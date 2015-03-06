@@ -39,6 +39,9 @@ private:
     bool compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const;
     void sortFiles(const QString &savePath, const QString &modelName, bool x64) const;
     void compressFiles(const QString &savePath, const QString &modelName) const;
+    bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs,
+                                        QStringList &rActualNames, QStringList &rActualVars, QStringList &rActualRefs,
+                                        const QStringList &rTags, const QString &rPortName, const QDomElement portElement);
 
 };
 

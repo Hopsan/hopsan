@@ -218,18 +218,18 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceInports;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = toVarName(inputs.at(i));
+        QString tempString = toValidVarName(inputs.at(i));
         replaceInports.append("    double "+tempString+";\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceInports.append("    double "+tempString+"C;\n");
         replaceInports.append("    double "+tempString+"Zc;\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceInports.append("    double "+tempString+"F;\n");
         replaceInports.append("    double "+tempString+"X;\n");
         replaceInports.append("    double "+tempString+"V;\n");
@@ -237,13 +237,13 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceInports.append("    double "+tempString+"C;\n");
         replaceInports.append("    double "+tempString+"Zc;\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceInports.append("    double "+tempString+"P;\n");
         replaceInports.append("    double "+tempString+"Q;\n");
     }
@@ -251,12 +251,12 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceOutports;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = toVarName(outputs.at(i));
+        QString tempString = toValidVarName(outputs.at(i));
         replaceOutports.append("    double "+tempString+";\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"F;\n");
         replaceOutports.append("    double "+tempString+"X;\n");
         replaceOutports.append("    double "+tempString+"V;\n");
@@ -264,19 +264,19 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"C;\n");
         replaceOutports.append("    double "+tempString+"Zc;\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"P;\n");
         replaceOutports.append("    double "+tempString+"Q;\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"C;\n");
         replaceOutports.append("    double "+tempString+"Zc;\n");
     }
@@ -287,18 +287,18 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceInportAttribs;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = toVarName(inputs.at(i));
+        QString tempString = toValidVarName(inputs.at(i));
         replaceInportAttribs.append("    { \""+tempString+"\", 1, 1},\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"F\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"X\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"V\", 1, 1},\n");
@@ -306,13 +306,13 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"P\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"Q\", 1, 1},\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
@@ -320,12 +320,12 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceOutportAttribs;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = toVarName(outputs.at(i));
+        QString tempString = toValidVarName(outputs.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"\", 1, 1},\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"F\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"X\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"V\", 1, 1},\n");
@@ -333,19 +333,19 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"P\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"Q\", 1, 1},\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
@@ -415,18 +415,18 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceIndata;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = toVarName(inputs.at(i));
+        QString tempString = toValidVarName(inputs.at(i));
         replaceIndata.append("        rtInport."+tempString+" = inData["+QString::number(i)+"];\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceIndata.append("        rtInport."+tempString+"C = inData["+QString::number(2*i+inputs.size())+"];\n");
         replaceIndata.append("        rtInport."+tempString+"Zc = inData["+QString::number(2*i+1+inputs.size())+"];\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceIndata.append("        rtInport."+tempString+"F = inData["+QString::number(4*i+inputs.size()+2*mechCinterfaces.size())+"];\n");
         replaceIndata.append("        rtInport."+tempString+"X = inData["+QString::number(4*i+1+inputs.size()+2*mechCinterfaces.size())+"];\n");
         replaceIndata.append("        rtInport."+tempString+"V = inData["+QString::number(4*i+2+inputs.size()+2*mechCinterfaces.size())+"];\n");
@@ -434,13 +434,13 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceIndata.append("        rtInport."+tempString+"C = inData["+QString::number(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n");
         replaceIndata.append("        rtInport."+tempString+"Zc = inData["+QString::number(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceIndata.append("        rtInport."+tempString+"P = inData["+QString::number(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n");
         replaceIndata.append("        rtInport."+tempString+"Q = inData["+QString::number(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n");
     }
@@ -448,18 +448,18 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceWriteNodeData;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = toVarName(inputs.at(i));
+        QString tempString = toValidVarName(inputs.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+inputs.at(i)+"\", \"out\", 0, rtInport."+tempString+");\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 3, rtInport."+tempString+"C);\n");
         replaceIndata.append("    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 4, rtInport."+tempString+"Zc);\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 1, rtInport."+tempString+"F);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 2, rtInport."+tempString+"X);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 0, rtInport."+tempString+"V);\n");
@@ -467,13 +467,13 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 3, rtInport."+tempString+"C);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 4, rtInport."+tempString+"Zc);\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 1, rtInport."+tempString+"P);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 0, rtInport."+tempString+"Q);\n");
     }
@@ -481,12 +481,12 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceReadNodeData;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = toVarName(outputs.at(i));
+        QString tempString = toValidVarName(outputs.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+" = readNodeData(\""+outputs.at(i)+"\", \"in\", 0);\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"F = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 1);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"X = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 2);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"V = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 0);\n");
@@ -494,19 +494,19 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"C = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 3);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"Zc = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 4);\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"P = readNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 1);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"Q = readNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 0);\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"C = readNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 3);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"Zc = readNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 4);\n");
     }
@@ -514,12 +514,12 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QString replaceOutData;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = toVarName(outputs.at(i));
+        QString tempString = toValidVarName(outputs.at(i));
         replaceOutData.append("        outData["+QString::number(i)+"] = rtOutport."+tempString+";\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechCinterfaces.at(i));
+        QString tempString = toValidVarName(mechCinterfaces.at(i));
         replaceOutData.append("        outData["+QString::number(4*i+outputs.size())+"] = rtOutport."+tempString+"F;\n");
         replaceOutData.append("        outData["+QString::number(4*i+1+outputs.size())+"] = rtOutport."+tempString+"X;\n");
         replaceOutData.append("        outData["+QString::number(4*i+2+outputs.size())+"] = rtOutport."+tempString+"V;\n");
@@ -527,19 +527,19 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(mechQinterfaces.at(i));
+        QString tempString = toValidVarName(mechQinterfaces.at(i));
         replaceOutData.append("        outData["+QString::number(2*i+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"C;\n");
         replaceOutData.append("        outData["+QString::number(2*i+1+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydCinterfaces.at(i));
+        QString tempString = toValidVarName(hydCinterfaces.at(i));
         replaceOutData.append("        outData["+QString::number(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"P;\n");
         replaceOutData.append("        outData["+QString::number(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"Q;\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = toVarName(hydQinterfaces.at(i));
+        QString tempString = toValidVarName(hydQinterfaces.at(i));
         replaceOutData.append("        outData["+QString::number(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"C;\n");
         replaceOutData.append("        outData["+QString::number(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n");
     }

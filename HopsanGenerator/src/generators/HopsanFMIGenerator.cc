@@ -24,7 +24,6 @@
 using namespace hopsan;
 
 
-
 HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog)
     : HopsanGenerator(coreIncludePath, binPath, gccPath, showDialog)
 {
@@ -158,7 +157,7 @@ bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, 
         fmi1_variability_enu_t variability = fmi1_import_get_variability(pVar);
         fmi1_base_type_enu_t type = fmi1_import_get_variable_base_type(pVar);
         fmi1_value_reference_t vr = fmi1_import_get_variable_vr(pVar);
-        name = toVarName(name);
+        name = toValidVarName(name);
         if(causality == fmi1_causality_enu_input && variability == fmi1_variability_enu_parameter)
         {
             parNames.append(name);
@@ -182,7 +181,7 @@ bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, 
 
     //Get name of FMU
     QString fmuName = fmi1_import_get_model_name(fmu);
-    fmuName = toVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+    fmuName = toValidVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
     //--------------------------------------------//
     printMessage("Creating " + fmuName + ".hpp...");
@@ -441,7 +440,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         QString name = fmi2_import_get_variable_name(pVar);
         fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
         fmi2_value_reference_t vr = fmi2_import_get_variable_vr(pVar);
-        name = toVarName(name);
+        name = toValidVarName(name);
         if(causality == fmi2_causality_enu_parameter)
         {
             parNames.append(name);
@@ -465,7 +464,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
     //Get name of FMU
     QString fmuName = fmi2_import_get_model_name(fmu);
-    fmuName = toVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+    fmuName = toValidVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
 
 
@@ -514,29 +513,22 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                         QStringList outputs = QStringList() << "f" << "x" << "v" << "me";
                         QStringList inputs = QStringList() << "c" << "Zc";
 
-                        QString name;
-                        foreach(const QString &output, outputs)
+                        // Replace input variables
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
+                                                            inputNames, inputVars, inputRefs, inputs,
+                                                            portNames.last(), portElement))
                         {
-                            name = portElement.firstChildElement(output).text();
-                            portVarNames.last().append(name);
-                            portVarVars.last().append(portVars.last()+"_"+name);
-                            portVarRefs.last().append(outputRefs.at(outputNames.indexOf(name)));
-
-                            outputVars.removeAt(outputNames.indexOf(name));
-                            outputRefs.removeAt(outputNames.indexOf(name));
-                            outputNames.removeAll(name);
-
+                            printErrorMessage("In: "+ file.fileName());
+                            return false;
                         }
-                        foreach(const QString &input, inputs)
-                        {
-                            name = portElement.firstChildElement(input).text();
-                            portVarNames.last().append(name);
-                            portVarVars.last().append(portVars.last()+"_"+name);
-                            portVarRefs.last().append(inputRefs.at(inputNames.indexOf(name)));
 
-                            inputVars.removeAt(inputNames.indexOf(name));
-                            inputRefs.removeAt(inputNames.indexOf(name));
-                            inputNames.removeAll(name);
+                        // Replace output variables
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
+                                                            outputNames, outputVars, outputRefs, outputs,
+                                                            portNames.last(), portElement))
+                        {
+                            printErrorMessage("In: "+ file.fileName());
+                            return false;
                         }
 
                         ++idx;
@@ -554,30 +546,24 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                         QStringList outputs = QStringList() << "p" << "q";
                         QStringList inputs = QStringList() << "c" << "Zc";
 
-                        QString name;
-                        foreach(const QString &output, outputs)
+                        // Replace input variables
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
+                                                            inputNames, inputVars, inputRefs, inputs,
+                                                            portNames.last(), portElement))
                         {
-                            name = portElement.firstChildElement(output).text();
-                            portVarNames.last().append(name);
-                            portVarVars.last().append(portVars.last()+"_"+name);
-                            portVarRefs.last().append(outputRefs.at(outputNames.indexOf(name)));
-
-                            outputVars.removeAt(outputNames.indexOf(name));
-                            outputRefs.removeAt(outputNames.indexOf(name));
-                            outputNames.removeAll(name);
-
+                            printErrorMessage("In: "+ file.fileName());
+                            return false;
                         }
-                        foreach(const QString &input, inputs)
+
+                        // Replace output variables
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
+                                                            outputNames, outputVars, outputRefs, outputs,
+                                                            portNames.last(), portElement))
                         {
-                            name = portElement.firstChildElement(input).text();
-                            portVarNames.last().append(name);
-                            portVarVars.last().append(portVars.last()+"_"+name);
-                            portVarRefs.last().append(inputRefs.at(inputNames.indexOf(name)));
-
-                            inputVars.removeAt(inputNames.indexOf(name));
-                            inputRefs.removeAt(inputNames.indexOf(name));
-                            inputNames.removeAll(name);
+                            printErrorMessage("In: "+ file.fileName());
+                            return false;
                         }
+
 
                         ++idx;
                     }
@@ -1023,12 +1009,12 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     {
         foreach(const InterfaceVarSpec &varSpec, portSpec.vars)
         {
-            QString temp = "dataPtrs["+QString::number(vr)+"] = spCoreComponentSystem";
+            QString temp = QString("dataPtrs[%1] = spCoreComponentSystem").arg(vr);
             foreach(const QString &subsystem, portSpec.path)
             {
-                temp.append("->getSubComponentSystem(\""+subsystem+"\")");
+                temp.append(QString("->getSubComponentSystem(\"%1\")").arg(subsystem));
             }
-            temp.append("->getSubComponent(\""+portSpec.component+"\")->getSafeNodeDataPtr(\""+portSpec.port+"\", "+QString::number(varSpec.dataId)+");\n");
+            temp.append(QString("->getSubComponent(\"%1\")->getSafeNodeDataPtr(\"%2\", %3);\n").arg(portSpec.component).arg(portSpec.port).arg(varSpec.dataId));
             setDataPtrsString.append(temp);
             ++vr;
         }
@@ -1663,6 +1649,33 @@ void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &m
 
     if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
         return;
+}
+
+bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs,
+                                                        QStringList &rActualNames, QStringList &rActualVars, QStringList &rActualRefs,
+                                                        const QStringList &rTags, const QString &rPortName, const QDomElement portElement)
+{
+    foreach(const QString &tag, rTags)
+    {
+        QString name = toValidVarName(portElement.firstChildElement(tag).text());
+        int idx = rActualNames.indexOf(name);
+        if (idx >= 0)
+        {
+            rPortVarNames.append(name);
+            rPortVarVars.append(rPortName+"_"+name);
+            rPortVarRefs.append(rActualRefs.at(idx));
+
+            rActualVars.removeAt(idx);
+            rActualRefs.removeAt(idx);
+            rActualNames.removeAll(name);
+        }
+        else
+        {
+            printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
+            return false;
+        }
+    }
+    return true;
 }
 
 

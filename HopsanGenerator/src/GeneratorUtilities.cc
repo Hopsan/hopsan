@@ -376,22 +376,44 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
 //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
 //! @param org Original string
 //! @returns String without illegal characters
-QString toVarName(const QString org)
+QString toValidVarName(const QString &rOrg)
 {
-    QString ret = org;
-    while(!ret.isEmpty() && !ret[0].isLetter())
+    QString ret;
+    if (!rOrg.isEmpty())
     {
-        ret = ret.right(ret.size()-1);
-    }
-    for(int i=1; i<ret.size(); ++i)
-    {
-        if(!ret[i].isLetterOrNumber())
+        // Reserve memory for entire string (we will only append as many chars as we decide to keep)
+        ret.reserve(rOrg.size());
+        // First discard any non letter char in the begining
+        int c=0;
+        while ( (c<rOrg.size()) && !rOrg[c].isLetter() )
         {
-            ret.remove(i,1);
-            i--;
+            ++c;
+        }
+        // Now remove any non letter or nummber
+        while ( c < rOrg.size() )
+        {
+            if ( rOrg[c].isLetterOrNumber() /*|| rOrg[c] == '_' */)
+            {
+                ret.append(rOrg[c]);
+            }
+            ++c;
         }
     }
     return ret;
+//    QString ret = org;
+//    while(!ret.isEmpty() && !ret[0].isLetter())
+//    {
+//        ret = ret.right(ret.size()-1);
+//    }
+//    for(int i=1; i<ret.size(); ++i)
+//    {
+//        if(!ret[i].isLetterOrNumber())
+//        {
+//            ret.remove(i,1);
+//            i--;
+//        }
+//    }
+//    return ret;
 }
 
 

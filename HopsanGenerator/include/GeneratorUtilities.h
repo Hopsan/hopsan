@@ -168,7 +168,7 @@ bool removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
 bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLFlags="", QString extraIncludes="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);
-QString toVarName(const QString org);
+QString toValidVarName(const QString &rOrg);
 QString extractTaggedSection(QString str, QString tag);
 void replaceTaggedSection(QString &str, QString tag, QString replacement);
 QString replaceTag(QString str, QString tag, QString replacement);
