@@ -787,32 +787,33 @@ void getInterfaces(QList<InterfacePortSpec> &interfaces, ComponentSystem *pSyste
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicRotationalC, names[i].c_str(), "P1", path));
         }
-        else if(typeName == "HydraulicQ")
+        else if(typeName == "HydraulicInterfaceQ")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::HydraulicQ, names[i].c_str(), "P1", path));
         }
-        else if(typeName == "HydraulicC")
+        else if(typeName == "HydraulicInterfaceC")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::HydraulicC, names[i].c_str(), "P1", path));
         }
-        else if(typeName == "PneumaticQ")
+        else if(typeName == "PneumaticInterfaceQ")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::PneumaticQ, names[i].c_str(), "P1", path));
         }
-        else if(typeName == "PneumaticC")
+        else if(typeName == "PneumaticInterfaceC")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::PneumaticC, names[i].c_str(), "P1", path));
         }
-        else if(typeName == "ElectricQ")
+        else if(typeName == "ElectricInterfaceQ")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::ElectricQ, names[i].c_str(), "P1", path));
         }
-        else if(typeName == "ElectricC")
+        else if(typeName == "ElectricInterfaceC")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::ElectricC, names[i].c_str(), "P1", path));
         }
         else if(typeName == "Subsystem")
         {
+            //! @todo this should not be allowed, What if subssytem has different type, not shure if it should be allowed even if type same (petno25)
             getInterfaces(interfaces, dynamic_cast<hopsan::ComponentSystem *>(pComponent), path << pComponent->getName().c_str());
         }
     }
