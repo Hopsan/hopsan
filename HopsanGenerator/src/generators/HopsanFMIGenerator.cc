@@ -470,6 +470,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
     QStringList portTypes, portNames, portVars;
     QList<QStringList> portVarNames, portVarVars, portVarRefs;
+    QList< QList<size_t> > portVarDataIds;
 
     QString tlmFileName = fmuName+"_TLM.xml";
     QFile file(rTargetPath+"/"+tlmFileName);
@@ -509,13 +510,20 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                         portVarNames.append(QStringList());
                         portVarVars.append(QStringList());
                         portVarRefs.append(QStringList());
+                        portVarDataIds.append(QList<size_t>());
 
-                        QStringList outputs = QStringList() << "f" << "x" << "v" << "me";
-                        QStringList inputs = QStringList() << "c" << "Zc";
+                        QStringList outputs, inputs;
+                        QList<size_t> outputDataIds, inputDataIds;
+                        GeneratorNodeInfo gni("NodeMechanic");
+                        outputs << gni.qVariables;
+                        outputDataIds << gni.qVariableIds;
+                        inputs << gni.cVariables;
+                        inputDataIds << gni.cVariableIds;
+
 
                         // Replace input variables
-                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
-                                                            inputNames, inputVars, inputRefs, inputs,
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
+                                                            inputNames, inputVars, inputRefs, inputs, inputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
@@ -523,8 +531,8 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                         }
 
                         // Replace output variables
-                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
-                                                            outputNames, outputVars, outputRefs, outputs,
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
+                                                            outputNames, outputVars, outputRefs, outputs, outputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
@@ -542,13 +550,20 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                         portVarNames.append(QStringList());
                         portVarVars.append(QStringList());
                         portVarRefs.append(QStringList());
+                        portVarDataIds.append(QList<size_t>());
 
-                        QStringList outputs = QStringList() << "p" << "q";
-                        QStringList inputs = QStringList() << "c" << "Zc";
+                        QStringList outputs, inputs;
+                        QList<size_t> outputDataIds, inputDataIds;
+                        GeneratorNodeInfo gni("NodeHydraulic");
+                        outputs << gni.qVariables;
+                        outputDataIds << gni.qVariableIds;
+                        inputs << gni.cVariables;
+                        inputDataIds << gni.cVariableIds;
+
 
                         // Replace input variables
-                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
-                                                            inputNames, inputVars, inputRefs, inputs,
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
+                                                            inputNames, inputVars, inputRefs, inputs, inputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
@@ -556,8 +571,8 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                         }
 
                         // Replace output variables
-                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(),
-                                                            outputNames, outputVars, outputRefs, outputs,
+                        if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
+                                                            outputNames, outputVars, outputRefs, outputs, outputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
@@ -567,6 +582,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
                         ++idx;
                     }
+                    //! @todo support the other nodetypes
                     else
                     {
                         printErrorMessage("Unknown port type: "+portType+", ignored.");
@@ -611,11 +627,13 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     {
         fmuComponentTemplateFile.setFileName(":templates/fmi2ComponentTemplate.hpp");
     }
-    assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString fmuComponentCode;
-    QTextStream t2(&fmuComponentTemplateFile);
-    fmuComponentCode = t2.readAll();
-    fmuComponentTemplateFile.close();
+    if(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream t2(&fmuComponentTemplateFile);
+        fmuComponentCode = t2.readAll();
+        fmuComponentTemplateFile.close();
+    }
     if(fmuComponentCode.isEmpty())
     {
         printErrorMessage("Unable to generate code for "+fmuName+".hpp.");
@@ -716,6 +734,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
             addPorts.append("        ");
         }
         QString nodeType;
+        //! @todo should have a lookup map for nodetype conversion
         if(portTypes.at(i) == "mechanicq")
         {
             nodeType = "NodeMechanic";
@@ -725,6 +744,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
             nodeType = "NodeHydraulic";
         }
         addPorts.append(portVars.at(i)+"= addPowerPort(\""+portNames.at(i)+"\",\""+nodeType+"\");\n");
+        //! @todo support all NODE TYPES
     }
 
     QString setNodeDataPointers;
@@ -737,21 +757,33 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         if(portTypes.at(i) == "mechanicq")
         {
             QString port = portVars.at(i);
-            setNodeDataPointers.append(portVarVars.at(i).at(0)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Force);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(1)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Position);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(2)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Velocity);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(3)+" = getSafeNodeDataPtr("+port+", NodeMechanic::EquivalentMass);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(4)+" = getSafeNodeDataPtr("+port+", NodeMechanic::WaveVariable);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(5)+" = getSafeNodeDataPtr("+port+", NodeMechanic::CharImpedance);\n");
+            for (int j=0; j<portVarVars.at(i).size(); ++j)
+            {
+                setNodeDataPointers.append(QString("%1 = getSafeNodeDataPtr(%2, %3);\n").arg(portVarVars.at(i).at(j)).arg(port).arg(portVarDataIds.at(i).at(j)));
+            }
+            //! @todo the code is the same now for all powerport types, could merge code
+//            setNodeDataPointers.append(portVarVars.at(i).at(0)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Force);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(1)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Position);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(2)+" = getSafeNodeDataPtr("+port+", NodeMechanic::Velocity);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(3)+" = getSafeNodeDataPtr("+port+", NodeMechanic::EquivalentMass);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(4)+" = getSafeNodeDataPtr("+port+", NodeMechanic::WaveVariable);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(5)+" = getSafeNodeDataPtr("+port+", NodeMechanic::CharImpedance);\n");
         }
         else if(portTypes.at(i) == "hydraulicq")
         {
             QString port = portVars.at(i);
-            setNodeDataPointers.append(portVarVars.at(i).at(0)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::Pressure);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(1)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::Flow);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(2)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::WaveVariable);\n");
-            setNodeDataPointers.append(portVarVars.at(i).at(3)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::CharImpedance);\n");
+            for (int j=0; j<portVarVars.at(i).size(); ++j)
+            {
+                setNodeDataPointers.append(QString("%1 = getSafeNodeDataPtr(%2, %3);\n").arg(portVarVars.at(i).at(j)).arg(port).arg(portVarDataIds.at(i).at(j)));
+            }
+            //! @todo the code is the same now for all powerport types, could merge code
+//            setNodeDataPointers.append(portVarVars.at(i).at(0)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::Pressure);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(1)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::Flow);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(2)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::WaveVariable);\n");
+//            setNodeDataPointers.append(portVarVars.at(i).at(3)+" = getSafeNodeDataPtr("+port+", NodeHydraulic::CharImpedance);\n");
         }
+
+        //! @todo support all NODE TYPES
     }
 
     QString setPars;
@@ -1651,19 +1683,20 @@ void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &m
         return;
 }
 
-bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs,
+bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
                                                         QStringList &rActualNames, QStringList &rActualVars, QStringList &rActualRefs,
-                                                        const QStringList &rTags, const QString &rPortName, const QDomElement portElement)
+                                                        const QStringList &rTags, const QList<size_t> &rDataIds, const QString &rPortName, const QDomElement portElement)
 {
-    foreach(const QString &tag, rTags)
+    for(size_t i=0; i<rTags.size(); ++i)
     {
-        QString name = toValidVarName(portElement.firstChildElement(tag).text());
+        QString name = toValidVarName(portElement.firstChildElement(rTags[i]).text());
         int idx = rActualNames.indexOf(name);
         if (idx >= 0)
         {
             rPortVarNames.append(name);
             rPortVarVars.append(rPortName+"_"+name);
             rPortVarRefs.append(rActualRefs.at(idx));
+            rPortVarDataIds.append(rDataIds[i]);
 
             rActualVars.removeAt(idx);
             rActualRefs.removeAt(idx);

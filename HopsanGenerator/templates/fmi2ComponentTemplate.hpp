@@ -21,10 +21,6 @@ void localLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level
 
 namespace hopsan {
 
-//!
-//! @brief
-//! @ingroup HydraulicComponents
-//!
 class <<<className>>> : public ComponentQ
 {
 
@@ -32,7 +28,7 @@ private:
     //Node data pointers
     <<<localvars>>>
 
-                  fmi2_callback_functions_t callBackFunctions;
+    fmi2_callback_functions_t callBackFunctions;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;

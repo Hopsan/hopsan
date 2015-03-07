@@ -171,15 +171,6 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
     QString fmiLibDir="/Dependencies/FMILibrary-2.0.1/";
 #endif
 
-    //    QString inc = "-I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/Config.cmake/";
-    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/CAPI/include/");
-    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/Import/include/");
-    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/Util/include/");
-    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/XML/include/");
-    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/src/ZIP/include/");
-    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/ThirdParty/FMI/default/");
-    //    inc.append(" -I"+pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary-2.0.1/install/include/");
-
     QString inc = QString("-I\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/include/");
     QString lib = QString("-L\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/lib");
 #ifdef _WIN32
