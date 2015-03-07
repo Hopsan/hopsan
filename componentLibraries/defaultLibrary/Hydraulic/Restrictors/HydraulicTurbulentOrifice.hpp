@@ -41,7 +41,7 @@ namespace hopsan {
         TurbulentFlowFunction qTurb;
 
         Port *mpP1, *mpP2;
-        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc, *mpND_A;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc;
         double *mpA, *mpCq, *mpRho;
 
     public:
@@ -86,7 +86,7 @@ namespace hopsan {
             Zc1 = (*mpP1_Zc);
             c2 = (*mpP2_c);
             Zc2 = (*mpP2_Zc);
-            A = (*mpA);
+            A = fabs(*mpA);
             Cq = (*mpCq);
             rho = (*mpRho);
 

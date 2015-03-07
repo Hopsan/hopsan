@@ -70,7 +70,7 @@ namespace hopsan {
             Zc1 = (*mpP1_Zc);
             c2 = (*mpP2_c);
             Zc2 = (*mpP2_Zc);
-            const double Kc = (*mpKc);
+            const double Kc = fabs(*mpKc);
 
             //Orifice equations
             q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
