@@ -1119,7 +1119,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
             GeneratorNodeInfo::getNodeTypes(nodeTypes);
             Q_FOREACH(const QString &nodeType, nodeTypes)
             {
-                GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
+                GeneratorNodeInfo info(nodeType);
                 if(type == info.niceName+"q" || type == info.niceName+"c")
                 {
                     Q_FOREACH(const QString &var, info.qVariables)
@@ -1147,7 +1147,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 
             Q_FOREACH(const QString &nodeType, nodeTypes)
             {
-                GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
+                GeneratorNodeInfo info(nodeType);
                 if(type == info.niceName+"q")
                 {
                     QStringList varNames;
@@ -1708,7 +1708,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
         QString name=compName;
         name.remove(' ').remove("-");
 
-        GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
+        GeneratorNodeInfo info(nodeType);
 
         tlmPorts.append(QStringList() << info.niceName+"q");
         Q_FOREACH(const QString &var, info.qVariables)
@@ -1716,7 +1716,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
             outVars.append(name+"_"+var+"__");
             outComps.append(compName);
             outPorts.append(portName);
-            outDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
+            outDatatypes.append(info.qVariableIds[info.qVariables.indexOf(var)]);
             tlmPorts.last() << var << name+"_"+var+"__";
         }
         Q_FOREACH(const QString &var, info.cVariables)
@@ -1724,7 +1724,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
             inVars.append(name+"_"+var+"__");
             inComps.append(compName);
             inPorts.append("P1");
-            inDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
+            inDatatypes.append(info.cVariableIds[info.cVariables.indexOf(var)]);
             tlmPorts.last() << var << name+"_"+var+"__";
         }
     }
@@ -1732,7 +1732,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
     {
         QString name=compName.remove(' ').remove("-");
 
-        GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
+        GeneratorNodeInfo info(nodeType);
 
         tlmPorts.append(QStringList() << info.niceName+"c");
         Q_FOREACH(const QString &var, info.qVariables)

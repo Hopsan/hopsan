@@ -640,29 +640,33 @@ GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
 {
     hopsan::HopsanEssentials hopsanCore;
     Node *pNode = hopsanCore.createNode(nodeType.toStdString().c_str());
-
-    niceName = pNode->getNiceName().c_str();
-    for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
+    if (pNode)
     {
-        NodeDataVariableTypeEnumT varType = pNode->getDataDescription(i)->varType;
-        if(varType == DefaultType || varType == FlowType || varType == IntensityType)        //Q variable
+        niceName = pNode->getNiceName().c_str();
+        for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
         {
-            qVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str());
-            varIdx << pNode->getDataDescription(i)->id;
-        }
-    }
-    for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
-    {
-        if(pNode->getDataDescription(i)->varType == TLMType)        //C variable
-        {
-            cVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str());
-            varIdx << pNode->getDataDescription(i)->id;
-        }
-    }
+            const hopsan::NodeDataDescription *pVarDesc = pNode->getDataDescription(i);
+            NodeDataVariableTypeEnumT varType = pVarDesc->varType;
+            // Ceck if  "Q-type variable"
+            if(varType == DefaultType || varType == FlowType || varType == IntensityType)
+            {
+                qVariables << pVarDesc->shortname.c_str();
+                qVariableIds << pVarDesc->id;
+                variableLabels << QString(pVarDesc->name.c_str());
+                varIdx << pVarDesc->id;
+            }
+            // Check if "C-type variable"
+            else if(varType == TLMType)
+            {
+                cVariables << pVarDesc->shortname.c_str();
+                cVariableIds << pVarDesc->id;
+                variableLabels << QString(pVarDesc->name.c_str());
+                varIdx << pVarDesc->id;
+            }
 
-    hopsanCore.removeNode(pNode);
+        }
+        hopsanCore.removeNode(pNode);
+    }
 }
 
 void GeneratorNodeInfo::getNodeTypes(QStringList &nodeTypes)
@@ -699,79 +703,119 @@ InterfacePortSpec::InterfacePortSpec(InterfaceTypesEnumT type, QString component
 
     QStringList inputDataNames;
     QStringList outputDataNames;
-    QList<size_t> dataIds;
+    QList<size_t> inputDataIds, outputDataIds;
 
     switch(type)
     {
     case InterfacePortSpec::Input:
         inputDataNames << "";
-        dataIds << 0;
+        inputDataIds << 0;
         break;
     case InterfacePortSpec::Output:
         outputDataNames << "";
-        dataIds << 0;
+        outputDataIds << 0;
         break;
     case InterfacePortSpec::MechanicQ:
-        inputDataNames << GeneratorNodeInfo("NodeMechanic").qVariables;
-        outputDataNames << GeneratorNodeInfo("NodeMechanic").cVariables;
-        dataIds << GeneratorNodeInfo("NodeMechanic").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeMechanic");
+        inputDataNames  << gni.qVariables;
+        inputDataIds    << gni.qVariableIds;
+        outputDataNames << gni.cVariables;
+        outputDataIds   << gni.cVariableIds;
         break;
+    }
     case InterfacePortSpec::MechanicC:
-        inputDataNames << GeneratorNodeInfo("NodeMechanic").cVariables;
-        outputDataNames << GeneratorNodeInfo("NodeMechanic").qVariables;
-        dataIds << GeneratorNodeInfo("NodeMechanic").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeMechanic");
+        inputDataNames  << gni.cVariables;
+        inputDataIds    << gni.cVariableIds;
+        outputDataNames << gni.qVariables;
+        outputDataIds   << gni.qVariableIds;
         break;
+    }
     case InterfacePortSpec::MechanicRotationalQ:
-        inputDataNames << GeneratorNodeInfo("NodeMechanicRotational").qVariables;
-        outputDataNames << GeneratorNodeInfo("NodeMechanicRotational").cVariables;
-        dataIds << GeneratorNodeInfo("NodeMechanicRotational").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeMechanicRotational");
+        inputDataNames  << gni.qVariables;
+        inputDataIds    << gni.qVariableIds;
+        outputDataNames << gni.cVariables;
+        outputDataIds   << gni.cVariableIds;
         break;
+    }
     case InterfacePortSpec::MechanicRotationalC:
-        inputDataNames << GeneratorNodeInfo("NodeMechanicRotational").cVariables;
-        outputDataNames << GeneratorNodeInfo("NodeMechanicRotational").qVariables;
-        dataIds << GeneratorNodeInfo("NodeMechanicRotational").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeMechanicRotational");
+        inputDataNames  << gni.cVariables;
+        inputDataIds    << gni.cVariableIds;
+        outputDataNames << gni.qVariables;
+        outputDataIds   << gni.qVariableIds;
         break;
+    }
     case InterfacePortSpec::HydraulicQ:
-        inputDataNames << GeneratorNodeInfo("NodeHydraulic").qVariables;
-        outputDataNames << GeneratorNodeInfo("NodeHydraulic").cVariables;
-        dataIds << GeneratorNodeInfo("NodeHydraulic").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeHydraulic");
+        inputDataNames  << gni.qVariables;
+        inputDataIds    << gni.qVariableIds;
+        outputDataNames << gni.cVariables;
+        outputDataIds   << gni.cVariableIds;
         break;
+    }
     case InterfacePortSpec::HydraulicC:
-        inputDataNames << GeneratorNodeInfo("NodeHydraulic").cVariables;
-        outputDataNames << GeneratorNodeInfo("NodeHydraulic").qVariables;
-        dataIds << GeneratorNodeInfo("NodeHydraulic").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeHydraulic");
+        inputDataNames  << gni.cVariables;
+        inputDataIds    << gni.cVariableIds;
+        outputDataNames << gni.qVariables;
+        outputDataIds   << gni.qVariableIds;
         break;
+    }
     case InterfacePortSpec::PneumaticQ:
-        inputDataNames << GeneratorNodeInfo("NodePneumatic").qVariables;
-        outputDataNames << GeneratorNodeInfo("NodePneumatic").cVariables;
-        dataIds << GeneratorNodeInfo("NodePneumatic").varIdx;
+    {
+        GeneratorNodeInfo gni("NodePneumatic");
+        inputDataNames  << gni.qVariables;
+        inputDataIds    << gni.qVariableIds;
+        outputDataNames << gni.cVariables;
+        outputDataIds   << gni.cVariableIds;
         break;
+    }
     case InterfacePortSpec::PneumaticC:
-        inputDataNames << GeneratorNodeInfo("NodePneumatic").cVariables;
-        outputDataNames << GeneratorNodeInfo("NodePneumatic").qVariables;
-        dataIds << GeneratorNodeInfo("NodePneumatic").varIdx;
+    {
+        GeneratorNodeInfo gni("NodePneumatic");
+        inputDataNames  << gni.cVariables;
+        inputDataIds    << gni.cVariableIds;
+        outputDataNames << gni.qVariables;
+        outputDataIds   << gni.qVariableIds;
         break;
+    }
     case InterfacePortSpec::ElectricQ:
-        inputDataNames << GeneratorNodeInfo("NodeElectric").qVariables;
-        outputDataNames << GeneratorNodeInfo("NodeElectric").cVariables;
-        dataIds << GeneratorNodeInfo("NodeElectric").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeElectric");
+        inputDataNames  << gni.qVariables;
+        inputDataIds    << gni.qVariableIds;
+        outputDataNames << gni.cVariables;
+        outputDataIds   << gni.cVariableIds;
         break;
+    }
     case InterfacePortSpec::ElectricC:
-        inputDataNames << GeneratorNodeInfo("NodeElectric").cVariables;
-        outputDataNames << GeneratorNodeInfo("NodeElectric").qVariables;
-        dataIds << GeneratorNodeInfo("NodeElectric").varIdx;
+    {
+        GeneratorNodeInfo gni("NodeElectric");
+        inputDataNames  << gni.cVariables;
+        inputDataIds    << gni.cVariableIds;
+        outputDataNames << gni.qVariables;
+        outputDataIds   << gni.qVariableIds;
         break;
+    }
     default:
         break;
     }
 
     foreach(const QString &dataName, inputDataNames)
     {
-        vars.append(InterfaceVarSpec(dataName, dataIds.takeFirst(), InterfaceVarSpec::Input));
+        vars.append(InterfaceVarSpec(dataName, inputDataIds.takeFirst(), InterfaceVarSpec::Input));
     }
     foreach(const QString &dataName, outputDataNames)
     {
-        vars.append(InterfaceVarSpec(dataName, dataIds.takeFirst(), InterfaceVarSpec::Output));
+        vars.append(InterfaceVarSpec(dataName, outputDataIds.takeFirst(), InterfaceVarSpec::Output));
     }
 }
 
