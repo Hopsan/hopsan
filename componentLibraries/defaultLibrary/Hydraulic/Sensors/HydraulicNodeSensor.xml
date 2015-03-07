@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="HydraulicNodeSensor.hpp" typename="HydraulicNodeSensor" displayname="Hydraulic Node Sensor">
+        <icons>
+            <icon scale="1" path="HydraulicPowerSensor_user.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="1" a="90" name="P1"/>
+            <port x="0.2" y="0.2" a="270" name="p"/>
+			<port x="0.4" y="0" a="270" name="q"/>
+			<port x="0.6" y="0" a="270" name="c"/>
+			<port x="0.8" y="0.2" a="270" name="Zc"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

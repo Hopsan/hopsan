@@ -364,7 +364,8 @@ HEADERS += \
     Hydraulic/Restrictors/HydraulicCheckValve.hpp \
     Signal/Non-Linearities/SignalSampleAndHold.hpp \
     Signal/Logic/SignalCounter.hpp \
-    Special/AeroComponents/HopsanDefaultAeroComponents.h
+    Special/AeroComponents/HopsanDefaultAeroComponents.h \
+    Hydraulic/Sensors/HydraulicNodeSensor.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
@@ -378,4 +379,5 @@ OTHER_FILES += \
     Special/AeroComponents/HopsanDefaultAerocomponents.cci \
     Special/MechanicB/HopsanDefaultMechanicBComponents.cci \
     Experimental/Experimental.cci \
-    Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.xml
+    Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.xml \
+    Connectivity/HopsanDefaultConnectivityComponents.cci
