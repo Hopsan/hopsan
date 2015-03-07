@@ -180,10 +180,10 @@ public:
 
         fmi2_import_do_step(fmu, mTime, mTimestep, true);
 
-        double rValue;
+        //Write outputs
 >>>writevars>>>        vr = <<<vr>>>;
-        fmistatus = fmi2_import_get_real(fmu, &vr, 1, &rValue);
-        (*<<<var>>>) = rValue;
+        fmistatus = fmi2_import_get_real(fmu, &vr, 1, &value);
+        (*<<<var>>>) = value;
         <<<writevars<<<
     }
 
@@ -198,8 +198,6 @@ public:
 
         fmi2_import_free(fmu);
         fmi_import_free_context(context);
-
-        addInfoMessage("Everything seems to be OK since you got this far=)!");
     }
 };
 }

@@ -308,8 +308,6 @@ public:
 
         fmi2_import_free(fmu);
         fmi_import_free_context(context);
-
-        addInfoMessage("Everything seems to be OK since you got this far=)!");
     }
 
 
