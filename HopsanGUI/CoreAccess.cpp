@@ -164,9 +164,9 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             //Copy component icon
             QFile fmuIcon;
             fmuIcon.setFileName(QString(GRAPHICSPATH)+"/objecticons/fmucomponent.svg");
-            fmuIcon.copy(gpDesktopHandler->getFMUPath()+fmuName+"/fmucomponent.svg");
+            fmuIcon.copy(gpDesktopHandler->getFMUPath()+fmuName+"/"+fmuName+"/fmucomponent.svg");
             fmuIcon.close();
-            fmuIcon.setFileName(gpDesktopHandler->getFMUPath()+fmuName+"/fmucomponent.svg");
+            fmuIcon.setFileName(gpDesktopHandler->getFMUPath()+fmuName+"/"+fmuName+"/fmucomponent.svg");
             fmuIcon.setPermissions(QFile::WriteUser | QFile::ReadUser);
             fmuIcon.close();
 
