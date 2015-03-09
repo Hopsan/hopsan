@@ -227,7 +227,13 @@ HEADERS += \
     Signal/Logic/HopsanDefaultSignalLogicComponents.h \
     Signal/Animation/HopsanDefaultSignalAnimationComponents.h \
     Signal/Filters/HopsanDefaultSignalTFComponents.h \
+    Signal/Animation/SignalNumericalInput.hpp \
     Signal/Arithmetics/SignalSubtract.hpp \
+    Signal/Sources&Sinks/SignalConstant.hpp \
+    Signal/Filters/SignalIntegrator2.hpp \
+    Signal/Non-Linearities/SignalSaturation.hpp \
+    Signal/Non-Linearities/SignalRateLimiter.hpp \
+    Signal/HopsanDefaultSignalComponents.h \
     Special/Benchmarking/SignalDummy.hpp \
     Special/Benchmarking/HydraulicDummyQ.hpp \
     Special/Benchmarking/HydraulicDummyC.hpp \
@@ -260,7 +266,6 @@ HEADERS += \
     Pneumatic/PneumaticdEsensor.hpp \
     Pneumatic/PneumaticMachine.hpp \
     defaultComponentLibraryInternal.h \
-    Signal/HopsanDefaultSignalComponents.h \
     Mechanic/HopsanDefaultMechanicComponents.h \
     Electric/HopsanDefaultElectricComponents.h \
     Connectivity/MechanicRotationalInterfaceQ.hpp \
@@ -271,8 +276,6 @@ HEADERS += \
     Connectivity/ElectricInterfaceQ.hpp \
     Connectivity/ElectricInterfaceC.hpp \
     defaultComponents.h \
-    Signal/Sources&Sinks/SignalConstant.hpp \
-    Signal/Filters/SignalIntegrator2.hpp \
     Special/AeroComponents/AeroAircraft6DOF.hpp \
     Special/AeroComponents/SignalWaypoint.hpp \
     Special/AeroComponents/SignalTimeAccelerator.hpp \
@@ -292,7 +295,6 @@ HEADERS += \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp \
     Special/AeroComponents//PneumaticTurboMachineJ.hpp \
-    Signal/Non-Linearities/SignalSaturation.hpp \
     Hydraulic/MachineParts/HydraulicPumpPiston.hpp \
     Hydraulic/Valves/HydraulicPilotControlledCheckValve.hpp \
     Hydraulic/Valves/HydraulicPilotClosableCheckValve.hpp \
@@ -315,7 +317,6 @@ HEADERS += \
     Special/AeroComponents/AeroAircraft6DOFSS.hpp \
     Special/AeroComponents/AeroCombustionChamberMono.hpp \
     Special/CombustionEngine.hpp \
-    Signal/Non-Linearities/SignalRateLimiter.hpp \
     Hydraulic/Valves/Hydraulic42DirectionalValve.hpp \
     Hydraulic/LinearActuators/HydraulicFourChamberPiston.hpp \
     Hydraulic/Valves/HydraulicPressureControlValve33.hpp \
@@ -324,13 +325,13 @@ HEADERS += \
     Hydraulic/Valves/PressureControlled/HopsanDefaultHydraulicPressureControlledValves.h \
     Hydraulic/Valves/Hydraulic42Valve2.hpp \
     Special/MechanicB/MechanicGear.hpp \
+    Special/MechanicB/MechanicM3load1D.hpp \
     Special/MechanicB/HopsanDefaultMechanicBComponents.h \
     Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \
     Experimental/Signal1DLookupTable.hpp \
     Experimental/Signal2DLookupTable.hpp \
     Experimental/Experimental.h \
     Experimental/Signal3DLookupTable.hpp \
-     Signal/Animation/SignalNumericalInput.hpp \
     Hydraulic/Valves/Hydraulic22DirectionalCheckValve.hpp \
     Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp \
     Experimental/Signal1DPLOLookupTable.hpp \
