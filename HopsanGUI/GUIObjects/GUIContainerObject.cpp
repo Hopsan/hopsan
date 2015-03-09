@@ -1608,11 +1608,11 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
         qDebug() << "Copying " << (*it)->getName();
         (*it)->saveToDomElement(*copyRoot, FullModel);
 
-        QString str;
-        QTextStream stream(&str);
-        QDomNode node = *copyRoot;
-        node.save(stream, 4);
-        qDebug() << str;
+//        QString str;
+//        QTextStream stream(&str);
+//        QDomNode node = *copyRoot;
+//        node.save(stream, 4);
+//        qDebug() << str;
 
         QStringList parNames = (*it)->getParameterNames();
         for(int n=0; n<parNames.size(); ++n)
