@@ -62,7 +62,7 @@ public:
 
     void initialize()
     {
-        addInfoMessage("Initializing FMU 2.0 import");
+        addInfoMessage("Initializing FMU 1.0 import");
 
         const char* FMUPath = "<<<fmupath>>>";
         const char* tmpPath = "<<<temppath>>>";
@@ -81,7 +81,7 @@ public:
 
         if(version != fmi_version_1_enu)
         {
-            addErrorMessage("The code only supports version 2.0\n");
+            addErrorMessage("The code only supports version 1.0\n");
             stopSimulation();
             return;
         }
@@ -97,7 +97,7 @@ public:
 
         if(fmi1_import_get_fmu_kind(fmu) == fmi1_fmu_kind_enu_me)
         {
-            addErrorMessage("Only CS 2.0 is supported by this code\n");
+            addErrorMessage("Only CS 1.0 is supported by this code\n");
             stopSimulation();
              return;
         }
