@@ -5,7 +5,11 @@
             <icon scale="1" path="MechanicGear.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="MechanicGear.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <ports>
+         <help>
+            <text>Mechanic gear. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>MechanicGear.nb</link>
+        </help>       
+       <ports>
             <port x="0.5" y="0" a="90" name="PgearRatio"/>
             <port x="0" y="0.5" a="0" name="Pmr1"/>
             <port x="1" y="0.5" a="180" name="Pmr2"/>

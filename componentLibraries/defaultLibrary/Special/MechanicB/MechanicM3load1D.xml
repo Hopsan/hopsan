@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="MechanicM3load1D" displayname="MechanicM3load1D">
+    <icons>
+      <icon iconrotation="" type="user" scale="1" path="MechanicM3load1D.svg"/>
+      <icon iconrotation="" type="iso" scale="1" path="MechanicM3load1D.svg"/>
+    </icons>
+    <ports>
+      <port x="0.226" y="0" enabled="true" autoplaced="true" name="fc1" a="270"/>
+      <port x="0.574" y="0" enabled="true" autoplaced="true" name="fc2" a="270"/>
+      <port x="0.35" y="1" enabled="true" autoplaced="true" name="xp1" a="90"/>
+      <port x="0.65" y="1" enabled="true" autoplaced="true" name="xp2" a="90"/>
+      <port x="0.40" y="1" enabled="true" autoplaced="true" name="fc13" a="90"/>
+      <port x="0.70" y="1" enabled="true" autoplaced="true" name="fc23" a="90"/>
+      <port x="0.151" y="1" enabled="true" autoplaced="true" name="Pm1" a="90"/>
+      <port x="1" y="0.5" enabled="true" autoplaced="true" name="xL" a="90"/>
+      <port x="0.497" y="1" enabled="true" autoplaced="true" name="Pm2" a="0"/>
+      <port x="1" y="0.5" enabled="true" autoplaced="true" name="Pm3" a="90"/>
+    </ports>
+    <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+  </modelobject>
+</hopsanobjectappearance>

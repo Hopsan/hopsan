@@ -2,5 +2,6 @@
 #define HOPSANDEFAULTMECHANICBCOMPONENTS_H
 
 #include "MechanicGear.hpp"
+#include "MechanicM3load1D.hpp"
 
 #endif // HOPSANDEFAULTMECHANICBCOMPONENTS_H
