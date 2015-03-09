@@ -159,6 +159,7 @@ HEADERS += \
     Mechanic/Linear/MechanicTranslationalMassWithLever.hpp \
     Mechanic/Linear/MechanicTranslationalMassWithCoulombFriction.hpp \
     Mechanic/Linear/MechanicTranslationalMass.hpp \
+    Mechanic/Linear/MechanicM2load1D.hpp \
     Mechanic/Linear/MechanicTranslationalLosslessConnector.hpp \
     Mechanic/Linear/MechanicSpeedSensor.hpp \
     Mechanic/Linear/MechanicPositionSensor.hpp \
@@ -167,11 +168,33 @@ HEADERS += \
     Mechanic/Linear/MechanicForceTransformer.hpp \
     Mechanic/Linear/MechanicForceSensor.hpp \
     Mechanic/Linear/MechanicFixedPosition.hpp \
+    Mechanic/Linear/MechanicM2load1D.hpp \
+    Mechanic/Linear/MechanicMkcload1D.hpp \
+    Mechanic/Linear/MechanicFixedPositionMultiPort.hpp \
+    Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp \
+    Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp \
+    Mechanic/Linear/HopsanDefaultMechanicLinearComponents.h \
     Mechanic/Rotational/MechanicRotationalInertiaWithSingleGear.hpp \
     Mechanic/Rotational/MechanicRotationalInertiaWithGearRatio.hpp \
     Mechanic/Rotational/MechanicRotationalInertiaWithCoulumbFriction.hpp \
     Mechanic/Rotational/MechanicRotationalInertia.hpp \
-    Mechanic/Linear/HopsanDefaultMechanicLinearComponents.h \
+    Mechanic/Rotational/MechanicAngularVelocityTransformer.hpp \
+    Mechanic/Rotational/MechanicAngularVelocitySensor.hpp \
+    Mechanic/Rotational/MechanicAngleSensor.hpp \
+    Mechanic/Rotational/MechanicTorsionalSpring.hpp \
+    Mechanic/Rotational/MechanicTorqueTransformer.hpp \
+    Mechanic/Rotational/MechanicTorqueSensor.hpp \
+    Mechanic/Rotational/MechanicThetaSource.hpp \
+    Mechanic/Rotational/MechanicRotShaft.hpp \
+    Mechanic/Rotational/MechanicGearShaft.hpp \
+    Mechanic/Rotational/MechanicJLink.hpp \
+    Mechanic/Rotational/MechanicJLink2.hpp \
+    Mechanic/Rotational/MechanicMotor.hpp \
+    Mechanic/Rotational/MechanicRackAndPinion.hpp \
+    Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp \
+    Mechanic/Rotational/MechanicBallScrew.hpp \
+    Mechanic/Rotational/MechanicGearShaft.hpp \
+    Mechanic/Rotational/MechanicRotShaftG.hpp \
     Mechanic/Rotational/HopsanDefaultMechanicRotationalComponents.h \
     Connectivity/SignalOutputInterface.hpp \
     Connectivity/SignalInputInterface.hpp \
@@ -181,6 +204,7 @@ HEADERS += \
     Connectivity/HydraulicInterfaceC.hpp \
     Connectivity/HopsanDefaultconnectivityComponents.h \
     Signal/Arithmetics/HopsanDefaultSignalArithmeticComponents.h \
+    Signal/Control/SignalPID2.hpp \
     Signal/Sources&Sinks/SignalTime.hpp \
     Signal/Sources&Sinks/SignalStepExponentialDelay.hpp \
     Signal/Sources&Sinks/SignalStep.hpp \
@@ -234,6 +258,7 @@ HEADERS += \
     Pneumatic/PneumaticTsensor.hpp \
     Pneumatic/PneumaticQmsensor.hpp \
     Pneumatic/PneumaticdEsensor.hpp \
+    Pneumatic/PneumaticMachine.hpp \
     defaultComponentLibraryInternal.h \
     Signal/HopsanDefaultSignalComponents.h \
     Mechanic/HopsanDefaultMechanicComponents.h \
@@ -246,19 +271,6 @@ HEADERS += \
     Connectivity/ElectricInterfaceQ.hpp \
     Connectivity/ElectricInterfaceC.hpp \
     defaultComponents.h \
-    Mechanic/Linear/MechanicFixedPositionMultiPort.hpp \
-    Mechanic/Rotational/MechanicAngularVelocityTransformer.hpp \
-    Mechanic/Rotational/MechanicAngularVelocitySensor.hpp \
-    Mechanic/Rotational/MechanicAngleSensor.hpp \
-    Mechanic/Rotational/MechanicTorsionalSpring.hpp \
-    Mechanic/Rotational/MechanicTorqueTransformer.hpp \
-    Mechanic/Rotational/MechanicTorqueSensor.hpp \
-    Mechanic/Rotational/MechanicThetaSource.hpp \
-    Mechanic/Rotational/MechanicRotShaft.hpp \
-    Mechanic/Rotational/MechanicJLink.hpp \
-    Mechanic/Rotational/MechanicJLink2.hpp \
-    Mechanic/Rotational/MechanicMotor.hpp \
-    Mechanic/Rotational/MechanicRackAndPinion.hpp \
     Signal/Sources&Sinks/SignalConstant.hpp \
     Signal/Filters/SignalIntegrator2.hpp \
     Special/AeroComponents/AeroAircraft6DOF.hpp \
@@ -275,13 +287,11 @@ HEADERS += \
     Special/AeroComponents/AeroAtmosphere.hpp \
     Special/AeroComponents/AeroWindFilter.hpp \
     Special/AeroComponents/AeroTurbFilter.hpp \
-    Special/AeroComponents/AeroTurbXfilter.hpp \
-    Special/AeroComponents/AeroTurbYfilter.hpp \
-    Special/AeroComponents/AeroTurbZfilter.hpp \
     Special/AeroComponents/AeroAircraft6DOFS.hpp \
     Special/AeroComponents/FuelComponents/HydraulicFuelTankG.hpp \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp \
+    Special/AeroComponents//PneumaticTurboMachineJ.hpp \
     Signal/Non-Linearities/SignalSaturation.hpp \
     Hydraulic/MachineParts/HydraulicPumpPiston.hpp \
     Hydraulic/Valves/HydraulicPilotControlledCheckValve.hpp \
@@ -304,34 +314,23 @@ HEADERS += \
     Special/AeroComponents/AeroAircraft6DOFS.hpp \
     Special/AeroComponents/AeroAircraft6DOFSS.hpp \
     Special/AeroComponents/AeroCombustionChamberMono.hpp \
-    Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp \
     Special/CombustionEngine.hpp \
-    Signal/Control/SignalPID2.hpp \
-    Mechanic/Rotational/MechanicBallScrew.hpp \
     Signal/Non-Linearities/SignalRateLimiter.hpp \
     Hydraulic/Valves/Hydraulic42DirectionalValve.hpp \
     Hydraulic/LinearActuators/HydraulicFourChamberPiston.hpp \
     Hydraulic/Valves/HydraulicPressureControlValve33.hpp \
-    Special/Mechanic/MechanicGear.hpp \
     Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve2.hpp \
     Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve.hpp \
     Hydraulic/Valves/PressureControlled/HopsanDefaultHydraulicPressureControlledValves.h \
     Hydraulic/Valves/Hydraulic42Valve2.hpp \
     Special/MechanicB/MechanicGear.hpp \
-    Special/AeroComponents/AeroWind.hpp \
     Special/MechanicB/HopsanDefaultMechanicBComponents.h \
-    Special/AeroComponents/AeroTurbZfilter.hpp \
-    Special/AeroComponents/AeroTurbYfilter.hpp \
-    Special/AeroComponents/AeroTurbXfilter.hpp \
-    Special/AeroComponents/AeroWind.hpp \
     Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \
     Experimental/Signal1DLookupTable.hpp \
     Experimental/Signal2DLookupTable.hpp \
     Experimental/Experimental.h \
     Experimental/Signal3DLookupTable.hpp \
-    Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp \
-    Signal/Animation/SignalNumericalInput.hpp \
-    Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp \
+     Signal/Animation/SignalNumericalInput.hpp \
     Hydraulic/Valves/Hydraulic22DirectionalCheckValve.hpp \
     Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp \
     Experimental/Signal1DPLOLookupTable.hpp \
@@ -362,6 +361,11 @@ HEADERS += \
     Hydraulic/Restrictors/HydraulicCheckValveWithOrifice.hpp \
     Hydraulic/Restrictors/HydraulicCheckValvePreLoaded.hpp \
     Hydraulic/Restrictors/HydraulicCheckValve.hpp \
+    Pneumatic/PneumaticMachine.hpp \
+    Special/AeroComponents/PneumaticTurboMachineJ.hpp \
+    Special/AeroComponents/PneumaticCentrifugalCompressorJ.hpp \
+    Special/AeroComponents/PneumaticTurboMachineJ.hpp \
+    Special/AeroComponents/AeroWind.hpp \
     Signal/Non-Linearities/SignalSampleAndHold.hpp \
     Signal/Logic/SignalCounter.hpp \
     Special/AeroComponents/HopsanDefaultAeroComponents.h \
