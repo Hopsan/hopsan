@@ -1,0 +1,23 @@
+diff -urb discount-2.1.8/mkdio.h.in discount-2.1.8_mod/mkdio.h.in
+--- discount-2.1.8/mkdio.h.in	2015-01-25 03:07:28.000000000 +0100
++++ discount-2.1.8_mod/mkdio.h.in	2015-03-09 08:06:02.154800701 +0100
+@@ -3,6 +3,10 @@
+ 
+ #include <stdio.h>
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ typedef void MMIOT;
+ 
+ typedef @DWORD@ mkd_flag_t;
+@@ -111,5 +115,8 @@
+ /* special flags for mkd_in() and mkd_string()
+  */
+ 
++#ifdef __cplusplus
++}
++#endif
+ 
+ #endif/*_MKDIO_D*/
