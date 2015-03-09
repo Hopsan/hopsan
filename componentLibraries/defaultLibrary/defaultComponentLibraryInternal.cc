@@ -130,7 +130,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicPressureSensor", HydraulicPressureSensor::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicFlowSensor", HydraulicFlowSensor::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);
-    pComponentFactory->registerCreatorFunction("HydraulicNodeSensor", HydraulicNodeSensor::Creator);
+//    pComponentFactory->registerCreatorFunction("HydraulicNodeSensor", HydraulicNodeSensor::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCylinderC", HydraulicCylinderC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicSymmetricCylinderC", HydraulicSymmetricCylinderC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicFourChamberPiston", HydraulicFourChamberPiston::Creator);
@@ -165,6 +165,8 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicFuelTankG", HydraulicFuelTankG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPlugQ", HydraulicPlugQ::Creator);
 
+    pComponentFactory->registerCreatorFunction("PneumaticTurboMachineJ", PneumaticTurboMachineJ::Creator);
+
     // Signal components
     #include "Signal/HopsanDefaultSignalComponents.cci"
 
@@ -178,10 +180,14 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithLever", MechanicTranslationalMassWithLever::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulombFriction", MechanicTranslationalMassWithCoulombFriction::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulombFrictionAndMultiPorts", MechanicTranslationalMassWithCoulombFrictionAndMultiPorts::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicM2load1D", MechanicM2load1D::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicMkcload1D", MechanicMkcload1D::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalSpringWithSlack", MechanicTranslationalSpringWithSlack::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotShaft", MechanicRotShaft::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicRotShaftG", MechanicRotShaftG::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicGearShaft", MechanicGearShaft::Creator);
     pComponentFactory->registerCreatorFunction("MechanicGearClutch", MechanicGearClutch::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaMultiPort", MechanicRotationalInertiaMultiPort::Creator);
