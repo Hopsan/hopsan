@@ -879,8 +879,8 @@ void getInterfaces(QList<InterfacePortSpec> &interfaces, ComponentSystem *pSyste
         }
         else if(typeName == "Subsystem")
         {
-            //! @todo this should not be allowed, What if subssytem has different type, not shure if it should be allowed even if type same (petno25)
-            getInterfaces(interfaces, dynamic_cast<hopsan::ComponentSystem *>(pComponent), path << pComponent->getName().c_str());
+            QStringList path2 = path;
+            getInterfaces(interfaces, dynamic_cast<hopsan::ComponentSystem *>(pComponent), path2 << pComponent->getName().c_str());
         }
     }
 }
