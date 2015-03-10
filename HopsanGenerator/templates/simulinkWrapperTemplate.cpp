@@ -16,7 +16,6 @@ permission from the copyright holders.
 #define S_FUNCTION_NAME <<<name>>>
 #define S_FUNCTION_LEVEL 2
 
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -26,30 +25,30 @@ permission from the copyright holders.
 using namespace hopsan;
 
 
-//! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you don't want error message
-void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)
-{
-    rExtLibFileNames.clear();
-    std::string line;
-    std::ifstream file;
-    file.open(filePath.c_str());
-    if ( file.is_open() )
-    {
-        while ( file.good() )
-        {
-            getline(file, line);
-            if ((*line.begin() != '#') && !line.empty())
-            {
-                rExtLibFileNames.push_back(line);
-            }
-       }
-        file.close();
-    }
-    else
-    {
-        std::cout << "error, could not open file: " << filePath << std::endl;
-    }
-}
+////! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you don't want error message
+//void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)
+//{
+//    rExtLibFileNames.clear();
+//    std::string line;
+//    std::ifstream file;
+//    file.open(filePath.c_str());
+//    if ( file.is_open() )
+//    {
+//        while ( file.good() )
+//        {
+//            getline(file, line);
+//            if ((*line.begin() != '#') && !line.empty())
+//            {
+//                rExtLibFileNames.push_back(line);
+//            }
+//       }
+//        file.close();
+//    }
+//    else
+//    {
+//        std::cout << "error, could not open file: " << filePath << std::endl;
+//    }
+//}
 
 
 HopsanEssentials gHopsanCore;
@@ -81,12 +80,12 @@ static void mdlInitializeSizes(SimStruct *S)
         return;
     }
 
-    std::vector<std::string> extLibs;
-    readExternalLibsFromTxtFile("externalLibs.txt",extLibs);
-    for (size_t i=0; i<extLibs.size(); ++i)
-    {
-        gHopsanCore.loadExternalComponentLib(extLibs[i].c_str());
-    }
+//    std::vector<std::string> extLibs;
+//    readExternalLibsFromTxtFile("externalLibs.txt",extLibs);
+//    for (size_t i=0; i<extLibs.size(); ++i)
+//    {
+//        gHopsanCore.loadExternalComponentLib(extLibs[i].c_str());
+//    }
 
     const char* hmfFilePath = "<<<4>>>";
     double startT, stopT;
@@ -97,7 +96,7 @@ static void mdlInitializeSizes(SimStruct *S)
         {
             HString msg, type, tag;
             gHopsanCore.getMessage(msg, type, tag);
-            std::cout << msg.c_str() << "\n";
+            ssPrintf("%s\n",msg.c_str());
         }
         ssSetErrorStatus(S,"Error could not open model: <<<4>>>");
         return;
@@ -133,7 +132,7 @@ static void mdlInitializeSampleTimes(SimStruct *S)
         {
             HString msg, type, tag;
             gHopsanCore.getMessage(msg, type, tag);
-            std::cout << msg.c_str() << "\n";
+            ssPrintf("%s\n",msg.c_str());
         }
         ssSetErrorStatus(S,"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.");
         return;
@@ -169,7 +168,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     {
         HString msg, type, tag;
         gHopsanCore.getMessage(msg, type, tag);
-        std::cout << msg.c_str() << "\n";
+        if (type != "debug")
+        {
+            ssPrintf("%s\n",msg.c_str());
+        }
     }
 }
 

@@ -96,8 +96,12 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         compileScriptStream << " " << s;
     }
-    compileScriptStream  << QString(" %1.cpp").arg(name);
-    compileScriptLStream << " -ldl";
+    compileScriptStream  << QString(" %1.cpp ").arg(name);
+#ifndef _WIN32
+    compileScriptStream << "-ldl ";
+#endif
+    compileScriptLStream << QString("-output %1").arg(name);
+
     compileScriptLStream << "disp('Finished.')";
 
     compileScriptFile.close();
