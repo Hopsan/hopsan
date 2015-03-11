@@ -105,29 +105,36 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
     Port *startPort = pContainer->getModelObjectPort(startComponentName, startPortName);
     Port *endPort = pContainer->getModelObjectPort(endComponentName, endPortName);
 
-    Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
-    if (pConn)
+    if (startPort && endPort)
     {
-        if(pointVector.isEmpty())   //Create a diagonal connector if no points were loaded from HMF
+        Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
+        if (pConn)
         {
-            pointVector.push_back(pConn->getStartPort()->boundingRect().center());
-            pointVector.push_back(pConn->getEndPort()->boundingRect().center());
-            geometryList.clear();
-            geometryList.append("diagonal");
-        }
-        pConn->setPointsAndGeometries(pointVector, geometryList);
-        pConn->setDashed(isDashed);
-        pConn->refreshConnectorAppearance();
-        pConn->setColor(color);
+            if(pointVector.isEmpty())   //Create a diagonal connector if no points were loaded from HMF
+            {
+                pointVector.push_back(pConn->getStartPort()->boundingRect().center());
+                pointVector.push_back(pConn->getEndPort()->boundingRect().center());
+                geometryList.clear();
+                geometryList.append("diagonal");
+            }
+            pConn->setPointsAndGeometries(pointVector, geometryList);
+            pConn->setDashed(isDashed);
+            pConn->refreshConnectorAppearance();
+            pConn->setColor(color);
 
-        if(undoSettings == Undo)
-        {
-            pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
+            if(undoSettings == Undo)
+            {
+                pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
+            }
+            if (pConn->isConnected())
+            {
+                success = true;
+            }
         }
-        if (pConn->isConnected())
-        {
-            success = true;
-        }
+    }
+    else
+    {
+        success = false;
     }
 
     gpMessageHandler->collectHopsanCoreMessages();;
