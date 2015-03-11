@@ -289,11 +289,24 @@ void GraphicsView::clearHighlights()
 
 
 //! @brief Returns the vieports center and zoom in the supplied reference variables
-void GraphicsView::getViewPort(double &rX, double &rY, double &rZoom)
+void GraphicsView::getViewPort(double &rX, double &rY, double &rZoom) const
 {
     rX = (horizontalScrollBar()->value() + width()/2.0 - pos().x()) / mZoomFactor;
     rY = (verticalScrollBar()->value() + height()/2.0 - pos().y()) / mZoomFactor;
     rZoom = mZoomFactor;
+}
+
+GraphicsViewPort GraphicsView::getViewPort() const
+{
+    double x,y,z;
+    getViewPort(x,y,z);
+    return GraphicsViewPort(x,y,z);
+}
+
+void GraphicsView::setViewPort(GraphicsViewPort vp)
+{
+    setZoomFactor(vp.mZoom);
+    centerOn(vp.mCenter);
 }
 
 

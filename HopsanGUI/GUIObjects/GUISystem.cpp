@@ -562,13 +562,9 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
     //Should we try to append appearancedata stuff, we don't want this in external systems as they contain their own appearance
     if (mLoadType!="EXTERNAL")
     {
-        //! @todo what happens if a subsystem (embedded) is saved, then we don't want to set the current graphics view
-        if (this->mpModelWidget->getGraphicsView() != 0)
-        {
-            double x,y,zoom;
-            this->mpModelWidget->getGraphicsView()->getViewPort(x,y,zoom);
-            appendViewPortTag(guiStuff, x, y, zoom);
-        }
+        GraphicsViewPort vp = this->getGraphicsViewport();
+        appendViewPortTag(guiStuff, vp.mCenter.x(), vp.mCenter.y(), vp.mZoom);
+
         QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
         portsHiddenElement.setAttribute("hidden", !mShowSubComponentPorts);
         QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
@@ -855,11 +851,13 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
             mSaveUndoStack = true;      //Set save undo stack setting to true if loading a hmf file with undo stack saved
         }
 
-        mpModelWidget->getGraphicsView()->setZoomFactor(zoom);
-
-        qDebug() << "Center on " << x << ", " << y;
-        mpModelWidget->getGraphicsView()->centerOn(x, y);
-        //! @todo load viewport and pose and stuff
+        // Only set viewport and zoom if the system beeing loaded is the one shown in the view
+        // But make system remeber the setting anyway
+        this->setGraphicsViewport(GraphicsViewPort(x,y,zoom));
+        if (mpModelWidget->getViewContainerObject() == this)
+        {
+            mpModelWidget->getGraphicsView()->setViewPort(GraphicsViewPort(x,y,zoom));
+        }
 
         //Load simulation time
         QString startT,stepT,stopT;

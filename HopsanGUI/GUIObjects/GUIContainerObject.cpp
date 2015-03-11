@@ -427,6 +427,16 @@ QGraphicsScene *ContainerObject::getContainedScenePtr()
     return mpScene;
 }
 
+void ContainerObject::setGraphicsViewport(GraphicsViewPort vp)
+{
+    mGraphicsViewPort = vp;
+}
+
+GraphicsViewPort ContainerObject::getGraphicsViewport() const
+{
+    return mGraphicsViewPort;
+}
+
 
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
@@ -3005,10 +3015,14 @@ void ContainerObject::enterContainer()
     // First deselect everything so that buttons pressed in the view are not sent to objects in the previous container
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
+    // Remember current viewport, before we switch to the new one
+    mpParentContainerObject->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());
+
     // Show this scene
     mpModelWidget->getGraphicsView()->setScene(getContainedScenePtr());
     mpModelWidget->getGraphicsView()->setContainerPtr(this);
     mpModelWidget->getQuickNavigationWidget()->addOpenContainer(this);
+    mpModelWidget->getGraphicsView()->setViewPort(getGraphicsViewport());
 
     // Disconnect parent system and connect new system with actions
     mpParentContainerObject->unmakeMainWindowConnectionsAndRefresh();
@@ -3029,8 +3043,10 @@ void ContainerObject::exitContainer()
     this->deselectAll();
 
     // Go back to parent system
-    mpModelWidget->getGraphicsView()->setScene(this->mpParentContainerObject->getContainedScenePtr());
-    mpModelWidget->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
+    mpModelWidget->getGraphicsView()->setScene(mpParentContainerObject->getContainedScenePtr());
+    mpModelWidget->getGraphicsView()->setContainerPtr(mpParentContainerObject);
+    this->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());     // Remember current viewport, before we set parents
+    mpModelWidget->getGraphicsView()->setViewPort(mpParentContainerObject->getGraphicsViewport());
 
     mpModelWidget->setExternalSystem((mpParentContainerObject->isExternal() &&
                                            mpParentContainerObject != mpModelWidget->getTopLevelSystemContainer()) ||

@@ -29,6 +29,7 @@
 #include <QGraphicsView>
 
 #include "common.h"
+#include "GraphicsViewPort.h"
 
 //Forward Declarations
 class ContainerObject;
@@ -42,7 +43,9 @@ public:
     GraphicsView(ModelWidget *parent = 0);
 
     void updateViewPort();
-    void getViewPort(double &rX, double &rY, double &rZoom);
+    void getViewPort(double &rX, double &rY, double &rZoom) const;
+    GraphicsViewPort getViewPort() const;
+    void setViewPort(GraphicsViewPort vp);
     void setContainerPtr(ContainerObject *pContainer);
     ContainerObject *getContainerPtr();
     bool isCtrlKeyPressed();

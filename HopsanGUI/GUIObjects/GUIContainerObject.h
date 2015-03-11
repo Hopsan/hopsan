@@ -30,6 +30,7 @@
 #include "GUIModelObject.h"
 #include "CopyStack.h"
 #include "LogDataHandler.h"
+#include "GraphicsViewPort.h"
 
 //Forward Declarations
 class PlotWindow;
@@ -63,8 +64,12 @@ public:
     virtual void makeMainWindowConnectionsAndRefresh();
     virtual void unmakeMainWindowConnectionsAndRefresh();
 
-    //Scene and core access methods
+    // Scene and view related methods
     QGraphicsScene *getContainedScenePtr();
+    void setGraphicsViewport(GraphicsViewPort vp);
+    GraphicsViewPort getGraphicsViewport() const;
+
+    // Core access
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
     //GUIModelObjects and GUIWidgets methods
@@ -307,8 +312,9 @@ protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-    //Scene pointer member
+    //Scene pointer and graphics viewport
     QGraphicsScene *mpScene;
+    GraphicsViewPort mGraphicsViewPort;
 
     //Model and script file members
     QFileInfo mModelFileInfo;
