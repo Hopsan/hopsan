@@ -5,7 +5,11 @@
       <icon iconrotation="" type="user" scale="1" path="MechanicM3load1D.svg"/>
       <icon iconrotation="" type="iso" scale="1" path="MechanicM3load1D.svg"/>
     </icons>
-    <ports>
+    <help>
+      <text>A one dimmensional model of three masses. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+      <link>MechanicM3load1D.nb</link>
+   </help>       
+   <ports>
       <port x="0.226" y="0" enabled="true" autoplaced="true" name="fc1" a="270"/>
       <port x="0.574" y="0" enabled="true" autoplaced="true" name="fc2" a="270"/>
       <port x="0.35" y="1" enabled="true" autoplaced="true" name="xp1" a="90"/>
