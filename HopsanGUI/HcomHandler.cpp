@@ -5388,7 +5388,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             QVector<double> freqVec;
             QVector<double> timeVec = pLogDataHandler->getTimeVectorVariable(-1)->getDataVectorCopy();
 
-            #ifndef __APPLE__
+            #ifndef Q_OS_OSX
                     const int n = pow(2, int(log2(timeVec.size()))); // This is odd.... /magse
             #else
                     const int n = (int)round(ldexp(2.0, int(log2(timeVec.size()))));

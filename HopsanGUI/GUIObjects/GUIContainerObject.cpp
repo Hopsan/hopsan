@@ -1089,7 +1089,7 @@ Connector* ContainerObject::findConnector(QString startComp, QString startPort, 
             break;
         }
     }
-    assert(!item == 0);
+    assert(!item == 0); // magse: strange? assert(item) ?
     return item;
 }
 

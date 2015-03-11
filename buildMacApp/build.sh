@@ -18,13 +18,13 @@ if [ "$1" == "--debug" ]; then
 echo "DEBUG build"
 QMAKE_OPTIONS="-r -spec macx-clang CONFIG+=debug CONFIG+=x86_64"
 LIBTAG="_d"
-DEPLOY="-always-overwrite -use-debug-libs"
-#DEPLOY="-always-overwrite"
+#DEPLOY="-always-overwrite -use-debug-libs"
+DEPLOY="-always-overwrite -verbose=3"
 else
 echo "RELEASE build"
 QMAKE_OPTIONS="-r -spec macx-clang CONFIG+=x86_64"
 LIBTAG=
-DEPLOY="-always-overwrite"
+DEPLOY="-always-overwrite -verbose=3"
 fi
 
 cd $buildRoot

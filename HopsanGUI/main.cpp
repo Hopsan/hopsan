@@ -22,6 +22,8 @@
 //!
 //$Id$
 
+#include <clocale>
+
 #include <QApplication>
 #include <QSplashScreen>
 #include <QTimer>

@@ -11,7 +11,7 @@ TARGET = HopsanGUI
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
-macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
 
 
 QT += svg xml
@@ -40,15 +40,6 @@ macx:QMAKE_LFLAGS *= -lqwt
 macx:message(LIBS=$$LIBS)
 macx:message(INCLUDEPATH=$$INCLUDEPATH)
 macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
-
-#macx:message(On mac using QWT framework in: $$magic_hopsan_includepath)
-#macx:LIBS *= -framework qwt
-#macx:QMAKE_LIBDIR *= $$magic_hopsan_libpath
-#macx:QMAKE_LFLAGS *= -L$$magic_hopsan_libpath -L$$magic_hopsan_libpath/qwt.framework -F$$magic_hopsan_libpath
-#macx:INCLUDEPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
-#macx:DEPENDPATH *= $$magic_hopsan_includepath/lib/qwt.framework/Headers/ $$magic_hopsan_includepath
-#macx:message($$LIBS)
-#macx:message($$INCLUDEPATH)
 
 QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 #--------------------------------------------------------
@@ -147,7 +138,8 @@ unix {
 
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative the executable (regardless of working dir, VERY useful)
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to handle the $$ORIGIN stuff, adding manually to LFLAGS
-    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
+    !macx:QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
+     macx:QMAKE_RPATHDIR *= $${PWD}/../bin
 
     # Get the svn revision in here if script succeed, we don't care about the external file generated,
     system($${PWD}/../getSvnRevision.sh) {

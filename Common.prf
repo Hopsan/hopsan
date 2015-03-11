@@ -1,7 +1,5 @@
 #Determine debug extension, and debug output on/off
 CONFIG(debug, debug|release) {
-#    !macx:DEBUG_EXT = _d
-#    macx:DEBUG_EXT =
     DEBUG_EXT = _d
     DEFINES *= DEBUGCOMPILING
 } else {
@@ -86,11 +84,11 @@ defineReplace(generateCopyDllCommand){
     unix {
         for(file, files){
             !macx:qmake_post_link += $$quote(cp -df $${file} $${dstDir}$$escape_expand(\\n\\t))
-             #macx:qmake_post_link += $$quote(cp -fpr $${file} $${dstDir}$$escape_expand(\\n\\t))
+             macx:qmake_post_link += $$quote(cp -fp $${file} $${dstDir}$$escape_expand(\\n\\t))
         }
     }
 
-    #message(qmake_post_link $${qmake_post_link})
+    message(qmake_post_link $${qmake_post_link})
     return($$qmake_post_link)
 }
 

@@ -57,7 +57,7 @@
 #define LIBEXT ".dll"
 #define LIBPREFIX ""
 #else
-#ifdef __APPLE__
+#ifdef Q_OS_OSX
 #define LIBEXT ".dylib"
 #define LIBPREFIX "lib"
 #else

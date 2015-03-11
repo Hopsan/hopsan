@@ -22,6 +22,12 @@
 //!
 //$Id$
 
+#ifdef Q_OS_OSX
+#include <utility>
+#else
+#include <algorithm>
+#endif
+
 #include <qmath.h>
 #include <QPoint>
 #include <QDir>
@@ -370,7 +376,7 @@ void FFT(QVector< complex<double> > &data)
     {
         if (j>i)
         {
-#if __cplusplus >= 201103L
+#if __cplusplus >= 201103L // magse Värre än så. swap har flyttat från <algorithm> till <utility> i C++11
             swap(data[j-1],  data[i]);
 #else
             swap(data[j-1].real(), data[i].real());     // Even numbers

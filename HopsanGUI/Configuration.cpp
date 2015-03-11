@@ -338,7 +338,7 @@ void Configuration::loadFromXml()
 void Configuration::loadDefaultsFromXml()
 {
     //Read from hopsandefaults.xml
-#ifdef __APPLE__
+#ifdef Q_OS_OSX
     QFile file(gpDesktopHandler->getResourcesPath() + "hopsandefaults");
 #else
     QFile file(gpDesktopHandler->getMainPath() + "hopsandefaults");

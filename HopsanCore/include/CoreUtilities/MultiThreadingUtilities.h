@@ -193,7 +193,7 @@ private:
     size_t mNumSimSteps;
     double mTimeStep;
     double mTime;
-#ifdef __APPLE__
+#ifdef Q_OS_OSX
     /* double *mpSimTime; Never used on mac. /magse */
 #else
     double *mpSimTime;
@@ -318,7 +318,7 @@ private:
     double mTimeStep;
     double mTime;
     vector<double *> mpSimTimes;
-#ifdef __APPLE__
+#ifdef Q_OS_OSX
     /* size_t mnSystems; Never used on mac. /magse */
 #else
     size_t mnSystems;

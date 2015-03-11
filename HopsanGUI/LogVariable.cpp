@@ -591,7 +591,7 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
 
         // Vector size has to be an even potential of 2.
         // Calculate largest potential that is smaller than or equal to the vector size.
-#ifndef __APPLE__
+#ifndef Q_OS_OSX
         const int n = pow(2, int(log2(data.size()))); // This is odd.... /magse
 #else
         const int n = (int)round(ldexp(2.0, int(log2(data.size()))));
@@ -1834,7 +1834,7 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
     }
 
     // Reduce vector size if they are not equal to an even potential of 2, and inform user
-#ifndef __APPLE__
+#ifndef Q_OS_OSX
         int n = pow(2, int(log2(vRealOut.size()))); // Odd.... /magse
 #else
         int n = (int)round(ldexp(2.0, int(log2(vRealOut.size()))));
