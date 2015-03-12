@@ -1302,8 +1302,13 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
             appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
         }
     }
-        //Save the model component hierarcy
-    //! @todo maybe use a saveload object instead of calling save immediately (only load object exist for now), or maybe this is fine
+
+    // Before we save, make sure that view port is updated in current model (as we only update it when entering exiting systems)
+    if (getViewContainerObject() && getGraphicsView())
+    {
+        getViewContainerObject()->setGraphicsViewport(getGraphicsView()->getViewPort());
+    }
+    // Save the model component hierarcy
     mpToplevelSystem->saveToDomElement(rootElement, contents);
 
         //Save to file
