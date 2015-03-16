@@ -18,6 +18,7 @@
 
 #include "Messages.h"
 #include "MessageUtilities.h"
+#include "ServerMessageUtilities.h"
 
 #ifdef _WIN32
 //#include <strsafe.h>
@@ -49,8 +50,63 @@ public:
 
 ServerConfig gServerConfig;
 size_t nTakenSlots=0;
+#ifdef _WIN32
+zmq::context_t gContext(1, 63);
+#else
+zmq::context_t gContext(1);
+#endif
 
 #define PRINTSERVER "Server; "
+
+bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNackReason)
+{
+    zmq::message_t response;
+    if(receiveWithTimeout(rSocket, timeout, response))
+    {
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        //cout << "id: " << id << endl;
+        if (id == S_Ack)
+        {
+            return true;
+        }
+        else if (id == S_NAck)
+        {
+            rNackReason = unpackMessage<std::string>(response, offset);
+        }
+        else
+        {
+            rNackReason = "Got neither Ack nor Nack";
+        }
+    }
+    else
+    {
+        rNackReason = "Got either timeout or exception in zmq::recv()";
+    }
+    return false;
+}
+
+void contactMasterServer(std::string masterIP, std::string masterPort, std::string myIP, std::string myPort)
+{
+    zmq::socket_t masterServerSocket (gContext, ZMQ_REQ);
+    int linger_ms = 1000;
+    masterServerSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+    masterServerSocket.connect(makeZMQAddress(masterIP, masterPort).c_str());
+
+    //! @todo check if ok
+    SM_Available_t message;
+    message.ip = myIP;
+    message.port = myPort;
+    sendServerMessage(masterServerSocket, S_Available, message);
+    std::string nackreason;
+    bool ack = readAckNackServerMessage(masterServerSocket, 1000, nackreason);
+    if (!ack)
+    {
+        cout << PRINTSERVER << "Error: Could not register in master server" << endl;
+    }
+    masterServerSocket.disconnect(makeZMQAddress(masterIP, masterPort).c_str());
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -59,20 +115,28 @@ int main(int argc, char* argv[])
         cout << PRINTSERVER << "Error: you must specify what base port to use!" << endl;
         return 1;
     }
+    string myPort = argv[1];
 
-    cout << PRINTSERVER << "Listening on port: " << argv[1]  << endl;
+    std::string masterserverip, masterserverport;
+    if (argc == 4)
+    {
+        masterserverip = argv[2];
+        masterserverport = argv[3];
+    }
+
+    cout << PRINTSERVER << "Listening on port: " << myPort  << endl;
 
     // Prepare our context and socket
-#ifdef _WIN32
-    zmq::context_t context(1, 63);
-#else
-    zmq::context_t context(1);
-#endif
-    zmq::socket_t socket (context, ZMQ_REP);
+    zmq::socket_t socket (gContext, ZMQ_REP);
     int linger_ms = 1000;
     socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+    socket.bind( makeZMQAddress("*", myPort).c_str() );
 
-    socket.bind( makeZMQAddress("*", argv[1]).c_str() );
+    if (!masterserverip.empty())
+    {
+        //! @todo somehow automatically figure out my ip
+        contactMasterServer(masterserverip, masterserverport, "127.0.0.1", myPort);
+    }
 
     while (true)
     {
@@ -219,6 +283,16 @@ int main(int argc, char* argv[])
                 {
                     sendServerNAck(socket, "Wrong worker id specified");
                 }
+            }
+            else if (msg_id == C_ReqStatus)
+            {
+                SM_ServerStatus_t status;
+                status.numTotalSlots = gServerConfig.mMaxClients;
+                status.numFreeSlots = gServerConfig.mMaxClients-nTakenSlots;
+                status.numThreadsPerSlot = gServerConfig.mMaxThreadsPerClient;
+                status.isReady = (status.numFreeSlots > 0);
+
+                sendServerMessage<SM_ServerStatus_t>(socket, S_ReqStatus_Reply, status);
             }
             else
             {

@@ -1,6 +1,3 @@
-# -------------------------------------------------
-# Global project options
-# -------------------------------------------------
 include( $${PWD}/../../Common.prf )
 include( $${PWD}/../HopsanRemoteBuild.pri )
 
@@ -21,10 +18,8 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
 
-#INCLUDEPATH += $${PWD}/../../ThirdParty/msgpack-0.5.9/src/
-#INCLUDEPATH += $${PWD}/../../ThirdParty/zeromq-4.1.0/include/
-#INCLUDEPATH += $${PWD}/../../ThirdParty/cppzeromq-master/
-#QMAKE_CXXFLAGS += -std=c++11
+INCLUDEPATH += $${PWD}/../HopsanServer/
+INCLUDEPATH += $${PWD}/../HopsanServerClient/
 
 # -------------------------------------------------
 # Platform specific additional project options
@@ -41,14 +36,10 @@ unix {
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 }
 
-# -------------------------------------------------
-# Project files
-# -------------------------------------------------
-SOURCES += main.cpp
+
+SOURCES += main.cpp \
+    ../HopsanServerClient/RemoteHopsanClient.cpp
 
 HEADERS += \
-    Messages.h \
-    MessageUtilities.h \
-    ServerMessageUtilities.h \
-    ServerStatusMessage.h
+    ../HopsanServerClient/RemoteHopsanClient.h
 

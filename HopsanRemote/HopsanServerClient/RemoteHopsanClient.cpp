@@ -168,6 +168,27 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     return rc;
 }
 
+bool RemoteHopsanClient::requestStatus(ServerStatusT &rServerStatus)
+{
+    sendShortClientMessage(mRSCSocket, C_ReqStatus);
+
+    zmq::message_t response;
+    if (receiveWithTimeout(mRSCSocket, response))
+    {
+        cout << "Response size: " << response.size() << endl;
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        if (id == S_ReqStatus_Reply)
+        {
+            SM_ServerStatus_t status = unpackMessage<SM_ServerStatus_t>(response, offset);
+            rServerStatus = status;
+            cout << "Got status reply" << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, vector<double> *pData)
 {
     sendClientMessage<string>(mRWCSocket, C_ReqResults, "*"); // Request all
@@ -345,6 +366,36 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
                 rTags[m] = messages[m].tag;
                 rMessages[m] = messages[m].message;
             }
+            return true;
+        }
+        else
+        {
+            mLastErrorMessage = "Got wrong reply";
+        }
+    }
+    return false;
+}
+
+bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<string> &rIps, std::vector<string> &rPorts)
+{
+    CM_ReqServerMachines_t req;
+    req.numMachines = nMachines;
+    req.maxBenchmarkTime = maxBenchmarkTime;
+    req.numThreads = -1;
+
+    sendClientMessage<CM_ReqServerMachines_t>(mRWCSocket, C_ReqServerMachines, req);
+
+    zmq::message_t response;
+    if (receiveWithTimeout(mRSCSocket, response))
+    {
+        cout << "Response size: " << response.size() << endl;
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        if (id == S_ReqServerMachines_Reply)
+        {
+            MSM_ReqServerMachines_Reply_t repl = unpackMessage<MSM_ReqServerMachines_Reply_t>(response,offset);
+            rIps = repl.ips;
+            rPorts = repl.ports;
             return true;
         }
         else

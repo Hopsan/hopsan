@@ -4,10 +4,33 @@
 #define MESSAGES_H
 
 #include <string>
+#include "ServerStatusMessage.h"
 #include "msgpack.hpp"
 
-enum ClientMessageIdEnumT {C_Ack, C_NAck, C_Bye, C_ReqAlive, C_ReqSlot, C_SendingHmf, C_SetParam, C_GetParam, C_Simulate, C_ReqResults, C_ReqMessages};
-enum ServerMessageIdEnumT {S_Ack=128, S_NAck, S_Available, S_ReqSlot_Reply, S_GetParam_Reply, S_ReqResults_Reply, S_ReqMessages_Reply, SW_Finished};
+enum ClientMessageIdEnumT {C_Ack=1,
+                           C_NAck,
+                           C_Bye,
+                           C_ReqAlive,
+                           C_ReqStatus,
+                           C_ReqSlot,
+                           C_SendingHmf,
+                           C_SetParam,
+                           C_GetParam,
+                           C_Simulate,
+                           C_ReqResults,
+                           C_ReqMessages,
+                           C_ReqServerMachines};
+enum ServerMessageIdEnumT {S_Ack=128,
+                           S_NAck,
+                           S_Available,
+                           S_Closing,
+                           S_ReqStatus_Reply,
+                           S_ReqSlot_Reply,
+                           S_GetParam_Reply,
+                           S_ReqResults_Reply,
+                           S_ReqMessages_Reply,
+                           S_ReqServerMachines_Reply,
+                           SW_Finished};
 
 MSGPACK_ADD_ENUM(ClientMessageIdEnumT)
 MSGPACK_ADD_ENUM(ServerMessageIdEnumT)
@@ -37,7 +60,13 @@ typedef struct
     MSGPACK_DEFINE(nLogSamples, logStartTim, simStartTime, simTimestep, simStopTime)
 }CM_Simulate_t;
 
-
+typedef struct
+{
+    int numMachines;
+    int numThreads;
+    double maxBenchmarkTime;
+    MSGPACK_DEFINE(numMachines, numThreads, maxBenchmarkTime)
+}CM_ReqServerMachines_t;
 
 
 // Server messages
@@ -78,5 +107,17 @@ typedef struct
     std::string tag;
     MSGPACK_DEFINE(type,message,tag)
 }SM_HopsanCoreMessage_t;
+
+typedef struct SM_ServerStatus_ : ServerStatusT
+{
+    MSGPACK_DEFINE(numFreeSlots, numTotalSlots, numThreadsPerSlot, startTime, stopTime, isReady)
+}SM_ServerStatus_t;
+
+typedef struct
+{
+    std::vector<std::string> ips;
+    std::vector<std::string> ports;
+    MSGPACK_DEFINE(ips, ports)
+}MSM_ReqServerMachines_Reply_t;
 
 #endif // MESSAGES_H

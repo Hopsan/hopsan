@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 
 CONFIG += ordered
-SUBDIRS = HopsanServer HopsanServerWorker HopsanServerClient
+SUBDIRS = HopsanServer HopsanServerWorker HopsanServerClient \
+    HopsanMasterServer

@@ -8,6 +8,7 @@
 
 #include "Messages.h"
 #include "MessageUtilities.h"
+#include "ServerMessageUtilities.h"
 #include "FileAccess.h"
 
 #include "HopsanEssentials.h"

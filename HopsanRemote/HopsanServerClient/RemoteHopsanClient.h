@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 
+#include "ServerStatusMessage.h"
 #include "zmq.hpp"
 
 class RemoteHopsanClient
@@ -32,9 +33,12 @@ public:
     bool sendModelMessage(const std::string &rModel);
     bool sendSimulateMessage(const int nLogsamples, const int logStartTime, const int simStarttime, const int simSteptime, const int simStoptime);
 
+    bool requestStatus(ServerStatusT &rServerStatus);
     bool requestSimulationResults(std::vector<std::string> *pDataNames, std::vector<double> *pData);
     bool requestMessages();
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
+
+    bool requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<std::string> &rIps, std::vector<std::string> &rPorts);
 
     std::string getLastErrorMessage() const;
 
