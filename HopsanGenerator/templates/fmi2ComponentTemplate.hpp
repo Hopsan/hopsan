@@ -178,7 +178,12 @@ public:
         fmistatus = fmi2_import_set_real(fmu, &vr, 1, &value);
         <<<readvars<<<
 
-        fmi2_import_do_step(fmu, mTime, mTimestep, true);
+        fmistatus = fmi2_import_do_step(fmu, mTime, mTimestep, true);
+        if (fmistatus != fmi2_status_ok)
+        {
+            stopSimulation("fmi2_import_do_Step did NOT return status fmi2_Status_ok");
+            return;
+        }
 
         //Write outputs
 >>>writevars>>>        vr = <<<vr>>>;
