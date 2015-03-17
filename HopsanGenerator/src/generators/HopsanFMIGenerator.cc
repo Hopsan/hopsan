@@ -1468,7 +1468,10 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
-    compileBatchCStream << mGccPath+"gcc.exe -c fmu"+vStr+"_model_cs.c " <<
+    compileBatchCStream << "@echo off\n";
+    compileBatchCStream << "PATH=" << mGccPath << ";%PATH%\n";
+    compileBatchCStream << "@echo on\n";
+    compileBatchCStream << "gcc.exe -c fmu"+vStr+"_model_cs.c " <<
                            QString("-I\"%1install/include\"").arg(mHopsanRootPath+fmiLibDir) << "\n";
     compileCBatchFile.close();
 
@@ -1508,7 +1511,10 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     printMessage("Compiling "+modelName+".dll...");
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mGccPath+"g++ -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB " << "fmu_hopsan.c";
+    compileCppBatchStream << "@echo off\n";
+    compileCppBatchStream << "PATH=" << mGccPath << ";%PATH%\n";
+    compileCppBatchStream << "@echo on\n";
+    compileCppBatchStream << "g++ -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB " << "fmu_hopsan.c";
     Q_FOREACH(const QString &srcFile, getHopsanCoreSourceFiles())
     {
         compileCppBatchStream << " " << srcFile;
@@ -1570,7 +1576,10 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << mGccPath+"g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' " <<
+    linkBatchStream << "@echo off\n";
+    linkBatchStream << "PATH=" << mGccPath << ";%PATH%\n";
+    linkBatchStream << "@echo on\n";
+    linkBatchStream << "g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' " <<
                      "fmu"+vStr+"_model_cs.o";
     Q_FOREACH(const QString &objFile, objectFiles)
     {
