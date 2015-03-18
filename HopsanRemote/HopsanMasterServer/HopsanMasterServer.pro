@@ -38,8 +38,11 @@ unix {
 
 
 SOURCES += main.cpp \
-    ../HopsanServerClient/RemoteHopsanClient.cpp
+    ../HopsanServerClient/RemoteHopsanClient.cpp \
+    ServerHandler.cpp
 
 HEADERS += \
-    ../HopsanServerClient/RemoteHopsanClient.h
+    ../HopsanServerClient/RemoteHopsanClient.h \
+    ServerHandler.h \
+    common.h
 

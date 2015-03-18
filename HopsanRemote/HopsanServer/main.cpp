@@ -11,10 +11,10 @@
 #endif
 
 #include <iostream>
-//#include <thread>
 #include <vector>
 #include "zmq.hpp"
 #include <map>
+#include <chrono>
 
 #include "Messages.h"
 #include "MessageUtilities.h"
@@ -29,6 +29,7 @@
 #endif
 
 using namespace std;
+using namespace std::chrono;
 
 #ifdef _WIN32
 map<int, PROCESS_INFORMATION> workerMap;
@@ -86,7 +87,7 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNac
     return false;
 }
 
-void contactMasterServer(std::string masterIP, std::string masterPort, std::string myIP, std::string myPort)
+void reportToMasterServer(std::string masterIP, std::string masterPort, std::string myIP, std::string myPort, bool isOnline)
 {
     zmq::socket_t masterServerSocket (gContext, ZMQ_REQ);
     int linger_ms = 1000;
@@ -97,15 +98,30 @@ void contactMasterServer(std::string masterIP, std::string masterPort, std::stri
     SM_Available_t message;
     message.ip = myIP;
     message.port = myPort;
-    sendServerMessage(masterServerSocket, S_Available, message);
-    std::string nackreason;
-    bool ack = readAckNackServerMessage(masterServerSocket, 1000, nackreason);
-    if (!ack)
+
+    if (isOnline)
     {
-        cout << PRINTSERVER << "Error: Could not register in master server" << endl;
+        sendServerMessage(masterServerSocket, S_Available, message);
+        std::string nackreason;
+        bool ack = readAckNackServerMessage(masterServerSocket, 1000, nackreason);
+        if (!ack)
+        {
+            cout << PRINTSERVER << "Error: Could not register in master server" << endl;
+        }
+    }
+    else
+    {
+        sendServerMessage(masterServerSocket, S_Closing, message);
+        std::string nackreason;
+        bool ack = readAckNackServerMessage(masterServerSocket, 1000, nackreason);
+        if (!ack)
+        {
+            cout << PRINTSERVER << "Error: Could not unregister in master server" << endl;
+        }
     }
     masterServerSocket.disconnect(makeZMQAddress(masterIP, masterPort).c_str());
 }
+
 
 
 int main(int argc, char* argv[])
@@ -118,6 +134,7 @@ int main(int argc, char* argv[])
     string myPort = argv[1];
 
     std::string masterserverip, masterserverport;
+    steady_clock::time_point lastStatusRequestTime;
     if (argc == 4)
     {
         masterserverip = argv[2];
@@ -135,7 +152,7 @@ int main(int argc, char* argv[])
     if (!masterserverip.empty())
     {
         //! @todo somehow automatically figure out my ip
-        contactMasterServer(masterserverip, masterserverport, "127.0.0.1", myPort);
+        reportToMasterServer(masterserverip, masterserverport, "127.0.0.1", myPort, true);
     }
 
     while (true)
@@ -293,6 +310,7 @@ int main(int argc, char* argv[])
                 status.isReady = (status.numFreeSlots > 0);
 
                 sendServerMessage<SM_ServerStatus_t>(socket, S_ReqStatus_Reply, status);
+                lastStatusRequestTime = chrono::steady_clock::now();
             }
             else
             {
@@ -307,12 +325,31 @@ int main(int argc, char* argv[])
             // Handle timeout / exception
         }
 
+        duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
+        if (time_span.count() > 60)
+        {
+            // If noone has requested status for this long (and we have a master server) we assume that the master server
+            // has gone down, lets reconnect to it to make sure it knows that we still exist
+            //! @todo maybe this should be handled in the server by saving known servers to file instead
+            if (!masterserverip.empty())
+            {
+                reportToMasterServer(masterserverip, masterserverport, "127.0.0.1", myPort, true);
+            }
+        }
+
         // Do some 'work'
 #ifndef _WIN32
         //sleep(1);
 #else
         //Sleep (1);
 #endif
+    }
+
+    // Tell master server we are closing
+    if (!masterserverip.empty())
+    {
+        //! @todo somehow automatically figure out my ip
+        reportToMasterServer(masterserverip, masterserverport, "127.0.0.1", myPort, false);
     }
 }
 
