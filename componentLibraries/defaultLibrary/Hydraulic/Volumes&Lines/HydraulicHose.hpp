@@ -212,7 +212,7 @@ namespace hopsan {
                 NTIME=1;
             }
 
-            NTIME1 = NTIME-1*NT + 1;
+            NTIME1 = NTIME-int(NT) + 1;
             if(NTIME1 < 1)
             {
                 NTIME1 = NTIME1 + NTMAX;
