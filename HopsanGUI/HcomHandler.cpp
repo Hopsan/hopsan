@@ -269,6 +269,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunctionoid("optvar", new HcomFunctionoidOptVar(this), "Returns specified optimization variable", "Usage: optvar(idx)");
     registerFunctionoid("optpar", new HcomFunctionoidOptPar(this), "Returns specified optimization parameter", "Usage: optpar(idx)");
     registerFunctionoid("fc", new HcomFunctionoidFC(this), "Fuzzy compare, returns 1 if the values of the arguments are almost the same", "Usage: fc(expr, expr, tolerance)");
+    registerFunctionoid("exists", new HcomFunctionoidExists(this), "Returns whether or not specified component exists in model", "Usage: exists(name)");
 
     createCommands();
 
@@ -7674,6 +7675,18 @@ double HcomFunctionoidTime::operator()(QString &str, bool &ok)
 }
 
 
+//! @brief Function operator for the "exists" functionoid
+double HcomFunctionoidExists::operator()(QString &str, bool &ok)
+{
+    ok = true;
+    if(mpHandler->getModelPtr()->getTopLevelSystemContainer()->hasModelObject(str))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+
 //! @brief Function operator for the "obj" functionoid
 //! @todo Should be renamed to "optObj"
 double HcomFunctionoidObj::operator()(QString &str, bool &ok)
@@ -7946,3 +7959,5 @@ double HcomFunctionoidFC::operator()(QString &str, bool &ok)
     // Else they are not the same
     return 0;
 }
+
+

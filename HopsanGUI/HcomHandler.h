@@ -396,4 +396,10 @@ public:
     double operator()(QString &str, bool &ok);
 };
 
+class HcomFunctionoidExists : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidExists(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double operator()(QString &str, bool &ok);
+};
 #endif // HCOMHANDLER_H
