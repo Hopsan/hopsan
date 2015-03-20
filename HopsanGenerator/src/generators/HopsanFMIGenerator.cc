@@ -1034,6 +1034,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     }
     fmuHopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
     fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
+    fmuHopsanSourceCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
     QFile fmuHopsanSourceFile(savePath+"/fmu_hopsan.c");
     if(!fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
     {

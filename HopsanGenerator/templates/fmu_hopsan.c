@@ -24,7 +24,7 @@ void hopsan_instantiate()
     assert(spCoreComponentSystem);
 
     //Initialize system
-    spCoreComponentSystem->setDesiredTimestep(0.001);
+    spCoreComponentSystem->setDesiredTimestep(<<<timestep>>>);
     spCoreComponentSystem->disableLog();
     spCoreComponentSystem->initialize(0,10);
 
