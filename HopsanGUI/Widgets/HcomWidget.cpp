@@ -214,6 +214,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     mGroupByTag = gpConfig->getGroupMessagesByTag();
 
     mDontPrint = false;
+    mDontPrintErrors = false;
     mShowErrorMessages = true;
     mShowWarningMessages = true;
     mShowInfoMessages = true;
