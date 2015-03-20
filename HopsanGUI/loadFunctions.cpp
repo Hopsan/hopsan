@@ -131,6 +131,10 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
                 success = true;
             }
         }
+        else
+        {
+            success = false;
+        }
     }
     else
     {
