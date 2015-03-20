@@ -110,7 +110,7 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
         Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
         if (pConn)
         {
-            if(pointVector.isEmpty())   //Create a diagonal connector if no points were loaded from HMF
+            if(pointVector.isEmpty() && !pConn->isDangling() && !pConn->isBroken())   //Create a diagonal connector if no points were loaded from HMF
             {
                 pointVector.push_back(pConn->getStartPort()->boundingRect().center());
                 pointVector.push_back(pConn->getEndPort()->boundingRect().center());
