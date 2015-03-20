@@ -4206,6 +4206,15 @@ bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompN
         Port *pPort = pComp->getPort(rPortName);
         if (pPort)
         {
+            if (pPort->isMultiPort())
+            {
+                if ( !rAlias.empty() )
+                {
+                    mpSystem->addErrorMessage("You can not set alias on multiport variables");
+                }
+                return false;
+            }
+
             int id = pPort->getNodeDataIdFromName(rVarName);
             return setVariableAlias(rAlias, rCompName, rPortName, id);
         }
