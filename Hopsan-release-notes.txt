@@ -25,9 +25,17 @@
 ******************************
     Version History
 ******************************
-0.6.11  (2015-02-??)
+0.6.11  (2015-03-25)
 - Feature: Support for FMI 2.0 import and export
+           Note! Only Signal, Hydraulic and Mechanic nodes can be exported / imported
+           Note! FMU import in Hopsan require additional TLM description XML file if FMU scalars should be interpreted as PowerPorts variables
 - Feature: Compiler path settings in Hopsan for FMU export/import, compiler no longer need to be in system PATH
+
+- Fixed component: Mass component position end stops are now +- 1e300 instead of 0 and 1
+- Fixed component: An assortment of fixes and changes in some (Mathematica generated) special components
+                   Pay attention to any warning messages if you use such components
+
+- New components: Some new (Mathematica generated) Mechanic components added
 
 - Enhancement: The number of log generations is automatically limited during optimization
 - Enhancement: Log data is not longer cached to User/Documents (very slow if you have a network drive personal storage), instead Temp location is used
@@ -42,8 +50,12 @@
 - Bug fixed: When a parameter was entered incorrectly the dialog box that pops up will (sometimes) crash Hopsan when you press the close button
 - Bug fixed: If you are creating a connector from a subsystem port and enter that subsystem then exit it again, Hopsan will crash
 - Bug fixed: Hopsan crash if a connector is being removed (not canceled) while it is being created
-- Bug fixed: When registering alias in logdatahandler Hopsan will crash if fullname not available in the current generation
-- Bug fixed: Simulink export does not work on linux
+- Bug fixed: When registering alias in logdatahandler Hopsan will crash if fullname is not available in the current generation
+- Bug fixed: Simulink export does not work on Linux, it would generate the same compile script as in Windows
+- Bug fixed: When clicking OK in component properties on a component with multiports lots of empty alias related errors are shown (alias can not be set in multiports)
+- Bug fixed: Viewport keeps jumping around when loading and switching between subsystems, also views are not saved correctly with model
+- Bug fixed: Timestep in FMU export is hard coded (model setting should be used instead)
+- Bug fixed: HCOM cannot read script files that contains tabs (as indentation character)
 
 ------------------------------
 0.6.10  (2015-02-16)
