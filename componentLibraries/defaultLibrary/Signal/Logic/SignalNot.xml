@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalNot.hpp" typename="SignalNot" displayname="Logical NOT Operator">
+        <icons>
+            <icon scale="1" path="SignalNot.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.5" a="0" name="out"/>
+            <port x="0" y="0.5" a="180" name="in"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
