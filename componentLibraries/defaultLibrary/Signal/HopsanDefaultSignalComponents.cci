@@ -52,6 +52,7 @@
     pComponentFactory->registerCreatorFunction("SignalSmallerThan", SignalSmallerThan::Creator);
     pComponentFactory->registerCreatorFunction("SignalSRlatch", SignalSRlatch::Creator);
     pComponentFactory->registerCreatorFunction("SignalCounter", SignalCounter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalNot", SignalNot::Creator);
 
 // Signal Non-Linearities
     pComponentFactory->registerCreatorFunction("SignalAdditiveNoise", SignalAdditiveNoise::Creator);

@@ -370,7 +370,8 @@ HEADERS += \
     Signal/Non-Linearities/SignalSampleAndHold.hpp \
     Signal/Logic/SignalCounter.hpp \
     Special/AeroComponents/HopsanDefaultAeroComponents.h \
-    Hydraulic/Sensors/HydraulicNodeSensor.hpp
+    Hydraulic/Sensors/HydraulicNodeSensor.hpp \
+    Signal/Logic/SignalNot.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
