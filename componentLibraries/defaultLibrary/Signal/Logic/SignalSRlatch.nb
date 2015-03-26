@@ -1,0 +1,229 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      8063,        220]
+NotebookOptionsPosition[      7258,        188]
+NotebookOutlinePosition[      7603,        203]
+CellTagsIndexPosition[      7560,        200]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["S-R latch", "Section",
+ CellChangeTimes->{{3.520880011078125*^9, 3.520880015078125*^9}, {
+  3.520938836109375*^9, 3.52093884040625*^9}, {3.5295848125*^9, 
+  3.529584814875*^9}, {3.52959633665625*^9, 3.52959634803125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG06.mx"}]], "Input",
+ CellChangeTimes->{{3.5772037650720577`*^9, 3.5772037650780582`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["System model", "Subsection",
+ CellChangeTimes->{{3.504161099890625*^9, 3.504161102453125*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Signal\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<SRlatch\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<S-R latch\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentSignal\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.520880152296875*^9, 3.520880230078125*^9}, 
+   3.520932125875*^9, 3.520932753984375*^9, {3.52093324790625*^9, 
+   3.520933251453125*^9}, 3.522342790078125*^9, {3.52958482121875*^9, 
+   3.5295848575625*^9}, {3.529588367046875*^9, 3.5295883780625*^9}, {
+   3.529590218*^9, 3.5295902181875*^9}, {3.529596354421875*^9, 
+   3.529596369015625*^9}, 3.5764735069894204`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Variables and parameters", "Subsection"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", ":=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "setCond", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<On condition\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "resetCond", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<off condition\>\""}], "}"}]}], "\n", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520880034703125*^9, 3.520880034703125*^9}, {
+   3.520932825078125*^9, 3.520932825328125*^9}, 3.529585849328125*^9, {
+   3.529596531265625*^9, 3.529596537390625*^9}, {3.529650349909154*^9, 
+   3.529650351237194*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", ":=", " ", 
+   RowBox[{"{", "\n", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "Qstate", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Logical state\>\""}], "}"}], ",", "\n", 
+     RowBox[{"{", 
+      RowBox[{
+      "notQstate", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Logical inverse of state\>\""}], "}"}]}], "\n", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52088004696875*^9, 3.520880046984375*^9}, 
+   3.520932825859375*^9, {3.52958588634375*^9, 3.529585902890625*^9}, {
+   3.52959659559375*^9, 3.529596615265625*^9}, 3.5296472601147585`*^9, {
+   3.5296473407948947`*^9, 3.5296473473268137`*^9}, 3.529649459263307*^9, 
+   3.590904738943883*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The system of equations", "Subsection"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"initialExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"oldQstate", "==", "Qstate"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"oldSetCond", "==", "setCond"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"oldResetCond", "==", "resetCond"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52234700896875*^9, 3.52234701828125*^9}, {
+   3.52234704890625*^9, 3.522347131203125*^9}, {3.522347193828125*^9, 
+   3.522347242390625*^9}, {3.529587134296875*^9, 3.52958716409375*^9}, 
+   3.529587754421875*^9, 3.5295963953125*^9, {3.529647256989439*^9, 
+   3.5296472580207944`*^9}, {3.529647337935227*^9, 3.529647353718093*^9}, {
+   3.5296872766875*^9, 3.529687338453125*^9}, {3.529687383921875*^9, 
+   3.5296873858125*^9}, {3.5719247270915413`*^9, 3.571924745717974*^9}, 
+   3.5719252640444846`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"DsetCond", "==", 
+      RowBox[{"onPositive", "[", 
+       RowBox[{"setCond", "-", "oldSetCond"}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"DresetCond", "==", 
+      RowBox[{"onPositive", "[", 
+       RowBox[{"resetCond", "-", "oldResetCond"}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Qstate", "\[Equal]", 
+      RowBox[{"limit", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"2", " ", 
+          RowBox[{"onPositive", "[", 
+           RowBox[{"oldQstate", "-", "0.5"}], "]"}]}], "+", 
+         RowBox[{"2", " ", 
+          RowBox[{"onPositive", "[", 
+           RowBox[{"DsetCond", "-", "0.5"}], "]"}]}], "-", 
+         RowBox[{"2", " ", 
+          RowBox[{"onPositive", "[", 
+           RowBox[{"DresetCond", "-", "0.5"}], "]"}]}]}], ",", "0", ",", 
+        "1"}], "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"oldQstate", "\[Equal]", "Qstate"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"notQstate", "==", 
+      RowBox[{"1", "-", "Qstate"}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.529586025328125*^9, 3.52958604828125*^9}, {
+   3.529586463703125*^9, 3.5295865311875*^9}, {3.5295869555*^9, 
+   3.52958704159375*^9}, {3.529587082453125*^9, 3.52958712321875*^9}, {
+   3.529587709234375*^9, 3.52958771875*^9}, {3.52958824928125*^9, 
+   3.529588250875*^9}, {3.52958830328125*^9, 3.529588310671875*^9}, {
+   3.529596403*^9, 3.52959645915625*^9}, {3.529596510671875*^9, 
+   3.529596527171875*^9}, {3.5295965615625*^9, 3.529596585640625*^9}, {
+   3.5296472501293616`*^9, 3.5296472536140933`*^9}, {3.52964732004277*^9, 
+   3.52964737482963*^9}, {3.5296486047915845`*^9, 3.529648605072869*^9}, 
+   3.529650357502418*^9, {3.5296505716074257`*^9, 3.5296505771857653`*^9}, {
+   3.529687265359375*^9, 3.529687267546875*^9}, {3.529687403515625*^9, 
+   3.529687484203125*^9}, {3.529687527171875*^9, 3.52968755115625*^9}, {
+   3.5297491187115407`*^9, 3.529749138767107*^9}, {3.571924759679999*^9, 
+   3.571924782643239*^9}, 3.571925072491748*^9, {3.577602445774715*^9, 
+   3.577602447837715*^9}, 3.5908985542438164`*^9, {3.5908986701958165`*^9, 
+   3.590898684410816*^9}, {3.590898999878015*^9, 3.590899024486476*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{707, 817},
+WindowMargins->{{158, Automatic}, {-19, Automatic}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 227, 3, 71, "Section"],
+Cell[809, 27, 151, 2, 31, "Input"],
+Cell[CellGroupData[{
+Cell[985, 33, 100, 1, 36, "Subsection"],
+Cell[1088, 36, 1143, 27, 152, "Input"],
+Cell[2234, 65, 89, 2, 31, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2360, 72, 46, 0, 36, "Subsection"],
+Cell[2409, 74, 700, 16, 92, "Input"],
+Cell[3112, 92, 754, 18, 92, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3903, 115, 45, 0, 36, "Subsection"],
+Cell[3951, 117, 892, 16, 112, "Input"],
+Cell[4846, 135, 2318, 46, 172, "Input"],
+Cell[7167, 183, 63, 1, 31, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
