@@ -23,6 +23,71 @@
 
 using namespace hopsan;
 
+typedef struct
+{
+    QString name;
+    QString variableName;
+    QString fmuVr;
+    fmi2_base_type_enu_t dataType;
+}hopsan_fmi_import_variable_t;
+
+
+bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
+                                    QList<hopsan_fmi_import_variable_t> &rActualVariables,
+                                    const QStringList &rTags, const QList<size_t> &rDataIds, const QString &rPortName, const QDomElement portElement)
+{
+    for(int i=0; i<rTags.size(); ++i)
+    {
+        QString name = toValidVarName(portElement.firstChildElement(rTags[i]).text());
+        int idx=-1, j=-1;
+        foreach(const hopsan_fmi_import_variable_t &rVar, rActualVariables)
+        {
+            ++j;
+            if (rVar.name == name)
+            {
+                idx = j;
+                break;
+            }
+        }
+
+        if (idx >= 0)
+        {
+            rPortVarNames.append(name);
+            rPortVarVars.append(rPortName+"_"+name);
+            rPortVarRefs.append(rActualVariables[idx].fmuVr);
+            rPortVarDataIds.append(rDataIds[i]);
+
+
+            rActualVariables.removeAt(idx);
+        }
+        else
+        {
+            //printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
+            return false;
+        }
+
+//        int idx = rActualNames.indexOf(name);
+//        if (idx >= 0)
+//        {
+//            rPortVarNames.append(name);
+//            rPortVarVars.append(rPortName+"_"+name);
+//            rPortVarRefs.append(rActualRefs.at(idx));
+//            rPortVarDataIds.append(rDataIds[i]);
+
+//            rActualVars.removeAt(idx);
+//            rActualRefs.removeAt(idx);
+//            rActualNames.removeAll(name);
+//        }
+//        else
+//        {
+//            //printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
+//            return false;
+//        }
+    }
+    return true;
+}
+
+
 
 HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog)
     : HopsanGenerator(coreIncludePath, binPath, gccPath, showDialog)
@@ -428,9 +493,12 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     }
 
     //Declare lists for parameters, input variables and output variables
-    QStringList parNames, parVars, parRefs;
-    QStringList inputNames, inputVars, inputRefs;
-    QStringList outputNames, outputVars, outputRefs;
+    QList<hopsan_fmi_import_variable_t> fmiParameters;
+    QList<hopsan_fmi_import_variable_t> fmiInputVariables;
+    QList<hopsan_fmi_import_variable_t> fmiOutputVariables;
+
+    //QStringList inputNames, inputVars, inputRefs;
+    //QStringList outputNames, outputVars, outputRefs;
 
     //Loop through variables in FMU and generate the lists
     fmi2_import_variable_list_t *pVarList = fmi2_import_get_variable_list(fmu,0);
@@ -438,27 +506,30 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     {
         fmi2_import_variable_t *pVar = fmi2_import_get_variable(pVarList, i);
         QString name = fmi2_import_get_variable_name(pVar);
+        fmi2_base_type_enu_t basetype = fmi2_import_get_variable_base_type(pVar);
         fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
         fmi2_value_reference_t vr = fmi2_import_get_variable_vr(pVar);
         name = toValidVarName(name);
+
+        hopsan_fmi_import_variable_t varORpar;
+        varORpar.name = name;
+        varORpar.dataType = basetype;
+        varORpar.fmuVr = QString::number(vr);
         if(causality == fmi2_causality_enu_parameter)
         {
-            parNames.append(name);
-            parVars.append("m"+name);
-            parRefs.append(QString::number(vr));
+            varORpar.variableName = "m"+name;
+            fmiParameters.append(varORpar);
         }
-        if(causality == fmi2_causality_enu_input)
-        {
-            inputNames.append(name);
-            inputVars.append("mp"+name);
-            inputRefs.append(QString::number(vr));
-        }
-        if(causality == fmi2_causality_enu_output)
+        else if(causality == fmi2_causality_enu_input)
         {
 
-            outputNames.append(name);
-            outputVars.append("mp"+name);
-            outputRefs.append(QString::number(vr));
+            varORpar.variableName = "mp"+name;
+            fmiInputVariables.append(varORpar);
+        }
+        else if(causality == fmi2_causality_enu_output)
+        {
+            varORpar.variableName = "mp"+name;
+            fmiOutputVariables.append(varORpar);
         }
     }
 
@@ -502,11 +573,21 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                 while(!portElement.isNull())
                 {
                     QString portType = portElement.attribute("type");
+                    QString portName = portElement.attribute("name");
                     if(portType == "mechanicq")
                     {
                         portTypes.append(portType);
-                        portNames.append("P"+QString::number(idx));
-                        portVars.append("mpP"+QString::number(idx));
+                        if (portName.isEmpty())
+                        {
+                            portNames.append(portName);
+                            portVars.append("mp"+portName);
+                        }
+                        else
+                        {
+                            portNames.append("P"+QString::number(idx));
+                            portVars.append("mpP"+QString::number(idx));
+                             ++idx;
+                        }
 
                         portVarNames.append(QStringList());
                         portVarVars.append(QStringList());
@@ -524,7 +605,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
                         // Replace input variables
                         if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
-                                                            inputNames, inputVars, inputRefs, inputs, inputDataIds,
+                                                            fmiInputVariables, inputs, inputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
@@ -536,20 +617,27 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
                         // Replace output variables
                         if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
-                                                            outputNames, outputVars, outputRefs, outputs, outputDataIds,
+                                                            fmiOutputVariables, outputs, outputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
                             return false;
                         }
-
-                        ++idx;
                     }
                     else if(portType == "hydraulicq")
                     {
                         portTypes.append(portType);
-                        portNames.append("P"+QString::number(idx));
-                        portVars.append("mpP"+QString::number(idx));
+                        if (portName.isEmpty())
+                        {
+                            portNames.append(portName);
+                            portVars.append("mp"+portName);
+                        }
+                        else
+                        {
+                            portNames.append("P"+QString::number(idx));
+                            portVars.append("mpP"+QString::number(idx));
+                             ++idx;
+                        }
 
                         portVarNames.append(QStringList());
                         portVarVars.append(QStringList());
@@ -568,7 +656,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
                         // Replace input variables
                         if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
-                                                            inputNames, inputVars, inputRefs, inputs, inputDataIds,
+                                                            fmiInputVariables, inputs, inputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
@@ -580,15 +668,12 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
                         // Replace output variables
                         if (!replaceFMIVariablesWithTLMPort(portVarNames.last(), portVarVars.last(), portVarRefs.last(), portVarDataIds.last(),
-                                                            outputNames, outputVars, outputRefs, outputs, outputDataIds,
+                                                            fmiOutputVariables, outputs, outputDataIds,
                                                             portNames.last(), portElement))
                         {
                             printErrorMessage("In: "+ file.fileName());
                             return false;
                         }
-
-
-                        ++idx;
                     }
                     //! @todo support the other nodetypes
                     else
@@ -652,31 +737,93 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     QString headerGuard = fmuName.toUpper()+"_HPP_INCLUDED";
     QString className = "FMU_"+fmuName;
 
-    QString localVars;
-    if(!parVars.isEmpty())
+    // Define member variables
+
+    // First constant parameter variables
+    QString parameterDefinitions;
+    QStringList doubleParams, strParams;
+    foreach (const hopsan_fmi_import_variable_t &par , fmiParameters)
     {
-        localVars.append("double ");
-        foreach(const QString &varName, parVars)
+        //! @todo support all data types
+        if (par.dataType == fmi2_base_type_real)
         {
-            localVars.append(varName+", ");             //Parameters
+            doubleParams.append(par.variableName);
         }
-        if(localVars.endsWith(", "))
+        else if (par.dataType == fmi2_base_type_str)
         {
-            localVars.chop(2);
+            strParams.append(par.variableName);
         }
-        localVars.append(";\n");
     }
-    if(!inputVars.isEmpty()  || !outputVars.isEmpty() || !portVars.isEmpty())
+
+    if (!doubleParams.isEmpty())
     {
-        localVars.append("    double ");
-        foreach(const QString &varName, inputVars)
+        parameterDefinitions += "double ";
+        foreach (const QString &par, doubleParams)
         {
-            localVars.append("*"+varName+", ");         //Input variables
+            parameterDefinitions += par + ", ";
         }
-        foreach(const QString &varName, outputVars)
+        parameterDefinitions.chop(2);
+        parameterDefinitions += ";\n";
+    }
+    if (!strParams.isEmpty())
+    {
+        parameterDefinitions += "HString ";
+        foreach (const QString &par, strParams)
         {
-            localVars.append("*"+varName+", ");         //Output variables
+            parameterDefinitions += par + ", ";
         }
+        parameterDefinitions.chop(2);
+        parameterDefinitions += ";\n";
+    }
+
+
+
+    QString localVars = parameterDefinitions+"\n";
+//    if(!parVars.isEmpty())
+//    {
+//        localVars.append("double ");
+//        foreach(const QString &varName, parVars)
+//        {
+//            localVars.append(varName+", ");             //Parameters
+//        }
+//        if(localVars.endsWith(", "))
+//        {
+//            localVars.chop(2);
+//        }
+//        localVars.append(";\n");
+//    }
+
+    // Define Input variables node data ptrs
+    if(!fmiInputVariables.isEmpty())
+    {
+        localVars.append("// Input variable node data ptrs\n");
+        localVars.append("double ");
+        foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
+        {
+            localVars.append("*"+var.variableName+", ");
+        }
+        localVars.chop(2);
+        localVars += ";\n";
+    }
+
+    // Define Output variables node data ptrs
+    if (!fmiOutputVariables.isEmpty())
+    {
+        localVars.append("// Output variable node data ptrs\n");
+        localVars.append("double ");
+        foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
+        {
+            localVars.append("*"+var.variableName+", ");
+        }
+        localVars.chop(2);
+        localVars += ";\n";
+    }
+
+    // Define power port variable node data ptrs
+    if (!portVars.isEmpty())
+    {
+        localVars.append("// Power port variable node data ptrs\n");
+        localVars.append("double ");
         for(int i=0; i<portVarVars.size(); ++i)
         {
             foreach(const QString &varName, portVarVars.at(i))
@@ -691,7 +838,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         localVars.append(";\n");
         if(!portVars.isEmpty())
         {
-            localVars.append("    Port ");
+            localVars.append("Port ");
             foreach(const QString &varName, portVars)
             {
                 localVars.append("*"+varName+", ");         //Ports
@@ -704,34 +851,77 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         }
     }
 
+
+//    if(!fmiInputVariables.isEmpty()  || !fmiOutputVariables.isEmpty() || !portVars.isEmpty())
+//    {
+//        localVars.append("    double ");
+//        foreach(const QString &varName, inputVars)
+//        {
+//            localVars.append("*"+varName+", ");         //Input variables
+//        }
+//        foreach(const QString &varName, outputVars)
+//        {
+//            localVars.append("*"+varName+", ");         //Output variables
+//        }
+//        for(int i=0; i<portVarVars.size(); ++i)
+//        {
+//            foreach(const QString &varName, portVarVars.at(i))
+//            {
+//                localVars.append("*"+varName+", ");     //Power port variables
+//            }
+//        }
+//        if(localVars.endsWith(", "))
+//        {
+//            localVars.chop(2);
+//        }
+//        localVars.append(";\n");
+//        if(!portVars.isEmpty())
+//        {
+//            localVars.append("    Port ");
+//            foreach(const QString &varName, portVars)
+//            {
+//                localVars.append("*"+varName+", ");         //Ports
+//            }
+//            if(localVars.endsWith(", "))
+//            {
+//                localVars.chop(2);
+//            }
+//            localVars.append(";\n");
+//        }
+//    }
+
     QString addConstants;
-    for(int i=0; i<parNames.size(); ++i)
+    foreach(const hopsan_fmi_import_variable_t &par, fmiParameters)
     {
-        if(i!=0)
+        if (par.dataType == fmi2_base_type_real)
         {
-            addConstants.append("        ");
+            //addConstants.append("addConstant(\""+parNames.at(i)+"\", \"\", \"\", 0, "+parVars.at(i)+");\n");
+            addConstants.append(QString("addConstant(\"%1\", \"\", \"\", %2, %3);\n").arg(par.name).arg(0).arg(par.variableName));
         }
-        addConstants.append("addConstant(\""+parNames.at(i)+"\", \"\", \"\", 0, "+parVars.at(i)+");\n");
+        else if (par.dataType == fmi2_base_type_str)
+        {
+            addConstants.append(QString("addConstant(\"%1\", \"\", \"\", HString(\"%2\"), %3);\n").arg(par.name).arg("").arg(par.variableName));
+        }
     }
 
     QString addInputs;
-    for(int i=0; i<inputNames.size(); ++i)
+    for(int i=0; i<fmiInputVariables.size(); ++i)
     {
         if(i!=0)
         {
             addInputs.append("        ");
         }
-        addInputs.append("addInputVariable(\""+inputNames.at(i)+"\", \"\", \"\", 0, &"+inputVars.at(i)+");\n");
+        addInputs.append("addInputVariable(\""+fmiInputVariables.at(i).name+"\", \"\", \"\", 0, &"+fmiInputVariables.at(i).variableName+");\n");
     }
 
     QString addOutputs;
-    for(int i=0; i<outputNames.size(); ++i)
+    for(int i=0; i<fmiOutputVariables.size(); ++i)
     {
         if(i!=0)
         {
             addOutputs.append("        ");
         }
-        addOutputs.append("addOutputVariable(\""+outputNames.at(i)+"\", \"\", \"\", 0, &"+outputVars.at(i)+");\n");
+        addOutputs.append("addOutputVariable(\""+fmiOutputVariables.at(i).name+"\", \"\", \"\", 0, &"+fmiOutputVariables.at(i).variableName+");\n");
     }
 
     QString addPorts;
@@ -783,23 +973,39 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         //! @todo support all NODE TYPES
     }
 
+    // Determine if we need more then "double value" as local variables
     QString setPars;
     QString temp = extractTaggedSection(fmuComponentCode, "setpars");
-    for(int i=0; i<parNames.size(); ++i)
+    foreach(const hopsan_fmi_import_variable_t &par, fmiParameters)
     {
-        QString tempVar = temp;
-        tempVar.replace("<<<vr>>>", parRefs.at(i));
-        tempVar.replace("<<<var>>>", parVars.at(i));
-        setPars.append(tempVar+"\n");
+        QString tempPar = temp;
+        tempPar.replace("<<<vr>>>", par.fmuVr);
+        if (par.dataType == fmi2_base_type_real)
+        {
+            tempPar.replace("<<<var>>>", "&"+par.variableName);
+            tempPar.replace("<<<setparfunction>>>","fmi2_import_set_real");
+        }
+        else if (par.dataType == fmi2_base_type_str )
+        {
+            QString tempPar2 = "{\n";
+            tempPar2.append("const char* buff[1] = {"+par.variableName+".c_str()"+"};\n");
+            tempPar2.append(tempPar);
+            tempPar2.replace("<<<var>>>", "&buff[0]");
+            tempPar2.replace("<<<setparfunction>>>","fmi2_import_set_string");
+            tempPar2.append("}\n");
+            tempPar = tempPar2;
+        }
+
+        setPars.append(tempPar+"\n");
     }
 
     QString readVars;
     temp = extractTaggedSection(fmuComponentCode, "readvars");
-    for(int i=0; i<inputNames.size(); ++i)
+    foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
     {
         QString tempVar = temp;
-        tempVar.replace("<<<vr>>>", inputRefs.at(i));
-        tempVar.replace("<<<var>>>", inputVars.at(i));
+        tempVar.replace("<<<vr>>>", var.fmuVr);
+        tempVar.replace("<<<var>>>", var.variableName);
         readVars.append(tempVar+"\n");
     }
     for(int i=0; i<portNames.size(); ++i)
@@ -817,11 +1023,11 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
     QString writeVars;
     temp = extractTaggedSection(fmuComponentCode, "writevars");
-    for(int i=0; i<outputNames.size(); ++i)
+    foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
     {
         QString tempVar = temp;
-        tempVar.replace("<<<vr>>>", outputRefs.at(i));
-        tempVar.replace("<<<var>>>", outputVars.at(i));
+        tempVar.replace("<<<vr>>>", var.fmuVr);
+        tempVar.replace("<<<var>>>", var.variableName);
         writeVars.append(tempVar+"\n");
     }
     for(int i=0; i<portNames.size(); ++i)
@@ -869,22 +1075,22 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
 
     //These 4 variables are used for input/output port positioning
-    double inputPosStep=1.0/(inputNames.size()+1.0);
-    double outputPosStep=1.0/(outputNames.size()+1.0);
+    double inputPosStep=1.0/(fmiInputVariables.size()+1.0);
+    double outputPosStep=1.0/(fmiOutputVariables.size()+1.0);
     double portPosStep=1.0/(portNames.size()+1.0);
     double inputPos=0;
     double outputPos=0;
     double portPos=0;
 
-    for(int i=0; i<inputNames.size(); ++i)
+    foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
     {
         inputPos += inputPosStep;
-        cafSpec.addPort(inputNames.at(i), 0.0, inputPos, 180.0);
+        cafSpec.addPort(var.name, 0.0, inputPos, 180.0);
     }
-    for(int i=0; i<outputNames.size(); ++i)
+    foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
     {
         outputPos += outputPosStep;
-        cafSpec.addPort(outputNames.at(i), 1.0, outputPos, 0.0);
+        cafSpec.addPort(var.name, 1.0, outputPos, 0.0);
     }
     for(int i=0; i<portNames.size(); ++i)
     {
@@ -1674,33 +1880,33 @@ void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &m
         return;
 }
 
-bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
-                                                        QStringList &rActualNames, QStringList &rActualVars, QStringList &rActualRefs,
-                                                        const QStringList &rTags, const QList<size_t> &rDataIds, const QString &rPortName, const QDomElement portElement)
-{
-    for(size_t i=0; i<rTags.size(); ++i)
-    {
-        QString name = toValidVarName(portElement.firstChildElement(rTags[i]).text());
-        int idx = rActualNames.indexOf(name);
-        if (idx >= 0)
-        {
-            rPortVarNames.append(name);
-            rPortVarVars.append(rPortName+"_"+name);
-            rPortVarRefs.append(rActualRefs.at(idx));
-            rPortVarDataIds.append(rDataIds[i]);
+//bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
+//                                                        QStringList &rActualNames, QStringList &rActualVars, QStringList &rActualRefs,
+//                                                        const QStringList &rTags, const QList<size_t> &rDataIds, const QString &rPortName, const QDomElement portElement)
+//{
+//    for(size_t i=0; i<rTags.size(); ++i)
+//    {
+//        QString name = toValidVarName(portElement.firstChildElement(rTags[i]).text());
+//        int idx = rActualNames.indexOf(name);
+//        if (idx >= 0)
+//        {
+//            rPortVarNames.append(name);
+//            rPortVarVars.append(rPortName+"_"+name);
+//            rPortVarRefs.append(rActualRefs.at(idx));
+//            rPortVarDataIds.append(rDataIds[i]);
 
-            rActualVars.removeAt(idx);
-            rActualRefs.removeAt(idx);
-            rActualNames.removeAll(name);
-        }
-        else
-        {
-            printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
-            return false;
-        }
-    }
-    return true;
-}
+//            rActualVars.removeAt(idx);
+//            rActualRefs.removeAt(idx);
+//            rActualNames.removeAll(name);
+//        }
+//        else
+//        {
+//            printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
+//            return false;
+//        }
+//    }
+//    return true;
+//}
 
 
 void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,

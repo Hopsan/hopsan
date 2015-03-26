@@ -130,6 +130,12 @@ public:
             return;
         }
 
+        //Set parameters
+        fmi2_value_reference_t vr;
+  >>>setpars>>>        vr = <<<vr>>>;
+          fmistatus = <<<setparfunction>>>(fmu, &vr, 1, <<<var>>>);
+        <<<setpars<<<
+
         //Setup experiment
         fmi2_real_t relativeTol = 1e-4;
         fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTol, mTime, fmi2_false, 10);
@@ -148,14 +154,6 @@ public:
             stopSimulation();
             return;
         }
-
-        //Set parameters
-        double value;
-        fmi2_value_reference_t vr;
->>>setpars>>>        vr = <<<vr>>>;
-        value = <<<var>>>;
-        fmistatus = fmi2_import_set_real(fmu, &vr, 1, &value);
-        <<<setpars<<<
 
         //Exit initialization mode
         fmistatus = fmi2_import_exit_initialization_mode(fmu);
