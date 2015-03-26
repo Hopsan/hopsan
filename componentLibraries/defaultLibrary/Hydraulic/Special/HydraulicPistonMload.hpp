@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicPistonMload.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 16 Feb 2015 10:49:51
+//! @date Thu 26 Mar 2015 11:35:04
 //! @brief This is piston with an inertia load
 //! @ingroup HydraulicComponents
 //!
@@ -290,19 +290,6 @@ bL*mTimestep + bp*mTimestep + mTimestep*Zcmp);
         Zcmp = (*mpND_Zcmp);
 
         //Read inputVariables from nodes
-
-        //Read inputParameters from nodes
-        A1 = (*mpA1);
-        A2 = (*mpA2);
-        SL = (*mpSL);
-        Cip = (*mpCip);
-        bp = (*mpbp);
-        mL = (*mpmL);
-        bL = (*mpbL);
-        fc = (*mpfc);
-        bfc = (*mpbfc);
-        xmin = (*mpxmin);
-        xmax = (*mpxmax);
 
         //LocalExpressions
 
