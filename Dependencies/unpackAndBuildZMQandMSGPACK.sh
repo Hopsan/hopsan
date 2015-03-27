@@ -6,7 +6,7 @@
 # Date:   2012-03-29
 
 zeromqname="zeromq-4.1.0"
-msgpackname="msgpack-c-master"
+msgpackname="msgpack-c-cpp-1.0.1"
 cppzeromqname="cppzmq-master"
 
 msgpackfile="$msgpackname.zip"
