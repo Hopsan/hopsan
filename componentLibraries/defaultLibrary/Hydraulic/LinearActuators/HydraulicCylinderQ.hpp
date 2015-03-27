@@ -163,7 +163,7 @@ namespace hopsan {
             //CylinderCtest Equations
 
             //Internal mechanical port
-            double cx1 = A1*c1 - A2*c2;
+            double cx1 = A1*max(c1,0.) - A2*max(c2,0.);
             double Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
 
             //Piston
