@@ -173,6 +173,7 @@ QString extractTaggedSection(QString str, QString tag);
 void replaceTaggedSection(QString &str, QString tag, QString replacement);
 QString replaceTag(QString str, QString tag, QString replacement);
 QString replaceTags(QString str, QStringList tags, QStringList replacements);
+bool replacePattern(const QString &rPattern, const QString &rReplacement, QString &rText);
 
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
 

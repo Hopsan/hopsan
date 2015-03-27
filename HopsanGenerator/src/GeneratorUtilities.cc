@@ -895,3 +895,47 @@ InterfaceVarSpec::InterfaceVarSpec(QString dataName, int dataId, InterfaceVarSpe
     this->dataId = dataId;
     this->causality = causality;
 }
+
+//! @brief Replaces a pattern preserving pattern indentation, adding indentation to each line of text
+//! @param[in] rPattern The pattern to replace
+//! @param[in] rReplacement The replacement text
+//! @param[in] rText The text to replace in
+//! @returns True if pattern was found (and replaced), else False
+bool replacePattern(const QString &rPattern, const QString &rReplacement, QString &rText)
+{
+    // First find pattern start in text
+    int b = rText.indexOf(rPattern);
+    if (b > -1)
+    {
+        // From beginning search backwards to count number of white spaces
+        int nIndent = 0;
+        QString indentString;
+        --b;
+        while (rText[b].isSpace() && (rText[b] != '\n'))
+        {
+            ++nIndent;
+            indentString.append(" ");
+            --b;
+        }
+
+        //Add indentation to each line in replacement text
+        QString newrepl, repl=rReplacement;
+        QTextStream ts(&repl);
+        while (!ts.atEnd())
+        {
+            newrepl += indentString+ts.readLine()+"\n";
+        }
+        // If original replacement string lacks newline at end, the last newline should be removed
+        if (!rReplacement.endsWith("\n"))
+        {
+            //! @todo will this work with crlf
+            newrepl.chop(1);
+        }
+
+        // Now replace pattern
+        rText.replace(indentString+rPattern, newrepl);
+
+        return true;
+    }
+    return false;
+}
