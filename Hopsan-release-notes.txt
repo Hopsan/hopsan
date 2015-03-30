@@ -28,17 +28,22 @@
 0.6.11  (2015-03-25)
 - Feature: Support for FMI 2.0 import and export
            Note! Only Signal, Hydraulic and Mechanic nodes can be exported / imported
-           Note! FMU import in Hopsan require additional TLM description XML file if FMU scalars should be interpreted as PowerPorts variables
+           Note! FMU import in Hopsan require additional TLM description XML file if FMU scalars should be interpreted as PowerPort variables
+           Note! FMU parameters are not yet supported
 - Feature: Compiler path settings in Hopsan for FMU export/import, compiler no longer need to be in system PATH
 
+- Fixed component: Hydraulic PistonQ prevent negative wave variable (cavitation) from "sucking" the piston
+- Fixed component: SignalSRLatch Fixed initial behaviour
 - Fixed component: Mass component position end stops are now +- 1e300 instead of 0 and 1
 - Fixed component: An assortment of fixes and changes in some (Mathematica generated) special components
                    Pay attention to any warning messages if you use such components
 
-- New components: Some new (Mathematica generated) Mechanic components added
+- New components: Some new (Mathematica generated) Mechanic components added (and some removed)
+- New component:  SignalNot (logic inverter) component
 
 - Enhancement: The number of log generations is automatically limited during optimization
-- Enhancement: Log data is not longer cached to User/Documents (very slow if you have a network drive personal storage), instead Temp location is used
+- Enhancement: Log data is no longer cached to User/Documents (very slow if you have a network drive personal storage), instead Temp location is used
+- Enhancement: When setting a system parameter whose name is already taken by a component the error message is slightly more clear
 
 - Bug fixed: Time scale dialog shows wrong unit for imported PLO data
 - Bug fixed: Imported PLO data will now get the correct custom time unit scale based on the plot scale in the PLO file
@@ -56,6 +61,7 @@
 - Bug fixed: Viewport keeps jumping around when loading and switching between subsystems, also views are not saved correctly with model
 - Bug fixed: Timestep in FMU export is hard coded (model setting should be used instead)
 - Bug fixed: HCOM cannot read script files that contains tabs (as indentation character)
+- Bug fixed: If you enter properties for a subsystem, and then exit, once you click and drag the system, it is in copy mode
 
 ------------------------------
 0.6.10  (2015-02-16)
