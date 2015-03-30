@@ -251,7 +251,7 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
         if(!isOk)
         {
             QMessageBox::critical(0, "Hopsan GUI",
-                                  QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
+                                  QString("The name '%1' is invalid or already used by something else, or the value '%2' is invalid.")
                                   .arg(rParameterData.mName, rParameterData.mValue));
             return false;
         }

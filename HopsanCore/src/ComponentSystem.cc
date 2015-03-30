@@ -424,7 +424,7 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
     {
         if (this->hasReservedUniqueName(rName) || !isNameValid(rName, "#"))
         {
-            addErrorMessage("The desired system parameter name: "+rName+" is invalid or already used by somthing else");
+            addErrorMessage("The desired system parameter name: "+rName+" is invalid or already used by something else");
             success=false;
         }
         else
@@ -1041,7 +1041,7 @@ bool ComponentSystem::renameParameter(const HString &rOldName, const HString &rN
 {
     if (hasReservedUniqueName(rNewName))
     {
-        addErrorMessage("The desired system parameter name: "+rNewName+" is already used");
+        addErrorMessage("The desired system parameter name: "+rNewName+" is already used by something else");
     }
     else if (mpParameters->renameParameter(rOldName, rNewName))
     {
