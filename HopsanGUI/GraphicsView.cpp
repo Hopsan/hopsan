@@ -88,9 +88,6 @@ GraphicsView::GraphicsView(ModelWidget *parent)
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
     qDebug() << "GraphicsView::contextMenuEvent(), reason = " << event->reason();
-
-
-
     if(!mpContainerObject->isCreatingConnector() && !mIgnoreNextContextMenuEvent)
     {
         if (itemAt(event->pos()))
@@ -620,11 +617,11 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
 
     //! Remove one connector line if right clicking while creating a connector
-    if (event->button() == Qt::RightButton && mpContainerObject->isCreatingConnector())
+    if ((event->button() == Qt::RightButton) && mpContainerObject->isCreatingConnector())
     {
         mpContainerObject->removeOneConnectorLine(mapToScene(event->pos()));
     }
-    else if  ((event->button() == Qt::LeftButton) && (mpContainerObject->isCreatingConnector()))
+    else if ((event->button() == Qt::LeftButton) && mpContainerObject->isCreatingConnector())
     {
         mpContainerObject->addOneConnectorLine(this->mapToScene(event->pos()));
     }
@@ -652,6 +649,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
         }
     }
     mLeftMouseButtonPressed = false;
+    //qDebug() << "GraphicsView QGraphicsView::mouseReleaseEvent(event)";
     QGraphicsView::mouseReleaseEvent(event);
 }
 

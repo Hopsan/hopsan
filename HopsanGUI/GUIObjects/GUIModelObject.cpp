@@ -1029,7 +1029,7 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QGraphicsItem::contextMenuEvent(event);
 
-    qDebug() << "contextMenuEvent()";
+    qDebug() << "ModelObject::contextMenuEvent";
 
     // This will prevent context menus from appearing automatically - they are started manually from mouse release event.
     if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
@@ -1093,7 +1093,7 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     WorkspaceObject::mousePressEvent(event);
 
-    qDebug() << "mousePressEvent(), button = " << event->button();
+    qDebug() << "ModelObject::mousePressEvent(), button = " << event->button();
 
     if(event->button() == Qt::RightButton)
     {
@@ -1135,7 +1135,7 @@ void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     //qDebug() << "mouseMoveEvent(), button = " << event->button();
 
-    if(mpParentContainerObject != 0 && mDragCopying)
+    if(mpParentContainerObject && mDragCopying)
     {
         //qDebug() << "Drag copying";
         mpParentContainerObject->deselectAll();
@@ -1168,7 +1168,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
     mDragCopying = false;
 
-    qDebug() << "mouseReleaseEvent()";
+    qDebug() << "ModelObject mouseReleaseEvent()";
 
     //! @todo It would be better if this was handled in some other way,  one particular object should not be responsible for registering moves from other object
     // Loop through all selected objects and register changed positions in undo stack
@@ -1204,7 +1204,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsSceneContextMenuEvent *test = new QGraphicsSceneContextMenuEvent(QGraphicsSceneContextMenuEvent::ContextMenu);
         test->setScenePos(event->scenePos());
         test->setScreenPos(event->screenPos());
-        mpParentContainerObject->mpModelWidget->mpGraphicsView->setIgnoreNextContextMenuEvent();       //! @todo No idea why this is needed, but it is...
+        //mpParentContainerObject->mpModelWidget->mpGraphicsView->setIgnoreNextContextMenuEvent();       //! @todo No idea why this is needed, but it is...
         this->contextMenuEvent(test);
     }
 

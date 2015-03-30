@@ -2745,6 +2745,10 @@ void ContainerObject::deselectSelectedNameText()
 //! @todo Maybe should try to reduce multiple copies of same functions with other GUIObjects
 void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
+    // This will prevent context menus from appearing automatically - they are started manually from mouse release event.
+    if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
+        return;
+
     QMenu menu;
     QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
     QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
@@ -2758,6 +2762,8 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         saveAction->setDisabled(true);
         saveAsComponentAction->setDisabled(true);
     }
+
+    //qDebug() << "ContainerObject::contextMenuEvent";
     QAction *pAction = this->buildBaseContextMenu(menu, event);
     if (pAction == loadAction)
     {
