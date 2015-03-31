@@ -410,7 +410,22 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                 }
                 else
                 {
-                    pSys = pHopsanEssentials->createComponentSystem();
+                    // Get the typename for this new subsystem
+                    string newTypeName = readStringAttribute(pObject, "typename", "UNSUPORTED_SYSTEM_TYPENAME");
+                    // Create the appropriate subsystem
+                    if (newTypeName == CONDITIONALTYPENAME)
+                    {
+                        pSys = pHopsanEssentials->createConditionalComponentSystem();
+                    }
+                    else if (newTypeName == SUBSYSTEMTYPENAME )
+                    {
+                        pSys = pHopsanEssentials->createComponentSystem();
+                    }
+                    else
+                    {
+                        //! @todo dont know how to report this error, but it is unlikely to happen
+                        return;
+                    }
                     // Add new system to parent
                     pSystem->addComponent(pSys);
                     // Load system contents
