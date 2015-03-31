@@ -63,6 +63,7 @@
 - Bug fixed: HCOM cannot read script files that contains tabs (as indentation character)
 - Bug fixed: If you enter properties for a subsystem, and then exit, once you click and drag the system, it is in copy mode
 - Bug fixed: Conditional subsystems are sometimes sorted in the wrong order before initialize
+- Bug fixed: HopsanCore HMF loader does not differ between SubSystem and ConditionaSubsystems, ordinary Subsystems are always created
 
 ------------------------------
 0.6.10  (2015-02-16)
