@@ -322,7 +322,6 @@ namespace hopsan {
         void clear();
 
         bool sortComponentVector(std::vector<Component*> &rOldSignalVector);
-        bool componentVectorContains(std::vector<Component*> vector, Component *pComp);
 
         // UniqueName specific functions
         HString determineUniquePortName(const HString &rPortname);

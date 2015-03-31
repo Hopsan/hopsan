@@ -46,6 +46,24 @@
 using namespace std;
 using namespace hopsan;
 
+//! @brief Figure out whether or not a vector contains a certain "object", exact comparisson
+//! @param[in] rVector Vector of objects
+//! @param[in] rObj Object to find
+//! @return Returns true if found else false
+template<typename T>
+bool vectorContains(const std::vector<T> &rVector, const T &rObj)
+{
+    typename std::vector<T>::const_iterator it;
+    for(it=rVector.begin(); it!=rVector.end(); ++it)
+    {
+        if((*it) == rObj)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool SimulationHandler::initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem)
 {
     if (pSystem->checkModelBeforeSimulation())
@@ -721,46 +739,57 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     {
         didSomething = false;
         std::vector<Component*>::iterator it;
-        for(it=rComponentVector.begin(); it!=rComponentVector.end(); ++it)  //Loop through the unsorted signal component vector
+        //Loop through the unsorted signal component vector
+        for(it=rComponentVector.begin(); it!=rComponentVector.end(); ++it)
         {
-            if(!componentVectorContains(newComponentVector, (*it)))    //Ignore components that are already added to the new vector
+            // A pointer to an unsorted component
+            Component* pUnsrtComp = (*it);
+            //Ignore components that are already added to the new vector
+            if(!vectorContains<Component*>(newComponentVector, pUnsrtComp))
             {
                 bool readyToAdd=true;
                 std::vector<Port*>::iterator itp;
                 std::vector<Port*> portVector = (*it)->getPortPtrVector();
-                for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
+                // Ask each read port for its node, then ask the node for its write port component
+                for(itp=portVector.begin(); itp!=portVector.end(); ++itp)
                 {
-                    Component* requiredComponent=0;
-                    if(((*itp)->getPortType() == ReadPortType || (*itp)->getPortType() == ReadMultiportType ||
-                        ((*it)->getTypeName() == "Subsystem" && (*itp)->getInternalPortType() == ReadPortType)) && (*itp)->isConnected())
+                    // Take the port pointer (To make code easier to read)
+                    Port *pPort = (*itp);
+                    Component* pRequiredComponent=0;
+
+                    bool isReadPort = pPort->getPortType() == ReadPortType || pPort->getPortType() == ReadMultiportType ||
+                                      ( (pUnsrtComp->getTypeName() == SUBSYSTEMTYPENAME) && (pPort->getInternalPortType() == ReadPortType)) ||
+                                      ( (pUnsrtComp->getTypeName() == CONDITIONALTYPENAME) && (pPort->getInternalPortType() == ReadPortType));
+                    if ( isReadPort && pPort->isConnected() )
                     {
-                        requiredComponent = (*itp)->getNodePtr()->getWritePortComponentPtr();
+                        pRequiredComponent = pPort->getNodePtr()->getWritePortComponentPtr();
                     }
-                    if(requiredComponent != 0 && requiredComponent->getTypeName() != "SignalUnitDelay")
+                    if(pRequiredComponent && (pRequiredComponent->getTypeName() != "SignalUnitDelay"))
                     {
-                        if(requiredComponent->mpSystemParent == this)
+                        if(pRequiredComponent->mpSystemParent == this)
                         {
-                            if(!componentVectorContains(newComponentVector, requiredComponent) &&
-                               componentVectorContains(rComponentVector, requiredComponent)
-                               /*requiredComponent->getTypeCQS() == (*itp)->getComponent()->getTypeCQS()*//*Component::S*/)
+                            if(!vectorContains<Component*>(newComponentVector, pRequiredComponent) &&
+                               vectorContains<Component*>(rComponentVector, pRequiredComponent)
+                               /*requiredComponent->getTypeCQS() == pPort->getComponent()->getTypeCQS()*//*Component::S*/)
                             {
                                 readyToAdd = false;     //Depending on normal component which has not yet been added
                             }
                         }
                         else
                         {
-                            if(!componentVectorContains(newComponentVector, requiredComponent->mpSystemParent) &&
-                               requiredComponent->mpSystemParent->getTypeCQS() == (*itp)->getComponent()->getTypeCQS() &&
-                               componentVectorContains(rComponentVector,requiredComponent->mpSystemParent))
+                            if(!vectorContains<Component*>(newComponentVector, pRequiredComponent->mpSystemParent) &&
+                               (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
+                               vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent))
                             {
-                                readyToAdd = false;     //Depending on subsystem component which has not yer been added
+                                readyToAdd = false;     //Depending on subsystem component which has not yet been added
                             }
                         }
                     }
                 }
-                if(readyToAdd)  //Add the component if all required write port components was already added
+                // Add the component if all required write port components was already added
+                if(readyToAdd)
                 {
-                    newComponentVector.push_back((*it));
+                    newComponentVector.push_back(pUnsrtComp);
                     didSomething = true;
                 }
             }
@@ -785,27 +814,14 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     {
         addErrorMessage("Initialize: Algebraic loops was found, signal components could not be sorted.");
         if(!newComponentVector.empty())
+        {
             addInfoMessage("Last component that was successfully sorted: " + newComponentVector.back()->getName());
+        }
         addInfoMessage("Initialize: Hint: Use unit delay components to resolve loops.");
         return false;
     }
 
     return true;
-}
-
-
-//! @brief Figures out whether or not a component vector contains a certain component
-bool ComponentSystem::componentVectorContains(std::vector<Component*> vector, Component *pComp)
-{
-    std::vector<Component*>::iterator it;
-    for(it=vector.begin(); it!=vector.end(); ++it)
-    {
-        if((*it) == pComp)
-        {
-            return true;
-        }
-    }
-    return false;
 }
 
 
