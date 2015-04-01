@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalJKlatch.hpp" typename="SignalJKlatch" displayname="SignalJKlatch">
+        <icons>
+            <icon scale="1" path="SignalJKlatch.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalJKlatch.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.25" a="-180" name="setCond"/>
+            <port x="0" y="0.75" a="-180" name="resetCond"/>
+            <port x="1" y="0.25" a="0" name="Qstate"/>
+            <port x="1" y="0.75" a="0" name="notQstate"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

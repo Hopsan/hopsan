@@ -8,6 +8,7 @@
 #include "SignalGreaterThan.hpp"
 #include "SignalSmallerThan.hpp"
 #include "SignalSRlatch.hpp"
+#include "SignalJKlatch.hpp"
 #include "SignalCounter.hpp"
 #include "SignalNot.hpp"
 
