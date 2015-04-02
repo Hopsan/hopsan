@@ -51,6 +51,7 @@
     pComponentFactory->registerCreatorFunction("SignalGreaterThan", SignalGreaterThan::Creator);
     pComponentFactory->registerCreatorFunction("SignalSmallerThan", SignalSmallerThan::Creator);
     pComponentFactory->registerCreatorFunction("SignalSRlatch", SignalSRlatch::Creator);
+    pComponentFactory->registerCreatorFunction("SignalJKlatch", SignalJKlatch::Creator);
     pComponentFactory->registerCreatorFunction("SignalCounter", SignalCounter::Creator);
     pComponentFactory->registerCreatorFunction("SignalNot", SignalNot::Creator);
 

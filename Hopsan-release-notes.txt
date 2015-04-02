@@ -38,8 +38,9 @@
 - Fixed component: An assortment of fixes and changes in some (Mathematica generated) special components
                    Pay attention to any warning messages if you use such components
 
-- New components: Some new (Mathematica generated) Mechanic components added (and some removed)
+- New components: Some new (Mathematica generated) (mostly Mechanic) components added (and some removed)
 - New component:  SignalNot (logic inverter) component
+- New component:  SignalJKLatch component
 
 - Enhancement: The number of log generations is automatically limited during optimization
 - Enhancement: Log data is no longer cached to User/Documents (very slow if you have a network drive personal storage), instead Temp location is used
