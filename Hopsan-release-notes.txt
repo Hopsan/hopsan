@@ -25,7 +25,7 @@
 ******************************
     Version History
 ******************************
-0.6.11  (2015-03-25)
+0.6.11  (2015-04-??)
 - Feature: Support for FMI 2.0 import and export
            Note! Only Signal, Hydraulic and Mechanic nodes can be exported / imported
            Note! FMU import in Hopsan require additional TLM description XML file if FMU scalars should be interpreted as PowerPort variables
@@ -37,6 +37,8 @@
 - Fixed component: Mass component position end stops are now +- 1e300 instead of 0 and 1
 - Fixed component: An assortment of fixes and changes in some (Mathematica generated) special components
                    Pay attention to any warning messages if you use such components
+- Fixed component: Moved default port location on Hydraulic42DirectionalValve and Hydraulic32DirectionalValve
+                   Also fixed incorrect animation data (removed for Hydraulic32DirectionalValve)
 
 - New components: Some new (Mathematica generated) (mostly Mechanic) components added (and some removed)
 - New component:  SignalNot (logic inverter) component
