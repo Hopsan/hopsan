@@ -1204,7 +1204,8 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsSceneContextMenuEvent *test = new QGraphicsSceneContextMenuEvent(QGraphicsSceneContextMenuEvent::ContextMenu);
         test->setScenePos(event->scenePos());
         test->setScreenPos(event->screenPos());
-        //mpParentContainerObject->mpModelWidget->mpGraphicsView->setIgnoreNextContextMenuEvent();       //! @todo No idea why this is needed, but it is...
+        // This ugly hack avoids the context menue in the graphicsview from showing up after this event is processed (is only an issue on windows appearantly)
+        mpParentContainerObject->mpModelWidget->mpGraphicsView->setIgnoreNextContextMenuEvent();
         this->contextMenuEvent(test);
     }
 
