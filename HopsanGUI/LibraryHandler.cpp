@@ -510,57 +510,80 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 
 //! @brief Unloads library by component type name
 //! @param typeName Type name of any component in the library
-void LibraryHandler::unloadLibrary(QString typeName)
+bool LibraryHandler::unloadLibraryByComponentType(QString typeName)
 {
-    QStringList components, nodes;  //Components and nodes to remove
-
-    //Find the library that the component belongs to
+    // Find the library that the component belongs to
     LibraryEntry selectedEntry = getEntry(typeName);
-    if(!getLoadedTypeNames().contains(typeName))
+    if(selectedEntry.isNull())
     {
         qDebug() << "Component: " << typeName << " not found.";
-        return; //No component found, probably already unloaded
+        return false; //No component found, probably already unloaded
     }
     ComponentLibrary *pLib = selectedEntry.pLibrary;
     if(!pLib)
     {
         qDebug() << "Library with component: " << typeName << " not found.";
-        return; //No library found, ignore (should normally never happen)
+        return false; //No library found, ignore (should normally never happen)
     }
     qDebug() << "Unloading component: " << typeName << ".";
+    return unloadLibrary(pLib);
+}
 
-    components.append(pLib->guiOnlyComponents);
-
-    CoreLibraryAccess core;
-
-    //Generate list of all components and nodes in library
-    core.getLibraryContents(pLib->libFilePath, components, nodes);
-
-    //Unload the library from HopsanCore
-    core.unLoadComponentLib(pLib->libFilePath);
-
-    //Remove all unloaded components from library
-    for(int c=0; c<components.size(); ++c)
+//! @brief Unloads fmu library by fmu name
+//! @param fmuName Name of the fmu to unload
+bool LibraryHandler::unloadLibraryFMU(QString fmuName)
+{
+    // Find the library entery that has fmuName (and is an fmu)
+    LibraryEntry fmuEntry = getFMUEntry(fmuName);
+    if(fmuEntry.isNull())
     {
-        mLibraryEntries.remove(components[c]);
+        qDebug() << "fmuEntry: " << fmuName << " not found.";
+        return false;
     }
+    return unloadLibrary(fmuEntry.pLibrary);
+}
 
-    //Remove user library from configuration (might remove other libraries as well if they were loaded together, they will not appear next time Hopsan restarts then)
-    gpConfig->removeUserLib(pLib->xmlFilePath);
-
-    //Remove library from list of loaded libraries
-    QString libFilePath = pLib->libFilePath;
-    for(int l=0; l<mLoadedLibraries.size(); ++l)
+bool LibraryHandler::unloadLibrary(ComponentLibrary *pLibrary)
+{
+    if(pLibrary)
     {
-        if(mLoadedLibraries[l].libFilePath == libFilePath)
+        CoreLibraryAccess core;
+        QStringList components, nodes;  //Components and nodes to remove
+
+        components.append(pLibrary->guiOnlyComponents);
+
+        //Generate list of all components and nodes in library
+        core.getLibraryContents(pLibrary->libFilePath, components, nodes);
+
+        //Unload the library from HopsanCore
+        core.unLoadComponentLib(pLibrary->libFilePath);
+
+        //Remove all unloaded components from library
+        for(int c=0; c<components.size(); ++c)
         {
-            mLoadedLibraries.removeAt(l);
-            --l;
+            mLibraryEntries.remove(components[c]);
         }
-    }
 
-    gpMessageHandler->collectHopsanCoreMessages();
-    emit contentsChanged();
+        //Remove user library from configuration (might remove other libraries as well if they were loaded together, they will not appear next time Hopsan restarts then)
+        gpConfig->removeUserLib(pLibrary->xmlFilePath);
+
+        //Remove library from list of loaded libraries
+        QString libFilePath = pLibrary->libFilePath;
+        for(int l=0; l<mLoadedLibraries.size(); ++l)
+        {
+            if(mLoadedLibraries[l].libFilePath == libFilePath)
+            {
+                mLoadedLibraries.removeAt(l);
+                --l;
+            }
+        }
+
+        gpMessageHandler->collectHopsanCoreMessages();
+        emit contentsChanged();
+
+        return true;
+    }
+    return false;
 }
 
 bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)
@@ -612,14 +635,29 @@ QStringList LibraryHandler::getLoadedTypeNames()
 LibraryEntry LibraryHandler::getEntry(const QString &typeName, const QString &subTypeName)
 {
     QString fullTypeString = makeFullTypeString(typeName, subTypeName);
-    if(mLibraryEntries.contains(fullTypeString))
+    return mLibraryEntries.value(fullTypeString, LibraryEntry() );
+}
+
+//! @brief Returns an FMU component entry in the library
+//! @param rFmuName The FMU name
+//! @returns The library entery for given fmu name or an invalid library entery if fmu name not found
+LibraryEntry LibraryHandler::getFMUEntry(const QString &rFmuName)
+{
+    //! @todo I dont think we can have multiple component in the same FMU so this should be safe (for now)
+    //QString fullTypeString = makeFullTypeString(typeName, subTypeName);
+    foreach (const LibraryEntry &le, mLibraryEntries.values())
     {
-        return mLibraryEntries.find(fullTypeString).value();
+        // This indexing hack assumes that the load code prepends FMULIBSTR before the actaul fmuName and fmu component type name
+        int i = le.path.size()-2;
+        if ( (i>=0) && (le.path[i] == FMULIBSTR) )
+        {
+            if (le.path[i+1] == rFmuName)
+            {
+                return le;
+            }
+        }
     }
-    else
-    {
-        return LibraryEntry();
-    }
+    return LibraryEntry();
 }
 
 
@@ -759,3 +797,16 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
 
 
 
+
+
+LibraryEntry::LibraryEntry()
+{
+    pAppearance = 0;
+    pLibrary = 0;
+    visibility = Hidden;
+}
+
+bool LibraryEntry::isNull() const
+{
+    return !pLibrary;
+}

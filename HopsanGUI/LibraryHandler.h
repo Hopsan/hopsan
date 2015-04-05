@@ -28,12 +28,14 @@ public:
     LibraryHandler(QObject *parent=0);
 
     void loadLibrary(QString xmlPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
-    void unloadLibrary(QString typeName);
+    bool unloadLibraryByComponentType(QString typeName);
+    bool unloadLibraryFMU(QString fmuName);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
     void recompileLibrary(ComponentLibrary lib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames();
     LibraryEntry getEntry(const QString &typeName, const QString &subTypeName="");
+    LibraryEntry getFMUEntry(const QString &rFmuName);
     ModelObjectAppearance *getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="");
 
     void addReplacement(QString type1, QString type2);
@@ -49,6 +51,8 @@ signals:
     void contentsChanged();
 
 private:
+    bool unloadLibrary(ComponentLibrary *pLibrary);
+
     YesNoToAllEnumT mUpConvertAllCAF;
 
     //Contents
@@ -80,10 +84,13 @@ public:
 class LibraryEntry
 {
 public:
+    LibraryEntry();
+    bool isNull() const;
+
     ModelObjectAppearance *pAppearance;
-    QStringList path;
     ComponentLibrary *pLibrary;
     HiddenVisibleEnumT visibility;
+    QStringList path;
 };
 
 

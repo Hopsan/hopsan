@@ -139,7 +139,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 
             if(doIt)
             {
-                gpLibraryHandler->unloadLibrary(fmuName);
+                gpLibraryHandler->unloadLibraryFMU(fmuName);
                 removeDir(QDir::cleanPath(gpDesktopHandler->getFMUPath()+fmuName));
             }
             else

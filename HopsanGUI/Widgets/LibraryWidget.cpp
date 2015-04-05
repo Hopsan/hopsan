@@ -670,10 +670,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                     }
                     for(int s=0; s<typeNames.size(); ++s)
                     {
-                        gpLibraryHandler->unloadLibrary(typeNames[s]);
+                        gpLibraryHandler->unloadLibraryByComponentType(typeNames[s]);
                     }
                 }
-                gpLibraryHandler->unloadLibrary(typeName);
+                gpLibraryHandler->unloadLibraryByComponentType(typeName);
             }
             else if(pReply == pOpenFolderAction)
             {
@@ -736,7 +736,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                     }
                     for(int s=0; s<typeNames.size(); ++s)
                     {
-                        gpLibraryHandler->unloadLibrary(typeNames[s]);
+                        gpLibraryHandler->unloadLibraryByComponentType(typeNames[s]);
                     }
                 }
             }
