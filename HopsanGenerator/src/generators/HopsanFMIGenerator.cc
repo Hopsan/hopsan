@@ -272,7 +272,7 @@ bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, 
     //--------------------------------------------//
 
     //Create <fmuname>.hpp
-    QString hppPath = rTargetPath + "/" + fmuName + "/component_code";
+    QString hppPath = rTargetPath + "/" + fmuName;
     if(!QFileInfo(hppPath).exists())
     {
         QDir().mkpath(hppPath);
@@ -424,7 +424,7 @@ bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, 
 
 
     ComponentAppearanceSpecification cafSpec("FMU_"+fmuName);
-    cafSpec.mSourceCode = "component_code/"+fmuName+".hpp";
+    cafSpec.mSourceCode = fmuName+".hpp";
     cafSpec.mRecompilable = true;
     cafSpec.mUserIconPath = "fmucomponent.svg";
 
@@ -665,7 +665,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     //--------------------------------------------//
 
     //Create <fmuname>.hpp
-    QString hppPath = rTargetPath + "/" + fmuName + "/component_code";
+    QString hppPath = rTargetPath + "/" + fmuName;
     if(!QFileInfo(hppPath).exists())
     {
         QDir().mkpath(hppPath);
@@ -1005,7 +1005,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
 
 
     ComponentAppearanceSpecification cafSpec("FMU_"+fmuName);
-    cafSpec.mSourceCode = "component_code/"+fmuName+".hpp";
+    cafSpec.mSourceCode = fmuName+".hpp";
     cafSpec.mRecompilable = true;
     cafSpec.mUserIconPath = "fmucomponent.svg";
 
