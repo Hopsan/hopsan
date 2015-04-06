@@ -57,6 +57,10 @@ public:
 
         //Add ports
         <<<addports>>>
+
+        //Init fmu pointers
+        context = 0;
+        fmu = 0;
     }
 
     void initialize()
@@ -193,14 +197,23 @@ public:
 
     void finalize()
     {
-        fmistatus = fmi2_import_terminate(fmu);
+        if (fmu)
+        {
+            fmistatus = fmi2_import_terminate(fmu);
 
-        fmi2_import_free_instance(fmu);
+            fmi2_import_free_instance(fmu);
 
-        fmi2_import_destroy_dllfmu(fmu);
+            fmi2_import_destroy_dllfmu(fmu);
 
-        fmi2_import_free(fmu);
-        fmi_import_free_context(context);
+            fmi2_import_free(fmu);
+            fmu = 0;
+        }
+
+        if (context)
+        {
+            fmi_import_free_context(context);
+            context = 0;
+        }
     }
 };
 }
