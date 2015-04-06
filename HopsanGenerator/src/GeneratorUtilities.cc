@@ -283,22 +283,35 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 //! @param output Reference to string where output messages are stored
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output)
 {
-    //Create compilation script file
+    // Create compilation script file
+    QFile compileScript;
 #ifdef _WIN32
-    QFile clBatchFile;
-    clBatchFile.setFileName(wdPath + "/compile.bat");
-    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    compileScript.setFileName(wdPath + "/compile.bat");
+    if(!compileScript.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         output = "Could not open compile.bat for writing.";
         return false;
     }
-    QTextStream clBatchStream(&clBatchFile);
+    QTextStream clBatchStream(&compileScript);
     clBatchStream << "@echo off\n";
     clBatchStream << "set PATH=" << gccPath << ";%PATH%\n";
     clBatchStream << "@echo on\n";
     clBatchStream << "g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
     clBatchStream << " -o " << o+".dll" << " " << lflags <<"\n";
-    clBatchFile.close();
+    compileScript.close();
+#elif __linux__
+    compileScript.setFileName(wdPath + "/compile.sh");
+    if(!compileScript.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        output = "Could not open compile.sh for writing.";
+        return false;
+    }
+    QTextStream compileStream(&compileScript);
+    compileStream << "#!/bin/sh\n";
+    compileStream << "gcc " << cflags << " " << srcFiles;
+    compileStream << " -fpermissive -o " << o << ".so ";
+    compileStream << inclPaths << " " << lflags;
+    compileScript.close();
 #endif
 
     //Call compilation script file
@@ -328,27 +341,34 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         //output = output.remove(output.size()-1, 1);
     }
 #elif __linux__
-    QString gccCommand = "cd \""+wdPath+"\" && gcc "+cflags+" ";
-    gccCommand.append(srcFiles+" -fpermissive -o "+o+".so "+inclPaths+" "+lflags);
-    //qDebug() << "Command = " << gccCommand;
-    gccCommand +=" 2>&1";
-    FILE *fp;
-    char line[130];
-    output.append("Compiler command: \""+gccCommand+"\"\n");
-    qDebug() << "Compiler command: \"" << gccCommand << "\"";
-    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        output.append("Could not execute '" + gccCommand + "'! err=%d\n");
-        return false;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            output.append(QString::fromUtf8(line));
-        }
-    }
+    QString stdOut,stdErr;
+    callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, stdOut, stdErr);
+    output.append(stdOut);
+    output.append("\n");
+    output.append(stdErr);
+    output.append("\n");
+
+//    QString gccCommand = "cd \""+wdPath+"\" && gcc "+cflags+" ";
+//    gccCommand.append(srcFiles+" -fpermissive -o "+o+".so "+inclPaths+" "+lflags);
+//    //qDebug() << "Command = " << gccCommand;
+//    gccCommand +=" 2>&1";
+//    FILE *fp;
+//    char line[130];
+//    output.append("Compiler command: \""+gccCommand+"\"\n");
+//    qDebug() << "Compiler command: \"" << gccCommand << "\"";
+//    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
+//    if ( !fp )
+//    {
+//        output.append("Could not execute '" + gccCommand + "'! err=%d\n");
+//        return false;
+//    }
+//    else
+//    {
+//        while ( fgets( line, sizeof line, fp))
+//        {
+//            output.append(QString::fromUtf8(line));
+//        }
+//    }
 #endif
 
     QDir targetDir(wdPath);
@@ -946,4 +966,20 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
         }
     }
     return didReplace;
+}
+
+
+void callProcess(const QString &name, const QStringList &args, const QString workingDirectory, QString &rStdOut, QString &rStdErr)
+{
+    QProcess p;
+    if(!workingDirectory.isEmpty())
+    {
+        p.setWorkingDirectory(workingDirectory);
+    }
+    p.start(name, args);
+    p.waitForFinished(60000);
+
+    rStdOut = p.readAllStandardOutput();
+    rStdErr = p.readAllStandardError();
+    //p.readAll();
 }
