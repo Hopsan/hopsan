@@ -5,12 +5,12 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-29
 
-zeromqname="zeromq-4.1.0"
+zeromqname="zeromq4-1-master"
 msgpackname="msgpack-c-cpp-1.0.1"
 cppzeromqname="cppzmq-master"
 
 msgpackfile="$msgpackname.zip"
-zeromqfile="$zeromqname-rc1.zip"
+zeromqfile="$zeromqname.zip"
 cppzeromqfile="$cppzeromqname.zip"
 
 basepwd=`pwd`
@@ -45,7 +45,8 @@ rm -rf $zeromqname                      # Clean old files
 unzip -q $zeromqfile                    # Unpack
 #patch --binary -p0 < $zeromq.patch     # Patch (if any)
 cd $zeromqname                          # Enter dir
-./configure                             # Configure
+./autogen.sh
+./configure --without-libsodium         # Configure
 make -j4                                # Build
 cd $basepwd                             # Return
 
