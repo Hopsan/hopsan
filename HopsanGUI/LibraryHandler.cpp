@@ -808,5 +808,5 @@ LibraryEntry::LibraryEntry()
 
 bool LibraryEntry::isNull() const
 {
-    return !pLibrary;
+    return ((pLibrary==0) && (pAppearance==0) && (path.isEmpty())) ;
 }
