@@ -27,6 +27,8 @@
     pComponentFactory->registerCreatorFunction("SignalSin", SignalSin::Creator);
     pComponentFactory->registerCreatorFunction("SignalCos", SignalCos::Creator);
     pComponentFactory->registerCreatorFunction("SignalTan", SignalTan::Creator);
+    pComponentFactory->registerCreatorFunction("SignalLog", SignalLog::Creator);
+    pComponentFactory->registerCreatorFunction("SignalLog10", SignalLog10::Creator);
     pComponentFactory->registerCreatorFunction("SignalSign", SignalSign::Creator);
     pComponentFactory->registerCreatorFunction("SignalSub", SignalSub::Creator);
 

@@ -8,6 +8,8 @@
 #include "SignalSin.hpp"
 #include "SignalCos.hpp"
 #include "SignalTan.hpp"
+#include "SignalLog.hpp"
+#include "SignalLog10.hpp"
 #include "SignalSign.hpp"
 #include "SignalSub.hpp"
 #include "SignalPower.hpp"
