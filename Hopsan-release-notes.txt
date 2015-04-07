@@ -67,6 +67,7 @@
 - Bug fixed: If you enter properties for a subsystem, and then exit, once you click and drag the system, it is in copy mode
 - Bug fixed: Conditional subsystems are sometimes sorted in the wrong order before initialize
 - Bug fixed: HopsanCore HMF loader does not differ between SubSystem and ConditionaSubsystems, ordinary Subsystems are always created
+- Bug fixed: When re-importing an FMU that is already imported the automatic unloading of the old one does not work
 
 ------------------------------
 0.6.10  (2015-02-16)
