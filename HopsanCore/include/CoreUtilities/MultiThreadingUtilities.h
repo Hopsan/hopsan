@@ -1161,6 +1161,34 @@ private:
 };
 
 
+/////////////////////////////////////////////
+// Parallel for loop algorithm using tasks //
+/////////////////////////////////////////////
+
+class TaskSimOneStep
+{
+public:
+    TaskSimOneStep(std::vector<Component *> *pComponentPtrs, double stopTime)
+    {
+        mpComponentPtrs = pComponentPtrs;
+        mStopTime = stopTime;
+        nComponents = mpComponentPtrs->size();
+    }
+
+    void operator() ()
+    {
+        for (size_t i=0; i<nComponents; ++i)
+        {
+            mpComponentPtrs->at(i)->simulate(mStopTime);
+        }
+    }
+
+private:
+    std::vector<Component *> *mpComponentPtrs;
+    double mStopTime;
+    size_t nComponents;
+};
+
 ////////////////////////////////////////////////
 // Parallel for algorithm using TBB templates //
 ////////////////////////////////////////////////
@@ -1168,9 +1196,9 @@ private:
 class BodySimulateComponentVector
 {
 public:
-    BodySimulateComponentVector(std::vector<Component *> vComponentPtrs, double stopTime)
+    BodySimulateComponentVector(std::vector<Component *> *pComponentPtrs, double stopTime)
     {
-        mvComponentPtrs = vComponentPtrs;
+        mpComponentPtrs = pComponentPtrs;
         mStopTime = stopTime;
     }
 
@@ -1178,12 +1206,12 @@ public:
     {
         for (int i=r.begin(); i!=r.end(); ++i)
         {
-            mvComponentPtrs[i]->simulate(mStopTime);
+            mpComponentPtrs->at(i)->simulate(mStopTime);
         }
     }
 
 private:
-    std::vector<Component *> mvComponentPtrs;
+    std::vector<Component *> *mpComponentPtrs;
     double mStopTime;
 };
 

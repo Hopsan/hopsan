@@ -3351,15 +3351,60 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             }
 
             //C components
-            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentCptrs.size()), BodySimulateComponentVector( mComponentCptrs, mTime));
+            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentCptrs.size()), BodySimulateComponentVector( &mComponentCptrs, mTime));
 
             //Q components
-            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentQptrs.size()), BodySimulateComponentVector( mComponentQptrs, mTime));
+            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentQptrs.size()), BodySimulateComponentVector( &mComponentQptrs, mTime));
 
             ++mTotalTakenSimulationSteps;
 
             logTimeAndNodes(mTotalTakenSimulationSteps);
         }
+    }
+    else if(algorithm == GroupedParallelForAlgorithm)
+    {
+        addInfoMessage("Using grouped parallel for loop algorithm with unlimited number of threads.");
+
+        // Round to nearest, we may not get exactly the stop time that we want
+        size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
+
+        //Simulate
+        for (size_t i=0; i<numSimulationSteps; ++i)
+        {
+            if (mStopSimulation)
+            {
+                break;
+            }
+
+            mTime += mTimestep; //mTime is updated here before the simulation,
+                                //mTime is the current time during the simulateOneTimestep
+
+            //Signal components
+            for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+            {
+                mComponentSignalptrs[s]->simulate(mTime);
+            }
+            simTasks->wait();
+
+            //C components
+            for (size_t c=0; c < mSplitCVector.size(); ++c)
+            {
+                simTasks->run(TaskSimOneStep(&mSplitCVector[c], mTime));
+            }
+            simTasks->wait();
+
+            //Q components
+            for (size_t q=0; q < mSplitQVector.size(); ++q)
+            {
+                simTasks->run(TaskSimOneStep(&mSplitQVector[q], mTime));
+            }
+            simTasks->wait();
+
+            ++mTotalTakenSimulationSteps;
+
+            logTimeAndNodes(mTotalTakenSimulationSteps);
+        }
+
     }
     else if(algorithm == RandomTaskPoolAlgorithm)
     {
