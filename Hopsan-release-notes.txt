@@ -25,7 +25,7 @@
 ******************************
     Version History
 ******************************
-0.6.11  (2015-04-??)
+0.6.11  (2015-04-08)
 - Feature: Support for FMI 2.0 import and export
            Note! Only Signal, Hydraulic and Mechanic nodes can be exported / imported
            Note! FMU import in Hopsan require additional TLM description XML file if FMU scalars should be interpreted as PowerPort variables
@@ -43,6 +43,7 @@
 - New components: Some new (Mathematica generated) (mostly Mechanic) components added (and some removed)
 - New component:  SignalNot (logic inverter) component
 - New component:  SignalJKLatch component
+- New component:  Signal log and log10 components
 
 - Enhancement: The number of log generations is automatically limited during optimization
 - Enhancement: Log data is no longer cached to User/Documents (very slow if you have a network drive personal storage), instead Temp location is used
