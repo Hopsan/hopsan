@@ -12,11 +12,11 @@ echo Setting paths for %1 %2
 
 REM Setup 0.7.x paths
 if "%~1"=="0.7.x" (
-	REM These paths require the following download http://downloads.sourceforge.net/project/qtx64/qt-x64/5.3.2/mingw-4.9/seh/qt-5.3.2-x64-mingw491r1-seh-opengl.exe
+	REM These paths require the following download http://sourceforge.net/projects/qt64ng/files/qt/x86-64/5.4.1/mingw-4.9/seh/qt-5.4.1-x64-mingw492r1-seh-rev1.exe
 	set mingw_path32=NotAvailable
-	set mingw_path64=C:\Qt\qt-5.4.1-x64-mingw492r1-seh-opengl-rev1\mingw64\bin
+	set mingw_path64=C:\Qt\qt-5.4.1-x64-mingw492r1-seh-rev1\mingw64\bin
 	set qmake_path32=NotAvailable
-	set qmake_path64=C:\Qt\qt-5.4.1-x64-mingw492r1-seh-opengl-rev1\qt-5.4.1-x64-mingw492r1-seh-opengl-rev1\bin
+	set qmake_path64=C:\Qt\qt-5.4.1-x64-mingw492r1-seh-rev1\qt-5.4.1-x64-mingw492r1-seh-rev1\bin
 ) else (
 	echo "Error Unsupported arg1 (version) %~1"
 	pause
