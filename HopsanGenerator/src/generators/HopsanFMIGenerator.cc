@@ -28,6 +28,8 @@ typedef struct
     QString name;
     QString variableName;
     QString fmuVr;
+    QString description;
+    QString unit;
     fmi2_base_type_enu_t dataType;
     fmi2_import_variable_t *pFmiVariable;
 }hopsan_fmi_import_variable_t;
@@ -36,6 +38,7 @@ typedef struct
 {
     QString type;
     QString name;
+    QString description;
     QString codeVarName;
     QStringList portVariableNames;
     QStringList portVariableCodeVarNames;
@@ -527,8 +530,17 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         QString name = fmi2_import_get_variable_name(pVar);
         name = toValidVarName(name);
         varORpar.name = name;
+        varORpar.description = fmi2_import_get_variable_description(pVar);
         varORpar.dataType = fmi2_import_get_variable_base_type(pVar);
         varORpar.fmuVr = QString::number(fmi2_import_get_variable_vr(pVar));
+        if (varORpar.dataType == fmi2_base_type_real)
+        {
+            fmi2_import_unit_t *pUnit = fmi2_import_get_real_variable_unit(fmi2_import_get_variable_as_real(pVar));
+            if (pUnit)
+            {
+                varORpar.unit = fmi2_import_get_unit_name(pUnit);
+            }
+        }
         fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
 
         if(causality == fmi2_causality_enu_parameter)
@@ -587,6 +599,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
                     hopsan_fmi_import_tlm_port_t tlmPort;
                     tlmPort.type = portElement.attribute("type");
                     tlmPort.name = portElement.attribute("name");
+                    tlmPort.description = portElement.attribute("description");
 
                     if (tlmPort.name.isEmpty())
                     {
@@ -833,35 +846,61 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
         if (par.dataType == fmi2_base_type_real)
         {
             double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(par.pFmiVariable));
-            addConstants.append(QString("addConstant(\"%1\", \"\", \"\", %2, %3);\n").arg(par.name).arg(startValue).arg(par.variableName));
+            addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", %4, %5);\n").arg(par.name)
+                                .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
         }
         else if (par.dataType == fmi2_base_type_str)
         {
             QString startValue = fmi2_import_get_string_variable_start(fmi2_import_get_variable_as_string(par.pFmiVariable));
-            addConstants.append(QString("addConstant(\"%1\", \"\", \"\", HString(\"%2\"), %3);\n").arg(par.name).arg(startValue).arg(par.variableName));
+            addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", HString(\"%4\"), %5);\n").arg(par.name)
+                                .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
         }
         else if (par.dataType == fmi2_base_type_int)
         {
             int startValue = fmi2_import_get_integer_variable_start(fmi2_import_get_variable_as_integer(par.pFmiVariable));
-            addConstants.append(QString("addConstant(\"%1\", \"\", \"\", %2, %3);\n").arg(par.name).arg(startValue).arg(par.variableName));
+            addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", %4, %5);\n").arg(par.name)
+                                .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
         }
         else if (par.dataType == fmi2_base_type_bool)
         {
             bool startValue = fromFmiBoolean(fmi2_import_get_boolean_variable_start(fmi2_import_get_variable_as_boolean(par.pFmiVariable)));
-            addConstants.append(QString("addConstant(\"%1\", \"\", \"\", %2, %3);\n").arg(par.name).arg(startValue).arg(par.variableName));
+            addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", %4, %5);\n").arg(par.name)
+                                .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
         }
     }
 
     QString addInputs;
     foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
     {
-        addInputs.append("addInputVariable(\""+var.name+"\", \"\", \"\", 0, &"+var.variableName+");\n");
+        if (var.dataType == fmi2_base_type_real)
+        {
+            double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(var.pFmiVariable));
+            addInputs.append(QString("addInputVariable(\"%1\", \"%2\", \"%3\", %4, &%5);\n").arg(var.name)
+                             .arg(var.description).arg(var.unit).arg(startValue).arg(var.variableName));
+            //addInputs.append("addInputVariable(\""+var.name+"\", \"\", \"\", 0, &"+var.variableName+");\n");
+        }
+        else
+        {
+            printErrorMessage(QString("Input varibale: %1 must be of type Real").arg(var.name));
+            return false;
+        }
     }
 
     QString addOutputs;
     foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
     {
-        addOutputs.append("addOutputVariable(\""+var.name+"\", \"\", \"\", 0, &"+var.variableName+");\n");
+        if (var.dataType == fmi2_base_type_real)
+        {
+            double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(var.pFmiVariable));
+            addInputs.append(QString("addOutputVariable(\"%1\", \"%2\", \"%3\", %4, &%5);\n").arg(var.name)
+                             .arg(var.description).arg(var.unit).arg(startValue).arg(var.variableName));
+            //addOutputs.append("addOutputVariable(\""+var.name+"\", \"\", \"\", 0, &"+var.variableName+");\n");
+        }
+        else
+        {
+            printErrorMessage(QString("Output varibale: %1 must be of type Real").arg(var.name));
+            return false;
+        }
     }
 
     QString addPorts;
@@ -878,7 +917,8 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
             nodeType = "NodeHydraulic";
         }
         //addPorts.append(portVars.at(i)+"= addPowerPort(\""+portNames.at(i)+"\",\""+nodeType+"\");\n");
-        addPorts += QString("%1 = addPowerPort(\"%2\", \"%3\");\n").arg(tlmPort.codeVarName).arg(tlmPort.name).arg(nodeType);
+        addPorts += QString("%1 = addPowerPort(\"%2\", \"%3\", \"%4\");\n").arg(tlmPort.codeVarName)
+                            .arg(tlmPort.name).arg(nodeType).arg(tlmPort.description);
         //! @todo support all NODE TYPES
     }
 
