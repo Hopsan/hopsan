@@ -71,7 +71,6 @@ HEADERS += \
     Signal/MathFunctions/SignalCos.hpp \
     Signal/Arithmetics/SignalAdd.hpp \
     Signal/MathFunctions/SignalTan.hpp \
-    Signal/Arithmetics/SignalSegare.hpp \
     Signal/MathFunctions/SignalCosh.hpp \
     Signal/MathFunctions/SignalSinh.hpp \
     Signal/MathFunctions/SignalAsin.hpp \
@@ -109,6 +108,7 @@ HEADERS += \
     Signal/Non-Linearities/SignalHysteresis.hpp \
     Signal/Non-Linearities/SignalDeadZone.hpp \
     Signal/Non-Linearities/SignalAdditiveNoise.hpp \
+    Signal/Non-Linearities/SignalSegare.hpp \
     Hydraulic/HopsanDefaultHydraulicComponents.h \
     Hydraulic/Valves/Hydraulic22DirectionalValve.hpp \
     Hydraulic/Valves/HydraulicValve416.hpp \
@@ -387,14 +387,9 @@ HEADERS += \
     Special/AeroComponents/HopsanDefaultAeroComponents.h \
     Hydraulic/Special/HydraulicCyldamp.hpp \
     Hydraulic/Special/HydraulicOrificeG.hpp \
-    Signal/Arithmetics/SignalLog.hpp \
-    Signal/Arithmetics/SignalLog10.hpp \
     Hydraulic/Sensors/HydraulicNodeSensor.hpp \
     Signal/Logic/SignalNot.hpp \
     Signal/Arithmetics/SignalSegare.hpp \
-    Signal/Arithmetics/SignalSqrt.hpp \
-    Signal/Arithmetics/SignalCosh.hpp \
-    Signal/Arithmetics/SignalSinh.hpp \
     Signal/Logic/HydraulicCyldamp.hpp \
     Signal/Logic/HydraulicPistonMload.hpp \
     Signal/MathFunctions/HopsanDefaultSignalMathFunctions.h
