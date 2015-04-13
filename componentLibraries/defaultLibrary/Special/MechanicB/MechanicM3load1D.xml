@@ -2,8 +2,8 @@
 <hopsanobjectappearance version="0.3">
   <modelobject typename="MechanicM3load1D" displayname="MechanicM3load1D">
     <icons>
-      <icon iconrotation="" type="user" scale="1" path="MechanicM3load1D.svg"/>
-      <icon iconrotation="" type="iso" scale="1" path="MechanicM3load1D.svg"/>
+      <icon iconrotation="ON" type="user" scale="1" path="MechanicM3load1D.svg"/>
+      <icon iconrotation="ON" type="iso" scale="1" path="MechanicM3load1D.svg"/>
     </icons>
     <help>
       <text>A one dimmensional model of three masses. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>

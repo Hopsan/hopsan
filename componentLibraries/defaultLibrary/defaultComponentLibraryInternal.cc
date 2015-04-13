@@ -102,6 +102,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicPressureCompensatingValve", HydraulicPressureCompensatingValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureCompensatingValveG", HydraulicPressureCompensatingValveG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCounterBalanceValveG", HydraulicCounterBalanceValveG::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicOrificeG", HydraulicOrificeG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicValve63OC", HydraulicValve63OC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicValve43LS", HydraulicValve43LS::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicValve43", HydraulicValve43::Creator);
@@ -113,6 +114,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicCheckValvePreLoaded", HydraulicCheckValvePreLoaded::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve", HydraulicPressureControlled42Valve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve2", HydraulicPressureControlled42Valve2::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicCyldamp", HydraulicCyldamp::Creator);
 
     // ----- Other Hydraulic Components -----
     pComponentFactory->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);

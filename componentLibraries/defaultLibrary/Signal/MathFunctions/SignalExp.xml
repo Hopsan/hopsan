@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalLog10.hpp" typename="SignalLog10" displayname="Log10">
+    <modelobject sourcecode="SignalExp.hpp" typename="SignalExp" displayname="Exp">
         <icons>
-            <icon scale="1" path="SignalLog10.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalExp.svg" iconrotation="" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>

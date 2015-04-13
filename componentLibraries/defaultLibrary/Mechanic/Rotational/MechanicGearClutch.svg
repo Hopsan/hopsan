@@ -7,13 +7,14 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="80.855316"
    height="41.531479"
    id="svg2847"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="MechanicGearClutch.svg">
   <defs
      id="defs2849">
@@ -31,6 +32,47 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <linearGradient
+       y2="-424.55084"
+       x2="522.59558"
+       y1="-424.55084"
+       x1="509.59558"
+       gradientTransform="matrix(0.82034974,0,0,0.28257144,109.51861,-278.39806)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient4461"
+       xlink:href="#linearGradient3157"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient3157">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop3159" />
+      <stop
+         style="stop-color:#454545;stop-opacity:1;"
+         offset="1"
+         id="stop3161" />
+    </linearGradient>
+    <linearGradient
+       y2="-424.55084"
+       x2="522.59558"
+       y1="-424.55084"
+       x1="509.59558"
+       gradientTransform="matrix(0.82034974,0,0,0.16648592,109.86016,-340.16416)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient5095"
+       xlink:href="#linearGradient3157"
+       inkscape:collect="always" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3157"
+       id="linearGradient5624"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.8016634,0,0,0.04112162,119.4409,-361.39164)"
+       x1="509.59558"
+       y1="-424.55084"
+       x2="522.59558"
+       y2="-424.55084" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -39,16 +81,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.7"
-     inkscape:cx="-31.365138"
-     inkscape:cy="42.920979"
+     inkscape:zoom="5.2325902"
+     inkscape:cx="47.945934"
+     inkscape:cy="27.374346"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1369"
      inkscape:window-height="697"
-     inkscape:window-x="22"
-     inkscape:window-y="34"
+     inkscape:window-x="213"
+     inkscape:window-y="170"
      inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true">
@@ -65,7 +107,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -75,13 +117,17 @@
      id="layer1"
      transform="translate(-375.40255,-512.51837)">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3595"
-       width="57.928135"
-       height="8.7364578"
-       x="-455.50787"
-       y="528.73425"
-       transform="scale(-1,1)" />
+       transform="matrix(0,1,-1,0,0,0)"
+       style="fill:url(#linearGradient5095);fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2597"
+       width="9.0238485"
+       height="58.585289"
+       x="528.72711"
+       y="-456.20114"
+       ry="0"
+       inkscape:export-filename="C:\HopsanTrunk\componentLibraries\defaultLibrary\Mechanic\Linear\MechanicM3load1D.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <rect
        transform="scale(-1,1)"
        y="513.26837"
@@ -89,7 +135,7 @@
        height="40.031479"
        width="42.092625"
        id="rect2823"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:1.50000000000000000;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.37500000000000000;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        ry="5.4054055" />
     <flowRoot
        xml:space="preserve"
@@ -134,14 +180,6 @@
          y="549.4317"
          x="408.36334"
          sodipodi:role="line" /></text>
-    <rect
-       transform="scale(-1,1)"
-       y="528.5766"
-       x="-389.98984"
-       height="9.051712"
-       width="13.837284"
-       id="rect2846"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 390.28938,517.61536 0,30"
@@ -150,5 +188,17 @@
        id="path3624"
        d="m 397.53263,517.61536 0,30"
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\HopsanTrunk\componentLibraries\defaultLibrary\Mechanic\Linear\MechanicM3load1D.png"
+       ry="0"
+       y="-390.05249"
+       x="528.76666"
+       height="14.470424"
+       width="8.8182993"
+       id="rect5622"
+       style="fill:url(#linearGradient5624);fill-opacity:1;stroke:#000000;stroke-width:1.48281777;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       transform="matrix(0,1,-1,0,0,0)" />
   </g>
 </svg>

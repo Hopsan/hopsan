@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicPistonMload.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Thu 26 Mar 2015 11:35:04
+//! @date Thu 26 Mar 2015 14:54:05
 //! @brief This is piston with an inertia load
 //! @ingroup HydraulicComponents
 //!
@@ -320,8 +320,8 @@ delayedPart[1][2],xmin,xmax),xmin,xmax)*(-((mTimestep*(cmp - A1*(c1 + q1*Zc1) \
 delayedPart[2][1]);
           systemEquations[2] =Cip*(p1 - p2) + q1 + A1*vmp;
           systemEquations[3] =Cip*(-p1 + p2) + q2 - A2*vmp;
-          systemEquations[4] =p1 - lowLimit(c1 + q1*Zc1,0);
-          systemEquations[5] =p2 - lowLimit(c2 + q2*Zc2,0);
+          systemEquations[4] =-c1 + p1 - q1*Zc1;
+          systemEquations[5] =-c2 + p2 - q2*Zc2;
           systemEquations[6] =-cmp + fmp - vmp*Zcmp;
 
           //Jacobian matrix
@@ -372,7 +372,7 @@ Zcmp));
           jacobianMatrix[3][6] = 0;
           jacobianMatrix[4][0] = 0;
           jacobianMatrix[4][1] = 0;
-          jacobianMatrix[4][2] = -(Zc1*dxLowLimit(c1 + q1*Zc1,0));
+          jacobianMatrix[4][2] = -Zc1;
           jacobianMatrix[4][3] = 0;
           jacobianMatrix[4][4] = 1;
           jacobianMatrix[4][5] = 0;
@@ -380,7 +380,7 @@ Zcmp));
           jacobianMatrix[5][0] = 0;
           jacobianMatrix[5][1] = 0;
           jacobianMatrix[5][2] = 0;
-          jacobianMatrix[5][3] = -(Zc2*dxLowLimit(c2 + q2*Zc2,0));
+          jacobianMatrix[5][3] = -Zc2;
           jacobianMatrix[5][4] = 0;
           jacobianMatrix[5][5] = 1;
           jacobianMatrix[5][6] = 0;

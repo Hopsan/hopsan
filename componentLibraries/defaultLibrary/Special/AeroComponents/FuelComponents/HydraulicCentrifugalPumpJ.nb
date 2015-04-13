@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     86837,       1553]
-NotebookOptionsPosition[     85737,       1517]
-NotebookOutlinePosition[     86081,       1532]
-CellTagsIndexPosition[     86038,       1529]
+NotebookDataLength[     87123,       1560]
+NotebookOptionsPosition[     85985,       1523]
+NotebookOutlinePosition[     86329,       1538]
+CellTagsIndexPosition[     86286,       1535]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -319,6 +319,12 @@ Cell[BoxData[
  CellChangeTimes->{{3.565539113334306*^9, 3.565539170607582*^9}, 
    3.5655884315190153`*^9, {3.5655908350732856`*^9, 3.5655908608133307`*^9}, 
    3.568364933923665*^9, {3.568913450874699*^9, 3.5689134514977345`*^9}}],
+
+Cell["\<\
+The figures below are from: http : // www.grundfos.com/content/dam/Global %20 \
+Site/Industries %20 %26 %20 solutions/Industry/pdf/The_Centrifugal _Pump.pdf\
+\>", "Text",
+ CellChangeTimes->{{3.63566031648907*^9, 3.635660346506071*^9}}],
 
 Cell[CellGroupData[{
 
@@ -1515,8 +1521,8 @@ Cell[BoxData[
  CellChangeTimes->{{3.57577247587291*^9, 3.575772478758915*^9}}]
 }, Open  ]]
 },
-WindowSize->{1061, 742},
-WindowMargins->{{Automatic, 120}, {Automatic, 6}},
+WindowSize->{1168, 847},
+WindowMargins->{{97, Automatic}, {25, Automatic}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
 ]
@@ -1541,19 +1547,20 @@ Cell[12398, 205, 2172, 38, 112, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
 Cell[14573, 245, 2473, 53, 232, "Input"],
 Cell[17049, 300, 859, 20, 112, "Input"],
+Cell[17911, 322, 245, 4, 29, "Text"],
 Cell[CellGroupData[{
-Cell[17933, 324, 30765, 509, 576, "Input"],
-Cell[48701, 835, 30953, 512, 576, "Output"]
+Cell[18181, 330, 30765, 509, 576, "Input"],
+Cell[48949, 841, 30953, 512, 576, "Output"]
 }, Open  ]],
-Cell[79669, 1350, 188, 4, 31, "Input"],
-Cell[79860, 1356, 352, 10, 47, "Input"],
-Cell[80215, 1368, 2437, 64, 149, "Input"],
-Cell[82655, 1434, 1001, 23, 112, "Input"],
-Cell[83659, 1459, 495, 10, 31, "Input"],
-Cell[84157, 1471, 354, 10, 31, "Input"],
-Cell[84514, 1483, 964, 22, 132, "Input"],
-Cell[85481, 1507, 107, 2, 31, "Input"],
-Cell[85591, 1511, 130, 3, 31, "Input"]
+Cell[79917, 1356, 188, 4, 31, "Input"],
+Cell[80108, 1362, 352, 10, 47, "Input"],
+Cell[80463, 1374, 2437, 64, 149, "Input"],
+Cell[82903, 1440, 1001, 23, 112, "Input"],
+Cell[83907, 1465, 495, 10, 31, "Input"],
+Cell[84405, 1477, 354, 10, 31, "Input"],
+Cell[84762, 1489, 964, 22, 132, "Input"],
+Cell[85729, 1513, 107, 2, 31, "Input"],
+Cell[85839, 1517, 130, 3, 31, "Input"]
 }, Open  ]]
 }
 ]

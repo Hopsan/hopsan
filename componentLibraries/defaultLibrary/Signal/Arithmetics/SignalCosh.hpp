@@ -14,15 +14,15 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SignalLog.hpp
+//! @file   SignalCosh.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date   2015-03-07
+//! @date   2015-04-12
 //!
-//! @brief Contains a signal log function component
+//! @brief Contains a signal cosh function component
 //!
 
-#ifndef SIGNALLOG_HPP_INCLUDED
-#define SIGNALLOG_HPP_INCLUDED
+#ifndef SIGNALCOSH_HPP_INCLUDED
+#define SIGNALCOSH_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
 #include <math.h>
@@ -33,7 +33,7 @@ namespace hopsan {
     //! @brief
     //! @ingroup SignalComponents
     //!
-    class SignalLog : public ComponentSignal
+    class SignalCosh : public ComponentSignal
     {
 
     private:
@@ -42,14 +42,14 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalLog();
+            return new SignalCosh();
         }
 
         void configure()
         {
             addInputVariable("in", "", "", 0.0, &mpND_in);
-            addOutputVariable("out", "log(in)","",&mpND_out);
-        }
+            addOutputVariable("out", "cosh(in)","",&mpND_out);
+           }
 
 
         void initialize()
@@ -60,9 +60,9 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = log(*mpND_in);
+            (*mpND_out) = cosh(*mpND_in);
         }
     };
 }
 
-#endif // SIGNALLOG_HPP_INCLUDED
+#endif // SIGNALCOSH_HPP_INCLUDED

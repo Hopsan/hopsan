@@ -37,7 +37,7 @@ namespace hopsan {
     {
 
     private:
-        double *mpND_in, *mpND_out;
+        double *mpND_in, *mpND_out, *mpND_err, x;
 
     public:
         static Component *Creator()
@@ -49,6 +49,7 @@ namespace hopsan {
         {
             addInputVariable("in", "", "", 0.0, &mpND_in);
             addOutputVariable("out", "log10(in)","",&mpND_out);
+            addOutputVariable("error", "error","",&mpND_err);
         }
 
 
@@ -60,7 +61,17 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = log10(*mpND_in);
+            x=(*mpND_in);
+            if(x<=0.)
+            {
+             (*mpND_out) = 0.;
+             (*mpND_err)=1.;
+            }
+             else
+            {
+             (*mpND_out) = log10(*mpND_in);
+             (*mpND_err)=0.;
+            }
         }
     };
 }

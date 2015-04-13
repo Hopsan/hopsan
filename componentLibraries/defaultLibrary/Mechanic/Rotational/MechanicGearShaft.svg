@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="100.625"
@@ -31,6 +32,37 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <linearGradient
+       y2="-424.55084"
+       x2="522.59558"
+       y1="-424.55084"
+       x1="509.59558"
+       gradientTransform="matrix(0.82034974,0,0,0.19310632,108.7321,-321.71995)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3502"
+       xlink:href="#linearGradient3157"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient3157">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop3159" />
+      <stop
+         style="stop-color:#454545;stop-opacity:1;"
+         offset="1"
+         id="stop3161" />
+    </linearGradient>
+    <linearGradient
+       y2="-424.55084"
+       x2="522.59558"
+       y1="-424.55084"
+       x1="509.59558"
+       gradientTransform="matrix(0.82034974,0,0,0.28257144,109.51861,-278.39806)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient4461"
+       xlink:href="#linearGradient3157"
+       inkscape:collect="always" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -40,15 +72,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.7"
-     inkscape:cx="-31.087588"
-     inkscape:cy="43.18363"
+     inkscape:cx="49.395608"
+     inkscape:cy="33.88176"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1362"
-     inkscape:window-height="697"
-     inkscape:window-x="22"
-     inkscape:window-y="34"
+     inkscape:window-width="1258"
+     inkscape:window-height="803"
+     inkscape:window-x="151"
+     inkscape:window-y="57"
      inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -79,13 +111,17 @@
      id="layer1"
      transform="translate(-375.125,-512.78125)">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.9575249;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3595"
-       width="98.655571"
-       height="8.7364578"
-       x="-474.76431"
-       y="528.73425"
-       transform="scale(-1,1)" />
+       transform="matrix(0,1,-1,0,0,0)"
+       style="fill:url(#linearGradient4461);fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2597"
+       width="9.0238485"
+       height="99.435013"
+       x="528.38556"
+       y="-475.34409"
+       ry="0"
+       inkscape:export-filename="C:\HopsanTrunk\componentLibraries\defaultLibrary\Mechanic\Linear\MechanicM3load1D.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <rect
        transform="scale(-1,1)"
        y="513.53864"
@@ -93,7 +129,7 @@
        height="40.031479"
        width="42.092625"
        id="rect2823"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:#000000;stroke-width:1.50000000000000000;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.37500000000000000;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        ry="5.4054055" />
     <flowRoot
        xml:space="preserve"

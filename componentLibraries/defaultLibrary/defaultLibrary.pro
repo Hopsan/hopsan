@@ -61,17 +61,29 @@ HEADERS += \
     Signal/Arithmetics/SignalSum.hpp \
     Signal/Arithmetics/SignalSub.hpp \
     Signal/Arithmetics/SignalSquare.hpp \
-    Signal/Arithmetics/SignalSin.hpp \
+    Signal/MathFunctions/SignalSin.hpp \
     Signal/Arithmetics/SignalSign.hpp \
-    Signal/Arithmetics/SignalPower.hpp \
     Signal/Arithmetics/SignalMultiply.hpp \
     Signal/Arithmetics/SignalMin.hpp \
     Signal/Arithmetics/SignalMax.hpp \
     Signal/Arithmetics/SignalGain.hpp \
     Signal/Arithmetics/SignalDivide.hpp \
-    Signal/Arithmetics/SignalCos.hpp \
+    Signal/MathFunctions/SignalCos.hpp \
     Signal/Arithmetics/SignalAdd.hpp \
-    Signal/Arithmetics/SignalTan.hpp \
+    Signal/MathFunctions/SignalTan.hpp \
+    Signal/Arithmetics/SignalSegare.hpp \
+    Signal/MathFunctions/SignalCosh.hpp \
+    Signal/MathFunctions/SignalSinh.hpp \
+    Signal/MathFunctions/SignalAsin.hpp \
+    Signal/MathFunctions/SignalAcos.hpp \
+    Signal/MathFunctions/SignalAtan.hpp \
+    Signal/MathFunctions/SignalAtan2.hpp \
+    Signal/MathFunctions/SignalTanh.hpp \
+    Signal/MathFunctions/SignalLog.hpp \
+    Signal/MathFunctions/SignalLog10.hpp \
+    Signal/MathFunctions/SignalSqrt.hpp \
+    Signal/MathFunctions/SignalExp.hpp \
+    Signal/MathFunctions/SignalPower.hpp \
     Signal/Control/SignalPIlead.hpp \
     Signal/Control/SignalPID.hpp \
     Signal/Filters/SignalFirstOrderFilter.hpp \
@@ -85,6 +97,7 @@ HEADERS += \
     Signal/Logic/SignalXor.hpp \
     Signal/Logic/SignalStopSimulation.hpp \
     Signal/Logic/SignalSRlatch.hpp \
+    Signal/Logic/SignalJKlatch.hpp \
     Signal/Logic/SignalSmallerThan.hpp \
     Signal/Logic/SignalOr.hpp \
     Signal/Logic/SignalGreaterThan.hpp \
@@ -299,6 +312,7 @@ HEADERS += \
     Hydraulic/Valves/HydraulicPilotControlledCheckValve.hpp \
     Hydraulic/Valves/HydraulicPilotClosableCheckValve.hpp \
     Hydraulic/Sources&Sinks/HydraulicPlugQ.hpp \
+    Hydraulic/Special/HydraulicOrificeG.hpp \
     Hydraulic/Special/HydraulicValve63OC.hpp \
     Hydraulic/Special/HydraulicValve43LS.hpp \
     Hydraulic/Special/HydraulicValve43.hpp \
@@ -312,6 +326,7 @@ HEADERS += \
     Hydraulic/Special/HydraulicPistonJload.hpp \
     Hydraulic/Special/HydraulicMotorJload.hpp \
     Hydraulic/Special/HydraulicCounterBalanceValveG.hpp \
+    Hydraulic/Special/HydraulicCyldamp.hpp \
     Hydraulic/Special/HopsanDefaultHydraulicSpecial.h \
     Special/AeroComponents/AeroAircraft6DOFS.hpp \
     Special/AeroComponents/AeroAircraft6DOFSS.hpp \
@@ -370,8 +385,19 @@ HEADERS += \
     Signal/Non-Linearities/SignalSampleAndHold.hpp \
     Signal/Logic/SignalCounter.hpp \
     Special/AeroComponents/HopsanDefaultAeroComponents.h \
+    Hydraulic/Special/HydraulicCyldamp.hpp \
+    Hydraulic/Special/HydraulicOrificeG.hpp \
+    Signal/Arithmetics/SignalLog.hpp \
+    Signal/Arithmetics/SignalLog10.hpp \
     Hydraulic/Sensors/HydraulicNodeSensor.hpp \
-    Signal/Logic/SignalNot.hpp
+    Signal/Logic/SignalNot.hpp \
+    Signal/Arithmetics/SignalSegare.hpp \
+    Signal/Arithmetics/SignalSqrt.hpp \
+    Signal/Arithmetics/SignalCosh.hpp \
+    Signal/Arithmetics/SignalSinh.hpp \
+    Signal/Logic/HydraulicCyldamp.hpp \
+    Signal/Logic/HydraulicPistonMload.hpp \
+    Signal/MathFunctions/HopsanDefaultSignalMathFunctions.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
@@ -387,3 +413,7 @@ OTHER_FILES += \
     Experimental/Experimental.cci \
     Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.xml \
     Connectivity/HopsanDefaultConnectivityComponents.cci
+
+DISTFILES += \
+    Hydraulic/Special/HydraulicOrificeG.nb \
+    Signal/Arithmetics/SignalSegare.svg

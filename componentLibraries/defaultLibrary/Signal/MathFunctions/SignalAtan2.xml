@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalAtan2.hpp" typename="SignalAtan2" displayname="Atan2">
+        <icons>
+            <icon scale="1" path="SignalAtan2.svg" iconrotation="" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="inY"/>
+            <port x="0.5" y="1" a="90" name="inX"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

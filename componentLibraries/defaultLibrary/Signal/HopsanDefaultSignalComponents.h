@@ -3,6 +3,7 @@
 
 #include "Animation/HopsanDefaultSignalAnimationComponents.h"
 #include "Arithmetics/HopsanDefaultSignalArithmeticComponents.h"
+#include "MathFunctions/HopsanDefaultSignalMathFunctions.h"
 #include "Control/HopsanDefaultSignalControlComponents.h"
 #include "Filters/HopsanDefaultSignalTFComponents.h"
 #include "Logic/HopsanDefaultSignalLogicComponents.h"

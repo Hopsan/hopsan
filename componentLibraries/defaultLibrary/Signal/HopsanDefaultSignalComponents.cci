@@ -22,15 +22,27 @@
     pComponentFactory->registerCreatorFunction("SignalSquare", SignalSquare::Creator);
     pComponentFactory->registerCreatorFunction("SignalStopSimulation", SignalStopSimulation::Creator);
     pComponentFactory->registerCreatorFunction("SignalSum", SignalSum::Creator);
-    pComponentFactory->registerCreatorFunction("SignalPower", SignalPower::Creator);
     pComponentFactory->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSegare", SignalSegare::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSign", SignalSign::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSub", SignalSub::Creator);
+
+// Signal MathFunctions
     pComponentFactory->registerCreatorFunction("SignalSin", SignalSin::Creator);
     pComponentFactory->registerCreatorFunction("SignalCos", SignalCos::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSinh", SignalSinh::Creator);
+    pComponentFactory->registerCreatorFunction("SignalCosh", SignalCosh::Creator);
+    pComponentFactory->registerCreatorFunction("SignalTanh", SignalTanh::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAsin", SignalAsin::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAcos", SignalAcos::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAtan", SignalAtan::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAtan2", SignalAtan2::Creator);
     pComponentFactory->registerCreatorFunction("SignalTan", SignalTan::Creator);
     pComponentFactory->registerCreatorFunction("SignalLog", SignalLog::Creator);
     pComponentFactory->registerCreatorFunction("SignalLog10", SignalLog10::Creator);
-    pComponentFactory->registerCreatorFunction("SignalSign", SignalSign::Creator);
-    pComponentFactory->registerCreatorFunction("SignalSub", SignalSub::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSqrt", SignalSqrt::Creator);
+    pComponentFactory->registerCreatorFunction("SignalPower", SignalPower::Creator);
+    pComponentFactory->registerCreatorFunction("SignalExp", SignalExp::Creator);
 
 // Signal Control
     pComponentFactory->registerCreatorFunction("SignalPID", SignalPID::Creator);

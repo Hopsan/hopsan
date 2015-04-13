@@ -29,6 +29,7 @@
 #include "HydraulicCounterBalanceValveG.hpp"
 #include "HydraulicPressureReliefValveG.hpp"
 #include "HydraulicPressureReducingValveG.hpp"
+#include "HydraulicOrificeG.hpp"
 #include "HydraulicValve43LS.hpp"
 #include "HydraulicValve43.hpp"
 #include "HydraulicValve33.hpp"
@@ -36,5 +37,6 @@
 #include "HydraulicMotorJload.hpp"
 #include "HydraulicPistonMkload.hpp"
 #include "HydraulicPistonMload.hpp"
+#include "HydraulicCyldamp.hpp"
 
 #endif
