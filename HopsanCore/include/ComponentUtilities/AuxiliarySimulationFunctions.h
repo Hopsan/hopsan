@@ -52,6 +52,8 @@ double DLLIMPORTEXPORT diffAngle(const double fi1, const double fi2);
 double DLLIMPORTEXPORT CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
 double DLLIMPORTEXPORT CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
 double DLLIMPORTEXPORT CMoment(double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double expclp, const double expcln);
+double DLLIMPORTEXPORT segare(const double x, const double d);
+double DLLIMPORTEXPORT dxSegare(const double x, const double d);
 double DLLIMPORTEXPORT equalSigns(const double x, const double y);
 double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
 double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
@@ -183,7 +185,7 @@ inline double dtIfPositive(const double x, const double /*y1*/, const double /*y
 //! @returns Limited derivative of x
 inline double dfIfPositive(const double x, const double /*y1*/, const double /*y2*/)
 {
-    if (x >= 0) { return 1.; }
+    if (x <= 0) { return 1.; }
     else { return 0.; }
 }
 
