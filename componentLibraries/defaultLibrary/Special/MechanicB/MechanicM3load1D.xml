@@ -6,20 +6,25 @@
       <icon iconrotation="ON" type="iso" scale="1" path="MechanicM3load1D.svg"/>
     </icons>
     <help>
-      <text>A one dimmensional model of three masses. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+      <text>A one dimensional model of three masses. Mass M1 and M2 are connected trough a friction model with M3.
+      CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
       <link>MechanicM3load1D.nb</link>
    </help>       
    <ports>
-      <port x="0.226" y="0" enabled="true" autoplaced="true" name="fc1" a="270"/>
-      <port x="0.574" y="0" enabled="true" autoplaced="true" name="fc2" a="270"/>
-      <port x="0.35" y="1" enabled="true" autoplaced="true" name="xp1" a="90"/>
+      <port x="1.0" y="0" enabled="false" autoplaced="true" name="m1FrictionCoulomb" a="270"/>
+      <port x="0.65" y="0" enabled="false" autoplaced="true" name="m2FrictionCoulomb" a="270"/>
+      <port x="0.3" y="0" enabled="false" autoplaced="true" name="m3FrictionCoulomb" a="270"/>
+      <port x="0.5" y="0" enabled="false" autoplaced="true" name="m12FrictionCoulomb" a="270"/>
+      <port x="0.15" y="0" enabled="false" autoplaced="true" name="m13FrictionCoulomb" a="270"/>
+      <port x="1.0" y="1" enabled="true" autoplaced="true" name="xp1" a="90"/>
       <port x="0.65" y="1" enabled="true" autoplaced="true" name="xp2" a="90"/>
-      <port x="0.40" y="1" enabled="true" autoplaced="true" name="fc13" a="90"/>
-      <port x="0.70" y="1" enabled="true" autoplaced="true" name="fc23" a="90"/>
-      <port x="0.151" y="1" enabled="true" autoplaced="true" name="Pm1" a="90"/>
-      <port x="1" y="0.5" enabled="true" autoplaced="true" name="xL" a="90"/>
-      <port x="0.497" y="1" enabled="true" autoplaced="true" name="Pm2" a="0"/>
-      <port x="1" y="0.5" enabled="true" autoplaced="true" name="Pm3" a="90"/>
+      <port x="0.3" y="1" enabled="true" autoplaced="true" name="xp3" a="90"/>      
+      <port x="0.15" y="1" enabled="true" autoplaced="true" name="Pm3" a="90"/>
+      <port x="0.5" y="1" enabled="true" autoplaced="true" name="Pm2" a="90"/>
+      <port x="1" y="0.5" enabled="true" autoplaced="true" name="Pm1" a="0"/>
+      <port x="0.6" y="1" enabled="true" autoplaced="true" name="fc12" a="90"/>
+      <port x="0.25" y="1" enabled="true" autoplaced="true" name="fc13" a="90"/>
+      
     </ports>
     <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
   </modelobject>
