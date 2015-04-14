@@ -10,7 +10,7 @@
 //! @file MechanicM3load1D.hpp
 //! @author Petter Krus <petter.krus@liu.se>, Martin Hochwallner \
 <martin.hochwallner@liu.se
-//! @date Tue 14 Apr 2015 11:00:05
+//! @date Tue 14 Apr 2015 11:20:07
 //! @brief An inertia load with spring and damper
 //! @ingroup MechanicComponents
 //!
@@ -33,12 +33,12 @@ private:
      double m12FrictionViscousCoeff;
      double m13FrictionViscousCoeff;
      double bfc;
-     double m1PositionLimitPos;
      double m1PositionLimitNeg;
-     double m2PositionLimitPos;
+     double m1PositionLimitPos;
      double m2PositionLimitNeg;
-     double m3PositionLimitPos;
+     double m2PositionLimitPos;
      double m3PositionLimitNeg;
+     double m3PositionLimitPos;
      Port *mpPm1;
      Port *mpPm2;
      Port *mpPm3;
@@ -137,12 +137,12 @@ private:
      double *mpm12FrictionViscousCoeff;
      double *mpm13FrictionViscousCoeff;
      double *mpbfc;
-     double *mpm1PositionLimitPos;
      double *mpm1PositionLimitNeg;
-     double *mpm2PositionLimitPos;
+     double *mpm1PositionLimitPos;
      double *mpm2PositionLimitNeg;
-     double *mpm3PositionLimitPos;
+     double *mpm2PositionLimitPos;
      double *mpm3PositionLimitNeg;
+     double *mpm3PositionLimitPos;
      //outputVariables pointers
      double *mpxp1;
      double *mpxp2;
@@ -222,18 +222,18 @@ coeff. between M1 and M2", "Ns/m", 10.,&mpm12FrictionViscousCoeff);
 coeff. between M1 and M3", "Ns/m", 10.,&mpm13FrictionViscousCoeff);
             addInputVariable("bfc", "Numerical friction factor.", "", \
 1.,&mpbfc);
-            addInputVariable("m1PositionLimitPos", "Limitation on stroke M1", \
-"m", 0.,&mpm1PositionLimitPos);
             addInputVariable("m1PositionLimitNeg", "Limitation on stroke M1", \
-"m", 1.,&mpm1PositionLimitNeg);
-            addInputVariable("m2PositionLimitPos", "Limitation on stroke M2", \
-"m", 0.,&mpm2PositionLimitPos);
+"m", -1000.,&mpm1PositionLimitNeg);
+            addInputVariable("m1PositionLimitPos", "Limitation on stroke M1", \
+"m", 1000.,&mpm1PositionLimitPos);
             addInputVariable("m2PositionLimitNeg", "Limitation on stroke M2", \
-"m", 1.,&mpm2PositionLimitNeg);
-            addInputVariable("m3PositionLimitPos", "Limitation on stroke M3", \
-"m", 0.,&mpm3PositionLimitPos);
+"m", -1000.,&mpm2PositionLimitNeg);
+            addInputVariable("m2PositionLimitPos", "Limitation on stroke M2", \
+"m", 1000.,&mpm2PositionLimitPos);
             addInputVariable("m3PositionLimitNeg", "Limitation on stroke M3", \
-"m", 1.,&mpm3PositionLimitNeg);
+"m", -1000.,&mpm3PositionLimitNeg);
+            addInputVariable("m3PositionLimitPos", "Limitation on stroke M3", \
+"m", 1000.,&mpm3PositionLimitPos);
         //Add outputVariables to the component
             addOutputVariable("xp1","Position of M1","m",0.,&mpxp1);
             addOutputVariable("xp2","Position of M2","m",0.,&mpxp2);
@@ -322,12 +322,12 @@ NodeMechanic::EquivalentMass);
         m12FrictionViscousCoeff = (*mpm12FrictionViscousCoeff);
         m13FrictionViscousCoeff = (*mpm13FrictionViscousCoeff);
         bfc = (*mpbfc);
-        m1PositionLimitPos = (*mpm1PositionLimitPos);
         m1PositionLimitNeg = (*mpm1PositionLimitNeg);
-        m2PositionLimitPos = (*mpm2PositionLimitPos);
+        m1PositionLimitPos = (*mpm1PositionLimitPos);
         m2PositionLimitNeg = (*mpm2PositionLimitNeg);
-        m3PositionLimitPos = (*mpm3PositionLimitPos);
+        m2PositionLimitPos = (*mpm2PositionLimitPos);
         m3PositionLimitNeg = (*mpm3PositionLimitNeg);
+        m3PositionLimitPos = (*mpm3PositionLimitPos);
 
         //Read outputVariables from nodes
         xp1 = (*mpxp1);
@@ -425,12 +425,12 @@ m3FrictionViscousCoeff*mTimestep);
         m12FrictionViscousCoeff = (*mpm12FrictionViscousCoeff);
         m13FrictionViscousCoeff = (*mpm13FrictionViscousCoeff);
         bfc = (*mpbfc);
-        m1PositionLimitPos = (*mpm1PositionLimitPos);
         m1PositionLimitNeg = (*mpm1PositionLimitNeg);
-        m2PositionLimitPos = (*mpm2PositionLimitPos);
+        m1PositionLimitPos = (*mpm1PositionLimitPos);
         m2PositionLimitNeg = (*mpm2PositionLimitNeg);
-        m3PositionLimitPos = (*mpm3PositionLimitPos);
+        m2PositionLimitPos = (*mpm2PositionLimitPos);
         m3PositionLimitNeg = (*mpm3PositionLimitNeg);
+        m3PositionLimitPos = (*mpm3PositionLimitPos);
 
         //LocalExpressions
 
@@ -453,8 +453,8 @@ m3FrictionViscousCoeff*mTimestep);
 
           //Assemble differential-algebraic equations
           systemEquations[0] =vm1 - dxLimit(limit((mTimestep*vm1)/2. - \
-delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos),-m1PositionLimitNe\
-g,-m1PositionLimitPos)*((mTimestep*(-fm1 + m12FrictionViscousCoeff*vm2 + \
+delayedPart[4][1],m1PositionLimitNeg,m1PositionLimitPos),m1PositionLimitNeg,m\
+1PositionLimitPos)*((mTimestep*(-fm1 + m12FrictionViscousCoeff*vm2 + \
 m13FrictionViscousCoeff*vm3 + \
 limit((-2*bfc*m1Mass*vm1)/mTimestep,-m1FrictionCoulomb,m1FrictionCoulomb) + \
 limit((-2*bfc*m1Mass*m2Mass*(vm1 - vm2))/((m1Mass + \
@@ -464,27 +464,27 @@ m3Mass)*mTimestep),-m13FrictionCoulomb,m13FrictionCoulomb)))/(2*m1Mass + \
 (m12FrictionViscousCoeff + m13FrictionViscousCoeff + \
 m1FrictionViscousCoeff)*mTimestep) - delayedPart[1][1]);
           systemEquations[1] =vm2 - dxLimit(limit((mTimestep*vm2)/2. - \
-delayedPart[5][1],-m2PositionLimitNeg,-m2PositionLimitPos),-m2PositionLimitNe\
-g,-m2PositionLimitPos)*(-((mTimestep*(fm2 - m12FrictionViscousCoeff*vm1 + \
+delayedPart[5][1],m2PositionLimitNeg,m2PositionLimitPos),m2PositionLimitNeg,m\
+2PositionLimitPos)*(-((mTimestep*(fm2 - m12FrictionViscousCoeff*vm1 + \
 limit((-2*bfc*m1Mass*m2Mass*(vm1 - vm2))/((m1Mass + \
 m2Mass)*mTimestep),-m12FrictionCoulomb,m12FrictionCoulomb) - \
 limit((-2*bfc*m2Mass*vm2)/mTimestep,-m2FrictionCoulomb,m2FrictionCoulomb)))/(\
 2*m2Mass + (m12FrictionViscousCoeff + m2FrictionViscousCoeff)*mTimestep)) - \
 delayedPart[2][1]);
           systemEquations[2] =vm3 - dxLimit(limit((mTimestep*vm3)/2. - \
-delayedPart[6][1],-m3PositionLimitNeg,-m3PositionLimitPos),-m3PositionLimitNe\
-g,-m3PositionLimitPos)*(-((mTimestep*(fm3 - m13FrictionViscousCoeff*vm1 + \
+delayedPart[6][1],m3PositionLimitNeg,m3PositionLimitPos),m3PositionLimitNeg,m\
+3PositionLimitPos)*(-((mTimestep*(fm3 - m13FrictionViscousCoeff*vm1 + \
 limit((-2*bfc*m1Mass*m3Mass*(vm1 - vm3))/((m1Mass + \
 m3Mass)*mTimestep),-m13FrictionCoulomb,m13FrictionCoulomb) - \
 limit((-2*bfc*m3Mass*vm3)/mTimestep,-m3FrictionCoulomb,m3FrictionCoulomb)))/(\
 2*m3Mass + (m13FrictionViscousCoeff + m3FrictionViscousCoeff)*mTimestep)) - \
 delayedPart[3][1]);
           systemEquations[3] =xm1 - limit((mTimestep*vm1)/2. - \
-delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos);
+delayedPart[4][1],m1PositionLimitNeg,m1PositionLimitPos);
           systemEquations[4] =xm2 - limit((mTimestep*vm2)/2. - \
-delayedPart[5][1],-m2PositionLimitNeg,-m2PositionLimitPos);
+delayedPart[5][1],m2PositionLimitNeg,m2PositionLimitPos);
           systemEquations[5] =xm3 - limit((mTimestep*vm3)/2. - \
-delayedPart[6][1],-m3PositionLimitNeg,-m3PositionLimitPos);
+delayedPart[6][1],m3PositionLimitNeg,m3PositionLimitPos);
           systemEquations[6] =-cm1 + fm1 - vm1*Zcm1;
           systemEquations[7] =-cm2 + fm2 - vm2*Zcm2;
           systemEquations[8] =-cm3 + fm3 - vm3*Zcm3;
@@ -499,30 +499,30 @@ m2Mass)*mTimestep) - (2*bfc*m1Mass*m3Mass*dxLimit((-2*bfc*m1Mass*m3Mass*(vm1 \
 - vm3))/((m1Mass + \
 m3Mass)*mTimestep),-m13FrictionCoulomb,m13FrictionCoulomb))/((m1Mass + \
 m3Mass)*mTimestep))*dxLimit(limit((mTimestep*vm1)/2. - \
-delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos),-m1PositionLimitNe\
-g,-m1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
+delayedPart[4][1],m1PositionLimitNeg,m1PositionLimitPos),m1PositionLimitNeg,m\
+1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
 m13FrictionViscousCoeff + m1FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[0][1] = -((mTimestep*(m12FrictionViscousCoeff + \
 (2*bfc*m1Mass*m2Mass*dxLimit((-2*bfc*m1Mass*m2Mass*(vm1 - vm2))/((m1Mass + \
 m2Mass)*mTimestep),-m12FrictionCoulomb,m12FrictionCoulomb))/((m1Mass + \
 m2Mass)*mTimestep))*dxLimit(limit((mTimestep*vm1)/2. - \
-delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos),-m1PositionLimitNe\
-g,-m1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
+delayedPart[4][1],m1PositionLimitNeg,m1PositionLimitPos),m1PositionLimitNeg,m\
+1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
 m13FrictionViscousCoeff + m1FrictionViscousCoeff)*mTimestep));
           jacobianMatrix[0][2] = -((mTimestep*(m13FrictionViscousCoeff + \
 (2*bfc*m1Mass*m3Mass*dxLimit((-2*bfc*m1Mass*m3Mass*(vm1 - vm3))/((m1Mass + \
 m3Mass)*mTimestep),-m13FrictionCoulomb,m13FrictionCoulomb))/((m1Mass + \
 m3Mass)*mTimestep))*dxLimit(limit((mTimestep*vm1)/2. - \
-delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos),-m1PositionLimitNe\
-g,-m1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
+delayedPart[4][1],m1PositionLimitNeg,m1PositionLimitPos),m1PositionLimitNeg,m\
+1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
 m13FrictionViscousCoeff + m1FrictionViscousCoeff)*mTimestep));
           jacobianMatrix[0][3] = 0;
           jacobianMatrix[0][4] = 0;
           jacobianMatrix[0][5] = 0;
           jacobianMatrix[0][6] = (mTimestep*dxLimit(limit((mTimestep*vm1)/2. \
 - \
-delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos),-m1PositionLimitNe\
-g,-m1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
+delayedPart[4][1],m1PositionLimitNeg,m1PositionLimitPos),m1PositionLimitNeg,m\
+1PositionLimitPos))/(2*m1Mass + (m12FrictionViscousCoeff + \
 m13FrictionViscousCoeff + m1FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[0][7] = 0;
           jacobianMatrix[0][8] = 0;
@@ -530,8 +530,8 @@ m13FrictionViscousCoeff + m1FrictionViscousCoeff)*mTimestep);
 (2*bfc*m1Mass*m2Mass*dxLimit((-2*bfc*m1Mass*m2Mass*(vm1 - vm2))/((m1Mass + \
 m2Mass)*mTimestep),-m12FrictionCoulomb,m12FrictionCoulomb))/((m1Mass + \
 m2Mass)*mTimestep))*dxLimit(limit((mTimestep*vm2)/2. - \
-delayedPart[5][1],-m2PositionLimitNeg,-m2PositionLimitPos),-m2PositionLimitNe\
-g,-m2PositionLimitPos))/(2*m2Mass + (m12FrictionViscousCoeff + \
+delayedPart[5][1],m2PositionLimitNeg,m2PositionLimitPos),m2PositionLimitNeg,m\
+2PositionLimitPos))/(2*m2Mass + (m12FrictionViscousCoeff + \
 m2FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[1][1] = 1 + \
 (mTimestep*((2*bfc*m1Mass*m2Mass*dxLimit((-2*bfc*m1Mass*m2Mass*(vm1 - \
@@ -540,8 +540,8 @@ m2Mass)*mTimestep),-m12FrictionCoulomb,m12FrictionCoulomb))/((m1Mass + \
 m2Mass)*mTimestep) + \
 (2*bfc*m2Mass*dxLimit((-2*bfc*m2Mass*vm2)/mTimestep,-m2FrictionCoulomb,m2Fric\
 tionCoulomb))/mTimestep)*dxLimit(limit((mTimestep*vm2)/2. - \
-delayedPart[5][1],-m2PositionLimitNeg,-m2PositionLimitPos),-m2PositionLimitNe\
-g,-m2PositionLimitPos))/(2*m2Mass + (m12FrictionViscousCoeff + \
+delayedPart[5][1],m2PositionLimitNeg,m2PositionLimitPos),m2PositionLimitNeg,m\
+2PositionLimitPos))/(2*m2Mass + (m12FrictionViscousCoeff + \
 m2FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[1][2] = 0;
           jacobianMatrix[1][3] = 0;
@@ -550,16 +550,16 @@ m2FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[1][6] = 0;
           jacobianMatrix[1][7] = (mTimestep*dxLimit(limit((mTimestep*vm2)/2. \
 - \
-delayedPart[5][1],-m2PositionLimitNeg,-m2PositionLimitPos),-m2PositionLimitNe\
-g,-m2PositionLimitPos))/(2*m2Mass + (m12FrictionViscousCoeff + \
+delayedPart[5][1],m2PositionLimitNeg,m2PositionLimitPos),m2PositionLimitNeg,m\
+2PositionLimitPos))/(2*m2Mass + (m12FrictionViscousCoeff + \
 m2FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[1][8] = 0;
           jacobianMatrix[2][0] = (mTimestep*(-m13FrictionViscousCoeff - \
 (2*bfc*m1Mass*m3Mass*dxLimit((-2*bfc*m1Mass*m3Mass*(vm1 - vm3))/((m1Mass + \
 m3Mass)*mTimestep),-m13FrictionCoulomb,m13FrictionCoulomb))/((m1Mass + \
 m3Mass)*mTimestep))*dxLimit(limit((mTimestep*vm3)/2. - \
-delayedPart[6][1],-m3PositionLimitNeg,-m3PositionLimitPos),-m3PositionLimitNe\
-g,-m3PositionLimitPos))/(2*m3Mass + (m13FrictionViscousCoeff + \
+delayedPart[6][1],m3PositionLimitNeg,m3PositionLimitPos),m3PositionLimitNeg,m\
+3PositionLimitPos))/(2*m3Mass + (m13FrictionViscousCoeff + \
 m3FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[2][1] = 0;
           jacobianMatrix[2][2] = 1 + \
@@ -569,8 +569,8 @@ m3Mass)*mTimestep),-m13FrictionCoulomb,m13FrictionCoulomb))/((m1Mass + \
 m3Mass)*mTimestep) + \
 (2*bfc*m3Mass*dxLimit((-2*bfc*m3Mass*vm3)/mTimestep,-m3FrictionCoulomb,m3Fric\
 tionCoulomb))/mTimestep)*dxLimit(limit((mTimestep*vm3)/2. - \
-delayedPart[6][1],-m3PositionLimitNeg,-m3PositionLimitPos),-m3PositionLimitNe\
-g,-m3PositionLimitPos))/(2*m3Mass + (m13FrictionViscousCoeff + \
+delayedPart[6][1],m3PositionLimitNeg,m3PositionLimitPos),m3PositionLimitNeg,m\
+3PositionLimitPos))/(2*m3Mass + (m13FrictionViscousCoeff + \
 m3FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[2][3] = 0;
           jacobianMatrix[2][4] = 0;
@@ -579,11 +579,11 @@ m3FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[2][7] = 0;
           jacobianMatrix[2][8] = (mTimestep*dxLimit(limit((mTimestep*vm3)/2. \
 - \
-delayedPart[6][1],-m3PositionLimitNeg,-m3PositionLimitPos),-m3PositionLimitNe\
-g,-m3PositionLimitPos))/(2*m3Mass + (m13FrictionViscousCoeff + \
+delayedPart[6][1],m3PositionLimitNeg,m3PositionLimitPos),m3PositionLimitNeg,m\
+3PositionLimitPos))/(2*m3Mass + (m13FrictionViscousCoeff + \
 m3FrictionViscousCoeff)*mTimestep);
           jacobianMatrix[3][0] = -(mTimestep*dxLimit((mTimestep*vm1)/2. - \
-delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos))/2.;
+delayedPart[4][1],m1PositionLimitNeg,m1PositionLimitPos))/2.;
           jacobianMatrix[3][1] = 0;
           jacobianMatrix[3][2] = 0;
           jacobianMatrix[3][3] = 1;
@@ -594,7 +594,7 @@ delayedPart[4][1],-m1PositionLimitNeg,-m1PositionLimitPos))/2.;
           jacobianMatrix[3][8] = 0;
           jacobianMatrix[4][0] = 0;
           jacobianMatrix[4][1] = -(mTimestep*dxLimit((mTimestep*vm2)/2. - \
-delayedPart[5][1],-m2PositionLimitNeg,-m2PositionLimitPos))/2.;
+delayedPart[5][1],m2PositionLimitNeg,m2PositionLimitPos))/2.;
           jacobianMatrix[4][2] = 0;
           jacobianMatrix[4][3] = 0;
           jacobianMatrix[4][4] = 1;
@@ -605,7 +605,7 @@ delayedPart[5][1],-m2PositionLimitNeg,-m2PositionLimitPos))/2.;
           jacobianMatrix[5][0] = 0;
           jacobianMatrix[5][1] = 0;
           jacobianMatrix[5][2] = -(mTimestep*dxLimit((mTimestep*vm3)/2. - \
-delayedPart[6][1],-m3PositionLimitNeg,-m3PositionLimitPos))/2.;
+delayedPart[6][1],m3PositionLimitNeg,m3PositionLimitPos))/2.;
           jacobianMatrix[5][3] = 0;
           jacobianMatrix[5][4] = 0;
           jacobianMatrix[5][5] = 1;
