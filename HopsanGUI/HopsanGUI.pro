@@ -26,6 +26,9 @@ isEqual(QT_MAJOR_VERSION, 5){
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
+# Make c++11 mandatory but allow non-strict ANSI
+QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__
+
 #--------------------------------------------------------
 # Set the QWT paths and dll/so/dylib/framework post linking copy command
 d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
@@ -67,8 +70,6 @@ d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
     LIBS *= $$magic_hopsan_libpath
     INCLUDEPATH *= $$magic_hopsan_includepath
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-
-    QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__
 
     INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServer
     INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServerClient
