@@ -40,6 +40,7 @@ class OptimizationWorker : public QObject
     friend class OptimizationHandler;
 public:
     OptimizationWorker(OptimizationHandler *pHandler);
+    ~OptimizationWorker();
 
     virtual void init();
     virtual void run();
@@ -68,6 +69,8 @@ public:
     double getMaxParDiff(QVector<QVector<double> > &points);
 
     QStringList *getParNamesPtr();
+
+    void clearModels();
 
     //Public members
     //! @todo These should not be required

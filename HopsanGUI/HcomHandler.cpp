@@ -4144,6 +4144,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRF ||
            mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFM)
         {
+            qDebug() << "Model size: " << mpOptHandler->getModelPtrs()->size();
             if(mpOptHandler->getModelPtrs()->size() != 1)
             {
                 mpOptHandler->clearModels();

@@ -117,6 +117,7 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
 //! @brief Destructor for container object
 ContainerObject::~ContainerObject()
 {
+    delete mpLogDataHandler;
     //qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 

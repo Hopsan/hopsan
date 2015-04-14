@@ -259,12 +259,7 @@ void OptimizationHandler::clearModels()
 {
     if (mpWorker)
     {
-        for(int i=0; i<mpWorker->mModelPtrs.size(); ++i)
-        {
-            mpWorker->mModelPtrs[i]->mpParentModelHandler->closeModel(mpWorker->mModelPtrs[i], true);
-            delete(mpWorker->mModelPtrs[i]);
-        }
-        mpWorker->mModelPtrs.clear();
+        mpWorker->clearModels();
     }
 }
 

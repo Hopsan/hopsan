@@ -53,6 +53,11 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mFinalEval = true;
 }
 
+OptimizationWorker::~OptimizationWorker()
+{
+    this->clearModels();
+}
+
 
 //! @brief Initialization function for optimization worker base class (should never be called directly)
 void OptimizationWorker::init()
@@ -736,6 +741,10 @@ double OptimizationWorker::getOptVar(const QString &var, bool &ok)
     {
         return mWorstId;
     }
+    else if(var == "niter")
+    {
+        return mIterations;
+    }
     else
     {
         ok=false;
@@ -894,4 +903,15 @@ double OptimizationWorker::getMaxParDiff(QVector<QVector<double> > &points)
 QStringList *OptimizationWorker::getParNamesPtr()
 {
     return &mParNames;
+}
+
+void OptimizationWorker::clearModels()
+{
+    mpHandler->mpHcomHandler->setModelPtr(gpModelHandler->getCurrentModel());
+    for(int i=0; i<mModelPtrs.size(); ++i)
+    {
+        mModelPtrs[i]->mpParentModelHandler->closeModel(mModelPtrs[i], true);
+        delete(mModelPtrs[i]);
+    }
+    mModelPtrs.clear();
 }
