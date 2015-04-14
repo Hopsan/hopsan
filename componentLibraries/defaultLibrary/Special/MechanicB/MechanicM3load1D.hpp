@@ -10,7 +10,7 @@
 //! @file MechanicM3load1D.hpp
 //! @author Petter Krus <petter.krus@liu.se>, Martin Hochwallner \
 <martin.hochwallner@liu.se
-//! @date Tue 14 Apr 2015 10:12:08
+//! @date Tue 14 Apr 2015 11:00:05
 //! @brief An inertia load with spring and damper
 //! @ingroup MechanicComponents
 //!
@@ -653,14 +653,14 @@ delayedPart[6][1],-m3PositionLimitNeg,-m3PositionLimitPos))/2.;
           fm2=stateVark[7];
           fm3=stateVark[8];
           //Expressions
-          xp1 = xm1;
+          xp1 = -xm1;
           xp2 = -xm2;
           xp3 = -xm3;
-          m1FrictionForce = -(m1FrictionViscousCoeff*vm1) + \
+          m1FrictionForce = m1FrictionViscousCoeff*vm1 - \
 limit((-2*bfc*m1Mass*vm1)/mTimestep,-m1FrictionCoulomb,m1FrictionCoulomb);
-          m2FrictionForce = -(m2FrictionViscousCoeff*vm2) + \
+          m2FrictionForce = m2FrictionViscousCoeff*vm2 - \
 limit((-2*bfc*m2Mass*vm2)/mTimestep,-m2FrictionCoulomb,m2FrictionCoulomb);
-          m3FrictionForce = -(m3FrictionViscousCoeff*vm3) + \
+          m3FrictionForce = m3FrictionViscousCoeff*vm3 - \
 limit((-2*bfc*m3Mass*vm3)/mTimestep,-m3FrictionCoulomb,m3FrictionCoulomb);
           m12FrictionForce = -(m12FrictionViscousCoeff*(vm1 - vm2)) + \
 limit((-2*bfc*m1Mass*m2Mass*(vm1 - vm2))/((m1Mass + \
