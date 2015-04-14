@@ -22,9 +22,11 @@
       <port x="0.15" y="1" enabled="true" autoplaced="true" name="Pm3" a="90"/>
       <port x="0.5" y="1" enabled="true" autoplaced="true" name="Pm2" a="90"/>
       <port x="1" y="0.5" enabled="true" autoplaced="true" name="Pm1" a="0"/>
-      <port x="0.6" y="1" enabled="true" autoplaced="true" name="fc12" a="90"/>
-      <port x="0.25" y="1" enabled="true" autoplaced="true" name="fc13" a="90"/>
-      
+      <port x="0.6" y="1" enabled="true" autoplaced="true" name="m12FrictionForce" a="90"/>
+      <port x="0.25" y="1" enabled="true" autoplaced="true" name="m13FrictionForce" a="90"/>
+      <port x="0.90" y="1" enabled="true" autoplaced="true" name="m1FrictionForce" a="90"/>
+      <port x="0.55" y="1" enabled="true" autoplaced="true" name="m2FrictionForce" a="90"/>
+      <port x="0.20" y="1" enabled="true" autoplaced="true" name="m3FrictionForce" a="90"/>
     </ports>
     <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
   </modelobject>
