@@ -27,7 +27,7 @@ isEqual(QT_MAJOR_VERSION, 5){
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 # Make c++11 mandatory but allow non-strict ANSI
-QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__
+QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__ -Wno-c++0x-compat
 
 #--------------------------------------------------------
 # Set the QWT paths and dll/so/dylib/framework post linking copy command
