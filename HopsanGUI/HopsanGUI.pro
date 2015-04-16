@@ -250,6 +250,7 @@ SOURCES += main.cpp \
     SimulationThreadHandler.cpp \
     Widgets/HcomWidget.cpp \
     LogDataHandler.cpp \
+    LogDataHandler2.cpp \
     PlotTab.cpp \
     PlotCurve.cpp \
     PlotHandler.cpp \
@@ -343,6 +344,7 @@ HEADERS += MainWindow.h \
     SimulationThreadHandler.h \
     Widgets/HcomWidget.h \
     LogDataHandler.h \
+    LogDataHandler2.h \
     PlotTab.h \
     PlotCurve.h \
     PlotHandler.h \

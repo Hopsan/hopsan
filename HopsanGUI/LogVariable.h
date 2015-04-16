@@ -56,6 +56,8 @@ QString variableSourceTypeAsShortString(const VariableSourceTypeT type);
 enum VariableTypeT {VectorType, TimeDomainType, FrequencyDomainType, RealFrequencyDomainType, ImaginaryFrequencyDomainType, AmplitudeFrequencyDomainType, PhaseFrequencyDomainType, ComplexType, UndefinedVariableType};
 QString variableTypeAsString(const VariableTypeT type);
 
+typedef QSharedPointer<QStringList> SharedSystemHierarchyT;
+
 //! @class VariableCommonDescription
 //! @brief Container class for strings describing a log variable
 class VariableDescription
@@ -66,6 +68,8 @@ public:
     QString mComponentName;
     QString mPortName;
     QString mDataName;
+
+    SharedSystemHierarchyT mpSystemHierarchy;
 
     QString mDataUnit;
     QString mDataDescription;
@@ -82,6 +86,7 @@ public:
 
 typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
 typedef QSharedPointer<VectorVariable> SharedVectorVariableT;
+
 
 SharedVariableDescriptionT createTimeVariableDescription();
 SharedVariableDescriptionT createFrequencyVariableDescription();
@@ -186,6 +191,8 @@ class VectorVariable : public QObject
     Q_OBJECT
     friend class VectorVariableContainer;
     friend class LogDataHandler;
+    friend class LogDataHandler2;
+    friend class Generation;
 
 public:
     VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
