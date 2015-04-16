@@ -32,8 +32,8 @@ tbblib64DirList = [r'.\HopsanCore\Dependencies\tbb41_20130613oss_x64']
 
 # Runtime binaries
 qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
-                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
-                 'icuin53.dll', 'icuuc53.dll', 'icudt53.dll', 'Qt5PrintSupport.dll']
+                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
+                 'icuin54.dll', 'icuuc54.dll', 'icudt54.dll', 'Qt5PrintSupport.dll']
 qtPluginBins  = [r'iconengines/qsvgicon.dll', r'imageformats/qjpeg.dll', r'imageformats/qsvg.dll', r'platforms/qwindows.dll']
 mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll'] 
 
