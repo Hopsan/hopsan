@@ -10,7 +10,7 @@
 //! @file MechanicM3load1D.hpp
 //! @author Petter Krus <petter.krus@liu.se>, Martin Hochwallner \
 <martin.hochwallner@liu.se
-//! @date Tue 14 Apr 2015 11:20:07
+//! @date Tue 14 Apr 2015 15:39:54
 //! @brief An inertia load with spring and damper
 //! @ingroup MechanicComponents
 //!
@@ -35,10 +35,16 @@ private:
      double bfc;
      double m1PositionLimitNeg;
      double m1PositionLimitPos;
+     double m1PositionOffset;
+     double m1Direction;
      double m2PositionLimitNeg;
      double m2PositionLimitPos;
+     double m2PositionOffset;
+     double m2Direction;
      double m3PositionLimitNeg;
      double m3PositionLimitPos;
+     double m3PositionOffset;
+     double m3Direction;
      Port *mpPm1;
      Port *mpPm2;
      Port *mpPm3;
@@ -89,9 +95,12 @@ private:
      double m12FrictionCoulomb;
      double m13FrictionCoulomb;
      //outputVariables
-     double xp1;
-     double xp2;
-     double xp3;
+     double m1Position;
+     double m2Position;
+     double m3Position;
+     double m1Velocity;
+     double m2Velocity;
+     double m3Velocity;
      double m1FrictionForce;
      double m2FrictionForce;
      double m3FrictionForce;
@@ -139,14 +148,23 @@ private:
      double *mpbfc;
      double *mpm1PositionLimitNeg;
      double *mpm1PositionLimitPos;
+     double *mpm1PositionOffset;
+     double *mpm1Direction;
      double *mpm2PositionLimitNeg;
      double *mpm2PositionLimitPos;
+     double *mpm2PositionOffset;
+     double *mpm2Direction;
      double *mpm3PositionLimitNeg;
      double *mpm3PositionLimitPos;
+     double *mpm3PositionOffset;
+     double *mpm3Direction;
      //outputVariables pointers
-     double *mpxp1;
-     double *mpxp2;
-     double *mpxp3;
+     double *mpm1Position;
+     double *mpm2Position;
+     double *mpm3Position;
+     double *mpm1Velocity;
+     double *mpm2Velocity;
+     double *mpm3Velocity;
      double *mpm1FrictionForce;
      double *mpm2FrictionForce;
      double *mpm3FrictionForce;
@@ -226,18 +244,39 @@ coeff. between M1 and M3", "Ns/m", 10.,&mpm13FrictionViscousCoeff);
 "m", -1000.,&mpm1PositionLimitNeg);
             addInputVariable("m1PositionLimitPos", "Limitation on stroke M1", \
 "m", 1000.,&mpm1PositionLimitPos);
+            addInputVariable("m1PositionOffset", "Offset for the position \
+output of M1", "m", 0.,&mpm1PositionOffset);
+            addInputVariable("m1Direction", "Direction 1 / -1 for the outputs \
+of M1", "1", 1.,&mpm1Direction);
             addInputVariable("m2PositionLimitNeg", "Limitation on stroke M2", \
 "m", -1000.,&mpm2PositionLimitNeg);
             addInputVariable("m2PositionLimitPos", "Limitation on stroke M2", \
 "m", 1000.,&mpm2PositionLimitPos);
+            addInputVariable("m2PositionOffset", "Offset for the position \
+output of M2", "m", 0.,&mpm2PositionOffset);
+            addInputVariable("m2Direction", "Direction 1 / -1 for the outputs \
+of M2", "1", 1.,&mpm2Direction);
             addInputVariable("m3PositionLimitNeg", "Limitation on stroke M3", \
 "m", -1000.,&mpm3PositionLimitNeg);
             addInputVariable("m3PositionLimitPos", "Limitation on stroke M3", \
 "m", 1000.,&mpm3PositionLimitPos);
+            addInputVariable("m3PositionOffset", "Offset for the position \
+output of M3", "m", 0.,&mpm3PositionOffset);
+            addInputVariable("m3Direction", "Direction 1 / -1 for the outputs \
+of M3", "1", 1.,&mpm3Direction);
         //Add outputVariables to the component
-            addOutputVariable("xp1","Position of M1","m",0.,&mpxp1);
-            addOutputVariable("xp2","Position of M2","m",0.,&mpxp2);
-            addOutputVariable("xp3","Position of M3","m",0.,&mpxp3);
+            addOutputVariable("m1Position","Position of \
+M1","m",0.,&mpm1Position);
+            addOutputVariable("m2Position","Position of \
+M2","m",0.,&mpm2Position);
+            addOutputVariable("m3Position","Position of \
+M3","m",0.,&mpm3Position);
+            addOutputVariable("m1Velocity","Velocity of \
+M1","m/s",0.,&mpm1Velocity);
+            addOutputVariable("m2Velocity","Velocity of \
+M2","m/s",0.,&mpm2Velocity);
+            addOutputVariable("m3Velocity","Velocity of \
+M3","m/s",0.,&mpm3Velocity);
             addOutputVariable("m1FrictionForce","friction force between M1 \
 and inertial frame of reference","N",0.,&mpm1FrictionForce);
             addOutputVariable("m2FrictionForce","friction force between M2 \
@@ -324,15 +363,24 @@ NodeMechanic::EquivalentMass);
         bfc = (*mpbfc);
         m1PositionLimitNeg = (*mpm1PositionLimitNeg);
         m1PositionLimitPos = (*mpm1PositionLimitPos);
+        m1PositionOffset = (*mpm1PositionOffset);
+        m1Direction = (*mpm1Direction);
         m2PositionLimitNeg = (*mpm2PositionLimitNeg);
         m2PositionLimitPos = (*mpm2PositionLimitPos);
+        m2PositionOffset = (*mpm2PositionOffset);
+        m2Direction = (*mpm2Direction);
         m3PositionLimitNeg = (*mpm3PositionLimitNeg);
         m3PositionLimitPos = (*mpm3PositionLimitPos);
+        m3PositionOffset = (*mpm3PositionOffset);
+        m3Direction = (*mpm3Direction);
 
         //Read outputVariables from nodes
-        xp1 = (*mpxp1);
-        xp2 = (*mpxp2);
-        xp3 = (*mpxp3);
+        m1Position = (*mpm1Position);
+        m2Position = (*mpm2Position);
+        m3Position = (*mpm3Position);
+        m1Velocity = (*mpm1Velocity);
+        m2Velocity = (*mpm2Velocity);
+        m3Velocity = (*mpm3Velocity);
         m1FrictionForce = (*mpm1FrictionForce);
         m2FrictionForce = (*mpm2FrictionForce);
         m3FrictionForce = (*mpm3FrictionForce);
@@ -427,10 +475,16 @@ m3FrictionViscousCoeff*mTimestep);
         bfc = (*mpbfc);
         m1PositionLimitNeg = (*mpm1PositionLimitNeg);
         m1PositionLimitPos = (*mpm1PositionLimitPos);
+        m1PositionOffset = (*mpm1PositionOffset);
+        m1Direction = (*mpm1Direction);
         m2PositionLimitNeg = (*mpm2PositionLimitNeg);
         m2PositionLimitPos = (*mpm2PositionLimitPos);
+        m2PositionOffset = (*mpm2PositionOffset);
+        m2Direction = (*mpm2Direction);
         m3PositionLimitNeg = (*mpm3PositionLimitNeg);
         m3PositionLimitPos = (*mpm3PositionLimitPos);
+        m3PositionOffset = (*mpm3PositionOffset);
+        m3Direction = (*mpm3Direction);
 
         //LocalExpressions
 
@@ -653,15 +707,18 @@ delayedPart[6][1],m3PositionLimitNeg,m3PositionLimitPos))/2.;
           fm2=stateVark[7];
           fm3=stateVark[8];
           //Expressions
-          xp1 = -xm1;
-          xp2 = -xm2;
-          xp3 = -xm3;
-          m1FrictionForce = m1FrictionViscousCoeff*vm1 - \
-limit((-2*bfc*m1Mass*vm1)/mTimestep,-m1FrictionCoulomb,m1FrictionCoulomb);
-          m2FrictionForce = m2FrictionViscousCoeff*vm2 - \
-limit((-2*bfc*m2Mass*vm2)/mTimestep,-m2FrictionCoulomb,m2FrictionCoulomb);
-          m3FrictionForce = m3FrictionViscousCoeff*vm3 - \
-limit((-2*bfc*m3Mass*vm3)/mTimestep,-m3FrictionCoulomb,m3FrictionCoulomb);
+          m1Position = m1PositionOffset - m1Direction*xm1;
+          m2Position = m2PositionOffset - m2Direction*xm2;
+          m3Position = m3PositionOffset - m3Direction*xm3;
+          m1Velocity = -(m1Direction*vm1);
+          m2Velocity = -(m2Direction*vm2);
+          m3Velocity = -(m3Direction*vm3);
+          m1FrictionForce = m1Direction*(m1FrictionViscousCoeff*vm1 - \
+limit((-2*bfc*m1Mass*vm1)/mTimestep,-m1FrictionCoulomb,m1FrictionCoulomb));
+          m2FrictionForce = m2Direction*(m2FrictionViscousCoeff*vm2 - \
+limit((-2*bfc*m2Mass*vm2)/mTimestep,-m2FrictionCoulomb,m2FrictionCoulomb));
+          m3FrictionForce = m3Direction*(m3FrictionViscousCoeff*vm3 - \
+limit((-2*bfc*m3Mass*vm3)/mTimestep,-m3FrictionCoulomb,m3FrictionCoulomb));
           m12FrictionForce = -(m12FrictionViscousCoeff*(vm1 - vm2)) + \
 limit((-2*bfc*m1Mass*m2Mass*(vm1 - vm2))/((m1Mass + \
 m2Mass)*mTimestep),-m12FrictionCoulomb,m12FrictionCoulomb);
@@ -733,9 +790,12 @@ m3FrictionViscousCoeff*mTimestep);
         (*mpND_vm3)=vm3;
         (*mpND_eqMassm3)=eqMassm3;
         //outputVariables
-        (*mpxp1)=xp1;
-        (*mpxp2)=xp2;
-        (*mpxp3)=xp3;
+        (*mpm1Position)=m1Position;
+        (*mpm2Position)=m2Position;
+        (*mpm3Position)=m3Position;
+        (*mpm1Velocity)=m1Velocity;
+        (*mpm2Velocity)=m2Velocity;
+        (*mpm3Velocity)=m3Velocity;
         (*mpm1FrictionForce)=m1FrictionForce;
         (*mpm2FrictionForce)=m2FrictionForce;
         (*mpm3FrictionForce)=m3FrictionForce;

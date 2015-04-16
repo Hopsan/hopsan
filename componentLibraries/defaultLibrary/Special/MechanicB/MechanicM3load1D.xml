@@ -11,18 +11,21 @@
       <link>MechanicM3load1D.nb</link>
    </help>       
    <ports>
-      <port x="1.0" y="0" enabled="false" autoplaced="true" name="m1FrictionCoulomb" a="270"/>
+      <port x="1.00" y="0" enabled="false" autoplaced="true" name="m1FrictionCoulomb" a="270"/>
       <port x="0.65" y="0" enabled="false" autoplaced="true" name="m2FrictionCoulomb" a="270"/>
-      <port x="0.3" y="0" enabled="false" autoplaced="true" name="m3FrictionCoulomb" a="270"/>
-      <port x="0.5" y="0" enabled="false" autoplaced="true" name="m12FrictionCoulomb" a="270"/>
+      <port x="0.30" y="0" enabled="false" autoplaced="true" name="m3FrictionCoulomb" a="270"/>
+      <port x="0.50" y="0" enabled="false" autoplaced="true" name="m12FrictionCoulomb" a="270"/>
       <port x="0.15" y="0" enabled="false" autoplaced="true" name="m13FrictionCoulomb" a="270"/>
-      <port x="1.0" y="1" enabled="true" autoplaced="true" name="xp1" a="90"/>
-      <port x="0.65" y="1" enabled="true" autoplaced="true" name="xp2" a="90"/>
-      <port x="0.3" y="1" enabled="true" autoplaced="true" name="xp3" a="90"/>      
+      <port x="1.00" y="1" enabled="true" autoplaced="true" name="m1Position" a="90"/>
+      <port x="0.65" y="1" enabled="true" autoplaced="true" name="m2Position" a="90"/>
+      <port x="0.30" y="1" enabled="true" autoplaced="true" name="m3Position" a="90"/>      
+      <port x="0.975" y="1" enabled="true" autoplaced="true" name="m1Velocity" a="90"/>
+      <port x="0.625" y="1" enabled="true" autoplaced="true" name="m2Velocity" a="90"/>
+      <port x="0.275" y="1" enabled="true" autoplaced="true" name="m3Velocity" a="90"/>      
       <port x="0.15" y="1" enabled="true" autoplaced="true" name="Pm3" a="90"/>
-      <port x="0.5" y="1" enabled="true" autoplaced="true" name="Pm2" a="90"/>
-      <port x="1" y="0.5" enabled="true" autoplaced="true" name="Pm1" a="0"/>
-      <port x="0.6" y="1" enabled="true" autoplaced="true" name="m12FrictionForce" a="90"/>
+      <port x="0.50" y="1" enabled="true" autoplaced="true" name="Pm2" a="90"/>
+      <port x="1.00" y="0.5" enabled="true" autoplaced="true" name="Pm1" a="0"/>
+      <port x="0.60" y="1" enabled="true" autoplaced="true" name="m12FrictionForce" a="90"/>
       <port x="0.25" y="1" enabled="true" autoplaced="true" name="m13FrictionForce" a="90"/>
       <port x="0.90" y="1" enabled="true" autoplaced="true" name="m1FrictionForce" a="90"/>
       <port x="0.55" y="1" enabled="true" autoplaced="true" name="m2FrictionForce" a="90"/>
