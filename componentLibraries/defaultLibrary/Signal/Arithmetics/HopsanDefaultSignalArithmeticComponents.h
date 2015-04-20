@@ -17,7 +17,7 @@
 //#include "SignalTan.hpp"
 //#include "SignalLog.hpp"
 //#include "SignalLog10.hpp"
-#include "SignalSegare.hpp"
+//#include "SignalSegare.hpp"
 #include "SignalSign.hpp"
 //#include "SignalSqrt.hpp"
 #include "SignalSub.hpp"

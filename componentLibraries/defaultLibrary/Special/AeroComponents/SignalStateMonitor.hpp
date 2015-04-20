@@ -9,7 +9,8 @@
 //!
 //! @file SignalStateMonitor.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 6 Jul 2014 23:38:10
+//  co-author/auditor **Not yet audited by a second person**
+//! @date Tue 14 Apr 2015 16:48:38
 //! @brief Check for steady state
 //! @ingroup SignalComponents
 //!
@@ -165,6 +166,9 @@ mTimestep*Abs(y3))/(mTimestep + 2*thau);
         delayedPart[2][1] = delayParts2[1];
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
+
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {
@@ -179,6 +183,12 @@ mTimestep*Abs(y3))/(mTimestep + 2*thau);
         y2 = (*mpy2);
         y3 = (*mpy3);
         sOn = (*mpsOn);
+
+        //Read inputParameters from nodes
+        y10 = (*mpy10);
+        y20 = (*mpy20);
+        y30 = (*mpy30);
+        thau = (*mpthau);
 
         //LocalExpressions
 

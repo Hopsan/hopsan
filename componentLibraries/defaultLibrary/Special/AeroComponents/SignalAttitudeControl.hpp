@@ -9,7 +9,8 @@
 //!
 //! @file SignalAttitudeControl.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 6 Jul 2014 23:38:09
+//  co-author/auditor **Not yet audited by a second person**
+//! @date Tue 14 Apr 2015 16:48:36
 //! @brief Attitude control unit for an aircraft
 //! @ingroup SignalComponents
 //!
@@ -217,6 +218,9 @@ turn","rad",1.,&mpphimax);
 
         //Initialize delays
 
+
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {
@@ -235,6 +239,21 @@ turn","rad",1.,&mpphimax);
         Rb = (*mpRb);
         Ub = (*mpUb);
 
+        //Read inputParameters from nodes
+        Kphi = (*mpKphi);
+        Kphipsi = (*mpKphipsi);
+        Kelev = (*mpKelev);
+        Kdelev = (*mpKdelev);
+        Krud = (*mpKrud);
+        Kdrud = (*mpKdrud);
+        u1min = (*mpu1min);
+        u1max = (*mpu1max);
+        u2min = (*mpu2min);
+        u2max = (*mpu2max);
+        u3min = (*mpu3min);
+        u3max = (*mpu3max);
+        U0 = (*mpU0);
+
         //LocalExpressions
         Kv = Power(U0,2)/(Power(U0,2) + Power(Abs(Ub),2));
         u1cmin = Kv*u1min;
@@ -248,7 +267,7 @@ turn","rad",1.,&mpphimax);
           uaerL = limit(Kphi*Kv*(diffAngle(phiref,phi) + \
 limit(Kphipsi*diffAngle(psiref,psi),-phimax,phimax)),u1cmin,u1cmax);
           uaerR = limit(-(Kphi*Kv*(diffAngle(phiref,phi) + \
-limit(Kphipsi*diffAngle(psiref,psi),-phimax,phimax))),u1cmin,u1cmax);
+limit(Kphipsi*diffAngle(psiref,psi),-phimax,phimax))),u1cmax,u1cmin);
           uelev = limit(-(Kv*(-(Kdelev*Qb) + \
 Kelev*diffAngle(thetaref,theta))),u2cmin,u2cmax);
           urud = limit(-(Kv*(beta*Krud + Kdrud*Rb)),u3cmin,u3cmax);

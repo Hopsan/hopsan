@@ -9,7 +9,8 @@
 //!
 //! @file SignalWaypoint.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 6 Jul 2014 23:38:11
+//  co-author/auditor **Not yet audited by a second person**
+//! @date Tue 14 Apr 2015 16:48:38
 //! @brief Waypoint Controller with way points
 //! @ingroup SignalComponents
 //!
@@ -137,6 +138,9 @@ wp","m",0.,&mpdistanceWp);
 
         //Initialize delays
 
+
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {
@@ -146,6 +150,14 @@ wp","m",0.,&mpdistanceWp);
         s1 = (*mps1);
         xc = (*mpxc);
         yc = (*mpyc);
+
+        //Read inputParameters from nodes
+        R = (*mpR);
+        alt1 = (*mpalt1);
+        v1 = (*mpv1);
+        wptol = (*mpwptol);
+        xcWp1 = (*mpxcWp1);
+        ycWp1 = (*mpycWp1);
 
         //LocalExpressions
 

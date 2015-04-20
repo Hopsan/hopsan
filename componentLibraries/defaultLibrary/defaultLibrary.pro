@@ -324,6 +324,8 @@ HEADERS += \
     Hydraulic/Special/HydraulicPistonMload.hpp \
     Hydraulic/Special/HydraulicPistonMkload.hpp \
     Hydraulic/Special/HydraulicPistonJload.hpp \
+    Hydraulic/Special/HydraulicPiston.hpp \
+    Hydraulic/Special/HydraulicPressureControlledPumpG.hpp \
     Hydraulic/Special/HydraulicMotorJload.hpp \
     Hydraulic/Special/HydraulicCounterBalanceValveG.hpp \
     Hydraulic/Special/HydraulicCyldamp.hpp \
@@ -392,7 +394,8 @@ HEADERS += \
     Signal/Arithmetics/SignalSegare.hpp \
     Signal/Logic/HydraulicCyldamp.hpp \
     Signal/Logic/HydraulicPistonMload.hpp \
-    Signal/MathFunctions/HopsanDefaultSignalMathFunctions.h
+    Signal/MathFunctions/HopsanDefaultSignalMathFunctions.h \
+    Hydraulic/Special/HydraulicPressureControlPumpG.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

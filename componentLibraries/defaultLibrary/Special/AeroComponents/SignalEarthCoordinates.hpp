@@ -9,7 +9,8 @@
 //!
 //! @file SignalEarthCoordinates.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 6 Jul 2014 23:38:10
+//  co-author/auditor **Not yet audited by a second person**
+//! @date Tue 14 Apr 2015 16:48:37
 //! @brief Calculates earth coordinates
 //! @ingroup SignalComponents
 //!
@@ -143,6 +144,9 @@ y-position","m",0.,&mplattitude);
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
         delayedPart[3][1] = delayParts3[1];
+
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {
@@ -156,6 +160,9 @@ y-position","m",0.,&mplattitude);
         timecomp = (*mptimecomp);
         vxcg = (*mpvxcg);
         vycg = (*mpvycg);
+
+        //Read inputParameters from nodes
+        R = (*mpR);
 
         //LocalExpressions
 

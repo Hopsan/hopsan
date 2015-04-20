@@ -9,7 +9,8 @@
 //!
 //! @file SignalAttitudeTVCcontrol.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 6 Jul 2014 23:38:09
+//  co-author/auditor **Not yet audited by a second person**
+//! @date Tue 14 Apr 2015 16:48:37
 //! @brief Attitude control unit for an aircraft
 //! @ingroup SignalComponents
 //!
@@ -141,6 +142,9 @@ yaw","rad",0.,&mppsiref);
 
         //Initialize delays
 
+
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {
@@ -154,6 +158,14 @@ yaw","rad",0.,&mppsiref);
         psi = (*mppsi);
         Qb = (*mpQb);
         Rb = (*mpRb);
+
+        //Read inputParameters from nodes
+        Kelev = (*mpKelev);
+        Krud = (*mpKrud);
+        KQrud = (*mpKQrud);
+        KRrud = (*mpKRrud);
+        umin = (*mpumin);
+        umax = (*mpumax);
 
         //LocalExpressions
 

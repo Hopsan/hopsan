@@ -110,6 +110,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicMotorJload", HydraulicMotorJload::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPistonMload", HydraulicPistonMload::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPistonMkload", HydraulicPistonMkload::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureControlledPumpG", HydraulicPressureControlledPumpG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCheckValvePreLoaded", HydraulicCheckValvePreLoaded::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve", HydraulicPressureControlled42Valve::Creator);
@@ -166,6 +167,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicCentrifugalPumpJ", HydraulicCentrifugalPumpJ::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicFuelTankG", HydraulicFuelTankG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPlugQ", HydraulicPlugQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPiston", HydraulicPiston::Creator);
 
     pComponentFactory->registerCreatorFunction("PneumaticTurboMachineJ", PneumaticTurboMachineJ::Creator);
 
