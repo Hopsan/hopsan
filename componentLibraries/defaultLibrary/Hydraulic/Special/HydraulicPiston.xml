@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject displayname="HydraulicPiston" typename="HydraulicPiston">
+    <icons>
+      <icon scale="1" path="HydraulicPiston.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="HydraulicPiston.svg" iconrotation="ON" type="iso"/>
+   </icons>
+ 		<help>
+            <text>Very simple hydraulic C-type Piston with two single hydraulic ports. Used primaerly for validation. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>HydraulicPiston.nb</link>
+        </help>               
+   <ports>
+      <port enabled="true" x="1" y="0.5" autoplaced="true" name="Pm1" a="0"/>
+      <port enabled="true" x="0.0418" y="1" autoplaced="true" name="P1" a="90"/>
+      <port enabled="true" x="0.7106" y="1" autoplaced="true" name="P2" a="90"/>
+    </ports>
+    <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+  </modelobject>
+</hopsanobjectappearance>
