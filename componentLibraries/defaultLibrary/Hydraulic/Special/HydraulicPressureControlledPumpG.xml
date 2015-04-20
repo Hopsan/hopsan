@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="HydraulicPressureControlledPumpG" displayname="HydraulicPressureControlledPumpG">
+    <icons>
+      <icon iconrotation="" type="user" path="HydraulicPressureControlledPumpG.svg" scale="1"/>
+      <icon iconrotation="" type="iso" path="HydraulicPressureControlledPumpG.svg" scale="1"/>
+    </icons>
+    <help>
+      <text>Hydraulic pressure controlled pump. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+      <link>HydraulicPressureControlledPumpG.nb</link>
+    </help>       
+    <ports>
+      <port x="1" y="0.4" enabled="true" name="speed" a="0" autoplaced="true"/>
+      <port x="1" y="0.1" enabled="true" name="eps" a="0" autoplaced="true"/>
+      <port x="0.6" y="1" enabled="true" name="P1" a="90" autoplaced="true"/>
+      <port x="0.6" y="0" enabled="true" name="P2" a="270" autoplaced="true"/>
+      <port x="0.07" y="1" enabled="true" name="P3" a="90" autoplaced="true"/>
+      <port x="0" y="0.76" enabled="true" name="pdif" a="180" autoplaced="true"/>
+    </ports>
+    <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+  </modelobject>
+</hopsanobjectappearance>

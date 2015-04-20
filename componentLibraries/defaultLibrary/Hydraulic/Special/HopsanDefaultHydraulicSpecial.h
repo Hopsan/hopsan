@@ -37,6 +37,9 @@
 #include "HydraulicMotorJload.hpp"
 #include "HydraulicPistonMkload.hpp"
 #include "HydraulicPistonMload.hpp"
+#include "HydraulicPiston.hpp"
+#include "HydraulicPressureControlledPumpG.hpp"
+#include "HydraulicPPump.hpp"
 #include "HydraulicCyldamp.hpp"
 
 #endif
