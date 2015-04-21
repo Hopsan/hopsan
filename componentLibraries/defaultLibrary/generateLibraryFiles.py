@@ -151,7 +151,7 @@ def findFiles(rootDir, suffixes, excludeDirs):
             if d in dirpath:
                 enterDir=False
         if enterDir:
-            for filename in filenames:
+            for filename in sorted(filenames):
                 name, ext = os.path.splitext(filename)
 #                print(r'name: '+name)
 #                print(r'ext: '+ext)
