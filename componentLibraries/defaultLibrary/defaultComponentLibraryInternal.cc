@@ -71,6 +71,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     #include "Special/SignalFFB/HopsanDefaultFBBComponents.cci"
     #include "Special/TMMS04/HopsanDefaultTMMS04Components.cci"
     #include "Special/MechanicB/HopsanDefaultMechanicBComponents.cci"
+    #include "Special/OptimizationTestFunctions/HopsanDefaultOptimizationTestFunctionComponents.cci"
 
     // ========== Hydraulic components ==========
     // ----- Hydraulic Valves -----

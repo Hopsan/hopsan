@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="OptimizationTestFunction6D" displayname="Optimization Test Function 6D" sourcecode="OptimizationTestFunction6D.hpp">
+        <icons>
+            <icon scale="1" path="OptimizationTestFunction2D.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.142857143" a="180" name="x1"/>
+            <port x="0" y="0.285714286" a="180" name="x2"/>
+            <port x="0" y="0.428571429" a="180" name="x3"/>
+            <port x="0" y="0.571428572" a="180" name="x4"/>
+            <port x="0" y="0.714285715" a="180" name="x5"/>
+            <port x="0" y="0.857142858" a="180" name="x6"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

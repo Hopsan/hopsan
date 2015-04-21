@@ -6,6 +6,7 @@
 #include "SignalFFB/HopsanDefaultFBBComponents.h"
 #include "TMMS04/HopsanDefaultTMMS04Components.h"
 #include "Benchmarking/HopsanDefaultBenchmarkingComponents.h"
+#include "OptimizationTestFunctions/HopsanDefaultOptimizationTestFunctionComponents.h"
 
 #include "MechanicVehicle1D.hpp"
 #include "CombustionEngine.hpp"
