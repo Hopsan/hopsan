@@ -144,14 +144,14 @@ def generatePRI(dirPath, filename, includeFiles, componentHeaders, componentSrcF
 
 def findFiles(rootDir, suffixes, excludeDirs):
     files = list()
-    for dirpath, dirnames, filenames in os.walk(rootDir, topdown=False):
+    for dirpath, dirnames, filenames in os.walk(rootDir):
         print(dirpath)
         enterDir = True
         for d in excludeDirs:
             if d in dirpath:
                 enterDir=False
         if enterDir:
-            for filename in sorted(filenames):
+            for filename in filenames:
                 name, ext = os.path.splitext(filename)
 #                print(r'name: '+name)
 #                print(r'ext: '+ext)
@@ -205,12 +205,13 @@ def main(rootDir):
     excludeDirs = list()
     excludeDirs.append('Dependencies')
     
-    files = findFiles(rootDir, suffixes, excludeDirs)
+    files = sorted(findFiles(rootDir, suffixes, excludeDirs))
+    print(files)
 
     currentDir = ComponentDir()    
     componentDirs = list()
 
-    for filepath in files:
+    for filepath in reversed(files):
         fileFullDir, fileName = os.path.split(filepath)
         dummy, fileDir = os.path.split(fileFullDir)
         print("\n")
