@@ -282,11 +282,11 @@ class HydraulicCylinderC : public ComponentC
             cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2.0 - cl2 - 2.0*Zc2*qLeak));
 
 
-            //limitStroke(CxLim, ZxLim, x3, v3, me, sl);
+            limitStroke(CxLim, ZxLim, x3, v3, me, sl);
 
             //Internal mechanical port
-            double c3 = A1*ci1 - A2*ci2;// + CxLim;
-            double Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp;// + ZxLim;
+            double c3 = A1*ci1 - A2*ci2 + CxLim;
+            double Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp + ZxLim;
             //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
             //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
 
