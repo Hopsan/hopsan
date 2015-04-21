@@ -1691,7 +1691,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
         printErrorMessage("Failed to open compileCpp.bat for writing.");
         return false;
     }
-    printMessage("Compiling "+modelName+".dll...");
+
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
     compileCppBatchStream << "@echo off\n";
@@ -1774,8 +1774,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & link.bat");
 
-    if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
-        return false;
+    return assertFilesExist(savePath, QStringList() << modelName+".dll");
 #elif __linux__
     QFile linkBatchFile;
     linkBatchFile.setFileName(savePath + "/link.sh");

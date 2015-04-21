@@ -71,7 +71,11 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	} 
     else 
     {
-        value[0] = hopsan_get_real(vr[0]);
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            value[i] = hopsan_get_real(vr[i]);
+        }
 		return fmiOK;
 	}
 }
@@ -85,7 +89,11 @@ fmiStatus fmi_get_integer(fmiComponent c, const fmiValueReference vr[], size_t n
 	} 
     else 
     {
-		value[0] = hopsan_get_integer(vr[0]);
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            value[i] = hopsan_get_integer(vr[i]);
+        }
 		return fmiOK;
 	}
 }
@@ -99,7 +107,11 @@ fmiStatus fmi_get_boolean(fmiComponent c, const fmiValueReference vr[], size_t n
 	} 
     else 
     {
-		value[0] = hopsan_get_boolean(vr[0]);
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            value[i] = hopsan_get_boolean(vr[i]);
+        }
 		return fmiOK;
 	}
 }
@@ -113,8 +125,12 @@ fmiStatus fmi_get_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 	} 
     else 
     {
-		value[0] = hopsan_get_string(vr[0]);
-		return fmiOK;
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            value[i] = hopsan_get_string(vr[i]);
+        }
+        return fmiOK;
 	}
 }
 
@@ -127,7 +143,11 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	} 
     else 
     {
-		hopsan_set_real(vr[0], value[0]);
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            hopsan_set_real(vr[i], value[i]);
+        }
 		return fmiOK;
 	}
 }
@@ -141,7 +161,11 @@ fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t n
 	} 
     else 
     {
-		hopsan_set_integer(vr[0], value[0]);
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            hopsan_set_integer(vr[i], value[i]);
+        }
 		return fmiOK;
 	}
 }
@@ -155,7 +179,11 @@ fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t n
 	} 
     else 
     {
-		hopsan_set_boolean(vr[0], value[0]);
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            hopsan_set_boolean(vr[i], value[i]);
+        }
 		return fmiOK;
 	}
 }
@@ -169,7 +197,11 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 	} 
     else 
     {
-		hopsan_set_string(vr[0], value[0]);
+        size_t i;
+        for(i=0; i<nvr; ++i)
+        {
+            hopsan_set_string(vr[i], value[i]);
+        }
         return fmiOK;
 	}
 }

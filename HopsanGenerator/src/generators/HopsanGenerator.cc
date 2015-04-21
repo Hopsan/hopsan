@@ -1017,7 +1017,7 @@ void HopsanGenerator::callProcess(const QString &name, const QStringList &args, 
         p.setWorkingDirectory(workingDirectory);
     }
     p.start(name, args);
-    p.waitForFinished(60000);
+    p.waitForFinished(300000);
     printMessage(p.readAll());
     printMessage(p.readAllStandardError());
     printMessage(p.readAllStandardOutput());
