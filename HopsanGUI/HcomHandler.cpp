@@ -3079,14 +3079,13 @@ void HcomHandler::executeDisableLoggingCommand(const QString cmd)
 //! @brief Execute function for "elog" command
 void HcomHandler::executeEnableLoggingCommand(const QString cmd)
 {
-    if(getNumberOfCommandArguments(cmd) != 1)
-    {
-        HCOMERR("Wrong number of arguments.");
-        return;
-    }
+    QStringList args = cmd.split(" ");
 
     QList<Port*> vPortPtrs;
-    getPorts(cmd, vPortPtrs);
+    foreach(const QString &arg, args)
+    {
+        getPorts(arg, vPortPtrs);
+    }
 
     for(int p=0; p<vPortPtrs.size(); ++p)
     {
@@ -4189,7 +4188,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
         {
-            int nModels = 4;
+            int nModels = gpConfig->getNumberOfThreads();
             if(mpOptHandler->getModelPtrs()->size() != nModels)
             {
                 mpOptHandler->clearModels();
@@ -4220,6 +4219,24 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                     mpOptHandler->clearModels();
                     mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));
                 }
+            }
+        }
+
+        //Make sure logging is disabled/enabled for same ports as in original model
+        CoreSystemAccess *pCore = mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
+        foreach(const QString &compName, mpModel->getTopLevelSystemContainer()->getModelObjectNames())
+        {
+            foreach(const Port *port, mpModel->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
+            {
+                QString portName = port->getName();
+                for(int i=0; i<mpOptHandler->getModelPtrs()->size(); ++i)
+                {
+                    bool enabled = pCore->isLoggingEnabled(compName, portName);
+                    SystemContainer *pOptSystem = mpOptHandler->getModelPtrs()->at(i)->getTopLevelSystemContainer();
+                    CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
+                    pOptCore->setLoggingEnabled(compName, portName, enabled);
+                }
+
             }
         }
 
