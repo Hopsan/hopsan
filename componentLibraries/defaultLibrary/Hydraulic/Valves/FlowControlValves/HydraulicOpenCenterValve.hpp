@@ -176,7 +176,7 @@ namespace hopsan {
             xpbnom = std::max(-xv-x_pb,0.0);
             xatnom = std::max(-xv-x_at,0.0);
             xbtnom = std::max(xv-x_bt,0.0);
-            xccnom = xvmax - std::max(min(xvmax,fabs(xv)-x_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
+            xccnom = xvmax - std::max(std::min(xvmax,fabs(xv)-x_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);

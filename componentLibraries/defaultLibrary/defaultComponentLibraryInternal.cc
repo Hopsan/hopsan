@@ -22,8 +22,9 @@
 //$Id$
 
 #include "defaultComponentLibraryInternal.h"
-#include "defaultComponents.h"
-#include <stdlib.h>
+
+// Include automatically generated header code for all default library components
+#include "Components.h"
 
 //! @defgroup Components Components
 //!
@@ -47,6 +48,8 @@ using namespace hopsan;
 //!
 void hopsan::register_default_components(ComponentFactory* pComponentFactory)
 {
+    // Include automatically generated registration code for all default library components
+    #include "Components.cci"
 
 
     // ========== Additional Components ==========
