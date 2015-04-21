@@ -68,6 +68,12 @@ void OptimizationWorker::init()
 
     mDisconnectedFromModelHandler = disconnect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHandler->mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
 
+    //Clear previous data in case models were re-used
+    for(int i=0; i<mModelPtrs.size(); ++i)
+    {
+        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        mpHandler->mpHcomHandler->executeCommand("rmvar *");
+    }
     mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
 
     //Load default optimization functions
@@ -134,7 +140,7 @@ void OptimizationWorker::finalize()
     gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
     double secondBestObj = mObjectives[mWorstId];
     mSecondBestId = mWorstId;
-    for(int i=0; i<mNumParameters; ++i)
+    for(int i=0; i<mNumPoints; ++i)
     {
         if(i != mBestId && mObjectives[i] < secondBestObj)
         {
@@ -147,19 +153,13 @@ void OptimizationWorker::finalize()
 
     print("Optimization finished!");
     updateProgressBar(mMaxEvals);
-
     mpHandler->setIsRunning(false);
-
     if(mDisconnectedFromModelHandler)
     {
         connect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHandler->mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
     }
-
     mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(false);
-
     gpOptimizationDialog->setOptimizationFinished();
-
-
 
     QFile resultFile(gpDesktopHandler->getDocumentsPath()+"optimization_results_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
     resultFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
