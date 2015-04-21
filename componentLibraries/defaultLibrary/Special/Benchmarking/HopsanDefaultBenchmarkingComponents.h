@@ -1,8 +1,0 @@
-#ifndef HOPSANDEFAULTBENCHMARKINGCOMPONENTS_H
-#define HOPSANDEFAULTBENCHMARKINGCOMPONENTS_H
-
-#include "HydraulicDummyC.hpp"
-#include "HydraulicDummyQ.hpp"
-#include "SignalDummy.hpp"
-
-#endif // HOPSANDEFAULTBENCHMARKINGCOMPONENTS_H
