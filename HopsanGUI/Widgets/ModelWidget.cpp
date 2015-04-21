@@ -29,6 +29,7 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QInputDialog>
 
 
 //Hopsan includes
@@ -300,6 +301,53 @@ int ModelWidget::getLastSimulationTime()
 bool ModelWidget::isEditingEnabled()
 {
     return mEditingEnabled;
+}
+
+//! @brief Defines a new alias for specified variable (popup box)
+//! @param[in] rFullName The Full name of the variable
+bool ModelWidget::defineAlias(const QString &rFullName, const QString &rAlias)
+{
+    QStringList systems;
+    QString c,p,d;
+    // Find the subsystem
+    SystemContainer *pSystem=0;
+    if (splitFullVariableName(rFullName,systems,c,p,d))
+    {
+        if (mpToplevelSystem)
+        {
+            pSystem = mpToplevelSystem;
+            for (auto &sysname : systems)
+            {
+                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+                if (!pSystem)
+                {
+                    return false;
+                }
+            }
+         }
+    }
+
+    // Now ask for alias and try to set it
+    if (pSystem)
+    {
+        if (rAlias.isEmpty())
+        {
+            bool ok;
+            QString alias = QInputDialog::getText(gpMainWindowWidget, gpMainWindowWidget->tr("Define Variable Alias"),
+                                                  QString("Alias for: %1").arg(rFullName), QLineEdit::Normal, "", &ok);
+            if(ok)
+            {
+                // Try to set the new alias, abort if it did not work
+                return pSystem->setVariableAlias(makeFullVariableName(QStringList(),c,p,d),alias);
+            }
+        }
+        else
+        {
+            // Try to set the new alias, abort if it did not work
+            return pSystem->setVariableAlias(makeFullVariableName(QStringList(),c,p,d),rAlias);
+        }
+    }
+    return false;
 }
 
 

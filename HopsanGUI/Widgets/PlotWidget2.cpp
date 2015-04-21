@@ -206,8 +206,8 @@ public:
     {
         if(mpLogdataHandler)
         {
-            int low, high;
-            mpLogdataHandler->getLowestAndHighestGenerationNumber(low,high);
+            int low = mpLogdataHandler->getLowestGenerationNumber();
+            int high = mpLogdataHandler->getHighestGenerationNumber();
             mSelectGenSpinBox.setRange(low+1, high+1);
             if (mCurrentGenCheckBox.isChecked())
             {
@@ -757,19 +757,11 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             // Execute selected action
             if(pSelectedAction == pUndefineAliasAction)
             {
-                //! @todo FIXA /Peter
-//                ContainerObject *pContainer = mpLogDataHandler->getParentContainerObject();
-//                if (pContainer)
-//                {
-//                    pContainer->setVariableAlias(pItem->getFullName(),""); //!< @todo maybe a remove alias function would be nice
-//                }
-//                // Regardless of success or failure, lets remove the alias from log variables
-//                // Set variable will fail if you try to remove alias from an old component that has already been deleted
-//                mpLogDataHandler->unregisterAlias(pItem->getAliasName()); //!< @todo at what generation???
+                mpLogDataHandler->getParentModel()->defineAlias(pItem->getFullName(), ""); //!< @todo at what generation???
             }
             else if(pSelectedAction == pDefineAliasAction)
             {
-                mpLogDataHandler->defineAlias(pItem->getFullName());
+                mpLogDataHandler->getParentModel()->defineAlias(pItem->getFullName());
             }
             else if(pSelectedAction == pFindAliasAction)
             {

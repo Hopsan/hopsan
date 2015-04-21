@@ -204,6 +204,7 @@ public slots:
 
     void shiftAllGenerationsDown();
     void shiftAllGenerationsUp();
+    void updateCurvesToNewGenerations();
 
     void removeCurve(PlotCurve *pCurve);
 

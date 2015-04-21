@@ -31,6 +31,7 @@
 #include "PlotCurve.h"
 #include "global.h"
 #include "Configuration.h"
+#include "LogDataHandler2.h"
 
 
 //! @brief Constructor for plot info box
@@ -205,24 +206,25 @@ void PlotCurveControlBox::updateInfo()
 {
     // Enable/disable generation buttons
     int gen = mpPlotCurve->getGeneration();
-    int lowGen, highGen, nGen;
-    if (false)
+    int lowGen, highGen;
+    bool haveGens=false;
+    auto pLDH = mpPlotCurve->getSharedVectorVariable()->getLogDataHandler();
+    if (pLDH)
     {
         //! @todo FIXA /Peter
-//        lowGen = pVarContainer->getLowestGeneration();
-//        highGen = pVarContainer->getHighestGeneration();
-//        nGen = pVarContainer->getNumGenerations();
+        pLDH->getVariableGenerationInfo(mpPlotCurve->getDataFullName(), lowGen, highGen);
+        haveGens = (lowGen != -1);
     }
     else
     {
         lowGen = highGen = gen;
-        nGen = 1;
+        haveGens = true;
     }
     mpGenerationSpinBox->blockSignals(true);    // Need to temporarily disconnect to avoid loop
     mpGenerationSpinBox->setRange(lowGen+1, highGen+1);
     mpGenerationSpinBox->setValue(gen+1);
     mpGenerationSpinBox->blockSignals(false);   // Unblock
-    mpGenerationSpinBox->setEnabled(nGen > 1);
+    mpGenerationSpinBox->setEnabled(haveGens);
 
 
     // Set generation number strings

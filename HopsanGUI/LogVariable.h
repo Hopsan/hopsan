@@ -96,37 +96,6 @@ SharedVectorVariableT createFreeTimeVectorVariabel(const QVector<double> &rTime)
 SharedVectorVariableT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency);
 SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc);
 
-class IndexIntervalCollection
-{
-public:
-    class MinMaxT
-    {
-    public:
-        MinMaxT(int min, int max);
-        int mMin, mMax;
-    };
-
-    void addValue(const int val);
-    void removeValue(const int val);
-    int min() const;
-    int max() const;
-    bool isContinuos() const;
-    bool isEmpty() const;
-    bool contains(const int val) const;
-    void clear();
-
-    QList<MinMaxT> getList() const;
-    QList<int> getCompleteList() const;
-    int getNumIIC() const;
-    int getNumI() const;
-
-    void testMe();
-
-private:
-    void mergeIntervals(int first, int second);
-    QList<MinMaxT> mIntervalList;
-};
-
 //class VectorVariableContainer : public QObject
 //{
 //    Q_OBJECT
@@ -300,6 +269,7 @@ public:
 
     // Access to parent object pointers
     QPointer<LogDataHandler2> getLogDataHandler();
+    const QPointer<LogDataHandler2> getLogDataHandler() const;
 
 public slots:
     void setPlotScale(double scale);

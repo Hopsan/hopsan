@@ -70,6 +70,8 @@ public:
 
     bool isEditingEnabled();
 
+    bool defineAlias(const QString &rFullName, const QString &rAlias="");
+
     SystemContainer *getTopLevelSystemContainer();
     ContainerObject *getViewContainerObject();
     GraphicsView *getGraphicsView();

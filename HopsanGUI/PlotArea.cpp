@@ -451,6 +451,16 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     connect(pCurve, SIGNAL(customXDataChanged()), this, SLOT(refreshPlotAreaCustomXData()));
     connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
 
+    // Connect signals from the curve data logdatahandler (to trigger update whenever new data becomes available)
+    LogDataHandler2 *pLDH = pCurve->getSharedVectorVariable()->getLogDataHandler();
+    if (pLDH)
+    {
+        // Uniqur connection will prevnet multiple connections to same log data handler
+        // Note! We connect here but we never disconnect, but that is OK, most of the time only data from same handler will be pressent
+        // if that is not the case, well then update will be triggered more often, but who cares (not me)
+        connect(pLDH, SIGNAL(dataAdded()), this, SLOT(updateCurvesToNewGenerations()), Qt::UniqueConnection);
+    }
+
     // Refresh and redraw the plot area
     //! @todo maybe make it possible to rescale only selected axis, instead of always rescaling both of them
     rescaleAxesToCurves();
@@ -1736,6 +1746,14 @@ void PlotArea::shiftAllGenerationsUp()
     Q_FOREACH(pCurve, mPlotCurves)
     {
         pCurve->gotoNextGeneration();
+    }
+}
+
+void PlotArea::updateCurvesToNewGenerations()
+{
+    for (PlotCurve *pCurve : mPlotCurves)
+    {
+        pCurve->updateToNewGeneration();
     }
 }
 

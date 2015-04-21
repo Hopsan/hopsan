@@ -11,6 +11,7 @@
 
 #include "LogVariable.h"
 #include "Widgets/ModelWidget.h"
+#include "Utilities/IndexIntervalCollection.h"
 
 // Forward Declaration
 class PlotWindow;
@@ -24,19 +25,6 @@ class ModelWidget;
 class Generation
 {
     friend class LogDataHandler2;
-private:
-    typedef QMap< QString, SharedVectorVariableT > VariableMapT;
-
-    VariableMapT mVariables;
-    QList<SharedVectorVariableT> mTimeVectors;
-
-    QString mImportedFromFile;
-    SharedMultiDataVectorCacheT mGenerationDataCache;
-
-    IndexIntervalCollection mAliasGenIndexes;
-
-
-
 public:
     Generation(const QString &rImportfile="");
 
@@ -47,7 +35,7 @@ public:
     bool isImported() const;
     QString getImportFileName() const;
 
-    void addVariable(const QString &rFullName, SharedVectorVariableT variable );
+    void addVariable(const QString &rFullName, SharedVectorVariableT variable, bool isAlias);
     bool removeVariable(const QString &rFullName);
 
     QStringList getVariableFullNames() const;
@@ -59,18 +47,26 @@ public:
     QList<SharedVectorVariableT> getAllNonAliasVariables() const;
     QList<SharedVectorVariableT> getAllVariables() const;
 
-    bool isStoringAlias() const;
-    bool isGenerationAlias(const int gen) const;
-
     bool registerAlias(const QString &rFullName, const QString &rAlias);
     bool unregisterAlias(const QString &rAlias);
     bool unregisterAliasForFullName(const QString &rFullName);
     QString getFullNameFromAlias(const QString &rAlias);
 
+private:
+    typedef QMap< QString, SharedVectorVariableT > VariableMapT;
+
+    QList<SharedVectorVariableT>  getMatchingVariables(const QRegExp &rNameExp, VariableMapT &rMap);
+
+    VariableMapT mVariables;
+    VariableMapT mAliasVariables;
+    QList<SharedVectorVariableT> mTimeVectors;
+
+    QString mImportedFromFile;
+    SharedMultiDataVectorCacheT mGenerationDataCache;
+
+    IndexIntervalCollection mAliasGenIndexes;
 
 };
-
-//bool isVariableAlias(SharedVectorVariableT pVar);
 
 class LogDataHandler2 : public QObject
 {
@@ -132,17 +128,17 @@ public:
     void removeImportedFileGenerations(const QString &rFileName);
     bool isGenerationImported(const int gen);
 
-    void defineAlias(const QString &rFullName);
-    QString getFullNameFromAlias(const QString &rAlias, const int gen=-1) const;
+    //QString getFullNameFromAlias(const QString &rAlias, const int gen=-1) const;
 
     int getNumberOfGenerations() const;
     QList<int> getGenerations() const;
     int getLowestGenerationNumber() const;
     int getHighestGenerationNumber() const;
-    void getLowestAndHighestGenerationNumber(int &rLowest, int &rHighest) const;
     int getCurrentGenerationNumber() const;
     const Generation* getCurrentGeneration() const;
     const Generation* getGeneration(const int gen) const;
+
+    void getVariableGenerationInfo(const QString &rFullName, int &rLowest, int &rHighest) const;
 
     void limitPlotGenerations();
     void preventGenerationAutoRemoval(const int gen);

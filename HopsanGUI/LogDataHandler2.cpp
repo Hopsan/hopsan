@@ -25,7 +25,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QProgressDialog>
-#include <QInputDialog>
 #include <QDialogButtonBox>
 #include <QPushButton>
 
@@ -1284,58 +1283,43 @@ QVector<double> LogDataHandler2::copyTimeVector(const int generation) const
 //}
 
 
-//! @brief Defines a new alias for specified variable (popup box)
-//! @param[in] rFullName The Full name of the variable
-//! @todo this function should not be in the logdatahanlder /Peter
-void LogDataHandler2::defineAlias(const QString &rFullName)
-{
-    bool ok;
-    QString alias = QInputDialog::getText(gpMainWindowWidget, gpMainWindowWidget->tr("Define Variable Alias"),
-                                          QString("Alias for: %1").arg(rFullName), QLineEdit::Normal, "", &ok);
-    if(ok)
-    {
-        //defineAlias(alias, rFullName);
-        // Try to set the new alias, abort if it did not work
-        //return mpParentContainerObject->setVariableAlias(rFullName,rAlias);
-    }
-}
 
 
-//! @brief Returns plot variable for specified alias
-//! @param[in] rAlias Alias of variable
-//! @param[in] gen Generation to check, -1 = Current, -2 = Newest Available, >= 0 = Specific generation to check
-QString LogDataHandler2::getFullNameFromAlias(const QString &rAlias, const int gen) const
-{
-//    SharedVectorVariableContainerT pAliasContainer = getVariableContainer(rAlias);
-//    if (pAliasContainer && pAliasContainer->isStoringAlias())
-//    {
-//        bool isStoringAlias = false;
-//        int g = INT_MIN;
-//        // Check if current
-//        if (gen == -1)
-//        {
-//            g = mGenerationNumber;
-//        }
-//        // Check specific
-//        else if (gen >= 0)
-//        {
-//            g = gen;
-//        }
-//        // First match (newest availible)
-//        else if (gen == -2)
-//        {
-//            g = pAliasContainer->getHighestGeneration();
-//        }
-//        isStoringAlias = pAliasContainer->isGenerationAlias(g);
+////! @brief Returns plot variable for specified alias
+////! @param[in] rAlias Alias of variable
+////! @param[in] gen Generation to check, -1 = Current, -2 = Newest Available, >= 0 = Specific generation to check
+//QString LogDataHandler2::getFullNameFromAlias(const QString &rAlias, const int gen) const
+//{
+////    SharedVectorVariableContainerT pAliasContainer = getVariableContainer(rAlias);
+////    if (pAliasContainer && pAliasContainer->isStoringAlias())
+////    {
+////        bool isStoringAlias = false;
+////        int g = INT_MIN;
+////        // Check if current
+////        if (gen == -1)
+////        {
+////            g = mGenerationNumber;
+////        }
+////        // Check specific
+////        else if (gen >= 0)
+////        {
+////            g = gen;
+////        }
+////        // First match (newest availible)
+////        else if (gen == -2)
+////        {
+////            g = pAliasContainer->getHighestGeneration();
+////        }
+////        isStoringAlias = pAliasContainer->isGenerationAlias(g);
 
-//        // Note there could be multiple different names under the same alias, but generation is used to choose
-//        if (isStoringAlias && (pAliasContainer->getDataGeneration(g)->getAliasName() == rAlias) )
-//        {
-//            return pAliasContainer->getDataGeneration(g)->getFullVariableName();
-//        }
-//    }
-//    return QString();
-}
+////        // Note there could be multiple different names under the same alias, but generation is used to choose
+////        if (isStoringAlias && (pAliasContainer->getDataGeneration(g)->getAliasName() == rAlias) )
+////        {
+////            return pAliasContainer->getDataGeneration(g)->getFullVariableName();
+////        }
+////    }
+////    return QString();
+//}
 
 
 QList<int> LogDataHandler2::getGenerations() const
@@ -1359,20 +1343,6 @@ int LogDataHandler2::getHighestGenerationNumber() const
         return (--(mGenerationMap.end())).key();
     }
     return -1;
-}
-
-void LogDataHandler2::getLowestAndHighestGenerationNumber(int &rLowest, int &rHighest) const
-{
-    if (!mGenerationMap.isEmpty())
-    {
-        rLowest = mGenerationMap.begin().key();
-        rHighest = (--(mGenerationMap.end())).key();
-    }
-    else
-    {
-        rLowest = -1;
-        rHighest = -1;
-    }
 }
 
 //! @brief Ask each variable how many generations it has, and returns the maximum (the total number of available generations)
@@ -1868,11 +1838,6 @@ PlotWindow *LogDataHandler2::plotVariable(PlotWindow *pPlotWindow, const QString
     return 0;
 }
 
-////! @brief Get a list of all available variables at their respective highest (newest) generation. Aliases are excluded.
-//QList<SharedVectorVariableT> LogDataHandler2::getAllNonAliasVariablesAtRespectiveNewestGeneration()
-//{
-//    return getAllNonAliasVariablesAtGeneration(-1);
-//}
 
 //! @brief Get a list of all available variables at a specific generation, variables that does not have this generation will not be included.  Aliases are excluded.
 QList<SharedVectorVariableT> LogDataHandler2::getAllNonAliasVariablesAtGeneration(const int generation) const
@@ -1885,17 +1850,12 @@ QList<SharedVectorVariableT> LogDataHandler2::getAllNonAliasVariablesAtGeneratio
     return QList<SharedVectorVariableT>();
 }
 
-//QList<SharedVectorVariableT> LogDataHandler2::getAllVariablesAtRespectiveNewestGeneration()
-//{
-//    return getAllVariablesAtGeneration(-1);
-//}
-
 QList<SharedVectorVariableT> LogDataHandler2::getAllVariablesAtGeneration(const int generation)
 {
     auto pGen = getGeneration(generation);
     if (pGen)
     {
-        return pGen->getAllNonAliasVariables();
+        return pGen->getAllVariables();
     }
     return QList<SharedVectorVariableT>();
 }
@@ -1955,6 +1915,35 @@ const Generation *LogDataHandler2::getGeneration(const int gen) const
     return mGenerationMap.value(gen, 0);
 }
 
+void LogDataHandler2::getVariableGenerationInfo(const QString &rFullName, int &rLowest, int &rHighest) const
+{
+    rLowest = -1;
+    rHighest = -1;
+
+    // Search lowest
+    for (auto it = mGenerationMap.begin(); it!=mGenerationMap.end(); ++it)
+    {
+        if (it.value()->haveVariable(rFullName))
+        {
+            rLowest = it.key();
+            break;
+        }
+    }
+
+    // Search highest
+    QMapIterator< int, Generation*> rit(mGenerationMap);
+    rit.toBack();
+    while (rit.hasPrevious())
+    {
+        auto item = rit.previous();
+        if (item.value()->haveVariable(rFullName))
+        {
+            rHighest = item.key();
+            break;
+        }
+    }
+}
+
 
 QStringList LogDataHandler2::getVariableFullNames(int generation) const
 {
@@ -1967,8 +1956,7 @@ QStringList LogDataHandler2::getVariableFullNames(int generation) const
     auto pGen = getGeneration(generation);
     if (pGen)
     {
-        //! @todo How to avoid aliases here FIXA  /Peter
-        //! @todo fix gen < 0 (all gens)
+        //! @todo fix gen < -1 (all gens)
         return pGen->getVariableFullNames();
     }
     return QStringList();
@@ -2330,11 +2318,19 @@ SharedVectorVariableT LogDataHandler2::insertFrequencyDomainVariable(SharedVecto
 //! @returns A SharedVectorVariableT object representing the inserted variable
 SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVariable, QString keyName, int gen)
 {
-    // If keyName is empty then use fullName
+    bool isAlias=false;
+
+    // If keyName is empty then use fullName, (this is not an alias)
     if (keyName.isEmpty())
     {
         keyName = pVariable->getFullVariableName();
     }
+    // If keyName is not empty, it might be an alias if it is different from teh fullName
+    else if ( keyName != pVariable->getFullVariableName() )
+    {
+        isAlias = true;
+    }
+
 
     // If gen -1 then use current generation
     if (gen<0)
@@ -2351,11 +2347,11 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
         mGenerationMap.insert(gen, pGen );
     }
 
-    // Set logdatahandler
+    // Make the variable remember that this LogDataHandler is its parent (creator)
     pVariable->mpParentLogDataHandler = this;
 
     // Now add variable
-    pGen->addVariable(keyName, pVariable);
+    pGen->addVariable(keyName, pVariable, isAlias);
 
     // Also insert alias if it exist, but only if it is different from keyName (else we will have an endless loop in here)
     if ( pVariable->hasAliasName() && (pVariable->getAliasName() != keyName) )
@@ -2365,10 +2361,6 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
 
     // Remember imported files in the import map, so that we know what generations belong to which file
     rememberIfImported(pVariable);
-
-    // Make the variable remember that this LogDataHandler is its parent (creator)
-    //pVariable->mpParentLogDataHandler = this;
-    //! @todo FIXA
 
     return pVariable;
 }
@@ -2421,7 +2413,6 @@ QStringList Generation::getVariableFullNames() const
     for (auto dit = mVariables.begin(); dit!=mVariables.end(); ++dit)
     {
         retval.append(dit.key());
-        //! @todo How to avoid aliases here FIXA  /Peter
     }
     return retval;
 }
@@ -2432,20 +2423,38 @@ bool Generation::haveVariable(const QString &rFullName) const
 }
 
 
-void Generation::addVariable(const QString &rFullName, SharedVectorVariableT variable)
+void Generation::addVariable(const QString &rFullName, SharedVectorVariableT variable, bool isAlias)
 {
-    mVariables.insert(rFullName, variable);
+    if (isAlias)
+    {
+        mAliasVariables.insert(rFullName, variable);
+    }
+    else
+    {
+        mVariables.insert(rFullName, variable);
+    }
 }
 
 bool Generation::removeVariable(const QString &rFullName)
 {
-    int rc = mVariables.remove(rFullName);
+    // First try alias
+    int rc = mAliasVariables.remove(rFullName);
+    if (rc == 0)
+    {
+        // If not alias then remove actual variable
+        rc = mVariables.remove(rFullName);
+    }
     return (rc != 0);
 }
 
 SharedVectorVariableT Generation::getVariable(const QString &rFullName) const
 {
-    return mVariables.value(rFullName, SharedVectorVariableT());
+    SharedVectorVariableT tmp = mAliasVariables.value(rFullName, SharedVectorVariableT());
+    if (!tmp)
+    {
+        tmp = mVariables.value(rFullName, SharedVectorVariableT());
+    }
+    return tmp;
 }
 
 
@@ -2454,36 +2463,19 @@ SharedVectorVariableT Generation::getVariable(const QString &rFullName) const
 QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNameExp)
 {
     QList<SharedVectorVariableT> results;
-    for (auto it = mVariables.begin(); it!=mVariables.end(); it++)
-    {
-        // Compare name with regexp
-        if ( rNameExp.exactMatch(it.key()) )
-        {
-            results.append(it.value());
-        }
-    }
+    results.append(getMatchingVariables(rNameExp, mAliasVariables));
+    results.append(getMatchingVariables(rNameExp, mVariables));
     return results;
 }
 
 QList<SharedVectorVariableT> Generation::getAllNonAliasVariables() const
 {
-    QList<SharedVectorVariableT> dataList;
-    dataList.reserve(mVariables.size()); //(may not use all reserved space but that does not matter)
-    for (auto dit = mVariables.begin(); dit!=mVariables.end(); ++dit)
-    {
-        // Append if not alias
-        //if(dit.value()->isAlias())
-        //! @todo fix this somehow /Peter
-        {
-            dataList.append(dit.value());
-        }
-    }
-    return dataList;
+    return mVariables.values();
 }
 
 QList<SharedVectorVariableT> Generation::getAllVariables() const
 {
-    return mVariables.values();
+    return mAliasVariables.values()+mVariables.values();
 }
 
 bool Generation::registerAlias(const QString &rFullName, const QString &rAlias)
@@ -2507,7 +2499,7 @@ bool Generation::registerAlias(const QString &rFullName, const QString &rAlias)
             // Now insert the full data as new alias
             // existing data with alias name will be replaced (removed)
             pFullVar->mpVariableDescription->mAliasName = rAlias;
-            addVariable(rAlias, pFullVar);
+            addVariable(rAlias, pFullVar, true);
             //! @todo this will overwrite existing fullname if alias asam as a full name /Peter
             return true;
         }
@@ -2542,12 +2534,26 @@ bool Generation::unregisterAliasForFullName(const QString &rFullName)
 //! @param[in] rAlias Alias of variable
 QString Generation::getFullNameFromAlias(const QString &rAlias)
 {
-    SharedVectorVariableT pAliasVar = getVariable(rAlias);
-    if (pAliasVar /*&& pAliasVar->isStoringAlias()*/) //! @todo need to be able to check if a variable is an alias
+    SharedVectorVariableT pAliasVar = mAliasVariables.value(rAlias);
+    if (pAliasVar)
     {
         return pAliasVar->getFullVariableName();
     }
     return QString();
+}
+
+QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNameExp, Generation::VariableMapT &rMap)
+{
+    QList<SharedVectorVariableT> results;
+    for (auto it = rMap.begin(); it!=rMap.end(); it++)
+    {
+        // Compare name with regexp
+        if ( rNameExp.exactMatch(it.key()) )
+        {
+            results.append(it.value());
+        }
+    }
+    return results;
 }
 
 
