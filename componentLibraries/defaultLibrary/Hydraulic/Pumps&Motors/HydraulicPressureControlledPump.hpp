@@ -120,7 +120,7 @@ namespace hopsan {
 
             gamma = 1 / (Clp * (Zc1 + Zc2) + 1);
             if (p2 < 1.0) { p2 = 1.0; }
-            lpe = lp * sqrt(pnom / p2) * (movementnom / movement+0.001);
+            lpe = lp * sqrt(pnom / p2) * (movementnom / (movement+0.001));
             y0 = q2 * (lpe + rp * taov + Zc2 * gamma / wp1);
 
             (*mpND_p1) = p1;
