@@ -1684,6 +1684,8 @@ QString PlotGraphicsExporter::selectExportFilename()
     }
 
     mImageFilename = QFileDialog::getSaveFileName(0, "Choose Export Filename", path, fileFilter);
+    QFileInfo file(mImageFilename);
+    gpConfig->setPlotGfxDir(file.canonicalPath());
     return mImageFilename;
 }
 
