@@ -260,7 +260,7 @@ namespace hopsan {
 
             if(x<0)
             {
-                x = 360-fmod(abs(x)-start-min_angle, 360);
+                x = 360-fmod(std::abs(x)-start-min_angle, 360);
             }
             else
             {

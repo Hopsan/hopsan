@@ -7,6 +7,7 @@
 import os
 import sys
 import re
+import collections
 
 def getAllEmediateSubDirsOf(dirPath,  listOfPaths):
     results = list()
@@ -208,7 +209,7 @@ def main(rootDir):
     #print(files)
 
     componentDirs = dict()
-    for filepath in reversed(files):
+    for filepath in files:
         fileFullDir, fileName = os.path.split(filepath)
         dummy, fileDir = os.path.split(fileFullDir)
         print("\n")
@@ -235,6 +236,9 @@ def main(rootDir):
             currentDir.compHeaders.append(fileName)
             #currentDir.compSources.append(fileBaseName+'.cc')
             #generateCCFileForComponentHeader(fileFullDir, fileBaseName+'.cc', fileName)
+
+    # Sort dictionary by key
+    componentDirs = collections.OrderedDict(sorted(componentDirs.items(), key=lambda t: t[0]))
 
     #print (len(componentDirs))
     print('\n')
