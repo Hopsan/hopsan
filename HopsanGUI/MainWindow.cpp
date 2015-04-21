@@ -58,7 +58,7 @@
 #include "SimulationThreadHandler.h"
 
 #include "Widgets/DebuggerWidget.h"
-#include "Widgets/PlotWidget.h"
+#include "Widgets/PlotWidget2.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
@@ -91,7 +91,7 @@ PlotHandler *gpPlotHandler = 0;
 LibraryWidget *gpLibraryWidget = 0;
 TerminalWidget *gpTerminalWidget = 0;
 ModelHandler *gpModelHandler = 0;
-PlotWidget *gpPlotWidget = 0;
+PlotWidget2 *gpPlotWidget = 0;
 CentralTabWidget *gpCentralTabWidget = 0;
 SystemParametersWidget *gpSystemParametersWidget = 0;
 UndoWidget *gpUndoWidget = 0;
@@ -411,7 +411,7 @@ void MainWindow::initializeWorkspace()
     }
 
     // Create the plot widget, only once! :)
-    gpPlotWidget = new PlotWidget(this);
+    gpPlotWidget = new PlotWidget2(this);
     gpPlotWidget->hide();
 
     // Create the find widget

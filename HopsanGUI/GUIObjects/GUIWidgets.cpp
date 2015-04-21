@@ -539,7 +539,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     if(mResizeLeft && mResizeTop)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());
@@ -552,7 +552,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     else if(mResizeTop && mResizeRight)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());
@@ -564,7 +564,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     else if(mResizeRight && mResizeBottom)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());
@@ -575,7 +575,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     else if(mResizeBottom && mResizeLeft)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());
@@ -587,7 +587,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     else if(mResizeLeft)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), mpBorderItem->rect().height());
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), mpBorderItem->rect().height());
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());
@@ -599,7 +599,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     else if(mResizeRight)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), max(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), mpBorderItem->rect().height());
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), mpBorderItem->rect().height());
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());
@@ -609,7 +609,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     else if(mResizeTop)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(),  mpBorderItem->rect().width(), max(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(),  mpBorderItem->rect().width(), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());
@@ -621,7 +621,7 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     else if(mResizeBottom)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), mpBorderItem->rect().width(), max(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), mpBorderItem->rect().width(), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
         if (mReflowText)
         {
             mpTextItem->setTextWidth(desiredRect.width());

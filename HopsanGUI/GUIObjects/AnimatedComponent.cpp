@@ -80,7 +80,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                 mpData->append(QList<QVector<double> >());
                 mpNodeDataPtrs->append(QList<double*>());
                 //! @todo generation info should be some kind of "property" for all of the animation code so that if you change it, it should change everywhere, to make it possible to animate different generations
-                int generation = mpAnimationWidget->mpContainer->getLogDataHandler()->getCurrentGeneration();
+                int generation = mpAnimationWidget->mpContainer->getLogDataHandler()->getCurrentGenerationNumber();
                 QString componentName = unanimatedComponent->getName();
                 for(int j=0; j<mpAnimationData->movables[i].dataPorts.size(); ++j)
                 {
@@ -96,7 +96,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                             tempComponentName = mpModelObject->getPort(portName)->getConnectedPorts().first()->getParentModelObjectName();
                             tempPortName = mpModelObject->getPort(portName)->getConnectedPorts().first()->getName();
                         }
-                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyVariableDataVector(makeConcatName(tempComponentName, tempPortName, dataName),generation));
+                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyVariableDataVector(makeFullVariableName(mpModelObject->getSystemNameHieararchy(), tempComponentName, tempPortName, dataName),generation));
                     }
                     mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
                     if(!mpNodeDataPtrs->last().last())
@@ -366,7 +366,7 @@ void AnimatedComponent::updateAnimation()
 
     if(mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
     {
-        LogDataHandler *pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler();
+        LogDataHandler2 *pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler();
 
         QList<SharedVectorVariableT> vectors;
 
@@ -379,8 +379,9 @@ void AnimatedComponent::updateAnimation()
             SharedVectorVariableT pVar;
             foreach(const Port *pPort, QVector<Port*>() << mpModelObject->getPort("in")->getConnectedPorts() << mpModelObject->getPort("in_right")->getConnectedPorts() << mpModelObject->getPort("in_bottom"))
             {
-                QString fullName = makeConcatName(pPort->getParentModelObjectName(),
-                                                  pPort->getName(),"Value");
+                //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
+                QString fullName = makeFullVariableName(pPort->getParentModelObject()->getSystemNameHieararchy(), pPort->getParentModelObjectName(),
+                                                        pPort->getName(),"Value");
                 fullName.remove("#");
                 pVar = pHandler->getVectorVariable(fullName,-1);
                 if(pVar.isNull())
@@ -894,7 +895,7 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     //Open plot window if double-clicking on scope component
     if(mpAnimatedComponent->mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
     {
-        LogDataHandler *pHandler = mpAnimatedComponent->mpModelObject->getParentContainerObject()->getLogDataHandler();
+        LogDataHandler2 *pHandler = mpAnimatedComponent->mpModelObject->getParentContainerObject()->getLogDataHandler();
         QString name = mpAnimatedComponent->mpModelObject->getName();
         PlotWindow *pPlotWindow = mpAnimatedComponent->mpPlotWindow;
 
@@ -911,8 +912,9 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
         foreach(const Port* pPort, mpAnimatedComponent->mpModelObject->getPort("in")->getConnectedPorts())
         {
-            QString fullName = makeConcatName(pPort->getParentModelObjectName(),
-                                              pPort->getName(),"Value");
+            //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
+            QString fullName = makeFullVariableName(pPort->getParentModelObject()->getSystemNameHieararchy(), pPort->getParentModelObjectName(),
+                                                    pPort->getName(),"Value");
             fullName.remove("#");
             SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
             if(pVar.isNull())
@@ -924,8 +926,9 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         }
         foreach(const Port* pPort, mpAnimatedComponent->mpModelObject->getPort("in_right")->getConnectedPorts())
         {
-            QString fullName = makeConcatName(pPort->getParentModelObjectName(),
-                                              pPort->getName(),"Value");
+            //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
+            QString fullName = makeFullVariableName(pPort->getParentModelObject()->getSystemNameHieararchy(), pPort->getParentModelObjectName(),
+                                                    pPort->getName(),"Value");
             fullName.remove("#");
             SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
             if(pVar.isNull())
@@ -938,8 +941,9 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         if(mpAnimatedComponent->mpModelObject->getPort("in_bottom")->isConnected())
         {
             Port *pPort = mpAnimatedComponent->mpModelObject->getPort("in_bottom");
-            QString fullName = makeConcatName(pPort->getParentModelObjectName(),
-                                              pPort->getName(),"Value");
+            //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
+            QString fullName = makeFullVariableName(pPort->getParentModelObject()->getSystemNameHieararchy(), pPort->getParentModelObjectName(),
+                                                    pPort->getName(),"Value");
             fullName.remove("#");
             SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
             if(pVar.isNull())

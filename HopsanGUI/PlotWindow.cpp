@@ -36,7 +36,7 @@
 
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "Widgets/PlotWidget.h"
+#include "Widgets/PlotWidget2.h"
 #include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
@@ -64,7 +64,6 @@
 #include "PlotTab.h"
 #include "PlotArea.h"
 #include "PlotCurve.h"
-
 
 //! @brief Closes the plot tab with specified index
 //! @param index Index of tab to close
@@ -303,7 +302,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpHelpPopup = new HelpPopUpWidget(this);
 
     // Setup PlotVariable List stuff
-    PlotWidget *pLocalPlotWidget = new PlotWidget(this);
+    PlotWidget2 *pLocalPlotWidget = new PlotWidget2(this);
     pLocalPlotWidget->setPreferedPlotWindow(this);
     QDockWidget *pLocalPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
     pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -311,7 +310,8 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     pLocalPlotWidgetDock->setWidget(pLocalPlotWidget);
     if(gpModelHandler->count() != 0)
     {
-        pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
+        //pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
+        pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
     }
 
     pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
@@ -487,15 +487,15 @@ QString PlotWindow::getName() const
 //! @param[in] pData Shared pointer to data that you want to plot
 //! @param[in] axisY  0=left 1=right
 //! @param[in] desiredColor The desired color
-PlotCurve* PlotWindow::addPlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
+PlotCurve* PlotWindow::addPlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
 {
     if (data)
     {
         // Remember which model it belongs to, and connect the closeWindow signal from the data handler
         // this makes it possible to auto close all plotwindows with data from a particular model(logdatahandler)
-        if (data.mpVariable->getLogDataHandler())
+        if (data->getLogDataHandler())
         {
-            connect(data.mpVariable->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
+            connect(data->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
         }
 
         // Make sure that we have a tab
@@ -513,7 +513,7 @@ PlotCurve* PlotWindow::addPlotCurve(HopsanVariable data, const QwtPlot::Axis axi
     return 0;
 }
 
-PlotCurve *PlotWindow::addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
+PlotCurve *PlotWindow::addPlotCurve(SharedVectorVariableT xdata, SharedVectorVariableT ydata, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
 {
     PlotCurve *pCurve = addPlotCurve(ydata, axisY, desiredColor, thickness, type);
     if (pCurve)
@@ -523,7 +523,7 @@ PlotCurve *PlotWindow::addPlotCurve(HopsanVariable xdata, HopsanVariable ydata, 
     return pCurve;
 }
 
-void PlotWindow::setXData(HopsanVariable xdata, bool force)
+void PlotWindow::setXData(SharedVectorVariableT xdata, bool force)
 {
     PlotTab *pTab=getCurrentPlotTab();
     // Make sure that we have a tab
@@ -649,7 +649,7 @@ void PlotWindow::saveToXml()
 //! @brief Loads a plot window from XML
 void PlotWindow::loadFromXml()
 {
-    gpPlotWidget->loadFromXml();
+    //gpPlotWidget->loadFromXml();
 }
 
 
@@ -940,7 +940,7 @@ void PlotWindow::createPlotWindowFromTab()
     PlotWindow *pPW = 0;
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
-        HopsanVariable data(getCurrentPlotTab()->getCurves().at(i)->getSharedVectorVariableContainer(), getCurrentPlotTab()->getCurves().at(i)->getSharedVectorVariable());
+        SharedVectorVariableT data = getCurrentPlotTab()->getCurves().at(i)->getSharedVectorVariable();
         pPW = gpPlotHandler->plotDataToWindow(pPW, data, getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }

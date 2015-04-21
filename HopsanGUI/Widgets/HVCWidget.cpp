@@ -295,8 +295,8 @@ void HVCWidget::runHvcTest()
     gpPlotHandler->closeAllOpenWindows(); //Close all plot windows to avoid confusion if we run several tests after each other
     for (int t=0; t<mDataConfigs.size(); ++t)
     {
-        LogDataHandler *pImportLogDataHandler = gpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
-        LogDataHandler *pVariableLogDataHandler = pImportLogDataHandler;
+        LogDataHandler2 *pImportLogDataHandler = gpModelHandler->getCurrentLogDataHandler();
+        LogDataHandler2 *pVariableLogDataHandler = pImportLogDataHandler;
         QString variableName = mDataConfigs[t].mFullVarName;
 
         // Handle subsystem variables

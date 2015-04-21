@@ -132,7 +132,8 @@ void FindWidget::findAlias(const QString &rName, const bool centerView)
             {
                 QString fullName = mpContainer->getFullNameFromAlias(alias);
                 QString comp, port, var;
-                splitConcatName(fullName, comp, port, var);
+                QStringList sysHierarchy;
+                splitFullVariableName(fullName, sysHierarchy, comp, port, var);
                 ModelObject *pMO = mpContainer->getModelObject(comp);
                 //! @todo we should actually highlight the port also (and center on the port)
                 if (pMO)

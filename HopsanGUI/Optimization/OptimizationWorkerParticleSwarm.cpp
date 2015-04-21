@@ -76,15 +76,15 @@ void OptimizationWorkerParticleSwarm::init()
     }
     mObjectives.resize(mNumPoints);
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasVariable("WorstObjective"))
     {
-        pHandler->deleteVariableContainer("WorstObjective");
+        pHandler->removeVariable("WorstObjective", -1);
     }
     if (pHandler->hasVariable("BestObjective"))
     {
-        pHandler->deleteVariableContainer("BestObjective");
+        pHandler->removeVariable("BestObjective", -1);
     }
 
     // Close these plotwindows before optimization to make sure old data is removed

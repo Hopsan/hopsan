@@ -140,7 +140,7 @@ public:
 
     void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor(), int thickness=2, int type=1);
     void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, bool force=false);
-    void setCustomXVectorForAll(HopsanVariable data, bool force=false);
+    void setCustomXVectorForAll(SharedVectorVariableT data, bool force=false);
     void removeAllCurvesOnAxis(const int axis);
 
     void removePlotMarker(PlotMarker *pMarker);
@@ -160,7 +160,7 @@ public:
     bool isZoomed() const;
 
     bool hasCustomXData() const;
-    const HopsanVariable getCustomXData() const;
+    const SharedVectorVariableT getCustomXData() const;
 
     void setBottomAxisLogarithmic(bool value);
     void setLeftAxisLogarithmic(bool value);
@@ -254,7 +254,7 @@ private:
     RectanglePainterWidget *mpPainterWidget;
 
     // Custom X data axis variables
-    HopsanVariable mCustomXData;
+    SharedVectorVariableT mCustomXData;
 
     // Legend related member variables
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;

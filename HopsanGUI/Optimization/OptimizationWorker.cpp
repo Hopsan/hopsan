@@ -283,7 +283,7 @@ void OptimizationWorker::printLogFile()
 //! @param idx Index of point to save
 void OptimizationWorker::logPoint(int idx)
 {
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
 
     for(int p=0; p<mNumParameters; ++p)
     {
@@ -425,7 +425,7 @@ void OptimizationWorker::plotPoints()
         return;
     }
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumPoints; ++p)
     {
         QString namex = "par"+QString::number(p)+"x";
@@ -484,7 +484,7 @@ void OptimizationWorker::plotObjectiveFunctionValues()
 {
     if(!mPlotObjectiveFunctionValues) { return; }
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
 
     //Best objective value
     SharedVectorVariableT bestVar = pHandler->getVectorVariable("BestObjective", -1);
@@ -546,7 +546,7 @@ void OptimizationWorker::plotParameters()
 {
     if(!mPlotParameters) { return; }
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumParameters; ++p)
     {
         SharedVectorVariableT par = pHandler->getVectorVariable("NewPar"+QString::number(p), -1);
@@ -582,7 +582,7 @@ void OptimizationWorker::plotEntropy()
     int n = mParameters.size();
     double entropy = -n*log2(deltaX);
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     SharedVectorVariableT entropyVar = pHandler->getVectorVariable("Entropy", -1);
     if(entropyVar.isNull())
     {

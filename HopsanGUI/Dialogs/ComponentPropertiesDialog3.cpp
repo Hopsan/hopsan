@@ -1232,7 +1232,7 @@ QSize TableWidgetTotalSize::sizeHint() const
     }
 
     int h = horizontalHeader()->sizeHint().height() + frameWidth()*2;
-    for (int r=0; r<min(mMaxVisibleRows,rowCount()); ++r)
+    for (int r=0; r<qMin(mMaxVisibleRows,rowCount()); ++r)
     {
         h += rowHeight(r);
     }

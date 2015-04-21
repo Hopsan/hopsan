@@ -60,26 +60,27 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
     {
         if(pConnector->getStartPort()->getPortType() == "PowerMultiportType")
         {
-            int g = pConnector->getParentContainer()->getLogDataHandler()->getCurrentGeneration();
+            int g = pConnector->getParentContainer()->getLogDataHandler()->getCurrentGenerationNumber();
             QString componentName = pConnector->getEndPort()->getParentModelObject()->getName();
             QString portName = pConnector->getEndPort()->getName();
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Pressure"), g);
-                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Flow"), g);
+                //! @todo it should be smarter to generate the fullnames once before animation to avoid the fullname creation every time, especially since adding the system name hierarchy thing
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(pConnector->getParentContainer()->getSystemNameHieararchy(), componentName, portName, "Pressure"), g);
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(pConnector->getParentContainer()->getSystemNameHieararchy(), componentName, portName, "Flow"), g);
             }
         }
         else
         {
-            int g = pConnector->getParentContainer()->getLogDataHandler()->getCurrentGeneration();
+            int g = pConnector->getParentContainer()->getLogDataHandler()->getCurrentGenerationNumber();
             QString componentName = pConnector->getStartPort()->getParentModelObject()->getName();
             QString portName = pConnector->getStartPort()->getName();
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Pressure"),g);
-                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, "Flow"),g);
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(pConnector->getParentContainer()->getSystemNameHieararchy(), componentName, portName, "Pressure"),g);
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(pConnector->getParentContainer()->getSystemNameHieararchy(), componentName, portName, "Flow"),g);
             }
         }
 

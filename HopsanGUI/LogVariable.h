@@ -42,10 +42,10 @@
 
 // Forward declaration
 class VectorVariable;
-class LogDataHandler;
+class LogDataHandler2;
 
-QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
-void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
+QString makeFullVariableName(const QStringList &rSystemHierarchy, const QString &rComponentName, const QString &rPortName, const QString &rDataName);
+bool splitFullVariableName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rPortName, QString &rVarName);
 
 //! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)
 enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, UndefinedVariableSourceType};
@@ -84,7 +84,7 @@ public:
 };
 
 
-typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
+typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT; //!< @todo I dont think this one need/should be shared anymore /Peter
 typedef QSharedPointer<VectorVariable> SharedVectorVariableT;
 
 
@@ -126,64 +126,64 @@ private:
     QList<MinMaxT> mIntervalList;
 };
 
-class VectorVariableContainer : public QObject
-{
-    Q_OBJECT
-public:
-    typedef QMap<int, SharedVectorVariableT> GenerationMapT;
+//class VectorVariableContainer : public QObject
+//{
+//    Q_OBJECT
+//public:
+//    typedef QMap<int, SharedVectorVariableT> GenerationMapT;
 
-    VectorVariableContainer(const QString &rName, LogDataHandler *pParentLogDataHandler);
-    ~VectorVariableContainer();
+//    VectorVariableContainer(const QString &rName, LogDataHandler2 *pParentLogDataHandler);
+//    ~VectorVariableContainer();
 
-    const QString &getName() const;
+//    const QString &getName() const;
 
-    void insertDataGeneration(const int generation, SharedVectorVariableT pData);
-    bool removeDataGeneration(const int generation, const bool force=false);
-    bool removeDataGenerationOnly(const int generation, const bool force=false);
-    void removeAllGenerations();
-    bool removeAllImportedGenerations();
-    bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
+//    void insertDataGeneration(const int generation, SharedVectorVariableT pData);
+//    bool removeDataGeneration(const int generation, const bool force=false);
+//    bool removeDataGenerationOnly(const int generation, const bool force=false);
+//    void removeAllGenerations();
+//    bool removeAllImportedGenerations();
+//    bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
 
-    SharedVectorVariableT getDataGeneration(const int gen=-1) const;
-    SharedVectorVariableT getNonAliasDataGeneration(int gen=-1) const;
-    QList<SharedVectorVariableT> getAllDataGenerations() const;
-    bool hasDataGeneration(const int gen);
-    int getLowestGeneration() const;
-    int getHighestGeneration() const;
-    int getNumGenerations() const;
-    QList<int> getGenerations() const;
-    int getNewestImportedGeneration() const;
-    int getNewestNonImportedGeneration() const;
-    int getNewestAliasGeneration() const;
+//    SharedVectorVariableT getDataGeneration(const int gen=-1) const;
+//    SharedVectorVariableT getNonAliasDataGeneration(int gen=-1) const;
+//    QList<SharedVectorVariableT> getAllDataGenerations() const;
+//    bool hasDataGeneration(const int gen);
+//    int getLowestGeneration() const;
+//    int getHighestGeneration() const;
+//    int getNumGenerations() const;
+//    QList<int> getGenerations() const;
+//    int getNewestImportedGeneration() const;
+//    int getNewestNonImportedGeneration() const;
+//    int getNewestAliasGeneration() const;
 
-    bool isStoringAlias() const;
-    bool isGenerationAlias(const int gen) const;
-    bool isStoringImported() const;
-    bool isGenerationImported(const int gen) const;
-    bool isStoringNonImported() const;
-    bool isGenerationNonImported(const int gen) const;
+//    bool isStoringAlias() const;
+//    bool isGenerationAlias(const int gen) const;
+//    bool isStoringImported() const;
+//    bool isGenerationImported(const int gen) const;
+//    bool isStoringNonImported() const;
+//    bool isGenerationNonImported(const int gen) const;
 
-    LogDataHandler *getLogDataHandler();
+//    LogDataHandler2 *getLogDataHandler();
 
-public slots:
-    void allowGenerationAutoRemoval(int gen, bool allow);
+//public slots:
+//    void allowGenerationAutoRemoval(int gen, bool allow);
 
-signals:
-    void importedVariableBeingRemoved(SharedVectorVariableT);
-    void generationAdded();
+//signals:
+//    void importedVariableBeingRemoved(SharedVectorVariableT);
+//    void generationAdded();
 
-private:
-    void actuallyRemoveDataGen(GenerationMapT::iterator git);
-    QString mName;
-    LogDataHandler *mpParentLogDataHandler;
-    GenerationMapT mDataGenerations;
-    IndexIntervalCollection mAliasGenIndexes;
-    IndexIntervalCollection mImportedGenIndexes;
-    IndexIntervalCollection mNonImportedGenIndexes;
-    QList<int> mKeepGenerations;
-};
+//private:
+//    void actuallyRemoveDataGen(GenerationMapT::iterator git);
+//    QString mName;
+//    LogDataHandler2 *mpParentLogDataHandler;
+//    GenerationMapT mDataGenerations;
+//    IndexIntervalCollection mAliasGenIndexes;
+//    IndexIntervalCollection mImportedGenIndexes;
+//    IndexIntervalCollection mNonImportedGenIndexes;
+//    QList<int> mKeepGenerations;
+//};
 
-typedef QSharedPointer<VectorVariableContainer> SharedVectorVariableContainerT;
+//typedef QSharedPointer<VectorVariableContainer> SharedVectorVariableContainerT;
 
 
 class VectorVariable : public QObject
@@ -209,6 +209,7 @@ public:
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
     QString getSmartName() const;
+    const SharedSystemHierarchyT getSystemHierarchy() const;
     const QString &getModelPath() const;
     const QString &getComponentName() const;
     const QString &getPortName() const;
@@ -297,7 +298,7 @@ public:
     void sendDataToStream(QTextStream &rStream, QString separator);
 
     // Access to parent object pointers
-    QPointer<LogDataHandler> getLogDataHandler();
+    QPointer<LogDataHandler2> getLogDataHandler();
 
 public slots:
     void setPlotScale(double scale);
@@ -318,7 +319,7 @@ protected:
     void replaceSharedTFVector(SharedVectorVariableT pToFVector);
     typedef QVector<double> DataVectorT;
 
-    QPointer<LogDataHandler> mpParentLogDataHandler;
+    QPointer<LogDataHandler2> mpParentLogDataHandler;
 
     CachableDataVector *mpCachedDataVector;
     SharedVariableDescriptionT mpVariableDescription;
@@ -429,28 +430,29 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
                          SharedVectorVariableT &rNyquistData, SharedVectorVariableT &rNyquistDataInv,
                          SharedVectorVariableT &rGainData, SharedVectorVariableT &rPhaseData);
 
+SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int generation);
 
-class HopsanVariable
-{
-public:
-    HopsanVariable();
-    HopsanVariable(SharedVectorVariableT pData);
-    HopsanVariable(SharedVectorVariableContainerT pContainer, SharedVectorVariableT pData);
-    void switchToGeneration(const int gen);
+//class SharedVectorVariableT
+//{
+//public:
+//    SharedVectorVariableT();
+//    SharedVectorVariableT(SharedVectorVariableT pData);
+//    SharedVectorVariableT(SharedVectorVariableContainerT pContainer, SharedVectorVariableT pData);
+//    void switchToGeneration(const int gen);
 
-    LogDataHandler *getLogDataHandler();
+//    LogDataHandler *getLogDataHandler();
 
-    bool hasContainer() const;
-    bool isNull() const;
-    bool isCompletelyNull() const;
-    operator bool() const;
-    bool operator!() const;
+//    bool hasContainer() const;
+//    bool isNull() const;
+//    bool isCompletelyNull() const;
+//    operator bool() const;
+//    bool operator!() const;
 
-    bool isVariableAlias() const;
+//    bool isVariableAlias() const;
 
-    SharedVectorVariableContainerT mpContainer;
-    SharedVectorVariableT mpVariable;
-};
+//    SharedVectorVariableContainerT mpContainer;
+//    SharedVectorVariableT mpVariable;
+//};
 
 
 #endif // LOGVARIABLE_H

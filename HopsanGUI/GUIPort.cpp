@@ -328,8 +328,8 @@ void Port::openRightClickMenu(QPoint screenPos)
     // Now build plot menu
     QMap<QAction*, int> plotActions;
 
-    LogDataHandler *pLogHandler = mpParentModelObject->getParentContainerObject()->getLogDataHandler();
-    QVector<SharedVectorVariableT> logVars;
+    LogDataHandler2 *pLogHandler = mpParentModelObject->getParentContainerObject()->getLogDataHandler();
+    QList<SharedVectorVariableT> logVars;
     QString comp, port;
     if(getPortType() == QString("PowerMultiportType"))
     {
@@ -341,7 +341,8 @@ void Port::openRightClickMenu(QPoint screenPos)
         comp = mpParentModelObject->getName();
         port = this->getName();
     }
-    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeConcatName(comp,port,".*")));
+
+    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeFullVariableName(mpParentModelObject->getSystemNameHieararchy(),comp,port,".*")));
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;
@@ -428,14 +429,14 @@ void Port::openRightClickMenu(QPoint screenPos)
 void Port::openDefineAliasDialog(const QString &rVarName, const QString &rCurrentAlias)
 {
     bool ok;
-    QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),rVarName);
+    QString fullName = makeFullVariableName(QStringList(), mpParentModelObject->getName(),this->getName(),rVarName);
     QString alias = QInputDialog::getText(gpMainWindowWidget, "Define Alias",
                                           tr("Alias for: ")+fullName, QLineEdit::Normal,
                                           rCurrentAlias, &ok);
     if(ok)
     {
-        //! @todo should not go through logdatahandler for this, should access directly, and signal the alias change to logdata handler
-        getParentContainerObject()->getLogDataHandler()->defineAlias(alias, fullName);
+
+        getParentContainerObject()->setVariableAlias(fullName, alias);
     }
 }
 
@@ -735,13 +736,18 @@ ModelObject *Port::getParentModelObject()
     return mpParentModelObject;
 }
 
+const ModelObject *Port::getParentModelObject() const
+{
+    return mpParentModelObject;
+}
+
 
 //! @brief Plots the variable with name 'dataName' in the node the port is connected to.
 //! @param dataName tells which variable to plot.
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
 PlotWindow *Port::plot(QString dataName, QString /*dataUnit*/, QColor desiredCurveColor)
 {
-    QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),dataName);
+    QString fullName = makeFullVariableName(mpParentModelObject->getSystemNameHieararchy(), mpParentModelObject->getName(),this->getName(),dataName);
     //! @todo  why do we have unit here
     return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
 }
@@ -777,7 +783,7 @@ QStringList Port::getFullVariableNames()
     QStringList names2;
     Q_FOREACH(QString name, names)
     {
-        names2.append(makeConcatName(getParentModelObjectName(), getName(), name));
+        names2.append(makeFullVariableName(mpParentModelObject->getSystemNameHieararchy(), getParentModelObjectName(), getName(), name));
     }
     return names2;
 }

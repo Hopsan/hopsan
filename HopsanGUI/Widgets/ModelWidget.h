@@ -33,6 +33,7 @@
 
 //Hopsan includes
 #include "common.h"
+#include "LogDataHandler2.h"
 
 //Forward declarations
 class SystemContainer;
@@ -74,6 +75,7 @@ public:
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
     SimulationThreadHandler *getSimulationThreadHandler();
+    LogDataHandler2 *getLogDataHandler();
 
     ModelHandler *mpParentModelHandler;
     GraphicsView *mpGraphicsView;
@@ -92,9 +94,9 @@ public slots:
     void openAnimation();
     void lockTab(bool locked);
     void simulateModelica();
+    void collectPlotData(bool overWriteGeneration=false);
 
 private slots:
-    void collectPlotData();
     void openCurrentContainerInNewTab();
     void closeAnimation();
     void unlockSimulateMutex();
@@ -104,6 +106,7 @@ signals:
     void checkMessages();
     void simulationFinished();
     void modelSaved(ModelWidget*);
+    void aliasChanged(QString fullName, QString alias);
 
 private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
@@ -118,6 +121,7 @@ private:
     QWidget *mpExternalSystemWidget;
 
     SystemContainer *mpToplevelSystem;
+    LogDataHandler2 *mpLogDataHandler2;
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;
     QMutex mSimulateMutex;

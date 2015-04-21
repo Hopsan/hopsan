@@ -751,7 +751,7 @@ void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
 }
 
 
-vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString portName)
+std::vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString portName)
 {
     //qDebug() << "getTimeVector, " << componentName << ", " << portName;
     hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString().c_str());
@@ -760,7 +760,7 @@ vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString po
         hopsan::Port* pPort = pComp->getPort(portName.toStdString().c_str());
         if (pPort != 0)
         {
-            vector<double> *ptr = pPort->getLogTimeVectorPtr();
+            std::vector<double> *ptr = pPort->getLogTimeVectorPtr();
             if (ptr != 0)
             {
                 return *ptr; //Return a copy of the vector
@@ -769,7 +769,7 @@ vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString po
     }
 
     // Else Return empty dummy
-    return vector<double>();
+    return std::vector<double>();
 }
 
 
@@ -1015,7 +1015,7 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
         dataId = pPort->getNodeDataIdFromName(dataname.toStdString().c_str());
         if (dataId > -1)
         {
-            vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
+            std::vector< std::vector<double> > *pData = pPort->getLogDataVectorPtr();
             rpTimeVector = pPort->getLogTimeVectorPtr();
 
             // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
@@ -1023,12 +1023,12 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
             size_t nElements;
             if (pPort->getNodePtr())
             {
-                nElements = min(pPort->getNodePtr()->getOwnerSystem()->getNumActuallyLoggedSamples(), pData->size());
+                nElements = qMin(pPort->getNodePtr()->getOwnerSystem()->getNumActuallyLoggedSamples(), pData->size());
             }
             else
             {
                 // this should never happen i think
-                nElements = min(pData->size(), rpTimeVector->size());
+                nElements = qMin(pData->size(), rpTimeVector->size());
             }
             //size_t nElements = min(pPort->getNodegetComponent()->getSystemParent()->getNumActuallyLoggedSamples(), pData->size());
             //qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
@@ -1085,7 +1085,7 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
 
         if (dataId >= 0)
         {
-            vector<double> *pData = pPort->getDataVectorPtr();
+            std::vector<double> *pData = pPort->getDataVectorPtr();
             rData = pData->at(dataId);
             return true;
         }
@@ -1522,7 +1522,7 @@ bool RemoteCoreSimulationHandler::simulateModel()
 bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug)
 {
     std::vector<char> types;
-    std::vector<string> tags, messages;
+    std::vector<std::string> tags, messages;
     bool rc = gRHC.requestMessages(types, tags, messages);
     if (rc)
     {

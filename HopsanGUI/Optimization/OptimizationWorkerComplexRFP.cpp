@@ -107,15 +107,15 @@ void OptimizationWorkerComplexRFP::init()
 
     mKf = 1.0-pow(mAlpha/2.0, mGamma/mNumPoints);
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasVariable("WorstObjective"))
     {
-        pHandler->deleteVariableContainer("WorstObjective");
+        pHandler->removeVariable("WorstObjective", -1);
     }
     if (pHandler->hasVariable("BestObjective"))
     {
-        pHandler->deleteVariableContainer("BestObjective");
+        pHandler->removeVariable("BestObjective", -1);
     }
 
     // Close these plotwindows before optimization to make sure old data is removed
@@ -285,8 +285,8 @@ void OptimizationWorkerComplexRFP::run()
                     double maxDiff = getMaxParDiff();
                     double r = (double)rand() / (double)RAND_MAX;
                     mCandidateParticles[t][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-                    mCandidateParticles[t][j] = min(mCandidateParticles[t][j], mParMax[j]);
-                    mCandidateParticles[t][j] = max(mCandidateParticles[t][j], mParMin[j]);
+                    mCandidateParticles[t][j] = qMin(mCandidateParticles[t][j], mParMax[j]);
+                    mCandidateParticles[t][j] = qMax(mCandidateParticles[t][j], mParMin[j]);
                 }
 
                 newPoint = mCandidateParticles[t];
@@ -493,8 +493,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         ++i;
@@ -512,8 +512,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();   //! @todo Use correct min and max (including previous candidates)
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         ++i;
@@ -532,8 +532,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         ++i;
@@ -551,8 +551,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         ++i;
@@ -570,8 +570,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         ++i;
@@ -589,8 +589,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         ++i;
@@ -608,8 +608,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         ++i;
@@ -627,8 +627,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
     }
     else if(mMethod==0)
@@ -669,8 +669,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
@@ -692,8 +692,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();   //! @todo Use correct min and max (including previous candidates)
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
@@ -715,8 +715,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
@@ -738,8 +738,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
         //! @todo Maybe reflect more points if more processors are available?
@@ -758,8 +758,8 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 //            double maxDiff = getMaxParDiff();
 //            double r = (double)rand() / (double)RAND_MAX;
 //            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-//            mCandidateParticles[i][j] = min(mCandidateParticles[i][j], mParMax[j]);
-//            mCandidateParticles[i][j] = max(mCandidateParticles[i][j], mParMin[j]);
+//            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+//            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
 //        }
     }
 }
@@ -1023,7 +1023,7 @@ void OptimizationWorkerComplexRFP::plotPoints()
         return;
     }
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumPoints; ++p)
     {
         QString namex = "par"+QString::number(p)+"x";

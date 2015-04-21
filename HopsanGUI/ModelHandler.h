@@ -33,7 +33,7 @@ class ModelWidget;
 class CentralTabWidget;
 class SystemContainer;
 class ContainerObject;
-class LogDataHandler;
+class LogDataHandler2;
 class SimulationThreadHandler;
 class DebuggerWidget;
 
@@ -56,6 +56,7 @@ public:
     SystemContainer *getCurrentTopLevelSystem();
     ContainerObject *getViewContainerObject(int idx);
     ContainerObject *getCurrentViewContainerObject();
+    LogDataHandler2 *getCurrentLogDataHandler();
 
     int count() const;
 
@@ -112,7 +113,7 @@ private:
     QStringList mStateInfoBackupList;
     QList<bool> mStateInfoHasChanged;
     QStringList mStateInfoTabNames;
-    QList<LogDataHandler*> mStateInfoLogDataHandlersList;
+    QList<LogDataHandler2*> mStateInfoLogDataHandlersList;
     QList<QDomDocument> mStateInfoModels;
 
     DebuggerWidget *mpDebugger;

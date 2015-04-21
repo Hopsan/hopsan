@@ -149,7 +149,7 @@ public:
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
     void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, int plotID=0, bool force=false);
-    void setCustomXVectorForAll(HopsanVariable data, int plotID=0, bool force=false);
+    void setCustomXVectorForAll(SharedVectorVariableT data, int plotID=0, bool force=false);
 
     QList<PlotCurve*> &getCurves(int plotID=0);
     void setActivePlotCurve(PlotCurve *pCurve);

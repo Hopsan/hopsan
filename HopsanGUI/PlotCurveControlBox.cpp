@@ -204,14 +204,14 @@ void PlotCurveControlBox::updateColor(const QColor color)
 void PlotCurveControlBox::updateInfo()
 {
     // Enable/disable generation buttons
-    SharedVectorVariableContainerT pVarContainer = mpPlotCurve->getSharedVectorVariableContainer();
     int gen = mpPlotCurve->getGeneration();
     int lowGen, highGen, nGen;
-    if (pVarContainer)
+    if (false)
     {
-        lowGen = pVarContainer->getLowestGeneration();
-        highGen = pVarContainer->getHighestGeneration();
-        nGen = pVarContainer->getNumGenerations();
+        //! @todo FIXA /Peter
+//        lowGen = pVarContainer->getLowestGeneration();
+//        highGen = pVarContainer->getHighestGeneration();
+//        nGen = pVarContainer->getNumGenerations();
     }
     else
     {

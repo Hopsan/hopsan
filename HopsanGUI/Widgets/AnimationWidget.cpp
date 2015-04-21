@@ -673,7 +673,7 @@ QGraphicsScene* AnimationWidget::getGraphicsScene()
 
 
 //! @brief Returns a pointer to the plot data object
-LogDataHandler* AnimationWidget::getPlotDataPtr()
+LogDataHandler2* AnimationWidget::getPlotDataPtr()
 {
     return mpPlotData;
 }

@@ -50,6 +50,7 @@
 #include "Widgets/ModelWidget.h"
 #include "PlotArea.h"
 #include "Utilities/HelpPopUpWidget.h"
+#include "GUIObjects/GUISystem.h"
 
 #include "qwt_plot_renderer.h"
 #include "Dependencies/BarChartPlotter/barchartplotter.h"
@@ -231,7 +232,7 @@ void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescr
     }
 }
 
-void PlotTab::setCustomXVectorForAll(HopsanVariable data, int plotID, bool force)
+void PlotTab::setCustomXVectorForAll(SharedVectorVariableT data, int plotID, bool force)
 {
     if (plotID < mPlotAreas.size())
     {
@@ -373,7 +374,7 @@ void PlotTab::exportToCsv(QString fileName)
         //! @todo how to handle this with multiple xvectors per curve
         //! @todo take into account whether cached or not, Should have some smart auto function for this in the data object
 
-        QVector<double> xvec = pPlotArea->getCustomXData().mpVariable->getDataVectorCopy(); //! @todo should direct access if not in cache
+        QVector<double> xvec = pPlotArea->getCustomXData()->getDataVectorCopy(); //! @todo should direct access if not in cache
         for(int i=0; i<xvec.size(); ++i)
         {
             fileStream << xvec[i];
@@ -473,7 +474,7 @@ void PlotTab::exportToHvc(QString fileName)
     hvcroot.setAttribute("hvcversion", "0.2");
 
     QList<PlotCurve*> curves = mPlotAreas.first()->getCurves();
-    QString modelPath = relativePath(curves.first()->getSharedVectorVariable()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(),
+    QString modelPath = relativePath(curves.first()->getSharedVectorVariable()->getLogDataHandler()->getParentModel()->getTopLevelSystemContainer()->getModelFileInfo(),
                                      QDir(hvcFileInfo.canonicalPath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
     validation.setAttribute("date", QDateTime::currentDateTime().toString("yyyyMMdd"));
@@ -487,32 +488,8 @@ void PlotTab::exportToHvc(QString fileName)
     // Cycle plot curves
     for (int i=0; i<curves.size(); ++i)
     {
-        QString comp = curves[i]->getComponentName();
-        QString port = curves[i]->getPortName();
-        QString data = curves[i]->getDataName();
-
-        // Figure out system hierarchy name
-        QString sysnames;
-        LogDataHandler *pLogDataHandler = curves[i]->getSharedVectorVariable()->getLogDataHandler();
-        if (pLogDataHandler)
-        {
-            ContainerObject *pCO = pLogDataHandler->getParentContainerObject();
-            while (pCO)
-            {
-                sysnames.prepend(pCO->getName()+"$");
-                if (pCO->isTopLevelContainer())
-                {
-                    pCO=0;
-                }
-                else
-                {
-                    pCO = pCO->getParentContainerObject();
-                }
-            }
-        }
-
         QDomElement variable = appendDomElement(validation, "variable");
-        variable.setAttribute("name", sysnames+makeConcatName(comp,port,data));
+        variable.setAttribute("name", curves[i]->getDataFullName());
 
         //! @todo this will only support one timevector
         appendDomIntegerNode(variable, "timecolumn", 0);
@@ -569,7 +546,7 @@ void PlotTab::exportToMatlab()
             if(pArea->hasCustomXData())
             {
                 //! @todo need smart function to auto select copy or direct access depending on cached or not (also in other places)
-                QVector<double> xvec = pArea->getCustomXData().mpVariable->getDataVectorCopy();
+                QVector<double> xvec = pArea->getCustomXData()->getDataVectorCopy();
                 for(int j=0; j<xvec.size(); ++j)
                 {
                     if(j>0) fileStream << ",";
@@ -739,10 +716,10 @@ void PlotTab::exportToPLO()
     }
     //! @todo make sure that csv can export from multiple sub plots (but how)
 
-    QList<HopsanVariable> variables;
+    QList<SharedVectorVariableT> variables;
     for(int c=0; c<getCurves(0).size(); ++c)
     {
-        variables.append(getCurves(0)[c]->getHopsanVariable());
+        variables.append(getCurves(0)[c]->getSharedVectorVariable());
     }
 
     //! @todo this assumes that all curves belong to the same model

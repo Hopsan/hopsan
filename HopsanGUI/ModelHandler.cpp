@@ -44,6 +44,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
+#include "Widgets/DataExplorer.h"
 
 ModelHandler::ModelHandler(QObject *parent)
     : QObject(parent)
@@ -191,6 +192,16 @@ ContainerObject *ModelHandler::getCurrentViewContainerObject()
     if (pMW)
     {
         return pMW->getViewContainerObject();
+    }
+    return 0;
+}
+
+LogDataHandler2 *ModelHandler::getCurrentLogDataHandler()
+{
+    ModelWidget *pMW = getCurrentModel();
+    if (pMW)
+    {
+        return pMW->getLogDataHandler();
     }
     return 0;
 }
@@ -511,6 +522,8 @@ void ModelHandler::refreshMainWindowConnections()
         getCurrentViewContainerObject()->makeMainWindowConnectionsAndRefresh();
         getCurrentViewContainerObject()->updateMainWindowButtons();
 
+        gpMainWindow->mpDataExplorer->setLogdataHandler(getCurrentLogDataHandler()); //!< @todo ugly hack, should do nicer
+
         setToolBarSimulationTimeFromTab(getCurrentModel());
 
         if(gpLibraryWidget->mGfxType != getCurrentTopLevelSystem()->getGfxType())
@@ -650,8 +663,10 @@ void ModelHandler::restoreState()
         gpCentralTabWidget->setCurrentIndex(i+1);
         this->mCurrentIdx = i;
         gpCentralTabWidget->setTabText(i+1, mStateInfoTabNames[i]);
-        getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
-        mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());
+
+        //! @todo FIXA /Peter
+//        getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
+//        mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());
     }
 }
 
@@ -711,7 +726,7 @@ void ModelHandler::launchDebugger()
 
     if(!mpDebugger || !mpDebugger->isVisible())
     {
-        mpDebugger = new DebuggerWidget(getCurrentTopLevelSystem(), gpMainWindow);
+        mpDebugger = new DebuggerWidget(getCurrentModel(), gpMainWindow);
         mpDebugger->show();
         mpDebugger->exec();
     }

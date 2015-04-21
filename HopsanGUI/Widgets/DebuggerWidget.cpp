@@ -29,19 +29,19 @@
 #include "ComponentSystem.h"
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
-#include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
+#include "GUIObjects/GUISystem.h"
 
 
 
-DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
+DebuggerWidget::DebuggerWidget(ModelWidget *pModel, QWidget *parent) :
     QDialog(parent)
 {
     this->setWindowIcon(QIcon(QString(ICONPATH)+"Hopsan-Debug.png"));
 
-    mpSystem = pSystem;
+    mpModel = pModel;
 
     this->resize(800, 600);
     QVBoxLayout *pVerticalLayout = new QVBoxLayout(this);
@@ -125,7 +125,7 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
 
     //this->setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(mpSystem, SIGNAL(destroyed()), this, SLOT(close()));
+    connect(mpModel, SIGNAL(destroyed()), this, SLOT(close()));
 
     retranslateUi();
     setInitData();
@@ -134,7 +134,7 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
 
 void DebuggerWidget::retranslateUi()
 {
-    setWindowTitle(tr("Hopsan Debugger") + " (" + mpSystem->getModelFileInfo().fileName().remove(".hmf").remove(".xml")+")");
+    setWindowTitle(tr("Hopsan Debugger") + " (" + mpModel->getTopLevelSystemContainer()->getModelFileInfo().fileName().remove(".hmf").remove(".xml")+")");
     mpTabWidget->setTabText(mpTabWidget->indexOf(mpTraceTab), tr("Trace variables"));
     mpRemoveButton->setText(tr("Remove"));
     mpAddButton->setText(tr("Add"));
@@ -155,7 +155,7 @@ void DebuggerWidget::setInitData()
 {
     mCurrentTime = gpModelHandler->getCurrentModel()->getStartTime().toDouble();
 
-    mpComponentsList->addItems(mpSystem->getModelObjectNames());
+    mpComponentsList->addItems(mpModel->getTopLevelSystemContainer()->getModelObjectNames());
     mpComponentsList->sortItems();
     mpGotoButton->setDisabled(true);
     mpForwardButton->setDisabled(true);
@@ -186,7 +186,7 @@ void DebuggerWidget::updatePortsList(QString component)
 {
     mpPortsList->clear();
     mpVariablesList->clear();
-    QList<Port*> ports = mpSystem->getModelObject(component)->getPortListPtrs();
+    QList<Port*> ports = mpModel->getTopLevelSystemContainer()->getModelObject(component)->getPortListPtrs();
     Q_FOREACH(const Port *port, ports)
     {
         mpPortsList->addItem(port->getName());
@@ -200,7 +200,7 @@ void DebuggerWidget::updateVariablesList(QString port)
     if(port.isEmpty()) return;
     mpVariablesList->clear();
     QString component = mpComponentsList->currentItem()->text();
-    NodeInfo info(mpSystem->getModelObject(component)->getPort(port)->getNodeType());
+    NodeInfo info(mpModel->getTopLevelSystemContainer()->getModelObject(component)->getPort(port)->getNodeType());
     QStringList variables = info.variableLabels;
     mpVariablesList->addItems(variables);
     // Note we don't want to sort here, we want them to appear in the correct order
@@ -260,8 +260,8 @@ void DebuggerWidget::runInitialization()
 {
     double startT = getStartTime();
     double stopT = getStopTime();
-    int nSteps = int((stopT-startT)/mpSystem->getTimeStep());
-    if(mpSystem->getCoreSystemAccessPtr()->initialize(startT,stopT, nSteps+1))
+    int nSteps = int((stopT-startT)/mpModel->getTopLevelSystemContainer()->getTimeStep());
+    if(mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->initialize(startT,stopT, nSteps+1))
     {
         mpGotoButton->setEnabled(true);
         mpForwardButton->setEnabled(true);
@@ -295,7 +295,7 @@ void DebuggerWidget::simulateTo()
 
 void DebuggerWidget::simulateTo(double targetTime, bool doCollectData)
 {
-    mpSystem->getCoreSystemAccessPtr()->simulate(getCurrentTime(), targetTime, -1, true);
+    mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->simulate(getCurrentTime(), targetTime, -1, true);
     if(doCollectData)
     {
         collectPlotData();
@@ -307,7 +307,7 @@ void DebuggerWidget::simulateTo(double targetTime, bool doCollectData)
 
 void DebuggerWidget::collectPlotData(bool overWriteGeneration)
 {
-    mpSystem->collectPlotData(overWriteGeneration);
+    mpModel->collectPlotData(overWriteGeneration);
 }
 
 
@@ -327,7 +327,7 @@ void DebuggerWidget::logLastData()
         QString data = var.split("#").at(2);
 
         double value;
-        mpSystem->getCoreSystemAccessPtr()->getLastNodeData(component, port, data, value);
+        mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->getLastNodeData(component, port, data, value);
         outputLine.append(QString::number(value)+",");
         QTableWidgetItem *pDataItem = new QTableWidgetItem(QString::number(value));
         for(int c=0; c<mpTraceTable->columnCount(); ++c)
@@ -357,18 +357,18 @@ void DebuggerWidget::updateTimeDisplay()
 
 double DebuggerWidget::getCurrentTime() const
 {
-    return mpSystem->getCoreSystemAccessPtr()->getCurrentTime();
+    return mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->getCurrentTime();
 }
 
 int DebuggerWidget::getCurrentStep() const
 {
     //return mpSystem->getLogDataHandler()->getAllVariablesAtNewestGeneration().first()->getDataSize()-1;
-    return int(mpSystem->getCoreSystemAccessPtr()->getCurrentTime() / getTimeStep());
+    return int(mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->getCurrentTime() / getTimeStep());
 }
 
 double DebuggerWidget::getTimeStep() const
 {
-    return mpSystem->getTimeStep();
+    return mpModel->getTopLevelSystemContainer()->getTimeStep();
 }
 
 double DebuggerWidget::getStartTime() const

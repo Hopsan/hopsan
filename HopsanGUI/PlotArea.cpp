@@ -391,8 +391,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     {
         if (!pCurve->hasCustomXData())
         {
-            HopsanVariable xdata = mCustomXData;
-            xdata.switchToGeneration(pCurve->getGeneration());
+            SharedVectorVariableT xdata = switchVariableGeneration(mCustomXData, pCurve->getGeneration());
             pCurve->setCustomXData(xdata);
         }
     }
@@ -472,7 +471,7 @@ void PlotArea::setCustomXVectorForAll(QVector<double> xArray, const VariableDesc
     setCustomXVectorForAll(createFreeVectorVariable(xArray, pVarDesc), force);
 }
 
-void PlotArea::setCustomXVectorForAll(HopsanVariable data, bool force)
+void PlotArea::setCustomXVectorForAll(SharedVectorVariableT data, bool force)
 {
     for(int i=0; i<mPlotCurves.size(); ++i)
     {
@@ -682,10 +681,10 @@ bool PlotArea::isZoomed() const
 
 bool PlotArea::hasCustomXData() const
 {
-    return !mCustomXData.isCompletelyNull();
+    return !mCustomXData;
 }
 
-const HopsanVariable PlotArea::getCustomXData() const
+const SharedVectorVariableT PlotArea::getCustomXData() const
 {
     return mCustomXData;
 }
@@ -985,7 +984,7 @@ void PlotArea::dropEvent(QDropEvent *event)
                     }
                     if (pContainer)
                     {
-                        HopsanVariable data = pContainer->getLogDataHandler()->getHopsanVariable(name, gen);
+                        SharedVectorVariableT data = pContainer->getLogDataHandler()->getVectorVariable(name, gen);
                         // If we have found data then add it to the plot
                         if (data)
                         {
@@ -1355,7 +1354,7 @@ void PlotArea::refreshPlotAreaCustomXData()
         if (mPlotCurves[i]->hasCustomXData())
         {
             // Set plot-area global custom x-data
-            mCustomXData = mPlotCurves[i]->getCustomXHopsanVariable();
+            mCustomXData = mPlotCurves[i]->getSharedCustomXVariable();
             someoneHasCustomXdata = true;
             break;
         }
@@ -1364,7 +1363,7 @@ void PlotArea::refreshPlotAreaCustomXData()
     // If no one has custom data, then reset it
     if (!someoneHasCustomXdata)
     {
-        mCustomXData = HopsanVariable();
+        mCustomXData = SharedVectorVariableT();
     }
 }
 
@@ -2485,7 +2484,7 @@ void PlotArea::resetXDataVector()
     {
         if (pCurve->hasCustomXData())
         {
-            pCurve->setCustomXData(HopsanVariable());
+            pCurve->setCustomXData(SharedVectorVariableT());
         }
     }
 }

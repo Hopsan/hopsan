@@ -79,7 +79,7 @@ public:
 //! @param pData A shared pointer to the data to plot
 //! @param curveType The type of the curve (controls the name and some other special things)
 //! @todo why is the axis in the curve constructor, it would make more sense if the axis is specified when adding a curve to a plot area /Peter
-PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const HopsanPlotCurveTypeEnumT curveType)
+PlotCurve::PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, const HopsanPlotCurveTypeEnumT curveType)
     : QObject(), QwtPlotCurve()
 {
     mpParentPlotArea = 0;
@@ -99,7 +99,7 @@ PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const Hopsa
     mAxisY = axisY;
 
     // We do not want imported data to auto refresh, in case the data name is the same as something from the model (alias)
-    if (data.mpVariable->isImported())
+    if (data->isImported())
     {
         mAutoUpdate = false;
     }
@@ -125,9 +125,9 @@ PlotCurve::PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY, const Hopsa
     // Create data connections
     connectDataSignals();
 
-    if (mData.getLogDataHandler())
+    if (mData->getLogDataHandler())
     {
-        mData.getLogDataHandler()->incrementOpenPlotCurves();
+        mData->getLogDataHandler()->incrementOpenPlotCurves();
     }
 }
 
@@ -140,7 +140,7 @@ void PlotCurve::refreshCurveTitle()
 PlotCurve::~PlotCurve()
 {
     // If the curve data had a data handler then decrement its open curves counter
-    LogDataHandler* pDataHandler = mData.mpVariable->getLogDataHandler();
+    LogDataHandler2* pDataHandler = mData->getLogDataHandler();
     if (pDataHandler)
     {
         pDataHandler->decrementOpenPlotCurves();
@@ -164,22 +164,22 @@ void PlotCurve::setIncludeSourceInTitle(bool doit)
 //! @brief Returns the current generation a plot curve is representing
 int PlotCurve::getGeneration() const
 {
-    return mData.mpVariable->getGeneration();
+    return mData->getGeneration();
 }
 
 QString PlotCurve::getCurveName() const
 {
-    if (mData.mpVariable->hasCustomLabel())
+    if (mData->hasCustomLabel())
     {
-        return mData.mpVariable->getCustomLabel();
+        return mData->getCustomLabel();
     }
-    else if (mData.mpVariable->hasAliasName())
+    else if (mData->hasAliasName())
     {
-        return mData.mpVariable->getAliasName();
+        return mData->getAliasName();
     }
     else
     {
-        return mData.mpVariable->getFullVariableNameWithSeparator(", ");
+        return mData->getFullVariableNameWithSeparator(", ");
     }
 }
 
@@ -188,18 +188,18 @@ QString PlotCurve::getCurveName(bool includeGeneration, bool includeSourceFile) 
     QString name = getCurveName();
     if (includeGeneration)
     {
-        name.append(QString("  (%1)").arg(mData.mpVariable->getGeneration()+1));
+        name.append(QString("  (%1)").arg(mData->getGeneration()+1));
     }
     if (includeSourceFile)
     {
         QString source;
-        if (mData.mpVariable->isImported())
+        if (mData->isImported())
         {
-            source = mData.mpVariable->getImportedFileName();
+            source = mData->getImportedFileName();
         }
         else
         {
-            source = mData.mpVariable->getModelPath();
+            source = mData->getModelPath();
         }
 
         if (!source.isEmpty())
@@ -222,34 +222,34 @@ HopsanPlotCurveTypeEnumT PlotCurve::getCurveType()
 //! @brief Returns the name of the component a plot curve is created from
 const QString &PlotCurve::getComponentName() const
 {
-    return mData.mpVariable->getComponentName();
+    return mData->getComponentName();
 }
 
 
 //! @brief Returns the name of the port a plot curve is created from
 const QString &PlotCurve::getPortName() const
 {
-    return mData.mpVariable->getPortName();
+    return mData->getPortName();
 }
 
 
 //! @brief Returns the data name (physical quantity) of a plot curve
 const QString &PlotCurve::getDataName() const
 {
-    return mData.mpVariable->getDataName();
+    return mData->getDataName();
 }
 
 
 //! @brief Returns the current custom data unit of a plot curve
 const QString &PlotCurve::getDataCustomPlotUnit() const
 {
-    return mData.mpVariable->getPlotScaleDataUnit();
+    return mData->getPlotScaleDataUnit();
 }
 
 //! @brief Returns the original data unit of a plot curve
 const QString &PlotCurve::getDataOriginalUnit() const
 {
-    return mData.mpVariable->getDataUnit();
+    return mData->getDataUnit();
 }
 
 //! @brief Returns the current unit of a plot curve in the following priority (Local unit, Data unit or Original unit)
@@ -274,12 +274,12 @@ const QString &PlotCurve::getCurrentUnit() const
 
 VariableSourceTypeT PlotCurve::getDataSource() const
 {
-    return mData.mpVariable->getVariableSourceType();
+    return mData->getVariableSourceType();
 }
 
 bool PlotCurve::hasCustomDataPlotScale() const
 {
-    return !mData.mpVariable->getCustomUnitScale().isEmpty();
+    return !mData->getCustomUnitScale().isEmpty();
 }
 
 bool PlotCurve::hasCustomCurveDataPlotScale() const
@@ -289,18 +289,18 @@ bool PlotCurve::hasCustomCurveDataPlotScale() const
 
 const QString &PlotCurve::getDataModelPath() const
 {
-    return mData.mpVariable->getModelPath();
+    return mData->getModelPath();
+}
+
+QString PlotCurve::getDataFullName() const
+{
+    return mData->getFullVariableName();
 }
 
 
 const SharedVectorVariableT PlotCurve::getSharedVectorVariable() const
 {
-    return mData.mpVariable;
-}
-
-const SharedVectorVariableContainerT PlotCurve::getSharedVectorVariableContainer() const
-{
-    return mData.mpContainer;
+    return mData;
 }
 
 
@@ -320,17 +320,7 @@ PlotArea *PlotCurve::getParentPlotArea() const
 QVector<double> PlotCurve::getVariableDataCopy() const
 {
     //! @todo this is no longer a reference need to see where it was used to avoid REALLY slow code fetching data all the time /Peter
-    return mData.mpVariable->getDataVectorCopy();
-}
-
-const HopsanVariable PlotCurve::getHopsanVariable() const
-{
-    return mData;
-}
-
-const HopsanVariable PlotCurve::getCustomXHopsanVariable() const
-{
-    return mCustomXdata;
+    return mData->getDataVectorCopy();
 }
 
 //! @brief Returns the minimum and maximum value of the curve (for values higher then 0)
@@ -338,7 +328,7 @@ const HopsanVariable PlotCurve::getCustomXHopsanVariable() const
 bool PlotCurve::minMaxPositiveNonZeroYValues(double &rMin, double &rMax)
 {
     int imax, imin;
-    return mData.mpVariable->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+    return mData->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
 }
 
 bool PlotCurve::minMaxPositiveNonZeroXValues(double &rMin, double &rMax)
@@ -346,16 +336,16 @@ bool PlotCurve::minMaxPositiveNonZeroXValues(double &rMin, double &rMax)
     int imax, imin;
     if (mCustomXdata)
     {
-        return mCustomXdata.mpVariable->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+        return mCustomXdata->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
     }
-    else if (mData.mpVariable->getSharedTimeOrFrequencyVector())
+    else if (mData->getSharedTimeOrFrequencyVector())
     {
-        return mData.mpVariable->getSharedTimeOrFrequencyVector()->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+        return mData->getSharedTimeOrFrequencyVector()->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
     }
     else
     {
         rMin = 0;
-        rMax = mData.mpVariable->getDataSize()-1;
+        rMax = mData->getDataSize()-1;
         return (rMax > -1);
     }
 }
@@ -365,7 +355,7 @@ bool PlotCurve::minMaxPositiveNonZeroXValues(double &rMin, double &rMax)
 //! This returns the TIME vector, NOT any special X-axes if they are used.
 const SharedVectorVariableT PlotCurve::getSharedTimeOrFrequencyVariable() const
 {
-    return mData.mpVariable->getSharedTimeOrFrequencyVector();
+    return mData->getSharedTimeOrFrequencyVector();
 }
 
 bool PlotCurve::hasCustomXData() const
@@ -380,7 +370,7 @@ bool PlotCurve::getShowVsSamples() const
 
 const SharedVectorVariableT PlotCurve::getSharedCustomXVariable() const
 {
-    return mCustomXdata.mpVariable;
+    return mCustomXdata;
 }
 
 
@@ -389,15 +379,14 @@ const SharedVectorVariableT PlotCurve::getSharedCustomXVariable() const
 //! @param generation Generation to use
 bool PlotCurve::setGeneration(const int generation)
 {
-    if(mData.mpContainer)
+    if(mData)
     {
         //! @todo maybe not set generation if same as current but what about custom x-axis
-        // Make sure we have the data requested
-        SharedVectorVariableT pNewData = mData.mpContainer->getDataGeneration(generation);
+        SharedVectorVariableT pNewData = switchVariableGeneration(mData, generation);
         if (pNewData)
         {
             disconnectDataSignals();
-            mData.mpVariable = pNewData;
+            mData = pNewData;
             connectDataSignals();
         }
         else
@@ -408,16 +397,10 @@ bool PlotCurve::setGeneration(const int generation)
 
         if (hasCustomXData())
         {
-            if (mCustomXdata.mpContainer)
+            pNewData = switchVariableGeneration(mCustomXdata, generation);
+            if (pNewData)
             {
-                // We switch generation in a temp variable to make sure that connect/disconnect of signals works when we set a new one
-                HopsanVariable temp = mCustomXdata;
-                temp.switchToGeneration(mData.mpVariable->getGeneration());
-                if (temp)
-                {
-                    setCustomXData(temp);
-                }
-                //! @todo else what ??
+                setCustomXData(pNewData);
             }
             //! @todo else what ??
         }
@@ -471,7 +454,7 @@ void PlotCurve::setCustomCurveDataUnit(const QString &rUnit)
 void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
 {
     mCustomCurveDataUnitScale.mUnit = rUnit;
-    mCustomCurveDataUnitScale.setScale(scale*1.0/mData.mpVariable->getPlotScale());
+    mCustomCurveDataUnitScale.setScale(scale*1.0/mData->getPlotScale());
 
     // Clear the custom scale if it is one and we have a data unit
     if (!getDataOriginalUnit().isEmpty() && mCustomCurveDataUnitScale.isOne())
@@ -504,7 +487,7 @@ void PlotCurve::removeCustomCurveDataUnit()
 //! @todo FIXA /Peter
 void PlotCurve::setTimePlotScalingAndOffset(double scale, double offset)
 {
-    mData.mpVariable->setTimePlotScaleAndOffset(scale, offset);
+    mData->setTimePlotScaleAndOffset(scale, offset);
 }
 
 void PlotCurve::setLocalCurvePlotScaleAndOffset(const double scale, const double offset)
@@ -516,7 +499,7 @@ void PlotCurve::setLocalCurvePlotScaleAndOffset(const double scale, const double
 
 void PlotCurve::setDataPlotOffset(const double offset)
 {
-    mData.mpVariable->setPlotOffset(offset);
+    mData->setPlotOffset(offset);
     //The dataChanged signal is emitted inside setPlotOffset
 }
 
@@ -531,7 +514,7 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
 
     // Create new custom data
     //! @todo we are abusing timedomain variable here
-    mData.mpVariable = SharedVectorVariableT(new TimeDomainVariable(createFreeTimeVectorVariabel(rvTime), rvData, 0,
+    mData = SharedVectorVariableT(new TimeDomainVariable(createFreeTimeVectorVariabel(rvTime), rvData, 0,
                                                        SharedVariableDescriptionT(new VariableDescription(rVarDesc)), SharedMultiDataVectorCacheT()));
     mHaveCustomData = true;
 
@@ -546,7 +529,7 @@ void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVecto
     setCustomXData(createFreeVectorVariable(rvXdata, SharedVariableDescriptionT(new VariableDescription(rVarDesc))));
 }
 
-void PlotCurve::setCustomXData(HopsanVariable data)
+void PlotCurve::setCustomXData(SharedVectorVariableT data)
 {
     //! @todo maybe prevent reset if timevector is null, but then it will (currently) be impossible to reset x vector in curve.
 
@@ -554,7 +537,7 @@ void PlotCurve::setCustomXData(HopsanVariable data)
     disconnectCustomXDataSignals();
 
     // Make sure generation is same
-    data.switchToGeneration(mData.mpVariable->getGeneration());
+    data = switchVariableGeneration(data, mData->getGeneration());
 
     // Set new data and connect signals
     mCustomXdata = data;
@@ -571,15 +554,15 @@ void PlotCurve::setCustomXData(const QString fullName)
     // If empty then reset time vector
     if (fullName.isEmpty())
     {
-        setCustomXData(HopsanVariable());
+        setCustomXData(SharedVectorVariableT());
     }
     else
     {
-        LogDataHandler *pHandler = mData.mpVariable->getLogDataHandler();
+        LogDataHandler2 *pHandler = mData->getLogDataHandler();
         if (pHandler)
         {
             // Fetch data, generation check is don in the other version of this function
-            HopsanVariable data = pHandler->getHopsanVariable(fullName, -1);
+            SharedVectorVariableT data = pHandler->getVectorVariable(fullName, -1);
             if (data)
             {
                 setCustomXData(data);
@@ -618,13 +601,14 @@ void PlotCurve::gotoPreviousGeneration()
     // We do not want to switch generations automatically for curves representing imported data.
     // That would make it very difficult to compare imported data with a model variable of the same name
     // This was decided based on how AC is using the program
-    if (!mData.mpVariable->isImported() && mAutoUpdate)
+    if (mData && !mData->isImported() && mAutoUpdate)
     {
-        // Loop until we find next lower generation, abort if gen<0
-        if (mData.mpContainer)
+        auto pLDH = mData->getLogDataHandler();
+        if (pLDH)
         {
+            // Loop until we find next lower generation, abort if gen<0
             int gen = getGeneration()-1;
-            while ((gen >= 0) && (gen >= mData.mpContainer->getLowestGeneration())  && !setNonImportedGeneration(gen))
+            while ((gen >= 0) && (gen >= pLDH->getLowestGenerationNumber())  && !setNonImportedGeneration(gen))
             {
                 --gen;
             }
@@ -639,13 +623,14 @@ void PlotCurve::gotoNextGeneration()
     // We do not want to switch generations automatically for curves representing imported data.
     // That would make it very difficult to compare imported data with a model variable of the same name
     // This was decided based on how AC is using the program
-    if (!mData.mpVariable->isImported() && mAutoUpdate)
+    if (mData && !mData->isImported() && mAutoUpdate)
     {
-        // Loop until we find next higher generation, abort if we reach the highest
-        if (mData.mpContainer)
+        auto pLDH = mData->getLogDataHandler();
+        if (pLDH)
         {
+            // Loop until we find next higher generation, abort if we reach the highest
             int gen = getGeneration()+1;
-            while ((gen <= mData.mpContainer->getHighestGeneration()) && !setNonImportedGeneration(gen))
+            while ((gen <= pLDH->getHighestGenerationNumber()) && !setNonImportedGeneration(gen))
             {
                 ++gen;
             }
@@ -836,10 +821,10 @@ void PlotCurve::openScaleDialog()
 
     QLabel *pYPlotScale = new QLabel(pScaleDialog);
     QLabel *pYPlotScaleUnit = new QLabel(pScaleDialog);
-    if (mData.mpVariable)
+    if (mData)
     {
-        pYPlotScale->setText(QString("%1").arg(mData.mpVariable->getPlotScale()));
-        pYPlotScaleUnit->setText(mData.mpVariable->getPlotScaleDataUnit());
+        pYPlotScale->setText(QString("%1").arg(mData->getPlotScale()));
+        pYPlotScaleUnit->setText(mData->getPlotScaleDataUnit());
     }
     else
     {
@@ -850,7 +835,7 @@ void PlotCurve::openScaleDialog()
 
     mpDataPlotOffsetLineEdit = new QLineEdit(pScaleDialog);
     mpDataPlotOffsetLineEdit->setValidator(new QDoubleValidator(mpDataPlotOffsetLineEdit));
-    mpDataPlotOffsetLineEdit->setText(QString("%1").arg(mData.mpVariable->getPlotOffset()));
+    mpDataPlotOffsetLineEdit->setText(QString("%1").arg(mData->getPlotOffset()));
 
     QLabel *pCurveUnitScale = new QLabel(pScaleDialog);
     QLabel *pCurveUnitScaleUnit = new QLabel(pScaleDialog);
@@ -930,7 +915,7 @@ void PlotCurve::openScaleDialog()
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
     double newScale = mpTimeScaleComboBox->currentText().split(" ")[0].toDouble();
-    double oldScale = mData.mpVariable->getSharedTimeOrFrequencyVector()->getPlotScale();
+    double oldScale = mData->getSharedTimeOrFrequencyVector()->getPlotScale();
 
     setTimePlotScalingAndOffset(newScale, mpTimeOffsetSpinBox->value());
 
@@ -999,9 +984,9 @@ void PlotCurve::markActive(bool value)
 void PlotCurve::updateCurve()
 {
     // Handle complex variables in a special way
-    if (mData.mpVariable->getVariableType() == ComplexType)
+    if (mData->getVariableType() == ComplexType)
     {
-        ComplexVectorVariable *pComplexVar = qobject_cast<ComplexVectorVariable*>(mData.mpVariable.data());
+        ComplexVectorVariable *pComplexVar = qobject_cast<ComplexVectorVariable*>(mData.data());
         if (pComplexVar)
         {
             setSamples(pComplexVar->getRealDataCopy(), pComplexVar->getImagDataCopy());
@@ -1012,9 +997,9 @@ void PlotCurve::updateCurve()
         QVector<double> tempX, tempY;
         // We copy here, it should be faster then peek (at least when data is cached on disc)
         //! @todo maybe be smart about doing this copy
-        tempY = mData.mpVariable->getDataVectorCopy();
-        const double dataScale = mData.mpVariable->getPlotScale();
-        const double dataOffset = mData.mpVariable->getPlotOffset();
+        tempY = mData->getDataVectorCopy();
+        const double dataScale = mData->getPlotScale();
+        const double dataOffset = mData->getPlotOffset();
         const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale.toDouble(1.0)*dataScale;
         const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
 
@@ -1022,9 +1007,9 @@ void PlotCurve::updateCurve()
         {
             // Use special X-data
             // We copy here, it should be faster then peek (at least when data is cached on disc)
-            tempX = mCustomXdata.mpVariable->getDataVectorCopy();
-            const double xScale = mCustomXdata.mpVariable->getPlotScale();
-            const double xOffset = mCustomXdata.mpVariable->getPlotOffset();
+            tempX = mCustomXdata->getDataVectorCopy();
+            const double xScale = mCustomXdata->getPlotScale();
+            const double xOffset = mCustomXdata->getPlotOffset();
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = tempX[i]*xScale + xOffset;
@@ -1032,11 +1017,11 @@ void PlotCurve::updateCurve()
             }
         }
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
-        else if (mData.mpVariable->getSharedTimeOrFrequencyVector() && !mShowVsSamples)
+        else if (mData->getSharedTimeOrFrequencyVector() && !mShowVsSamples)
         {
-            tempX = mData.mpVariable->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
-            const double timeScale = mData.mpVariable->getSharedTimeOrFrequencyVector()->getPlotScale();
-            const double timeOffset = mData.mpVariable->getSharedTimeOrFrequencyVector()->getPlotOffset();
+            tempX = mData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+            const double timeScale = mData->getSharedTimeOrFrequencyVector()->getPlotScale();
+            const double timeOffset = mData->getSharedTimeOrFrequencyVector()->getPlotOffset();
 
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
@@ -1069,9 +1054,9 @@ void PlotCurve::updateCurveName()
 
 bool PlotCurve::setNonImportedGeneration(const int gen)
 {
-    if (mData.mpContainer)
+    if (mData && mData->getLogDataHandler())
     {
-        if (!mData.mpContainer->isGenerationImported(gen))
+        if (!mData->getLogDataHandler()->isGenerationImported(gen))
         {
             return setGeneration(gen);
         }
@@ -1083,7 +1068,7 @@ void PlotCurve::deleteCustomData()
 {
     if (mHaveCustomData)
     {
-        mData.mpVariable.clear();
+        mData.clear();
         mHaveCustomData = false;
     }
 }
@@ -1091,13 +1076,13 @@ void PlotCurve::deleteCustomData()
 void PlotCurve::connectDataSignals()
 {
     //! @todo what will happen if you import or set alias with same name as data then this will also trigger
-    if (mData.mpContainer)
+    if (mData)
     {
-        connect(mData.mpContainer.data(), SIGNAL(generationAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
+        connect(mData.data(), SIGNAL(generationAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
     }
 
-    connect(mData.mpVariable.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
-    connect(mData.mpVariable.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
+    connect(mData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+    connect(mData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
 }
 
 void PlotCurve::connectCustomXDataSignals()
@@ -1105,26 +1090,26 @@ void PlotCurve::connectCustomXDataSignals()
     if (mCustomXdata)
     {
         //! @todo what will happen if you import or set alias with same name as data then this will also trigger
-        if (mCustomXdata.mpContainer)
+        if (mCustomXdata)
         {
-            connect(mCustomXdata.mpContainer.data(), SIGNAL(generationAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
+            connect(mCustomXdata.data(), SIGNAL(generationAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
         }
 
-        connect(mCustomXdata.mpVariable.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+        connect(mCustomXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     }
 }
 
 void PlotCurve::disconnectDataSignals()
 {
-    if (mData.mpVariable)
+    if (mData)
     {
         // Disconnect all signals from the data variable to this
-        mData.mpVariable.data()->disconnect(this);
+        mData.data()->disconnect(this);
 
         // Disconnect the signals from the container to this
-        if (mData.mpContainer)
+        if (mData)
         {
-            mData.mpContainer.data()->disconnect(this);
+            mData.data()->disconnect(this);
         }
     }
 }
@@ -1134,7 +1119,7 @@ void PlotCurve::disconnectCustomXDataSignals()
     if (mCustomXdata)
     {
         // Disconnect all data signals from any custom x-data
-        mCustomXdata.mpVariable.data()->disconnect(this);
+        mCustomXdata.data()->disconnect(this);
     }
 }
 

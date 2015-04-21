@@ -40,7 +40,7 @@ class LibraryWidget;
 class OptionsDialog;
 class MessageWidget;
 class TerminalConsole;
-class PlotWidget;
+class PlotWidget2;
 class PyDockWidget;
 class SystemParametersWidget;
 class WelcomeWidget;

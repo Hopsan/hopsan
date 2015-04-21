@@ -10,13 +10,16 @@
 #include <QDir>
 
 #include "LogVariable.h"
+#include "Widgets/ModelWidget.h"
 
 // Forward Declaration
 class PlotWindow;
 class ContainerObject;
+class SystemContainer;
 class LogDataHandler2;
+class ModelWidget;
 
-#include "Widgets/ModelWidget.h"
+
 
 class Generation
 {
@@ -28,13 +31,14 @@ private:
     QList<SharedVectorVariableT> mTimeVectors;
 
     QString mImportedFromFile;
-    SharedMultiDataVectorCacheT mGeneratinoDataCache;
+    SharedMultiDataVectorCacheT mGenerationDataCache;
 
     IndexIntervalCollection mAliasGenIndexes;
 
 
 
 public:
+    Generation(const QString &rImportfile="");
 
     int getNumVariables() const;
     bool isEmpty();
@@ -49,7 +53,7 @@ public:
     QStringList getVariableFullNames() const;
     bool haveVariable(const QString &rFullName) const;
 
-    SharedVectorVariableT getVariable(const QString &rFullName);
+    SharedVectorVariableT getVariable(const QString &rFullName) const;
     QList<SharedVectorVariableT> getMatchingVariables(const QRegExp &rNameExp);
 
     QList<SharedVectorVariableT> getAllNonAliasVariables() const;
@@ -58,13 +62,15 @@ public:
     bool isStoringAlias() const;
     bool isGenerationAlias(const int gen) const;
 
-    void registerAlias(const QString &rFullName, const QString &rAlias);
-    void unregisterAlias(const QString &rAlias);
-    void unregisterAliasForFullName(const QString &rFullName);
+    bool registerAlias(const QString &rFullName, const QString &rAlias);
+    bool unregisterAlias(const QString &rAlias);
+    bool unregisterAliasForFullName(const QString &rFullName);
     QString getFullNameFromAlias(const QString &rAlias);
 
 
 };
+
+//bool isVariableAlias(SharedVectorVariableT pVar);
 
 class LogDataHandler2 : public QObject
 {
@@ -97,41 +103,36 @@ public:
     SharedVectorVariableT defineNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
     SharedVectorVariableT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
-    //bool deleteVariableContainer(const QString &rVarName);
-    //bool deleteImportedVariable(const QString &rVarName);
-    //bool deleteGeneration(const int gen);
-
     bool removeVariable(const QString &rVarName, const int gen);
 
     int getNumVariables() const;
     bool isEmpty();
     void clear();
 
-    //void getVariableNamesWithHighestGeneration(QStringList &rNames, QList<int> &rGens) const;
-    QStringList getVariableFullNames(const int generation=-1) const;
+    QStringList getVariableFullNames(int generation=-1) const;
     bool hasVariable(const QString &rFullName, const int generation=-1);
 
     const SharedVectorVariableT getTimeVectorVariable(int generation) const;
     QVector<double> copyTimeVector(const int generation) const;
 
     QVector<double> copyVariableDataVector(const QString &rName, const int generation);
-    SharedVectorVariableT getVectorVariable(const QString &rName, const int generation) const;
-    //HopsanVariable getHopsanVariable(const QString &rName, const int generation) const;
+    SharedVectorVariableT getVectorVariable(const QString &rName, int generation=-1) const;
 
-    QList<SharedVectorVariableT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, const int generation) const;
-    //QList<SharedVectorVariableT> getAllNonAliasVariablesAtRespectiveNewestGeneration();
+    QList<SharedVectorVariableT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, int generation=-1) const;
+    QList<SharedVectorVariableT> getMatchingVariablesFromAllGeneration(const QRegExp &rNameExp) const;
     QList<SharedVectorVariableT> getAllNonAliasVariablesAtGeneration(const int generation) const;
-    //QList<SharedVectorVariableT> getAllVariablesAtRespectiveNewestGeneration();
     QList<SharedVectorVariableT> getAllVariablesAtGeneration(const int gen);
+    QList<SharedVectorVariableT> getAllVariablesAtCurrentGeneration();
+    QList<SharedVectorVariableT> getAllVariablesAtRespectiveNewestGeneration();
 
     QList<QString> getImportedGenerationFileNames() const;
     QList<SharedVectorVariableT> getImportedVariablesForFile(const QString &rFileName);
     QList<int> getImportFileGenerations(const QString &rFilePath) const;
     QMap<QString, QList<int> > getImportFilesAndGenerations() const;
     void removeImportedFileGenerations(const QString &rFileName);
+    bool isGenerationImported(const int gen);
 
     void defineAlias(const QString &rFullName);
-    bool defineAlias(const QString &rAlias, const QString &rFullName);
     QString getFullNameFromAlias(const QString &rAlias, const int gen=-1) const;
 
     int getNumberOfGenerations() const;
@@ -201,11 +202,12 @@ private slots:
 private:
     typedef QMultiMap< QString, int > ImportedGenerationsMapT;
     typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
+
     SharedVectorVariableT insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc);
     SharedVectorVariableT insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
-    SharedVectorVariableT insertTimeVectorVariable(const QVector<double> &rTimeVector);
+    SharedVectorVariableT insertTimeVectorVariable(const QVector<double> &rTimeVector, SharedSystemHierarchyT pSysHierarchy);
     SharedVectorVariableT insertTimeVectorVariable(const QVector<double> &rTimeVector, const QString &rImportFileName);
-    SharedVectorVariableT insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector);
+    SharedVectorVariableT insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector, SharedSystemHierarchyT pSysHierarchy);
     SharedVectorVariableT insertFrequencyVectorVariable(const QVector<double> &rFrequencyVector, const QString &rImportFileName);
     SharedVectorVariableT insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc);
     SharedVectorVariableT insertTimeDomainVariable(SharedVectorVariableT pTimeVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
@@ -213,7 +215,7 @@ private:
     SharedVectorVariableT insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
     SharedVectorVariableT insertVariable(SharedVectorVariableT pVariable, QString keyName=QString(), int gen=-1);
 
-    bool collectLogDataFromSystem(SystemContainer *pCurrentSystem, QStringList systemHieararchy, QMap<std::vector<double> *, SharedVectorVariableT> &rGenTimeVectors);
+    bool collectLogDataFromSystem(SystemContainer *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double> *, SharedVectorVariableT> &rGenTimeVectors);
 
     QString getNewCacheName();
     void rememberIfImported(SharedVectorVariableT data);
@@ -225,7 +227,6 @@ private:
 
     ImportedGenerationsMapT mImportedGenerationsMap;
     GenerationCacheMapT mGenerationCacheMap;
-    QList<SharedVectorVariableContainerT> mCurrentlyDeletingContainers;
 
     GenerationMapT mGenerationMap;
     QList<int> mKeepGenerations;

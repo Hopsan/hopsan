@@ -425,22 +425,22 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
             for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
             {
-                QString fullName = makeConcatName(getPort("in")->getConnectedPorts().at(i)->getParentModelObjectName(),
-                                                  getPort("in")->getConnectedPorts().at(i)->getName(),"Value");
+                QString fullName = makeFullVariableName(getSystemNameHieararchy(), getPort("in")->getConnectedPorts().at(i)->getParentModelObjectName(),
+                                                        getPort("in")->getConnectedPorts().at(i)->getName(),"Value");
                 getParentContainerObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 0);
             }
             for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
             {
-                QString fullName = makeConcatName(getPort("in_right")->getConnectedPorts().at(i)->getParentModelObjectName(),
-                                                  getPort("in_right")->getConnectedPorts().at(i)->getName(),"Value");
+                QString fullName = makeFullVariableName(getSystemNameHieararchy(), getPort("in_right")->getConnectedPorts().at(i)->getParentModelObjectName(),
+                                                        getPort("in_right")->getConnectedPorts().at(i)->getName(),"Value");
                 getParentContainerObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 1);
             }
 
             if(this->getPort("in_bottom")->isConnected() && mpPlotWindow && mpPlotWindow->getCurrentPlotTab())
             {
-                QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
-                                                  getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
-                mpPlotWindow->getCurrentPlotTab()->setCustomXVectorForAll(getParentContainerObject()->getLogDataHandler()->getHopsanVariable(fullName, -1));
+                QString fullName = makeFullVariableName(getSystemNameHieararchy(), getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
+                                                        getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
+                mpPlotWindow->getCurrentPlotTab()->setCustomXVectorForAll(getParentContainerObject()->getLogDataHandler()->getVectorVariable(fullName, -1));
             }
         }
         mpPlotWindow->showNormal();

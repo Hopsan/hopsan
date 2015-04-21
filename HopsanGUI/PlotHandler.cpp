@@ -128,14 +128,14 @@ PlotWindow *PlotHandler::getPlotWindow(const QString &rName)
     return 0;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable data, int axis, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, SharedVectorVariableT data, int axis, QColor curveColor, int type, int thickness)
 {
     PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
     plotDataToWindow(pWindow, data, axis, true, curveColor, type, thickness);
     return pWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable xdata, HopsanVariable ydata, int axis, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, QColor curveColor, int type, int thickness)
 {
     if (xdata && ydata)
     {
@@ -146,7 +146,7 @@ PlotWindow *PlotHandler::plotDataToWindow(QString windowName, HopsanVariable xda
     return 0;
 }
 
-PlotWindow *PlotHandler::setPlotWindowXData(PlotWindow *pPlotWindow, HopsanVariable xdata, bool force)
+PlotWindow *PlotHandler::setPlotWindowXData(PlotWindow *pPlotWindow, SharedVectorVariableT xdata, bool force)
 {
     if(!pPlotWindow)
     {
@@ -156,7 +156,7 @@ PlotWindow *PlotHandler::setPlotWindowXData(PlotWindow *pPlotWindow, HopsanVaria
     return pPlotWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable data, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorVariableT data, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
 {
     if(!pPlotWindow)
     {
@@ -168,7 +168,7 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariabl
     return pPlotWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, HopsanVariable xdata, HopsanVariable ydata, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
 {
     if(!pPlotWindow)
     {

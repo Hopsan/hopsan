@@ -146,6 +146,15 @@ void ModelObject::setParentContainerObject(ContainerObject *pParentContainer)
     }
 }
 
+QStringList ModelObject::getSystemNameHieararchy() const
+{
+    if (mpParentContainerObject)
+    {
+        return mpParentContainerObject->getSystemNameHieararchy();
+    }
+    return QStringList();
+}
+
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
 int ModelObject::type() const
@@ -421,7 +430,7 @@ void ModelObject::showLosses()
     if(getTypeCQS() == "S")
         return;
 
-    int generation = mpParentContainerObject->getLogDataHandler()->getCurrentGeneration();
+    int generation = mpParentContainerObject->getLogDataHandler()->getCurrentGenerationNumber();
 
     time.start();
 
@@ -450,9 +459,10 @@ void ModelObject::showLosses()
                         }
                         QString componentName = vConnectedPorts.at(i)->getParentModelObjectName();
                         QString portName = vConnectedPorts.at(i)->getName();
+                        QStringList sysHieararchy = vConnectedPorts.at(i)->getParentModelObject()->getSystemNameHieararchy();
                         //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, NodeInfo(type).intensity), generation);
-                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeConcatName(componentName, portName, NodeInfo(type).flow), generation);
+                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).intensity), generation);
+                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).flow), generation);
                         QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
                         for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                         {
@@ -465,8 +475,8 @@ void ModelObject::showLosses()
                 else    //Normal port!
                 {
                     //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeConcatName(getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity), generation);
-                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeConcatName(getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow), generation);
+                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity), generation);
+                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow), generation);
                     QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
                     for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {

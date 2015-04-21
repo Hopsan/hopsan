@@ -9,7 +9,7 @@
 #include <QPointer>
 
 //Forward declarations
-class LogDataHandler;
+class LogDataHandler2;
 class GenerationItem;
 
 class DataExplorer : public QDialog
@@ -21,7 +21,7 @@ public:
 signals:
 
 public slots:
-    void setLogdataHandler(LogDataHandler* pLogDataHanlder);
+    void setLogdataHandler(LogDataHandler2 *pLogDataHandler);
     void refresh();
     void openImportDataDialog();
     void openExportDataDialog();
@@ -35,7 +35,7 @@ private slots:
 
 private:
     QVector<int> gensFromSelected();
-    QPointer<LogDataHandler> mpLogDataHandler;
+    QPointer<LogDataHandler2> mpLogDataHandler;
     QWidget *mpGenerationsListWidget;
     QScrollArea *mpGenerationsScrollArea;
     QMap<int, GenerationItem*> mGenerationItemMap;

@@ -39,7 +39,6 @@ class PlotHandler;
 class LibraryWidget;
 class TerminalWidget;
 class ModelHandler;
-class PlotWidget;
 class CentralTabWidget;
 class SystemParametersWidget;
 class UndoWidget;
@@ -56,6 +55,7 @@ class QGridLayout;
 class FindWidget;
 class ModelicaLibrary;
 class ModelicaEditor;
+class PlotWidget2;
 
 // Global pointer to the main window and QWidget cast version
 extern MainWindow* gpMainWindow;
@@ -73,7 +73,7 @@ extern PlotHandler *gpPlotHandler;
 extern LibraryWidget *gpLibraryWidget;
 extern TerminalWidget *gpTerminalWidget;
 extern ModelHandler *gpModelHandler;
-extern PlotWidget *gpPlotWidget;
+extern PlotWidget2 *gpPlotWidget;
 extern CentralTabWidget *gpCentralTabWidget;
 extern SystemParametersWidget *gpSystemParametersWidget;
 extern UndoWidget *gpUndoWidget;

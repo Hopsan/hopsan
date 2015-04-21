@@ -53,6 +53,7 @@ public:
 
     ContainerObject *getParentContainerObject();
     ModelObject *getParentModelObject();
+    const ModelObject *getParentModelObject() const;
     QString getParentModelObjectName() const;
 
     QString getName() const;

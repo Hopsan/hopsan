@@ -63,7 +63,7 @@
 #include "Widgets/HcomWidget.h"
 #include "LibraryHandler.h"
 #include "Widgets/ModelWidget.h"
-#include "Widgets/PlotWidget.h"
+#include "Widgets/PlotWidget2.h"
 #include "Widgets/PyDockWidget.h"
 #include "Widgets/QuickNavigationWidget.h"
 #include "Widgets/SystemParametersWidget.h"
@@ -73,8 +73,6 @@
 #include "Widgets/MessageWidget.h"
 #include "PlotHandler.h"
 #include "Utilities/HelpPopUpWidget.h"
-
-
 
 //! @brief Constructor for container objects.
 //! @param position Initial position where container object is to be placed in its parent container
@@ -106,8 +104,6 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
 
     mpDragCopyStack = new CopyStack();
 
-    mpLogDataHandler = new LogDataHandler(this);
-
     //Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 
@@ -117,13 +113,24 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
 //! @brief Destructor for container object
 ContainerObject::~ContainerObject()
 {
-    delete mpLogDataHandler;
     //qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
 bool ContainerObject::isTopLevelContainer() const
 {
     return (mpParentContainerObject==0);
+}
+
+QStringList ContainerObject::getSystemNameHieararchy() const
+{
+    QStringList parentSystemNames;
+    // Note! This wil lreturn empty lsit for top-level system, and that is OK, it is supposed to do that
+    if (mpParentContainerObject)
+    {
+        parentSystemNames = mpParentContainerObject->getSystemNameHieararchy();
+        parentSystemNames << this->getName();
+    }
+    return parentSystemNames;
 }
 
 //! @brief Notify the parent project tab that changes has occurred
@@ -165,9 +172,8 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
     gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
 
     // Update main window widgets with data from this container
-    gpMainWindow->mpDataExplorer->setLogdataHandler(this->mpLogDataHandler);
     gpFindWidget->setContainer(this);
-    gpPlotWidget->setLogDataHandler(this->getLogDataHandler());
+    gpPlotWidget->setLogDataHandler(mpModelWidget->getLogDataHandler());
     gpMainWindow->mpSystemParametersWidget->update(this);
     gpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
@@ -2291,7 +2297,8 @@ bool ContainerObject::isSubObjectSelected()
 bool ContainerObject::setVariableAlias(const QString &rFullName, const QString &rAlias)
 {
     QString compName, portName, varName;
-    splitConcatName(rFullName, compName, portName, varName);
+    QStringList dummy;
+    splitFullVariableName(rFullName, dummy, compName, portName, varName);
     bool isOk = getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, rAlias);
     if (isOk)
     {
@@ -2309,7 +2316,8 @@ bool ContainerObject::setVariableAlias(const QString &rFullName, const QString &
 QString ContainerObject::getVariableAlias(const QString &rFullName)
 {
     QString compName, portName, varName;
-    splitConcatName(rFullName, compName, portName, varName);
+    QStringList dummy;
+    splitFullVariableName(rFullName, dummy, compName, portName, varName);
     return getCoreSystemAccessPtr()->getVariableAlias(compName, portName, varName);
 }
 
@@ -2317,7 +2325,7 @@ QString ContainerObject::getFullNameFromAlias(const QString alias)
 {
     QString comp, port, var;
     getCoreSystemAccessPtr()->getFullVariableNameByAlias(alias, comp, port, var);
-    return makeConcatName(comp,port,var);
+    return makeFullVariableName(getSystemNameHieararchy(), comp,port,var);
 }
 
 QStringList ContainerObject::getAliasNames()
@@ -2703,7 +2711,7 @@ void ContainerObject::updateMainWindowButtons()
     gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
 
     //gpMainWindow->mpPlotAction->setDisabled(mpLogDataHandler->isEmpty());
-    gpMainWindow->mpShowLossesAction->setDisabled(mpLogDataHandler->isEmpty());
+    //gpMainWindow->mpShowLossesAction->setDisabled(mpLogDataHandler->isEmpty());
     //gpMainWindow->mpAnimateAction->setDisabled(mpNewPlotData->isEmpty());
 
     gpMainWindow->mpToggleNamesAction->setChecked(mShowSubComponentNames);
@@ -3113,23 +3121,6 @@ void ContainerObject::flipSubObjectsVertical()
 }
 
 
-//! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
-void ContainerObject::collectPlotData(bool overWriteLastGeneration)
-{
-    mpLogDataHandler->collectLogDataFromModel(overWriteLastGeneration);
-
-    // Now collect plotdata from all subsystems
-    ModelObjectMapT::iterator it;
-    for (it=mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
-    {
-        if (it.value()->type() == SystemContainerType)
-        {
-            static_cast<ContainerObject*>(it.value())->collectPlotData();
-        }
-    }
-}
-
-
 void ContainerObject::showLosses(bool show)
 {
     if(!show)
@@ -3216,7 +3207,7 @@ void ContainerObject::showLossesFromDialog()
     mpLossesDialog->close();
 
     //We should not be here if there is no plot data, but let's check to be sure
-    if(mpLogDataHandler->isEmpty())
+    if(getLogDataHandler()->isEmpty())
     {
         gpMessageHandler->addErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
         return;
@@ -3225,7 +3216,7 @@ void ContainerObject::showLossesFromDialog()
     mLossesVisible=true;
 
     bool usePower = mpAvgPwrRadioButton->isChecked();
-    double time = this->mpLogDataHandler->copyTimeVector(-1).last();
+    double time = getLogDataHandler()->copyTimeVector(-1).last();
 
     double limit=0;
     if(mpMinLossesSlider->isEnabled())
@@ -3650,15 +3641,8 @@ QList<Connector *> ContainerObject::getSubConnectorPtrs()
 
 
 
-LogDataHandler *ContainerObject::getLogDataHandler()
+LogDataHandler2 *ContainerObject::getLogDataHandler()
 {
-    return mpLogDataHandler;
+    return mpModelWidget->getLogDataHandler();
+    //return mpLogDataHandler;
 }
-
-
-void ContainerObject::setLogDataHandler(LogDataHandler *pHandler)
-{
-    mpLogDataHandler = pHandler;
-    mpLogDataHandler->setParent(this);
-}
-

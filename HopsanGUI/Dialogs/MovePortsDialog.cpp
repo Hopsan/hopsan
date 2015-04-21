@@ -331,7 +331,7 @@ QPointF DragPort::getPosOnComponent()
     double dx = (this->mapToScene(boundingRect().topLeft()).x()+ox) - mpParentComponent->mapToScene(mpParentComponent->boundingRect().topLeft()).x();
     double dy = (this->mapToScene(boundingRect().topLeft()).y()+oy) - mpParentComponent->mapToScene(mpParentComponent->boundingRect().topLeft()).y();
 
-    return QPointF(max(0.0, min(1.0, dx/mpParentComponent->boundingRect().width())), max(0.0, min(1.0, dy/mpParentComponent->boundingRect().height())));
+    return QPointF(qMax(0.0, qMin(1.0, dx/mpParentComponent->boundingRect().width())), qMax(0.0, qMin(1.0, dy/mpParentComponent->boundingRect().height())));
 }
 
 //! @brief Returns the rotation of the portgraphics

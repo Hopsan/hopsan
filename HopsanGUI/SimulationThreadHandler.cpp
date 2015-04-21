@@ -101,7 +101,7 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(QString hmfModel, std::vector<string> &rLogNames, std::vector<double> &rLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
+RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(QString hmfModel, std::vector<std::string> &rLogNames, std::vector<double> &rLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
     mHmfModel = hmfModel;
     mStartTime = startTime;
@@ -265,7 +265,7 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
     initSimulateFinalize(vpSystems, noChanges);
 }
 
-void SimulationThreadHandler::initSimulateFinalizeRemote(QString modelPath, std::vector<string> &rLogNames, std::vector<double> &rLogData)
+void SimulationThreadHandler::initSimulateFinalizeRemote(QString modelPath, std::vector<std::string> &rLogNames, std::vector<double> &rLogData)
 {
     mvpSystems.clear();
     mpSimulationWorkerObject = new RemoteSimulationWorkerObject(modelPath, rLogNames, rLogData, mStartT, mStopT, mLogStartTime, mnLogSamples);

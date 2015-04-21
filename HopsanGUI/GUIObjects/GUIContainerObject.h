@@ -29,7 +29,7 @@
 
 #include "GUIModelObject.h"
 #include "CopyStack.h"
-#include "LogDataHandler.h"
+#include "LogDataHandler2.h"
 #include "GraphicsViewPort.h"
 
 //Forward Declarations
@@ -44,8 +44,6 @@ class TextBoxWidget;
 class QTableView;
 class QRadioButton;
 
-using namespace std;
-
 class ContainerObject : public ModelObject
 {
     friend class UndoStack;     //! @todo Not sure about this, but the alternative would be to have lots and lots of access functions only used by undo stack...
@@ -56,6 +54,7 @@ public:
     virtual ~ContainerObject();
 
     bool isTopLevelContainer() const;
+    QStringList getSystemNameHieararchy() const;
 
     void hasChanged();
     ModelWidget *mpModelWidget;  //!< @todo not public
@@ -133,8 +132,7 @@ public:
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     //Plot and simulation results methods
-    LogDataHandler *getLogDataHandler();
-    void setLogDataHandler(LogDataHandler *pHandler);
+    LogDataHandler2 *getLogDataHandler();
 
     //Undo/redo methods
     UndoStack *getUndoStackPtr();
@@ -238,9 +236,6 @@ public slots:
     void flipSubObjectsHorizontal();
     void flipSubObjectsVertical();
 
-    //Plot data slots
-    void collectPlotData(bool overWriteLastGeneration=false);
-
     //Losses
     void showLosses(bool show);
     void showLossesFromDialog();
@@ -341,9 +336,6 @@ protected:
     bool mShowSubComponentNames;
     bool mSignalsHidden;
     GraphicsTypeEnumT mGfxType;
-
-    //Plot members
-    LogDataHandler *mpLogDataHandler;
 
     //Undo-redo members
     UndoStack *mpUndoStack;

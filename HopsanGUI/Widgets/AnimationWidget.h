@@ -62,7 +62,7 @@ class AnimatedComponent;
 class AnimatedGraphicsView;
 class MainWindow;
 class ModelObject;
-class LogDataHandler;
+class LogDataHandler2;
 class ModelObjectAnimationData;
 
 class QGraphicsScene;
@@ -85,7 +85,7 @@ public:
 
     //Get functions
     QGraphicsScene* getGraphicsScene();
-    LogDataHandler* getPlotDataPtr();
+    LogDataHandler2 *getPlotDataPtr();
 
     int getIndex(); // returns the current position inside the time vector
     int getLastIndex();
@@ -158,7 +158,7 @@ private:
     QGridLayout *mpLayout;
 
     //Copy of plot data object
-    LogDataHandler *mpPlotData;
+    LogDataHandler2 *mpPlotData;
 
     //Copy of time values
     QVector<double> mTimeValues;

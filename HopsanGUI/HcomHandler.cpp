@@ -1807,7 +1807,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
         QStringList groups;
         for(int c=0; c<mCmdList.size(); ++c)
         {
-            n=max(mCmdList[c].cmd.size(), n);
+            n=qMax(mCmdList[c].cmd.size(), n);
             if(!groups.contains(mCmdList[c].group))
             {
                 groups << mCmdList[c].group;
@@ -1877,7 +1877,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
             if(line.size() > helpLength)
                 helpLength = line.size();
         }
-        int length=max(description.size(), helpLength)+2;
+        int length=qMax(description.size(), helpLength)+2;
         QString delimiterLine;
         for(int i=0; i<length; ++i)
         {
@@ -1911,7 +1911,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
                 if(line.size() > helpLength)
                     helpLength = line.size();
             }
-            int length=max(mCmdList[idx].description.size(), helpLength)+2;
+            int length=qMax(mCmdList[idx].description.size(), helpLength)+2;
             QString delimiterLine;
             for(int i=0; i<length; ++i)
             {
@@ -2325,7 +2325,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
         return;
     }
 
-    SharedVectorVariableT pData = getLogVariable(variable).mpVariable;
+    SharedVectorVariableT pData = getLogVariable(variable);
     if(pData)
     {
         QString err;
@@ -2370,7 +2370,7 @@ void HcomHandler::executePokeCommand(const QString cmd)
         return;
     }
 
-    SharedVectorVariableT pData = getLogVariable(variable).mpVariable;
+    SharedVectorVariableT pData = getLogVariable(variable);
     if(pData)
     {
         QString err;
@@ -2752,20 +2752,20 @@ void HcomHandler::executeDisplayDefaultPlotOffsetCommand(const QString cmd)
 //! @brief Execute function for "info" command
 void HcomHandler::executeVariableInfoCommand(const QString cmd)
 {
-    HopsanVariable pVar = getLogVariable(cmd);
+    SharedVectorVariableT pVar = getLogVariable(cmd);
     if (pVar)
     {
-        QString type = variableTypeAsString(pVar.mpVariable->getVariableType());
-        QString plotscale = QString("%1 (%2)").arg(pVar.mpVariable->getCustomUnitScale().mUnit).arg(pVar.mpVariable->getCustomUnitScale().mScale);
-        QString numGens = QString("%1").arg(pVar.mpContainer->getNumGenerations());
-        QString length = QString("%1").arg(pVar.mpVariable->getDataSize());
+        QString type = variableTypeAsString(pVar->getVariableType());
+        QString plotscale = QString("%1 (%2)").arg(pVar->getCustomUnitScale().mUnit).arg(pVar->getCustomUnitScale().mScale);
+        //QString numGens = QString("%1").arg(pVar->getNumGenerations());
+        QString length = QString("%1").arg(pVar->getDataSize());
 
         QString infotext("\n");
-        infotext.append("       Name: ").append(pVar.mpVariable->getFullVariableName()).append("\n");
+        infotext.append("       Name: ").append(pVar->getFullVariableName()).append("\n");
         infotext.append("       Type: ").append(type).append("\n");
         infotext.append(" Plot Scale: ").append(plotscale.trimmed()).append("\n");
         infotext.append("     Length: ").append(length).append("\n");
-        infotext.append("Generations: ").append(numGens);
+        //infotext.append("Generations: ").append(numGens);
 
         HCOMPRINT(infotext);
     }
@@ -2816,7 +2816,7 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     }
     Q_FOREACH(const QString var, vars)
     {
-        SharedVectorVariableT pVar = getLogVariable(var).mpVariable;
+        SharedVectorVariableT pVar = getLogVariable(var);
         pVar.data()->setPlotScale(scale);
     }
 }
@@ -2840,7 +2840,7 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
     }
     Q_FOREACH(const QString var, vars)
     {
-        SharedVectorVariableT pVar = getLogVariable(var).mpVariable;
+        SharedVectorVariableT pVar = getLogVariable(var);
         if(!pVar.isNull())
         {
             QString scale = pVar.data()->getCustomUnitScale().mScale;
@@ -2915,7 +2915,7 @@ void HcomHandler::executeChangePlotOffsetCommand(const QString cmd)
     }
     Q_FOREACH(const QString var, vars)
     {
-        SharedVectorVariableT pVar = getLogVariable(var).mpVariable;
+        SharedVectorVariableT pVar = getLogVariable(var);
         pVar.data()->setPlotOffset(offset);
     }
 }
@@ -2939,7 +2939,7 @@ void HcomHandler::executeDisplayPlotOffsetCommand(const QString cmd)
     }
     Q_FOREACH(const QString var, vars)
     {
-        SharedVectorVariableT pVar = getLogVariable(var).mpVariable;
+        SharedVectorVariableT pVar = getLogVariable(var);
         if(!pVar.isNull())
         {
             double offset = pVar.data()->getPlotOffset();
@@ -3265,7 +3265,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
     }
 
     // If we get here we should try to read all variable patterns explicitly
-    QList<HopsanVariable> allVariables;
+    QList<SharedVectorVariableT> allVariables;
     for(int i=1; i<splitCmdMajor.size(); ++i)
     {
         splitCmdMajor[i].remove("\"");
@@ -3956,8 +3956,8 @@ void HcomHandler::executeBodeCommand(const QString cmd)
 
     QString var1 = args[0];
     QString var2 = args[1];
-    SharedVectorVariableT pData1 = getLogVariable(var1).mpVariable;
-    SharedVectorVariableT pData2 = getLogVariable(var2).mpVariable;
+    SharedVectorVariableT pData1 = getLogVariable(var1);
+    SharedVectorVariableT pData2 = getLogVariable(var2);
     if(!pData1 || !pData2)
     {
         HCOMERR("Data variable not found.");
@@ -3986,7 +3986,7 @@ void HcomHandler::executeAbsCommand(const QString cmd)
     }
     const QString &varName = args[0];
 
-    SharedVectorVariableT var = getLogVariable(varName).mpVariable;
+    SharedVectorVariableT var = getLogVariable(varName);
     if(var)
     {
         var.data()->absData();
@@ -4528,7 +4528,7 @@ void HcomHandler::changePlotXVariable(const QString varExp)
     {
         // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
         // else we will just set to same
-        mpCurrentPlotWindow = gpPlotHandler->setPlotWindowXData(mpCurrentPlotWindow, HopsanVariable(), true);
+        mpCurrentPlotWindow = gpPlotHandler->setPlotWindowXData(mpCurrentPlotWindow, SharedVectorVariableT(), true);
     }
     // Else set new
     else
@@ -4572,7 +4572,7 @@ void HcomHandler::changePlotXVariable(const QString varExp)
 //! @param axis Axis to add curve to
 void HcomHandler::addPlotCurve(QString var, const int axis, int type, QColor color, int thickness)
 {
-    HopsanVariable data = getLogVariable(var);
+    SharedVectorVariableT data = getLogVariable(var);
     if(!data)
     {
         HCOMERR(QString("Variable not found: %1").arg(var));
@@ -4592,7 +4592,7 @@ void HcomHandler::addPlotCurve(QString var, const int axis, int type, QColor col
     }
 }
 
-void HcomHandler::addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh, int type, QColor color, int thickness)
+void HcomHandler::addPlotCurve(SharedVectorVariableT data, const int axis, bool autoRefresh, int type, QColor color, int thickness)
 {
     // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
     // else we will just set to same
@@ -4634,10 +4634,10 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
         if( allGens )
         {
             // Get the latest available (we actually want the container)
-            HopsanVariable data = getLogVariable(name+GENERATIONSPECIFIERSTR+"-1");
-            if (data && data.mpContainer && data.getLogDataHandler())
+            SharedVectorVariableT data = getLogVariable(name+GENERATIONSPECIFIERSTR+"-1");
+            if (data && data->getLogDataHandler())
             {
-                bool rc = data.getLogDataHandler()->deleteVariableContainer(data.mpContainer->getName());
+                bool rc = data->getLogDataHandler()->removeVariable(data->getSmartName(), -1);
                 if (!rc)
                 {
                     HCOMERR(QString("Variable %1 could not be deleted").arg(name));
@@ -4646,13 +4646,10 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
         }
         else
         {
-            HopsanVariable data = getLogVariable(name);
-            if(data)
+            SharedVectorVariableT data = getLogVariable(name);
+            if(data && data->getLogDataHandler())
             {
-                if (data.mpContainer)
-                {
-                    data.mpContainer->removeDataGeneration(generation, true);
-                }
+                 data->getLogDataHandler()->removeVariable(data->getSmartName(), generation);
             }
             else
             {
@@ -4785,7 +4782,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     if(desiredType != Scalar)
     {
         //Data variable, return it
-        SharedVectorVariableT data = getLogVariable(expr).mpVariable;
+        SharedVectorVariableT data = getLogVariable(expr);
         if(data)
         {
             mAnsType = DataVector;
@@ -4816,7 +4813,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
     // Vector functions
     //timer.tic();
-    LogDataHandler *pLogDataHandler=0;
+    LogDataHandler2 *pLogDataHandler=0;
     if(mpModel && mpModel->getViewContainerObject())
     {
         pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
@@ -4825,7 +4822,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     if(expr.startsWith("abs(") && expr.endsWith(")"))
     {
         QString argStr = expr.mid(4, expr.size()-5);
-        SharedVectorVariableT pData = getLogVariable(argStr).mpVariable;
+        SharedVectorVariableT pData = getLogVariable(argStr);
         if(!pData)
         {
             evaluateExpression(argStr);
@@ -5795,7 +5792,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         if(mAnsType == DataVector && p.toDouble() == 2.0)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogDataHandler->multVariables(mAnsVector, getLogVariable(b.toString()).mpVariable);
+            mAnsVector = pLogDataHandler->multVariables(mAnsVector, getLogVariable(b.toString()));
             return;
         }
     }
@@ -6584,7 +6581,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     if(!mpModel) { return; }
 
     // Get pointers to logdatahandler
-    LogDataHandler *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
 
     // Parse and chop the desired generation
     bool parseOK;
@@ -6597,51 +6594,50 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     // If we know generation then search for it directly
     if (desiredGen >= 0)
     {
-        QList<SharedVectorVariableContainerT> varConts = pLogDataHandler->getVariableContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard), desiredGen);
-        for (int d=0; d<varConts.size(); ++d)
+        QList<SharedVectorVariableT> vars = pLogDataHandler->getMatchingVariablesAtGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard), desiredGen);
+        for (int d=0; d<vars.size(); ++d)
         {
-            QString name = varConts[d]->getName();
+            QString name = vars[d]->getSmartName();
             toShortDataNames(name);
             rVariables.append(name+QString(GENERATIONSPECIFIERSTR"%1").arg(desiredGen+1));
         }
     }
-    // Generate for latest in each variable
-    else if (desiredGen == -1)
-    {
-        QList<SharedVectorVariableContainerT> varConts = pLogDataHandler->getVariableContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
-        for (int d=0; d<varConts.size(); ++d)
-        {
-            QString name = varConts[d]->getName();
-            toShortDataNames(name);
-            rVariables.append(name+QString(GENERATIONSPECIFIERSTR"%1").arg(varConts[d]->getHighestGeneration()+1));
-        }
-    }
+    //! @todo FIXA /Peter
+//    // Generate for latest in each variable
+//    else if (desiredGen == -1)
+//    {
+//        QList<SharedVectorVariableT> varConts = pLogDataHandler->getVariableContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
+//        for (int d=0; d<varConts.size(); ++d)
+//        {
+//            QString name = varConts[d]->getName();
+//            toShortDataNames(name);
+//            rVariables.append(name+QString(GENERATIONSPECIFIERSTR"%1").arg(varConts[d]->getHighestGeneration()+1));
+//        }
+//    }
     // Do more costly name lookup, generate a list of all variables and all generations
     else if (desiredGen == -2)
     {
-        QList<SharedVectorVariableContainerT> variables = pLogDataHandler->getVariableContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
+        QList<SharedVectorVariableT> variables = pLogDataHandler->getMatchingVariablesFromAllGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
         for (int d=0; d<variables.size(); ++d)
         {
-            QString name = variables[d]->getName();
+            QString name = variables[d]->getSmartName();
             toShortDataNames(name);
-            QList<int> gens = variables[d]->getGenerations();
-            for (int g=0; g<gens.size(); ++g)
-            {
-                QString name2 = QString("%1" GENERATIONSPECIFIERSTR "%2").arg(name).arg(gens[g]+1);
-                rVariables.append(name2);
-            }
+            int gen = variables[d]->getGeneration();
+            QString name2 = QString("%1" GENERATIONSPECIFIERSTR "%2").arg(name).arg(gen+1);
+            rVariables.append(name2);
         }
     }
     // Else generation number was not specified, lookup on names directly and do not append generations numbers to names
     else
     {
-        QList<SharedVectorVariableContainerT> variableContainers = pLogDataHandler->getVariableContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
-        for (int d=0; d<variableContainers.size(); ++d)
-        {
-            QString name = variableContainers[d]->getName();
-            toShortDataNames(name);
-            rVariables.append(name);
-        }
+        //! @todo FIXA /Peter
+//        QList<SharedVectorVariableContainerT> variableContainers = pLogDataHandler->getVariableContainersMatching(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
+//        for (int d=0; d<variableContainers.size(); ++d)
+//        {
+//            QString name = variableContainers[d]->getSmartName();
+//            toShortDataNames(name);
+//            rVariables.append(name);
+//        }
     }
     //timer.toc("getMatchingLogVariableNames("+pattern+")");
 }
@@ -6649,7 +6645,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
 //! @brief Parses the generation specifier of a name and chops it from the name
 //! @param[in,out] rStr A reference to the name string, the generation specifier will be chopped
 //! @param[out] rOk A bool describing if parsing was successful
-//! @returns The desired generation, or: -1 = Latest available, -2 = All generations, -3 = Not generation specified, -4 on failure
+//! @returns The desired generation, or: -1 = All generations, -2 = No generation specified, -3 = on failure
 int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
 {
     rOk=true;
@@ -6658,34 +6654,35 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
     {
         QStringRef genStr = rStr.rightRef(rStr.size()-i-1);
 
-        if( (genStr == "l") || (genStr == "L") )
-        {
-            rStr.chop(2);
-            //return getLogVariable(rStr.section("{",0,0)).mpContainer->getLowestGeneration();
-            return getModelPtr()->getViewContainerObject()->getLogDataHandler()->getLowestGenerationNumber();
-        }
-        else if( (genStr == "h") || (genStr == "H") )
-        {
-            rStr.chop(2);
-            return getModelPtr()->getViewContainerObject()->getLogDataHandler()->getHighestGenerationNumber();
-        }
-        else if( (genStr == "*") || (genStr == "a") || (genStr == "A") )
+//        if( (genStr == "l") || (genStr == "L") )
+//        {
+//            rStr.chop(2);
+//            //return getLogVariable(rStr.section("{",0,0))->getLowestGeneration();
+//            return getModelPtr()->getViewContainerObject()->getLogDataHandler()->getLowestGenerationNumber();
+//        }
+//        else if( (genStr == "h") || (genStr == "H") )
+//        {
+//            rStr.chop(2);
+//            return getModelPtr()->getViewContainerObject()->getLogDataHandler()->getHighestGenerationNumber();
+//        }
+        if( (genStr == "*") || (genStr == "a") || (genStr == "A") )
         {
             rStr.chop(2);
             return -2;
         }
         else if(genStr.startsWith("(") && genStr.endsWith(")"))
         {
-            QString str = genStr.toString();
-            rStr.chop(str.size()+1);
-            int h = getLogVariable(rStr.section("{",0,0)).mpContainer->getHighestGeneration()+1;
-            int l = getLogVariable(rStr.section("{",0,0)).mpContainer->getLowestGeneration()+1;
-            str.replace("h", QString::number(h));
-            str.replace("H", QString::number(h));
-            str.replace("l", QString::number(l));
-            str.replace("L", QString::number(l));
-            SymHop::Expression expr(str);
-            return expr.evaluate(mLocalVars, &mLocalFunctionoidPtrs)-1;
+            //! @todo FIXA /Peter
+//            QString str = genStr.toString();
+//            rStr.chop(str.size()+1);
+//            int h = getLogVariable(rStr.section("{",0,0))->getHighestGeneration()+1;
+//            int l = getLogVariable(rStr.section("{",0,0))->getLowestGeneration()+1;
+//            str.replace("h", QString::number(h));
+//            str.replace("H", QString::number(h));
+//            str.replace("l", QString::number(l));
+//            str.replace("L", QString::number(l));
+//            SymHop::Expression expr(str);
+//            return expr.evaluate(mLocalVars, &mLocalFunctionoidPtrs)-1;
         }
         else
         {
@@ -6700,12 +6697,12 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
             else
             {
                 rOk=false;
-                return -4;
+                return -3;
             }
         }
     }
 
-    return -3;
+    return -2;
 }
 
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
@@ -6716,7 +6713,7 @@ void HcomHandler::getLogVariablesThatStartsWithString(const QString str, QString
     if(!mpModel) { return; }
 
     ContainerObject *pSystem = mpModel->getViewContainerObject();
-    QStringList names = pSystem->getLogDataHandler()->getVariableFullNames(".");
+    QStringList names = mpModel->getLogDataHandler()->getVariableFullNames();
     names.append(pSystem->getAliasNames());
 
     //Add quotation marks around component name if it contains spaces
@@ -6800,7 +6797,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         if (mAnsType==Scalar)
         {
             getParameters(left, pars);
-            HopsanVariable data = getLogVariable(left);
+            SharedVectorVariableT data = getLogVariable(left);
 
             if(pars.isEmpty() && data)
             {
@@ -6846,26 +6843,26 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             // If  < -1 then current generation should be used, try to get current from this data logdatahandler
             if  ( (gen < -1) && mpModel)
             {
-                gen = mpModel->getViewContainerObject()->getLogDataHandler()->getCurrentGeneration();
+                gen = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
             }
 
             // Get log data, (generation does not matter)
-            HopsanVariable leftData = getLogVariable(left);
+            SharedVectorVariableT leftData = getLogVariable(left);
             // Now switch to the desired generation
-            leftData.switchToGeneration(gen);
+            leftData = switchVariableGeneration(leftData, gen);
 
             // If desired generation of desired variable exist then assign to it
             if (leftData && mAnsVector)
             {
-                if (leftData.mpVariable->getVariableType() != mAnsVector->getVariableType())
+                if (leftData->getVariableType() != mAnsVector->getVariableType())
                 {
-                    HCOMWARN(QString("Variable type missmatch: %1 != %2, you may have lost information!").arg(variableTypeAsString(leftData.mpVariable->getVariableType())).arg(variableTypeAsString(mAnsVector->getVariableType())));
+                    HCOMWARN(QString("Variable type missmatch: %1 != %2, you may have lost information!").arg(variableTypeAsString(leftData->getVariableType())).arg(variableTypeAsString(mAnsVector->getVariableType())));
                 }
-                if (leftData.mpVariable->getGeneration() != mAnsVector->getGeneration())
+                if (leftData->getGeneration() != mAnsVector->getGeneration())
                 {
-                    HCOMWARN(QString("Variable generations missmatch %1 != %2 in assignment").arg(leftData.mpVariable->getGeneration()+1).arg(mAnsVector->getGeneration()+1));
+                    HCOMWARN(QString("Variable generations missmatch %1 != %2 in assignment").arg(leftData->getGeneration()+1).arg(mAnsVector->getGeneration()+1));
                 }
-                leftData.mpVariable->assignFrom(mAnsVector);
+                leftData->assignFrom(mAnsVector);
                 return true;
             }
             // Else lets create the variable or insert into it
@@ -6875,13 +6872,13 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
                 leftData = mpModel->getViewContainerObject()->getLogDataHandler()->insertNewHopsanVariable(left, mAnsVector->getVariableType(), gen);
                 if (leftData)
                 {
-                    if (leftData.mpVariable->getGeneration() != mAnsVector->getGeneration())
+                    if (leftData->getGeneration() != mAnsVector->getGeneration())
                     {
-                        HCOMWARN(QString("Variable generations missmatch %1 != %2 in assignment").arg(leftData.mpVariable->getGeneration()+1).arg(mAnsVector->getGeneration()+1));
+                        HCOMWARN(QString("Variable generations missmatch %1 != %2 in assignment").arg(leftData->getGeneration()+1).arg(mAnsVector->getGeneration()+1));
                     }
 
-                    leftData.mpVariable->assignFrom(mAnsVector);
-                    leftData.mpVariable->preventAutoRemoval();
+                    leftData->assignFrom(mAnsVector);
+                    leftData->preventAutoRemoval();
                     mLocalVars.remove(left);    //Remove scalar variable with same name if it exists
                     return true;
                 }
@@ -6953,7 +6950,7 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
             pVar2 = mAnsVector;
         }
 
-        LogDataHandler *pLogDataHandler = 0;
+        LogDataHandler2 *pLogDataHandler = 0;
         if(mpModel)
              pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
 
@@ -7060,7 +7057,7 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
             pVar2 = mAnsVector;
         }
 
-        LogDataHandler *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+        LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
 
         // Handle both scalars
         if (arg1IsDouble && arg2IsDouble)
@@ -7182,7 +7179,7 @@ void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
             pVar2 = mAnsVector;
         }
 
-        LogDataHandler *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+        LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
 
         // Handle both scalars
         if (arg1IsDouble && arg2IsDouble)
@@ -7256,18 +7253,17 @@ void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
 //! @brief Returns data pointers for the variable with given full short name format (may include generation)
 //! @param fullShortName Full concatenated name of the variable, (short name format expected)
 //! @returns Pointers to the data variable and container
-HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
+SharedVectorVariableT HcomHandler::getLogVariable(QString fullShortName) const
 {
     if(!mpModel)
     {
-        return HopsanVariable();
+        return SharedVectorVariableT();
     }
 
     QString warningMessage;
 
     // If no generation is specified we want to use the current generation
-    // otherwise an arithmetic expression could get mixed generations if "latest (-1)" was chosen every time
-    int generation = mpModel->getViewContainerObject()->getLogDataHandler()->getCurrentGeneration();
+    int generation = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
 
     // Now try to parse and separate the generation  number from the name
     bool parseGenOK;
@@ -7276,11 +7272,11 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
     {
         warningMessage = QString("Could not parse generation specifier in: %2, choosing current").arg(fullShortName);
     }
-    else if(genRC == -3)
+    else if(genRC == -2)
     {
         generation = -1;
     }
-    else if (genRC != -3)
+    else if (genRC != -2)
     {
         if (genRC < -1)
         {
@@ -7288,7 +7284,8 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
         }
         else
         {
-            // Generation = -1 (latest available) or higher is accepted
+            // Generation = -1 (All available)
+            //! @todo this is kind of strange now, will become Current /Peter
             generation = genRC;
         }
     }
@@ -7297,7 +7294,7 @@ HopsanVariable HcomHandler::getLogVariable(QString fullShortName) const
     toLongDataNames(fullShortName);
 
     // Try to retrieve data
-    HopsanVariable data = mpModel->getViewContainerObject()->getLogDataHandler()->getHopsanVariable(fullShortName, generation);
+    SharedVectorVariableT data = mpModel->getLogDataHandler()->getVectorVariable(fullShortName, generation);
 
     // If data was found then also print any warnings from the generation parser, otherwise do not print anything and
     // let a higher level function deal with printing warnings or errors regarding data that was not found
@@ -7357,62 +7354,6 @@ void HcomHandler::toShortDataNames(QString &rName) const
             rName.append(shortVarName.first());
         }
     }
-
-//    if(variable.endsWith(".Position"))
-//    {
-//        variable.chop(9);
-//        variable.append(".x");
-//    }
-//    else if(variable.endsWith(".Velocity"))
-//    {
-//        variable.chop(9);
-//        variable.append(".v");
-//    }
-//    else if(variable.endsWith(".Force"))
-//    {
-//        variable.chop(6);
-//        variable.append(".f");
-//    }
-//    else if(variable.endsWith(".Pressure"))
-//    {
-//        variable.chop(9);
-//        variable.append(".p");
-//    }
-//    else if(variable.endsWith(".Flow"))
-//    {
-//        variable.chop(5);
-//        variable.append(".q");
-//    }
-//    else if(variable.endsWith(".Value"))
-//    {
-//        variable.chop(6);
-//        variable.append(".val");
-//    }
-//    else if(variable.endsWith(".CharImpedance"))
-//    {
-//        variable.chop(14);
-//        variable.append(".Zc");
-//    }
-//    else if(variable.endsWith(".WaveVariable"))
-//    {
-//        variable.chop(13);
-//        variable.append(".c");
-//    }
-//    else if(variable.endsWith(".EquivalentMass"))
-//    {
-//        variable.chop(15);
-//        variable.append(".me");
-//    }
-//    else if(variable.endsWith(".HeatFlow"))
-//    {
-//        variable.chop(9);
-//        variable.append(".Q");
-//    }
-//    else if(variable.endsWith(".Temperature"))
-//    {
-//        variable.chop(12);
-//        variable.append(".t");
-//    }
 }
 
 
@@ -7438,92 +7379,6 @@ void HcomHandler::toLongDataNames(QString &rName) const
             }
         }
     }
-
-//    if ( !rName.endsWith("#*") )
-//    {
-//        QList<QString> longNames;
-//        int li = rName.lastIndexOf("#");
-//        if (li>=0)
-//        {
-//            QString shortName = rName.right(rName.size()-li-1);
-//            if (shortName.endsWith("*"))
-//            {
-//                longNames = gLongShortNameConverter.shortToLong(QRegExp(shortName, Qt::CaseSensitive, QRegExp::Wildcard));
-//            }
-//            else
-//            {
-//                longNames = gLongShortNameConverter.shortToLong(shortName);
-//            }
-//        }
-
-//        if (!longNames.isEmpty())
-//        {
-//            rName.chop(rName.size()-li-1);
-//            rName.append(longNames[0]);
-
-//            //! @todo what if we get multiple matches
-//            if (longNames.size()>1)
-//            {
-//                qWarning() << "longNames.size() > 1 in HcomHandler::toLongDataNames. Is currently not IMPLEMENTED";
-//            }
-//        }
-//    }
-
-//    if(var.endsWith("#x"))
-//    {
-//        var.chop(2);
-//        var.append("#Position");
-//    }
-//    else if(var.endsWith("#v"))
-//    {
-//        var.chop(2);
-//        var.append("#Velocity");
-//    }
-//    else if(var.endsWith("#f"))
-//    {
-//        var.chop(2);
-//        var.append("#Force");
-//    }
-//    else if(var.endsWith("#p"))
-//    {
-//        var.chop(2);
-//        var.append("#Pressure");
-//    }
-//    else if(var.endsWith("#q"))
-//    {
-//        var.chop(2);
-//        var.append("#Flow");
-//    }
-//    else if(var.endsWith("#val"))
-//    {
-//        var.chop(4);
-//        var.append("#Value");
-//    }
-//    else if(var.endsWith("#Zc"))
-//    {
-//        var.chop(3);
-//        var.append("#CharImpedance");
-//    }
-//    else if(var.endsWith("#c"))
-//    {
-//        var.chop(2);
-//        var.append("#WaveVariable");
-//    }
-//    else if(var.endsWith("#me"))
-//    {
-//        var.chop(3);
-//        var.append("#EquivalentMass");
-//    }
-//    else if(var.endsWith("#Q"))
-//    {
-//        var.chop(2);
-//        var.append("#HeatFlow");
-//    }
-//    else if(var.endsWith("#t"))
-//    {
-//        var.chop(2);
-//        var.append("#Temperature");
-//    }
 }
 
 
@@ -7572,7 +7427,7 @@ void HcomHandler::registerFunctionoid(const QString &funcName, SymHopFunctionoid
 //! @brief Function operator for the "aver" functionoid
 double HcomFunctionoidAver::operator()(QString &str, bool &ok)
 {
-    SharedVectorVariableT pData = mpHandler->getLogVariable(str).mpVariable;
+    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
     if(!pData)
     {
         mpHandler->evaluateExpression(str);
@@ -7613,7 +7468,7 @@ double HcomFunctionoidPeek::operator()(QString &str, bool &ok)
         return 0;
     }
 
-    SharedVectorVariableT pData = mpHandler->getLogVariable(splitStr[0]).mpVariable;
+    SharedVectorVariableT pData = mpHandler->getLogVariable(splitStr[0]);
 
     if(!pData)
     {
@@ -7652,7 +7507,7 @@ double HcomFunctionoidPeek::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "size" functionoid
 double HcomFunctionoidSize::operator()(QString &str, bool &ok)
 {
-    SharedVectorVariableT pData = mpHandler->getLogVariable(str).mpVariable;
+    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
 
     if(!pData)
     {
@@ -7718,7 +7573,7 @@ double HcomFunctionoidObj::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "min" functionoid
 double HcomFunctionoidMin::operator()(QString &str, bool &ok)
 {
-    SharedVectorVariableT pData = mpHandler->getLogVariable(str).mpVariable;
+    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
     if(!pData)
     {
         mpHandler->evaluateExpression(str, HcomHandler::DataVector);
@@ -7747,7 +7602,7 @@ double HcomFunctionoidMin::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "max" functionoid
 double HcomFunctionoidMax::operator()(QString &str, bool &ok)
 {
-    SharedVectorVariableT pData = mpHandler->getLogVariable(str).mpVariable;
+    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
     if(!pData)
     {
         mpHandler->evaluateExpression(str, HcomHandler::DataVector);
@@ -7776,7 +7631,7 @@ double HcomFunctionoidMax::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "imin" functionoid
 double HcomFunctionoidIMin::operator()(QString &str, bool &ok)
 {
-    SharedVectorVariableT pData = mpHandler->getLogVariable(str).mpVariable;
+    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
 
     if(!pData)
     {
@@ -7808,7 +7663,7 @@ double HcomFunctionoidIMin::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "imax" functionoid
 double HcomFunctionoidIMax::operator()(QString &str, bool &ok)
 {
-    SharedVectorVariableT pData = mpHandler->getLogVariable(str).mpVariable;
+    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
 
     if(!pData)
     {
@@ -7909,7 +7764,7 @@ double HcomFunctionoidFC::operator()(QString &str, bool &ok)
 
     bool isScalar1=false, isScalar2=false;
     double scalar1=0, scalar2=0;
-    SharedVectorVariableT pData1 = mpHandler->getLogVariable(args.first()).mpVariable;
+    SharedVectorVariableT pData1 = mpHandler->getLogVariable(args.first());
     if(!pData1)
     {
         mpHandler->evaluateExpression(args.first());
@@ -7931,7 +7786,7 @@ double HcomFunctionoidFC::operator()(QString &str, bool &ok)
     }
 
 
-    SharedVectorVariableT pData2 = mpHandler->getLogVariable(args[1]).mpVariable;
+    SharedVectorVariableT pData2 = mpHandler->getLogVariable(args[1]);
     if(!pData2)
     {
         mpHandler->evaluateExpression(args[1]);

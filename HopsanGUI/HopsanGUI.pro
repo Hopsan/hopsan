@@ -283,7 +283,8 @@ SOURCES += main.cpp \
     Optimization/OptimizationWorkerParameterSweep.cpp \
     Widgets/FindWidget.cpp \
     ModelicaLibrary.cpp \
-    Widgets/ModelicaEditor.cpp
+    Widgets/ModelicaEditor.cpp \
+    Widgets/PlotWidget2.cpp
 
 
 
@@ -379,7 +380,8 @@ HEADERS += MainWindow.h \
     Widgets/FindWidget.h \
     ModelicaLibrary.h \
     Widgets/ModelicaEditor.h \
-    GraphicsViewPort.h
+    GraphicsViewPort.h \
+    Widgets/PlotWidget2.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

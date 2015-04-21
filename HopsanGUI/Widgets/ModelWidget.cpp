@@ -60,7 +60,7 @@
 #include "ModelicaLibrary.h"
 #include "LibraryHandler.h"
 #include "GUIPort.h"
-#include "PlotWidget.h"
+#include "PlotWidget2.h"
 
 
 //! @class ModelWidget
@@ -106,6 +106,9 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent)
     mpExternalSystemWidget->hide();
 
     mpToplevelSystem = new SystemContainer(this, 0);
+
+    mpLogDataHandler2 = new LogDataHandler2(this);
+
     mpSimulationThreadHandler = new SimulationThreadHandler();
     setMessageHandler(gpMessageHandler);
 
@@ -272,6 +275,11 @@ QuickNavigationWidget *ModelWidget::getQuickNavigationWidget()
 SimulationThreadHandler *ModelWidget::getSimulationThreadHandler()
 {
     return mpSimulationThreadHandler;
+}
+
+LogDataHandler2 *ModelWidget::getLogDataHandler()
+{
+    return mpLogDataHandler2;
 }
 
 
@@ -607,7 +615,7 @@ void ModelWidget::setEditingEnabled(bool value)
 
 
 //! @brief Slot that tells the current system to collect plot data from core
-void ModelWidget::collectPlotData()
+void ModelWidget::collectPlotData(bool overWriteGeneration)
 {
     //If we collect plot data, we can plot and calculate losses, so enable these buttons
     //gpMainWindow->mpPlotAction->setEnabled(true);
@@ -617,8 +625,7 @@ void ModelWidget::collectPlotData()
     if (mRemoteLogNames.empty())
     {
         // Collect local data
-        // Tell container to do the job
-        mpToplevelSystem->collectPlotData();
+        mpLogDataHandler2->collectLogDataFromModel(overWriteGeneration);
     }
     else
     {
@@ -782,8 +789,8 @@ void ModelWidget::simulateModelica()
 
             if(id1 != id2)
             {
-                groups[min(id1,id2)].append(groups[max(id1, id2)]);
-                groups.removeAt(max(id1,id2));
+                groups[qMin(id1,id2)].append(groups[qMax(id1, id2)]);
+                groups.removeAt(qMax(id1,id2));
             }
         }
     }
@@ -1083,10 +1090,10 @@ void ModelWidget::simulateModelica()
         it2.next();
         for(int i=0; i<mpToplevelSystem->getLogDataHandler()->getAllVariablesAtGeneration(-1).size(); ++i)
         {
-            HopsanVariable pVar = mpToplevelSystem->getLogDataHandler()->getAllVariablesAtGeneration(-1).at(i);
-            if(pVar.mpContainer->getName().startsWith(it2.key()+"#"))
+            SharedVectorVariableT pVar = mpToplevelSystem->getLogDataHandler()->getAllVariablesAtGeneration(-1).at(i);
+            if(pVar->getSmartName().startsWith(it2.key()+"#"))
             {
-                QString newName = pVar.mpContainer->getName();
+                QString newName = pVar->getSmartName();
                 newName.remove(it2.key()+"#");
                 newName.remove("#Value");
                 if(!newName.startsWith("_"))    //Ignore all internal variables (will be removed)
@@ -1097,21 +1104,22 @@ void ModelWidget::simulateModelica()
                     pVarDesc->mDataName = newName.section("__",2,2);
                     if(pVarDesc->mDataName.isEmpty())
                         pVarDesc->mDataName = "Value";
-                    SharedVectorVariableT pNewVar = createFreeVariable(pVar.mpVariable->getVariableType(), pVarDesc);
-                    pNewVar->assignFrom(pVar.mpVariable);
+                    SharedVectorVariableT pNewVar = createFreeVariable(pVar->getVariableType(), pVarDesc);
+                    pNewVar->assignFrom(pVar);
                     mpToplevelSystem->getLogDataHandler()->insertNewHopsanVariable(pNewVar);
                 }
-                varsToRemove.append(pVar.mpContainer->getName());
+                varsToRemove.append(pVar->getSmartName());
             }
         }
     }
 
     gpPlotWidget->updateList();
 
-    foreach(const QString &var, varsToRemove)
-    {
-        mpToplevelSystem->getLogDataHandler()->deleteVariableContainer(var);
-    }
+    //! @todo FIXA /Peter
+//    foreach(const QString &var, varsToRemove)
+//    {
+//        mpToplevelSystem->getLogDataHandler()->deleteVariableContainer(var);
+//    }
 
 
     //Cleanup

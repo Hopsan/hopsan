@@ -90,6 +90,9 @@ void SystemContainer::commonConstructorCode()
     mLogStartTime = 0;
     mSaveUndoStack = false;       //Do not save undo stack by default
 
+    // Conenct propagation signal when alias is changed
+    connect(this, SIGNAL(aliasChanged(QString,QString)), mpModelWidget, SIGNAL(aliasChanged(QString,QString)));
+
     // Create the object in core, and update name
     if (this->mpParentContainerObject == 0)
     {

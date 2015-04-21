@@ -44,13 +44,13 @@
 #include <QFile>
 
 // Forward declaration
-class SystemContainer;
+class ModelWidget;
 
 class DebuggerWidget : public QDialog
 {
     Q_OBJECT
 public:
-    DebuggerWidget(SystemContainer *pSystem, QWidget *parent = 0);
+    DebuggerWidget(ModelWidget *pModel, QWidget *parent = 0);
     void retranslateUi();
     void setInitData();
 
@@ -80,7 +80,7 @@ private slots:
 
 
 private:
-    SystemContainer *mpSystem;
+    ModelWidget *mpModel;
 
     QTabWidget *mpTabWidget;
     QWidget *mpTraceTab;

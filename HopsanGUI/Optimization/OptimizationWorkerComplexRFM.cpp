@@ -78,15 +78,15 @@ void OptimizationWorkerComplexRFM::init()
 
     mKf = 1.0-pow(mAlpha/2.0, mGamma/mNumPoints);
 
-    LogDataHandler *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasVariable("WorstObjective"))
     {
-        pHandler->deleteVariableContainer("WorstObjective");
+        pHandler->removeVariable("WorstObjective", -1);
     }
     if (pHandler->hasVariable("BestObjective"))
     {
-        pHandler->deleteVariableContainer("BestObjective");
+        pHandler->removeVariable("BestObjective", -1);
     }
 
     // Close these plotwindows before optimization to make sure old data is removed
@@ -213,8 +213,8 @@ void OptimizationWorkerComplexRFM::run()
             double maxDiff = getMaxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mParameters[wid][j] = mParameters[wid][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-            mParameters[wid][j] = min(mParameters[wid][j], mParMax[j]);
-            mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
+            mParameters[wid][j] = qMin(mParameters[wid][j], mParMax[j]);
+            mParameters[wid][j] = qMax(mParameters[wid][j], mParMin[j]);
         }
         newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
 
@@ -323,8 +323,8 @@ void OptimizationWorkerComplexRFM::run()
                 double maxDiff = getMaxParDiff();
                 double r = (double)rand() / (double)RAND_MAX;
                 mParameters[wid][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-                mParameters[wid][j] = min(mParameters[wid][j], mParMax[j]);
-                mParameters[wid][j] = max(mParameters[wid][j], mParMin[j]);
+                mParameters[wid][j] = qMin(mParameters[wid][j], mParMax[j]);
+                mParameters[wid][j] = qMax(mParameters[wid][j], mParMin[j]);
             }
             newPoint = mParameters[wid];
             gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);

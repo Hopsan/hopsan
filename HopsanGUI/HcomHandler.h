@@ -71,7 +71,7 @@ public:
     LocalVarsMapT getLocalVariables() const;
     void setLocalVariables(const LocalVarsMapT &vars);
     QMap<QString, SymHopFunctionoid *> getLocalFunctionoidPointers() const;
-    HopsanVariable getLogVariable(QString fullShortName) const;
+    SharedVectorVariableT getLogVariable(QString fullShortName) const;
 
     // Public utilities
     void toShortDataNames(QString &rName) const;
@@ -202,7 +202,7 @@ private:
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void changePlotXVariable(const QString varExp);
     void addPlotCurve(QString var, const int axis, int type=0, QColor color=QColor(), int thickness=2);
-    void addPlotCurve(HopsanVariable data, const int axis, bool autoRefresh=true, int type=0, QColor color=QColor(), int thickness=2);
+    void addPlotCurve(SharedVectorVariableT data, const int axis, bool autoRefresh=true, int type=0, QColor color=QColor(), int thickness=2);
     void removePlotCurves(const int axis) const;
     void extractCurveStyle(QString &value, int &style, QColor &color, int &thickness);
 

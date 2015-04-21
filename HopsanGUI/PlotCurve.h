@@ -72,7 +72,7 @@ class PlotCurve : public QObject, public QwtPlotCurve
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
-    PlotCurve(HopsanVariable data, const QwtPlot::Axis axisY=QwtPlot::yLeft, const HopsanPlotCurveTypeEnumT curveType=PortVariableType);
+    PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY=QwtPlot::yLeft, const HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     void setIncludeGenerationInTitle(bool doit);
@@ -85,9 +85,6 @@ public:
     PlotArea *getParentPlotArea() const;
 
     QVector<double> getVariableDataCopy() const;
-    const HopsanVariable getHopsanVariable() const;
-    const HopsanVariable getCustomXHopsanVariable() const;
-    const SharedVectorVariableContainerT getSharedVectorVariableContainer() const;
     const SharedVectorVariableT getSharedVectorVariable() const;
     const SharedVectorVariableT getSharedTimeOrFrequencyVariable() const;
     const SharedVectorVariableT getSharedCustomXVariable() const;
@@ -105,6 +102,7 @@ public:
     const QString &getDataCustomPlotUnit() const;
     const QString &getCurrentUnit() const;
     const QString &getDataModelPath() const;
+    QString getDataFullName() const;
     VariableSourceTypeT getDataSource() const;
     bool hasCustomDataPlotScale() const;
 
@@ -118,7 +116,7 @@ public:
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
-    void setCustomXData(HopsanVariable data);
+    void setCustomXData(SharedVectorVariableT data);
     void setCustomXData(const QString fullName);
     void setShowVsSamples(bool tf);
 
@@ -173,8 +171,8 @@ private:
 
     // Curve data
     HopsanPlotCurveTypeEnumT mCurveType;
-    HopsanVariable mData;
-    HopsanVariable mCustomXdata;
+    SharedVectorVariableT mData;
+    SharedVectorVariableT mCustomXdata;
     bool mHaveCustomData;
     bool mShowVsSamples;
 

@@ -29,6 +29,7 @@
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QPushButton>
 
 #include "global.h"
 #include "Configuration.h"

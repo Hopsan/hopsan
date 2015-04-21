@@ -69,7 +69,9 @@ double PyPortClassWrapper::lastData(Port* o, const QString& rDataName)
 
 QVector<double> PyPortClassWrapper::data(Port* o, const QString& rDataName)
 {
-    SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->getVectorVariable(makeConcatName(o->getParentModelObjectName(), o->getName(), rDataName),-1);
+    SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->
+            getVectorVariable(makeFullVariableName(o->getParentModelObject()->getSystemNameHieararchy(), o->getParentModelObjectName(),
+                                                   o->getName(), rDataName),-1);
     if (pVar)
     {
         return pVar->getDataVectorCopy();
@@ -82,7 +84,9 @@ QVector<double> PyPortClassWrapper::time(Port* o)
     QStringList vars = variableNames(o);
     if (!vars.empty())
     {
-        SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->getVectorVariable(makeConcatName(o->getParentModelObjectName(), o->getName(), vars.first()), -1);
+        SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->
+                getVectorVariable(makeFullVariableName(o->getParentModelObject()->getSystemNameHieararchy(), o->getParentModelObjectName(),
+                                                       o->getName(), vars.first()), -1);
         if (pVar)
         {
             if (pVar->getSharedTimeOrFrequencyVector())
@@ -96,7 +100,9 @@ QVector<double> PyPortClassWrapper::time(Port* o)
 
 VectorVariable *PyPortClassWrapper::variable(Port *o, const QString &rDataName)
 {
-    return getCurrentViewcontainerObject()->getLogDataHandler()->getVectorVariable(makeConcatName(o->getParentModelObjectName(), o->getName(), rDataName), -1).data();
+    return getCurrentViewcontainerObject()->getLogDataHandler()->
+            getVectorVariable(makeFullVariableName(o->getParentModelObject()->getSystemNameHieararchy(), o->getParentModelObjectName(),
+                                                   o->getName(), rDataName), -1).data();
 }
 
 QStringList PyPortClassWrapper::variableNames(Port* o)
@@ -422,7 +428,7 @@ void PythonHopsanInterface::clearComponents()
 
 void PythonHopsanInterface::plot(const QString &rCompName, const QString &rPortName, const QString &rDataName, const int gen)
 {
-    plot(makeConcatName(rCompName, rPortName, rDataName), gen);
+    plot(makeFullVariableName(getCurrentViewcontainerObject()->getSystemNameHieararchy(), rCompName, rPortName, rDataName), gen);
 }
 
 void PythonHopsanInterface::plot(const QString &rName, const int gen)
@@ -462,7 +468,7 @@ void PythonHopsanInterface::savePlotDataCSV(const QString &rFileName)
 
 VectorVariable *PythonHopsanInterface::getVariable(const QString &rCompName, const QString &rPortName, const QString &rDataName, const int gen)
 {
-    return getVariable(makeConcatName(rCompName, rPortName, rDataName), gen);
+    return getVariable(makeFullVariableName(getCurrentViewcontainerObject()->getSystemNameHieararchy(), rCompName, rPortName, rDataName), gen);
 }
 
 VectorVariable *PythonHopsanInterface::getVariable(const QString &rName, const int gen)

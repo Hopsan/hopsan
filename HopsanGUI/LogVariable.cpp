@@ -88,58 +88,89 @@ SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescr
 }
 
 //! @todo this should not be here should be together with plot variable stuff in some other file later
-QString makeConcatName(const QString componentName, const QString portName, const QString dataName)
+QString makeFullVariableName(const QStringList &rSystemHierarchy, const QString &rComponentName, const QString &rPortName, const QString &rDataName)
 {
-    if (componentName.isEmpty() && portName.isEmpty())
+    QString sysName;
+    if(!rSystemHierarchy.isEmpty())
     {
+        //! @todo should use define for $ (system name separator)
+        sysName = rSystemHierarchy.join("$")+"$";
+    }
 
-        return dataName;
+    if (rComponentName.isEmpty() && rPortName.isEmpty())
+    {
+        return sysName+rDataName;
     }
     else
     {
         //! @todo default separator should be DEFINED
-        return componentName+"#"+portName+"#"+dataName;
+        return sysName+rComponentName+"#"+rPortName+"#"+rDataName;
     }
-    return "ERRORinConcatName";
 }
 
 //! @todo this should not be here should be together with plot variable stuff in some other file later
-void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName)
+bool splitFullVariableName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rPortName, QString &rVarName)
 {
     rCompName.clear();
     rPortName.clear();
     rVarName.clear();
-    QStringList slist = fullName.split('#');
-    if (slist.size() == 1)
+    rSystemHierarchy.clear();
+
+    QStringList syslist = rFullName.split("$");
+    if (!syslist.isEmpty())
     {
-        rVarName = slist[0];
+        QString cpd = syslist.last();
+        syslist.pop_back();
+        if (!syslist.isEmpty())
+        {
+            rSystemHierarchy = syslist;
+        }
+
+        QStringList cpd_list = cpd.split('#');
+        if (cpd_list.size() == 1)
+        {
+            rVarName = cpd_list[0];
+            return true;
+        }
+        else if (cpd_list.size() == 3)
+        {
+            rCompName = cpd_list[0];
+            rPortName = cpd_list[1];
+            rVarName = cpd_list[2];
+            return true;
+        }
     }
-    else if (slist.size() == 3)
-    {
-        rCompName = slist[0];
-        rPortName = slist[1];
-        rVarName = slist[2];
-    }
-    else
-    {
-        rVarName = "ERRORinsplitConcatName";
-    }
+    return false;
 }
 
 QString VariableDescription::getFullName() const
 {
-    return makeConcatName(mComponentName,mPortName,mDataName);
+    if (mpSystemHierarchy && !mpSystemHierarchy->isEmpty())
+    {
+        return makeFullVariableName(*mpSystemHierarchy.data(),mComponentName,mPortName,mDataName);
+    }
+    else
+    {
+        return makeFullVariableName(QStringList(),mComponentName,mPortName,mDataName);
+    }
+
 }
 
 QString VariableDescription::getFullNameWithSeparator(const QString sep) const
 {
+    QString sysName;
+    if (mpSystemHierarchy && !mpSystemHierarchy->isEmpty())
+    {
+        sysName = mpSystemHierarchy->join(sep)+sep;
+    }
+
     if (mComponentName.isEmpty())
     {
-        return mDataName;
+        return sysName+mDataName;
     }
     else
     {
-        return mComponentName+sep+mPortName+sep+mDataName;
+        return sysName+mComponentName+sep+mPortName+sep+mDataName;
     }
 }
 
@@ -263,6 +294,11 @@ QString VectorVariable::getSmartName() const
     {
         return mpVariableDescription->mAliasName;
     }
+}
+
+const SharedSystemHierarchyT VectorVariable::getSystemHierarchy() const
+{
+    return mpVariableDescription->mpSystemHierarchy;
 }
 
 const QString &VectorVariable::getModelPath() const
@@ -1062,67 +1098,67 @@ bool VectorVariable::indexInRange(const int idx) const
     return (idx>=0 && idx<mpCachedDataVector->size());
 }
 
-QPointer<LogDataHandler> VectorVariable::getLogDataHandler()
+QPointer<LogDataHandler2> VectorVariable::getLogDataHandler()
 {
     return mpParentLogDataHandler;
 }
 
 
-const QString &VectorVariableContainer::getName() const
-{
-    return mName;
-}
+//const QString &VectorVariableContainer::getName() const
+//{
+//    return mName;
+//}
 
 
-void VectorVariableContainer::allowGenerationAutoRemoval(int gen, bool allow)
-{
-    if (allow)
-    {
-        //! @todo maybe special -1 input for ALL
-        mKeepGenerations.removeOne(gen);
-    }
-    else
-    {
-        //! @todo what happens if we tell it to keep a generation it does not have
-        //! @todo maybe special -1 input for ALL
-        if (!mKeepGenerations.contains(gen))
-        {
-            mKeepGenerations.prepend(gen);
-        }
-    }
-}
+//void VectorVariableContainer::allowGenerationAutoRemoval(int gen, bool allow)
+//{
+//    if (allow)
+//    {
+//        //! @todo maybe special -1 input for ALL
+//        mKeepGenerations.removeOne(gen);
+//    }
+//    else
+//    {
+//        //! @todo what happens if we tell it to keep a generation it does not have
+//        //! @todo maybe special -1 input for ALL
+//        if (!mKeepGenerations.contains(gen))
+//        {
+//            mKeepGenerations.prepend(gen);
+//        }
+//    }
+//}
 
 
-LogDataHandler *VectorVariableContainer::getLogDataHandler()
-{
-    return mpParentLogDataHandler;
-}
+//LogDataHandler2 *VectorVariableContainer::getLogDataHandler()
+//{
+//    return mpParentLogDataHandler;
+//}
 
-void VectorVariableContainer::actuallyRemoveDataGen(GenerationMapT::iterator git)
-{
-    bool isAlias=false;
-    // Disconnect signals from data to this container
-    git.value().data()->disconnect(this,0);
-    // Remove from alias and imported registers if needed
-    if (mAliasGenIndexes.contains(git.key()))
-    {
-        mAliasGenIndexes.removeValue(git.key());
-        isAlias = true;
-    }
-    if (mImportedGenIndexes.contains(git.key()))
-    {
-        mImportedGenIndexes.removeValue(git.key());
-        if (!isAlias)
-        {
-            emit importedVariableBeingRemoved(git.value());
-        }
-    }
-    if (mNonImportedGenIndexes.contains(git.key()))
-    {
-        mNonImportedGenIndexes.removeValue(git.key());
-    }
-    mDataGenerations.erase(git);
-}
+//void VectorVariableContainer::actuallyRemoveDataGen(GenerationMapT::iterator git)
+//{
+//    bool isAlias=false;
+//    // Disconnect signals from data to this container
+//    git.value().data()->disconnect(this,0);
+//    // Remove from alias and imported registers if needed
+//    if (mAliasGenIndexes.contains(git.key()))
+//    {
+//        mAliasGenIndexes.removeValue(git.key());
+//        isAlias = true;
+//    }
+//    if (mImportedGenIndexes.contains(git.key()))
+//    {
+//        mImportedGenIndexes.removeValue(git.key());
+//        if (!isAlias)
+//        {
+//            emit importedVariableBeingRemoved(git.value());
+//        }
+//    }
+//    if (mNonImportedGenIndexes.contains(git.key()))
+//    {
+//        mNonImportedGenIndexes.removeValue(git.key());
+//    }
+//    mDataGenerations.erase(git);
+//}
 
 //! @brief This function converts a VariableSourceTypeT enum into a human readable string
 QString variableSourceTypeAsString(const VariableSourceTypeT type)
@@ -1188,293 +1224,293 @@ QString variableTypeAsString(const VariableTypeT type)
 
 
 
-int VectorVariableContainer::getLowestGeneration() const
-{
-    if (mDataGenerations.empty())
-    {
-        return -1;
-    }
-    else
-    {
-        return mDataGenerations.begin().key();
-    }
-}
+//int VectorVariableContainer::getLowestGeneration() const
+//{
+//    if (mDataGenerations.empty())
+//    {
+//        return -1;
+//    }
+//    else
+//    {
+//        return mDataGenerations.begin().key();
+//    }
+//}
 
-int VectorVariableContainer::getHighestGeneration() const
-{
-    if (mDataGenerations.empty())
-    {
-        return -1;
-    }
-    else
-    {
-        return (--mDataGenerations.end()).key();
-    }
-}
+//int VectorVariableContainer::getHighestGeneration() const
+//{
+//    if (mDataGenerations.empty())
+//    {
+//        return -1;
+//    }
+//    else
+//    {
+//        return (--mDataGenerations.end()).key();
+//    }
+//}
 
-int VectorVariableContainer::getNumGenerations() const
-{
-    return mDataGenerations.size();
-}
+//int VectorVariableContainer::getNumGenerations() const
+//{
+//    return mDataGenerations.size();
+//}
 
-QList<int> VectorVariableContainer::getGenerations() const
-{
-    return mDataGenerations.keys();
-}
+//QList<int> VectorVariableContainer::getGenerations() const
+//{
+//    return mDataGenerations.keys();
+//}
 
-int VectorVariableContainer::getNewestImportedGeneration() const
-{
-    return mImportedGenIndexes.max();
-}
+//int VectorVariableContainer::getNewestImportedGeneration() const
+//{
+//    return mImportedGenIndexes.max();
+//}
 
-int VectorVariableContainer::getNewestNonImportedGeneration() const
-{
-    return mNonImportedGenIndexes.max();
-}
+//int VectorVariableContainer::getNewestNonImportedGeneration() const
+//{
+//    return mNonImportedGenIndexes.max();
+//}
 
-int VectorVariableContainer::getNewestAliasGeneration() const
-{
-    return mAliasGenIndexes.max();
-}
+//int VectorVariableContainer::getNewestAliasGeneration() const
+//{
+//    return mAliasGenIndexes.max();
+//}
 
-bool VectorVariableContainer::isStoringAlias() const
-{
-    return !mAliasGenIndexes.isEmpty();
-}
+//bool VectorVariableContainer::isStoringAlias() const
+//{
+//    return !mAliasGenIndexes.isEmpty();
+//}
 
-bool VectorVariableContainer::isGenerationAlias(const int gen) const
-{
-    if (gen<0)
-    {
-        return mAliasGenIndexes.contains(getHighestGeneration());
-    }
-    else
-    {
-        return mAliasGenIndexes.contains(gen);
-    }
-}
+//bool VectorVariableContainer::isGenerationAlias(const int gen) const
+//{
+//    if (gen<0)
+//    {
+//        return mAliasGenIndexes.contains(getHighestGeneration());
+//    }
+//    else
+//    {
+//        return mAliasGenIndexes.contains(gen);
+//    }
+//}
 
-bool VectorVariableContainer::isStoringImported() const
-{
-    return !mImportedGenIndexes.isEmpty();
-}
+//bool VectorVariableContainer::isStoringImported() const
+//{
+//    return !mImportedGenIndexes.isEmpty();
+//}
 
-bool VectorVariableContainer::isGenerationImported(const int gen) const
-{
-    if (gen<0)
-    {
-        return mImportedGenIndexes.contains(getHighestGeneration());
-    }
-    else
-    {
-        return mImportedGenIndexes.contains(gen);
-    }
-}
+//bool VectorVariableContainer::isGenerationImported(const int gen) const
+//{
+//    if (gen<0)
+//    {
+//        return mImportedGenIndexes.contains(getHighestGeneration());
+//    }
+//    else
+//    {
+//        return mImportedGenIndexes.contains(gen);
+//    }
+//}
 
-bool VectorVariableContainer::isStoringNonImported() const
-{
-    return !mNonImportedGenIndexes.isEmpty();
-}
+//bool VectorVariableContainer::isStoringNonImported() const
+//{
+//    return !mNonImportedGenIndexes.isEmpty();
+//}
 
-bool VectorVariableContainer::isGenerationNonImported(const int gen) const
-{
-    return mNonImportedGenIndexes.contains(gen);
-}
+//bool VectorVariableContainer::isGenerationNonImported(const int gen) const
+//{
+//    return mNonImportedGenIndexes.contains(gen);
+//}
 
-SharedVectorVariableT VectorVariableContainer::getDataGeneration(const int gen) const
-{
-    // If generation not specified (<0), then take latest (if not empty),
-    if ( (gen < 0) && !mDataGenerations.empty() )
-    {
-        return (--mDataGenerations.end()).value();
-    }
+//SharedVectorVariableT VectorVariableContainer::getDataGeneration(const int gen) const
+//{
+//    // If generation not specified (<0), then take latest (if not empty),
+//    if ( (gen < 0) && !mDataGenerations.empty() )
+//    {
+//        return (--mDataGenerations.end()).value();
+//    }
 
-    // Else try to find specified generation
-    // Return 0 ptr if generation not found
-    return mDataGenerations.value(gen, SharedVectorVariableT(0));
-}
+//    // Else try to find specified generation
+//    // Return 0 ptr if generation not found
+//    return mDataGenerations.value(gen, SharedVectorVariableT(0));
+//}
 
-SharedVectorVariableT VectorVariableContainer::getNonAliasDataGeneration(int gen) const
-{
-    // We need to know the generation to check
-    if (gen<0)
-    {
-        gen = getHighestGeneration();
-    }
+//SharedVectorVariableT VectorVariableContainer::getNonAliasDataGeneration(int gen) const
+//{
+//    // We need to know the generation to check
+//    if (gen<0)
+//    {
+//        gen = getHighestGeneration();
+//    }
 
-    if (!isGenerationAlias(gen))
-    {
-        return getDataGeneration(gen);
-    }
+//    if (!isGenerationAlias(gen))
+//    {
+//        return getDataGeneration(gen);
+//    }
 
-    // If we can not find one, then return 0 ptr
-    return SharedVectorVariableT();
+//    // If we can not find one, then return 0 ptr
+//    return SharedVectorVariableT();
 
-}
+//}
 
-QList<SharedVectorVariableT> VectorVariableContainer::getAllDataGenerations() const
-{
-    return mDataGenerations.values();
-}
+//QList<SharedVectorVariableT> VectorVariableContainer::getAllDataGenerations() const
+//{
+//    return mDataGenerations.values();
+//}
 
-bool VectorVariableContainer::hasDataGeneration(const int gen)
-{
-    return mDataGenerations.contains(gen);
-}
+//bool VectorVariableContainer::hasDataGeneration(const int gen)
+//{
+//    return mDataGenerations.contains(gen);
+//}
 
-//! @brief Adds or replaces a data generation
-void VectorVariableContainer::insertDataGeneration(const int generation, SharedVectorVariableT pData)
-{
-    // If the generation already exists then we must remove the old one first
-    // Note! we do not want to call removeDataGeneration as that could trigger removal of the container as-well (if last gen i s removed)
-    GenerationMapT::iterator git = mDataGenerations.find(generation);
-    if (git != mDataGenerations.end())
-    {
-        actuallyRemoveDataGen(git);
-    }
+////! @brief Adds or replaces a data generation
+//void VectorVariableContainer::insertDataGeneration(const int generation, SharedVectorVariableT pData)
+//{
+//    // If the generation already exists then we must remove the old one first
+//    // Note! we do not want to call removeDataGeneration as that could trigger removal of the container as-well (if last gen i s removed)
+//    GenerationMapT::iterator git = mDataGenerations.find(generation);
+//    if (git != mDataGenerations.end())
+//    {
+//        actuallyRemoveDataGen(git);
+//    }
 
-    // Set generation that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
-    pData->mGeneration = generation;
-    // Insert into generation storage
-    mDataGenerations.insert(generation, pData);
-    // Remember if alias
-    if (pData->hasAliasName() && pData->getAliasName() == mName)
-    {
-        mAliasGenIndexes.addValue(generation);
-    }
-    // Remember if imported
-    if (pData->isImported())
-    {
-        mImportedGenIndexes.addValue(generation);
-    }
-    else
-    // Remember non-imported variables
-    {
-        mNonImportedGenIndexes.addValue(generation);
-    }
+//    // Set generation that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
+//    pData->mGeneration = generation;
+//    // Insert into generation storage
+//    mDataGenerations.insert(generation, pData);
+//    // Remember if alias
+//    if (pData->hasAliasName() && pData->getAliasName() == mName)
+//    {
+//        mAliasGenIndexes.addValue(generation);
+//    }
+//    // Remember if imported
+//    if (pData->isImported())
+//    {
+//        mImportedGenIndexes.addValue(generation);
+//    }
+//    else
+//    // Remember non-imported variables
+//    {
+//        mNonImportedGenIndexes.addValue(generation);
+//    }
 
 
-    // Connect signals from data
-    connect(pData.data(), SIGNAL(allowAutoRemove(int,bool)), this, SLOT(allowGenerationAutoRemoval(int,bool)), Qt::UniqueConnection);
+//    // Connect signals from data
+//    connect(pData.data(), SIGNAL(allowAutoRemove(int,bool)), this, SLOT(allowGenerationAutoRemoval(int,bool)), Qt::UniqueConnection);
 
-    // Emit notification of new generation
-    emit generationAdded();
-}
+//    // Emit notification of new generation
+//    emit generationAdded();
+//}
 
-//! @brief Removes a generation of the variable, and the variable itself if it becomes empty
-//! @note If last generation the container itself will be deleted from parent log data handler, so DO NOT CALL this while iterating through the log data map
-//! @todo this functions should not call delete in parent if empty, it causes difficult to debug problems while calling it during iteration, need to come up with a smarter solution
-//! @returns True if the generation was removed, otherwise false (if generation was not present or tagged as keep (when not forcing)
-bool VectorVariableContainer::removeDataGeneration(const int generation, const bool force)
-{
-    // Remove a data generation
-    bool didRemove = removeDataGenerationOnly(generation, force);
+////! @brief Removes a generation of the variable, and the variable itself if it becomes empty
+////! @note If last generation the container itself will be deleted from parent log data handler, so DO NOT CALL this while iterating through the log data map
+////! @todo this functions should not call delete in parent if empty, it causes difficult to debug problems while calling it during iteration, need to come up with a smarter solution
+////! @returns True if the generation was removed, otherwise false (if generation was not present or tagged as keep (when not forcing)
+//bool VectorVariableContainer::removeDataGeneration(const int generation, const bool force)
+//{
+//    // Remove a data generation
+//    bool didRemove = removeDataGenerationOnly(generation, force);
 
-    // If last data generation removed then ask my parent to delete me
-    if (mDataGenerations.isEmpty())
-    {
-        mpParentLogDataHandler->deleteVariableContainer(mName);
-    }
-    return didRemove;
-}
+//    // If last data generation removed then ask my parent to delete me
+//    if (mDataGenerations.isEmpty())
+//    {
+//        mpParentLogDataHandler->deleteVariableContainer(mName);
+//    }
+//    return didRemove;
+//}
 
-//! @brief Removes a generation of the variable
-//! @returns True if the generation was removed, otherwise false (if generation was not present or tagged as keep (when not forcing)
-bool VectorVariableContainer::removeDataGenerationOnly(const int generation, const bool force)
-{
-    bool didRemove=false;
-    // Skip removal of generations that should be kept
-    if (mKeepGenerations.contains(generation))
-    {
-        if (force)
-        {
-            // We use find to search only once, (and reuse iterator)
-            GenerationMapT::iterator git = mDataGenerations.find(generation);
-            if (git != mDataGenerations.end())
-            {
-                actuallyRemoveDataGen(git);
-                didRemove=true;
-            }
-            mKeepGenerations.removeOne(generation);
-        }
-    }
-    else
-    {
-        // We use find to search only once, (and reuse iterator)
-        GenerationMapT::iterator git = mDataGenerations.find(generation);
-        if (git != mDataGenerations.end())
-        {
-            actuallyRemoveDataGen(git);
-            didRemove=true;
-        }
-    }
-    return didRemove;
-}
+////! @brief Removes a generation of the variable
+////! @returns True if the generation was removed, otherwise false (if generation was not present or tagged as keep (when not forcing)
+//bool VectorVariableContainer::removeDataGenerationOnly(const int generation, const bool force)
+//{
+//    bool didRemove=false;
+//    // Skip removal of generations that should be kept
+//    if (mKeepGenerations.contains(generation))
+//    {
+//        if (force)
+//        {
+//            // We use find to search only once, (and reuse iterator)
+//            GenerationMapT::iterator git = mDataGenerations.find(generation);
+//            if (git != mDataGenerations.end())
+//            {
+//                actuallyRemoveDataGen(git);
+//                didRemove=true;
+//            }
+//            mKeepGenerations.removeOne(generation);
+//        }
+//    }
+//    else
+//    {
+//        // We use find to search only once, (and reuse iterator)
+//        GenerationMapT::iterator git = mDataGenerations.find(generation);
+//        if (git != mDataGenerations.end())
+//        {
+//            actuallyRemoveDataGen(git);
+//            didRemove=true;
+//        }
+//    }
+//    return didRemove;
+//}
 
-//! @brief Limit the number of generations within the given interval
-//! @returns True if something was removed else false
-bool VectorVariableContainer::purgeOldGenerations(const int purgeEnd, const int nGensToKeep)
-{
-    bool didRemove = false;
-    // Only do the purge if mingen is under upper limit
-    int minGen = getLowestGeneration();
-    if (minGen <= purgeEnd)
-    {
-        // loop through keys
-        const int nTaggedKeep = mKeepGenerations.size();
-        QList<int> keys = mDataGenerations.keys();
-        for (int k=0; k<keys.size(); ++k)
-        {
-            // Only break loop when we have deleted all below purge limit or when total number of generations is less then the desired (+ those we want to keep)
-            if ((keys[k] > purgeEnd) || (mDataGenerations.size() < (nGensToKeep+nTaggedKeep)) )
-            {
-                break;
-            }
-            else
-            {
-                // Try to remove each generation
-                didRemove += removeDataGeneration(keys[k], false);
-            }
-        }
-    }
-    return didRemove;
-}
+////! @brief Limit the number of generations within the given interval
+////! @returns True if something was removed else false
+//bool VectorVariableContainer::purgeOldGenerations(const int purgeEnd, const int nGensToKeep)
+//{
+//    bool didRemove = false;
+//    // Only do the purge if mingen is under upper limit
+//    int minGen = getLowestGeneration();
+//    if (minGen <= purgeEnd)
+//    {
+//        // loop through keys
+//        const int nTaggedKeep = mKeepGenerations.size();
+//        QList<int> keys = mDataGenerations.keys();
+//        for (int k=0; k<keys.size(); ++k)
+//        {
+//            // Only break loop when we have deleted all below purge limit or when total number of generations is less then the desired (+ those we want to keep)
+//            if ((keys[k] > purgeEnd) || (mDataGenerations.size() < (nGensToKeep+nTaggedKeep)) )
+//            {
+//                break;
+//            }
+//            else
+//            {
+//                // Try to remove each generation
+//                didRemove += removeDataGeneration(keys[k], false);
+//            }
+//        }
+//    }
+//    return didRemove;
+//}
 
-void VectorVariableContainer::removeAllGenerations()
-{
-    // It is assumed that the generation map is sorted by key which it should be since adding will always append
-    QList<int> gens = mDataGenerations.keys();
-    for (int it=0; it<gens.size(); ++it)
-    {
-        removeDataGeneration(gens[it]);
-    }
-}
+//void VectorVariableContainer::removeAllGenerations()
+//{
+//    // It is assumed that the generation map is sorted by key which it should be since adding will always append
+//    QList<int> gens = mDataGenerations.keys();
+//    for (int it=0; it<gens.size(); ++it)
+//    {
+//        removeDataGeneration(gens[it]);
+//    }
+//}
 
-bool VectorVariableContainer::removeAllImportedGenerations()
-{
-    bool didRemove=false;
-    QList<int> gens = mDataGenerations.keys();
-    for (int it=0; it<gens.size(); ++it)
-    {
-        if (mDataGenerations[gens[it]]->isImported())
-        {
-            didRemove += removeDataGeneration(gens[it], true);
-        }
-    }
-    return didRemove;
-}
+//bool VectorVariableContainer::removeAllImportedGenerations()
+//{
+//    bool didRemove=false;
+//    QList<int> gens = mDataGenerations.keys();
+//    for (int it=0; it<gens.size(); ++it)
+//    {
+//        if (mDataGenerations[gens[it]]->isImported())
+//        {
+//            didRemove += removeDataGeneration(gens[it], true);
+//        }
+//    }
+//    return didRemove;
+//}
 
-VectorVariableContainer::VectorVariableContainer(const QString &rName, LogDataHandler *pParentLogDataHandler) : QObject()
-{
-    mName = rName;
-    mpParentLogDataHandler = pParentLogDataHandler;
-}
+//VectorVariableContainer::VectorVariableContainer(const QString &rName, LogDataHandler2 *pParentLogDataHandler) : QObject()
+//{
+//    mName = rName;
+//    mpParentLogDataHandler = pParentLogDataHandler;
+//}
 
-VectorVariableContainer::~VectorVariableContainer()
-{
-    // Clear all data
-    mDataGenerations.clear();
-}
+//VectorVariableContainer::~VectorVariableContainer()
+//{
+//    // Clear all data
+//    mDataGenerations.clear();
+//}
 
 QVector<double> VectorVariable::getDataVectorCopy() const
 {
@@ -2161,75 +2197,75 @@ IndexIntervalCollection::MinMaxT::MinMaxT(int min, int max)
 
 
 
-HopsanVariable::HopsanVariable()
-    : mpContainer(0), mpVariable(0)
-{
-    //Nothing
-}
+//SharedVectorVariableT::SharedVectorVariableT()
+//    : mpContainer(0), mpVariable(0)
+//{
+//    //Nothing
+//}
 
-HopsanVariable::HopsanVariable(SharedVectorVariableT pData)
-    : mpContainer(0), mpVariable(0)
-{
-    mpVariable = pData;
-}
+//SharedVectorVariableT::SharedVectorVariableT(SharedVectorVariableT pData)
+//    : mpContainer(0), mpVariable(0)
+//{
+//    mpVariable = pData;
+//}
 
-HopsanVariable::HopsanVariable(SharedVectorVariableContainerT pContainer, SharedVectorVariableT pData)
-    : mpContainer(0), mpVariable(0)
-{
-    mpContainer = pContainer;
-    mpVariable = pData;
-}
+//SharedVectorVariableT::SharedVectorVariableT(SharedVectorVariableContainerT pContainer, SharedVectorVariableT pData)
+//    : mpContainer(0), mpVariable(0)
+//{
+//    mpContainer = pContainer;
+//    mpVariable = pData;
+//}
 
-void HopsanVariable::switchToGeneration(const int gen)
-{
-    if (mpContainer)
-    {
-        mpVariable = mpContainer->getDataGeneration(gen);
-    }
-}
+//void SharedVectorVariableT::switchToGeneration(const int gen)
+//{
+//    if (mpContainer)
+//    {
+//        mpVariable = mpContainer->getDataGeneration(gen);
+//    }
+//}
 
-LogDataHandler *HopsanVariable::getLogDataHandler()
-{
-    if (mpVariable)
-    {
-        return mpVariable->getLogDataHandler();
-    }
-    return 0;
-}
+//LogDataHandler *SharedVectorVariableT::getLogDataHandler()
+//{
+//    if (mpVariable)
+//    {
+//        return mpVariable->getLogDataHandler();
+//    }
+//    return 0;
+//}
 
-bool HopsanVariable::hasContainer() const
-{
-    return !mpContainer.isNull();
-}
+//bool SharedVectorVariableT::hasContainer() const
+//{
+//    return !mpContainer.isNull();
+//}
 
-bool HopsanVariable::isNull() const
-{
-    return mpVariable.isNull();
-}
+//bool SharedVectorVariableT::isNull() const
+//{
+//    return mpVariable.isNull();
+//}
 
-bool HopsanVariable::isCompletelyNull() const
-{
-    return mpContainer.isNull() && mpVariable.isNull();
-}
+//bool SharedVectorVariableT::isCompletelyNull() const
+//{
+//    return mpContainer.isNull() && mpVariable.isNull();
+//}
 
-bool HopsanVariable::operator!() const
-{
-    return mpVariable.isNull();
-}
+//bool SharedVectorVariableT::operator!() const
+//{
+//    return mpVariable.isNull();
+//}
 
-bool HopsanVariable::isVariableAlias() const
-{
-    if (mpContainer && mpVariable)
-    {
-        return mpContainer->isGenerationAlias(mpVariable->getGeneration());
-    }
-    return false;
-}
+//bool SharedVectorVariableT::isVariableAlias() const
+//{
+//    if (mpContainer && mpVariable)
+//    {
+//        return mpContainer->isGenerationAlias(mpVariable->getGeneration());
+//    }
+//    return false;
+//}
 
-HopsanVariable::operator bool() const
-{
-    return !mpVariable.isNull();
-}
+//SharedVectorVariableT::operator bool() const
+//{
+//    return !mpVariable.isNull();
+//}
 
 
 ImportedFrequencyDomainVariable::ImportedFrequencyDomainVariable(SharedVectorVariableT frequency, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache)
@@ -2246,4 +2282,18 @@ bool ImportedFrequencyDomainVariable::isImported() const
 QString ImportedFrequencyDomainVariable::getImportedFileName() const
 {
     return mImportFileName;
+}
+
+
+SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int generation)
+{
+    if (pVar && (pVar->getGeneration() != generation))
+    {
+        auto pLogDataHandler = pVar->getLogDataHandler();
+        if (pLogDataHandler)
+        {
+            return pLogDataHandler->getVectorVariable(pVar->getSmartName(), generation);
+        }
+    }
+    return SharedVectorVariableT();
 }

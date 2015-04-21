@@ -1,111 +1,62 @@
-/*-----------------------------------------------------------------------------
- This source file is part of Hopsan NG
+///*-----------------------------------------------------------------------------
+// This source file is part of Hopsan NG
 
- Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
-    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+// Copyright (c) 2011
+//    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+//    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
- This file is provided "as is", with no guarantee or warranty for the
- functionality or reliability of the contents. All contents in this file is
- the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- redistributing any part of this file is prohibited without explicit
- permission from the copyright holders.
------------------------------------------------------------------------------*/
+// This file is provided "as is", with no guarantee or warranty for the
+// functionality or reliability of the contents. All contents in this file is
+// the original work of the copyright holders at the Division of Fluid and
+// Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+// redistributing any part of this file is prohibited without explicit
+// permission from the copyright holders.
+//-----------------------------------------------------------------------------*/
 
-//!
-//! @file   PlotWidget.h
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-XX-XX
-//!
-//! @brief Contains the PlotWidget and related classes
-//!
-//$Id$
+////!
+////! @file   PlotWidget.h
+////! @author Robert Braun <robert.braun@liu.se>
+////! @date   2010-XX-XX
+////!
+////! @brief Contains the PlotWidget and related classes
+////!
+////$Id$
 
-#ifndef PlotWidget_H
-#define PlotWidget_H
+//#ifndef PlotWidget_H
+//#define PlotWidget_H
 
-#include <QPushButton>
-#include <QTreeWidget>
-#include "LogDataHandler.h"
+//#include <QPushButton>
+//#include <QTreeWidget>
+//#include "LogDataHandler2.h"
 
-class VariableTree : public QTreeWidget
-{
-    Q_OBJECT
-public:
-    VariableTree(QWidget *pParent=0);
+//// Forward declaration
+//class GenerationSelector;
+//class VariableTree;
 
-    void setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler);
-    LogDataHandler *getLogDataHandler();
-    void setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow);
+//class PlotWidget : public QWidget
+//{
+//    Q_OBJECT
+//public:
+//    PlotWidget(QWidget *pParent=0);
+//    void setLogDataHandler(QPointer<LogDataHandler2> pLogDataHandler);
+//    LogDataHandler2 *getLogDataHandler();
+//    void setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow);
 
-    void addFullVariable(HopsanVariable data);
-    void addAliasVariable(HopsanVariable data);
-    void addImportedVariable(HopsanVariable data);
-    void refreshImportedVariables();
+//public slots:
+//    void updateList();
+//    void clearList();
 
-    void clear();
+//    void openNewPlotWindow();
+//    void loadFromXml();
 
-public slots:
-    void updateList(const int gen);
+//protected:
+//    virtual void showEvent(QShowEvent *event);
 
-protected slots:
-    PlotWindow *plotToPreferedPlotWindow(QTreeWidgetItem *item);
+//    GenerationSelector *mpGenerationSelector;
+//    VariableTree *mpVariableTree;
+//    QPushButton *mpNewWindowButton;
+//    QPushButton *mpLoadButton;
+//    bool mHasPendingUpdate;
+//};
 
-protected:
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void contextMenuEvent(QContextMenuEvent *event);
-
-    void resetImportedItemParent();
-    void resetAliasItemParent();
-
-    void getExpandedFullVariables(QStringList &rList);
-    void getExpandedImportFiles(QStringList &rList);
-
-    void expandImportFileItems(const QStringList &rList);
-    void expandFullVariableItems(const QStringList &rList);
-
-    QPointF mDragStartPosition;
-    QMap<QString, QTreeWidgetItem*> mFullVariableItemMap;
-    QMap<QString, QTreeWidgetItem*> mAliasVariableItemMap;
-    QMap<QString, QTreeWidgetItem*> mImportedFileItemMap;
-
-    QTreeWidgetItem* mpImportedItemParent;
-    QTreeWidgetItem* mpAliasItemParent;
-
-    //QList<VariableCommonDescription> mAvailableVariables;
-    QPointer<LogDataHandler> mpLogDataHandler;
-    QPointer<PlotWindow> mpPreferedPlotWindow;
-};
-
-// Forward declaration
-class GenerationSelector;
-
-class PlotWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    PlotWidget(QWidget *pParent=0);
-    void setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler);
-    LogDataHandler *getLogDataHandler();
-    void setPreferedPlotWindow(QPointer<PlotWindow> pPreferedPlotWindow);
-
-public slots:
-    void updateList();
-    void clearList();
-
-    void openNewPlotWindow();
-    void loadFromXml();
-
-protected:
-    virtual void showEvent(QShowEvent *event);
-
-    GenerationSelector *mpGenerationSelector;
-    VariableTree *mpVariableTree;
-    QPushButton *mpNewWindowButton;
-    QPushButton *mpLoadButton;
-    bool mHasPendingUpdate;
-};
-
-#endif // PlotWidget_H
+//#endif // PlotWidget_H

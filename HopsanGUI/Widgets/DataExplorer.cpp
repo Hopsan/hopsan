@@ -1,6 +1,6 @@
 #include "global.h"
 #include "DataExplorer.h"
-#include "LogDataHandler.h"
+#include "LogDataHandler2.h"
 #include "Configuration.h"
 
 #include <QLabel>
@@ -78,14 +78,14 @@ DataExplorer::DataExplorer(QWidget *parent) :
     this->setWindowTitle("Data Explorer");
 }
 
-void DataExplorer::setLogdataHandler(LogDataHandler *pLogDataHanlder)
+void DataExplorer::setLogdataHandler(LogDataHandler2 *pLogDataHandler)
 {
     if (mpLogDataHandler)
     {
         disconnect(mpLogDataHandler, 0, this, 0);
     }
 
-    mpLogDataHandler = pLogDataHanlder;
+    mpLogDataHandler = pLogDataHandler;
     connect(mpLogDataHandler, SIGNAL(dataAdded()), this, SLOT(refreshGenerationList()));
     connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(refreshGenerationList()));
     refreshGenerationList();

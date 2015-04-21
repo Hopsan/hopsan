@@ -26,6 +26,8 @@
 #include <QDialogButtonBox>
 #include <QAction>
 #include <QProgressBar>
+#include <QTreeWidget>
+#include <QPushButton>
 
 #include "global.h"
 #include "Configuration.h"
@@ -638,7 +640,7 @@ void SensitivityAnalysisDialog::run()
 
     for(int v=0; v<mOutputVariables.size(); ++v)
     {
-        int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGeneration()+1;
+        int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGenerationNumber()+1;
         int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
 
         QVector<double> vMin(nSamples, 100000000000.0);
@@ -650,7 +652,8 @@ void SensitivityAnalysisDialog::run()
         QString port = mOutputVariables.at(v).at(1);
         QString variable = mOutputVariables.at(v).at(2);
 
-        QString fullName = makeConcatName(component,port,variable);
+        //! @todo there is no subsystem support here right now
+        QString fullName = makeFullVariableName(QStringList(), component,port,variable);
 
         //PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
 
