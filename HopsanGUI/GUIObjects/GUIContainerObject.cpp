@@ -173,7 +173,6 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 
     // Update main window widgets with data from this container
     gpFindWidget->setContainer(this);
-    gpPlotWidget->setLogDataHandler(mpModelWidget->getLogDataHandler());
     gpMainWindow->mpSystemParametersWidget->update(this);
     gpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
@@ -186,7 +185,6 @@ void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 {
     // Update Systemparameter widget to have no contents
     gpMainWindow->mpSystemParametersWidget->update(0);
-    gpPlotWidget->setLogDataHandler(0);
 
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));

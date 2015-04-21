@@ -342,7 +342,7 @@ void Port::openRightClickMenu(QPoint screenPos)
         port = this->getName();
     }
 
-    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeFullVariableName(mpParentModelObject->getSystemNameHieararchy(),comp,port,".*")));
+    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeFullVariableNameRegexpSafe(mpParentModelObject->getSystemNameHieararchy(),comp,port,".*")));
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;

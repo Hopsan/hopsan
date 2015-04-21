@@ -45,6 +45,7 @@
 #include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/DataExplorer.h"
+#include "Widgets/PlotWidget2.h"
 
 ModelHandler::ModelHandler(QObject *parent)
     : QObject(parent)
@@ -523,6 +524,7 @@ void ModelHandler::refreshMainWindowConnections()
         getCurrentViewContainerObject()->updateMainWindowButtons();
 
         gpMainWindow->mpDataExplorer->setLogdataHandler(getCurrentLogDataHandler()); //!< @todo ugly hack, should do nicer
+        gpPlotWidget->setLogDataHandler(getCurrentLogDataHandler());
 
         setToolBarSimulationTimeFromTab(getCurrentModel());
 

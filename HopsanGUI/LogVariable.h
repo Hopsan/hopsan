@@ -45,6 +45,7 @@ class VectorVariable;
 class LogDataHandler2;
 
 QString makeFullVariableName(const QStringList &rSystemHierarchy, const QString &rComponentName, const QString &rPortName, const QString &rDataName);
+QString makeFullVariableNameRegexpSafe(const QStringList &rSystemHierarchy, const QString &rComponentName, const QString &rPortName, const QString &rDataName);
 bool splitFullVariableName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rPortName, QString &rVarName);
 
 //! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)

@@ -108,6 +108,13 @@ QString makeFullVariableName(const QStringList &rSystemHierarchy, const QString 
     }
 }
 
+QString makeFullVariableNameRegexpSafe(const QStringList &rSystemHierarchy, const QString &rComponentName, const QString &rPortName, const QString &rDataName)
+{
+    QString name = makeFullVariableName(rSystemHierarchy, rComponentName, rPortName, rDataName);
+    name.replace("$", "\\$");
+    return name;
+}
+
 //! @todo this should not be here should be together with plot variable stuff in some other file later
 bool splitFullVariableName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rPortName, QString &rVarName)
 {
@@ -2297,3 +2304,6 @@ SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int g
     }
     return SharedVectorVariableT();
 }
+
+
+

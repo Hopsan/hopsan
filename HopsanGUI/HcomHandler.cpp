@@ -6590,6 +6590,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     // Convert short hcom format to long format
     QString pattern_long = pattern;
     toLongDataNames(pattern_long);
+    //! @todo what about subsystem $
 
     // If we know generation then search for it directly
     if (desiredGen >= 0)
