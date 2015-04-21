@@ -205,11 +205,9 @@ def main(rootDir):
     excludeDirs.append('Dependencies')
     
     files = sorted(findFiles(rootDir, suffixes, excludeDirs))
-    print(files)
+    #print(files)
 
-    currentDir = ComponentDir()    
-    componentDirs = list()
-
+    componentDirs = dict()
     for filepath in reversed(files):
         fileFullDir, fileName = os.path.split(filepath)
         dummy, fileDir = os.path.split(fileFullDir)
@@ -218,17 +216,14 @@ def main(rootDir):
         print('fileFullDir:  '+fileFullDir)
         print('fileName:     '+fileName) 
         print('fileDir:      '+fileDir)
-        if currentDir.dirPath != fileFullDir:
-            # Append last dir
-            if not currentDir.isEmpty():
-                #print('Appending componentDir entery 1')
-                componentDirs.append(currentDir)                
-    
-            print('Creating new ComppnentDir entery')
-            currentDir = ComponentDir() 
+        if componentDirs.has_key(fileFullDir):
+            currentDir = componentDirs[fileFullDir]
+        else:
+            print('Creating new ComppnentDir entry for: '+fileFullDir)
+            currentDir = ComponentDir()
             currentDir.dirPath = fileFullDir
             currentDir.dirName = fileDir
-            
+            componentDirs[fileFullDir] = currentDir
 
         typename = checkTypeName(filepath)
         if not typename == '':
@@ -241,17 +236,14 @@ def main(rootDir):
             #currentDir.compSources.append(fileBaseName+'.cc')
             #generateCCFileForComponentHeader(fileFullDir, fileBaseName+'.cc', fileName)
 
-    if not currentDir.isEmpty():
-        #print('Appending componentDir entery 2')
-        componentDirs.append(currentDir) 
-
     #print (len(componentDirs))
+    print('\n')
     
     allComDirPaths = list()
-    for compDir in componentDirs:
-        allComDirPaths.append(compDir.dirPath)
+    for dirpath in componentDirs.keys():
+        allComDirPaths.append(dirpath)
         
-    for compDir in componentDirs:
+    for compDir in componentDirs.values():
         emediates = getAllEmediateSubDirsOf(compDir.dirPath,  allComDirPaths)
         emediateHeaders =list()
         emediateCCI = list()
@@ -297,7 +289,7 @@ def main(rootDir):
     
     allHeaders = list()
     allCCI = list()
-    for compDir in componentDirs:
+    for compDir in componentDirs.values():
         allHeaders.append(compDir.dirPath+'/'+compDir.dirName+'.h')
         allCCI.append(compDir.dirPath+'/'+compDir.dirName+'.cci')
         for compHeader in compDir.compHeaders:
