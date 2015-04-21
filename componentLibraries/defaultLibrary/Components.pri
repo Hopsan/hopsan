@@ -45,9 +45,9 @@ HEADERS +=  \
  $${PWD}/./Mechanic/Rotational/MechanicRackAndPinion.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicTorqueSensor.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicBallScrew.hpp \ 
- $${PWD}/./Mechanic/Rotational/MechanicRotationalInertiaWithCoulumbFriction.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicAngularVelocitySensor.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicRotShaft.hpp \ 
+ $${PWD}/./Mechanic/Rotational/MechanicRotationalInertiaWithCoulombFriction.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicJLink2.hpp \ 
  $${PWD}/./Electric/Electric.h \ 
  $${PWD}/./Electric/ElectricMotor.hpp \ 
@@ -244,6 +244,7 @@ HEADERS +=  \
  $${PWD}/./Hydraulic/Valves/HydraulicShuttleValve.hpp \ 
  $${PWD}/./Hydraulic/Valves/Hydraulic22PoppetValve.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/LinearActuators.h \ 
+ $${PWD}/./Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicCylinderQ.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicFourChamberPiston.hpp \ 

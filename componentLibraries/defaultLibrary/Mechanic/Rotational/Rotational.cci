@@ -16,7 +16,7 @@ pComponentFactory->registerCreatorFunction("MechanicAngleSensor",MechanicAngleSe
 pComponentFactory->registerCreatorFunction("MechanicRackAndPinion",MechanicRackAndPinion::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTorqueSensor",MechanicTorqueSensor::Creator);
 pComponentFactory->registerCreatorFunction("MechanicBallScrew",MechanicBallScrew::Creator);
-pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithCoulombFriction",MechanicRotationalInertiaWithCoulombFriction::Creator);
 pComponentFactory->registerCreatorFunction("MechanicAngularVelocitySensor",MechanicAngularVelocitySensor::Creator);
 pComponentFactory->registerCreatorFunction("MechanicRotShaft",MechanicRotShaft::Creator);
+pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithCoulombFriction",MechanicRotationalInertiaWithCoulombFriction::Creator);
 pComponentFactory->registerCreatorFunction("MechanicJLink2",MechanicJLink2::Creator);

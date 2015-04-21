@@ -492,6 +492,8 @@ bool verifyHmfFormatVersion(const QString hmfVersion)
 //! @todo coreVersion check will not work later when core can save some data by itself, need to use guiversion also
 void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVersion*/, QString coreVersion)
 {
+    updateRenamedComponentType(element, "MechanicRotationalInertiaWithCoulumbFriction", "MechanicRotationalInertiaWithCoulombFriction");
+
     // For all versions older then 0.6.0 and all 0.6.x DEV versions run the following
     if (isVersionGreaterThan("0.6.0", coreVersion) || (coreVersion.contains("0.6.x_r")))
     {

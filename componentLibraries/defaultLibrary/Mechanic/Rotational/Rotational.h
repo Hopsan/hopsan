@@ -16,7 +16,7 @@
 #include "MechanicRackAndPinion.hpp"
 #include "MechanicTorqueSensor.hpp"
 #include "MechanicBallScrew.hpp"
-#include "MechanicRotationalInertiaWithCoulumbFriction.hpp"
 #include "MechanicAngularVelocitySensor.hpp"
 #include "MechanicRotShaft.hpp"
+#include "MechanicRotationalInertiaWithCoulombFriction.hpp"
 #include "MechanicJLink2.hpp"

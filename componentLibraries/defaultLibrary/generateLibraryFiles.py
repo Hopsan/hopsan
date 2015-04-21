@@ -166,18 +166,20 @@ def checkTypeName(filename):
     typename = ''
     file = open(filename,  'r')
     if not file.closed:
-        # Read until line starts with class
+        foundCreator=False
+        # Read until we find the creator function
         for line in file:
             line = line.strip()
-            if line.startswith('class'):
-                if line.endswith('ComponentQ') or line.endswith('ComponentC') or line.endswith('ComponentSignal') or line.endswith('ComponentSystem'):
+            if line.startswith('static Component *Creator()'):
+                foundCreator = True
+            if foundCreator:
+                if line.startswith('return new'):
                     try:
-                        found = re.search('class(.+?):', line).group(1)
+                        found = re.search('return new(.+?)\(\);', line).group(1)
                     except AttributeError:
                         found = ''
                     typename = found.strip()
-                    if not typename == '':
-                        break
+                    break
     file.close()
     return typename
 
