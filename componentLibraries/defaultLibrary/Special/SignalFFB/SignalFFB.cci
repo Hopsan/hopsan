@@ -5,5 +5,4 @@ pComponentFactory->registerCreatorFunction("SignalFFB",SignalFFB::Creator);
 pComponentFactory->registerCreatorFunction("SignalFFBloopIn",SignalFFBloopIn::Creator);
 pComponentFactory->registerCreatorFunction("SignalFFBand",SignalFFBand::Creator);
 pComponentFactory->registerCreatorFunction("SignalFFBorIn",SignalFFBorIn::Creator);
-pComponentFactory->registerCreatorFunction("SignalSRlatch",SignalSRlatch::Creator);
 pComponentFactory->registerCreatorFunction("SignalFFBandIn",SignalFFBandIn::Creator);

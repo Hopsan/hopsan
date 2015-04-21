@@ -2,7 +2,6 @@
 pComponentFactory->registerCreatorFunction("HydraulicHose",HydraulicHose::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicTLMRlineR",HydraulicTLMRlineR::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicAckumulator",HydraulicAckumulator::Creator);
-pComponentFactory->registerCreatorFunction("HydraulicPressureCompensatingValveG",HydraulicPressureCompensatingValveG::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicVolume",HydraulicVolume::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPistonAckumulator",HydraulicPistonAckumulator::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicTLMlossless",HydraulicTLMlossless::Creator);

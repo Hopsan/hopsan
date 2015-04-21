@@ -5,5 +5,4 @@
 #include "SignalFFBloopIn.hpp"
 #include "SignalFFBand.hpp"
 #include "SignalFFBorIn.hpp"
-#include "SignalSRlatch.hpp"
 #include "SignalFFBandIn.hpp"

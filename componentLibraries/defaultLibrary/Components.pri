@@ -260,7 +260,6 @@ HEADERS +=  \
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicHose.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicTLMRLineR.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicAckumulator.hpp \ 
- $${PWD}/./Hydraulic/Volumes&Lines/HydraulicPressureCompensatingValveG.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicVolume.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicPistonAckumulator.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicTLMlossless.hpp \ 
@@ -316,7 +315,6 @@ HEADERS +=  \
  $${PWD}/./Special/SignalFFB/SignalFFBloopIn.hpp \ 
  $${PWD}/./Special/SignalFFB/SignalFFBand.hpp \ 
  $${PWD}/./Special/SignalFFB/SignalFFBorIn.hpp \ 
- $${PWD}/./Special/SignalFFB/SignalSRlatch.hpp \ 
  $${PWD}/./Special/SignalFFB/SignalFFBandIn.hpp \ 
  $${PWD}/./Special/Special.h \ 
  $${PWD}/./Special/CombustionEngine.hpp \ 
