@@ -4,3 +4,7 @@ pComponentFactory->registerCreatorFunction("HydraulicPressureControlValve33",Hyd
 pComponentFactory->registerCreatorFunction("HydraulicValve416",HydraulicValve416::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicShuttleValve",HydraulicShuttleValve::Creator);
 pComponentFactory->registerCreatorFunction("Hydraulic22PoppetValve",Hydraulic22PoppetValve::Creator);
+#include "FlowControlValves/FlowControlValves.cci"
+#include "PressureControlled/PressureControlled.cci"
+#include "PressureControlValves/PressureControlValves.cci"
+#include "DirectionalValves/DirectionalValves.cci"

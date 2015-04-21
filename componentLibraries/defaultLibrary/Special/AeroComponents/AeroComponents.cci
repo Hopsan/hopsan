@@ -18,3 +18,4 @@ pComponentFactory->registerCreatorFunction("AeroAircraft6DOFS",AeroAircraft6DOFS
 pComponentFactory->registerCreatorFunction("AeroWind",AeroWind::Creator);
 pComponentFactory->registerCreatorFunction("AeroPropeller",AeroPropeller::Creator);
 pComponentFactory->registerCreatorFunction("SignalTimeAccelerator",SignalTimeAccelerator::Creator);
+#include "FuelComponents/FuelComponents.cci"
