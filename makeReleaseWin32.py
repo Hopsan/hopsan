@@ -27,8 +27,6 @@ innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno S
 # Libs
 qtlibDirList = [r'C:\Qt\4.8.5']
 qtlib64DirList = [r'C:\Qt\Qt64-4.8.5']
-tbblibDirList = [r'.\HopsanCore\Dependencies\tbb41_20130613oss']
-tbblib64DirList = [r'.\HopsanCore\Dependencies\tbb41_20130613oss_x64']
 
 # Runtime binaries
 qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
@@ -39,8 +37,6 @@ mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 
 # Compilers and build tools
 qtcreatorDirList = [r'C:\Qt\qtcreator-2.8.1']
-#mingwDirList = [r'C:\Qt\MinGW-gcc440_1\mingw\bin', r'C:\Qt\mingw\bin', r'C:\mingw\bin']
-#mingw64DirList = [r'C:\Qt\mingw64\bin']
 msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
 msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
@@ -98,11 +94,7 @@ def printDebug(text):
     setColor(bcolors.WHITE)
 
 def pathExists(path, failMsg="", okMsg=""):
-    # Add \ at end if not already present, else the dirname function below will take parent dir
-    if path[-1] != "\\":
-        path = path+"\\"
-        
-    if os.path.exists(os.path.dirname(path)):
+    if os.path.isdir(path):
         if okMsg!="":
             printSuccess(okMsg)
         return True
@@ -188,6 +180,16 @@ def call7z(args):
 def callSed(sedCommand):
     callEXE(hopsanDir+r'\ThirdParty\sed-4.2.1\sed.exe', sedCommand);
 
+# Returns the last part of a path (split[1] or split[0] if only one part)
+def lastpathelement(path):
+    parts = os.path.split(path)
+    if len(parts) == 1:
+        return parts[0]
+    elif len(parts) == 2:
+        return parts[1]
+    else:
+        return None
+
 def copyFileToDir(srcDir, srcFile, dstDir):
     if not srcDir[-1] == '/':
         srcDir=srcDir+'/'
@@ -208,6 +210,22 @@ def copyFileToDir(srcDir, srcFile, dstDir):
     else:
         print('Error: Source file '+src+' does not exist!')
 
+#  Copy srcDir into dstDir, creating dstDir if necessary
+def copyDirTo(srcDir, dstDir):
+    if os.path.exists(srcDir):
+        # Create destination if it does not exist
+        if not os.path.exists(dstDir):
+            os.makedirs(dstDir)
+        tgtDir = os.path.join(dstDir, lastpathelement(srcDir))
+        if os.path.exists(tgtDir):
+            print('Error: tgtDir '+tgtDir+' already exists')
+            return False
+        shutil.copytree(srcDir, tgtDir)
+        return True
+    else:
+        print('Error: Src directory '+srcDir+' does not exist!')
+        return False
+
 def makeMSVCDirName(version, arch):
     return "MSVC"+version+"_"+arch
     
@@ -223,7 +241,6 @@ def verifyPaths():
     global jomDir
     global qmakeDir
     #global mingwDir
-    global tbbDir
     global dependecyBinFile
 
     isOk = True
@@ -231,12 +248,10 @@ def verifyPaths():
     
     if do64BitRelease:
         qtlibsdirs=qmakeDir
-        tbbdirs=tbblib64DirList
         mingwdirs=mingwDir
         dependecyBinFile=dependecyBinFile64
     else:
         qtlibsdirs=qmakeDir
-        tbbdirs=tbblibDirList
         mingwdirs=mingwDir
         dependecyBinFile=dependecyBinFile32
 
@@ -272,11 +287,6 @@ def verifyPaths():
     #if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
     #    isOk = False
         
-    #Make sure TBB is installed in correct location
-    tbbDir=selectPathFromList(tbbdirs, "Cannot find correct TBB version", "Found correct TBB version!")
-    if tbbDir == "":
-        isOk = False
-
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
     innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
     if innoDir == "":
@@ -507,11 +517,11 @@ def copyFiles():
 	
 	#Copy the FMILibrary include files
     if do64BitRelease:
-        FMILibraryDir=r'\Dependencies\FMILibrary-2.0.1_x64'
+        FMILibraryDir=r'./Dependencies/FMILibrary-2.0.1_x64'
     else:
-        FMILibraryDir=r'\Dependencies\FMILibrary-2.0.1'
-    callMkdir(tempDir+FMILibraryDir+"\\install\\")
-    callXcopy(FMILibraryDir+r'\install', tempDir+FMILibraryDir+"\\install\\") #Dst must end with \
+        FMILibraryDir=r'./Dependencies/FMILibrary-2.0.1'
+    if not copyDirTo(FMILibraryDir+r'/install', tempDir+FMILibraryDir):
+        return False
  
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
     callXcopy(r'HopsanCore\include\svnrevnum.h', tempDir+r'\HopsanCore\include')
