@@ -342,7 +342,8 @@ void Port::openRightClickMenu(QPoint screenPos)
         port = this->getName();
     }
 
-    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeFullVariableNameRegexpSafe(mpParentModelObject->getSystemNameHieararchy(),comp,port,".*")));
+    // Get matching log variables
+    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeFullVariableNameRegexpSafe(mpParentModelObject->getParentSystemNameHieararchy(),comp,port,".*")));
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;
@@ -747,7 +748,7 @@ const ModelObject *Port::getParentModelObject() const
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
 PlotWindow *Port::plot(QString dataName, QString /*dataUnit*/, QColor desiredCurveColor)
 {
-    QString fullName = makeFullVariableName(mpParentModelObject->getSystemNameHieararchy(), mpParentModelObject->getName(),this->getName(),dataName);
+    QString fullName = makeFullVariableName(mpParentModelObject->getParentSystemNameHieararchy(), mpParentModelObject->getName(),this->getName(),dataName);
     //! @todo  why do we have unit here
     return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
 }
@@ -783,7 +784,7 @@ QStringList Port::getFullVariableNames()
     QStringList names2;
     Q_FOREACH(QString name, names)
     {
-        names2.append(makeFullVariableName(mpParentModelObject->getSystemNameHieararchy(), getParentModelObjectName(), getName(), name));
+        names2.append(makeFullVariableName(mpParentModelObject->getParentSystemNameHieararchy(), getParentModelObjectName(), getName(), name));
     }
     return names2;
 }

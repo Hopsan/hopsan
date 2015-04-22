@@ -70,7 +70,7 @@ double PyPortClassWrapper::lastData(Port* o, const QString& rDataName)
 QVector<double> PyPortClassWrapper::data(Port* o, const QString& rDataName)
 {
     SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->
-            getVectorVariable(makeFullVariableName(o->getParentModelObject()->getSystemNameHieararchy(), o->getParentModelObjectName(),
+            getVectorVariable(makeFullVariableName(o->getParentModelObject()->getParentSystemNameHieararchy(), o->getParentModelObjectName(),
                                                    o->getName(), rDataName),-1);
     if (pVar)
     {
@@ -85,7 +85,7 @@ QVector<double> PyPortClassWrapper::time(Port* o)
     if (!vars.empty())
     {
         SharedVectorVariableT pVar = o->getParentContainerObject()->getLogDataHandler()->
-                getVectorVariable(makeFullVariableName(o->getParentModelObject()->getSystemNameHieararchy(), o->getParentModelObjectName(),
+                getVectorVariable(makeFullVariableName(o->getParentModelObject()->getParentSystemNameHieararchy(), o->getParentModelObjectName(),
                                                        o->getName(), vars.first()), -1);
         if (pVar)
         {
@@ -101,7 +101,7 @@ QVector<double> PyPortClassWrapper::time(Port* o)
 VectorVariable *PyPortClassWrapper::variable(Port *o, const QString &rDataName)
 {
     return getCurrentViewcontainerObject()->getLogDataHandler()->
-            getVectorVariable(makeFullVariableName(o->getParentModelObject()->getSystemNameHieararchy(), o->getParentModelObjectName(),
+            getVectorVariable(makeFullVariableName(o->getParentModelObject()->getParentSystemNameHieararchy(), o->getParentModelObjectName(),
                                                    o->getName(), rDataName), -1).data();
 }
 
@@ -428,7 +428,7 @@ void PythonHopsanInterface::clearComponents()
 
 void PythonHopsanInterface::plot(const QString &rCompName, const QString &rPortName, const QString &rDataName, const int gen)
 {
-    plot(makeFullVariableName(getCurrentViewcontainerObject()->getSystemNameHieararchy(), rCompName, rPortName, rDataName), gen);
+    plot(makeFullVariableName(getCurrentViewcontainerObject()->getParentSystemNameHieararchy(), rCompName, rPortName, rDataName), gen);
 }
 
 void PythonHopsanInterface::plot(const QString &rName, const int gen)
@@ -468,7 +468,7 @@ void PythonHopsanInterface::savePlotDataCSV(const QString &rFileName)
 
 VectorVariable *PythonHopsanInterface::getVariable(const QString &rCompName, const QString &rPortName, const QString &rDataName, const int gen)
 {
-    return getVariable(makeFullVariableName(getCurrentViewcontainerObject()->getSystemNameHieararchy(), rCompName, rPortName, rDataName), gen);
+    return getVariable(makeFullVariableName(getCurrentViewcontainerObject()->getParentSystemNameHieararchy(), rCompName, rPortName, rDataName), gen);
 }
 
 VectorVariable *PythonHopsanInterface::getVariable(const QString &rName, const int gen)

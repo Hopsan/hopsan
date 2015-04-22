@@ -127,7 +127,7 @@ QStringList ContainerObject::getSystemNameHieararchy() const
     // Note! This wil lreturn empty lsit for top-level system, and that is OK, it is supposed to do that
     if (mpParentContainerObject)
     {
-        parentSystemNames = mpParentContainerObject->getSystemNameHieararchy();
+        parentSystemNames = mpParentContainerObject->getParentSystemNameHieararchy();
         parentSystemNames << this->getName();
     }
     return parentSystemNames;
@@ -2323,7 +2323,7 @@ QString ContainerObject::getFullNameFromAlias(const QString alias)
 {
     QString comp, port, var;
     getCoreSystemAccessPtr()->getFullVariableNameByAlias(alias, comp, port, var);
-    return makeFullVariableName(getSystemNameHieararchy(), comp,port,var);
+    return makeFullVariableName(getParentSystemNameHieararchy(), comp,port,var);
 }
 
 QStringList ContainerObject::getAliasNames()

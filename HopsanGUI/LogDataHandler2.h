@@ -89,7 +89,7 @@ public:
     void importFromPlainColumnCsv(QString importFilePath=QString());
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> datacolumns, QStringList datanames, QVector<int> timecolumns);
 
-    void exportGenerationToPlo(const QString &rFilePath, const int gen, const int version=-1) const;
+    void exportGenerationToPlo(const QString &rFilePath, int gen, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, QList<SharedVectorVariableT> variables, int version=-1) const;
     void exportToCSV(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
@@ -99,9 +99,9 @@ public:
     SharedVectorVariableT defineNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
     SharedVectorVariableT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 
-    bool removeVariable(const QString &rVarName, const int gen);
+    bool removeVariable(const QString &rVarName, int generation=-1);
 
-    int getNumVariables() const;
+    //int getNumVariables() const;
     bool isEmpty();
     void clear();
 
@@ -120,6 +120,7 @@ public:
     QList<SharedVectorVariableT> getAllVariablesAtGeneration(const int gen);
     QList<SharedVectorVariableT> getAllVariablesAtCurrentGeneration();
     QList<SharedVectorVariableT> getAllVariablesAtRespectiveNewestGeneration();
+    QList<SharedVectorVariableT> getMatchingVariablesAtRespectiveNewestGeneration(const QRegExp &rNameExp) const;
 
     QList<QString> getImportedGenerationFileNames() const;
     QList<SharedVectorVariableT> getImportedVariablesForFile(const QString &rFileName);
@@ -228,7 +229,7 @@ private:
     QList<int> mKeepGenerations;
 
     int mNumPlotCurves;
-    int mGenerationNumber;
+    int mCurrentGenerationNumber;
     QList<QDir> mCacheDirs;
     quint64 mCacheSubDirCtr;
 };

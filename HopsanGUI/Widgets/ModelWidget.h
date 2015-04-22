@@ -70,7 +70,9 @@ public:
 
     bool isEditingEnabled();
 
-    bool defineAlias(const QString &rFullName, const QString &rAlias="");
+    bool defineVariableAlias(const QString &rFullName, const QString &rAlias="");
+    bool undefineVariableAlias(const QString &rFullName);
+    QString getVariableAlias(const QString &rFullName);
 
     SystemContainer *getTopLevelSystemContainer();
     ContainerObject *getViewContainerObject();

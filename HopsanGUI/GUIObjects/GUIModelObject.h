@@ -47,6 +47,7 @@ public:
 
     virtual void setParentContainerObject(ContainerObject *pParentContainer);
 
+    QStringList getParentSystemNameHieararchy() const;
     virtual QStringList getSystemNameHieararchy() const;
 
     // Name methods

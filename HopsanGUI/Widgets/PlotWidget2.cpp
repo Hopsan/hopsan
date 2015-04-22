@@ -730,20 +730,14 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             }
             else
             {
-                //! @todo FIXA /Peter
-//                ContainerObject *pContainer = mpLogDataHandler->getParentContainerObject();
-//                if (pContainer)
-//                {
-//                    // Only show alias commands if the alias represent the actual current alias in the model (Avoids problems with aliases lingering in old generations after rename or similar)
-//                    QString actualAlias = pContainer->getVariableAlias(pItem->getFullName());
-//                    if (actualAlias == pItem->getAliasName())
-//                    {
-//                        pDefineAliasAction = menu.addAction(QString("Change Alias"));
-//                        pUndefineAliasAction = menu.addAction(QString("Undefine Alias"));
-//                        pFindAliasAction = menu.addAction("Find Alias");
-//                    }
-//                }
-
+                // Only show alias commands if the alias represent the actual current alias in the model (Avoids problems with aliases lingering in old generations after rename or similar)
+                QString actualAlias = mpLogDataHandler->getParentModel()->getVariableAlias(pItem->getFullName());
+                if (actualAlias == pItem->getAliasName())
+                {
+                    pDefineAliasAction = menu.addAction(QString("Change Alias"));
+                    pUndefineAliasAction = menu.addAction(QString("Undefine Alias"));
+                    pFindAliasAction = menu.addAction("Find Alias");
+                }
             }
             menu.addSeparator();
         }
@@ -757,11 +751,11 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             // Execute selected action
             if(pSelectedAction == pUndefineAliasAction)
             {
-                mpLogDataHandler->getParentModel()->defineAlias(pItem->getFullName(), ""); //!< @todo at what generation???
+                mpLogDataHandler->getParentModel()->undefineVariableAlias(pItem->getFullName());
             }
             else if(pSelectedAction == pDefineAliasAction)
             {
-                mpLogDataHandler->getParentModel()->defineAlias(pItem->getFullName());
+                mpLogDataHandler->getParentModel()->defineVariableAlias(pItem->getFullName());
             }
             else if(pSelectedAction == pFindAliasAction)
             {
@@ -769,44 +763,25 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             }
             else if (pSelectedAction == pDeleteVariableThisGenAction)
             {
-                if (isImportVariabel)
-                {
-                                    //! @todo FIXA /Peter
-                    //mpLogDataHandler->deleteImportedVariable(pItem->getFullName());
-                }
-                else if (isAliasVariabel)
+                if (isAliasVariabel)
                 {
                     mpLogDataHandler->unregisterAlias(pItem->getAliasName(), pItem->getGeneration());
                 }
                 else
                 {
-                                    //! @todo FIXA /Peter
-//                    //! @todo we should maybe not remove imported variables in this case
-//                    //! @todo what should you remove if you trigger remove on an alias? that is connected to both imported and non-imported variables
-//                    SharedVectorVariableContainerT pCont = mpLogDataHandler->getVariableContainer(pItem->getFullName());
-//                    if (pCont)
-//                    {
-//                        pCont->removeDataGeneration(pItem->getGeneration());
-//                    }
+                    mpLogDataHandler->removeVariable(pItem->getFullName(), pItem->getGeneration());
                 }
             }
             else if (pSelectedAction == pDeleteVariableAllGenAction)
             {
-                if (isImportVariabel)
+                if (isAliasVariabel)
                 {
-                                    //! @todo FIXA /Peter
-                    //mpLogDataHandler->deleteImportedVariable(pItem->getFullName());
-                }
-                else if (isAliasVariabel)
-                {
+                    //! @todo -2 (all) is not supported right now (will only rempove current) /Peter
                     mpLogDataHandler->unregisterAlias(pItem->getAliasName(), -2);
                 }
                 else
                 {
-                                    //! @todo FIXA /Peter
-                    //! @todo we should maybe not remove imported variables in this case
-                    //! @todo what should you remove if you trigger remove on an alias? that is connected to both imported and non-imported variables
-                    //mpLogDataHandler->deleteVariableContainer(pItem->getFullName());
+                    mpLogDataHandler->removeVariable(pItem->getFullName(), -2);
                 }
             }
         }
@@ -955,13 +930,6 @@ PlotWidget2::PlotWidget2(QWidget *pParent)
     tempFont.setBold(true);
     pNewWindowButton->setFont(tempFont);
 
-    QPushButton *pLoadButton = new QPushButton(tr("&Load Plot Window from XML"), this);
-    pLoadButton->setAutoDefault(false);
-    pLoadButton->setFixedHeight(30);
-    tempFont = pLoadButton->font();
-    tempFont.setBold(true);
-    pLoadButton->setFont(tempFont);
-
     mpGenerationSelector = new GenerationSelector();
     connect(mpGenerationSelector, SIGNAL(setGen(int)), mpVariableTree,  SLOT(updateList(int)));
 
@@ -969,13 +937,9 @@ PlotWidget2::PlotWidget2(QWidget *pParent)
     pLayout->addWidget(mpVariableTree, 1);
     pLayout->addWidget(mpGenerationSelector);
     pLayout->addWidget(pNewWindowButton);
-    pLayout->addWidget(pLoadButton);
     pLayout->setSpacing(1);
 
     connect(pNewWindowButton, SIGNAL(clicked()), this, SLOT(openNewPlotWindow()));
-    connect(pLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
-    pLoadButton->setHidden(true);      //!< @todo Fix /Peter
-    //mpLoadButton->setDisabled(true);
 
     this->setMouseTracking(true);
 }

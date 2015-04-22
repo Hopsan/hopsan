@@ -146,13 +146,18 @@ void ModelObject::setParentContainerObject(ContainerObject *pParentContainer)
     }
 }
 
-QStringList ModelObject::getSystemNameHieararchy() const
+QStringList ModelObject::getParentSystemNameHieararchy() const
 {
     if (mpParentContainerObject)
     {
-        return mpParentContainerObject->getSystemNameHieararchy();
+        return mpParentContainerObject->getParentSystemNameHieararchy();
     }
     return QStringList();
+}
+
+QStringList ModelObject::getSystemNameHieararchy() const
+{
+    return getParentSystemNameHieararchy();
 }
 
 
@@ -459,7 +464,7 @@ void ModelObject::showLosses()
                         }
                         QString componentName = vConnectedPorts.at(i)->getParentModelObjectName();
                         QString portName = vConnectedPorts.at(i)->getName();
-                        QStringList sysHieararchy = vConnectedPorts.at(i)->getParentModelObject()->getSystemNameHieararchy();
+                        QStringList sysHieararchy = vConnectedPorts.at(i)->getParentModelObject()->getParentSystemNameHieararchy();
                         //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
                         QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).intensity), generation);
                         QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).flow), generation);
@@ -475,8 +480,8 @@ void ModelObject::showLosses()
                 else    //Normal port!
                 {
                     //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity), generation);
-                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow), generation);
+                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity), generation);
+                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow), generation);
                     QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
                     for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {

@@ -305,7 +305,7 @@ bool ModelWidget::isEditingEnabled()
 
 //! @brief Defines a new alias for specified variable (popup box)
 //! @param[in] rFullName The Full name of the variable
-bool ModelWidget::defineAlias(const QString &rFullName, const QString &rAlias)
+bool ModelWidget::defineVariableAlias(const QString &rFullName, const QString &rAlias)
 {
     QStringList systems;
     QString c,p,d;
@@ -348,6 +348,67 @@ bool ModelWidget::defineAlias(const QString &rFullName, const QString &rAlias)
         }
     }
     return false;
+}
+
+bool ModelWidget::undefineVariableAlias(const QString &rFullName)
+{
+    QStringList systems;
+    QString c,p,d;
+    // Find the subsystem
+    SystemContainer *pSystem=0;
+    if (splitFullVariableName(rFullName,systems,c,p,d))
+    {
+        if (mpToplevelSystem)
+        {
+            pSystem = mpToplevelSystem;
+            for (auto &sysname : systems)
+            {
+                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+                if (!pSystem)
+                {
+                    return false;
+                }
+            }
+         }
+    }
+
+    // Now ask for alias and try to set it
+    if (pSystem)
+    {
+        // Try to set the new alias, abort if it did not work
+        return pSystem->setVariableAlias(makeFullVariableName(QStringList(),c,p,d),"");
+    }
+    return false;
+}
+
+QString ModelWidget::getVariableAlias(const QString &rFullName)
+{
+    QStringList systems;
+    QString c,p,d;
+    // Find the subsystem
+    SystemContainer *pSystem=0;
+    if (splitFullVariableName(rFullName,systems,c,p,d))
+    {
+        if (mpToplevelSystem)
+        {
+            pSystem = mpToplevelSystem;
+            for (auto &sysname : systems)
+            {
+                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+                if (!pSystem)
+                {
+                    return QString();
+                }
+            }
+         }
+    }
+
+    // Now ask for alias and try to set it
+    if (pSystem)
+    {
+        return pSystem->getVariableAlias(makeFullVariableName(QStringList(),c,p,d));
+    }
+    return QString();
 }
 
 
