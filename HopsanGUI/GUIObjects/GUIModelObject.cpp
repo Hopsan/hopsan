@@ -658,15 +658,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
             double y = pPortApp->y*boundingRect().height();
             //qDebug() << "x,y: " << x << " " << y;
 
-            if (this->type() == GroupContainerType)
-            {
-                pPort = new GroupPort(portName, x, y, pPortApp, this);
-            }
-            else
-            {
-                pPort = new Port(portName, x, y, pPortApp, this);
-            }
-
+            pPort = new Port(portName, x, y, pPortApp, this);
 
             mPortListPtrs.append(pPort);
         }
@@ -1232,15 +1224,6 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
 {
     rMenu.addSeparator();
 
-    QAction *groupAction=0;
-    if (!this->scene()->selectedItems().empty())
-    {
-#ifdef DEVELOPMENT
-        //! @todo Grouping is deactivated because it does not currently work!
-        groupAction = rMenu.addAction(tr("Group components"));
-#endif
-    }
-
     QAction *pShowNameAction = rMenu.addAction(tr("Always show name"));
     QAction *pExportComponentParam = 0;//rMenu.addAction(tr("Export Component Parameters"));
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
@@ -1327,10 +1310,6 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         setNameTextAlwaysVisible(pShowNameAction->isChecked());
-    }
-    else if (selectedAction == groupAction)
-    {
-        mpParentContainerObject->groupSelected(pEvent->scenePos());
     }
     else
     {

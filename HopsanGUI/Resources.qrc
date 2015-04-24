@@ -102,9 +102,7 @@
         <file>graphics/uiicons/Hopsan-Add.png</file>
         <file>graphics/objecticons/generatedcomponenticon.svg</file>
         <file>graphics/welcome_newyear.png</file>
-        <file>graphics/objecticons/groupDefault.svg</file>
         <file>graphics/builtinCAF/hidden/missingComponent.xml</file>
-        <file>graphics/builtinCAF/visible/Subsystem/Group.xml</file>
         <file>graphics/builtinCAF/visible/Subsystem/subsystem.xml</file>
         <file>graphics/builtinCAF/visible/Subsystem/systemport.xml</file>
         <file>graphics/objecticons/containerport.svg</file>

@@ -47,7 +47,6 @@
 #define SOUNDSPATH ":sounds/"
 
 // Gui TypeName defines
-#define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
 #define HOPSANGUISYSTEMTYPENAME "Subsystem"
 #define HOPSANGUICONDITIONALSYSTEMTYPENAME "ConditionalSubsystem"
 #define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"

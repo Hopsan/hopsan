@@ -35,7 +35,7 @@ class QDomElement;
 class WorkspaceObjectSelectionBox;
 class ContainerObject;
 
-enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, ContainerObjectType, SystemContainerType, ComponentType, ScopeComponentType, ContainerPortType, GroupContainerType, AnimatedObjectType};
+enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, ContainerObjectType, SystemContainerType, ComponentType, ScopeComponentType, ContainerPortType, AnimatedObjectType};
 
 class WorkspaceObject : public QGraphicsWidget
 {

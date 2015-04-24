@@ -144,36 +144,6 @@ private:
     QGraphicsSvgItem *mpMainIcon;
 };
 
-
-class GroupPortCommonInfo
-{
-public:
-    QVector<Connector*> mConnectedConnectors;
-    QList<Port*> mSharedPorts;
-};
-
-typedef QSharedPointer<GroupPortCommonInfo>  SharedGroupInfoPtrT;
-
-class GroupPort : public Port
-{
-public:
-    GroupPort(QString name, double xpos, double ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject);
-    QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ActualPortType);
-    QString getNodeType();
-
-    void rememberConnection(Connector *pConnector);
-    void forgetConnection(Connector *pConnector);
-
-    Port* getRealPort();
-    QVector<Port *> getConnectedPorts();
-    SharedGroupInfoPtrT getSharedGroupPortInfo();
-    void setSharedGroupPortInfo(SharedGroupInfoPtrT sharedGroupPortInfo);
-
-protected:
-    SharedGroupInfoPtrT mSharedGroupPortInfo;
-
-};
-
 QPointF getOffsetPointfromPort(Port *pStartPortGUIPort, Port *pEndPort);
 
 #endif // GUIPORT_H

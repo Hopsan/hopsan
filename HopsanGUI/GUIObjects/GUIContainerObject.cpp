@@ -47,7 +47,6 @@
 #include "GUIConnector.h"
 #include "GUIContainerObject.h"
 #include "GUIContainerPort.h"
-#include "GUIGroup.h"
 #include "GUIPort.h"
 #include "GUISystem.h"
 #include "GUIWidgets.h"
@@ -473,15 +472,7 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
         double y = it.value().y;
         //qDebug() << "x,y: " << x << " " << y;
 
-        if (this->type() == GroupContainerType)
-        {
-            pPort = new GroupPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
-        }
-        else
-        {
-            pPort = new Port(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
-        }
-
+        pPort = new Port(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
 
         mPortListPtrs.append(pPort);
 
@@ -590,20 +581,12 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
     {
         mpTempGUIModelObject= new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
-//    else if (componentTypeName == HOPSANGUICONDITIONALSYSTEMTYPENAME)
-//    {
-//        mpTempGUIModelObject= new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType, true);
-//    }
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
         // We must create internal port FIRST before external one
         mpTempGUIModelObject = new ContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
         this->addExternalContainerPortObject(mpTempGUIModelObject);
         this->refreshExternalPortsAppearanceAndPosition();
-    }
-    else if (componentTypeName == HOPSANGUIGROUPTYPENAME)
-    {
-        mpTempGUIModelObject = new GroupContainer(position, rotation, pAppearanceData, this);
     }
     else if (componentTypeName == HOPSANGUISCOPECOMPONENTTYPENAME)
     {
@@ -2015,56 +1998,6 @@ QPointF ContainerObject::getCenterPointFromSelection()
     return QPointF(sumX/nSelected, sumY/nSelected);
 }
 
-
-//! @brief Groups the selected objects together.
-void ContainerObject::groupSelected(QPointF pt)
-{
-    qDebug() << "pos where we want to create group: " << pt;
-    qDebug() << "In group selected";
-
-    //Copy the selected objects, the lists will be cleared by addGuiobject and we need to keep this information
-    QList<ModelObject*> modelObjects = mSelectedModelObjectsList;
-    QList<Widget*> widgets = mSelectedWidgetsList;
-
-    //"Detach" the selected objects from this container, basically by removing pointers from the subobject storage maps, make this container forget about these objects
-    for (int i=0; i<modelObjects.size(); ++i)
-    {
-        //! @todo if a containerport is selected we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly, for now we just ignore them (maybe we should always ignore them when grouping)
-        if (modelObjects[i]->type() != ContainerPortType)
-        {
-            // Maybe take ownership should handle this
-            mModelObjectMap.remove(modelObjects[i]->getName());
-        }
-        else
-        {
-            //Remove container ports, we cant group them for now
-            modelObjects.removeAt(i);
-            --i;
-        }
-    }
-
-    for (int i=0; i<widgets.size(); ++i)
-    {
-        mWidgetMap.remove(widgets[i]->getWidgetIndex());
-    }
-
-    if (modelObjects.size() > 0 || widgets.size() > 0)
-    {
-        //Create a new group at the location of the specified
-        ModelObject* pObj =  this->addModelObject(HOPSANGUIGROUPTYPENAME, pt.toPoint(),0);
-        ContainerObject* pContainer =  qobject_cast<ContainerObject*>(pObj);
-
-        //If dyncast successful (it should always be) then let new group take ownership of objects
-        if (pContainer != 0)
-        {
-            pContainer->takeOwnershipOf(modelObjects, widgets);
-        }
-        else
-        {
-            assert(false);
-        }
-    }
-}
 
 
 void ContainerObject::replaceComponent(QString name, QString newType)

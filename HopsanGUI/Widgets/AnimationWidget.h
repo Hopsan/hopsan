@@ -47,7 +47,6 @@
 class ContainerObject;
 class CentralTabWidget;
 class ModelWidget;
-class GUIGroup;
 class GUIComponent;
 class Connector;
 class Port;

@@ -72,22 +72,10 @@ void ContainerPort::createPorts()
     //! @todo should make this function select a systemport icon not undefined
     i.value().selectPortIcon("", "", "NodeEmpty");
 
-
-    if (isSystemPort())
-    {
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
-        mName = mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname);
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mModelObjectAppearance.getDisplayName();
-        mpPort = new Port(mName, x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
-    }
-    else
-    {
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with desired name: " << desiredportname;
-        mName = mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname);
-        mpPort = new GroupPort(mName, x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
-        SharedGroupInfoPtrT shp(new GroupPortCommonInfo);
-        static_cast<GroupPort*>(mpPort)->setSharedGroupPortInfo(shp);
-    }
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
+    mName = mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname);
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mModelObjectAppearance.getDisplayName();
+    mpPort = new Port(mName, x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
 
     mPortListPtrs.append(mpPort);
     refreshDisplayName(); //Must run this after append port cause portname will also be refreshed

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HopsanGUIContainerPort" displayname="Container Port">
+    <modelobject typename="HopsanGUIContainerPort" displayname="SystemPort">
         <icons>
             <icon scale="1" path="containerport.svg" iconrotation="ON" type="defaultmissing"/>
         </icons>

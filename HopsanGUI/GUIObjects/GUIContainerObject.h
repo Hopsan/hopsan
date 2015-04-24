@@ -191,9 +191,6 @@ public slots:
     Connector* createConnector(Port *pPort, UndoStatusEnumT undoSettings=Undo);
     Connector* createConnector(Port *pPort1, Port *pPort2, UndoStatusEnumT undoSettings=Undo);
 
-    //Section slots
-    void groupSelected(QPointF pt);
-
     //Copy/paste slots
     void cutSelected(CopyStack *xmlStack = 0);
     void copySelected(CopyStack *xmlStack = 0);

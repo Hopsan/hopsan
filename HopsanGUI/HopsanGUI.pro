@@ -217,7 +217,6 @@ SOURCES += main.cpp \
     GUIObjects/GUIObject.cpp \
     GUIObjects/GUIModelObjectAppearance.cpp \
     GUIObjects/GUIModelObject.cpp \
-    GUIObjects/GUIGroup.cpp \
     GUIObjects/GUIContainerObject.cpp \
     GUIObjects/GUIComponent.cpp \
     Utilities/XMLUtilities.cpp \
@@ -314,7 +313,6 @@ HEADERS += MainWindow.h \
     GUIObjects/GUIObject.h \
     GUIObjects/GUIModelObjectAppearance.h \
     GUIObjects/GUIModelObject.h \
-    GUIObjects/GUIGroup.h \
     GUIObjects/GUIContainerObject.h \
     GUIObjects/GUIComponent.h \
     Utilities/XMLUtilities.h \

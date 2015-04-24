@@ -92,8 +92,6 @@ protected:
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 
 private:
-    void createActions();
-    void createMenus();
     QColor mIsoColor;
     bool mCtrlKeyPressed;
     bool mShiftKeyPressed;
