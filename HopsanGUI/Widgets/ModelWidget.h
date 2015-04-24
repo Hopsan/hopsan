@@ -33,7 +33,6 @@
 
 //Hopsan includes
 #include "common.h"
-#include "LogDataHandler2.h"
 
 //Forward declarations
 class SystemContainer;
@@ -45,6 +44,7 @@ class CentralTabWidget;
 class AnimationWidget;
 class SimulationThreadHandler;
 class GUIMessageHandler;
+class LogDataHandler2;
 
 
 class ModelWidget : public QWidget

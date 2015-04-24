@@ -25,7 +25,6 @@
 //Hopsan includes
 #include "global.h"
 #include "Configuration.h"
-#include "LogDataHandler.h"
 #include "ModelHandler.h"
 #include "PlotCurve.h"
 #include "PlotTab.h"
@@ -34,6 +33,7 @@
 #include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Utilities/GUIUtilities.h"
+#include "LogDataHandler2.h"
 
 //Other includes
 #include <limits>

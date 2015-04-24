@@ -44,7 +44,6 @@
 #include "Utilities/GUIUtilities.h"
 
 #include "PlotWindow.h"
-#include "Widgets/PlotWidget.h"
 #include "PlotHandler.h"
 
 #include "ComponentUtilities/CSVParser.h"

@@ -25,7 +25,6 @@
 #include "global.h"
 #include "Configuration.h"
 #include "LogVariable.h"
-#include "LogDataHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
 #include <QMessageBox>

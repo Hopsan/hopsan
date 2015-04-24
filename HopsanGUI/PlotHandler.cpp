@@ -27,7 +27,6 @@
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "PlotWindow.h"
-#include "LogDataHandler.h"
 #include "PlotCurve.h"
 #include "Configuration.h"
 

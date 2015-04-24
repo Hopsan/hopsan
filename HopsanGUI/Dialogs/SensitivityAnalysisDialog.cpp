@@ -38,7 +38,6 @@
 #include "Utilities/HelpPopUpWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
-#include "Widgets/PlotWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
 #include "PlotHandler.h"

@@ -36,7 +36,6 @@
 #include "global.h"
 #include "GUIObjects/GUISystem.h"
 #include "HVCWidget.h"
-#include "LogDataHandler.h"
 #include "ModelHandler.h"
 #include "PlotHandler.h"
 #include "Utilities/XMLUtilities.h"

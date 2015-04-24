@@ -35,7 +35,6 @@
 #include "PlotWindow.h"
 #include "PlotTab.h"
 #include "Widgets/ModelWidget.h"
-#include "Widgets/PlotWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUISystem.h"

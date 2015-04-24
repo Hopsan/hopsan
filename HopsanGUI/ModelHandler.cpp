@@ -34,7 +34,6 @@
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 #include "MessageHandler.h"
-#include "LogDataHandler.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
 #include "SimulationThreadHandler.h"

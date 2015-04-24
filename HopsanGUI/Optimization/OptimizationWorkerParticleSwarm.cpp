@@ -26,7 +26,6 @@
 #include "OptimizationWorkerParticleSwarm.h"
 #include "OptimizationWorker.h"
 #include "OptimizationHandler.h"
-#include "LogDataHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/HcomWidget.h"
 #include "HcomHandler.h"

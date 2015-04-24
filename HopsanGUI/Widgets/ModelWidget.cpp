@@ -56,6 +56,7 @@
 #include "Widgets/QuickNavigationWidget.h"
 #include "SymHop.h"
 #include "MessageHandler.h"
+#include "LogDataHandler2.h"
 
 //Needed for Modelica experiments, move later if necessary
 #include "ModelicaLibrary.h"
@@ -164,6 +165,8 @@ ModelWidget::~ModelWidget()
     mpToplevelSystem->deleteInHopsanCore();
     mpToplevelSystem->deleteLater();
     mpSimulationThreadHandler->deleteLater();
+
+    mpLogDataHandler2->deleteLater();
 }
 
 void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)

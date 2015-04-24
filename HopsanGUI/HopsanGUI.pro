@@ -200,7 +200,6 @@ SOURCES += main.cpp \
     Widgets/ProjectTabWidget.cpp \
     GUIConnector.cpp \
     GUIPort.cpp \
-    Widgets/PlotWidget.cpp \
     Widgets/MessageWidget.cpp \
     InitializationThread.cpp \
     Dialogs/OptionsDialog.cpp \
@@ -248,7 +247,6 @@ SOURCES += main.cpp \
     Dialogs/ModelObjectPropertiesDialog.cpp \
     SimulationThreadHandler.cpp \
     Widgets/HcomWidget.cpp \
-    LogDataHandler.cpp \
     LogDataHandler2.cpp \
     PlotTab.cpp \
     PlotCurve.cpp \
@@ -292,7 +290,6 @@ HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
     GUIConnector.h \
     GUIPort.h \
-    Widgets/PlotWidget.h \
     Widgets/MessageWidget.h \
     InitializationThread.h \
     version_gui.h \
@@ -343,7 +340,6 @@ HEADERS += MainWindow.h \
     Dialogs/ModelObjectPropertiesDialog.h \
     SimulationThreadHandler.h \
     Widgets/HcomWidget.h \
-    LogDataHandler.h \
     LogDataHandler2.h \
     PlotTab.h \
     PlotCurve.h \

@@ -37,7 +37,6 @@
 #include "GraphicsView.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "OptionsDialog.h"
-#include "Widgets/PlotWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
 

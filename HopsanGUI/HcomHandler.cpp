@@ -46,7 +46,6 @@
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/PlotWidget.h"
 #include "ModelHandler.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/ModelWidget.h"

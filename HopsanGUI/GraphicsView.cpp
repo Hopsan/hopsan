@@ -38,7 +38,6 @@
 
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
-#include "Widgets/PlotWidget.h"
 #include "MessageHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"

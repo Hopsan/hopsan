@@ -28,7 +28,6 @@
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "HcomHandler.h"
-#include "LogDataHandler.h"
 #include "OptimizationHandler.h"
 #include "OptimizationWorkerComplexRFM.h"
 #include "PlotHandler.h"
