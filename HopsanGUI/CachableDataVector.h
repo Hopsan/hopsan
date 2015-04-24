@@ -88,6 +88,8 @@ public:
     CachableDataVector(const QVector<double> &rDataVector, SharedMultiDataVectorCacheT pMultiCache, const bool cached=true);
     ~CachableDataVector();
 
+    void switchCacheFile(SharedMultiDataVectorCacheT pMultiCache);
+
     bool setCached(const bool cached);
     bool isCached() const;
 

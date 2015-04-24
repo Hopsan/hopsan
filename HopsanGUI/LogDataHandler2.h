@@ -27,10 +27,11 @@ class Generation
     friend class LogDataHandler2;
 public:
     Generation(const QString &rImportfile="");
+    ~Generation();
 
     int getNumVariables() const;
     bool isEmpty();
-    void clear();
+    bool clear(bool force);
 
     bool isImported() const;
     QString getImportFileName() const;
@@ -52,6 +53,8 @@ public:
     bool unregisterAliasForFullName(const QString &rFullName);
     QString getFullNameFromAlias(const QString &rAlias);
 
+    void switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache);
+
 private:
     typedef QMap< QString, SharedVectorVariableT > VariableMapT;
 
@@ -62,10 +65,6 @@ private:
     QList<SharedVectorVariableT> mTimeVectors;
 
     QString mImportedFromFile;
-    SharedMultiDataVectorCacheT mGenerationDataCache;
-
-    IndexIntervalCollection mAliasGenIndexes;
-
 };
 
 class LogDataHandler2 : public QObject
@@ -149,6 +148,7 @@ public:
 
     const QList<QDir> &getCacheDirs() const;
     SharedMultiDataVectorCacheT getGenerationMultiCache(const int gen);
+    void pruneGenerationCache(const int generation);
 
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();

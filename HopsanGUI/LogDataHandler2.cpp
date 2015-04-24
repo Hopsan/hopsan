@@ -1460,15 +1460,23 @@ void LogDataHandler2::allowGenerationAutoRemoval(const int gen)
 //! @brief Removes a generation
 bool LogDataHandler2::removeGeneration(const int gen, const bool force)
 {
-    auto it = mGenerationMap.find(gen);
-    if (it != mGenerationMap.end())
+    auto git = mGenerationMap.find(gen);
+    if (git != mGenerationMap.end())
     {
         //! @todo make it possible to keep individual variables in generations (and purge the rest) (force should always purge all)
         if (force || !mKeepGenerations.contains(gen))
         {
-            mGenerationMap.erase(it);
-            // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
-            removeGenerationCacheIfEmpty(gen);
+            Generation *pGen = git.value();
+            bool genEmpty = pGen->clear(force);
+            // Only delete the generation if it really becomes empty
+            //! @todo a problem here is that limit will allways go in here and call "prune (clear)" in the generation, wasting time, could be aproblem if very many generations /Peter
+            if (genEmpty)
+            {
+                delete pGen;
+                mGenerationMap.erase(git);
+                // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
+                removeGenerationCacheIfEmpty(gen);
+            }
             // Emit signal
             emit dataRemoved();
             return true;
@@ -1492,6 +1500,19 @@ SharedMultiDataVectorCacheT LogDataHandler2::getGenerationMultiCache(const int g
         mGenerationCacheMap.insert(gen, pCache);
     }
     return pCache;
+}
+
+void LogDataHandler2::pruneGenerationCache(const int generation)
+{
+    Generation* pGen = mGenerationMap.value(generation, 0);
+    if (pGen)
+    {
+        auto pCache = SharedMultiDataVectorCacheT(new MultiDataVectorCache(getNewCacheName()));
+        pGen->switchGenerationDataCache(pCache);
+
+        // Replace old generation
+        mGenerationCacheMap.insert(generation, pCache);
+    }
 }
 
 
@@ -2376,6 +2397,11 @@ Generation::Generation(const QString &rImportfile)
     mImportedFromFile = rImportfile;
 }
 
+Generation::~Generation()
+{
+    clear(true);
+}
+
 int Generation::getNumVariables() const
 {
     return mVariables.count();
@@ -2388,10 +2414,47 @@ bool Generation::isEmpty()
 }
 
 
-void Generation::clear()
+bool Generation::clear(bool force)
 {
-    mVariables.clear();
-    mImportedFromFile.clear();
+    if (force)
+    {
+        mVariables.clear();
+        mAliasVariables.clear();
+        mImportedFromFile.clear();
+        return true;
+    }
+    else
+    {
+        // Loop through variables but only remove those that are not tagged as keep
+        // We use a copy of values to avoid making the loop invalid
+        QList<SharedVectorVariableT> avars = mAliasVariables.values();
+        for (SharedVectorVariableT &avar : avars)
+        {
+            if (avar->isAutoremovalAllowed())
+            {
+                mAliasVariables.remove(avar->getAliasName());
+            }
+        }
+        QList<SharedVectorVariableT> vars =  mVariables.values();
+        for (SharedVectorVariableT &var : vars)
+        {
+            if (var->isAutoremovalAllowed())
+            {
+                mVariables.remove(var->getFullVariableName());
+            }
+        }
+
+        // If no variables remain
+        if (mAliasVariables.isEmpty() && mVariables.isEmpty())
+        {
+            mImportedFromFile.clear();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 
 
@@ -2540,6 +2603,17 @@ QString Generation::getFullNameFromAlias(const QString &rAlias)
         return pAliasVar->getFullVariableName();
     }
     return QString();
+}
+
+void Generation::switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache)
+{
+    if (gpConfig->getCacheLogData())
+    {
+        for (auto it=mVariables.begin(); it!=mVariables.end(); ++it)
+        {
+            it.value()->mpCachedDataVector->switchCacheFile(pDataCache);
+        }
+    }
 }
 
 QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNameExp, Generation::VariableMapT &rMap)

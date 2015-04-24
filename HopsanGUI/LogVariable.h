@@ -159,8 +159,6 @@ SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescr
 class VectorVariable : public QObject
 {
     Q_OBJECT
-    friend class VectorVariableContainer;
-    friend class LogDataHandler;
     friend class LogDataHandler2;
     friend class Generation;
 
@@ -258,7 +256,8 @@ public:
     virtual void integrateBy(SharedVectorVariableT pOther);
     virtual void lowPassFilter(SharedVectorVariableT pTime, const double w);
 
-    // Functions to toggle "keep" generation
+    // Functions to toggle "keep" data
+    bool isAutoremovalAllowed() const;
     void preventAutoRemoval();
     void allowAutoRemoval();
 
@@ -284,7 +283,6 @@ public slots:
 signals:
     void dataChanged();
     void nameChanged();
-    void allowAutoRemove(int gen, bool allow);
 
 protected:
     void replaceSharedTFVector(SharedVectorVariableT pToFVector);
@@ -299,6 +297,7 @@ protected:
     UnitScale mCustomUnitScale;
     double mDataPlotOffset;
     int mGeneration;
+    bool mAllowAutoRemove = true;
 };
 
 class ImportedVectorVariable : public VectorVariable

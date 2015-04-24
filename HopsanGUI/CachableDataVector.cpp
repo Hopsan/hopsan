@@ -339,6 +339,36 @@ CachableDataVector::~CachableDataVector()
     }
 }
 
+void CachableDataVector::switchCacheFile(SharedMultiDataVectorCacheT pMultiCache)
+{
+    bool wasCached = isCached();
+    if (wasCached)
+    {
+        copyToMem();
+    }
+
+    mCacheNumBytes = 0;
+    mCacheStartByte = 0;
+    mIsCached = 0;
+
+    // Decrement old cache supbscribers
+    if (mpMultiCache)
+    {
+        mpMultiCache->decrementSubscribers();
+    }
+
+    // Set new cahce file, and increment subscribers
+    mpMultiCache = pMultiCache;
+    mpMultiCache->incrementSubscribers();
+
+    // Move to cache if we were previously cached
+    //! @todo maybe we should alwasy move to cache
+    if (wasCached)
+    {
+        moveToCache();
+    }
+}
+
 //! @brief Moves data to and from disk cache
 bool CachableDataVector::setCached(const bool cached)
 {

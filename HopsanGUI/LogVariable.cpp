@@ -614,6 +614,11 @@ void VectorVariable::lowPassFilter(SharedVectorVariableT pTime, const double w)
     }
 }
 
+bool VectorVariable::isAutoremovalAllowed() const
+{
+    return mAllowAutoRemove;
+}
+
 SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum)
 {
     if(pTime)
@@ -1080,12 +1085,12 @@ bool VectorVariable::positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int
 
 void VectorVariable::preventAutoRemoval()
 {
-    emit allowAutoRemove(mGeneration, false);
+    mAllowAutoRemove = false;
 }
 
 void VectorVariable::allowAutoRemoval()
 {
-    emit allowAutoRemove(mGeneration, true);
+    mAllowAutoRemove = true;
 }
 
 void VectorVariable::setCacheDataToDisk(const bool toDisk)
