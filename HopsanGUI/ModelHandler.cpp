@@ -220,13 +220,13 @@ void ModelHandler::loadModel()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose Model File"),
-                                                         gpConfig->getLoadModelDir(),
+                                                         gpConfig->getStringSetting(CFG_LOADMODELDIR),
                                                          tr("Hopsan Model Files (*.hmf *.xml)"));
     if(!modelFileName.isEmpty())
     {
         loadModel(modelFileName);
         QFileInfo fileInfo = QFileInfo(modelFileName);
-        gpConfig->setLoadModelDir(fileInfo.absolutePath());
+        gpConfig->setStringSetting(CFG_LOADMODELDIR, fileInfo.absolutePath());
     }
 }
 

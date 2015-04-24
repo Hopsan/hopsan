@@ -74,7 +74,7 @@ LibraryHandler::LibraryHandler(QObject *parent)
 void LibraryHandler::loadLibrary()
 {
     QString libDir = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Choose Library Directory"),
-                                                   gpConfig->getExternalLibDir(),
+                                                   gpConfig->getStringSetting(CFG_EXTERNALLIBDIR),
                                                    QFileDialog::ShowDirsOnly
                                                    | QFileDialog::DontResolveSymlinks);
     if(libDir.isEmpty())
@@ -83,7 +83,7 @@ void LibraryHandler::loadLibrary()
     }
     else
     {
-        gpConfig->setExternalLibDir(libDir);
+        gpConfig->setStringSetting(CFG_EXTERNALLIBDIR,libDir);
 
         if(!gpConfig->hasUserLib(libDir))     //Check so that path does not already exist
         {
@@ -721,7 +721,7 @@ void LibraryHandler::importFmu()
 {
     //Load .fmu file and create paths
     QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Import Functional Mockup Unit (FMU)"),
-                                                    gpConfig->getFmuImportDir(),
+                                                    gpConfig->getStringSetting(CFG_FMUIMPORTDIR),
                                                     tr("Functional Mockup Unit (*.fmu)"));
     if(filePath.isEmpty())      //Cancelled by user
         return;
@@ -732,7 +732,7 @@ void LibraryHandler::importFmu()
         gpMessageHandler->addErrorMessage("File not found: "+filePath);
         return;
     }
-    gpConfig->setFmuImportDir(fmuFileInfo.absolutePath());
+    gpConfig->setStringSetting(CFG_FMUIMPORTDIR, fmuFileInfo.absolutePath());
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateFromFmu(filePath);

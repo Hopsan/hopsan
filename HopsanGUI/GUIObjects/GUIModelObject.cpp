@@ -743,11 +743,11 @@ QMap<QString, QString> ModelObject::getVariableAliases(const QString &rPortName)
     getVariameterDescriptions(vds);
     for (int i=0; i<vds.size(); ++i)
     {
-        if ( !vds[i].mAlias.isEmpty() && rPortName.isEmpty() && (gpConfig->getShowHiddenNodeDataVariables() || (vds[i].mVariabelType != "Hidden")) )
+        if ( !vds[i].mAlias.isEmpty() && rPortName.isEmpty() && (gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES) || (vds[i].mVariabelType != "Hidden")) )
         {
             results.insert(vds[i].mPortName+"#"+vds[i].mName, vds[i].mAlias);
         }
-        else if ( !vds[i].mAlias.isEmpty() && (rPortName == vds[i].mPortName)  && (gpConfig->getShowHiddenNodeDataVariables() || (vds[i].mVariabelType != "Hidden")) )
+        else if ( !vds[i].mAlias.isEmpty() && (rPortName == vds[i].mPortName)  && (gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES) || (vds[i].mVariabelType != "Hidden")) )
         {
             results.insert(vds[i].mName, vds[i].mAlias);
         }

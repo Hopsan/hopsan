@@ -62,7 +62,7 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
     PlotWindow* pPlotWindow = getPlotWindow(name);
     if (pPlotWindow==0)
     {
-        if(gpConfig->getPlotWindowsOnTop())
+        if(gpConfig->getBoolSetting(CFG_PLOTWINDOWSONTOP))
             pPlotWindow = new PlotWindow(name, gpMainWindowWidget);
         else
             pPlotWindow = new PlotWindow(name, 0);
@@ -90,7 +90,7 @@ PlotWindow *PlotHandler::createNewUniquePlotWindow(const QString &rName)
     }
 
     PlotWindow *pPlotWindow;
-    if(gpConfig->getPlotWindowsOnTop())
+    if(gpConfig->getBoolSetting(CFG_PLOTWINDOWSONTOP))
         pPlotWindow = new PlotWindow(rName, gpMainWindowWidget);
     else
         pPlotWindow = new PlotWindow(rName, 0);

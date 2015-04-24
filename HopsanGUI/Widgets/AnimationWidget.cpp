@@ -80,7 +80,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpGraphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
     //mpGraphicsView->centerOn(mpGraphicsView->sceneRect().topLeft());
     mpGraphicsView->setZoomFactor(pOrgView->getZoomFactor());
-    mpGraphicsView->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
+    mpGraphicsView->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
     double X,Y,Z;
     pOrgView->getViewPort(X,Y,Z);
     mpGraphicsView->centerOn(X,Y+3/Z);

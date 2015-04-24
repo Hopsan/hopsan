@@ -3112,7 +3112,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        getConfigPtr()->setUseMultiCore(value=="on");
+        getConfigPtr()->setBoolSetting(CFG_MULTICORE, value=="on");
     }
     else if(pref == "threads")
     {
@@ -3123,7 +3123,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        getConfigPtr()->setNumberOfThreads(nThreads);
+        getConfigPtr()->setIntegerSetting(CFG_NUMBEROFTHREADS, nThreads);
     }
     else if(pref == "algorithm")
     {
@@ -3142,7 +3142,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         {
             HCOMERR("Unknown value.");
         }
-        getConfigPtr()->setCacheLogData(value=="on");
+        getConfigPtr()->setBoolSetting(CFG_CACHELOGDATA, value=="on");
     }
     else if(pref == "generationlimit")
     {
@@ -3153,7 +3153,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        getConfigPtr()->setGenerationLimit(limit);
+        getConfigPtr()->setIntegerSetting(CFG_GENERATIONLIMIT, limit);
     }
     else if(pref == "samples")
     {
@@ -3180,7 +3180,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         {
             HCOMERR("Unknown value.");
         }
-        getConfigPtr()->setAutoBackup(value=="on");
+        getConfigPtr()->setBoolSetting(CFG_AUTOBACKUP, value=="on");
     }
     else
     {
@@ -4152,7 +4152,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ParameterSweep)
         {
-            int nThreads = gpConfig->getNumberOfThreads();
+            int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
             if(nThreads == 0)
             {
         #ifdef _WIN32
@@ -4187,7 +4187,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
         {
-            int nModels = gpConfig->getNumberOfThreads();
+            int nModels = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
             if(mpOptHandler->getModelPtrs()->size() != nModels)
             {
                 mpOptHandler->clearModels();
@@ -4378,8 +4378,8 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
         }
     }
 
-    getConfigPtr()->setUseMultiCore(useMultiThreading);
-    if(nArgs > 1) getConfigPtr()->setNumberOfThreads(nThreads);
+    getConfigPtr()->setBoolSetting(CFG_MULTICORE, useMultiThreading);
+    if(nArgs > 1) getConfigPtr()->setIntegerSetting(CFG_NUMBEROFTHREADS, nThreads);
     if(nArgs > 2) getConfigPtr()->setParallelAlgorithm(algorithm);
 }
 
@@ -5938,7 +5938,7 @@ void HcomHandler::splitAtFirst(QString str, QString c, QString &left, QString &r
 
 void HcomHandler::updatePwd()
 {
-    if(mpModel && mpModel->isSaved() && gpConfig->getAutoSetPwdToMwd())
+    if(mpModel && mpModel->isSaved() && gpConfig->getBoolSetting(CFG_SETPWDTOMWD))
     {
         mPwd = mpModel->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path();
     }

@@ -76,13 +76,13 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
         // Check if we should simulate multiple systems at the same time using multicore
         if ((coreSystemAccessVector.size() > 1) && (gpConfig->getUseMulticore()))
         {
-            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS), coreSystemAccessVector, mNoChanges);
         }
         else if (gpConfig->getUseMulticore())
         {
             // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
             timer.start();
-            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS), coreSystemAccessVector, mNoChanges);
         }
         else
         {
@@ -120,7 +120,7 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
     QTime timer;
     bool connectSuccess=false, modelSuccess=false, initSuccess=false, simulateSuccess=false;
     RemoteCoreSimulationHandler rcsh;
-    QStringList addr_port = gpConfig->getRemoteHopsanAddress().split(":");
+    QStringList addr_port = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
     if (addr_port.size() == 2)
     {
         rcsh.setHopsanServer(addr_port.first(), addr_port.last());
@@ -299,7 +299,7 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
     connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)), Qt::UniqueConnection);
     connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)), Qt::UniqueConnection);
 
-    if (gpConfig->getEnableProgressBar() && mProgressBarEnabled)
+    if (gpConfig->getBoolSetting(CFG_PROGRESSBAR) && mProgressBarEnabled)
     {
         mpProgressDialog = new QProgressDialog(gpMainWindowWidget);
         mpProgressDialog->setWindowTitle("Running Simulation");

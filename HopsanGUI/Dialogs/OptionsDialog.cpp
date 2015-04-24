@@ -267,7 +267,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpEnableProgressBarCheckBox->setCheckable(true);
 
     QLabel *pProgressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
-    pProgressBarLabel->setEnabled(gpConfig->getEnableProgressBar());
+    pProgressBarLabel->setEnabled(gpConfig->getBoolSetting(CFG_PROGRESSBAR));
     mpProgressBarSpinBox = new QSpinBox();
     mpProgressBarSpinBox->setMinimum(1);
     mpProgressBarSpinBox->setMaximum(5000);
@@ -402,6 +402,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanDispatchAddress, 1, 1);
     pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanDispatchLabel, 2, 0);
     pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanDispatch, 2, 1);
+    pRemoteHopsanSettingsLayout->addWidget(new QWidget(this),         3, 0);
+    pRemoteHopsanSettingsLayout->setRowStretch(3,1);
 
     QPushButton *mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
     mpResetButton->setAutoDefault(false);
@@ -479,10 +481,13 @@ void OptionsDialog::openConfigFile()
 //! Slot that updates and saves the settings based on the choices made in the dialog box
 void OptionsDialog::setValues()
 {
-    gpConfig->setShowPopupHelp(mpShowPopupHelpCheckBox->isChecked());
-    gpConfig->setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
+    // Toggle writing to disk off, since we would write manny times fore each set below
+    gpConfig->beginMultiSet();
 
-    if(gpConfig->getUseNativeStyleSheet())
+    gpConfig->setBoolSetting(CFG_SHOWPOPUPHELP, mpShowPopupHelpCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_NATIVESTYLESHEET, mpNativeStyleSheetCheckBox->isChecked());
+
+    if(gpConfig->getBoolSetting(CFG_NATIVESTYLESHEET))
     {
         gpMainWindowWidget->setStyleSheet((" "));
         QMainWindow dummy;
@@ -496,28 +501,28 @@ void OptionsDialog::setValues()
         this->setPalette(gpConfig->getPalette());
     }
     emit paletteChanged();
-    gpConfig->setInvertWheel(mpInvertWheelCheckBox->isChecked());
-    gpConfig->setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
-    gpConfig->setSnapping(mpSnappingCheckBox->isChecked());
-    gpConfig->setAutoSetPwdToMwd(mpAutoSetPwdToMwdCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_INVERTWHEEL, mpInvertWheelCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_ANTIALIASING, mpAntiAliasingCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_SNAPPING, mpSnappingCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_SETPWDTOMWD, mpAutoSetPwdToMwdCheckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
-        gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
+        gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
     }
     gpConfig->setBackgroundColor(mPickedBackgroundColor);
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
         gpModelHandler->getModel(i)->getGraphicsView()->updateViewPort();
     }
-    gpConfig->setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
-    gpConfig->setProgressBarStep(mpProgressBarSpinBox->value());
-    gpConfig->setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
-    gpConfig->setNumberOfThreads(mpThreadsSpinBox->value());
-    gpConfig->setAutoLimitLogDataGenerations(mpAutoLimitGenerationsCheckBox->isChecked());
-    gpConfig->setShowHiddenNodeDataVariables(mpShowHiddenNodeDataVarCheckBox->isChecked());
-    gpConfig->setPlotWindowsOnTop(mpPlotWindowsOnTop->isChecked());
-    gpConfig->setGenerationLimit(mpGenerationLimitSpinBox->value());
-    gpConfig->setCacheLogData(mpCacheLogDataCeckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_PROGRESSBAR, mpEnableProgressBarCheckBox->isChecked());
+    gpConfig->setIntegerSetting(CFG_PROGRESSBARSTEP, mpProgressBarSpinBox->value());
+    gpConfig->setBoolSetting(CFG_MULTICORE, mpUseMulticoreCheckBox->isChecked());
+    gpConfig->setIntegerSetting(CFG_NUMBEROFTHREADS, mpThreadsSpinBox->value());
+    gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mpAutoLimitGenerationsCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES, mpShowHiddenNodeDataVarCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_PLOTWINDOWSONTOP, mpPlotWindowsOnTop->isChecked());
+    gpConfig->setIntegerSetting(CFG_GENERATIONLIMIT, mpGenerationLimitSpinBox->value());
+    gpConfig->setBoolSetting(CFG_CACHELOGDATA, mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
         gpModelHandler->getViewContainerObject(i)->getLogDataHandler()->limitPlotGenerations();
@@ -535,14 +540,16 @@ void OptionsDialog::setValues()
     }
 
 #ifdef _WIN32
-    gpConfig->setGcc32Dir(mpCompiler32LineEdit->text());
-    gpConfig->setGcc64Dir(mpCompiler64LineEdit->text());
+    gpConfig->setStringSetting(CFG_GCC32DIR, mpCompiler32LineEdit->text());
+    gpConfig->setStringSetting(CFG_GCC64DIR, mpCompiler64LineEdit->text());
 #endif
 
-    gpConfig->setRemoteHopsanAddress(mpRemoteHopsanAddress->text());
-    gpConfig->setRemoteHopsanDispatchAddress(mpRemoteHopsanDispatchAddress->text());
-    gpConfig->setUseRemoteHopsanDispatch(mpUseRemoteHopsanDispatch->isChecked());
+    gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESS, mpRemoteHopsanAddress->text());
+    gpConfig->setStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS, mpRemoteHopsanDispatchAddress->text());
+    gpConfig->setBoolSetting(CFG_USEREMOTEDISPATCH, mpUseRemoteHopsanDispatch->isChecked());
 
+    // Toggle writing to disk back on before saving
+    gpConfig->endMultiSet();
     gpConfig->saveToXml();
 
     this->accept();
@@ -601,28 +608,28 @@ void OptionsDialog::show()
     mpBackgroundColorButton->setStyleSheet(buttonStyle);
     mPickedBackgroundColor = gpConfig->getBackgroundColor();
 
-    mpNativeStyleSheetCheckBox->setChecked(gpConfig->getUseNativeStyleSheet());
-    mpShowPopupHelpCheckBox->setChecked(gpConfig->getShowPopupHelp());
-    mpAntiAliasingCheckBox->setChecked(gpConfig->getAntiAliasing());
-    mpInvertWheelCheckBox->setChecked(gpConfig->getInvertWheel());
-    mpSnappingCheckBox->setChecked(gpConfig->getSnapping());
-    mpAutoSetPwdToMwdCheckBox->setChecked(gpConfig->getAutoSetPwdToMwd());
-    mpEnableProgressBarCheckBox->setChecked(gpConfig->getEnableProgressBar());
-    mpProgressBarSpinBox->setValue(gpConfig->getProgressBarStep());
-    mpProgressBarSpinBox->setEnabled(gpConfig->getEnableProgressBar());
-    mpThreadsSpinBox->setEnabled(gpConfig->getUseMulticore());
-    mpUseMulticoreCheckBox->setChecked(gpConfig->getUseMulticore());
-    mpThreadsSpinBox->setValue(gpConfig->getNumberOfThreads());
-    mpThreadsLabel->setEnabled(gpConfig->getUseMulticore());
-    mpGenerationLimitSpinBox->setValue(gpConfig->getGenerationLimit());
-    mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getAutoLimitLogDataGenerations());
-    mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getShowHiddenNodeDataVariables());
-    mpPlotWindowsOnTop->setChecked(gpConfig->getPlotWindowsOnTop());
-    mpCacheLogDataCeckBox->setChecked(gpConfig->getCacheLogData());
+    mpNativeStyleSheetCheckBox->setChecked(gpConfig->getBoolSetting(CFG_NATIVESTYLESHEET));
+    mpShowPopupHelpCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWPOPUPHELP));
+    mpAntiAliasingCheckBox->setChecked(gpConfig->getBoolSetting(CFG_ANTIALIASING));
+    mpInvertWheelCheckBox->setChecked(gpConfig->getBoolSetting(CFG_INVERTWHEEL));
+    mpSnappingCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SNAPPING));
+    mpAutoSetPwdToMwdCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SETPWDTOMWD));
+    mpEnableProgressBarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_PROGRESSBAR));
+    mpProgressBarSpinBox->setValue(gpConfig->getIntegerSetting(CFG_PROGRESSBARSTEP));
+    mpProgressBarSpinBox->setEnabled(gpConfig->getBoolSetting(CFG_PROGRESSBAR));
+    mpThreadsSpinBox->setEnabled(gpConfig->getBoolSetting(CFG_MULTICORE));
+    mpUseMulticoreCheckBox->setChecked(gpConfig->getBoolSetting(CFG_MULTICORE));
+    mpThreadsSpinBox->setValue(gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS));
+    mpThreadsLabel->setEnabled(gpConfig->getBoolSetting(CFG_MULTICORE));
+    mpGenerationLimitSpinBox->setValue(gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT));
+    mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS));
+    mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES));
+    mpPlotWindowsOnTop->setChecked(gpConfig->getBoolSetting(CFG_PLOTWINDOWSONTOP));
+    mpCacheLogDataCeckBox->setChecked(gpConfig->getBoolSetting(CFG_CACHELOGDATA));
 
-    mpRemoteHopsanAddress->setText(gpConfig->getRemoteHopsanAddress());
-    mpRemoteHopsanDispatchAddress->setText(gpConfig->getRemoteHopsanDispatchAddress());
-    mpUseRemoteHopsanDispatch->setChecked(gpConfig->getUseRemoteHopsanDispatch());
+    mpRemoteHopsanAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS));
+    mpRemoteHopsanDispatchAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS));
+    mpUseRemoteHopsanDispatch->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEDISPATCH));
 
     // Update units scale lists
     QObjectList unitselectors =  mpUnitScaleWidget->children();
@@ -643,7 +650,7 @@ void OptionsDialog::show()
 
 void OptionsDialog::setCompiler32Path()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getGcc32Dir());
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getStringSetting(CFG_GCC32DIR));
 
     if(path.isEmpty()) return;
 
@@ -659,7 +666,7 @@ void OptionsDialog::setCompiler32Path(QString path)
 
 void OptionsDialog::setCompiler64Path()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getGcc64Dir());
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getStringSetting(CFG_GCC64DIR));
 
     if(path.isEmpty()) return;
 

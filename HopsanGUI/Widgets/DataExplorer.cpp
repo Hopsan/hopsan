@@ -100,7 +100,7 @@ void DataExplorer::refresh()
 void DataExplorer::openImportDataDialog()
 {
     QString fileName = QFileDialog::getOpenFileName(this,tr("Choose Hopsan Data File"),
-                                                    gpConfig->getPlotDataDir(),
+                                                    gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                                     tr("Data Files (*.plo *.PLO *.csv *.CSV)"));
     QFileInfo fi(fileName);
     if (mpLogDataHandler)
@@ -183,7 +183,7 @@ void DataExplorer::openExportDataDialog()
         // Get save file name
         if ((pFilenameButtons->checkedButton() == pAppendGenButton) && (gens.size() > 1))
         {
-            QString fileName = QFileDialog::getSaveFileName(this,tr("Choose Hopsan Data File Name"), gpConfig->getPlotDataDir(), tr("Data Files")+QString(" (%1)").arg(suffixFilter));
+            QString fileName = QFileDialog::getSaveFileName(this,tr("Choose Hopsan Data File Name"), gpConfig->getStringSetting(CFG_PLOTDATADIR), tr("Data Files")+QString(" (%1)").arg(suffixFilter));
             QFileInfo file(fileName);
             for (int i=0; i<gens.size(); ++i)
             {
@@ -194,7 +194,7 @@ void DataExplorer::openExportDataDialog()
         {
             for (int i=0; i<gens.size(); ++i)
             {
-                fNames.append(QFileDialog::getSaveFileName(this,QString("Choose File Name for Gen: %1").arg(gens[i]), gpConfig->getPlotDataDir(),  tr("Data Files")+QString(" (%1)").arg(suffixFilter)));
+                fNames.append(QFileDialog::getSaveFileName(this,QString("Choose File Name for Gen: %1").arg(gens[i]), gpConfig->getStringSetting(CFG_PLOTDATADIR),  tr("Data Files")+QString(" (%1)").arg(suffixFilter)));
             }
         }
 
@@ -202,7 +202,7 @@ void DataExplorer::openExportDataDialog()
         if (!fNames.isEmpty())
         {
             QFileInfo exportPath(fNames.last());
-            gpConfig->setPlotDataDir(exportPath.absolutePath());
+            gpConfig->setStringSetting(CFG_PLOTDATADIR, exportPath.absolutePath());
         }
 
         QProgressDialog progress("Exporting Data", "Cancel", 0, fNames.size(), this);

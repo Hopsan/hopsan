@@ -80,7 +80,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     mZoomFactor = 1.0;
 
     this->updateViewPort();
-    this->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
+    this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
 }
 
 
@@ -716,12 +716,12 @@ void GraphicsView::print()
 void GraphicsView::exportToPDF()
 {
     QString fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", gpConfig->getModelGfxDir(),
+        this, "Export File Name", gpConfig->getStringSetting(CFG_MODELGFXDIR),
         "Adobe PDF Documents (*.pdf)");
     if ( !fileName.isEmpty() )
     {
         QFileInfo file(fileName);
-        gpConfig->setModelGfxDir(file.absolutePath());
+        gpConfig->setStringSetting(CFG_MODELGFXDIR, file.absolutePath());
 
         //Here we set A0, Landscape and Fullpage among other things to make sure that components get large enough to be treated as vector graphics
         //Some bug or "feature" makes small objects be converted to bitmaps (ugly)
@@ -768,14 +768,14 @@ void GraphicsView::exportToPNG()
 
     //Open save dialog to get the file name
     QString fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", gpConfig->getModelGfxDir(),
+        this, "Export File Name", gpConfig->getStringSetting(CFG_MODELGFXDIR),
         "Portable Network Graphics (*.png)");
 
     //Attempt to save if user did select a filename
     if(!fileName.isEmpty())
     {
         QFileInfo file(fileName);
-        gpConfig->setModelGfxDir(file.absolutePath());
+        gpConfig->setStringSetting(CFG_MODELGFXDIR, file.absolutePath());
 
         QGraphicsScene *pScene = this->getContainerPtr()->getContainedScenePtr();
         pScene->clearSelection();
@@ -835,7 +835,7 @@ AnimatedGraphicsView::AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pPar
     mZoomFactor = 1.0;
 
     this->updateViewPort();
-    this->setRenderHint(QPainter::Antialiasing, gpConfig->getAntiAliasing());
+    this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
 
     connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
     //connect(this, SIGNAL(hovered()), gpPlotWidget, SLOT(clearHoverEffects()));

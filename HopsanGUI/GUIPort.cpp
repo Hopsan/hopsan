@@ -307,7 +307,7 @@ void Port::openRightClickMenu(QPoint screenPos)
     {
         if (variameterDescriptions[i].mPortName == this->getName())
         {
-            if (gpConfig->getShowHiddenNodeDataVariables() || (variameterDescriptions[i].mVariabelType != "Hidden"))
+            if (gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES) || (variameterDescriptions[i].mVariabelType != "Hidden"))
             {
                 QAction *pAliasAction;
                 if (variameterDescriptions[i].mAlias.isEmpty())

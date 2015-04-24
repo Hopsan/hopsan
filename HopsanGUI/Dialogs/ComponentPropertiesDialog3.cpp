@@ -808,7 +808,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     for (int i=0; i<variameters.size(); ++i)
     {
         if ( (variameters[i].mVariameterType == OtherVariable) &&
-             ( gpConfig->getShowHiddenNodeDataVariables() || (variameters[i].mVariabelType != "Hidden") ) )
+             ( gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES) || (variameters[i].mVariabelType != "Hidden") ) )
         {
             // Extract current port name to see if we should make a separator
             QString portName = variameters[i].mPortName;

@@ -85,9 +85,9 @@ int main(int argc, char *argv[])
     gpSplash->show();
 
     // Create/set global objects
-    gpConfig = new Configuration();
     gpDesktopHandler = new DesktopHandler();
     gpDesktopHandler->setupPaths();
+    gpConfig = new Configuration();
     gpCopyStack = new CopyStack();
     gpMessageHandler = new GUIMessageHandler();
 

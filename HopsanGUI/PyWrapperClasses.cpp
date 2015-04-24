@@ -253,17 +253,17 @@ void PythonHopsanInterface::abort()
 
 void PythonHopsanInterface::useMultiCore(const bool tf)
 {
-    gpConfig->setUseMultiCore(tf);
+    gpConfig->setBoolSetting(CFG_MULTICORE, tf);
 }
 
 void PythonHopsanInterface::setNumberOfThreads(const int numThreads)
 {
-    gpConfig->setNumberOfThreads(numThreads);
+    gpConfig->setIntegerSetting(CFG_NUMBEROFTHREADS, numThreads);
 }
 
 void PythonHopsanInterface::enableProgressBar(const bool tf)
 {
-    gpConfig->setEnableProgressBar(tf);
+    gpConfig->setBoolSetting(CFG_PROGRESSBAR, tf);
 }
 
 void PythonHopsanInterface::newModel()

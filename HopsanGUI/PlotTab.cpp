@@ -332,11 +332,11 @@ void PlotTab::exportToCsv()
     QString filePath;
     QFileInfo fileInfo;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
-                                            gpConfig->getPlotDataDir(),
+                                            gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                             tr("Comma-separated values files (*.csv)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gpConfig->setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
 
     exportToCsv(filePath);
 }
@@ -445,7 +445,7 @@ void PlotTab::exportToHvc(QString fileName)
     {
         // Open file dialog and initialize the file stream
         QString filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To HVC and HVD"),
-                                                        gpConfig->getPlotDataDir(),
+                                                        gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                                         tr("HopsanValidationCfg (*.hvc)"));
         if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
         hvcFileInfo.setFile(filePath);
@@ -514,11 +514,11 @@ void PlotTab::exportToMatlab()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To MATLAB File"),
-                                            gpConfig->getPlotDataDir(),
+                                            gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                             tr("MATLAB script file (*.m)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gpConfig->setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -630,11 +630,11 @@ void PlotTab::exportToGnuplot()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To gnuplot File"),
-                                            gpConfig->getPlotDataDir(),
+                                            gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                             tr("gnuplot file (*.dat)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gpConfig->setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -704,11 +704,11 @@ void PlotTab::exportToPLO()
     QString filePath;
     QFileInfo fileInfo;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To OldHopsan Format File"),
-                                            gpConfig->getPlotDataDir(),
+                                            gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                             tr("Hopsan Classic file (*.PLO)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gpConfig->setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
 
     if (getPlotTabType() != XYPlotType)
     {
@@ -1100,11 +1100,11 @@ void PlotTab::saveToXml()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To XML File"),
-                                            gpConfig->getPlotDataDir(),
+                                            gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                             tr("Extensible Markup Language (*.xml)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
-    gpConfig->setPlotDataDir(fileInfo.absolutePath());
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -1516,12 +1516,12 @@ PlotGraphicsExporter::PlotGraphicsExporter()
 {
     mSupportedFormats << "png" << "pdf" << "svg" << "ps" << "jpeg";
 
-    mImageFormat = gpConfig->getPlotGfxImageFormat();
-    mDimensionsUnit = gpConfig->getPlotGfxDimensionsUnit();
-    mDPI = gpConfig->getPlotGfxDPI();
+    mImageFormat = gpConfig->getStringSetting(CFG_PLOTGFXIMAGEFORMAT);
+    mDimensionsUnit = gpConfig->getStringSetting(CFG_PLOTGFXDIMENSIONSUNIT);
+    mDPI = gpConfig->getDoubleSetting(CFG_PLOTGFXDPI);
     mSetSize = gpConfig->getPlotGfxSize();
-    mKeepAspect = gpConfig->getPlotGfxKeepAspect();
-    mUseScreenSize = gpConfig->getPlotGfxUseScreenSize();
+    mKeepAspect = gpConfig->getBoolSetting(CFG_PLOTGFXKEEPASPECT);
+    mUseScreenSize = gpConfig->getBoolSetting(CFG_PLOTGFXUSESCREENSIZE);
 }
 
 void PlotGraphicsExporter::openExportDialog()
@@ -1653,7 +1653,7 @@ QString PlotGraphicsExporter::selectExportFilename()
 
     fileFilter.append(";;all (*.*)");
 
-    QString path = gpConfig->getPlotGfxDir();
+    QString path = gpConfig->getStringSetting(CFG_PLOTGFXDIR);
     if (!mImageFilename.isEmpty())
     {
         QFileInfo file(mImageFilename);
@@ -1662,7 +1662,7 @@ QString PlotGraphicsExporter::selectExportFilename()
 
     mImageFilename = QFileDialog::getSaveFileName(0, "Choose Export Filename", path, fileFilter);
     QFileInfo file(mImageFilename);
-    gpConfig->setPlotGfxDir(file.canonicalPath());
+    gpConfig->setStringSetting(CFG_PLOTGFXDIR, file.canonicalPath());
     return mImageFilename;
 }
 
@@ -1827,10 +1827,10 @@ void PlotGraphicsExporter::rememberDialogValues()
     mUseScreenSize = mpUseScreenSizeCheckBox->isChecked();
     mKeepAspect = mpKeepAspectRatioCheckBox->isChecked();
 
-    gpConfig->setPlotGfxImageFormat(mImageFormat);
-    gpConfig->setPlotGfxDimensionsUnit(mDimensionsUnit);
+    gpConfig->setStringSetting(CFG_PLOTGFXIMAGEFORMAT, mImageFormat);
+    gpConfig->setStringSetting(CFG_PLOTGFXDIMENSIONSUNIT, mDimensionsUnit);
     gpConfig->setPlotGfxSize(mSetSize);
-    gpConfig->setPlotGfxDPI(mDPI);
-    gpConfig->setPlotGfxUseScreenSize(mUseScreenSize);
-    gpConfig->setPlotGfxKeepAspect(mKeepAspect);
+    gpConfig->setDoubleSetting(CFG_PLOTGFXDPI, mDPI);
+    gpConfig->setBoolSetting(CFG_PLOTGFXUSESCREENSIZE, mUseScreenSize);
+    gpConfig->setBoolSetting(CFG_PLOTGFXKEEPASPECT, mKeepAspect);
 }

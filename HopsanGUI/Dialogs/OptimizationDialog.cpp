@@ -1840,7 +1840,7 @@ void OptimizationDialog::saveScriptFile()
     }
 
     QString filePath = QFileDialog::getSaveFileName(this, tr("Save Script File"),
-                                                 gpConfig->getScriptDir(),
+                                                 gpConfig->getStringSetting(CFG_SCRIPTDIR),
                                                  this->tr("HCOM Script (*.hcom)"));
 
     if(filePath.isEmpty())     //Don't save anything if user presses cancel
@@ -1849,7 +1849,7 @@ void OptimizationDialog::saveScriptFile()
     }
 
     QFileInfo fileInfo = QFileInfo(filePath);
-    gpConfig->setScriptDir(fileInfo.absolutePath());
+    gpConfig->setStringSetting(CFG_SCRIPTDIR, fileInfo.absolutePath());
 
     saveScriptFile(filePath);
 
@@ -1873,12 +1873,12 @@ void OptimizationDialog::saveScriptFile(const QString &filePath)
 void OptimizationDialog::loadScriptFile()
 {
     QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Script File)"),
-                                                    gpConfig->getScriptDir(),
+                                                    gpConfig->getStringSetting(CFG_SCRIPTDIR),
                                                     tr("HCOM Script (*.hcom)"));
     if(filePath.isEmpty())      //Cancelled by user
         return;
 
-    gpConfig->setScriptDir(QFileInfo(filePath).absolutePath());
+    gpConfig->setStringSetting(CFG_SCRIPTDIR, QFileInfo(filePath).absolutePath());
 
     QFile file(filePath);
     file.open(QFile::Text | QFile::ReadOnly);

@@ -2776,13 +2776,13 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         QDir fileDialog; QFile file;
         QString modelFilePath = QFileDialog::getOpenFileName(gpMainWindow, tr("Choose Subsystem File"),
-                                                             gpConfig->getSubsystemDir(),
+                                                             gpConfig->getStringSetting(CFG_SUBSYSTEMDIR),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (!modelFilePath.isNull())
         {
             file.setFileName(modelFilePath);
             QFileInfo fileInfo(file);
-            gpConfig->setSubsystemDir(fileInfo.absolutePath());
+            gpConfig->setStringSetting(CFG_SUBSYSTEMDIR, fileInfo.absolutePath());
 
             bool doIt = true;
             if (mModelObjectMap.size() > 0)
@@ -2818,7 +2818,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         //Get file name
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
-                                                     gpConfig->getLoadModelDir(),
+                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
                                                      gpMainWindow->tr("Hopsan Model Files (*.hmf)"));
 
         if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
@@ -2875,7 +2875,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         //Get file name
         QString cafFilePath;
         cafFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
-                                                     gpConfig->getLoadModelDir(),
+                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
                                                      gpMainWindow->tr("Hopsan Component Appearance Files (*.xml)"));
 
         if(cafFilePath.isEmpty())     //Don't save anything if user presses cancel
@@ -3554,12 +3554,12 @@ void ContainerObject::plotMeasuredSimulationTime()
 void ContainerObject::exportMesasuredSimulationTime()
 {
     //! @todo Ask for filename
-    QString pathStr = QFileDialog::getSaveFileName(gpMainWindowWidget, "Save measured simulation times", gpConfig->getPlotDataDir(), "*.csv");
+    QString pathStr = QFileDialog::getSaveFileName(gpMainWindowWidget, "Save measured simulation times", gpConfig->getStringSetting(CFG_PLOTDATADIR), "*.csv");
 
     if(pathStr.isEmpty())
         return; //User aborted
 
-    gpConfig->setPlotDataDir(QFileInfo(pathStr).absolutePath());
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, QFileInfo(pathStr).absolutePath());
 
 
     QFile csvFile(pathStr);

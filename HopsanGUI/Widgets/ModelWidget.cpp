@@ -438,7 +438,7 @@ void ModelWidget::setSaved(bool value)
 bool ModelWidget::simulate_nonblocking()
 {
     // Save backup copy (if needed)
-    if (!isSaved() && gpConfig->getAutoBackup())
+    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
     {
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
@@ -472,7 +472,7 @@ bool ModelWidget::simulate_nonblocking()
 bool ModelWidget::simulate_blocking()
 {
     // Save backup copy
-    if (!isSaved() && gpConfig->getAutoBackup())
+    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
     {
         //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -516,7 +516,7 @@ void ModelWidget::startCoSimulation()
     //---------- Peters Remote Simulation Test Code START ---------
 
     // Save backup copy
-    if (!isSaved() && gpConfig->getAutoBackup())
+    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
     {
         //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -1300,7 +1300,7 @@ void ModelWidget::openCurrentContainerInNewTab()
 void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents)
 {
     // Backup old save file before saving (if old file exists)
-    if(saveAsFlag == ExistingFile && gpConfig->getAutoBackup())
+    if(saveAsFlag == ExistingFile && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
     {
         QFile backupFile(mpToplevelSystem->getModelFileInfo().filePath());
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -1330,7 +1330,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         QString modelPath = getTopLevelSystemContainer()->getModelFileInfo().absolutePath();
         if(modelPath.isEmpty())
         {
-            modelPath = gpConfig->getLoadModelDir();
+            modelPath = gpConfig->getStringSetting(CFG_LOADMODELDIR);
         }
 
         modelFilePathToSave = QFileDialog::getSaveFileName(this, tr("Save Model File"),
@@ -1346,7 +1346,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             mpToplevelSystem->setModelFile(modelFilePathToSave);
         }
         QFileInfo fileInfo = QFileInfo(modelFilePathToSave);
-        gpConfig->setLoadModelDir(fileInfo.absolutePath());
+        gpConfig->setStringSetting(CFG_LOADMODELDIR, fileInfo.absolutePath());
     }
 
     bool success = saveTo(modelFilePathToSave, contents);

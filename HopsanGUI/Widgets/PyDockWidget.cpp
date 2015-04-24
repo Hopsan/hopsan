@@ -76,13 +76,13 @@ void PythonTerminalWidget::loadPyScript()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Script File"),
-                                                         gpConfig->getScriptDir(),
+                                                         gpConfig->getStringSetting(CFG_SCRIPTDIR),
                                                          tr("Python Scripts (*.py)"));
     if(!modelFileName.isEmpty())
     {
         mpScriptFileLineEdit->setText(modelFileName);
         QFileInfo fileInfo = QFileInfo(modelFileName);
-        gpConfig->setScriptDir(fileInfo.absolutePath());
+        gpConfig->setStringSetting(CFG_SCRIPTDIR,fileInfo.absolutePath());
     }
 }
 

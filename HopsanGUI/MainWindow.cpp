@@ -358,7 +358,7 @@ void MainWindow::createContents()
     this->updateRecentList();
 
     // Update style sheet setting after all children has been created and added so that they too will be affected
-    if(!gpConfig->getUseNativeStyleSheet())
+    if(!gpConfig->getBoolSetting(CFG_NATIVESTYLESHEET))
     {
         setStyleSheet(gpConfig->getStyleSheet());
         setPalette(gpConfig->getPalette());
@@ -727,7 +727,7 @@ void MainWindow::createActions()
     gpToggleNamesAction = mpToggleNamesAction;
     mpToggleNamesAction->setText("Show Component Names (Ctrl+N)");
     mpToggleNamesAction->setCheckable(true);
-    mpToggleNamesAction->setChecked(gpConfig->getToggleNamesButtonCheckedLastSession());
+    mpToggleNamesAction->setChecked(gpConfig->getBoolSetting(CFG_TOGGLENAMESBUTTONCHECKED));
     mpToggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
     connect(mpToggleNamesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpToggleNamesAction, "Toggle  visibility of component names for all components.");
@@ -838,7 +838,7 @@ void MainWindow::createActions()
     gpTogglePortsAction = mpTogglePortsAction;
     mpTogglePortsAction->setText("Show Unconnected Ports (Ctrl+T)");
     mpTogglePortsAction->setCheckable(true);
-    mpTogglePortsAction->setChecked(gpConfig->getTogglePortsButtonCheckedLastSession());
+    mpTogglePortsAction->setChecked(gpConfig->getBoolSetting(CFG_TOGGLEPORTSBUTTONCHECKED));
     mpTogglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
     connect(mpTogglePortsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpTogglePortsAction, "Toggle visibility of unconnected ports.");

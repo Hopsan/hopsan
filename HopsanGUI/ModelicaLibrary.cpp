@@ -682,12 +682,12 @@ void ModelicaLibrary::loadModelicaFile()
 {
     //Load .fmu file and create paths
     QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, gpMainWindowWidget->tr("Load Modelica File"),
-                                                    gpConfig->getModelicaModelsDir(),
+                                                    gpConfig->getStringSetting(CFG_MODELICAMODELSDIR),
                                                     gpMainWindowWidget->tr("Modelica files (*.mo)"));
     if(filePath.isEmpty())      //Cancelled by user
         return;
 
-    gpConfig->setModelicaModelsDir(QFileInfo(filePath).absoluteFilePath());
+    gpConfig->setStringSetting(CFG_MODELICAMODELSDIR, QFileInfo(filePath).absoluteFilePath());
 
     if(!mModelicaFiles.contains(filePath))
     {

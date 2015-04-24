@@ -101,10 +101,10 @@ void OptimizationWorker::init()
 
     mpHandler->setIsRunning(true);
 
-    mOrgProgressBarSetting = gpConfig->getEnableProgressBar();
-    mOrgLimitDataGenerationsSetting = gpConfig->getAutoLimitLogDataGenerations();
-    gpConfig->setEnableProgressBar(false);
-    gpConfig->setAutoLimitLogDataGenerations(true);
+    mOrgProgressBarSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
+    mOrgLimitDataGenerationsSetting = gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS);
+    gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
+    gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, true);
 
     mLogFile.setFileName(gpDesktopHandler->getDocumentsPath()+"OptLog"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".csv");
 
@@ -189,8 +189,8 @@ void OptimizationWorker::finalize()
         mLogFile.close();
     }
 
-    gpConfig->setEnableProgressBar(mOrgProgressBarSetting);
-    gpConfig->setAutoLimitLogDataGenerations(mOrgLimitDataGenerationsSetting);
+    gpConfig->setBoolSetting(CFG_PROGRESSBAR, mOrgProgressBarSetting);
+    gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mOrgLimitDataGenerationsSetting);
 }
 
 void OptimizationWorker::printLogFile()

@@ -123,45 +123,72 @@ class Configuration : public QObject
     Q_OBJECT
 
 public:
+    Configuration();
+
     void saveToXml();
     void loadFromXml();
     void loadDefaultsFromXml();
 
+    void beginMultiSet();
+    void endMultiSet();
+
+    QString getStringSetting(const QString &rName) const;
+    bool getBoolSetting(const QString &rName) const;
+    int getIntegerSetting(const QString &rName) const;
+    double getDoubleSetting(const QString &rName) const;
+
+    void setStringSetting(const QString &rName, const QString &rValue);
+    void setBoolSetting(const QString &rName, const bool value);
+    void setIntegerSetting(const QString &rName, const int value);
+    void setDoubleSetting(const QString &rName, const double value);
+
+    // Quick acces methods (to avoid cost of settings lookup)
     bool getShowPopupHelp() const;
     bool getInvertWheel() const;
-    bool getToggleNamesButtonCheckedLastSession() const;
-    bool getTogglePortsButtonCheckedLastSession() const;
-    int getProgressBarStep() const;
-    bool getEnableProgressBar() const;
-    bool getSnapping() const;
-    bool getAutoSetPwdToMwd() const;
-    bool getPlotWindowsOnTop() const;
-
+    bool getCacheLogData() const;
     bool getUseMulticore() const;
-    int getNumberOfThreads() const;
+    int getProgressBarStep() const;
+    bool getSnapping() const;
 
-    int getLibraryStyle() const;
-    bool getUseNativeStyleSheet() const;
+    // Other settings
+    QSizeF getPlotGfxSize();
+    int getParallelAlgorithm();
+    void setPlotGfxSize(const QSizeF size);
+    void setParallelAlgorithm(int value);
+
+    // Style and appeanrace related methods
     QColor getBackgroundColor() const;
+    void setBackgroundColor(const QColor &value);
     QPalette getPalette() const;
     QFont getFont() const;
     QString getStyleSheet() const;
     QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation) const;
-    bool getAntiAliasing() const;
 
+    // Libraries
+    void addModelicaFile(const QString &value);
+    QStringList getModelicaFiles() const;
+    void addUserLib(const QString &value, LibraryTypeEnumT type);
+    void removeUserLib(const QString &value);
+    bool hasUserLib(const QString &value) const;
     QStringList getUserLibs() const;
     QList<LibraryTypeEnumT> getUserLibTypes() const;
 
-    QStringList getModelicaFiles() const;
-
+    // Models
     QStringList getRecentModels() const;
-    QStringList getRecentGeneratorModels() const;
+    void addRecentModel(QString value);
+    void removeRecentModel(QString value);
+    void addLastSessionModel(QString value);
+    void clearLastSessionModels();
     QStringList getLastSessionModels() const;
+    void addRecentGeneratorModel(QString value);
+    QStringList getRecentGeneratorModels() const;
 
-    QString getLastPyScriptFile() const;
 
+    // Units and scales
     QStringList getUnitQuantities() const;
     QString getDefaultUnit(const QString &rPhysicalQuantity) const;
+    void setDefaultUnit(QString key, QString value);
+    void addCustomUnit(QString quantity, QString unitname, double scale);
     QMap<QString, double> getUnitScales(const QString &rPhysicalQuantity);
     void getUnitScales(const QString &rQuantity, QList<UnitScale> &rUnitScales);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
@@ -170,110 +197,18 @@ public:
     QStringList getPhysicalQuantitiesForUnit(const QString &rUnit) const;
     QString getSIUnit(const QString &rQuantity);
     bool isRegisteredSIUnit(const QString &rUnitName) const;
-
     void removeUnitScale(const QString &rQuantity, const QString &rUnit);
 
-    int getPLOExportVersion() const;
-    bool getShowHiddenNodeDataVariables() const;
 
-    bool getGroupMessagesByTag();
-    QStringList getTerminalHistory();
-    QString getHcomWorkingDirectory() const;
-    int getGenerationLimit() const;
-    bool getCacheLogData() const;
-    bool getAutoBackup() const;
-
-    bool getAutoLimitLogDataGenerations();
-
-    QString getPlotGfxImageFormat();
-    QString getPlotGfxDimensionsUnit();
-    double getPlotGfxDPI();
-    QSizeF getPlotGfxSize();
-    bool getPlotGfxKeepAspect();
-    bool getPlotGfxUseScreenSize();
-
-    QString getLoadModelDir();
-    QString getModelGfxDir();
-    QString getPlotDataDir();
-    QString getPlotGfxDir();
-    QString getSimulinkExportDir();
-    QString getSubsystemDir();
-    QString getModelicaModelsDir();
-    QString getExternalLibDir();
-    QString getScriptDir();
-    QString getPlotWindowDir();
-    QString getFmuImportDir();
-    QString getFmuExportDir();
-    QString getLabViewExportDir();
-    QString getGcc32Dir();
-    QString getGcc64Dir();
-
-    int getParallelAlgorithm();
-
-    void setLibraryStyle(int value);
-    void setShowPopupHelp(bool value);
-    void setUseNativeStyleSheet(bool value);
-    void setInvertWheel(bool value);
-    void setUseMultiCore(bool value);
-    void setNumberOfThreads(size_t value);
-    void setProgressBarStep(int value);
-    void setEnableProgressBar(bool value);
-    void setBackgroundColor(const QColor &value);
-    void setAntiAliasing(const bool &value);
-    void addUserLib(const QString &value, LibraryTypeEnumT type);
-    void removeUserLib(const QString &value);
-    bool hasUserLib(const QString &value) const;
-    void addModelicaFile(const QString &value);
-    void setSnapping(const bool value);
-    void setAutoSetPwdToMwd(const bool value);
-    void setPlotWindowsOnTop(const bool value);
-    void addRecentModel(QString value);
-    void removeRecentModel(QString value);
-    void addRecentGeneratorModel(QString value);
-    void addLastSessionModel(QString value);
-    void clearLastSessionModels();
-    void setDefaultUnit(QString key, QString value);
-    void addCustomUnit(QString quantity, QString unitname, double scale);
+    // Termianal and scripts
+    QString getLastPyScriptFile() const;
     void setLastPyScriptFile(QString file);
-    void setGroupMessagesByTag(bool value);
-    void setGenerationLimit(int value);
-    void setCacheLogData(const bool value);
-    void setAutoBackup(const bool value);
-    void setAutoLimitLogDataGenerations(const bool value);
-    void setShowHiddenNodeDataVariables(const bool value);
-    void setLoadModelDir(QString value);
-    void setModelGfxDir(QString value);
-    void setPlotDataDir(QString value);
-    void setPlotGfxDir(QString value);
-    void setSimulinkExportDir(QString value);
-    void setSubsystemDir(QString value);
-    void setModelicaModelsDir(QString value);
-    void setExternalLibDir(QString value);
-    void setScriptDir(QString value);
-    void setPlotWindowDir(QString value);
+
+    QStringList getTerminalHistory();
     void storeTerminalHistory(QStringList value);
+
+    QString getHcomWorkingDirectory() const;
     void setHcomWorkingDirectory(QString value);
-    void setFmuImportDir(QString value);
-    void setFmuExportDir(QString value);
-    void setLabViewExportDir(QString value);
-    void setGcc32Dir(QString value);
-    void setGcc64Dir(QString value);
-    void setPlotGfxImageFormat(QString value);
-    void setPlotGfxDimensionsUnit(QString value);
-    void setPlotGfxDPI(double value);
-    void setPlotGfxSize(QSizeF value);
-    void setPlotGfxKeepAspect(bool value);
-    void setPlotGfxUseScreenSize(bool value);
-
-
-    void setParallelAlgorithm(int value);
-
-    QString getRemoteHopsanAddress() const;
-    void setRemoteHopsanAddress(QString addr);
-    QString getRemoteHopsanDispatchAddress() const;
-    void setRemoteHopsanDispatchAddress(QString addr);
-    bool getUseRemoteHopsanDispatch() const;
-    void setUseRemoteHopsanDispatch(bool tf);
 
 
 private:
@@ -285,6 +220,7 @@ private:
     void loadModelicaFilesSettings(QDomElement &rDomElement);
     void loadModelSettings(QDomElement &rDomElement);
     void loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement);
+    void refreshQuickAccessVariables();
 
     class QuantityUnitScale
     {
@@ -294,71 +230,46 @@ private:
         QMap<QString, UnitScale> customScales;
     };
 
-    int mLibraryStyle;
-    bool mShowPopupHelp;
-    bool mUseNativeStyleSheet;
-    bool mInvertWheel;
-    bool mUseMulticore;
-    int mNumberOfThreads;
-    bool mToggleNamesButtonCheckedLastSession;
-    bool mTogglePortsButtonCheckedLastSession;
-    int mProgressBarStep;
-    bool mEnableProgressBar;
     QColor mBackgroundColor;
-    bool mAntiAliasing;
-    QList<QFileInfo> mUserLibs;
-    QList<LibraryTypeEnumT> mUserLibTypes;
-    QList<QFileInfo> mModelicaFiles;
-    bool mSnapping;
-    bool mSetPwdToMwd;
-    bool mPlotWindowsOnTop;
-    QStringList mRecentModels;
-    QStringList mLastSessionModels;
-    QStringList mRecentGeneratorModels;
-    QMap<QString, QString> mSelectedDefaultUnits;
-    QMap<QString, QuantityUnitScale> mUnitScales;
     QPalette mPalette;
     QFont mFont;
     QString mStyleSheet;
+
+    QList<QFileInfo> mUserLibs;
+    QList<LibraryTypeEnumT> mUserLibTypes;
+    QList<QFileInfo> mModelicaFiles;
+
+    QStringList mRecentModels;
+    QStringList mLastSessionModels;
+    QStringList mRecentGeneratorModels;
+
+    QMap<QString, QString> mSelectedDefaultUnits;
+    QMap<QString, QuantityUnitScale> mUnitScales;
+
     QString mLastPyScriptFile;
-    bool mGroupMessagesByTag;
-    int mGenerationLimit;
-    bool mCacheLogData;
-    bool mAutoBackup;
-    bool mAutoLimitLogDataGenerations;
-    QString mLoadModelDir;
-    QString mModelGfxDir;
-    QString mPlotDataDir;
-    QString mPlotGfxDir;
-    QString mSimulinkExportDir;
-    QString mSubsystemDir;
-    QString mModelicaModelsDir;
-    QString mExternalLibDir;
-    QString mScriptDir;
-    QString mPlotWindowDir;
     QStringList mTerminalHistory;
     QString mHcomWorkingDirectory;
-    QString mFmuImportDir;
-    QString mFmuExportDir;
-    QString mLabViewExportDir;
-    QString mGcc32Dir;
-    QString mGcc64Dir;
-    int mPLOExportVersion;
-    bool mShowHiddenNodeDataVariables;
-    QString mPlotGfxImageFormat;
-    QString mPlotGfxDimensionsUnit;
-    double mPlotGfxDPI;
+
     QSizeF mPlotGfxSize;
-    bool mPlotGfxKeepAspect;
-    bool mPlotGfxUseScreenSize;
-
-    QString mRemoteHopsanAddress;
-    QString mRemoteHopsanDispatchAddress;
-    bool mUseRemoteHopsanDispatch;
-
     int mParallelAlgorighm;
 
+    bool mWriteOnSave = true;
+
+    // Settings variable maps
+    QMap<QString, QString> mStringSettings;
+    QMap<QString, bool> mBoolSettings;
+    QMap<QString, int> mIntegerSettings;
+    QMap<QString, double> mDoubleSettings;
+
     QMap < ConnectorStyleEnumT, QMap< QString, QMap<QString, QPen> > > mPenStyles;
+
+    // Quick access settings variables
+    bool mInvertWheel;
+    bool mShowPopupHelp;
+    bool mCacheLogData;
+    bool mUseMulticore;
+    int mProgressBarStep;
+    bool mSnapping;
 
 signals:
     void recentModelsListChanged();

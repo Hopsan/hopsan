@@ -535,7 +535,7 @@ void SensitivityAnalysisDialog::run()
     }
 
 
-    int nThreads = gpConfig->getNumberOfThreads();
+    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
     if(nThreads == 0)
     {
 #ifdef _WIN32
@@ -585,8 +585,8 @@ void SensitivityAnalysisDialog::run()
         mModelPtrs.at(m)->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
     }
 
-    bool progressBarOrgSetting = gpConfig->getEnableProgressBar();
-    gpConfig->setEnableProgressBar(false);
+    bool progressBarOrgSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
+    gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
     for(int i=0; i<nSteps/nThreads; ++i)
     {
         if(mAborted)
@@ -624,7 +624,7 @@ void SensitivityAnalysisDialog::run()
             if(!gpModelHandler->simulateMultipleModels_blocking(mModelPtrs))
             {
                 gpMessageHandler->addErrorMessage("Unable to perform sensitivity analysis: Failed to simulate model.");
-                gpConfig->setEnableProgressBar(progressBarOrgSetting);
+                gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
                 return;
             }
         }
@@ -636,7 +636,7 @@ void SensitivityAnalysisDialog::run()
     }
 
     mpProgressBar->setValue(100);   //Just to make it look better
-    gpConfig->setEnableProgressBar(progressBarOrgSetting);
+    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
 
     for(int v=0; v<mOutputVariables.size(); ++v)
     {

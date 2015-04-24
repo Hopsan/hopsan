@@ -1127,12 +1127,12 @@ void SystemContainer::exportToLabView()
     //QFileInfo fileInfo;
     //QFile file;
     filePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Export Project to HopsanRT Wrapper Code"),
-                                            gpConfig->getLabViewExportDir(),
+                                            gpConfig->getStringSetting(CFG_LABVIEWEXPORTDIR),
                                             tr("C++ Source File (*.cpp)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
     QFileInfo file(filePath);
-    gpConfig->setLabViewExportDir(file.absolutePath());
+    gpConfig->setStringSetting(CFG_LABVIEWEXPORTDIR, file.absolutePath());
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToLabViewSIT(filePath, this);
@@ -1169,14 +1169,14 @@ void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAc
         //Open file dialog and initialize the file stream
         QDir fileDialogSaveDir;
         savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
-                                                        gpConfig->getFmuExportDir(),
+                                                        gpConfig->getStringSetting(CFG_FMUEXPORTDIR),
                                                         QFileDialog::ShowDirsOnly
                                                         | QFileDialog::DontResolveSymlinks);
         if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
         QDir saveDir;
         saveDir.setPath(savePath);
-        gpConfig->setFmuExportDir(saveDir.absolutePath());
+        gpConfig->setStringSetting(CFG_FMUEXPORTDIR, saveDir.absolutePath());
         saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
         if(!saveDir.entryList().isEmpty())
         {
@@ -1724,12 +1724,12 @@ void SystemContainer::exportToSimulink()
         //Open file dialog and initialize the file stream
     QString savePath;
     savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
-                                                    gpConfig->getSimulinkExportDir(),
+                                                    gpConfig->getStringSetting(CFG_SIMULINKEXPORTDIR),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
     QFileInfo file(savePath);
-    gpConfig->setSimulinkExportDir(file.absolutePath());
+    gpConfig->setStringSetting(CFG_SIMULINKEXPORTDIR, file.absolutePath());
 
        //Save xml document
     mpModelWidget->saveTo(savePath+"/"+fileName);
@@ -1835,12 +1835,12 @@ void SystemContainer::exportToSimulinkCoSim()
         //Open file dialog and initialize the file stream
     QString savePath;
     savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
-                                                    gpConfig->getSimulinkExportDir(),
+                                                    gpConfig->getStringSetting(CFG_SIMULINKEXPORTDIR),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
     QFileInfo file(savePath);
-    gpConfig->setSimulinkExportDir(file.absolutePath());
+    gpConfig->setStringSetting(CFG_SIMULINKEXPORTDIR, file.absolutePath());
 
 
 
@@ -1895,7 +1895,7 @@ void SystemContainer::loadParameterFile(const QString &path)
     if(path.isEmpty())
     {
         parameterFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
-                                                             gpConfig->getLoadModelDir(),
+                                                             gpConfig->getStringSetting(CFG_LOADMODELDIR),
                                                              tr("Hopsan Parameter Files (*.hpf *.xml)"));
     }
 
@@ -1903,7 +1903,7 @@ void SystemContainer::loadParameterFile(const QString &path)
     {
         mpCoreSystemAccess->loadParameterFile(parameterFileName);
         QFileInfo fileInfo = QFileInfo(parameterFileName);
-        gpConfig->setLoadModelDir(fileInfo.absolutePath());
+        gpConfig->setStringSetting(CFG_LOADMODELDIR, fileInfo.absolutePath());
     }
 }
 

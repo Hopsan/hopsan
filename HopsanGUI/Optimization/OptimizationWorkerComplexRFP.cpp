@@ -81,7 +81,7 @@ void OptimizationWorkerComplexRFP::init()
         }
     }
 
-    mNumThreads = gpConfig->getNumberOfThreads();
+    mNumThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
     if(mNumThreads == 0)
     {
 #ifdef _WIN32

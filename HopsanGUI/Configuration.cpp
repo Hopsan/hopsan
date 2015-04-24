@@ -51,212 +51,233 @@
 
 
 //! @brief Saves the current settings to hopsanconfig.xml
+Configuration::Configuration()
+{
+    // Resgister configuration options
+
+    // String settings
+    mStringSettings.insert(CFG_REMOTEHOPSANADDRESS, "");
+    mStringSettings.insert(CFG_REMOTEHOPSANDISPATCHADDRESS, "");
+    mStringSettings.insert(CFG_LOADMODELDIR, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(CFG_MODELGFXDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_PLOTDATADIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_PLOTGFXDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_SIMULINKEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_SUBSYSTEMDIR, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(CFG_MODELICAMODELSDIR, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(CFG_EXTERNALLIBDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_SCRIPTDIR, gpDesktopHandler->getScriptsPath());
+    mStringSettings.insert(CFG_PLOTWINDOWDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_FMUIMPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_FMUEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_LABVIEWEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_GCC32DIR, "");
+    mStringSettings.insert(CFG_GCC64DIR, "");
+    mStringSettings.insert(CFG_PLOTGFXIMAGEFORMAT, "png");
+    mStringSettings.insert(CFG_PLOTGFXDIMENSIONSUNIT, "px");
+
+    // Bool settings
+    mBoolSettings.insert(CFG_USEREMOTEDISPATCH, false);
+    mBoolSettings.insert(CFG_PLOTWINDOWSONTOP, true);
+    mBoolSettings.insert(CFG_PLOTGFXUSESCREENSIZE, false);
+    mBoolSettings.insert(CFG_PLOTGFXKEEPASPECT, true);
+    mBoolSettings.insert(CFG_AUTOLIMITGENERATIONS, false);
+    mBoolSettings.insert(CFG_CACHELOGDATA, true);
+    mBoolSettings.insert(CFG_SHOWHIDDENNODEDATAVARIABLES, false);
+    mBoolSettings.insert(CFG_AUTOBACKUP, true);
+    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
+    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
+    mBoolSettings.insert(CFG_TOGGLENAMESBUTTONCHECKED, true);
+    mBoolSettings.insert(CFG_TOGGLEPORTSBUTTONCHECKED, true);
+    mBoolSettings.insert(CFG_SNAPPING, true);
+    mBoolSettings.insert(CFG_INVERTWHEEL, false);
+    mBoolSettings.insert(CFG_ANTIALIASING, true);
+    mBoolSettings.insert(CFG_NATIVESTYLESHEET, false);
+    mBoolSettings.insert(CFG_SHOWPOPUPHELP, true);
+    mBoolSettings.insert(CFG_MULTICORE, false);
+    mBoolSettings.insert(CFG_PROGRESSBAR, true);
+    mBoolSettings.insert(CFG_SETPWDTOMWD, false);
+
+    // Integer settings
+    mIntegerSettings.insert(CFG_LIBRARYSTYLE, 0);
+    mIntegerSettings.insert(CFG_PROGRESSBARSTEP, 100);
+    mIntegerSettings.insert(CFG_NUMBEROFTHREADS, 0);
+    mIntegerSettings.insert(CFG_GENERATIONLIMIT, 100);
+    mIntegerSettings.insert(CFG_PLOEXPORTVERSION, 1);
+
+    // Double settings
+    mDoubleSettings.insert(CFG_PLOTGFXDPI, 96);
+}
+
 void Configuration::saveToXml()
 {
-        //Write to hopsanconfig.xml
-    QDomDocument domDocument;
-    QDomElement configRoot = domDocument.createElement(CFG_HOPSANCONFIG);
-    configRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, HOPSANGUIVERSION);
-    domDocument.appendChild(configRoot);
-
-    QDomElement settings = appendDomElement(configRoot,CFG_SETTINGS);
-    appendDomIntegerNode(settings, CFG_LIBRARYSTYLE, mLibraryStyle);
-    appendDomBooleanNode(settings, CFG_SHOWPOPUPHELP, mShowPopupHelp);
-    appendDomBooleanNode(settings, CFG_NATIVESTYLESHEET, mUseNativeStyleSheet);
-    appendDomTextNode(settings, CFG_BACKGROUNDCOLOR, mBackgroundColor.name());
-    appendDomBooleanNode(settings, CFG_ANTIALIASING, mAntiAliasing);
-    appendDomBooleanNode(settings, CFG_INVERTWHEEL, mInvertWheel);
-    appendDomBooleanNode(settings, CFG_SNAPPING, mSnapping);
-    appendDomBooleanNode(settings, CFG_PROGRESSBAR, mEnableProgressBar);
-    appendDomIntegerNode(settings, CFG_PROGRESSBARSTEP, mProgressBarStep);
-    appendDomBooleanNode(settings, CFG_MULTICORE, mUseMulticore);
-    appendDomIntegerNode(settings, CFG_NUMBEROFTHREADS, mNumberOfThreads);
-    appendDomBooleanNode(settings, CFG_TOGGLENAMESBUTTONCHECKED, gpToggleNamesAction->isChecked());
-    appendDomBooleanNode(settings, CFG_TOGGLEPORTSBUTTONCHECKED, gpTogglePortsAction->isChecked());
-    appendDomBooleanNode(settings, CFG_GROUPMESSAGESBYTAG, mGroupMessagesByTag);
-    appendDomIntegerNode(settings, CFG_GENERATIONLIMIT, mGenerationLimit);
-    appendDomBooleanNode(settings, CFG_AUTOLIMITGENERATIONS, mAutoLimitLogDataGenerations);
-    appendDomBooleanNode(settings, CFG_CACHELOGDATA, mCacheLogData);
-    appendDomBooleanNode(settings, CFG_AUTOBACKUP, mAutoBackup);
-    appendDomBooleanNode(settings, CFG_SETPWDTOMWD, mSetPwdToMwd);
-    appendDomBooleanNode(settings, CFG_SETPWDTOMWD, mSetPwdToMwd);
-    appendDomBooleanNode(settings, CFG_PLOTWINDOWSONTOP, mPlotWindowsOnTop);
-    appendDomTextNode(settings, CFG_LOADMODELDIR, mLoadModelDir);
-    appendDomTextNode(settings, CFG_MODELGFXDIR, mModelGfxDir);
-    appendDomTextNode(settings, CFG_PLOTDATADIR, mPlotDataDir);
-    appendDomTextNode(settings, CFG_PLOTGFXDIR, mPlotGfxDir);
-    appendDomTextNode(settings, CFG_SIMULINKEXPORTDIR, mSimulinkExportDir);
-    appendDomTextNode(settings, CFG_SUBSYSTEMDIR, mSubsystemDir);
-    appendDomTextNode(settings, CFG_MODELICAMODELSDIR, mModelicaModelsDir);
-    appendDomTextNode(settings, CFG_EXTERNALLIBDIR, mExternalLibDir);
-    appendDomTextNode(settings, CFG_SCRIPTDIR, mScriptDir);
-    appendDomTextNode(settings, CFG_PLOTWINDOWDIR, mPlotWindowDir);
-    appendDomTextNode(settings, CFG_FMUIMPORTDIR, mFmuImportDir);
-    appendDomTextNode(settings, CFG_FMUEXPORTDIR, mFmuExportDir);
-    appendDomTextNode(settings, CFG_LABVIEWEXPORTDIR, mLabViewExportDir);
-    appendDomTextNode(settings, CFG_GCC32DIR, mGcc32Dir);
-    appendDomTextNode(settings, CFG_GCC64DIR, mGcc64Dir);
-    appendDomIntegerNode(settings, CFG_PLOEXPORTVERSION, mPLOExportVersion);
-    appendDomBooleanNode(settings, CFG_SHOWHIDDENNODEDATAVARIABLES, mShowHiddenNodeDataVariables);
-    appendDomTextNode(settings, CFG_PLOTGFXIMAGEFORMAT, mPlotGfxImageFormat);
-    appendDomTextNode(settings, CFG_PLOTGFXDIMENSIONSUNIT, mPlotGfxDimensionsUnit);
-    appendDomIntegerNode(settings, CFG_PLOTGFXDPI, mPlotGfxDPI);
-    appendDomValueNode2(settings, CFG_PLOTGFXSIZE, mPlotGfxSize.width(), mPlotGfxSize.height());
-    appendDomBooleanNode(settings, CFG_PLOTGFXKEEPASPECT, mPlotGfxKeepAspect);
-    appendDomBooleanNode(settings, CFG_PLOTGFXUSESCREENSIZE, mPlotGfxUseScreenSize);
-    appendDomTextNode(settings, CFG_REMOTEHOPSANADDRESS, mRemoteHopsanAddress);
-    appendDomTextNode(settings, CFG_REMOTEHOPSANADDRESS, mRemoteHopsanAddress);
-    appendDomBooleanNode(settings, CFG_USEREMOTEDISPATCH, mUseRemoteHopsanDispatch);
-
-    QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
-
-    QMap<ConnectorStyleEnumT, QMap<QString, QMap<QString, QPen> > >::iterator it1;
-    QMap<QString, QMap<QString, QPen> >::iterator it2;
-    QMap<QString, QPen>::iterator it3;
-
-    for(it1 = mPenStyles.begin(); it1 != mPenStyles.end(); ++it1)
+    if (mWriteOnSave)
     {
-        for(it2 = it1.value().begin(); it2 != it1.value().end(); ++it2)
-        {
-            for(it3 = it2.value().begin(); it3 != it2.value().end(); ++it3)
-            {
-                QString type;
-                if(it1.key() == PowerConnectorStyle) type = "Power";
-                if(it1.key() == SignalConnectorStyle) type = "Signal";
-                if(it1.key() == BrokenConnectorStyle) type = "Broken";
-                if(it1.key() == UndefinedConnectorStyle) type = "Undefined";
+        // Write to hopsanconfig.xml
+        QDomDocument domDocument;
+        QDomElement configRoot = domDocument.createElement(CFG_HOPSANCONFIG);
+        configRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, HOPSANGUIVERSION);
+        domDocument.appendChild(configRoot);
 
-                QDomElement tempElement = appendDomElement(style, CFG_PENSTYLE);
-                tempElement.setAttribute(CFG_TYPE, type);
-                tempElement.setAttribute(CFG_GFXTYPE, it2.key());
-                tempElement.setAttribute(CFG_SITUATION, it3.key());
-                tempElement.setAttribute(CFG_COLOR, it3.value().color().name());
-                setQrealAttribute(tempElement, CFG_WIDTH, it3.value().widthF());
-                tempElement.setAttribute(HMF_STYLETAG, it3.value().style());
-                tempElement.setAttribute(CFG_CAPSTYLE, it3.value().capStyle());
+        QDomElement settings = appendDomElement(configRoot,CFG_SETTINGS);
+
+        // Write string settings
+        for(auto it=mStringSettings.begin(); it!=mStringSettings.end(); ++it)
+        {
+            appendDomTextNode(settings, it.key(), it.value());
+        }
+
+        // Write bool settings
+        for(auto it=mBoolSettings.begin(); it!=mBoolSettings.end(); ++it)
+        {
+            appendDomBooleanNode(settings, it.key(), it.value());
+        }
+
+        // Write integer settings
+        for(auto it=mIntegerSettings.begin(); it!=mIntegerSettings.end(); ++it)
+        {
+            appendDomIntegerNode(settings, it.key(), it.value());
+        }
+
+        // Write double settings
+        for(auto it=mDoubleSettings.begin(); it!=mDoubleSettings.end(); ++it)
+        {
+            appendDomValueNode(settings, it.key(), it.value());
+        }
+
+        // Write other settings
+        appendDomValueNode2(settings, CFG_PLOTGFXSIZE, mPlotGfxSize.width(), mPlotGfxSize.height());
+        appendDomTextNode(settings, CFG_BACKGROUNDCOLOR, mBackgroundColor.name());
+
+        // Write style
+        QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
+        for(auto it1 = mPenStyles.begin(); it1 != mPenStyles.end(); ++it1)
+        {
+            for(auto it2 = it1.value().begin(); it2 != it1.value().end(); ++it2)
+            {
+                for(auto it3 = it2.value().begin(); it3 != it2.value().end(); ++it3)
+                {
+                    QString type;
+                    if(it1.key() == PowerConnectorStyle) type = "Power";
+                    if(it1.key() == SignalConnectorStyle) type = "Signal";
+                    if(it1.key() == BrokenConnectorStyle) type = "Broken";
+                    if(it1.key() == UndefinedConnectorStyle) type = "Undefined";
+
+                    QDomElement tempElement = appendDomElement(style, CFG_PENSTYLE);
+                    tempElement.setAttribute(CFG_TYPE, type);
+                    tempElement.setAttribute(CFG_GFXTYPE, it2.key());
+                    tempElement.setAttribute(CFG_SITUATION, it3.key());
+                    tempElement.setAttribute(CFG_COLOR, it3.value().color().name());
+                    setQrealAttribute(tempElement, CFG_WIDTH, it3.value().widthF());
+                    tempElement.setAttribute(HMF_STYLETAG, it3.value().style());
+                    tempElement.setAttribute(CFG_CAPSTYLE, it3.value().capStyle());
+                }
             }
         }
-    }
 
-    QDomElement libs = appendDomElement(configRoot, XML_LIBS);
-    for(int i=0; i<mUserLibs.size(); ++i)
-    {
-        appendDomTextNode(libs, XML_USERLIB, mUserLibs.at(i).absoluteFilePath());
-        QString typeStr = XML_LIBTYPE_INTERNAL;
-        if(mUserLibTypes.at(i) == ExternalLib)
+        QDomElement libs = appendDomElement(configRoot, XML_LIBS);
+        for(int i=0; i<mUserLibs.size(); ++i)
         {
-            typeStr = XML_LIBTYPE_EXTERNAL;
-        }
-        else if(mUserLibTypes.at(i) == FmuLib)
-        {
-            typeStr = XML_LIBTYPE_FMU;
-        }
-        libs.lastChildElement(XML_USERLIB).setAttribute(XML_LIBTYPE, typeStr);
-    }
-
-    QDomElement modelicaFilesXml = appendDomElement(configRoot, XML_MODELICAFILES);
-    for(int i=0; i<mModelicaFiles.size(); ++i)
-    {
-        appendDomTextNode(modelicaFilesXml, XML_MODELICAFILE, mModelicaFiles.at(i).absoluteFilePath());
-    }
-
-    QDomElement models = appendDomElement(configRoot, XML_MODELS);
-    for(int i=0; i<mLastSessionModels.size(); ++i)
-    {
-        if(mLastSessionModels.at(i) != "")
-        {
-            appendDomTextNode(models, XML_LASTSESSIONMODEL, mLastSessionModels.at(i));
-        }
-    }
-    for(int i = mRecentModels.size()-1; i>-1; --i)
-    {
-        if(mRecentModels.at(i) != "")
-            appendDomTextNode(models, XML_RECENTMODEL, mRecentModels.at(i));
-    }
-    for(int i = mRecentGeneratorModels.size()-1; i>-1; --i)
-    {
-        if(mRecentGeneratorModels.at(i) != "")
-            appendDomTextNode(models, XML_RECENTGENERATORMODEL, mRecentGeneratorModels.at(i));
-    }
-
-
-    QDomElement xmlUnitScales = appendDomElement(configRoot, CFG_UNITSCALES);
-    QMap<QString, QuantityUnitScale >::iterator qit;
-    for(qit = mUnitScales.begin(); qit != mUnitScales.end(); ++qit)
-    {
-        QDomElement xmlQuantity = appendDomElement(xmlUnitScales, CFG_QUANTITY);
-        xmlQuantity.setAttribute(HMF_NAMETAG, qit.key());
-        QString siunit = qit.value().siunit;
-        if (!siunit.isEmpty())
-        {
-            xmlQuantity.setAttribute(CFG_SIUNIT, siunit);
-        }
-        QMap<QString, UnitScale>::iterator cuit;
-        for(cuit = qit.value().customScales.begin(); cuit != qit.value().customScales.end(); ++cuit)
-        {
-            if (cuit.key() != siunit)
+            appendDomTextNode(libs, XML_USERLIB, mUserLibs.at(i).absoluteFilePath());
+            QString typeStr = XML_LIBTYPE_INTERNAL;
+            if(mUserLibTypes.at(i) == ExternalLib)
             {
-                QDomElement xmlUS = appendDomTextNode(xmlQuantity, CFG_UNITSCALE, cuit.value().mScale);
-                xmlUS.setAttribute(CFG_UNIT, cuit.key());
+                typeStr = XML_LIBTYPE_EXTERNAL;
+            }
+            else if(mUserLibTypes.at(i) == FmuLib)
+            {
+                typeStr = XML_LIBTYPE_FMU;
+            }
+            libs.lastChildElement(XML_USERLIB).setAttribute(XML_LIBTYPE, typeStr);
+        }
+
+        QDomElement modelicaFilesXml = appendDomElement(configRoot, XML_MODELICAFILES);
+        for(int i=0; i<mModelicaFiles.size(); ++i)
+        {
+            appendDomTextNode(modelicaFilesXml, XML_MODELICAFILE, mModelicaFiles.at(i).absoluteFilePath());
+        }
+
+        QDomElement models = appendDomElement(configRoot, XML_MODELS);
+        for(int i=0; i<mLastSessionModels.size(); ++i)
+        {
+            if(mLastSessionModels.at(i) != "")
+            {
+                appendDomTextNode(models, XML_LASTSESSIONMODEL, mLastSessionModels.at(i));
             }
         }
-    }
-
-    QDomElement units = appendDomElement(configRoot, CFG_UNITS);
-    QMap<QString, QString>::iterator itdu;
-    for(itdu = mSelectedDefaultUnits.begin(); itdu != mSelectedDefaultUnits.end(); ++itdu)
-    {
-        QDomElement xmlTemp = appendDomElement(units, CFG_DEFAULTUNIT);
-        xmlTemp.setAttribute(CFG_NAME, itdu.key());
-        xmlTemp.setAttribute(CFG_UNIT, itdu.value());
-    }
-
-    //-------------------------------------------------------------------------------------
-    //! @deprecated This code should be removed in the future 20140414 /Peter
-    appendComment(units, "Note! These customunit tags are deprecated and should no longer be used! (Used for backwards compatibility)");
-    QMap<QString, QuantityUnitScale >::iterator itpcu;
-    QMap<QString, UnitScale>::iterator itcu;
-    for(itpcu = mUnitScales.begin(); itpcu != mUnitScales.end(); ++itpcu)
-    {
-        for(itcu = itpcu.value().customScales.begin(); itcu != itpcu.value().customScales.end(); ++itcu)
+        for(int i = mRecentModels.size()-1; i>-1; --i)
         {
-            QDomElement xmlTemp = appendDomElement(units, CFG_CUSTOMUNIT);
-            xmlTemp.setAttribute(CFG_NAME, itpcu.key());
-            xmlTemp.setAttribute(CFG_UNIT, itcu.key());
-            setQrealAttribute(xmlTemp, CFG_SCALE, itcu.value().mScale.toDouble());
+            if(mRecentModels.at(i) != "")
+                appendDomTextNode(models, XML_RECENTMODEL, mRecentModels.at(i));
         }
-    }
-    appendComment(units, "Note! These customunit tags are deprecated and should no longer be used! (Used for backwards compatibility)");
-    //-------------------------------------------------------------------------------------
+        for(int i = mRecentGeneratorModels.size()-1; i>-1; --i)
+        {
+            if(mRecentGeneratorModels.at(i) != "")
+                appendDomTextNode(models, XML_RECENTGENERATORMODEL, mRecentGeneratorModels.at(i));
+        }
 
-    //Save python session
+
+        QDomElement xmlUnitScales = appendDomElement(configRoot, CFG_UNITSCALES);
+        QMap<QString, QuantityUnitScale >::iterator qit;
+        for(qit = mUnitScales.begin(); qit != mUnitScales.end(); ++qit)
+        {
+            QDomElement xmlQuantity = appendDomElement(xmlUnitScales, CFG_QUANTITY);
+            xmlQuantity.setAttribute(HMF_NAMETAG, qit.key());
+            QString siunit = qit.value().siunit;
+            if (!siunit.isEmpty())
+            {
+                xmlQuantity.setAttribute(CFG_SIUNIT, siunit);
+            }
+            QMap<QString, UnitScale>::iterator cuit;
+            for(cuit = qit.value().customScales.begin(); cuit != qit.value().customScales.end(); ++cuit)
+            {
+                if (cuit.key() != siunit)
+                {
+                    QDomElement xmlUS = appendDomTextNode(xmlQuantity, CFG_UNITSCALE, cuit.value().mScale);
+                    xmlUS.setAttribute(CFG_UNIT, cuit.key());
+                }
+            }
+        }
+
+        QDomElement units = appendDomElement(configRoot, CFG_UNITS);
+        QMap<QString, QString>::iterator itdu;
+        for(itdu = mSelectedDefaultUnits.begin(); itdu != mSelectedDefaultUnits.end(); ++itdu)
+        {
+            QDomElement xmlTemp = appendDomElement(units, CFG_DEFAULTUNIT);
+            xmlTemp.setAttribute(CFG_NAME, itdu.key());
+            xmlTemp.setAttribute(CFG_UNIT, itdu.value());
+        }
+
+
+        //Save python session
 #ifdef USEPYTHONQT
-    QDomElement python = appendDomElement(configRoot, CFG_PYTHON);
-    gpPythonTerminalWidget->saveSettingsToDomElement(python);
+        QDomElement python = appendDomElement(configRoot, CFG_PYTHON);
+        gpPythonTerminalWidget->saveSettingsToDomElement(python);
 #endif
 
-    QDomElement hcom = appendDomElement(configRoot, CFG_HCOM);
-    appendDomTextNode(hcom, CFG_PWD, mHcomWorkingDirectory);
-    for(int i=0; i<mTerminalHistory.size(); ++i)
-    {
-        appendDomTextNode(hcom, CFG_COMMAND, mTerminalHistory.at(i));
-    }
+        QDomElement hcom = appendDomElement(configRoot, CFG_HCOM);
+        appendDomTextNode(hcom, CFG_PWD, mHcomWorkingDirectory);
+        for(int i=0; i<mTerminalHistory.size(); ++i)
+        {
+            appendDomTextNode(hcom, CFG_COMMAND, mTerminalHistory.at(i));
+        }
 
-    appendRootXMLProcessingInstruction(domDocument);
+        appendRootXMLProcessingInstruction(domDocument);
 
-    //Save to file
-    if(!QDir(gpDesktopHandler->getConfigPath()).exists())
-    {
-        QDir().mkpath(gpDesktopHandler->getConfigPath());
+        //Save to file
+        if(!QDir(gpDesktopHandler->getConfigPath()).exists())
+        {
+            QDir().mkpath(gpDesktopHandler->getConfigPath());
+        }
+        QFile xmlsettings(gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
+        if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMessageHandler->addErrorMessage("Failed to open config file for writing: "+gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
+            return;
+        }
+        QTextStream out(&xmlsettings);
+        domDocument.save(out, XMLINDENTATION);
     }
-    QFile xmlsettings(gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
-    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        gpMessageHandler->addErrorMessage("Failed to open config file for writing: "+gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
-        return;
-    }
-    QTextStream out(&xmlsettings);
-    domDocument.save(out, XMLINDENTATION);
 }
 
 
@@ -397,56 +418,100 @@ void Configuration::loadDefaultsFromXml()
     return;
 }
 
+void Configuration::beginMultiSet()
+{
+    mWriteOnSave = false;
+}
+
+void Configuration::endMultiSet()
+{
+    mWriteOnSave = true;
+}
+
+QString Configuration::getStringSetting(const QString &rName) const
+{
+    Q_ASSERT(mStringSettings.contains(rName));
+    return mStringSettings.value(rName, "StringSettingNotFond");
+}
+
+bool Configuration::getBoolSetting(const QString &rName) const
+{
+    Q_ASSERT(mBoolSettings.contains(rName));
+    return mBoolSettings.value(rName, false);
+}
+
+int Configuration::getIntegerSetting(const QString &rName) const
+{
+    Q_ASSERT(mIntegerSettings.contains(rName));
+    return mIntegerSettings.value(rName, -1);
+}
+
+double Configuration::getDoubleSetting(const QString &rName) const
+{
+    Q_ASSERT(mDoubleSettings.contains(rName));
+    return mDoubleSettings.value(rName, -1);
+}
+
+void Configuration::setStringSetting(const QString &rName, const QString &rValue)
+{
+    Q_ASSERT(mStringSettings.contains(rName));
+    mStringSettings.insert(rName, rValue);
+    refreshQuickAccessVariables();
+    saveToXml();
+}
+
+void Configuration::setBoolSetting(const QString &rName, const bool value)
+{
+    Q_ASSERT(mBoolSettings.contains(rName));
+    mBoolSettings.insert(rName, value);
+    refreshQuickAccessVariables();
+    saveToXml();
+}
+
+void Configuration::setIntegerSetting(const QString &rName, const int value)
+{
+    Q_ASSERT(mIntegerSettings.contains(rName));
+    mIntegerSettings.insert(rName, value);
+    refreshQuickAccessVariables();
+    saveToXml();
+}
+
+void Configuration::setDoubleSetting(const QString &rName, const double value)
+{
+    Q_ASSERT(mDoubleSettings.contains(rName));
+    mDoubleSettings.insert(rName, value);
+    refreshQuickAccessVariables();
+    saveToXml();
+}
+
 //! @brief Utility function that loads user settings from dom element
 void Configuration::loadUserSettings(QDomElement &rDomElement)
 {
-    mLibraryStyle = parseDomIntegerNode(rDomElement.firstChildElement(CFG_LIBRARYSTYLE), mLibraryStyle);
-    mPLOExportVersion = parseDomIntegerNode(rDomElement.firstChildElement(CFG_PLOEXPORTVERSION), mPLOExportVersion);
+    // Load string settings
+    for (auto it = mStringSettings.begin(); it != mStringSettings.end(); ++it)
+    {
+        it.value() = parseDomStringNode(rDomElement.firstChildElement(it.key()), it.value());
+    }
 
-    if(!rDomElement.firstChildElement(CFG_SHOWHIDDENNODEDATAVARIABLES).isNull())
-        mShowHiddenNodeDataVariables = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SHOWHIDDENNODEDATAVARIABLES), mShowHiddenNodeDataVariables);
-    if(!rDomElement.firstChildElement(CFG_SHOWPOPUPHELP).isNull())
-        mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SHOWPOPUPHELP), mShowPopupHelp);
-    if(!rDomElement.firstChildElement(CFG_NATIVESTYLESHEET).isNull())
-        mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement(CFG_NATIVESTYLESHEET), mUseNativeStyleSheet);
-    if(!rDomElement.firstChildElement(CFG_ANTIALIASING).isNull())
-        mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement(CFG_ANTIALIASING), mAntiAliasing);
-    if(!rDomElement.firstChildElement(CFG_INVERTWHEEL).isNull())
-        mInvertWheel = parseDomBooleanNode(rDomElement.firstChildElement(CFG_INVERTWHEEL), mInvertWheel);
-    if(!rDomElement.firstChildElement(CFG_SNAPPING).isNull())
-        mSnapping = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SNAPPING), mSnapping);
-    if(!rDomElement.firstChildElement(CFG_SETPWDTOMWD).isNull())
-        mSetPwdToMwd = parseDomBooleanNode(rDomElement.firstChildElement(CFG_SETPWDTOMWD), mSetPwdToMwd);
-    if(!rDomElement.firstChildElement(CFG_PLOTWINDOWSONTOP).isNull())
-        mPlotWindowsOnTop = parseDomBooleanNode(rDomElement.firstChildElement(CFG_PLOTWINDOWSONTOP), mPlotWindowsOnTop);
-    if(!rDomElement.firstChildElement(CFG_PROGRESSBAR).isNull())
-        mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement(CFG_PROGRESSBAR), mEnableProgressBar);
-    if(!rDomElement.firstChildElement(CFG_PROGRESSBARSTEP).isNull())
-        mProgressBarStep = parseDomIntegerNode(rDomElement.firstChildElement(CFG_PROGRESSBARSTEP), mProgressBarStep);
-    if(!rDomElement.firstChildElement(CFG_MULTICORE).isNull())
-        mUseMulticore = parseDomBooleanNode(rDomElement.firstChildElement(CFG_MULTICORE), mUseMulticore);
-    if(!rDomElement.firstChildElement(CFG_NUMBEROFTHREADS).isNull())
-        mNumberOfThreads = parseDomIntegerNode(rDomElement.firstChildElement(CFG_NUMBEROFTHREADS), mNumberOfThreads);
-    if(!rDomElement.firstChildElement(CFG_TOGGLENAMESBUTTONCHECKED).isNull())
-        mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement(CFG_TOGGLENAMESBUTTONCHECKED), mToggleNamesButtonCheckedLastSession);
-    if(!rDomElement.firstChildElement(CFG_TOGGLEPORTSBUTTONCHECKED).isNull())
-        mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement(CFG_TOGGLEPORTSBUTTONCHECKED), mTogglePortsButtonCheckedLastSession);
-    if(!rDomElement.firstChildElement(CFG_GROUPMESSAGESBYTAG).isNull())
-        mGroupMessagesByTag = parseDomBooleanNode(rDomElement.firstChildElement(CFG_GROUPMESSAGESBYTAG), mGroupMessagesByTag);
-    if(!rDomElement.firstChildElement(CFG_GENERATIONLIMIT).isNull())
-        mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement(CFG_GENERATIONLIMIT), mGenerationLimit);
-    if(!rDomElement.firstChildElement(CFG_CACHELOGDATA).isNull())
-        mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement(CFG_CACHELOGDATA), mCacheLogData);
-    if(!rDomElement.firstChildElement(CFG_AUTOBACKUP).isNull())
-        mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement(CFG_AUTOBACKUP), mAutoBackup);
-    if(!rDomElement.firstChildElement(CFG_AUTOLIMITGENERATIONS).isNull())
-        mAutoLimitLogDataGenerations = parseDomBooleanNode(rDomElement.firstChildElement(CFG_AUTOLIMITGENERATIONS), mAutoLimitLogDataGenerations);
-    if(!rDomElement.firstChildElement(CFG_PLOTGFXIMAGEFORMAT).isNull())
-        mPlotGfxImageFormat = rDomElement.firstChildElement(CFG_PLOTGFXIMAGEFORMAT).text();
-    if(!rDomElement.firstChildElement(CFG_PLOTGFXDIMENSIONSUNIT).isNull())
-        mPlotGfxDimensionsUnit = rDomElement.firstChildElement(CFG_PLOTGFXDIMENSIONSUNIT).text();
-    if(!rDomElement.firstChildElement(CFG_PLOTGFXDPI).isNull())
-        mPlotGfxDPI = parseDomIntegerNode(rDomElement.firstChildElement(CFG_PLOTGFXDPI), mPlotGfxDPI);
+    // Load bool settings
+    for (auto it = mBoolSettings.begin(); it != mBoolSettings.end(); ++it)
+    {
+        it.value() = parseDomBooleanNode(rDomElement.firstChildElement(it.key()), it.value());
+    }
+
+    // Load integer settings
+    for (auto it = mIntegerSettings.begin(); it != mIntegerSettings.end(); ++it)
+    {
+        it.value() = parseDomIntegerNode(rDomElement.firstChildElement(it.key()), it.value());
+    }
+
+    // Load double settings
+    for (auto it = mDoubleSettings.begin(); it != mDoubleSettings.end(); ++it)
+    {
+        it.value() = parseDomValueNode(rDomElement.firstChildElement(it.key()), it.value());
+    }
+
+    // Load other settings
     if(!rDomElement.firstChildElement(CFG_PLOTGFXSIZE).isNull())
     {
         double width = mPlotGfxSize.width();
@@ -455,49 +520,10 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mPlotGfxSize.setWidth(width);
         mPlotGfxSize.setHeight(height);
     }
-    if(!rDomElement.firstChildElement(CFG_PLOTGFXKEEPASPECT).isNull())
-        mPlotGfxKeepAspect = parseDomBooleanNode(rDomElement.firstChildElement(CFG_PLOTGFXKEEPASPECT),mPlotGfxKeepAspect);
-    if(!rDomElement.firstChildElement(CFG_PLOTGFXUSESCREENSIZE).isNull())
-        mPlotGfxUseScreenSize = parseDomBooleanNode(rDomElement.firstChildElement(CFG_PLOTGFXUSESCREENSIZE),mPlotGfxUseScreenSize);
 
-    if(!rDomElement.firstChildElement(CFG_BACKGROUNDCOLOR).isNull())
-        mBackgroundColor.setNamedColor(rDomElement.firstChildElement(CFG_BACKGROUNDCOLOR).text());
-    if(!rDomElement.firstChildElement(CFG_LOADMODELDIR).isNull())
-        mLoadModelDir = rDomElement.firstChildElement(CFG_LOADMODELDIR).text();
-    if(!rDomElement.firstChildElement(CFG_MODELGFXDIR).isNull())
-        mModelGfxDir = rDomElement.firstChildElement(CFG_MODELGFXDIR).text();
-    if(!rDomElement.firstChildElement(CFG_PLOTDATADIR).isNull())
-        mPlotDataDir = rDomElement.firstChildElement(CFG_PLOTDATADIR).text();
-    if(!rDomElement.firstChildElement(CFG_PLOTGFXDIR).isNull())
-        mPlotGfxDir = rDomElement.firstChildElement(CFG_PLOTGFXDIR).text();
-    if(!rDomElement.firstChildElement(CFG_SIMULINKEXPORTDIR).isNull())
-        mSimulinkExportDir = rDomElement.firstChildElement(CFG_SIMULINKEXPORTDIR).text();
-    if(!rDomElement.firstChildElement(CFG_SUBSYSTEMDIR).isNull())
-        mSubsystemDir = rDomElement.firstChildElement(CFG_SUBSYSTEMDIR).text();
-    if(!rDomElement.firstChildElement(CFG_MODELICAMODELSDIR).isNull())
-        mModelicaModelsDir = rDomElement.firstChildElement(CFG_MODELICAMODELSDIR).text();
-    if(!rDomElement.firstChildElement(CFG_EXTERNALLIBDIR).isNull())
-        mExternalLibDir = rDomElement.firstChildElement(CFG_EXTERNALLIBDIR).text();
-    if(!rDomElement.firstChildElement(CFG_SCRIPTDIR).isNull())
-        mScriptDir = rDomElement.firstChildElement(CFG_SCRIPTDIR).text();
-    if(!rDomElement.firstChildElement(CFG_PLOTWINDOWDIR).isNull())
-        mPlotWindowDir = rDomElement.firstChildElement(CFG_PLOTWINDOWDIR).text();
-    if(!rDomElement.firstChildElement("fmudir").isNull())
-        mFmuImportDir = rDomElement.firstChildElement("fmudir").text();
-    if(!rDomElement.firstChildElement(CFG_FMUIMPORTDIR).isNull())
-        mFmuImportDir = rDomElement.firstChildElement(CFG_FMUIMPORTDIR).text();
-    if(!rDomElement.firstChildElement("fmuexportdir").isNull())
-        mFmuExportDir = rDomElement.firstChildElement("fmuexportdir").text();
-    if(!rDomElement.firstChildElement(CFG_LABVIEWEXPORTDIR).isNull())
-        mLabViewExportDir = rDomElement.firstChildElement(CFG_LABVIEWEXPORTDIR).text();
-    if(!rDomElement.firstChildElement(CFG_GCC32DIR).isNull())
-        mGcc32Dir = rDomElement.firstChildElement(CFG_GCC32DIR).text();
-    if(!rDomElement.firstChildElement(CFG_GCC64DIR).isNull())
-        mGcc64Dir = rDomElement.firstChildElement(CFG_GCC64DIR).text();
+    mBackgroundColor.setNamedColor(parseDomStringNode(rDomElement.firstChildElement(CFG_BACKGROUNDCOLOR), mBackgroundColor.name()));
 
-    mRemoteHopsanAddress = parseDomStringNode(rDomElement.firstChildElement(CFG_REMOTEHOPSANADDRESS), mRemoteHopsanAddress);
-    mRemoteHopsanDispatchAddress = parseDomStringNode(rDomElement.firstChildElement(CFG_REMOTEHOPSANDISPATCHADDRESS), mRemoteHopsanDispatchAddress);
-    mUseRemoteHopsanDispatch = parseDomBooleanNode(rDomElement.firstChildElement(CFG_USEREMOTEDISPATCH), mUseRemoteHopsanDispatch);
+    refreshQuickAccessVariables();
 }
 
 
@@ -585,33 +611,6 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement)
     {
         mSelectedDefaultUnits.insert(xmlDefaultUnit.attribute(HMF_NAMETAG), xmlDefaultUnit.attribute(CFG_UNIT));
         xmlDefaultUnit = xmlDefaultUnit.nextSiblingElement(CFG_DEFAULTUNIT);
-    }
-
-    //! @deprecated This code is only used for backwards compatibility, remove it in the future /Peter 20140414
-    QDomElement customUnitElement = rDomElement.firstChildElement(CFG_CUSTOMUNIT);
-    while (!customUnitElement.isNull())
-    {
-        QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
-        QString unitName = customUnitElement.attribute(CFG_UNIT);
-        QString unitScale = customUnitElement.attribute(CFG_SCALE);
-        if (!mUnitScales.contains(physicalQuantity))
-        {
-            mUnitScales.insert(physicalQuantity, QuantityUnitScale());
-        }
-        if(!mUnitScales.value(physicalQuantity).customScales.contains(unitName))
-        {
-            mUnitScales.find(physicalQuantity).value().customScales.insert(unitName, UnitScale(unitName, unitScale));
-        }
-        else
-        {
-            // Compre with old deprected settings to make sure scale is same as already loaded from new xml format
-            QString currentVal = mUnitScales.find(physicalQuantity).value().customScales.value(unitName).mScale;
-            if (currentVal != unitScale)
-            {
-                qDebug() << "Warning unit scales unequal for: " << physicalQuantity+":"+unitName << " " << currentVal << " != " << unitScale;
-            }
-        }
-        customUnitElement = customUnitElement.nextSiblingElement(CFG_CUSTOMUNIT);
     }
 }
 
@@ -732,32 +731,32 @@ void Configuration::loadScriptSettings(QDomElement &rPythonElement, QDomElement 
     }
 }
 
-
-//! @brief Returns which library style to use
-int Configuration::getLibraryStyle() const
+void Configuration::refreshQuickAccessVariables()
 {
-    return this->mLibraryStyle;
+    mInvertWheel = getBoolSetting(CFG_INVERTWHEEL);
+    mShowPopupHelp = getBoolSetting(CFG_SHOWPOPUPHELP);
+    mCacheLogData = getBoolSetting(CFG_CACHELOGDATA);
+    mUseMulticore = getBoolSetting(CFG_MULTICORE);
+    mProgressBarStep = getIntegerSetting(CFG_PROGRESSBARSTEP);
+    mSnapping = getBoolSetting(CFG_SNAPPING);
 }
 
 
 //! @brief Returns whether or not the popup help shall be shown
 bool Configuration::getShowPopupHelp() const
 {
-    return this->mShowPopupHelp;
+    return mShowPopupHelp;
 }
-
-
-//! @brief Returns whether or not the welcome dialog shall be shown
-bool Configuration::getUseNativeStyleSheet() const
-{
-    return this->mUseNativeStyleSheet;
-}
-
 
 //! @brief Returns whether or not invert wheel shall be used
 bool Configuration::getInvertWheel() const
 {
-    return this->mInvertWheel;
+    return mInvertWheel;
+}
+
+bool Configuration::getCacheLogData() const
+{
+    return mCacheLogData;
 }
 
 
@@ -768,38 +767,11 @@ bool Configuration::getUseMulticore() const
 }
 
 
-//! @brief Returns number of simulation threads that shall be used
-int Configuration::getNumberOfThreads() const
-{
-    return this->mNumberOfThreads;
-}
-
-
-//! @brief Returns whether or not the toggle names button was checked at the end of last session
-bool Configuration::getToggleNamesButtonCheckedLastSession() const
-{
-    return this->mToggleNamesButtonCheckedLastSession;
-}
-
-
-//! @brief Returns whether or not the toggle ports button was checked at the end of last session
-bool Configuration::getTogglePortsButtonCheckedLastSession() const
-{
-    return this->mTogglePortsButtonCheckedLastSession;
-}
-
 
 //! @brief Returns the step size that shall be used in progress bar
 int Configuration::getProgressBarStep() const
 {
-    return this->mProgressBarStep;
-}
-
-
-//! @brief Returns whether or not the progress bar shall be displayed during simulation
-bool Configuration::getEnableProgressBar() const
-{
-    return this->mEnableProgressBar;
+    return mProgressBarStep;
 }
 
 
@@ -807,13 +779,6 @@ bool Configuration::getEnableProgressBar() const
 QColor Configuration::getBackgroundColor() const
 {
     return this->mBackgroundColor;
-}
-
-
-//! @brief Returns whether or not anti-aliasing shall be used
-bool Configuration::getAntiAliasing() const
-{
-    return this->mAntiAliasing;
 }
 
 
@@ -853,32 +818,22 @@ QStringList Configuration::getModelicaFiles() const
 //! @brief Returns whether or not connector snapping shall be used
 bool Configuration::getSnapping() const
 {
-    return this->mSnapping;
+    return mSnapping;
 }
 
-//! @brief Returns whether ot not PWD should automatically be set to MWD in HCOM
-bool Configuration::getAutoSetPwdToMwd() const
-{
-    return mSetPwdToMwd;
-}
-
-bool Configuration::getPlotWindowsOnTop() const
-{
-    return mPlotWindowsOnTop;
-}
 
 
 //! @brief Returns a list of paths to recently opened models
 QStringList Configuration::getRecentModels() const
 {
-    return this->mRecentModels;
+    return mRecentModels;
 }
 
 
 //! @brief Returns a list of paths to recently opened models in component generator
 QStringList Configuration::getRecentGeneratorModels() const
 {
-    return this->mRecentGeneratorModels;
+    return mRecentGeneratorModels;
 }
 
 
@@ -886,7 +841,7 @@ QStringList Configuration::getRecentGeneratorModels() const
 //! @brief Returns a list of paths to models that were open last time program was closed
 QStringList Configuration::getLastSessionModels() const
 {
-    return this->mLastSessionModels;
+    return mLastSessionModels;
 }
 
 
@@ -895,7 +850,7 @@ QStringList Configuration::getLastSessionModels() const
 QString Configuration::getDefaultUnit(const QString &rPhysicalQuantity) const
 {
     if(mSelectedDefaultUnits.contains(rPhysicalQuantity))
-        return this->mSelectedDefaultUnits.find(rPhysicalQuantity).value();
+        return mSelectedDefaultUnits.find(rPhysicalQuantity).value();
     else
         return "";
 }
@@ -1003,17 +958,6 @@ void Configuration::removeUnitScale(const QString &rQuantity, const QString &rUn
     }
 }
 
-int Configuration::getPLOExportVersion() const
-{
-    return mPLOExportVersion;
-}
-
-bool Configuration::getShowHiddenNodeDataVariables() const
-{
-    return mShowHiddenNodeDataVariables;
-}
-
-
 //! @brief Returns connector pen for specified connector type
 //! @param style Style of connector (POWERCONNECTOR, SIGNALCONNECTOR or UNDEFINEDCONNECTOR)
 //! @param gfxType Graphics type (User or Iso)
@@ -1040,7 +984,7 @@ QPen Configuration::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType,
 
 QPalette Configuration::getPalette() const
 {
-    if(this->mUseNativeStyleSheet)
+    if(getBoolSetting(CFG_NATIVESTYLESHEET))
     {
         QMainWindow *dummy = new QMainWindow();
         QPalette dummyPalette = dummy->palette();
@@ -1066,7 +1010,7 @@ QFont Configuration::getFont() const
 //! @brief Returns the current style sheet
 QString Configuration::getStyleSheet() const
 {
-    if(mUseNativeStyleSheet)
+    if(getBoolSetting(CFG_NATIVESTYLESHEET))
         return QString();
     else
         return mStyleSheet;
@@ -1085,195 +1029,12 @@ QStringList Configuration::getUnitQuantities() const
 }
 
 
-//! @brief Returns the group message by tag setting
-bool Configuration::getGroupMessagesByTag()
-{
-    return mGroupMessagesByTag;
-}
-
-
-//! @brief Returns the limit setting for plot generations
-int Configuration::getGenerationLimit() const
-{
-    return mGenerationLimit;
-}
-
-//! @brief Returns the cache log data setting
-bool Configuration::getCacheLogData() const
-{
-    return mCacheLogData;
-}
-
-//! @brief Returns the auto backup setting
-bool Configuration::getAutoBackup() const
-{
-    return mAutoBackup;
-}
-
-//! @brief Returns the auto limit log data generations setting
-bool Configuration::getAutoLimitLogDataGenerations()
-{
-    return mAutoLimitLogDataGenerations;
-}
-
-//! @brief Returns the plot graphics export image format setting
-QString Configuration::getPlotGfxImageFormat()
-{
-    return mPlotGfxImageFormat;
-}
-
-//! @brief Returns the plot graphics export dimension unit setting
-QString Configuration::getPlotGfxDimensionsUnit()
-{
-    return mPlotGfxDimensionsUnit;
-}
-
-//! @brief Returns the plot graphics export DPI setting
-double Configuration::getPlotGfxDPI()
-{
-    return mPlotGfxDPI;
-}
-
 //! @brief Returns the plot graphics export size setting
 QSizeF Configuration::getPlotGfxSize()
 {
     return mPlotGfxSize;
 }
 
-//! @brief Returns the plot graphics export keep aspect ratio setting
-bool Configuration::getPlotGfxKeepAspect()
-{
-    return mPlotGfxKeepAspect;
-}
-
-//! @brief Returns the plot graphics export use screen size setting
-bool Configuration::getPlotGfxUseScreenSize()
-{
-    return mPlotGfxUseScreenSize;
-}
-
-
-
-
-//! @brief Returns the last used model directory
-QString Configuration::getLoadModelDir()
-{
-    if(mLoadModelDir.isEmpty())
-    {
-        return gpDesktopHandler->getModelsPath();
-    }
-    return mLoadModelDir;
-}
-
-
-//! @brief Returns the last used model graphics export directory
-QString Configuration::getModelGfxDir()
-{
-    if(mModelGfxDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mModelGfxDir;
-}
-
-
-//! @brief Returns the last used plot data export directory
-QString Configuration::getPlotDataDir()
-{
-    if(mPlotDataDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mPlotDataDir;
-}
-
-
-//! @brief Returns the last used plot graphics export directory
-QString Configuration::getPlotGfxDir()
-{
-    if(mPlotGfxDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mPlotGfxDir;
-}
-
-
-//! @brief Returns the last used simulink export directory
-QString Configuration::getSimulinkExportDir()
-{
-    if(mSimulinkExportDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mSimulinkExportDir;
-}
-
-
-//! @brief Returns the last used external subsystem directory
-QString Configuration::getSubsystemDir()
-{
-    if(mSubsystemDir.isEmpty())
-    {
-        return gpDesktopHandler->getModelsPath();
-    }
-    return mSubsystemDir;
-}
-
-
-//! @brief Returns the last used modelica model directory
-QString Configuration::getModelicaModelsDir()
-{
-    if(mModelicaModelsDir.isEmpty())
-    {
-        return gpDesktopHandler->getModelsPath();
-    }
-    return mModelicaModelsDir;
-}
-
-
-//! @brief Returns the last used external library directory
-QString Configuration::getExternalLibDir()
-{
-    if(mExternalLibDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mExternalLibDir;
-}
-
-
-//! @brief Returns the last used scripts directory
-QString Configuration::getScriptDir()
-{
-    if(mScriptDir.isEmpty())
-    {
-        return gpDesktopHandler->getScriptsPath();
-    }
-    return mScriptDir;
-}
-
-
-//! @brief Returns the last used scripts directory
-QString Configuration::getPlotWindowDir()
-{
-    if(mPlotWindowDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mPlotWindowDir;
-}
-
-
-//! @brief Returns the last used directory for importing FMUs
-QString Configuration::getFmuImportDir()
-{
-    if(mFmuImportDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mFmuImportDir;
-}
 
 QStringList Configuration::getTerminalHistory()
 {
@@ -1285,34 +1046,6 @@ QString Configuration::getHcomWorkingDirectory() const
     return mHcomWorkingDirectory;
 }
 
-//! @brief Returns the last used directory for importing FMUs
-QString Configuration::getFmuExportDir()
-{
-    if(mFmuExportDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mFmuExportDir;
-}
-
-QString Configuration::getLabViewExportDir()
-{
-    if(mLabViewExportDir.isEmpty())
-    {
-        return gpDesktopHandler->getDocumentsPath();
-    }
-    return mLabViewExportDir;
-}
-
-QString Configuration::getGcc32Dir()
-{
-    return mGcc32Dir;
-}
-
-QString Configuration::getGcc64Dir()
-{
-    return mGcc64Dir;
-}
 
 int Configuration::getParallelAlgorithm()
 {
@@ -1320,90 +1053,13 @@ int Configuration::getParallelAlgorithm()
 }
 
 
-//! @brief Set function for library style option
-//! @param value Desired setting
-void Configuration::setLibraryStyle(int value)
-{
-    this->mLibraryStyle = value;
-    saveToXml();
-}
-
-
-void Configuration::setShowPopupHelp(bool value)
-{
-    this->mShowPopupHelp = value;
-    saveToXml();
-}
-
-
-void Configuration::setUseNativeStyleSheet(bool value)
-{
-    this->mUseNativeStyleSheet = value;
-    saveToXml();
-}
-
-//! @brief Set function for invert wheel option
-//! @param value Desired setting
-void Configuration::setInvertWheel(bool value)
-{
-    this->mInvertWheel = value;
-    saveToXml();
-}
-
-
-//! @brief Set function for multi-threading option
-//! @param value Desired setting
-void Configuration::setUseMultiCore(bool value)
-{
-    this->mUseMulticore = value;
-    saveToXml();
-}
-
-
-//! @brief Set function for number of simulation threads
-//! @param value Desired number of threads
-void Configuration::setNumberOfThreads(size_t value)
-{
-    this->mNumberOfThreads = value;
-    saveToXml();
-}
-
-
-//! @brief Set function for progress bar time step
-//! @param value Desired step
-void Configuration::setProgressBarStep(int value)
-{
-    this->mProgressBarStep = value;
-    saveToXml();
-}
-
-
-//! @brief Set function for use progress bar setting
-//! @param value Desired setting
-void Configuration::setEnableProgressBar(bool value)
-{
-    this->mEnableProgressBar = value;
-    saveToXml();
-}
-
-
 //! @brief Set function for background color setting
 //! @param value Desired color
 void Configuration::setBackgroundColor(const QColor &value)
 {
-    this->mBackgroundColor = value;
+    mBackgroundColor = value;
     saveToXml();
 }
-
-
-//! @brief Set function for anti-aliasing setting
-//! @param value Desired setting
-void Configuration::setAntiAliasing(const bool &value)
-{
-    this->mAntiAliasing = value;
-    saveToXml();
-}
-
 
 //! @brief Adds a user library to the library list
 //! @param value Path to the new library
@@ -1455,29 +1111,6 @@ void Configuration::addModelicaFile(const QString &value)
     {
         mModelicaFiles.append(file);
     }
-    saveToXml();
-}
-
-
-//! @brief Set function for connector snapping setting
-//! @param value Desired setting
-void Configuration::setSnapping(bool value)
-{
-    this->mSnapping = value;
-    saveToXml();
-}
-
-
-//! @brief Set function for automatically setting PWD to MWD in HCOM
-void Configuration::setAutoSetPwdToMwd(const bool value)
-{
-    mSetPwdToMwd = value;
-    saveToXml();
-}
-
-void Configuration::setPlotWindowsOnTop(const bool value)
-{
-    mPlotWindowsOnTop = value;
     saveToXml();
 }
 
@@ -1573,95 +1206,10 @@ void Configuration::setLastPyScriptFile(QString file)
 }
 
 
-void Configuration::setGroupMessagesByTag(bool value)
+
+void Configuration::setPlotGfxSize(const QSizeF size)
 {
-    mGroupMessagesByTag = value;
-    saveToXml();
-}
-
-
-void Configuration::setGenerationLimit(int value)
-{
-    mGenerationLimit = value;
-    saveToXml();
-}
-
-void Configuration::setCacheLogData(const bool value)
-{
-    mCacheLogData = value;
-    saveToXml();
-}
-
-void Configuration::setAutoBackup(const bool value)
-{
-    mAutoBackup = value;
-    saveToXml();
-}
-
-void Configuration::setAutoLimitLogDataGenerations(const bool value)
-{
-    mAutoLimitLogDataGenerations = value;
-}
-
-void Configuration::setShowHiddenNodeDataVariables(const bool value)
-{
-    mShowHiddenNodeDataVariables = value;
-}
-
-
-void Configuration::setLoadModelDir(QString value)
-{
-    mLoadModelDir = value;
-}
-
-
-void Configuration::setModelGfxDir(QString value)
-{
-    mModelGfxDir = value;
-}
-
-
-void Configuration::setPlotDataDir(QString value)
-{
-    mPlotDataDir = value;
-}
-
-
-void Configuration::setPlotGfxDir(QString value)
-{
-    mPlotGfxDir = value;
-}
-
-
-void Configuration::setSimulinkExportDir(QString value)
-{
-    mSimulinkExportDir = value;
-}
-
-
-void Configuration::setSubsystemDir(QString value)
-{
-    mSubsystemDir = value;
-}
-
-void Configuration::setModelicaModelsDir(QString value)
-{
-    mModelicaModelsDir = value;
-}
-
-void Configuration::setExternalLibDir(QString value)
-{
-    mExternalLibDir = value;
-}
-
-void Configuration::setScriptDir(QString value)
-{
-    mScriptDir = value;
-}
-
-void Configuration::setPlotWindowDir(QString value)
-{
-    mPlotWindowDir = value;
+    mPlotGfxSize = size;
 }
 
 void Configuration::storeTerminalHistory(QStringList value)
@@ -1674,92 +1222,7 @@ void Configuration::setHcomWorkingDirectory(QString value)
     mHcomWorkingDirectory = value;
 }
 
-void Configuration::setFmuImportDir(QString value)
-{
-    mFmuImportDir = value;
-}
-
-void Configuration::setFmuExportDir(QString value)
-{
-    mFmuExportDir = value;
-}
-
-void Configuration::setLabViewExportDir(QString value)
-{
-    mLabViewExportDir = value;
-}
-
-void Configuration::setGcc32Dir(QString value)
-{
-    mGcc32Dir = value;
-}
-
-void Configuration::setGcc64Dir(QString value)
-{
-    mGcc64Dir = value;
-}
-
-void Configuration::setPlotGfxImageFormat(QString value)
-{
-    mPlotGfxImageFormat = value;
-}
-
-void Configuration::setPlotGfxDimensionsUnit(QString value)
-{
-    mPlotGfxDimensionsUnit = value;
-}
-
-void Configuration::setPlotGfxDPI(double value)
-{
-    mPlotGfxDPI = value;
-}
-
-void Configuration::setPlotGfxSize(QSizeF value)
-{
-    mPlotGfxSize = value;
-}
-
-void Configuration::setPlotGfxKeepAspect(bool value)
-{
-    mPlotGfxKeepAspect = value;
-}
-
-void Configuration::setPlotGfxUseScreenSize(bool value)
-{
-    mPlotGfxUseScreenSize = value;
-}
-
 void Configuration::setParallelAlgorithm(int value)
 {
     mParallelAlgorighm = value;
-}
-
-QString Configuration::getRemoteHopsanAddress() const
-{
-    return mRemoteHopsanAddress;
-}
-
-void Configuration::setRemoteHopsanAddress(QString addr)
-{
-    mRemoteHopsanAddress = addr;
-}
-
-QString Configuration::getRemoteHopsanDispatchAddress() const
-{
-    return mRemoteHopsanDispatchAddress;
-}
-
-void Configuration::setRemoteHopsanDispatchAddress(QString addr)
-{
-    mRemoteHopsanDispatchAddress = addr;
-}
-
-bool Configuration::getUseRemoteHopsanDispatch() const
-{
-    return mUseRemoteHopsanDispatch;
-}
-
-void Configuration::setUseRemoteHopsanDispatch(bool tf)
-{
-    mUseRemoteHopsanDispatch = tf;
 }

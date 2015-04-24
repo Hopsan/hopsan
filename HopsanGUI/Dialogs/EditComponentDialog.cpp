@@ -161,7 +161,7 @@ void EditComponentDialog::setHighlighter(SourceCodeEnumT language)
 
 void EditComponentDialog::load()
 {
-    QString path = QFileDialog::getOpenFileName(this, "Load component source code", gpConfig->getModelicaModelsDir(), QString("C++ header (*.hpp);;Modelica (*.mo)"));
+    QString path = QFileDialog::getOpenFileName(this, "Load component source code", gpConfig->getStringSetting(CFG_MODELICAMODELSDIR), QString("C++ header (*.hpp);;Modelica (*.mo)"));
 
     if(QFileInfo(path).exists())
     {
@@ -171,7 +171,7 @@ void EditComponentDialog::load()
 
 void EditComponentDialog::save()
 {
-    QString path = QFileDialog::getSaveFileName(this, "Save component source code", gpConfig->getModelicaModelsDir(), QString("C++ header (*.hpp);;Modelica (*.mo)"));
+    QString path = QFileDialog::getSaveFileName(this, "Save component source code", gpConfig->getStringSetting(CFG_MODELICAMODELSDIR), QString("C++ header (*.hpp);;Modelica (*.mo)"));
 
     if(!path.isEmpty())
     {
