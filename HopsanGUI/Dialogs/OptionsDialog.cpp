@@ -378,8 +378,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pCompilersLayout->addWidget(new QWidget(this),                     ++row,0,1,3);
     pCompilersLayout->setRowStretch(row,1);
 
-    setCompilerPath(gpConfig->getGcc32Dir(), false);
-    setCompilerPath(gpConfig->getGcc64Dir(), true);
+    setCompilerPath(gpConfig->getStringSetting(CFG_GCC32DIR), false);
+    setCompilerPath(gpConfig->getStringSetting(CFG_GCC64DIR), true);
 
     connect(pCompiler32Button, SIGNAL(clicked()), this, SLOT(setCompiler32Path()));
     connect(mpCompiler32LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler32Path(QString)));

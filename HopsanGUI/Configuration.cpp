@@ -29,6 +29,7 @@
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "Utilities/XMLUtilities.h"
+#include "MessageHandler.h"
 
 #include "Widgets/PyDockWidget.h"
 //! @todo this config object should not need to include PyDockWidget
