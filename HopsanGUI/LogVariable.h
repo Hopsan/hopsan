@@ -96,66 +96,6 @@ SharedVectorVariableT createFreeTimeVectorVariabel(const QVector<double> &rTime)
 SharedVectorVariableT createFreeFrequencyVectorVariabel(const QVector<double> &rFrequency);
 SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescriptionT pVarDesc);
 
-//class VectorVariableContainer : public QObject
-//{
-//    Q_OBJECT
-//public:
-//    typedef QMap<int, SharedVectorVariableT> GenerationMapT;
-
-//    VectorVariableContainer(const QString &rName, LogDataHandler2 *pParentLogDataHandler);
-//    ~VectorVariableContainer();
-
-//    const QString &getName() const;
-
-//    void insertDataGeneration(const int generation, SharedVectorVariableT pData);
-//    bool removeDataGeneration(const int generation, const bool force=false);
-//    bool removeDataGenerationOnly(const int generation, const bool force=false);
-//    void removeAllGenerations();
-//    bool removeAllImportedGenerations();
-//    bool purgeOldGenerations(const int purgeEnd, const int nGensToKeep);
-
-//    SharedVectorVariableT getDataGeneration(const int gen=-1) const;
-//    SharedVectorVariableT getNonAliasDataGeneration(int gen=-1) const;
-//    QList<SharedVectorVariableT> getAllDataGenerations() const;
-//    bool hasDataGeneration(const int gen);
-//    int getLowestGeneration() const;
-//    int getHighestGeneration() const;
-//    int getNumGenerations() const;
-//    QList<int> getGenerations() const;
-//    int getNewestImportedGeneration() const;
-//    int getNewestNonImportedGeneration() const;
-//    int getNewestAliasGeneration() const;
-
-//    bool isStoringAlias() const;
-//    bool isGenerationAlias(const int gen) const;
-//    bool isStoringImported() const;
-//    bool isGenerationImported(const int gen) const;
-//    bool isStoringNonImported() const;
-//    bool isGenerationNonImported(const int gen) const;
-
-//    LogDataHandler2 *getLogDataHandler();
-
-//public slots:
-//    void allowGenerationAutoRemoval(int gen, bool allow);
-
-//signals:
-//    void importedVariableBeingRemoved(SharedVectorVariableT);
-//    void generationAdded();
-
-//private:
-//    void actuallyRemoveDataGen(GenerationMapT::iterator git);
-//    QString mName;
-//    LogDataHandler2 *mpParentLogDataHandler;
-//    GenerationMapT mDataGenerations;
-//    IndexIntervalCollection mAliasGenIndexes;
-//    IndexIntervalCollection mImportedGenIndexes;
-//    IndexIntervalCollection mNonImportedGenIndexes;
-//    QList<int> mKeepGenerations;
-//};
-
-//typedef QSharedPointer<VectorVariableContainer> SharedVectorVariableContainerT;
-
-
 class VectorVariable : public QObject
 {
     Q_OBJECT
@@ -396,33 +336,16 @@ protected:
     SharedVectorVariableT mpSharedReal, mpSharedImag;
 };
 
+
+// Convenient functions
 void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorVariableT pOutput, int Fmax,
                          SharedVectorVariableT &rNyquistData, SharedVectorVariableT &rNyquistDataInv,
                          SharedVectorVariableT &rGainData, SharedVectorVariableT &rPhaseData);
 
 SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int generation);
 
-//class SharedVectorVariableT
-//{
-//public:
-//    SharedVectorVariableT();
-//    SharedVectorVariableT(SharedVectorVariableT pData);
-//    SharedVectorVariableT(SharedVectorVariableContainerT pContainer, SharedVectorVariableT pData);
-//    void switchToGeneration(const int gen);
-
-//    LogDataHandler *getLogDataHandler();
-
-//    bool hasContainer() const;
-//    bool isNull() const;
-//    bool isCompletelyNull() const;
-//    operator bool() const;
-//    bool operator!() const;
-
-//    bool isVariableAlias() const;
-
-//    SharedVectorVariableContainerT mpContainer;
-//    SharedVectorVariableT mpVariable;
-//};
+double pokeVariable(SharedVectorVariableT a, const int index, const double value);
+double peekVariable(SharedVectorVariableT a, const int b);
 
 
 #endif // LOGVARIABLE_H

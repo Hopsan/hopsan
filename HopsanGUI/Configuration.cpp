@@ -739,6 +739,7 @@ void Configuration::refreshQuickAccessVariables()
     mUseMulticore = getBoolSetting(CFG_MULTICORE);
     mProgressBarStep = getIntegerSetting(CFG_PROGRESSBARSTEP);
     mSnapping = getBoolSetting(CFG_SNAPPING);
+    mGenerationLimit = getIntegerSetting(CFG_GENERATIONLIMIT);
 }
 
 
@@ -772,6 +773,11 @@ bool Configuration::getUseMulticore() const
 int Configuration::getProgressBarStep() const
 {
     return mProgressBarStep;
+}
+
+int Configuration::getGenerationLimit() const
+{
+    return mGenerationLimit;
 }
 
 

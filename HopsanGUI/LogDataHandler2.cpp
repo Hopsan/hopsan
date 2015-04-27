@@ -1362,16 +1362,17 @@ int LogDataHandler2::getNumberOfGenerations() const
 void LogDataHandler2::limitPlotGenerations()
 {
     int numGens = getNumberOfGenerations() ;
-    if (numGens > gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT))
+    const int generationLimit = gpConfig->getGenerationLimit();
+    if (numGens > generationLimit)
     {
         if(!gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS))
         {
             QDialog dialog(gpMainWindowWidget);
             dialog.setWindowTitle("Hopsan");
             QVBoxLayout *pLayout = new QVBoxLayout(&dialog);
-            QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT))+
+            QLabel *pLabel = new QLabel("<b>Log data generation limit reached!</b><br><br>Generation limit: "+QString::number(generationLimit)+
                                         "<br>Number of data generations: "+QString::number(numGens)+
-                                        "<br><br><b>Discard "+QString::number(numGens-gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT))+" generations(s)?</b>");
+                                        "<br><br><b>Discard "+QString::number(numGens-generationLimit)+" generations(s)?</b>");
             QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard old generations", &dialog);
             pAutoLimitCheckBox->setChecked(gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS));
             QDialogButtonBox *pButtonBox = new QDialogButtonBox(&dialog);
@@ -1397,7 +1398,7 @@ void LogDataHandler2::limitPlotGenerations()
         TicToc timer;
         int highestGeneration = getHighestGenerationNumber();
         int lowestGeneration = getLowestGenerationNumber();
-        int highestToRemove = highestGeneration-gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT);
+        int highestToRemove = highestGeneration-generationLimit;
         bool didRemoveSomething = false;
         // Note!
         // Here we must iterate through a copy of the map
@@ -1405,23 +1406,23 @@ void LogDataHandler2::limitPlotGenerations()
         GenerationMapT gens = mGenerationMap;
         for (auto it=gens.begin(); it!=gens.end(); ++it)
         {
-            //didRemoveSomething += (*it)->purgeOldGenerations(highestToRemove, gpConfig->getGenerationLimit());
-
             // Only do the purge if the lowest generation is under upper limit
             if (lowestGeneration <= highestToRemove)
             {
-
                 const int nTaggedKeep = mKeepGenerations.size();
+                const int g = it.key();
+
+                //! @todo what about generations that have internal keep variables (maybe they should be counted here as well)
                 // Only break loop when we have deleted all below purge limit or
                 // when the total number of generations is less then the desired (+ those we want to keep)
-                if ( (it.key() > highestToRemove) || (mGenerationMap.size() < (gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT)+nTaggedKeep)) )
+                if ( (g > highestToRemove) || (mGenerationMap.size() < (generationLimit+nTaggedKeep)) )
                 {
                     break;
                 }
                 else
                 {
                     // Try to remove each generation
-                    didRemoveSomething += removeGeneration(it.key(), false);
+                    didRemoveSomething += removeGeneration(g, false);
                 }
             }
        }
@@ -1468,6 +1469,7 @@ bool LogDataHandler2::removeGeneration(const int gen, const bool force)
         {
             Generation *pGen = git.value();
             bool genEmpty = pGen->clear(force);
+
             // Only delete the generation if it really becomes empty
             //! @todo a problem here is that limit will allways go in here and call "prune (clear)" in the generation, wasting time, could be aproblem if very many generations /Peter
             if (genEmpty)
@@ -1477,6 +1479,13 @@ bool LogDataHandler2::removeGeneration(const int gen, const bool force)
                 // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
                 removeGenerationCacheIfEmpty(gen);
             }
+            // If we did not clear all data, then at least prune the log data cache to conserve disk space
+            else
+            {
+                //! @todo, pruning may take time, maybe we should have config option for this
+                pruneGenerationCache(gen, pGen);
+            }
+
             // Emit signal
             emit dataRemoved();
             return true;
@@ -1504,11 +1513,15 @@ SharedMultiDataVectorCacheT LogDataHandler2::getGenerationMultiCache(const int g
 
 void LogDataHandler2::pruneGenerationCache(const int generation)
 {
-    Generation* pGen = mGenerationMap.value(generation, 0);
-    if (pGen)
+    pruneGenerationCache(generation, mGenerationMap.value(generation, 0));
+}
+
+void LogDataHandler2::pruneGenerationCache(const int generation, Generation *pGeneration)
+{
+    if (pGeneration)
     {
         auto pCache = SharedMultiDataVectorCacheT(new MultiDataVectorCache(getNewCacheName()));
-        pGen->switchGenerationDataCache(pCache);
+        pGeneration->switchGenerationDataCache(pCache);
 
         // Replace old generation
         mGenerationCacheMap.insert(generation, pCache);
@@ -1608,22 +1621,6 @@ SharedVectorVariableT LogDataHandler2::lowPassFilterVariable(const SharedVectorV
 }
 
 
-////! @brief Remove a variable, but only imported generations
-//bool LogDataHandler2::deleteImportedVariable(const QString &rVarName)
-//{
-//    bool didRemove=false;
-//    LogDataMapT::iterator it = mLogDataMap.find(rVarName);
-//    if(it != mLogDataMap.end())
-//    {
-//        didRemove = (*it)->removeAllImportedGenerations();
-//        if (didRemove)
-//        {
-//            emit dataRemoved();
-//        }
-//    }
-//    return didRemove;
-//}
-
 ////! @brief Returns the number of log data variables registered in this log data handler
 ////! @returns The number of registered log data variables
 //int LogDataHandler2::getNumVariables() const
@@ -1702,28 +1699,7 @@ SharedVectorVariableT LogDataHandler2::divVariables(const SharedVectorVariableT 
     return pTempVar;
 }
 
-double LogDataHandler2::pokeVariable(SharedVectorVariableT a, const int index, const double value)
-{
-    QString err;
-    double r = a->pokeData(index,value,err);
-    if (!err.isEmpty())
-    {
-        gpMessageHandler->addErrorMessage(err);
-    }
-    return r;
-}
 
-
-double LogDataHandler2::peekVariable(SharedVectorVariableT a, const int index)
-{
-    QString err;
-    double r = a->peekData(index, err);
-    if (!err.isEmpty())
-    {
-        gpMessageHandler->addErrorMessage(err);
-    }
-    return r;
-}
 
 
 //! @brief Creates an orphan temp variable that will be deleted when its shared pointer reference counter reaches zero (when no one is using it)
@@ -2128,19 +2104,6 @@ void LogDataHandler2::removeGenerationCacheIfEmpty(const int gen)
     }
 }
 
-void LogDataHandler2::unregisterAliasForFullName(const QString &rFullName)
-{
-//    SharedVectorVariableContainerT pFullContainer = getVariableContainer(rFullName);
-//    if (pFullContainer)
-//    {
-//        SharedVectorVariableT pAliasData = pFullContainer->getDataGeneration(mGenerationNumber);
-//        if (pAliasData)
-//        {
-//            unregisterAlias(pAliasData->getAliasName(), mGenerationNumber);
-//        }
-//    }
-}
-
 void LogDataHandler2::takeOwnershipOfData(LogDataHandler2 *pOtherHandler, const int otherGeneration)
 {
     // If otherGeneration < -1 then take everything
@@ -2189,8 +2152,6 @@ void LogDataHandler2::takeOwnershipOfData(LogDataHandler2 *pOtherHandler, const 
             insertVariable(other_it.value(), keyName);
 
             tookOwnershipOfSomeData=true;
-
-            //! @todo how to detect if alias collision appear, how to notify user
         }
         // Remove from other
         pOtherHandler->removeGeneration(otherGeneration, true);
@@ -2201,7 +2162,7 @@ void LogDataHandler2::takeOwnershipOfData(LogDataHandler2 *pOtherHandler, const 
             --mCurrentGenerationNumber;
         }
     }
-    //! @todo favorite variables, plotwindows, imported data
+    //! @todo plotwindows, imported data
 }
 
 void LogDataHandler2::registerAlias(const QString &rFullName, const QString &rAlias, int gen)

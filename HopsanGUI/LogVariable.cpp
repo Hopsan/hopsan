@@ -27,7 +27,7 @@
 #include "LogVariable.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
-#include <QMessageBox>
+#include "MessageHandler.h"
 
 #include <limits>
 #include <QMessageBox>
@@ -2106,5 +2106,26 @@ SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int g
     return SharedVectorVariableT();
 }
 
+double pokeVariable(SharedVectorVariableT a, const int index, const double value)
+{
+    QString err;
+    double r = a->pokeData(index,value,err);
+    if (!err.isEmpty())
+    {
+        gpMessageHandler->addErrorMessage(err);
+    }
+    return r;
+}
 
+
+double peekVariable(SharedVectorVariableT a, const int index)
+{
+    QString err;
+    double r = a->peekData(index, err);
+    if (!err.isEmpty())
+    {
+        gpMessageHandler->addErrorMessage(err);
+    }
+    return r;
+}
 

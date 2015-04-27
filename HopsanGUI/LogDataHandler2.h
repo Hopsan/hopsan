@@ -62,7 +62,8 @@ private:
 
     VariableMapT mVariables;
     VariableMapT mAliasVariables;
-    QList<SharedVectorVariableT> mTimeVectors;
+    QList<SharedVectorVariableT> mTimeVectors; //!< @todo use this
+    int mNumKeepVariables = 0;
 
     QString mImportedFromFile;
 };
@@ -128,8 +129,6 @@ public:
     void removeImportedFileGenerations(const QString &rFileName);
     bool isGenerationImported(const int gen);
 
-    //QString getFullNameFromAlias(const QString &rAlias, const int gen=-1) const;
-
     int getNumberOfGenerations() const;
     QList<int> getGenerations() const;
     int getLowestGenerationNumber() const;
@@ -173,9 +172,6 @@ public:
     SharedVectorVariableT integrateVariables(const SharedVectorVariableT a, const SharedVectorVariableT b);
     SharedVectorVariableT lowPassFilterVariable(const SharedVectorVariableT a, const SharedVectorVariableT b, const double freq);
 
-    double pokeVariable(SharedVectorVariableT a, const int index, const double value);
-    double peekVariable(SharedVectorVariableT a, const int b);
-
     SharedVectorVariableT elementWiseGT(SharedVectorVariableT pData, const double thresh);
     SharedVectorVariableT elementWiseLT(SharedVectorVariableT pData, const double thresh);
 
@@ -217,7 +213,7 @@ private:
     QString getNewCacheName();
     void rememberIfImported(SharedVectorVariableT data);
     void removeGenerationCacheIfEmpty(const int gen);
-    void unregisterAliasForFullName(const QString &rFullName);
+    void pruneGenerationCache(const int generation, Generation *pGeneration);
 
     ModelWidget *mpParentModel;
 

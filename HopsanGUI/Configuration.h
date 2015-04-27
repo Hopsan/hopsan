@@ -148,6 +148,7 @@ public:
     bool getCacheLogData() const;
     bool getUseMulticore() const;
     int getProgressBarStep() const;
+    int getGenerationLimit() const;
     bool getSnapping() const;
 
     // Other settings
@@ -269,6 +270,7 @@ private:
     bool mCacheLogData;
     bool mUseMulticore;
     int mProgressBarStep;
+    int mGenerationLimit;
     bool mSnapping;
 
 signals:
