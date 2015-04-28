@@ -2103,7 +2103,7 @@ SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int g
             return pLogDataHandler->getVectorVariable(pVar->getSmartName(), generation);
         }
     }
-    return SharedVectorVariableT();
+    return pVar;
 }
 
 double pokeVariable(SharedVectorVariableT a, const int index, const double value)

@@ -691,7 +691,7 @@ bool PlotArea::isZoomed() const
 
 bool PlotArea::hasCustomXData() const
 {
-    return !mCustomXData;
+    return !mCustomXData.isNull();
 }
 
 const SharedVectorVariableT PlotArea::getCustomXData() const
