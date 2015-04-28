@@ -40,6 +40,8 @@
 #include "DesktopHandler.h"
 #include "MessageHandler.h"
 #include "CoreUtilities/HmfLoader.h"
+#include "Widgets/HcomWidget.h"
+#include "HcomHandler.h"
 
 // Declare global pointers
 MainWindow* gpMainWindow = 0;
@@ -103,6 +105,16 @@ int main(int argc, char *argv[])
 
     // Process any received messages
     gpMessageHandler->startPublish();
+
+    // Read command line arguments
+    QStringList args = a.arguments();
+    if (args.size() > 1)
+    {
+        //! @todo maybe use TCLAP here
+        // Assume argument is hcom script
+        QString hcomScript = args[1];
+        gpTerminalWidget->mpHandler->executeCommand("exec "+hcomScript);
+    }
 
     // Execute application
     int rc = a.exec();

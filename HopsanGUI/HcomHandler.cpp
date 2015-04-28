@@ -1963,7 +1963,7 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
                 file.setFileName(path+".hcom");
                 if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
                 {
-                    HCOMERR("Unable to read file.");
+                    HCOMERR(QString("Unable to read file: %1").arg(file.fileName()));
                     return;
                 }
             }
