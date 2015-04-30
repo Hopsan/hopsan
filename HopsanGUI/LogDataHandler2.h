@@ -22,14 +22,19 @@ class ModelWidget;
 
 
 
-class Generation
+class Generation : public QObject
 {
+    Q_OBJECT
+
     friend class LogDataHandler2;
 public:
     Generation(const QString &rImportfile="");
     ~Generation();
 
+    int getGenerationNumber() const;
+
     int getNumVariables() const;
+    int getNumKeepVariables() const;
     bool isEmpty();
     bool clear(bool force);
 
@@ -54,6 +59,12 @@ public:
     QString getFullNameFromAlias(const QString &rAlias);
 
     void switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache);
+
+private slots:
+    void variableAutoRemovalChanged(bool allowRemoval);
+
+signals:
+    void generationHasKeepVariables(int gen, bool tf);
 
 private:
     typedef QMap< QString, SharedVectorVariableT > VariableMapT;
@@ -140,8 +151,6 @@ public:
     void getVariableGenerationInfo(const QString &rFullName, int &rLowest, int &rHighest) const;
 
     void limitPlotGenerations();
-    void preventGenerationAutoRemoval(const int gen);
-    void allowGenerationAutoRemoval(const int gen);
     bool removeGeneration(const int gen, const bool force);
 
 
@@ -191,6 +200,7 @@ signals:
 
 private slots:
     void forgetImportedVariable(SharedVectorVariableT pData);
+    void generationHasKeepVariables(int gen, bool tf);
 
 private:
     typedef QMultiMap< QString, int > ImportedGenerationsMapT;
@@ -224,8 +234,8 @@ private:
     GenerationMapT mGenerationMap;
     QList<int> mKeepGenerations;
 
-    int mNumPlotCurves;
-    int mCurrentGenerationNumber;
+    int mNumPlotCurves = 0;
+    int mCurrentGenerationNumber = -1;
     QList<QDir> mCacheDirs;
     quint64 mCacheSubDirCtr;
 };

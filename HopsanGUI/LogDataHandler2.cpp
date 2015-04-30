@@ -565,9 +565,6 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
             pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
         }
 
-        // We do not want imported data to be removed automatically
-        preventGenerationAutoRemoval(mCurrentGenerationNumber);
-
         emit dataAdded();
     }
 
@@ -702,9 +699,6 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
                 insertTimeDomainVariable(pTimeVec, allDatas[i], pVarDesc, fileInfo.absoluteFilePath());
             }
 
-            // We do not want imported data to be removed automatically
-            preventGenerationAutoRemoval(mCurrentGenerationNumber);
-
             // Limit number of plot generations if there are too many
             limitPlotGenerations();
 
@@ -765,9 +759,6 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath)
             pVarDesc->mDataName = "CSV"+QString::number(i);
             insertTimeDomainVariable(pTimeVec, data[i], pVarDesc, fileInfo.absoluteFilePath());
         }
-
-        // We do not want imported data to be removed automatically
-        preventGenerationAutoRemoval(mCurrentGenerationNumber);
 
         emit dataAdded();
     }
@@ -866,9 +857,6 @@ void LogDataHandler2::importTimeVariablesFromCSVColumns(const QString csvFilePat
             }
 
             csvFile.close();
-
-            // We do not want imported data to be removed automatically
-            preventGenerationAutoRemoval(mCurrentGenerationNumber);
 
             emit dataAdded();
         }
@@ -1400,22 +1388,22 @@ void LogDataHandler2::limitPlotGenerations()
         int lowestGeneration = getLowestGenerationNumber();
         int highestToRemove = highestGeneration-generationLimit;
         bool didRemoveSomething = false;
-        // Note!
-        // Here we must iterate through a copy of the map
-        // if we use an iterator in the original map then the iterator will become invalid if an item is removed
-        GenerationMapT gens = mGenerationMap;
-        for (auto it=gens.begin(); it!=gens.end(); ++it)
+
+        // Only do the purge if the lowest generation is under upper limit
+        if (lowestGeneration <= highestToRemove)
         {
-            // Only do the purge if the lowest generation is under upper limit
-            if (lowestGeneration <= highestToRemove)
+            const int nToKeep = mKeepGenerations.size();
+
+            // Note!
+            // Here we must iterate through a copy of the map
+            // if we use an iterator in the original map then the iterator will become invalid if an item is removed
+            GenerationMapT gens = mGenerationMap;
+            for (auto it=gens.begin(); it!=gens.end(); ++it)
             {
-                const int nTaggedKeep = mKeepGenerations.size();
                 const int g = it.key();
 
-                //! @todo what about generations that have internal keep variables (maybe they should be counted here as well)
-                // Only break loop when we have deleted all below purge limit or
-                // when the total number of generations is less then the desired (+ those we want to keep)
-                if ( (g > highestToRemove) || (mGenerationMap.size() < (generationLimit+nTaggedKeep)) )
+                // Only break loop when we have deleted or pruned all below purge limit
+                if ( (g > highestToRemove) )
                 {
                     break;
                 }
@@ -1425,7 +1413,7 @@ void LogDataHandler2::limitPlotGenerations()
                     didRemoveSomething += removeGeneration(g, false);
                 }
             }
-       }
+        }
 
         if (didRemoveSomething)
         {
@@ -1434,9 +1422,8 @@ void LogDataHandler2::limitPlotGenerations()
             //! @todo this is not a good solution, signaling would be better but it would be nice not to make every thing into qobjects
             // Loop until we have removed every empty generation cache object
             QList<int> gens = mGenerationCacheMap.keys();
-            for (int i=0; i<gens.size(); ++i)
+            for (int g : gens)
             {
-                const int g = gens[i];
                 if (g>highestToRemove)
                 {
                     break;
@@ -1448,27 +1435,18 @@ void LogDataHandler2::limitPlotGenerations()
     }
 }
 
-void LogDataHandler2::preventGenerationAutoRemoval(const int gen)
-{
-    mKeepGenerations.append(gen);
-}
-
-void LogDataHandler2::allowGenerationAutoRemoval(const int gen)
-{
-    mKeepGenerations.removeAll(gen);
-}
-
 //! @brief Removes a generation
 bool LogDataHandler2::removeGeneration(const int gen, const bool force)
 {
     auto git = mGenerationMap.find(gen);
     if (git != mGenerationMap.end())
     {
-        //! @todo make it possible to keep individual variables in generations (and purge the rest) (force should always purge all)
-        if (force || !mKeepGenerations.contains(gen))
+        Generation *pGen = git.value();
+        if (force || !pGen->isImported())
         {
-            Generation *pGen = git.value();
+            int nVarsPre = pGen->getNumVariables();
             bool genEmpty = pGen->clear(force);
+            int nVarsPost = pGen->getNumVariables();
 
             // Only delete the generation if it really becomes empty
             //! @todo a problem here is that limit will allways go in here and call "prune (clear)" in the generation, wasting time, could be aproblem if very many generations /Peter
@@ -1476,19 +1454,30 @@ bool LogDataHandler2::removeGeneration(const int gen, const bool force)
             {
                 delete pGen;
                 mGenerationMap.erase(git);
+//                if (pGen->getNumKeepVariables() != 0)
+//                {
+//                    mNumKeepGenerations--;
+//                }
                 // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
                 removeGenerationCacheIfEmpty(gen);
+
+                // Emit signal
+                emit dataRemoved();
+
+                return true;
             }
             // If we did not clear all data, then at least prune the log data cache to conserve disk space
-            else
+            // but only if we actually removed some variables, otherwise there is no point in pruning (which takes time)
+            else if (nVarsPre != nVarsPost)
             {
                 //! @todo, pruning may take time, maybe we should have config option for this
                 pruneGenerationCache(gen, pGen);
-            }
 
-            // Emit signal
-            emit dataRemoved();
-            return true;
+                // Emit signal
+                emit dataRemoved();
+
+                return true;
+            }
         }
     }
     return false;
@@ -2218,7 +2207,20 @@ void LogDataHandler2::forgetImportedVariable(SharedVectorVariableT pData)
 //            }
 //        }
 //        //! @todo this code assumes that imported data can not have aliases (full name can be a short one like an alias but is technically not an alias)
-//    }
+    //    }
+}
+
+void LogDataHandler2::generationHasKeepVariables(int gen, bool tf)
+{
+    //! @todo use counter
+    if (tf && !mKeepGenerations.contains(gen))
+    {
+        mKeepGenerations.append(gen);
+    }
+    else
+    {
+        mKeepGenerations.removeOne(gen);
+    }
 }
 
 SharedVectorVariableT LogDataHandler2::insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc)
@@ -2326,7 +2328,12 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
     if (!pGen)
     {
         pGen = new Generation(pVariable->getImportedFileName());
+        connect(pGen, SIGNAL(generationHasKeepVariables(int, bool)), this, SLOT(generationHasKeepVariables(int, bool)));
         mGenerationMap.insert(gen, pGen );
+        if (pGen->isImported())
+        {
+            mKeepGenerations.append(gen);
+        }
     }
 
     // Make the variable remember that this LogDataHandler is its parent (creator)
@@ -2363,9 +2370,33 @@ Generation::~Generation()
     clear(true);
 }
 
+int Generation::getGenerationNumber() const
+{
+    // Ask first variable
+    SharedVectorVariableT first = mVariables.first();
+    if (!first)
+    {
+        first = mAliasVariables.first();
+    }
+
+    if (first)
+    {
+        return first->getGeneration();
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 int Generation::getNumVariables() const
 {
     return mVariables.count();
+}
+
+int Generation::getNumKeepVariables() const
+{
+    return mNumKeepVariables;
 }
 
 
@@ -2382,6 +2413,7 @@ bool Generation::clear(bool force)
         mVariables.clear();
         mAliasVariables.clear();
         mImportedFromFile.clear();
+        mNumKeepVariables = 0;
         return true;
     }
     else
@@ -2393,6 +2425,7 @@ bool Generation::clear(bool force)
         {
             if (avar->isAutoremovalAllowed())
             {
+                disconnect(avar.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
                 mAliasVariables.remove(avar->getAliasName());
             }
         }
@@ -2401,6 +2434,7 @@ bool Generation::clear(bool force)
         {
             if (var->isAutoremovalAllowed())
             {
+                disconnect(var.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
                 mVariables.remove(var->getFullVariableName());
             }
         }
@@ -2409,6 +2443,7 @@ bool Generation::clear(bool force)
         if (mAliasVariables.isEmpty() && mVariables.isEmpty())
         {
             mImportedFromFile.clear();
+            mNumKeepVariables = 0;
             return true;
         }
         else
@@ -2449,26 +2484,51 @@ bool Generation::haveVariable(const QString &rFullName) const
 
 void Generation::addVariable(const QString &rFullName, SharedVectorVariableT variable, bool isAlias)
 {
-    if (isAlias)
+    if (variable)
     {
-        mAliasVariables.insert(rFullName, variable);
-    }
-    else
-    {
-        mVariables.insert(rFullName, variable);
+        if (isAlias)
+        {
+            mAliasVariables.insert(rFullName, variable);
+        }
+        else
+        {
+            mVariables.insert(rFullName, variable);
+        }
+
+        if (!variable->isAutoremovalAllowed())
+        {
+            // This will increment numKeepVariables one and emit signal to log data handler
+            variableAutoRemovalChanged(true);
+        }
+
+        connect(variable.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
     }
 }
 
 bool Generation::removeVariable(const QString &rFullName)
 {
+    bool didRemove = false;
+
     // First try alias
-    int rc = mAliasVariables.remove(rFullName);
-    if (rc == 0)
+    auto alias_it = mAliasVariables.find(rFullName);
+    if (alias_it != mAliasVariables.end())
     {
-        // If not alias then remove actual variable
-        rc = mVariables.remove(rFullName);
+        disconnect(alias_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+        mAliasVariables.erase(alias_it);
+        didRemove = true;
     }
-    return (rc != 0);
+    // If not alias then remove actual variable
+    else
+    {
+        auto full_it = mVariables.find(rFullName);
+        if (full_it != mVariables.end())
+        {
+            disconnect(full_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+            mVariables.erase(full_it);
+            didRemove = true;
+        }
+    }
+    return didRemove;
 }
 
 SharedVectorVariableT Generation::getVariable(const QString &rFullName) const
@@ -2575,6 +2635,19 @@ void Generation::switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCach
             it.value()->mpCachedDataVector->switchCacheFile(pDataCache);
         }
     }
+}
+
+void Generation::variableAutoRemovalChanged(bool allowRemoval)
+{
+    if (allowRemoval)
+    {
+        mNumKeepVariables--;
+    }
+    else
+    {
+        mNumKeepVariables++;
+    }
+    emit generationHasKeepVariables(getGenerationNumber(), (mNumKeepVariables!=0) );
 }
 
 QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNameExp, Generation::VariableMapT &rMap)

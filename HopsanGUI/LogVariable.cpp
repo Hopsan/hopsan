@@ -1086,11 +1086,13 @@ bool VectorVariable::positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int
 void VectorVariable::preventAutoRemoval()
 {
     mAllowAutoRemove = false;
+    emit allowAutoRemovalChanged(mAllowAutoRemove);
 }
 
 void VectorVariable::allowAutoRemoval()
 {
     mAllowAutoRemove = true;
+    emit allowAutoRemovalChanged(mAllowAutoRemove);
 }
 
 void VectorVariable::setCacheDataToDisk(const bool toDisk)

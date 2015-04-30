@@ -223,6 +223,7 @@ public slots:
 signals:
     void dataChanged();
     void nameChanged();
+    void allowAutoRemovalChanged(bool);
 
 protected:
     void replaceSharedTFVector(SharedVectorVariableT pToFVector);

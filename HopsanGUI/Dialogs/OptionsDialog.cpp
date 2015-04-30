@@ -524,7 +524,7 @@ void OptionsDialog::setValues()
     gpConfig->setBoolSetting(CFG_CACHELOGDATA, mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
-        gpModelHandler->getViewContainerObject(i)->getLogDataHandler()->limitPlotGenerations();
+        gpModelHandler->getModel(i)->getLogDataHandler()->limitPlotGenerations();
     }
 
     // Set default units
