@@ -331,7 +331,7 @@ void LogDataHandler2::exportGenerationToCSV(const QString &rFilePath, const int 
     exportToCSV(rFilePath, vars);
 }
 
-SharedVectorVariableT LogDataHandler2::insertNewHopsanVariable(const QString &rDesiredname, VariableTypeT type, const int gen)
+SharedVectorVariableT LogDataHandler2::insertNewVectorVariable(const QString &rDesiredname, VariableTypeT type, const int gen)
 {
     //! @todo should prevent negative gen maybe
     bool ok = isNameValid(rDesiredname);
@@ -341,16 +341,13 @@ SharedVectorVariableT LogDataHandler2::insertNewHopsanVariable(const QString &rD
     }
     if( ok )
     {
-        SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
-        pVarDesc->mDataName = rDesiredname;
-        pVarDesc->mVariableSourceType = ScriptVariableType;
-        SharedVectorVariableT pNewData = createFreeVariable(type, pVarDesc);
+        SharedVectorVariableT pNewData = createOrphanVariable(rDesiredname, type);
         return insertVariable(pNewData, "", gen);
     }
     return SharedVectorVariableT();
 }
 
-SharedVectorVariableT LogDataHandler2::insertNewHopsanVariable(SharedVectorVariableT pVariable, const int gen)
+SharedVectorVariableT LogDataHandler2::insertNewVectorVariable(SharedVectorVariableT pVariable, const int gen)
 {
     return insertVariable(pVariable, "", gen);
 }
@@ -1697,7 +1694,7 @@ SharedVectorVariableT LogDataHandler2::divVariables(const SharedVectorVariableT 
 
 
 //! @brief Creates an orphan temp variable that will be deleted when its shared pointer reference counter reaches zero (when no one is using it)
-//! @todo this function should not be inside LogDataHandler2, it should be free so that you do not need to use a log datahandler to create a free variable, however it is nice to get the generation number, we wont get that if creating it outside
+//! @details This function will not insert the variable into the generation but but it will assign the current generation number anyway, we wont get that if using createFreeVariable
 SharedVectorVariableT LogDataHandler2::createOrphanVariable(const QString &rName, VariableTypeT type)
 {
     SharedVariableDescriptionT varDesc = SharedVariableDescriptionT(new VariableDescription());
@@ -1716,17 +1713,17 @@ bool LogDataHandler2::removeVariable(const QString &rVarName, int generation)
         generation = mCurrentGenerationNumber;
     }
 
+    bool didRemove=false;
+
     // If gen < -1 remove variable in all gens
     if ( generation == -2)
     {
-        bool removed=false;
         // Need to work with a copy of values in case last variable is removed, then generation will be removed as well ( and iterator in map will becom invalid )
         QList<Generation*> gens = mGenerationMap.values();
         for(auto pGen: gens)
         {
-            removed += pGen->removeVariable(rVarName);
+            didRemove += pGen->removeVariable(rVarName);
         }
-        return removed;
     }
     // Else remove in specific generation
     else
@@ -1735,10 +1732,15 @@ bool LogDataHandler2::removeVariable(const QString &rVarName, int generation)
         if(pGen)
         {
             // Now remove variable in generation
-            return pGen->removeVariable(rVarName);
+            didRemove = pGen->removeVariable(rVarName);
         }
     }
-    return false;
+
+    if (didRemove)
+    {
+        emit dataRemoved();
+    }
+    return didRemove;
 
     //! @todo what about unregistering ALIAS, maybe handled inside generation
 }
@@ -2336,6 +2338,7 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
 
     // Now add variable
     pGen->addVariable(keyName, pVariable, isAlias);
+    pVariable->mGeneration = gen;
 
     // Also insert alias if it exist, but only if it is different from keyName (else we will have an endless loop in here)
     if ( pVariable->hasAliasName() && (pVariable->getAliasName() != keyName) )

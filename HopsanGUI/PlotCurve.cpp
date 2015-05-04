@@ -1075,12 +1075,6 @@ void PlotCurve::deleteCustomData()
 
 void PlotCurve::connectDataSignals()
 {
-    //! @todo what will happen if you import or set alias with same name as data then this will also trigger
-    if (mData)
-    {
-        connect(mData.data(), SIGNAL(generationAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
-    }
-
     connect(mData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     connect(mData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
 }
@@ -1089,12 +1083,6 @@ void PlotCurve::connectCustomXDataSignals()
 {
     if (mCustomXdata)
     {
-        //! @todo what will happen if you import or set alias with same name as data then this will also trigger
-        if (mCustomXdata)
-        {
-            connect(mCustomXdata.data(), SIGNAL(generationAdded()), this, SLOT(updateToNewGeneration()), Qt::UniqueConnection);
-        }
-
         connect(mCustomXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     }
 }
@@ -1105,12 +1093,6 @@ void PlotCurve::disconnectDataSignals()
     {
         // Disconnect all signals from the data variable to this
         mData.data()->disconnect(this);
-
-        // Disconnect the signals from the container to this
-        if (mData)
-        {
-            mData.data()->disconnect(this);
-        }
     }
 }
 

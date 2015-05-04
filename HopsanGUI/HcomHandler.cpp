@@ -2755,7 +2755,7 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
     {
         QString type = variableTypeAsString(pVar->getVariableType());
         QString plotscale = QString("%1 (%2)").arg(pVar->getCustomUnitScale().mUnit).arg(pVar->getCustomUnitScale().mScale);
-        //QString numGens = QString("%1").arg(pVar->getNumGenerations());
+        QString gen = QString("%1").arg(pVar->getGeneration());
         QString length = QString("%1").arg(pVar->getDataSize());
 
         QString infotext("\n");
@@ -2763,7 +2763,7 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
         infotext.append("       Type: ").append(type).append("\n");
         infotext.append(" Plot Scale: ").append(plotscale.trimmed()).append("\n");
         infotext.append("     Length: ").append(length).append("\n");
-        //infotext.append("Generations: ").append(numGens);
+        infotext.append(" Generation: ").append(gen);
 
         HCOMPRINT(infotext);
     }
@@ -4492,7 +4492,20 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             QColor color;
             extractCurveStyle(varNames[s], type, color, thickness);
 
-            getMatchingLogVariableNames(varNames[s], variables);
+            // Check if no generation is given, then specify "current" to avoid costly lookup in all generations
+            QString tempVarName = varNames[s];
+            bool parseOK;
+            int desiredGen = parseAndChopGenerationSpecifier(tempVarName, parseOK);
+            if (desiredGen == -3 && mpModel && mpModel->getLogDataHandler() )
+            {
+                getMatchingLogVariableNames(varNames[s], variables, mpModel->getLogDataHandler()->getCurrentGenerationNumber());
+            }
+            else
+            {
+                getMatchingLogVariableNames(varNames[s], variables);
+            }
+
+
             if (variables.isEmpty())
             {
                 evaluateExpression(varNames[s], DataVector);
@@ -4505,9 +4518,9 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             else
             {
                 found = true;
-                for(int v=0; v<variables.size(); ++v)
+                for(auto &var : variables)
                 {
-                    addPlotCurve(variables[v], axisId, type, color, thickness);
+                    addPlotCurve(var, axisId, type, color, thickness);
                 }
             }
 
@@ -4608,9 +4621,8 @@ void HcomHandler::addPlotCurve(SharedVectorVariableT data, const int axis, bool 
 //! @param [in] fullShortVarNameWithGen Full short name of variable to remove (including optional generation specifier)
 void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
 {
-    if(!mpModel) return;
-    ContainerObject *pCurrentSystem = mpModel->getViewContainerObject();
-    if(!pCurrentSystem) { return; }
+    if(!mpModel || !mpModel->getLogDataHandler())
+        return;
 
     bool parseOK;
 
@@ -4796,7 +4808,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
     if(expr.startsWith("abs(") && expr.endsWith(")"))
     {
-        QString argStr = expr.mid(4, expr.size()-5);
+        QString argStr = expr.mid(4, expr.size()-5).trimmed();
         SharedVectorVariableT pData = getLogVariable(argStr);
         if(!pData)
         {
@@ -6546,8 +6558,9 @@ void HcomHandler::getMatchingLogVariableNamesWithoutLogDataHandler(QString patte
 //! @brief Help function that returns a list of variables according to input (with support for * regexp search)
 //! @param [in] pattern Name to look for
 //! @param [out] rVariables Reference to list that will contain the found variable names with generation appended
+//! @param [in] generationOverride Lets you override the generation specifier (or decide generation if it is missing)  must be >= 0
 //! @warning If you make changes to this function you MUST MAKE SURE that all other Hcom functions using this is are still working for all cases. Many depend on the behavior of this function.
-void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const
+void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVariables, const int generationOverride ) const
 {
     //TicToc timer;
     rVariables.clear();
@@ -6556,15 +6569,25 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     if(!mpModel) { return; }
 
     // Get pointers to logdatahandler
-    LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pLogDataHandler = mpModel->getLogDataHandler();
 
     // Parse and chop the desired generation
-    bool parseOK;
-    int desiredGen = parseAndChopGenerationSpecifier(pattern, parseOK);
-    if (!parseOK)
+    int desiredGen = -3;
+    if (generationOverride < 0)
     {
-        HCOMERR("Failed to parse generation specifier");
-        return;
+        bool parseOK;
+        desiredGen = parseAndChopGenerationSpecifier(pattern, parseOK);
+        if (!parseOK)
+        {
+            HCOMERR("Failed to parse generation specifier");
+            return;
+        }
+    }
+    else
+    {
+        // Note! we use generation override instead of appending @c to name,
+        // that would cause the plot generation to be come locked at the current in the plot
+        desiredGen = generationOverride;
     }
 
     // Convert short hcom format to long format
@@ -6596,10 +6619,10 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             rVariables.append(name2);
         }
     }
-    // Else generation number was not specified, lookup on names directly and do not append generations numbers to names
+    // Else generation number was not specified, lookup names at all generations but do not store duplicates and do not append generations numbers to names
     else if (desiredGen == -3)
     {
-        QList<SharedVectorVariableT> variables = pLogDataHandler->getMatchingVariablesFromAllGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
+        QList<SharedVectorVariableT> variables = pLogDataHandler->getMatchingVariablesAtRespectiveNewestGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
         for (auto &var : variables)
         {
             QString name = var->getSmartName();
@@ -6851,7 +6874,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
                         }
 
                         // Value given but left does not exist (or at least generation does not exist), create/insert it
-                        leftData = mpModel->getLogDataHandler()->insertNewHopsanVariable(left, mAnsVector->getVariableType(), gen);
+                        leftData = mpModel->getLogDataHandler()->insertNewVectorVariable(left, mAnsVector->getVariableType(), gen);
                         if (leftData)
                         {
                             if (leftData->getGeneration() != mAnsVector->getGeneration())

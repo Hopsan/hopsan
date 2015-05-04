@@ -1218,7 +1218,7 @@ void ModelWidget::simulateModelica()
                         pVarDesc->mDataName = "Value";
                     SharedVectorVariableT pNewVar = createFreeVariable(pVar->getVariableType(), pVarDesc);
                     pNewVar->assignFrom(pVar);
-                    mpToplevelSystem->getLogDataHandler()->insertNewHopsanVariable(pNewVar);
+                    mpToplevelSystem->getLogDataHandler()->insertNewVectorVariable(pNewVar);
                 }
                 varsToRemove.append(pVar->getSmartName());
             }

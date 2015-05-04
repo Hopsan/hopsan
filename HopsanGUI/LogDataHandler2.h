@@ -102,8 +102,8 @@ public:
     void exportToCSV(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
 
-    SharedVectorVariableT insertNewHopsanVariable(const QString &rDesiredname, VariableTypeT type=VectorType, const int gen=-1);
-    SharedVectorVariableT insertNewHopsanVariable(SharedVectorVariableT pVariable, const int gen=-1);
+    SharedVectorVariableT insertNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType, const int gen=-1);
+    SharedVectorVariableT insertNewVectorVariable(SharedVectorVariableT pVariable, const int gen=-1);
     SharedVectorVariableT defineNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType);
     SharedVectorVariableT createOrphanVariable(const QString &rName, VariableTypeT type=VectorType);
 

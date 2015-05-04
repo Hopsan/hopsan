@@ -210,7 +210,7 @@ private:
 
     QString getfullNameFromAlias(const QString &rAlias) const;
     void getMatchingLogVariableNamesWithoutLogDataHandler(QString pattern, QStringList &rVariables) const;
-    void getMatchingLogVariableNames(QString pattern, QStringList &rVariables) const;
+    void getMatchingLogVariableNames(QString pattern, QStringList &rVariables, const int generationOverride=-10) const;
     void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     int parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const;
 
