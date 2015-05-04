@@ -467,7 +467,7 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
             // Else check for plot scale
             else if (lineNum == 6)
             {
-                // Read plotscales
+                // Read plot scales
                 QTextStream linestream(&line);
                 for(int c=0; c<nDataColumns; ++c)
                 {
@@ -477,7 +477,7 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
         }
         if (!parseOK)
         {
-            gpMessageHandler->addErrorMessage(QString("A parse error occured while parsing the header of: ")+fileInfo.fileName()+" Aborting import!");
+            gpMessageHandler->addErrorMessage(QString("A parse error occurred while parsing the header of: ")+fileInfo.fileName()+" Aborting import!");
             return;
         }
     }
@@ -545,12 +545,12 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
             //! @todo what about reading the unit
 
             SharedVectorVariableT pNewData;
-            // Insert timedomain variable
+            // Insert time domain variable
             if (pTimeVec)
             {
                 pNewData = insertTimeDomainVariable(pTimeVec, importedPLODataVector[i].mDataValues, pVarDesc, fileInfo.absoluteFilePath());
             }
-            // Insert frequencydomain variable
+            // Insert frequency domain variable
             else if (pFreqVec)
             {
                 pNewData = insertFrequencyDomainVariable(pFreqVec, importedPLODataVector[i].mDataValues, pVarDesc, fileInfo.absoluteFilePath());
@@ -1392,8 +1392,6 @@ void LogDataHandler2::limitPlotGenerations()
         // Only do the purge if the lowest generation is under upper limit
         if (lowestGeneration <= highestToRemove)
         {
-            const int nToKeep = mKeepGenerations.size();
-
             // Note!
             // Here we must iterate through a copy of the map
             // if we use an iterator in the original map then the iterator will become invalid if an item is removed
@@ -1449,7 +1447,7 @@ bool LogDataHandler2::removeGeneration(const int gen, const bool force)
             int nVarsPost = pGen->getNumVariables();
 
             // Only delete the generation if it really becomes empty
-            //! @todo a problem here is that limit will allways go in here and call "prune (clear)" in the generation, wasting time, could be aproblem if very many generations /Peter
+            //! @todo a problem here is that limit will always go in here and call "prune (clear)" in the generation, wasting time, could be a problem if very many generations /Peter
             if (genEmpty)
             {
                 delete pGen;
@@ -1838,7 +1836,7 @@ QList<SharedVectorVariableT> LogDataHandler2::getAllVariablesAtCurrentGeneration
 QList<SharedVectorVariableT> LogDataHandler2::getAllVariablesAtRespectiveNewestGeneration()
 {
     QMap<QString, SharedVectorVariableT> data;
-    // Iterated generations and colelct varaiables in a map
+    // Iterated generations and collect variables in a map
     // For newer generations replace old data values
     for (auto git = mGenerationMap.begin(); git != mGenerationMap.end(); ++git)
     {
@@ -1854,7 +1852,7 @@ QList<SharedVectorVariableT> LogDataHandler2::getAllVariablesAtRespectiveNewestG
 QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtRespectiveNewestGeneration(const QRegExp &rNameExp) const
 {
     QMap<QString, SharedVectorVariableT> data;
-    // Iterated generations and colelct varaiables in a map
+    // Iterated generations and collect variables in a map
     // For newer generations replace old data values
     for (auto git = mGenerationMap.begin(); git != mGenerationMap.end(); ++git)
     {
@@ -2074,7 +2072,7 @@ void LogDataHandler2::rememberIfImported(SharedVectorVariableT data)
 //            connect(data.mpContainer.data(), SIGNAL(importedVariableBeingRemoved(SharedVectorVariableT)), this, SLOT(forgetImportedVariable(SharedVectorVariableT)));
 //        }
 
-        //! @todo wasting time here readding every time, should be made only once prefreably
+        //! @todo wasting time here re-adding every time, should be made only once preferably
         mImportedGenerationsMap.insert(data->getImportedFileName(), data->getGeneration());
 
         // Make data description source know its imported
@@ -2100,7 +2098,7 @@ void LogDataHandler2::takeOwnershipOfData(LogDataHandler2 *pOtherHandler, const 
     {
         int minOGen = pOtherHandler->getLowestGenerationNumber();
         int maxOGen = pOtherHandler->getHighestGenerationNumber();
-        // Since generations are not necessarily continuous and same in all datavariables we try with every generation between min and max
+        // Since generations are not necessarily continuous and same in all data variables we try with every generation between min and max
         // We cant take them all at once, that could change the internal ordering
         for (int i=minOGen; i<=maxOGen; ++i)
         {
@@ -2210,19 +2208,6 @@ void LogDataHandler2::forgetImportedVariable(SharedVectorVariableT pData)
     //    }
 }
 
-void LogDataHandler2::generationHasKeepVariables(int gen, bool tf)
-{
-    //! @todo use counter
-    if (tf && !mKeepGenerations.contains(gen))
-    {
-        mKeepGenerations.append(gen);
-    }
-    else
-    {
-        mKeepGenerations.removeOne(gen);
-    }
-}
-
 SharedVectorVariableT LogDataHandler2::insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc)
 {
     SharedVectorVariableT pVec = SharedVectorVariableT(new VectorVariable(rVector, mCurrentGenerationNumber, pVarDesc,
@@ -2309,7 +2294,7 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
     {
         keyName = pVariable->getFullVariableName();
     }
-    // If keyName is not empty, it might be an alias if it is different from teh fullName
+    // If keyName is not empty, it might be an alias if it is different from the fullName
     else if ( keyName != pVariable->getFullVariableName() )
     {
         isAlias = true;
@@ -2328,12 +2313,7 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
     if (!pGen)
     {
         pGen = new Generation(pVariable->getImportedFileName());
-        connect(pGen, SIGNAL(generationHasKeepVariables(int, bool)), this, SLOT(generationHasKeepVariables(int, bool)));
         mGenerationMap.insert(gen, pGen );
-        if (pGen->isImported())
-        {
-            mKeepGenerations.append(gen);
-        }
     }
 
     // Make the variable remember that this LogDataHandler is its parent (creator)
@@ -2372,13 +2352,27 @@ Generation::~Generation()
 
 int Generation::getGenerationNumber() const
 {
+    SharedVectorVariableT first;
     // Ask first variable
-    SharedVectorVariableT first = mVariables.first();
+#if QT_VERSION >= 0x050200
+    first = mVariables.first();
     if (!first)
     {
         first = mAliasVariables.first();
     }
-
+#else
+    if (!mVariables.isEmpty() || !mAliasVariables.isEmpty())
+    {
+        if (!mVariables.isEmpty())
+        {
+            first = mVariables.begin().value();
+        }
+        else
+        {
+            first = mAliasVariables.begin().value();
+        }
+    }
+#endif
     if (first)
     {
         return first->getGeneration();
@@ -2408,7 +2402,7 @@ bool Generation::isEmpty()
 
 bool Generation::clear(bool force)
 {
-    if (force)
+    if (force || (mNumKeepVariables == 0) )
     {
         mVariables.clear();
         mAliasVariables.clear();
@@ -2647,7 +2641,6 @@ void Generation::variableAutoRemovalChanged(bool allowRemoval)
     {
         mNumKeepVariables++;
     }
-    emit generationHasKeepVariables(getGenerationNumber(), (mNumKeepVariables!=0) );
 }
 
 QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNameExp, Generation::VariableMapT &rMap)
@@ -2664,22 +2657,3 @@ QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNa
     }
     return results;
 }
-
-
-//bool isVariableAlias(SharedVectorVariableT pVar)
-//{
-//    if (pVar)
-//    {
-//        auto pLDH = pVar->getLogDataHandler();
-//        if (pLDH)
-//        {
-//            auto pGen = pLDH->getGeneration(pVar->getGeneration());
-//            if (pGen)
-//            {
-
-//                return (pGen->getVariable(pVar->getAliasName()) == pVar);
-//            }
-//        }
-//    }
-//    return false;
-//}

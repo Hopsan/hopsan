@@ -63,9 +63,6 @@ public:
 private slots:
     void variableAutoRemovalChanged(bool allowRemoval);
 
-signals:
-    void generationHasKeepVariables(int gen, bool tf);
-
 private:
     typedef QMap< QString, SharedVectorVariableT > VariableMapT;
 
@@ -200,7 +197,6 @@ signals:
 
 private slots:
     void forgetImportedVariable(SharedVectorVariableT pData);
-    void generationHasKeepVariables(int gen, bool tf);
 
 private:
     typedef QMultiMap< QString, int > ImportedGenerationsMapT;
@@ -232,7 +228,6 @@ private:
     GenerationCacheMapT mGenerationCacheMap;
 
     GenerationMapT mGenerationMap;
-    QList<int> mKeepGenerations;
 
     int mNumPlotCurves = 0;
     int mCurrentGenerationNumber = -1;
