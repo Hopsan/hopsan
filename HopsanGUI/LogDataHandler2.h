@@ -216,7 +216,7 @@ private:
 
     bool collectLogDataFromSystem(SystemContainer *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double> *, SharedVectorVariableT> &rGenTimeVectors);
 
-    QString getNewCacheName();
+    QString getNewCacheName(const QString &rDesiredName=QString());
     void rememberIfImported(SharedVectorVariableT data);
     void removeGenerationCacheIfEmpty(const int gen);
     void pruneGenerationCache(const int generation, Generation *pGeneration);

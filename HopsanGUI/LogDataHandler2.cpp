@@ -1386,7 +1386,7 @@ void LogDataHandler2::limitPlotGenerations()
         TicToc timer;
         int highestGeneration = getHighestGenerationNumber();
         int lowestGeneration = getLowestGenerationNumber();
-        int highestToRemove = highestGeneration-generationLimit;
+        int highestToRemove = highestGeneration-generationLimit+1;
         bool didRemoveSomething = false;
 
         // Only do the purge if the lowest generation is under upper limit
@@ -1507,7 +1507,14 @@ void LogDataHandler2::pruneGenerationCache(const int generation, Generation *pGe
 {
     if (pGeneration)
     {
-        auto pCache = SharedMultiDataVectorCacheT(new MultiDataVectorCache(getNewCacheName()));
+        QString prevName;
+        SharedMultiDataVectorCacheT pPrevCache = mGenerationCacheMap.value(generation, SharedMultiDataVectorCacheT());
+        if (pPrevCache)
+        {
+            prevName = pPrevCache->getCacheFileInfo().baseName();
+        }
+
+        SharedMultiDataVectorCacheT pCache = SharedMultiDataVectorCacheT(new MultiDataVectorCache(getNewCacheName(prevName)));
         pGeneration->switchGenerationDataCache(pCache);
 
         // Replace old generation
@@ -2043,10 +2050,18 @@ bool LogDataHandler2::isGenerationImported(const int gen)
 }
 
 
-QString LogDataHandler2::getNewCacheName()
+QString LogDataHandler2::getNewCacheName(const QString &rDesiredName)
 {
-    // The first dir is the main one, any other dirs have been appended later when taking ownership of someone else's data
-    return mCacheDirs.first().absoluteFilePath("cf"+QString("%1").arg(mCacheSubDirCtr++));
+    // The first directory is the main one, any other directories have been appended later when taking ownership of someone else's data
+    QDir dir = mCacheDirs.first();
+    if (rDesiredName.isEmpty())
+    {
+        return dir.absoluteFilePath(QString("cf%1").arg(mCacheSubDirCtr++));
+    }
+    else
+    {
+        return dir.absoluteFilePath(QString("%1_%2").arg(rDesiredName).arg(mCacheSubDirCtr++));
+    }
 }
 
 void LogDataHandler2::rememberIfImported(SharedVectorVariableT data)
@@ -2622,11 +2637,13 @@ QString Generation::getFullNameFromAlias(const QString &rAlias)
 
 void Generation::switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache)
 {
-    if (gpConfig->getCacheLogData())
+    for (auto it=mVariables.begin(); it!=mVariables.end(); ++it)
     {
-        for (auto it=mVariables.begin(); it!=mVariables.end(); ++it)
+        SharedVectorVariableT &data = it.value();
+        data->mpCachedDataVector->switchCacheFile(pDataCache);
+        if (data->mpSharedTimeOrFrequencyVector)
         {
-            it.value()->mpCachedDataVector->switchCacheFile(pDataCache);
+            data->mpSharedTimeOrFrequencyVector->mpCachedDataVector->switchCacheFile(pDataCache);
         }
     }
 }

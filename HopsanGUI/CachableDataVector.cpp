@@ -278,7 +278,7 @@ void MultiDataVectorCache::incrementSubscribers()
     ++mNumSubscribers;
 }
 
-//! @brief Decrement num subscribers, if no subscribers remain the cache file will be deleted (even if this object still remains).
+//! @brief Decrement number of subscribers, if no subscribers remain the cache file will be deleted (even if this object still remains).
 void MultiDataVectorCache::decrementSubscribers()
 {
     // If mNumSubs are 0or1 before this subtraction (it will be the last subscriber), 0 case should not happen unless someone has forgotten to increment
@@ -305,7 +305,7 @@ CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, Share
     mCacheStartByte = 0;
     mCacheNumBytes = 0;
     // This bool is needed so that we can handled non-cached but empty data.
-    // We can not rely on checking size of mDataVector (may be empty but non-cached) or the mCacheNumBytes (will still have a value after moving from cache to mem temporarily)
+    // We can not rely on checking size of mDataVector (may be empty but non-cached) or the mCacheNumBytes (will still have a value after moving from cache to memory temporarily)
     mIsCached = false;
 
     if (pMultiCache)
@@ -316,6 +316,7 @@ CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, Share
 
     if (mpMultiCache && cached)
     {
+        // We add directly to cache here instead of first copying to memory and then moving to cache (saves some time)
         if (mpMultiCache->addVector(rDataVector,mCacheStartByte, mCacheNumBytes))
         {
             mIsCached = true;
@@ -341,31 +342,37 @@ CachableDataVector::~CachableDataVector()
 
 void CachableDataVector::switchCacheFile(SharedMultiDataVectorCacheT pMultiCache)
 {
-    bool wasCached = isCached();
-    if (wasCached)
+    if (mpMultiCache != pMultiCache)
     {
-        copyToMem();
-    }
+        bool wasCached = isCached();
+        if (wasCached)
+        {
+            copyToMem();
+        }
 
-    mCacheNumBytes = 0;
-    mCacheStartByte = 0;
-    mIsCached = 0;
+        mCacheNumBytes = 0;
+        mCacheStartByte = 0;
+        mIsCached = false;
 
-    // Decrement old cache supbscribers
-    if (mpMultiCache)
-    {
-        mpMultiCache->decrementSubscribers();
-    }
+        // Decrement old cache subscribers
+        if (mpMultiCache)
+        {
+            mpMultiCache->decrementSubscribers();
+        }
 
-    // Set new cahce file, and increment subscribers
-    mpMultiCache = pMultiCache;
-    mpMultiCache->incrementSubscribers();
+        // Set new cache file, and increment subscribers if pointer is not NULL
+        mpMultiCache = pMultiCache;
+        if (mpMultiCache)
+        {
+            mpMultiCache->incrementSubscribers();
 
-    // Move to cache if we were previously cached
-    //! @todo maybe we should alwasy move to cache
-    if (wasCached)
-    {
-        moveToCache();
+            // Move to cache if we were previously cached
+            //! @todo maybe we should always move to cache
+            if (wasCached)
+            {
+                moveToCache();
+            }
+        }
     }
 }
 
@@ -572,6 +579,7 @@ bool CachableDataVector::moveToCache()
             if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
             {
                 mDataVector.clear();
+                mIsCached = true;
                 return true;
             }
         }
@@ -581,6 +589,7 @@ bool CachableDataVector::moveToCache()
             if (mpMultiCache->replaceData(mCacheStartByte, mDataVector, mCacheNumBytes))
             {
                 mDataVector.clear();
+                mIsCached = true;
                 return true;
             }
         }
@@ -588,13 +597,16 @@ bool CachableDataVector::moveToCache()
         else if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
         {
             mDataVector.clear();
+            mIsCached = true;
             return true;
         }
         // If we get here some error happened
         mError = mpMultiCache->getError();
+        mIsCached = false;
         return false;
     }
     mError = "No MultiCache set";
+    mIsCached = false;
     return false;
 }
 
@@ -604,6 +616,7 @@ bool CachableDataVector::copyToMem()
     {
         if (mpMultiCache->copyDataTo(mCacheStartByte, mCacheNumBytes, mDataVector))
         {
+            mIsCached = false;
             return true;
         }
         mError = mpMultiCache->getError();
