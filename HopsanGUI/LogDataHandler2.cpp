@@ -29,6 +29,8 @@
 #include <QPushButton>
 
 #include "LogDataHandler2.h"
+#include "LogDataGeneration.h"
+
 
 #include "PlotWindow.h"
 #include "DesktopHandler.h"
@@ -1436,7 +1438,7 @@ bool LogDataHandler2::removeGeneration(const int gen, const bool force)
     auto git = mGenerationMap.find(gen);
     if (git != mGenerationMap.end())
     {
-        Generation *pGen = git.value();
+        LogDataGeneration *pGen = git.value();
         if (force || !pGen->isImported())
         {
             int nVarsPre = pGen->getNumVariables();
@@ -1500,7 +1502,7 @@ void LogDataHandler2::pruneGenerationCache(const int generation)
     pruneGenerationCache(generation, mGenerationMap.value(generation, 0));
 }
 
-void LogDataHandler2::pruneGenerationCache(const int generation, Generation *pGeneration)
+void LogDataHandler2::pruneGenerationCache(const int generation, LogDataGeneration *pGeneration)
 {
     if (pGeneration)
     {
@@ -1719,7 +1721,7 @@ bool LogDataHandler2::removeVariable(const QString &rVarName, int generation)
     if ( generation == -2)
     {
         // Need to work with a copy of values in case last variable is removed, then generation will be removed as well ( and iterator in map will becom invalid )
-        QList<Generation*> gens = mGenerationMap.values();
+        QList<LogDataGeneration*> gens = mGenerationMap.values();
         for(auto pGen: gens)
         {
             didRemove += pGen->removeVariable(rVarName);
@@ -1898,12 +1900,12 @@ int LogDataHandler2::getCurrentGenerationNumber() const
     return mCurrentGenerationNumber;
 }
 
-const Generation *LogDataHandler2::getCurrentGeneration() const
+const LogDataGeneration *LogDataHandler2::getCurrentGeneration() const
 {
     return mGenerationMap.value(mCurrentGenerationNumber, 0);
 }
 
-const Generation *LogDataHandler2::getGeneration(const int gen) const
+const LogDataGeneration *LogDataHandler2::getGeneration(const int gen) const
 {
     return mGenerationMap.value(gen, 0);
 }
@@ -1924,7 +1926,7 @@ void LogDataHandler2::getVariableGenerationInfo(const QString &rFullName, int &r
     }
 
     // Search highest
-    QMapIterator< int, Generation*> rit(mGenerationMap);
+    QMapIterator< int, LogDataGeneration*> rit(mGenerationMap);
     rit.toBack();
     while (rit.hasPrevious())
     {
@@ -2148,8 +2150,8 @@ void LogDataHandler2::takeOwnershipOfData(LogDataHandler2 *pOtherHandler, const 
         }
 
         // Take the data, and only increment this->mGeneration if data was taken
-        Generation *pOtherGen = pOtherHandler->mGenerationMap.value(otherGeneration, 0);
-        Generation::VariableMapT &otherMap = pOtherGen->mVariables;
+        LogDataGeneration *pOtherGen = pOtherHandler->mGenerationMap.value(otherGeneration, 0);
+        LogDataGeneration::VariableMapT &otherMap = pOtherGen->mVariables;
         for (auto other_it=otherMap.begin(); other_it!=otherMap.end(); ++other_it)
         {
             QString keyName = other_it.key();
@@ -2325,11 +2327,11 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
     }
 
     //! @todo is it here we need to create generation ?
-    Generation *pGen = mGenerationMap.value(gen, 0);
+    LogDataGeneration *pGen = mGenerationMap.value(gen, 0);
     // If generation does not exist, the we need to create it
     if (!pGen)
     {
-        pGen = new Generation(pVariable->getImportedFileName());
+        pGen = new LogDataGeneration(pVariable->getImportedFileName());
         mGenerationMap.insert(gen, pGen );
     }
 
@@ -2358,322 +2360,3 @@ bool LogDataHandler2::hasVariable(const QString &rFullName, const int generation
 }
 
 
-Generation::Generation(const QString &rImportfile)
-{
-    mImportedFromFile = rImportfile;
-}
-
-Generation::~Generation()
-{
-    clear(true);
-}
-
-int Generation::getGenerationNumber() const
-{
-    SharedVectorVariableT first;
-    // Ask first variable
-#if QT_VERSION >= 0x050200
-    first = mVariables.first();
-    if (!first)
-    {
-        first = mAliasVariables.first();
-    }
-#else
-    if (!mVariables.isEmpty() || !mAliasVariables.isEmpty())
-    {
-        if (!mVariables.isEmpty())
-        {
-            first = mVariables.begin().value();
-        }
-        else
-        {
-            first = mAliasVariables.begin().value();
-        }
-    }
-#endif
-    if (first)
-    {
-        return first->getGeneration();
-    }
-    else
-    {
-        return -1;
-    }
-}
-
-int Generation::getNumVariables() const
-{
-    return mVariables.count();
-}
-
-int Generation::getNumKeepVariables() const
-{
-    return mNumKeepVariables;
-}
-
-
-bool Generation::isEmpty()
-{
-    return mVariables.isEmpty();
-}
-
-
-bool Generation::clear(bool force)
-{
-    if (force || (mNumKeepVariables == 0) )
-    {
-        mVariables.clear();
-        mAliasVariables.clear();
-        mImportedFromFile.clear();
-        mNumKeepVariables = 0;
-        return true;
-    }
-    else
-    {
-        // Loop through variables but only remove those that are not tagged as keep
-        // We use a copy of values to avoid making the loop invalid
-        QList<SharedVectorVariableT> avars = mAliasVariables.values();
-        for (SharedVectorVariableT &avar : avars)
-        {
-            if (avar->isAutoremovalAllowed())
-            {
-                disconnect(avar.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-                mAliasVariables.remove(avar->getAliasName());
-            }
-        }
-        QList<SharedVectorVariableT> vars =  mVariables.values();
-        for (SharedVectorVariableT &var : vars)
-        {
-            if (var->isAutoremovalAllowed())
-            {
-                disconnect(var.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-                mVariables.remove(var->getFullVariableName());
-            }
-        }
-
-        // If no variables remain
-        if (mAliasVariables.isEmpty() && mVariables.isEmpty())
-        {
-            mImportedFromFile.clear();
-            mNumKeepVariables = 0;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-}
-
-
-bool Generation::isImported() const
-{
-    return !mImportedFromFile.isEmpty();
-}
-
-
-QString Generation::getImportFileName() const
-{
-    return mImportedFromFile;
-}
-
-
-QStringList Generation::getVariableFullNames() const
-{
-    QStringList retval;
-    for (auto dit = mVariables.begin(); dit!=mVariables.end(); ++dit)
-    {
-        retval.append(dit.key());
-    }
-    return retval;
-}
-
-bool Generation::haveVariable(const QString &rFullName) const
-{
-    return mVariables.contains(rFullName);
-}
-
-
-void Generation::addVariable(const QString &rFullName, SharedVectorVariableT variable, bool isAlias)
-{
-    if (variable)
-    {
-        if (isAlias)
-        {
-            mAliasVariables.insert(rFullName, variable);
-        }
-        else
-        {
-            mVariables.insert(rFullName, variable);
-        }
-
-        if (!variable->isAutoremovalAllowed())
-        {
-            // This will increment numKeepVariables one and emit signal to log data handler
-            variableAutoRemovalChanged(true);
-        }
-
-        connect(variable.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-    }
-}
-
-bool Generation::removeVariable(const QString &rFullName)
-{
-    bool didRemove = false;
-
-    // First try alias
-    auto alias_it = mAliasVariables.find(rFullName);
-    if (alias_it != mAliasVariables.end())
-    {
-        disconnect(alias_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-        mAliasVariables.erase(alias_it);
-        didRemove = true;
-    }
-    // If not alias then remove actual variable
-    else
-    {
-        auto full_it = mVariables.find(rFullName);
-        if (full_it != mVariables.end())
-        {
-            disconnect(full_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-            mVariables.erase(full_it);
-            didRemove = true;
-        }
-    }
-    return didRemove;
-}
-
-SharedVectorVariableT Generation::getVariable(const QString &rFullName) const
-{
-    SharedVectorVariableT tmp = mAliasVariables.value(rFullName, SharedVectorVariableT());
-    if (!tmp)
-    {
-        tmp = mVariables.value(rFullName, SharedVectorVariableT());
-    }
-    return tmp;
-}
-
-
-//! @brief Returns multiple logdatavariables based on regular expression search. Excluding temp variables but including aliases
-//! @param [in] rNameExp The regular expression for the names to match
-QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNameExp)
-{
-    QList<SharedVectorVariableT> results;
-    results.append(getMatchingVariables(rNameExp, mAliasVariables));
-    results.append(getMatchingVariables(rNameExp, mVariables));
-    return results;
-}
-
-QList<SharedVectorVariableT> Generation::getAllNonAliasVariables() const
-{
-    return mVariables.values();
-}
-
-QList<SharedVectorVariableT> Generation::getAllVariables() const
-{
-    return mAliasVariables.values()+mVariables.values();
-}
-
-bool Generation::registerAlias(const QString &rFullName, const QString &rAlias)
-{
-    SharedVectorVariableT pFullVar = getVariable(rFullName);
-    if (pFullVar)
-    {
-        // If alias is empty then we should unregister the alias
-        if (rAlias.isEmpty())
-        {
-            return unregisterAliasForFullName(rFullName);
-        }
-        else
-        {
-            // If we get here then we should set a new alias or replace the previous one
-            // First unregister the previous alias
-            if (pFullVar->hasAliasName())
-            {
-                unregisterAliasForFullName(rFullName);
-            }
-            // Now insert the full data as new alias
-            // existing data with alias name will be replaced (removed)
-            pFullVar->mpVariableDescription->mAliasName = rAlias;
-            addVariable(rAlias, pFullVar, true);
-            //! @todo this will overwrite existing fullname if alias same as a full name /Peter
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Generation::unregisterAlias(const QString &rAlias)
-{
-    QString fullName = getFullNameFromAlias(rAlias);
-    if (!fullName.isEmpty())
-    {
-        return unregisterAliasForFullName(fullName);
-    }
-    return false;
-}
-
-bool Generation::unregisterAliasForFullName(const QString &rFullName)
-{
-    SharedVectorVariableT pFullVar = getVariable(rFullName);
-    if (pFullVar && pFullVar->hasAliasName())
-    {
-        QString alias = pFullVar->getAliasName();
-        pFullVar->mpVariableDescription->mAliasName = "";
-        removeVariable(alias);
-        return true;
-    }
-    return false;
-}
-
-//! @brief Returns plot variable for specified alias
-//! @param[in] rAlias Alias of variable
-QString Generation::getFullNameFromAlias(const QString &rAlias)
-{
-    SharedVectorVariableT pAliasVar = mAliasVariables.value(rAlias);
-    if (pAliasVar)
-    {
-        return pAliasVar->getFullVariableName();
-    }
-    return QString();
-}
-
-void Generation::switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache)
-{
-    for (auto it=mVariables.begin(); it!=mVariables.end(); ++it)
-    {
-        SharedVectorVariableT &data = it.value();
-        data->mpCachedDataVector->switchCacheFile(pDataCache);
-        if (data->mpSharedTimeOrFrequencyVector)
-        {
-            data->mpSharedTimeOrFrequencyVector->mpCachedDataVector->switchCacheFile(pDataCache);
-        }
-    }
-}
-
-void Generation::variableAutoRemovalChanged(bool allowRemoval)
-{
-    if (allowRemoval)
-    {
-        mNumKeepVariables--;
-    }
-    else
-    {
-        mNumKeepVariables++;
-    }
-}
-
-QList<SharedVectorVariableT> Generation::getMatchingVariables(const QRegExp &rNameExp, Generation::VariableMapT &rMap)
-{
-    QList<SharedVectorVariableT> results;
-    for (auto it = rMap.begin(); it!=rMap.end(); it++)
-    {
-        // Compare name with regexp
-        QString name = it.key();
-        if ( rNameExp.exactMatch(name) )
-        {
-            results.append(it.value());
-        }
-    }
-    return results;
-}

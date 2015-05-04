@@ -11,76 +11,18 @@
 
 #include "LogVariable.h"
 #include "Widgets/ModelWidget.h"
-#include "Utilities/IndexIntervalCollection.h"
 
 // Forward Declaration
 class PlotWindow;
-class ContainerObject;
-class SystemContainer;
-class LogDataHandler2;
 class ModelWidget;
+class LogDataGeneration;
 
-
-
-class Generation : public QObject
-{
-    Q_OBJECT
-
-    friend class LogDataHandler2;
-public:
-    Generation(const QString &rImportfile="");
-    ~Generation();
-
-    int getGenerationNumber() const;
-
-    int getNumVariables() const;
-    int getNumKeepVariables() const;
-    bool isEmpty();
-    bool clear(bool force);
-
-    bool isImported() const;
-    QString getImportFileName() const;
-
-    void addVariable(const QString &rFullName, SharedVectorVariableT variable, bool isAlias);
-    bool removeVariable(const QString &rFullName);
-
-    QStringList getVariableFullNames() const;
-    bool haveVariable(const QString &rFullName) const;
-
-    SharedVectorVariableT getVariable(const QString &rFullName) const;
-    QList<SharedVectorVariableT> getMatchingVariables(const QRegExp &rNameExp);
-
-    QList<SharedVectorVariableT> getAllNonAliasVariables() const;
-    QList<SharedVectorVariableT> getAllVariables() const;
-
-    bool registerAlias(const QString &rFullName, const QString &rAlias);
-    bool unregisterAlias(const QString &rAlias);
-    bool unregisterAliasForFullName(const QString &rFullName);
-    QString getFullNameFromAlias(const QString &rAlias);
-
-    void switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache);
-
-private slots:
-    void variableAutoRemovalChanged(bool allowRemoval);
-
-private:
-    typedef QMap< QString, SharedVectorVariableT > VariableMapT;
-
-    QList<SharedVectorVariableT>  getMatchingVariables(const QRegExp &rNameExp, VariableMapT &rMap);
-
-    VariableMapT mVariables;
-    VariableMapT mAliasVariables;
-    QList<SharedVectorVariableT> mTimeVectors; //!< @todo use this
-    int mNumKeepVariables = 0;
-
-    QString mImportedFromFile;
-};
 
 class LogDataHandler2 : public QObject
 {
     Q_OBJECT
 
-    typedef QMap< int, Generation* > GenerationMapT;
+    typedef QMap< int, LogDataGeneration* > GenerationMapT;
 
 public:
     LogDataHandler2(ModelWidget *pParentModel);
@@ -142,8 +84,8 @@ public:
     int getLowestGenerationNumber() const;
     int getHighestGenerationNumber() const;
     int getCurrentGenerationNumber() const;
-    const Generation* getCurrentGeneration() const;
-    const Generation* getGeneration(const int gen) const;
+    const LogDataGeneration* getCurrentGeneration() const;
+    const LogDataGeneration* getGeneration(const int gen) const;
 
     void getVariableGenerationInfo(const QString &rFullName, int &rLowest, int &rHighest) const;
 
@@ -219,7 +161,7 @@ private:
     QString getNewCacheName(const QString &rDesiredName=QString());
     void rememberIfImported(SharedVectorVariableT data);
     void removeGenerationCacheIfEmpty(const int gen);
-    void pruneGenerationCache(const int generation, Generation *pGeneration);
+    void pruneGenerationCache(const int generation, LogDataGeneration *pGeneration);
 
     ModelWidget *mpParentModel;
 

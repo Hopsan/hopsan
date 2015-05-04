@@ -282,7 +282,8 @@ SOURCES += main.cpp \
     ModelicaLibrary.cpp \
     Widgets/ModelicaEditor.cpp \
     Widgets/PlotWidget2.cpp \
-    Utilities/IndexIntervalCollection.cpp
+    Utilities/IndexIntervalCollection.cpp \
+    LogDataGeneration.cpp
 
 
 
@@ -377,7 +378,8 @@ HEADERS += MainWindow.h \
     Widgets/ModelicaEditor.h \
     GraphicsViewPort.h \
     Widgets/PlotWidget2.h \
-    Utilities/IndexIntervalCollection.h
+    Utilities/IndexIntervalCollection.h \
+    LogDataGeneration.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

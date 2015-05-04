@@ -100,7 +100,7 @@ class VectorVariable : public QObject
 {
     Q_OBJECT
     friend class LogDataHandler2;
-    friend class Generation;
+    friend class LogDataGeneration;
 
 public:
     VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc,
