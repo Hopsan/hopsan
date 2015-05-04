@@ -1,4 +1,3 @@
 #Absolute Average Difference
 error = <<<var1>>>-<<<var2>>>
-abs error
-obj<<<id>>> = aver(error)
+obj<<<id>>> = aver(abs(error))
