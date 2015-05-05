@@ -53,8 +53,8 @@ namespace hopsan {
         Port* ifMultiportAddSubport(Port *pMaybeMultiport);
         void ifMultiportPrepareDissconnect(Port *pMaybeMultiport1, Port *pMaybeMultiport2, Port *&rpActualPort1, Port *&rpActualPort2);
 
-        void ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess);
-        void ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess);
+        void ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, Port **ppActualPort, const bool wasSucess);
+        void ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port **ppActualPort, const bool wasSucess);
 
     private:
         class ConnOKCounters

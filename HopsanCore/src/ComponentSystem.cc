@@ -1505,7 +1505,7 @@ ConnectionAssistant::ConnectionAssistant(ComponentSystem *pComponentSystem)
 //! Helpfunction that clears the nodetype in empty systemports, It will not clear the type if the port is not empty or if the port is not a systemport
 void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 {
-    if ( (pPort->getPortType() == SystemPortType) && (!pPort->isConnected()) )
+    if ( pPort && (pPort->getPortType() == SystemPortType) && (!pPort->isConnected()) )
     {
         Node *pOldNode = pPort->getNodePtr();
         pPort->setNode(mpComponentSystem->getHopsanEssentials()->createNode("NodeEmpty"));
@@ -1609,7 +1609,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         sucess = connAssist.mergeNodeConnection(pBlankSysPort, pActualPort);
 
         // Handle multiport connection success or failure
-        connAssist.ifMultiportCleanupAfterConnect(pOtherPort, pActualPort, sucess);
+        connAssist.ifMultiportCleanupAfterConnect(pOtherPort, &pActualPort, sucess);
     }
     // Non of the ports  are blank systemports
     else
@@ -1621,8 +1621,8 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         sucess = connAssist.mergeNodeConnection(pActualPort1, pActualPort2);
 
         // Handle multiport connection success or failure
-        connAssist.ifMultiportCleanupAfterConnect(pPort1, pActualPort1, sucess);
-        connAssist.ifMultiportCleanupAfterConnect(pPort2, pActualPort2, sucess);
+        connAssist.ifMultiportCleanupAfterConnect(pPort1, &pActualPort1, sucess);
+        connAssist.ifMultiportCleanupAfterConnect(pPort2, &pActualPort2, sucess);
     }
 
     // Abort connection if there was a connect failure
@@ -1951,8 +1951,8 @@ void ConnectionAssistant::ifMultiportPrepareDissconnect(Port *pMaybeMultiport1, 
     // if pMaybeMultiport1 is a multiport, but not other port
     if (pMaybeMultiport1->getPortType() >= MultiportType)
     {
-        rpActualPort1 = findMultiportSubportFromOtherPort(pMaybeMultiport1, pMaybeMultiport2);
         rpActualPort2 = pMaybeMultiport2;
+        rpActualPort1 = findMultiportSubportFromOtherPort(pMaybeMultiport1, rpActualPort2);
         if(rpActualPort1 == 0)
         {
             mpComponentSystem->addFatalMessage("ifMultiportFindActualPort(): pActualPort1 == 0");
@@ -1964,7 +1964,7 @@ void ConnectionAssistant::ifMultiportPrepareDissconnect(Port *pMaybeMultiport1, 
     if (pMaybeMultiport2->getPortType() >= MultiportType)
     {
         rpActualPort1 = pMaybeMultiport1;
-        rpActualPort2 = findMultiportSubportFromOtherPort(pMaybeMultiport2, pMaybeMultiport1);
+        rpActualPort2 = findMultiportSubportFromOtherPort(pMaybeMultiport2, rpActualPort1);
         if(rpActualPort2 == 0)
         {
             mpComponentSystem->addFatalMessage("ifMultiportFindActualPort(): pActualPort2 == 0");
@@ -1972,9 +1972,9 @@ void ConnectionAssistant::ifMultiportPrepareDissconnect(Port *pMaybeMultiport1, 
     }
 }
 
-void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess)
+void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, Port **ppActualPort, const bool wasSucess)
 {
-    if (pMaybeMultiport == pActualPort->getParentPort())
+    if (pMaybeMultiport && (pMaybeMultiport == (*ppActualPort)->getParentPort()) )
     {
         if (wasSucess)
         {
@@ -1983,20 +1983,23 @@ void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, 
         else
         {
             //We need to remove the last created subport
-            pMaybeMultiport->removeSubPort(pActualPort);
+            pMaybeMultiport->removeSubPort(*ppActualPort);
+            delete *ppActualPort;
+            *ppActualPort = 0;
         }
     }
 }
 
-void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess)
+void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port **ppActualPort, const bool wasSucess)
 {
-    if (pMaybeMultiport == pActualPort->getParentPort())
+    if (pMaybeMultiport && (pMaybeMultiport == (*ppActualPort)->getParentPort()) )
     {
         if (wasSucess)
         {
             //If successful we should remove the empty port
-            pMaybeMultiport->removeSubPort(pActualPort);
-            pActualPort = 0;
+            pMaybeMultiport->removeSubPort(*ppActualPort);
+            delete *ppActualPort;
+            *ppActualPort = 0;
         }
         else
         {
@@ -2067,39 +2070,6 @@ void ConnectionAssistant::removeNode(Node *pNode)
     mpComponentSystem->getHopsanEssentials()->removeNode(pNode);
 }
 
-////! @brief Prepares port pointers for multiport disconnections,
-//void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiSubPort1, Port *&rpMultiSubPort2)
-//{
-//    // First make sure that multiport pointers are zero if no multiports are being connected
-//    rpMultiSubPort1=0;
-//    rpMultiSubPort2=0;
-
-//    // Port 1 is a multiport, but not port2
-//    if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() < MultiportType )
-//    {
-//        rpMultiSubPort1 = findMultiportSubportFromOtherPort(rpPort1, rpPort2);
-//        if(rpMultiSubPort1 == 0)
-//        {
-//            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpMultiSubPort1 == 0");
-//        }
-//    }
-//    // Port 2 is a multiport, but not port1
-//    else if (rpPort1->getPortType() < MultiportType && rpPort2->getPortType() >= MultiportType )
-//    {
-//        rpMultiSubPort2 = findMultiportSubportFromOtherPort(rpPort2, rpPort1);
-//        if(rpMultiSubPort2 == 0)
-//        {
-//            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpMultiSubPort2 == 0");
-//        }
-//    }
-//    // both ports are multiports
-//    else if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() >= MultiportType )
-//    {
-//        mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): Multiport <-> Multiport disconnection has not been implemented yet.");
-//        //! @todo need to search around to find correct subports
-//    }
-//}
-
 
 //! @brief Disconnect two ports, string version
 //! @param [in] compname1 The name of the first component
@@ -2135,7 +2105,8 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     // First check if ports not null
     if (pPort1 && pPort2)
     {
-        //cout << "disconnecting " << pPort1->getComponentName().c_str() << " " << pPort1->getName().c_str() << "  and  " << pPort2->getComponentName().c_str() << " " << pPort2->getName().c_str() << endl;
+        HString msgName1 = pPort1->getComponent()->getName()+"::"+pPort1->getName();
+        HString msgName2 = pPort2->getComponent()->getName()+"::"+pPort2->getName();
 
         ConnectionAssistant disconnAssistant(this);
         //! @todo some more advanced error handling
@@ -2147,6 +2118,10 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
             if ( !(pPort1->isMultiPort() || pPort2->isMultiPort()) )
             {
                 success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
+
+                // In case we did disconnect an ordinary port and a subport in a multiport, then clear the subport from the multiport
+                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1->getParentPort(), &pPort1, success);
+                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2->getParentPort(), &pPort2, success);
             }
             // If one of the ports is a multiport
             else if ( pPort1->isMultiPort() || pPort2->isMultiPort() )
@@ -2165,8 +2140,8 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
                 success = disconnAssistant.splitNodeConnection(pActualPort1, pActualPort2);
 
                 // Handle multiport connection success or failure
-                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pActualPort1, success);
-                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pActualPort2, success);
+                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, &pActualPort1, success);
+                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, &pActualPort2, success);
             }
 
             disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);
@@ -2184,14 +2159,14 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
             }
 
             HString msg;
-            msg = "Disconnected: {"+pPort1->getComponent()->getName()+"::"+pPort1->getName()+"} and {"+pPort2->getComponent()->getName()+"::"+pPort2->getName()+"}";
+            msg = "Disconnected: {"+msgName1+"} and {"+msgName2+"}";
             addDebugMessage(msg, "succesfuldisconnect");
 
             return success;
         }
         else
         {
-            addErrorMessage("When attempting disconnect: Port: " + pPort1->getComponentName()+"::"+pPort1->getName() + "  is not connected to: " + pPort2->getComponentName()+"::"+pPort2->getName());
+            addErrorMessage("When attempting disconnect: Port: "+msgName1+" is not connected to: "+msgName2);
             return false;
         }
         addFatalMessage("When attempting disconnect: One of the ports is NULL");

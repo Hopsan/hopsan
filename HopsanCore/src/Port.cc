@@ -126,7 +126,7 @@ Port* Port::addSubPort()
 void Port::removeSubPort(Port* pPort)
 {
     HOPSAN_UNUSED(pPort)
-            mpComponent->addFatalMessage("Port::removeSubPort(): This should only be implemented and called from multiports.");
+    mpComponent->addFatalMessage("Port::removeSubPort(): This should only be implemented and called from multiports.");
 }
 
 //! @brief This function registers the startvalue parameters from the start node
@@ -1111,7 +1111,6 @@ void MultiPort::removeSubPort(Port* ptr)
         if ( *spit == ptr )
         {
             mSubPortsVector.erase(spit);
-            delete ptr;
             break;
         }
     }

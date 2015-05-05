@@ -301,6 +301,10 @@ int main(int argc, char *argv[])
                         printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
                     }
                 }
+
+                // Now remove the rootsystem
+                delete pRootSystem;
+                pRootSystem = 0;
             }
             else
             {
