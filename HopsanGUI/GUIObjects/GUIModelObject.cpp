@@ -150,7 +150,7 @@ QStringList ModelObject::getParentSystemNameHieararchy() const
 {
     if (mpParentContainerObject)
     {
-        return mpParentContainerObject->getParentSystemNameHieararchy();
+        return mpParentContainerObject->getSystemNameHieararchy();
     }
     return QStringList();
 }
