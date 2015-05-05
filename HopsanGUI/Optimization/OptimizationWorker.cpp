@@ -425,27 +425,21 @@ void OptimizationWorker::plotPoints()
         return;
     }
 
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumPoints; ++p)
     {
-        QString namex = "par"+QString::number(p)+"x";
-        QString namey = "par"+QString::number(p)+"y";
         double x = mParameters[p][0];
         double y = mParameters[p][1];
-        SharedVectorVariableT parVar_x = pHandler->getVectorVariable(namex, -1);
-        SharedVectorVariableT parVar_y = pHandler->getVectorVariable(namey, -1);
-        if(!parVar_x)
+
+        if(mPointVars_x.size() <= p)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
-            parVar_x = pHandler->defineNewVectorVariable(namex);
-            parVar_y = pHandler->defineNewVectorVariable(namey);
-            parVar_x->preventAutoRemoval();
-            parVar_y->preventAutoRemoval();
+            mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+            mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
 
-            parVar_x->assignFrom(x);
-            parVar_y->assignFrom(y);
+            mPointVars_x.last()->assignFrom(x);
+            mPointVars_y.last()->assignFrom(y);
 
-            gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0);
+            gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::xBottom, mParMin[0], mParMax[0]);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::yLeft, mParMin[1], mParMax[1]);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
@@ -454,8 +448,8 @@ void OptimizationWorker::plotPoints()
         else
         {
             //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
-            parVar_x->assignFrom(x);
-            parVar_y->assignFrom(y);
+            mPointVars_x.at(p)->assignFrom(x);
+            mPointVars_y.at(p)->assignFrom(y);
         }
     }
 
@@ -484,90 +478,74 @@ void OptimizationWorker::plotObjectiveFunctionValues()
 {
     if(!mPlotObjectiveFunctionValues) { return; }
 
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
-
     //Best objective value
-    SharedVectorVariableT bestVar = pHandler->getVectorVariable("BestObjective", -1);
-    if(bestVar.isNull())
+    if(mBestVar.isNull())
     {
-        //! @todo unit and description
-        bestVar = pHandler->defineNewVectorVariable("BestObjective");
-        bestVar->preventAutoRemoval();
-        bestVar->assignFrom(mObjectives[mBestId]);
-        bestVar->setCacheDataToDisk(false);
+        mBestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mBestVar->assignFrom(mObjectives[mBestId]);
     }
     else
     {
-        bestVar->append(mObjectives[mBestId]);
+        mBestVar->append(mObjectives[mBestId]);
     }
 
     //Worst objective value
-    SharedVectorVariableT worstVar = pHandler->getVectorVariable("WorstObjective", -1);
-    if(worstVar.isNull())
+    if(mWorstVar.isNull())
     {
-        worstVar = pHandler->defineNewVectorVariable("WorstObjective");
-        worstVar->preventAutoRemoval();
-        worstVar->assignFrom(mObjectives[mWorstId]);
-        worstVar->setCacheDataToDisk(false);
+        mWorstVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mWorstVar->assignFrom(mObjectives[mWorstId]);
     }
     else
     {
-        worstVar->append(mObjectives[mWorstId]);
+        mWorstVar->append(mObjectives[mWorstId]);
     }
 
     //Newest objective value
-    SharedVectorVariableT newestVar = pHandler->getVectorVariable("NewestObjective", -1);
-    if(newestVar.isNull())
+    if(mNewestVar.isNull())
     {
-        newestVar = pHandler->defineNewVectorVariable("NewestObjective");
-        newestVar->preventAutoRemoval();
-        newestVar->assignFrom(mObjectives[mLastWorstId]);
-        newestVar->setCacheDataToDisk(false);
+        mNewestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mNewestVar->assignFrom(mObjectives[mLastWorstId]);
     }
     else
     {
-        newestVar->append(mObjectives[mLastWorstId]);
+        mNewestVar->append(mObjectives[mLastWorstId]);
     }
 
     // If this is the first time, then recreate the plotwindows
     // Note! plots will auto update when new data is appended, so there is no need to call plotab->update()
-    if(bestVar.data()->getDataSize() == 1)
+    if(mBestVar->getDataSize() == 1)
     {
         PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("ObjectiveFunction");
-        gpPlotHandler->plotDataToWindow(pPW, bestVar, 0, true, QColor("Green"));
-        gpPlotHandler->plotDataToWindow(pPW, worstVar, 0, true, QColor("Red"));
-        gpPlotHandler->plotDataToWindow(pPW, newestVar, 0, true, QColor("Orange"));
+        gpPlotHandler->plotDataToWindow(pPW, mBestVar, 0, true, QColor("Green"));
+        gpPlotHandler->plotDataToWindow(pPW, mWorstVar, 0, true, QColor("Red"));
+        gpPlotHandler->plotDataToWindow(pPW, mNewestVar, 0, true, QColor("Orange"));
     }
 }
 
 
-//! @brief Plots best and worst objective values (if option is selected)
+//! @brief Plots parameter values (if option is selected)
 void OptimizationWorker::plotParameters()
 {
     if(!mPlotParameters) { return; }
 
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumParameters; ++p)
     {
-        SharedVectorVariableT par = pHandler->getVectorVariable("NewPar"+QString::number(p), -1);
-        if(par.isNull())
+        if(mParVars.size() <= p)
         {
-            par = pHandler->defineNewVectorVariable("NewPar"+QString::number(p));
-            par->preventAutoRemoval();
-            par->assignFrom(mParameters[mLastWorstId][p]);
-            par->setCacheDataToDisk(false);
+            mParVars.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+            mParVars.last()->assignFrom(mParameters[mLastWorstId][p]);
         }
         else
         {
-            par->append(mParameters[mLastWorstId][p]);
+            mParVars.at(p)->append(mParameters[mLastWorstId][p]);
         }
 
         // If this is the first time, then recreate the plotwindows
         // Note! plots will auto update when new data is appended, so there is no need to call plotab->update()
-        if(par.data()->getDataSize() == 1)
+        if(mParVars.at(p)->getDataSize() == 1)
         {
             PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");
-            gpPlotHandler->plotDataToWindow(pPW, par, 0, true, QColor("blue"));
+            gpPlotHandler->plotDataToWindow(pPW, mParVars.at(p), 0, true);
         }
     }
 }
@@ -582,25 +560,22 @@ void OptimizationWorker::plotEntropy()
     int n = mParameters.size();
     double entropy = -n*log2(deltaX);
 
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
-    SharedVectorVariableT entropyVar = pHandler->getVectorVariable("Entropy", -1);
-    if(entropyVar.isNull())
+
+    if(mEntropyVar.isNull())
     {
-        entropyVar = pHandler->defineNewVectorVariable("Entropy");
-        entropyVar->preventAutoRemoval();
-        entropyVar->assignFrom(entropy);
-        entropyVar->setCacheDataToDisk(false);
+        mEntropyVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mEntropyVar->assignFrom(entropy);
     }
     else
     {
-        entropyVar->append(entropy);
+        mEntropyVar->append(entropy);
     }
 
     // If this is the first time, then recreate the plotwindows
-    if(entropyVar.data()->getDataSize() == 1)
+    if(mEntropyVar.data()->getDataSize() == 1)
     {
         PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("OptimizationEntropy");
-        gpPlotHandler->plotDataToWindow(pPW, entropyVar, 0, true, QColor("blue"));
+        gpPlotHandler->plotDataToWindow(pPW, mEntropyVar, 0, true);
     }
 }
 

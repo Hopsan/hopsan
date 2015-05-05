@@ -29,6 +29,7 @@
 #include <QVector>
 #include <QFile>
 #include <QStringList>
+#include "LogVariable.h"
 
 class OptimizationHandler;
 class ModelWidget;
@@ -120,6 +121,21 @@ protected:
 
     bool mOrgProgressBarSetting;
     bool mOrgLimitDataGenerationsSetting;
+
+    //Plotting points
+    QList<SharedVectorVariableT> mPointVars_x;
+    QList<SharedVectorVariableT> mPointVars_y;
+
+    //Plotting best/worst/newest objective
+    SharedVectorVariableT mBestVar;
+    SharedVectorVariableT mWorstVar;
+    SharedVectorVariableT mNewestVar;
+
+    //Plotting parameters
+    QList<SharedVectorVariableT> mParVars;
+
+    //Plotting entropy
+    SharedVectorVariableT mEntropyVar;
 };
 
 #endif // OPTIMIZATIONWORKER_H
