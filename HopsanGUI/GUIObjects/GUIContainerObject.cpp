@@ -126,7 +126,7 @@ QStringList ContainerObject::getSystemNameHieararchy() const
     // Note! This wil lreturn empty lsit for top-level system, and that is OK, it is supposed to do that
     if (mpParentContainerObject)
     {
-        parentSystemNames = mpParentContainerObject->getParentSystemNameHieararchy();
+        parentSystemNames = mpParentContainerObject->getSystemNameHieararchy();
         parentSystemNames << this->getName();
     }
     return parentSystemNames;
@@ -1184,16 +1184,6 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                  Port *pStartP = pConnector->getStartPort();
                  Port *pEndP = pConnector->getEndPort();
 
-                 if (pStartP->getPortType() == "GroupPortType")
-                 {
-                     startPortIsGroupPort=true;
-                 }
-
-                 if (pEndP->getPortType() == "GroupPortType")
-                 {
-                     endPortIsGroupPort = true;
-                 }
-
                  //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
                  Port *pStartRealPort=0, *pEndRealPort=0;
                  // If no group ports, do normal disconnect
@@ -1355,73 +1345,11 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
         {
             // Check if we are connecting group ports
             Port *pStartRealPort=0, *pEndRealPort=0;
-            bool startPortIsGroupPort=false, endPortIsGroupPort=false;
-            if (mpTempConnector->getStartPort()->getPortType() == "GroupPortType")
-            {
-                startPortIsGroupPort=true;
-                pStartRealPort = mpTempConnector->getStartPort()->getRealPort();
-            }
-            else
-            {
-                pStartRealPort = mpTempConnector->getStartPort();
-            }
 
-            if (pPort->getPortType() == "GroupPortType")
-            {
-                endPortIsGroupPort=true;
-                pEndRealPort = pPort->getRealPort();
-            }
-            else
-            {
-                pEndRealPort = pPort;
-            }
-            //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
+            pStartRealPort = mpTempConnector->getStartPort();
+            pEndRealPort = pPort;
 
-            // Abort with error if trying to connect two group ports to each other
-            //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
-            if ( startPortIsGroupPort && endPortIsGroupPort )
-            {
-                gpMessageHandler->addErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
-                return 0;
-            }
-
-            // Abort with error if trying to connect two undefined group ports to each other
-            if ( (pStartRealPort==0) && (pEndRealPort==0) )
-            {
-                gpMessageHandler->addErrorMessage("You are not allowed to connect two undefined group ports to each other");
-                return 0;
-            }
-
-            // Handle if one or both ports are group ports
-            //! @todo cleanup and rewrite
-            if ( startPortIsGroupPort || endPortIsGroupPort )
-            {
-                // If both group ports are defined
-                if ( (pStartRealPort != 0) && (pEndRealPort != 0) )
-                {
-                    success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
-                                                                      pStartRealPort->getName(),
-                                                                      pEndRealPort->getParentModelObjectName(),
-                                                                      pEndRealPort->getName());
-                }
-                // If start known but not end
-                else if ( (pStartRealPort != 0) && (pEndRealPort == 0) )
-                {
-                    success = true;
-
-                }
-                // Else start unknown but end known
-                else if ( (pStartRealPort == 0) && (pEndRealPort != 0) )
-                {
-                    success = true;
-                }
-                else
-                {
-                    //This should never happen, handled above
-                    success = false;
-                }
-            }
-            else if(pStartRealPort->getNodeType() == "NodeModelica" || pEndRealPort->getNodeType() == "NodeModelica")
+            if(pStartRealPort->getNodeType() == "NodeModelica" || pEndRealPort->getNodeType() == "NodeModelica")
             {
                 //! @todo Also make sure that the port in the Modelica code is correct physical type
                 if((pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getNodeType() == "NodeModelica") ||

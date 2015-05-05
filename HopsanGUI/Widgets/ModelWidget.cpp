@@ -432,7 +432,7 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
         bool rc = mpRemoteCoreSimulationHandler->connect();
         if (rc)
         {
-            mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
+            loadModelRemote();
         }
         else
         {
@@ -1359,9 +1359,20 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
 #ifdef USEZMQ
         if (isRemoteCoreConnected())
         {
-            mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
+            loadModelRemote();
         }
 #endif
+    }
+}
+
+void ModelWidget::loadModelRemote()
+{
+    mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
+    QVector<QString> types,tags,messages;
+    mpRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
+    for (int i=0; i<messages.size(); ++i)
+    {
+       mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
     }
 }
 

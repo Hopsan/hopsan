@@ -119,6 +119,7 @@ signals:
 
 private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
+    void loadModelRemote();
 
     QString mStartTime, mStopTime;
     int mLastSimulationTime;
