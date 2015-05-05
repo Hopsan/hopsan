@@ -1367,6 +1367,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
 
 void ModelWidget::loadModelRemote()
 {
+#ifdef USEZMQ
     mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
     QVector<QString> types,tags,messages;
     mpRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
@@ -1374,6 +1375,7 @@ void ModelWidget::loadModelRemote()
     {
        mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
     }
+#endif
 }
 
 
