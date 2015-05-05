@@ -302,6 +302,8 @@ private:
 };
 
 #ifdef USEZMQ
+class RemoteHopsanClient;
+
 class RemoteCoreSimulationHandler
 {
 private:
@@ -309,9 +311,11 @@ private:
     QString mHopsanDispatchAddress, mHopsanDispatchPort;
 
     bool mUseDispatch = false;
+    RemoteHopsanClient *mpRemoteHopsanClient=0;
 
 
 public:
+    RemoteCoreSimulationHandler();
     ~RemoteCoreSimulationHandler();
 
     void setHopsanServer(QString ip, QString port );

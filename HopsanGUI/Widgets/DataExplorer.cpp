@@ -86,8 +86,11 @@ void DataExplorer::setLogdataHandler(LogDataHandler2 *pLogDataHandler)
     }
 
     mpLogDataHandler = pLogDataHandler;
-    connect(mpLogDataHandler, SIGNAL(dataAdded()), this, SLOT(refreshGenerationList()));
-    connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(refreshGenerationList()));
+    if (mpLogDataHandler)
+    {
+        connect(mpLogDataHandler, SIGNAL(dataAdded()), this, SLOT(refreshGenerationList()));
+        connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(refreshGenerationList()));
+    }
     refreshGenerationList();
 
 }
@@ -244,6 +247,7 @@ void DataExplorer::refreshGenerationList()
     {
         mGenerationItemMap.clear();
         mpGenerationsListWidget->deleteLater();
+        mpGenerationsListWidget = nullptr;
     }
 
     if (mpLogDataHandler)

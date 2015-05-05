@@ -592,6 +592,12 @@ void MainWindow::createActions()
     connect(mpSimulateAction, SIGNAL(triggered()), this, SLOT(simulateKeyWasPressed()));
     mHelpPopupTextMap.insert(mpSimulateAction, "Starts a new simulation of current model.");
 
+    mpToggleRemoteCoreSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Toggle Remote HopsanCore Connection"), this);
+    mpToggleRemoteCoreSimAction->setCheckable(true);
+    mpToggleRemoteCoreSimAction->setChecked(false);
+    mHelpPopupTextMap.insert(mpToggleRemoteCoreSimAction, "Connect or disconnect to a remote HopsanCore, this will determine if local or remote simulation is run, when calling simulate");
+    connect(mpToggleRemoteCoreSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpCoSimulationAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Start Co-Simulation"), this);
     mpCoSimulationAction->setToolTip(tr("Start Co-Simulation"));
     connect(mpCoSimulationAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
@@ -949,6 +955,7 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpCloseAction);
 
     mpSimulationMenu->addAction(mpSimulateAction);
+    mpSimulationMenu->addAction(mpToggleRemoteCoreSimAction);
     mpSimulationMenu->addAction(mpOpenDebuggerAction);
 #ifdef DEVELOPMENT
     mpSimulationMenu->addAction(mpCoSimulationAction);
@@ -1091,6 +1098,7 @@ void MainWindow::createToolbars()
 
     mpSimToolBar->addWidget(mpSimulationTimeEdit);
     mpSimToolBar->addAction(mpSimulateAction);
+    mpSimToolBar->addAction(mpToggleRemoteCoreSimAction);
     mpSimToolBar->addAction(mpOpenDebuggerAction);
 #ifdef DEVELOPMENT
     mpSimToolBar->addAction(mpCoSimulationAction);

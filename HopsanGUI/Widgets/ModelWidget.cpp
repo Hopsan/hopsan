@@ -42,13 +42,10 @@
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
 #include "Utilities/GUIUtilities.h"
-//#include "HcomWidget.h"
 #include "InitializationThread.h"
 #include "ModelHandler.h"
-//#include "ProgressBarThread.h"
 #include "ProjectTabWidget.h"
 #include "SimulationThreadHandler.h"
-//#include "Utilities/XMLUtilities.h"
 #include "version_gui.h"
 #include "Widgets/AnimationWidget.h"
 #include "MessageHandler.h"
@@ -57,6 +54,7 @@
 #include "SymHop.h"
 #include "MessageHandler.h"
 #include "LogDataHandler2.h"
+#include "CoreAccess.h"
 
 //Needed for Modelica experiments, move later if necessary
 #include "ModelicaLibrary.h"
@@ -74,8 +72,8 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent)
-    : QWidget(parent)
+ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentTabWidget)
+    : QWidget(pParentTabWidget)
 {
     mpMessageHandler = 0;
     mpAnimationWidget = 0;
@@ -109,7 +107,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent)
 
     mpToplevelSystem = new SystemContainer(this, 0);
 
-    mpLogDataHandler2 = new LogDataHandler2(this);
+    mpLogDataHandler = new LogDataHandler2(this);
 
     mpSimulationThreadHandler = new SimulationThreadHandler();
     setMessageHandler(gpMessageHandler);
@@ -157,6 +155,8 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent)
 
 ModelWidget::~ModelWidget()
 {
+    setUseRemoteSimulationCore(false, false);
+
     delete mpAnimationWidget;
 
     //First make sure that we go to the top level system, we don't want to be inside a subsystem while it is being deleted
@@ -166,7 +166,7 @@ ModelWidget::~ModelWidget()
     mpToplevelSystem->deleteLater();
     mpSimulationThreadHandler->deleteLater();
 
-    mpLogDataHandler2->deleteLater();
+    mpLogDataHandler->deleteLater();
 }
 
 void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)
@@ -283,7 +283,7 @@ SimulationThreadHandler *ModelWidget::getSimulationThreadHandler()
 
 LogDataHandler2 *ModelWidget::getLogDataHandler()
 {
-    return mpLogDataHandler2;
+    return mpLogDataHandler;
 }
 
 
@@ -414,6 +414,50 @@ QString ModelWidget::getVariableAlias(const QString &rFullName)
     return QString();
 }
 
+void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
+{
+    mUseRemoteCore=tf;
+    mUseRemotecoreDispatch=useDispatch;
+
+#ifdef USEZMQ
+    if (mUseRemoteCore)
+    {
+        mpRemoteCoreSimulationHandler = new RemoteCoreSimulationHandler();
+        QStringList saddr = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
+        QStringList dsaddr = gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS).split(":");
+        mpRemoteCoreSimulationHandler->setHopsanServer(saddr.first(), saddr.last());
+        mpRemoteCoreSimulationHandler->setHopsanDispatch(dsaddr.first(), dsaddr.last());
+        mpRemoteCoreSimulationHandler->setUseDispatchServer(mUseRemotecoreDispatch);
+
+        bool rc = mpRemoteCoreSimulationHandler->connect();
+        if (rc)
+        {
+            mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
+        }
+        else
+        {
+            mpMessageHandler->addErrorMessage(mpRemoteCoreSimulationHandler->getLastError());
+            mUseRemoteCore = false;
+        }
+    }
+
+    // If use remote core is false and a core simualtion handler is set, then delete it
+    // This should trigger when we deactiva remote simulation or if connect or load model failed
+    if (!mUseRemoteCore && mpRemoteCoreSimulationHandler)
+    {
+        mpRemoteCoreSimulationHandler->disconnect();
+        delete mpRemoteCoreSimulationHandler;
+        mpRemoteCoreSimulationHandler = 0;
+    }
+#endif
+}
+
+bool ModelWidget::isRemoteCoreConnected() const
+{
+    //! @todo should check is connected also
+    return (mUseRemoteCore && mpRemoteCoreSimulationHandler);
+}
+
 
 //! @brief Returns whether or not the current project is saved
 bool ModelWidget::isSaved()
@@ -448,25 +492,50 @@ bool ModelWidget::simulate_nonblocking()
         saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
     }
 
-    if(!mSimulateMutex.tryLock()) return false;
-
-    //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
-    foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+    // Remote Core Simulation
+    if (isRemoteCoreConnected())
     {
-        if(comp->getTypeName() == MODELICATYPENAME)
+        // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+        foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
         {
-            simulateModelica();
-            unlockSimulateMutex();
-            return true;        //! @todo Should use return value from simulateModelica() function instead
+            if(comp->getTypeName() == MODELICATYPENAME)
+            {
+                gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                return false;
+            }
         }
-    }
 
-    qDebug() << "Calling simulate_nonblocking()";
-    //QVector<SystemContainer*> vec;
-    //vec.push_back(mpSystem);
-    //mSimulationHandler.initSimulateFinalize( vec, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
-    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
-    mpSimulationThreadHandler->initSimulateFinalize(mpToplevelSystem);
+        if(!mSimulateMutex.tryLock())
+        {
+            gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
+            return false;
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+        //! @todo is this really blocking hmm
+    }
+    // Local core simulation
+    else
+    {
+        if(!mSimulateMutex.tryLock()) return false;
+
+        //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+        foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+        {
+            if(comp->getTypeName() == MODELICATYPENAME)
+            {
+                simulateModelica();
+                unlockSimulateMutex();
+                return true;        //! @todo Should use return value from simulateModelica() function instead
+            }
+        }
+
+        qDebug() << "Calling simulate_nonblocking()";
+        mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+        mpSimulationThreadHandler->initSimulateFinalize(mpToplevelSystem);
+    }
 
     return true;
     //! @todo fix return code
@@ -483,71 +552,64 @@ bool ModelWidget::simulate_blocking()
         saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
     }
 
-    if(!mSimulateMutex.tryLock()) return false;
-
-    //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
-    foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+    // Remote Core Simulation
+    if (isRemoteCoreConnected())
     {
-        if(comp->getTypeName() == MODELICATYPENAME)
+        // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+        foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
         {
-            simulateModelica();
-            return true;        //! @todo Should use return value from simulateModelica() function instead
+            if(comp->getTypeName() == MODELICATYPENAME)
+            {
+                gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                return false;
+            }
         }
-    }
 
-    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
-    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-    QVector<SystemContainer*> vec;
-    vec.push_back(mpToplevelSystem);
-    mpSimulationThreadHandler->initSimulateFinalize_blocking(vec);
+        if(!mSimulateMutex.tryLock())
+        {
+            gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
+            return false;
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+        //! @todo is this really blocking hmm
+    }
+    // Local core simulation
+    else
+    {
+        if(!mSimulateMutex.tryLock()) return false;
+
+        //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+        foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+        {
+            if(comp->getTypeName() == MODELICATYPENAME)
+            {
+                simulateModelica();
+                return true;        //! @todo Should use return value from simulateModelica() function instead
+            }
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        QVector<SystemContainer*> vec;
+        vec.push_back(mpToplevelSystem);
+        mpSimulationThreadHandler->initSimulateFinalize_blocking(vec);
+    }
 
     return true;
     //! @todo fix return code
+
 }
 
 void ModelWidget::startCoSimulation()
 {
-    //! @todo I am borrowing this pice of useless code for now to run remote simulation, the original code is in this block /Peter
-    //---------- Original Code START ----------
-//    CoreSimulationHandler *pHandler = new CoreSimulationHandler();
-//    pHandler->runCoSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
-//    delete(pHandler);
+    CoreSimulationHandler *pHandler = new CoreSimulationHandler();
+    pHandler->runCoSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
+    delete(pHandler);
 
-//    emit checkMessages();
-    //---------- Original Code END ----------
-
-    //---------- Peters Remote Simulation Test Code START ---------
-
-    // Save backup copy
-    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
-    {
-        //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
-        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
-        fileNameWithoutHmf.chop(4);
-        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
-    }
-
-    if(!mSimulateMutex.tryLock())
-    {
-        gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
-        return;
-    }
-
-    // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
-    foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
-    {
-        if(comp->getTypeName() == MODELICATYPENAME)
-        {
-            gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
-            return;
-        }
-    }
-
-    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
-    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-    mpSimulationThreadHandler->initSimulateFinalizeRemote(mpToplevelSystem->getModelFileInfo().absoluteFilePath(), mRemoteLogNames, mRemoteLogData);
-
-    //---------- Peters Remote Simulation Test Code END ---------
+    emit checkMessages();
 }
 
 
@@ -569,91 +631,6 @@ void ModelWidget::saveAs()
 void ModelWidget::exportModelParameters()
 {
     saveModel(NewFile, ParametersOnly);
-
-
-//    //saveModel(NEWFILE);
-
-//    QDir fileDialogSaveDir;
-//    QString modelFilePath;
-//    modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-//                                                 gConfig.getLoadModelDir(),
-//                                                 tr("Hopsan Parameter File (*.hmf)"));
-
-//    if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
-//    {
-//        return;
-//    }
-
-//    mpSystem->setModelFile(modelFilePath);
-//    QFileInfo fileInfo = QFileInfo(modelFilePath);
-//    gConfig.setLoadModelDir(fileInfo.absolutePath());
-
-//    QFile file(mpSystem->getModelFileInfo().filePath());   //Create a QFile object
-//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//    {
-//        return;
-//    }
-
-//    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-//    mpSystem->setName(mpSystem->getModelFileInfo().baseName());
-
-//    //Update the basepath for relative appearance data info
-//    mpSystem->setAppearanceDataBasePath(mpSystem->getModelFileInfo().absolutePath());
-
-//    //Save xml document
-//    QDomDocument domDocument;
-//    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
-
-//    // Save the required external lib names
-//    QVector<QString> extLibNames;
-//    CoreParameterData coreParaAccess;
-//    //coreParaAccess.getLoadedLibNames(extLibNames);
-
-
-////    //! @todo need HMF defines for hardcoded strings
-////    QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
-////    for (int i=0; i<coreParaAccess.size(); ++i)
-////    {
-////        appendDomTextNode(reqDom, "Parameters", extLibNames[i]);
-////    }
-
-////    QDomElement XMLparameters = appendDomElement(hmfRoot, "parameters");
-////    for(int i = 0; i < gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
-////    {
-////        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
-////        appendDomTextNode(XMLparameter, "componentname", gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
-////        appendDomTextNode(XMLparameter, "parametername", gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
-////        appendDomValueNode2(XMLparameter, "minmax", gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
-////    }
-
-////    //Save the model component hierarchy
-////    //! @todo maybe use a saveload object instead of calling save immediately (only load object exist for now), or maybe this is fine
-//    mpSystem->saveToDomElement(hmfRoot);
-
-//    //Save to file
-//    const int IndentSize = 4;
-//    QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
-//    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//    {
-//        gpMessageHandler->addErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
-//        return;
-//    }
-//    QTextStream out(&xmlhmf);
-//    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-//    domDocument.save(out, IndentSize);
-
-//    //Close the file
-//    xmlhmf.close();
-
-//    //Set the tab name to the model name, effectively removing *, also mark the tab as saved
-//    QString tabName = mpSystem->getModelFileInfo().baseName();
-//    mpParentCentralTabWidget->setTabText(mpParentCentralTabWidget->currentIndex(), tabName);
-//    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
-//    gpMainWindow->updateRecentList();
-//    this->setSaved(true);
-
-//    gpMessageHandler->addInfoMessage("Saved model: " + tabName);
-
 }
 
 
@@ -737,18 +714,23 @@ void ModelWidget::collectPlotData(bool overWriteGeneration)
     if (mRemoteLogNames.empty())
     {
         // Collect local data
-        mpLogDataHandler2->collectLogDataFromModel(overWriteGeneration);
+        mpLogDataHandler->collectLogDataFromModel(overWriteGeneration);
     }
     else
     {
         // Collect remote data instead
-        mpToplevelSystem->getLogDataHandler()->collectLogDataFromRemoteModel(mRemoteLogNames,mRemoteLogData);
+        mpLogDataHandler->collectLogDataFromRemoteModel(mRemoteLogNames,mRemoteLogData);
         // Clear now obsolete data
         mRemoteLogNames.clear();
         mRemoteLogData.clear();
     }
 
 
+}
+
+void ModelWidget::setUseRemoteSimulationCore(bool tf)
+{
+    setUseRemoteSimulationCore(tf, mUseRemotecoreDispatch);
 }
 
 
@@ -1372,6 +1354,14 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
 
         emit modelSaved(this);
+
+        // Reload the model on the remote server when we save
+#ifdef USEZMQ
+        if (isRemoteCoreConnected())
+        {
+            mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
+        }
+#endif
     }
 }
 
@@ -1428,7 +1418,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     {
         getViewContainerObject()->setGraphicsViewport(getGraphicsView()->getViewPort());
     }
-    // Save the model component hierarcy
+    // Save the model component hierarchy
     mpToplevelSystem->saveToDomElement(rootElement, contents);
 
         //Save to file

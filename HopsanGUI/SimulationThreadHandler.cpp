@@ -101,72 +101,44 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(QString hmfModel, std::vector<std::string> &rLogNames, std::vector<double> &rLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
+RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(RemoteCoreSimulationHandler *pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
-    mHmfModel = hmfModel;
+    mpRCSH = pRCSH;
+    mpLogDataNames = pLogNames;
+    mpLogData = pLogData;
+
     mStartTime = startTime;
     mStopTime = stopTime;
     mLogStartTime = logStartTime;
     mnLogSamples = nLogSamples;
     mNoChanges = false;
-    mpMessageHandler = gpMessageHandler;
-    mpLogDataNames = &rLogNames;
-    mpLogData = &rLogData;
 }
 
 void RemoteSimulationWorkerObject::initSimulateFinalize()
 {
 #ifdef USEZMQ
     QTime timer;
-    bool connectSuccess=false, modelSuccess=false, initSuccess=false, simulateSuccess=false;
-    RemoteCoreSimulationHandler rcsh;
-    QStringList addr_port = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
-    if (addr_port.size() == 2)
-    {
-        rcsh.setHopsanServer(addr_port.first(), addr_port.last());
-    }
 
-    // Initializing
-    emit setProgressBarText(tr("Connecting..."));
-    emit setProgressBarRange(0,0);
-
+    emit setProgressBarText(tr("Simulating..."));
     timer.start();
-    connectSuccess = rcsh.connect(); //initialize(mStartTime, mStopTime, mLogStartTime, mnLogSamples, coreSystemAccessVector);
-    if (connectSuccess)
+    bool simulateSuccess = mpRCSH->simulateModel();
+    emit initDone(simulateSuccess, 0);
+    emit simulateDone(simulateSuccess, timer.elapsed());
+
+    // It is VERY important that we collect messages before we send finalizeDone signal as that will also do messaging and we could (will) have thread collission
+    //! @todo since gpMessageHandler is indirectly used we could easily crash here if doing local simulation or just modelling at the same time
+    QVector<QString> types,tags,messages;
+    mpRCSH->getCoreMessages(types, tags, messages);
+    printRemoteCoreMessages(mpMessageHandler, types, tags, messages);
+    //! @todo should open a separate window with remote messages
+
+    if (simulateSuccess)
     {
-        emit setProgressBarText(tr("Sending Model..."));
-        modelSuccess = rcsh.loadModel(mHmfModel);
-        if (modelSuccess)
-        {
-            emit initDone(true, timer.elapsed());
-            emit setProgressBarText(tr("Simulating..."));
-            timer.start();
-            simulateSuccess = rcsh.simulateModel();
+        // Collect data before emitting finalizeDone as that will signal that data is ready to be collected
+        mpRCSH->getLogData(mpLogDataNames, mpLogData);
 
-            emit simulateDone(simulateSuccess, timer.elapsed());
-        }
-        else
-        {
-            emit initDone(false, timer.elapsed());
-        }
-
-        // It is VERY important that we collect messages before we send finalizeDone signal as that will also do messaging and we could (will) have thread collission
-        //! @todo since gpMessageHandler is indirectly used we could easily crash here if doing local simulation or just modelling at the same time
-        QVector<QString> types,tags,messages;
-        rcsh.getCoreMessages(types, tags, messages);
-        printRemoteCoreMessages(mpMessageHandler, types, tags, messages);
-        //! @todo should open a separate window with remote messages
-
-        if (simulateSuccess)
-        {
-
-            // Collect data before emitting finalizeDone as that will signal that data is ready to be collected
-            rcsh.getLogData(mpLogDataNames, mpLogData);
-
-            emit finalizeDone(true, 0);
-
-            return;
-        }
+        emit finalizeDone(true, 0);
+        return;
     }
 #endif
     emit finalizeDone(false, 0);
@@ -265,10 +237,10 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
     initSimulateFinalize(vpSystems, noChanges);
 }
 
-void SimulationThreadHandler::initSimulateFinalizeRemote(QString modelPath, std::vector<std::string> &rLogNames, std::vector<double> &rLogData)
+void SimulationThreadHandler::initSimulateFinalizeRemote(RemoteCoreSimulationHandler *pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData)
 {
     mvpSystems.clear();
-    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(modelPath, rLogNames, rLogData, mStartT, mStopT, mLogStartTime, mnLogSamples);
+    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(pRCSH, pLogNames, pLogData, mStartT, mStopT, mLogStartTime, mnLogSamples);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }

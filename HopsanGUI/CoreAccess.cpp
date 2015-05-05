@@ -47,11 +47,10 @@
 #ifdef USEZMQ
 #include "RemoteHopsanClient.h"
 #ifdef _WIN32
-zmq::context_t context(1, 63);
+zmq::context_t zmqContext(1, 63);
 #else
-zmq::context_t context(1);
+zmq::context_t zmqContext(1);
 #endif
-RemoteHopsanClient gRHC(context);
 #endif
 
 // Here the HopsanCore object is created
@@ -1433,11 +1432,23 @@ QString getHopsanCoreBuildTime()
 }
 
 #ifdef USEZMQ
+
+RemoteCoreSimulationHandler::RemoteCoreSimulationHandler()
+{
+    mpRemoteHopsanClient = new RemoteHopsanClient(zmqContext);
+}
+
+
 RemoteCoreSimulationHandler::~RemoteCoreSimulationHandler()
 {
-    if (gRHC.workerConnected() || gRHC.serverConnected())
+    if (mpRemoteHopsanClient->workerConnected() || mpRemoteHopsanClient->serverConnected())
     {
         disconnect();
+    }
+    if (mpRemoteHopsanClient)
+    {
+        delete mpRemoteHopsanClient;
+        mpRemoteHopsanClient = 0;
     }
 }
 
@@ -1474,14 +1485,14 @@ bool RemoteCoreSimulationHandler::connect()
     {
         if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
         {
-            gRHC.connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
-            if (gRHC.serverConnected())
+            mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
+            if (mpRemoteHopsanClient->serverConnected())
             {
                 size_t workerPort;
-                if (gRHC.requestSlot(workerPort))
+                if (mpRemoteHopsanClient->requestSlot(workerPort))
                 {
-                    gRHC.connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
-                    if (gRHC.workerConnected())
+                    mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
+                    if (mpRemoteHopsanClient->workerConnected())
                     {
                         return true;
                     }
@@ -1494,7 +1505,7 @@ bool RemoteCoreSimulationHandler::connect()
 
 void RemoteCoreSimulationHandler::disconnect()
 {
-    gRHC.disconnect();
+    mpRemoteHopsanClient->disconnect();
 }
 
 bool RemoteCoreSimulationHandler::loadModel(QString hmfModelFile)
@@ -1503,7 +1514,7 @@ bool RemoteCoreSimulationHandler::loadModel(QString hmfModelFile)
     if (hmfFile.open(QIODevice::ReadOnly))
     {
         QTextStream ts(&hmfFile);
-        bool rc = gRHC.sendModelMessage(ts.readAll().toStdString());
+        bool rc = mpRemoteHopsanClient->sendModelMessage(ts.readAll().toStdString());
         hmfFile.close();
         return rc;
     }
@@ -1516,14 +1527,14 @@ bool RemoteCoreSimulationHandler::loadModel(QString hmfModelFile)
 
 bool RemoteCoreSimulationHandler::simulateModel()
 {
-    return gRHC.sendSimulateMessage(-1, -1, -1, -1, -1);
+    return mpRemoteHopsanClient->sendSimulateMessage(-1, -1, -1, -1, -1);
 }
 
 bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug)
 {
     std::vector<char> types;
     std::vector<std::string> tags, messages;
-    bool rc = gRHC.requestMessages(types, tags, messages);
+    bool rc = mpRemoteHopsanClient->requestMessages(types, tags, messages);
     if (rc)
     {
         // Here we copy messages AGAIN
@@ -1575,12 +1586,15 @@ bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTypes, QVec
 
 bool RemoteCoreSimulationHandler::getLogData(std::vector<std::string> *pNames, std::vector<double> *pData)
 {
-    return gRHC.requestSimulationResults(pNames, pData);
+    return mpRemoteHopsanClient->requestSimulationResults(pNames, pData);
 }
 
 QString RemoteCoreSimulationHandler::getLastError() const
 {
-    return QString::fromStdString(gRHC.getLastErrorMessage());
+    return QString::fromStdString(mpRemoteHopsanClient->getLastErrorMessage());
 }
 
 #endif
+
+
+

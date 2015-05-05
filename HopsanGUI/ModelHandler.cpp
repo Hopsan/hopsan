@@ -511,29 +511,45 @@ void ModelHandler::selectModelByTabIndex(int tabIdx)
 
 void ModelHandler::refreshMainWindowConnections()
 {
+    // First disconnect connections from all models
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
         disconnectMainWindowConnections(getModel(i));
         getViewContainerObject(i)->unmakeMainWindowConnectionsAndRefresh();
     }
-    if(getCurrentModel())
+    // Now refresh actions (we need to do this before reconnecting to avoid sending signals)
+    ModelWidget *pCurrentModel = getCurrentModel();
+    if (pCurrentModel)
     {
-        connectMainWindowConnections(getCurrentModel());
+        gpMainWindow->mpToggleRemoteCoreSimAction->setChecked(pCurrentModel->isRemoteCoreConnected());
+        gpMainWindow->mpDataExplorer->setLogdataHandler(pCurrentModel->getLogDataHandler());
+        gpPlotWidget->setLogDataHandler(pCurrentModel->getLogDataHandler());
+    }
+    else
+    {
+        gpMainWindow->mpToggleRemoteCoreSimAction->setChecked(false);
+        gpMainWindow->mpDataExplorer->setLogdataHandler(nullptr);
+        if (gpPlotWidget)
+        {
+            gpPlotWidget->setLogDataHandler(nullptr);
+        }
+    }
+    // Now reestablish connections to new model
+    if(pCurrentModel)
+    {
+        connectMainWindowConnections(pCurrentModel);
         getCurrentViewContainerObject()->makeMainWindowConnectionsAndRefresh();
         getCurrentViewContainerObject()->updateMainWindowButtons();
 
-        gpMainWindow->mpDataExplorer->setLogdataHandler(getCurrentLogDataHandler()); //!< @todo ugly hack, should do nicer
-        gpPlotWidget->setLogDataHandler(getCurrentLogDataHandler());
+        setToolBarSimulationTimeFromTab(pCurrentModel);
 
-        setToolBarSimulationTimeFromTab(getCurrentModel());
-
-        if(gpLibraryWidget->mGfxType != getCurrentTopLevelSystem()->getGfxType())
+        if(gpLibraryWidget->mGfxType != pCurrentModel->getTopLevelSystemContainer()->getGfxType())
         {
-            gpLibraryWidget->setGfxType(getCurrentTopLevelSystem()->getGfxType());
+            gpLibraryWidget->setGfxType(pCurrentModel->getTopLevelSystemContainer()->getGfxType());
         }
     }
 
-    emit modelChanged(getCurrentModel());
+    emit modelChanged(pCurrentModel);
 }
 
 void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
@@ -552,6 +568,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
 
     disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModel,  SLOT(simulate_nonblocking()));
     disconnect(gpMainWindow->mpCoSimulationAction,          SIGNAL(triggered()),            pModel,  SLOT(startCoSimulation()));
+    disconnect(gpMainWindow->mpToggleRemoteCoreSimAction,   SIGNAL(triggered(bool)),        pModel,  SLOT(setUseRemoteSimulationCore(bool)));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
     disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
@@ -575,6 +592,7 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
 
     connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   pModel,    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
     connect(gpMainWindow->mpCoSimulationAction,             SIGNAL(triggered()),            pModel,    SLOT(startCoSimulation()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpToggleRemoteCoreSimAction,      SIGNAL(triggered(bool)),        pModel,    SLOT(setUseRemoteSimulationCore(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
     connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            pModel,    SLOT(exportModelParameters()), Qt::UniqueConnection);
@@ -846,4 +864,3 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models)
     }
     return false;
 }
-

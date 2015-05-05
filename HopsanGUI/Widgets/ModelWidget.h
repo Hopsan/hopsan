@@ -45,6 +45,7 @@ class AnimationWidget;
 class SimulationThreadHandler;
 class GUIMessageHandler;
 class LogDataHandler2;
+class RemoteCoreSimulationHandler;
 
 
 class ModelWidget : public QWidget
@@ -52,7 +53,7 @@ class ModelWidget : public QWidget
     Q_OBJECT
 
 public:
-    ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *parent = 0);
+    ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentTabWidget = nullptr);
     ~ModelWidget();
 
     void setMessageHandler(GUIMessageHandler *pMessageHandler);
@@ -73,6 +74,9 @@ public:
     bool defineVariableAlias(const QString &rFullName, const QString &rAlias="");
     bool undefineVariableAlias(const QString &rFullName);
     QString getVariableAlias(const QString &rFullName);
+
+    void setUseRemoteSimulationCore(bool tf, bool useDispatch);
+    bool isRemoteCoreConnected() const;
 
     SystemContainer *getTopLevelSystemContainer();
     ContainerObject *getViewContainerObject();
@@ -99,6 +103,7 @@ public slots:
     void lockTab(bool locked);
     void simulateModelica();
     void collectPlotData(bool overWriteGeneration=false);
+    void setUseRemoteSimulationCore(bool tf);
 
 private slots:
     void openCurrentContainerInNewTab();
@@ -120,14 +125,17 @@ private:
 
     bool mIsSaved;
     bool mEditingEnabled;
+    bool mUseRemoteCore=false;
+    bool mUseRemotecoreDispatch=false;
 
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWidget;
 
     SystemContainer *mpToplevelSystem;
-    LogDataHandler2 *mpLogDataHandler2;
+    LogDataHandler2 *mpLogDataHandler;
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;
+    RemoteCoreSimulationHandler *mpRemoteCoreSimulationHandler=nullptr;
     QMutex mSimulateMutex;
 
     // Remote collected data
