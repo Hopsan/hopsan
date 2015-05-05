@@ -1078,43 +1078,84 @@ void LogDataHandler2::collectLogDataFromRemoteModel(std::vector<std::string> &rN
     {
         this->getGenerationMultiCache(mCurrentGenerationNumber)->beginMultiAppend();
     }
+
+    QList<SharedVariableDescriptionT> varDescs;
+    varDescs.reserve(rNames.size());
+    QMap<size_t, SharedSystemHierarchyT> systemTimeVarIdAndSysname;
+    QMap<QString, SharedVectorVariableT> systemHierarchy2TimeVariable;
+
     // Iterate over variables
     for(int v=0; v<rNames.size(); ++v)
     {
-        QString name = QString::fromStdString((rNames[v]));
-        QStringList nsplit = name.split('#');
-        if (nsplit.size() == 3)
+        foundData=true;
+        QStringList sh;
+        QString comp, port, data;
+        splitFullVariableName(QString::fromStdString(rNames[v]),sh,comp,port,data);
+
+
+        SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
+        pVarDesc->mModelPath = "UNKNOWN";
+        pVarDesc->mComponentName = comp;
+        pVarDesc->mpSystemHierarchy = SharedSystemHierarchyT(new QStringList(sh)); //!< @todo would be nice if we could avoid duplicates here
+        pVarDesc->mPortName = port;
+        pVarDesc->mDataName = data;
+        pVarDesc->mDataUnit = "UNKOWN";
+        pVarDesc->mDataDescription = "UNKOWN";
+        pVarDesc->mAliasName  = "";
+        pVarDesc->mVariableSourceType = ModelVariableType;
+
+        varDescs.push_back(pVarDesc);
+
+        if (data == TIMEVARIABLENAME)
         {
-            foundData=true;
-            SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-            pVarDesc->mModelPath = "UNKNOWN";
-            pVarDesc->mComponentName = nsplit.first();
-            pVarDesc->mPortName = nsplit[1];
-            pVarDesc->mDataName = nsplit.last();
-            pVarDesc->mDataUnit = "UNKOWN";
-            pVarDesc->mDataDescription = "UNKOWN";
-            pVarDesc->mAliasName  = "";
-            pVarDesc->mVariableSourceType = ModelVariableType;
-
-            long int nElements = rData.size() / rNames.size();
-            qDebug() << "nElements: " << nElements;
-
-            QVector<double> newData;
-            newData.reserve(nElements);
-            for (int i=nElements*v; i<nElements*(v+1); ++i)
-            {
-                newData.push_back(rData[i]);
-            }
-            SharedVectorVariableT pNewData = insertTimeDomainVariable(SharedVectorVariableT(), newData, pVarDesc);
-
-
+            systemTimeVarIdAndSysname.insert(v,pVarDesc->mpSystemHierarchy);
         }
-        else
+    }
+
+    // Figure out number of plot elements for each variable
+    long int nElements = rData.size() / rNames.size();
+    qDebug() << "nElements: " << nElements;
+
+    // First process time variables
+    for (auto it=systemTimeVarIdAndSysname.begin(); it!=systemTimeVarIdAndSysname.end(); ++it)
+    {
+        QVector<double> timeData;
+        timeData.reserve(nElements);
+        size_t v = it.key();
+        for (size_t i=nElements*v; i<nElements*(v+1); ++i)
         {
-            qDebug() << "Something is wrong in collectLogDataFromRemoteModel";
+            timeData.push_back(rData[i]);
         }
 
+        auto pNewData = insertTimeVectorVariable(timeData, it.value());
+        systemHierarchy2TimeVariable.insert(it.value()->join("$"), pNewData);
+    }
 
+    auto timeIds = systemTimeVarIdAndSysname.keys();
+    for(size_t v=0; v<rNames.size(); ++v)
+    {
+        // skip variables that were time variables
+        if (timeIds.contains(v))
+        {
+            continue;
+        }
+
+        QVector<double> newData;
+        newData.reserve(nElements);
+        for (size_t i=nElements*v; i<nElements*(v+1); ++i)
+        {
+            newData.push_back(rData[i]);
+        }
+
+        // Lookup time variable
+        SharedVectorVariableT pTime = systemHierarchy2TimeVariable.value(varDescs[v]->mpSystemHierarchy->join("$"));
+        if (pTime)
+        {
+            varDescs[v]->mpSystemHierarchy = pTime->mpVariableDescription->mpSystemHierarchy; // Replace systems hierachy with shared version (to save some memmory)
+        }
+
+        // Insert time domain variable
+        insertTimeDomainVariable(pTime, newData, varDescs[v]);
     }
 
     if(!overWriteLastGeneration)
@@ -2299,7 +2340,7 @@ SharedVectorVariableT LogDataHandler2::insertFrequencyDomainVariable(SharedVecto
     return pNewData;
 }
 
-//! @brief Inserts a variable into the map creating a container if needed
+//! @brief Inserts a variable into the map creating a generation if needed
 //! @param[in] pVariable The variable to insert
 //! @param[in] keyName An alternative keyName to use (used recursively to set an alias, do not abuse this argument)
 //! @param[in] gen An alternative generation number (-1 = current))

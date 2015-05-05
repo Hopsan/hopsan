@@ -811,37 +811,6 @@ void ReadPort::loadStartValues()
     }
 }
 
-//bool ReadPort::hasConnectedExternalSystemWritePort()
-//{
-//    // First figure out who my system parent is
-//    Component *pSystemParent;
-//    if (this->getComponent()->isComponentSystem())
-//    {
-//        // If my parent component is a system, then I am a kind of systemport (I am a normal port as interface port on a system)
-//        pSystemParent = this->getComponent();
-//    }
-//    else
-//    {
-//        // Take my parent components systemparent
-//        pSystemParent = this->getComponent()->getSystemParent();
-//    }
-
-//    // Now check all connected ports, find a write port
-//    vector<Port*>::iterator portIt;
-//    for (portIt = mConnectedPorts.begin(); portIt != mConnectedPorts.end(); ++portIt)
-//    {
-//        Port *pPort = (*portIt);
-//        if (pPort->getPortType() == WritePortType)
-//        {
-//            // Check if this writport belongs to a component whos parent system is the same as my system grand parent
-//            if (pPort->getComponent()->getSystemParent() == pSystemParent->getSystemParent())
-//            {
-//                return true;
-//            }
-//        }
-//    }
-//    return false;
-//}
 
 bool ReadPort::isConnectedToWriteOrPowerPort()
 {
@@ -882,7 +851,6 @@ MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Compone
 MultiPort::~MultiPort()
 {
     // Delete all subports that may remain, if everything is working this should be zero
-    //! @todo removed assert, BUT problem needs to be fixed /Peter
     if (mSubPortsVector.size() != 0)
     {
         getComponent()->addFatalMessage("~MultiPort(): mSubPortsVector.size() != 0 in multiport destructor (will fix later)");
