@@ -23,10 +23,11 @@ HopsanEssentials gHopsanCore;
 typedef struct
 {
     string fullName;
-    vector< vector<double> > *pData;
-    size_t dataLength;
-    size_t dataId;
-    NodeDataDescription *pDataDescription;
+    vector< vector<double> > *pData = 0;
+    vector< double > *pTimeData = 0;
+    size_t dataLength = 0;
+    size_t dataId = 0;
+    NodeDataDescription *pDataDescription = 0;
     string unit;
 }ModelVariableInfo_t;
 
@@ -36,9 +37,17 @@ typedef struct
 //! @todo Model utilities should not be in this file they should be shared
 
 //! @todo vector for vars bad maybe list or map better
-void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t> &rvMVI, HString parentSysNames)
+void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t> &rvMVI, HString systemHierarchy)
 {
-    HString sysName = pSys->getName();
+    // Append this systems time vector
+    vector<double> *pTime = pSys->getLogTimeVector();
+    ModelVariableInfo_t tmvi;
+    tmvi.fullName = (systemHierarchy+"Time").c_str();
+    tmvi.unit = "s";
+    tmvi.pTimeData = pTime;
+    tmvi.dataLength = pSys->getNumActuallyLoggedSamples();
+    rvMVI.push_back(tmvi);
+
     vector<Component *> subComps = pSys->getSubComponents();
     for (size_t c=0; c<subComps.size(); ++c)
     {
@@ -46,7 +55,7 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
         if (pComp->isComponentSystem())
         {
             // Collect results for subsystem
-            collectAllModelVariables(static_cast<ComponentSystem*>(pComp), rvMVI, parentSysNames+sysName+"$");
+            collectAllModelVariables(static_cast<ComponentSystem*>(pComp), rvMVI, systemHierarchy+pComp->getName()+"$");
         }
         else
         {
@@ -76,7 +85,7 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
                         {
                             const NodeDataDescription *pVarDesc = &(*pVars)[v];
                             ModelVariableInfo_t mvi;
-                            mvi.fullName = (parentSysNames+sysName+"$"+pComp->getName()+"#"+pPort->getName()+"#"+pVarDesc->name).c_str();
+                            mvi.fullName = (systemHierarchy+pComp->getName()+"#"+pPort->getName()+"#"+pVarDesc->name).c_str();
                             //mvi.pDataDescription = pVarDesc;
                             mvi.unit = pVarDesc->unit.c_str();
                             mvi.pData = pLogData;
@@ -410,9 +419,21 @@ int main(int argc, char* argv[])
                     vars.back().alias = "";
                     vars.back().unit = vMVI[mvi].unit.c_str();
                     vars.back().data.reserve(vMVI[mvi].dataLength);
-                    for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                    // Copy if a data variable
+                    if (vMVI[mvi].pData)
                     {
-                        vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
+                        for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                        {
+                            vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
+                        }
+                    }
+                    // Copy if a time data variable
+                    else if (vMVI[mvi].pTimeData)
+                    {
+                        for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                        {
+                            vars.back().data.push_back((*vMVI[mvi].pTimeData)[t]);
+                        }
                     }
                 }
 
