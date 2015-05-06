@@ -5,6 +5,7 @@
 #include <vector>
 #include <ctime>
 #include <chrono>
+#include <signal.h>
 
 #include "zmq.hpp"
 
@@ -254,6 +255,21 @@ ComponentSystem *pRootSystem=nullptr;
 double simStartTime, simStopTime;
 size_t nThreads = 1;
 
+static int s_interrupted = 0;
+static void s_signal_handler(int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals(void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
 
 int main(int argc, char* argv[])
 {
@@ -302,6 +318,7 @@ int main(int argc, char* argv[])
     const double dead_client_timout_min = 5;
     size_t nClientTimeouts = 0;
 
+    s_catch_signals();
     bool keepRunning=true;
     while (keepRunning)
     {
@@ -504,6 +521,11 @@ int main(int argc, char* argv[])
 #else
         //Sleep (1);
 #endif
+        if (s_interrupted)
+        {
+            cout << PRINTWORKER << nowDateTime() << " Interrupt signal received, killing worker" << std::endl;
+            keepRunning=false;
+        }
     }
 
     // Delete the model if we have one
@@ -513,5 +535,5 @@ int main(int argc, char* argv[])
         pRootSystem=nullptr;
     }
 
-
+    cout << PRINTWORKER << nowDateTime() << " Closed!" << endl;
 }

@@ -5,7 +5,7 @@
 #include <windows.h>
 #endif
 
-#include <iostream>
+#include <signal.h>
 #include <thread>
 #include <vector>
 #include <ctime>
@@ -67,6 +67,22 @@ void refreshServerStatus(size_t serverId)
 }
 
 
+static int s_interrupted = 0;
+static void s_signal_handler(int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals(void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc < 2)
@@ -85,6 +101,7 @@ int main(int argc, char* argv[])
 
     socket.bind( makeZMQAddress("*", myPort).c_str() );
 
+    s_catch_signals();
     while (true)
     {
         // Wait for next request from client
@@ -167,11 +184,13 @@ int main(int argc, char* argv[])
             std::thread (refreshServerStatus, item ).detach();
         }
 
-
-
-
         // check quit signal
+        if (s_interrupted)
+        {
+            cout << PRINTSERVER << nowDateTime() << " Interrupt signal received, killing server" << std::endl;
+            break;
+        }
     }
-
+    cout << PRINTSERVER << nowDateTime() << " Closed!" << endl;
     return 0;
 }

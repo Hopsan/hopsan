@@ -3,6 +3,7 @@
 #include <streambuf>
 #include <sstream>
 #include <cstdlib>
+#include <signal.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -136,7 +137,21 @@ void reportToMasterServer(std::string masterIP, std::string masterPort, std::str
     masterServerSocket.disconnect(makeZMQAddress(masterIP, masterPort).c_str());
 }
 
+static int s_interrupted = 0;
+static void s_signal_handler(int signal_value)
+{
+    s_interrupted = 1;
+}
 
+static void s_catch_signals(void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
 
 int main(int argc, char* argv[])
 {
@@ -176,6 +191,7 @@ int main(int argc, char* argv[])
         reportToMasterServer(masterserverip, masterserverport, myExternalIP, myPort, true);
     }
 
+    s_catch_signals();
     while (true)
     {
         // Wait for next request from client
@@ -365,6 +381,12 @@ int main(int argc, char* argv[])
 #else
         //Sleep (1);
 #endif
+
+        if (s_interrupted)
+        {
+            cout << PRINTSERVER << nowDateTime() << " Interrupt signal received, killing server" << std::endl;
+            break;
+        }
     }
 
     // Tell master server we are closing
@@ -373,5 +395,6 @@ int main(int argc, char* argv[])
         //! @todo somehow automatically figure out my ip
         reportToMasterServer(masterserverip, masterserverport, myExternalIP, myPort, false);
     }
+    cout << PRINTSERVER << nowDateTime() << " Closed!" << endl;
 }
 
