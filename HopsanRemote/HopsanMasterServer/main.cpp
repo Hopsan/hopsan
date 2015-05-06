@@ -8,6 +8,8 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <ctime>
+#include <chrono>
 #include "zmq.hpp"
 
 
@@ -39,7 +41,7 @@ void refreshServerStatus(size_t serverId)
     RemoteHopsanClient hopsanClient(gContext);
     ServerInfo server = gServerHandler.getServer(serverId);
 
-    cout << PRINTSERVER << "Requesting status from server: " << serverId;
+    cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId;
     hopsanClient.connectToServer(server.ip, server.port);
     ServerStatusT status;
     bool rc = hopsanClient.requestStatus(status);
@@ -47,7 +49,8 @@ void refreshServerStatus(size_t serverId)
     {
         cout << " ... Server is responding!" << endl;
         server.lastCheckTime = steady_clock::now();
-
+        server.isReady = status.isReady;
+        gServerHandler.updateServerInfo(server);
     }
     else
     {
@@ -62,12 +65,12 @@ int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
-        cout << PRINTSERVER << "Error: you must specify what base port to use!" << endl;
+        cout << PRINTSERVER << nowDateTime() << " Error: you must specify what base port to use!" << endl;
         return 1;
     }
     string myPort = argv[1];
 
-    cout << PRINTSERVER << "Listening on port: " << myPort  << endl;
+    cout << PRINTSERVER << nowDateTime() << " Listening on port: " << myPort  << endl;
 
 
     zmq::socket_t socket (gContext, ZMQ_REP);
@@ -107,7 +110,7 @@ int main(int argc, char* argv[])
             else if (msg_id == S_Closing)
             {
                 SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset);
-                cout << PRINTSERVER << "Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
+                cout << PRINTSERVER << nowDateTime() << " Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
 
                 // lookup server
                 //! @todo need to give servers a unique id to avoid others from beeing able to close them
@@ -119,7 +122,7 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    sendServerNAck(socket, "You are no registered");
+                    sendServerNAck(socket, "You are not registered");
                 }
             }
             else if (msg_id == C_ReqServerMachines)
@@ -128,7 +131,7 @@ int main(int argc, char* argv[])
 
                 //! @todo be smart
                 CM_ReqServerMachines_t req = unpackMessage<CM_ReqServerMachines_t>(message,offset);
-                cout << PRINTSERVER << "Got server machines request" << endl;
+                cout << PRINTSERVER << nowDateTime() << " Got server machines request" << endl;
                 auto ids = gServerHandler.getServersFasterThen(req.maxBenchmarkTime, req.numMachines);
                 vector<string> ips, ports;
                 for (auto id : ids)

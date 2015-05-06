@@ -21,15 +21,22 @@ void ServerHandler::addServer(ServerInfo server)
         id = (mServerMap.end()--)->first;
     }
     server.mId = id;
-    cout << PRINTSERVER << "Adding server: " << id << " IP: " << server.ip << " Port: " << server.port << endl;
+    cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " IP: " << server.ip << " Port: " << server.port << endl;
     mServerMap.insert(std::pair<size_t, ServerInfo>(id,server));
+    mLock.unlock();
+}
+
+void ServerHandler::updateServerInfo(ServerInfo server)
+{
+    mLock.lock();
+    mServerMap[server.id()] = server;
     mLock.unlock();
 }
 
 void ServerHandler::removeServer(size_t id)
 {
     mLock.lock();
-    cout << PRINTSERVER << "Removing server: " << id << endl;
+    cout << PRINTSERVER << nowDateTime() << " Removing server: " << id << endl;
     mServerMap.erase(id);
     mFreeIds.push_back(id);
     mLock.unlock();

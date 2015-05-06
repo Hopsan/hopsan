@@ -175,14 +175,14 @@ bool RemoteHopsanClient::requestStatus(ServerStatusT &rServerStatus)
     zmq::message_t response;
     if (receiveWithTimeout(mRSCSocket, response))
     {
-        cout << "Response size: " << response.size() << endl;
+        //cout << "Response size: " << response.size() << endl;
         size_t offset=0;
         size_t id = getMessageId(response, offset);
         if (id == S_ReqStatus_Reply)
         {
             SM_ServerStatus_t status = unpackMessage<SM_ServerStatus_t>(response, offset);
             rServerStatus = status;
-            cout << "Got status reply" << endl;
+            //cout << "Got status reply" << endl;
             return true;
         }
     }

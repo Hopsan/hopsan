@@ -38,6 +38,7 @@ private:
     std::mutex mLock;
 public :
     void addServer(ServerInfo server);
+    void updateServerInfo(ServerInfo server);
     void removeServer(size_t id);
     size_t numServers();
 
