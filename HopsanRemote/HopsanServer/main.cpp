@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
 
                     string scport = to_string(gServerConfig.mControlPort);
                     string swport = to_string(port);
-                    string nthreads = to_string(gServerConfig.mMaxThreadsPerClient);
+                    string nthreads = to_string(gServerConfig.mMaxThreadsPerSlot);
                     string uidstr = to_string(uid);
 
                     std::string appName("HopsanServerWorker.exe");
