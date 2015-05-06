@@ -18,6 +18,10 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "TicToc.hpp"
 
+#ifdef _WIN32
+#include "windows.h"
+#endif
+
 using namespace hopsan;
 using namespace std;
 
@@ -256,6 +260,14 @@ double simStartTime, simStopTime;
 size_t nThreads = 1;
 
 static int s_interrupted = 0;
+#ifdef _WIN32
+BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
+{
+    // what to do here?
+    s_interrupted = 1;
+    return TRUE;
+}
+#else
 static void s_signal_handler(int signal_value)
 {
     s_interrupted = 1;
@@ -270,6 +282,7 @@ static void s_catch_signals(void)
     sigaction (SIGINT, &action, NULL);
     sigaction (SIGTERM, &action, NULL);
 }
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -318,7 +331,11 @@ int main(int argc, char* argv[])
     const double dead_client_timout_min = 5;
     size_t nClientTimeouts = 0;
 
+#ifdef _WIN32
+    SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
+#else
     s_catch_signals();
+#endif
     bool keepRunning=true;
     while (keepRunning)
     {

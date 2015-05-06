@@ -3,13 +3,6 @@
 #include <streambuf>
 #include <sstream>
 #include <cstdlib>
-#include <signal.h>
-
-#ifndef _WIN32
-#include <unistd.h>
-#else
-#include <windows.h>
-#endif
 
 #include <iostream>
 #include <vector>
@@ -22,9 +15,11 @@
 #include "ServerMessageUtilities.h"
 
 #ifdef _WIN32
-//#include <strsafe.h>
+#include <windows.h>
 #include <tchar.h>
 #else
+#include <unistd.h>
+#include <signal.h>
 #include <spawn.h>
 #include <sys/wait.h>
 #endif
@@ -138,6 +133,14 @@ void reportToMasterServer(std::string masterIP, std::string masterPort, std::str
 }
 
 static int s_interrupted = 0;
+#ifdef _WIN32
+BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
+{
+    // what to do here?
+    s_interrupted = 1;
+    return TRUE;
+}
+#else
 static void s_signal_handler(int signal_value)
 {
     s_interrupted = 1;
@@ -152,6 +155,7 @@ static void s_catch_signals(void)
     sigaction (SIGINT, &action, NULL);
     sigaction (SIGTERM, &action, NULL);
 }
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -191,7 +195,11 @@ int main(int argc, char* argv[])
         reportToMasterServer(masterserverip, masterserverport, myExternalIP, myPort, true);
     }
 
+#ifdef _WIN32
+    SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
+#else
     s_catch_signals();
+#endif
     while (true)
     {
         // Wait for next request from client
