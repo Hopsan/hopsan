@@ -80,7 +80,7 @@ LibraryWidget::LibraryWidget(QWidget *parent)
 
     QLabel *pFilterLabel = new QLabel("Filter:",this);
     mpFilterEdit = new QLineEdit(this);
-    QHBoxLayout *pFilterLayout = new QHBoxLayout(gpMainWindowWidget);
+    QHBoxLayout *pFilterLayout = new QHBoxLayout();
     pFilterLayout->addWidget(pFilterLabel);
     pFilterLayout->addWidget(mpFilterEdit);
 

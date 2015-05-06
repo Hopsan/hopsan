@@ -192,6 +192,7 @@ private:
     void executeLockLeftAxisCommand(const QString cmd);
     void executeLockRightAxisCommand(const QString cmd);
     void executeLockXAxisCommand(const QString cmd);
+    void executeSleepCommand(const QString cmd);
 
     // Help functions
     void createCommands();

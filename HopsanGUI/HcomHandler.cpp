@@ -983,6 +983,14 @@ void HcomHandler::createCommands()
     lockxCmd.fnc = &HcomHandler::executeLockXAxisCommand;
     lockxCmd.group = "Plot Commands";
     mCmdList << lockxCmd;
+
+    HcomCommand sleepCmd;
+    sleepCmd.cmd = "sleep";
+    sleepCmd.description.append("Pause execution for a number of seconds");
+    sleepCmd.help.append(" Usage: sleep [seconds]\n");
+    sleepCmd.help.append(" The sleep argument has millisecond accuracy");
+    sleepCmd.fnc = &HcomHandler::executeSleepCommand;
+    mCmdList << sleepCmd;
 }
 
 void HcomHandler::generateCommandsHelpText()
@@ -1100,7 +1108,11 @@ void HcomHandler::executeCommand(QString cmd)
     int idx = -1;
     for(int i=0; i<mCmdList.size(); ++i)
     {
-        if(mCmdList[i].cmd == majorCmd) { idx = i; }
+        if(mCmdList[i].cmd == majorCmd)
+        {
+            idx = i;
+            break;
+        }
     }
 
     if(idx<0)
@@ -1123,9 +1135,12 @@ void HcomHandler::executeCommand(QString cmd)
 
 
 //! @brief Execute function for "exit" command
-void HcomHandler::executeExitCommand(const QString /*cmd*/)
+void HcomHandler::executeExitCommand(const QString cmd)
 {
-    gpMainWindowWidget->close();
+    Q_UNUSED(cmd);
+    // Using a single shot timer seems to prevent freeze/crash if a script ending in exit is executed emediately when hopsan starts (called from commandline)
+    QTimer::singleShot(0, gpMainWindowWidget, SLOT(close()));
+    //gpMainWindowWidget->close();
 }
 
 
@@ -1948,33 +1963,19 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!file.exists() && !path.endsWith(".hcom"))
     {
         file.setFileName(path+".hcom");
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            path.prepend(mPwd+"/");
-            dir = path.left(path.lastIndexOf("/"));
-            dir = getDirectory(dir);
-            path = dir+path.right(path.size()-path.lastIndexOf("/"));
-            file.setFileName(path);
-            if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-            {
-                file.setFileName(path+".hcom");
-                if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-                {
-                    HCOMERR(QString("Unable to read file: %1").arg(file.fileName()));
-                    return;
-                }
-            }
-        }
+    }
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        HCOMERR(QString("Unable to read file: %1").arg(file.fileName()));
+        return;
     }
 
-    QString code;
-
     QTextStream t(&file);
-
-    code = t.readAll();
+    QString code = t.readAll();
+    file.close();
 
     for(int i=0; i<args.size()-1; ++i)  //Replace arguments with their values
     {
@@ -1994,15 +1995,13 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
 
     QStringList lines = code.split("\n");
     lines.removeAll("");
-    bool *abort = new bool;
-    *abort = false;
-    QString gotoLabel = runScriptCommands(lines, abort);
-    if(*abort)
+    bool abort = false;
+    QString gotoLabel = runScriptCommands(lines, &abort);
+    if(abort)
     {
-        delete abort;
         return;
     }
-    delete abort;
+
     while(!gotoLabel.isEmpty())
     {
         if(gotoLabel == "%%%%%EOF")
@@ -2014,13 +2013,11 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
             if(lines[l].startsWith("&"+gotoLabel))
             {
                 QStringList commands = lines.mid(l, lines.size()-l);
-                bool *abort = new bool;
-                gotoLabel = runScriptCommands(commands, abort);
+                bool abort = false;
+                gotoLabel = runScriptCommands(commands, &abort);
             }
         }
     }
-
-    file.close();
 }
 
 
@@ -4450,6 +4447,33 @@ void HcomHandler::executeLockXAxisCommand(const QString cmd)
         return;
     }
     mpCurrentPlotWindow->getCurrentPlotTab()->getPlotArea()->setAxisLocked(QwtPlot::xBottom, cmd=="on");
+}
+
+void HcomHandler::executeSleepCommand(const QString cmd)
+{
+    if (!cmd.isEmpty())
+    {
+        bool ok;
+        double s = cmd.toDouble(&ok);
+        if (ok)
+        {
+            QElapsedTimer timer;
+            timer.start();
+            HCOMINFO("Sleeping for: "+cmd+" seconds");
+            while ( timer.elapsed() < qint64(s*1000) )
+            {
+                qApp->processEvents();
+            }
+        }
+        else
+        {
+            HCOMERR("Could not interpret: '"+cmd+"' as a number");
+        }
+    }
+    else
+    {
+        HCOMERR("sleep requires at least one argument (the number of seconds to sleep)");
+    }
 }
 
 
@@ -7395,9 +7419,9 @@ void HcomHandler::toLongDataNames(QString &rName) const
 //! @brief Converts a command to a directory path, or returns an empty string if command is invalid
 QString HcomHandler::getDirectory(const QString &cmd) const
 {
-    if(QDir().exists(QDir().cleanPath(mPwd+"/"+cmd)))
+    if(QDir().exists(QDir::cleanPath(mPwd+"/"+cmd)))
     {
-        return QDir().cleanPath(mPwd+"/"+cmd);
+        return QDir::cleanPath(mPwd+"/"+cmd);
     }
     else if(QDir().exists(cmd))
     {
