@@ -18,7 +18,14 @@ void sendClientMessage(zmq::socket_t &rSocket, ClientMessageIdEnumT id, const T 
     msgpack::v1::sbuffer out_buffer;
     msgpack::pack(out_buffer, id);
     msgpack::pack(out_buffer, rMessage);
-    rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+    try
+    {
+        rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+    }
+    catch(zmq::error_t e)
+    {
+        //Ignore
+    }
 }
 
 
@@ -26,7 +33,14 @@ void sendShortClientMessage(zmq::socket_t &rSocket, ClientMessageIdEnumT id)
 {
     msgpack::v1::sbuffer out_buffer;
     msgpack::pack(out_buffer, id);
-    rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+    try
+    {
+        rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+    }
+    catch(zmq::error_t e)
+    {
+        //Ignore
+    }
 }
 
 bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNackReason)
@@ -111,20 +125,23 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
     sendClientMessage<CM_GetParam_t>(mRWCSocket, C_GetParam, msg);
 
     zmq::message_t response;
-    mRWCSocket.recv(&response);
-    size_t offset=0;
-    size_t id = getMessageId(response, offset);
-    if (id == S_GetParam_Reply)
+    if (receiveWithTimeout(mRWCSocket, response))
     {
-        rValue = unpackMessage<string>(response, offset);
-        assert(response.size() == offset);
-        return true;
+        size_t offset=0;
+        size_t id = getMessageId(response, offset);
+        if (id == S_GetParam_Reply)
+        {
+            rValue = unpackMessage<string>(response, offset);
+            assert(response.size() == offset);
+            return true;
+        }
+        else
+        {
+            rValue.clear();
+            return false;
+        }
     }
-    else
-    {
-        rValue.clear();
-        return false;
-    }
+    return false;
 }
 
 bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &rValue)
