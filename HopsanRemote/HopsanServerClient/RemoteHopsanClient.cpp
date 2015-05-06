@@ -383,7 +383,7 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
     req.maxBenchmarkTime = maxBenchmarkTime;
     req.numThreads = -1;
 
-    sendClientMessage<CM_ReqServerMachines_t>(mRWCSocket, C_ReqServerMachines, req);
+    sendClientMessage<CM_ReqServerMachines_t>(mRSCSocket, C_ReqServerMachines, req);
 
     zmq::message_t response;
     if (receiveWithTimeout(mRSCSocket, response))

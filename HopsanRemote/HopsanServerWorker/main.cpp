@@ -3,6 +3,8 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <chrono>
 
 #include "zmq.hpp"
 
@@ -215,6 +217,14 @@ string getParameter(ComponentSystem *pSystem, HString &fullname)
 string gWorkerId;
 #define PRINTWORKER "Worker "+gWorkerId+"; "
 
+std::string nowDateTime()
+{
+    std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    char buff[64];
+    std::strftime(buff, sizeof(buff), "%b %d %H:%M:%S", std::localtime(&now_time));
+    return std::string(&buff[0]);
+}
+
 void loadComponentLibraries(const std::string &rDir)
 {
     FileAccess fa;
@@ -223,13 +233,13 @@ void loadComponentLibraries(const std::string &rDir)
         vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT));
         for (string f : soFiles)
         {
-            cout << PRINTWORKER << "Loading library file: " << f << endl;
+            cout << PRINTWORKER << nowDateTime() << " Loading library file: " << f << endl;
             gHopsanCore.loadExternalComponentLib(f.c_str());
         }
     }
     else
     {
-        cout << PRINTWORKER << "Error: Could not enter directory: " << rDir << endl;
+        cout << PRINTWORKER << nowDateTime() << " Error: Could not enter directory: " << rDir << endl;
     }
 }
 
@@ -249,7 +259,7 @@ int main(int argc, char* argv[])
 {
     if (argc < 4)
     {
-        cout << PRINTWORKER << "Error: To few arguments!" << endl;
+        cout << PRINTWORKER << nowDateTime() << " Error: To few arguments!" << endl;
         return 1;
     }
 
@@ -264,7 +274,8 @@ int main(int argc, char* argv[])
         nThreads = size_t(atoi(argv[4]));
     }
 
-    cout << PRINTWORKER << "Listening on port: " << workerCtrlPort << " Using: " << nThreads << " threads" << endl;
+    cout << PRINTWORKER << nowDateTime() << " Listening on port: " << workerCtrlPort << " Using: " << nThreads << " threads" << endl;
+    cout << PRINTWORKER << nowDateTime() << " Server control port is: " << serverCtrlPort << endl;
 
     // Loading component libraries
     loadComponentLibraries("./componentLibraries");
@@ -301,11 +312,11 @@ int main(int argc, char* argv[])
             nClientTimeouts = 0;
             size_t offset=0;
             size_t msg_id = getMessageId(request, offset);
-            cout << PRINTWORKER << "Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+            cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
             if (msg_id == C_SetParam)
             {
                 CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset);
-                cout << PRINTWORKER << "Client want to set parameter " << msg.name << " " << msg.value << endl;
+                cout << PRINTWORKER << nowDateTime() << " Client want to set parameter " << msg.name << " " << msg.value << endl;
 
                 // Set parameter
                 HString fullName = msg.name.c_str();
@@ -323,7 +334,7 @@ int main(int argc, char* argv[])
             else if (msg_id == C_GetParam)
             {
                 std::string msg = unpackMessage<std::string>(request, offset);
-                cout << PRINTWORKER << "Client want to get parameter " << msg << endl;
+                cout << PRINTWORKER << nowDateTime() << " Client want to get parameter " << msg << endl;
 
                 // Get parameter
                 HString fullName = msg.c_str();
@@ -343,7 +354,7 @@ int main(int argc, char* argv[])
             else if (msg_id == C_SendingHmf)
             {
                 std::string hmf = unpackMessage<std::string>(request, offset);
-                cout << PRINTWORKER << "Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
+                cout << PRINTWORKER << nowDateTime() << " Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
 
                 // If a model is already loaded then delete it
                 if (pRootSystem)
@@ -360,12 +371,12 @@ int main(int argc, char* argv[])
 
                 if (pRootSystem && (gHopsanCore.getNumErrorMessages() == 0) && (gHopsanCore.getNumFatalMessages() == 0) )
                 {
-                    cout << PRINTWORKER << "Model was loaded sucessfully" << endl;
+                    cout << PRINTWORKER << nowDateTime() << " Model was loaded sucessfully" << endl;
                     sendServerAck(socket);
                 }
                 else
                 {
-                    cout << PRINTWORKER << "Error: Could not load the model" << endl;
+                    cout << PRINTWORKER << nowDateTime() << " Error: Could not load the model" << endl;
                     sendServerNAck(socket, "Server could not load model");
                 }
             }
@@ -377,16 +388,16 @@ int main(int argc, char* argv[])
                 bool irc=false,src=false;
                 TicToc timer;
                 irc = simulator.initializeSystem(simStartTime, simStopTime, pRootSystem);
-                timer.TocPrint(PRINTWORKER+"Initialize");
+                timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
                 if (irc)
                 {
                     timer.Tic();
                     src = simulator.simulateSystem(simStartTime, simStopTime, 1, pRootSystem);
-                    timer.TocPrint(PRINTWORKER+"Simulate");
+                    timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
                 }
                 timer.Tic();
                 simulator.finalizeSystem(pRootSystem);
-                timer.TocPrint(PRINTWORKER+"Finalize");
+                timer.TocPrint(PRINTWORKER+nowDateTime()+" Finalize");
 
                 if (irc && src)
                 {
@@ -394,12 +405,12 @@ int main(int argc, char* argv[])
                 }
                 else if (!irc)
                 {
-                    cout  << PRINTWORKER << "Model Init failed"  << endl;
+                    cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
                     sendServerNAck(socket, "Could not initialize system");
                 }
                 else
                 {
-                    cout  << PRINTWORKER << "Model simulation failed"  << endl;
+                    cout  << PRINTWORKER << nowDateTime() << " Model simulation failed"  << endl;
                     sendServerNAck(socket, "Cold not simulate system");
                 }
             }
@@ -408,7 +419,7 @@ int main(int argc, char* argv[])
                 string varName = unpackMessage<string>(request, offset);
                 vector<ModelVariableInfo_t> vMVI;
                 collectAllModelVariables(pRootSystem, vMVI, "");
-                cout << PRINTWORKER << "Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
+                cout << PRINTWORKER << nowDateTime() << " Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
 
                 //! @todo Check if simulation finished, ACK Nack
                 vector<SM_Variable_Description_t> vars;
@@ -445,7 +456,7 @@ int main(int argc, char* argv[])
                 vector<SM_HopsanCoreMessage_t> messages;
                 size_t nMessages = pHandler->getNumWaitingMessages();
                 messages.resize(nMessages);
-                cout << PRINTWORKER << "Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
+                cout << PRINTWORKER << nowDateTime() << " Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
                 for (size_t i=0; i<nMessages; ++i)
                 {
                     HString mess, tag, type;
@@ -459,7 +470,7 @@ int main(int argc, char* argv[])
             }
             else if (msg_id == C_Bye)
             {
-                cout << PRINTWORKER << "Client said godbye!" << endl;
+                cout << PRINTWORKER << nowDateTime() << " Client said godbye!" << endl;
                 sendServerAck(socket);
                 keepRunning = false;
 
@@ -468,7 +479,7 @@ int main(int argc, char* argv[])
             else
             {
                 stringstream ss;
-                ss << PRINTWORKER << "Error: Unknown message id: " << msg_id << endl;
+                ss << PRINTWORKER << nowDateTime() << " Error: Unknown message id: " << msg_id << endl;
                 cout << ss.str() << endl;
                 sendServerNAck(socket, ss.str());
             }
@@ -480,7 +491,7 @@ int main(int argc, char* argv[])
             if (double(nClientTimeouts)*double(client_timeout)/60000.0 >= dead_client_timout_min)
             {
                 // Force quit after 5 minutes
-                cout << PRINTWORKER << "Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
+                cout << PRINTWORKER << nowDateTime() << " Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
                 //! @todo should hanlde loong simulation time
                 sendServerGoodby(serverSocket);
                 keepRunning = false;
