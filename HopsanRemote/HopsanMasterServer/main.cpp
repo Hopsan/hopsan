@@ -47,20 +47,20 @@ void refreshServerStatus(size_t serverId)
     RemoteHopsanClient hopsanClient(gContext);
     ServerInfo server = gServerHandler.getServer(serverId);
 
-    cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId;
+    cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
     hopsanClient.connectToServer(server.ip, server.port);
     ServerStatusT status;
     bool rc = hopsanClient.requestStatus(status);
     if (rc)
     {
-        cout << " ... Server is responding!" << endl;
+        cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is responding!" << endl;
         server.lastCheckTime = steady_clock::now();
         server.isReady = status.isReady;
         gServerHandler.updateServerInfo(server);
     }
     else
     {
-        cout << " ... Server is NOT responding!" << endl;
+        cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
         gServerHandler.removeServer(serverId);
         //! @todo what if network temporarily down
     }
@@ -157,6 +157,8 @@ int main(int argc, char* argv[])
         }
 
         // Every time we get here we should refresh status from servers where status is old
+        // Note! You should make sure that the max age here is shorter then the "Report to master server" timer in the actual server
+        // Otherwise you will end up with the server trying to reregister because no status has been requested
         double maxAgeSeconds=60;
         std::list<size_t> refreshList = gServerHandler.getServersToRefresh(maxAgeSeconds);
         for (auto &item : refreshList)
