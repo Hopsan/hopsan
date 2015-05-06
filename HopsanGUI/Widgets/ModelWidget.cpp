@@ -62,6 +62,9 @@
 #include "GUIPort.h"
 #include "PlotWidget2.h"
 
+#ifdef USEZMQ
+QSharedPointer<RemoteCoreAddressHandler> gpRemoteCoreAddressHandler;
+#endif
 
 //! @class ModelWidget
 //! @brief The ModelWidget class is a Widget to contain a simulation model
@@ -420,14 +423,35 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
     mUseRemotecoreDispatch=useDispatch;
 
 #ifdef USEZMQ
+    QStringList serveraddress;
+    if (mUseRemotecoreDispatch)
+    {
+        // Check if we should create the Remote Address handler for the first time
+        if (gpRemoteCoreAddressHandler.isNull())
+        {
+            //! @todo this is a hack
+            gpRemoteCoreAddressHandler = QSharedPointer<RemoteCoreAddressHandler>(new RemoteCoreAddressHandler);
+            QStringList dsaddr = gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS).split(":");
+            gpRemoteCoreAddressHandler->setHopsanAddressServer(dsaddr.first(), dsaddr.last());
+            gpRemoteCoreAddressHandler->connect();
+            gpRemoteCoreAddressHandler->requestAvailableServers();
+            //! @todo what happens if it disconnects, then we would need to reconnect, we also need to keep teh connection alive by polling
+        }
+
+        gpRemoteCoreAddressHandler->requestAvailableServers();
+        QString addr = gpRemoteCoreAddressHandler->getBestAvailableServer();
+        serveraddress = addr.split(":");
+    }
+    else
+    {
+        serveraddress = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
+    }
+
+
     if (mUseRemoteCore)
     {
         mpRemoteCoreSimulationHandler = new RemoteCoreSimulationHandler();
-        QStringList saddr = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
-        QStringList dsaddr = gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS).split(":");
-        mpRemoteCoreSimulationHandler->setHopsanServer(saddr.first(), saddr.last());
-        mpRemoteCoreSimulationHandler->setHopsanDispatch(dsaddr.first(), dsaddr.last());
-        mpRemoteCoreSimulationHandler->setUseDispatchServer(mUseRemotecoreDispatch);
+        mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress.first(), serveraddress.last());
 
         bool rc = mpRemoteCoreSimulationHandler->connect();
         if (rc)
@@ -730,7 +754,7 @@ void ModelWidget::collectPlotData(bool overWriteGeneration)
 
 void ModelWidget::setUseRemoteSimulationCore(bool tf)
 {
-    setUseRemoteSimulationCore(tf, mUseRemotecoreDispatch);
+    setUseRemoteSimulationCore(tf, gpConfig->getBoolSetting(CFG_USEREMOTEDISPATCH));
 }
 
 

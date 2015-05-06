@@ -29,6 +29,7 @@
 #include <QVector>
 #include <QPair>
 #include <QStringList>
+#include <QMultiMap>
 
 //Forward declarations of HopsanGUI classes
 class LibraryWidget;
@@ -304,25 +305,51 @@ private:
 #ifdef USEZMQ
 class RemoteHopsanClient;
 
+class RemoteCoreAddressHandler
+{
+private:
+    typedef struct
+    {
+        QString addr;
+        double speed=0;
+        int nOpenSlots=10; // This is a HACK should ask server
+        bool recentlyTaken=false;
+    }ServerInfoT;
+
+    QString mHopsanAddressServerIP, mHopsanAddressServerPort;
+    RemoteHopsanClient *mpRemoteHopsanClient=0;
+
+    //! @todo shared pointer to info maybe
+    QMap<QString, ServerInfoT> mAvailableServers;
+    QMultiMap<double, ServerInfoT> mServerSpeedMap;
+
+public:
+    RemoteCoreAddressHandler();
+    ~RemoteCoreAddressHandler();
+    void setHopsanAddressServer( QString ip, QString port );
+
+    bool isConnected();
+
+    bool connect();
+    void disconnect();
+
+    QList<QString> requestAvailableServers();
+    QList<QString> requestAvailableServers(int nOpenSlots);
+
+    QString getBestAvailableServer();
+};
+
 class RemoteCoreSimulationHandler
 {
 private:
     QString mRemoteServerAddress,   mRemoteServerPort;
-    QString mHopsanDispatchAddress, mHopsanDispatchPort;
-
-    bool mUseDispatch = false;
     RemoteHopsanClient *mpRemoteHopsanClient=0;
-
 
 public:
     RemoteCoreSimulationHandler();
     ~RemoteCoreSimulationHandler();
 
     void setHopsanServer(QString ip, QString port );
-    void setHopsanDispatch( QString ip, QString port );
-
-    void setUseDispatchServer(bool tf);
-    bool usingDispatchServer() const;
 
     bool connect();
     void disconnect();

@@ -1458,48 +1458,26 @@ void RemoteCoreSimulationHandler::setHopsanServer(QString ip, QString port)
     mRemoteServerPort = port;
 }
 
-void RemoteCoreSimulationHandler::setHopsanDispatch(QString ip, QString port)
-{
-    mHopsanDispatchAddress = ip;
-    mHopsanDispatchPort = port;
-}
-
-void RemoteCoreSimulationHandler::setUseDispatchServer(bool tf)
-{
-    mUseDispatch = tf;
-}
-
-bool RemoteCoreSimulationHandler::usingDispatchServer() const
-{
-    return mUseDispatch;
-}
 
 bool RemoteCoreSimulationHandler::connect()
 {
-    if (mUseDispatch)
+    if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
     {
-        //! @todo use dispatch
-        return false;
-    }
-    else
-    {
-        if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
+        mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
+        if (mpRemoteHopsanClient->serverConnected())
         {
-            mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
-            if (mpRemoteHopsanClient->serverConnected())
+            size_t workerPort;
+            if (mpRemoteHopsanClient->requestSlot(workerPort))
             {
-                size_t workerPort;
-                if (mpRemoteHopsanClient->requestSlot(workerPort))
+                mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
+                if (mpRemoteHopsanClient->workerConnected())
                 {
-                    mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
-                    if (mpRemoteHopsanClient->workerConnected())
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
     }
+
     return false;
 }
 
@@ -1594,7 +1572,102 @@ QString RemoteCoreSimulationHandler::getLastError() const
     return QString::fromStdString(mpRemoteHopsanClient->getLastErrorMessage());
 }
 
+RemoteCoreAddressHandler::RemoteCoreAddressHandler()
+{
+    mpRemoteHopsanClient = new RemoteHopsanClient(zmqContext);
+}
+
+RemoteCoreAddressHandler::~RemoteCoreAddressHandler()
+{
+    if (mpRemoteHopsanClient->serverConnected())
+    {
+        disconnect();
+    }
+    if (mpRemoteHopsanClient)
+    {
+        delete mpRemoteHopsanClient;
+        mpRemoteHopsanClient = 0;
+    }
+}
+
+void RemoteCoreAddressHandler::setHopsanAddressServer(QString ip, QString port)
+{
+    mHopsanAddressServerIP = ip;
+    mHopsanAddressServerPort = port;
+
+}
+
+bool RemoteCoreAddressHandler::isConnected()
+{
+    return mpRemoteHopsanClient->serverConnected();
+}
+
+bool RemoteCoreAddressHandler::connect()
+{
+    if (!mHopsanAddressServerIP.isEmpty() && !mHopsanAddressServerPort.isEmpty())
+    {
+        mpRemoteHopsanClient->connectToServer(mHopsanAddressServerIP.toStdString(), mHopsanAddressServerPort.toStdString());
+        if (mpRemoteHopsanClient->serverConnected())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void RemoteCoreAddressHandler::disconnect()
+{
+    mpRemoteHopsanClient->disconnect();
+}
+
+QList<QString> RemoteCoreAddressHandler::requestAvailableServers()
+{
+    //! @todo maybe should have a timer to prevent requesting multiple time within the same period
+    mAvailableServers.clear();
+    if (mpRemoteHopsanClient->serverConnected())
+    {
+        std::vector<std::string> ips, ports;
+        mpRemoteHopsanClient->requestServerMachines(-1, 1e200, ips, ports);
+        for (int i=0; i<ips.size(); ++i)
+        {
+            QString addr = QString("%1:%2").arg(ips[i].c_str()).arg(ports[i].c_str());
+            ServerInfoT info;
+            info.addr = addr;
+            mAvailableServers.insert(addr, info);
+            mServerSpeedMap.insertMulti(0, info );
+        }
+    }
+    return mAvailableServers.keys();
+}
+
+QList<QString> RemoteCoreAddressHandler::requestAvailableServers(int nOpenSlots)
+{
+    requestAvailableServers();
+
+}
+
+QString RemoteCoreAddressHandler::getBestAvailableServer()
+{
+    for (auto it=mServerSpeedMap.begin(); it!=mServerSpeedMap.end(); ++it)
+    {
+        if (!it.value().recentlyTaken)
+        {
+            it.value().recentlyTaken = true;
+            return it.value().addr;
+        }
+    }
+
+    // If we get here then everyone is taken, lets search again for the first one with an open slot
+    for (auto it=mServerSpeedMap.begin(); it!=mServerSpeedMap.end(); ++it)
+    {
+        if (it.value().nOpenSlots > 0)
+        {
+            return it.value().addr;
+        }
+    }
+
+    return "";
+}
+
+
 #endif
-
-
-
