@@ -9,7 +9,7 @@ using namespace std::chrono;
 
 void ServerHandler::addServer(ServerInfo server)
 {
-    mLock.lock();
+    mMutex.lock();
     size_t id=0;
     if (!mFreeIds.empty())
     {
@@ -23,48 +23,52 @@ void ServerHandler::addServer(ServerInfo server)
     server.mId = id;
     cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " IP: " << server.ip << " Port: " << server.port << endl;
     mServerMap.insert(std::pair<size_t, ServerInfo>(id,server));
-    mLock.unlock();
+    mMutex.unlock();
 }
 
 void ServerHandler::updateServerInfo(ServerInfo server)
 {
-    mLock.lock();
+    mMutex.lock();
     mServerMap[server.id()] = server;
-    mLock.unlock();
+    mMutex.unlock();
 }
 
 void ServerHandler::removeServer(size_t id)
 {
-    mLock.lock();
+    mMutex.lock();
     cout << PRINTSERVER << nowDateTime() << " Removing server: " << id << endl;
     mServerMap.erase(id);
     mFreeIds.push_back(id);
-    mLock.unlock();
+    mMutex.unlock();
 }
 
 ServerInfo ServerHandler::getServer(size_t id)
 {
     ServerInfo si;
-    mLock.lock();
+    mMutex.lock();
     auto it = mServerMap.find(id);
     if (it != mServerMap.end())
     {
         si = it->second;
     }
-    mLock.unlock();
+    mMutex.unlock();
     return si;
 }
 
 int ServerHandler::getServerMatching(std::string ip, std::string port)
 {
+    int result=-1;
+    mMutex.lock();
     for(auto &item : mServerMap )
     {
         if ( (item.second.ip == ip) && (item.second.port == port) )
         {
-            return item.first;
+            result = item.first;
+            break;
         }
     }
-    return -1;
+    mMutex.unlock();
+    return result;
 }
 
 ServerHandler::idlist_t ServerHandler::getServersFasterThen(double maxTime, int maxNum)
@@ -75,7 +79,7 @@ ServerHandler::idlist_t ServerHandler::getServersFasterThen(double maxTime, int 
     }
 
     idlist_t ids;
-    mLock.lock();
+    mMutex.lock();
     for (auto &item : mServerMap)
     {
         if (item.second.isReady && item.second.benchmarkTime < maxTime)
@@ -87,7 +91,7 @@ ServerHandler::idlist_t ServerHandler::getServersFasterThen(double maxTime, int 
             }
         }
     }
-    mLock.unlock();
+    mMutex.unlock();
 
     return ids;
 }
@@ -100,6 +104,7 @@ size_t ServerHandler::numServers()
 ServerHandler::idlist_t ServerHandler::getServersToRefresh(double maxAge)
 {
     std::list<size_t> ids;
+    mMutex.lock();
     for(auto &server : mServerMap)
     {
         duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - server.second.lastCheckTime);
@@ -108,5 +113,6 @@ ServerHandler::idlist_t ServerHandler::getServersToRefresh(double maxAge)
             ids.push_back(server.second.id());
         }
     }
+    mMutex.unlock();
     return ids;
 }

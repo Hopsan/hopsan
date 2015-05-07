@@ -6,6 +6,7 @@
 #include "Messages.h"
 #include "msgpack.hpp"
 #include <string>
+#include <iostream>
 
 
 inline bool receiveWithTimeout(zmq::socket_t &rSocket, long timeout, zmq::message_t &rMessage)
@@ -27,15 +28,25 @@ inline bool receiveWithTimeout(zmq::socket_t &rSocket, long timeout, zmq::messag
     }
     catch(zmq::error_t e)
     {
-        //Ignore
+        std::cout << "EXCEPTION in receiveWithTimeout: " << e.what() << std::endl;
     }
     return false;
 }
 
 template <typename T>
-inline T unpackMessage(zmq::message_t &rRequest, size_t &rOffset)
+inline T unpackMessage(zmq::message_t &rRequest, size_t &rOffset, bool &rUnpackOK)
 {
-    return msgpack::unpack(static_cast<char*>(rRequest.data()), rRequest.size(), rOffset).get().as<T>();
+    try
+    {
+        rUnpackOK = true;
+        return msgpack::unpack(static_cast<char*>(rRequest.data()), rRequest.size(), rOffset).get().as<T>();
+    }
+    catch( msgpack::unpack_error e)
+    {
+        std::cout << "EXCEPTION in unpackMessage: " << e.what() << std::endl;
+        rUnpackOK = false;
+        return T();
+    }
 }
 
 //inline size_t parseMessageId(char* pBuffer, size_t len, size_t &rOffset)
@@ -43,10 +54,11 @@ inline T unpackMessage(zmq::message_t &rRequest, size_t &rOffset)
 //    return msgpack::unpack(pBuffer, len, rOffset).get().as<size_t>();
 //}
 
-inline size_t getMessageId(zmq::message_t &rMsg, size_t &rOffset)
+inline size_t getMessageId(zmq::message_t &rMsg, size_t &rOffset, bool &rUnpackOK)
 {
     //return parseMessageId(static_cast<char*>(rMsg.data()), rMsg.size(), rOffset);
-    return msgpack::unpack(static_cast<char*>(rMsg.data()), rMsg.size(), rOffset).get().as<size_t>();
+    //return msgpack::unpack(static_cast<char*>(rMsg.data()), rMsg.size(), rOffset).get().as<size_t>();
+    return unpackMessage<size_t>(rMsg, rOffset, rUnpackOK);
 }
 
 inline std::string makeZMQAddress(std::string ip, size_t port)

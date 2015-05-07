@@ -122,11 +122,13 @@ int main(int argc, char* argv[])
         if(receiveWithTimeout(socket, 30000, message))
         {
             size_t offset=0;
-            size_t msg_id = getMessageId(message, offset);
+            bool idParseOK;
+            size_t msg_id = getMessageId(message, offset, idParseOK);
 
             if (msg_id == S_Available)
             {
-                SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset);
+                bool parseOK;
+                SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
 
                 ServerInfo si;
                 si.ip = sm.ip;
@@ -145,7 +147,8 @@ int main(int argc, char* argv[])
             }
             else if (msg_id == S_Closing)
             {
-                SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset);
+                bool parseOK;
+                SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
                 cout << PRINTSERVER << nowDateTime() << " Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
 
                 // lookup server
@@ -166,7 +169,8 @@ int main(int argc, char* argv[])
                 //! @todo maybe refresh all before checking
 
                 //! @todo be smart
-                CM_ReqServerMachines_t req = unpackMessage<CM_ReqServerMachines_t>(message,offset);
+                bool parseOK;
+                CM_ReqServerMachines_t req = unpackMessage<CM_ReqServerMachines_t>(message,offset,parseOK);
                 cout << PRINTSERVER << nowDateTime() << " Got server machines request" << endl;
                 auto ids = gServerHandler.getServersFasterThen(req.maxBenchmarkTime, req.numMachines);
                 vector<string> ips, ports;
@@ -182,6 +186,10 @@ int main(int argc, char* argv[])
                 reply.ports = ports;
 
                 sendServerMessage<MSM_ReqServerMachines_Reply_t>(socket, S_ReqServerMachines_Reply, reply);
+            }
+            else if (!idParseOK)
+            {
+                cout << PRINTSERVER << nowDateTime() << " Error: Could not parse message id" << std::endl;
             }
 
         }

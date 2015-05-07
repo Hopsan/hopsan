@@ -311,245 +311,278 @@ int main(int argc, char* argv[])
     loadComponentLibraries("../componentLibraries/defaultLibrary");
 
     // Prepare our context and sockets
-#ifdef _WIN32
-    zmq::context_t context(1, 63);
-#else
-    zmq::context_t context(1);
-#endif
-
-    zmq::socket_t socket (context, ZMQ_REP);
-    zmq::socket_t serverSocket( context, ZMQ_REQ);
-
-    int linger_ms = 1000;
-    socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-    serverSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-
-    socket.bind( makeZMQAddress("*", workerCtrlPort).c_str() );
-    serverSocket.connect( makeZMQAddress("localhost", serverCtrlPort).c_str() );
-
-    const long client_timeout = 30000;
-    const double dead_client_timout_min = 5;
-    size_t nClientTimeouts = 0;
-
-#ifdef _WIN32
-    SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
-#else
-    s_catch_signals();
-#endif
-    bool keepRunning=true;
-    while (keepRunning)
+    try
     {
-        // Wait for next request from client
-        zmq::message_t request;
-        if(receiveWithTimeout(socket, client_timeout, request))
+#ifdef _WIN32
+        zmq::context_t context(1, 63);
+#else
+        zmq::context_t context(1);
+#endif
+
+        zmq::socket_t socket (context, ZMQ_REP);
+        zmq::socket_t serverSocket( context, ZMQ_REQ);
+
+        int linger_ms = 1000;
+        socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+        serverSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+
+        socket.bind( makeZMQAddress("*", workerCtrlPort).c_str() );
+        serverSocket.connect( makeZMQAddress("localhost", serverCtrlPort).c_str() );
+
+        const long client_timeout = 30000;
+        const double dead_client_timout_min = 5;
+        size_t nClientTimeouts = 0;
+
+#ifdef _WIN32
+        SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
+#else
+        s_catch_signals();
+#endif
+        bool keepRunning=true;
+        while (keepRunning)
         {
-            nClientTimeouts = 0;
-            size_t offset=0;
-            size_t msg_id = getMessageId(request, offset);
-            cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
-            if (msg_id == C_SetParam)
+            // Wait for next request from client
+            zmq::message_t request;
+            if(receiveWithTimeout(socket, client_timeout, request))
             {
-                CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset);
-                cout << PRINTWORKER << nowDateTime() << " Client want to set parameter " << msg.name << " " << msg.value << endl;
+                nClientTimeouts = 0;
+                size_t offset=0;
+                bool idParseOK;
+                size_t msg_id = getMessageId(request, offset, idParseOK);
+                cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+                if (msg_id == C_SetParam)
+                {
+                    bool parseOK;
+                    CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset, parseOK);
+                    cout << PRINTWORKER << nowDateTime() << " Client want to set parameter " << msg.name << " " << msg.value << endl;
 
-                // Set parameter
-                HString fullName = msg.name.c_str();
-                bool rc = setParameter(pRootSystem, fullName, msg.value.c_str());
-                // Send ack or nack
-                if (rc)
-                {
-                    sendServerAck(socket);
-                }
-                else
-                {
-                    sendServerNAck(socket, "Failed to set parameter: "+msg.name);
-                }
-            }
-            else if (msg_id == C_GetParam)
-            {
-                std::string msg = unpackMessage<std::string>(request, offset);
-                cout << PRINTWORKER << nowDateTime() << " Client want to get parameter " << msg << endl;
-
-                // Get parameter
-                HString fullName = msg.c_str();
-                string val = getParameter(pRootSystem, fullName);
-                //! @todo what if root system name is first?
-
-                // Send param value (as string) or nack
-                if (val.empty())
-                {
-                    sendServerNAck(socket, "Could not get parameter");
-                }
-                else
-                {
-                    sendServerStringMessage(socket, S_GetParam_Reply, val);
-                }
-            }
-            else if (msg_id == C_SendingHmf)
-            {
-                std::string hmf = unpackMessage<std::string>(request, offset);
-                cout << PRINTWORKER << nowDateTime() << " Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
-
-                // If a model is already loaded then delete it
-                if (pRootSystem)
-                {
-                    delete pRootSystem;
-                    pRootSystem=nullptr;
-                }
-
-                //! @todo loadHMFModel will hang (sometimes) if hmf empty
-                if (!hmf.empty())
-                {
-                    pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime);
-                }
-
-                if (pRootSystem && (gHopsanCore.getNumErrorMessages() == 0) && (gHopsanCore.getNumFatalMessages() == 0) )
-                {
-                    cout << PRINTWORKER << nowDateTime() << " Model was loaded sucessfully" << endl;
-                    sendServerAck(socket);
-                }
-                else
-                {
-                    cout << PRINTWORKER << nowDateTime() << " Error: Could not load the model" << endl;
-                    sendServerNAck(socket, "Server could not load model");
-                }
-            }
-            else if (msg_id == C_Simulate)
-            {
-                CM_Simulate_t msg = unpackMessage<CM_Simulate_t>(request, offset);
-                // Start simulation
-                SimulationHandler simulator;
-                bool irc=false,src=false;
-                TicToc timer;
-                irc = simulator.initializeSystem(simStartTime, simStopTime, pRootSystem);
-                timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
-                if (irc)
-                {
-                    timer.Tic();
-                    src = simulator.simulateSystem(simStartTime, simStopTime, 1, pRootSystem);
-                    timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
-                }
-                timer.Tic();
-                simulator.finalizeSystem(pRootSystem);
-                timer.TocPrint(PRINTWORKER+nowDateTime()+" Finalize");
-
-                if (irc && src)
-                {
-                    sendServerAck(socket);
-                }
-                else if (!irc)
-                {
-                    cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
-                    sendServerNAck(socket, "Could not initialize system");
-                }
-                else
-                {
-                    cout  << PRINTWORKER << nowDateTime() << " Model simulation failed"  << endl;
-                    sendServerNAck(socket, "Cold not simulate system");
-                }
-            }
-            else if (msg_id == C_ReqResults)
-            {
-                string varName = unpackMessage<string>(request, offset);
-                vector<ModelVariableInfo_t> vMVI;
-                collectAllModelVariables(pRootSystem, vMVI, "");
-                cout << PRINTWORKER << nowDateTime() << " Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
-
-                //! @todo Check if simulation finished, ACK Nack
-                vector<SM_Variable_Description_t> vars;
-                for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
-                {
-                    vars.push_back(SM_Variable_Description_t());
-                    vars.back().name = vMVI[mvi].fullName.c_str();
-                    vars.back().alias = "";
-                    vars.back().unit = vMVI[mvi].unit.c_str();
-                    vars.back().data.reserve(vMVI[mvi].dataLength);
-                    // Copy if a data variable
-                    if (vMVI[mvi].pData)
+                    // Set parameter
+                    HString fullName = msg.name.c_str();
+                    bool rc = setParameter(pRootSystem, fullName, msg.value.c_str());
+                    // Send ack or nack
+                    if (rc)
                     {
-                        for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
-                        {
-                            vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
-                        }
+                        sendServerAck(socket);
                     }
-                    // Copy if a time data variable
-                    else if (vMVI[mvi].pTimeData)
+                    else
                     {
-                        for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
-                        {
-                            vars.back().data.push_back((*vMVI[mvi].pTimeData)[t]);
-                        }
+                        sendServerNAck(socket, "Failed to set parameter: "+msg.name);
                     }
                 }
-
-                sendServerMessage<vector<SM_Variable_Description_t>>(socket,S_ReqResults_Reply,vars);
-            }
-            else if (msg_id == C_ReqMessages)
-            {
-                HopsanCoreMessageHandler *pHandler = gHopsanCore.getCoreMessageHandler();
-                vector<SM_HopsanCoreMessage_t> messages;
-                size_t nMessages = pHandler->getNumWaitingMessages();
-                messages.resize(nMessages);
-                cout << PRINTWORKER << nowDateTime() << " Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
-                for (size_t i=0; i<nMessages; ++i)
+                else if (msg_id == C_GetParam)
                 {
-                    HString mess, tag, type;
-                    pHandler->getMessage(mess, type, tag);
-                    messages[i].message = mess.c_str();
-                    messages[i].tag = tag.c_str();
-                    messages[i].type = type[0];
+                    bool parseOK;
+                    std::string msg = unpackMessage<std::string>(request, offset, parseOK);
+                    cout << PRINTWORKER << nowDateTime() << " Client want to get parameter " << msg << endl;
+
+                    // Get parameter
+                    HString fullName = msg.c_str();
+                    string val = getParameter(pRootSystem, fullName);
+                    //! @todo what if root system name is first?
+
+                    // Send param value (as string) or nack
+                    if (val.empty())
+                    {
+                        sendServerNAck(socket, "Could not get parameter");
+                    }
+                    else
+                    {
+                        sendServerStringMessage(socket, S_GetParam_Reply, val);
+                    }
                 }
+                else if (msg_id == C_SendingHmf)
+                {
+                    bool parseOK;
+                    std::string hmf = unpackMessage<std::string>(request, offset, parseOK);
+                    if (parseOK)
+                    {
+                        cout << PRINTWORKER << nowDateTime() << " Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
 
-                sendServerMessage<vector<SM_HopsanCoreMessage_t>>(socket,S_ReqMessages_Reply,messages);
-            }
-            else if (msg_id == C_Bye)
-            {
-                cout << PRINTWORKER << nowDateTime() << " Client said godbye!" << endl;
-                sendServerAck(socket);
-                keepRunning = false;
+                        // If a model is already loaded then delete it
+                        if (pRootSystem)
+                        {
+                            delete pRootSystem;
+                            pRootSystem=nullptr;
+                        }
 
-                sendServerGoodby(serverSocket);
+                        //! @todo loadHMFModel will hang (sometimes) if hmf empty
+                        if (!hmf.empty())
+                        {
+                            pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime);
+                        }
+
+                        if (pRootSystem && (gHopsanCore.getNumErrorMessages() == 0) && (gHopsanCore.getNumFatalMessages() == 0) )
+                        {
+                            cout << PRINTWORKER << nowDateTime() << " Model was loaded sucessfully" << endl;
+                            sendServerAck(socket);
+                        }
+                        else
+                        {
+                            cout << PRINTWORKER << nowDateTime() << " Error: Could not load the model" << endl;
+                            sendServerNAck(socket, "Server could not load model");
+                        }
+                    }
+                    else
+                    {
+                        cout << PRINTWORKER << nowDateTime() << " Error: Could not parse model message" << endl;
+                        sendServerNAck(socket, "Could not parse model message");
+                    }
+                }
+                else if (msg_id == C_Simulate)
+                {
+                    bool parseOK;
+                    CM_Simulate_t msg = unpackMessage<CM_Simulate_t>(request, offset, parseOK);
+                    if (parseOK)
+                    {
+                        // Start simulation
+                        SimulationHandler simulator;
+                        bool irc=false,src=false;
+                        TicToc timer;
+                        irc = simulator.initializeSystem(simStartTime, simStopTime, pRootSystem);
+                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
+                        if (irc)
+                        {
+                            timer.Tic();
+                            src = simulator.simulateSystem(simStartTime, simStopTime, 1, pRootSystem);
+                            timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
+                        }
+                        timer.Tic();
+                        simulator.finalizeSystem(pRootSystem);
+                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Finalize");
+
+                        if (irc && src)
+                        {
+                            sendServerAck(socket);
+                        }
+                        else if (!irc)
+                        {
+                            cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
+                            sendServerNAck(socket, "Could not initialize system");
+                        }
+                        else
+                        {
+                            cout  << PRINTWORKER << nowDateTime() << " Model simulation failed"  << endl;
+                            sendServerNAck(socket, "Cold not simulate system");
+                        }
+                    }
+                    else
+                    {
+                        cout  << PRINTWORKER << nowDateTime() << " Error: Failed to parse simulation message" << endl;
+                        sendServerNAck(socket, "Failed to parse simulation message");
+                    }
+                }
+                else if (msg_id == C_ReqResults)
+                {
+                    bool parseOK;
+                    string varName = unpackMessage<string>(request, offset, parseOK);
+                    vector<ModelVariableInfo_t> vMVI;
+                    collectAllModelVariables(pRootSystem, vMVI, "");
+                    cout << PRINTWORKER << nowDateTime() << " Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
+
+                    //! @todo Check if simulation finished, ACK Nack
+                    vector<SM_Variable_Description_t> vars;
+                    for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
+                    {
+                        vars.push_back(SM_Variable_Description_t());
+                        vars.back().name = vMVI[mvi].fullName.c_str();
+                        vars.back().alias = "";
+                        vars.back().unit = vMVI[mvi].unit.c_str();
+                        vars.back().data.reserve(vMVI[mvi].dataLength);
+                        // Copy if a data variable
+                        if (vMVI[mvi].pData)
+                        {
+                            for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                            {
+                                vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
+                            }
+                        }
+                        // Copy if a time data variable
+                        else if (vMVI[mvi].pTimeData)
+                        {
+                            for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                            {
+                                vars.back().data.push_back((*vMVI[mvi].pTimeData)[t]);
+                            }
+                        }
+                    }
+
+                    sendServerMessage<vector<SM_Variable_Description_t>>(socket,S_ReqResults_Reply,vars);
+                }
+                else if (msg_id == C_ReqMessages)
+                {
+                    HopsanCoreMessageHandler *pHandler = gHopsanCore.getCoreMessageHandler();
+                    vector<SM_HopsanCoreMessage_t> messages;
+                    size_t nMessages = pHandler->getNumWaitingMessages();
+                    messages.resize(nMessages);
+                    cout << PRINTWORKER << nowDateTime() << " Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
+                    for (size_t i=0; i<nMessages; ++i)
+                    {
+                        HString mess, tag, type;
+                        pHandler->getMessage(mess, type, tag);
+                        messages[i].message = mess.c_str();
+                        messages[i].tag = tag.c_str();
+                        messages[i].type = type[0];
+                    }
+
+                    sendServerMessage<vector<SM_HopsanCoreMessage_t>>(socket,S_ReqMessages_Reply,messages);
+                }
+                else if (msg_id == C_Bye)
+                {
+                    cout << PRINTWORKER << nowDateTime() << " Client said godbye!" << endl;
+                    sendServerAck(socket);
+                    keepRunning = false;
+
+                    sendServerGoodby(serverSocket);
+                }
+                else if (!idParseOK)
+                {
+                    cout << PRINTWORKER << nowDateTime() << " Error: Could not parse message id" << endl;
+                }
+                else
+                {
+                    stringstream ss;
+                    ss << PRINTWORKER << nowDateTime() << " Error: Unknown message id: " << msg_id << endl;
+                    cout << ss.str() << endl;
+                    sendServerNAck(socket, ss.str());
+                }
             }
             else
             {
-                stringstream ss;
-                ss << PRINTWORKER << nowDateTime() << " Error: Unknown message id: " << msg_id << endl;
-                cout << ss.str() << endl;
-                sendServerNAck(socket, ss.str());
+                //Handle timout / exception
+                nClientTimeouts++;
+                if (double(nClientTimeouts)*double(client_timeout)/60000.0 >= dead_client_timout_min)
+                {
+                    // Force quit after 5 minutes
+                    cout << PRINTWORKER << nowDateTime() << " Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
+                    //! @todo should hanlde loong simulation time
+                    sendServerGoodby(serverSocket);
+                    keepRunning = false;
+                }
             }
-        }
-        else
-        {
-            //Handle timout / exception
-            nClientTimeouts++;
-            if (double(nClientTimeouts)*double(client_timeout)/60000.0 >= dead_client_timout_min)
+
+            //! @todo do we need to sleep here?
+#ifndef _WIN32
+            //sleep(1);
+#else
+            //Sleep (1);
+#endif
+            if (s_interrupted)
             {
-                // Force quit after 5 minutes
-                cout << PRINTWORKER << nowDateTime() << " Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
-                //! @todo should hanlde loong simulation time
-                sendServerGoodby(serverSocket);
-                keepRunning = false;
+                cout << PRINTWORKER << nowDateTime() << " Interrupt signal received, killing worker" << std::endl;
+                keepRunning=false;
             }
         }
 
-        //! @todo do we need to sleep here?
-#ifndef _WIN32
-        //sleep(1);
-#else
-        //Sleep (1);
-#endif
-        if (s_interrupted)
+        // Delete the model if we have one
+        if (pRootSystem)
         {
-            cout << PRINTWORKER << nowDateTime() << " Interrupt signal received, killing worker" << std::endl;
-            keepRunning=false;
+            delete pRootSystem;
+            pRootSystem=nullptr;
         }
     }
-
-    // Delete the model if we have one
-    if (pRootSystem)
+    catch(zmq::error_t e)
     {
-        delete pRootSystem;
-        pRootSystem=nullptr;
+        cout << PRINTWORKER << nowDateTime() << " Error: Preparing our context and socket: " << e.what() << endl;
     }
 
     cout << PRINTWORKER << nowDateTime() << " Closed!" << endl;

@@ -39,6 +39,7 @@ class ServerConfig
 {
 public:
     int mControlPort = 23300;
+    string mControlPortStr = "23300";
     int mMaxNumSlots = 2;
     int mMaxThreadsPerSlot = 2;
 };
@@ -51,7 +52,7 @@ zmq::context_t gContext(1, 63);
 zmq::context_t gContext(1);
 #endif
 
-#define PRINTSERVER "Server; "
+#define PRINTSERVER "HopsanServer@"+gServerConfig.mControlPortStr+"; "
 std::string nowDateTime()
 {
     std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -66,7 +67,8 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNac
     if(receiveWithTimeout(rSocket, timeout, response))
     {
         size_t offset=0;
-        size_t id = getMessageId(response, offset);
+        bool parseOK;
+        size_t id = getMessageId(response, offset, parseOK);
         //cout << "id: " << id << endl;
         if (id == S_Ack)
         {
@@ -74,7 +76,11 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNac
         }
         else if (id == S_NAck)
         {
-            rNackReason = unpackMessage<std::string>(response, offset);
+            rNackReason = unpackMessage<std::string>(response, offset, parseOK);
+        }
+        else if (!parseOK)
+        {
+            rNackReason = "Exception in msgpack:unpack!";
         }
         else
         {
@@ -88,48 +94,55 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNac
     return false;
 }
 
-void reportToMasterServer(std::string masterIP, std::string masterPort, std::string myIP, std::string myPort, bool isOnline)
+void reportToAddressServer(std::string addressIP, std::string addressPort, std::string myIP, std::string myPort, bool isOnline)
 {
-    zmq::socket_t masterServerSocket (gContext, ZMQ_REQ);
-    int linger_ms = 1000;
-    masterServerSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-    masterServerSocket.connect(makeZMQAddress(masterIP, masterPort).c_str());
-
-    //! @todo check if ok
-    SM_Available_t message;
-    message.ip = myIP;
-    message.port = myPort;
-
-    if (isOnline)
+    try
     {
-        sendServerMessage(masterServerSocket, S_Available, message);
-        std::string nackreason;
-        bool ack = readAckNackServerMessage(masterServerSocket, 1000, nackreason);
-        if (ack)
+        zmq::socket_t addressServerSocket (gContext, ZMQ_REQ);
+        int linger_ms = 1000;
+        addressServerSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+        addressServerSocket.connect(makeZMQAddress(addressIP, addressPort).c_str());
+
+        //! @todo check if ok
+        SM_Available_t message;
+        message.ip = myIP;
+        message.port = myPort;
+
+        if (isOnline)
         {
-            cout << PRINTSERVER << nowDateTime() << " Successfully registered in address server" << endl;
+            sendServerMessage(addressServerSocket, S_Available, message);
+            std::string nackreason;
+            bool ack = readAckNackServerMessage(addressServerSocket, 5000, nackreason);
+            if (ack)
+            {
+                cout << PRINTSERVER << nowDateTime() << " Successfully registered in address server" << endl;
+            }
+            else
+            {
+
+                cout << PRINTSERVER << nowDateTime() << " Error: Could not register in master server: " << nackreason << endl;
+            }
         }
         else
         {
-
-            cout << PRINTSERVER << nowDateTime() << " Error: Could not register in master server: " << nackreason << endl;
+            sendServerMessage(addressServerSocket, S_Closing, message);
+            std::string nackreason;
+            bool ack = readAckNackServerMessage(addressServerSocket, 5000, nackreason);
+            if (ack)
+            {
+                cout << PRINTSERVER << nowDateTime() << " Successfully unregistered in address server" << endl;
+            }
+            else
+            {
+                cout << PRINTSERVER << nowDateTime() << " Error: Could not unregister in master server: " << nackreason << endl;
+            }
         }
+        addressServerSocket.disconnect(makeZMQAddress(addressIP, addressPort).c_str());
     }
-    else
+    catch(zmq::error_t e)
     {
-        sendServerMessage(masterServerSocket, S_Closing, message);
-        std::string nackreason;
-        bool ack = readAckNackServerMessage(masterServerSocket, 1000, nackreason);
-        if (ack)
-        {
-            cout << PRINTSERVER << nowDateTime() << " Successfully unregistered in address server" << endl;
-        }
-        else
-        {
-            cout << PRINTSERVER << nowDateTime() << " Error: Could not unregister in master server: " << nackreason << endl;
-        }
+        cout << PRINTSERVER << nowDateTime() << " Error: Preparing addressServerSocket: " << e.what() << endl;
     }
-    masterServerSocket.disconnect(makeZMQAddress(masterIP, masterPort).c_str());
 }
 
 static int s_interrupted = 0;
@@ -165,6 +178,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     string myPort = argv[1];
+    gServerConfig.mControlPortStr = myPort;
     gServerConfig.mControlPort = atoi(myPort.c_str());
 
     std::string masterserverip, masterserverport;
@@ -184,225 +198,247 @@ int main(int argc, char* argv[])
     cout << PRINTSERVER << nowDateTime() << " Listening on port: " << myPort  << endl;
 
     // Prepare our context and socket
-    zmq::socket_t socket (gContext, ZMQ_REP);
-    int linger_ms = 1000;
-    socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-    socket.bind( makeZMQAddress("*", myPort).c_str() );
-
-    if (!masterserverip.empty())
+    try
     {
-        //! @todo somehow automatically figure out my ip
-        reportToMasterServer(masterserverip, masterserverport, myExternalIP, myPort, true);
-    }
+        zmq::socket_t socket (gContext, ZMQ_REP);
+        int linger_ms = 1000;
+        socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+        socket.bind( makeZMQAddress("*", myPort).c_str() );
 
-#ifdef _WIN32
-    SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
-#else
-    s_catch_signals();
-#endif
-    while (true)
-    {
-        // Wait for next request from client
-        zmq::message_t request;
-        if(receiveWithTimeout(socket, 30000, request))
+        if (!masterserverip.empty())
         {
-            size_t offset=0;
-            size_t msg_id = getMessageId(request, offset);
-            cout << PRINTSERVER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
-
-            //        int fd = request.get(ZMQ_SRCFD);
-            //        struct sockaddr addr;
-            //        unsigned int len;
-            //        getpeername(fd, &addr, &len);
-            //        cout << "Addr len: " << len << " data: ";
-            //        for (int i=0; i<len; ++i)
-            //        {
-            //            cout << addr.sa_data[i];
-            //        }
-            //        cout << endl;
-
-            //        string soxtype = request.gets("Socket-Type");
-            //        string identity = request.gets("Identity");
-            //        cout << "Socket-type: " << soxtype << " Identity: " << identity << endl;
-
-            if (msg_id == C_ReqSlot)
-            {
-                cout << PRINTSERVER << nowDateTime() << " Client is requesting slot... " << endl;
-                msgpack::v1::sbuffer out_buffer;
-                if (nTakenSlots < gServerConfig.mMaxNumSlots)
-                {
-                    size_t port = gServerConfig.mControlPort+1+nTakenSlots;
-
-                    // Generate unique worker Id
-                    int uid = rand();
-                    while (workerMap.count(uid) != 0)
-                    {
-                        uid = rand();
-                    }
+            //! @todo somehow automatically figure out my ip
+            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, true);
+        }
 
 #ifdef _WIN32
-                    PROCESS_INFORMATION processInformation;
-                    STARTUPINFO startupInfo;
-                    memset(&processInformation, 0, sizeof(processInformation));
-                    memset(&startupInfo, 0, sizeof(startupInfo));
-                    startupInfo.cb = sizeof(startupInfo);
+        SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
+#else
+        s_catch_signals();
+#endif
+        while (true)
+        {
+            // Wait for next request from client
+            zmq::message_t request;
+            if(receiveWithTimeout(socket, 30000, request))
+            {
+                size_t offset=0;
+                bool idParseOK;
+                size_t msg_id = getMessageId(request, offset, idParseOK);
+                //cout << PRINTSERVER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
 
-                    string scport = to_string(gServerConfig.mControlPort);
-                    string swport = to_string(port);
-                    string nthreads = to_string(gServerConfig.mMaxThreadsPerSlot);
-                    string uidstr = to_string(uid);
+                //        int fd = request.get(ZMQ_SRCFD);
+                //        struct sockaddr addr;
+                //        unsigned int len;
+                //        getpeername(fd, &addr, &len);
+                //        cout << "Addr len: " << len << " data: ";
+                //        for (int i=0; i<len; ++i)
+                //        {
+                //            cout << addr.sa_data[i];
+                //        }
+                //        cout << endl;
 
-                    std::string appName("HopsanServerWorker.exe");
-                    std::string cmdLine("HopsanServerWorker "+uidstr+" "+scport+" "+swport+" "+nthreads);
-                    TCHAR tempCmdLine[cmdLine.size()*2];
-                    strcpy_s(tempCmdLine, cmdLine.size()*2, cmdLine.c_str());
+                //        string soxtype = request.gets("Socket-Type");
+                //        string identity = request.gets("Identity");
+                //        cout << "Socket-type: " << soxtype << " Identity: " << identity << endl;
 
-                    BOOL result = CreateProcess(appName.c_str(), tempCmdLine, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startupInfo, &processInformation);
-                    if (result == 0)
+                if (msg_id == C_ReqSlot)
+                {
+                    cout << PRINTSERVER << nowDateTime() << " Client is requesting slot... " << endl;
+                    msgpack::v1::sbuffer out_buffer;
+                    if (nTakenSlots < gServerConfig.mMaxNumSlots)
                     {
-                        std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
-                        sendServerNAck(socket, "Failed to launch worker process!");
+                        size_t port = gServerConfig.mControlPort+1+nTakenSlots;
+
+                        // Generate unique worker Id
+                        int uid = rand();
+                        while (workerMap.count(uid) != 0)
+                        {
+                            uid = rand();
+                        }
+
+#ifdef _WIN32
+                        PROCESS_INFORMATION processInformation;
+                        STARTUPINFO startupInfo;
+                        memset(&processInformation, 0, sizeof(processInformation));
+                        memset(&startupInfo, 0, sizeof(startupInfo));
+                        startupInfo.cb = sizeof(startupInfo);
+
+                        string scport = to_string(gServerConfig.mControlPort);
+                        string swport = to_string(port);
+                        string nthreads = to_string(gServerConfig.mMaxThreadsPerSlot);
+                        string uidstr = to_string(uid);
+
+                        std::string appName("HopsanServerWorker.exe");
+                        std::string cmdLine("HopsanServerWorker "+uidstr+" "+scport+" "+swport+" "+nthreads);
+                        TCHAR tempCmdLine[cmdLine.size()*2];
+                        strcpy_s(tempCmdLine, cmdLine.size()*2, cmdLine.c_str());
+
+                        BOOL result = CreateProcess(appName.c_str(), tempCmdLine, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startupInfo, &processInformation);
+                        if (result == 0)
+                        {
+                            std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
+                            sendServerNAck(socket, "Failed to launch worker process!");
+                        }
+                        else
+                        {
+                            std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << port << " uid: " << uid << endl;
+                            workerMap.insert({uid,processInformation});
+
+                            SM_ReqSlot_Reply_t msg = {port};
+                            msgpack::pack(out_buffer, S_ReqSlot_Reply);
+                            msgpack::pack(out_buffer, msg);
+                            socket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+                            nTakenSlots++;
+                        }
+
+#else
+                        char sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
+                        // Write port as char in buffer
+                        sprintf(sport_buff, "%d", gServerConfig.mControlPort);
+                        sprintf(wport_buff, "%d", int(port));
+                        // Write num threads as char in buffer
+                        sprintf(thread_buff, "%d", gServerConfig.mMaxThreadsPerSlot);
+                        // Write id as char in buffer
+                        sprintf(uid_buff, "%d", uid);
+
+                        char *argv[] = {"HopsanServerWorker", uid_buff, sport_buff, wport_buff, thread_buff, nullptr};
+
+                        pid_t pid;
+                        int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
+                        if(status == 0)
+                        {
+                            std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << port << " uid: " << uid << endl;
+                            workerMap.insert({uid,pid});
+
+                            SM_ReqSlot_Reply_t msg = {port};
+                            msgpack::pack(out_buffer, S_ReqSlot_Reply);
+                            msgpack::pack(out_buffer, msg);
+                            socket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+                            nTakenSlots++;
+
+                        }
+                        else
+                        {
+                            std::cout << PRINTSERVER << nowDateTime() << " Error: Failed to launch worker process!"<<endl;
+                            sendServerNAck(socket, "Failed to launch worker process!");
+                        }
+#endif
                     }
                     else
                     {
-                        std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << port << " uid: " << uid << endl;
-                        workerMap.insert({uid,processInformation});
-
-                        SM_ReqSlot_Reply_t msg = {port};
-                        msgpack::pack(out_buffer, S_ReqSlot_Reply);
-                        msgpack::pack(out_buffer, msg);
-                        socket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
-                        nTakenSlots++;
+                        sendServerNAck(socket, "All slots taken");
+                        cout << PRINTSERVER << nowDateTime() << " Denied! All slots taken." << endl;
                     }
 
-#else
-                    char sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
-                    // Write port as char in buffer
-                    sprintf(sport_buff, "%d", gServerConfig.mControlPort);
-                    sprintf(wport_buff, "%d", int(port));
-                    // Write num threads as char in buffer
-                    sprintf(thread_buff, "%d", gServerConfig.mMaxThreadsPerSlot);
-                    // Write id as char in buffer
-                    sprintf(uid_buff, "%d", uid);
-
-                    char *argv[] = {"HopsanServerWorker", uid_buff, sport_buff, wport_buff, thread_buff, nullptr};
-
-                    pid_t pid;
-                    int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
-                    if(status == 0)
+                }
+                else if (msg_id == SW_Finished)
+                {
+                    bool parseOK;
+                    string id_string = unpackMessage<std::string>(request,offset,parseOK);
+                    if (parseOK)
                     {
-                        std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << port << " uid: " << uid << endl;
-                        workerMap.insert({uid,pid});
+                        int id = atoi(id_string.c_str());
+                        cout << PRINTSERVER << nowDateTime() << " Worker " << id_string << " Finished!" << endl;
 
-                        SM_ReqSlot_Reply_t msg = {port};
-                        msgpack::pack(out_buffer, S_ReqSlot_Reply);
-                        msgpack::pack(out_buffer, msg);
-                        socket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
-                        nTakenSlots++;
+                        auto it = workerMap.find(id);
+                        if (it != workerMap.end())
+                        {
+                            sendServerAck(socket);
 
+                            // Wait for process to stop (to avoid zombies)
+#ifdef _WIN32
+                            PROCESS_INFORMATION pi = it->second;
+                            WaitForSingleObject( pi.hProcess, INFINITE );
+                            CloseHandle( pi.hProcess );
+                            CloseHandle( pi.hThread );
+#else
+                            pid_t pid = it->second;
+                            int stat_loc;
+                            pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
+#endif
+                            //! @todo check returncodes maybe
+                            workerMap.erase(it);
+                            nTakenSlots--;
+                        }
+                        else
+                        {
+                            sendServerNAck(socket, "Wrong worker id specified");
+                        }
                     }
                     else
                     {
-                        std::cout << PRINTSERVER << nowDateTime() << " Error: Failed to launch worker process!"<<endl;
-                        sendServerNAck(socket, "Failed to launch worker process!");
+                        cout << PRINTSERVER << nowDateTime() << " Error: Could not server id string" << endl;
                     }
-#endif
+                }
+                else if (msg_id == C_ReqStatus)
+                {
+                    cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
+                    SM_ServerStatus_t status;
+                    status.numTotalSlots = gServerConfig.mMaxNumSlots;
+                    status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
+                    status.numThreadsPerSlot = gServerConfig.mMaxThreadsPerSlot;
+                    status.isReady = (status.numFreeSlots > 0);
+
+                    sendServerMessage<SM_ServerStatus_t>(socket, S_ReqStatus_Reply, status);
+                    lastStatusRequestTime = chrono::steady_clock::now();
+                }
+                else if (!idParseOK)
+                {
+                    cout << PRINTSERVER << nowDateTime() << " Error: Could not parse message id" << endl;
                 }
                 else
                 {
-                    sendServerNAck(socket, "All slots taken");
-                    cout << PRINTSERVER << nowDateTime() << " Denied! All slots taken." << endl;
+                    stringstream ss;
+                    ss << PRINTSERVER << nowDateTime() << " Error: Unknown message id " << msg_id << endl;
+                    cout << ss.str() << endl;
+                    sendServerNAck(socket, ss.str());
                 }
-
-            }
-            else if (msg_id == SW_Finished)
-            {
-                string id_string = unpackMessage<std::string>(request,offset);
-                int id = atoi(id_string.c_str());
-                cout << PRINTSERVER << nowDateTime() << " Worker " << id_string << " Finished!" << endl;
-
-                auto it = workerMap.find(id);
-                if (it != workerMap.end())
-                {
-                    sendServerAck(socket);
-
-                    // Wait for process to stop (to avoid zombies)
-#ifdef _WIN32
-                    PROCESS_INFORMATION pi = it->second;
-                    WaitForSingleObject( pi.hProcess, INFINITE );
-                    CloseHandle( pi.hProcess );
-                    CloseHandle( pi.hThread );
-#else
-                    pid_t pid = it->second;
-                    int stat_loc;
-                    pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
-#endif
-                    //! @todo check returncodes maybe
-                    workerMap.erase(it);
-                    nTakenSlots--;
-                }
-                else
-                {
-                    sendServerNAck(socket, "Wrong worker id specified");
-                }
-            }
-            else if (msg_id == C_ReqStatus)
-            {
-                cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
-                SM_ServerStatus_t status;
-                status.numTotalSlots = gServerConfig.mMaxNumSlots;
-                status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
-                status.numThreadsPerSlot = gServerConfig.mMaxThreadsPerSlot;
-                status.isReady = (status.numFreeSlots > 0);
-
-                sendServerMessage<SM_ServerStatus_t>(socket, S_ReqStatus_Reply, status);
-                lastStatusRequestTime = chrono::steady_clock::now();
             }
             else
             {
-                stringstream ss;
-                ss << PRINTSERVER << nowDateTime() << " Error: Unknown message id " << msg_id << endl;
-                cout << ss.str() << endl;
-                sendServerNAck(socket, ss.str());
+                // Handle timeout / exception
             }
-        }
-        else
-        {
-            // Handle timeout / exception
-        }
 
-        duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
-        if (time_span.count() > 120)
-        {
-            // If noone has requested status for this long (and we have a master server) we assume that the master server
-            // has gone down, lets reconnect to it to make sure it knows that we still exist
-            //! @todo maybe this should be handled in the server by saving known servers to file instead
-            if (!masterserverip.empty())
+            duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
+            if (time_span.count() > 120)
             {
-                reportToMasterServer(masterserverip, masterserverport, myExternalIP, myPort, true);
+                // If noone has requested status for this long (and we have a master server) we assume that the master server
+                // has gone down, lets reconnect to it to make sure it knows that we still exist
+                //! @todo maybe this should be handled in the server by saving known servers to file instead
+                if (!masterserverip.empty())
+                {
+                    reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, true);
+                }
             }
-        }
 
-        // Do some 'work'
+            // Do some 'work'
 #ifndef _WIN32
-        //sleep(1);
+            //sleep(1);
 #else
-        //Sleep (1);
+            //Sleep (1);
 #endif
 
-        if (s_interrupted)
-        {
-            cout << PRINTSERVER << nowDateTime() << " Interrupt signal received, killing server" << std::endl;
-            break;
+            if (s_interrupted)
+            {
+                cout << PRINTSERVER << nowDateTime() << " Interrupt signal received, killing server" << std::endl;
+                break;
+            }
         }
+
+        // Tell master server we are closing
+        if (!masterserverip.empty())
+        {
+            //! @todo somehow automatically figure out my ip
+            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, false);
+        }
+
+    }
+    catch(zmq::error_t e)
+    {
+        cout << PRINTSERVER << nowDateTime() << " Error: Preparing our context and socket: " << e.what() << endl;
     }
 
-    // Tell master server we are closing
-    if (!masterserverip.empty())
-    {
-        //! @todo somehow automatically figure out my ip
-        reportToMasterServer(masterserverip, masterserverport, myExternalIP, myPort, false);
-    }
     cout << PRINTSERVER << nowDateTime() << " Closed!" << endl;
 }
 

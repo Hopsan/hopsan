@@ -35,7 +35,7 @@ private:
     typedef std::list<size_t> idlist_t;
     idlist_t mFreeIds;
     std::map<size_t, ServerInfo> mServerMap;
-    std::mutex mLock;
+    std::mutex mMutex;
 public :
     void addServer(ServerInfo server);
     void updateServerInfo(ServerInfo server);
