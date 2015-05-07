@@ -45,7 +45,7 @@ public :
     ServerInfo getServer(size_t id);
     int getServerMatching(std::string ip, std::string port);
     idlist_t getServersFasterThen(double maxTime, int maxNum=-1);
-    idlist_t getServersToRefresh(double maxAge);
+    idlist_t getServersToRefresh(double maxAge, int maxNumServers=-1);
 };
 
 #endif // SERVERHANDLER_H

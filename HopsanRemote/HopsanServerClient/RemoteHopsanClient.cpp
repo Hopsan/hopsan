@@ -93,18 +93,21 @@ bool RemoteHopsanClient::connectToServer(std::string zmqaddres)
     }
     else
     {
-        try
+        if (mpRSCSocket)
         {
-            mpRSCSocket->connect(zmqaddres.c_str());
-            mServerAddress = zmqaddres;
-            return true;
+            try
+            {
+                mpRSCSocket->connect(zmqaddres.c_str());
+                mServerAddress = zmqaddres;
+                return true;
+            }
+            catch (zmq::error_t e)
+            {
+                mLastErrorMessage = e.what();
+                mServerAddress.clear();
+            }
         }
-        catch (zmq::error_t e)
-        {
-            mLastErrorMessage =  e.what();
-            mServerAddress.clear();
-            return false;
-        }
+        return false;
     }
 }
 
@@ -113,10 +116,10 @@ bool RemoteHopsanClient::connectToServer(string ip, string port)
     return connectToServer(makeZMQAddress(ip,port));
 }
 
-bool RemoteHopsanClient::serverConnected()
+bool RemoteHopsanClient::serverConnected() const
 {
     // Note we can not use socket.connected() it only checks if underlying c-socket exist
-    return !mServerAddress.empty();
+    return mpRSCSocket && !mServerAddress.empty();
 }
 
 
@@ -303,18 +306,21 @@ bool RemoteHopsanClient::connectToWorker(std::string zmqaddres)
     }
     else
     {
-        try
+        if (mpRWCSocket)
         {
-            mpRWCSocket->connect(zmqaddres.c_str());
-            mWorkerAddress = zmqaddres;
-            return true;
+            try
+            {
+                mpRWCSocket->connect(zmqaddres.c_str());
+                mWorkerAddress = zmqaddres;
+                return true;
+            }
+            catch (zmq::error_t e)
+            {
+                mLastErrorMessage =  e.what();
+                mWorkerAddress.clear();
+            }
         }
-        catch (zmq::error_t e)
-        {
-            mLastErrorMessage =  e.what();
-            mWorkerAddress.clear();
-            return false;
-        }
+        return false;
     }
 }
 
@@ -323,10 +329,10 @@ bool RemoteHopsanClient::connectToWorker(string ip, string port)
     return connectToWorker(makeZMQAddress(ip,port));
 }
 
-bool RemoteHopsanClient::workerConnected()
+bool RemoteHopsanClient::workerConnected() const
 {
     // Note we can not use socket.connected() it only checks if underlying c-socket exist
-    return !mWorkerAddress.empty();
+    return mpRWCSocket && !mWorkerAddress.empty();
 }
 
 void RemoteHopsanClient::disconnect()
@@ -473,6 +479,34 @@ bool RemoteHopsanClient::receiveWithTimeout(zmq::socket_t &rSocket, zmq::message
     return false;
 }
 
+void RemoteHopsanClient::deleteSockets()
+{
+    if (mpRSCSocket)
+    {
+        try
+        {
+            delete mpRSCSocket;
+        }
+        catch(zmq::error_t e)
+        {
+            mLastErrorMessage = e.what();
+        }
+        mpRSCSocket = nullptr;
+    }
+    if (mpRWCSocket)
+    {
+        try
+        {
+            delete mpRWCSocket;
+        }
+        catch(zmq::error_t e)
+        {
+            mLastErrorMessage = e.what();
+        }
+        mpRWCSocket = nullptr;
+    }
+}
+
 
 RemoteHopsanClient::RemoteHopsanClient(zmq::context_t &rContext)
 {
@@ -486,21 +520,19 @@ RemoteHopsanClient::RemoteHopsanClient(zmq::context_t &rContext)
     }
     catch(zmq::error_t e)
     {
+        deleteSockets();
         mLastErrorMessage = e.what();
     }
 }
 
 RemoteHopsanClient::~RemoteHopsanClient()
 {
-    try
-    {
-        delete mpRWCSocket;
-        delete mpRSCSocket;
-    }
-    catch(zmq::error_t e)
-    {
-        mLastErrorMessage = e.what();
-    }
+    deleteSockets();
+}
+
+bool RemoteHopsanClient::areSocketsValid() const
+{
+    return mpRSCSocket && mpRWCSocket;
 }
 
 void RemoteHopsanClient::setReceiveTimeout(long ms)

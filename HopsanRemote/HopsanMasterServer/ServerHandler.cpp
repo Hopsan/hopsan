@@ -85,7 +85,7 @@ ServerHandler::idlist_t ServerHandler::getServersFasterThen(double maxTime, int 
         if (item.second.isReady && item.second.benchmarkTime < maxTime)
         {
             ids.push_back(item.first);
-            if (ids.size() >= maxNum)
+            if (int(ids.size()) >= maxNum)
             {
                 break;
             }
@@ -101,8 +101,13 @@ size_t ServerHandler::numServers()
     return mServerMap.size();
 }
 
-ServerHandler::idlist_t ServerHandler::getServersToRefresh(double maxAge)
+ServerHandler::idlist_t ServerHandler::getServersToRefresh(double maxAge, int maxNumServers)
 {
+    if (maxNumServers < 0)
+    {
+        maxNumServers = INT_MAX;
+    }
+
     std::list<size_t> ids;
     mMutex.lock();
     for(auto &server : mServerMap)
@@ -111,6 +116,11 @@ ServerHandler::idlist_t ServerHandler::getServersToRefresh(double maxAge)
         if (time_span.count() > maxAge)
         {
             ids.push_back(server.second.id());
+            if (int(ids.size()) >= maxNumServers)
+            {
+                // Break loop if we have collected enough servers
+                break;
+            }
         }
     }
     mMutex.unlock();

@@ -14,17 +14,19 @@ class RemoteHopsanClient
 public:
     RemoteHopsanClient(zmq::context_t &rContext);
     ~RemoteHopsanClient();
+    bool areSocketsValid() const;
+
     void setReceiveTimeout(long ms);
     long getReceiveTimeout() const;
 
     bool connectToServer(std::string zmqaddres);
     bool connectToServer(std::string ip, std::string port);
-    bool serverConnected();
+    bool serverConnected() const;
     bool requestSlot(size_t &rControlPort);
 
     bool connectToWorker(std::string zmqaddres);
     bool connectToWorker(std::string ip, std::string port);
-    bool workerConnected();
+    bool workerConnected() const;
 
     void disconnect();
 
@@ -45,13 +47,14 @@ public:
 
 private:
     bool receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage);
+    void deleteSockets();
 
     long mReceiveTimeout = 8000; //!< Receive timeout in ms
     std::string mLastErrorMessage;
     std::string mServerAddress;
     std::string mWorkerAddress;
-    zmq::socket_t *mpRSCSocket; //!< The Remote Server Control Socket
-    zmq::socket_t *mpRWCSocket; //!< The Remote Worker Control Socket
+    zmq::socket_t *mpRSCSocket = nullptr; //!< The Remote Server Control Socket
+    zmq::socket_t *mpRWCSocket = nullptr; //!< The Remote Worker Control Socket
 
 };
 
