@@ -2736,6 +2736,8 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             }
             else
             {
+                if(mpLeft) delete mpLeft;
+                if(mpRight) delete mpRight;
                 mpLeft = new Expression(left);
                 mpRight = new Expression(right);
             }
@@ -2845,6 +2847,8 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             {
                 return false;
             }
+            if(mpBase) delete mpBase;
+            if(mpPower) delete mpPower;
             mpBase = new Expression(base);
             mpPower = new Expression(power);
         }
@@ -2867,6 +2871,7 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                     mDivisors.append(subSymbols[i]);
                 }
             }
+            if(mpDividend) delete mpDividend;
             mpDividend = new Expression(dividend);
         }
         else if(sep == "!")
