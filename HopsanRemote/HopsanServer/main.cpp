@@ -403,6 +403,8 @@ int main(int argc, char* argv[])
             duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
             if (time_span.count() > 120)
             {
+                cout << PRINTSERVER << nowDateTime() << " Too long since status check: " << time_span.count() << endl;
+
                 // If noone has requested status for this long (and we have a master server) we assume that the master server
                 // has gone down, lets reconnect to it to make sure it knows that we still exist
                 //! @todo maybe this should be handled in the server by saving known servers to file instead

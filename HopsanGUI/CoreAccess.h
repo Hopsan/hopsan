@@ -30,6 +30,7 @@
 #include <QPair>
 #include <QStringList>
 #include <QMultiMap>
+#include <QSharedPointer>
 
 //Forward declarations of HopsanGUI classes
 class LibraryWidget;
@@ -327,6 +328,8 @@ public:
     RemoteCoreAddressHandler();
     ~RemoteCoreAddressHandler();
     void setHopsanAddressServer( QString ip, QString port );
+    void setHopsanAddressServer( QString ip_port );
+    QString getAddressAndPort() const;
 
     bool isConnected();
 
@@ -363,6 +366,8 @@ public:
 
     QString getLastError() const;
 };
+
+typedef QSharedPointer<RemoteCoreSimulationHandler> SharedRemoteCoreSimulationHandlerT;
 #endif
 
 

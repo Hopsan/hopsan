@@ -101,7 +101,7 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(RemoteCoreSimulationHandler *pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
+RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
     mpRCSH = pRCSH;
     mpLogDataNames = pLogNames;
@@ -237,7 +237,7 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
     initSimulateFinalize(vpSystems, noChanges);
 }
 
-void SimulationThreadHandler::initSimulateFinalizeRemote(RemoteCoreSimulationHandler *pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData)
+void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData)
 {
     mvpSystems.clear();
     mpSimulationWorkerObject = new RemoteSimulationWorkerObject(pRCSH, pLogNames, pLogData, mStartT, mStopT, mLogStartTime, mnLogSamples);

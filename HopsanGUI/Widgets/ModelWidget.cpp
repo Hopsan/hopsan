@@ -427,14 +427,12 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
     if (mUseRemotecoreDispatch)
     {
         // Check if we should create the Remote Address handler for the first time
-        if (gpRemoteCoreAddressHandler.isNull())
+        if (gpRemoteCoreAddressHandler.isNull() || gpRemoteCoreAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS) )
         {
             //! @todo this is a hack
             gpRemoteCoreAddressHandler = QSharedPointer<RemoteCoreAddressHandler>(new RemoteCoreAddressHandler);
-            QStringList dsaddr = gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS).split(":");
-            gpRemoteCoreAddressHandler->setHopsanAddressServer(dsaddr.first(), dsaddr.last());
+            gpRemoteCoreAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS));
             gpRemoteCoreAddressHandler->connect();
-            gpRemoteCoreAddressHandler->requestAvailableServers();
             //! @todo what happens if it disconnects, then we would need to reconnect, we also need to keep teh connection alive by polling
         }
 
@@ -450,7 +448,7 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
 
     if (mUseRemoteCore)
     {
-        mpRemoteCoreSimulationHandler = new RemoteCoreSimulationHandler();
+        mpRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
         mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress.first(), serveraddress.last());
 
         bool rc = mpRemoteCoreSimulationHandler->connect();
@@ -469,9 +467,8 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
     // This should trigger when we deactiva remote simulation or if connect or load model failed
     if (!mUseRemoteCore && mpRemoteCoreSimulationHandler)
     {
-        mpRemoteCoreSimulationHandler->disconnect();
-        delete mpRemoteCoreSimulationHandler;
-        mpRemoteCoreSimulationHandler = 0;
+        mpRemoteCoreSimulationHandler->disconnect(); //! @todo maybe should not disconnect here should wait for destructor when all refs gone
+        mpRemoteCoreSimulationHandler.clear();
     }
 #endif
 }

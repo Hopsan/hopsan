@@ -45,8 +45,9 @@ class AnimationWidget;
 class SimulationThreadHandler;
 class GUIMessageHandler;
 class LogDataHandler2;
-class RemoteCoreSimulationHandler;
 
+//! @todo should have a remotecore access
+#include "CoreAccess.h"
 
 class ModelWidget : public QWidget
 {
@@ -136,7 +137,7 @@ private:
     LogDataHandler2 *mpLogDataHandler;
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;
-    RemoteCoreSimulationHandler *mpRemoteCoreSimulationHandler=nullptr;
+    SharedRemoteCoreSimulationHandlerT mpRemoteCoreSimulationHandler;
     QMutex mSimulateMutex;
 
     // Remote collected data

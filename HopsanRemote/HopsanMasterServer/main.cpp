@@ -68,7 +68,7 @@ static void s_catch_signals(void)
 #endif
 
 const int gMaxNumRunningRefreshServerStatusThreads = 20;
-std::atomic<int> gNumRunningRefreshServerStatusThreads = 0;
+std::atomic<int> gNumRunningRefreshServerStatusThreads{0};
 void refreshServerStatus(size_t serverId)
 {
     gNumRunningRefreshServerStatusThreads++;

@@ -1597,6 +1597,24 @@ void RemoteCoreAddressHandler::setHopsanAddressServer(QString ip, QString port)
 
 }
 
+void RemoteCoreAddressHandler::setHopsanAddressServer(QString ip_port)
+{
+    QStringList fields = ip_port.split(":");
+    if (fields.size() == 2)
+    {
+        setHopsanAddressServer(fields.first(), fields.last());
+    }
+    else
+    {
+        setHopsanAddressServer(fields.first(), mHopsanAddressServerPort);
+    }
+}
+
+QString RemoteCoreAddressHandler::getAddressAndPort() const
+{
+    return mHopsanAddressServerIP+":"+mHopsanAddressServerPort;
+}
+
 bool RemoteCoreAddressHandler::isConnected()
 {
     return mpRemoteHopsanClient->serverConnected();
