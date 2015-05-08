@@ -101,6 +101,8 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
+#ifdef USEZMQ
+
 RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
     mpRCSH = pRCSH;
@@ -143,6 +145,8 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
 #endif
     emit finalizeDone(false, 0);
 }
+
+#endif
 
 void SimulationWorkerObjectBase::setMessageHandler(GUIMessageHandler *pMessageHandler)
 {
@@ -237,6 +241,7 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
     initSimulateFinalize(vpSystems, noChanges);
 }
 
+#ifdef USEZMQ
 void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData)
 {
     mvpSystems.clear();
@@ -244,6 +249,7 @@ void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulat
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }
+#endif
 
 void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges)
 {

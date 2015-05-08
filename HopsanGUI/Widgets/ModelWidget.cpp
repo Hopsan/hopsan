@@ -475,8 +475,12 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
 
 bool ModelWidget::isRemoteCoreConnected() const
 {
+#ifdef USEZMQ
     //! @todo should check is connected also
     return (mUseRemoteCore && mpRemoteCoreSimulationHandler);
+#else
+    return false;
+#endif
 }
 
 
@@ -531,10 +535,11 @@ bool ModelWidget::simulate_nonblocking()
             gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
             return false;
         }
-
+#ifdef USEZMQ
         mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
         mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+#endif
         //! @todo is this really blocking hmm
     }
     // Local core simulation
@@ -592,10 +597,12 @@ bool ModelWidget::simulate_blocking()
             return false;
         }
 
+#ifdef USEZMQ
         mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
         mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
         //! @todo is this really blocking hmm
+#endif
     }
     // Local core simulation
     else

@@ -137,7 +137,9 @@ private:
     LogDataHandler2 *mpLogDataHandler;
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;
+#ifdef USEZMQ
     SharedRemoteCoreSimulationHandlerT mpRemoteCoreSimulationHandler;
+#endif
     QMutex mSimulateMutex;
 
     // Remote collected data

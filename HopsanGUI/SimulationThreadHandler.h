@@ -81,6 +81,7 @@ public slots:
 
 };
 
+#ifdef USEZMQ
 class RemoteSimulationWorkerObject : public SimulationWorkerObjectBase
 {
     Q_OBJECT
@@ -96,6 +97,7 @@ public:
 public slots:
     void initSimulateFinalize();
 };
+#endif
 
 class ProgressBarWorkerObject : public QObject
 {
@@ -158,7 +160,9 @@ public:
     void setSimulationTimeVariables(const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     void setProgressDilaogBehaviour(bool enabled, bool modal);
     void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
+#ifdef USEZMQ
     void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData);
+#endif
     void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
