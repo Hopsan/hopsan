@@ -104,9 +104,16 @@ void OptimizationWorkerComplexRFP::init()
 
     mObjectives.resize(mNumPoints+mNumThreads);
 
+    //Limit number of models, in case worker has opened more models than necessary
+    mUsedModelPtrs.clear();
+    for(int i=0; i<mNumThreads; ++i)
+    {
+        mUsedModelPtrs.append(mModelPtrs.at(i));
+    }
+
     mKf = 1.0-pow(mAlpha/2.0, mGamma/mNumPoints);
 
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mUsedModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasVariable("WorstObjective"))
     {
@@ -165,6 +172,7 @@ void OptimizationWorkerComplexRFP::run()
 
     //Evaluate all points
     execute("call evalall");
+
 //    for(int i=0; i<mNumPoints; ++i)
 //    {
 //        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
@@ -178,7 +186,7 @@ void OptimizationWorkerComplexRFP::run()
 //        execute("opt set evalid "+QString::number(i));
 //        execute("call obj");
 //    }
-    mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
+    mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs.first());
     ++mIterations;
     logAllPoints();
     mEvaluations += mNumPoints;
@@ -228,7 +236,7 @@ void OptimizationWorkerComplexRFP::run()
         pickCandidateParticles();
 
         //Evaluate new point
-        evaluateCandidateParticles();
+        evaluateCandidateParticles(i==0);
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
             execute("echo on");
@@ -341,6 +349,7 @@ void OptimizationWorkerComplexRFP::run()
 
         plotParameters();
         plotEntropy();
+
     }
 
     gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
@@ -472,14 +481,24 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         int i=0;
         findCenter();
 
+//        double alpha1 = mAlpha;                 //1.3
+//        double alpha2 = 1;                      //1
+//        double alpha3 = (1-(mAlpha-1));         //0.7
+//        double alpha4 = (1+(mAlpha-1)*2);       //1.6
+//        double alpha5 = (1+(mAlpha-1)*3);       //1.9
+//        double alpha6 = (1+(mAlpha-1)*4);       //2.2
+//        double alpha7 = (1+(mAlpha-1)*5);       //2.5
+//        double alpha8 = (1+(mAlpha-1)*6);       //2.8
+
         double alpha1 = mAlpha;                 //1.3
-        double alpha2 = 1;                      //1
-        double alpha3 = (1-(mAlpha-1));         //0.7
-        double alpha4 = (1+(mAlpha-1)*2);       //1.6
-        double alpha5 = (1+(mAlpha-1)*3);       //1.9
-        double alpha6 = (1+(mAlpha-1)*4);       //2.2
-        double alpha7 = (1+(mAlpha-1)*5);       //2.5
-        double alpha8 = (1+(mAlpha-1)*6);       //2.8
+        double alpha2 = (1+(mAlpha-1)*2);       //1.6
+        double alpha3 = (1+(mAlpha-1)*3);       //1.9
+        double alpha4 = (1+(mAlpha-1)*4);       //2.2
+        double alpha5 = (1+(mAlpha-1)*5);       //2.5
+        double alpha6 = (1+(mAlpha-1)*6);       //2.8
+        double alpha7 = (1+(mAlpha-1)*7);       //3.1
+        double alpha8 = (1+(mAlpha-1)*8);       //3.4
+
 
         //Reflect first point
         for(int j=0; j<mNumParameters; ++j)
@@ -764,27 +783,27 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 }
 
 
-void OptimizationWorkerComplexRFP::evaluateCandidateParticles()
+void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
 {
     //Multi-threading, we cannot use the "evalall" function
     for(int i=0; i<mCandidateParticles.size() && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
-        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
         execute("opt set evalid "+QString::number(i+mNumPoints));
         execute("call setpars");
     }
-    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+    gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime); //Ok to use global model handler for this, it does not use any member stuff
 
     for(int i=0; i<mCandidateParticles.size() && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
-        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
         execute("opt set evalid "+QString::number(i+mNumPoints));
         execute("call obj");
     }
-    mpHandler->mpHcomHandler->setModelPtr(mModelPtrs.first());
+    mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs.first());
 
     ++mIterations;
-    mEvaluations += mNumPoints;
+    mEvaluations += mNumThreads;
 }
 
 
@@ -1022,27 +1041,23 @@ void OptimizationWorkerComplexRFP::plotPoints()
         return;
     }
 
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mNumPoints; ++p)
     {
-        QString namex = "par"+QString::number(p)+"x";
-        QString namey = "par"+QString::number(p)+"y";
+        //QString namex = "par"+QString::number(p)+"x";
+        //QString namey = "par"+QString::number(p)+"y";
         double x = mParameters[p][0];
         double y = mParameters[p][1];
-        SharedVectorVariableT parVar_x = pHandler->getVectorVariable(namex, -1);
-        SharedVectorVariableT parVar_y = pHandler->getVectorVariable(namey, -1);
-        if(!parVar_x)
+
+        if(mPointVars_x.size() <= p)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
-            parVar_x = pHandler->defineNewVectorVariable(namex);
-            parVar_y = pHandler->defineNewVectorVariable(namey);
-            parVar_x->preventAutoRemoval();
-            parVar_y->preventAutoRemoval();
+            mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+            mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
 
-            parVar_x->assignFrom(x);
-            parVar_y->assignFrom(y);
+            mPointVars_x.last()->assignFrom(x);
+            mPointVars_y.last()->assignFrom(y);
 
-            gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0, QColor("blue"));
+            gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0, QColor("blue"));
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::xBottom, mParMin[0], mParMax[0]);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::yLeft, mParMin[1], mParMax[1]);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
@@ -1051,30 +1066,25 @@ void OptimizationWorkerComplexRFP::plotPoints()
         else
         {
             //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
-            parVar_x->assignFrom(x);
-            parVar_y->assignFrom(y);
+            mPointVars_x.at(p)->assignFrom(x);
+            mPointVars_y.at(p)->assignFrom(y);
         }
     }
     for(int p=0; p<mNumThreads; ++p)
     {
-        QString namex = "candidate"+QString::number(p)+"x";
-        QString namey = "candidate"+QString::number(p)+"y";
         double x = mCandidateParticles[p][0];
         double y = mCandidateParticles[p][1];
-        SharedVectorVariableT parVar_x = pHandler->getVectorVariable(namex, -1);
-        SharedVectorVariableT parVar_y = pHandler->getVectorVariable(namey, -1);
-        if(!parVar_x)
+
+        if(mCandidateVars_x.size() <= p)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
-            parVar_x = pHandler->defineNewVectorVariable(namex);
-            parVar_y = pHandler->defineNewVectorVariable(namey);
-            parVar_x->preventAutoRemoval();
-            parVar_y->preventAutoRemoval();
+            mCandidateVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+            mCandidateVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
 
-            parVar_x->assignFrom(x);
-            parVar_y->assignFrom(y);
+            mCandidateVars_x.last()->assignFrom(x);
+            mCandidateVars_y.last()->assignFrom(y);
 
-            gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0, QColor("red"));
+            gpPlotHandler->plotDataToWindow("parplot", mCandidateVars_x.last(), mCandidateVars_y.last(), 0, QColor("red"));
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::xBottom, mParMin[0], mParMax[0]);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLimits(QwtPlot::yLeft, mParMin[1], mParMax[1]);
             gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea()->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
@@ -1083,10 +1093,10 @@ void OptimizationWorkerComplexRFP::plotPoints()
         else
         {
             //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
-            parVar_x->assignFrom(x);
-            parVar_y->assignFrom(y);
+            mCandidateVars_x.at(p)->assignFrom(x);
+            mCandidateVars_y.at(p)->assignFrom(y);
         }
-    }
+  }
 
     PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
     if(pPlotWindow)

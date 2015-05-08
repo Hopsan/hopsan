@@ -122,6 +122,8 @@ protected:
     bool mOrgProgressBarSetting;
     bool mOrgLimitDataGenerationsSetting;
 
+    int mNumThreads;
+
     //Plotting points
     QList<SharedVectorVariableT> mPointVars_x;
     QList<SharedVectorVariableT> mPointVars_y;

@@ -45,6 +45,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/DataExplorer.h"
 #include "Widgets/PlotWidget2.h"
+#include "Utilities/GUIUtilities.h"
 
 ModelHandler::ModelHandler(QObject *parent)
     : QObject(parent)
@@ -840,8 +841,9 @@ bool ModelHandler::simulateMultipleModels_nonblocking(QVector<ModelWidget*> mode
 }
 
 
-bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models)
+bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models, bool noChanges)
 {
+    TicToc tictoc;
     if (!models.isEmpty())
     {
         // All systems will use start time, stop time and time step from the first model
@@ -858,9 +860,10 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models)
 
         mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-        mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector);
-
+        mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, noChanges);
+        tictoc.toc("simulateMultipleModels_blocking()");
         return mpSimulationThreadHandler->wasSuccessful();
     }
+    tictoc.toc("simulateMultipleModels_blocking()");
     return false;
 }

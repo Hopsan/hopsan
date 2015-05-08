@@ -4184,10 +4184,10 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
         {
             int nModels = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
-            if(mpOptHandler->getModelPtrs()->size() != nModels)
-            {
-                mpOptHandler->clearModels();
-            }
+//            if(mpOptHandler->getModelPtrs()->size() != nModels)
+//            {
+//                mpOptHandler->clearModels();
+//            }
             while(mpOptHandler->getModelPtrs()->size() < nModels)
             {
                 mpOptHandler->addModel(gpModelHandler->loadModel(savePath, true, true));

@@ -39,6 +39,7 @@
 #include "PlotArea.h"
 #include "PlotCurve.h"
 #include "Configuration.h"
+#include "Utilities/GUIUtilities.h"
 
 //! @brief Checks for convergence (in either of the algorithms)
 OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
@@ -51,6 +52,7 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mPlotEntropy = false;
     mDoLog = true;
     mFinalEval = true;
+    mNumThreads = 1;
 }
 
 OptimizationWorker::~OptimizationWorker()
@@ -161,9 +163,12 @@ void OptimizationWorker::finalize()
     mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(false);
     gpOptimizationDialog->setOptimizationFinished();
 
+
+
     QFile resultFile(gpDesktopHandler->getDocumentsPath()+"optimization_results_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
     resultFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
     QString output = QString::number(mpHandler->getAlgorithm())+",";
+    output.append(QString::number(mNumThreads)+",");
     output.append(QString::number(mIterations)+",");
     output.append(QString::number(mEvaluations)+",");
     output.append(QString::number(mMetaModelEvaluations)+",");
@@ -283,6 +288,8 @@ void OptimizationWorker::printLogFile()
 //! @param idx Index of point to save
 void OptimizationWorker::logPoint(int idx)
 {
+    return;     //! @todo Make this work again (should probably store values in QVector<double> and only create a vector variable after optimization is finished)
+
     LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
 
     for(int p=0; p<mNumParameters; ++p)

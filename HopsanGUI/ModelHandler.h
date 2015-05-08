@@ -92,7 +92,7 @@ public slots:
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
     bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
     bool simulateMultipleModels_nonblocking(QVector<ModelWidget*> models);
-    bool simulateMultipleModels_blocking(QVector<ModelWidget*> models);
+    bool simulateMultipleModels_blocking(QVector<ModelWidget*> models, bool noChanges=false);
 
 signals:
     void newModelWidgetAdded();

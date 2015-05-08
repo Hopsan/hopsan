@@ -45,7 +45,7 @@ public:
 
 protected:
     virtual void pickCandidateParticles();
-    virtual void evaluateCandidateParticles();
+    virtual void evaluateCandidateParticles(bool firstTime=false);
     virtual void examineCandidateParticles();
     double triangularDistribution(double min, double mid, double max);
     void generateRandomParticle(QVector<double> &rParticle);
@@ -54,11 +54,15 @@ protected:
     void findCenter(QVector< QVector<double> > &particles);
     void plotPoints();
 
+    QVector<ModelWidget *> mUsedModelPtrs;
+
     QVector< QVector<double> > mCandidateParticles;
     bool mNeedsIteration;
 
     double mAlpha1, mAlpha2, mAlpha3;
-    int mNumThreads;
     int mMethod;
+
+    QList<SharedVectorVariableT> mCandidateVars_x;
+    QList<SharedVectorVariableT> mCandidateVars_y;
 };
 #endif // OPTIMIZATIONWORKERCOMPLEXRFP_H
