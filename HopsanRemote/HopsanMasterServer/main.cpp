@@ -41,6 +41,31 @@ zmq::context_t gContext(1, 63);
 zmq::context_t gContext(1);
 #endif
 
+static int s_interrupted = 0;
+#ifdef _WIN32
+BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
+{
+    // what to do here?
+    s_interrupted = 1;
+    return TRUE;
+}
+#else
+static void s_signal_handler(int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals(void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
+#endif
+
 void refreshServerStatus(size_t serverId)
 {
     RemoteHopsanClient hopsanClient(gContext);
@@ -68,32 +93,62 @@ void refreshServerStatus(size_t serverId)
     }
 }
 
-
-
-static int s_interrupted = 0;
-#ifdef _WIN32
-BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
+void refreshServerThread()
 {
-    // what to do here?
-    s_interrupted = 1;
-    return TRUE;
-}
-#else
-static void s_signal_handler(int signal_value)
-{
-    s_interrupted = 1;
-}
+    const double maxAgeSeconds=60;
+    cout << PRINTSERVER << nowDateTime() << " Starting server refresh thread!" << endl;
 
-static void s_catch_signals(void)
-{
-    struct sigaction action;
-    action.sa_handler = s_signal_handler;
-    action.sa_flags = 0;
-    sigemptyset (&action.sa_mask);
-    sigaction (SIGINT, &action, NULL);
-    sigaction (SIGTERM, &action, NULL);
+    while (true)
+    {
+        // Check break condition
+        if (s_interrupted)
+        {
+            break;
+        }
+
+        // Extract oldest servers
+        //! @todo maybe extract age as well, under the same lock
+        list<size_t> server_ids = gServerHandler.getOldestServers(20);
+
+        // If now servers are available, then sleep
+        if (server_ids.empty())
+        {
+            std::chrono::milliseconds ms{int(floor(maxAgeSeconds*1000))};
+            cout << "Sleeping for: " << ms.count() << " milliseconds" << endl;
+            std::this_thread::sleep_for(ms);
+        }
+
+        // Check break condition
+        if (s_interrupted)
+        {
+            break;
+        }
+
+        // Now process them, oldes first
+        // Oldest should be first in the list
+        for (size_t server_id : server_ids)
+        {
+            // Check break condition
+            if (s_interrupted)
+            {
+                break;
+            }
+
+            duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - gServerHandler.getServerAge(server_id));
+            if (time_span.count() < maxAgeSeconds)
+            {
+                // Sleep until its time
+                std::chrono::milliseconds ms{int(floor(time_span.count()*1000))};
+                cout << "Sleeping for: " << ms.count() << "milliseconds" << endl;
+                std::this_thread::sleep_for(ms);
+            }
+
+            // Spawn refresh threads (the threds will dealocate themselves when done)
+            std::thread (refreshServerStatus, server_id ).detach();
+        }
+    }
+    cout << PRINTSERVER << nowDateTime() << " Exiting server refresh thread!" << endl;
 }
-#endif
 
 int main(int argc, char* argv[])
 {
@@ -118,6 +173,11 @@ int main(int argc, char* argv[])
 #else
     s_catch_signals();
 #endif
+
+    // Start refresh thread
+    std::thread refreshThread = std::thread( refreshServerThread );
+
+    // Start main thread
     while (true)
     {
         // Wait for next request from client
@@ -203,16 +263,16 @@ int main(int argc, char* argv[])
         //
         // Note2! You should limit the number of servers to attempt refresh on,
         //        else you will run out of file descriptors if to many request threads are made at the same time
-        double maxAgeSeconds=60;
-        //! @todo here we have a serious problem if we have too many servers, we will not have time to refresh them all ever
-        //! @todo refreshing should be in a different thread really, or we could only refresh when someone makes a request
-        std::list<size_t> refreshList = gServerHandler.getServersToRefresh(maxAgeSeconds, 100);
-        cout << PRINTSERVER << nowDateTime() << " Debug: refreshList.size(): " << refreshList.size() << endl;
-        for (auto &item : refreshList)
-        {
-            // Spawn refresh threads (the thredas will dealocate themselves when done)
-            std::thread (refreshServerStatus, item ).detach();
-        }
+//        double maxAgeSeconds=60;
+//        //! @todo here we have a serious problem if we have too many servers, we will not have time to refresh them all ever
+//        //! @todo refreshing should be in a different thread really, or we could only refresh when someone makes a request
+//        std::list<size_t> refreshList = gServerHandler.getServersToRefresh(maxAgeSeconds, 100);
+//        cout << PRINTSERVER << nowDateTime() << " Debug: refreshList.size(): " << refreshList.size() << endl;
+//        for (auto &item : refreshList)
+//        {
+//            // Spawn refresh threads (the thredas will dealocate themselves when done)
+//            std::thread (refreshServerStatus, item ).detach();
+//        }
 
         // check quit signal
         if (s_interrupted)
@@ -221,6 +281,11 @@ int main(int argc, char* argv[])
             break;
         }
     }
+
+    s_interrupted = 1;
+    cout << PRINTSERVER << nowDateTime() << " Waiting for server refresh thread..." << endl;
+    refreshThread.join();
+
     cout << PRINTSERVER << nowDateTime() << " Closed!" << endl;
     return 0;
 }

@@ -342,7 +342,14 @@ void RemoteHopsanClient::disconnect()
     {
         sendShortClientMessage(mpRWCSocket, C_Bye);
         readAckNackServerMessage(mpRWCSocket, 1000); //But we do not care about result
-        mpRWCSocket->disconnect(mWorkerAddress.c_str());
+        try
+        {
+            mpRWCSocket->disconnect(mWorkerAddress.c_str());
+        }
+        catch(zmq::error_t e)
+        {
+            mLastErrorMessage = e.what();
+        }
         mWorkerAddress.clear();
     }
 
@@ -350,7 +357,14 @@ void RemoteHopsanClient::disconnect()
     if (serverConnected())
     {
         //! @todo maybe should auto disconnect when we connect to worker
-        mpRSCSocket->disconnect(mServerAddress.c_str());
+        try
+        {
+            mpRSCSocket->disconnect(mServerAddress.c_str());
+        }
+        catch(zmq::error_t e)
+        {
+            mLastErrorMessage = e.what();
+        }
         mServerAddress.clear();
     }
 }

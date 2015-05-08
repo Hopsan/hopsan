@@ -34,6 +34,8 @@ class ServerHandler
 private:
     typedef std::list<size_t> idlist_t;
     idlist_t mFreeIds;
+    idlist_t mServerAgeList;
+    idlist_t mServerRefreshList;
     std::map<size_t, ServerInfo> mServerMap;
     std::mutex mMutex;
 public :
@@ -44,8 +46,10 @@ public :
 
     ServerInfo getServer(size_t id);
     int getServerMatching(std::string ip, std::string port);
+    std::chrono::steady_clock::time_point getServerAge(size_t id);
     idlist_t getServersFasterThen(double maxTime, int maxNum=-1);
     idlist_t getServersToRefresh(double maxAge, int maxNumServers=-1);
+    idlist_t getOldestServers(size_t maxNum);
 };
 
 #endif // SERVERHANDLER_H
