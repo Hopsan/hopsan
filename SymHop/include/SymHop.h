@@ -62,6 +62,7 @@ public:
     //Expression(const Expression left, const QString mid, const Expression right, const ExpressionSimplificationT simplifications=FullSimplification);
     //Expression(const QList<Expression> children, const QString separator);
     Expression(const double value);
+    ~Expression();
 
     void commonConstructorCode(QStringList symbols, bool &ok, const ExpressionSimplificationT simplifications=FullSimplification);
 

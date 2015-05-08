@@ -176,7 +176,31 @@ Expression::Expression(const double value)
 //    {
 //        //mString.append(".0");
 //        mString = QString::number(mString.toDouble(), 'f', 20);
-//    }
+    //    }
+}
+
+Expression::~Expression()
+{
+    if(mpLeft)
+    {
+        delete mpLeft;
+    }
+    if(mpRight)
+    {
+        delete mpRight;
+    }
+    if(mpBase)
+    {
+        delete mpBase;
+    }
+    if(mpPower)
+    {
+        delete mpPower;
+    }
+    if(mpDividend)
+    {
+        delete mpDividend;
+    }
 }
 
 //! @brief Common constructor code that constructs an Expression from a string list
@@ -736,17 +760,17 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             {
                 argString.append(mArguments[a].toString()+",");
             }
-            qDebug() << "Evaluating: " << mFunction << " with arguments " << argString;
+            //qDebug() << "Evaluating: " << mFunction << " with arguments " << argString;
             argString.chop(1);
             bool ok;
             SymHopFunctionoid *pFunc = functions->find(mFunction).value();
             retval = (*pFunc)(argString, ok);
             if(ok)
             {
-                qDebug() << "Ok!";
+                //qDebug() << "Ok!";
                 return retval;
             }
-            qDebug() << "Not ok!";
+            //qDebug() << "Not ok!";
         }
 
         if(mFunction == "der") { return 0; }
