@@ -3,6 +3,7 @@
 #include <vector>
 #include <ctime>
 #include <chrono>
+#include <atomic>
 
 #include "zmq.hpp"
 #include "Messages.h"
@@ -66,8 +67,11 @@ static void s_catch_signals(void)
 }
 #endif
 
+const int gMaxNumRunningRefreshServerStatusThreads = 20;
+std::atomic<int> gNumRunningRefreshServerStatusThreads = 0;
 void refreshServerStatus(size_t serverId)
 {
+    gNumRunningRefreshServerStatusThreads++;
     RemoteHopsanClient hopsanClient(gContext);
     if (hopsanClient.areSocketsValid())
     {
@@ -91,6 +95,7 @@ void refreshServerStatus(size_t serverId)
             //! @todo what if network temporarily down
         }
     }
+    gNumRunningRefreshServerStatusThreads--;
 }
 
 void refreshServerThread()
@@ -108,13 +113,20 @@ void refreshServerThread()
 
         // Extract oldest servers
         //! @todo maybe extract age as well, under the same lock
-        list<size_t> server_ids = gServerHandler.getOldestServers(20);
+        list<size_t> server_ids = gServerHandler.getOldestServers(gMaxNumRunningRefreshServerStatusThreads-gNumRunningRefreshServerStatusThreads);
 
-        // If now servers are available, then sleep
-        if (server_ids.empty())
+        // If no servers are available, then sleep for a while
+        if (server_ids.empty() && gNumRunningRefreshServerStatusThreads==0)
         {
             std::chrono::milliseconds ms{int(floor(maxAgeSeconds*1000))};
-            cout << "Sleeping for: " << ms.count() << " milliseconds" << endl;
+            cout << "No servers sleeping for: " << ms.count() << " milliseconds" << endl;
+            std::this_thread::sleep_for(ms);
+        }
+        // If we have maxed out the number of running refresh threads then sleep fora  short while (typically timeout time)
+        else if (server_ids.empty())
+        {
+            std::chrono::milliseconds ms{5000};
+            cout << "Max num refresh threads running, sleeping for: " << ms.count() << " milliseconds" << endl;
             std::this_thread::sleep_for(ms);
         }
 
