@@ -47,7 +47,7 @@ namespace hopsan {
         bool isSaturated() const;
 
     private:
-        double mY;
+        double mValue;
         double mDelayedU, mDelayed2U, mDelayedY, mDelayed2Y;
         double mCoeffU[3];
         double mCoeffY[3];

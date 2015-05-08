@@ -56,6 +56,7 @@ void SecondOrderTransferFunction::initialize(double timestep, double num[3], dou
     mMax = max;
     mDelayedU = u0;
     mDelayed2U = u0;
+    mValue = y0;
     mDelayedY = std::max(std::min(y0, mMax), mMin);
     mDelayed2Y = mDelayedY-sy0*mTimeStep;
     mTimeStep = timestep;
@@ -106,14 +107,14 @@ void SecondOrderTransferFunction::initializeValues(double u0, double y0)
     mDelayed2U = u0;
     mDelayedY = y0;
     mDelayed2Y = y0;
-    mY = y0;
+    mValue = y0;
 }
 
 
 double SecondOrderTransferFunction::update(double u)
 {
 //    std::cout << "u: " << u << " Value before: " << mY;
-    mY = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayedU + mCoeffU[2]*mDelayed2U - mCoeffY[1]*mDelayedY - mCoeffY[2]*mDelayed2Y);
+    mValue = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayedU + mCoeffU[2]*mDelayed2U - mCoeffY[1]*mDelayedY - mCoeffY[2]*mDelayed2Y);
 //    std::cout << " Value after: " << mY << std::endl;
 
     //    if (mValue >= mMax)
@@ -143,14 +144,14 @@ double SecondOrderTransferFunction::update(double u)
     //        mIsSaturated = false;
     //    }
 
-    if (mY >= mMax)
+    if (mValue >= mMax)
     {
-        mY           = mMax;
+        mValue = mMax;
         mIsSaturated = true;
     }
-    else if (mY <= mMin)
+    else if (mValue <= mMin)
     {
-        mY           = mMin;
+        mValue = mMin;
         mIsSaturated = true;
     }
     else
@@ -161,9 +162,9 @@ double SecondOrderTransferFunction::update(double u)
     mDelayed2U = mDelayedU;
     mDelayedU  = u;
     mDelayed2Y = mDelayedY;
-    mDelayedY  = mY;
+    mDelayedY  = mValue;
 
-    return mY;
+    return mValue;
 }
 
 
@@ -171,7 +172,7 @@ double SecondOrderTransferFunction::update(double u)
 //! @return The filtered actual value.
 double SecondOrderTransferFunction::value() const
 {
-    return mY;
+    return mValue;
 }
 
 double SecondOrderTransferFunction::delayedU() const
@@ -211,6 +212,7 @@ void SecondOrderTransferFunctionVariable::initialize(double *pTimeStep, double n
     mMax = max;
     mDelayU[0] = u0;
     mDelayU[1] = u0;
+    mValue = y0;
     mDelayY[0] = std::max(std::min(y0, mMax), mMin);
     mDelayY[1] = mDelayY[0];
     mpTimeStep = pTimeStep;

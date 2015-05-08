@@ -44,7 +44,7 @@ void FirstOrderTransferFunction::initialize(double timestep, double num[2], doub
     mIsSaturated = false;
     mMin = min;
     mMax = max;
-    mY = y0;
+    mValue = y0;
     mDelayedU = u0;
     mDelayedY = std::max(std::min(y0, mMax), mMin);
     mTimeStep = timestep;
@@ -90,7 +90,7 @@ void FirstOrderTransferFunction::initializeValues(double u0, double y0)
 {
     mDelayedU = u0;
     mDelayedY = y0;
-    mY = y0;
+    mValue = y0;
 }
 
 
@@ -99,7 +99,7 @@ double FirstOrderTransferFunction::update(double u)
     //Filter equation
     //Bilinear transform is used
 
-    mY = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayedU - mCoeffY[0]*mDelayedY);
+    mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayedU - mCoeffY[0]*mDelayedY);
 
 //    if (mValue >= mMax)
 //    {
@@ -122,14 +122,14 @@ double FirstOrderTransferFunction::update(double u)
 //        mIsSaturated = false;
 //    }
 
-    if (mY >= mMax)
+    if (mValue >= mMax)
     {
-        mY = mMax;
+        mValue = mMax;
         mIsSaturated = true;
     }
-    else if (mY <= mMin)
+    else if (mValue <= mMin)
     {
-        mY = mMin;
+        mValue = mMin;
         mIsSaturated = true;
     }
     else
@@ -137,10 +137,10 @@ double FirstOrderTransferFunction::update(double u)
         mIsSaturated = false;
     }
 
-    mDelayedY = mY;
+    mDelayedY = mValue;
     mDelayedU = u;
 
-    return mY;
+    return mValue;
 }
 
 
@@ -148,7 +148,7 @@ double FirstOrderTransferFunction::update(double u)
 //! @return The filtered actual value.
 double FirstOrderTransferFunction::value() const
 {
-    return mY;
+    return mValue;
 }
 
 double FirstOrderTransferFunction::delayedU() const
