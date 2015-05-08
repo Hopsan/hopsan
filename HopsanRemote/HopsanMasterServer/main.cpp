@@ -76,23 +76,25 @@ void refreshServerStatus(size_t serverId)
     if (hopsanClient.areSocketsValid())
     {
         ServerInfo server = gServerHandler.getServer(serverId);
-
-        cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
-        hopsanClient.connectToServer(server.ip, server.port);
-        ServerStatusT status;
-        bool rc = hopsanClient.requestStatus(status);
-        if (rc)
+        if (server.isValid())
         {
-            cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is responding!" << endl;
-            server.lastCheckTime = steady_clock::now();
-            server.isReady = status.isReady;
-            gServerHandler.updateServerInfo(server);
-        }
-        else
-        {
-            cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
-            gServerHandler.removeServer(serverId);
-            //! @todo what if network temporarily down
+            cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
+            hopsanClient.connectToServer(server.ip, server.port);
+            ServerStatusT status;
+            bool rc = hopsanClient.requestStatus(status);
+            if (rc)
+            {
+                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is responding!" << endl;
+                server.lastCheckTime = steady_clock::now();
+                server.isReady = status.isReady;
+                gServerHandler.updateServerInfo(server);
+            }
+            else
+            {
+                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
+                gServerHandler.removeServer(serverId);
+                //! @todo what if network temporarily down
+            }
         }
     }
     gNumRunningRefreshServerStatusThreads--;
@@ -113,21 +115,31 @@ void refreshServerThread()
 
         // Extract oldest servers
         //! @todo maybe extract age as well, under the same lock
-        list<size_t> server_ids = gServerHandler.getOldestServers(gMaxNumRunningRefreshServerStatusThreads-gNumRunningRefreshServerStatusThreads);
+        list<int> server_ids;
 
+        int nRunning = gNumRunningRefreshServerStatusThreads;
+        cout << "Num RefreshThreads running: " << nRunning << endl;
+        cout << "Num Servers: " << gServerHandler.numServers() << endl;
         // If no servers are available, then sleep for a while
-        if (server_ids.empty() && gNumRunningRefreshServerStatusThreads==0)
+        if (gServerHandler.numServers() == 0)
         {
             std::chrono::milliseconds ms{int(floor(maxAgeSeconds*1000))};
             cout << "No servers sleeping for: " << ms.count() << " milliseconds" << endl;
             std::this_thread::sleep_for(ms);
         }
-        // If we have maxed out the number of running refresh threads then sleep fora  short while (typically timeout time)
-        else if (server_ids.empty())
+        // Else try to get the oldest servers
+        else
         {
-            std::chrono::milliseconds ms{5000};
-            cout << "Max num refresh threads running, sleeping for: " << ms.count() << " milliseconds" << endl;
-            std::this_thread::sleep_for(ms);
+
+            server_ids = gServerHandler.getOldestServers(gMaxNumRunningRefreshServerStatusThreads-nRunning);
+
+            // If we did not get any then we have maxed out our num refresh threads, so sleep a short while before we try again
+            if (server_ids.empty() && (gMaxNumRunningRefreshServerStatusThreads-nRunning)==0 )
+            {
+                std::chrono::milliseconds ms{1000};
+                cout << "Max num refresh threads running, sleeping for: " << ms.count() << " milliseconds" << endl;
+                std::this_thread::sleep_for(ms);
+            }
         }
 
         // Check break condition
@@ -136,8 +148,7 @@ void refreshServerThread()
             break;
         }
 
-        // Now process them, oldes first
-        // Oldest should be first in the list
+        // Now process them, Oldest should be first in the list
         for (size_t server_id : server_ids)
         {
             // Check break condition
@@ -150,8 +161,13 @@ void refreshServerThread()
             if (time_span.count() < maxAgeSeconds)
             {
                 // Sleep until its time
-                std::chrono::milliseconds ms{int(floor(time_span.count()*1000))};
-                cout << "Sleeping for: " << ms.count() << "milliseconds" << endl;
+                std::chrono::milliseconds ms{int(floor((maxAgeSeconds-time_span.count())*1000))};
+                cout << "Non needs update, Sleeping for: " << ms.count() << " milliseconds" << endl;
+                std::this_thread::sleep_for(ms);
+            }
+            else
+            {
+                std::chrono::milliseconds ms{50};
                 std::this_thread::sleep_for(ms);
             }
 
@@ -214,6 +230,14 @@ int main(int argc, char* argv[])
                 {
                     gServerHandler.addServer(si);
                     sendServerAck(socket);
+                    // Get the oldest one, (should be the one we just added, since it need emmediate update)
+                    std::list<int> list = gServerHandler.getOldestServers(1);
+                    // Start a refresh thread for this one server, unless we have the maximum number of threads running
+                    // In that case we let the ordinary refresh thread handle this server
+                    if (gNumRunningRefreshServerStatusThreads < gMaxNumRunningRefreshServerStatusThreads)
+                    {
+                        std::thread ( refreshServerStatus, list.front() ).detach();
+                    }
                 }
                 else
                 {
@@ -252,8 +276,11 @@ int main(int argc, char* argv[])
                 for (auto id : ids)
                 {
                     ServerInfo server = gServerHandler.getServer(id);
-                    ips.push_back(server.ip);
-                    ports.push_back(server.port);
+                    if (server.isValid())
+                    {
+                        ips.push_back(server.ip);
+                        ports.push_back(server.port);
+                    }
                 }
 
                 MSM_ReqServerMachines_Reply_t reply;
