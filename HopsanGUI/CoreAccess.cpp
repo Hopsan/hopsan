@@ -1728,7 +1728,7 @@ QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
             if (!ait.value().recentlyTaken && ait.value().nSlots >= nRequiredSlots )
             {
                 requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
-                if (ait.value().nOpenSlots > nRequiredSlots)
+                if (ait.value().nOpenSlots >= nRequiredSlots)
                 {
                     ait.value().recentlyTaken = true;
                     return ait.value().addr;

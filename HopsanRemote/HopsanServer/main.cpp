@@ -366,9 +366,11 @@ int main(int argc, char* argv[])
                             int stat_loc;
                             pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
 #endif
+                            int nThreads = it->second.numThreads;
+
                             //! @todo check returncodes maybe
                             workerMap.erase(it);
-                            nTakenSlots--;
+                            nTakenSlots -= nThreads;
                         }
                         else
                         {
