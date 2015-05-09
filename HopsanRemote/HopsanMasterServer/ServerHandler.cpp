@@ -86,7 +86,7 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
     cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " IP: " << rServerInfo.ip << " Port: " << rServerInfo.port << endl;
 
     // Insert into the map
-    mServerMap.insert( std::make_pair(id, rServerInfo) );
+    mServerMap.insert( {id, rServerInfo} );
 
     // Here we push to front, bacause new servers need emmediate update
     mServerAgeList.push_front(rServerInfo.mId);
@@ -139,7 +139,7 @@ int ServerHandler::getServerIDMatching(std::string ip, std::string port)
     return -1;
 }
 
-ServerHandler::idlist_t ServerHandler::getServersFasterThen(double maxTime, int maxNum)
+ServerHandler::idlist_t ServerHandler::getServers(double maxTime, int minNumThreads, int maxNum)
 {
     if (maxNum < 0)
     {
@@ -150,7 +150,7 @@ ServerHandler::idlist_t ServerHandler::getServersFasterThen(double maxTime, int 
     mMutex.lock();
     for (auto &item : mServerMap)
     {
-        if (item.second.isReady && item.second.benchmarkTime < maxTime)
+        if (item.second.isReady && item.second.numSlots > minNumThreads && item.second.benchmarkTime < maxTime)
         {
             ids.push_back(item.first);
             if (int(ids.size()) >= maxNum)
@@ -223,6 +223,7 @@ void ServerHandler::refreshServerStatusThread(int serverId)
                 {
                     server2.lastCheckTime = steady_clock::now();
                     server2.isReady = status.isReady;
+                    server2.numSlots = status.numTotalSlots;
                     updateServerInfoNoLock(server2);
                 }
                 mMutex.unlock();

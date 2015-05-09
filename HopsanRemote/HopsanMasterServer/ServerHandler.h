@@ -19,6 +19,7 @@ private:
 public:
     std::string ip;
     std::string port;
+    int numSlots = 0;
     double benchmarkTime=1e100;
     std::chrono::steady_clock::time_point lastCheckTime;
     bool bussyProcessing=false;
@@ -63,7 +64,7 @@ public :
     ServerInfo getServer(int id);
 
     int getServerIDMatching(std::string ip, std::string port);
-    idlist_t getServersFasterThen(double maxTime, int maxNum=-1);
+    idlist_t getServers(double maxTime, int minNumThreads=0, int maxNum=-1);
     void getOldestServer(int &rID, std::chrono::steady_clock::time_point &rTime);
     int getOldestServer();
 

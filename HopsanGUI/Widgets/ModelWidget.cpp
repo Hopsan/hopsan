@@ -422,6 +422,9 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
     mUseRemoteCore=tf;
     mUseRemotecoreDispatch=useDispatch;
 
+    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+    nThreads = qMax(nThreads, 1);
+
 #ifdef USEZMQ
     QStringList serveraddress;
     if (mUseRemotecoreDispatch)
@@ -437,7 +440,8 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
         }
 
         gpRemoteCoreAddressHandler->requestAvailableServers();
-        QString addr = gpRemoteCoreAddressHandler->getBestAvailableServer();
+
+        QString addr = gpRemoteCoreAddressHandler->getBestAvailableServer(nThreads);
         serveraddress = addr.split(":");
     }
     else
@@ -449,6 +453,7 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
     if (mUseRemoteCore)
     {
         mpRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
+        mpRemoteCoreSimulationHandler->setNumThreads(nThreads);
         mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress.first(), serveraddress.last());
 
         bool rc = mpRemoteCoreSimulationHandler->connect();

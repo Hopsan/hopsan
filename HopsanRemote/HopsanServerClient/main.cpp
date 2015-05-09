@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
         try
         {
             size_t ctrlPort;
-            bool rc = rhopsan.requestSlot(ctrlPort);
+            bool rc = rhopsan.requestSlot(1, ctrlPort);
             if (rc)
             {
                 cout << PRINTCLIENT << "Got server worker slot at port: " << ctrlPort << endl;

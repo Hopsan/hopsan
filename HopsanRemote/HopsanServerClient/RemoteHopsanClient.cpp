@@ -261,9 +261,10 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
     return false;
 }
 
-bool RemoteHopsanClient::requestSlot(size_t &rControlPort)
+bool RemoteHopsanClient::requestSlot(int numThreads, size_t &rControlPort)
 {
-    sendShortClientMessage(mpRSCSocket, C_ReqSlot);
+    CM_ReqSlot_t msg {numThreads};
+    sendClientMessage<CM_ReqSlot_t>(mpRSCSocket, C_ReqSlot, msg);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRSCSocket, response))
@@ -430,7 +431,8 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
     return false;
 }
 
-bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<string> &rIps, std::vector<string> &rPorts)
+bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<string> &rIps, std::vector<string> &rPorts,
+                                               std::vector<int> &rNumSlots, std::vector<double> &rSpeeds)
 {
     CM_ReqServerMachines_t req;
     req.numMachines = nMachines;
@@ -451,6 +453,8 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
             MSM_ReqServerMachines_Reply_t repl = unpackMessage<MSM_ReqServerMachines_Reply_t>(response,offset,parseOK);
             rIps = repl.ips;
             rPorts = repl.ports;
+            rNumSlots = repl.numslots;
+            rSpeeds = repl.speeds;
             return true;
         }
         else

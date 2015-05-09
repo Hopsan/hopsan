@@ -312,8 +312,9 @@ private:
     typedef struct
     {
         QString addr;
-        double speed=0;
-        int nOpenSlots=10; // This is a HACK should ask server
+        double speed=-1;
+        int nSlots=0;
+        int nOpenSlots=0;
         bool recentlyTaken=false;
     }ServerInfoT;
 
@@ -322,7 +323,9 @@ private:
 
     //! @todo shared pointer to info maybe
     QMap<QString, ServerInfoT> mAvailableServers;
-    QMultiMap<double, ServerInfoT> mServerSpeedMap;
+    QMultiMap<double, QString> mServerSpeedMap;
+
+    void requestServerInfo(QString address);
 
 public:
     RemoteCoreAddressHandler();
@@ -337,9 +340,9 @@ public:
     void disconnect();
 
     QList<QString> requestAvailableServers();
-    QList<QString> requestAvailableServers(int nOpenSlots);
+    //QList<QString> requestAvailableServers(int nOpenSlots);
 
-    QString getBestAvailableServer();
+    QString getBestAvailableServer(int nRequiredSlots);
 };
 
 class RemoteCoreSimulationHandler
@@ -347,12 +350,15 @@ class RemoteCoreSimulationHandler
 private:
     QString mRemoteServerAddress,   mRemoteServerPort;
     RemoteHopsanClient *mpRemoteHopsanClient=0;
+    int mNumThreads=1;
 
 public:
     RemoteCoreSimulationHandler();
     ~RemoteCoreSimulationHandler();
 
     void setHopsanServer(QString ip, QString port );
+    void setNumThreads(int nThreads);
+    int numThreads() const;
 
     bool connect();
     void disconnect();

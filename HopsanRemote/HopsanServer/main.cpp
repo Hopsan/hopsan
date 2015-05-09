@@ -27,21 +27,26 @@
 using namespace std;
 using namespace std::chrono;
 
+extern char **environ;
+
+class WorkerInfo
+{
+public:
+    int numThreads;
 #ifdef _WIN32
-map<int, PROCESS_INFORMATION> workerMap;
+    PROCESS_INFORMATION pi;
 #else
-map<int, pid_t> workerMap;
+    pid_t pid;
 #endif
 
-extern char **environ;
+};
 
 class ServerConfig
 {
 public:
     int mControlPort = 23300;
     string mControlPortStr = "23300";
-    int mMaxNumSlots = 2;
-    int mMaxThreadsPerSlot = 2;
+    int mMaxNumSlots = 4;
 };
 
 ServerConfig gServerConfig;
@@ -170,6 +175,8 @@ static void s_catch_signals(void)
 }
 #endif
 
+map<int, WorkerInfo> workerMap;
+
 int main(int argc, char* argv[])
 {
     if (argc < 2)
@@ -244,11 +251,14 @@ int main(int argc, char* argv[])
 
                 if (msg_id == C_ReqSlot)
                 {
-                    cout << PRINTSERVER << nowDateTime() << " Client is requesting slot... " << endl;
-                    msgpack::v1::sbuffer out_buffer;
-                    if (nTakenSlots < gServerConfig.mMaxNumSlots)
+                    bool parseOK;
+                    CM_ReqSlot_t msg = unpackMessage<CM_ReqSlot_t>(request, offset, parseOK);
+                    int requestNumThreads = msg.numThreads;
+
+                    cout << PRINTSERVER << nowDateTime() << " Client is requesting: " << requestNumThreads << " slots... " << endl;
+                    if (nTakenSlots+requestNumThreads <= gServerConfig.mMaxNumSlots)
                     {
-                        size_t port = gServerConfig.mControlPort+1+nTakenSlots;
+                        size_t workerPort = gServerConfig.mControlPort+nTakenSlots+1;
 
                         // Generate unique worker Id
                         int uid = rand();
@@ -265,8 +275,8 @@ int main(int argc, char* argv[])
                         startupInfo.cb = sizeof(startupInfo);
 
                         string scport = to_string(gServerConfig.mControlPort);
-                        string swport = to_string(port);
-                        string nthreads = to_string(gServerConfig.mMaxThreadsPerSlot);
+                        string swport = to_string(workerPort);
+                        string nthreads = to_string(requestNumThreads);
                         string uidstr = to_string(uid);
 
                         std::string appName("HopsanServerWorker.exe");
@@ -283,12 +293,10 @@ int main(int argc, char* argv[])
                         else
                         {
                             std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << port << " uid: " << uid << endl;
-                            workerMap.insert({uid,processInformation});
+                            workerMap.insert({uid, {requestNumThreads, processInformation}});
 
                             SM_ReqSlot_Reply_t msg = {port};
-                            msgpack::pack(out_buffer, S_ReqSlot_Reply);
-                            msgpack::pack(out_buffer, msg);
-                            socket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+                            sendServerMessage<SM_ReqSlot_Reply_t>(socket, S_ReqSlot_Reply, msg);
                             nTakenSlots++;
                         }
 
@@ -296,9 +304,9 @@ int main(int argc, char* argv[])
                         char sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
                         // Write port as char in buffer
                         sprintf(sport_buff, "%d", gServerConfig.mControlPort);
-                        sprintf(wport_buff, "%d", int(port));
+                        sprintf(wport_buff, "%d", int(workerPort));
                         // Write num threads as char in buffer
-                        sprintf(thread_buff, "%d", gServerConfig.mMaxThreadsPerSlot);
+                        sprintf(thread_buff, "%d", requestNumThreads);
                         // Write id as char in buffer
                         sprintf(uid_buff, "%d", uid);
 
@@ -308,15 +316,12 @@ int main(int argc, char* argv[])
                         int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
                         if(status == 0)
                         {
-                            std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << port << " uid: " << uid << endl;
-                            workerMap.insert({uid,pid});
+                            std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << endl;
+                            workerMap.insert({uid,{requestNumThreads,pid}});
 
-                            SM_ReqSlot_Reply_t msg = {port};
-                            msgpack::pack(out_buffer, S_ReqSlot_Reply);
-                            msgpack::pack(out_buffer, msg);
-                            socket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
-                            nTakenSlots++;
-
+                            SM_ReqSlot_Reply_t msg = {workerPort};
+                            sendServerMessage<SM_ReqSlot_Reply_t>(socket, S_ReqSlot_Reply, msg);
+                            nTakenSlots+=requestNumThreads;
                         }
                         else
                         {
@@ -325,12 +330,16 @@ int main(int argc, char* argv[])
                         }
 #endif
                     }
-                    else
+                    else if (nTakenSlots == gServerConfig.mMaxNumSlots)
                     {
                         sendServerNAck(socket, "All slots taken");
                         cout << PRINTSERVER << nowDateTime() << " Denied! All slots taken." << endl;
                     }
-
+                    else
+                    {
+                        sendServerNAck(socket, "To few free slots");
+                        cout << PRINTSERVER << nowDateTime() << " Denied! To few free slots." << endl;
+                    }
                 }
                 else if (msg_id == SW_Finished)
                 {
@@ -348,12 +357,12 @@ int main(int argc, char* argv[])
 
                             // Wait for process to stop (to avoid zombies)
 #ifdef _WIN32
-                            PROCESS_INFORMATION pi = it->second;
+                            PROCESS_INFORMATION pi = it->second.pi;
                             WaitForSingleObject( pi.hProcess, INFINITE );
                             CloseHandle( pi.hProcess );
                             CloseHandle( pi.hThread );
 #else
-                            pid_t pid = it->second;
+                            pid_t pid = it->second.pid;
                             int stat_loc;
                             pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
 #endif
@@ -377,7 +386,6 @@ int main(int argc, char* argv[])
                     SM_ServerStatus_t status;
                     status.numTotalSlots = gServerConfig.mMaxNumSlots;
                     status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
-                    status.numThreadsPerSlot = gServerConfig.mMaxThreadsPerSlot;
                     status.isReady = (status.numFreeSlots > 0);
 
                     sendServerMessage<SM_ServerStatus_t>(socket, S_ReqStatus_Reply, status);

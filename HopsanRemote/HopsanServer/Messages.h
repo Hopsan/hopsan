@@ -68,6 +68,11 @@ typedef struct
     MSGPACK_DEFINE(numMachines, numThreads, maxBenchmarkTime)
 }CM_ReqServerMachines_t;
 
+typedef struct
+{
+    int numThreads;
+    MSGPACK_DEFINE(numThreads)
+}CM_ReqSlot_t;
 
 // Server messages
 
@@ -110,14 +115,16 @@ typedef struct
 
 typedef struct SM_ServerStatus_ : ServerStatusT
 {
-    MSGPACK_DEFINE(numFreeSlots, numTotalSlots, numThreadsPerSlot, startTime, stopTime, isReady)
+    MSGPACK_DEFINE(numFreeSlots, numTotalSlots, startTime, stopTime, isReady)
 }SM_ServerStatus_t;
 
 typedef struct
 {
     std::vector<std::string> ips;
     std::vector<std::string> ports;
-    MSGPACK_DEFINE(ips, ports)
+    std::vector<int> numslots;
+    std::vector<double> speeds;
+    MSGPACK_DEFINE(ips, ports, numslots, speeds)
 }MSM_ReqServerMachines_Reply_t;
 
 #endif // MESSAGES_H

@@ -22,7 +22,7 @@ public:
     bool connectToServer(std::string zmqaddres);
     bool connectToServer(std::string ip, std::string port);
     bool serverConnected() const;
-    bool requestSlot(size_t &rControlPort);
+    bool requestSlot(int numThreads, size_t &rControlPort);
 
     bool connectToWorker(std::string zmqaddres);
     bool connectToWorker(std::string ip, std::string port);
@@ -41,7 +41,8 @@ public:
     bool requestMessages();
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
 
-    bool requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<std::string> &rIps, std::vector<std::string> &rPorts);
+    bool requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<std::string> &rIps, std::vector<std::string> &rPorts,
+                               std::vector<int> &rNumSlots, std::vector<double> &rSpeeds);
 
     std::string getLastErrorMessage() const;
 

@@ -1458,6 +1458,16 @@ void RemoteCoreSimulationHandler::setHopsanServer(QString ip, QString port)
     mRemoteServerPort = port;
 }
 
+void RemoteCoreSimulationHandler::setNumThreads(int nThreads)
+{
+    mNumThreads = nThreads;
+}
+
+int RemoteCoreSimulationHandler::numThreads() const
+{
+    return mNumThreads;
+}
+
 
 bool RemoteCoreSimulationHandler::connect()
 {
@@ -1467,7 +1477,7 @@ bool RemoteCoreSimulationHandler::connect()
         if (mpRemoteHopsanClient->serverConnected())
         {
             size_t workerPort;
-            if (mpRemoteHopsanClient->requestSlot(workerPort))
+            if (mpRemoteHopsanClient->requestSlot(mNumThreads, workerPort))
             {
                 mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
                 if (mpRemoteHopsanClient->workerConnected())
@@ -1572,6 +1582,43 @@ QString RemoteCoreSimulationHandler::getLastError() const
     return QString::fromStdString(mpRemoteHopsanClient->getLastErrorMessage());
 }
 
+void RemoteCoreAddressHandler::requestServerInfo(QString address)
+{
+    QStringList ad = address.split(":");
+    // Here we create a new temporary HopsanClient to communicate with the HopsanServer
+    RemoteHopsanClient client(zmqContext);
+    client.connectToServer(ad.first().toStdString(), ad.last().toStdString());
+    if (client.serverConnected())
+    {
+        ServerStatusT status;
+        if (client.requestStatus(status))
+        {
+            // If we got status then update our mapped info, we use iterator and reference to avoid
+            // inserting into map and therby destorying iterators that might be used when this function is called
+            auto it = mAvailableServers.find(address);
+            if (it != mAvailableServers.end())
+            {
+                it.value().nSlots = status.numTotalSlots;
+                it.value().nOpenSlots = status.numFreeSlots;
+                //it.value().speed = status.
+            }
+        }
+        //else server is dead maybe? Then discard the server entery
+        else
+        {
+            //! @todo maybe have a remove function instead
+            auto it = mAvailableServers.find(address);
+            if (it != mAvailableServers.end())
+            {
+                double speed = it.value().speed;
+                mAvailableServers.erase(it);
+                mServerSpeedMap.remove(speed, address); //! @todo since speed is double maybe we can not remove here, speed maybe should be int (ms)
+            }
+        }
+        client.disconnect();
+    }
+}
+
 RemoteCoreAddressHandler::RemoteCoreAddressHandler()
 {
     mpRemoteHopsanClient = new RemoteHopsanClient(zmqContext);
@@ -1642,45 +1689,66 @@ QList<QString> RemoteCoreAddressHandler::requestAvailableServers()
 {
     //! @todo maybe should have a timer to prevent requesting multiple time within the same period
     mAvailableServers.clear();
+    mServerSpeedMap.clear();
     if (mpRemoteHopsanClient->serverConnected())
     {
         std::vector<std::string> ips, ports;
-        mpRemoteHopsanClient->requestServerMachines(-1, 1e200, ips, ports);
+        std::vector<int> numSlots;
+        std::vector<double> speeds;
+        mpRemoteHopsanClient->requestServerMachines(-1, 1e200, ips, ports, numSlots, speeds);
         for (int i=0; i<ips.size(); ++i)
         {
+            //! @todo need common function for this add/update
             QString addr = QString("%1:%2").arg(ips[i].c_str()).arg(ports[i].c_str());
             ServerInfoT info;
             info.addr = addr;
+            info.nSlots = numSlots[i];
+            info.speed = speeds[i];
             mAvailableServers.insert(addr, info);
-            mServerSpeedMap.insertMulti(0, info );
+            mServerSpeedMap.insertMulti(info.speed, addr );
         }
     }
     return mAvailableServers.keys();
 }
 
-QList<QString> RemoteCoreAddressHandler::requestAvailableServers(int nOpenSlots)
-{
-    requestAvailableServers();
+//QList<QString> RemoteCoreAddressHandler::requestAvailableServers(int nOpenSlots)
+//{
+//    requestAvailableServers();
 
-}
+//}
 
-QString RemoteCoreAddressHandler::getBestAvailableServer()
+QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
 {
-    for (auto it=mServerSpeedMap.begin(); it!=mServerSpeedMap.end(); ++it)
+    for (auto sit=mServerSpeedMap.begin(); sit!=mServerSpeedMap.end(); ++sit)
     {
-        if (!it.value().recentlyTaken)
+        auto ait = mAvailableServers.find(sit.value());
+        if (ait != mAvailableServers.end())
         {
-            it.value().recentlyTaken = true;
-            return it.value().addr;
+            //! @todo here we would like to know about all open slots, but requesting every time may take time
+            if (!ait.value().recentlyTaken && ait.value().nSlots >= nRequiredSlots )
+            {
+                requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
+                if (ait.value().nOpenSlots > nRequiredSlots)
+                {
+                    ait.value().recentlyTaken = true;
+                    return ait.value().addr;
+                }
+            }
         }
     }
 
     // If we get here then everyone is taken, lets search again for the first one with an open slot
-    for (auto it=mServerSpeedMap.begin(); it!=mServerSpeedMap.end(); ++it)
+    for (auto sit=mServerSpeedMap.begin(); sit!=mServerSpeedMap.end(); ++sit)
     {
-        if (it.value().nOpenSlots > 0)
+        auto ait = mAvailableServers.find(sit.value());
+        if (ait != mAvailableServers.end())
         {
-            return it.value().addr;
+            //! @todo need a "request and reserver" function
+            requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
+            if (ait.value().nOpenSlots > nRequiredSlots)
+            {
+                return ait.value().addr;
+            }
         }
     }
 

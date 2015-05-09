@@ -241,21 +241,25 @@ int main(int argc, char* argv[])
                     bool parseOK;
                     CM_ReqServerMachines_t req = unpackMessage<CM_ReqServerMachines_t>(message,offset,parseOK);
                     cout << PRINTSERVER << nowDateTime() << " Got server machines request" << endl;
-                    auto ids = gServerHandler.getServersFasterThen(req.maxBenchmarkTime, req.numMachines);
-                    vector<string> ips, ports;
+                    auto ids = gServerHandler.getServers(req.maxBenchmarkTime, req.numMachines);
+                    //! @todo what if a server is replaced or removed while we are processing this list
+
+                    MSM_ReqServerMachines_Reply_t reply;
+                    reply.ips.reserve(ids.size());
+                    reply.ports.reserve(ids.size());
+                    reply.numslots.reserve(ids.size());
+                    reply.speeds.reserve(ids.size());
                     for (auto id : ids)
                     {
                         ServerInfo server = gServerHandler.getServer(id);
                         if (server.isValid())
                         {
-                            ips.push_back(server.ip);
-                            ports.push_back(server.port);
+                            reply.ips.push_back(server.ip);
+                            reply.ports.push_back(server.port);
+                            reply.numslots.push_back(server.numSlots);
+                            reply.speeds.push_back(server.benchmarkTime);
                         }
                     }
-
-                    MSM_ReqServerMachines_Reply_t reply;
-                    reply.ips = ips;
-                    reply.ports = ports;
 
                     sendServerMessage<MSM_ReqServerMachines_Reply_t>(socket, S_ReqServerMachines_Reply, reply);
                 }

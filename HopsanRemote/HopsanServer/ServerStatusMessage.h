@@ -7,7 +7,6 @@ typedef struct
 {
     int numFreeSlots;
     int numTotalSlots;
-    int numThreadsPerSlot;
     std::string startTime;
     std::string stopTime;
     bool isReady;
