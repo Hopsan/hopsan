@@ -41,14 +41,14 @@ private:
     typedef std::list<int> idlist_t;
     idlist_t mFreeIds;
     idlist_t mServerAgeList;
-    //idlist_t mServerRefreshList;
+    idlist_t mServerRefreshList;
     std::map<int, ServerInfo> mServerMap;
     std::mutex mMutex;
 
     ServerInfo getServerNoLock(int id);
     void updateServerInfoNoLock(const ServerInfo &rServerInfo);
 
-    void refreshServerStatusThread(size_t serverId);
+    void refreshServerStatusThread(int serverId);
 
     //Debug
     void consistent();
@@ -63,16 +63,13 @@ public :
     ServerInfo getServer(int id);
 
     int getServerIDMatching(std::string ip, std::string port);
-    //std::chrono::steady_clock::time_point getServerAge(int id);
     idlist_t getServersFasterThen(double maxTime, int maxNum=-1);
-    //idlist_t getServersToRefresh(double maxAge, int maxNumServers=-1);
-    //idlist_t getOldestServers(size_t maxNum);
     void getOldestServer(int &rID, std::chrono::steady_clock::time_point &rTime);
     int getOldestServer();
 
-    const int mMaxNumRunningRefreshServerStatusThreads = 20;
+    const int mMaxNumRunningRefreshServerStatusThreads = 30;
     std::atomic<int> mNumRunningRefreshServerStatusThreads{0};
-    void refreshServerStatus(size_t serverId);
+    void refreshServerStatus(int serverId);
 };
 
 #endif // SERVERHANDLER_H

@@ -33,14 +33,14 @@ std::string nowDateTime()
     return std::string(&buff[0]);
 }
 
-ServerHandler gServerHandler;
-
-// Prepare our context and socket
+// Create our zmq::context
 #ifdef _WIN32
 zmq::context_t gContext(1, 63);
 #else
 zmq::context_t gContext(1);
 #endif
+
+ServerHandler gServerHandler;
 
 static int s_interrupted = 0;
 #ifdef _WIN32
@@ -67,39 +67,8 @@ static void s_catch_signals(void)
 }
 #endif
 
-//const int gMaxNumRunningRefreshServerStatusThreads = 20;
-//std::atomic<int> gNumRunningRefreshServerStatusThreads{0};
-//void refreshServerStatus(size_t serverId)
-//{
-//    gNumRunningRefreshServerStatusThreads++;
-//    RemoteHopsanClient hopsanClient(gContext);
-//    if (hopsanClient.areSocketsValid())
-//    {
-//        ServerInfo server = gServerHandler.getServer(serverId);
-//        if (server.isValid())
-//        {
-//            cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
-//            hopsanClient.connectToServer(server.ip, server.port);
-//            ServerStatusT status;
-//            bool rc = hopsanClient.requestStatus(status);
-//            if (rc)
-//            {
-//                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is responding!" << endl;
-//                server.lastCheckTime = steady_clock::now();
-//                server.isReady = status.isReady;
-//                gServerHandler.updateServerInfo(server);
-//            }
-//            else
-//            {
-//                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
-//                gServerHandler.removeServer(serverId);
-//                //! @todo what if network temporarily down
-//            }
-//        }
-//    }
-//    gNumRunningRefreshServerStatusThreads--;
-//}
 
+//! @todo this thread should be a member of the server handler
 void refreshServerThread()
 {
     const double maxAgeSeconds=60;
@@ -167,7 +136,8 @@ void refreshServerThread()
             {
                 // Spawn refresh threads (the threds will dealocate themselves when done)
                 //std::thread (refreshServerStatus, server_id ).detach();
-                std::thread (&ServerHandler::refreshServerStatus, &gServerHandler, id).detach();
+                //std::thread (&ServerHandler::refreshServerStatus, &gServerHandler, id).detach();
+                gServerHandler.refreshServerStatus(id);
 
                 // Debug sleep to let cout print nicely, remove later
                 std::chrono::milliseconds ms{100};
@@ -236,8 +206,7 @@ int main(int argc, char* argv[])
                         // In that case we let the ordinary refresh thread handle this server later
                         if (gServerHandler.mNumRunningRefreshServerStatusThreads < gServerHandler.mMaxNumRunningRefreshServerStatusThreads)
                         {
-                            //std::thread ( refreshServerStatus, list.front() ).detach();
-                            std::thread (&ServerHandler::refreshServerStatus, &gServerHandler, id).detach();
+                            gServerHandler.refreshServerStatus(id);
                         }
                     }
                     else
@@ -297,24 +266,7 @@ int main(int argc, char* argv[])
 
             }
 
-            // Every time we get here we should refresh status from servers where status is old
-            // Note1! You should make sure that the max age here is shorter then the "Report to master server" timer in the actual server
-            // Otherwise you will end up with the server trying to reregister because no status has been requested
-            //
-            // Note2! You should limit the number of servers to attempt refresh on,
-            //        else you will run out of file descriptors if to many request threads are made at the same time
-            //        double maxAgeSeconds=60;
-            //        //! @todo here we have a serious problem if we have too many servers, we will not have time to refresh them all ever
-            //        //! @todo refreshing should be in a different thread really, or we could only refresh when someone makes a request
-            //        std::list<size_t> refreshList = gServerHandler.getServersToRefresh(maxAgeSeconds, 100);
-            //        cout << PRINTSERVER << nowDateTime() << " Debug: refreshList.size(): " << refreshList.size() << endl;
-            //        for (auto &item : refreshList)
-            //        {
-            //            // Spawn refresh threads (the thredas will dealocate themselves when done)
-            //            std::thread (refreshServerStatus, item ).detach();
-            //        }
-
-            // check quit signal
+            // Check quit signal
             if (s_interrupted)
             {
                 cout << PRINTSERVER << nowDateTime() << " Interrupt signal received, killing server" << std::endl;

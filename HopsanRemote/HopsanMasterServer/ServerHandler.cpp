@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <climits>
+#include <thread>
 
 using namespace std;
 using namespace std::chrono;
@@ -45,7 +46,7 @@ ServerInfo ServerHandler::getServerNoLock(int id)
 
 void ServerHandler::consistent()
 {
-    int d = int(mServerMap.size()) - int(mServerAgeList.size()) /*- int(mServerRefreshList.size())*/;
+    int d = int(mServerMap.size()) - int(mServerAgeList.size()) - int(mServerRefreshList.size());
     if (d != 0)
     {
         std::cout << "Error: Inconsisten num servers: " << d << std::endl;
@@ -82,16 +83,6 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
     // Now set the id in the server info opbject
     rServerInfo.mId = id;
 
-    // DEBUG
-//    if (mServerMap.count(id) > 0)
-//    {
-//        cout << "Error: Trying to add server with id that already exist in map" << endl;
-//    }
-//    if (listContains(mServerAgeList, id))
-//    {
-//        cout << "Error: Trying to add server with id that already exist in age list" << endl;
-//    }
-
     cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " IP: " << rServerInfo.ip << " Port: " << rServerInfo.port << endl;
 
     // Insert into the map
@@ -105,14 +96,10 @@ void ServerHandler::updateServerInfoNoLock(const ServerInfo &rServerInfo)
 {
     if (rServerInfo.isValid())
     {
-        // We only allow re insert if server was actually in refresh list, (to avoid re inserting it if it was just remove during refresh)
-        //if (listContains(mServerRefreshList, rServerInfo.mId))
-        {
-            mServerMap.at(rServerInfo.mId) = rServerInfo;
-        //    mServerRefreshList.remove(rServerInfo.mId); //! @todo is this list even needed
-            mServerAgeList.remove(rServerInfo.mId);
-            mServerAgeList.push_back(rServerInfo.mId);
-        }
+        // Here we assume that serverId is in mServerRefreshList
+        mServerMap.at(rServerInfo.mId) = rServerInfo;
+        mServerRefreshList.remove(rServerInfo.mId);
+        mServerAgeList.push_back(rServerInfo.mId);
     }
     else
     {
@@ -127,7 +114,7 @@ void ServerHandler::removeServer(int id)
     // Remove the server info object and any occurance in the age and refresh lists
     mServerMap.erase(id);
     mServerAgeList.remove(id);
-    //mServerRefreshList.remove(id);
+    mServerRefreshList.remove(id);
     // This id is now free to use by an other server
     mFreeIds.push_back(id);
     mMutex.unlock();
@@ -151,22 +138,6 @@ int ServerHandler::getServerIDMatching(std::string ip, std::string port)
     }
     return -1;
 }
-
-//steady_clock::time_point ServerHandler::getServerAge(int id)
-//{
-//    //! @todo should have smarter mutex solution to allow multiple reads as long as there is no write
-//    std::lock_guard<std::mutex> lock(mMutex);
-//    std::chrono::steady_clock::time_point tp;
-//    try
-//    {
-//        tp = mServerMap.at(id).lastCheckTime;
-//    }
-//    catch(std::exception e)
-//    {
-//        cout << "FUCK YOU: " << e.what() << endl;
-//    }
-//    return tp;
-//}
 
 ServerHandler::idlist_t ServerHandler::getServersFasterThen(double maxTime, int maxNum)
 {
@@ -216,12 +187,20 @@ int ServerHandler::getOldestServer()
     return id;
 }
 
-void ServerHandler::refreshServerStatus(size_t serverId)
+void ServerHandler::refreshServerStatus(int serverId)
 {
+    mMutex.lock();
+    if (listContains(mServerAgeList, serverId))
+    {
+        mServerRefreshList.push_back(serverId);
+        mServerAgeList.remove(serverId);
+        std::thread (&ServerHandler::refreshServerStatusThread, this, serverId).detach();
+    }
+    mMutex.unlock();
 
 }
 
-void ServerHandler::refreshServerStatusThread(size_t serverId)
+void ServerHandler::refreshServerStatusThread(int serverId)
 {
     mNumRunningRefreshServerStatusThreads++;
     RemoteHopsanClient hopsanClient(gContext);
@@ -264,47 +243,3 @@ size_t ServerHandler::numServers()
     std::lock_guard<std::mutex> lock(mMutex);
     return mServerMap.size();
 }
-
-//ServerHandler::idlist_t ServerHandler::getServersToRefresh(double maxAge, int maxNumServers)
-//{
-//    if (maxNumServers < 0)
-//    {
-//        maxNumServers = INT_MAX;
-//    }
-
-//    std::list<size_t> ids;
-//    mMutex.lock();
-//    for(auto &server : mServerMap)
-//    {
-//        duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - server.second.lastCheckTime);
-//        if (time_span.count() > maxAge)
-//        {
-//            ids.push_back(server.second.id());
-//            if (int(ids.size()) >= maxNumServers)
-//            {
-//                // Break loop if we have collected enough servers
-//                break;
-//            }
-//        }
-//    }
-//    mMutex.unlock();
-//    return ids;
-//}
-
-//ServerHandler::idlist_t ServerHandler::getOldestServers(size_t maxNum)
-//{
-//    idlist_t results;
-//    mMutex.lock();
-//    cout << "mServerAgeList.size(): " << mServerAgeList.size() << endl;
-//    cout << "mServerRefreshList.size(): " << mServerRefreshList.size() << endl;
-//    for (size_t i=0; i<min(maxNum, mServerAgeList.size()); ++i)
-//    {
-//        results.push_back(mServerAgeList.front());
-//        mServerRefreshList.push_back(mServerAgeList.front());
-//        mServerAgeList.pop_front();
-//        findNull();
-//        consistent();
-//    }
-//    mMutex.unlock();
-//    return results;
-//}
