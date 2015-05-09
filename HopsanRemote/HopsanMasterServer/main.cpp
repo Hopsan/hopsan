@@ -10,7 +10,7 @@
 #include "MessageUtilities.h"
 #include "ServerMessageUtilities.h"
 #include "ServerStatusMessage.h"
-#include "RemoteHopsanClient.h"
+
 
 #include "ServerHandler.h"
 #include "common.h"
@@ -67,38 +67,38 @@ static void s_catch_signals(void)
 }
 #endif
 
-const int gMaxNumRunningRefreshServerStatusThreads = 20;
-std::atomic<int> gNumRunningRefreshServerStatusThreads{0};
-void refreshServerStatus(size_t serverId)
-{
-    gNumRunningRefreshServerStatusThreads++;
-    RemoteHopsanClient hopsanClient(gContext);
-    if (hopsanClient.areSocketsValid())
-    {
-        ServerInfo server = gServerHandler.getServer(serverId);
-        if (server.isValid())
-        {
-            cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
-            hopsanClient.connectToServer(server.ip, server.port);
-            ServerStatusT status;
-            bool rc = hopsanClient.requestStatus(status);
-            if (rc)
-            {
-                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is responding!" << endl;
-                server.lastCheckTime = steady_clock::now();
-                server.isReady = status.isReady;
-                gServerHandler.updateServerInfo(server);
-            }
-            else
-            {
-                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
-                gServerHandler.removeServer(serverId);
-                //! @todo what if network temporarily down
-            }
-        }
-    }
-    gNumRunningRefreshServerStatusThreads--;
-}
+//const int gMaxNumRunningRefreshServerStatusThreads = 20;
+//std::atomic<int> gNumRunningRefreshServerStatusThreads{0};
+//void refreshServerStatus(size_t serverId)
+//{
+//    gNumRunningRefreshServerStatusThreads++;
+//    RemoteHopsanClient hopsanClient(gContext);
+//    if (hopsanClient.areSocketsValid())
+//    {
+//        ServerInfo server = gServerHandler.getServer(serverId);
+//        if (server.isValid())
+//        {
+//            cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
+//            hopsanClient.connectToServer(server.ip, server.port);
+//            ServerStatusT status;
+//            bool rc = hopsanClient.requestStatus(status);
+//            if (rc)
+//            {
+//                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is responding!" << endl;
+//                server.lastCheckTime = steady_clock::now();
+//                server.isReady = status.isReady;
+//                gServerHandler.updateServerInfo(server);
+//            }
+//            else
+//            {
+//                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
+//                gServerHandler.removeServer(serverId);
+//                //! @todo what if network temporarily down
+//            }
+//        }
+//    }
+//    gNumRunningRefreshServerStatusThreads--;
+//}
 
 void refreshServerThread()
 {
@@ -114,12 +114,13 @@ void refreshServerThread()
         }
 
         // Extract oldest servers
-        //! @todo maybe extract age as well, under the same lock
-        list<int> server_ids;
+        int id=-1, id2=-1;
+        steady_clock::time_point tp, tp2;
 
-        int nRunning = gNumRunningRefreshServerStatusThreads;
+        int nRunning = gServerHandler.mNumRunningRefreshServerStatusThreads;
         cout << "Num RefreshThreads running: " << nRunning << endl;
         cout << "Num Servers: " << gServerHandler.numServers() << endl;
+
         // If no servers are available, then sleep for a while
         if (gServerHandler.numServers() == 0)
         {
@@ -127,19 +128,17 @@ void refreshServerThread()
             cout << "No servers sleeping for: " << ms.count() << " milliseconds" << endl;
             std::this_thread::sleep_for(ms);
         }
-        // Else try to get the oldest servers
+        // Else if we have maxed out our refresh threads then sleep for a while
+        else if (nRunning >= gServerHandler.mMaxNumRunningRefreshServerStatusThreads)
+        {
+            std::chrono::milliseconds ms{1000};
+            cout << "Max num refresh threads running, sleeping for: " << ms.count() << " milliseconds" << endl;
+            std::this_thread::sleep_for(ms);
+        }
+        // Else we fetch the oldest server
         else
         {
-
-            server_ids = gServerHandler.getOldestServers(gMaxNumRunningRefreshServerStatusThreads-nRunning);
-
-            // If we did not get any then we have maxed out our num refresh threads, so sleep a short while before we try again
-            if (server_ids.empty() && (gMaxNumRunningRefreshServerStatusThreads-nRunning)==0 )
-            {
-                std::chrono::milliseconds ms{1000};
-                cout << "Max num refresh threads running, sleeping for: " << ms.count() << " milliseconds" << endl;
-                std::this_thread::sleep_for(ms);
-            }
+            gServerHandler.getOldestServer(id,tp);
         }
 
         // Check break condition
@@ -148,31 +147,32 @@ void refreshServerThread()
             break;
         }
 
-        // Now process them, Oldest should be first in the list
-        for (size_t server_id : server_ids)
+        // If we got a server, then process it, else skip
+        if (id >= 0)
         {
-            // Check break condition
-            if (s_interrupted)
-            {
-                break;
-            }
-
-            duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - gServerHandler.getServerAge(server_id));
+            // If the oldest server is not old enough for refresh then lets wait until it is
+            duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - tp);
             if (time_span.count() < maxAgeSeconds)
             {
                 // Sleep until its time
                 std::chrono::milliseconds ms{int(floor((maxAgeSeconds-time_span.count())*1000))};
-                cout << "Non needs update, Sleeping for: " << ms.count() << " milliseconds" << endl;
-                std::this_thread::sleep_for(ms);
-            }
-            else
-            {
-                std::chrono::milliseconds ms{50};
+                cout << "No server needs update, Sleeping for: " << ms.count() << " milliseconds" << endl;
                 std::this_thread::sleep_for(ms);
             }
 
-            // Spawn refresh threads (the threds will dealocate themselves when done)
-            std::thread (refreshServerStatus, server_id ).detach();
+            // Now the oldest server should be old enough, but lets request oldest again just to be sure it has not been removed
+            gServerHandler.getOldestServer(id2,tp2);
+            // If oldest is still the same then spawn a refresh thread for it, else we do nothing
+            if (id == id2)
+            {
+                // Spawn refresh threads (the threds will dealocate themselves when done)
+                //std::thread (refreshServerStatus, server_id ).detach();
+                std::thread (&ServerHandler::refreshServerStatus, &gServerHandler, id).detach();
+
+                // Debug sleep to let cout print nicely, remove later
+                std::chrono::milliseconds ms{100};
+                std::this_thread::sleep_for(ms);
+            }
         }
     }
     cout << PRINTSERVER << nowDateTime() << " Exiting server refresh thread!" << endl;
@@ -189,141 +189,147 @@ int main(int argc, char* argv[])
 
     cout << PRINTSERVER << nowDateTime() << " Listening on port: " << myPort  << endl;
 
-
-    zmq::socket_t socket (gContext, ZMQ_REP);
-    int linger_ms = 1000;
-    socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-
-    socket.bind( makeZMQAddress("*", myPort).c_str() );
+    try
+    {
+        zmq::socket_t socket (gContext, ZMQ_REP);
+        int linger_ms = 1000;
+        socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+        socket.bind( makeZMQAddress("*", myPort).c_str() );
 
 #ifdef _WIN32
-    SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
+        SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
 #else
-    s_catch_signals();
+        s_catch_signals();
 #endif
 
-    // Start refresh thread
-    std::thread refreshThread = std::thread( refreshServerThread );
+        // Start refresh thread
+        std::thread refreshThread = std::thread( refreshServerThread );
 
-    // Start main thread
-    while (true)
-    {
-        // Wait for next request from client
-        zmq::message_t message;
-        if(receiveWithTimeout(socket, 30000, message))
+        // Start main thread
+        while (true)
         {
-            size_t offset=0;
-            bool idParseOK;
-            size_t msg_id = getMessageId(message, offset, idParseOK);
-
-            if (msg_id == S_Available)
+            // Wait for next request from client
+            zmq::message_t message;
+            if(receiveWithTimeout(socket, 30000, message))
             {
-                bool parseOK;
-                SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
+                size_t offset=0;
+                bool idParseOK;
+                size_t msg_id = getMessageId(message, offset, idParseOK);
 
-                ServerInfo si;
-                si.ip = sm.ip;
-                si.port = sm.port;
-                si.lastCheckTime = steady_clock::time_point(); // Epoch time
-
-                if (gServerHandler.getServerMatching(sm.ip, sm.port) < 0)
+                if (msg_id == S_Available)
                 {
-                    gServerHandler.addServer(si);
-                    sendServerAck(socket);
-                    // Get the oldest one, (should be the one we just added, since it need emmediate update)
-                    std::list<int> list = gServerHandler.getOldestServers(1);
-                    // Start a refresh thread for this one server, unless we have the maximum number of threads running
-                    // In that case we let the ordinary refresh thread handle this server
-                    if (gNumRunningRefreshServerStatusThreads < gMaxNumRunningRefreshServerStatusThreads)
+                    bool parseOK;
+                    SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
+
+                    ServerInfo si;
+                    si.ip = sm.ip;
+                    si.port = sm.port;
+                    si.lastCheckTime = steady_clock::time_point(); // Epoch time
+
+                    if (gServerHandler.getServerIDMatching(sm.ip, sm.port) < 0)
                     {
-                        std::thread ( refreshServerStatus, list.front() ).detach();
+                        gServerHandler.addServer(si);
+                        sendServerAck(socket);
+                        // Get the oldest one, (should be the one we just added, since it need emmediate update)
+                        int id = gServerHandler.getOldestServer();
+                        // Start a refresh thread for this one server, unless we have the maximum number of threads running
+                        // In that case we let the ordinary refresh thread handle this server later
+                        if (gServerHandler.mNumRunningRefreshServerStatusThreads < gServerHandler.mMaxNumRunningRefreshServerStatusThreads)
+                        {
+                            //std::thread ( refreshServerStatus, list.front() ).detach();
+                            std::thread (&ServerHandler::refreshServerStatus, &gServerHandler, id).detach();
+                        }
+                    }
+                    else
+                    {
+                        sendServerNAck(socket, "Address is already registered");
                     }
                 }
-                else
+                else if (msg_id == S_Closing)
                 {
-                    sendServerNAck(socket, "Address is already registered");
-                }
-            }
-            else if (msg_id == S_Closing)
-            {
-                bool parseOK;
-                SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
-                cout << PRINTSERVER << nowDateTime() << " Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
+                    bool parseOK;
+                    SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
+                    cout << PRINTSERVER << nowDateTime() << " Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
 
-                // lookup server
-                //! @todo need to give servers a unique id to avoid others from beeing able to close them
-                int id = gServerHandler.getServerMatching(sm.ip, sm.port);
-                if (id >= 0)
-                {
-                    gServerHandler.removeServer(id);
-                    sendServerAck(socket);
-                }
-                else
-                {
-                    sendServerNAck(socket, "You are not registered");
-                }
-            }
-            else if (msg_id == C_ReqServerMachines)
-            {
-                //! @todo maybe refresh all before checking
-
-                //! @todo be smart
-                bool parseOK;
-                CM_ReqServerMachines_t req = unpackMessage<CM_ReqServerMachines_t>(message,offset,parseOK);
-                cout << PRINTSERVER << nowDateTime() << " Got server machines request" << endl;
-                auto ids = gServerHandler.getServersFasterThen(req.maxBenchmarkTime, req.numMachines);
-                vector<string> ips, ports;
-                for (auto id : ids)
-                {
-                    ServerInfo server = gServerHandler.getServer(id);
-                    if (server.isValid())
+                    // lookup server
+                    //! @todo need to give servers a unique id to avoid others from beeing able to close them
+                    int id = gServerHandler.getServerIDMatching(sm.ip, sm.port);
+                    if (id >= 0)
                     {
-                        ips.push_back(server.ip);
-                        ports.push_back(server.port);
+                        gServerHandler.removeServer(id);
+                        sendServerAck(socket);
+                    }
+                    else
+                    {
+                        sendServerNAck(socket, "You are not registered");
                     }
                 }
+                else if (msg_id == C_ReqServerMachines)
+                {
+                    //! @todo maybe refresh all before checking
 
-                MSM_ReqServerMachines_Reply_t reply;
-                reply.ips = ips;
-                reply.ports = ports;
+                    //! @todo be smart
+                    bool parseOK;
+                    CM_ReqServerMachines_t req = unpackMessage<CM_ReqServerMachines_t>(message,offset,parseOK);
+                    cout << PRINTSERVER << nowDateTime() << " Got server machines request" << endl;
+                    auto ids = gServerHandler.getServersFasterThen(req.maxBenchmarkTime, req.numMachines);
+                    vector<string> ips, ports;
+                    for (auto id : ids)
+                    {
+                        ServerInfo server = gServerHandler.getServer(id);
+                        if (server.isValid())
+                        {
+                            ips.push_back(server.ip);
+                            ports.push_back(server.port);
+                        }
+                    }
 
-                sendServerMessage<MSM_ReqServerMachines_Reply_t>(socket, S_ReqServerMachines_Reply, reply);
+                    MSM_ReqServerMachines_Reply_t reply;
+                    reply.ips = ips;
+                    reply.ports = ports;
+
+                    sendServerMessage<MSM_ReqServerMachines_Reply_t>(socket, S_ReqServerMachines_Reply, reply);
+                }
+                else if (!idParseOK)
+                {
+                    cout << PRINTSERVER << nowDateTime() << " Error: Could not parse message id" << std::endl;
+                }
+
             }
-            else if (!idParseOK)
+
+            // Every time we get here we should refresh status from servers where status is old
+            // Note1! You should make sure that the max age here is shorter then the "Report to master server" timer in the actual server
+            // Otherwise you will end up with the server trying to reregister because no status has been requested
+            //
+            // Note2! You should limit the number of servers to attempt refresh on,
+            //        else you will run out of file descriptors if to many request threads are made at the same time
+            //        double maxAgeSeconds=60;
+            //        //! @todo here we have a serious problem if we have too many servers, we will not have time to refresh them all ever
+            //        //! @todo refreshing should be in a different thread really, or we could only refresh when someone makes a request
+            //        std::list<size_t> refreshList = gServerHandler.getServersToRefresh(maxAgeSeconds, 100);
+            //        cout << PRINTSERVER << nowDateTime() << " Debug: refreshList.size(): " << refreshList.size() << endl;
+            //        for (auto &item : refreshList)
+            //        {
+            //            // Spawn refresh threads (the thredas will dealocate themselves when done)
+            //            std::thread (refreshServerStatus, item ).detach();
+            //        }
+
+            // check quit signal
+            if (s_interrupted)
             {
-                cout << PRINTSERVER << nowDateTime() << " Error: Could not parse message id" << std::endl;
+                cout << PRINTSERVER << nowDateTime() << " Interrupt signal received, killing server" << std::endl;
+                break;
             }
-
         }
 
-        // Every time we get here we should refresh status from servers where status is old
-        // Note1! You should make sure that the max age here is shorter then the "Report to master server" timer in the actual server
-        // Otherwise you will end up with the server trying to reregister because no status has been requested
-        //
-        // Note2! You should limit the number of servers to attempt refresh on,
-        //        else you will run out of file descriptors if to many request threads are made at the same time
-//        double maxAgeSeconds=60;
-//        //! @todo here we have a serious problem if we have too many servers, we will not have time to refresh them all ever
-//        //! @todo refreshing should be in a different thread really, or we could only refresh when someone makes a request
-//        std::list<size_t> refreshList = gServerHandler.getServersToRefresh(maxAgeSeconds, 100);
-//        cout << PRINTSERVER << nowDateTime() << " Debug: refreshList.size(): " << refreshList.size() << endl;
-//        for (auto &item : refreshList)
-//        {
-//            // Spawn refresh threads (the thredas will dealocate themselves when done)
-//            std::thread (refreshServerStatus, item ).detach();
-//        }
-
-        // check quit signal
-        if (s_interrupted)
-        {
-            cout << PRINTSERVER << nowDateTime() << " Interrupt signal received, killing server" << std::endl;
-            break;
-        }
+        s_interrupted = 1;
+        cout << PRINTSERVER << nowDateTime() << " Waiting for server refresh thread..." << endl;
+        refreshThread.join();
     }
-
-    s_interrupted = 1;
-    cout << PRINTSERVER << nowDateTime() << " Waiting for server refresh thread..." << endl;
-    refreshThread.join();
+    catch (zmq::error_t  e)
+    {
+        cout << "Error: Could not create sockets: " << e.what() << endl;
+    }
 
     cout << PRINTSERVER << nowDateTime() << " Closed!" << endl;
     return 0;

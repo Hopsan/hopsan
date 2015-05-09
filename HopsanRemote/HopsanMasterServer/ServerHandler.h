@@ -6,6 +6,7 @@
 #include <map>
 #include <mutex>
 #include <list>
+#include <atomic>
 
 class ServerHandler;
 
@@ -40,24 +41,38 @@ private:
     typedef std::list<int> idlist_t;
     idlist_t mFreeIds;
     idlist_t mServerAgeList;
-    idlist_t mServerRefreshList;
+    //idlist_t mServerRefreshList;
     std::map<int, ServerInfo> mServerMap;
     std::mutex mMutex;
 
+    ServerInfo getServerNoLock(int id);
+    void updateServerInfoNoLock(const ServerInfo &rServerInfo);
+
+    void refreshServerStatusThread(size_t serverId);
+
+    //Debug
     void consistent();
+    void findNull();
 
 public :
-    size_t addServer(ServerInfo &rServerInfo);
-    void updateServerInfo(ServerInfo &rServerInfo);
+    void addServer(ServerInfo &rServerInfo);
+
     void removeServer(int id);
     size_t numServers();
 
     ServerInfo getServer(int id);
-    int getServerMatching(std::string ip, std::string port);
-    std::chrono::steady_clock::time_point getServerAge(int id);
+
+    int getServerIDMatching(std::string ip, std::string port);
+    //std::chrono::steady_clock::time_point getServerAge(int id);
     idlist_t getServersFasterThen(double maxTime, int maxNum=-1);
     //idlist_t getServersToRefresh(double maxAge, int maxNumServers=-1);
-    idlist_t getOldestServers(size_t maxNum);
+    //idlist_t getOldestServers(size_t maxNum);
+    void getOldestServer(int &rID, std::chrono::steady_clock::time_point &rTime);
+    int getOldestServer();
+
+    const int mMaxNumRunningRefreshServerStatusThreads = 20;
+    std::atomic<int> mNumRunningRefreshServerStatusThreads{0};
+    void refreshServerStatus(size_t serverId);
 };
 
 #endif // SERVERHANDLER_H
