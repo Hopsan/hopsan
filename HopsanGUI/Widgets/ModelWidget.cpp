@@ -491,12 +491,14 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
 #endif
 }
 
+#ifdef USEZMQ
 void ModelWidget::setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT pRSCH)
 {
     // Turn off manual remote core
     setUseRemoteSimulationCore(false, false);
     mpExternalRemoteCoreSimulationHandler = pRSCH;
 }
+#endif
 
 bool ModelWidget::getUseRemoteSimulationCore() const
 {
