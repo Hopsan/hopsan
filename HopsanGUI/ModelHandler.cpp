@@ -522,7 +522,7 @@ void ModelHandler::refreshMainWindowConnections()
     ModelWidget *pCurrentModel = getCurrentModel();
     if (pCurrentModel)
     {
-        gpMainWindow->mpToggleRemoteCoreSimAction->setChecked(pCurrentModel->isRemoteCoreConnected());
+        gpMainWindow->mpToggleRemoteCoreSimAction->setChecked(pCurrentModel->getUseRemoteSimulationCore());
         gpMainWindow->mpDataExplorer->setLogdataHandler(pCurrentModel->getLogDataHandler());
         gpPlotWidget->setLogDataHandler(pCurrentModel->getLogDataHandler());
     }

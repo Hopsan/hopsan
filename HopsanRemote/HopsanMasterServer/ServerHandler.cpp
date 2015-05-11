@@ -150,7 +150,7 @@ ServerHandler::idlist_t ServerHandler::getServers(double maxTime, int minNumThre
     mMutex.lock();
     for (auto &item : mServerMap)
     {
-        if (item.second.isReady && item.second.numSlots > minNumThreads && item.second.benchmarkTime < maxTime)
+        if (item.second.isReady && item.second.numTotalSlots > minNumThreads && item.second.benchmarkTime < maxTime)
         {
             ids.push_back(item.first);
             if (int(ids.size()) >= maxNum)
@@ -223,7 +223,7 @@ void ServerHandler::refreshServerStatusThread(int serverId)
                 {
                     server2.lastCheckTime = steady_clock::now();
                     server2.isReady = status.isReady;
-                    server2.numSlots = status.numTotalSlots;
+                    server2.numTotalSlots = status.numTotalSlots;
                     updateServerInfoNoLock(server2);
                 }
                 mMutex.unlock();

@@ -179,30 +179,34 @@ map<int, WorkerInfo> workerMap;
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
-        cout << PRINTSERVER << nowDateTime() << " Error: you must specify what base port to use!" << endl;
+        cout << PRINTSERVER << nowDateTime() << " Error: you must specify what number of threads to use and what base port to use!" << endl;
         return 1;
     }
-    string myPort = argv[1];
+
+    string numThreadsToUse = argv[1];
+    gServerConfig.mMaxNumSlots = atoi(numThreadsToUse.c_str());
+
+    string myPort = argv[2];
     gServerConfig.mControlPortStr = myPort;
     gServerConfig.mControlPort = atoi(myPort.c_str());
 
     std::string masterserverip, masterserverport;
     steady_clock::time_point lastStatusRequestTime;
-    if (argc >= 4)
+    if (argc >= 5)
     {
-        masterserverip = argv[2];
-        masterserverport = argv[3];
+        masterserverip = argv[3];
+        masterserverport = argv[4];
     }
 
     string myExternalIP = "127.0.0.1";
-    if (argc >= 5)
+    if (argc >= 6)
     {
-        myExternalIP = argv[4];
+        myExternalIP = argv[5];
     }
 
-    cout << PRINTSERVER << nowDateTime() << " Listening on port: " << myPort  << endl;
+    cout << PRINTSERVER << nowDateTime() << " Starting with: " << gServerConfig.mMaxNumSlots << " slots, Listening on port: " << gServerConfig.mControlPort  << endl;
 
     // Prepare our context and socket
     try
@@ -292,7 +296,7 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << port << " uid: " << uid << endl;
+                            std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << port << " uid: " << uid << " nThreads: " << requestNumThreads  << endl;
                             workerMap.insert({uid, {requestNumThreads, processInformation}});
 
                             SM_ReqSlot_Reply_t msg = {port};
@@ -316,12 +320,13 @@ int main(int argc, char* argv[])
                         int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
                         if(status == 0)
                         {
-                            std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << endl;
+                            std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads << endl;
                             workerMap.insert({uid,{requestNumThreads,pid}});
 
                             SM_ReqSlot_Reply_t msg = {workerPort};
                             sendServerMessage<SM_ReqSlot_Reply_t>(socket, S_ReqSlot_Reply, msg);
                             nTakenSlots+=requestNumThreads;
+                            std::cout << PRINTSERVER << nowDateTime() << " Remaining slots: " << gServerConfig.mMaxNumSlots-nTakenSlots << endl;
                         }
                         else
                         {
@@ -371,6 +376,7 @@ int main(int argc, char* argv[])
                             //! @todo check returncodes maybe
                             workerMap.erase(it);
                             nTakenSlots -= nThreads;
+                            std::cout << PRINTSERVER << nowDateTime() << " Open slots: " << gServerConfig.mMaxNumSlots-nTakenSlots << endl;
                         }
                         else
                         {
@@ -388,7 +394,7 @@ int main(int argc, char* argv[])
                     SM_ServerStatus_t status;
                     status.numTotalSlots = gServerConfig.mMaxNumSlots;
                     status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
-                    status.isReady = (status.numFreeSlots > 0);
+                    status.isReady = true;
 
                     sendServerMessage<SM_ServerStatus_t>(socket, S_ReqStatus_Reply, status);
                     lastStatusRequestTime = chrono::steady_clock::now();
@@ -411,7 +417,7 @@ int main(int argc, char* argv[])
             }
 
             duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
-            if (time_span.count() > 120)
+            if (time_span.count() > 180)
             {
                 cout << PRINTSERVER << nowDateTime() << " Too long since status check: " << time_span.count() << endl;
 

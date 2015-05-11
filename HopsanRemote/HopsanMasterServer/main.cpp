@@ -71,7 +71,7 @@ static void s_catch_signals(void)
 //! @todo this thread should be a member of the server handler
 void refreshServerThread()
 {
-    const double maxAgeSeconds=60;
+    const double maxAgeSeconds=120;
     cout << PRINTSERVER << nowDateTime() << " Starting server refresh thread!" << endl;
 
     while (true)
@@ -256,11 +256,12 @@ int main(int argc, char* argv[])
                         {
                             reply.ips.push_back(server.ip);
                             reply.ports.push_back(server.port);
-                            reply.numslots.push_back(server.numSlots);
+                            reply.numslots.push_back(server.numTotalSlots);
                             reply.speeds.push_back(server.benchmarkTime);
                         }
                     }
 
+                    cout << PRINTSERVER << nowDateTime() << " Responds with: " << reply.ips.size() << " servers" << endl;
                     sendServerMessage<MSM_ReqServerMachines_Reply_t>(socket, S_ReqServerMachines_Reply, reply);
                 }
                 else if (!idParseOK)

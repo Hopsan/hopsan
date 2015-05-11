@@ -34,6 +34,9 @@ class SystemContainer;
 class GUIMessageHandler;
 
 #include "CoreAccess.h"
+#ifdef USEZMQ
+#include "RemoteCoreAccess.h"
+#endif
 
 
 enum SimulationWorkeObjectEnumT {LocalSWO, RemoteSWO};

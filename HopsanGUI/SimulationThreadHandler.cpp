@@ -118,7 +118,6 @@ RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimul
 
 void RemoteSimulationWorkerObject::initSimulateFinalize()
 {
-#ifdef USEZMQ
     QTime timer;
 
     emit setProgressBarText(tr("Simulating..."));
@@ -140,10 +139,12 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
         mpRCSH->getLogData(mpLogDataNames, mpLogData);
 
         emit finalizeDone(true, 0);
+        mpRCSH.clear();
         return;
     }
-#endif
+
     emit finalizeDone(false, 0);
+    mpRCSH.clear();
 }
 
 #endif

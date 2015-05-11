@@ -46,8 +46,10 @@ class SimulationThreadHandler;
 class GUIMessageHandler;
 class LogDataHandler2;
 
-//! @todo should have a remotecore access
 #include "CoreAccess.h"
+#ifdef USEZMQ
+#include "RemoteCoreAccess.h"
+#endif
 
 class ModelWidget : public QWidget
 {
@@ -77,6 +79,7 @@ public:
     QString getVariableAlias(const QString &rFullName);
 
     void setUseRemoteSimulationCore(bool tf, bool useDispatch);
+    bool getUseRemoteSimulationCore() const;
     bool isRemoteCoreConnected() const;
 
     SystemContainer *getTopLevelSystemContainer();
@@ -120,7 +123,7 @@ signals:
 
 private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
-    void loadModelRemote();
+    bool loadModelRemote();
 
     QString mStartTime, mStopTime;
     int mLastSimulationTime;
@@ -128,7 +131,7 @@ private:
     bool mIsSaved;
     bool mEditingEnabled;
     bool mUseRemoteCore=false;
-    bool mUseRemotecoreDispatch=false;
+    bool mUseRemoteCoreAddressServer=false;
 
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWidget;

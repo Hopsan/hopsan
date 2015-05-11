@@ -62,10 +62,6 @@
 #include "GUIPort.h"
 #include "PlotWidget2.h"
 
-#ifdef USEZMQ
-QSharedPointer<RemoteCoreAddressHandler> gpRemoteCoreAddressHandler;
-#endif
-
 //! @class ModelWidget
 //! @brief The ModelWidget class is a Widget to contain a simulation model
 //!
@@ -420,62 +416,83 @@ QString ModelWidget::getVariableAlias(const QString &rFullName)
 void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
 {
     mUseRemoteCore=tf;
-    mUseRemotecoreDispatch=useDispatch;
+    mUseRemoteCoreAddressServer=useDispatch;
 
+#ifdef USEZMQ
     int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
     nThreads = qMax(nThreads, 1);
 
-#ifdef USEZMQ
-    QStringList serveraddress;
-    if (mUseRemotecoreDispatch)
-    {
-        // Check if we should create the Remote Address handler for the first time
-        if (gpRemoteCoreAddressHandler.isNull() || gpRemoteCoreAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS) )
-        {
-            //! @todo this is a hack
-            gpRemoteCoreAddressHandler = QSharedPointer<RemoteCoreAddressHandler>(new RemoteCoreAddressHandler);
-            gpRemoteCoreAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS));
-            gpRemoteCoreAddressHandler->connect();
-            //! @todo what happens if it disconnects, then we would need to reconnect, we also need to keep teh connection alive by polling
-        }
-
-        gpRemoteCoreAddressHandler->requestAvailableServers();
-
-        QString addr = gpRemoteCoreAddressHandler->getBestAvailableServer(nThreads);
-        serveraddress = addr.split(":");
-    }
-    else
-    {
-        serveraddress = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
-    }
-
+    bool useRemoteCoreFailed=false;
 
     if (mUseRemoteCore)
     {
-        mpRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
-        mpRemoteCoreSimulationHandler->setNumThreads(nThreads);
-        mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress.first(), serveraddress.last());
-
-        bool rc = mpRemoteCoreSimulationHandler->connect();
-        if (rc)
+        QStringList serveraddress;
+        if (mUseRemoteCoreAddressServer)
         {
-            loadModelRemote();
+            SharedRemoteCoreAddressHandlerT pAddressHandler = getSharedRemoteCoreAddressHandler();
+
+            // Check if we should change server address and reconnect
+            if (!pAddressHandler.isNull() && (pAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS)) )
+            {
+                pAddressHandler->disconnect();
+                pAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS));
+                pAddressHandler->connect();
+                //! @todo what happens if it disconnects, then we would need to reconnect, we also need to keep teh connection alive by polling
+            }
+
+            pAddressHandler->requestAvailableServers();
+
+            QString addr = pAddressHandler->getBestAvailableServer(nThreads);
+            serveraddress = addr.split(":");
         }
         else
         {
-            mpMessageHandler->addErrorMessage(mpRemoteCoreSimulationHandler->getLastError());
-            mUseRemoteCore = false;
+            serveraddress = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
+        }
+
+        if (serveraddress.size() == 2)
+        {
+            mpRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
+            mpRemoteCoreSimulationHandler->setNumThreads(nThreads);
+            mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress.first(), serveraddress.last());
+
+            bool rc = mpRemoteCoreSimulationHandler->connect();
+            if (rc)
+            {
+                rc = loadModelRemote();
+                if (!rc)
+                {
+                    mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(mpRemoteCoreSimulationHandler->getLastError()));
+                    useRemoteCoreFailed = true;
+                }
+            }
+            else
+            {
+                mpMessageHandler->addErrorMessage(QString("Could not connect to remote server: %1").arg(mpRemoteCoreSimulationHandler->getLastError()));
+                useRemoteCoreFailed = true;
+            }
+        }
+        else
+        {
+            mpMessageHandler->addErrorMessage(QString("Could not find an availible server mathing your requirements; nThreads: %1").arg(nThreads));
+            useRemoteCoreFailed = true;
+
         }
     }
 
     // If use remote core is false and a core simualtion handler is set, then delete it
-    // This should trigger when we deactiva remote simulation or if connect or load model failed
-    if (!mUseRemoteCore && mpRemoteCoreSimulationHandler)
+    // This should trigger when we deactivate remote simulation or if connect or load model failed
+    if ( (!mUseRemoteCore || useRemoteCoreFailed) && mpRemoteCoreSimulationHandler)
     {
         mpRemoteCoreSimulationHandler->disconnect(); //! @todo maybe should not disconnect here should wait for destructor when all refs gone
         mpRemoteCoreSimulationHandler.clear();
     }
 #endif
+}
+
+bool ModelWidget::getUseRemoteSimulationCore() const
+{
+    return mUseRemoteCore;
 }
 
 bool ModelWidget::isRemoteCoreConnected() const
@@ -523,29 +540,37 @@ bool ModelWidget::simulate_nonblocking()
     }
 
     // Remote Core Simulation
-    if (isRemoteCoreConnected())
+    if (mUseRemoteCore)
     {
-        // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
-        foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+        if (isRemoteCoreConnected())
         {
-            if(comp->getTypeName() == MODELICATYPENAME)
+            // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+            foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
             {
-                gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                if(comp->getTypeName() == MODELICATYPENAME)
+                {
+                    gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                    return false;
+                }
+            }
+
+            if(!mSimulateMutex.tryLock())
+            {
+                gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
                 return false;
             }
+#ifdef USEZMQ
+            mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+            mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+#endif
+            //! @todo is this really blocking hmm
         }
-
-        if(!mSimulateMutex.tryLock())
+        else
         {
-            gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
+            mpMessageHandler->addErrorMessage(QString("Remote core is not connected"));
             return false;
         }
-#ifdef USEZMQ
-        mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
-        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-        mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
-#endif
-        //! @todo is this really blocking hmm
     }
     // Local core simulation
     else
@@ -584,30 +609,38 @@ bool ModelWidget::simulate_blocking()
     }
 
     // Remote Core Simulation
-    if (isRemoteCoreConnected())
+    if (mUseRemoteCore)
     {
-        // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
-        foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+        if (isRemoteCoreConnected())
         {
-            if(comp->getTypeName() == MODELICATYPENAME)
+            // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+            foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
             {
-                gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                if(comp->getTypeName() == MODELICATYPENAME)
+                {
+                    gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                    return false;
+                }
+            }
+
+            if(!mSimulateMutex.tryLock())
+            {
+                gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
                 return false;
             }
-        }
-
-        if(!mSimulateMutex.tryLock())
-        {
-            gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
-            return false;
-        }
 
 #ifdef USEZMQ
-        mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
-        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-        mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
-        //! @todo is this really blocking hmm
+            mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+            mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+            //! @todo is this really blocking hmm
 #endif
+        }
+        else
+        {
+            mpMessageHandler->addErrorMessage(QString("Remote core is not connected"));
+            return false;
+        }
     }
     // Local core simulation
     else
@@ -1398,16 +1431,21 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     }
 }
 
-void ModelWidget::loadModelRemote()
+bool ModelWidget::loadModelRemote()
 {
 #ifdef USEZMQ
-    mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
-    QVector<QString> types,tags,messages;
-    mpRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
-    for (int i=0; i<messages.size(); ++i)
+    if (mpRemoteCoreSimulationHandler)
     {
-       mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
+        bool rc = mpRemoteCoreSimulationHandler->loadModel(mpToplevelSystem->getModelFilePath());
+        QVector<QString> types,tags,messages;
+        mpRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
+        for (int i=0; i<messages.size(); ++i)
+        {
+            mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
+        }
+        return rc;
     }
+    return false;
 #endif
 }
 

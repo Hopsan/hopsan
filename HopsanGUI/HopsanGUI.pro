@@ -283,7 +283,8 @@ SOURCES += main.cpp \
     Widgets/ModelicaEditor.cpp \
     Widgets/PlotWidget2.cpp \
     Utilities/IndexIntervalCollection.cpp \
-    LogDataGeneration.cpp
+    LogDataGeneration.cpp \
+    RemoteCoreAccess.cpp
 
 
 
@@ -379,7 +380,8 @@ HEADERS += MainWindow.h \
     GraphicsViewPort.h \
     Widgets/PlotWidget2.h \
     Utilities/IndexIntervalCollection.h \
-    LogDataGeneration.h
+    LogDataGeneration.h \
+    RemoteCoreAccess.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

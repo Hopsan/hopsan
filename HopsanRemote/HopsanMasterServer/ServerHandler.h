@@ -19,7 +19,7 @@ private:
 public:
     std::string ip;
     std::string port;
-    int numSlots = 0;
+    int numTotalSlots = 0;
     double benchmarkTime=1e100;
     std::chrono::steady_clock::time_point lastCheckTime;
     bool bussyProcessing=false;
