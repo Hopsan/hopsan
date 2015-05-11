@@ -58,7 +58,7 @@ void OptimizationWorkerComplexRFP::init()
 {
     OptimizationWorkerComplex::init();
 
-    mMethod = 1;
+    mMethod = 0;
 
     mLastWorstId = -1;
     mWorstCounter = 0;
@@ -234,6 +234,8 @@ void OptimizationWorkerComplexRFP::run()
 
         //Reflect worst point
         pickCandidateParticles();
+
+        plotPoints();
 
         //Evaluate new point
         evaluateCandidateParticles(i==0);
@@ -670,7 +672,6 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             mvIdx.append(worstId);
         }
 
-        QList<int> nTests;
         int i=0;
         QVector< QVector<double> > otherPoints = mParameters;
         otherPoints.remove(mvIdx[i]);
@@ -694,10 +695,9 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
 
         ++i;
+        if(i >= mNumThreads) return;
         otherPoints.remove(mvIdx[i]);
         findCenter(otherPoints);
-
-        if(i >= mNumThreads) return;
 
         //Reflect second point
         for(int j=0; j<mNumParameters; ++j)
@@ -717,10 +717,9 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
 
         ++i;
+        if(i >= mNumThreads) return;
         otherPoints.remove(mvIdx[i]);
         findCenter(otherPoints);
-
-        if(i >= mNumThreads) return;
 
         //Reflect third point
         for(int j=0; j<mNumParameters; ++j)
@@ -740,10 +739,9 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
 
         ++i;
+        if(i >= mNumThreads) return;
         otherPoints.remove(mvIdx[i]);
         findCenter(otherPoints);
-
-        if(i >= mNumThreads) return;
 
         //Reflect forth point
         for(int j=0; j<mNumParameters; ++j)
@@ -760,6 +758,96 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
         }
 
+        otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
+
+        ++i;
+        if(i >= mNumThreads) return;
+        otherPoints.remove(mvIdx[i]);
+        findCenter(otherPoints);
+
+        //Reflect fifth point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
+        }
+
+
+        otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
+
+        ++i;
+        if(i >= mNumThreads) return;
+        otherPoints.remove(mvIdx[i]);
+        findCenter(otherPoints);
+
+        //Reflect sixth point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
+        }
+
+
+        otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
+
+        ++i;
+        if(i >= mNumThreads) return;
+        otherPoints.remove(mvIdx[i]);
+        findCenter(otherPoints);
+
+        //Reflect seventh point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
+        }
+
+
+        otherPoints.insert(mvIdx[i], mCandidateParticles[i]);
+
+        ++i;
+        if(i >= mNumThreads) return;
+        otherPoints.remove(mvIdx[i]);
+        findCenter(otherPoints);
+
+        //Reflect eigth point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mvIdx[i]][j];
+            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
+        }
         //! @todo Maybe reflect more points if more processors are available?
 
 //        i=0;
@@ -943,8 +1031,8 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
 
         if(mObjectives[mNumPoints+minIdx] < mObjectives[mWorstId])
         {
-            mParameters[mWorstId] = mCandidateParticles[minIdx];
-            mObjectives[mWorstId] = mObjectives[mNumPoints+minIdx];
+            mParameters[mWorstId] = mCandidateParticles[0];
+            mObjectives[mWorstId] = mObjectives[mNumPoints+0];
             logPoint(mWorstId);
             calculateBestAndWorstId();
             if(checkForConvergence()) return;   //Check convergence

@@ -97,6 +97,7 @@ protected:
     QFile mLogFile;
     int mEvalId;
     int mNumParameters;
+    QVector< QVector<double> > mLoggedParameters;
     QStringList mParNames;
     QVector<double> mParMin, mParMax;
     QVector< QVector<double> > mParameters;

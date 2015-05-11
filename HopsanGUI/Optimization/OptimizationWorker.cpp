@@ -108,6 +108,9 @@ void OptimizationWorker::init()
     gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
     gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, true);
 
+    mLoggedParameters.clear();
+    mLoggedParameters.resize(mNumParameters);
+
     mLogFile.setFileName(gpDesktopHandler->getDocumentsPath()+"OptLog"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".csv");
 
     if(mDoLog)
@@ -152,6 +155,14 @@ void OptimizationWorker::finalize()
     }
     execute("echo on");
 
+
+    LogDataHandler2 *pLogDataHandler = mpHandler->getModelPtrs()->first()->getLogDataHandler();
+    for(int p=0; p<mNumParameters; ++p)
+    {
+        SharedVectorVariableT logVec = pLogDataHandler->createOrphanVariable("optpar"+QString::number(p));
+        logVec->assignFrom(mLoggedParameters.at(p));
+        mpHandler->getModelPtrs()->first()->getLogDataHandler()->insertNewVectorVariable(logVec);
+    }
 
     print("Optimization finished!");
     updateProgressBar(mMaxEvals);
@@ -288,7 +299,14 @@ void OptimizationWorker::printLogFile()
 //! @param idx Index of point to save
 void OptimizationWorker::logPoint(int idx)
 {
+    for(int p=0; p<mNumParameters; ++p)
+    {
+        mLoggedParameters[p].append(mParameters[idx][p]);
+    }
+
     return;     //! @todo Make this work again (should probably store values in QVector<double> and only create a vector variable after optimization is finished)
+
+
 
     LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
 
