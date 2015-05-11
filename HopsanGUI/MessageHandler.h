@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QList>
 #include <QString>
+#include <QMutex>
 
 
 // Forward declaration
@@ -82,6 +83,7 @@ private:
     CoreMessagesAccess *mpCoreAccess;
     QList<GUIMessage> mMessageList;
     bool mIsPublishing;
+    QMutex mMutex;
 };
 
 #endif // MESSAGEHANDLER_H

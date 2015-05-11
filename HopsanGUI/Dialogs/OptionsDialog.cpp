@@ -390,19 +390,23 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QWidget *pRemoteHopsanSettingsWidget = new QWidget();
     QGridLayout *pRemoteHopsanSettingsLayout = new QGridLayout(pRemoteHopsanSettingsWidget);
     QLabel *pRemoteHopsanAddressLabel = new QLabel("RemoteHopsanAddress: ");
-    QLabel *pRemoteHopsanDispatchAddressLabel = new QLabel("RemoteHopsanDispatchAddress: ");
-    QLabel *pUseRemoteHopsanDispatchLabel = new QLabel("Use remote Hopsan dispatch server: ");
-    mpUseRemoteHopsanDispatch = new QCheckBox();
+    QLabel *pRemoteHopsanAddressAddressLabel = new QLabel("RemoteHopsanAddressServerAddress: ");
+    QLabel *pUseRemoteHopsanAddressLabel = new QLabel("Use remote Hopsan address server: ");
+    QLabel *pUseRemoteHopsanoptimizationLabel = new QLabel("Use remote Hopsan optimization: ");
+    mpUseRemoteHopsanAddressServer = new QCheckBox();
+    mpUseRemoteOptimization = new QCheckBox();
     mpRemoteHopsanAddress = new QLineEdit();
-    mpRemoteHopsanDispatchAddress = new QLineEdit();
+    mpRemoteHopsanAddressServerAddress = new QLineEdit();
     pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanAddressLabel, 0, 0);
     pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanAddress, 0, 1);
-    pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanDispatchAddressLabel, 1, 0);
-    pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanDispatchAddress, 1, 1);
-    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanDispatchLabel, 2, 0);
-    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanDispatch, 2, 1);
-    pRemoteHopsanSettingsLayout->addWidget(new QWidget(this),         3, 0);
-    pRemoteHopsanSettingsLayout->setRowStretch(3,1);
+    pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanAddressAddressLabel, 1, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanAddressServerAddress, 1, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanAddressLabel, 2, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanAddressServer, 2, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanoptimizationLabel, 3, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteOptimization, 3, 1);
+    pRemoteHopsanSettingsLayout->addWidget(new QWidget(this),         4, 0);
+    pRemoteHopsanSettingsLayout->setRowStretch(4,1);
 
     QPushButton *mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
     mpResetButton->setAutoDefault(false);
@@ -544,8 +548,9 @@ void OptionsDialog::setValues()
 #endif
 
     gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESS, mpRemoteHopsanAddress->text());
-    gpConfig->setStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS, mpRemoteHopsanDispatchAddress->text());
-    gpConfig->setBoolSetting(CFG_USEREMOTEDISPATCH, mpUseRemoteHopsanDispatch->isChecked());
+    gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, mpRemoteHopsanAddressServerAddress->text());
+    gpConfig->setBoolSetting(CFG_USEREMOTEADDRESSSERVER, mpUseRemoteHopsanAddressServer->isChecked());
+    gpConfig->setBoolSetting(CFG_USEREMOTEOPTIMIZATION, mpUseRemoteOptimization->isChecked());
 
     // Toggle writing to disk back on before saving
     gpConfig->endMultiSet();
@@ -627,8 +632,9 @@ void OptionsDialog::show()
     mpCacheLogDataCeckBox->setChecked(gpConfig->getBoolSetting(CFG_CACHELOGDATA));
 
     mpRemoteHopsanAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS));
-    mpRemoteHopsanDispatchAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS));
-    mpUseRemoteHopsanDispatch->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEDISPATCH));
+    mpRemoteHopsanAddressServerAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
+    mpUseRemoteHopsanAddressServer->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
+    mpUseRemoteOptimization->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION));
 
     // Update units scale lists
     QObjectList unitselectors =  mpUnitScaleWidget->children();

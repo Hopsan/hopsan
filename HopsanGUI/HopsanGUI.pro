@@ -284,7 +284,8 @@ SOURCES += main.cpp \
     Widgets/PlotWidget2.cpp \
     Utilities/IndexIntervalCollection.cpp \
     LogDataGeneration.cpp \
-    RemoteCoreAccess.cpp
+    RemoteCoreAccess.cpp \
+    RemoteSimulationUtils.cpp
 
 
 
@@ -381,7 +382,8 @@ HEADERS += MainWindow.h \
     Widgets/PlotWidget2.h \
     Utilities/IndexIntervalCollection.h \
     LogDataGeneration.h \
-    RemoteCoreAccess.h
+    RemoteCoreAccess.h \
+    RemoteSimulationUtils.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

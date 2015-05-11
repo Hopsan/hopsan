@@ -30,6 +30,7 @@
 #include <QWidget>
 #include <QMutex>
 #include <QMap>
+#include <QDomDocument>
 
 //Hopsan includes
 #include "common.h"
@@ -79,8 +80,13 @@ public:
     QString getVariableAlias(const QString &rFullName);
 
     void setUseRemoteSimulationCore(bool tf, bool useDispatch);
+#ifdef USEZMQ
+    void setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT pRSCH);
+#endif
     bool getUseRemoteSimulationCore() const;
     bool isRemoteCoreConnected() const;
+    bool isExternalRemoteCoreConnected() const;
+    bool loadModelRemote();
 
     SystemContainer *getTopLevelSystemContainer();
     ContainerObject *getViewContainerObject();
@@ -122,8 +128,8 @@ signals:
     void aliasChanged(QString fullName, QString alias);
 
 private:
+    QDomDocument saveToDom(SaveContentsEnumT contents=FullModel);
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
-    bool loadModelRemote();
 
     QString mStartTime, mStopTime;
     int mLastSimulationTime;
@@ -142,6 +148,7 @@ private:
     SimulationThreadHandler *mpSimulationThreadHandler;
 #ifdef USEZMQ
     SharedRemoteCoreSimulationHandlerT mpRemoteCoreSimulationHandler;
+    SharedRemoteCoreSimulationHandlerT mpExternalRemoteCoreSimulationHandler;
 #endif
     QMutex mSimulateMutex;
 

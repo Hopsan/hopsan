@@ -78,7 +78,9 @@ GUIMessageHandler::GUIMessageHandler(QObject *pParent) :
 
 void GUIMessageHandler::clear()
 {
+    mMutex.lock();
     mMessageList.clear();
+    mMutex.unlock();
 }
 
 void GUIMessageHandler::startPublish()
@@ -172,12 +174,15 @@ void GUIMessageHandler::addDebugMessage(QString message, QString tag, bool doTim
 
 void GUIMessageHandler::addMessage(const QString &rMessage, const QString &rTag, const MessageTypeEnumT type, bool doTimeStamp)
 {
+    mMutex.lock();
     mMessageList.append(GUIMessage(rMessage, rTag, type, doTimeStamp));
+    mMutex.unlock();
     publishWaitingMessages();
 }
 
 void GUIMessageHandler::publishWaitingMessages()
 {
+    mMutex.lock();
     while (mIsPublishing && !mMessageList.isEmpty())
     {
         switch (mMessageList.front().mType)
@@ -206,4 +211,5 @@ void GUIMessageHandler::publishWaitingMessages()
         // Now remove the message as everyone has been notified
         mMessageList.removeFirst();
     }
+    mMutex.unlock();
 }

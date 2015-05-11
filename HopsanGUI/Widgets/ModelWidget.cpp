@@ -419,23 +419,24 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
     mUseRemoteCoreAddressServer=useDispatch;
 
 #ifdef USEZMQ
-    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
-    nThreads = qMax(nThreads, 1);
 
     bool useRemoteCoreFailed=false;
 
     if (mUseRemoteCore)
     {
+        int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+        nThreads = qMax(nThreads, 1);
+
         QStringList serveraddress;
         if (mUseRemoteCoreAddressServer)
         {
             SharedRemoteCoreAddressHandlerT pAddressHandler = getSharedRemoteCoreAddressHandler();
 
             // Check if we should change server address and reconnect
-            if (!pAddressHandler.isNull() && (pAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS)) )
+            if (!pAddressHandler.isNull() && (pAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS)) )
             {
                 pAddressHandler->disconnect();
-                pAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(CFG_REMOTEHOPSANDISPATCHADDRESS));
+                pAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
                 pAddressHandler->connect();
                 //! @todo what happens if it disconnects, then we would need to reconnect, we also need to keep teh connection alive by polling
             }
@@ -490,6 +491,13 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
 #endif
 }
 
+void ModelWidget::setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT pRSCH)
+{
+    // Turn off manual remote core
+    setUseRemoteSimulationCore(false, false);
+    mpExternalRemoteCoreSimulationHandler = pRSCH;
+}
+
 bool ModelWidget::getUseRemoteSimulationCore() const
 {
     return mUseRemoteCore;
@@ -502,6 +510,14 @@ bool ModelWidget::isRemoteCoreConnected() const
     return (mUseRemoteCore && mpRemoteCoreSimulationHandler);
 #else
     return false;
+#endif
+}
+
+bool ModelWidget::isExternalRemoteCoreConnected() const
+{
+#ifdef USEZMQ
+    //! @todo should check is connected also
+    return !mpExternalRemoteCoreSimulationHandler.isNull();
 #endif
 }
 
@@ -572,6 +588,29 @@ bool ModelWidget::simulate_nonblocking()
             return false;
         }
     }
+    else if (isExternalRemoteCoreConnected())
+    {
+        // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+        foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+        {
+            if(comp->getTypeName() == MODELICATYPENAME)
+            {
+                gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                return false;
+            }
+        }
+
+        if(!mSimulateMutex.tryLock())
+        {
+            gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
+            return false;
+        }
+#ifdef USEZMQ
+        mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+#endif
+    }
     // Local core simulation
     else
     {
@@ -635,6 +674,30 @@ bool ModelWidget::simulate_blocking()
             mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
             //! @todo is this really blocking hmm
 #endif
+        }
+        else if (isExternalRemoteCoreConnected())
+        {
+            // If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
+            foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
+            {
+                if(comp->getTypeName() == MODELICATYPENAME)
+                {
+                    gpMessageHandler->addErrorMessage("You cant simulate Modelica models remotly right now");
+                    return false;
+                }
+            }
+
+            if(!mSimulateMutex.tryLock())
+            {
+                gpMessageHandler->addErrorMessage("mSimulateMutex is locked!! Aborting");
+                return false;
+            }
+    #ifdef USEZMQ
+            mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+            mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+            //! @todo is this really blocking hmm
+    #endif
         }
         else
         {
@@ -796,7 +859,7 @@ void ModelWidget::collectPlotData(bool overWriteGeneration)
 
 void ModelWidget::setUseRemoteSimulationCore(bool tf)
 {
-    setUseRemoteSimulationCore(tf, gpConfig->getBoolSetting(CFG_USEREMOTEDISPATCH));
+    setUseRemoteSimulationCore(tf, gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
 }
 
 
@@ -1445,30 +1508,38 @@ bool ModelWidget::loadModelRemote()
         }
         return rc;
     }
+    else if (mpExternalRemoteCoreSimulationHandler)
+    {
+        QDomDocument doc = saveToDom();
+        bool rc = mpExternalRemoteCoreSimulationHandler->loadModelStr(doc.toString(-1));
+        QVector<QString> types,tags,messages;
+        mpExternalRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
+        for (int i=0; i<messages.size(); ++i)
+        {
+            mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
+        }
+        if (!rc)
+        {
+            mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(mpExternalRemoteCoreSimulationHandler->getLastError()));
+        }
+        return rc;
+    }
     return false;
 #endif
 }
 
-
-bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
+QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)
 {
-    QFile file(path);   //Create a QFile object
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        mpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
-        return false;
-    }
-
     if(contents==FullModel)
     {
-            //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+        //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
         mpToplevelSystem->setName(mpToplevelSystem->getModelFileInfo().baseName());
 
-            //Update the basepath for relative appearance data info
+        //Update the basepath for relative appearance data info
         mpToplevelSystem->setAppearanceDataBasePath(mpToplevelSystem->getModelFileInfo().absolutePath());
     }
 
-        //Save xml document
+    //Save xml document
     QDomDocument domDocument;
     QDomElement rootElement;
     if(contents==FullModel)
@@ -1483,7 +1554,7 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
 
     if(contents==FullModel)
     {
-            // Save the required external lib names
+        // Save the required external lib names
         QVector<QString> extLibNames;
         CoreLibraryAccess coreLibAccess;
         coreLibAccess.getLoadedLibNames(extLibNames);
@@ -1505,18 +1576,34 @@ bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     // Save the model component hierarchy
     mpToplevelSystem->saveToDomElement(rootElement, contents);
 
-        //Save to file
+    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+
+    return domDocument;
+}
+
+bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
+{
+//    QFile file(path);   //Create a QFile object
+//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+//    {
+//        mpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+//        return false;
+//    }
+
+    // Save to file
     QFile xmlFile(path);
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        mpMessageHandler->addErrorMessage("Could not save to file: " + path);
+        mpMessageHandler->addErrorMessage("Could not open the file: "+xmlFile.fileName()+" for writing.");
         return false;
     }
-    QTextStream out(&xmlFile);
-    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-    domDocument.save(out, XMLINDENTATION);
 
-    //Close the file
+    QTextStream out(&xmlFile);
+
+    QDomDocument doc = saveToDom(contents);
+    doc.save(out, XMLINDENTATION);
+
+    // Close the file
     xmlFile.close();
 
     return true;

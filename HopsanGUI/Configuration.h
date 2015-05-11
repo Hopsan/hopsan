@@ -77,8 +77,9 @@
 #define CFG_GCC64DIR "gcc64dir"
 
 #define CFG_REMOTEHOPSANADDRESS "remotehopsanaddress"
-#define CFG_REMOTEHOPSANDISPATCHADDRESS "remotehopsandispatchaddress"
-#define CFG_USEREMOTEDISPATCH "useremotehopsandispatch"
+#define CFG_REMOTEHOPSANADDRESSSERVERADDRESS "remotehopsanaddressserveraddress"
+#define CFG_USEREMOTEADDRESSSERVER "useremotehopsanaddressserver"
+#define CFG_USEREMOTEOPTIMIZATION "useremoteoptimization"
 
 #define CFG_PENSTYLE "penstyle"
 #define CFG_TYPE "type"

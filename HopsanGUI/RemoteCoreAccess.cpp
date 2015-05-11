@@ -113,9 +113,18 @@ bool RemoteCoreSimulationHandler::loadModel(QString hmfModelFile)
     }
     else
     {
-        //! @todo must remort failed to open
+        //! @todo must report failed to open
         return false;
     }
+}
+
+bool RemoteCoreSimulationHandler::loadModelStr(QString hmfStr)
+{
+    if (!hmfStr.isEmpty())
+    {
+        return mpRemoteHopsanClient->sendModelMessage(hmfStr.toStdString());
+    }
+    return false;
 }
 
 bool RemoteCoreSimulationHandler::simulateModel()
@@ -358,6 +367,30 @@ QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
     }
 
     return "";
+}
+
+QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requiredSpeed, int nRequiredSlots)
+{
+    QList<QString> results;
+    for (auto sit=mServerSpeedMap.begin(); sit!=mServerSpeedMap.end(); ++sit)
+    {
+        if (sit.key() <= requiredSpeed)
+        {
+            auto ait = mAvailableServers.find(sit.value());
+            if (ait != mAvailableServers.end())
+            {
+                if (ait.value().nSlots >= nRequiredSlots )
+                {
+                    requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
+                    if (ait.value().nOpenSlots >= nRequiredSlots)
+                    {
+                        results.append(ait.value().addr);
+                    }
+                }
+            }
+        }
+    }
+    return results;
 }
 
 #endif

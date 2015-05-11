@@ -41,6 +41,10 @@
 //C++ includes
 #include <math.h>
 
+#ifdef USEZMQ
+#include "RemoteSimulationUtils.h"
+#endif
+
 //! @brief Initializes a particle swarm optimization
 OptimizationWorkerParticleSwarm::OptimizationWorkerParticleSwarm(OptimizationHandler *pHandler)
     : OptimizationWorker(pHandler)
@@ -75,7 +79,7 @@ void OptimizationWorkerParticleSwarm::init()
     }
     mObjectives.resize(mNumPoints);
 
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mModelPtrs[0]->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasVariable("WorstObjective"))
     {
@@ -100,6 +104,15 @@ void OptimizationWorkerParticleSwarm::init()
             }
         }
     }
+
+#ifdef USEZMQ
+    // Setup parallell server queues
+    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    {
+        gRemoteModelSimulationQueuer.setupSimulationHandlers(mModelPtrs);
+    }
+#endif
+
 }
 
 
@@ -240,6 +253,14 @@ void OptimizationWorkerParticleSwarm::run()
 void OptimizationWorkerParticleSwarm::finalize()
 {
     OptimizationWorker::finalize();
+
+#ifdef USEZMQ
+    // Clear and disconnect from parallell server queues
+    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    {
+        gRemoteModelSimulationQueuer.clear();
+    }
+#endif
 }
 
 

@@ -54,6 +54,7 @@ public:
     //QList<QString> requestAvailableServers(int nOpenSlots);
 
     QString getBestAvailableServer(int nRequiredSlots);
+    QList<QString> getMatchingAvailableServers(double requiredSpeed, int nRequiredSlots);
 };
 
 typedef QSharedPointer<RemoteCoreAddressHandler> SharedRemoteCoreAddressHandlerT;
@@ -78,6 +79,7 @@ public:
     void disconnect();
 
     bool loadModel(QString hmfModelFile);
+    bool loadModelStr(QString hmfStr);
     bool simulateModel();
 
     bool getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug=true);

@@ -57,7 +57,7 @@ Configuration::Configuration()
 
     // String settings
     mStringSettings.insert(CFG_REMOTEHOPSANADDRESS, "");
-    mStringSettings.insert(CFG_REMOTEHOPSANDISPATCHADDRESS, "");
+    mStringSettings.insert(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, "");
     mStringSettings.insert(CFG_LOADMODELDIR, gpDesktopHandler->getModelsPath());
     mStringSettings.insert(CFG_MODELGFXDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_PLOTDATADIR, gpDesktopHandler->getDocumentsPath());
@@ -77,7 +77,8 @@ Configuration::Configuration()
     mStringSettings.insert(CFG_PLOTGFXDIMENSIONSUNIT, "px");
 
     // Bool settings
-    mBoolSettings.insert(CFG_USEREMOTEDISPATCH, false);
+    mBoolSettings.insert(CFG_USEREMOTEADDRESSSERVER, false);
+    mBoolSettings.insert(CFG_USEREMOTEOPTIMIZATION, false);
     mBoolSettings.insert(CFG_PLOTWINDOWSONTOP, true);
     mBoolSettings.insert(CFG_PLOTGFXUSESCREENSIZE, false);
     mBoolSettings.insert(CFG_PLOTGFXKEEPASPECT, true);

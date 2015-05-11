@@ -46,6 +46,10 @@
 #include <unistd.h>
 #endif
 
+#ifdef USEZMQ
+#include "RemoteSimulationUtils.h"
+#endif
+
 OptimizationWorkerComplexRFP::OptimizationWorkerComplexRFP(OptimizationHandler *pHandler)
     : OptimizationWorkerComplex(pHandler)
 {
@@ -113,7 +117,7 @@ void OptimizationWorkerComplexRFP::init()
 
     mKf = 1.0-pow(mAlpha/2.0, mGamma/mNumPoints);
 
-    LogDataHandler2 *pHandler = mUsedModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+    LogDataHandler2 *pHandler = mUsedModelPtrs[0]->getLogDataHandler();
     // Check if exist at any generation first to avoid error message
     if (pHandler->hasVariable("WorstObjective"))
     {
@@ -138,6 +142,15 @@ void OptimizationWorkerComplexRFP::init()
             }
         }
     }
+
+#ifdef USEZMQ
+    // Setup parallell server queues
+    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    {
+        gRemoteModelSimulationQueuer.setupSimulationHandlers(mModelPtrs);
+    }
+#endif
+
 }
 
 
@@ -389,6 +402,14 @@ void OptimizationWorkerComplexRFP::run()
 void OptimizationWorkerComplexRFP::finalize()
 {
     OptimizationWorkerComplex::finalize();
+
+#ifdef USEZMQ
+    // Clear and disconnect from parallell server queues
+    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    {
+        gRemoteModelSimulationQueuer.clear();
+    }
+#endif
 }
 
 
