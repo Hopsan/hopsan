@@ -296,10 +296,10 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << port << " uid: " << uid << " nThreads: " << requestNumThreads  << endl;
+                            std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads  << endl;
                             workerMap.insert({uid, {requestNumThreads, processInformation}});
 
-                            SM_ReqSlot_Reply_t msg = {port};
+                            SM_ReqSlot_Reply_t msg = {workerPort};
                             sendServerMessage<SM_ReqSlot_Reply_t>(socket, S_ReqSlot_Reply, msg);
                             nTakenSlots++;
                         }
