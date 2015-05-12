@@ -53,7 +53,7 @@
 OptimizationWorkerComplexRFP::OptimizationWorkerComplexRFP(OptimizationHandler *pHandler)
     : OptimizationWorkerComplex(pHandler)
 {
-
+    mMethod = 0;
 }
 
 
@@ -62,10 +62,10 @@ void OptimizationWorkerComplexRFP::init()
 {
     OptimizationWorkerComplex::init();
 
-    mMethod = 0;
-
     mLastWorstId = -1;
     mWorstCounter = 0;
+
+    print("Using method "+QString::number(mMethod));
 
     for(int p=0; p<mNumPoints; ++p)
     {
@@ -101,7 +101,7 @@ void OptimizationWorkerComplexRFP::init()
 //    }
 
     mCandidateParticles.resize(mNumThreads);
-    for(int i=0; i<mCandidateParticles.size(); ++i)
+    for(int i=0; i<mNumThreads; ++i)
     {
         mCandidateParticles[i].resize(mNumParameters);
     }
@@ -428,6 +428,10 @@ void OptimizationWorkerComplexRFP::setOptVar(const QString &var, const QString &
     else if(var == "alpha3")
     {
         mAlpha3 = value.toDouble();
+    }
+    else if(var == "method")
+    {
+        mMethod = value.toInt();
     }
 }
 
@@ -895,7 +899,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
 {
     //Multi-threading, we cannot use the "evalall" function
-    for(int i=0; i<mCandidateParticles.size() && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    for(int i=0; i<mNumThreads && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
         execute("opt set evalid "+QString::number(i+mNumPoints));
@@ -903,7 +907,7 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
     }
     gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime); //Ok to use global model handler for this, it does not use any member stuff
 
-    for(int i=0; i<mCandidateParticles.size() && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    for(int i=0; i<mNumThreads && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
         execute("opt set evalid "+QString::number(i+mNumPoints));
@@ -1050,16 +1054,19 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
             }
         }
 
+
         if(mObjectives[mNumPoints+minIdx] < mObjectives[mWorstId])
         {
-            mParameters[mWorstId] = mCandidateParticles[0];
-            mObjectives[mWorstId] = mObjectives[mNumPoints+0];
+            mParameters[mWorstId] = mCandidateParticles[minIdx];
+            mObjectives[mWorstId] = mObjectives[mNumPoints+minIdx];
             logPoint(mWorstId);
             calculateBestAndWorstId();
             if(checkForConvergence()) return;   //Check convergence
         }
         else
         {
+            mParameters[mWorstId] = mCandidateParticles[minIdx];
+            mObjectives[mWorstId] = mObjectives[mNumPoints+minIdx];
             mNeedsIteration=true;
             return;
         }
@@ -1121,7 +1128,7 @@ void OptimizationWorkerComplexRFP::findCenter()
 void OptimizationWorkerComplexRFP::findCenter(QVector<QVector<double> > &particles)
 {
     mCenter.resize(mNumParameters);
-    for(int i=0; i<mCenter.size(); ++i)
+    for(int i=0; i<mNumParameters; ++i)
     {
         mCenter[i] = 0;
     }
@@ -1132,7 +1139,7 @@ void OptimizationWorkerComplexRFP::findCenter(QVector<QVector<double> > &particl
             mCenter[i] = mCenter[i]+particles[p][i];
         }
     }
-    for(int i=0; i<mCenter.size(); ++i)
+    for(int i=0; i<mNumParameters; ++i)
     {
         mCenter[i] = mCenter[i]/double(particles.size());
     }
