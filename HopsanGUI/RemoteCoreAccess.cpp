@@ -214,22 +214,39 @@ void RemoteCoreAddressHandler::requestServerInfo(QString address)
             {
                 it.value().nSlots = status.numTotalSlots;
                 it.value().nOpenSlots = status.numFreeSlots;
+                it.value().mResponding = true;
                 //it.value().speed = status.
             }
         }
         //else server is dead maybe? Then discard the server entery
         else
         {
-            //! @todo maybe have a remove function instead
+            // Cant remove here will break iterators in calling functions
+            // Tagg it instead and schedule for later removal
             auto it = mAvailableServers.find(address);
             if (it != mAvailableServers.end())
             {
-                double speed = it.value().speed;
-                mAvailableServers.erase(it);
-                mServerSpeedMap.remove(speed, address); //! @todo since speed is double maybe we can not remove here, speed maybe should be int (ms)
+                it.value().mResponding = false;
+                mNotRespondingServers.append(address);
+                //it.value().speed = status.
             }
         }
         client.disconnect();
+    }
+}
+
+void RemoteCoreAddressHandler::removeNotRespondingServers()
+{
+    while (!mNotRespondingServers.empty())
+    {
+        QString addr = mNotRespondingServers.front(); mNotRespondingServers.pop_front();
+        auto it = mAvailableServers.find(addr);
+        if (it != mAvailableServers.end())
+        {
+            double speed = it.value().speed;
+            mAvailableServers.erase(it);
+            mServerSpeedMap.remove(speed, addr); //! @todo since speed is double maybe we can not remove here, speed maybe should be int (ms)
+        }
     }
 }
 
@@ -339,17 +356,18 @@ QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
         if (ait != mAvailableServers.end())
         {
             //! @todo here we would like to know about all open slots, but requesting every time may take time
-            if (!ait.value().recentlyTaken && ait.value().nSlots >= nRequiredSlots )
+            if (ait.value().nSlots >= nRequiredSlots )
             {
                 requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
-                if (ait.value().nOpenSlots >= nRequiredSlots)
+                if (ait.value().mResponding && ait.value().nOpenSlots >= nRequiredSlots)
                 {
-                    ait.value().recentlyTaken = true;
                     return ait.value().addr;
                 }
             }
         }
     }
+
+    removeNotRespondingServers();
 
     // If we get here then everyone is taken, lets search again for the first one with an open slot
     for (auto sit=mServerSpeedMap.begin(); sit!=mServerSpeedMap.end(); ++sit)
@@ -359,7 +377,7 @@ QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
         {
             //! @todo need a "request and reserver" function
             requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
-            if (ait.value().nOpenSlots > nRequiredSlots)
+            if (ait.value().mResponding && ait.value().nOpenSlots > nRequiredSlots)
             {
                 return ait.value().addr;
             }
@@ -382,7 +400,7 @@ QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requ
                 if (ait.value().nSlots >= nRequiredSlots )
                 {
                     requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
-                    if (ait.value().nOpenSlots >= nRequiredSlots)
+                    if (ait.value().mResponding && ait.value().nOpenSlots >= nRequiredSlots)
                     {
                         results.append(ait.value().addr);
                     }
@@ -390,6 +408,9 @@ QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requ
             }
         }
     }
+
+    removeNotRespondingServers();
+
     return results;
 }
 

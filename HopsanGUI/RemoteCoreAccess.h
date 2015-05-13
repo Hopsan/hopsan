@@ -26,7 +26,7 @@ private:
         double speed=-1;
         int nSlots=0;
         int nOpenSlots=0;
-        bool recentlyTaken=false;
+        bool mResponding=false;
     }ServerInfoT;
 
     QString mHopsanAddressServerIP, mHopsanAddressServerPort;
@@ -35,8 +35,10 @@ private:
     //! @todo shared pointer to info maybe
     QMap<QString, ServerInfoT> mAvailableServers;
     QMultiMap<double, QString> mServerSpeedMap;
+    QList<QString> mNotRespondingServers;
 
     void requestServerInfo(QString address);
+    void removeNotRespondingServers();
 
 public:
     RemoteCoreAddressHandler();
