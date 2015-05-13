@@ -39,6 +39,13 @@ void RemoteModelSimulationQueuer::setupSimulationHandlers(QVector<ModelWidget *>
     {
         mpRemoteCoreAddressHandler = getSharedRemoteCoreAddressHandler();
     }
+
+    // Disconnect if address has changed
+    if (mpRemoteCoreAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS))
+    {
+        mpRemoteCoreAddressHandler->disconnect();
+    }
+
     bool addrserver_connected = mpRemoteCoreAddressHandler->isConnected();
     if (!addrserver_connected)
     {
