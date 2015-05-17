@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="HydraulicCyldamp" displayname="HydraulicCyldamp">
+    <icons>
+      <icon scale="1" type="user" iconrotation="ON" path="HydraulicCyldamp.svg"/>
+      <icon scale="1" type="iso" iconrotation="ON" path="HydraulicCyldamp.svg"/>
+    </icons>
+        <help>
+            <text>Cylinder damping. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>HydraulicCyldamp.nb</link>
+        </help>       
+   <ports>
+      <port name="Ao" autoplaced="true" enabled="true" a="270" x="0.25" y="0"/>
+      <port name="So" autoplaced="true" enabled="true" a="270" x="0.5" y="0"/>
+      <port name="lo" autoplaced="true" enabled="true" a="270" x="0.75" y="0"/>
+      <port name="Po" autoplaced="true" enabled="true" a="180" x="0" y="0.75"/>
+      <port name="Pc" autoplaced="true" enabled="true" a="0" x="1" y="0.75"/>
+     </ports>
+    <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+  </modelobject>
+</hopsanobjectappearance>
