@@ -70,6 +70,7 @@ void QuickNavigationWidget::gotoContainerAndCloseSubcontainers(int id)
     for (int i=mContainerObjectPtrs.size()-1; i>=id; --i)
     {
         mContainerObjectPtrs[i]->exitContainer();
+        mContainerObjectPtrs[i]->setFlag(QGraphicsItem::ItemIsMovable, false); //!< @todo This is a hack to avoid subsystems moving if you exited multiple systems at once and then entered parent system again, that would for some reason trigger a mouse move event when resetting the viewport
         mpButtonGroup->removeButton(this->mPushButtonPtrs.value(i));  //Remove button from button group
         layout()->removeWidget(this->mPushButtonPtrs.value(i));       //Remove button from graphics box
         delete mPushButtonPtrs.last();                                //Delete the actual button
