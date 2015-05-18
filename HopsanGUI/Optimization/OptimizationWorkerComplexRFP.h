@@ -58,8 +58,9 @@ protected:
 
     QVector< QVector<double> > mCandidateParticles;
     bool mNeedsIteration;
+    bool mFirstReflectionFailed;
 
-    double mAlpha1, mAlpha2, mAlpha3;
+    double mAlpha1, mAlpha2, mAlpha3, mAlpha4, mAlpha5, mAlpha6, mAlpha7;
     int mMethod;
 
     QList<SharedVectorVariableT> mCandidateVars_x;
