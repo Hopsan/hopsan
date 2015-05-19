@@ -771,6 +771,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         //Use additional threads to compute a few iteration steps
         QVector<double> newPoint = mCandidateParticles[0];
+        mWorstCounter=0;
         for(int t=mNumPoints; t<mNumThreads; ++t)
         {
             double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
@@ -783,7 +784,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
                 mCandidateParticles[t][j] = qMin(mCandidateParticles[t][j], mParMax[j]);
                 mCandidateParticles[t][j] = qMax(mCandidateParticles[t][j], mParMin[j]);
             }
-
+            ++mWorstCounter;
             newPoint = mCandidateParticles[t];
         }
 
