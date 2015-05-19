@@ -325,6 +325,7 @@ void OptimizationWorkerComplexRFP::run()
                         mNeedsIteration = false;
                         break;
                     }
+                    ++mWorstCounter;
                 }
             }
 
@@ -729,7 +730,6 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         mvIdx.clear();
         while(mvIdx.size() != mNumPoints)
         {
-            print("Picking candidate point "+QString::number(mvIdx.size()));
             int worstId = 0;
             double worstObjective = -1000000000;
             for(int i=0; i<mNumPoints; ++i)
@@ -748,7 +748,6 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         QVector< QVector<double> > otherPoints = mParameters;
         for(int i=0; i<qMin(mNumThreads,mNumPoints); ++i)
         {
-            print("Picking extra candidate point "+QString::number(i));
             otherPoints.remove(mvIdx[i]);
             findCenter(otherPoints);
 
@@ -772,7 +771,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         //Use additional threads to compute a few iteration steps
         QVector<double> newPoint = mCandidateParticles[0];
-        for(int t=mNumPoints-1; t<mNumThreads; ++t)
+        for(int t=mNumPoints; t<mNumThreads; ++t)
         {
             double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
             for(int j=0; j<mNumParameters; ++j)
@@ -859,14 +858,12 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
             mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
             if(nWorsePoints >= 2)   //New point is better, keep it
             {
-                print("DEBUG: Candidate point "+QString::number(i)+" is better!");
                 mFirstReflectionFailed=false;
                 logPoint(mvIdx[i]);
                 if(checkForConvergence()) return;   //Check convergence
             }
             else        //New point is not better, iterate
             {
-                print("DEBUG: Candidate point "+QString::number(i)+" is not better!");
                 mNeedsIteration=true;
                 return;
             }
