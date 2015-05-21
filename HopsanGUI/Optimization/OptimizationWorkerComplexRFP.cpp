@@ -842,7 +842,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         mNeedsIteration=false;
 
         mFirstReflectionFailed=true;
-        for(int i=0; i<mNumPoints; ++i)
+        for(int i=0; i<mNumThreads; ++i)
         {
             forget();
 
