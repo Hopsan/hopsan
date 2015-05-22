@@ -2,6 +2,7 @@
 \page devBuildHopsanPage How to Build Hopsan and Requirements
 
 -# \subpage devBaseRequirementsPage
+-# \subpage devBuildHopsanDependenciesPage
 -# \subpage devHopsanCoreRequirementsPage
 -# \subpage devHopsanGeneratorRequirementsPage
 -# \subpage devHopsanCLIRequirementsPage
