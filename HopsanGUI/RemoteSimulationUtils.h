@@ -2,6 +2,7 @@
 #define REMOTESIMULATIONUTILS_H
 
 #include <QVector>
+#include <QQueue>
 
 #ifdef USEZMQ
 class ModelWidget;

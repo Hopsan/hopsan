@@ -6,6 +6,8 @@
 #include <ctime>
 #include <chrono>
 #include <signal.h>
+#include <thread>
+#include <atomic>
 
 #include "zmq.hpp"
 
@@ -37,6 +39,17 @@ typedef struct
     NodeDataDescription *pDataDescription = 0;
     string unit;
 }ModelVariableInfo_t;
+
+string gWorkerId;
+#define PRINTWORKER "Worker "+gWorkerId+"; "
+
+std::string nowDateTime()
+{
+    std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    char buff[64];
+    std::strftime(buff, sizeof(buff), "%b %d %H:%M:%S", std::localtime(&now_time));
+    return std::string(&buff[0]);
+}
 
 // ------------------------------
 // Model utilities BEGIN
@@ -219,45 +232,18 @@ string getParameter(ComponentSystem *pSystem, HString &fullname)
 // Model utilities END
 // ------------------------------
 
-string gWorkerId;
-#define PRINTWORKER "Worker "+gWorkerId+"; "
 
-std::string nowDateTime()
-{
-    std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    char buff[64];
-    std::strftime(buff, sizeof(buff), "%b %d %H:%M:%S", std::localtime(&now_time));
-    return std::string(&buff[0]);
-}
-
-void loadComponentLibraries(const std::string &rDir)
-{
-    FileAccess fa;
-    if (fa.enterDir(rDir))
-    {
-        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT));
-        for (string f : soFiles)
-        {
-            cout << PRINTWORKER << nowDateTime() << " Loading library file: " << f << endl;
-            gHopsanCore.loadExternalComponentLib(f.c_str());
-        }
-    }
-    else
-    {
-        cout << PRINTWORKER << nowDateTime() << " Error: Could not enter directory: " << rDir << endl;
-    }
-}
-
-void sendServerGoodby(zmq::socket_t &rSocket)
-{
-    zmq::message_t response;
-    sendServerStringMessage(rSocket, SW_Finished, gWorkerId);
-    receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
-}
-
-ComponentSystem *pRootSystem=nullptr;
-double simStartTime, simStopTime;
-size_t nThreads = 1;
+ComponentSystem *gpRootSystem=nullptr;
+double gSimStartTime, gSimStopTime;
+size_t gNumThreads = 1;
+SimulationHandler gSimulator;
+std::atomic_bool gIsSimulating(false);
+bool gIsModelLoaded = false;
+bool gWasSimulationOK = false;
+bool gSimulationFinnished = false;
+double gInitTime;
+double gSimulationTime;
+double gFinilizeTime;
 
 static int s_interrupted = 0;
 #ifdef _WIN32
@@ -284,6 +270,87 @@ static void s_catch_signals(void)
 }
 #endif
 
+
+void simulationThread(bool *pSimOK)
+{
+    // We set this first to signal that simulation is not yet finished
+    gSimulationFinnished = false;
+    gIsSimulating = true;
+    *pSimOK = false;
+
+    TicToc timer;
+
+    timer.Tic();
+    bool simOK = gSimulator.simulateSystem(gSimStartTime, gSimStopTime, gNumThreads, gpRootSystem);
+    gSimulationTime = timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
+
+    timer.Tic();
+    gSimulator.finalizeSystem(gpRootSystem);
+    gFinilizeTime = timer.TocPrint(PRINTWORKER+nowDateTime()+" Finalize");
+
+    // We need to set this last, as it is used to "signal" simulation complete
+    *pSimOK = simOK;
+    gIsSimulating = false;
+    gSimulationFinnished = true;
+}
+
+
+void loadComponentLibraries(const std::string &rDir)
+{
+    FileAccess fa;
+    if (fa.enterDir(rDir))
+    {
+        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT));
+        for (string f : soFiles)
+        {
+            cout << PRINTWORKER << nowDateTime() << " Loading library file: " << f << endl;
+            gHopsanCore.loadExternalComponentLib(f.c_str());
+        }
+    }
+    else
+    {
+        cout << PRINTWORKER << nowDateTime() << " Error: Could not enter directory: " << rDir << endl;
+    }
+}
+
+bool loadModel(string &rModel)
+{
+    // If a model is already loaded then delete it
+    if (gpRootSystem)
+    {
+        delete gpRootSystem;
+        gpRootSystem=nullptr;
+        gIsModelLoaded = false;
+    }
+
+    //! @todo loadHMFModel will hang (sometimes) if hmf empty
+    if (!rModel.empty())
+    {
+        gpRootSystem = gHopsanCore.loadHMFModel(rModel.c_str(), gSimStartTime, gSimStopTime);
+    }
+
+    if (gpRootSystem && (gHopsanCore.getNumErrorMessages() == 0) && (gHopsanCore.getNumFatalMessages() == 0) )
+    {
+        cout << PRINTWORKER << nowDateTime() << " Model was loaded sucessfully" << endl;
+        gIsModelLoaded = true;
+        return true;
+    }
+    else
+    {
+        cout << PRINTWORKER << nowDateTime() << " Error: Could not load the model" << endl;
+        return false;
+    }
+}
+
+
+void sendServerGoodby(zmq::socket_t &rSocket)
+{
+    zmq::message_t response;
+    sendServerStringMessage(rSocket, SW_Finished, gWorkerId);
+    receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
+}
+
+
 int main(int argc, char* argv[])
 {
     if (argc < 4)
@@ -300,10 +367,10 @@ int main(int argc, char* argv[])
     // Read num threads argument
     if (argc == 5)
     {
-        nThreads = size_t(atoi(argv[4]));
+        gNumThreads = size_t(atoi(argv[4]));
     }
 
-    cout << PRINTWORKER << nowDateTime() << " Listening on port: " << workerCtrlPort << " Using: " << nThreads << " threads" << endl;
+    cout << PRINTWORKER << nowDateTime() << " Listening on port: " << workerCtrlPort << " Using: " << gNumThreads << " threads" << endl;
     cout << PRINTWORKER << nowDateTime() << " Server control port is: " << serverCtrlPort << endl;
 
     // Loading component libraries
@@ -350,34 +417,66 @@ int main(int argc, char* argv[])
                 bool idParseOK;
                 size_t msg_id = getMessageId(request, offset, idParseOK);
                 cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
-                if (msg_id == C_SetParam)
+                if (msg_id == C_ReqWorkerStatus)
                 {
-                    bool parseOK;
-                    CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset, parseOK);
-                    cout << PRINTWORKER << nowDateTime() << " Client want to set parameter " << msg.name << " " << msg.value << endl;
-
-                    // Set parameter
-                    HString fullName = msg.name.c_str();
-                    bool rc = setParameter(pRootSystem, fullName, msg.value.c_str());
-                    // Send ack or nack
-                    if (rc)
+                    cout << PRINTWORKER << nowDateTime() << " Client requesting status" << endl;
+                    SWM_ReqWorkerStatus_Reply_t msg;
+                    msg.model_loaded = gIsModelLoaded;
+                    msg.simualtion_success = gWasSimulationOK;
+                    msg.simulation_finished = gSimulationFinnished;
+                    msg.simulation_inprogress = gIsSimulating;
+                    if (gIsSimulating)
                     {
-                        sendServerAck(socket);
+                        msg.current_simulation_time = gpRootSystem->getTime();
+                        msg.simulation_progress = (msg.current_simulation_time-gSimStartTime) / (gSimStopTime - gSimStartTime);
+                        msg.estimated_simulation_time_remaining = -1;
                     }
                     else
                     {
-                        sendServerNAck(socket, "Failed to set parameter: "+msg.name);
+                        msg.current_simulation_time = -1;
+                        msg.simulation_progress = -1;
+                        msg.estimated_simulation_time_remaining = -1;
+                    }
+
+                    sendServerMessage<SWM_ReqWorkerStatus_Reply_t>(socket, SW_ReqWorkerStatus_Reply, msg);
+                }
+                else if (msg_id == C_SetParam)
+                {
+                    if (gIsSimulating)
+                    {
+                        sendServerNAck(socket, "You can not set parameters while simulating!");
+                    }
+                    else
+                    {
+                        bool parseOK;
+                        CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset, parseOK);
+                        cout << PRINTWORKER << nowDateTime() << " Client want to set parameter " << msg.name << " " << msg.value << endl;
+
+                        // Set parameter
+                        HString fullName = msg.name.c_str();
+                        bool rc = setParameter(gpRootSystem, fullName, msg.value.c_str());
+                        // Send ack or nack
+                        if (rc)
+                        {
+                            sendServerAck(socket);
+                        }
+                        else
+                        {
+                            sendServerNAck(socket, "Failed to set parameter: "+msg.name);
+                        }
                     }
                 }
                 else if (msg_id == C_GetParam)
                 {
+                    //! @todo is this safe while simulating
+
                     bool parseOK;
                     std::string msg = unpackMessage<std::string>(request, offset, parseOK);
                     cout << PRINTWORKER << nowDateTime() << " Client want to get parameter " << msg << endl;
 
                     // Get parameter
                     HString fullName = msg.c_str();
-                    string val = getParameter(pRootSystem, fullName);
+                    string val = getParameter(gpRootSystem, fullName);
                     //! @todo what if root system name is first?
 
                     // Send param value (as string) or nack
@@ -387,126 +486,207 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        sendServerStringMessage(socket, S_GetParam_Reply, val);
+                        sendServerStringMessage(socket, SW_GetParam_Reply, val);
                     }
                 }
                 else if (msg_id == C_SendingHmf)
                 {
-                    bool parseOK;
-                    std::string hmf = unpackMessage<std::string>(request, offset, parseOK);
-                    if (parseOK)
+                    if (gIsSimulating)
                     {
-                        cout << PRINTWORKER << nowDateTime() << " Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
-
-                        // If a model is already loaded then delete it
-                        if (pRootSystem)
-                        {
-                            delete pRootSystem;
-                            pRootSystem=nullptr;
-                        }
-
-                        //! @todo loadHMFModel will hang (sometimes) if hmf empty
-                        if (!hmf.empty())
-                        {
-                            pRootSystem = gHopsanCore.loadHMFModel(hmf.c_str(), simStartTime, simStopTime);
-                        }
-
-                        if (pRootSystem && (gHopsanCore.getNumErrorMessages() == 0) && (gHopsanCore.getNumFatalMessages() == 0) )
-                        {
-                            cout << PRINTWORKER << nowDateTime() << " Model was loaded sucessfully" << endl;
-                            sendServerAck(socket);
-                        }
-                        else
-                        {
-                            cout << PRINTWORKER << nowDateTime() << " Error: Could not load the model" << endl;
-                            sendServerNAck(socket, "Server could not load model");
-                        }
+                        sendServerNAck(socket, "You can not load a model while simulating!");
                     }
                     else
                     {
-                        cout << PRINTWORKER << nowDateTime() << " Error: Could not parse model message" << endl;
-                        sendServerNAck(socket, "Could not parse model message");
+                        bool parseOK;
+                        std::string hmf = unpackMessage<std::string>(request, offset, parseOK);
+                        if (parseOK)
+                        {
+                            cout << PRINTWORKER << nowDateTime() << " Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
+
+                            bool rc = loadModel(hmf);
+                            if (rc )
+                            {
+                                sendServerAck(socket);
+                            }
+                            else
+                            {
+                                sendServerNAck(socket, "Server could not load model");
+                            }
+                        }
+                        else
+                        {
+                            cout << PRINTWORKER << nowDateTime() << " Error: Could not parse model message" << endl;
+                            sendServerNAck(socket, "Could not parse model message");
+                        }
                     }
                 }
                 else if (msg_id == C_Simulate)
                 {
-                    bool parseOK;
-                    CM_Simulate_t msg = unpackMessage<CM_Simulate_t>(request, offset, parseOK);
-                    if (parseOK)
+                    if (gIsSimulating)
                     {
-                        // Start simulation
-                        SimulationHandler simulator;
-                        bool irc=false,src=false;
-                        TicToc timer;
-                        irc = simulator.initializeSystem(simStartTime, simStopTime, pRootSystem);
-                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
-                        if (irc)
-                        {
-                            timer.Tic();
-                            src = simulator.simulateSystem(simStartTime, simStopTime, 1, pRootSystem);
-                            timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
-                        }
-                        timer.Tic();
-                        simulator.finalizeSystem(pRootSystem);
-                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Finalize");
-
-                        if (irc && src)
-                        {
-                            sendServerAck(socket);
-                        }
-                        else if (!irc)
-                        {
-                            cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
-                            sendServerNAck(socket, "Could not initialize system");
-                        }
-                        else
-                        {
-                            cout  << PRINTWORKER << nowDateTime() << " Model simulation failed"  << endl;
-                            sendServerNAck(socket, "Cold not simulate system");
-                        }
+                        sendServerNAck(socket, "Simulation is already in progress!");
                     }
                     else
                     {
-                        cout  << PRINTWORKER << nowDateTime() << " Error: Failed to parse simulation message" << endl;
-                        sendServerNAck(socket, "Failed to parse simulation message");
+                        bool parseOK;
+                        CM_Simulate_t msg = unpackMessage<CM_Simulate_t>(request, offset, parseOK);
+                        if (parseOK)
+                        {
+                            // Start simulation
+                            bool irc=false;
+                            TicToc timer;
+                            //! @todo what happens here if we get stuck in initialize, then get status will say that we are not simulating
+                            irc = gSimulator.initializeSystem(gSimStartTime, gSimStopTime, gpRootSystem);
+                            gInitTime = timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
+                            if (irc)
+                            {
+                                std::thread ( simulationThread, &gWasSimulationOK ).detach();
+                                sendServerAck(socket);
+                            }
+                            else
+                            {
+                                cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
+                                sendServerNAck(socket, "Could not initialize system");
+                            }
+
+                            //                        // Start simulation
+                            //                        SimulationHandler simulator;
+                            //                        bool irc=false,src=false;
+                            //                        TicToc timer;
+                            //                        irc = simulator.initializeSystem(gSimStartTime, gSimStopTime, gpRootSystem);
+                            //                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
+                            //                        if (irc)
+                            //                        {
+                            //                            timer.Tic();
+                            //                            src = simulator.simulateSystem(gSimStartTime, gSimStopTime, gNumThreads, gpRootSystem);
+                            //                            timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
+                            //                        }
+                            //                        timer.Tic();
+                            //                        simulator.finalizeSystem(gpRootSystem);
+                            //                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Finalize");
+
+                            //                        if (irc && src)
+                            //                        {
+                            //                            sendServerAck(socket);
+                            //                        }
+                            //                        else if (!irc)
+                            //                        {
+                            //                            cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
+                            //                            sendServerNAck(socket, "Could not initialize system");
+                            //                        }
+                            //                        else
+                            //                        {
+                            //                            cout  << PRINTWORKER << nowDateTime() << " Model simulation failed"  << endl;
+                            //                            sendServerNAck(socket, "Cold not simulate system");
+                            //                        }
+                        }
+                        else
+                        {
+                            cout  << PRINTWORKER << nowDateTime() << " Error: Failed to parse simulation message" << endl;
+                            sendServerNAck(socket, "Failed to parse simulation message");
+                        }
                     }
                 }
-                else if (msg_id == C_ReqResults)
+                else if (msg_id == C_ReqBenchmark)
                 {
-                    bool parseOK;
-                    string varName = unpackMessage<string>(request, offset, parseOK);
-                    vector<ModelVariableInfo_t> vMVI;
-                    collectAllModelVariables(pRootSystem, vMVI, "");
-                    cout << PRINTWORKER << nowDateTime() << " Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
-
-                    //! @todo Check if simulation finished, ACK Nack
-                    vector<SM_Variable_Description_t> vars;
-                    for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
+                    if (gIsSimulating)
                     {
-                        vars.push_back(SM_Variable_Description_t());
-                        vars.back().name = vMVI[mvi].fullName.c_str();
-                        vars.back().alias = "";
-                        vars.back().unit = vMVI[mvi].unit.c_str();
-                        vars.back().data.reserve(vMVI[mvi].dataLength);
-                        // Copy if a data variable
-                        if (vMVI[mvi].pData)
+                        sendServerNAck(socket, "Simulation is already in progress!");
+                    }
+                    else
+                    {
+                        bool parseOK;
+                        CM_ReqBenchmark_t benchreq = unpackMessage<CM_ReqBenchmark_t>(request, offset, parseOK);
+                        if (parseOK)
                         {
-                            for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                            bool rc = loadModel(benchreq.model);
+                            if (rc )
                             {
-                                vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
+
+                                TicToc timer;
+                                bool irc = gSimulator.initializeSystem(gSimStartTime, gSimStopTime, gpRootSystem);
+                                gInitTime = timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
+                                if (irc)
+                                {
+                                    // Start simulation
+                                    std::thread ( simulationThread, &gWasSimulationOK ).detach();
+                                    sendServerAck(socket);
+                                }
+                                else
+                                {
+                                    cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
+                                    sendServerNAck(socket, "Could not initialize system");
+                                }
+                            }
+                            else
+                            {
+                                sendServerNAck(socket, "Server could not load the model to benchmark");
                             }
                         }
-                        // Copy if a time data variable
-                        else if (vMVI[mvi].pTimeData)
+                        else
                         {
-                            for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
-                            {
-                                vars.back().data.push_back((*vMVI[mvi].pTimeData)[t]);
-                            }
+                            cout  << PRINTWORKER << nowDateTime() << " Error: Failed to parse simulation message" << endl;
+                            sendServerNAck(socket, "Failed to parse simulation message");
                         }
                     }
+                }
+                else if (msg_id == C_ReqBenchmarkResults)
+                {
+                    cout << PRINTWORKER << nowDateTime() << " Client requests benchmark times" << endl;
+                    //! @todo  Wait for benchmark to complete maybe
+                    //!
+                    SWM_ReqBenchmarkResults_Reply_t msg;
+                    msg.numthreads = gNumThreads;
+                    msg.inittime = gInitTime;
+                    msg.simutime = gSimulationTime;
+                    msg.finitime = gFinilizeTime;
 
-                    sendServerMessage<vector<SM_Variable_Description_t>>(socket,S_ReqResults_Reply,vars);
+                    sendServerMessage<SWM_ReqBenchmarkResults_Reply_t>(socket, S_ReqBenchmarkResults_Reply, msg);
+                }
+
+                else if (msg_id == C_ReqResults)
+                {
+                    if (gIsSimulating)
+                    {
+                        sendServerNAck(socket, "Simulation is still in progress!");
+                    }
+                    else
+                    {
+                        bool parseOK;
+                        string varName = unpackMessage<string>(request, offset, parseOK);
+                        vector<ModelVariableInfo_t> vMVI;
+                        collectAllModelVariables(gpRootSystem, vMVI, "");
+                        cout << PRINTWORKER << nowDateTime() << " Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
+
+                        //! @todo Check if simulation finished, ACK Nack
+                        vector<SM_Variable_Description_t> vars;
+                        for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
+                        {
+                            vars.push_back(SM_Variable_Description_t());
+                            vars.back().name = vMVI[mvi].fullName.c_str();
+                            vars.back().alias = "";
+                            vars.back().unit = vMVI[mvi].unit.c_str();
+                            vars.back().data.reserve(vMVI[mvi].dataLength);
+                            // Copy if a data variable
+                            if (vMVI[mvi].pData)
+                            {
+                                for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                                {
+                                    vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
+                                }
+                            }
+                            // Copy if a time data variable
+                            else if (vMVI[mvi].pTimeData)
+                            {
+                                for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                                {
+                                    vars.back().data.push_back((*vMVI[mvi].pTimeData)[t]);
+                                }
+                            }
+                        }
+
+                        sendServerMessage<vector<SM_Variable_Description_t>>(socket,SW_ReqResults_Reply,vars);
+                    }
                 }
                 else if (msg_id == C_ReqMessages)
                 {
@@ -524,7 +704,7 @@ int main(int argc, char* argv[])
                         messages[i].type = type[0];
                     }
 
-                    sendServerMessage<vector<SM_HopsanCoreMessage_t>>(socket,S_ReqMessages_Reply,messages);
+                    sendServerMessage<vector<SM_HopsanCoreMessage_t>>(socket,SW_ReqMessages_Reply,messages);
                 }
                 else if (msg_id == C_Bye)
                 {
@@ -533,6 +713,8 @@ int main(int argc, char* argv[])
                     keepRunning = false;
 
                     sendServerGoodby(serverSocket);
+
+                    //! @todo what happen to simulation thread if it is running
                 }
                 else if (!idParseOK)
                 {
@@ -574,10 +756,11 @@ int main(int argc, char* argv[])
         }
 
         // Delete the model if we have one
-        if (pRootSystem)
+        if (gpRootSystem)
         {
-            delete pRootSystem;
-            pRootSystem=nullptr;
+            delete gpRootSystem;
+            gpRootSystem=nullptr;
+            gIsModelLoaded = false;
         }
     }
     catch(zmq::error_t e)

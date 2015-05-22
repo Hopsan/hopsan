@@ -7,6 +7,7 @@
 #include <mutex>
 #include <list>
 #include <atomic>
+#include <vector>
 
 class ServerHandler;
 
@@ -21,6 +22,7 @@ public:
     std::string port;
     int numTotalSlots = 0;
     double benchmarkTime=1e100;
+    std::vector<double> benchmarkTimes;
     std::chrono::steady_clock::time_point lastCheckTime;
     bool bussyProcessing=false;
     bool isReady=false;
@@ -36,6 +38,8 @@ public:
     }
 };
 
+#define BENCHMARKMODEL "../Models/Example Models/Load Sensing System.hmf"
+
 class ServerHandler
 {
 private:
@@ -50,6 +54,7 @@ private:
     void updateServerInfoNoLock(const ServerInfo &rServerInfo);
 
     void refreshServerStatusThread(int serverId);
+    void refreshServerBenchmarkThread(int serverId);
 
     //Debug
     void consistent();
@@ -71,6 +76,7 @@ public :
     const int mMaxNumRunningRefreshServerStatusThreads = 30;
     std::atomic<int> mNumRunningRefreshServerStatusThreads{0};
     void refreshServerStatus(int serverId);
+    void refreshServerBenchmark(int serverId);
 };
 
 #endif // SERVERHANDLER_H

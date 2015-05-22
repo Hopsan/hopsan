@@ -121,13 +121,13 @@ void RemoteModelSimulationQueuer::simulateModels()
         barriers[i] = new MyBarrier();
     }
 
-    // Create a copy since we weill deque and pop pointers
+    // Create a copy since we will deque and pop pointers
     QVector<QQueue<ModelWidget*>> modelQueues = mModelQueues;
 
     int prev_m=0;
     for (int m=0; m<mAllModels.size(); ++m)
     {
-        // Block if until next element in queue can be run
+        // Block until next element in queue can be run
         if (barriers[h]->tryLock())
         {
             ModelWidget *pModel = modelQueues[h].dequeue();

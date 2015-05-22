@@ -7,6 +7,8 @@
 #include "MessageUtilities.h"
 
 #include <iostream>
+#include <thread>
+#include <algorithm>
 
 using namespace std;
 
@@ -81,9 +83,6 @@ bool readAckNackServerMessage(zmq::socket_t *pSocket, long timeout)
 // ---------- Help functions end ----------
 
 
-
-
-
 bool RemoteHopsanClient::connectToServer(std::string zmqaddres)
 {
     if (serverConnected())
@@ -134,7 +133,7 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_GetParam_Reply)
+        if (id == SW_GetParam_Reply)
         {
             rValue = unpackMessage<string>(response, offset, parseOK);
             assert(response.size() == offset);
@@ -181,7 +180,6 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     CM_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
     sendClientMessage<CM_Simulate_t>(mpRWCSocket, C_Simulate, msg);
     string err;
-    //! @todo blocking read for now, in the future we need to poll while simulating
     bool rc = readAckNackServerMessage(mpRWCSocket, -1, err);
     if (!rc)
     {
@@ -190,9 +188,116 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     return rc;
 }
 
-bool RemoteHopsanClient::requestStatus(ServerStatusT &rServerStatus)
+bool RemoteHopsanClient::blockingBenchmark(const string &rModel, const int nThreads, double &rSimTime)
 {
-    sendShortClientMessage(mpRSCSocket, C_ReqStatus);
+    bool gotResponse=false;
+    size_t workerPort;
+    bool rc = requestSlot(nThreads, workerPort);
+    if(rc)
+    {
+        std::string prot,ip,port;
+        splitZMQAddress(mServerAddress, prot,ip,port);
+        rc = connectToWorker(makeZMQAddress(ip, workerPort));
+    }
+    else
+    {
+        cout << mLastErrorMessage << endl;
+    }
+
+    if (rc)
+    {
+        CM_ReqBenchmark_t msg;
+        msg.model = rModel;
+        sendClientMessage<CM_ReqBenchmark_t>(mpRWCSocket, C_ReqBenchmark, msg);
+        string errorMsg;
+        rc = readAckNackServerMessage(mpRWCSocket, 5000,  errorMsg);
+
+        if (rc)
+        {
+            // Block until benchamark is done
+            //! @todo what if benchmark freeces, need a timeout here
+            double progress;
+            std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, &progress);
+            t.join();
+
+            // Now request benchmark results
+//            sendShortClientMessage(mpRWCSocket, C_ReqBenchmarkResults);
+//            zmq::message_t reply;
+//            if (receiveWithTimeout(*mpRWCSocket, reply))
+//            {
+//                size_t offset=0;
+//                bool parseOK;
+//                size_t id = getMessageId(reply, offset, parseOK);
+//                if (id == S_ReqBenchmarkResults_Reply)
+//                {
+//                    SWM_ReqBenchmarkResults_Reply_t results = unpackMessage<SWM_ReqBenchmarkResults_Reply_t>(reply, offset, parseOK);
+//                    if (parseOK)
+//                    {
+//                        //! @todo right now we bundle all times togheter
+//                        rSimTime = results.inittime+results.simutime+results.finitime;
+//                        gotResponse = true;
+//                    }
+//                }
+//            }
+            gotResponse = requestBenchmarkResults(rSimTime);
+        }
+    }
+
+    disconnectWorker();
+
+    return gotResponse;
+}
+
+bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
+{
+    sendShortClientMessage(mpRWCSocket, C_ReqBenchmarkResults);
+    zmq::message_t reply;
+    if (receiveWithTimeout(*mpRWCSocket, reply))
+    {
+        size_t offset=0;
+        bool parseOK;
+        size_t id = getMessageId(reply, offset, parseOK);
+        if (id == S_ReqBenchmarkResults_Reply)
+        {
+            SWM_ReqBenchmarkResults_Reply_t results = unpackMessage<SWM_ReqBenchmarkResults_Reply_t>(reply, offset, parseOK);
+            if (parseOK)
+            {
+                //! @todo right now we bundle all times togheter
+                rSimTime = results.inittime+results.simutime+results.finitime;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool RemoteHopsanClient::requestWorkerStatus(WorkerStatusT &rWorkerStatus)
+{
+    sendShortClientMessage(mpRWCSocket, C_ReqWorkerStatus);
+
+    zmq::message_t response;
+    if (receiveWithTimeout(*mpRWCSocket, response))
+    {
+        //cout << "Response size: " << response.size() << endl;
+        size_t offset=0;
+        bool parseOK;
+        size_t id = getMessageId(response, offset, parseOK);
+        if (id == SW_ReqWorkerStatus_Reply)
+        {
+            SWM_ReqWorkerStatus_Reply_t status = unpackMessage<SWM_ReqWorkerStatus_Reply_t>(response, offset, parseOK);
+            if (parseOK)
+            {
+                rWorkerStatus = status;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
+{
+    sendShortClientMessage(mpRSCSocket, C_ReqServerStatus);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRSCSocket, response))
@@ -201,7 +306,7 @@ bool RemoteHopsanClient::requestStatus(ServerStatusT &rServerStatus)
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_ReqStatus_Reply)
+        if (id == S_ReqServerStatus_Reply)
         {
             SM_ServerStatus_t status = unpackMessage<SM_ServerStatus_t>(response, offset, parseOK);
             if (parseOK)
@@ -226,7 +331,7 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_ReqResults_Reply)
+        if (id == SW_ReqResults_Reply)
         {
             vector<SM_Variable_Description_t> vars = unpackMessage<vector<SM_Variable_Description_t>>(response,offset, parseOK);
             //cout << "Received: " << vars.size() << " vars" << endl;
@@ -336,9 +441,8 @@ bool RemoteHopsanClient::workerConnected() const
     return mpRWCSocket && !mWorkerAddress.empty();
 }
 
-void RemoteHopsanClient::disconnect()
+void RemoteHopsanClient::disconnectWorker()
 {
-    // Disconnect from Worker
     if (workerConnected())
     {
         sendShortClientMessage(mpRWCSocket, C_Bye);
@@ -353,8 +457,10 @@ void RemoteHopsanClient::disconnect()
         }
         mWorkerAddress.clear();
     }
+}
 
-    // Disconnect from Server
+void RemoteHopsanClient::disconnectServer()
+{
     if (serverConnected())
     {
         //! @todo maybe should auto disconnect when we connect to worker
@@ -370,6 +476,26 @@ void RemoteHopsanClient::disconnect()
     }
 }
 
+void RemoteHopsanClient::disconnect()
+{
+    // Disconnect from Worker
+    disconnectWorker();
+
+    // Disconnect from Server
+    disconnectServer();
+}
+
+bool RemoteHopsanClient::blockingSimulation(const int nLogsamples, const int logStartTime, const int simStarttime,
+                                            const int simSteptime, const int simStoptime, double *pProgress)
+{
+    sendSimulateMessage(nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime);
+    std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, pProgress);
+    t.join();
+    WorkerStatusT status;
+    requestWorkerStatus(status);
+    return (status.model_loaded && status.simualtion_success);
+}
+
 bool RemoteHopsanClient::requestMessages()
 {
     sendShortClientMessage(mpRWCSocket, C_ReqMessages);
@@ -380,7 +506,7 @@ bool RemoteHopsanClient::requestMessages()
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_ReqMessages_Reply)
+        if (id == SW_ReqMessages_Reply)
         {
             vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset, parseOK);
             cout << "Received: " << messages.size() << " messages from server" << endl;
@@ -408,7 +534,7 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_ReqMessages_Reply)
+        if (id == SW_ReqMessages_Reply)
         {
             vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset, parseOK);
             //cout << "Received: " << messages.size() << " messages from server" << endl;
@@ -525,6 +651,47 @@ void RemoteHopsanClient::deleteSockets()
     }
 }
 
+void RemoteHopsanClient::requestWorkerStatusThread(double *pProgress)
+{
+    const int defaultSleepMs = 100;
+    double progressedTime = 0;
+
+    WorkerStatusT status;
+    std::chrono::milliseconds msd{defaultSleepMs};
+    std::chrono::milliseconds ms=msd;
+    bool rc = requestWorkerStatus(status);
+    *pProgress = status.simulation_progress;
+    while (!status.simulation_finished && rc)
+    {
+        std::this_thread::sleep_for(ms);
+        progressedTime += double(ms.count())/1000;
+        rc = requestWorkerStatus(status);
+        *pProgress = status.simulation_progress;
+        // Ok make an estimate of remaning time based on progressed time
+        if (status.simulation_progress > 1e-6)
+        {
+            // Calulate an estimate of the remaining time
+            double  remaining_time = progressedTime / status.simulation_progress - progressedTime;
+
+            // Make sure that we request status within at most mMaxWorkerStatusRequestWaitTime seconds
+            // If remaning time lower, then wait estimated remaning time + 100 ms
+            double sleep_time = min( remaining_time+0.1, mMaxWorkerStatusRequestWaitTime );
+            if (sleep_time > 0 )
+            {
+                std::chrono::milliseconds mss{int(sleep_time*1000.0)};
+                ms = mss;
+            }
+            else
+            {
+                ms = msd;
+            }
+        }
+
+        //! @todo how to handle simulation that freezes
+        //! @todo how to handle non-responsive simulation, rith now we abort maybe should wait
+    }
+}
+
 
 RemoteHopsanClient::RemoteHopsanClient(zmq::context_t &rContext)
 {
@@ -561,4 +728,9 @@ void RemoteHopsanClient::setReceiveTimeout(long ms)
 long RemoteHopsanClient::getReceiveTimeout() const
 {
     return mReceiveTimeout;
+}
+
+void RemoteHopsanClient::setMaxWorkerStatusRequestWaitTime(double seconds)
+{
+    mMaxWorkerStatusRequestWaitTime = seconds;
 }

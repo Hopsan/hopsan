@@ -498,6 +498,11 @@ void ModelWidget::setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT 
     setUseRemoteSimulationCore(false, false);
     mpExternalRemoteCoreSimulationHandler = pRSCH;
 }
+
+double ModelWidget::getSimulationProgress() const
+{
+    return mSimulationProgress;
+}
 #endif
 
 bool ModelWidget::getUseRemoteSimulationCore() const
@@ -546,7 +551,6 @@ void ModelWidget::setSaved(bool value)
     mIsSaved = value;
 }
 
-//! @note this is experimental code to replace madness simulation code in the future
 bool ModelWidget::simulate_nonblocking()
 {
     // Save backup copy (if needed)
@@ -580,7 +584,7 @@ bool ModelWidget::simulate_nonblocking()
 #ifdef USEZMQ
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
 #endif
             //! @todo is this really blocking hmm
         }
@@ -610,13 +614,13 @@ bool ModelWidget::simulate_nonblocking()
 #ifdef USEZMQ
         mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-        mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+        mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
 #endif
     }
     // Local core simulation
     else
     {
-        //if(!mSimulateMutex.tryLock()) return false;
+        if(!mSimulateMutex.tryLock()) return false;
 
         //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
         foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())
@@ -673,7 +677,7 @@ bool ModelWidget::simulate_blocking()
 #ifdef USEZMQ
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
             //! @todo is this really blocking hmm
 #endif
         }
@@ -697,7 +701,7 @@ bool ModelWidget::simulate_blocking()
     #ifdef USEZMQ
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
             //! @todo is this really blocking hmm
     #endif
         }

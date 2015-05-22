@@ -12,6 +12,7 @@
 #include <QFile>
 #include <QVector>
 #include <QTextStream>
+#include <QStringList>
 
 
 #ifdef USEZMQ
@@ -41,6 +42,7 @@ SharedRemoteCoreAddressHandlerT getSharedRemoteCoreAddressHandler()
 RemoteCoreSimulationHandler::RemoteCoreSimulationHandler()
 {
     mpRemoteHopsanClient = new RemoteHopsanClient(zmqContext);
+    mpRemoteHopsanClient->setMaxWorkerStatusRequestWaitTime(0.1); //!< @todo This is a temprary hack, need to set this from the outside and maybe not request so often
 }
 
 
@@ -127,9 +129,40 @@ bool RemoteCoreSimulationHandler::loadModelStr(QString hmfStr)
     return false;
 }
 
-bool RemoteCoreSimulationHandler::simulateModel()
+bool RemoteCoreSimulationHandler::simulateModel_blocking(double *pProgress)
+{
+    return mpRemoteHopsanClient->blockingSimulation(-1, -1, -1, -1, -1, pProgress);
+}
+
+bool RemoteCoreSimulationHandler::simulateModel_nonblocking()
 {
     return mpRemoteHopsanClient->sendSimulateMessage(-1, -1, -1, -1, -1);
+}
+
+bool RemoteCoreSimulationHandler::requestSimulationProgress(double *pProgress)
+{
+    WorkerStatusT status;
+    bool rc = mpRemoteHopsanClient->requestWorkerStatus(status);
+    if (rc)
+    {
+        if (status.simulation_inprogress)
+        {
+            *pProgress = status.simulation_progress;
+        }
+        else if (status.simulation_finished)
+        {
+            //! @todo what if simulation exits before it is finished
+            *pProgress = 1.;
+        }
+        else
+        {
+            *pProgress = -1.;
+        }
+    }
+    else
+    {
+        *pProgress = -1.;
+    }
 }
 
 bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug)
@@ -205,7 +238,7 @@ void RemoteCoreAddressHandler::requestServerInfo(QString address)
     if (client.serverConnected())
     {
         ServerStatusT status;
-        if (client.requestStatus(status))
+        if (client.requestServerStatus(status))
         {
             // If we got status then update our mapped info, we use iterator and reference to avoid
             // inserting into map and therby destorying iterators that might be used when this function is called

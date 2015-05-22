@@ -19,6 +19,8 @@ public:
     void setReceiveTimeout(long ms);
     long getReceiveTimeout() const;
 
+    void setMaxWorkerStatusRequestWaitTime(double seconds);
+
     bool connectToServer(std::string zmqaddres);
     bool connectToServer(std::string ip, std::string port);
     bool serverConnected() const;
@@ -28,15 +30,23 @@ public:
     bool connectToWorker(std::string ip, std::string port);
     bool workerConnected() const;
 
+    void disconnectWorker();
+    void disconnectServer();
     void disconnect();
 
+    bool blockingSimulation(const int nLogsamples, const int logStartTime, const int simStarttime,
+                            const int simSteptime, const int simStoptime, double *pProgress);
+    bool blockingBenchmark(const std::string &rModel, const int nThreads, double &rSimTime);
 
     bool sendGetParamMessage(const std::string &rName, std::string &rValue);
     bool sendSetParamMessage(const std::string &rName, const std::string &rValue);
     bool sendModelMessage(const std::string &rModel);
-    bool sendSimulateMessage(const int nLogsamples, const int logStartTime, const int simStarttime, const int simSteptime, const int simStoptime);
+    bool sendSimulateMessage(const int nLogsamples, const int logStartTime, const int simStarttime,
+                             const int simSteptime, const int simStoptime);
 
-    bool requestStatus(ServerStatusT &rServerStatus);
+    bool requestBenchmarkResults(double &rSimTime);
+    bool requestWorkerStatus(WorkerStatusT &rWorkerStatus);
+    bool requestServerStatus(ServerStatusT &rServerStatus);
     bool requestSimulationResults(std::vector<std::string> *pDataNames, std::vector<double> *pData);
     bool requestMessages();
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
@@ -49,7 +59,9 @@ public:
 private:
     bool receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage);
     void deleteSockets();
+    void requestWorkerStatusThread(double *pProgress);
 
+    double mMaxWorkerStatusRequestWaitTime = 30; //!< The maximum delay between worker status requests in seconds
     long mReceiveTimeout = 8000; //!< Receive timeout in ms
     std::string mLastErrorMessage;
     std::string mServerAddress;

@@ -82,7 +82,10 @@ public:
 
     bool loadModel(QString hmfModelFile);
     bool loadModelStr(QString hmfStr);
-    bool simulateModel();
+    bool simulateModel_blocking(double *pProgress);
+    bool simulateModel_nonblocking();
+
+    bool requestSimulationProgress(double *pProgress);
 
     bool getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug=true);
 

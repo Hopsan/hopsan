@@ -92,8 +92,9 @@ private:
     SharedRemoteCoreSimulationHandlerT mpRCSH;
     std::vector<std::string> *mpLogDataNames;
     std::vector<double> *mpLogData;
+    double *mpProgress;
 public:
-    RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData,
+    RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress,
                                  const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     int swoType() const {return RemoteSWO;}
 
@@ -107,8 +108,10 @@ class ProgressBarWorkerObject : public QObject
     Q_OBJECT
 
 private:
-    QTimer mProgressDialogRefreshTimer;
     QVector<SystemContainer*> mvSystems;
+
+protected:
+    QTimer mProgressDialogRefreshTimer;
     int mLastProgressRefreshStep;
     double mStartT, mStopT;
 
@@ -127,6 +130,19 @@ signals:
     void setProgressBarValue(int);
     void aborted();
 };
+
+#ifdef USEZMQ
+class RemoteProgressbarWorkerObject : public ProgressBarWorkerObject
+{
+    Q_OBJECT
+private:
+    double mProgress;
+    SharedRemoteCoreSimulationHandlerT mpRCSH;
+public:
+    RemoteProgressbarWorkerObject(const double startTime, const double stopTime, SharedRemoteCoreSimulationHandlerT pRCSH, QProgressDialog *pProgressDialog);
+    //! @todo finnish this
+};
+#endif
 
 class SimulationThreadHandler  : public QObject
 {
@@ -164,7 +180,7 @@ public:
     void setProgressDilaogBehaviour(bool enabled, bool modal);
     void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
 #ifdef USEZMQ
-    void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData);
+    void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress);
 #endif
     void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);

@@ -82,6 +82,7 @@ public:
     void setUseRemoteSimulationCore(bool tf, bool useDispatch);
 #ifdef USEZMQ
     void setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT pRSCH);
+    double getSimulationProgress() const;
 #endif
     bool getUseRemoteSimulationCore() const;
     bool isRemoteCoreConnected() const;
@@ -149,6 +150,7 @@ private:
 #ifdef USEZMQ
     SharedRemoteCoreSimulationHandlerT mpRemoteCoreSimulationHandler;
     SharedRemoteCoreSimulationHandlerT mpExternalRemoteCoreSimulationHandler;
+    double mSimulationProgress;
 #endif
     QMutex mSimulateMutex;
 

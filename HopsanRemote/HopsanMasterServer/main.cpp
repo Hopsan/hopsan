@@ -140,7 +140,15 @@ void refreshServerThread()
                 gServerHandler.refreshServerStatus(id);
 
                 // Debug sleep to let cout print nicely, remove later
-                std::chrono::milliseconds ms{100};
+                std::chrono::milliseconds ms{50};
+                std::this_thread::sleep_for(ms);
+
+                if (gServerHandler.getServer(id).benchmarkTime > 1e99)
+                {
+                    gServerHandler.refreshServerBenchmark(id);
+                }
+
+                // Debug sleep to let cout print nicely, remove later
                 std::this_thread::sleep_for(ms);
             }
         }
@@ -207,7 +215,14 @@ int main(int argc, char* argv[])
                         if (gServerHandler.mNumRunningRefreshServerStatusThreads < gServerHandler.mMaxNumRunningRefreshServerStatusThreads)
                         {
                             gServerHandler.refreshServerStatus(id);
+                            std::chrono::milliseconds ms{50};
+                            std::this_thread::sleep_for(ms);
+                            //! @todo sleeping here is bad if manny connect at the same time
+                            gServerHandler.refreshServerBenchmark(id);
                         }
+                        //! @todo if server is not responnding here tehn additional adds will get the SAME server ID
+                        // When we add a server, then request benchmark from it
+
                     }
                     else
                     {

@@ -39,6 +39,7 @@ inline T unpackMessage(zmq::message_t &rRequest, size_t &rOffset, bool &rUnpackO
     try
     {
         rUnpackOK = true;
+        //! @todo if extra bytes and some other conditions, unpack will not throw an exception and as<T>() will krash the program with SIG ABORT
         return msgpack::unpack(static_cast<char*>(rRequest.data()), rRequest.size(), rOffset).get().as<T>();
     }
     catch( msgpack::unpack_error e)
@@ -69,6 +70,21 @@ inline std::string makeZMQAddress(std::string ip, size_t port)
 inline std::string makeZMQAddress(std::string ip, std::string port)
 {
     return "tcp://" + ip + ":" + port;
+}
+
+inline void splitZMQAddress(const std::string &rZMQAddress, std::string &rProtocol, std::string &rIP, std::string &rPort)
+{
+    size_t pe = rZMQAddress.find_last_of('/');
+    if (pe != std::string::npos)
+    {
+        rProtocol = rZMQAddress.substr(0, pe-2);
+        size_t ipe = rZMQAddress.find_last_of(':');
+        if (ipe != std::string::npos)
+        {
+            rIP = rZMQAddress.substr(pe+1, ipe-pe-1);
+            rPort = rZMQAddress.substr(ipe+1);
+        }
+    }
 }
 
 #endif // PACKANDSEND_H

@@ -103,11 +103,13 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
 
 #ifdef USEZMQ
 
-RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
+RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress,
+                                                           const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
     mpRCSH = pRCSH;
     mpLogDataNames = pLogNames;
     mpLogData = pLogData;
+    mpProgress = pProgress;
 
     mStartTime = startTime;
     mStopTime = stopTime;
@@ -122,12 +124,11 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
 
     emit setProgressBarText(tr("Simulating..."));
     timer.start();
-    bool simulateSuccess = mpRCSH->simulateModel();
+    bool simulateSuccess = mpRCSH->simulateModel_blocking(mpProgress);
     emit initDone(simulateSuccess, 0);
     emit simulateDone(simulateSuccess, timer.elapsed());
 
     // It is VERY important that we collect messages before we send finalizeDone signal as that will also do messaging and we could (will) have thread collission
-    //! @todo since gpMessageHandler is indirectly used we could easily crash here if doing local simulation or just modelling at the same time
     QVector<QString> types,tags,messages;
     mpRCSH->getCoreMessages(types, tags, messages);
     printRemoteCoreMessages(mpMessageHandler, types, tags, messages);
@@ -145,6 +146,13 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
 
     emit finalizeDone(false, 0);
     mpRCSH.clear();
+}
+
+RemoteProgressbarWorkerObject::RemoteProgressbarWorkerObject(const double startTime, const double stopTime, SharedRemoteCoreSimulationHandlerT pRCSH, QProgressDialog *pProgressDialog) :
+    ProgressBarWorkerObject(startTime, stopTime, QVector<SystemContainer*>(), pProgressDialog)
+{
+    mpRCSH = pRCSH;
+    mProgress = 0;
 }
 
 #endif
@@ -243,10 +251,10 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
 }
 
 #ifdef USEZMQ
-void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData)
+void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress)
 {
     mvpSystems.clear();
-    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(pRCSH, pLogNames, pLogData, mStartT, mStopT, mLogStartTime, mnLogSamples);
+    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(pRCSH, pLogNames, pLogData, pProgress, mStartT, mStopT, mLogStartTime, mnLogSamples);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }

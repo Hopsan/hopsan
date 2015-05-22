@@ -7,6 +7,8 @@
 #include <iostream>
 #include <climits>
 #include <thread>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 using namespace std::chrono;
@@ -70,6 +72,7 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
     // Default id value is 0, it will be applied to the first server added
     int id=0;
     // If we have free ids, than take one of them
+    //! @todo should have a quarantine period befor pushing into free ids, to avoid nasty code taht handles what if server was replaced during the last milliseconds
     if (!mFreeIds.empty())
     {
         id = mFreeIds.front();
@@ -197,7 +200,13 @@ void ServerHandler::refreshServerStatus(int serverId)
         std::thread (&ServerHandler::refreshServerStatusThread, this, serverId).detach();
     }
     mMutex.unlock();
+}
 
+void ServerHandler::refreshServerBenchmark(int serverId)
+{
+    mMutex.lock();
+    std::thread (&ServerHandler::refreshServerBenchmarkThread, this, serverId).detach();
+    mMutex.unlock();
 }
 
 void ServerHandler::refreshServerStatusThread(int serverId)
@@ -212,7 +221,7 @@ void ServerHandler::refreshServerStatusThread(int serverId)
             cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
             hopsanClient.connectToServer(server.ip, server.port);
             ServerStatusT status;
-            bool rc = hopsanClient.requestStatus(status);
+            bool rc = hopsanClient.requestServerStatus(status);
             if (rc)
             {
                 mMutex.lock();
@@ -233,6 +242,57 @@ void ServerHandler::refreshServerStatusThread(int serverId)
                 cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
                 removeServer(serverId);
                 //! @todo what if network temporarily down
+            }
+        }
+    }
+    mNumRunningRefreshServerStatusThreads--;
+}
+
+void ServerHandler::refreshServerBenchmarkThread(int serverId)
+{
+    mNumRunningRefreshServerStatusThreads++;
+    RemoteHopsanClient hopsanClient(gContext);
+    if (hopsanClient.areSocketsValid())
+    {
+        ServerInfo server = getServer(serverId);
+        if (server.isValid())
+        {
+            cout << PRINTSERVER << nowDateTime() << " Requesting benchmark from server: " << serverId << endl;
+            hopsanClient.connectToServer(server.ip, server.port);
+
+            ifstream benchmarkmodel(BENCHMARKMODEL);
+            if (!benchmarkmodel.is_open())
+            {
+                cout << PRINTSERVER << nowDateTime() << "Error: Could not open file " << BENCHMARKMODEL << endl;
+            }
+
+            std::stringstream filebuffer;
+            filebuffer << benchmarkmodel.rdbuf();
+
+            double benchmarkTime;
+            size_t nThreads = 1; //! @todo not 1 should cycle and test all
+            bool rc = hopsanClient.blockingBenchmark(filebuffer.str(), nThreads, benchmarkTime);
+            if (rc)
+            {
+                mMutex.lock();
+                cout << PRINTSERVER << nowDateTime() << " Got server: " << serverId << " benchmark" << endl;
+                // We need to get server again to verify that it has not been replaced while we were communicating
+                ServerInfo server2 = getServerNoLock(serverId);
+                if (sameIP(server, server2))
+                {
+                    if (server2.benchmarkTimes.size() < nThreads)
+                    {
+                        server2.benchmarkTimes.resize(nThreads);
+                    }
+                    server2.benchmarkTimes[nThreads-1] = benchmarkTime;
+                    server2.benchmarkTime = server2.benchmarkTimes.front();
+                    updateServerInfoNoLock(server2);
+                }
+                mMutex.unlock();
+            }
+            else
+            {
+                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
             }
         }
     }

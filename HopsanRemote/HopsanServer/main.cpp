@@ -388,7 +388,7 @@ int main(int argc, char* argv[])
                         cout << PRINTSERVER << nowDateTime() << " Error: Could not server id string" << endl;
                     }
                 }
-                else if (msg_id == C_ReqStatus)
+                else if (msg_id == C_ReqServerStatus)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
                     SM_ServerStatus_t status;
@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
                     status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
                     status.isReady = true;
 
-                    sendServerMessage<SM_ServerStatus_t>(socket, S_ReqStatus_Reply, status);
+                    sendServerMessage<SM_ServerStatus_t>(socket, S_ReqServerStatus_Reply, status);
                     lastStatusRequestTime = chrono::steady_clock::now();
                 }
                 else if (!idParseOK)
