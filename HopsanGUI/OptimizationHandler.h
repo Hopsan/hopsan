@@ -53,7 +53,7 @@ public:
     OptimizationHandler(HcomHandler *pHandler);
 
     //Public access functions
-    void startOptimization();
+    void startOptimization(ModelWidget *pModel, QString &modelPath);
     void setOptimizationObjectiveValue(int idx, double value);
     void setParMin(int idx, double value);
     void setParMax(int idx, double value);

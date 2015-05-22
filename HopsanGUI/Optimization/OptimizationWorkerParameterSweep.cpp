@@ -31,6 +31,9 @@
 #include "OptimizationHandler.h"
 #include "OptimizationWorker.h"
 #include "OptimizationWorkerParameterSweep.h"
+#include "Widgets/ModelWidget.h"
+#include "GUIObjects/GUISystem.h"
+#include "GUIPort.h"
 
 //Qt includes
 #include <QDebug>
@@ -50,20 +53,20 @@ OptimizationWorkerParameterSweep::OptimizationWorkerParameterSweep(OptimizationH
 
 }
 
-void OptimizationWorkerParameterSweep::init()
+void OptimizationWorkerParameterSweep::init(const ModelWidget *pModel, const QString &modelPath)
 {
-    OptimizationWorker::init();
-
-    mNumThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
-    if(mNumThreads == 0)
+    mNumModels = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+    if(mNumModels == 0)
     {
 #ifdef _WIN32
         std::string temp = getenv("NUMBER_OF_PROCESSORS");
-        mNumThreads = atoi(temp.c_str());
+        mNumModels = atoi(temp.c_str());
 #else
-        mNumThreads = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+        mNumModels = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
 #endif
     }
+
+    OptimizationWorker::init(pModel, modelPath);
 
     mAllPoints.resize(pow(mLength, mNumParameters));
     mAllObjectives.reserve(pow(mLength, mNumParameters));
@@ -76,7 +79,7 @@ void OptimizationWorkerParameterSweep::init()
         }
     }
 
-    mNumPoints = mNumThreads;
+    mNumPoints = mNumModels;
     mParameters.resize(mNumPoints);
     mObjectives.resize(mNumPoints);
 
@@ -106,13 +109,13 @@ void OptimizationWorkerParameterSweep::run()
     {
         updateProgressBar(i);
 
-        mParameters[i%mNumThreads] = mAllPoints[i];
+        mParameters[i%mNumModels] = mAllPoints[i];
 
-        if(i%mNumThreads == mNumThreads-1)
+        if(i%mNumModels == mNumModels-1)
         {
             evaluateAllPoints();
 
-            for(int o=0; o<mNumThreads; ++o)
+            for(int o=0; o<mNumModels; ++o)
             {
                 mAllObjectives.append(mObjectives[o]);
                 if(mObjectives[o] < mAllObjectives[bestIdx])

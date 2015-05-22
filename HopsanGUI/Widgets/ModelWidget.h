@@ -88,7 +88,7 @@ public:
     bool isExternalRemoteCoreConnected() const;
     bool loadModelRemote();
 
-    SystemContainer *getTopLevelSystemContainer();
+    SystemContainer *getTopLevelSystemContainer() const;
     ContainerObject *getViewContainerObject();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();

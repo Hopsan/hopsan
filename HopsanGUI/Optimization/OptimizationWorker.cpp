@@ -40,6 +40,10 @@
 #include "PlotCurve.h"
 #include "Configuration.h"
 #include "Utilities/GUIUtilities.h"
+#include "CoreAccess.h"
+#include "ComponentSystem.h"
+#include "GUIObjects/GUISystem.h"
+#include "GUIPort.h"
 
 //! @brief Checks for convergence (in either of the algorithms)
 OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
@@ -52,7 +56,7 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mPlotEntropy = false;
     mDoLog = true;
     mFinalEval = true;
-    mNumThreads = 1;
+    mNumModels = 1;
 }
 
 OptimizationWorker::~OptimizationWorker()
@@ -62,8 +66,33 @@ OptimizationWorker::~OptimizationWorker()
 
 
 //! @brief Initialization function for optimization worker base class (should never be called directly)
-void OptimizationWorker::init()
+void OptimizationWorker::init(const ModelWidget *pModel, const QString &modelPath)
 {
+    //Load model widgets
+    if(mModelPtrs.size() > mNumModels)
+    {
+        clearModels();
+    }
+    //for(int i=0; i<mpOptHandler->getOptVar("npoints"); ++i)
+    while(mModelPtrs.size() < mNumModels)
+    {
+        mpHandler->addModel(gpModelHandler->loadModel(modelPath, true, true));
+
+        //Make sure logging is disabled/enabled for same ports as in original model
+        CoreSystemAccess *pCore = pModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
+        foreach(const QString &compName, pModel->getTopLevelSystemContainer()->getModelObjectNames())
+        {
+            foreach(const Port *port, pModel->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
+            {
+                QString portName = port->getName();
+                bool enabled = pCore->isLoggingEnabled(compName, portName);
+                SystemContainer *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
+                CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
+                pOptCore->setLoggingEnabled(compName, portName, enabled);
+            }
+        }
+    }
+
     mIterations = 0;
     mEvaluations = 0;
     mMetaModelEvaluations = 0;
@@ -179,7 +208,7 @@ void OptimizationWorker::finalize()
     QFile resultFile(gpDesktopHandler->getDocumentsPath()+"optimization_results_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
     resultFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
     QString output = QString::number(mpHandler->getAlgorithm())+",";
-    output.append(QString::number(mNumThreads)+",");
+    output.append(QString::number(mNumModels)+",");
     output.append(QString::number(mIterations)+",");
     output.append(QString::number(mEvaluations)+",");
     output.append(QString::number(mMetaModelEvaluations)+",");

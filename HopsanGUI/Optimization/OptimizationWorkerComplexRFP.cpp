@@ -65,9 +65,9 @@ OptimizationWorkerComplexRFP::OptimizationWorkerComplexRFP(OptimizationHandler *
 
 
 //! @brief Initializes a Complex-RF optimization
-void OptimizationWorkerComplexRFP::init()
+void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString &modelPath)
 {
-    OptimizationWorkerComplex::init();
+    OptimizationWorkerComplex::init(pModel, modelPath);
 
     mLastWorstId = -1;
     mWorstCounter = 0;
@@ -91,33 +91,18 @@ void OptimizationWorkerComplexRFP::init()
         }
     }
 
-    mNumThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
-    if(mNumThreads == 0)
-    {
-#ifdef _WIN32
-        std::string temp = getenv("NUMBER_OF_PROCESSORS");
-        mNumThreads = atoi(temp.c_str());
-#else
-        mNumThreads = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
-#endif
-    }
 
-//    if(mMethod == 1)
-//    {
-//        mNumThreads = max(mNumThreads, mNumPoints-2);
-//    }
-
-    mCandidateParticles.resize(mNumThreads);
-    for(int i=0; i<mNumThreads; ++i)
+    mCandidateParticles.resize(mNumModels);
+    for(int i=0; i<mNumModels; ++i)
     {
         mCandidateParticles[i].resize(mNumParameters);
     }
 
-    mObjectives.resize(mNumPoints+mNumThreads);
+    mObjectives.resize(mNumPoints+mNumModels);
 
     //Limit number of models, in case worker has opened more models than necessary
     mUsedModelPtrs.clear();
-    for(int i=0; i<mNumThreads; ++i)
+    for(int i=0; i<mNumModels; ++i)
     {
         mUsedModelPtrs.append(mModelPtrs.at(i));
     }
@@ -306,7 +291,7 @@ void OptimizationWorkerComplexRFP::run()
             //Check the already evaluated iteration points (if any)
             if(mFirstReflectionFailed && mWorstCounter==0)
             {
-                for(int o=mNumPoints; o<mNumThreads; ++o)
+                for(int o=mNumPoints; o<mNumModels; ++o)
                 {
                     int nWorsePoints=0;
                     for(int j=0; j<mNumPoints; ++j)
@@ -330,7 +315,7 @@ void OptimizationWorkerComplexRFP::run()
             }
 
             //Move first reflected point
-            for(int t=0; t<mNumThreads && mNeedsIteration; ++t)
+            for(int t=0; t<mNumModels && mNeedsIteration; ++t)
             {
                 double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
                 for(int j=0; j<mNumParameters; ++j)
@@ -353,7 +338,7 @@ void OptimizationWorkerComplexRFP::run()
             evaluateCandidateParticles();
 
             //Replace worst point with first candidate point that is better, if any
-            for(int o=0; o<mNumThreads; ++o)
+            for(int o=0; o<mNumModels; ++o)
             {
                 int nWorsePoints=0;
                 for(int j=0; j<mNumPoints; ++j)
@@ -449,7 +434,11 @@ void OptimizationWorkerComplexRFP::setOptVar(const QString &var, const QString &
 {
     OptimizationWorkerComplex::setOptVar(var, value);
 
-    if(var == "alpha1")
+    if(var == "nmodels")
+    {
+        mNumModels = value.toInt();
+    }
+    else if(var == "alpha1")
     {
         mAlpha1 = value.toDouble();
     }
@@ -592,7 +581,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         ++i;
 
-        if(i >= mNumThreads) return;
+        if(i >= mNumModels) return;
 
         //Reflect second point
         for(int j=0; j<mNumParameters; ++j)
@@ -612,7 +601,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         ++i;
 
 
-        if(i >= mNumThreads) return;
+        if(i >= mNumModels) return;
 
         //Reflect third point
         for(int j=0; j<mNumParameters; ++j)
@@ -631,7 +620,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         ++i;
 
-        if(i >= mNumThreads) return;
+        if(i >= mNumModels) return;
 
         //Reflect forth point
         for(int j=0; j<mNumParameters; ++j)
@@ -650,7 +639,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         ++i;
 
-        if(i >= mNumThreads) return;
+        if(i >= mNumModels) return;
 
         //Reflect fifth point
         for(int j=0; j<mNumParameters; ++j)
@@ -669,7 +658,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         ++i;
 
-        if(i >= mNumThreads) return;
+        if(i >= mNumModels) return;
 
         //Reflect sixth point
         for(int j=0; j<mNumParameters; ++j)
@@ -688,7 +677,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         ++i;
 
-        if(i >= mNumThreads) return;
+        if(i >= mNumModels) return;
 
         //Reflect seventh point
         for(int j=0; j<mNumParameters; ++j)
@@ -707,7 +696,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 
         ++i;
 
-        if(i >= mNumThreads) return;
+        if(i >= mNumModels) return;
 
         //Reflect eigth point
         for(int j=0; j<mNumParameters; ++j)
@@ -746,7 +735,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         }
 
         QVector< QVector<double> > otherPoints = mParameters;
-        for(int i=0; i<qMin(mNumThreads,mNumPoints); ++i)
+        for(int i=0; i<qMin(mNumModels,mNumPoints); ++i)
         {
             otherPoints.remove(mvIdx[i]);
             findCenter(otherPoints);
@@ -772,7 +761,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         //Use additional threads to compute a few iteration steps
         QVector<double> newPoint = mCandidateParticles[0];
         mWorstCounter=0;
-        for(int t=mNumPoints; t<mNumThreads; ++t)
+        for(int t=mNumPoints; t<mNumModels; ++t)
         {
             double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
             for(int j=0; j<mNumParameters; ++j)
@@ -813,7 +802,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
 {
     //Multi-threading, we cannot use the "evalall" function
-    for(int i=0; i<mNumThreads && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
         execute("opt set evalid "+QString::number(i+mNumPoints));
@@ -821,7 +810,7 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
     }
     gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime); //Ok to use global model handler for this, it does not use any member stuff
 
-    for(int i=0; i<mNumThreads && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
         execute("opt set evalid "+QString::number(i+mNumPoints));
@@ -830,7 +819,7 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
     mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs.first());
 
     ++mIterations;
-    mEvaluations += mNumThreads;
+    mEvaluations += mNumModels;
 }
 
 
@@ -842,14 +831,14 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         mNeedsIteration=false;
 
         mFirstReflectionFailed=true;
-        for(int i=0; i<mNumThreads; ++i)
+        for(int i=0; i<mNumPoints; ++i)
         {
             forget();
 
             int nWorsePoints=0;
-            for(int j=0; j<mNumPoints; ++j)
+            for(int j=0; j<mNumModels; ++j)
             {
-                if(mObjectives[j] > mObjectives[mNumPoints+i])
+                if(mObjectives[j] > mObjectives[mNumPoints+j])
                 {
                     ++nWorsePoints;
                 }
@@ -874,7 +863,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
     {
         calculateBestAndWorstId();
         int minIdx = 0;
-        for(int i=1; i<mNumThreads; ++i)
+        for(int i=1; i<mNumModels; ++i)
         {
             if(mObjectives[mNumPoints+i] < mObjectives[mNumPoints+minIdx])
             {
@@ -1014,7 +1003,7 @@ void OptimizationWorkerComplexRFP::plotPoints()
             mPointVars_y.at(p)->assignFrom(y);
         }
     }
-    for(int p=0; p<mNumThreads; ++p)
+    for(int p=0; p<mNumModels; ++p)
     {
         double x = mCandidateParticles[p][0];
         double y = mCandidateParticles[p][1];

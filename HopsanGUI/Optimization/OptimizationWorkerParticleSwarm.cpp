@@ -52,9 +52,11 @@ OptimizationWorkerParticleSwarm::OptimizationWorkerParticleSwarm(OptimizationHan
     mPrintLogOutput = true;  //! @todo Should be changeable by user
 }
 
-void OptimizationWorkerParticleSwarm::init()
+void OptimizationWorkerParticleSwarm::init(const ModelWidget *pModel, const QString &modelPath)
 {
-    OptimizationWorker::init();
+    mNumModels = mNumPoints;
+
+    OptimizationWorker::init(pModel, modelPath);
 
     for(int p=0; p<mNumPoints; ++p)
     {
@@ -160,66 +162,141 @@ void OptimizationWorkerParticleSwarm::run()
     mPsBestObj = mObjectives[mBestId];
     mBestPoint = mParameters[mBestId];
 
-    int i=0;
-    for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    bool asynchronous=false;
+    if(asynchronous)
     {
-        //Process events, to make sure GUI is updated
-        qApp->processEvents();
-
-        //Abort if abort key was pressed
-        if(mpHandler->mpHcomHandler->isAborted())
-        {
-            print("Optimization aborted.");
-            //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            finalize();
-            return;
-        }
-
-        //Print log output
-        printLogOutput();
-
-        //Update progress bar in dialog
-        updateProgressBar(i);
-
-        //Move particles
         moveParticles();
-
-        //Evaluate objective values
         evaluateAllParticles();
-        if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
+        while(!checkForConvergence())
         {
-            execute("echo on");
-            print("Optimization aborted.");
-           //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
-            finalize();
-            return;
-        }
+            //Process events, to make sure GUI is updated
+            qApp->processEvents();
 
-        //Calculate best known positions
-        for(int p=0; p<mNumPoints; ++p)
-        {
-            if(mObjectives[p] < mBestObjectives[p])
+            //Abort if abort key was pressed
+            if(mpHandler->mpHcomHandler->isAborted())
             {
-                mBestKnowns[p] = mParameters[p];
-                mBestObjectives[p] = mObjectives[p];
+                print("Optimization aborted.");
+                //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                finalize();
+                return;
+            }
+
+            //Print log output
+            printLogOutput();
+
+            //Update progress bar in dialog
+            updateProgressBar(0);
+
+            //Move particles
+            for(int p=0; p<mNumPoints; ++p)
+            {
+                if(mModelPtrs.at(p)->getLastSimulationTime() > 0)
+                {
+                    mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[p]);
+                    execute("opt set evalid "+QString::number(p));
+                    execute("call obj");
+                }
+
+
+
+                //Evaluate objective values
+                if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
+                {
+                    execute("echo on");
+                    print("Optimization aborted.");
+                    //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                    finalize();
+                    return;
+                }
+
+                //Calculate best known positions
+                if(mObjectives[p] < mBestObjectives[p])
+                {
+                    mBestKnowns[p] = mParameters[p];
+                    mBestObjectives[p] = mObjectives[p];
+                }
+
+                //Calculate best known global position
+                calculateBestAndWorstId();
+                if(mObjectives[mBestId] < mPsBestObj)
+                {
+                    mPsBestObj = mObjectives[mBestId];
+                    mBestPoint = mParameters[mBestId];
+                }
+                gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+                plotPoints();
+                plotObjectiveFunctionValues();
+                plotEntropy();
+
+                moveParticle(p);
+                evaluateParticleNonBlocking(p);
             }
         }
-
-        //Calculate best known global position
-        calculateBestAndWorstId();
-        if(mObjectives[mBestId] < mPsBestObj)
+    }
+    else
+    {
+        int i=0;
+        for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
         {
-            mPsBestObj = mObjectives[mBestId];
-            mBestPoint = mParameters[mBestId];
+            //Process events, to make sure GUI is updated
+            qApp->processEvents();
+
+            //Abort if abort key was pressed
+            if(mpHandler->mpHcomHandler->isAborted())
+            {
+                print("Optimization aborted.");
+                //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                finalize();
+                return;
+            }
+
+            //Print log output
+            printLogOutput();
+
+            //Update progress bar in dialog
+            updateProgressBar(i);
+
+            //Move particles
+            moveParticles();
+
+            //Evaluate objective values
+            evaluateAllParticles();
+            if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
+            {
+                execute("echo on");
+                print("Optimization aborted.");
+                //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
+                finalize();
+                return;
+            }
+
+            //Calculate best known positions
+            for(int p=0; p<mNumPoints; ++p)
+            {
+                if(mObjectives[p] < mBestObjectives[p])
+                {
+                    mBestKnowns[p] = mParameters[p];
+                    mBestObjectives[p] = mObjectives[p];
+                }
+            }
+
+            //Calculate best known global position
+            calculateBestAndWorstId();
+            if(mObjectives[mBestId] < mPsBestObj)
+            {
+                mPsBestObj = mObjectives[mBestId];
+                mBestPoint = mParameters[mBestId];
+            }
+            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+            plotPoints();
+            plotObjectiveFunctionValues();
+            plotEntropy();
+
+            //Check convergence
+            if(checkForConvergence()) break;      //Use complex method, it's the same principle
         }
-        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
-
-        plotPoints();
-        plotObjectiveFunctionValues();
-        plotEntropy();
-
-        //Check convergence
-        if(checkForConvergence()) break;      //Use complex method, it's the same principle
     }
 
     execute("echo on");
@@ -227,13 +304,13 @@ void OptimizationWorkerParticleSwarm::run()
     switch(mConvergenceReason)
     {
     case 0:
-        print("Optimization failed to converge after "+QString::number(i)+" iterations.");
+        print("Optimization failed to converge.");
         break;
     case 1:
-        print("Optimization converged in function values after "+QString::number(i)+" iterations.");
+        print("Optimization converged in function values.");
         break;
     case 2:
-        print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
+        print("Optimization converged in parameter values.");
         break;
     }
 
@@ -270,25 +347,44 @@ void OptimizationWorkerParticleSwarm::moveParticles()
 {
     for (int p=0; p<mNumPoints; ++p)
     {
-        double r1 = double(rand())/double(RAND_MAX);
-        double r2 = double(rand())/double(RAND_MAX);
-        for(int j=0; j<mNumParameters; ++j)
+        moveParticle(p);
+    }
+}
+
+
+//! @brief Moves specified particles (for particle swarm optimization)
+void OptimizationWorkerParticleSwarm::moveParticle(int p)
+{
+    double r1 = double(rand())/double(RAND_MAX);
+    double r2 = double(rand())/double(RAND_MAX);
+    for(int j=0; j<mNumParameters; ++j)
+    {
+        mVelocities[p][j] = mPsOmega*mVelocities[p][j] + mPsC1*r1*(mBestKnowns[p][j]-mParameters[p][j]) + mPsC2*r2*(mBestPoint[j]-mParameters[p][j]);
+        mParameters[p][j] = mParameters[p][j]+mVelocities[p][j];
+        if(mParameters[p][j] <= mParMin[j])
         {
-            mVelocities[p][j] = mPsOmega*mVelocities[p][j] + mPsC1*r1*(mBestKnowns[p][j]-mParameters[p][j]) + mPsC2*r2*(mBestPoint[j]-mParameters[p][j]);
-            mParameters[p][j] = mParameters[p][j]+mVelocities[p][j];
-            if(mParameters[p][j] <= mParMin[j])
-            {
-                mParameters[p][j] = mParMin[j];
-                mVelocities[p][j] = 0.0;
-            }
-            if(mParameters[p][j] >= mParMax[j])
-            {
-                mParameters[p][j] = mParMax[j];
-                mVelocities[p][j] = 0.0;
-            }
+            mParameters[p][j] = mParMin[j];
+            mVelocities[p][j] = 0.0;
+        }
+        if(mParameters[p][j] >= mParMax[j])
+        {
+            mParameters[p][j] = mParMax[j];
+            mVelocities[p][j] = 0.0;
         }
     }
 }
+
+
+void OptimizationWorkerParticleSwarm::evaluateParticleNonBlocking(int p)
+{
+    mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[p]);
+    execute("opt set evalid "+QString::number(p));
+    execute("call setpars");
+
+    mModelPtrs.at(p)->setLastSimulationTime(0);
+    mModelPtrs.at(p)->simulate_nonblocking();
+}
+
 
 void OptimizationWorkerParticleSwarm::evaluateAllParticles()
 {
@@ -373,7 +469,11 @@ void OptimizationWorkerParticleSwarm::setOptVar(const QString &var, const QStrin
 {
     OptimizationWorker::setOptVar(var, value);
 
-    if(var == "npoints")
+    if(var == "nmodels")
+    {
+        mNumModels = value.toInt();
+    }
+    else if(var == "npoints")
     {
         int n = value.toInt();
         mVelocities.resize(n);

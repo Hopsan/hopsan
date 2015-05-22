@@ -43,7 +43,7 @@ public:
     OptimizationWorker(OptimizationHandler *pHandler);
     ~OptimizationWorker();
 
-    virtual void init();
+    virtual void init(const ModelWidget *pModel, const QString &modelPath);
     virtual void run();
     virtual void finalize();
 
@@ -90,6 +90,7 @@ protected:
     //Used to remember if connections with model widget was disconnected before optimization and should be re-connected
     bool mDisconnectedFromModelHandler;
 
+    int mNumModels;
     int mNumPoints;
     QVector<int> mvIdx;
     bool mDoLog;
@@ -123,7 +124,6 @@ protected:
     bool mOrgProgressBarSetting;
     bool mOrgLimitDataGenerationsSetting;
 
-    int mNumThreads;
 
     //Plotting points
     QList<SharedVectorVariableT> mPointVars_x;

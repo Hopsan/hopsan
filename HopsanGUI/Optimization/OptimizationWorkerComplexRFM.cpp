@@ -51,9 +51,9 @@ OptimizationWorkerComplexRFM::OptimizationWorkerComplexRFM(OptimizationHandler *
 
 
 //! @brief Initializes a Complex-RF optimization
-void OptimizationWorkerComplexRFM::init()
+void OptimizationWorkerComplexRFM::init(const ModelWidget *pModel, const QString &modelPath)
 {
-    OptimizationWorkerComplex::init();
+    OptimizationWorkerComplex::init(pModel, modelPath);
 
     mUseMetaModel = true;
     mMetaModelExist = false;

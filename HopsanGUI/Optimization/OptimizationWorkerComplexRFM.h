@@ -38,7 +38,7 @@ class OptimizationWorkerComplexRFM : public OptimizationWorkerComplex
 public:
     OptimizationWorkerComplexRFM(OptimizationHandler *pHandler);
 
-    void init();
+    void init(const ModelWidget *pModel, const QString &modelPath);
     void run();
     void finalize();
 

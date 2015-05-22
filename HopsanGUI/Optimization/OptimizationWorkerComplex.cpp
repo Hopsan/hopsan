@@ -33,9 +33,9 @@ OptimizationWorkerComplex::OptimizationWorkerComplex(OptimizationHandler *pHandl
     mDontChangeStartValues=false;
 }
 
-void OptimizationWorkerComplex::init()
+void OptimizationWorkerComplex::init(const ModelWidget *pModel, const QString &modelPath)
 {
-    OptimizationWorker::init();
+    OptimizationWorker::init(pModel, modelPath);
 }
 
 void OptimizationWorkerComplex::run()

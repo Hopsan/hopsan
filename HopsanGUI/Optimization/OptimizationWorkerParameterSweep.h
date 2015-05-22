@@ -33,7 +33,7 @@ class OptimizationWorkerParameterSweep : public OptimizationWorker
 public:
     OptimizationWorkerParameterSweep(OptimizationHandler *pHandler);
 
-    virtual void init();
+    virtual void init(const ModelWidget *pModel, const QString &modelPath);
     virtual void run();
     virtual void finalize();
 
@@ -46,7 +46,7 @@ public:
 private:
     QVector< QVector<double> > mAllPoints;
     QVector<double> mAllObjectives;
-    int mNumThreads;
+    int mNumModels;
     int mLength;
 };
 

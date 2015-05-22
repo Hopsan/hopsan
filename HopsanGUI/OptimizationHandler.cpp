@@ -51,11 +51,11 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
     mIsRunning = false;
 }
 
-void OptimizationHandler::startOptimization()
+void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelPath)
 {
     if(mpWorker)
     {
-        mpWorker->init();
+        mpWorker->init(pModel, modelPath);
         mpWorker->run();
     }
     else

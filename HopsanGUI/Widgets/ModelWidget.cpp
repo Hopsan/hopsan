@@ -249,7 +249,7 @@ void ModelWidget::hasChanged()
 
 
 //! @brief Returns a pointer to the system in the tab
-SystemContainer *ModelWidget::getTopLevelSystemContainer()
+SystemContainer *ModelWidget::getTopLevelSystemContainer() const
 {
     return mpToplevelSystem;
 }
@@ -616,7 +616,7 @@ bool ModelWidget::simulate_nonblocking()
     // Local core simulation
     else
     {
-        if(!mSimulateMutex.tryLock()) return false;
+        //if(!mSimulateMutex.tryLock()) return false;
 
         //If model contains at least one modelica component, the special code for simulating models with Modelica components must be used
         foreach(const ModelObject *comp, mpToplevelSystem->getModelObjects())

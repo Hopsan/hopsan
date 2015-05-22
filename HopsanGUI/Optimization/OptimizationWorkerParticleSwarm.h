@@ -39,7 +39,7 @@ class OptimizationWorkerParticleSwarm : public OptimizationWorker
 public:
     OptimizationWorkerParticleSwarm(OptimizationHandler *pHandler);
 
-    void init();
+    void init(const ModelWidget *pModel, const QString &modelPath);
     void run();
     void finalize();
 
@@ -57,6 +57,9 @@ protected:
     QVector< QVector<double> > mVelocities, mBestKnowns;
     QVector<double> mBestObjectives, mBestPoint;
     double mPsBestObj;
+private:
+    void evaluateParticleNonBlocking(int p);
+    void moveParticle(int p);
 };
 
 #endif // OPTIMIZATIONWORKERPARTICLESWARM_H

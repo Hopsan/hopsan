@@ -46,9 +46,9 @@ OptimizationWorkerComplexRF::OptimizationWorkerComplexRF(OptimizationHandler *pH
 
 
 //! @brief Initializes a Complex-RF optimization
-void OptimizationWorkerComplexRF::init()
+void OptimizationWorkerComplexRF::init(const ModelWidget *pModel, const QString &modelPath)
 {
-    OptimizationWorkerComplex::init();
+    OptimizationWorkerComplex::init(pModel, modelPath);
 
 
     mLastWorstId = -1;

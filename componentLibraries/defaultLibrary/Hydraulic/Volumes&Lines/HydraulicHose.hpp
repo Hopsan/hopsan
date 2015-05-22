@@ -128,7 +128,7 @@ namespace hopsan {
             NT = TL/mTimestep+0.5;
 
             // Allocate necessary storage based on NT value
-            NTMAX = int(NT+1);
+            NTMAX = int(NT+2);
             // We need NTMAX+1 here to account for the "fortran index begins at 1 hack" introduced in the translation of the code to c++
             //! @todo We should try to use indexing based on 0 (as it should be in c)
             mpC1i = new double[NTMAX+1];
