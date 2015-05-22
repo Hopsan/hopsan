@@ -4183,7 +4183,25 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(mpOptHandler->mAlgorithm == OptimizationHandler::ComplexRFP)
         {
-            int nModels = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+            //! @todo this is a problem when remote optimizing, then the number of local threads should not matter
+            int nModels = 1;
+            if (gpConfig->getBoolSetting(CFG_MULTICORE))
+            {
+                if (gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS) == 0)
+                {
+                    //! @todo we should really have a utility function to get the maximum number of cores (i think we do, somewhere)
+#ifdef _WIN32
+                    std::string temp = getenv("NUMBER_OF_PROCESSORS");
+                    nModels = atoi(temp.c_str());
+#else
+                    nModels = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+#endif
+                }
+                else
+                {
+                    nModels = qMax(1, gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS));
+                }
+            }
 //            if(mpOptHandler->getModelPtrs()->size() != nModels)
 //            {
 //                mpOptHandler->clearModels();

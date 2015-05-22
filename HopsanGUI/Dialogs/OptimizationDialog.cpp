@@ -1910,12 +1910,28 @@ void OptimizationDialog::updateCoreProgressBars()
             if(pOptHandler->mpWorker->mModelPtrs.size() > p)
             {
                 ModelWidget *pOptModel = pOptHandler->mpWorker->mModelPtrs[p];
+#ifdef USEZMQ
+                if (pOptModel->isRemoteCoreConnected() || pOptModel->isExternalRemoteCoreConnected())
+                {
+                    mCoreProgressBarPtrs[p]->setValue(pOptModel->getSimulationProgress()*100);
+                }
+                else
+                {
+                    double stopT = pOptModel->getStopTime().toDouble();
+                    if(pOptModel)
+                    {
+                        CoreSystemAccess *pCoreSystem = pOptModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
+                        mCoreProgressBarPtrs[p]->setValue(pCoreSystem->getCurrentTime() / stopT *100);
+                    }
+                }
+#else
                 double stopT = pOptModel->getStopTime().toDouble();
                 if(pOptModel)
                 {
                     CoreSystemAccess *pCoreSystem = pOptModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
                     mCoreProgressBarPtrs[p]->setValue(pCoreSystem->getCurrentTime() / stopT *100);
                 }
+#endif
             }
         }
     }
