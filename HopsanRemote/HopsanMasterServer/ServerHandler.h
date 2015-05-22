@@ -20,6 +20,7 @@ private:
 public:
     std::string ip;
     std::string port;
+    std::string description;
     int numTotalSlots = 0;
     double benchmarkTime=1e100;
     std::vector<double> benchmarkTimes;

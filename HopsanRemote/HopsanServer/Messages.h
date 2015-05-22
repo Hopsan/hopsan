@@ -90,7 +90,8 @@ typedef struct
 {
     std::string ip;
     std::string port;
-    MSGPACK_DEFINE(ip,port)
+    std::string description;
+    MSGPACK_DEFINE(ip,port,description)
 }SM_Available_t;
 
 typedef struct
@@ -151,9 +152,10 @@ typedef struct
 {
     std::vector<std::string> ips;
     std::vector<std::string> ports;
+    std::vector<std::string> descriptions;
     std::vector<int> numslots;
     std::vector<double> speeds;
-    MSGPACK_DEFINE(ips, ports, numslots, speeds)
+    MSGPACK_DEFINE(ips, ports, descriptions, numslots, speeds)
 }MSM_ReqServerMachines_Reply_t;
 
 

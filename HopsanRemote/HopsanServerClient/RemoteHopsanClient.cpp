@@ -558,7 +558,7 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
 }
 
 bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<string> &rIps, std::vector<string> &rPorts,
-                                               std::vector<int> &rNumSlots, std::vector<double> &rSpeeds)
+                                               std::vector<std::string> &rDescriptions, std::vector<int> &rNumSlots, std::vector<double> &rSpeeds)
 {
     CM_ReqServerMachines_t req;
     req.numMachines = nMachines;
@@ -581,6 +581,7 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
             rPorts = repl.ports;
             rNumSlots = repl.numslots;
             rSpeeds = repl.speeds;
+            rDescriptions = repl.descriptions;
             return true;
         }
         else

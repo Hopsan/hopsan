@@ -163,6 +163,7 @@ bool RemoteCoreSimulationHandler::requestSimulationProgress(double *pProgress)
     {
         *pProgress = -1.;
     }
+    return rc;
 }
 
 bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug)
@@ -356,10 +357,10 @@ QList<QString> RemoteCoreAddressHandler::requestAvailableServers()
     mServerSpeedMap.clear();
     if (mpRemoteHopsanClient->serverConnected())
     {
-        std::vector<std::string> ips, ports;
+        std::vector<std::string> ips, ports, descs;
         std::vector<int> numSlots;
         std::vector<double> speeds;
-        mpRemoteHopsanClient->requestServerMachines(-1, 1e200, ips, ports, numSlots, speeds);
+        mpRemoteHopsanClient->requestServerMachines(-1, 1e200, ips, ports, descs, numSlots, speeds);
         for (size_t i=0; i<ips.size(); ++i)
         {
             //! @todo need common function for this add/update

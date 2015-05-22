@@ -52,7 +52,7 @@ public:
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
 
     bool requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<std::string> &rIps, std::vector<std::string> &rPorts,
-                               std::vector<int> &rNumSlots, std::vector<double> &rSpeeds);
+                               std::vector<std::string> &rDescriptions, std::vector<int> &rNumSlots, std::vector<double> &rSpeeds);
 
     std::string getLastErrorMessage() const;
 

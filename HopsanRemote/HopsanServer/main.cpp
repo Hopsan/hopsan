@@ -99,7 +99,7 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNac
     return false;
 }
 
-void reportToAddressServer(std::string addressIP, std::string addressPort, std::string myIP, std::string myPort, bool isOnline)
+void reportToAddressServer(std::string addressIP, std::string addressPort, std::string myIP, std::string myPort, std::string myDescription, bool isOnline)
 {
     try
     {
@@ -112,6 +112,7 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
         SM_Available_t message;
         message.ip = myIP;
         message.port = myPort;
+        message.description = myDescription;
 
         if (isOnline)
         {
@@ -206,6 +207,12 @@ int main(int argc, char* argv[])
         myExternalIP = argv[5];
     }
 
+    string myDescription;
+    if (argc >= 7)
+    {
+        myDescription = argv[6];
+    }
+
     cout << PRINTSERVER << nowDateTime() << " Starting with: " << gServerConfig.mMaxNumSlots << " slots, Listening on port: " << gServerConfig.mControlPort  << endl;
 
     // Prepare our context and socket
@@ -219,7 +226,7 @@ int main(int argc, char* argv[])
         if (!masterserverip.empty())
         {
             //! @todo somehow automatically figure out my ip
-            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, true);
+            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, myDescription, true);
         }
 
 #ifdef _WIN32
@@ -426,7 +433,7 @@ int main(int argc, char* argv[])
                 //! @todo maybe this should be handled in the server by saving known servers to file instead
                 if (!masterserverip.empty())
                 {
-                    reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, true);
+                    reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, myDescription, true);
                 }
             }
 
@@ -448,7 +455,7 @@ int main(int argc, char* argv[])
         if (!masterserverip.empty())
         {
             //! @todo somehow automatically figure out my ip
-            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, false);
+            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, myDescription, false);
         }
 
     }

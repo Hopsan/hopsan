@@ -31,15 +31,15 @@ using namespace std;
 //}
 //#endif
 
-void printInfoFromAddressServer(vector<string> &ips, vector<string> &ports, vector<int> nslots, vector<double> speeds)
+void printInfoFromAddressServer(vector<string> &ips, vector<string> &ports, vector<string> &descs, vector<int> nslots, vector<double> speeds)
 {
     cout << endl << endl;
-    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "Speed:" << endl;
+    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "Speed:" << std::setw(10) << "Description:" << endl;
     cout << "--------------------------------------------------------------------------" << endl;
     for (size_t i=0; i<ips.size(); ++i)
     {
         string addr = ips[i]+":"+ports[i];
-        cout << std::setw(24) << addr << std::setw(10) << nslots[i] << std::setw(10) << speeds[i] << endl;
+        cout << std::setw(24) << addr << std::setw(10) << nslots[i] << std::setw(10) << speeds[i] << std::setw(10) << descs[i] << endl;
     }
 }
 
@@ -86,13 +86,13 @@ int main(int argc, char* argv[])
                 // If update
                 if (input == "u")
                 {
-                    vector<string> ips, ports;
+                    vector<string> ips, ports, desc;
                     vector<int> nslots;
                     vector<double> speeds;
-                    bool rsm_rc = rhc.requestServerMachines(-1, 1e150, ips, ports, nslots, speeds);
+                    bool rsm_rc = rhc.requestServerMachines(-1, 1e150, ips, ports, desc, nslots, speeds);
                     if (rsm_rc)
                     {
-                        printInfoFromAddressServer(ips,ports,nslots,speeds);
+                        printInfoFromAddressServer(ips,ports,desc,nslots,speeds);
                     }
                     else
                     {

@@ -86,7 +86,12 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
     // Now set the id in the server info opbject
     rServerInfo.mId = id;
 
-    cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " IP: " << rServerInfo.ip << " Port: " << rServerInfo.port << endl;
+    cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " IP: " << rServerInfo.ip << ":" << rServerInfo.port;
+    if (!rServerInfo.description.empty())
+    {
+        cout << " (" << rServerInfo.description << ")";
+    }
+    cout << endl;
 
     // Insert into the map
     mServerMap.insert( {id, rServerInfo} );

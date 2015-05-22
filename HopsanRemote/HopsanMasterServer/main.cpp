@@ -202,6 +202,7 @@ int main(int argc, char* argv[])
                     ServerInfo si;
                     si.ip = sm.ip;
                     si.port = sm.port;
+                    si.description = sm.description;
                     si.lastCheckTime = steady_clock::time_point(); // Epoch time
 
                     if (gServerHandler.getServerIDMatching(sm.ip, sm.port) < 0)
@@ -262,6 +263,7 @@ int main(int argc, char* argv[])
                     MSM_ReqServerMachines_Reply_t reply;
                     reply.ips.reserve(ids.size());
                     reply.ports.reserve(ids.size());
+                    reply.descriptions.reserve(ids.size());
                     reply.numslots.reserve(ids.size());
                     reply.speeds.reserve(ids.size());
                     for (auto id : ids)
@@ -271,6 +273,7 @@ int main(int argc, char* argv[])
                         {
                             reply.ips.push_back(server.ip);
                             reply.ports.push_back(server.port);
+                            reply.descriptions.push_back(server.description);
                             reply.numslots.push_back(server.numTotalSlots);
                             reply.speeds.push_back(server.benchmarkTime);
                         }
