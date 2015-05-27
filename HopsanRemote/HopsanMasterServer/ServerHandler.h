@@ -45,7 +45,7 @@ class ServerHandler
 {
 private:
     typedef std::list<int> idlist_t;
-    idlist_t mFreeIds;
+    //idlist_t mFreeIds;
     idlist_t mServerAgeList;
     idlist_t mServerRefreshList;
     std::map<int, ServerInfo> mServerMap;

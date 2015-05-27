@@ -111,7 +111,8 @@ void OptimizationWorkerParticleSwarm::init(const ModelWidget *pModel, const QStr
     // Setup parallell server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        gRemoteModelSimulationQueuer.setupSimulationHandlers(mModelPtrs);
+        chooseRemoteModelSimulationQueuer(Pso_Homo_Reschedule);
+        gpRemoteModelSimulationQueuer->setup(mModelPtrs);
     }
 #endif
 
@@ -335,7 +336,7 @@ void OptimizationWorkerParticleSwarm::finalize()
     // Clear and disconnect from parallell server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        gRemoteModelSimulationQueuer.clear();
+        gpRemoteModelSimulationQueuer->clear();
     }
 #endif
 }

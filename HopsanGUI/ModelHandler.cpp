@@ -873,11 +873,11 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
 #ifdef USEZMQ
         if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
         {
-            if (!gRemoteModelSimulationQueuer.hasServers())
+            if (!gpRemoteModelSimulationQueuer || !gpRemoteModelSimulationQueuer->hasServers())
             {
                 return false;
             }
-            gRemoteModelSimulationQueuer.simulateModels();
+            gpRemoteModelSimulationQueuer->simulateModels();
         }
         else
         {

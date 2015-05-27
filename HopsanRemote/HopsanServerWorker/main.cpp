@@ -273,11 +273,6 @@ static void s_catch_signals(void)
 
 void simulationThread(bool *pSimOK)
 {
-    // We set this first to signal that simulation is not yet finished
-    gSimulationFinnished = false;
-    gIsSimulating = true;
-    *pSimOK = false;
-
     TicToc timer;
 
     timer.Tic();
@@ -293,6 +288,20 @@ void simulationThread(bool *pSimOK)
     gIsSimulating = false;
     gSimulationFinnished = true;
 }
+
+void startSimulation(bool *pSimOK)
+{
+    // We set this first to signal that simulation is not yet finished
+    // we need to set them before launching the thread, since it may take a while to start it
+    // staus requests received would return incorrect values in such cases
+    gSimulationFinnished = false;
+    gIsSimulating = true;
+    *pSimOK = false;
+
+    // Now launch the simulation thread
+    std::thread ( simulationThread, pSimOK ).detach();
+}
+
 
 
 void loadComponentLibraries(const std::string &rDir)
@@ -425,7 +434,7 @@ int main(int argc, char* argv[])
                     msg.simualtion_success = gWasSimulationOK;
                     msg.simulation_finished = gSimulationFinnished;
                     msg.simulation_inprogress = gIsSimulating;
-                    if (gIsSimulating)
+                    if (msg.simulation_inprogress || msg.simulation_finished)
                     {
                         msg.current_simulation_time = gpRootSystem->getTime();
                         msg.simulation_progress = (msg.current_simulation_time-gSimStartTime) / (gSimStopTime - gSimStartTime);
@@ -540,7 +549,8 @@ int main(int argc, char* argv[])
                             gInitTime = timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
                             if (irc)
                             {
-                                std::thread ( simulationThread, &gWasSimulationOK ).detach();
+                                //std::thread ( simulationThread, &gWasSimulationOK ).detach();
+                                startSimulation(&gWasSimulationOK);
                                 sendServerAck(socket);
                             }
                             else
@@ -609,7 +619,8 @@ int main(int argc, char* argv[])
                                 if (irc)
                                 {
                                     // Start simulation
-                                    std::thread ( simulationThread, &gWasSimulationOK ).detach();
+                                    //std::thread ( simulationThreads, &gWasSimulationOK ).detach();
+                                    startSimulation(&gWasSimulationOK);
                                     sendServerAck(socket);
                                 }
                                 else

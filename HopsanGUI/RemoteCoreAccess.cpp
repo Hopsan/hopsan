@@ -42,7 +42,7 @@ SharedRemoteCoreAddressHandlerT getSharedRemoteCoreAddressHandler()
 RemoteCoreSimulationHandler::RemoteCoreSimulationHandler()
 {
     mpRemoteHopsanClient = new RemoteHopsanClient(zmqContext);
-    mpRemoteHopsanClient->setMaxWorkerStatusRequestWaitTime(0.1); //!< @todo This is a temprary hack, need to set this from the outside and maybe not request so often
+    mpRemoteHopsanClient->setMaxWorkerStatusRequestWaitTime(0.2); //!< @todo This is a temprary hack, need to set this from the outside and maybe not request so often
 }
 
 
@@ -63,6 +63,20 @@ void RemoteCoreSimulationHandler::setHopsanServer(QString ip, QString port)
 {
     mRemoteServerAddress = ip;
     mRemoteServerPort = port;
+}
+
+void RemoteCoreSimulationHandler::setHopsanServer(QString ip_port)
+{
+    QStringList fields = ip_port.split(":");
+    if (fields.size() == 2)
+    {
+        setHopsanServer(fields.first(), fields.last());
+    }
+}
+
+QString RemoteCoreSimulationHandler::getHopsanServerAddress() const
+{
+    return mRemoteServerAddress+":"+mRemoteServerPort;
 }
 
 void RemoteCoreSimulationHandler::setNumThreads(int nThreads)
@@ -137,6 +151,11 @@ bool RemoteCoreSimulationHandler::simulateModel_blocking(double *pProgress)
 bool RemoteCoreSimulationHandler::simulateModel_nonblocking()
 {
     return mpRemoteHopsanClient->sendSimulateMessage(-1, -1, -1, -1, -1);
+}
+
+bool RemoteCoreSimulationHandler::benchmarkModel_blocking(const QString &rModel, const int nThreads, double &rSimTime)
+{
+    return mpRemoteHopsanClient->blockingBenchmark(rModel.toStdString(), nThreads, rSimTime);
 }
 
 bool RemoteCoreSimulationHandler::requestSimulationProgress(double *pProgress)
@@ -382,7 +401,7 @@ QList<QString> RemoteCoreAddressHandler::requestAvailableServers()
 
 //}
 
-QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
+QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots, const QStringList &rExcludeList)
 {
     for (auto sit=mServerSpeedMap.begin(); sit!=mServerSpeedMap.end(); ++sit)
     {
@@ -393,7 +412,7 @@ QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
             if (ait.value().nSlots >= nRequiredSlots )
             {
                 requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
-                if (ait.value().mResponding && ait.value().nOpenSlots >= nRequiredSlots)
+                if (ait.value().mResponding && ait.value().nOpenSlots >= nRequiredSlots && !rExcludeList.contains(ait.value().addr))
                 {
                     return ait.value().addr;
                 }
@@ -421,7 +440,7 @@ QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots)
     return "";
 }
 
-QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requiredSpeed, int nRequiredSlots)
+QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requiredSpeed, int nRequiredSlots, const QStringList &rExcludeList)
 {
     QList<QString> results;
     for (auto sit=mServerSpeedMap.begin(); sit!=mServerSpeedMap.end(); ++sit)
@@ -434,7 +453,7 @@ QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requ
                 if (ait.value().nSlots >= nRequiredSlots )
                 {
                     requestServerInfo(ait.key()); //!  @todo should have last refresh time to avoid calling every time
-                    if (ait.value().mResponding && ait.value().nOpenSlots >= nRequiredSlots)
+                    if (ait.value().mResponding && ait.value().nOpenSlots >= nRequiredSlots && !rExcludeList.contains(ait.value().addr))
                     {
                         results.append(ait.value().addr);
                     }
@@ -446,6 +465,29 @@ QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requ
     removeNotRespondingServers();
 
     return results;
+}
+
+void RemoteCoreAddressHandler::getMaxNumSlots(int &rMaxNumSlots, int &rNumServers)
+{
+    int maxSlots=-1;
+    int numServers=0;
+
+    for (const auto &kv : mAvailableServers )
+    {
+        if (kv.nSlots > maxSlots)
+        {
+            maxSlots=kv.nSlots;
+            numServers=1;
+        }
+        else if (kv.nSlots == maxSlots)
+        {
+            numServers++;
+        }
+    }
+
+    //! @todo what if the server with max slots have no open slots or is not accepting jobs
+    rMaxNumSlots = maxSlots;
+    rNumServers = numServers;
 }
 
 #endif

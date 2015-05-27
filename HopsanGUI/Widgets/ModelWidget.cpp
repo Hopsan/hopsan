@@ -584,6 +584,7 @@ bool ModelWidget::simulate_nonblocking()
 #ifdef USEZMQ
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+            mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
             mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
 #endif
             //! @todo is this really blocking hmm
@@ -614,6 +615,7 @@ bool ModelWidget::simulate_nonblocking()
 #ifdef USEZMQ
         mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
         mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
 #endif
     }
@@ -677,6 +679,7 @@ bool ModelWidget::simulate_blocking()
 #ifdef USEZMQ
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+            mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
             mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
             //! @todo is this really blocking hmm
 #endif
@@ -701,6 +704,7 @@ bool ModelWidget::simulate_blocking()
     #ifdef USEZMQ
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+            mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
             mpSimulationThreadHandler->initSimulateFinalizeRemote(mpExternalRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
             //! @todo is this really blocking hmm
     #endif

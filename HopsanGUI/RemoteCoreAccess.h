@@ -13,6 +13,7 @@
 #include <QString>
 #include <QMultiMap>
 #include <QSharedPointer>
+#include <QStringList>
 
 #ifdef USEZMQ
 class RemoteHopsanClient;
@@ -55,8 +56,9 @@ public:
     QList<QString> requestAvailableServers();
     //QList<QString> requestAvailableServers(int nOpenSlots);
 
-    QString getBestAvailableServer(int nRequiredSlots);
-    QList<QString> getMatchingAvailableServers(double requiredSpeed, int nRequiredSlots);
+    QString getBestAvailableServer(int nRequiredSlots, const QStringList &rExcludeList=QStringList());
+    QList<QString> getMatchingAvailableServers(double requiredSpeed, int nRequiredSlots, const QStringList &rExcludeList=QStringList());
+    void getMaxNumSlots(int &rMaxNumSlots, int &rNumServers);
 };
 
 typedef QSharedPointer<RemoteCoreAddressHandler> SharedRemoteCoreAddressHandlerT;
@@ -74,6 +76,8 @@ public:
     ~RemoteCoreSimulationHandler();
 
     void setHopsanServer(QString ip, QString port );
+    void setHopsanServer(QString ip_port );
+    QString getHopsanServerAddress() const;
     void setNumThreads(int nThreads);
     int numThreads() const;
 
@@ -84,6 +88,9 @@ public:
     bool loadModelStr(QString hmfStr);
     bool simulateModel_blocking(double *pProgress);
     bool simulateModel_nonblocking();
+
+    bool benchmarkModel_blocking(const QString &rModel, const int nThreads, double &rSimTime);
+
 
     bool requestSimulationProgress(double *pProgress);
 

@@ -319,6 +319,7 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
     // But not if we run multi threaded or a remote simulation
     if( (mpSimulationWorkerObject->swoType() != RemoteSWO) && !gpConfig->getUseMulticore())
     {
+        //! @todo This timer is never stopped or deleted apperantly (very bad)
         QTimer *pCheckMessagesTimer = new QTimer();
         connect(pCheckMessagesTimer, SIGNAL(timeout()), mpMessageHandler, SLOT(collectHopsanCoreMessages()));
         connect(this, SIGNAL(done(bool)), pCheckMessagesTimer, SLOT(deleteLater()));

@@ -139,7 +139,8 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
     // Setup parallell server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        gRemoteModelSimulationQueuer.setupSimulationHandlers(mModelPtrs);
+        chooseRemoteModelSimulationQueuer(Basic);
+        gpRemoteModelSimulationQueuer->setup(mModelPtrs);
     }
 #endif
 
@@ -424,7 +425,7 @@ void OptimizationWorkerComplexRFP::finalize()
     // Clear and disconnect from parallell server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        gRemoteModelSimulationQueuer.clear();
+        gpRemoteModelSimulationQueuer->clear();
     }
 #endif
 }

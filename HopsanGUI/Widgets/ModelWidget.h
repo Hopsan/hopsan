@@ -69,6 +69,7 @@ public:
     void setLastSimulationTime(int time);
 
     bool saveTo(QString path, SaveContentsEnumT contents=FullModel);
+    QDomDocument saveToDom(SaveContentsEnumT contents=FullModel);
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
@@ -129,7 +130,6 @@ signals:
     void aliasChanged(QString fullName, QString alias);
 
 private:
-    QDomDocument saveToDom(SaveContentsEnumT contents=FullModel);
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
 
     QString mStartTime, mStopTime;

@@ -488,12 +488,16 @@ void RemoteHopsanClient::disconnect()
 bool RemoteHopsanClient::blockingSimulation(const int nLogsamples, const int logStartTime, const int simStarttime,
                                             const int simSteptime, const int simStoptime, double *pProgress)
 {
-    sendSimulateMessage(nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime);
-    std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, pProgress);
-    t.join();
-    WorkerStatusT status;
-    requestWorkerStatus(status);
-    return (status.model_loaded && status.simualtion_success);
+    bool initOK = sendSimulateMessage(nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime);
+    if (initOK)
+    {
+        std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, pProgress);
+        t.join();
+	WorkerStatusT status;
+	requestWorkerStatus(status);
+	return (status.model_loaded && status.simualtion_success);
+    }
+    return initOK;
 }
 
 bool RemoteHopsanClient::requestMessages()

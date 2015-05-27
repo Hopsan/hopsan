@@ -71,15 +71,8 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
     std::lock_guard<std::mutex> lock(mMutex);
     // Default id value is 0, it will be applied to the first server added
     int id=0;
-    // If we have free ids, than take one of them
-    //! @todo should have a quarantine period befor pushing into free ids, to avoid nasty code taht handles what if server was replaced during the last milliseconds
-    if (!mFreeIds.empty())
-    {
-        id = mFreeIds.front();
-        mFreeIds.pop_front();
-    }
-    // Else we ask for the highest id in the map, and add one to that
-    else if (!mServerMap.empty())
+    // If we have servers them ask for the highest id in the map, and add one to that
+    if (!mServerMap.empty())
     {
         id = (mServerMap.rbegin())->first + 1;
     }
@@ -123,8 +116,6 @@ void ServerHandler::removeServer(int id)
     mServerMap.erase(id);
     mServerAgeList.remove(id);
     mServerRefreshList.remove(id);
-    // This id is now free to use by an other server
-    mFreeIds.push_back(id);
     mMutex.unlock();
 }
 
