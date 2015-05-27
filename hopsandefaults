@@ -157,7 +157,7 @@
             <unitscale unit="kHz">1e-3</unitscale>
             <unitscale unit="MHz">1e-6</unitscale>
             <unitscale unit="GHz">1e-9</unitscale>
-            <unitscale unit="rad/s">0.159154943091895</unitscale>
+            <unitscale unit="rad/s">6.28318530717959</unitscale>
         </quantity>
         <quantity name="Angle" siunit="rad">
             <unitscale unit="deg">57.296</unitscale>
