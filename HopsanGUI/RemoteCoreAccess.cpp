@@ -92,29 +92,74 @@ int RemoteCoreSimulationHandler::numThreads() const
 
 bool RemoteCoreSimulationHandler::connect()
 {
-    if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
+    if (connectServer())
     {
-        mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
-        if (mpRemoteHopsanClient->serverConnected())
-        {
-            size_t workerPort;
-            if (mpRemoteHopsanClient->requestSlot(mNumThreads, workerPort))
-            {
-                mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
-                if (mpRemoteHopsanClient->workerConnected())
-                {
-                    return true;
-                }
-            }
-        }
+        return connectWorker();
     }
-
     return false;
+//    if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
+//    {
+//        mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
+//        if (mpRemoteHopsanClient->serverConnected())
+//        {
+//            size_t workerPort;
+//            if (mpRemoteHopsanClient->requestSlot(mNumThreads, workerPort))
+//            {
+//                mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
+//                if (mpRemoteHopsanClient->workerConnected())
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//    }
+
+//    return false;
 }
 
 void RemoteCoreSimulationHandler::disconnect()
 {
     mpRemoteHopsanClient->disconnect();
+}
+
+bool RemoteCoreSimulationHandler::connectServer()
+{
+    if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
+    {
+        mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
+        if (mpRemoteHopsanClient->serverConnected())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool RemoteCoreSimulationHandler::connectWorker()
+{
+    if (mpRemoteHopsanClient->serverConnected())
+    {
+        size_t workerPort;
+        if (mpRemoteHopsanClient->requestSlot(mNumThreads, workerPort))
+        {
+            mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
+            if (mpRemoteHopsanClient->workerConnected())
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void RemoteCoreSimulationHandler::disconnectServer()
+{
+    mpRemoteHopsanClient->disconnectServer();
+}
+
+void RemoteCoreSimulationHandler::disconnectWorker()
+{
+    mpRemoteHopsanClient->disconnectWorker();
 }
 
 bool RemoteCoreSimulationHandler::loadModel(QString hmfModelFile)

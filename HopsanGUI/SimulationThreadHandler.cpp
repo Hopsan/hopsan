@@ -130,15 +130,15 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
 
     // It is VERY important that we collect messages before we send finalizeDone signal as that will also do messaging and we could (will) have thread collission
     QVector<QString> types,tags,messages;
-    mpRCSH->getCoreMessages(types, tags, messages);
+    bool gotMessages = mpRCSH->getCoreMessages(types, tags, messages);
     printRemoteCoreMessages(mpMessageHandler, types, tags, messages);
     //! @todo should open a separate window with remote messages
 
-    if (simulateSuccess)
-    {
-        // Collect data before emitting finalizeDone as that will signal that data is ready to be collected
-        mpRCSH->getLogData(mpLogDataNames, mpLogData);
+    // Collect data before emitting finalizeDone as that will signal that data is ready to be collected
+    bool gotLogData = mpRCSH->getLogData(mpLogDataNames, mpLogData);
 
+    if (simulateSuccess && gotMessages && gotLogData)
+    {
         emit finalizeDone(true, 0);
         mpRCSH.clear();
         return;

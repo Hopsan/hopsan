@@ -2,6 +2,7 @@
 #include "Configuration.h"
 #include "global.h"
 #include "Widgets/ModelWidget.h"
+#include "MessageHandler.h"
 
 #ifdef USEZMQ
 
@@ -13,42 +14,42 @@
 #include <QDebug>
 
 
-double SUa_cpxrfp(int numParallellEvaluators, int method)
-{
-    // Need to lookup from table, approximate speedup for algorithms, absed on method
-    QVector<double> sua;
-    if (method == 1)
-    {
-        sua = {1.0, 1.43, 1.78, 1.81, 1.87, 1.99, 1.91, 1.92};
-    }
-    else if (method == 2)
-    {
-        sua = {1.0, 1.35, 1.52, 1.58, 1.72, 1.74, 1.78, 1.79};
-    }
+//double SUa_cpxrfp(int numParallellEvaluators, int method)
+//{
+//    // Need to lookup from table, approximate speedup for algorithms, absed on method
+//    QVector<double> sua;
+//    if (method == 1)
+//    {
+//        sua = {1.0, 1.43, 1.78, 1.81, 1.87, 1.99, 1.91, 1.92};
+//    }
+//    else if (method == 2)
+//    {
+//        sua = {1.0, 1.35, 1.52, 1.58, 1.72, 1.74, 1.78, 1.79};
+//    }
 
-    if (numParallellEvaluators <= sua.size())
-    {
-        return sua[numParallellEvaluators];
-    }
+//    if (numParallellEvaluators <= sua.size())
+//    {
+//        return sua[numParallellEvaluators];
+//    }
 
-    return 0.;
-}
+//    return 0.;
+//}
 
-double SUa_pso(int numParallellEvaluators, int numParticles)
-{
-    if (numParallellEvaluators > 0)
-    {
-        int maxParticlesPerEvaluator = numParticles / numParallellEvaluators;
+//double SUa_pso(int numParallellEvaluators, int numParticles)
+//{
+//    if (numParallellEvaluators > 0)
+//    {
+//        int maxParticlesPerEvaluator = numParticles / numParallellEvaluators;
 
-        // If integer division has remanider, then ballancing is uneven, we need one addtional evaluation run (not all evaluatros will be used)
-        if (numParticles % numParallellEvaluators != 0)
-        {
-            maxParticlesPerEvaluator++;
-        }
-        return double(numParticles) / double(maxParticlesPerEvaluator);
-    }
-    return 0;
-}
+//        // If integer division has remanider, then ballancing is uneven, we need one addtional evaluation run (not all evaluatros will be used)
+//        if (numParticles % numParallellEvaluators != 0)
+//        {
+//            maxParticlesPerEvaluator++;
+//        }
+//        return double(numParticles) / double(maxParticlesPerEvaluator);
+//    }
+//    return 0;
+//}
 
 
 class MyBarrier : public QObject
@@ -101,57 +102,12 @@ void RemoteModelSimulationQueuer::setup(QVector<ModelWidget *> models)
 
         if (!servers.isEmpty())
         {
-//            int nServers = 0;
-//            int enqueCtr = 0;
-//            for (int m=0; m<models.size(); ++m)
-//            {
-//                QList<QString> servers = mpRemoteCoreAddressHandler->getMatchingAvailableServers(1e200, mNumThreadsPerModel);
-//                ModelWidget *pModel = models[m];
-
-//                // If we run out of servers, then enque models
-//                if (servers.isEmpty())
-//                {
-//                    mModelQueues[enqueCtr].enqueue(pModel);
-
-//                    // Increment / reset counter
-//                    enqueCtr++;
-//                    if (enqueCtr >= mRemoteCoreSimulationHandlers.size())
-//                    {
-//                        enqueCtr = 0;
-//                    }
-//                }
-//                // Assign one model to each new simulation handler
-//                else
-//                {
-//                    QString server = servers.front();
-//                    QStringList sserver = server.split(":");
-//                    servers.pop_front();
-
-//                    SharedRemoteCoreSimulationHandlerT pSH(new RemoteCoreSimulationHandler());
-//                    pSH->setHopsanServer(sserver.first(), sserver.last());
-//                    pSH->setNumThreads(mNumThreadsPerModel);
-//                    if (pSH->connect())
-//                    {
-//                        nServers++;
-//                        mRemoteCoreSimulationHandlers.append(pSH);
-
-//                        QQueue<ModelWidget*> q;
-//                        q.enqueue(pModel);
-//                        mModelQueues.append(q);
-//                    }
-//                    else
-//                    {
-//                        //if we fail to connect we should rerun this model the next step
-//                        m--;
-//                    }
-//                }
-//            }
             accuireSlotsAndEnqueModels(models, mNumThreadsPerModel);
         }
     }
 }
 
-void RemoteModelSimulationQueuer::simulateModels()
+bool RemoteModelSimulationQueuer::simulateModels()
 {
     // Now start simulation of the first qued models
     QEventLoop event_loop;
@@ -328,14 +284,14 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget 
         mpRemoteCoreAddressHandler->getMaxNumSlots(maxNumSlots, nServersWithMaxSlots);
         if (nServersWithMaxSlots > 0)
         {
-            mNumThreadsVsModelSpeed.clear();
-            mNumThreadsVsModelSpeed.reserve(maxNumSlots);
+            mNumThreadsVsModelEvalTime.clear();
+            mNumThreadsVsModelEvalTime.reserve(maxNumSlots);
 
             // Benchamrk speed vs num threads
             QString server_addr = mpRemoteCoreAddressHandler->getBestAvailableServer(maxNumSlots, mServerBlacklist);
             SharedRemoteCoreSimulationHandlerT pRCSH(new RemoteCoreSimulationHandler());
             pRCSH->setHopsanServer(server_addr);
-            bool rc = pRCSH->connect();
+            bool rc = pRCSH->connectServer();
             if (rc)
             {
                 ModelWidget *pModel = models.first();
@@ -347,7 +303,8 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget 
                     bool rc2 = pRCSH->benchmarkModel_blocking(doc.toString(), t, simTime);
                     if(rc2)
                     {
-                        mNumThreadsVsModelSpeed.push_back(simTime);
+                        mNumThreadsVsModelEvalTime.push_back(simTime);
+                        gpMessageHandler->addInfoMessage(QString("Benchmark: nThreads %1, speed: %2").arg(t).arg(simTime));
                     }
                     else
                     {
@@ -356,7 +313,7 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget 
                 }
             }
             pRCSH->disconnect();
-            qDebug() << "NumThreads speedup: " << mNumThreadsVsModelSpeed;
+            qDebug() << "NumThreads speedup: " << mNumThreadsVsModelEvalTime;
 
             // Now determine optimal allocation
             QList<QString> matching_servers = mpRemoteCoreAddressHandler->getMatchingAvailableServers(1e200, maxNumSlots, mServerBlacklist);
@@ -376,7 +333,7 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget 
     }
 }
 
-void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
+bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
 {
     bool someServerSlowdownProblem = true;
     bool remoteFailure = false;
@@ -435,6 +392,7 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
                         {
                             //! @todo handle failure
                             remoteFailure = true;
+                            return false;
                         }
                     }
                     else
@@ -456,6 +414,7 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
                     else
                     {
                         remoteFailure = true;
+                        return false;
                     }
                 }
             }
@@ -517,7 +476,7 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
                         ModelWidget *pModel = modelsInProgress[m];
                         //! @todo abort simulation
                         //pModel->abortSimulation();
-                        mRemoteCoreSimulationHandlers[m]->disconnect();
+                        //mRemoteCoreSimulationHandlers[m]->disconnect();
                     }
 
                     break;
@@ -531,13 +490,28 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
             event_loop.processEvents();
         }
 
+        //! @todo move disconnect here due to problems
+        if (someServerSlowdownProblem)
+        {
+            for (int m=0; m<modelsInProgress.size(); ++m)
+            {
+                ModelWidget *pModel = modelsInProgress[m];
+                //! @todo abort simulation
+                //pModel->abortSimulation();
+                mRemoteCoreSimulationHandlers[m]->disconnect();
+            }
+        }
+
         // IF we faced a problem then try to reschedule all work
         //! @todo rescheduling everything is probably not the best solution
         if (someServerSlowdownProblem)
         {
             setup(mAllModels);
         }
+
+        //! @todo need to abort this loop if all servers stop responding, now we are stuck forever
     }
+    return true;
 }
 
 
@@ -553,10 +527,11 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::determineBestSpeedup(int n
     for (int pm=1; pm<=nc; ++pm)
     {
         int pa = np * floor( nc / pm );
-        double sua = SUa_pso( pa, numParticles  );
+        double sua = SUa( pa, numParticles  );
         double sum = SUm ( pm );
         double SU =  sua * sum ;
 
+        gpMessageHandler->addInfoMessage(QString("Speedup: pm: %1, pa: %2, SUm: %3, SUa: %4, SU: %5").arg(pm).arg(pa).arg(sum).arg(sua).arg(SU));
         qDebug() << "Speedup: " << pm << " " << pa << " " << sum << " " << sua << " " << SU;
 
         if ( SU>bestSU )
@@ -567,24 +542,69 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::determineBestSpeedup(int n
         }
     }
 
+    gpMessageHandler->addInfoMessage(QString("Best Speedup: pm: %1, pa: %2, SU: %3").arg(bestPM).arg(bestPA).arg(bestSU));
     rPM = bestPM;
     rPA = bestPA;
     rSU = bestSU;
 }
 
+double RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::SUa(int numParallellEvaluators, int numParticles)
+{
+    if (numParallellEvaluators > 0)
+    {
+        int maxParticlesPerEvaluator = numParticles / numParallellEvaluators;
+
+        // If integer division has remanider, then ballancing is uneven, we need one addtional evaluation run (not all evaluatros will be used)
+        if (numParticles % numParallellEvaluators != 0)
+        {
+            maxParticlesPerEvaluator++;
+        }
+        return double(numParticles) / double(maxParticlesPerEvaluator);
+    }
+    return 0;
+}
+
 double RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::SUm(int nThreads)
 {
-    if (!mNumThreadsVsModelSpeed.isEmpty())
+    //! @todo calling it speed is bad, its the simtime lower is better (evaluation better)
+    if (!mNumThreadsVsModelEvalTime.isEmpty())
     {
-        double baseSpeed = mNumThreadsVsModelSpeed.first();
-        if (nThreads <= mNumThreadsVsModelSpeed.size())
+        double baseEvalTime = mNumThreadsVsModelEvalTime.first();
+        if (nThreads <= mNumThreadsVsModelEvalTime.size())
         {
-            return mNumThreadsVsModelSpeed[nThreads] / baseSpeed;
+            return baseEvalTime / mNumThreadsVsModelEvalTime[nThreads-1];
         }
         //! @todo what if nThreads to high, right now we pretend no speedup, maybe should return negative value
     }
 
     return 0;
+}
+
+
+double RemoteModelSimulationQueuer_CRFP1_HOMO_RESCHEDULE::SUa(int numParallellEvaluators, int numParticles)
+{
+    // Need to lookup from table, approximate speedup for algorithms, absed on method
+    QVector<double> sua {1.0, 1.43, 1.78, 1.81, 1.87, 1.99, 1.91, 1.92};
+    if (numParallellEvaluators <= sua.size())
+    {
+        return sua[numParallellEvaluators];
+    }
+
+    return 0.;
+}
+
+
+double RemoteModelSimulationQueuer_CRFP2_HOMO_RESCHEDULE::SUa(int numParallellEvaluators, int numParticles)
+{
+    // Need to lookup from table, approximate speedup for algorithms, absed on method
+    QVector<double> sua {1.0, 1.35, 1.52, 1.58, 1.72, 1.74, 1.78, 1.79};
+
+    if (numParallellEvaluators <= sua.size())
+    {
+        return sua[numParallellEvaluators];
+    }
+
+    return 0.;
 }
 
 
@@ -604,6 +624,14 @@ void chooseRemoteModelSimulationQueuer(RemoteModelSimulationQueuerType type)
     {
         gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE();
     }
+    else if (type == Crfp1_Homo_Reschedule)
+    {
+        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_CRFP1_HOMO_RESCHEDULE();
+    }
+    else if (type == Crfp2_Homo_Reschedule)
+    {
+        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_CRFP2_HOMO_RESCHEDULE();
+    }
 }
 
 RemoteModelSimulationQueuer *gpRemoteModelSimulationQueuer=0;
@@ -611,6 +639,3 @@ RemoteModelSimulationQueuer *gpRemoteModelSimulationQueuer=0;
 #include "RemoteSimulationUtils.moc"
 
 #endif
-
-
-

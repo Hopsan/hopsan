@@ -1522,17 +1522,19 @@ bool ModelWidget::loadModelRemote()
     {
         QDomDocument doc = saveToDom();
         bool rc = mpExternalRemoteCoreSimulationHandler->loadModelStr(doc.toString(-1));
-        QVector<QString> types,tags,messages;
-        mpExternalRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
-        for (int i=0; i<messages.size(); ++i)
-        {
-            mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
-        }
         if (!rc)
         {
             mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(mpExternalRemoteCoreSimulationHandler->getLastError()));
         }
-        return rc;
+
+        QVector<QString> types,tags,messages;
+        bool rc2 = mpExternalRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
+        for (int i=0; i<messages.size(); ++i)
+        {
+            mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
+        }
+
+        return rc && rc2;
     }
     return false;
 #endif

@@ -18,7 +18,7 @@ public:
     void reset();
     void clear();
 
-    virtual void simulateModels();
+    virtual bool simulateModels();
 
     bool hasServers() const;
 
@@ -39,16 +39,29 @@ class RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE : public RemoteModelSimula
 {
 public:
     virtual void setup(QVector<ModelWidget*> models);
-    virtual void simulateModels();
+    virtual bool simulateModels();
 
 protected:
     void determineBestSpeedup(int numParticles, int maxNumThreads, int numServers, int &rPM, int &rPA, double &rSU );
+    virtual double SUa(int numParallellEvaluators, int numParticles);
     double SUm(int nThreads);
-    QVector<double> mNumThreadsVsModelSpeed;
+    QVector<double> mNumThreadsVsModelEvalTime;
+};
+
+class RemoteModelSimulationQueuer_CRFP1_HOMO_RESCHEDULE : public RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE
+{
+protected:
+    virtual double SUa(int numParallellEvaluators, int numParticles);
+};
+
+class RemoteModelSimulationQueuer_CRFP2_HOMO_RESCHEDULE : public RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE
+{
+protected:
+    virtual double SUa(int numParallellEvaluators, int numParticles);
 };
 
 
-enum RemoteModelSimulationQueuerType {Basic, Pso_Homo_Reschedule};
+enum RemoteModelSimulationQueuerType {Basic, Pso_Homo_Reschedule, Crfp1_Homo_Reschedule, Crfp2_Homo_Reschedule};
 
 void chooseRemoteModelSimulationQueuer(RemoteModelSimulationQueuerType type);
 extern RemoteModelSimulationQueuer *gpRemoteModelSimulationQueuer;

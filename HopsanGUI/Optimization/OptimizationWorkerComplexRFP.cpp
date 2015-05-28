@@ -139,7 +139,7 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
     // Setup parallell server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        chooseRemoteModelSimulationQueuer(Basic);
+        chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule); //!< @todo how do I know method number
         gpRemoteModelSimulationQueuer->setup(mModelPtrs);
     }
 #endif

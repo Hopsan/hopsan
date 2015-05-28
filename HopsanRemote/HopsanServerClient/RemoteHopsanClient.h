@@ -62,7 +62,7 @@ private:
     void requestWorkerStatusThread(double *pProgress);
 
     double mMaxWorkerStatusRequestWaitTime = 30; //!< The maximum delay between worker status requests in seconds
-    long mReceiveTimeout = 8000; //!< Receive timeout in ms
+    long mReceiveTimeout = 30000; //!< Receive timeout in ms
     std::string mLastErrorMessage;
     std::string mServerAddress;
     std::string mWorkerAddress;

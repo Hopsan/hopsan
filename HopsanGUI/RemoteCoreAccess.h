@@ -84,6 +84,11 @@ public:
     bool connect();
     void disconnect();
 
+    bool connectServer();
+    bool connectWorker();
+    void disconnectServer();
+    void disconnectWorker();
+
     bool loadModel(QString hmfModelFile);
     bool loadModelStr(QString hmfStr);
     bool simulateModel_blocking(double *pProgress);

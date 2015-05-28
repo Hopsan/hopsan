@@ -347,13 +347,13 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
             for (auto &v : vars)
             {
                 pDataNames->push_back(v.name);
-                cout << v.name << " " << v.alias << " " << v.unit << " Data:";
+                //cout << v.name << " " << v.alias << " " << v.unit << " Data:";
                 for (auto d : v.data)
                 {
                     pData->push_back(d);
                     //cout << " " << d;
                 }
-                cout << endl;
+                //cout << endl;
             }
 
             return true;

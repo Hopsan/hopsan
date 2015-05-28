@@ -877,7 +877,7 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
             {
                 return false;
             }
-            gpRemoteModelSimulationQueuer->simulateModels();
+            return gpRemoteModelSimulationQueuer->simulateModels();
         }
         else
         {
