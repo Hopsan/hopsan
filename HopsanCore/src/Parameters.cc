@@ -233,6 +233,10 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     {
         doCheckOthers = !strippedValue.isBool();
     }
+    else if (mType=="string")
+    {
+        doCheckOthers = true;
+    }
 
     // First check if this parameter value is in fact the name of one of the other parameters or system parameter
 //        if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, ignoreMe) ) //To allow a parameter to use a systemsparameter with same name the component parameter itself has to be excluded in this check by ignore it here, issue #783
