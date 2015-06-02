@@ -348,11 +348,7 @@ PlotArea::PlotArea(PlotTab *pParentPlotTab)
 
 PlotArea::~PlotArea()
 {
-    // Remove all curves
-    while(!mPlotCurves.empty())
-    {
-        removeCurve(mPlotCurves.last());
-    }
+    removeAllCurves();
 }
 
 
@@ -575,6 +571,15 @@ void PlotArea::removeAllCurvesOnAxis(const int axis)
         {
             removeCurve(curvePtrs[c]);
         }
+    }
+}
+
+void PlotArea::removeAllCurves()
+{
+    // Remove all curves
+    while(!mPlotCurves.empty())
+    {
+        removeCurve(mPlotCurves.last());
     }
 }
 

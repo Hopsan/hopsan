@@ -217,6 +217,14 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
     }
 }
 
+void PlotTab::removeAllCurves()
+{
+    for (int i=0; i<mPlotAreas.size(); ++i)
+    {
+        mPlotAreas[i]->removeAllCurves();
+    }
+}
+
 
 //! @brief Changes the X vector of current plot tab to specified variable
 //! @param xArray New data for X-axis

@@ -142,6 +142,7 @@ public:
     void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, bool force=false);
     void setCustomXVectorForAll(SharedVectorVariableT data, bool force=false);
     void removeAllCurvesOnAxis(const int axis);
+    void removeAllCurves();
 
     void removePlotMarker(PlotMarker *pMarker);
 

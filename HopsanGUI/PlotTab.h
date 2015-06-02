@@ -148,6 +148,7 @@ public:
     void addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness=2, int type=1, const int subPlotId=0);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
+    void removeAllCurves();
     void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, int plotID=0, bool force=false);
     void setCustomXVectorForAll(SharedVectorVariableT data, int plotID=0, bool force=false);
 
