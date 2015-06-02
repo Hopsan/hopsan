@@ -12,6 +12,7 @@
 #include <QQueue>
 #include <QEventLoop>
 #include <QDebug>
+#include <QTime>
 
 
 //double SUa_cpxrfp(int numParallellEvaluators, int method)
@@ -335,6 +336,9 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget 
 
 bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
 {
+    QTime timer;
+    timer.start();
+
     bool someServerSlowdownProblem = true;
     bool remoteFailure = false;
     QEventLoop event_loop;
@@ -523,6 +527,8 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
 
         //! @todo need to abort this loop if all servers stop responding, now we are stuck forever
     }
+    int elapsed = timer.elapsed();
+    gpMessageHandler->addInfoMessage(QString("One full itteration took: %1 ms").arg(elapsed));
     return true;
 }
 
