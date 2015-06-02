@@ -46,6 +46,7 @@ public:
 protected:
     virtual void pickCandidateParticles();
     virtual void evaluateCandidateParticles(bool firstTime=false);
+    virtual void evaluatePoints(bool firstTime=false);
     virtual void examineCandidateParticles();
     double triangularDistribution(double min, double mid, double max);
     void generateRandomParticle(QVector<double> &rParticle);

@@ -337,12 +337,12 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
 {
     bool someServerSlowdownProblem = true;
     bool remoteFailure = false;
-    const int numQueues = mRemoteCoreSimulationHandlers.size();
     QEventLoop event_loop;
 
     // Loop until there is no problem, hopefully this will only be one loop
     while (someServerSlowdownProblem)
     {
+        const int numQueues = mRemoteCoreSimulationHandlers.size();
         someServerSlowdownProblem = false;
 
         // Create a copy since we will deque and pop pointers
@@ -355,6 +355,12 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
         int numProcessedModels=0;
         while (numProcessedModels < mAllModels.size() || (semaphore.available() != numQueues))
         {
+            // Abort if no simulation resources exist
+            if (numQueues == 0)
+            {
+                break;
+            }
+
             if (semaphore.available() == numQueues)
             {
                 for (int m=0; m<modelsInProgress.size(); ++m)
@@ -509,6 +515,12 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
             setup(mAllModels);
         }
 
+        // We have run out of resources, exit with failure
+        if (numQueues == 0)
+        {
+            return false;
+        }
+
         //! @todo need to abort this loop if all servers stop responding, now we are stuck forever
     }
     return true;
@@ -585,9 +597,9 @@ double RemoteModelSimulationQueuer_CRFP1_HOMO_RESCHEDULE::SUa(int numParallellEv
 {
     // Need to lookup from table, approximate speedup for algorithms, absed on method
     QVector<double> sua {1.0, 1.43, 1.78, 1.81, 1.87, 1.99, 1.91, 1.92};
-    if (numParallellEvaluators <= sua.size())
+    if ( (numParallellEvaluators > 0) && (numParallellEvaluators <= sua.size()) )
     {
-        return sua[numParallellEvaluators];
+        return sua[numParallellEvaluators-1];
     }
 
     return 0.;
@@ -599,9 +611,9 @@ double RemoteModelSimulationQueuer_CRFP2_HOMO_RESCHEDULE::SUa(int numParallellEv
     // Need to lookup from table, approximate speedup for algorithms, absed on method
     QVector<double> sua {1.0, 1.35, 1.52, 1.58, 1.72, 1.74, 1.78, 1.79};
 
-    if (numParallellEvaluators <= sua.size())
+    if ( (numParallellEvaluators > 0 ) && (numParallellEvaluators <= sua.size()) )
     {
-        return sua[numParallellEvaluators];
+        return sua[numParallellEvaluators-1];
     }
 
     return 0.;

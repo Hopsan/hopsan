@@ -128,10 +128,7 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
         PlotTab *pPlotTab = pPlotWindow->getCurrentPlotTab();
         if(pPlotTab)
         {
-            while(!pPlotTab->getCurves().isEmpty())
-            {
-                pPlotTab->removeCurve(pPlotTab->getCurves().first());
-            }
+            pPlotTab->removeAllCurves();
         }
     }
 
@@ -139,8 +136,15 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
     // Setup parallell server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule); //!< @todo how do I know method number
-        gpRemoteModelSimulationQueuer->setup(mModelPtrs);
+        if (mMethod == 0 )
+        {
+            chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule);
+        }
+        else
+        {
+            chooseRemoteModelSimulationQueuer(Crfp2_Homo_Reschedule);
+        }
+        gpRemoteModelSimulationQueuer->setup(mUsedModelPtrs);
     }
 #endif
 
@@ -177,25 +181,8 @@ void OptimizationWorkerComplexRFP::run()
     execute("echo off -nonerrors");
 
     //Evaluate all points
-    execute("call evalall");
-
-//    for(int i=0; i<mNumPoints; ++i)
-//    {
-//        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
-//        execute("opt set evalid "+QString::number(i));
-//        execute("call setpars");
-//    }
-//    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
-//    for(int i=0; i<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++i)
-//    {
-//        mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[i]);
-//        execute("opt set evalid "+QString::number(i));
-//        execute("call obj");
-//    }
-    mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs.first());
-    ++mIterations;
+    evaluatePoints();
     logAllPoints();
-    mEvaluations += mNumPoints;
 
     //Calculate best and worst id, and initialize last worst id
     calculateBestAndWorstId();
@@ -821,6 +808,49 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
 
     ++mIterations;
     mEvaluations += mNumModels;
+}
+
+void OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
+{
+    // In case we have wefere models then points, we need to process the models sequentially
+    // (all models in paralllel in ieach sequential step needed)
+    int numEvaluatedPoints=0;
+    while ( (numEvaluatedPoints < mNumPoints) && !mpHandler->mpHcomHandler->isAborted() )
+    {
+        const int nMax = qMin(mNumPoints, mNumModels);
+
+        // Set parameters in models
+        int point_id=0;
+        for(int m=0; m<nMax && !mpHandler->mpHcomHandler->isAborted(); ++m)
+        {
+            mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[m]);
+            execute("opt set evalid "+QString::number(point_id));
+            execute("call setpars");
+            ++point_id;
+        }
+
+        // Simulate in parallele if possible
+        gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
+
+        // Now calculate objective function value
+        point_id=0;
+        for(int m=0; m<nMax && !mpHandler->mpHcomHandler->isAborted(); ++m)
+        {
+            mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[m]);
+            execute("opt set evalid "+QString::number(point_id));
+            execute("call obj");
+            ++point_id;
+        }
+
+        // Reset model pointer
+        mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs.first());
+
+        // Increment number of evaluated points
+        numEvaluatedPoints += nMax;
+    }
+
+    ++mIterations;
+    mEvaluations += numEvaluatedPoints;
 }
 
 
