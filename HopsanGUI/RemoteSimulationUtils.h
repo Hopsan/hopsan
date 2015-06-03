@@ -14,7 +14,7 @@ class RemoteModelSimulationQueuer
 {
 public:
     virtual ~RemoteModelSimulationQueuer();
-    virtual void setup(QVector<ModelWidget*> models);
+    virtual void setup(QVector<ModelWidget*> models, bool runBenchmark=false);
     void reset();
     void clear();
 
@@ -38,7 +38,7 @@ protected:
 class RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE : public RemoteModelSimulationQueuer
 {
 public:
-    virtual void setup(QVector<ModelWidget*> models);
+    virtual void setup(QVector<ModelWidget*> models, bool runBenchmark=false);
     virtual bool simulateModels();
 
 protected:

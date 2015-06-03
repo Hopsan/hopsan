@@ -90,7 +90,7 @@ RemoteModelSimulationQueuer::~RemoteModelSimulationQueuer()
     clear();
 }
 
-void RemoteModelSimulationQueuer::setup(QVector<ModelWidget *> models)
+void RemoteModelSimulationQueuer::setup(QVector<ModelWidget *> models, bool runBenchmark)
 {
     reset();
     mAllModels = models;
@@ -271,7 +271,7 @@ void RemoteModelSimulationQueuer::clear()
     mServerBlacklist.clear();
 }
 
-void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget *> models)
+void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget *> models, bool runBenchmark)
 {
     reset();
     mAllModels = models;
@@ -494,6 +494,7 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
         }
 
         // Wait until all simualtions finnished, and data collected and such things
+        //! @todo if a server freezes we will block here forever
         while (semaphore.available() != numQueues)
         {
             event_loop.processEvents();
@@ -512,7 +513,8 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
         //! @todo rescheduling everything is probably not the best solution
         if (someServerSlowdownProblem)
         {
-            setup(mAllModels);
+            // Note! We do not need to run benchmark again
+            setup(mAllModels, false);
         }
 
         // We have run out of resources, exit with failure
@@ -541,6 +543,7 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::determineBestSpeedup(int n
     for (int pm=1; pm<=nc; ++pm)
     {
         int pa = np * floor( nc / pm );
+        pa = qMin(pa, numParticles);
         double sua = SUa( pa, numParticles  );
         double sum = SUm ( pm );
         double SU =  sua * sum ;
@@ -580,13 +583,13 @@ double RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::SUa(int numParallellEval
 
 double RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::SUm(int nThreads)
 {
-    //! @todo calling it speed is bad, its the simtime lower is better (evaluation better)
+    //! @todo calling it speed is bad, its the simtime lower is better (evaluationTime better name)
     if (!mNumThreadsVsModelEvalTime.isEmpty())
     {
         double oneCoreEvalTime = mNumThreadsVsModelEvalTime.first();
         if (nThreads <= mNumThreadsVsModelEvalTime.size())
         {
-            return mNumThreadsVsModelEvalTime[nThreads-1] / oneCoreEvalTime;
+            return oneCoreEvalTime / mNumThreadsVsModelEvalTime[nThreads-1];
         }
         //! @todo what if nThreads to high, right now we pretend no speedup, maybe should return negative value
     }

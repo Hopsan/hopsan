@@ -14,6 +14,12 @@ using namespace std;
 
 // ---------- Help functions start ----------
 
+typedef std::chrono::duration<double> fseconds;
+inline double elapsedSecondsSince(chrono::steady_clock::time_point &rSince)
+{
+    return chrono::duration_cast<fseconds>(chrono::steady_clock::now()-rSince).count();
+}
+
 template <typename T>
 void sendClientMessage(zmq::socket_t *pSocket, ClientMessageIdEnumT id, const T &rMessage)
 {
@@ -231,29 +237,11 @@ bool RemoteHopsanClient::blockingBenchmark(const string &rModel, const int nThre
         {
             // Block until benchamark is done
             //! @todo what if benchmark freeces, need a timeout here
-            double progress;
-            std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, &progress);
+            double progress; bool isAlive;
+            std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, &progress, &isAlive);
             t.join();
 
             // Now request benchmark results
-//            sendShortClientMessage(mpRWCSocket, C_ReqBenchmarkResults);
-//            zmq::message_t reply;
-//            if (receiveWithTimeout(*mpRWCSocket, reply))
-//            {
-//                size_t offset=0;
-//                bool parseOK;
-//                size_t id = getMessageId(reply, offset, parseOK);
-//                if (id == S_ReqBenchmarkResults_Reply)
-//                {
-//                    SWM_ReqBenchmarkResults_Reply_t results = unpackMessage<SWM_ReqBenchmarkResults_Reply_t>(reply, offset, parseOK);
-//                    if (parseOK)
-//                    {
-//                        //! @todo right now we bundle all times togheter
-//                        rSimTime = results.inittime+results.simutime+results.finitime;
-//                        gotResponse = true;
-//                    }
-//                }
-//            }
             gotResponse = requestBenchmarkResults(rSimTime);
         }
     }
@@ -509,7 +497,8 @@ bool RemoteHopsanClient::blockingSimulation(const int nLogsamples, const int log
     bool initOK = sendSimulateMessage(nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime);
     if (initOK)
     {
-        std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, pProgress);
+        bool isAlive;
+        std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, pProgress, &isAlive);
         t.join();
 	WorkerStatusT status;
 	requestWorkerStatus(status);
@@ -674,20 +663,30 @@ void RemoteHopsanClient::deleteSockets()
     }
 }
 
-void RemoteHopsanClient::requestWorkerStatusThread(double *pProgress)
+void RemoteHopsanClient::requestWorkerStatusThread(double *pProgress, bool *pAlive)
 {
-    const int defaultSleepMs = 100;
+    const int defaultSleepMs = 200;
     double progressedTime = 0;
+    double lastProgress=0;
+    bool firstNoProgress = true;
+
+    // Assume server alive
+    // Note! This one should be set true from the outside since it may take some time to launch this thread
+    *pAlive = true;
 
     WorkerStatusT status;
-    std::chrono::milliseconds msd{defaultSleepMs};
-    std::chrono::milliseconds ms=msd;
+    chrono::milliseconds msd{defaultSleepMs};
+    chrono::milliseconds ms=msd;
+    chrono::steady_clock::time_point startT = chrono::steady_clock::now();
+    chrono::steady_clock::time_point lastNoProgressTime = chrono::steady_clock::now();
+
     bool rc = requestWorkerStatus(status);
     *pProgress = status.simulation_progress;
+    *pAlive = rc;
     while (!status.simulation_finished && rc)
     {
         std::this_thread::sleep_for(ms);
-        progressedTime += double(ms.count())/1000;
+        progressedTime = elapsedSecondsSince(startT);
         rc = requestWorkerStatus(status);
         *pProgress = status.simulation_progress;
         // Ok make an estimate of remaning time based on progressed time
@@ -708,10 +707,27 @@ void RemoteHopsanClient::requestWorkerStatusThread(double *pProgress)
             {
                 ms = msd;
             }
-        }
 
-        //! @todo how to handle simulation that freezes
-        //! @todo how to handle non-responsive simulation, rith now we abort maybe should wait
+            if (status.simulation_progress == lastProgress)
+            {
+                if (firstNoProgress)
+                {
+                    lastNoProgressTime = chrono::steady_clock::now();
+                    firstNoProgress = false;
+                }
+                else if (elapsedSecondsSince(lastNoProgressTime) > mMaxNoProgressTime)
+                {
+                    *pAlive = false;
+                    break;
+                }
+            }
+            else
+            {
+                firstNoProgress = true;
+            }
+
+            lastProgress = status.simulation_progress;
+        }
     }
 }
 

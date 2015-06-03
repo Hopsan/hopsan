@@ -112,7 +112,7 @@ void OptimizationWorkerParticleSwarm::init(const ModelWidget *pModel, const QStr
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
         chooseRemoteModelSimulationQueuer(Pso_Homo_Reschedule);
-        gpRemoteModelSimulationQueuer->setup(mModelPtrs);
+        gpRemoteModelSimulationQueuer->setup(mModelPtrs, true);
     }
 #endif
 

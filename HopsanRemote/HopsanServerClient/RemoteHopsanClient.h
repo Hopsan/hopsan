@@ -64,17 +64,19 @@ public:
 private:
     bool receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage, long timeout);
     void deleteSockets();
-    void requestWorkerStatusThread(double *pProgress);
+    void requestWorkerStatusThread(double *pProgress, bool *pAlive);
 
     double mMaxWorkerStatusRequestWaitTime = 30; //!< The maximum delay between worker status requests in seconds
     long mShortReceiveTimeout = 5000; //!< Receive timeout in ms
     long mLongReceiveTimeout = 30000; //!< Receive timeout in ms
+    double mMaxNoProgressTime = 30; //!< The maximum allowed time in seconds with no progress before simulation is assumed frozen
     std::string mLastErrorMessage;
     std::string mServerAddress;
     std::string mWorkerAddress;
     zmq::socket_t *mpRSCSocket = nullptr; //!< The Remote Server Control Socket
     zmq::socket_t *mpRWCSocket = nullptr; //!< The Remote Worker Control Socket
     std::mutex mWorkerMutex;
+
 
 };
 

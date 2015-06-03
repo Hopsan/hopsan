@@ -144,7 +144,7 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
         {
             chooseRemoteModelSimulationQueuer(Crfp2_Homo_Reschedule);
         }
-        gpRemoteModelSimulationQueuer->setup(mUsedModelPtrs);
+        gpRemoteModelSimulationQueuer->setup(mUsedModelPtrs, true);
     }
 #endif
 
