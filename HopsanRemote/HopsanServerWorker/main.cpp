@@ -276,7 +276,7 @@ void simulationThread(bool *pSimOK)
     TicToc timer;
 
     timer.Tic();
-    bool simOK = gSimulator.simulateSystem(gSimStartTime, gSimStopTime, gNumThreads, gpRootSystem, TaskPoolAlgorithm);
+    bool simOK = gSimulator.simulateSystem(gSimStartTime, gSimStopTime, gNumThreads, gpRootSystem);
     gSimulationTime = timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
 
     timer.Tic();

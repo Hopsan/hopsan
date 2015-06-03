@@ -288,7 +288,7 @@ void ServerHandler::refreshServerBenchmarkThread(int serverId)
             }
             else
             {
-                cout << PRINTSERVER << nowDateTime() << " Server: " << serverId << " is NOT responding!" << endl;
+                cout << PRINTSERVER << nowDateTime() << " Benchmarking Server: " << serverId << " is NOT responding!" << endl;
             }
         }
     }
