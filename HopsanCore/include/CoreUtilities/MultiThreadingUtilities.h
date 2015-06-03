@@ -135,14 +135,13 @@ public:
     {
         for(size_t i=0; i<mNumSimSteps; ++i)
         {
-            if(mpSystem->wasSimulationAborted()) break;
-
             mTime += mTimeStep;
 
             //! Signal Components !//
 
             mpBarrier_S->increment();
             while(mpBarrier_S->isLocked()){}                         //Wait at S barrier
+            if(mpSystem->wasSimulationAborted()) break;
 
             for(size_t i=0; i<mVectorS.size(); ++i)
             {
@@ -154,6 +153,7 @@ public:
 
             mpBarrier_C->increment();
             while(mpBarrier_C->isLocked()){}                         //Wait at C barrier
+            if(mpSystem->wasSimulationAborted()) break;
 
             for(size_t i=0; i<mVectorC.size(); ++i)
             {
@@ -165,6 +165,7 @@ public:
 
             mpBarrier_Q->increment();
             while(mpBarrier_Q->isLocked()){}                         //Wait at Q barrier
+            if(mpSystem->wasSimulationAborted()) break;
 
             for(size_t i=0; i<mVectorQ.size(); ++i)
             {
@@ -175,7 +176,7 @@ public:
 
             mpBarrier_N->increment();
             while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
-
+            if(mpSystem->wasSimulationAborted()) break;
             //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with something smart
 //            for(size_t i=0; i<mVectorN.size(); ++i)
 //            {
@@ -253,13 +254,27 @@ public:
     {
         for(size_t s=0; s<mNumSimSteps; ++s)
         {
-            if(mpSystem->wasSimulationAborted()) break;
-
             mTime += mTimeStep;
 
             //! Signal Components !//
+            bool stop=false;
+            while(!mpBarrier_S->allArrived())   //Wait for all other threads to arrive at signal barrier
+            {
+                if(mpSystem->wasSimulationAborted())
+                {
+                    stop=true;
+                    break;
+                }
 
-            while(!mpBarrier_S->allArrived()) {}    //Wait for all other threads to arrive at signal barrier
+            }
+            if(stop)
+            {
+                mpBarrier_S->unlock();
+                mpBarrier_C->unlock();
+                mpBarrier_Q->unlock();
+                mpBarrier_N->unlock();
+                break;
+            }
             mpBarrier_C->lock();                    //Lock next barrier (must be done before unlocking this one, to prevent deadlocks)
             mpBarrier_S->unlock();                  //Unlock signal barrier
 
@@ -269,8 +284,23 @@ public:
             }
 
             //! C Components !//
-
-            while(!mpBarrier_C->allArrived()) {}    //C barrier
+            stop=false;
+            while(!mpBarrier_C->allArrived())   //C barrier
+            {
+                if(mpSystem->wasSimulationAborted())
+                {
+                    stop=true;
+                    break;
+                }
+            }
+            if(stop)
+            {
+                mpBarrier_S->unlock();
+                mpBarrier_C->unlock();
+                mpBarrier_Q->unlock();
+                mpBarrier_N->unlock();
+                break;
+            }
             mpBarrier_Q->lock();
             mpBarrier_C->unlock();
 
@@ -280,8 +310,23 @@ public:
             }
 
             //! Q Components !//
-
-            while(!mpBarrier_Q->allArrived()) {}    //Q barrier
+            stop=false;
+            while(!mpBarrier_Q->allArrived()) //Q barrier
+            {
+                if(mpSystem->wasSimulationAborted())
+                {
+                    stop=true;
+                    break;
+                }
+            }
+            if(stop)
+            {
+                mpBarrier_S->unlock();
+                mpBarrier_C->unlock();
+                mpBarrier_Q->unlock();
+                mpBarrier_N->unlock();
+                break;
+            }
             mpBarrier_N->lock();
             mpBarrier_Q->unlock();
 
@@ -294,8 +339,24 @@ public:
                 *mpSimTimes[i] = mTime;     //Update time in component system, so that progress bar can use it
 
             //! Log Nodes !//
+            stop=false;
+            while(!mpBarrier_N->allArrived()) //N barrier
+            {
+                if(mpSystem->wasSimulationAborted())
+                {
+                    stop=true;
+                    break;
+                }
 
-            while(!mpBarrier_N->allArrived()) {}    //N barrier
+            }
+            if(stop)
+            {
+                mpBarrier_S->unlock();
+                mpBarrier_C->unlock();
+                mpBarrier_Q->unlock();
+                mpBarrier_N->unlock();
+                break;
+            }
             mpBarrier_S->lock();
             mpBarrier_N->unlock();
 
