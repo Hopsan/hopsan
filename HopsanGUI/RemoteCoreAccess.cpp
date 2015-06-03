@@ -198,6 +198,11 @@ bool RemoteCoreSimulationHandler::simulateModel_nonblocking()
     return mpRemoteHopsanClient->sendSimulateMessage(-1, -1, -1, -1, -1);
 }
 
+bool RemoteCoreSimulationHandler::abortSimulation()
+{
+    return mpRemoteHopsanClient->abortSimulation();
+}
+
 bool RemoteCoreSimulationHandler::benchmarkModel_blocking(const QString &rModel, const int nThreads, double &rSimTime)
 {
     return mpRemoteHopsanClient->blockingBenchmark(rModel.toStdString(), nThreads, rSimTime);

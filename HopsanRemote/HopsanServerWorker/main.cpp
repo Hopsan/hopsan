@@ -425,10 +425,10 @@ int main(int argc, char* argv[])
                 size_t offset=0;
                 bool idParseOK;
                 size_t msg_id = getMessageId(request, offset, idParseOK);
-                cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+                //cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
                 if (msg_id == C_ReqWorkerStatus)
                 {
-                    cout << PRINTWORKER << nowDateTime() << " Client requesting status" << endl;
+                    cout << PRINTWORKER << nowDateTime() << " Got status request" << endl;
                     SWM_ReqWorkerStatus_Reply_t msg;
                     msg.model_loaded = gIsModelLoaded;
                     msg.simualtion_success = gWasSimulationOK;
@@ -558,37 +558,6 @@ int main(int argc, char* argv[])
                                 cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
                                 sendServerNAck(socket, "Could not initialize system");
                             }
-
-                            //                        // Start simulation
-                            //                        SimulationHandler simulator;
-                            //                        bool irc=false,src=false;
-                            //                        TicToc timer;
-                            //                        irc = simulator.initializeSystem(gSimStartTime, gSimStopTime, gpRootSystem);
-                            //                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Initialize");
-                            //                        if (irc)
-                            //                        {
-                            //                            timer.Tic();
-                            //                            src = simulator.simulateSystem(gSimStartTime, gSimStopTime, gNumThreads, gpRootSystem);
-                            //                            timer.TocPrint(PRINTWORKER+nowDateTime()+" Simulate");
-                            //                        }
-                            //                        timer.Tic();
-                            //                        simulator.finalizeSystem(gpRootSystem);
-                            //                        timer.TocPrint(PRINTWORKER+nowDateTime()+" Finalize");
-
-                            //                        if (irc && src)
-                            //                        {
-                            //                            sendServerAck(socket);
-                            //                        }
-                            //                        else if (!irc)
-                            //                        {
-                            //                            cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
-                            //                            sendServerNAck(socket, "Could not initialize system");
-                            //                        }
-                            //                        else
-                            //                        {
-                            //                            cout  << PRINTWORKER << nowDateTime() << " Model simulation failed"  << endl;
-                            //                            sendServerNAck(socket, "Cold not simulate system");
-                            //                        }
                         }
                         else
                         {
@@ -643,7 +612,7 @@ int main(int argc, char* argv[])
                 }
                 else if (msg_id == C_ReqBenchmarkResults)
                 {
-                    cout << PRINTWORKER << nowDateTime() << " Client requests benchmark times" << endl;
+                    cout << PRINTWORKER << nowDateTime() << " Got Benchmark times request" << endl;
                     //! @todo  Wait for benchmark to complete maybe
                     //!
                     SWM_ReqBenchmarkResults_Reply_t msg;
@@ -716,6 +685,19 @@ int main(int argc, char* argv[])
                     }
 
                     sendServerMessage<vector<SM_HopsanCoreMessage_t>>(socket,SW_ReqMessages_Reply,messages);
+                }
+                else if (msg_id == C_Abort)
+                {
+                    if (gIsSimulating && gpRootSystem)
+                    {
+                        cout << PRINTWORKER << nowDateTime() << " Client request Abort simulation!" << endl;
+                        gpRootSystem->stopSimulation("Got abort request");
+                        sendServerAck(socket);
+                    }
+                    else
+                    {
+                        sendServerNAck(socket, "No simulation running");
+                    }
                 }
                 else if (msg_id == C_Bye)
                 {

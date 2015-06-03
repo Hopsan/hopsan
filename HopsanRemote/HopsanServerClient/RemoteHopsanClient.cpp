@@ -128,7 +128,7 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
     sendClientMessage<CM_GetParam_t>(mpRWCSocket, C_GetParam, msg);
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRWCSocket, response))
+    if (receiveWithTimeout(*mpRWCSocket, response, mShortReceiveTimeout))
     {
         size_t offset=0;
         bool parseOK;
@@ -154,7 +154,7 @@ bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &
     sendClientMessage<CM_SetParam_t>(mpRWCSocket, C_SetParam, msg);
 
     string err;
-    bool rc = readAckNackServerMessage(mpRWCSocket, mReceiveTimeout, err);
+    bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
     if (!rc)
     {
         cout << err << endl;
@@ -166,7 +166,7 @@ bool RemoteHopsanClient::sendModelMessage(const std::string &rModel)
 {
     sendClientMessage<std::string>(mpRWCSocket, C_SendingHmf, rModel);
     string err;
-    bool rc = readAckNackServerMessage(mpRWCSocket, mReceiveTimeout, err);
+    bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
     if (!rc)
     {
         cout << err << endl;
@@ -180,7 +180,22 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     CM_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
     sendClientMessage<CM_Simulate_t>(mpRWCSocket, C_Simulate, msg);
     string err;
-    bool rc = readAckNackServerMessage(mpRWCSocket, -1, err);
+    bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
+    if (!rc)
+    {
+        cout << err << endl;
+    }
+    return rc;
+}
+
+bool RemoteHopsanClient::abortSimulation()
+{
+    // Lock here to prevent problem if some other thread is requesting fore xample status
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
+    sendShortClientMessage(mpRWCSocket, C_Abort);
+    string err;
+    bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
     if (!rc)
     {
         cout << err << endl;
@@ -252,7 +267,7 @@ bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
 {
     sendShortClientMessage(mpRWCSocket, C_ReqBenchmarkResults);
     zmq::message_t reply;
-    if (receiveWithTimeout(*mpRWCSocket, reply))
+    if (receiveWithTimeout(*mpRWCSocket, reply, mShortReceiveTimeout))
     {
         size_t offset=0;
         bool parseOK;
@@ -273,10 +288,13 @@ bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
 
 bool RemoteHopsanClient::requestWorkerStatus(WorkerStatusT &rWorkerStatus)
 {
+    // Lock here to prevent problem if som other thread is requesting abort
+    std::lock_guard<std::mutex> lock(mWorkerMutex); //! @todo should use this mutex in more places (or build it into the send function)
+
     sendShortClientMessage(mpRWCSocket, C_ReqWorkerStatus);
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRWCSocket, response))
+    if (receiveWithTimeout(*mpRWCSocket, response, mShortReceiveTimeout))
     {
         //cout << "Response size: " << response.size() << endl;
         size_t offset=0;
@@ -300,7 +318,7 @@ bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
     sendShortClientMessage(mpRSCSocket, C_ReqServerStatus);
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRSCSocket, response))
+    if (receiveWithTimeout(*mpRSCSocket, response, mShortReceiveTimeout))
     {
         //cout << "Response size: " << response.size() << endl;
         size_t offset=0;
@@ -325,7 +343,7 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
     sendClientMessage<string>(mpRWCSocket, C_ReqResults, "*"); // Request all
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRWCSocket, response))
+    if (receiveWithTimeout(*mpRWCSocket, response, mLongReceiveTimeout))
     {
         //cout << "Response size: " << response.size() << endl;
         size_t offset=0;
@@ -372,7 +390,7 @@ bool RemoteHopsanClient::requestSlot(int numThreads, size_t &rControlPort)
     sendClientMessage<CM_ReqSlot_t>(mpRSCSocket, C_ReqSlot, msg);
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRSCSocket, response))
+    if (receiveWithTimeout(*mpRSCSocket, response, mShortReceiveTimeout))
     {
         size_t offset=0;
         bool parseOK;
@@ -505,7 +523,7 @@ bool RemoteHopsanClient::requestMessages()
     sendShortClientMessage(mpRWCSocket, C_ReqMessages);
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRWCSocket, response))
+    if (receiveWithTimeout(*mpRWCSocket, response, mLongReceiveTimeout))
     {
         size_t offset=0;
         bool parseOK;
@@ -533,7 +551,7 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
     sendShortClientMessage(mpRWCSocket, C_ReqMessages);
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRWCSocket, response))
+    if (receiveWithTimeout(*mpRWCSocket, response, mLongReceiveTimeout))
     {
         size_t offset=0;
         bool parseOK;
@@ -572,7 +590,7 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
     sendClientMessage<CM_ReqServerMachines_t>(mpRSCSocket, C_ReqServerMachines, req);
 
     zmq::message_t response;
-    if (receiveWithTimeout(*mpRSCSocket, response))
+    if (receiveWithTimeout(*mpRSCSocket, response, mShortReceiveTimeout))
     {
         cout << "Response size: " << response.size() << endl;
         size_t offset=0;
@@ -601,14 +619,14 @@ string RemoteHopsanClient::getLastErrorMessage() const
     return mLastErrorMessage;
 }
 
-bool RemoteHopsanClient::receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage)
+bool RemoteHopsanClient::receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage, long timeout)
 {
     // Create a poll item
     zmq::pollitem_t pollitems[] = {{ rSocket, 0, ZMQ_POLLIN, 0 }};
     try
     {
         // Poll socket for a reply, with timeout
-        zmq::poll(&pollitems[0], 1,  mReceiveTimeout);
+        zmq::poll(&pollitems[0], 1,  timeout);
         // If we have received a message then read message and return true
         if (pollitems[0].revents & ZMQ_POLLIN)
         {
@@ -725,14 +743,24 @@ bool RemoteHopsanClient::areSocketsValid() const
     return mpRSCSocket && mpRWCSocket;
 }
 
-void RemoteHopsanClient::setReceiveTimeout(long ms)
+void RemoteHopsanClient::setShortReceiveTimeout(long ms)
 {
-    mReceiveTimeout = ms;
+    mShortReceiveTimeout = ms;
 }
 
-long RemoteHopsanClient::getReceiveTimeout() const
+void RemoteHopsanClient::setLongReceiveTimeout(long ms)
 {
-    return mReceiveTimeout;
+    mLongReceiveTimeout = ms;
+}
+
+long RemoteHopsanClient::getShortReceiveTimeout() const
+{
+    return mShortReceiveTimeout;
+}
+
+long RemoteHopsanClient::getLongReceiveTimeout() const
+{
+    return mLongReceiveTimeout;
 }
 
 void RemoteHopsanClient::setMaxWorkerStatusRequestWaitTime(double seconds)

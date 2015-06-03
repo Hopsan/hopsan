@@ -21,7 +21,8 @@ enum ClientMessageIdEnumT {C_Ack=1,
                            C_ReqServerMachines,
                            C_ReqWorkerStatus,
                            C_ReqBenchmark,
-                           C_ReqBenchmarkResults};
+                           C_ReqBenchmarkResults,
+                           C_Abort};
 enum ServerMessageIdEnumT {S_Ack=128,
                            S_NAck,
                            S_Available,

@@ -483,10 +483,9 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
                 {
                     for (int m=0; m<modelsInProgress.size(); ++m)
                     {
-                        ModelWidget *pModel = modelsInProgress[m];
-                        //! @todo abort simulation
+                        mRemoteCoreSimulationHandlers[m]->abortSimulation();
+                        //ModelWidget *pModel = modelsInProgress[m];
                         //pModel->abortSimulation();
-                        //mRemoteCoreSimulationHandlers[m]->disconnect();
                     }
 
                     break;
@@ -494,20 +493,17 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
             }
         }
 
-        // Wait until all simualtions finnished, (should not need to wait here, but lets wait just in case)
+        // Wait until all simualtions finnished, and data collected and such things
         while (semaphore.available() != numQueues)
         {
             event_loop.processEvents();
         }
 
-        //! @todo move disconnect here due to problems
+        // Now all communication with worker should be finnished, lets disconnect
         if (someServerSlowdownProblem)
         {
             for (int m=0; m<modelsInProgress.size(); ++m)
             {
-                ModelWidget *pModel = modelsInProgress[m];
-                //! @todo abort simulation
-                //pModel->abortSimulation();
                 mRemoteCoreSimulationHandlers[m]->disconnect();
             }
         }
@@ -587,10 +583,10 @@ double RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::SUm(int nThreads)
     //! @todo calling it speed is bad, its the simtime lower is better (evaluation better)
     if (!mNumThreadsVsModelEvalTime.isEmpty())
     {
-        double baseEvalTime = mNumThreadsVsModelEvalTime.first();
+        double oneCoreEvalTime = mNumThreadsVsModelEvalTime.first();
         if (nThreads <= mNumThreadsVsModelEvalTime.size())
         {
-            return baseEvalTime / mNumThreadsVsModelEvalTime[nThreads-1];
+            return mNumThreadsVsModelEvalTime[nThreads-1] / oneCoreEvalTime;
         }
         //! @todo what if nThreads to high, right now we pretend no speedup, maybe should return negative value
     }

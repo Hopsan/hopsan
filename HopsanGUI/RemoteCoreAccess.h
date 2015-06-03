@@ -93,6 +93,7 @@ public:
     bool loadModelStr(QString hmfStr);
     bool simulateModel_blocking(double *pProgress);
     bool simulateModel_nonblocking();
+    bool abortSimulation();
 
     bool benchmarkModel_blocking(const QString &rModel, const int nThreads, double &rSimTime);
 
