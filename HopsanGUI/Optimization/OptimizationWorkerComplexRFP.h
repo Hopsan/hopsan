@@ -38,6 +38,8 @@ public:
     virtual void run();
     virtual void finalize();
 
+    void reInit(int nModels);
+
     virtual void setOptVar(const QString &var, const QString &value);
     virtual double getOptVar(const QString &var, bool &ok);
 
@@ -57,6 +59,7 @@ protected:
     void setOptimizationObjectiveValue(int idx, double value);
 
     QVector<ModelWidget *> mUsedModelPtrs;
+    QString mModelPath;
 
     QVector< QVector<double> > mCandidateParticles;
     QVector<double> mCandidateObjectives;

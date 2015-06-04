@@ -39,6 +39,8 @@
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
+#include "GUIPort.h"
+#include "GUIObjects/GUISystem.h"
 
 //C++ includes
 #include <math.h>
@@ -69,6 +71,7 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
 {
     OptimizationWorkerComplex::init(pModel, modelPath);
 
+    mModelPath = modelPath;
     mLastWorstId = -1;
     mWorstCounter = 0;
 
@@ -191,8 +194,15 @@ void OptimizationWorkerComplexRFP::run()
 
     //Run optimization loop
     int i=0;
+    bool changed=false;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
+//        if(i>=20 && !changed)
+//        {
+//            reInit(3);
+//            changed=true;
+//        }
+
         //Plot optimization points
         plotPoints();
 
@@ -418,6 +428,48 @@ void OptimizationWorkerComplexRFP::finalize()
 #endif
 }
 
+void OptimizationWorkerComplexRFP::reInit(int nModels)
+{
+    mNumModels = nModels;
+
+    while(mModelPtrs.size() < mNumModels)
+    {
+        mpHandler->addModel(gpModelHandler->loadModel(mModelPath, true, true));
+
+        //Make sure logging is disabled/enabled for same ports as in original model
+        CoreSystemAccess *pCore = mModelPtrs.first()->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
+        foreach(const QString &compName, mModelPtrs.first()->getTopLevelSystemContainer()->getModelObjectNames())
+        {
+            foreach(const Port *port, mModelPtrs.first()->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
+            {
+                QString portName = port->getName();
+                bool enabled = pCore->isLoggingEnabled(compName, portName);
+                SystemContainer *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
+                CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
+                pOptCore->setLoggingEnabled(compName, portName, enabled);
+            }
+        }
+    }
+
+    mCandidateParticles.clear();
+    mCandidateParticles.resize(mNumModels);
+    for(int i=0; i<mNumModels; ++i)
+    {
+        mCandidateParticles[i].resize(mNumParameters);
+    }
+
+    mCandidateObjectives.clear();
+    mCandidateObjectives.resize(mNumModels);
+
+    //Limit number of models, in case worker has opened more models than necessary
+    mUsedModelPtrs.clear();
+    for(int i=0; i<mNumModels; ++i)
+    {
+        mUsedModelPtrs.append(mModelPtrs.at(i));
+    }
+
+}
+
 
 void OptimizationWorkerComplexRFP::setOptVar(const QString &var, const QString &value)
 {
@@ -510,7 +562,11 @@ double OptimizationWorkerComplexRFP::getParameter(const int pointIdx, const int 
 
 void OptimizationWorkerComplexRFP::pickCandidateParticles()
 {
-    if(mMethod==1)
+    if(mMethod == 2)
+    {
+
+    }
+    else if(mMethod==1)
     {
         //Sort ids by objective value (worst to best)
         mvIdx.clear();
