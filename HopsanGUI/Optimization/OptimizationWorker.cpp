@@ -69,10 +69,10 @@ OptimizationWorker::~OptimizationWorker()
 void OptimizationWorker::init(const ModelWidget *pModel, const QString &modelPath)
 {
     //Load model widgets
-    if(mModelPtrs.size() > mNumModels)
-    {
-        clearModels();
-    }
+//    if(mModelPtrs.size() > mNumModels)
+//    {
+//        clearModels();
+//    }
     //for(int i=0; i<mpOptHandler->getOptVar("npoints"); ++i)
     while(mModelPtrs.size() < mNumModels)
     {

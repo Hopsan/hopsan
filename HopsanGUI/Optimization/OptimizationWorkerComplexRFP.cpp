@@ -74,6 +74,7 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
     mModelPath = modelPath;
     mLastWorstId = -1;
     mWorstCounter = 0;
+    mFirstReflectionFailed = false;
 
     print("Using method "+QString::number(mMethod));
 
@@ -564,10 +565,6 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 {
     if(mMethod == 2)
     {
-
-    }
-    else if(mMethod==1)
-    {
         //Sort ids by objective value (worst to best)
         mvIdx.clear();
         while(mvIdx.size() != mNumPoints)
@@ -587,7 +584,31 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
             mvIdx.append(worstId);
         }
 
-        int i=0;
+
+        for(int i=0; i<qMin(mNumPoints, mNumModels); ++i)
+        {
+            mWorstId = mvIdx[i];
+            findCenter();
+
+            //Reflect first point
+            for(int j=0; j<mNumParameters; ++j)
+            {
+                //Reflect
+                double worst = mParameters[mvIdx[i]][j];
+                mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+                //Add some random noise
+                double maxDiff = getMaxParDiff();
+                double r = (double)rand() / (double)RAND_MAX;
+                mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+                mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
+            }
+        }
+    }
+    else if(mMethod==1)
+    {
+        calculateBestAndWorstId();
         findCenter();
 
 //        double alpha1 = mAlpha;                 //1.3
@@ -608,12 +629,13 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         double alpha7 = mAlpha6;//(1+(mAlpha-1)*7);       //3.1
         double alpha8 = mAlpha7;//(1+(mAlpha-1)*8);       //3.4
 
+        int i=0;
 
         //Reflect first point
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha1;
 
             //Add some random noise
@@ -632,7 +654,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha2;
 
             //Add some random noise
@@ -652,7 +674,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha3;
 
             //Add some random noise
@@ -671,7 +693,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha4;
 
             //Add some random noise
@@ -690,7 +712,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha5;
 
             //Add some random noise
@@ -709,7 +731,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha6;
 
             //Add some random noise
@@ -728,7 +750,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha7;
 
             //Add some random noise
@@ -747,7 +769,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
         for(int j=0; j<mNumParameters; ++j)
         {
             //Reflect
-            double worst = mParameters[mvIdx[0]][j];
+            double worst = mParameters[mWorstId][j];
             mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*alpha8;
 
             //Add some random noise
@@ -841,6 +863,65 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 //            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
 //        }
     }
+    else if(mMethod==3)
+    {
+        calculateBestAndWorstId();
+        findCenter();
+
+        //Reflect first point
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double worst = mParameters[mWorstId][j];
+            mCandidateParticles[0][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+            //Add some random noise
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[0][j] = mCandidateParticles[0][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[0][j] = qMin(mCandidateParticles[0][j], mParMax[j]);
+            mCandidateParticles[0][j] = qMax(mCandidateParticles[0][j], mParMin[j]);
+        }
+
+
+        //Use additional threads to compute a few iteration steps
+        QVector<double> newPoint = mCandidateParticles[0];
+        mWorstCounter=0;
+        for(int t=1; t<mNumModels; ++t)
+        {
+            double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
+            for(int j=0; j<mNumParameters; ++j)
+            {
+                double best = mParameters[mBestId][j];
+                double maxDiff = getMaxParDiff();
+                double r = (double)rand() / (double)RAND_MAX;
+                mCandidateParticles[t][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+                mCandidateParticles[t][j] = qMin(mCandidateParticles[t][j], mParMax[j]);
+                mCandidateParticles[t][j] = qMax(mCandidateParticles[t][j], mParMin[j]);
+            }
+            ++mWorstCounter;
+            newPoint = mCandidateParticles[t];
+        }
+
+
+//        i=0;
+//        if(i >= mNumThreads) return;
+
+//        //Reflect third
+//        for(int j=0; j<mNumParameters; ++j)
+//        {
+//            //Reflect
+//            double worst = mParameters[mvIdx[i]][j];
+//            mCandidateParticles[i][j] = mCenter[j] + (mCenter[j]-worst)*mAlpha;
+
+//            //Add some random noise
+//            double maxDiff = getMaxParDiff();
+//            double r = (double)rand() / (double)RAND_MAX;
+//            mCandidateParticles[i][j] = mCandidateParticles[i][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+//            mCandidateParticles[i][j] = qMin(mCandidateParticles[i][j], mParMax[j]);
+//            mCandidateParticles[i][j] = qMax(mCandidateParticles[i][j], mParMin[j]);
+//        }
+    }
 }
 
 
@@ -883,7 +964,7 @@ void OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
         {
             mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[m]);
             mCandidateParticles[candidate_id] = mParameters[point_id+m];
-            execute("opt set evalid "+QString::number(candidate_id));
+            execute("opt set evalid "+QString::number(mNumPoints+candidate_id));
             execute("call setpars");
             ++candidate_id;
         }
@@ -928,9 +1009,9 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
             forget();
 
             int nWorsePoints=0;
-            for(int j=0; j<mNumModels; ++j)
+            for(int j=0; j<mNumPoints; ++j)
             {
-                if(mObjectives[j] > mCandidateObjectives[j])
+                if(mObjectives[j] > mCandidateObjectives[i])
                 {
                     ++nWorsePoints;
                 }
@@ -951,7 +1032,38 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
             }
         }
     }
-    else
+    else if(mMethod == 3)
+    {
+        mNeedsIteration=false;
+
+        mFirstReflectionFailed=true;
+
+        forget();
+
+        int nWorsePoints=0;
+        for(int j=0; j<mNumPoints; ++j)
+        {
+            if(mObjectives[j] > mCandidateObjectives[0])
+            {
+                ++nWorsePoints;
+            }
+        }
+
+        mParameters[mWorstId] = mCandidateParticles[0];
+        mObjectives[mWorstId] = mCandidateObjectives[0];
+        if(nWorsePoints >= 2)   //New point is better, keep it
+        {
+            mFirstReflectionFailed=false;
+            logPoint(mWorstId);
+            if(checkForConvergence()) return;   //Check convergence
+        }
+        else        //New point is not better, iterate
+        {
+            mNeedsIteration=true;
+            return;
+        }
+    }
+    else //method 1 and 2
     {
         calculateBestAndWorstId();
         int minIdx = 0;
