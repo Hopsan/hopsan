@@ -45,8 +45,8 @@ public:
 
 protected:
     virtual void pickCandidateParticles();
-    virtual void evaluateCandidateParticles(bool firstTime=false);
-    virtual void evaluatePoints(bool firstTime=false);
+    virtual void evaluateCandidateParticles(bool firstTime=true);
+    virtual void evaluatePoints(bool firstTime=true);
     virtual void examineCandidateParticles();
     double triangularDistribution(double min, double mid, double max);
     void generateRandomParticle(QVector<double> &rParticle);
@@ -54,10 +54,12 @@ protected:
     void findCenter();
     void findCenter(QVector< QVector<double> > &particles);
     void plotPoints();
+    void setOptimizationObjectiveValue(int idx, double value);
 
     QVector<ModelWidget *> mUsedModelPtrs;
 
     QVector< QVector<double> > mCandidateParticles;
+    QVector<double> mCandidateObjectives;
     bool mNeedsIteration;
     bool mFirstReflectionFailed;
 

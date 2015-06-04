@@ -98,7 +98,8 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
         mCandidateParticles[i].resize(mNumParameters);
     }
 
-    mObjectives.resize(mNumPoints+mNumModels);
+    mObjectives.resize(mNumPoints);
+    mCandidateObjectives.resize(mNumModels);
 
     //Limit number of models, in case worker has opened more models than necessary
     mUsedModelPtrs.clear();
@@ -284,7 +285,7 @@ void OptimizationWorkerComplexRFP::run()
                     int nWorsePoints=0;
                     for(int j=0; j<mNumPoints; ++j)
                     {
-                        if(mObjectives[j] > mObjectives[mNumPoints+o])
+                        if(mObjectives[j] > mCandidateObjectives[o])
                         {
                             ++nWorsePoints;
                         }
@@ -293,7 +294,7 @@ void OptimizationWorkerComplexRFP::run()
                     if(nWorsePoints >= 2)
                     {
                         mParameters[mWorstId] = mCandidateParticles[o];
-                        mObjectives[mWorstId] = mObjectives[mNumPoints+o];
+                        mObjectives[mWorstId] = mCandidateObjectives[o];
                         logWorstPoint();
                         mNeedsIteration = false;
                         break;
@@ -323,7 +324,7 @@ void OptimizationWorkerComplexRFP::run()
             newPoint = mCandidateParticles.last();
 
             //Evaluate new point
-            evaluateCandidateParticles();
+            evaluateCandidateParticles(i==0);
 
             //Replace worst point with first candidate point that is better, if any
             for(int o=0; o<mNumModels; ++o)
@@ -331,7 +332,7 @@ void OptimizationWorkerComplexRFP::run()
                 int nWorsePoints=0;
                 for(int j=0; j<mNumPoints; ++j)
                 {
-                    if(mObjectives[j] > mObjectives[mNumPoints+o])
+                    if(mObjectives[j] > mCandidateObjectives[o])
                     {
                         ++nWorsePoints;
                     }
@@ -340,7 +341,7 @@ void OptimizationWorkerComplexRFP::run()
                 if(nWorsePoints >= 2)
                 {
                     mParameters[mWorstId] = mCandidateParticles[o];
-                    mObjectives[mWorstId] = mObjectives[mNumPoints+o];
+                    mObjectives[mWorstId] = mCandidateObjectives[o];
                     logWorstPoint();
                     mNeedsIteration = false;
                     break;
@@ -793,7 +794,7 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
     for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
-        execute("opt set evalid "+QString::number(i+mNumPoints));
+        execute("opt set evalid "+QString::number(mNumPoints+i));
         execute("call setpars");
     }
     gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime); //Ok to use global model handler for this, it does not use any member stuff
@@ -801,7 +802,7 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
     for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
-        execute("opt set evalid "+QString::number(i+mNumPoints));
+        execute("opt set evalid "+QString::number(i));
         execute("call obj");
     }
     mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs.first());
@@ -815,31 +816,35 @@ void OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
     // In case we have wefere models then points, we need to process the models sequentially
     // (all models in paralllel in ieach sequential step needed)
     int numEvaluatedPoints=0;
+    int point_id=0;
     while ( (numEvaluatedPoints < mNumPoints) && !mpHandler->mpHcomHandler->isAborted() )
     {
-        const int nMax = qMin(mNumPoints, mNumModels);
+        const int nMax = qMin(mNumPoints-numEvaluatedPoints, mNumModels);
 
         // Set parameters in models
-        int point_id=0;
+        int candidate_id=0;
         for(int m=0; m<nMax && !mpHandler->mpHcomHandler->isAborted(); ++m)
         {
             mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[m]);
-            execute("opt set evalid "+QString::number(point_id));
+            mCandidateParticles[candidate_id] = mParameters[point_id+m];
+            execute("opt set evalid "+QString::number(candidate_id));
             execute("call setpars");
-            ++point_id;
+            ++candidate_id;
         }
 
         // Simulate in parallele if possible
         gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
 
         // Now calculate objective function value
-        point_id=0;
+        candidate_id=0;
         for(int m=0; m<nMax && !mpHandler->mpHcomHandler->isAborted(); ++m)
         {
             mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[m]);
-            execute("opt set evalid "+QString::number(point_id));
+            execute("opt set evalid "+QString::number(candidate_id));
             execute("call obj");
+            mObjectives[point_id] = mCandidateObjectives[candidate_id];
             ++point_id;
+            ++candidate_id;
         }
 
         // Reset model pointer
@@ -862,21 +867,21 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         mNeedsIteration=false;
 
         mFirstReflectionFailed=true;
-        for(int i=0; i<mNumPoints; ++i)
+        for(int i=0; i<qMin(mNumPoints,mNumModels); ++i)
         {
             forget();
 
             int nWorsePoints=0;
             for(int j=0; j<mNumModels; ++j)
             {
-                if(mObjectives[j] > mObjectives[mNumPoints+j])
+                if(mObjectives[j] > mCandidateObjectives[j])
                 {
                     ++nWorsePoints;
                 }
             }
 
             mParameters[mvIdx[i]] = mCandidateParticles[i];
-            mObjectives[mvIdx[i]] = mObjectives[mNumPoints+i];
+            mObjectives[mvIdx[i]] = mCandidateObjectives[i];
             if(nWorsePoints >= 2)   //New point is better, keep it
             {
                 mFirstReflectionFailed=false;
@@ -896,17 +901,17 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         int minIdx = 0;
         for(int i=1; i<mNumModels; ++i)
         {
-            if(mObjectives[mNumPoints+i] < mObjectives[mNumPoints+minIdx])
+            if(mCandidateObjectives[i] < mCandidateObjectives[minIdx])
             {
                 minIdx = i;
             }
         }
 
 
-        if(mObjectives[mNumPoints+minIdx] < mObjectives[mWorstId])
+        if(mCandidateObjectives[minIdx] < mObjectives[mWorstId])
         {
             mParameters[mWorstId] = mCandidateParticles[minIdx];
-            mObjectives[mWorstId] = mObjectives[mNumPoints+minIdx];
+            mObjectives[mWorstId] = mCandidateObjectives[minIdx];
             logPoint(mWorstId);
             calculateBestAndWorstId();
             if(checkForConvergence()) return;   //Check convergence
@@ -914,7 +919,7 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         else
         {
             mParameters[mWorstId] = mCandidateParticles[minIdx];
-            mObjectives[mWorstId] = mObjectives[mNumPoints+minIdx];
+            mObjectives[mWorstId] = mCandidateObjectives[minIdx];
             mNeedsIteration=true;
             return;
         }
@@ -1079,4 +1084,13 @@ void OptimizationWorkerComplexRFP::plotPoints()
         }
         pTab->update();
     }
+}
+
+void OptimizationWorkerComplexRFP::setOptimizationObjectiveValue(int idx, double value)
+{
+    if(idx<0 || idx > mCandidateObjectives.size()-1)
+    {
+        return;
+    }
+    mCandidateObjectives[idx] = value;
 }

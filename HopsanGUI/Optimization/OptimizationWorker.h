@@ -63,7 +63,7 @@ public:
     void setParMin(int idx, double value);
     void setParMax(int idx, double value);
 
-    void setOptimizationObjectiveValue(int idx, double value);
+    virtual void setOptimizationObjectiveValue(int idx, double value);
     double getOptimizationObjectiveValue(int idx);
     virtual double getParameter(const int pointIdx, const int parIdx) const;
     double getMaxParDiff();
