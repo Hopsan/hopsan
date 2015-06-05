@@ -26,6 +26,7 @@
 #include "Configuration.h"
 #include "HcomHandler.h"
 #include "OptimizationHandler.h"
+#include "Optimization/OptimizationWorkerSimplex.h"
 #include "Optimization/OptimizationWorkerComplexRF.h"
 #include "Optimization/OptimizationWorkerComplexRFM.h"
 #include "Optimization/OptimizationWorkerComplexRFP.h"
@@ -151,7 +152,16 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
 
     if(var == "algorithm")
     {
-        if(value == "complexrf")
+        if(value == "simplex")
+        {
+            mAlgorithm = OptimizationHandler::Simplex;
+            if(mpWorker)
+            {
+                delete mpWorker;
+            }
+            mpWorker = new OptimizationWorkerSimplex(this);
+        }
+        else if(value == "complexrf")
         {
             mAlgorithm = OptimizationHandler::ComplexRF;
             if(mpWorker)

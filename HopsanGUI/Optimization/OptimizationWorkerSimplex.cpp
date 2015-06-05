@@ -14,13 +14,14 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   OptimizationWorkerComplexRF.cpp
+//! @file   OptimizationWorkerSimplex.cpp
 //! @author Robert Braun <robert.braun@liu.se>
-//! @date   2014-02-13
-//! @version $Id$
+//! @date   2015-05-25
+//! @version $Id: OptimizationWorkerComplexRF.cpp 8081 2015-05-22 13:56:59Z robbr48 $
 //!
-//! @brief Contains an optimization worker object for the Complex-RF algorithm
+//! @brief Contains an optimization worker object for the Simplex algorithm
 //!
+
 
 //Hopsan includes
 #include "Dialogs/OptimizationDialog.h"
@@ -28,7 +29,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "HcomHandler.h"
 #include "OptimizationHandler.h"
-#include "OptimizationWorkerComplexRF.h"
+#include "OptimizationWorkerSimplex.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotWindow.h"
@@ -38,7 +39,7 @@
 //C++ includes
 #include <math.h>
 
-OptimizationWorkerComplexRF::OptimizationWorkerComplexRF(OptimizationHandler *pHandler)
+OptimizationWorkerSimplex::OptimizationWorkerSimplex(OptimizationHandler *pHandler)
     : OptimizationWorkerComplex(pHandler)
 {
 
@@ -46,7 +47,7 @@ OptimizationWorkerComplexRF::OptimizationWorkerComplexRF(OptimizationHandler *pH
 
 
 //! @brief Initializes a Complex-RF optimization
-void OptimizationWorkerComplexRF::init(const ModelWidget *pModel, const QString &modelPath)
+void OptimizationWorkerSimplex::init(const ModelWidget *pModel, const QString &modelPath)
 {
     OptimizationWorkerComplex::init(pModel, modelPath);
 
@@ -103,8 +104,8 @@ void OptimizationWorkerComplexRF::init(const ModelWidget *pModel, const QString 
 
 
 
-//! @brief Executes a Complex-RF optimization. optComplexInit() must be called before this one.
-void OptimizationWorkerComplexRF::run()
+//! @brief Executes a Simplex optimization. optComplexInit() must be called before this one.
+void OptimizationWorkerSimplex::run()
 {
     //Plot optimization points
     plotPoints();
@@ -148,6 +149,8 @@ void OptimizationWorkerComplexRF::run()
     int i=0;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
+        mLastWorstId = mWorstId;
+
         //Plot optimization points
         plotPoints();
 
@@ -169,11 +172,10 @@ void OptimizationWorkerComplexRF::run()
         if(checkForConvergence()) break;
 
         //Increase all objective values (forgetting principle)
-        forget();
+        //orget();
 
         //Calculate best and worst point
         calculateBestAndWorstId();
-        int wid = mWorstId;
 
         //Plot best and worst objective values
         plotObjectiveFunctionValues();
@@ -183,16 +185,13 @@ void OptimizationWorkerComplexRF::run()
 
         //Reflect worst point
         reflectWorst();
-        QVector<double> newPoint;
-        newPoint.resize(mNumParameters);
-        newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
+        plotPoints();
 
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Evaluate new point
         execute("call evalworst");
 
-        ++mEvaluations;
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
             execute("echo on");
@@ -202,57 +201,17 @@ void OptimizationWorkerComplexRF::run()
         }
 
         //Calculate best and worst points
-        mLastWorstId=wid;
         calculateBestAndWorstId();
-        wid = mWorstId;
 
-        if(wid != mLastWorstId)
+
+        if(mBestId == mLastWorstId)
         {
-            logPoint(mLastWorstId);
-        }
-
-        //Iterate until worst point is no longer the same
-        mWorstCounter=0;
-        while(mLastWorstId == wid)
-        {
-            plotPoints();
-
-            qApp->processEvents();
-            if(mpHandler->mpHcomHandler->isAborted())
-            {
-                execute("echo on");
-                print("Optimization aborted.");
-                finalize();
-                mpHandler->mpHcomHandler->abortHCOM();
-                return;
-            }
-
-            ++i;
-            if(i>=mMaxEvals)
-            {
-                --i;    //Needed because for-loop will increase it by one anyway
-                break;
-            }
-
-            double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
-
-            //Reflect worst point
-            for(int j=0; j<mNumParameters; ++j)
-            {
-                double best = mParameters[mBestId][j];
-                double maxDiff = getMaxParDiff();
-                double r = (double)rand() / (double)RAND_MAX;
-                mParameters[wid][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-                mParameters[wid][j] = qMin(mParameters[wid][j], mParMax[j]);
-                mParameters[wid][j] = qMax(mParameters[wid][j], mParMin[j]);
-            }
-            newPoint = mParameters[wid];
+            QVector<double> reflected = mParameters[mBestId];
+            double reflectedObj = mObjectives[mBestId];
+            mWorstId = mBestId;
+            expand();
             gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
-
-            //Evaluate new point
             execute("call evalworst");
-
-            ++mEvaluations;
             if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
             {
                 execute("echo on");
@@ -260,25 +219,57 @@ void OptimizationWorkerComplexRF::run()
                 finalize();
                 return;
             }
-
-            //Calculate best and worst points
-            mLastWorstId=wid;
             calculateBestAndWorstId();
-            wid = mWorstId;
-
-            if(wid != mLastWorstId)
+            if(mBestId != mLastWorstId)
             {
+                mParameters[mLastWorstId] = reflected;    //Expanded point not better than reflected, so use reflected
+                mObjectives[mLastWorstId] = reflectedObj;
+                plotPoints();
                 logPoint(mLastWorstId);
             }
-
-            ++mWorstCounter;
-            execute("echo off -nonerrors");
-
-            updateProgressBar(i);
+        }
+        else
+        {
+            QVector<double> reflected = mParameters[mBestId];
+            mWorstId = mBestId;
+            contract();
+            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+            execute("call evalworst");
+            if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+            {
+                execute("echo on");
+                print("Optimization aborted.");
+                finalize();
+                return;
+            }
+            calculateBestAndWorstId();
+            if(mWorstId != mLastWorstId)
+            {
+                plotPoints();
+                logPoint(mLastWorstId);
+            }
+            else
+            {
+                reduce();
+                gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+                execute("call evalall");
+                if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+                {
+                    execute("echo on");
+                    print("Optimization aborted.");
+                    finalize();
+                    return;
+                }
+                calculateBestAndWorstId();
+                plotPoints();
+                logAllPoints();
+            }
         }
 
         plotParameters();
         plotEntropy();
+
+        ++mEvaluations;
     }
 
     gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
@@ -315,7 +306,7 @@ void OptimizationWorkerComplexRF::run()
     return;
 }
 
-void OptimizationWorkerComplexRF::finalize()
+void OptimizationWorkerSimplex::finalize()
 {
     OptimizationWorkerComplex::finalize();
 }

@@ -403,7 +403,8 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 
     bool ok;
     OptimizationHandler::AlgorithmT algorithm = mpTerminal->mpHandler->mpOptHandler->mAlgorithm;
-    if(algorithm == OptimizationHandler::ComplexRF ||
+    if(algorithm == OptimizationHandler::Simplex ||
+       algorithm == OptimizationHandler::ComplexRF ||
        algorithm == OptimizationHandler::ComplexRFM ||
        algorithm == OptimizationHandler::ComplexRFP)
     {
@@ -920,6 +921,8 @@ void OptimizationDialog::generateScriptFile()
     bool algorithmOk=true;
     switch (mpAlgorithmBox->currentIndex())
     {
+    case OptimizationHandler::Simplex :
+        generateComplexScript("simplex");
     case OptimizationHandler::ComplexRF :
         generateComplexScript("complexrf");
         break;
@@ -1355,6 +1358,16 @@ void OptimizationDialog::setAlgorithm(int i)
 
     switch(i)
     {
+    case OptimizationHandler::Simplex:
+        mpSearchPointsLabel->setVisible(true);
+        mpSearchPointsSpinBox->setVisible(true);
+        mpAlphaLabel->setVisible(true);
+        mpAlphaLineEdit->setVisible(true);
+        mpBetaLabel->setVisible(true);
+        mpBetaLineEdit->setVisible(true);
+        mpGammaLabel->setVisible(true);
+        mpGammaLineEdit->setVisible(true);
+        break;
     case OptimizationHandler::ComplexRF:
         mpSearchPointsLabel->setVisible(true);
         mpSearchPointsSpinBox->setVisible(true);
@@ -1954,6 +1967,11 @@ void OptimizationDialog::recreateCoreProgressBars()
     //Add new stuff depending on algorithm and number of threads
     switch (mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
     {
+    case OptimizationHandler::Simplex :    //Complex-RF
+        mCoreProgressBarPtrs.append(new QProgressBar(this));
+        mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
+        mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
+        break;
     case OptimizationHandler::ComplexRF :    //Complex-RF
         mCoreProgressBarPtrs.append(new QProgressBar(this));
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
@@ -2032,6 +2050,9 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
     int nPoints;
     switch(mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
     {
+    case OptimizationHandler::Simplex:
+        nPoints=mpSearchPointsSpinBox->value();
+        break;
     case OptimizationHandler::ComplexRF:     //Complex-RF
         nPoints=mpSearchPointsSpinBox->value();
         break;

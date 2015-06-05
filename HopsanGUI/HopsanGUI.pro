@@ -285,7 +285,8 @@ SOURCES += main.cpp \
     Utilities/IndexIntervalCollection.cpp \
     LogDataGeneration.cpp \
     RemoteCoreAccess.cpp \
-    RemoteSimulationUtils.cpp
+    RemoteSimulationUtils.cpp \
+    Optimization/OptimizationWorkerSimplex.cpp
 
 
 
@@ -383,7 +384,8 @@ HEADERS += MainWindow.h \
     Utilities/IndexIntervalCollection.h \
     LogDataGeneration.h \
     RemoteCoreAccess.h \
-    RemoteSimulationUtils.h
+    RemoteSimulationUtils.h \
+    Optimization/OptimizationWorkerSimplex.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

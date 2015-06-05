@@ -89,6 +89,57 @@ void OptimizationWorkerComplex::forget()
 }
 
 
+void OptimizationWorkerComplex::reflect(double distance)
+{
+    for(int j=0; j<mNumParameters; ++j)
+    {
+        //Reflect
+        double worst = mParameters[mWorstId][j];
+        mParameters[mWorstId][j] = mCenter[j] + (mCenter[j]-worst)*distance;
+
+        //Add some random noise
+        double maxDiff = getMaxParDiff();
+        double r = (double)rand() / (double)RAND_MAX;
+        mParameters[mWorstId][j] = mParameters[mWorstId][j] + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+        mParameters[mWorstId][j] = qMin(mParameters[mWorstId][j], mParMax[j]);
+        mParameters[mWorstId][j] = qMax(mParameters[mWorstId][j], mParMin[j]);
+    }
+}
+
+void OptimizationWorkerComplex::reflectWorst()
+{
+    reflect(mAlpha);
+}
+
+
+void OptimizationWorkerComplex::expand()
+{
+    reflect(mGamma-mAlpha);
+}
+
+
+void OptimizationWorkerComplex::contract()
+{
+    reflect(mRho-mAlpha);
+}
+
+
+void OptimizationWorkerComplex::reduce()
+{
+    for(int i=0; i<mNumPoints; ++i)
+    {
+        if(i==mBestId) continue;
+
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            //Reflect
+            double best = mParameters[mBestId][j];
+            mParameters[i][j] = best + mSigma*(mParameters[i][j] - best);
+        }
+    }
+}
+
+
 void OptimizationWorkerComplex::setOptVar(const QString &var, const QString &value)
 {
     OptimizationWorker::setOptVar(var, value);
@@ -104,6 +155,14 @@ void OptimizationWorkerComplex::setOptVar(const QString &var, const QString &val
     else if(var == "gamma")
     {
         mGamma = value.toDouble();
+    }
+    else if(var == "rho")
+    {
+        mRho = value.toDouble();
+    }
+    else if(var == "sigma")
+    {
+        mSigma = value.toDouble();
     }
     else if(var == "dontchangestartvalues")
     {

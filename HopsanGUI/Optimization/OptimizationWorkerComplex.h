@@ -41,12 +41,17 @@ public:
 
     void findCenter();
     void forget();
+    void reflect(double distance);
+    void reflectWorst();
+    void expand();
+    void contract();
+    void reduce();
 
     virtual void setOptVar(const QString &var, const QString &value);
     virtual double getOptVar(const QString &var, bool &ok);
 
 protected:
-    double mAlpha, mRfak, mGamma, mKf;
+    double mAlpha, mRfak, mGamma, mRho, mSigma, mKf;
     bool mDontChangeStartValues;
     int mWorstCounter;
     QVector<double> mCenter;
