@@ -287,6 +287,8 @@ void OptimizationWorkerComplexRFP::run()
             return;
         }
 
+        examineCandidateParticles();
+
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Calculate best and worst points
