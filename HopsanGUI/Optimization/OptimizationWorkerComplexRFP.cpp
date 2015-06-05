@@ -143,13 +143,18 @@ void OptimizationWorkerComplexRFP::init(const ModelWidget *pModel, const QString
     {
         if (mMethod == 0 )
         {
-            chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule);
+            chooseRemoteModelSimulationQueuer(Crfp0_Homo_Reschedule);
         }
         else
         {
-            chooseRemoteModelSimulationQueuer(Crfp2_Homo_Reschedule);
+            chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule);
         }
-        gpRemoteModelSimulationQueuer->setup(mUsedModelPtrs, true);
+        gpRemoteModelSimulationQueuer->benchmarkModel(mUsedModelPtrs.front());
+        int pm, pa; double su;
+        gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, 8, pm, pa, su);
+        reInit(pa);
+
+        gpRemoteModelSimulationQueuer->setupModelQueues(mUsedModelPtrs, pm);
     }
 #endif
 
@@ -196,6 +201,7 @@ void OptimizationWorkerComplexRFP::run()
     //Run optimization loop
     int i=0;
     bool changed=false;
+    bool needsReschedule = false;
     for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
 //        if(i>=20 && !changed)
@@ -203,6 +209,21 @@ void OptimizationWorkerComplexRFP::run()
 //            reInit(3);
 //            changed=true;
 //        }
+#ifdef USEZMQ
+        if (needsReschedule)
+        {
+            int pm, pa;
+            double su;
+            gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, 8, pm, pa, su);
+            reInit(pa);
+            // Setup parallell server queues
+            if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+            {
+                gpRemoteModelSimulationQueuer->setupModelQueues(mUsedModelPtrs, pm);
+            }
+            needsReschedule = false;
+        }
+#endif
 
         //Plot optimization points
         plotPoints();
@@ -243,7 +264,21 @@ void OptimizationWorkerComplexRFP::run()
         plotPoints();
 
         //Evaluate new point
-        evaluateCandidateParticles(i==0);
+        bool evalOK = evaluateCandidateParticles(needsReschedule, i==0);
+        if (needsReschedule)
+        {
+            --i;
+            continue;
+        }
+        else if (!evalOK)
+        {
+            execute("echo on");
+            print("Simaultion failed during candidate evaluation.");
+            print("Optimization aborted.");
+            finalize();
+            return;
+        }
+
         if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
         {
             execute("echo on");
@@ -251,8 +286,6 @@ void OptimizationWorkerComplexRFP::run()
             finalize();
             return;
         }
-
-        examineCandidateParticles();
 
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
@@ -335,7 +368,20 @@ void OptimizationWorkerComplexRFP::run()
             newPoint = mCandidateParticles.last();
 
             //Evaluate new point
-            evaluateCandidateParticles(i==0);
+            bool evalOK = evaluateCandidateParticles(needsReschedule, i==0);
+            if (needsReschedule)
+            {
+                --i;
+                continue;
+            }
+            else if (!evalOK)
+            {
+                execute("echo on");
+                print("Simaultion failed during candidate evaluation.");
+                print("Optimization aborted.");
+                finalize();
+                return;
+            }
 
             //Replace worst point with first candidate point that is better, if any
             for(int o=0; o<mNumModels; ++o)
@@ -468,7 +514,6 @@ void OptimizationWorkerComplexRFP::reInit(int nModels)
     {
         mUsedModelPtrs.append(mModelPtrs.at(i));
     }
-
 }
 
 
@@ -925,8 +970,10 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 }
 
 
-void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
+bool OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool &rNeedsRescheduling, bool firstTime)
 {
+    rNeedsRescheduling = false;
+
     //Multi-threading, we cannot use the "evalall" function
     for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
@@ -934,7 +981,27 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
         execute("opt set evalid "+QString::number(mNumPoints+i));
         execute("call setpars");
     }
-    gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime); //Ok to use global model handler for this, it does not use any member stuff
+
+    bool simOK=false;
+#ifdef USEZMQ
+    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    {
+        if (gpRemoteModelSimulationQueuer && gpRemoteModelSimulationQueuer->hasServers())
+        {
+            simOK = gpRemoteModelSimulationQueuer->simulateModels(rNeedsRescheduling);
+        }
+    }
+    else
+    {
+        simOK = gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
+    }
+#else
+    simOK = gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
+#endif
+    if (!simOK)
+    {
+        return false;
+    }
 
     for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
@@ -946,9 +1013,11 @@ void OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool firstTime)
 
     ++mIterations;
     mEvaluations += mNumModels;
+
+    return true;
 }
 
-void OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
+bool OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
 {
     // In case we have wefere models then points, we need to process the models sequentially
     // (all models in paralllel in ieach sequential step needed)
@@ -970,7 +1039,27 @@ void OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
         }
 
         // Simulate in parallele if possible
-        gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
+        bool simOK=false;
+    #ifdef USEZMQ
+        if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+        {
+            if (gpRemoteModelSimulationQueuer && gpRemoteModelSimulationQueuer->hasServers())
+            {
+                bool dummy;
+                simOK = gpRemoteModelSimulationQueuer->simulateModels(dummy);
+            }
+        }
+        else
+        {
+            simOK = gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
+        }
+    #else
+        simOK = gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
+    #endif
+        if (!simOK)
+        {
+            return false;
+        }
 
         // Now calculate objective function value
         candidate_id=0;
@@ -993,6 +1082,7 @@ void OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
 
     ++mIterations;
     mEvaluations += numEvaluatedPoints;
+    return true;
 }
 
 
@@ -1004,25 +1094,25 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         mNeedsIteration=false;
 
         mFirstReflectionFailed=true;
-        for(int i=0; i<qMin(mNumPoints,mNumModels); ++i)
+        for(int candId=0; candId<qMin(mNumPoints,mNumModels); ++candId)
         {
             forget();
 
             int nWorsePoints=0;
-            for(int j=0; j<mNumPoints; ++j)
+            for(int ptId=0; ptId<mNumPoints; ++ptId)
             {
-                if(mObjectives[j] > mCandidateObjectives[i])
+                if(mObjectives[ptId] > mCandidateObjectives[candId])
                 {
                     ++nWorsePoints;
                 }
             }
 
-            mParameters[mvIdx[i]] = mCandidateParticles[i];
-            mObjectives[mvIdx[i]] = mCandidateObjectives[i];
+            mParameters[mvIdx[candId]] = mCandidateParticles[candId];
+            mObjectives[mvIdx[candId]] = mCandidateObjectives[candId];
             if(nWorsePoints >= 2)   //New point is better, keep it
             {
                 mFirstReflectionFailed=false;
-                logPoint(mvIdx[i]);
+                logPoint(mvIdx[candId]);
                 if(checkForConvergence()) return;   //Check convergence
             }
             else        //New point is not better, iterate

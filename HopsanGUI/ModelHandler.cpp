@@ -870,36 +870,36 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
     TicToc tictoc;
     if (!models.isEmpty())
     {
-#ifdef USEZMQ
-        if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
-        {
-            if (!gpRemoteModelSimulationQueuer || !gpRemoteModelSimulationQueuer->hasServers())
-            {
-                return false;
-            }
-            return gpRemoteModelSimulationQueuer->simulateModels();
-        }
-        else
-        {
-            // All systems will use start time, stop time and time step from the first model
-            double startTime = models.first()->getStartTime().toDouble();
-            double stopTime = models.first()->getStopTime().toDouble();
-            size_t nSamples = models.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
-            double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
+//#ifdef USEZMQ
+//        if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+//        {
+//            if (!gpRemoteModelSimulationQueuer || !gpRemoteModelSimulationQueuer->hasServers())
+//            {
+//                return false;
+//            }
+//            return gpRemoteModelSimulationQueuer->simulateModels();
+//        }
+//        else
+//        {
+//            // All systems will use start time, stop time and time step from the first model
+//            double startTime = models.first()->getStartTime().toDouble();
+//            double stopTime = models.first()->getStopTime().toDouble();
+//            size_t nSamples = models.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
+//            double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
 
-            QVector<SystemContainer*> systemsVector;
-            for(int i=0; i<models.size(); ++i)
-            {
-                systemsVector.append(models[i]->getTopLevelSystemContainer());
-            }
+//            QVector<SystemContainer*> systemsVector;
+//            for(int i=0; i<models.size(); ++i)
+//            {
+//                systemsVector.append(models[i]->getTopLevelSystemContainer());
+//            }
 
-            mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
-            mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-            mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, noChanges);
-            tictoc.toc("simulateMultipleModels_blocking()");
-            return mpSimulationThreadHandler->wasSuccessful();
-        }
-#else
+//            mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, logStartT, nSamples);
+//            mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+//            mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, noChanges);
+//            tictoc.toc("simulateMultipleModels_blocking()");
+//            return mpSimulationThreadHandler->wasSuccessful();
+//        }
+//#else
         // All systems will use start time, stop time and time step from the first model
         double startTime = models.first()->getStartTime().toDouble();
         double stopTime = models.first()->getStopTime().toDouble();
@@ -917,7 +917,7 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
         mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, noChanges);
         tictoc.toc("simulateMultipleModels_blocking()");
         return mpSimulationThreadHandler->wasSuccessful();
-#endif
+//#endif
     }
 
     tictoc.toc("simulateMultipleModels_blocking()");

@@ -13,6 +13,7 @@
 #include <QVector>
 #include <QTextStream>
 #include <QStringList>
+#include <limits>
 
 
 #ifdef USEZMQ
@@ -492,6 +493,11 @@ QString RemoteCoreAddressHandler::getBestAvailableServer(int nRequiredSlots, con
 
 QList<QString> RemoteCoreAddressHandler::getMatchingAvailableServers(double requiredSpeed, int nRequiredSlots, const QStringList &rExcludeList)
 {
+    if (requiredSpeed < 0)
+    {
+        requiredSpeed = std::numeric_limits<double>::max();
+    }
+
     QList<QString> results;
     for (auto sit=mServerSpeedMap.begin(); sit!=mServerSpeedMap.end(); ++sit)
     {

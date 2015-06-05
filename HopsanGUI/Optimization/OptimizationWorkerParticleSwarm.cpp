@@ -112,7 +112,10 @@ void OptimizationWorkerParticleSwarm::init(const ModelWidget *pModel, const QStr
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
         chooseRemoteModelSimulationQueuer(Pso_Homo_Reschedule);
-        gpRemoteModelSimulationQueuer->setup(mModelPtrs, true);
+        gpRemoteModelSimulationQueuer->benchmarkModel(mModelPtrs.front());
+        int pm, pa; double su;
+        gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, mModelPtrs.size(), pm, pa, su);
+        gpRemoteModelSimulationQueuer->setupModelQueues(mModelPtrs, pm);
     }
 #endif
 
@@ -177,7 +180,6 @@ void OptimizationWorkerParticleSwarm::run()
             if(mpHandler->mpHcomHandler->isAborted())
             {
                 print("Optimization aborted.");
-                //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
                 finalize();
                 return;
             }
@@ -205,7 +207,6 @@ void OptimizationWorkerParticleSwarm::run()
                 {
                     execute("echo on");
                     print("Optimization aborted.");
-                    //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
                     finalize();
                     return;
                 }
@@ -247,7 +248,6 @@ void OptimizationWorkerParticleSwarm::run()
             if(mpHandler->mpHcomHandler->isAborted())
             {
                 print("Optimization aborted.");
-                //gpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
                 finalize();
                 return;
             }
@@ -262,12 +262,20 @@ void OptimizationWorkerParticleSwarm::run()
             moveParticles();
 
             //Evaluate objective values
-            evaluateAllParticles();
+            bool evalOK = evaluateAllParticles();
+            if(!evalOK)
+            {
+                execute("echo on");
+                print("Simaultion failed during candidate evaluation.");
+                print("Optimization aborted.");
+                finalize();
+                return;
+            }
+
             if(mpHandler->mpHcomHandler->getVar("ans") == -1 || mpHandler->mpHcomHandler->isAborted())    //This check is needed if abort key is pressed while evaluating
             {
                 execute("echo on");
                 print("Optimization aborted.");
-                //mpHcomHandler->setModelPtr(qobject_cast<ModelWidget*>(gpCentralTabWidget->currentWidget()));
                 finalize();
                 return;
             }
@@ -387,7 +395,7 @@ void OptimizationWorkerParticleSwarm::evaluateParticleNonBlocking(int p)
 }
 
 
-void OptimizationWorkerParticleSwarm::evaluateAllParticles()
+bool OptimizationWorkerParticleSwarm::evaluateAllParticles()
 {
     if(mpHandler->mpConfig->getUseMulticore())
     {
@@ -398,7 +406,28 @@ void OptimizationWorkerParticleSwarm::evaluateAllParticles()
             execute("opt set evalid "+QString::number(j));
             execute("call setpars");
         }
-        gpModelHandler->simulateMultipleModels_blocking(mModelPtrs); //Ok to use global model handler for this, it does not use any member stuff
+
+        bool simOK=false;
+#ifdef USEZMQ
+        if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+        {
+            if (gpRemoteModelSimulationQueuer && gpRemoteModelSimulationQueuer->hasServers())
+            {
+                simOK = gpRemoteModelSimulationQueuer->simulateModels();
+            }
+        }
+        else
+        {
+            simOK = gpModelHandler->simulateMultipleModels_blocking(mModelPtrs);
+        }
+#else
+        simOK = gpModelHandler->simulateMultipleModels_blocking(mModelPtrs);
+#endif
+        if (!simOK)
+        {
+            return false;
+        }
+
         for(int j=0; j<mNumPoints && !mpHandler->mpHcomHandler->isAborted(); ++j)
         {
             mpHandler->mpHcomHandler->setModelPtr(mModelPtrs[j]);
@@ -414,6 +443,8 @@ void OptimizationWorkerParticleSwarm::evaluateAllParticles()
 
     ++mIterations;
     mEvaluations += mNumPoints;
+
+    return true;
 }
 
 

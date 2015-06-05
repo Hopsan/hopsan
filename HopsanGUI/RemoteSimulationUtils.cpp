@@ -15,44 +15,6 @@
 #include <QTime>
 
 
-//double SUa_cpxrfp(int numParallellEvaluators, int method)
-//{
-//    // Need to lookup from table, approximate speedup for algorithms, absed on method
-//    QVector<double> sua;
-//    if (method == 1)
-//    {
-//        sua = {1.0, 1.43, 1.78, 1.81, 1.87, 1.99, 1.91, 1.92};
-//    }
-//    else if (method == 2)
-//    {
-//        sua = {1.0, 1.35, 1.52, 1.58, 1.72, 1.74, 1.78, 1.79};
-//    }
-
-//    if (numParallellEvaluators <= sua.size())
-//    {
-//        return sua[numParallellEvaluators];
-//    }
-
-//    return 0.;
-//}
-
-//double SUa_pso(int numParallellEvaluators, int numParticles)
-//{
-//    if (numParallellEvaluators > 0)
-//    {
-//        int maxParticlesPerEvaluator = numParticles / numParallellEvaluators;
-
-//        // If integer division has remanider, then ballancing is uneven, we need one addtional evaluation run (not all evaluatros will be used)
-//        if (numParticles % numParallellEvaluators != 0)
-//        {
-//            maxParticlesPerEvaluator++;
-//        }
-//        return double(numParticles) / double(maxParticlesPerEvaluator);
-//    }
-//    return 0;
-//}
-
-
 class MyBarrier : public QObject
 {
     Q_OBJECT
@@ -90,7 +52,7 @@ RemoteModelSimulationQueuer::~RemoteModelSimulationQueuer()
     clear();
 }
 
-void RemoteModelSimulationQueuer::setup(QVector<ModelWidget *> models, bool runBenchmark)
+void RemoteModelSimulationQueuer::setupModelQueues(QVector<ModelWidget *> models, int numThreads)
 {
     reset();
     mAllModels = models;
@@ -98,14 +60,62 @@ void RemoteModelSimulationQueuer::setup(QVector<ModelWidget *> models, bool runB
     bool addrserver_connected = connectToAddressServer();
     if (addrserver_connected)
     {
-        mpRemoteCoreAddressHandler->requestAvailableServers();
-        QList<QString> servers = mpRemoteCoreAddressHandler->getMatchingAvailableServers(1e200, mNumThreadsPerModel);
+            // Now queue particles / models for remote evaluation
+            mNumThreadsPerModel = numThreads;
 
-        if (!servers.isEmpty())
-        {
-            accuireSlotsAndEnqueModels(models, mNumThreadsPerModel);
-        }
+            // Aquire slots and enque models
+            int nServers = 0;
+            int enqueCtr = 0;
+            for (int m=0; m<models.size(); ++m)
+            {
+                QList<QString> servers = mpRemoteCoreAddressHandler->getMatchingAvailableServers(-1, mNumThreadsPerModel, mServerBlacklist);
+                ModelWidget *pModel = models[m];
+
+                // If we run out of servers, then enque models
+                if (servers.isEmpty() && !mModelQueues.isEmpty())
+                {
+                    mModelQueues[enqueCtr].enqueue(pModel);
+
+                    // Increment / reset counter
+                    enqueCtr++;
+                    if (enqueCtr >= mRemoteCoreSimulationHandlers.size())
+                    {
+                        enqueCtr = 0;
+                    }
+                }
+                // Assign one model to each new simulation handler
+                else if(!servers.isEmpty())
+                {
+                    QString server_addr = servers.front();
+                    servers.pop_front();
+
+                    SharedRemoteCoreSimulationHandlerT pSH(new RemoteCoreSimulationHandler());
+                    pSH->setHopsanServer(server_addr);
+                    pSH->setNumThreads(mNumThreadsPerModel);
+                    if (pSH->connect())
+                    {
+                        nServers++;
+                        mRemoteCoreSimulationHandlers.append(pSH);
+
+                        QQueue<ModelWidget*> q;
+                        q.enqueue(pModel);
+                        mModelQueues.append(q);
+                    }
+                    else
+                    {
+                        //if we fail to connect we should rerun this model the next step
+                        m--;
+                    }
+                }
+            }
+            //! @todo need to make sure that all models were allocated properly
     }
+}
+
+bool RemoteModelSimulationQueuer::simulateModels(bool &rExternalReschedulingNeeded)
+{
+    rExternalReschedulingNeeded = false;
+    return simulateModels();
 }
 
 bool RemoteModelSimulationQueuer::simulateModels()
@@ -136,13 +146,21 @@ bool RemoteModelSimulationQueuer::simulateModels()
             // Load model remotely
             //! @todo handle failure
             bool rc = pModel->loadModelRemote();
+            if (!rc)
+            {
+                return false;
+            }
             // Disconnect old signals from unlock slot
             QObject::disconnect(0,0, barriers[h], SLOT(unlock()));
             // Connect this models signal to unlock slot
             QObject::connect(pModel, SIGNAL(simulationFinished()), barriers[h], SLOT(unlock()));
 
             // Start simulation
-            pModel->simulate_nonblocking();
+            rc = pModel->simulate_nonblocking();
+            if (!rc)
+            {
+                return false;
+            }
 
             // Increment counters
             h++;
@@ -170,6 +188,86 @@ bool RemoteModelSimulationQueuer::simulateModels()
         }
         barriers[i]->unlock();
         delete barriers[i];
+    }
+
+    return true;
+}
+
+
+void RemoteModelSimulationQueuer::determineBestSpeedup(int maxNumThreads, int maxPA, int &rPM, int &rPA, double &rSU)
+{
+    rPM = 1;
+    rPA = 1;
+    rSU = 1;
+
+    bool addrserver_connected = connectToAddressServer();
+    if (addrserver_connected)
+    {
+        mpRemoteCoreAddressHandler->requestAvailableServers();
+
+        int nThreads = mNumThreadsPerModel;
+        if (maxNumThreads < 0)
+        {
+            int nServers;
+            mpRemoteCoreAddressHandler->getMaxNumSlots(nThreads, nServers);
+        }
+
+        // Limit num threads
+        if (maxNumThreads > 0)
+        {
+            nThreads = qMin(maxNumThreads, nThreads);
+        }
+
+        QList<QString> servers = mpRemoteCoreAddressHandler->getMatchingAvailableServers(-1, nThreads, mServerBlacklist);
+
+
+        // HOMOGENEOUS VERSION
+        double bestSU=0;
+        int bestPA=1, bestPM=1;
+        const int nc = nThreads;
+        const int np = servers.size(); // Num servers
+
+        // Limit PA
+        int pa_max = mAlgorithmMaxPa;
+        if (maxPA > 0)
+        {
+            pa_max = qMin(pa_max, maxPA);
+        }
+
+        for (int pm=1; pm<=nc; ++pm)
+        {
+            //int pa_lim_max = qMin(pa_max, np *  (nc / pm) ); //Integer division is used to mimic floor (truncation)
+            int pa_lim_max = pa_max;
+
+            for (int pa_lim=1; pa_lim<=pa_lim_max; ++pa_lim)
+            {
+
+                //int pa = np * floor( nc / pm );
+                //pa = qMin(pa, pa_lim); // Limit PA
+
+                int pa = pa_lim;
+
+                double sua = SUa ( pa, maxPA );
+                double sum = SUm ( pm );
+                double suq = SUq (pa , pm, np, nc );
+                double SU =  sua * sum * suq ;
+
+                gpMessageHandler->addInfoMessage(QString("Speedup: np: %1, pm: %2, pa: %3, SUm: %4, SUa: %5, SUq: %6, SU: %7").arg(np, 4).arg(pm, 4).arg(pa, 4).arg(sum, 10).arg(sua, 10).arg(suq, 10).arg(SU, 10));
+
+                if ( SU>bestSU )
+                {
+                    bestSU = SU;
+                    bestPM = pm;
+                    bestPA = pa;
+                }
+            }
+        }
+
+        gpMessageHandler->addInfoMessage(QString("Best Speedup: pm: %1, pa: %2, SU: %3").arg(bestPM, 4).arg(bestPA, 4).arg(bestSU, 10));
+
+        rPM = bestPM;
+        rPA = bestPA;
+        rSU = bestSU;
     }
 }
 
@@ -203,53 +301,23 @@ bool RemoteModelSimulationQueuer::connectToAddressServer()
     return addrserver_connected;
 }
 
-void RemoteModelSimulationQueuer::accuireSlotsAndEnqueModels(QVector<ModelWidget *> models, int numThreads)
+double RemoteModelSimulationQueuer::SUa(int numParallellEvaluators, int numParticles)
 {
-    int nServers = 0;
-    int enqueCtr = 0;
-    for (int m=0; m<models.size(); ++m)
-    {
-        QList<QString> servers = mpRemoteCoreAddressHandler->getMatchingAvailableServers(1e200, numThreads, mServerBlacklist);
-        ModelWidget *pModel = models[m];
+    return 1;
+}
 
-        // If we run out of servers, then enque models
-        if (servers.isEmpty() && !mModelQueues.isEmpty())
-        {
-            mModelQueues[enqueCtr].enqueue(pModel);
+double RemoteModelSimulationQueuer::SUq(int Pa, int Pm, int np, int nc)
+{
+    int nAvailableQueues = np * (1+(nc-Pm));
 
-            // Increment / reset counter
-            enqueCtr++;
-            if (enqueCtr >= mRemoteCoreSimulationHandlers.size())
-            {
-                enqueCtr = 0;
-            }
-        }
-        // Assign one model to each new simulation handler
-        else if(!servers.isEmpty())
-        {
-            QString server_addr = servers.front();
-            servers.pop_front();
+    int intDiv = Pa / nAvailableQueues;
+    int intDivRem = Pa % nAvailableQueues;
 
-            SharedRemoteCoreSimulationHandlerT pSH(new RemoteCoreSimulationHandler());
-            pSH->setHopsanServer(server_addr);
-            pSH->setNumThreads(mNumThreadsPerModel);
-            if (pSH->connect())
-            {
-                nServers++;
-                mRemoteCoreSimulationHandlers.append(pSH);
+    //int maxNumJobsInQueue = Pa / nAvailableQueues + (Pa % nAvailableQueues);
+    int maxNumJobsInQueue = intDiv + 1*(intDivRem != 0);
+    double maxNumJobsInQueueD = ceil(double(Pa) / double(nAvailableQueues));
 
-                QQueue<ModelWidget*> q;
-                q.enqueue(pModel);
-                mModelQueues.append(q);
-            }
-            else
-            {
-                //if we fail to connect we should rerun this model the next step
-                m--;
-            }
-        }
-    }
-    //! @todo need to make sure that all models were allocated properly
+    return 1.0/double(maxNumJobsInQueueD);
 }
 
 void RemoteModelSimulationQueuer::reset()
@@ -271,11 +339,8 @@ void RemoteModelSimulationQueuer::clear()
     mServerBlacklist.clear();
 }
 
-void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget *> models, bool runBenchmark)
+void RemoteModelSimulationQueuer::benchmarkModel(ModelWidget *pModel)
 {
-    reset();
-    mAllModels = models;
-
     bool addrserver_connected = connectToAddressServer();
     if (addrserver_connected)
     {
@@ -288,16 +353,14 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget 
             mNumThreadsVsModelEvalTime.clear();
             mNumThreadsVsModelEvalTime.reserve(maxNumSlots);
 
-            // Benchamrk speed vs num threads
+            // Benchmark evalTime vs numThreads
             QString server_addr = mpRemoteCoreAddressHandler->getBestAvailableServer(maxNumSlots, mServerBlacklist);
             SharedRemoteCoreSimulationHandlerT pRCSH(new RemoteCoreSimulationHandler());
             pRCSH->setHopsanServer(server_addr);
             bool rc = pRCSH->connectServer();
             if (rc)
             {
-                ModelWidget *pModel = models.first();
                 QDomDocument doc = pModel->saveToDom();
-
                 for (int t=1; t<=maxNumSlots; ++t)
                 {
                     double simTime;
@@ -305,37 +368,23 @@ void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::setup(QVector<ModelWidget 
                     if(rc2)
                     {
                         mNumThreadsVsModelEvalTime.push_back(simTime);
-                        gpMessageHandler->addInfoMessage(QString("Benchmark: nThreads %1, speed: %2").arg(t).arg(simTime));
+                        gpMessageHandler->addInfoMessage(QString("Benchmark: nThreads %1, evalTime: %2").arg(t).arg(simTime, 10));
                     }
                     else
                     {
-                        qDebug() << "Failed remote benchamrk, using numThreads: " << t;
+                        gpMessageHandler->addErrorMessage(QString("Failed remote benchmark, using numThreads: %1").arg(t));
                     }
                 }
             }
             pRCSH->disconnect();
-            qDebug() << "NumThreads speedup: " << mNumThreadsVsModelEvalTime;
-
-            // Now determine optimal allocation
-            QList<QString> matching_servers = mpRemoteCoreAddressHandler->getMatchingAvailableServers(1e200, maxNumSlots, mServerBlacklist);
-            double SU;
-            int pa, pm;
-            determineBestSpeedup(models.size(), maxNumSlots, matching_servers.size(), pm, pa, SU);
-            qDebug() << "Best speedup: " << pm << " " << pa << " " << SU;
-
-            // Now queue particles / models for remote evaluation
-            mNumThreadsPerModel = pm;
-            accuireSlotsAndEnqueModels(models, mNumThreadsPerModel);
-
-
-
-
         }
     }
 }
 
-bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
+bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNeeded)
 {
+    rExternalReschedulingNeeded = false;
+
     QTime timer;
     timer.start();
 
@@ -464,7 +513,7 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
                 }
 
 #define MAXDIFFTHRESH 50
-                //! @todo not hardcoded threshold
+                //! @todo not hardcoded threshold, use smarter method
                 if (maxDiff > MAXDIFFTHRESH)
                 {
                     someServerSlowdownProblem = true;
@@ -494,7 +543,6 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
         }
 
         // Wait until all simualtions finnished, and data collected and such things
-        //! @todo if a server freezes we will block here forever
         while (semaphore.available() != numQueues)
         {
             event_loop.processEvents();
@@ -513,8 +561,35 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
         //! @todo rescheduling everything is probably not the best solution
         if (someServerSlowdownProblem)
         {
-            // Note! We do not need to run benchmark again
-            setup(mAllModels, false);
+            if (mReschedulingMethod == ExternalRescheduling)
+            {
+                int pm,pa;
+                double su;
+                determineBestSpeedup(-1, -1, pm, pa, su);
+                if (pa != mAllModels.size())
+                {
+                    rExternalReschedulingNeeded = true;
+                    gpMessageHandler->addInfoMessage("Aborting iteration, rescheduling by optimization algorithm needed");
+                    return false;
+                }
+                else
+                {
+                    // Do internal load balancing only
+                    // Note! We do not need to run benchmark again
+                    gpMessageHandler->addInfoMessage("External rescheduling is not needed, using internal load balancing");
+                    setupModelQueues(mAllModels, pm);
+                }
+            }
+            else if (mReschedulingMethod == InternalLoadBalance)
+            {
+                int pm,pa;
+                double su;
+                determineBestSpeedup(-1, mAllModels.size(), pm, pa, su);
+                // Do internal load balancing only
+                // Note! We do not need to run benchmark again
+                setupModelQueues(mAllModels, pm);
+            }
+
         }
 
         // We have run out of resources, exit with failure
@@ -526,102 +601,109 @@ bool RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::simulateModels()
         //! @todo need to abort this loop if all servers stop responding, now we are stuck forever
     }
     int elapsed = timer.elapsed();
-    gpMessageHandler->addInfoMessage(QString("One full itteration took: %1 ms").arg(elapsed));
+    gpMessageHandler->addInfoMessage(QString("One full iteration took: %1 ms").arg(elapsed));
     return true;
 }
 
-
-void RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::determineBestSpeedup(int numParticles, int maxNumThreads, int numServers, int &rPM, int &rPA, double &rSU)
+bool RemoteModelSimulationQueuerCRFP::simulateModels()
 {
-    // HOMOGENEOUS VERSION
-
-    double bestSU=0;
-    int bestPA=1, bestPM=1;
-    const int nc = maxNumThreads;
-    const int np = numServers;
-
-    for (int pm=1; pm<=nc; ++pm)
-    {
-        int pa = np * floor( nc / pm );
-        pa = qMin(pa, numParticles);
-        double sua = SUa( pa, numParticles  );
-        double sum = SUm ( pm );
-        double SU =  sua * sum ;
-
-        gpMessageHandler->addInfoMessage(QString("Speedup: pm: %1, pa: %2, SUm: %3, SUa: %4, SU: %5").arg(pm).arg(pa).arg(sum).arg(sua).arg(SU));
-        qDebug() << "Speedup: " << pm << " " << pa << " " << sum << " " << sua << " " << SU;
-
-        if ( SU>bestSU )
-        {
-            bestSU = SU;
-            bestPM = pm;
-            bestPA = pa;
-        }
-    }
-
-    gpMessageHandler->addInfoMessage(QString("Best Speedup: pm: %1, pa: %2, SU: %3").arg(bestPM).arg(bestPA).arg(bestSU));
-    rPM = bestPM;
-    rPA = bestPA;
-    rSU = bestSU;
+    // In CRFP This function should not be called
+    Q_ASSERT(false);
+    return false;
 }
 
-double RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::SUa(int numParallellEvaluators, int numParticles)
+
+bool RemoteModelSimulationQueuerLB::simulateModels()
+{
+    bool dummy;
+    return simulateModels(dummy);
+}
+
+
+double RemoteModelSimulationQueuer_Homo_Re_PSO::SUa(int numParallellEvaluators, int numParticles)
 {
     if (numParallellEvaluators > 0)
     {
-        int maxParticlesPerEvaluator = numParticles / numParallellEvaluators;
-
         // If integer division has remanider, then ballancing is uneven, we need one addtional evaluation run (not all evaluatros will be used)
-        if (numParticles % numParallellEvaluators != 0)
+        int maxQueueLength = numParticles / numParallellEvaluators;
+        if ( (numParticles % numParallellEvaluators) != 0)
         {
-            maxParticlesPerEvaluator++;
+            maxQueueLength += 1.0;
         }
-        return double(numParticles) / double(maxParticlesPerEvaluator);
+        return double(numParticles) / double(maxQueueLength);
     }
     return 0;
 }
 
-double RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE::SUm(int nThreads)
+double RemoteModelSimulationQueuer::SUm(int nThreads)
 {
-    //! @todo calling it speed is bad, its the simtime lower is better (evaluationTime better name)
-    if (!mNumThreadsVsModelEvalTime.isEmpty())
+    // Convert to zero-based index
+    nThreads--;
+
+    if ( !mNumThreadsVsModelEvalTime.isEmpty() && (nThreads >= 0) )
     {
         double oneCoreEvalTime = mNumThreadsVsModelEvalTime.first();
-        if (nThreads <= mNumThreadsVsModelEvalTime.size())
+        if (nThreads < mNumThreadsVsModelEvalTime.size())
         {
-            return oneCoreEvalTime / mNumThreadsVsModelEvalTime[nThreads-1];
+            return oneCoreEvalTime / mNumThreadsVsModelEvalTime[nThreads];
         }
-        //! @todo what if nThreads to high, right now we pretend no speedup, maybe should return negative value
+        //! @todo what if nThreads to high, right now we pretend no speedup
     }
-
     return 0;
 }
 
 
-double RemoteModelSimulationQueuer_CRFP1_HOMO_RESCHEDULE::SUa(int numParallellEvaluators, int numParticles)
+double RemoteModelSimulationQueuer_Homo_Re_CRFP0::SUa(int numParallellEvaluators, int numParticles)
 {
+    Q_UNUSED(numParticles)
+
+    // Convert to zero-based index
+    numParallellEvaluators--;
+
     // Need to lookup from table, approximate speedup for algorithms, absed on method
     QVector<double> sua {1.0, 1.43, 1.78, 1.81, 1.87, 1.99, 1.91, 1.92};
-    if ( (numParallellEvaluators > 0) && (numParallellEvaluators <= sua.size()) )
+    if (numParallellEvaluators >= 0)
     {
-        return sua[numParallellEvaluators-1];
+        if  (numParallellEvaluators < sua.size())
+        {
+            return sua[numParallellEvaluators];
+        }
+        else
+        {
+            return sua.back(); // Assume same speedup as last known
+        }
     }
-
     return 0.;
 }
 
 
-double RemoteModelSimulationQueuer_CRFP2_HOMO_RESCHEDULE::SUa(int numParallellEvaluators, int numParticles)
+double RemoteModelSimulationQueuer_Homo_Re_CRFP1::SUa(int numParallellEvaluators, int numParticles)
 {
+    Q_UNUSED(numParticles)
+
+    // Convert to zero-based index
+    numParallellEvaluators--;
+
     // Need to lookup from table, approximate speedup for algorithms, absed on method
     QVector<double> sua {1.0, 1.35, 1.52, 1.58, 1.72, 1.74, 1.78, 1.79};
-
-    if ( (numParallellEvaluators > 0 ) && (numParallellEvaluators <= sua.size()) )
+    if (numParallellEvaluators >= 0)
     {
-        return sua[numParallellEvaluators-1];
+        if  (numParallellEvaluators < sua.size())
+        {
+            return sua[numParallellEvaluators];
+        }
+        else
+        {
+            return sua.back(); // Assume same speedup as last known
+        }
     }
-
     return 0.;
+}
+
+double RemoteModelSimulationQueuer_Homo_Re_CRFP1::SUq(int Pa, int Pm, int np, int nc)
+{
+    Q_UNUSED(Pa) Q_UNUSED(Pm) Q_UNUSED(np) Q_UNUSED(nc)
+    return 1.0;
 }
 
 
@@ -639,15 +721,15 @@ void chooseRemoteModelSimulationQueuer(RemoteModelSimulationQueuerType type)
     }
     else if (type == Pso_Homo_Reschedule)
     {
-        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_PSO_HOMO_RESCHEDULE();
+        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_Homo_Re_PSO();
+    }
+    else if (type == Crfp0_Homo_Reschedule)
+    {
+        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_Homo_Re_CRFP0();
     }
     else if (type == Crfp1_Homo_Reschedule)
     {
-        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_CRFP1_HOMO_RESCHEDULE();
-    }
-    else if (type == Crfp2_Homo_Reschedule)
-    {
-        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_CRFP2_HOMO_RESCHEDULE();
+        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_Homo_Re_CRFP1();
     }
 }
 
