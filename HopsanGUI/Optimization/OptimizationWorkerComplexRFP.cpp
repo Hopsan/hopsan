@@ -306,6 +306,7 @@ void OptimizationWorkerComplexRFP::run()
             otherPoints.remove(mWorstId);
             findCenter(otherPoints);
         }
+
         while(mNeedsIteration)
         {
             plotPoints();
@@ -370,13 +371,12 @@ void OptimizationWorkerComplexRFP::run()
             newPoint = mCandidateParticles.last();
 
             //Evaluate new point
-            bool evalOK = evaluateCandidateParticles(needsReschedule, i==0);
+            bool evalOK2 = evaluateCandidateParticles(needsReschedule, i==0);
             if (needsReschedule)
             {
-                --i;
-                continue;
+                break;
             }
-            else if (!evalOK)
+            else if (!evalOK2)
             {
                 execute("echo on");
                 print("Simaultion failed during candidate evaluation.");
@@ -423,6 +423,12 @@ void OptimizationWorkerComplexRFP::run()
 
             ++i;
             execute("echo off -nonerrors");
+        }
+        // Check if we need to reshedule from this internal while reiteration needed loop
+        if (needsReschedule)
+        {
+            --i;
+            continue;
         }
 
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
