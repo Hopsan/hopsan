@@ -130,6 +130,8 @@ bool RemoteHopsanClient::serverConnected() const
 
 bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue)
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     CM_GetParam_t msg {rName};
     sendClientMessage<CM_GetParam_t>(mpRWCSocket, C_GetParam, msg);
 
@@ -156,6 +158,8 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
 
 bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &rValue)
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     CM_SetParam_t msg {rName, rValue};
     sendClientMessage<CM_SetParam_t>(mpRWCSocket, C_SetParam, msg);
 
@@ -170,6 +174,8 @@ bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &
 
 bool RemoteHopsanClient::sendModelMessage(const std::string &rModel)
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     sendClientMessage<std::string>(mpRWCSocket, C_SendingHmf, rModel);
     string err;
     bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
@@ -183,6 +189,8 @@ bool RemoteHopsanClient::sendModelMessage(const std::string &rModel)
 bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int logStartTime,
                          const int simStarttime, const int simSteptime, const int simStoptime)
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     CM_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
     sendClientMessage<CM_Simulate_t>(mpRWCSocket, C_Simulate, msg);
     string err;
@@ -253,6 +261,8 @@ bool RemoteHopsanClient::blockingBenchmark(const string &rModel, const int nThre
 
 bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     sendShortClientMessage(mpRWCSocket, C_ReqBenchmarkResults);
     zmq::message_t reply;
     if (receiveWithTimeout(*mpRWCSocket, reply, mShortReceiveTimeout))
@@ -328,6 +338,8 @@ bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
 
 bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, vector<double> *pData)
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     sendClientMessage<string>(mpRWCSocket, C_ReqResults, "*"); // Request all
 
     zmq::message_t response;
@@ -509,6 +521,8 @@ bool RemoteHopsanClient::blockingSimulation(const int nLogsamples, const int log
 
 bool RemoteHopsanClient::requestMessages()
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     sendShortClientMessage(mpRWCSocket, C_ReqMessages);
 
     zmq::message_t response;
@@ -537,6 +551,8 @@ bool RemoteHopsanClient::requestMessages()
 
 bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<string> &rTags, std::vector<string> &rMessages)
 {
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
     sendShortClientMessage(mpRWCSocket, C_ReqMessages);
 
     zmq::message_t response;

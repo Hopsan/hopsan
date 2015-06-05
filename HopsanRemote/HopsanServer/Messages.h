@@ -155,7 +155,7 @@ typedef struct
     std::vector<std::string> ports;
     std::vector<std::string> descriptions;
     std::vector<int> numslots;
-    std::vector<double> speeds;
+    std::vector<double> speeds;     //! @todo calling it speed is bad, its the simtime lower is better (evaluationTime better name)
     MSGPACK_DEFINE(ips, ports, descriptions, numslots, speeds)
 }MSM_ReqServerMachines_Reply_t;
 
