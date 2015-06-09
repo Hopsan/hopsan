@@ -221,6 +221,7 @@ public slots:
     virtual void setTimePlotOffset(double offset);
 
 signals:
+    void beingRemoved();
     void dataChanged();
     void nameChanged();
     void allowAutoRemovalChanged(bool);

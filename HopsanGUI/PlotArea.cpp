@@ -352,6 +352,7 @@ PlotArea::~PlotArea()
 }
 
 
+
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
 //! @param desiredColor Desired color for curve (will override default colors)
@@ -446,6 +447,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
     connect(pCurve, SIGNAL(customXDataChanged()), this, SLOT(refreshPlotAreaCustomXData()));
     connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
+    connect(pCurve, SIGNAL(dataRemoved(PlotCurve*)), this, SLOT(removeCurve(PlotCurve*)));
 
     // Connect signals from the curve data logdatahandler (to trigger update whenever new data becomes available)
     LogDataHandler2 *pLDH = pCurve->getSharedVectorVariable()->getLogDataHandler();

@@ -70,48 +70,38 @@ bool LogDataGeneration::isEmpty()
 
 bool LogDataGeneration::clear(bool force)
 {
-    if (force || (mNumKeepVariables == 0) )
+    // Loop through variables but only remove those that are not tagged as keep (unless forced removal)
+    // We use a copy of values to avoid making the loop invalid
+    QList<SharedVectorVariableT> avars = mAliasVariables.values();
+    for (SharedVectorVariableT &avar : avars)
     {
-        mVariables.clear();
-        mAliasVariables.clear();
+        if (force || avar->isAutoremovalAllowed())
+        {
+            disconnect(avar.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+            mAliasVariables.remove(avar->getAliasName());
+        }
+    }
+    QList<SharedVectorVariableT> vars =  mVariables.values();
+    for (SharedVectorVariableT &var : vars)
+    {
+        if (force || var->isAutoremovalAllowed())
+        {
+            disconnect(var.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+            emit var->beingRemoved();
+            mVariables.remove(var->getFullVariableName());
+        }
+    }
+
+    // If no variables remain
+    if (mAliasVariables.isEmpty() && mVariables.isEmpty())
+    {
         mImportedFromFile.clear();
         mNumKeepVariables = 0;
         return true;
     }
     else
     {
-        // Loop through variables but only remove those that are not tagged as keep
-        // We use a copy of values to avoid making the loop invalid
-        QList<SharedVectorVariableT> avars = mAliasVariables.values();
-        for (SharedVectorVariableT &avar : avars)
-        {
-            if (avar->isAutoremovalAllowed())
-            {
-                disconnect(avar.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-                mAliasVariables.remove(avar->getAliasName());
-            }
-        }
-        QList<SharedVectorVariableT> vars =  mVariables.values();
-        for (SharedVectorVariableT &var : vars)
-        {
-            if (var->isAutoremovalAllowed())
-            {
-                disconnect(var.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-                mVariables.remove(var->getFullVariableName());
-            }
-        }
-
-        // If no variables remain
-        if (mAliasVariables.isEmpty() && mVariables.isEmpty())
-        {
-            mImportedFromFile.clear();
-            mNumKeepVariables = 0;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 }
 
@@ -186,6 +176,7 @@ bool LogDataGeneration::removeVariable(const QString &rFullName)
         if (full_it != mVariables.end())
         {
             disconnect(full_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+            emit full_it.value()->beingRemoved();
             mVariables.erase(full_it);
             didRemove = true;
         }

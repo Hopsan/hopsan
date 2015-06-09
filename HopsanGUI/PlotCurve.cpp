@@ -1052,6 +1052,16 @@ void PlotCurve::updateCurveName()
     emit curveInfoUpdated();
 }
 
+void PlotCurve::dataIsBeingRemoved()
+{
+    emit dataRemoved(this);
+}
+
+void PlotCurve::customXDataIsBeingRemoved()
+{
+    setCustomXData(SharedVectorVariableT());
+}
+
 bool PlotCurve::setNonImportedGeneration(const int gen)
 {
     if (mData && mData->getLogDataHandler())
@@ -1077,6 +1087,7 @@ void PlotCurve::connectDataSignals()
 {
     connect(mData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     connect(mData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
+    connect(mData.data(), SIGNAL(beingRemoved()), this, SLOT(dataIsBeingRemoved()), Qt::UniqueConnection);
 }
 
 void PlotCurve::connectCustomXDataSignals()
@@ -1084,6 +1095,7 @@ void PlotCurve::connectCustomXDataSignals()
     if (mCustomXdata)
     {
         connect(mCustomXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+        connect(mCustomXdata.data(), SIGNAL(beingRemoved()), this, SLOT(customXDataIsBeingRemoved()), Qt::UniqueConnection);
     }
 }
 

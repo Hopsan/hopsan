@@ -134,6 +134,7 @@ signals:
     void customXDataChanged();
     void colorChanged(QColor);
     void markedActive(bool);
+    void dataRemoved(PlotCurve *pCurve);
 
 public slots:
     bool setGeneration(const int generation);
@@ -160,6 +161,8 @@ public slots:
 private slots:
     void updateCurve();
     void updateCurveName();
+    void dataIsBeingRemoved();
+    void customXDataIsBeingRemoved();
 
 private:
     // Private member functions
