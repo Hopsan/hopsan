@@ -365,6 +365,7 @@ void OptimizationWorkerComplexRFP::run()
                 }
 
                 newPoint = mCandidateParticles[t];
+                mParameters[mWorstId] = newPoint;
                 ++mWorstCounter;
             }
 
