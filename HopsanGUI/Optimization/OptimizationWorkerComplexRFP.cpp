@@ -432,6 +432,9 @@ void OptimizationWorkerComplexRFP::run()
             continue;
         }
 
+        mParameters[mWorstId] = mCandidateParticles.last();
+        mObjectives[mWorstId] = mCandidateObjectives.last();
+
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         plotParameters();

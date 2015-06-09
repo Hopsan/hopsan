@@ -111,15 +111,15 @@ RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimul
     mpLogData = pLogData;
     mpProgress = pProgress;
 
-    mStartTime = startTime;
-    mStopTime = stopTime;
-    mLogStartTime = logStartTime;
-    mnLogSamples = nLogSamples;
-    mNoChanges = false;
-}
+//    mStartTime = startTime;
+//    mStopTime = stopTime;
+//    mLogStartTime = logStartTime;
+//    mnLogSamples = nLogSamples;
+//    mNoChanges = false;
+//}
 
-void RemoteSimulationWorkerObject::initSimulateFinalize()
-{
+//void RemoteSimulationWorkerObject::initSimulateFinalize()
+//{
     QTime timer;
 
     emit setProgressBarText(tr("Simulating..."));

@@ -98,9 +98,9 @@ public:
                                  const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     int swoType() const {return RemoteSWO;}
 
-public slots:
-    void initSimulateFinalize();
-};
+//public slots:
+//    void initSimulateFinalize();
+//};
 #endif
 
 class ProgressBarWorkerObject : public QObject

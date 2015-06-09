@@ -514,7 +514,8 @@ bool ModelWidget::isRemoteCoreConnected() const
 {
 #ifdef USEZMQ
     //! @todo should check is connected also
-    return (mUseRemoteCore && mpRemoteCoreSimulationHandler);
+    //return (mUseRemoteCore && mpRemoteCoreSimulationHandler);
+    return false;
 #else
     return false;
 #endif
