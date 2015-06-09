@@ -386,19 +386,20 @@ void OptimizationWorkerComplexRFP::run()
                 return;
             }
 
+
             //Replace worst point with first candidate point that is better, if any
             for(int o=0; o<mNumModels; ++o)
             {
                 int nWorsePoints=0;
                 for(int j=0; j<mNumPoints; ++j)
                 {
-                    if(mObjectives[j] > mCandidateObjectives[o])
+                    if(j != mWorstId && mObjectives[j] > mCandidateObjectives[o])
                     {
                         ++nWorsePoints;
                     }
                 }
 
-                if(nWorsePoints >= 2)
+                if(nWorsePoints >= 1)
                 {
                     mParameters[mWorstId] = mCandidateParticles[o];
                     mObjectives[mWorstId] = mCandidateObjectives[o];
@@ -424,6 +425,20 @@ void OptimizationWorkerComplexRFP::run()
 
             ++i;
             execute("echo off -nonerrors");
+
+
+            if(mNeedsIteration)
+            {
+                //Replace worst point with last candidate if no success (for updating parameter outputs)
+                mParameters[mWorstId] = mCandidateParticles.last();
+                mObjectives[mWorstId] = mCandidateObjectives.last();
+            }
+
+            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+            plotParameters();
+            plotEntropy();
+
         }
         // Check if we need to reshedule from this internal while reiteration needed loop
         if (needsReschedule)
@@ -431,9 +446,6 @@ void OptimizationWorkerComplexRFP::run()
             --i;
             continue;
         }
-
-        mParameters[mWorstId] = mCandidateParticles.last();
-        mObjectives[mWorstId] = mCandidateObjectives.last();
 
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
