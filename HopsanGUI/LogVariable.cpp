@@ -188,48 +188,48 @@ void VariableDescription::setFullName(const QString compName, const QString port
 }
 
 
-void VectorVariable::setPlotOffset(double offset)
-{
-    mDataPlotOffset = offset;
-    emit dataChanged();
-}
+//void VectorVariable::setPlotOffset(double offset)
+//{
+//    mDataPlotOffset = offset;
+//    emit dataChanged();
+//}
 
-void VectorVariable::setPlotScaleAndOffset(const double scale, const double offset)
-{
-    mCustomUnitScale.setOnlyScale(scale);
-    mDataPlotOffset = offset;
-    emit dataChanged();
-}
+//void VectorVariable::setPlotScaleAndOffset(const double scale, const double offset)
+//{
+//    mCustomUnitScale.setOnlyScale(scale);
+//    mDataPlotOffset = offset;
+//    emit dataChanged();
+//}
 
-void VectorVariable::setTimePlotOffset(double offset)
-{
-    Q_UNUSED(offset);
-    // Do nothing by default
-}
+//void VectorVariable::setTimePlotOffset(double offset)
+//{
+//    Q_UNUSED(offset);
+//    // Do nothing by default
+//}
 
-void VectorVariable::setTimePlotScale(double scale)
-{
-    Q_UNUSED(scale);
-    // Do nothing by default
-}
+//void VectorVariable::setTimePlotScale(double scale)
+//{
+//    Q_UNUSED(scale);
+//    // Do nothing by default
+//}
 
-void VectorVariable::setTimePlotScaleAndOffset(const double scale, const double offset)
-{
-    Q_UNUSED(scale);
-    Q_UNUSED(offset);
-    // Do nothing by default
-}
+//void VectorVariable::setTimePlotScaleAndOffset(const double scale, const double offset)
+//{
+//    Q_UNUSED(scale);
+//    Q_UNUSED(offset);
+//    // Do nothing by default
+//}
 
-void VectorVariable::setPlotScale(double scale)
-{
-    mCustomUnitScale.setOnlyScale(scale);
-    emit dataChanged();
-}
+//void VectorVariable::setPlotScale(double scale)
+//{
+//    mCustomUnitScale.setOnlyScale(scale);
+//    emit dataChanged();
+//}
 
 VectorVariable::VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache)
 {
     mpVariableDescription = varDesc;
-    mDataPlotOffset = 0.0;
+//    mDataPlotOffset = 0.0;
     mGeneration = generation;
     mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gpConfig->getCacheLogData());
 }
@@ -337,22 +337,34 @@ const QString &VectorVariable::getCustomLabel() const
     return mpVariableDescription->mCustomLabel;
 }
 
-const QString &VectorVariable::getPlotScaleDataUnit() const
+UnitScale VectorVariable::getUnitScale() const
 {
-    return mCustomUnitScale.mUnit;
-}
-
-const QString &VectorVariable::getActualPlotDataUnit() const
-{
-    if (mCustomUnitScale.isEmpty())
+    if (mpVariableDescription->mDataUnit.isEmpty())
     {
-        return getDataUnit();
+        return UnitScale();
     }
     else
     {
-        return mCustomUnitScale.mUnit;
+        return UnitScale(mpVariableDescription->mDataName, mpVariableDescription->mDataUnit, "1.0");
     }
 }
+
+//const QString &VectorVariable::getPlotScaleDataUnit() const
+//{
+//    return mCustomUnitScale.mUnit;
+//}
+
+//const QString &VectorVariable::getActualPlotDataUnit() const
+//{
+//    if (mCustomUnitScale.isEmpty())
+//    {
+//        return getDataUnit();
+//    }
+//    else
+//    {
+//        return mCustomUnitScale.mUnit;
+//    }
+//}
 
 bool VectorVariable::hasAliasName() const
 {
@@ -385,10 +397,10 @@ const SharedVectorVariableT VectorVariable::getSharedTimeOrFrequencyVector() con
     return mpSharedTimeOrFrequencyVector;
 }
 
-double VectorVariable::getPlotOffset() const
-{
-    return mDataPlotOffset;
-}
+//double VectorVariable::getPlotOffset() const
+//{
+//    return mDataPlotOffset;
+//}
 
 void VectorVariable::addToData(const SharedVectorVariableT pOther)
 {
@@ -1581,28 +1593,28 @@ QVector<double> VectorVariable::absOfData() const
     return absdata;
 }
 
-//! @brief Returns the custom plot scale or 1 if not plotscale set.
-double VectorVariable::getPlotScale() const
-{
-    return mCustomUnitScale.toDouble(1.0);
-}
+////! @brief Returns the custom plot scale or 1 if not plotscale set.
+//double VectorVariable::getPlotScale() const
+//{
+//    return mCustomUnitScale.toDouble(1.0);
+//}
 
-void VectorVariable::setCustomUnitScale(const UnitScale &rUnitScale)
-{
-    mCustomUnitScale = rUnitScale;
-    emit dataChanged();
-}
+//void VectorVariable::setCustomUnitScale(const UnitScale &rUnitScale)
+//{
+//    mCustomUnitScale = rUnitScale;
+//    emit dataChanged();
+//}
 
-const UnitScale &VectorVariable::getCustomUnitScale() const
-{
-    return mCustomUnitScale;
-}
+//const UnitScale &VectorVariable::getCustomUnitScale() const
+//{
+//    return mCustomUnitScale;
+//}
 
-void VectorVariable::removeCustomUnitScale()
-{
-    mCustomUnitScale.clear();
-    emit dataChanged();
-}
+//void VectorVariable::removeCustomUnitScale()
+//{
+//    mCustomUnitScale.clear();
+//    emit dataChanged();
+//}
 
 
 TimeDomainVariable::TimeDomainVariable(SharedVectorVariableT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
@@ -1739,29 +1751,29 @@ void TimeDomainVariable::append(const double t, const double y)
     //! @todo FIXA, it is bad to append x-data to shared time vector, there should be a custom private xvector Peter
 }
 
-void TimeDomainVariable::setTimePlotScaleAndOffset(const double scale, const double offset)
-{
-    if (mpSharedTimeOrFrequencyVector)
-    {
-        mpSharedTimeOrFrequencyVector->setPlotScaleAndOffset(scale, offset);
-    }
-}
+//void TimeDomainVariable::setTimePlotScaleAndOffset(const double scale, const double offset)
+//{
+//    if (mpSharedTimeOrFrequencyVector)
+//    {
+//        mpSharedTimeOrFrequencyVector->setPlotScaleAndOffset(scale, offset);
+//    }
+//}
 
-void TimeDomainVariable::setTimePlotScale(double scale)
-{
-    if (mpSharedTimeOrFrequencyVector)
-    {
-        mpSharedTimeOrFrequencyVector->setPlotScale(scale);
-    }
-}
+//void TimeDomainVariable::setTimePlotScale(double scale)
+//{
+//    if (mpSharedTimeOrFrequencyVector)
+//    {
+//        mpSharedTimeOrFrequencyVector->setPlotScale(scale);
+//    }
+//}
 
-void TimeDomainVariable::setTimePlotOffset(double offset)
-{
-    if (mpSharedTimeOrFrequencyVector)
-    {
-        mpSharedTimeOrFrequencyVector->setPlotOffset(offset);
-    }
-}
+//void TimeDomainVariable::setTimePlotOffset(double offset)
+//{
+//    if (mpSharedTimeOrFrequencyVector)
+//    {
+//        mpSharedTimeOrFrequencyVector->setPlotOffset(offset);
+//    }
+//}
 
 
 ImportedTimeDomainVariable::ImportedTimeDomainVariable(SharedVectorVariableT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache) :

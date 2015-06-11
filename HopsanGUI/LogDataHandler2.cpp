@@ -257,15 +257,15 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     // Write plotScalings line
     for(int i=0; i<variables.size(); ++i)
     {
-        const double val =  variables[i]->getPlotScale();
-        if (val < 0)
-        {
-            fileStream << " " << val;
-        }
-        else
-        {
-            fileStream << "  " << val;
-        }
+//        const double val =  variables[i]->getPlotScale();
+//        if (val < 0)
+//        {
+//            fileStream << " " << val;
+//        }
+//        else
+//        {
+//            fileStream << "  " << val;
+//        }
     }
     fileStream << "\n";
 
@@ -516,7 +516,8 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
             UnitScale us = figureOutCutomUnitScale2(TIMEVARIABLENAME, importedPLODataVector.first().mPlotScale);
             if (!us.isOne() && !us.isEmpty())
             {
-                pTimeVec->setCustomUnitScale(us);
+                //! @todo handle this somehow /Peter
+                //pTimeVec->setCustomUnitScale(us);
             }
         }
         else if (importedPLODataVector.first().mDataName == FREQUENCYVARIABLENAME)
@@ -525,7 +526,8 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
             UnitScale us = figureOutCutomUnitScale2(FREQUENCYVARIABLENAME, importedPLODataVector.first().mPlotScale);
             if (!us.isOne() && !us.isEmpty())
             {
-                pFreqVec->setCustomUnitScale(us);
+                //! @todo handle this somehow /Peter
+                //pFreqVec->setCustomUnitScale(us);
             }
         }
 
@@ -561,7 +563,8 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
                                                                             fileInfo.absoluteFilePath(), getGenerationMultiCache(mCurrentGenerationNumber)));
                 insertVariable(pNewData);
             }
-            pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
+            //pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
+            //! @todo Fixa /Peter
         }
 
         emit dataAdded();

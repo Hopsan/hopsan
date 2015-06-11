@@ -2751,7 +2751,8 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
     if (pVar)
     {
         QString type = variableTypeAsString(pVar->getVariableType());
-        QString plotscale = QString("%1 (%2)").arg(pVar->getCustomUnitScale().mUnit).arg(pVar->getCustomUnitScale().mScale);
+        //QString plotscale = QString("%1 (%2)").arg(pVar->getCustomUnitScale().mUnit).arg(pVar->getCustomUnitScale().mScale);
+        QString plotscale = "NULL";
         QString gen = QString("%1").arg(pVar->getGeneration());
         QString length = QString("%1").arg(pVar->getDataSize());
 
@@ -2812,7 +2813,8 @@ void HcomHandler::executeChangePlotScaleCommand(const QString cmd)
     Q_FOREACH(const QString var, vars)
     {
         SharedVectorVariableT pVar = getLogVariable(var);
-        pVar.data()->setPlotScale(scale);
+        //pVar.data()->setPlotScale(scale);
+        //! @todo fixa /Peter
     }
 }
 
@@ -2838,8 +2840,10 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
         SharedVectorVariableT pVar = getLogVariable(var);
         if(!pVar.isNull())
         {
-            QString scale = pVar.data()->getCustomUnitScale().mScale;
-            QString unit = pVar.data()->getCustomUnitScale().mUnit;
+//            QString scale = pVar.data()->getCustomUnitScale().mScale;
+//            QString unit = pVar.data()->getCustomUnitScale().mUnit;
+            QString scale = "NULL";
+            QString unit = "NULL";
             if(!scale.isEmpty() && !unit.isEmpty())
             {
                 HCOMPRINT(QString("%1: %2 [%3]").arg(var).arg(scale).arg(unit));
@@ -2856,8 +2860,10 @@ void HcomHandler::executeDisplayPlotScaleCommand(const QString cmd)
             }
             else
             {
-                scale = QString::number(pVar.data()->getPlotScale());
-                unit = pVar.data()->getPlotScaleDataUnit();
+//                scale = QString::number(pVar.data()->getPlotScale());
+//                unit = pVar.data()->getPlotScaleDataUnit();
+                QString scale = "NULL";
+                QString unit = "NULL";
                 if(!scale.isEmpty() && !unit.isEmpty())
                 {
                     HCOMPRINT(QString("%1: %2 [%3]").arg(var).arg(scale).arg(unit));
@@ -2911,7 +2917,8 @@ void HcomHandler::executeChangePlotOffsetCommand(const QString cmd)
     Q_FOREACH(const QString var, vars)
     {
         SharedVectorVariableT pVar = getLogVariable(var);
-        pVar.data()->setPlotOffset(offset);
+        //pVar.data()->setPlotOffset(offset);
+        //! @todo fixa /Peter
     }
 }
 
@@ -2937,7 +2944,8 @@ void HcomHandler::executeDisplayPlotOffsetCommand(const QString cmd)
         SharedVectorVariableT pVar = getLogVariable(var);
         if(!pVar.isNull())
         {
-            double offset = pVar.data()->getPlotOffset();
+            //double offset = pVar.data()->getPlotOffset();
+            double offset = 0;
 
             HCOMPRINT(QString("%1: %2").arg(var).arg(offset));
 

@@ -124,6 +124,7 @@ public:
     virtual const QString &getDataName() const;
     const QString &getDataUnit() const;
     const QString &getCustomLabel() const;
+    UnitScale getUnitScale() const;
     bool hasAliasName() const;
     bool hasCustomLabel() const;
     int getGeneration() const;
@@ -131,13 +132,13 @@ public:
     virtual QString getImportedFileName() const;
 
     // Data plot scaling
-    void setCustomUnitScale(const UnitScale &rUnitScale);
-    void removeCustomUnitScale();
-    const UnitScale &getCustomUnitScale() const;
-    const QString &getPlotScaleDataUnit() const;
-    const QString &getActualPlotDataUnit() const;
-    double getPlotScale() const;
-    double getPlotOffset() const;
+//    void setCustomUnitScale(const UnitScale &rUnitScale);
+//    void removeCustomUnitScale();
+//    const UnitScale &getCustomUnitScale() const;
+//    const QString &getPlotScaleDataUnit() const;
+//    const QString &getActualPlotDataUnit() const;
+//    double getPlotScale() const;
+//    double getPlotOffset() const;
 
     // Functions that only read data
     int getDataSize() const;
@@ -211,14 +212,14 @@ public:
     const QPointer<LogDataHandler2> getLogDataHandler() const;
 
 public slots:
-    void setPlotScale(double scale);
-    void setPlotOffset(double offset);
-    void setPlotScaleAndOffset(const double scale, const double offset);
+//    void setPlotScale(double scale);
+//    void setPlotOffset(double offset);
+//    void setPlotScaleAndOffset(const double scale, const double offset);
 
     // Slots that require reimplementation in derived classes
-    virtual void setTimePlotScaleAndOffset(const double scale, const double offset);
-    virtual void setTimePlotScale(double scale);
-    virtual void setTimePlotOffset(double offset);
+//    virtual void setTimePlotScaleAndOffset(const double scale, const double offset);
+//    virtual void setTimePlotScale(double scale);
+//    virtual void setTimePlotOffset(double offset);
 
 signals:
     void beingRemoved();
@@ -236,8 +237,8 @@ protected:
     SharedVariableDescriptionT mpVariableDescription;
     SharedVectorVariableT mpSharedTimeOrFrequencyVector;
 
-    UnitScale mCustomUnitScale;
-    double mDataPlotOffset;
+    //UnitScale mCustomUnitScale;
+    //double mDataPlotOffset;
     int mGeneration;
     bool mAllowAutoRemove = true;
 };
@@ -273,9 +274,9 @@ public:
     virtual void append(const double t, const double y);
 
 public slots:
-    void setTimePlotScaleAndOffset(const double scale, const double offset);
-    void setTimePlotScale(double scale);
-    void setTimePlotOffset(double offset);
+//    void setTimePlotScaleAndOffset(const double scale, const double offset);
+//    void setTimePlotScale(double scale);
+//    void setTimePlotOffset(double offset);
 };
 
 class ImportedTimeDomainVariable : public TimeDomainVariable

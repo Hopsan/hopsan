@@ -146,93 +146,103 @@ void HopQwtPlot::resizeEvent(QResizeEvent *e)
 }
 
 
-TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pVariable, QWidget *pParent) :
+TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(const QList<PlotCurve*> &rPlotCurves, QWidget *pParent) :
     QWidget(pParent)
 {
-    mpTimeOrFrequency = pVariable->getSharedTimeOrFrequencyVector();
-
-    QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-    mpScaleComboBox = new QComboBox(this);
-    mpOffsetLineEdit = new QLineEdit(this);
-    mpOffsetLineEdit->setValidator(new QDoubleValidator(this));
-
-    if ( pVariable->getVariableType() == TimeDomainType )
+    mPlotCurves = rPlotCurves;
+    if (!mPlotCurves.isEmpty())
     {
-        pHBoxLayout->addWidget(new QLabel("Time", this));
-    }
-    else if ( pVariable->getVariableType() == FrequencyDomainType )
-    {
-        pHBoxLayout->addWidget(new QLabel("Frequency", this));
-    }
-    else
-    {
-        pHBoxLayout->addWidget(new QLabel("Invalid", this));
-    }
+        SharedVectorVariableT dataVar = mPlotCurves.first()->getSharedVectorVariable();
+        SharedVectorVariableT tfVar = dataVar->getSharedTimeOrFrequencyVector();
 
-    pHBoxLayout->addWidget(new QLabel("Scale: ", this));
-    pHBoxLayout->addWidget(mpScaleComboBox);
-    pHBoxLayout->addWidget(new QLabel("Offset: ", this));
-    pHBoxLayout->addWidget(mpOffsetLineEdit);
+        QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
+        mpScaleComboBox = new QComboBox(this);
+        mpOffsetLineEdit = new QLineEdit(this);
+        mpOffsetLineEdit->setValidator(new QDoubleValidator(this));
 
-    // Don't do stuff if mpTimeOrFrequency = NULL ptr
-    if (mpTimeOrFrequency)
-    {
-        // Populate time scale box and try to figure out current time unit
-        //! @todo what if time = 0
-        //! @todo would be nice if we could sort on scale size
-        QMap<QString,double> units = gpConfig->getUnitScales(mpTimeOrFrequency->getDataName());
-        QString currUnit = mpTimeOrFrequency->getActualPlotDataUnit();
-        if (currUnit.isEmpty())
+        if ( dataVar->getVariableType() == TimeDomainType )
         {
-            //! @todo if we get here something is wrong (time should alwasy have a unit) /Peter
-            currUnit = gpConfig->getDefaultUnit(mpTimeOrFrequency->getDataName());
+            mQuantity = "Time";
         }
-        QMap<QString,double>::iterator it;
-        int ctr=0;
-        for (it = units.begin(); it != units.end(); ++it)
+        else if ( dataVar->getVariableType() == FrequencyDomainType )
         {
-            mpScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
-            if (currUnit == it.key())
+            mQuantity = "Frequency";
+        }
+        else
+        {
+            mQuantity = "Invalid";
+        }
+        pHBoxLayout->addWidget(new QLabel(mQuantity, this));
+
+        pHBoxLayout->addWidget(new QLabel("Scale: ", this));
+        pHBoxLayout->addWidget(mpScaleComboBox);
+        pHBoxLayout->addWidget(new QLabel("Offset: ", this));
+        pHBoxLayout->addWidget(mpOffsetLineEdit);
+
+        // Don't do stuff if tfVar = NULL ptr
+        if (tfVar)
+        {
+            // Populate time scale box and try to figure out current time unit, (we assume all curves have same, they should belong to same generation)
+            //! @todo what if time = 0
+            //! @todo would be nice if we could sort on scale size
+            QMap<QString,double> units = gpConfig->getUnitScales(tfVar->getDataName());
+            QString currUnit = mPlotCurves.first()->getCurveTFUnitScale().mUnit;
+            if (currUnit.isEmpty())
             {
-                mpScaleComboBox->setCurrentIndex(ctr);
+                //! @todo if we get here something is wrong (time should alwasy have a unit) /Peter
+                currUnit = gpConfig->getDefaultUnit(tfVar->getDataName());
             }
-            ++ctr;
+
+            int ctr=0;
+            for (auto it=units.begin(); it!=units.end(); ++it)
+            {
+                mpScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
+                if (currUnit == it.key())
+                {
+                    mpScaleComboBox->setCurrentIndex(ctr);
+                }
+                ++ctr;
+            }
+
+            // Set the current offset value
+            mpOffsetLineEdit->setText(QString("%1").arg(mPlotCurves.first()->getCurveTFOffset()));
+
+
+            // Connect signals to update time scale and offset when changing values
+            connect(mpScaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setVaules()));
+            connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setVaules()));
         }
-
-        // Set the current offset value
-        mpOffsetLineEdit->setText(QString("%1").arg(mpTimeOrFrequency->getPlotOffset()));
-
-        // Connect signals to update time scale and offset when changing values
-        connect(mpScaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setVaules()));
-        connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setVaules()));
-    }
-    else
-    {
-        mpScaleComboBox->setDisabled(true);
-        mpOffsetLineEdit->setDisabled(true);
+        else
+        {
+            mpScaleComboBox->setDisabled(true);
+            mpOffsetLineEdit->setDisabled(true);
+        }
     }
 }
 
-void TimeOrFrequencyScaleWidget::setScale(const QString &rUnitScale)
-{
-    mpScaleComboBox->findText(rUnitScale, Qt::MatchContains);
-    setVaules();
-}
+//void TimeOrFrequencyScaleWidget::setScale(const QString &rUnitScale)
+//{
+//    mpScaleComboBox->findText(rUnitScale, Qt::MatchContains);
+//    setVaules();
+//}
 
-void TimeOrFrequencyScaleWidget::setOffset(const QString &rOffset)
-{
-    mpOffsetLineEdit->setText(rOffset);
-    setVaules();
-}
+//void TimeOrFrequencyScaleWidget::setOffset(const QString &rOffset)
+//{
+//    mpOffsetLineEdit->setText(rOffset);
+//    setVaules();
+//}
 
 void TimeOrFrequencyScaleWidget::setVaules()
 {
     QString newUnit = extractBetweenFromQString(mpScaleComboBox->currentText().split(" ").last(), '[', ']');
-    QString newScaleStr = mpScaleComboBox->currentText().split(" ")[0];
-    mpTimeOrFrequency->setCustomUnitScale(UnitScale(newUnit, newScaleStr));
-    mpTimeOrFrequency->setPlotOffset(mpOffsetLineEdit->text().toDouble());
+    for (PlotCurve* pCurve : mPlotCurves)
+    {
+        UnitScale us;
+        gpConfig->getUnitScale(mQuantity, newUnit, us);
+        pCurve->setCurveTFUnitScaleAndOffset(us, mpOffsetLineEdit->text().toDouble());
+    }
     emit valuesChanged();
-    //! @todo this will also call all the updates again, need to be able to set scale and offset separately or together
+
 }
 
 PlotArea::PlotArea(PlotTab *pParentPlotTab)
@@ -394,7 +404,8 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     }
 
     // Determine what plot scales to use
-    determineAddedCurveUnitOrScale(pCurve);
+    determineAddedCurveDataUnitScale(pCurve);
+    determineAddedCurveTFUnitScale(pCurve);
 
     // Determine plot curve color, if desired color is valid then use that color, else use the color selector the get the least common one
     if (desiredColor.isValid())
@@ -1079,7 +1090,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu((*itc)->getCurveName());
         if ((*itc)->getDataName() == "Value")
         {
-            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit((*itc)->getDataOriginalUnit());
+            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit((*itc)->getDataUnit());
             if (pqs.size() > 0)
             {
                 unitMap = gpConfig->getUnitScales(pqs.first());
@@ -1150,13 +1161,14 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     // Change unit on selected curve
     if(pSelectedAction->parentWidget()->parentWidget() == pChangeUnitsMenu)
     {
-        actionToCurveMap.find(pSelectedAction).value()->setCustomCurveDataUnit(pSelectedAction->text());
+        actionToCurveMap.find(pSelectedAction).value()->setCurveDataUnitScale(pSelectedAction->text());
     }
 
     // Reset unit on selected curve
     if(pSelectedAction->parentWidget() == pResetUnitsMenu)
     {
-        actionToCurveMap.find(pSelectedAction).value()->removeCustomCurveDataUnit();
+        actionToCurveMap.find(pSelectedAction).value()->resetCurveDataUnitScale();
+        actionToCurveMap.find(pSelectedAction).value()->setCurveExtraDataScaleAndOffset(1,0);
     }
 
 
@@ -1426,66 +1438,89 @@ void PlotArea::updateAxisLabels()
     {
         QStringList leftLabels, rightLabels, bottomLabels;
         QList<SharedVectorVariableT> sharedBottomVars;
-        for(int i=0; i<mPlotCurves.size(); ++i)
+        for(PlotCurve *pPlotCurve : mPlotCurves)
         {
             // First decide new y-axis label
             // If alias empty then use data name, else use the alias name
             QString newLabel;
-            if (mPlotCurves[i]->getSharedVectorVariable()->getAliasName().isEmpty())
+            if (pPlotCurve->getSharedVectorVariable()->hasAliasName())
             {
-                newLabel = QString("%1").arg(mPlotCurves[i]->getDataName());
+                newLabel = pPlotCurve->getSharedVectorVariable()->getAliasName();
             }
             else
             {
-                newLabel = QString("%1").arg(mPlotCurves[i]->getSharedVectorVariable()->getAliasName());
+                newLabel = pPlotCurve->getDataName();
             }
 
             // Add unit if it exists
-            if (!mPlotCurves[i]->getCurrentUnit().isEmpty())
+            QString yUnit = pPlotCurve->getCurrentPlotUnit();
+            if (!yUnit.isEmpty())
             {
-                newLabel.append(QString(" [%1]").arg(mPlotCurves[i]->getCurrentUnit()));
+                newLabel.append(QString(" [%1]").arg(yUnit));
             }
 
             // If new label is not already on the axis then we may want to add it
             // Check left axis
-            if( (mPlotCurves[i]->getAxisY() == QwtPlot::yLeft) && !leftLabels.contains(newLabel) )
+            if( (pPlotCurve->getAxisY() == QwtPlot::yLeft) && !leftLabels.contains(newLabel) )
             {
                 leftLabels.append(newLabel);
             }
 
             // Check right axis
-            if( (mPlotCurves[i]->getAxisY() == QwtPlot::yRight) && !rightLabels.contains(newLabel) )
+            if( (pPlotCurve->getAxisY() == QwtPlot::yRight) && !rightLabels.contains(newLabel) )
             {
                 rightLabels.append(newLabel);
             }
 
             // Now decide new bottom axis label
             // Use custom x-axis if available, else try to use the time or frequency vector (if set), but also check for showVSsamples
-            SharedVectorVariableT pSharedXVector;
-            if (!mPlotCurves[i]->getShowVsSamples())
-            {
-                pSharedXVector = mPlotCurves[i]->getSharedCustomXVariable();
-                if (pSharedXVector.isNull())
-                {
-                    pSharedXVector = mPlotCurves[i]->getSharedTimeOrFrequencyVariable();
-                }
-            }
             QString bottomLabel;
-            if (pSharedXVector.isNull())
+
+            if (pPlotCurve->getShowVsSamples())
             {
                 bottomLabel = "Samples";
             }
-            else if (!sharedBottomVars.contains(pSharedXVector))
+            else
             {
-                //! @todo for custom x maybe check for alias name
-                sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
-                bottomLabel = QString("%1").arg(pSharedXVector->getDataName());
-                if (!pSharedXVector->getActualPlotDataUnit().isEmpty())
+                bool customX=true;
+                SharedVectorVariableT pSharedXVector = pPlotCurve->getSharedCustomXVariable();
+                // If not custom data exist, try time or frequency vector
+                if (pSharedXVector.isNull())
                 {
-                    bottomLabel.append(QString(" [%1]").arg(pSharedXVector->getActualPlotDataUnit()));
+                    customX = false;
+                    pSharedXVector = pPlotCurve->getSharedTimeOrFrequencyVariable();
                 }
 
+                if (pSharedXVector.isNull())
+                {
+                    bottomLabel = "Samples";
+                }
+                else if (!sharedBottomVars.contains(pSharedXVector))
+                {
+                    sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
+                    bottomLabel = QString("%1").arg(pSharedXVector->getDataName());
+                    if(customX)
+                    {
+                        //! @todo for custom x maybe check for alias name
+                        UnitScale xUS = pSharedXVector->getUnitScale(); //! @todo this will alwasy be original unit, need som way of solving this, maybe in curve
+                        if (!xUS.isEmpty())
+                        {
+                            bottomLabel.append(QString(" [%1]").arg(xUS.mUnit));
+                        }
+                    }
+                    // handle time or frequency vector
+                    else
+                    {
+                        UnitScale tfUS = pPlotCurve->getCurveTFUnitScale();
+                        if (!tfUS.isEmpty())
+                        {
+                            bottomLabel.append(QString(" [%1]").arg(tfUS.mUnit));
+                        }
+                    }
+
+                }
             }
+
             if (!bottomLabel.isEmpty() && !bottomLabels.contains(bottomLabel))
             {
                 bottomLabels.append(bottomLabel);
@@ -1574,29 +1609,26 @@ void PlotArea::openTimeScalingDialog()
     scaleDialog.setWindowTitle("Change Time scaling and offset");
 
     // One for each generation, automatic sort on key
-    QMap<int, TimeOrFrequencyScaleWidget*> activeGenerations;
+    QMultiMap<int, PlotCurve*> genCurveMap;
     //! @todo what if massive amount of generations
-    for (int i=0; i<mPlotCurves.size(); ++i)
+    for (PlotCurve* pCurve : mPlotCurves)
     {
-        int gen = mPlotCurves[i]->getGeneration();
-        if (!activeGenerations.contains(gen))
-        {
-            TimeOrFrequencyScaleWidget *pTimeScaleW = new TimeOrFrequencyScaleWidget(mPlotCurves[i]->getSharedVectorVariable(), &scaleDialog);
-            connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
-            activeGenerations.insert(gen, pTimeScaleW);
-        }
+        genCurveMap.insertMulti(pCurve->getGeneration(), pCurve);
     }
 
     QGridLayout *pGridLayout = new QGridLayout(&scaleDialog);
-
-    // Now push scale widgets into grid, in sorted order from map
-    pGridLayout->addWidget(new QLabel("Changing a generation time scale or offset will affect all variables at generation in all plot windows!",&scaleDialog), 0, 0, 1, 2, Qt::AlignLeft);
+    pGridLayout->addWidget(new QLabel("Changing generation time scale and offset will affect all curves at that generation",&scaleDialog), 0, 0, 1, 2, Qt::AlignLeft);
     int row = 1;
-    QMap<int, TimeOrFrequencyScaleWidget*>::iterator it;
-    for (it=activeGenerations.begin(); it!=activeGenerations.end(); ++it)
+    for (int key : genCurveMap.uniqueKeys())
     {
-        pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(it.key()+1), &scaleDialog), row, 0);
-        pGridLayout->addWidget(it.value(), row, 1);
+        // Create and push scale widgets into grid, in sorted order from map
+        auto list = genCurveMap.values(key);
+
+        TimeOrFrequencyScaleWidget *pTimeScaleW = new TimeOrFrequencyScaleWidget(list, &scaleDialog);
+        connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
+
+        pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(key+1), &scaleDialog), row, 0);
+        pGridLayout->addWidget(pTimeScaleW, row, 1);
         ++row;
     }
 
@@ -1606,7 +1638,7 @@ void PlotArea::openTimeScalingDialog()
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
     pGridLayout->addWidget(pButtonBox, row, 1);
     connect(pDoneButton,SIGNAL(clicked()),&scaleDialog,SLOT(close()));
-    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateAxisLabels())); //!< @todo this should happen directly when changing scale values
+    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateAxisLabels()));
 
     scaleDialog.exec();
 }
@@ -2179,48 +2211,88 @@ void PlotArea::setLegendSymbol(const QString symStyle, PlotCurve *pCurve)
     pCurve->resetLegendSize();
 }
 
-void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
+void PlotArea::determineAddedCurveDataUnitScale(PlotCurve *pCurve)
 {
-    // If a custom plotunit is not set on the data, then try to figure out if we should set one on the curve
-    if (!pCurve->hasCustomDataPlotScale())
+    const QString &originalDataUnit = pCurve->getDataUnit();
+    // Figure out the desired default unit (set in configuration) for the data behind this curve
+    QString defaultUnit;
+    if ( pCurve->getDataName() == "Value" )
     {
-        const QString &originalDataUnit = pCurve->getDataOriginalUnit();
-        // Figure out the desired default unit (set in configuration) for the data behind this curve
-        QString defaultUnit;
-        if ( pCurve->getDataName() != "Value" )
+        // Figure out compatible default unit based on the original data unit
+        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(originalDataUnit);
+        //! @todo if same unit exist in multiple places we have a problem
+        if (pqs.size() > 1)
         {
-            // If not "Value", then lookup default unit based on data name (ex: "Position")
-            defaultUnit = gpConfig->getDefaultUnit(pCurve->getDataName());
+            gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(originalDataUnit));
         }
-        else
+        if (pqs.size() == 1)
         {
-            // Figure out compatible default unit based on the original data unit
-            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(originalDataUnit);
-            //! @todo if same unit exist in multiple places we have a problem
-            if (pqs.size() > 1)
+            defaultUnit = gpConfig->getDefaultUnit(pqs.first());
+        }
+    }
+    else
+    {
+        // If not "Value", then lookup default unit based on data name (ex: "Position")
+        defaultUnit = gpConfig->getDefaultUnit(pCurve->getDataName());
+    }
+
+    // Use the default unit if it is not the same as the original unit
+    if (!defaultUnit.isEmpty() && (defaultUnit != originalDataUnit) )
+    {
+        pCurve->setCurveDataUnitScale(defaultUnit);
+    }
+
+    // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
+    // But only if there is an original unit to begin with otherwise we should scale something with unknown original unit (bad)
+    if (!originalDataUnit.isEmpty())
+    {
+        QString customUnit;
+        for(int i=0; i<mPlotCurves.size(); ++i)
+        {
+            // Skip checking the curve we are adding, and only check for curves on the same axis as we are adding to
+            if ( (mPlotCurves[i] != pCurve) && (mPlotCurves[i]->getAxisY() == pCurve->getAxisY()) )
             {
-                gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(originalDataUnit));
-            }
-            if (pqs.size() == 1)
-            {
-                defaultUnit = gpConfig->getDefaultUnit(pqs.first());
+                if( customUnit.isEmpty() )
+                {
+                    // Assign custom unit on first occurrence
+                    customUnit = mPlotCurves[i]->getCurrentPlotUnit();
+                }
+                else if(customUnit != mPlotCurves[i]->getCurrentPlotUnit())
+                {
+                    // Unit is different between the other curves, so we do not want to use it
+                    customUnit = QString();
+                    break;
+                }
             }
         }
 
-        // Use the default unit if it is not the same as the original unit
-        if (!defaultUnit.isEmpty() && (defaultUnit != originalDataUnit) )
+        // If we have found a custom unit that is shared among the other curves, then set that custom scale
+        // but only if it is different from the current unit, (we do not want a custom curve scale 1)
+        if( !customUnit.isEmpty()  && (customUnit != pCurve->getCurrentPlotUnit()) )
         {
-            pCurve->setCustomCurveDataUnit(defaultUnit);
+            pCurve->setCurveDataUnitScale(customUnit);
         }
-        //! @todo maybe this elseif can be removed in the future
-        else if (pCurve->getDataCustomPlotUnit() == "-")
+    }
+}
+
+void PlotArea::determineAddedCurveTFUnitScale(PlotCurve *pCurve)
+{
+    SharedVectorVariableT tfVar = pCurve->getSharedTimeOrFrequencyVariable();
+    if (tfVar)
+    {
+        QString defaultTfUnit = gpConfig->getDefaultUnit(tfVar->getDataName());
+
+        // Use the default unit if it is not the same as the original unit
+        if (!defaultTfUnit.isEmpty() && (defaultTfUnit != tfVar->getDataUnit()) )
         {
-            pCurve->setCustomCurveDataUnit(defaultUnit);
+            UnitScale us;
+            gpConfig->getUnitScale(tfVar->getDataName(), defaultTfUnit, us);
+            pCurve->setCurveTFUnitScale(us);
         }
 
         // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
         // But only if there is an original unit to begin with otherwise we should scale something with unknown original unit (bad)
-        if (!originalDataUnit.isEmpty())
+        if (!tfVar->getDataUnit().isEmpty())
         {
             QString customUnit;
             for(int i=0; i<mPlotCurves.size(); ++i)
@@ -2231,9 +2303,9 @@ void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
                     if( customUnit.isEmpty() )
                     {
                         // Assign custom unit on first occurrence
-                        customUnit = mPlotCurves[i]->getCurrentUnit();
+                        customUnit = mPlotCurves[i]->getCurveTFUnitScale().mUnit;
                     }
-                    else if(customUnit != mPlotCurves[i]->getCurrentUnit())
+                    else if(customUnit != mPlotCurves[i]->getCurveTFUnitScale().mUnit)
                     {
                         // Unit is different between the other curves, so we do not want to use it
                         customUnit = QString();
@@ -2243,19 +2315,15 @@ void PlotArea::determineAddedCurveUnitOrScale(PlotCurve *pCurve)
             }
 
             // If we have found a custom unit that is shared among the other curves, then set that custom scale
-            // but only if it is different from the current unit, (we do not want a custom curve scale 1)
-            if( !customUnit.isEmpty()  && (customUnit != pCurve->getCurrentUnit()) )
+            if( !customUnit.isEmpty() )
             {
-                pCurve->setCustomCurveDataUnit(customUnit);
+                UnitScale us;
+                gpConfig->getUnitScale(tfVar->getDataName(), customUnit, us);
+                pCurve->setCurveTFUnitScale(us);
             }
         }
-    }
-    else
-    {
-        // Else the given plot unit in the data will be used
-        //pCurve->removeCustomCurveDataUnit();
-    }
 
+    }
 }
 
 //! @brief This help function will append bottom or top space to make room for legend, space will be appended to input axis limits

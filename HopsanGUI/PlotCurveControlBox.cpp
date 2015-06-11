@@ -266,7 +266,7 @@ void PlotCurveControlBox::updateInfo()
 
 void PlotCurveControlBox::refreshTitle()
 {
-    mpTitle->setText(mpPlotCurve->getCurveName() + " ["+mpPlotCurve->getCurrentUnit()+"]");
+    mpTitle->setText(mpPlotCurve->getCurveName() + " ["+mpPlotCurve->getCurrentPlotUnit()+"]");
     mpTitle->setToolTip(mpPlotCurve->getSharedVectorVariable()->getFullVariableName());
 }
 

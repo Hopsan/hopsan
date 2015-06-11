@@ -340,7 +340,8 @@ const QString &BaseVariableTreeItem::getDataUnit() const
 
 const QString &BaseVariableTreeItem::getPlotDataUnit() const
 {
-    return mData->getActualPlotDataUnit();
+    //return mData->getActualPlotDataUnit();
+    return mData->getDataUnit();
 }
 
 const QString &BaseVariableTreeItem::getAliasName() const

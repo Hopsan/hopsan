@@ -93,9 +93,9 @@ class TimeOrFrequencyScaleWidget : public QWidget
 {
     Q_OBJECT
 public:
-    TimeOrFrequencyScaleWidget(SharedVectorVariableT pVariable, QWidget *pParent=0);
-    void setScale(const QString &rUnitScale);
-    void setOffset(const QString &rOffset);
+    TimeOrFrequencyScaleWidget(const QList<PlotCurve*> &rPlotCurves, QWidget *pParent=0);
+//    void setScale(const QString &rUnitScale);
+//    void setOffset(const QString &rOffset);
 
 signals:
     void valuesChanged();
@@ -104,11 +104,10 @@ public slots:
     void setVaules();
 
 private:
-    SharedVectorVariableT mpTimeOrFrequency;
+    QList<PlotCurve*> mPlotCurves;
+    QString mQuantity;
     QComboBox *mpScaleComboBox;
     QLineEdit *mpOffsetLineEdit;
-
-
 };
 
 class CurveColorSelector
@@ -228,7 +227,8 @@ private:
     void constructAxisLabelDialog();
     void setLegendSymbol(const QString symStyle);
     void setLegendSymbol(const QString symStyle, PlotCurve *pCurve);
-    void determineAddedCurveUnitOrScale(PlotCurve *pCurve);
+    void determineAddedCurveDataUnitScale(PlotCurve *pCurve);
+    void determineAddedCurveTFUnitScale(PlotCurve *pCurve);
     void setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisLimits);
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
     void updatePlotMarkers();

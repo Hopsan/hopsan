@@ -89,7 +89,6 @@ public:
     const SharedVectorVariableT getSharedTimeOrFrequencyVariable() const;
     const SharedVectorVariableT getSharedCustomXVariable() const;
     bool hasCustomXData() const;
-    bool getShowVsSamples() const;
 
     bool minMaxPositiveNonZeroYValues(double &rMin, double &rMax);
     bool minMaxPositiveNonZeroXValues(double &rMin, double &rMax);
@@ -98,26 +97,34 @@ public:
     const QString &getComponentName() const;
     const QString &getPortName() const;
     const QString &getDataName() const;
-    const QString &getDataOriginalUnit() const;
-    const QString &getDataCustomPlotUnit() const;
-    const QString &getCurrentUnit() const;
+    const QString &getDataUnit() const;
     const QString &getDataModelPath() const;
     QString getDataFullName() const;
+    QString getDataSmartName() const;
     VariableSourceTypeT getDataSource() const;
-    bool hasCustomDataPlotScale() const;
 
-    bool hasCustomCurveDataPlotScale() const;
-    void setCustomCurveDataUnit(const QString &rUnit);
-    void setCustomCurveDataUnit(const QString &rUnit, double scale);
-    void removeCustomCurveDataUnit();
-    void setTimePlotScalingAndOffset(double scale, double offset);
-    void setLocalCurvePlotScaleAndOffset(const double scale, const double offset);
-    void setDataPlotOffset(const double offset);
+    bool hasCurveDataUnitScale() const;
+    void setCurveDataUnitScale(const QString &rUnit);
+    void setCurveDataUnitScale(const UnitScale &rUS);
+    const UnitScale getCurveDataUnitScale() const;
+    void resetCurveDataUnitScale();
+
+    void setCurveExtraDataScaleAndOffset(const double scale, const double offset);
+
+    const QString getCurrentPlotUnit() const;
+
+    UnitScale getCurveTFUnitScale() const;
+    double getCurveTFOffset() const;
+    void setCurveTFUnitScale(UnitScale us);
+    void setCurveTFOffset(double offset);
+    void setCurveTFUnitScaleAndOffset(const UnitScale &rUS, double offset);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
     void setCustomXData(SharedVectorVariableT data);
     void setCustomXData(const QString fullName);
+
+    bool getShowVsSamples() const;
     void setShowVsSamples(bool tf);
 
     bool isAutoUpdating() const;
@@ -148,9 +155,7 @@ public slots:
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
     void openScaleDialog();
-    void updateTimePlotScaleFromDialog();
-    void updateLocalPlotScaleAndOffsetFromDialog();
-    void updateDataPlotOffsetFromDialog();
+    void updateCurveExtraDataScaleAndOffsetFromDialog();
     void updateToNewGeneration();
 
     void refreshCurveTitle();
@@ -179,18 +184,20 @@ private:
     bool mHaveCustomData;
     bool mShowVsSamples;
 
-    UnitScale mCustomCurveDataUnitScale;
-    double mLocalAdditionalCurveScale;
-    double mLocalAdditionalCurveOffset;
+    UnitScale mCurveDataUnitScale;
+    UnitScale mCurveTFUnitScale;
+    double mCurveTFOffset;
+    double mCurveExtraDataScale;
+    double mCurveExtraDataOffset;
 
     // Curve properties settings
     bool mAutoUpdate, mIsActive, mIncludeGenInTitle, mIncludeSourceInTitle;
     QwtPlot::Axis mAxisY;
     QComboBox *mpTimeScaleComboBox;
     QDoubleSpinBox *mpTimeOffsetSpinBox;
-    QLineEdit *mpLocalCurveScaleLineEdit;
-    QLineEdit *mpLocalCurveOffsetLineEdit;
-    QLineEdit *mpDataPlotOffsetLineEdit;
+    QLineEdit *mpCurveExtraDataScaleLineEdit;
+    QLineEdit *mpCurveExtraDataOffsetLineEdit;
+    QLineEdit *mpCurveDataOffsetLineEdit;
     PlotArea *mpParentPlotArea;
 
     // Line properties

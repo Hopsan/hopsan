@@ -87,8 +87,10 @@ PlotCurve::PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, cons
     mShowVsSamples = false;
     mData = data;
 
-    mLocalAdditionalCurveScale = 1.0;
-    mLocalAdditionalCurveOffset = 0.0;
+    mCurveExtraDataScale = 1.0;
+    mCurveExtraDataOffset = 0.0;
+    mCurveTFOffset = 0.0;
+
     mpCurveSymbol = 0;
     mCurveSymbolSize = 8;
     mIsActive = false;
@@ -240,36 +242,30 @@ const QString &PlotCurve::getDataName() const
 }
 
 
-//! @brief Returns the current custom data unit of a plot curve
-const QString &PlotCurve::getDataCustomPlotUnit() const
-{
-    return mData->getPlotScaleDataUnit();
-}
-
 //! @brief Returns the original data unit of a plot curve
-const QString &PlotCurve::getDataOriginalUnit() const
+const QString &PlotCurve::getDataUnit() const
 {
     return mData->getDataUnit();
 }
 
+
 //! @brief Returns the current unit of a plot curve in the following priority (Local unit, Data unit or Original unit)
-const QString &PlotCurve::getCurrentUnit() const
+const QString PlotCurve::getCurrentPlotUnit() const
 {
-    if (mCustomCurveDataUnitScale.isEmpty())
+    QString localScale = QString::number(mCurveExtraDataScale);
+    UnitScale us = getCurveDataUnitScale();
+    if (!us.isEmpty())
     {
-        if (hasCustomDataPlotScale())
+        if (localScale != "1")
         {
-            return getDataCustomPlotUnit();
+            return QString("%1 * %2").arg(localScale).arg(us.mUnit);
         }
         else
         {
-            return getDataOriginalUnit();
+            return us.mUnit;
         }
     }
-    else
-    {
-        return mCustomCurveDataUnitScale.mUnit;
-    }
+    return "";
 }
 
 VariableSourceTypeT PlotCurve::getDataSource() const
@@ -277,14 +273,9 @@ VariableSourceTypeT PlotCurve::getDataSource() const
     return mData->getVariableSourceType();
 }
 
-bool PlotCurve::hasCustomDataPlotScale() const
+bool PlotCurve::hasCurveDataUnitScale() const
 {
-    return !mData->getCustomUnitScale().isEmpty();
-}
-
-bool PlotCurve::hasCustomCurveDataPlotScale() const
-{
-    return !mCustomCurveDataUnitScale.isEmpty();
+    return !mCurveDataUnitScale.isEmpty();
 }
 
 const QString &PlotCurve::getDataModelPath() const
@@ -295,6 +286,11 @@ const QString &PlotCurve::getDataModelPath() const
 QString PlotCurve::getDataFullName() const
 {
     return mData->getFullVariableName();
+}
+
+QString PlotCurve::getDataSmartName() const
+{
+    return mData->getSmartName();
 }
 
 
@@ -421,86 +417,144 @@ bool PlotCurve::setGeneration(const int generation)
 //! @details The physical quantity will be checked, if it does not match the current unit, the new unit will be ignored
 //! @param[in] rUnit Name of new unit
 //! @note If unit is not registered for data then nothing will happen
-void PlotCurve::setCustomCurveDataUnit(const QString &rUnit)
+void PlotCurve::setCurveDataUnitScale(const QString &rUnit)
 {
-    // For non signal variables
-    if (getDataName() != "Value")
-    {
-        // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
-        if (gpConfig->hasUnitScale(getDataName(),rUnit))
-        {
-            setCustomCurveDataUnit(rUnit, gpConfig->getUnitScale(getDataName(), rUnit));
-        }
-    }
     // For signal variables
-    else
+    if (getDataName() == "Value")
     {
         // Only set the new unit if it represents the same physical quantity as the current unit
         QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(rUnit);
-        QStringList pqsOrg = gpConfig->getPhysicalQuantitiesForUnit(getDataOriginalUnit());
+        QStringList pqsOrg = gpConfig->getPhysicalQuantitiesForUnit(getDataUnit());
         if ( !(pqs.isEmpty() || pqsOrg.isEmpty()) )
         {
             if (pqs.front() == pqsOrg.front())
             {
-                setCustomCurveDataUnit(rUnit, gpConfig->getUnitScale(pqs.first(), rUnit));
+                UnitScale us;
+                gpConfig->getUnitScale(pqs.first(), rUnit, us);
+                setCurveDataUnitScale(us);
             }
+        }
+    }
+    // For non signal variables
+    else
+    {
+        // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
+        if (gpConfig->hasUnitScale(getDataName(),rUnit))
+        {
+            UnitScale us;
+            gpConfig->getUnitScale(getDataName(), rUnit, us);
+            setCurveDataUnitScale(us);
         }
     }
 }
 
-//! @brief Sets a custom unit and scale of a plot curve
-//! @param unit Name of new unit
-//! @param scale What scaling towards default (usually SI) unit to use
-void PlotCurve::setCustomCurveDataUnit(const QString &rUnit, double scale)
+void PlotCurve::setCurveDataUnitScale(const UnitScale &rUS)
 {
-    mCustomCurveDataUnitScale.mUnit = rUnit;
-    mCustomCurveDataUnitScale.setScale(scale*1.0/mData->getPlotScale());
-
-    // Clear the custom scale if it is one and we have a data unit
-    if (!getDataOriginalUnit().isEmpty() && mCustomCurveDataUnitScale.isOne())
+    if (rUS.isEmpty())
     {
-        removeCustomCurveDataUnit();
+        resetCurveDataUnitScale();
     }
     else
     {
-        updateCurve();
-        //! @todo shouldn't these be triggered by signal in update curve?
-        mpParentPlotArea->replot();
+        mCurveDataUnitScale = rUS;
+
+        // Clear the custom scale if it is one and we have a data unit
+        if (!getDataUnit().isEmpty() && mCurveDataUnitScale.isOne())
+        {
+            resetCurveDataUnitScale();
+        }
+        else
+        {
+            updateCurve();
+            //! @todo shouldn't these be triggered by signal in update curve?
+            mpParentPlotArea->replot();
+        }
+    }
+
+}
+
+const UnitScale PlotCurve::getCurveDataUnitScale() const
+{
+    if (mCurveDataUnitScale.isEmpty())
+    {
+        // If data have an original unit then return that as a unit scale with scaling 1.0
+        if (!mData->getDataUnit().isEmpty())
+        {
+            return UnitScale(mData->getDataName(), mData->getDataUnit(), "1.0");
+        }
+        // If not then return empty
+        else
+        {
+            return UnitScale();
+        }
+    }
+    // Return the custom unitscale
+    else
+    {
+        return mCurveDataUnitScale;
     }
 }
 
-void PlotCurve::removeCustomCurveDataUnit()
+void PlotCurve::resetCurveDataUnitScale()
 {
-    mCustomCurveDataUnitScale.clear();
+    mCurveDataUnitScale.clear();
     updateCurve();
 
     //! @todo shouldn't these be triggered by signal in update curve?
     mpParentPlotArea->replot();
 }
 
-
-//! @brief Sets the (plot only) scaling of a plot curve
-//! @param scaleX Scale factor for X-axis
-//! @param scaleY Scale factor for Y-axis
-//! @param offsetX Offset value for X-axis
-//! @param offsetY Offset value for Y-axis
-//! @todo FIXA /Peter
-void PlotCurve::setTimePlotScalingAndOffset(double scale, double offset)
+void PlotCurve::setCurveTFUnitScale(UnitScale us)
 {
-    mData->setTimePlotScaleAndOffset(scale, offset);
-}
-
-void PlotCurve::setLocalCurvePlotScaleAndOffset(const double scale, const double offset)
-{
-    mLocalAdditionalCurveScale = scale;
-    mLocalAdditionalCurveOffset = offset;
+    mCurveTFUnitScale = us;
     updateCurve();
 }
 
-void PlotCurve::setDataPlotOffset(const double offset)
+UnitScale PlotCurve::getCurveTFUnitScale() const
 {
-    mData->setPlotOffset(offset);
-    //The dataChanged signal is emitted inside setPlotOffset
+    if (mCurveTFUnitScale.isEmpty())
+    {
+        SharedVectorVariableT tfVar = mData->getSharedTimeOrFrequencyVector();
+        if (tfVar)
+        {
+            return UnitScale(tfVar->getDataName(), tfVar->getDataUnit(), "1.0");
+        }
+        else
+        {
+            return UnitScale();
+        }
+    }
+    else
+    {
+        return mCurveTFUnitScale;
+    }
+}
+
+void PlotCurve::setCurveTFOffset(double offset)
+{
+    mCurveTFOffset = offset;
+    updateCurve();
+}
+
+double PlotCurve::getCurveTFOffset() const
+{
+    return mCurveTFOffset;
+}
+
+
+//! @brief Sets the curve specific time or frequency vector scale and offset
+void PlotCurve::setCurveTFUnitScaleAndOffset(const UnitScale &rUS, double offset)
+{
+    mCurveTFUnitScale = rUS;
+    mCurveTFOffset = offset;
+    updateCurve();
+}
+
+void PlotCurve::setCurveExtraDataScaleAndOffset(const double scale, const double offset)
+{
+    mCurveExtraDataScale = scale;
+    mCurveExtraDataOffset = offset;
+    updateCurve();
 }
 
 
@@ -819,36 +873,32 @@ void PlotCurve::openScaleDialog()
     QDialog *pScaleDialog = new QDialog(mpParentPlotArea);
     pScaleDialog->setWindowTitle("Change plot-scale and plot-offsets");
 
-    QLabel *pYPlotScale = new QLabel(pScaleDialog);
-    QLabel *pYPlotScaleUnit = new QLabel(pScaleDialog);
-    if (mData)
+    QLabel *pOriginalDataUnit = new QLabel(pScaleDialog);
+    QLabel *pCustomDataUnit = new QLabel(pScaleDialog);
+    UnitScale us = getCurveDataUnitScale();
+    if (mData && !us.isEmpty())
     {
-        pYPlotScale->setText(QString("%1").arg(mData->getPlotScale()));
-        pYPlotScaleUnit->setText(mData->getPlotScaleDataUnit());
+        pOriginalDataUnit->setText(mData->getDataUnit());
+        pCustomDataUnit->setText(QString("%1     (%2)").arg(us.mUnit).arg(us.mScale));
     }
     else
     {
-        pYPlotScale->setText("0");
-        pYPlotScale->setEnabled(false);
-        pYPlotScaleUnit->setEnabled(false);
+        pOriginalDataUnit->setEnabled(false);
+        pCustomDataUnit->setEnabled(false);
     }
-
-    mpDataPlotOffsetLineEdit = new QLineEdit(pScaleDialog);
-    mpDataPlotOffsetLineEdit->setValidator(new QDoubleValidator(mpDataPlotOffsetLineEdit));
-    mpDataPlotOffsetLineEdit->setText(QString("%1").arg(mData->getPlotOffset()));
 
     QLabel *pCurveUnitScale = new QLabel(pScaleDialog);
     QLabel *pCurveUnitScaleUnit = new QLabel(pScaleDialog);
-    pCurveUnitScale->setText(mCustomCurveDataUnitScale.mScale);
-    pCurveUnitScaleUnit->setText(mCustomCurveDataUnitScale.mUnit);
+    pCurveUnitScale->setText(mCurveDataUnitScale.mScale);
+    pCurveUnitScaleUnit->setText(mCurveDataUnitScale.mUnit);
 
-    mpLocalCurveScaleLineEdit = new QLineEdit(pScaleDialog);
-    mpLocalCurveScaleLineEdit->setValidator(new QDoubleValidator(mpLocalCurveScaleLineEdit));
-    mpLocalCurveScaleLineEdit->setText(QString("%1").arg(mLocalAdditionalCurveScale));
+    mpCurveExtraDataScaleLineEdit = new QLineEdit(pScaleDialog);
+    mpCurveExtraDataScaleLineEdit->setValidator(new QDoubleValidator(mpCurveExtraDataScaleLineEdit));
+    mpCurveExtraDataScaleLineEdit->setText(QString("%1").arg(mCurveExtraDataScale));
 
-    mpLocalCurveOffsetLineEdit = new QLineEdit(pScaleDialog);
-    mpLocalCurveOffsetLineEdit->setValidator(new QDoubleValidator(mpLocalCurveOffsetLineEdit));
-    mpLocalCurveOffsetLineEdit->setText(QString("%1").arg(mLocalAdditionalCurveOffset));
+    mpCurveExtraDataOffsetLineEdit = new QLineEdit(pScaleDialog);
+    mpCurveExtraDataOffsetLineEdit->setValidator(new QDoubleValidator(mpCurveExtraDataOffsetLineEdit));
+    mpCurveExtraDataOffsetLineEdit->setText(QString("%1").arg(mCurveExtraDataOffset));
 
 
     QPushButton *pDoneButton = new QPushButton("Done", pScaleDialog);
@@ -866,83 +916,46 @@ void PlotCurve::openScaleDialog()
     //Space
     pDialogLayout->setRowMinimumHeight(r,12);
     ++r;
-    pDialogLayout->addWidget(new QLabel("Data plot scale and offset that affects all plot curves based on this data variable:", pScaleDialog),r,0,1,2,Qt::AlignLeft);
+    pDialogLayout->addWidget(new QLabel("Original Unit: ", pScaleDialog),  r,0);
+    pDialogLayout->addWidget(pOriginalDataUnit,                            r,1);
     ++r;
-    pDialogLayout->addWidget(new QLabel("Data plot scale: ", pScaleDialog),         r,0);
-    pDialogLayout->addWidget(pYPlotScale,                                           r,1);
-    pDialogLayout->addWidget(pYPlotScaleUnit,                                       r,2);
-    ++r;
-    pDialogLayout->addWidget(new QLabel("Data plot offset: ", pScaleDialog),        r,0);
-    pDialogLayout->addWidget(mpDataPlotOffsetLineEdit,                              r,1);
+    pDialogLayout->addWidget(new QLabel("Unit Scale: ", pScaleDialog),     r,0);
+    pDialogLayout->addWidget(pCustomDataUnit,                              r,1);
     ++r;
     //Space
     pDialogLayout->setRowMinimumHeight(r,12);
     ++r;
-    pDialogLayout->addWidget(new QLabel("Plot curve scale and offset that affects only this plot curve (all generations):", pScaleDialog),r,0,1,2,Qt::AlignLeft);
+    pDialogLayout->addWidget(new QLabel("Plot curve scale and offset that affects only this plot curve (regardless of generation):", pScaleDialog),r,0,1,2,Qt::AlignLeft);
     ++r;
-    pDialogLayout->addWidget(new QLabel("Plot curve unit scale: ", pScaleDialog),   r,0);
-    pDialogLayout->addWidget(pCurveUnitScale,                                       r,1);
-    pDialogLayout->addWidget(pCurveUnitScaleUnit,                                   r,2);
+    pDialogLayout->addWidget(new QLabel("Plot curve extra scale: ", pScaleDialog),      r,0);
+    pDialogLayout->addWidget(mpCurveExtraDataScaleLineEdit,                             r,1);
     ++r;
-    pDialogLayout->addWidget(new QLabel("Plot curve scale: ", pScaleDialog),        r,0);
-    pDialogLayout->addWidget(mpLocalCurveScaleLineEdit,                             r,1);
-    ++r;
-    pDialogLayout->addWidget(new QLabel("Plot curve offset: ", pScaleDialog),       r,0);
-    pDialogLayout->addWidget(mpLocalCurveOffsetLineEdit,                            r,1);
+    pDialogLayout->addWidget(new QLabel("Plot curve extra offset: ", pScaleDialog),     r,0);
+    pDialogLayout->addWidget(mpCurveExtraDataOffsetLineEdit,                            r,1);
     ++r;
 
     pDialogLayout->addWidget(pButtonBox,r,0,1,2);
     pScaleDialog->setLayout(pDialogLayout);
 
     connect(pDoneButton,                SIGNAL(clicked()),pScaleDialog, SLOT(close()));
-    connect(mpLocalCurveScaleLineEdit,  SIGNAL(textChanged(QString)),   SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
-    connect(mpLocalCurveOffsetLineEdit, SIGNAL(textChanged(QString)),   SLOT(updateLocalPlotScaleAndOffsetFromDialog()));
-    connect(mpDataPlotOffsetLineEdit,   SIGNAL(textChanged(QString)),   SLOT(updateDataPlotOffsetFromDialog()));
+    connect(mpCurveExtraDataScaleLineEdit,  SIGNAL(textChanged(QString)),   SLOT(updateCurveExtraDataScaleAndOffsetFromDialog()));
+    connect(mpCurveExtraDataOffsetLineEdit, SIGNAL(textChanged(QString)),   SLOT(updateCurveExtraDataScaleAndOffsetFromDialog()));
 
     pScaleDialog->exec();
 
     // Disconnect again to avoid triggering value update the next time the dialog is built
-    disconnect(mpLocalCurveScaleLineEdit, 0, 0, 0);
-    disconnect(mpLocalCurveOffsetLineEdit, 0, 0, 0);
-    disconnect(mpDataPlotOffsetLineEdit, 0, 0, 0);
+    disconnect(mpCurveExtraDataScaleLineEdit, 0, 0, 0);
+    disconnect(mpCurveExtraDataOffsetLineEdit, 0, 0, 0);
 
     pScaleDialog->deleteLater();
 }
 
 
-//! @brief Updates the scaling of a plot curve from values in scaling dialog
-//! @todo FIXA  /Peter
-void PlotCurve::updateTimePlotScaleFromDialog()
+void PlotCurve::updateCurveExtraDataScaleAndOffsetFromDialog()
 {
-    double newScale = mpTimeScaleComboBox->currentText().split(" ")[0].toDouble();
-    double oldScale = mData->getSharedTimeOrFrequencyVector()->getPlotScale();
-
-    setTimePlotScalingAndOffset(newScale, mpTimeOffsetSpinBox->value());
-
-    // Update zoom rectangle to new scale if zoomed
-    if(mpParentPlotArea->isZoomed())
-    {
-        QRectF oldZoomRect = mpParentPlotArea->mpQwtZoomerLeft->zoomRect();
-        QRectF newZoomRect = QRectF(oldZoomRect.x()*newScale/oldScale, oldZoomRect.y(), oldZoomRect.width()*newScale/oldScale, oldZoomRect.height());
-
-        mpParentPlotArea->resetZoom();
-
-        mpParentPlotArea->mpQwtZoomerLeft->zoom(newZoomRect);
-        mpParentPlotArea->replot();
-    }
-
-    mpParentPlotArea->mpQwtPlot->setAxisTitle(QwtPlot::xBottom, "Time ["+mpTimeScaleComboBox->currentText().split(" ")[1].remove("(").remove(")")+"] ");     //!< @todo Not so nice fix... /Robert
+    setCurveExtraDataScaleAndOffset(mpCurveExtraDataScaleLineEdit->text().toDouble(), mpCurveExtraDataOffsetLineEdit->text().toDouble());
 }
 
-void PlotCurve::updateLocalPlotScaleAndOffsetFromDialog()
-{
-    setLocalCurvePlotScaleAndOffset(mpLocalCurveScaleLineEdit->text().toDouble(), mpLocalCurveOffsetLineEdit->text().toDouble());
-}
-
-void PlotCurve::updateDataPlotOffsetFromDialog()
-{
-    setDataPlotOffset(mpDataPlotOffsetLineEdit->text().toDouble());
-}
 
 
 //! @brief Updates a plot curve to the most recent available generation of its data
@@ -998,18 +1011,17 @@ void PlotCurve::updateCurve()
         // We copy here, it should be faster then peek (at least when data is cached on disc)
         //! @todo maybe be smart about doing this copy
         tempY = mData->getDataVectorCopy();
-        const double dataScale = mData->getPlotScale();
-        const double dataOffset = mData->getPlotOffset();
-        const double yScale = mLocalAdditionalCurveScale*mCustomCurveDataUnitScale.toDouble(1.0)*dataScale;
-        const double yOffset = dataOffset + mLocalAdditionalCurveOffset;
+        const double yScale = mCurveExtraDataScale*mCurveDataUnitScale.toDouble(1.0);
+        const double yOffset = mCurveExtraDataOffset;
 
         if (mCustomXdata && !mShowVsSamples)
         {
             // Use special X-data
             // We copy here, it should be faster then peek (at least when data is cached on disc)
             tempX = mCustomXdata->getDataVectorCopy();
-            const double xScale = mCustomXdata->getPlotScale();
-            const double xOffset = mCustomXdata->getPlotOffset();
+            //! @todo need to have custom Scale for custom x-axis data
+            const double xScale = 1.0; // mCustomXdata->getPlotScale();
+            const double xOffset = 1.0; // mCustomXdata->getPlotOffset();
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = tempX[i]*xScale + xOffset;
@@ -1020,8 +1032,8 @@ void PlotCurve::updateCurve()
         else if (mData->getSharedTimeOrFrequencyVector() && !mShowVsSamples)
         {
             tempX = mData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
-            const double timeScale = mData->getSharedTimeOrFrequencyVector()->getPlotScale();
-            const double timeOffset = mData->getSharedTimeOrFrequencyVector()->getPlotOffset();
+            const double timeScale = mCurveTFUnitScale.toDouble(1.0);
+            const double timeOffset = mCurveTFOffset;
 
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
