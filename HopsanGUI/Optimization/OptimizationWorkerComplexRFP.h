@@ -65,6 +65,7 @@ protected:
     QVector<double> mCandidateObjectives;
     bool mNeedsIteration;
     bool mFirstReflectionFailed;
+    int mFailedReflection;
 
     double mAlpha1, mAlpha2, mAlpha3, mAlpha4, mAlpha5, mAlpha6, mAlpha7;
     int mMethod;

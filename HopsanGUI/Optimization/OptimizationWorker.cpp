@@ -912,7 +912,7 @@ double OptimizationWorker::getMaxParDiff()
 double OptimizationWorker::getMaxParDiff(QVector<QVector<double> > &points)
 {
     double maxDiff = -1e100;
-    for(int i=0; i<points.size(); ++i)
+    for(int i=0; i<mNumParameters; ++i)
     {
         double maxPar = -1e100;
         double minPar = 1e100;
@@ -921,7 +921,7 @@ double OptimizationWorker::getMaxParDiff(QVector<QVector<double> > &points)
             if(points[p][i] > maxPar) maxPar = points[p][i];
             if(points[p][i] < minPar) minPar = points[p][i];
         }
-        if((maxPar-minPar)/(mParMax[i]-mParMin[i]) > maxDiff)
+        if(mParMax[i] != mParMin[i] && (maxPar-minPar)/(mParMax[i]-mParMin[i]) > maxDiff)
         {
             maxDiff = (maxPar-minPar)/(mParMax[i]-mParMin[i]);
         }
