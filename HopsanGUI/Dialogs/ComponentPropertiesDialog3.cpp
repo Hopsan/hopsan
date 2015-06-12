@@ -756,6 +756,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
 
         variameter.mDescription = parameters[constantsIds[i]].mDescription;
         variameter.mUnit = parameters[constantsIds[i]].mUnit;
+        variameter.mQuantity = parameters[constantsIds[i]].mQuantity;
         variameter.mDataType = parameters[constantsIds[i]].mType;
         variameter.mConditions = parameters[constantsIds[i]].mConditions;
         createTableRow(r, variameter, Constant);
@@ -1497,34 +1498,43 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             connect(mpValueEdit, SIGNAL(textChanged(QString)), this, SLOT(checkIfSysParEntered()));
             refreshValueTextStyle();
 
-            // Set the unit field
-            if (!rData.mUnit.isEmpty())
-            {
+            mDefaultUnitScale.setOnlyScale(1);
 
-                mDefaultUnitScale.setOnlyScale(1);
-                if (!gpConfig->isRegisteredSIUnit(rData.mUnit))
+            // Set the unit selection field based on Quantity
+            QString quantity = rData.mQuantity;
+            // If quantity is empty, first try to figure out from unit (assuming base units)
+            if (quantity.isEmpty())
+            {
+                if (gpConfig->isRegisteredBaseUnit(rData.mUnit))
                 {
                     QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(rData.mUnit);
-                    if (pqs.size() > 1)
+                    // Only allow listing in case we have one unique quantity match for base unit
+                    if (pqs.size() == 1)
                     {
-                        gpMessageHandler->addWarningMessage(QString("Multiple matches for custom unit scales for original unit: %1, wrong set may be shown!").arg(rData.mUnit), "WrongUSSet");
-                    }
-
-                    if (pqs.size() > 0)
-                    {
-                        UnitScale us;
-                        gpConfig->getUnitScale(pqs.front(), rData.mUnit, us);
-                        if (!us.isEmpty())
-                        {
-                            mDefaultUnitScale = us;
-                        }
+                        quantity = pqs.front();
                     }
                 }
+            }
 
-                mpUnitSelectionWidget = new UnitSelectionWidget(rData.mUnit, this);
+            // Get teh default unit scale (should be one but also contains quantity and unit name)
+            if (!quantity.isEmpty())
+            {
+                UnitScale us;
+                gpConfig->getUnitScale(quantity, rData.mUnit, us);
+                if (!us.isEmpty())
+                {
+                    mDefaultUnitScale = us;
+                }
+            }
+
+
+            if (!quantity.isEmpty())
+            {
+                mpUnitSelectionWidget = new UnitSelectionWidget(quantity, this);
                 mpUnitSelectionWidget->setUnitScaling(currentCustomUS);
                 connect(mpUnitSelectionWidget, SIGNAL(unitChanged(UnitScale)), this, SLOT(rescaleByUnitScale(UnitScale)));
                 pLayout->addWidget(mpUnitSelectionWidget);
+
             }
         }
 
@@ -1847,37 +1857,18 @@ void HideShowPortWidget::hideShowPort(const bool doShow)
 }
 
 
-UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *pParent) :
+UnitSelectionWidget::UnitSelectionWidget(const QString &rQuantity, QWidget *pParent) :
     QWidget(pParent)
 {
+    mpUnitComboBox = 0;
+    mQuantity = rQuantity;
+    mBaseUnitIndex = -1;
+
     QHBoxLayout *pLayout = new QHBoxLayout(this);
     pLayout->setContentsMargins(0,0,0,0);
-    mpUnitComboBox = 0;
-    mDefaultUnit = rDefaultUnit;
-    mDefaultIndex = -1;
 
-    QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mDefaultUnit);
-    //! @todo if more then one is returned both will be shown, there could be mixups, don't know how to handle that
-
-    //! @todo this may show the wrong set of units
-    if (pqs.size() > 1)
-    {
-        gpMessageHandler->addWarningMessage(QString("Multiple matches for custom unit scales for original unit: %1, There may be mixup!").arg(mDefaultUnit), "WrongUSSet");
-        foreach(QString pq, pqs)
-        {
-            QMap<QString, double> map = gpConfig->getUnitScales(pq);
-            QMap<QString, double>::iterator it;
-            for (it=map.begin(); it!=map.end(); ++it)
-            {
-                mUnitScales.insert(QString("<%1> %2").arg(pq,it.key()), it.value());
-            }
-        }
-    }
-    else if (pqs.size() == 1)
-    {
-        mPhysicalQuantity = pqs.front();
-        mUnitScales = gpConfig->getUnitScales(mPhysicalQuantity);
-    }
+    gpConfig->getUnitScales(mQuantity, mUnitScales);
+    mBaseUnit = gpConfig->getBaseUnit(mQuantity);
 
     if (!mUnitScales.isEmpty())
     {
@@ -1885,37 +1876,20 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rDefaultUnit, QWidget *p
         mpUnitComboBox->installEventFilter(new MouseWheelEventEater(this));
         mpUnitComboBox->setMinimumWidth(60);
 
-        foreach(QString unit, mUnitScales.keys())
+        for( UnitScale &us : mUnitScales )
         {
-            mpUnitComboBox->addItem(unit);
-            if (mDefaultIndex < 0)
+            mpUnitComboBox->addItem(us.mUnit);
+            if (mBaseUnitIndex < 0)
             {
-                // Special handling if n pq's > 1
-                if (pqs.size() > 1)
+                // check if this is the default unit
+                if ( mBaseUnit == us.mUnit )
                 {
-                    double s = mUnitScales.value(unit);
-
-                    unit.remove(0, unit.indexOf(">")+1);
-                    unit = unit.trimmed();
-
-                    // check if this is the default unit
-                    if ( (mDefaultUnit == unit) && fuzzyEqual(s, 1.0, 1e-10) )
-                    {
-                        mDefaultIndex = mpUnitComboBox->count()-1;
-                    }
-                    //! @todo this may still fail as I do not really know the physical quantity
-                }
-                else
-                {
-                    // check if this is the default unit
-                    if ( mDefaultUnit == unit )
-                    {
-                        mDefaultIndex = mpUnitComboBox->count()-1;
-                    }
+                    mBaseUnitIndex = mpUnitComboBox->count()-1;
                 }
             }
         }
-        mpUnitComboBox->setCurrentIndex(mDefaultIndex);
+
+        mpUnitComboBox->setCurrentIndex(mBaseUnitIndex);
         pLayout->addWidget(mpUnitComboBox);
         connect(mpUnitComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectionChanged(int)));
     }
@@ -1926,20 +1900,15 @@ void UnitSelectionWidget::setUnitScaling(const UnitScale &rUs)
     if (mpUnitComboBox && !rUs.isEmpty())
     {
         int i = mpUnitComboBox->findText(rUs.mUnit);
-        // If we did not find anything then add <PhysicalQuantity> in front and try that
-        if (i<0 && !rUs.mQuantity.isEmpty())
-        {
-            i = mpUnitComboBox->findText(QString("<%1> %2").arg(rUs.mQuantity, rUs.mUnit));
-        }
-
+        // If we have it, then make it selected
         if (i >= 0)
         {
             mpUnitComboBox->setCurrentIndex(i);
         }
+        // If not then Add to list
         else
         {
-            //Add to list
-            mUnitScales.insert(rUs.mUnit, rUs.toDouble());
+            mUnitScales.append(rUs);
             mpUnitComboBox->addItem(rUs.mUnit);
             mpUnitComboBox->setCurrentIndex(mpUnitComboBox->count()-1);
         }
@@ -1948,42 +1917,39 @@ void UnitSelectionWidget::setUnitScaling(const UnitScale &rUs)
 
 QString UnitSelectionWidget::getSelectedUnit() const
 {
-    if (mpUnitComboBox)
-    {
-        return mpUnitComboBox->currentText();
-    }
-    else
-    {
-        return mDefaultUnit;
-    }
+    UnitScale us;
+    getSelectedUnitScale(us);
+    return us.mUnit;
 }
 
 double UnitSelectionWidget::getSelectedUnitScale() const
 {
-    return mUnitScales.value(getSelectedUnit(),1);
+    UnitScale us;
+    getSelectedUnitScale(us);
+    return us.toDouble();
 }
 
 void UnitSelectionWidget::getSelectedUnitScale(UnitScale &rUnitScale) const
 {
-    QString pq = mPhysicalQuantity;
-    rUnitScale.mUnit = getSelectedUnit();
-    // Clean up the extra info on units in case of multiple quantities
-    if (rUnitScale.mUnit.startsWith("<"))
+    if (mpUnitComboBox)
     {
-        pq = rUnitScale.mUnit.mid(1, rUnitScale.mUnit.indexOf(">")-1);
-        rUnitScale.mUnit.remove(0,rUnitScale.mUnit.indexOf(">")+1);
-        rUnitScale.mUnit = rUnitScale.mUnit.trimmed();
+        int i = mpUnitComboBox->currentIndex();
+        if (i < mUnitScales.size())
+        {
+            rUnitScale =  mUnitScales[i];
+        }
     }
-    //! @todo converting to and from text could damage the scale value due to truncation
-    rUnitScale.mScale = QString("%1").arg(getSelectedUnitScale());
-    rUnitScale.mQuantity = pq;
+    else
+    {
+        rUnitScale = UnitScale(mQuantity, mBaseUnit, "1.0");
+    }
 }
 
 bool UnitSelectionWidget::isDefaultSelected() const
 {
     if (mpUnitComboBox)
     {
-        return mpUnitComboBox->currentIndex() == mDefaultIndex;
+        return mpUnitComboBox->currentIndex() == mBaseUnitIndex;
     }
     else
     {
@@ -1995,7 +1961,7 @@ void UnitSelectionWidget::resetDefault()
 {
     if (mpUnitComboBox)
     {
-        mpUnitComboBox->setCurrentIndex(mDefaultIndex);
+        mpUnitComboBox->setCurrentIndex(mBaseUnitIndex);
     }
 }
 

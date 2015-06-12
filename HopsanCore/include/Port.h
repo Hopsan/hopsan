@@ -92,7 +92,7 @@ namespace hopsan {
         virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0);
         virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0) const;
         virtual int getNodeDataIdFromName(const HString &rName, const size_t subPortIdx=0);
-        virtual void setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription);
+        virtual void setSignalNodeQuantityOrUnit(const HString &rQuantityOrUnit);
 
         const HString &getVariableAlias(const int id);
         int getVariableIdByAlias(const HString &rAlias) const;

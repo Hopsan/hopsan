@@ -119,7 +119,6 @@ void Component::getParameterValue(const HString &rName, HString &rValue)
 
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Don't use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
-//! @warning This function may be removed in the future
 void* Component::getParameterDataPtr(const HString &rName)
 {
     return mpParameters->getParameterDataPtr(rName);
@@ -161,7 +160,7 @@ const std::vector<VariameterDescription>* Component::getVariameters()
                 data.mShortName = pDesc->shortname;
                 data.mPortName = pPort->getName();
                 data.mUnit = pDesc->unit;
-                data.mDescription = pDesc->description;
+                data.mQuantity = pDesc->quantity;
                 data.mVariableId = pDesc->id;
                 data.mVarType = pDesc->varType;
                 data.mAlias = pPort->getVariableAlias(data.mVariableId);
@@ -170,10 +169,12 @@ const std::vector<VariameterDescription>* Component::getVariameters()
                 if ( (pPort->getNodeType() == "NodeSignal") && (pPort->getPortType() == ReadPortType) )
                 {
                     data.mVariameterType = InputVariable;
+                    data.mDescription = pPort->getDescription();
                 }
                 else if ( (pPort->getNodeType() == "NodeSignal") && (pPort->getPortType() == WritePortType) )
                 {
                     data.mVariameterType = OutputVariable;
+                    data.mDescription = pPort->getDescription();
                 }
                 else
                 {
@@ -1168,7 +1169,7 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
 {
     //! @todo support more types
     Port *pPort = addReadPort(rName,"NodeSignal", rDescription, Port::NotRequired);
-    pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
+    pPort->setSignalNodeQuantityOrUnit(rUnit);
     pPort->registerStartValueParameters(); // Reregister after unit has been changed
     setDefaultStartValue(pPort, 0, defaultValue);
 
@@ -1190,7 +1191,7 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData)
 {
     Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
-    pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
+    pPort->setSignalNodeQuantityOrUnit(rUnit);
     pPort->registerStartValueParameters(); // Reregister after unit has been changed
     disableStartValue(pPort,0);
 
@@ -1213,7 +1214,7 @@ Port *Component::addOutputVariable(const HString &rName, const HString &rDescrip
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
 {
     Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
-    pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
+    pPort->setSignalNodeQuantityOrUnit(rUnit);
     setDefaultStartValue(pPort, 0, defaultValue);
 
     if (ppNodeData)

@@ -674,7 +674,7 @@ GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
             {
                 qVariables << pVarDesc->shortname.c_str();
                 qVariableIds << pVarDesc->id;
-                variableLabels << QString(pVarDesc->name.c_str());
+                variableLabels << pVarDesc->name.c_str();
                 varIdx << pVarDesc->id;
             }
             // Check if "C-type variable"
@@ -682,7 +682,7 @@ GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
             {
                 cVariables << pVarDesc->shortname.c_str();
                 cVariableIds << pVarDesc->id;
-                variableLabels << QString(pVarDesc->name.c_str());
+                variableLabels << pVarDesc->name.c_str();
                 varIdx << pVarDesc->id;
             }
 

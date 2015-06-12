@@ -63,7 +63,7 @@ public:
         pShowCustomUnitsButton->setFixedWidth(48);
         pShowCustomUnitsButton->setToolTip("Show unit scales for "+mQuantity);
 
-        QString original = gpConfig->getSIUnit(rQuantity);
+        QString original = gpConfig->getBaseUnit(rQuantity);
 
         QHBoxLayout *pLayout = new QHBoxLayout(this);
         pLayout->setContentsMargins(0,0,0,0);
@@ -87,7 +87,7 @@ public:
         QString defaultUnit = gpConfig->getDefaultUnit(mQuantity);
         if (defaultUnit.isEmpty())
         {
-            defaultUnit = gpConfig->getSIUnit(mQuantity);
+            defaultUnit = gpConfig->getBaseUnit(mQuantity);
         }
         QMap<QString, double> unit_scales = gpConfig->getUnitScales(mQuantity);
         QMap<QString, double>::iterator it;
@@ -160,7 +160,7 @@ private slots:
         pDialog->setWindowTitle("Custom "+mQuantity+" Unit Scales");
         QGridLayout *pLayout = new QGridLayout(pDialog);
 
-        QString si = gpConfig->getSIUnit(mQuantity);
+        QString si = gpConfig->getBaseUnit(mQuantity);
         QList<UnitScale> scales;
         gpConfig->getUnitScales(mQuantity, scales);
 

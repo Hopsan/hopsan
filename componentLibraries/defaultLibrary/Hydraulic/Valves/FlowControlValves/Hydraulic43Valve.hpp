@@ -82,7 +82,7 @@ namespace hopsan {
             addInputVariable("x_bt", "Spool Overlap From Port B To T", "m", -1e-6, &mpX_bt);
             addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
 
-            addConstant("omega_h", "Resonance frequency", "rad/s", 100.0, mOmegah);
+            addConstant("omega_h", "Resonance frequency", "Frequency", 100.0, mOmegah);
             addConstant("delta_h", "Damping factor", "-", 1.0, mDeltah);
         }
 

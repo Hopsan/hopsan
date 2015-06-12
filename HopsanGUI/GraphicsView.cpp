@@ -635,7 +635,8 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
     Q_FOREACH(ModelObject* object, mpContainerObject->getSelectedModelObjectPtrs())
     {
-        if(object->getPreviousPos() != object->pos())
+        QPointF pos = object->pos();
+        if(object->getPreviousPos() != pos)
         {
             mpParentModelWidget->hasChanged();
             if(!createdUndoPost)

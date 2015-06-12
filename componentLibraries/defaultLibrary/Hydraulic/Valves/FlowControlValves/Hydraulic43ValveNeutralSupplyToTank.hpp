@@ -85,7 +85,7 @@ namespace hopsan {
             addInputVariable("x_at", "Spool Overlap From Port A To T", "m", -1e-6, &mpX_at);
             addInputVariable("x_bt", "Spool Overlap From Port B To T", "m", -1e-6, &mpX_bt);
 
-            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, mOmegah);
+            addConstant("omega_h", "Resonance Frequency", "Frequency", 100.0, mOmegah);
             addConstant("delta_h", "Damping Factor", "-", 1.0, mDeltah);
         }
 

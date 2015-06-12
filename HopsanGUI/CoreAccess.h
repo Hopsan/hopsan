@@ -97,13 +97,14 @@ class CoreParameterData
 {
 public:
     CoreParameterData() : mIsDynamic(false) {}
-    CoreParameterData(const QString name, const QString value, const QString type, const QString unit="", const QString desc="")
-        : mName(name), mValue(value), mType(type), mUnit(unit), mDescription(desc), mIsDynamic(false) {}
+    CoreParameterData(const QString name, const QString value, const QString type, const QString quantity="", const QString unit="", const QString desc="")
+        : mName(name), mValue(value), mType(type), mQuantity(quantity), mUnit(unit), mDescription(desc), mIsDynamic(false) {}
 
     QString mName;
     QString mAlias;
     QString mValue;
     QString mType;
+    QString mQuantity;
     QString mUnit;
     QString mDescription;
     QStringList mConditions;
@@ -138,6 +139,7 @@ public:
     QString mDataType;
     QString mUnit;
     QString mDescription;
+    QString mQuantity;
     QString mVariabelType;
     QStringList mConditions;
     int mVariameterType;

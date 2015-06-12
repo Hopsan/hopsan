@@ -935,12 +935,12 @@ QStringList Configuration::getPhysicalQuantitiesForUnit(const QString &rUnit) co
     return list;
 }
 
-QString Configuration::getSIUnit(const QString &rQuantity)
+QString Configuration::getBaseUnit(const QString &rQuantity)
 {
     return  mUnitScales.value(rQuantity, QuantityUnitScale()).siunit;
 }
 
-bool Configuration::isRegisteredSIUnit(const QString &rUnitName) const
+bool Configuration::isRegisteredBaseUnit(const QString &rUnitName) const
 {
     QMap< QString, QuantityUnitScale >::const_iterator it;
     for (it=mUnitScales.begin(); it!=mUnitScales.end(); ++it)

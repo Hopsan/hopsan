@@ -71,7 +71,7 @@ namespace hopsan {
             addInputVariable("f", "Spool Fraction of the Diameter", "-", 1.0, &mpF);
             addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
 
-            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, mOmegah);
+            addConstant("omega_h", "Resonance Frequency", "Frequency", 100.0, mOmegah);
             addConstant("delta_h", "Damping Factor", "-", 1.0, mDeltah);
         }
 

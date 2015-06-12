@@ -147,7 +147,7 @@ class UnitSelectionWidget : public QWidget
 {
     Q_OBJECT
 public:
-    UnitSelectionWidget(const QString &rDefaultUnit, QWidget *pParent);
+    UnitSelectionWidget(const QString &rQuantity, QWidget *pParent);
     void setUnitScaling(const UnitScale &rUs);
     QString getSelectedUnit() const;
     double getSelectedUnitScale() const;
@@ -165,10 +165,10 @@ private slots:
 
 private:
     QComboBox *mpUnitComboBox;
-    QMap<QString, double> mUnitScales;
-    QString mPhysicalQuantity;
-    QString mDefaultUnit;
-    int mDefaultIndex;
+    QList<UnitScale> mUnitScales;
+    QString mQuantity;
+    QString mBaseUnit;
+    int mBaseUnitIndex;
 };
 
 class ParameterValueSelectionWidget : public QWidget

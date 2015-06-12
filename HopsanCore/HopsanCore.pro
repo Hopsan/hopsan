@@ -127,7 +127,8 @@ SOURCES += \
     src/ComponentUtilities/HopsanPowerUser.cc \
     src/ComponentUtilities/LookupTable.cc \
     src/ComponentUtilities/PLOParser.cc \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParser.cpp
+    ../Dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
+    src/Quantities.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -178,7 +179,8 @@ HEADERS += \
     include/ComponentUtilities/LookupTable.h \
     include/ComponentUtilities/PLOParser.h \
     ../Dependencies/IndexingCSVParser/IndexingCSVParser.h \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp
+    ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
+    include/Quantities.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

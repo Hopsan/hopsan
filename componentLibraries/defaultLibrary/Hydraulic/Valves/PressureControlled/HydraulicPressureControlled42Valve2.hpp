@@ -71,7 +71,7 @@ namespace hopsan {
         void configure()
         {
             //Register constant parameters
-            addConstant("omega_h", "Resonance frequency", "rad/s", 100, mOmega_h);
+            addConstant("omega_h", "Resonance frequency", "Frequency", 100, mOmega_h);
             addConstant("delta_h", "Damping factor", "-", 1, mDelta_h);
             
             //Register input variables

@@ -42,20 +42,20 @@ public:
     enum DataIndexEnumOldT {VALUE};
     static Node* CreatorFunction() {return new NodeSignal;}
 
-    void setSignalDataUnitAndDescription(const HString &rUnit, const HString &rDescription)
+    void setSignalQuantity(const HString &rQuantity, const HString &rUnit)
     {
+        mDataDescriptions[Value].quantity = rQuantity;
         mDataDescriptions[Value].unit = rUnit;
-        mDataDescriptions[Value].description = rDescription;
     }
 
-    void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const
+    void copySignalQuantityAndUnitTo(Node *pOtherNode) const
     {
         // Copy variable values from this to pNode
         if(pOtherNode->getNodeType()==this->getNodeType())
         {
             for(size_t i=0; i<mDataDescriptions.size(); ++i)
             {
-                pOtherNode->setSignalDataUnitAndDescription(mDataDescriptions[i].unit, mDataDescriptions[i].description);
+                pOtherNode->setSignalQuantity(mDataDescriptions[i].quantity, mDataDescriptions[i].unit);
             }
         }
     }
@@ -84,10 +84,10 @@ private:
     NodeHydraulic() : Node(DataLength)
     {
         setNiceName("hydraulic");
-        setDataCharacteristics(Flow, "Flow", "q", "m^3/s", FlowType);
-        setDataCharacteristics(Pressure, "Pressure", "p", "Pa", IntensityType);
+        setDataCharacteristics(Flow, "Flow", "q", "Flow", FlowType);
+        setDataCharacteristics(Pressure, "Pressure", "p", "Pressure", IntensityType);
         setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
-        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pa", TLMType);
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pressure", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
         setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
 
@@ -178,10 +178,10 @@ private:
     NodeMechanic() : Node(DataLength)
     {
         setNiceName("mechanic");
-        setDataCharacteristics(Velocity, "Velocity", "v", "m/s", FlowType);
-        setDataCharacteristics(Force, "Force", "f", "N", IntensityType);
-        setDataCharacteristics(Position, "Position", "x", "m");
-        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "N", TLMType);
+        setDataCharacteristics(Velocity, "Velocity", "v", "Velocity", FlowType);
+        setDataCharacteristics(Force, "Force", "f", "Force", IntensityType);
+        setDataCharacteristics(Position, "Position", "x", "Position");
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Force", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "N s/m", TLMType);
         setDataCharacteristics(EquivalentMass, "EquivalentMass", "me", "kg", DefaultType);
 
@@ -210,10 +210,10 @@ private:
     NodeMechanicRotational() : Node(DataLength)
     {
         setNiceName("mechanicrotational");
-        setDataCharacteristics(AngularVelocity, "AngularVelocity", "w", "rad/s", FlowType);
-        setDataCharacteristics(Torque, "Torque", "T", "Nm", IntensityType);
-        setDataCharacteristics(Angle, "Angle", "a", "rad");
-        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Nm", TLMType);
+        setDataCharacteristics(AngularVelocity, "AngularVelocity", "w", "AngularVelocity", FlowType);
+        setDataCharacteristics(Torque, "Torque", "T", "Torque", IntensityType);
+        setDataCharacteristics(Angle, "Angle", "a", "Angle");
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Torque", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
         setDataCharacteristics(EquivalentInertia, "EquivalentInertia", "Je", "kgm^2", HiddenType);
     }
@@ -242,9 +242,9 @@ private:
     NodeElectric() : Node(DataLength)
     {
         setNiceName("electric");
-        setDataCharacteristics(Voltage, "Voltage", "U", "V", IntensityType);
-        setDataCharacteristics(Current, "Current", "I", "A", FlowType);
-        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "V", TLMType);
+        setDataCharacteristics(Voltage, "Voltage", "U", "Voltage", IntensityType);
+        setDataCharacteristics(Current, "Current", "I", "Current", FlowType);
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Voltage", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "V/A", TLMType);
     }
 

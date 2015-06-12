@@ -2902,8 +2902,6 @@ void ContainerObject::enterContainer()
     mpParentContainerObject->unmakeMainWindowConnectionsAndRefresh();
     this->makeMainWindowConnectionsAndRefresh();
 
-
-
     refreshInternalContainerPortGraphics();
 
     mpModelWidget->setExternalSystem((this->isExternal() &&
@@ -2916,10 +2914,12 @@ void ContainerObject::exitContainer()
 {
     this->deselectAll();
 
+    // Remember current viewport, before we set parents
+    this->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());
+
     // Go back to parent system
     mpModelWidget->getGraphicsView()->setScene(mpParentContainerObject->getContainedScenePtr());
     mpModelWidget->getGraphicsView()->setContainerPtr(mpParentContainerObject);
-    this->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());     // Remember current viewport, before we set parents
     mpModelWidget->getGraphicsView()->setViewPort(mpParentContainerObject->getGraphicsViewport());
 
     mpModelWidget->setExternalSystem((mpParentContainerObject->isExternal() &&

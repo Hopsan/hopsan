@@ -34,6 +34,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "Port.h"
 #include "ComponentSystem.h"
+#include "Quantities.h"
 
 using namespace std;
 using namespace hopsan;
@@ -113,8 +114,20 @@ void Node::setDataCharacteristics(const size_t id, const HString &rName, const H
     mDataDescriptions[id].id = id;
     mDataDescriptions[id].name = rName;
     mDataDescriptions[id].shortname = rShortname;
-    mDataDescriptions[id].unit = rUnit;
     mDataDescriptions[id].varType = vartype;
+
+    HString bu = gHopsanQuantities.lookupBaseUnit(rUnit);
+    // If bu empty then, rUnit was not a quantity
+    if (bu.empty())
+    {
+        mDataDescriptions[id].unit = rUnit;
+    }
+    // Else rUnit was actually a valid Quantity
+    else
+    {
+        mDataDescriptions[id].quantity = rUnit;
+        mDataDescriptions[id].unit = bu;
+    }
 }
 
 
@@ -131,20 +144,22 @@ const NodeDataDescription* Node::getDataDescription(const size_t id) const
 }
 
 //! @brief This function can be used to set unit string and displayName for signal nodes ONLY
-void Node::setSignalDataUnitAndDescription(const HString &/*rUnit*/, const HString &/*rDescription*/)
+void Node::setSignalQuantity(const HString &rQuantity, const HString &rUnit)
 {
+    HOPSAN_UNUSED(rQuantity);
+    HOPSAN_UNUSED(rUnit);
     // Do nothing by default
 }
 
 
 //! @brief This function gives you the data Id for a names data variable
-//! @param [in] rName The data name
+//! @param [in] rQuantity The data quantity
 //! @return The Id, -1 if requested data name is not found
 int Node::getDataIdFromName(const HString &rName) const
 {
     for (size_t i=0; i<mDataDescriptions.size(); ++i)
     {
-        if (rName == mDataDescriptions.at(i).name)
+        if (rName == mDataDescriptions[i].name)
         {
             return i;
         }
@@ -184,7 +199,7 @@ void Node::copyNodeDataValuesTo(Node *pOtherNode) const
     }
 }
 
-void Node::copySignalDataUnitAndDescriptionTo(Node* /*pOtherNode*/) const
+void Node::copySignalQuantityAndUnitTo(Node* /*pOtherNode*/) const
 {
     // This is only possible in signal nodes
 }

@@ -39,7 +39,7 @@ class DLLIMPORTEXPORT ParameterEvaluator
     friend class ParameterEvaluatorHandler;
 public:
     ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit,
-              const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* parentParameters=0);
+                       const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* parentParameters=0);
 
     bool setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation=0);
     bool setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit,
@@ -56,6 +56,7 @@ public:
     const HString &getValue() const;
     const HString &getUnit() const;
     const HString &getDescription() const;
+    const HString &getQuantity() const;
     const std::vector<HString> &getConditions() const;
 
 protected:
@@ -66,6 +67,7 @@ protected:
     HString mParameterValue;
     HString mDescription;
     HString mUnit;
+    HString mQuantity;
     HString mType;
     void* mpData;
     ParameterEvaluatorHandler* mpParentParameters;

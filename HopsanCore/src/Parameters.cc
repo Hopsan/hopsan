@@ -26,6 +26,7 @@
 #include "Component.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/StringUtilities.h"
+#include "Quantities.h"
 #include <cassert>
 #include <sstream>
 #include <algorithm>
@@ -54,8 +55,20 @@ ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rVal
     mParameterName = rName;
     mParameterValue = rValue;
     mDescription = rDescription;
-    mUnit = rUnit;
     mType = rType;
+
+    HString bu = gHopsanQuantities.lookupBaseUnit(rUnit);
+    // If bu empty then, rUnit was not a quantity
+    if (bu.empty())
+    {
+        mUnit = rUnit;
+    }
+    // Else rUnit was actually a valid Quantity
+    else
+    {
+        mQuantity = rUnit;
+        mUnit = bu;
+    }
 
     mpData = pDataPtr;
     mpParentParameters = pParentParameters;
@@ -65,7 +78,6 @@ ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rVal
 
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Don't use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
-//! @warning This function may be removed in the future
 void* ParameterEvaluator::getDataPtr()
 {
     return mpData;
@@ -376,6 +388,11 @@ const HString &ParameterEvaluator::getDescription() const
     return mDescription;
 }
 
+const HString &ParameterEvaluator::getQuantity() const
+{
+    return mQuantity;
+}
+
 const std::vector<HString> &ParameterEvaluator::getConditions() const
 {
     return mConditions;
@@ -565,7 +582,6 @@ void ParameterEvaluatorHandler::getParameterValue(const HString &rName, HString 
 
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Don't use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
-//! @warning This function may be removed in the future
 void* ParameterEvaluatorHandler::getParameterDataPtr(const HString &rName)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
@@ -645,6 +661,7 @@ bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString 
 {
     bool success = false;
     //Try our own parameters
+    //! @todo we should remove this, it is confusing to look among your own parameters, users will expact a system parameter
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
         if ( (mParameters[i]->getName() == rName) &&

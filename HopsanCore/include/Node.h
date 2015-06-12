@@ -45,9 +45,9 @@ class NodeDataDescription
 {
 public:
     HString name;
+    HString quantity;
     HString shortname;
     HString unit;
-    HString description;
     NodeDataVariableTypeEnumT varType;
     unsigned int id;
 };
@@ -88,7 +88,8 @@ public:
 
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
-    virtual void setSignalDataUnitAndDescription(const HString &rUnit, const HString &rDescription);
+    virtual void setSignalQuantity(const HString &rQuantity, const HString &rUnit);
+
 
     void logData(const size_t logSlot);
 
@@ -109,7 +110,7 @@ protected:
                                 const HString &rUnit, const NodeDataVariableTypeEnumT vartype=DefaultType);
 
     void copyNodeDataValuesTo(Node *pOtherNode) const;
-    virtual void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const;
+    virtual void copySignalQuantityAndUnitTo(Node *pOtherNode) const;
     virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const;
 
     void preAllocateLogSpace(const size_t nLogSlots);

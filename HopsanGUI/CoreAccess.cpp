@@ -54,6 +54,7 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
     rGUIParam.mValue = QString(pCoreParam->getValue().c_str());
     rGUIParam.mUnit = QString(pCoreParam->getUnit().c_str());
     rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription().c_str());
+    rGUIParam.mQuantity = QString::fromStdString(pCoreParam->getQuantity().c_str());
     for(size_t c=0; c<pCoreParam->getConditions().size(); ++c)
     {
         rGUIParam.mConditions.append(QString(pCoreParam->getConditions()[c].c_str()));
@@ -685,6 +686,7 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
             data.mShortName = pDescs->at(i).mShortName.c_str();
             data.mPortName = pDescs->at(i).mPortName.c_str();
             data.mUnit = pDescs->at(i).mUnit.c_str();
+            data.mQuantity = pDescs->at(i).mQuantity.c_str();
             data.mDescription = pDescs->at(i).mDescription.c_str();
             data.mDataType = pDescs->at(i).mDataType.c_str();
             data.mAlias = pDescs->at(i).mAlias.c_str();
@@ -1258,7 +1260,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
                 data.mName = pDescs->at(i).name.c_str();
                 data.mUnit = pDescs->at(i).unit.c_str();
                 data.mAlias = pPort->getVariableAlias(i).c_str();
-                data.mDescription = pDescs->at(i).description.c_str();
+                //data.mDescription = pDescs->at(i).description.c_str();
                 data.mNodeDataVariableType = nodeDataVariableTypeAsString(pDescs->at(i).varType).c_str();
                 rVarDescriptions.push_back(data);
             }
@@ -1317,16 +1319,16 @@ NodeInfo::NodeInfo(QString nodeType)
            pNode->getDataDescription(i)->varType == hopsan::FlowType)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str())/*.toUpper()*/;
+            variableLabels << pNode->getDataDescription(i)->name.c_str();
             varIdx << pNode->getDataDescription(i)->id;
         }
         if(pNode->getDataDescription(i)->varType == hopsan::IntensityType)
         {
-            intensity = QString(pNode->getDataDescription(i)->name.c_str());
+            intensity = pNode->getDataDescription(i)->name.c_str();
         }
         if(pNode->getDataDescription(i)->varType == hopsan::FlowType)
         {
-            flow = QString(pNode->getDataDescription(i)->name.c_str());
+            flow = pNode->getDataDescription(i)->name.c_str();
         }
     }
     for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
@@ -1334,7 +1336,7 @@ NodeInfo::NodeInfo(QString nodeType)
         if(pNode->getDataDescription(i)->varType == hopsan::TLMType)        //C variable
         {
             cVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str())/*.toUpper()*/;
+            variableLabels << pNode->getDataDescription(i)->name.c_str();
             varIdx << pNode->getDataDescription(i)->id;
         }
     }
@@ -1347,6 +1349,7 @@ NodeInfo::NodeInfo(QString nodeType)
 
 void NodeInfo::getNodeTypes(QStringList &nodeTypes)
 {
+    //! @todo this should not be hardcoded
     nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
 }
 

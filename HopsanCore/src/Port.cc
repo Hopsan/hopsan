@@ -34,6 +34,7 @@
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/StringUtilities.h"
+#include "Quantities.h"
 
 using namespace std;
 using namespace hopsan;
@@ -169,7 +170,7 @@ void Port::loadStartValues()
     if(mpStartNode)
     {
         mpStartNode->copyNodeDataValuesTo(mpNode);
-        mpStartNode->copySignalDataUnitAndDescriptionTo(mpNode);
+        mpStartNode->copySignalQuantityAndUnitTo(mpNode);
     }
 }
 
@@ -485,13 +486,28 @@ int Port::getNodeDataIdFromName(const HString &rName, const size_t subPortIdx)
 
 //! @brief A help function that makes it possible to overwrite the unit and description of scalar signal node variables
 //! @todo is this even needed any more now that we have in/out variables
-void Port::setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription)
+void Port::setSignalNodeQuantityOrUnit(const HString &rQuantityOrUnit)
 {
     //! @todo multiport version needed
-    mpNode->setSignalDataUnitAndDescription(rUnit, rDescription);
-    if (mpStartNode)
+
+    HString bu = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
+    // If this was not a quantity
+    if (bu.empty())
     {
-        mpStartNode->setSignalDataUnitAndDescription(rUnit, rDescription);
+        mpNode->setSignalQuantity("", rQuantityOrUnit);
+        if (mpStartNode)
+        {
+            mpStartNode->setSignalQuantity("", rQuantityOrUnit);
+        }
+    }
+    // If this was a quantity
+    else
+    {
+        mpNode->setSignalQuantity(rQuantityOrUnit, bu);
+        if (mpStartNode)
+        {
+            mpStartNode->setSignalQuantity(rQuantityOrUnit, bu);
+        }
     }
 }
 
@@ -1029,7 +1045,7 @@ void MultiPort::loadStartValues()
         for(size_t p=0; p<mSubPortsVector.size(); ++p)
         {
             mpStartNode->copyNodeDataValuesTo(mSubPortsVector[p]->mpNode);
-            mpStartNode->copySignalDataUnitAndDescriptionTo(mSubPortsVector[p]->mpNode);
+            mpStartNode->copySignalQuantityAndUnitTo(mSubPortsVector[p]->mpNode);
         }
     }
 }

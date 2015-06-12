@@ -59,6 +59,7 @@ public:
     HString mAlias;
     HString mDataType;
     HString mUnit;
+    HString mQuantity;
     HString mDescription;
     VariameterTypeEnumT mVariameterType;
     NodeDataVariableTypeEnumT mVarType;
