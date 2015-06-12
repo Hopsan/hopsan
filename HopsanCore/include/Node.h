@@ -107,7 +107,7 @@ protected:
     // Protected member functions
     void setNiceName(const HString &rNicename);
     void setDataCharacteristics(const size_t id, const HString &rName, const HString &rShortname,
-                                const HString &rUnit, const NodeDataVariableTypeEnumT vartype=DefaultType);
+                                const HString &rQuantityOrUnit, const NodeDataVariableTypeEnumT vartype=DefaultType);
 
     void copyNodeDataValuesTo(Node *pOtherNode) const;
     virtual void copySignalQuantityAndUnitTo(Node *pOtherNode) const;

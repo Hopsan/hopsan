@@ -447,7 +447,8 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
         }
         else
         {
-            success = mpParameters->addParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), rUnit.c_str(), rType.c_str(), 0, force);
+            //! @todo support quantities in system parameters (only for doubles)
+            success = mpParameters->addParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), "", rUnit.c_str(), rType.c_str(), 0, force);
             if (success)
             {
                 reserveUniqueName(rName,UniqueSysparamNameType);

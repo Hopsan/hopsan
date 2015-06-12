@@ -835,6 +835,23 @@ double ModelObject::getCustomPlotOffset(const QString &rVariablePortDataName)
 
 }
 
+void ModelObject::setCustomQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
+{
+    if (rQuantity.isEmpty())
+    {
+        mRegisteredCustomQuantities.remove(rVariablePortDataName);
+    }
+    else
+    {
+        mRegisteredCustomQuantities.insert(rVariablePortDataName, rQuantity);
+    }
+}
+
+QString ModelObject::getCustomQuantity(const QString &rVariablePortDataName)
+{
+    return mRegisteredCustomQuantities.value(rVariablePortDataName, "");
+}
+
 void ModelObject::loadFromDomElement(QDomElement domElement)
 {
     Q_UNUSED(domElement)

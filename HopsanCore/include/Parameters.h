@@ -38,7 +38,7 @@ class DLLIMPORTEXPORT ParameterEvaluator
 {
     friend class ParameterEvaluatorHandler;
 public:
-    ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit,
+    ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
                        const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* parentParameters=0);
 
     bool setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation=0);
@@ -82,7 +82,8 @@ public:
     ~ParameterEvaluatorHandler();
 
     bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
-                      const HString &rUnit, const HString &rType, void* pData=0, bool force=false, std::vector<HString> conditions = std::vector<HString>());
+                      const HString &rQuantity, const HString &rUnit, const HString &rType,
+                      void* pData=0, bool force=false, std::vector<HString> conditions = std::vector<HString>());
     void deleteParameter(const HString &rName);
     bool renameParameter(const HString &rOldName, const HString &rNewName);
 

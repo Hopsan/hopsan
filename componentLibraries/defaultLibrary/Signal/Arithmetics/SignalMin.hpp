@@ -51,7 +51,7 @@ namespace hopsan {
 
         void configure()
         {
-            mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
+            mpMultiInPort = addReadMultiPort("in", "NodeSignal", "", Port::NotRequired);
             addOutputVariable("out", "Min of the inputs", "", &mpND_out);
         }
 

@@ -719,7 +719,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     columnHeaders.append("Description");
     columnHeaders.append("Unit");
     columnHeaders.append("Value");
-    columnHeaders.append("PlotScale");
+    columnHeaders.append("Quantity");
     columnHeaders.append("Port");
     this->setHorizontalHeaderLabels(columnHeaders);
 
@@ -1144,8 +1144,10 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     // Create the custom plot unit display and selection button
     if (variametertype != Constant)
     {
-        QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(rData, mpModelObject, this);
-        this->setIndexWidget(model()->index(row,Scale), pPlotScaleWidget);
+//        QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(rData, mpModelObject, this);
+//        this->setIndexWidget(model()->index(row,Scale), pPlotScaleWidget);
+        QWidget *pQuantityWidget = new QuantitySelectionWidget(rData, mpModelObject, this);
+        setIndexWidget(model()->index(row,Scale), pQuantityWidget);
     }
     else
     {
@@ -1300,7 +1302,7 @@ void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
     QMenu menu;
     if (mVariableTypeName == "Value")
     {
-        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
+        QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
         if (pqs.size() > 0)
         {
             unitScales = gpConfig->getUnitScales(pqs.first());
@@ -1368,7 +1370,7 @@ void PlotScaleSelectionWidget::registerCustomScale()
     {
         if (mVariableTypeName == "Value")
         {
-            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(mOriginalUnit);
+            QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
             if (pqs.size() > 0)
             {
                 unitScales = gpConfig->getUnitScales(pqs.first());
@@ -1507,7 +1509,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             {
                 if (gpConfig->isRegisteredBaseUnit(rData.mUnit))
                 {
-                    QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(rData.mUnit);
+                    QStringList pqs = gpConfig->getQuantitiesForUnit(rData.mUnit);
                     // Only allow listing in case we have one unique quantity match for base unit
                     if (pqs.size() == 1)
                     {
@@ -1971,4 +1973,75 @@ void UnitSelectionWidget::selectionChanged(int idx)
     UnitScale us;
     getSelectedUnitScale(us);
     emit unitChanged(us);
+}
+
+
+QuantitySelectionWidget::QuantitySelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent)
+{
+    mVariableTypeName = rData.mName;
+    mVariablePortDataName = rData.mPortName+"#"+rData.mName;
+    mOriginalUnit = rData.mUnit;
+    mQuantity = rData.mQuantity;
+    mpModelObject = pModelObject;
+
+    QHBoxLayout* pLayout = new QHBoxLayout(this);
+    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
+    pLayout->setContentsMargins(margins);
+
+    mpQuantityLabel = new QLabel(this);
+    mpQuantityLabel->setAlignment(Qt::AlignLeft);
+    //mpQuantityLabel->setFrame(false);
+    mpQuantityLabel->setText(mQuantity);
+    pLayout->addWidget(mpQuantityLabel);
+
+    if (mVariableTypeName == "Value" && mQuantity.isEmpty())
+    {
+        //! @todo read custom quantity maybe (but if it is set in core we wont need to read it since we already have iti
+        QString custQuant = mpModelObject->getCustomQuantity(mVariablePortDataName);
+        mpQuantityLabel->setText(custQuant);
+        mQuantity = custQuant;
+
+        QToolButton *pQuantitySelectionButton =  new QToolButton(this);
+        pQuantitySelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
+        pQuantitySelectionButton->setToolTip("Select Custom Quantity");
+        pQuantitySelectionButton->setFixedSize(24,24);
+        connect(pQuantitySelectionButton, SIGNAL(clicked()), this, SLOT(createQuantitySelectionMenu()));
+        pLayout->addWidget(pQuantitySelectionButton);
+    }
+}
+
+void QuantitySelectionWidget::registerCustomQuantity()
+{
+    if (hasChanged())
+    {
+        mpModelObject->setCustomQuantity(mVariablePortDataName, mpQuantityLabel->text());
+    }
+}
+
+bool QuantitySelectionWidget::hasChanged() const
+{
+    return (mQuantity != mpQuantityLabel->text());
+}
+
+void QuantitySelectionWidget::createQuantitySelectionMenu()
+{
+    QStringList quantities = gpConfig->getUnitQuantities();
+
+    QMenu menu;
+    QMap<QAction*, int> actionScaleMap;
+    for (int i=0; i<quantities.size(); ++i)
+    {
+        QAction *tempAction = menu.addAction(quantities[i]);
+        actionScaleMap.insert(tempAction, i);
+        tempAction->setIconVisibleInMenu(false);
+    }
+
+    QCursor cursor;
+    QAction *selectedAction = menu.exec(cursor.pos());
+    int idx = actionScaleMap.value(selectedAction,-1);
+    if (idx >= 0)
+    {
+        mpQuantityLabel->setText(quantities[idx]);
+        registerCustomQuantity();
+    }
 }

@@ -423,8 +423,8 @@ void PlotCurve::setCurveDataUnitScale(const QString &rUnit)
     if (getDataName() == "Value")
     {
         // Only set the new unit if it represents the same physical quantity as the current unit
-        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(rUnit);
-        QStringList pqsOrg = gpConfig->getPhysicalQuantitiesForUnit(getDataUnit());
+        QStringList pqs = gpConfig->getQuantitiesForUnit(rUnit);
+        QStringList pqsOrg = gpConfig->getQuantitiesForUnit(getDataUnit());
         if ( !(pqs.isEmpty() || pqsOrg.isEmpty()) )
         {
             if (pqs.front() == pqsOrg.front())

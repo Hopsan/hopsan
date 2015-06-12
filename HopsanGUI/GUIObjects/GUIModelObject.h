@@ -109,6 +109,10 @@ public:
     void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
     double getCustomPlotOffset(const QString &rVariablePortDataName);
 
+    // Custom quantity methods
+    void setCustomQuantity(const QString &rVariablePortDataName, const QString &rQuantity);
+    QString getCustomQuantity(const QString &rVariablePortDataName);
+
     // Load and save methods
     virtual void loadFromDomElement(QDomElement domElement);
     virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
@@ -194,6 +198,8 @@ protected:
     QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
     QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
     QMap<QString, double> mRegisteredCustomPlotOffsets;
+
+    QMap<QString, QString> mRegisteredCustomQuantities;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

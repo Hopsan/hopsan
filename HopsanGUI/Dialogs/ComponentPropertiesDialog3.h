@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QEvent>
 #include <QCheckBox>
+#include <QLabel>
 #include "CoreAccess.h"
 #include "UnitScale.h"
 
@@ -116,6 +117,24 @@ private:
     QLineEdit *mpPlotScaleEdit;
     ModelObject *mpModelObject;
     QString mVariableTypeName, mVariablePortDataName, mOriginalUnit;
+};
+
+class QuantitySelectionWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    QuantitySelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+    void registerCustomQuantity();
+    bool hasChanged() const;
+    //QLineEdit *getQuantityLabel() const;
+
+private slots:
+    void createQuantitySelectionMenu();
+
+private:
+    QLabel *mpQuantityLabel;
+    ModelObject *mpModelObject;
+    QString mVariableTypeName, mVariablePortDataName, mOriginalUnit, mQuantity;
 };
 
 //! @todo maybe should have eventfilters in a specific file

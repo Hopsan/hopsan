@@ -48,7 +48,7 @@ namespace hopsan {
         void configure()
         {
 
-            addReadPort("P1", "NodeMechanic", Port::NotRequired);
+            addReadPort("P1", "NodeMechanic", "", Port::NotRequired);
             addOutputVariable("out", "Force", "N", &mpND_out);
         }
 

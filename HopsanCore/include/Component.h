@@ -113,10 +113,11 @@ public:
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData);
-    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const double defaultValue, double &rData);
     void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rData);
 
     void setConstantValue(const HString &rName, const double value);
@@ -227,17 +228,11 @@ protected:
     void initializeAutoSignalNodeDataPtrs();
 
     // Port functions
-    //! @todo we should deprecate the version without description as argument (do this in 0.7)
-    Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadMultiPort(const HString &rPortname, const HString &rNodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
     void removePort(const HString &rPortName);
 
@@ -264,11 +259,10 @@ private:
     void setSystemParent(ComponentSystem *pComponentSystem);
     void setTypeName(const HString &rTypeName);
     double *getNodeDataPtr(Port* pPort, const int dataId);
-    Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnection);
     Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection);
 
     // Parameter registration
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, double &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);

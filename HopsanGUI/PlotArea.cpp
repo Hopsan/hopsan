@@ -1090,7 +1090,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu((*itc)->getCurveName());
         if ((*itc)->getDataName() == "Value")
         {
-            QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit((*itc)->getDataUnit());
+            QStringList pqs = gpConfig->getQuantitiesForUnit((*itc)->getDataUnit());
             if (pqs.size() > 0)
             {
                 unitMap = gpConfig->getUnitScales(pqs.first());
@@ -2219,7 +2219,7 @@ void PlotArea::determineAddedCurveDataUnitScale(PlotCurve *pCurve)
     if ( pCurve->getDataName() == "Value" )
     {
         // Figure out compatible default unit based on the original data unit
-        QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(originalDataUnit);
+        QStringList pqs = gpConfig->getQuantitiesForUnit(originalDataUnit);
         //! @todo if same unit exist in multiple places we have a problem
         if (pqs.size() > 1)
         {

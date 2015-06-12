@@ -26,7 +26,7 @@
 #include "Component.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/StringUtilities.h"
-#include "Quantities.h"
+//#include "Quantities.h"
 #include <cassert>
 #include <sstream>
 #include <algorithm>
@@ -50,25 +50,30 @@ using namespace std;
 //! @param [in] rType The type of the parameter e.g. double
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
-ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParentParameters)
+ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParentParameters)
 {
     mParameterName = rName;
     mParameterValue = rValue;
     mDescription = rDescription;
     mType = rType;
+    mQuantity = rQuantity;
+    mUnit = rUnit;
 
-    HString bu = gHopsanQuantities.lookupBaseUnit(rUnit);
-    // If bu empty then, rUnit was not a quantity
-    if (bu.empty())
-    {
-        mUnit = rUnit;
-    }
-    // Else rUnit was actually a valid Quantity
-    else
-    {
-        mQuantity = rUnit;
-        mUnit = bu;
-    }
+//    // If quantity not speecified, use the specified unit
+//    if (mQuantity.empty())
+//    {
+//        mUnit = rUnit;
+//    }
+//    // If quantity is specified but not, unit, try to lookup unit
+//    else if (rUnit.empty())
+//    {
+//        mUnit = gHopsanQuantities.lookupBaseUnit(mQuantity);
+//    }
+//    // If both quantity and unit is specified then use both (it is up to the componet developer to choose a relevant unit for this quantity)
+//    else
+//    {
+//        mUnit = rUnit;
+//    }
 
     mpData = pDataPtr;
     mpParentParameters = pParentParameters;
@@ -474,7 +479,7 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 //! @param [in] force Should we force to add parameter even if it fails to evaluate
 //! @param [in] conditions Conditions for a conditional constant parameter
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<HString> conditions)
+bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<HString> conditions)
 {
     bool success = false;
     if (!rName.empty())
@@ -482,7 +487,7 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
         if(!hasParameter(rName))
         {
             //! @todo should make sure that parameter names do not have + - * / . or similar as first character
-            ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rUnit, rType, pData, this);
+            ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rQuantity, rUnit, rType, pData, this);
             if(rType == "conditional")
             {
                 newParameter->mConditions = conditions;

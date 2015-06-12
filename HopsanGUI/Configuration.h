@@ -196,7 +196,7 @@ public:
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     void getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitScale &rUnitScale) const;
-    QStringList getPhysicalQuantitiesForUnit(const QString &rUnit) const;
+    QStringList getQuantitiesForUnit(const QString &rUnit) const;
     QString getBaseUnit(const QString &rQuantity);
     bool isRegisteredBaseUnit(const QString &rUnitName) const;
     void removeUnitScale(const QString &rQuantity, const QString &rUnit);

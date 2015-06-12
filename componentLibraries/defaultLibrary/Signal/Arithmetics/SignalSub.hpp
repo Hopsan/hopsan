@@ -51,8 +51,8 @@ namespace hopsan {
 
         void configure()
         {
-            mpMultiInSumPort = addReadMultiPort("insum", "NodeSignal", Port::NotRequired);
-            mpMultiInSubPort = addReadMultiPort("insub", "NodeSignal", Port::NotRequired);
+            mpMultiInSumPort = addReadMultiPort("insum", "NodeSignal", "", Port::NotRequired);
+            mpMultiInSubPort = addReadMultiPort("insub", "NodeSignal", "", Port::NotRequired);
             addOutputVariable("out", "sum(insum)-sum(insub)", "", &mpND_out);
         }
 

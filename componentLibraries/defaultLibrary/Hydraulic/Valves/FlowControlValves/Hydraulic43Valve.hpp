@@ -61,10 +61,10 @@ namespace hopsan {
 
         void configure()
         {
-            mpPP = addPowerPort("PP", "NodeHydraulic");
-            mpPT = addPowerPort("PT", "NodeHydraulic");
-            mpPA = addPowerPort("PA", "NodeHydraulic");
-            mpPB = addPowerPort("PB", "NodeHydraulic");
+            mpPP = addPowerPort("PP", "NodeHydraulic", "Supply port");
+            mpPT = addPowerPort("PT", "NodeHydraulic", "Tank port");
+            mpPA = addPowerPort("PA", "NodeHydraulic", "Load port A");
+            mpPB = addPowerPort("PB", "NodeHydraulic", "Load port B");
 
             addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
 

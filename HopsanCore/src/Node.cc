@@ -109,23 +109,23 @@ const HString &Node::getNiceName() const
 //! @param [in] rShortname The short variable name
 //! @param [in] rUnit The variable unit
 //! @param [in] vartype The type of the variable
-void Node::setDataCharacteristics(const size_t id, const HString &rName, const HString &rShortname, const HString &rUnit, const NodeDataVariableTypeEnumT vartype)
+void Node::setDataCharacteristics(const size_t id, const HString &rName, const HString &rShortname, const HString &rQuantityOrUnit, const NodeDataVariableTypeEnumT vartype)
 {
     mDataDescriptions[id].id = id;
     mDataDescriptions[id].name = rName;
     mDataDescriptions[id].shortname = rShortname;
     mDataDescriptions[id].varType = vartype;
 
-    HString bu = gHopsanQuantities.lookupBaseUnit(rUnit);
+    HString bu = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
     // If bu empty then, rUnit was not a quantity
     if (bu.empty())
     {
-        mDataDescriptions[id].unit = rUnit;
+        mDataDescriptions[id].unit = rQuantityOrUnit;
     }
     // Else rUnit was actually a valid Quantity
     else
     {
-        mDataDescriptions[id].quantity = rUnit;
+        mDataDescriptions[id].quantity = rQuantityOrUnit;
         mDataDescriptions[id].unit = bu;
     }
 }

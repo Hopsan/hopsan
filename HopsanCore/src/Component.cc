@@ -34,6 +34,7 @@
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
 #include "ComponentUtilities/num2string.hpp"
+#include "Quantities.h"
 
 #ifdef USETBB
 #include "tbb/mutex.h"
@@ -394,21 +395,25 @@ HopsanEssentials *Component::getHopsanEssentials()
 //! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, double &rData)
 {
-    registerParameter(rName, rDescription, rUnit, rData);
+    addWarningMessage("Component::addConstant(rName, rDescription, rUnit, rData) is DEPRECATED use Component::addConstant(rName, rDescription, rUnit, defaultValue, rData) instead!", "deprecatedAddConstant");
+    registerParameter(rName, rDescription, "", rUnit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData)
 {
+    addWarningMessage("Component::addConstant(rName, rDescription, rUnit, rData) is DEPRECATED use Component::addConstant(rName, rDescription, rUnit, defaultValue, rData) instead!", "deprecatedAddConstant");
     registerParameter(rName, rDescription, rUnit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData)
 {
+    addWarningMessage("Component::addConstant(rName, rDescription, rUnit, rData) is DEPRECATED use Component::addConstant(rName, rDescription, rUnit, defaultValue, rData) instead!", "deprecatedAddConstant");
     registerParameter(rName, rDescription, rUnit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData)
 {
+    addWarningMessage("Component::addConstant(rName, rDescription, rUnit, rData) is DEPRECATED use Component::addConstant(rName, rDescription, rUnit, defaultValue, rData) instead!", "deprecatedAddConstant");
     registerParameter(rName, rDescription, rUnit, rData);
 }
 ///@}
@@ -435,30 +440,73 @@ void Component::addConditionalConstant(const HString &rName, const HString &rDes
 //! @param [in] rData A reference to the data variable
 //! @todo Using a reference is not that clear, we should use a ptr instead
 //! @ingroup ComponentSetupFunctions
-void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData)
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double &rData)
 {
-    rData = defaultValue;
-    addConstant(rName, rDescription, rUnit, rData);
+    // If unit is actually a quantity, then register the quantity with the base unit
+    HString bu = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
+    if (!bu.empty())
+    {
+        addConstant(rName, rDescription, rQuantityOrUnit, bu, defaultValue, rData);
+    }
+    // Else unit is a unit and no quantity has been specified
+    else
+    {
+        rData = defaultValue;
+        registerParameter(rName, rDescription, "", rQuantityOrUnit, rData);
+    }
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData)
 {
     rData = defaultValue;
-    addConstant(rName, rDescription, rUnit, rData);
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData)
 {
     rData = defaultValue;
-    addConstant(rName, rDescription, rUnit, rData);
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData)
 {
     rData = defaultValue;
-    addConstant(rName, rDescription, rUnit, rData);
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 ///@}
+
+//! @brief Add (register) a constant parameter with a default value to the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rQuantity The physical quantity type (if any)
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] defaultValue Default constant value
+//! @param [in] rData A reference to the data variable
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const double defaultValue, double &rData)
+{
+    rData = defaultValue;
+    if (rUnit.empty())
+    {
+        HString bu = gHopsanQuantities.lookupBaseUnit(rQuantity);
+        registerParameter(rName, rDescription, rQuantity, bu, rData);
+    }
+    else if (!rQuantity.empty())
+    {
+        // Make sure unit correct, since we do not yet support non base units in core
+        HString bu = gHopsanQuantities.lookupBaseUnit(rQuantity);
+        if (bu != rUnit)
+        {
+            addErrorMessage(HString("Using non base units together with a quantity is not yet supported: "+bu+" != "+rUnit+" ("+rQuantity+")"));
+        }
+        registerParameter(rName, rDescription, rQuantity, rUnit, rData);
+    }
+    else
+    {
+        registerParameter(rName, rDescription, rQuantity, rUnit, rData);
+    }
+}
 
 ///@{
 //! @brief Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
@@ -468,7 +516,7 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 //! @param [in] rValue A reference to the double variable representing the value, its address will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 //! @todo Using a reference is not that clear, we should use a ptr instead
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, double &rValue)
 {
     // We allow the # exception for registering start value parameters
     if (!isNameValid(rName, "#"))
@@ -482,7 +530,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 
     stringstream ss;
     ss << rValue;
-    mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", &rValue);
+    mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rQuantity, rUnit, "double", &rValue);
 }
 
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue)
@@ -496,7 +544,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, rUnit, "integer", &rValue);
+    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", rUnit, "integer", &rValue);
 }
 
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue)
@@ -510,7 +558,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(rName, rValue, rDescription, rUnit, "string", &rValue);
+    mpParameters->addParameter(rName, rValue, rDescription, "", rUnit, "string", &rValue);
 }
 
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue)
@@ -525,9 +573,9 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     if(rValue)
-        mpParameters->addParameter(rName, "true", rDescription, rUnit, "bool", &rValue);
+        mpParameters->addParameter(rName, "true", rDescription, "", rUnit, "bool", &rValue);
     else
-        mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", &rValue);
+        mpParameters->addParameter(rName, "false", rDescription, "", rUnit, "bool", &rValue);
 }
 ///@}
 
@@ -549,7 +597,7 @@ void Component::registerConditionalParameter(const HString &rName, const HString
     if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", "conditional", &rValue, false, rConditions);
+    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", "", "conditional", &rValue, false, rConditions);
 }
 
 
@@ -644,13 +692,14 @@ double *Component::getTimePtr()
 }
 
 
-//! @brief Adds a port to the component, do not call this function directly unless you have to for some reason
+//! @brief Adds a port to the component, do not call this function directly unless you have to
 //! @param [in] rPortName The desired name of the port (may be automatically changed)
 //! @param [in] portType The type of port
 //! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] rDescription A description string describing the port
 //! @param [in] reqConnection Specify if the port must be connected or if it is optional
-//! @return A pointer to the created port
-Port* Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnection)
+//! @returns A pointer to the created port
+Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection)
 {
     addLogMess((getName()+"::addPort").c_str());
 
@@ -677,21 +726,9 @@ Port* Component::addPort(const HString &rPortName, const PortTypesEnumT portType
     {
         addDebugMessage("Automatically changed name of added port from: {" + rPortName + "} to {" + newname + "}");
     }
-    return pNewPort;
-}
 
-//! @brief Adds a port to the component, do not call this function directly unless you have to
-//! @param [in] rPortName The desired name of the port (may be automatically changed)
-//! @param [in] portType The type of port
-//! @param [in] rNodeType The type of node that must be connected to the port
-//! @param [in] rDescription A description string describing the port
-//! @param [in] reqConnection Specify if the port must be connected or if it is optional
-//! @returns A pointer to the created port
-Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection)
-{
-    Port *pPort = addPort(rPortName, portType, rNodeType, reqConnection);
-    pPort->setDescription(rDescription);
-    return pPort;
+    pNewPort->setDescription(rDescription);
+    return pNewPort;
 }
 
 void Component::removePort(const HString &rPortName)
@@ -724,17 +761,6 @@ void Component::removePort(const HString &rPortName)
     //delete pPort;
 }
 
-//! @brief Add a PowerPort to the component
-//! @ingroup ComponentSetupFunctions
-//! @param [in] rPortName The desired name of the port (may be automatically changed)
-//! @param [in] rNodeType The type of node that must be connected to the port
-//! @param [in] reqConnect Specify if the port must be connected or if it is optional (Required or NotRequired)
-//! @return A pointer to the created port
-Port* Component::addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, PowerPortType, rNodeType, reqConnect);
-}
-
 //! @brief Add a PowerPort with description to the component
 //! @ingroup ComponentSetupFunctions
 //! @param [in] rPortName The desired name of the port (may be automatically changed)
@@ -747,16 +773,6 @@ Port *Component::addPowerPort(const HString &rPortName, const HString &rNodeType
     return addPort(rPortName, PowerPortType, rNodeType, rDescription, reqConnect);
 }
 
-//! @brief Add a PowerMultiPort to the component
-//! @ingroup ComponentSetupFunctions
-//! @param [in] rPortName The desired name of the port (may be automatically changed)
-//! @param [in] rNodeType The type of node that must be connected to the port
-//! @param [in] reqConnect Specify if the port must be connected or if it is optional (Required or NotRequired)
-//! @return A pointer to the created port
-Port* Component::addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, PowerMultiportType, rNodeType, reqConnect);
-}
 
 //! @brief Add a PowerMultiPort with description  to the component
 //! @ingroup ComponentSetupFunctions
@@ -770,16 +786,6 @@ Port *Component::addPowerMultiPort(const HString &rPortName, const HString &rNod
     return addPort(rPortName, PowerMultiportType, rNodeType, rDescription, reqConnect);
 }
 
-//! @brief Add a ReadMultiPort to the component
-//! @ingroup ComponentSetupFunctions
-//! @param [in] rPortName The desired name of the port (may be automatically changed)
-//! @param [in] rNodeType The type of node that must be connected to the port
-//! @param [in] reqConnect Specify if the port must be connected or if it is optional (Required or NotRequired)
-//! @return A pointer to the created port
-Port* Component::addReadMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, ReadMultiportType, rNodeType, reqConnect);
-}
 
 //! @brief Add a ReadMultiPort with description to the component
 //! @ingroup ComponentSetupFunctions
@@ -793,17 +799,6 @@ Port *Component::addReadMultiPort(const HString &rPortName, const HString &rNode
     return addPort(rPortName, ReadMultiportType, rNodeType, rDescription, reqConnect);
 }
 
-//! @brief Add a ReadPort to the component
-//! @note Usually you should use addInputVariable instead of this one
-//! @ingroup ComponentSetupFunctions
-//! @param [in] rPortName The desired name of the port (may be automatically changed)
-//! @param [in] rNodeType The type of node that must be connected to the port
-//! @param [in] reqConnect Specify if the port must be connected or if it is optional (Required or NotRequired)
-//! @return A pointer to the created port
-Port* Component::addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, ReadPortType, rNodeType, reqConnect);
-}
 
 //! @brief Add a ReadPort with description to the component
 //! @note Usually you should use addInputVariable instead of this one
@@ -818,19 +813,10 @@ Port *Component::addReadPort(const HString &rPortName, const HString &rNodeType,
     return addPort(rPortName, ReadPortType, rNodeType, rDescription, reqConnect);
 }
 
-//! @brief Add a WritePort with description to the component
-//! @note Usually you should use addOutputVariable instead of this one unless you need a "sniffer port"
-//! @param [in] rPortName The desired name of the port (may be automatically changed)
-//! @param [in] rNodeType The type of node that must be connected to the port
-//! @param [in] reqConnect Specify if the port must be connected or if it is optional (Required or NotRequired)
-//! @return A pointer to the created port
-Port *Component::addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, WritePortType, rNodeType, reqConnect);
-}
 
 //! @brief Add a WritePort with description to the component
 //! @note Usually you should use addOutputVariable instead of this one unless you need a "sniffer port"
+//! @ingroup ComponentSetupFunctions
 //! @param [in] rPortName The desired name of the port (may be automatically changed)
 //! @param [in] rNodeType The type of node that must be connected to the port
 //! @param [in] rDescription The port description

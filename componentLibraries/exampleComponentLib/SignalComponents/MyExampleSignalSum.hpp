@@ -56,7 +56,7 @@ public:
     void configure()
     {
         // Add ports to the component
-        mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
+        mpMultiInPort = addReadMultiPort("in", "NodeSignal", "", Port::NotRequired);
         mpOutPort = addOutputVariable("out", "The sum of inputs", "");
     }
 

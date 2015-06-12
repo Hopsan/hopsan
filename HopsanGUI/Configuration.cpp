@@ -921,7 +921,7 @@ void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString
 
 //! @brief Returns a list of the Physical Quantities associated with this unit (hopefully only one)
 //! @param [in] rUnit The unit to lookup
-QStringList Configuration::getPhysicalQuantitiesForUnit(const QString &rUnit) const
+QStringList Configuration::getQuantitiesForUnit(const QString &rUnit) const
 {
     QStringList list;
     QMap< QString, QuantityUnitScale >::const_iterator it;

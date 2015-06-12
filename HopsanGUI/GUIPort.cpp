@@ -358,7 +358,7 @@ void Port::openRightClickMenu(QPoint screenPos)
         {
             if ( dataName == "Value" && dataUnit != "-")
             {
-                QStringList pqs = gpConfig->getPhysicalQuantitiesForUnit(dataUnit);
+                QStringList pqs = gpConfig->getQuantitiesForUnit(dataUnit);
                 //! @todo if same unit exist in multiple places we have a problem
                 if (pqs.size() > 1)
                 {

@@ -141,7 +141,7 @@ void Port::registerStartValueParameters()
             const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
             const HString desc = "startvalue: Port "+getName();
             const HString name = getName()+"#"+pDesc->name;
-            getComponent()->addConstant(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)));
+            getComponent()->addConstant(name, desc, pDesc->quantity, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)), *(mpStartNode->getDataPtr(pDesc->id)));
         }
     }
 }
