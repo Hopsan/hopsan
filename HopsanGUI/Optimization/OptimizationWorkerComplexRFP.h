@@ -69,6 +69,11 @@ protected:
     double mAlpha1, mAlpha2, mAlpha3, mAlpha4, mAlpha5, mAlpha6, mAlpha7;
     int mMethod;
 
+    //Method 3 members
+    int mNumDist, mNumDir;
+    int mDistCount, mDirCount, mIterCount;
+    QMap<QString, int> mActionCounter;
+
     QList<SharedVectorVariableT> mCandidateVars_x;
     QList<SharedVectorVariableT> mCandidateVars_y;
 };
