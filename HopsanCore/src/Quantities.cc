@@ -21,6 +21,8 @@ hopsan::QuantityRegister::QuantityRegister()
 
     registerQuantity("Mass", "Kg");
     registerQuantity("Area", "m^2");
+    registerQuantity("Volume", "m^3");
+    registerQuantity("Displacement", "m^3/rev");
 
     registerQuantity("Frequency", "rad/s");
     registerQuantity("Time", "s");

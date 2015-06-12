@@ -1021,7 +1021,7 @@ void PlotCurve::updateCurve()
             tempX = mCustomXdata->getDataVectorCopy();
             //! @todo need to have custom Scale for custom x-axis data
             const double xScale = 1.0; // mCustomXdata->getPlotScale();
-            const double xOffset = 1.0; // mCustomXdata->getPlotOffset();
+            const double xOffset = 0.0; // mCustomXdata->getPlotOffset();
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = tempX[i]*xScale + xOffset;
