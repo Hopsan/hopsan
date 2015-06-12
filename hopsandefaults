@@ -153,11 +153,11 @@
             <unitscale unit="us">1e6</unitscale>
             <unitscale unit="ns">1e9</unitscale>
         </quantity>
-        <quantity name="Frequency" siunit="Hz">
-            <unitscale unit="kHz">1e-3</unitscale>
-            <unitscale unit="MHz">1e-6</unitscale>
-            <unitscale unit="GHz">1e-9</unitscale>
-            <unitscale unit="rad/s">6.28318530717959</unitscale>
+        <quantity name="Frequency" siunit="rad/s">
+            <unitscale unit="Hz">0.159154943091895</unitscale>
+            <unitscale unit="kHz">0.159154943091895e-3</unitscale>
+            <unitscale unit="MHz">0.159154943091895e-6</unitscale>
+            <unitscale unit="GHz">0.159154943091895e-9</unitscale>
         </quantity>
         <quantity name="Angle" siunit="rad">
             <unitscale unit="deg">57.296</unitscale>
@@ -207,7 +207,7 @@
         <defaultunit unit="Nm" name="Torque"/>
         <defaultunit unit="m/s" name="Velocity"/>
         <defaultunit unit="s" name="Time"/>
-        <defaultunit unit="Hz" name="Frequency"/>
+        <defaultunit unit="rad/s" name="Frequency"/>
         <defaultunit unit="m^2" name="Area"/>
 <!-- Note! these customunit tags are deprecated and should no longer be used   -->
         <customunit unit="Hz" scale="1" name="Frequency"/>
