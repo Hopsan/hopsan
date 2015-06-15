@@ -379,6 +379,18 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
             }
 
+            // Load any custom signal quantities
+            QDomElement portTag = rDomElement.firstChildElement(HMF_PORTSTAG).firstChildElement(HMF_PORTTAG);
+            while (!portTag.isNull())
+            {
+                QString q = portTag.attribute("signalquantity");
+                if (!q.isEmpty())
+                {
+                    pObj->setModifyableSignalQuantity(portTag.attribute("name")+"#Value", q);
+                }
+                portTag = portTag.nextSiblingElement(HMF_PORTTAG);
+            }
+
 
             // Load component specific override port data, and dynamic parameter port positions
             QDomElement cafMoStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT);

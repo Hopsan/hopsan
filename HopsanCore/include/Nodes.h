@@ -44,8 +44,26 @@ public:
 
     void setSignalQuantity(const HString &rQuantity, const HString &rUnit)
     {
-        mDataDescriptions[Value].quantity = rQuantity;
-        mDataDescriptions[Value].unit = rUnit;
+        if (mDataDescriptions[Value].userModifiableQuantity)
+        {
+            mDataDescriptions[Value].quantity = rQuantity;
+            mDataDescriptions[Value].unit = rUnit;
+        }
+    }
+
+    void setSignalQuantityModifyable(bool tf)
+    {
+        mDataDescriptions[Value].userModifiableQuantity = tf;
+    }
+
+    HString getSignalQuantity() const
+    {
+        return mDataDescriptions[Value].quantity;
+    }
+
+    bool getSignalQuantityModifyable() const
+    {
+        return mDataDescriptions[Value].userModifiableQuantity;
     }
 
     void copySignalQuantityAndUnitTo(Node *pOtherNode) const
@@ -56,6 +74,7 @@ public:
             for(size_t i=0; i<mDataDescriptions.size(); ++i)
             {
                 pOtherNode->setSignalQuantity(mDataDescriptions[i].quantity, mDataDescriptions[i].unit);
+                pOtherNode->setSignalQuantityModifyable(mDataDescriptions[i].userModifiableQuantity);
             }
         }
     }

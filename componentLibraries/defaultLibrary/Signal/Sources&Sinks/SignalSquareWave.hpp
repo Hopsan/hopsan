@@ -63,10 +63,10 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
-            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
+            addInputVariable("y_0", "Base Value", "", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "", 1.0, &mpAmplitude);
             addInputVariable("f", "Frequencty", "Hz", 1.0, &mpFrequency);
-            addInputVariable("t_start", "Start Time", "s", 0.0, &mpStartTime);
+            addInputVariable("t_start", "Start Time", "Time", 0.0, &mpStartTime);
 
 
             addOutputVariable("out", "Square wave output", "", &mpOut);

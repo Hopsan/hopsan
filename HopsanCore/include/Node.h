@@ -45,9 +45,10 @@ class NodeDataDescription
 {
 public:
     HString name;
-    HString quantity;
     HString shortname;
+    HString quantity;
     HString unit;
+    bool userModifiableQuantity;
     NodeDataVariableTypeEnumT varType;
     unsigned int id;
 };
@@ -88,8 +89,11 @@ public:
 
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
-    virtual void setSignalQuantity(const HString &rQuantity, const HString &rUnit);
 
+    virtual void setSignalQuantity(const HString &rQuantity, const HString &rUnit);
+    virtual void setSignalQuantityModifyable(bool tf);
+    virtual HString getSignalQuantity() const;
+    virtual bool getSignalQuantityModifyable() const;
 
     void logData(const size_t logSlot);
 

@@ -135,11 +135,13 @@ public:
     QString mName;
     QString mShortName;
     QString mPortName;
+    QString mNodeType;
     QString mAlias;
     QString mDataType;
     QString mUnit;
     QString mDescription;
     QString mQuantity;
+    bool mUserModifiableQuantity;
     QString mVariabelType;
     QStringList mConditions;
     int mVariameterType;
@@ -191,7 +193,9 @@ public:
     void getFullVariableNameByAlias(QString alias, QString &rCompName, QString &rPortName, QString &rVarName);
     QStringList getAliasNames() const;
 
-
+    // Custom Quantitys
+    void setModifyableSignalQuantity(QString compPortVar, QString quantity);
+    QString getModifyableSignalQuantity(QString compPortVar);
 
     // Port Functions
     //! @todo maybe need some get allport info function (instead of separate type nodetype description)

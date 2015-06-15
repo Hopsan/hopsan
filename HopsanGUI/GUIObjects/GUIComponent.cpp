@@ -374,12 +374,44 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
     {
         //Implementation of Feature #698 - Save nodetype in HMF
         QDomElement xmlPorts = appendDomElement(rDomElement, HMF_PORTSTAG);
-        QList<Port*>::Iterator it;
-        for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
+
+        // Note! we can loop local ports since non-enabled ports will not exist at all in the GUI
+        //       Instead we ask Core for all "variameters" and extract port info from there
+        QVector<CoreVariameterDescription> descs;
+        getVariameterDescriptions(descs);
+
+        for (CoreVariameterDescription &desc : descs)
         {
-            QDomElement xmlPort = appendDomElement(xmlPorts, "port");
-            xmlPort.setAttribute(HMF_NAMETAG, (*it)->getName());
-            xmlPort.setAttribute("nodetype", (*it)->getNodeType());
+//            Port *pPort = (*it);
+//            QDomElement xmlPort = appendDomElement(xmlPorts, "port");
+//            xmlPort.setAttribute(HMF_NAMETAG, pPort->getName());
+//            xmlPort.setAttribute("nodetype", pPort->getNodeType());
+//            if (pPort->getNodeType() == "NodeSignal")
+//            {
+//                QString q = pPort->getParentModelObject()->getModifyableSignalQuantity(pPort->getName()+"#"+"Value");
+//                if (!q.isEmpty())
+//                {
+//                    xmlPort.setAttribute("signalquantity", q);
+//                }
+//            }
+
+            QString currentPort;
+            if (desc.mPortName != currentPort)
+            {
+                currentPort = desc.mPortName;
+                QDomElement xmlPort = appendDomElement(xmlPorts, "port");
+                xmlPort.setAttribute(HMF_NAMETAG, desc.mPortName);
+                xmlPort.setAttribute("nodetype", desc.mNodeType);
+                if (desc.mNodeType == "NodeSignal")
+                {
+                    QString q = this->getModifyableSignalQuantity(desc.mPortName+"#Value");
+                    if (!q.isEmpty())
+                    {
+                        xmlPort.setAttribute("signalquantity", q);
+                    }
+                }
+
+            }
         }
     }
 }

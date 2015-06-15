@@ -160,8 +160,10 @@ const std::vector<VariameterDescription>* Component::getVariameters()
                 data.mName = pDesc->name;
                 data.mShortName = pDesc->shortname;
                 data.mPortName = pPort->getName();
+                data.mNodeType = pPort->getNodeType();
                 data.mUnit = pDesc->unit;
                 data.mQuantity = pDesc->quantity;
+                data.mUserModifiableQuantity = pDesc->userModifiableQuantity;
                 data.mVariableId = pDesc->id;
                 data.mVarType = pDesc->varType;
                 data.mAlias = pPort->getVariableAlias(data.mVariableId);
@@ -1155,7 +1157,16 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
 {
     //! @todo support more types
     Port *pPort = addReadPort(rName,"NodeSignal", rDescription, Port::NotRequired);
-    pPort->setSignalNodeQuantityOrUnit(rUnit);
+    if (rUnit.empty())
+    {
+        pPort->setSignalNodeQuantityModifyable(true);
+    }
+    else
+    {
+        pPort->setSignalNodeQuantityModifyable(true);
+        pPort->setSignalNodeQuantityOrUnit(rUnit);
+        pPort->setSignalNodeQuantityModifyable(false);
+    }
     pPort->registerStartValueParameters(); // Reregister after unit has been changed
     setDefaultStartValue(pPort, 0, defaultValue);
 
@@ -1177,7 +1188,16 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData)
 {
     Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
-    pPort->setSignalNodeQuantityOrUnit(rUnit);
+    if (rUnit.empty())
+    {
+        pPort->setSignalNodeQuantityModifyable(true);
+    }
+    else
+    {
+        pPort->setSignalNodeQuantityModifyable(true);
+        pPort->setSignalNodeQuantityOrUnit(rUnit);
+        pPort->setSignalNodeQuantityModifyable(false);
+    }
     pPort->registerStartValueParameters(); // Reregister after unit has been changed
     disableStartValue(pPort,0);
 

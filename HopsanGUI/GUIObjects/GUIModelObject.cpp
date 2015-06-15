@@ -835,21 +835,14 @@ double ModelObject::getCustomPlotOffset(const QString &rVariablePortDataName)
 
 }
 
-void ModelObject::setCustomQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
+void ModelObject::setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
 {
-    if (rQuantity.isEmpty())
-    {
-        mRegisteredCustomQuantities.remove(rVariablePortDataName);
-    }
-    else
-    {
-        mRegisteredCustomQuantities.insert(rVariablePortDataName, rQuantity);
-    }
+    getParentContainerObject()->getCoreSystemAccessPtr()->setModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName, rQuantity);
 }
 
-QString ModelObject::getCustomQuantity(const QString &rVariablePortDataName)
+QString ModelObject::getModifyableSignalQuantity(const QString &rVariablePortDataName)
 {
-    return mRegisteredCustomQuantities.value(rVariablePortDataName, "");
+    return getParentContainerObject()->getCoreSystemAccessPtr()->getModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName);
 }
 
 void ModelObject::loadFromDomElement(QDomElement domElement)

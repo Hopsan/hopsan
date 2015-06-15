@@ -112,9 +112,10 @@ Component* Port::getComponent() const
 //! @param[in] subPortIdx Ignored on non multi ports
 Node* Port::getNodePtr(const size_t subPortIdx)
 {
-    HOPSAN_UNUSED(subPortIdx)
+    HOPSAN_UNUSED(subPortIdx);
     return mpNode;
 }
+
 
 //! @brief Adds a subport to a multiport
 Port* Port::addSubPort()
@@ -509,6 +510,37 @@ void Port::setSignalNodeQuantityOrUnit(const HString &rQuantityOrUnit)
             mpStartNode->setSignalQuantity(rQuantityOrUnit, bu);
         }
     }
+}
+
+void Port::setSignalNodeQuantityModifyable(bool tf)
+{
+    //! @todo multiport version needed
+
+    mpNode->setSignalQuantityModifyable(tf);
+    if (mpStartNode)
+    {
+        mpStartNode->setSignalQuantityModifyable(tf);
+    }
+}
+
+HString Port::getSignalNodeQuantity() const
+{
+    // Return setting in startnode as that is teh setting for our own node, the mpNode may contain someone elses setting
+    if (mpStartNode)
+    {
+        return mpStartNode->getSignalQuantity();
+    }
+    return "";
+}
+
+bool Port::getSignalNodeQuantityModifyable() const
+{
+    // Return setting in startnode as that is teh setting for our own node, the mpNode may contain someone elses setting
+    if (mpStartNode)
+    {
+        return mpStartNode->getSignalQuantityModifyable();
+    }
+    return false;
 }
 
 //! @param [in] subPortIdx Ignored on non multi ports

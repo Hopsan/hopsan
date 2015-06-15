@@ -52,10 +52,10 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
-            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
-            addInputVariable("tao", "Time Constant of Delay", "-", 1.0, &mpTimeConstant);
-            addInputVariable("t_step", "Step Time", "-", 1.0, &mpStepTime);
+            addInputVariable("y_0", "Base Value", "", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "", 1.0, &mpAmplitude);
+            addInputVariable("tao", "Time Constant of Delay", "", 1.0, &mpTimeConstant);
+            addInputVariable("t_step", "Step Time", "Time", 1.0, &mpStepTime);
 
             addOutputVariable("out", "", "", &mpOut);
         }

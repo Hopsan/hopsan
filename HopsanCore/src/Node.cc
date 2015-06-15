@@ -115,6 +115,7 @@ void Node::setDataCharacteristics(const size_t id, const HString &rName, const H
     mDataDescriptions[id].name = rName;
     mDataDescriptions[id].shortname = rShortname;
     mDataDescriptions[id].varType = vartype;
+    mDataDescriptions[id].userModifiableQuantity = false;
 
     HString bu = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
     // If bu empty then, rUnit was not a quantity
@@ -149,6 +150,22 @@ void Node::setSignalQuantity(const HString &rQuantity, const HString &rUnit)
     HOPSAN_UNUSED(rQuantity);
     HOPSAN_UNUSED(rUnit);
     // Do nothing by default
+}
+
+void Node::setSignalQuantityModifyable(bool tf)
+{
+    HOPSAN_UNUSED(tf);
+    // Do nothing by default
+}
+
+HString Node::getSignalQuantity() const
+{
+    return "";
+}
+
+bool Node::getSignalQuantityModifyable() const
+{
+    return false;
 }
 
 

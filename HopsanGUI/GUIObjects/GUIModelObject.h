@@ -110,8 +110,8 @@ public:
     double getCustomPlotOffset(const QString &rVariablePortDataName);
 
     // Custom quantity methods
-    void setCustomQuantity(const QString &rVariablePortDataName, const QString &rQuantity);
-    QString getCustomQuantity(const QString &rVariablePortDataName);
+    void setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity);
+    QString getModifyableSignalQuantity(const QString &rVariablePortDataName);
 
     // Load and save methods
     virtual void loadFromDomElement(QDomElement domElement);
@@ -198,8 +198,6 @@ protected:
     QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
     QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
     QMap<QString, double> mRegisteredCustomPlotOffsets;
-
-    QMap<QString, QString> mRegisteredCustomQuantities;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

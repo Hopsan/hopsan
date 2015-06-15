@@ -57,11 +57,11 @@ namespace hopsan {
 
         void configure()
         {
-            addOutputVariable("out", "Step output", "-", &mpOut);
+            addOutputVariable("out", "Step output", "", &mpOut);
 
-            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
-            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
-            addInputVariable("t_step", "Step Time", "-", 1.0, &mpStepTime);
+            addInputVariable("y_0", "Base Value", "", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "", 1.0, &mpAmplitude);
+            addInputVariable("t_step", "Step Time", "Time", 1.0, &mpStepTime);
         }
 
 

@@ -47,7 +47,7 @@ namespace hopsan {
 
         void configure()
         {
-            addOutputVariable("y", "Constant value", "-", 1.0, &mpOut);
+            addOutputVariable("y", "Constant value", "", 1.0, &mpOut);
         }
 
 

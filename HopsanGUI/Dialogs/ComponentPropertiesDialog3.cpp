@@ -1976,7 +1976,8 @@ void UnitSelectionWidget::selectionChanged(int idx)
 }
 
 
-QuantitySelectionWidget::QuantitySelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent)
+QuantitySelectionWidget::QuantitySelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent) :
+    QWidget(pParent)
 {
     mVariableTypeName = rData.mName;
     mVariablePortDataName = rData.mPortName+"#"+rData.mName;
@@ -1994,12 +1995,12 @@ QuantitySelectionWidget::QuantitySelectionWidget(const CoreVariameterDescription
     mpQuantityLabel->setText(mQuantity);
     pLayout->addWidget(mpQuantityLabel);
 
-    if (mVariableTypeName == "Value" && mQuantity.isEmpty())
+    if (rData.mUserModifiableQuantity)
     {
-        //! @todo read custom quantity maybe (but if it is set in core we wont need to read it since we already have iti
-        QString custQuant = mpModelObject->getCustomQuantity(mVariablePortDataName);
-        mpQuantityLabel->setText(custQuant);
-        mQuantity = custQuant;
+//        //! @todo read custom quantity maybe (but if it is set in core we wont need to read it since we already have iti
+//        QString custQuant = mpModelObject->getCustomQuantity(mVariablePortDataName);
+//        mpQuantityLabel->setText(custQuant);
+//        mQuantity = custQuant;
 
         QToolButton *pQuantitySelectionButton =  new QToolButton(this);
         pQuantitySelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
@@ -2014,7 +2015,7 @@ void QuantitySelectionWidget::registerCustomQuantity()
 {
     if (hasChanged())
     {
-        mpModelObject->setCustomQuantity(mVariablePortDataName, mpQuantityLabel->text());
+        mpModelObject->setModifyableSignalQuantity(mVariablePortDataName, mpQuantityLabel->text());
     }
 }
 
@@ -2028,6 +2029,8 @@ void QuantitySelectionWidget::createQuantitySelectionMenu()
     QStringList quantities = gpConfig->getUnitQuantities();
 
     QMenu menu;
+    QAction *pClearAction = menu.addAction("Clear");
+    menu.addSeparator();
     QMap<QAction*, int> actionScaleMap;
     for (int i=0; i<quantities.size(); ++i)
     {
@@ -2037,11 +2040,20 @@ void QuantitySelectionWidget::createQuantitySelectionMenu()
     }
 
     QCursor cursor;
-    QAction *selectedAction = menu.exec(cursor.pos());
-    int idx = actionScaleMap.value(selectedAction,-1);
-    if (idx >= 0)
+    QAction *pSelectedAction = menu.exec(cursor.pos());
+
+    if (pSelectedAction == pClearAction)
     {
-        mpQuantityLabel->setText(quantities[idx]);
+        mpQuantityLabel->clear();
         registerCustomQuantity();
+    }
+    else
+    {
+        int idx = actionScaleMap.value(pSelectedAction,-1);
+        if (idx >= 0)
+        {
+            mpQuantityLabel->setText(quantities[idx]);
+            registerCustomQuantity();
+        }
     }
 }

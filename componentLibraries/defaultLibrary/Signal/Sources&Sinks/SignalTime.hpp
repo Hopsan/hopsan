@@ -47,7 +47,7 @@ namespace hopsan {
 
         void configure()
         {
-            addOutputVariable("out", "Simulation time", "s", &mpOut);
+            addOutputVariable("out", "Simulation time", "Time", &mpOut);
         }
 
 

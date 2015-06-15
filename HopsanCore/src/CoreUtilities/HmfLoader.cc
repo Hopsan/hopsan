@@ -265,6 +265,27 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
                 pParam = pParam->next_sibling("parameter");
             }
         }
+
+        // Load modifyable signal quantities
+        rapidxml::xml_node<> *pXmlPorts = pComponentNode->first_node("ports");
+        if (pXmlPorts)
+        {
+            rapidxml::xml_node<> *pXmlPort = pXmlPorts->first_node("port");
+            while (pXmlPort != 0)
+            {
+                HString quantity = readStringAttribute(pXmlPort, "signalquantity", "").c_str();
+                if (!quantity.empty())
+                {
+                    HString portName = readStringAttribute(pXmlPort, "name", "").c_str();
+                    Port *pPort = pComp->getPort(portName);
+                    if (pPort)
+                    {
+                        pPort->setSignalNodeQuantityOrUnit(quantity);
+                    }
+                }
+                pXmlPort = pXmlPort->next_sibling("port");
+            }
+        }
     }
 }
 

@@ -685,8 +685,10 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
             data.mName = pDescs->at(i).mName.c_str();
             data.mShortName = pDescs->at(i).mShortName.c_str();
             data.mPortName = pDescs->at(i).mPortName.c_str();
+            data.mNodeType = pDescs->at(i).mNodeType.c_str();
             data.mUnit = pDescs->at(i).mUnit.c_str();
             data.mQuantity = pDescs->at(i).mQuantity.c_str();
+            data.mUserModifiableQuantity = pDescs->at(i).mUserModifiableQuantity;
             data.mDescription = pDescs->at(i).mDescription.c_str();
             data.mDataType = pDescs->at(i).mDataType.c_str();
             data.mAlias = pDescs->at(i).mAlias.c_str();
@@ -733,6 +735,43 @@ QStringList CoreSystemAccess::getAliasNames() const
         qvec.push_back(str_vec[i].c_str());
     }
     return qvec;
+}
+
+void CoreSystemAccess::setModifyableSignalQuantity(QString compPortVar, QString quantity)
+{
+   QStringList systems;
+   QString c,p,v;
+   splitFullVariableName(compPortVar,systems,c,p,v);
+   hopsan::Component *pComp =  mpCoreComponentSystem->getSubComponent(c.toStdString().c_str());
+   if(pComp)
+   {
+       hopsan::Port *pPort = pComp->getPort(p.toStdString().c_str());
+       if (pPort)
+       {
+           pPort->setSignalNodeQuantityOrUnit(quantity.toStdString().c_str());
+       }
+   }
+}
+
+QString CoreSystemAccess::getModifyableSignalQuantity(QString compPortVar)
+{
+    QStringList systems;
+    QString c,p,v;
+    splitFullVariableName(compPortVar,systems,c,p,v);
+    hopsan::Component *pComp =  mpCoreComponentSystem->getSubComponent(c.toStdString().c_str());
+    if(pComp)
+    {
+        hopsan::Port *pPort = pComp->getPort(p.toStdString().c_str());
+        if (pPort)
+        {
+            // Only return a Custom quantity fior those nodes where quantity is changeable
+            if (pPort->getSignalNodeQuantityModifyable())
+            {
+                return pPort->getSignalNodeQuantity().c_str();
+            }
+        }
+    }
+    return "";
 }
 
 

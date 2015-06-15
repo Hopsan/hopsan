@@ -56,12 +56,12 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "-", 0.0, &mpY0);
-            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpYa);
-            addInputVariable("t_start", "Start Time", "s", 1.0, &mpTstart);
-            addInputVariable("t_end", "Stop Time", "s", 2.0, &mpTend);
+            addInputVariable("y_0", "Base Value", "", 0.0, &mpY0);
+            addInputVariable("y_A", "Amplitude", "", 1.0, &mpYa);
+            addInputVariable("t_start", "Start Time", "Time", 1.0, &mpTstart);
+            addInputVariable("t_end", "Stop Time", "Time", 2.0, &mpTend);
 
-            addOutputVariable("out", "Pulse", "-", &mpOut);
+            addOutputVariable("out", "Pulse", "", &mpOut);
         }
 
 

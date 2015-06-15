@@ -53,11 +53,11 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
-            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
-            addInputVariable("t_start", "Start Time", "s", 0.0, &mpStartTime);
-            addInputVariable("dT", "Time Period", "s", 1.0, &mpPeriodT);
-            addInputVariable("D", "Duty Cycle, (ratio 0<=x<=1)", "-", 0.5, &mpDutyCycle);
+            addInputVariable("y_0", "Base Value", "", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "", 1.0, &mpAmplitude);
+            addInputVariable("t_start", "Start Time", "Time", 0.0, &mpStartTime);
+            addInputVariable("dT", "Time Period", "Time", 1.0, &mpPeriodT);
+            addInputVariable("D", "Duty Cycle, (ratio 0<=x<=1)", "", 0.5, &mpDutyCycle);
 
             addOutputVariable("out", "PulseWave", "", &mpOut);
         }

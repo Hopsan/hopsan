@@ -56,10 +56,12 @@ public:
     HString mName;
     HString mShortName;
     HString mPortName;
+    HString mNodeType;
     HString mAlias;
     HString mDataType;
     HString mUnit;
     HString mQuantity;
+    bool mUserModifiableQuantity;
     HString mDescription;
     VariameterTypeEnumT mVariameterType;
     NodeDataVariableTypeEnumT mVarType;

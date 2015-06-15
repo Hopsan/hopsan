@@ -34,7 +34,7 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("std_dev", "Standard deviation", "-", 1.0, &mpStdDev);
+            addInputVariable("std_dev", "Standard deviation", "", 1.0, &mpStdDev);
             addOutputVariable("out", "", "", 0.0, &mpOut);
         }
 
