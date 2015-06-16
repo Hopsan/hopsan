@@ -404,8 +404,9 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     }
 
     // Determine what plot scales to use
-    determineAddedCurveDataUnitScale(pCurve);
-    determineAddedCurveTFUnitScale(pCurve);
+    determineCurveTFUnitScale(pCurve);
+    determineCurveDataUnitScale(pCurve);
+    determineCurveXDataUnitScale(pCurve);
 
     // Determine plot curve color, if desired color is valid then use that color, else use the color selector the get the least common one
     if (desiredColor.isValid())
@@ -497,6 +498,7 @@ void PlotArea::setCustomXVectorForAll(SharedVectorVariableT data, bool force)
         if (force || !mPlotCurves[i]->hasCustomXData())
         {
             mPlotCurves[i]->setCustomXData(data);
+            determineCurveXDataUnitScale(mPlotCurves[i]);
         }
     }
     rescaleAxesToCurves();
@@ -1501,11 +1503,10 @@ void PlotArea::updateAxisLabels()
                     bottomLabel = QString("%1").arg(pSharedXVector->getDataName());
                     if(customX)
                     {
-                        //! @todo for custom x maybe check for alias name
-                        UnitScale xUS = pSharedXVector->getUnitScale(); //! @todo this will alwasy be original unit, need som way of solving this, maybe in curve
+                        QString xUS = pPlotCurve->getCurrentXPlotUnit();
                         if (!xUS.isEmpty())
                         {
-                            bottomLabel.append(QString(" [%1]").arg(xUS.mUnit));
+                            bottomLabel.append(QString(" [%1]").arg(xUS));
                         }
                     }
                     // handle time or frequency vector
@@ -2211,35 +2212,38 @@ void PlotArea::setLegendSymbol(const QString symStyle, PlotCurve *pCurve)
     pCurve->resetLegendSize();
 }
 
-void PlotArea::determineAddedCurveDataUnitScale(PlotCurve *pCurve)
+void PlotArea::determineCurveDataUnitScale(PlotCurve *pCurve)
 {
-    const QString &originalDataUnit = pCurve->getDataUnit();
+    const QString originalDataUnit = pCurve->getDataUnit();
+    QString dataQuantity = pCurve->getDataQuantity();
+
     // Figure out the desired default unit (set in configuration) for the data behind this curve
-    QString defaultUnit;
-    if ( pCurve->getDataName() == "Value" )
+    QString desiredDefaultUnit;
+    if ( dataQuantity.isEmpty() )
     {
         // Figure out compatible default unit based on the original data unit
         QStringList pqs = gpConfig->getQuantitiesForUnit(originalDataUnit);
-        //! @todo if same unit exist in multiple places we have a problem
         if (pqs.size() > 1)
         {
             gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(originalDataUnit));
         }
         if (pqs.size() == 1)
         {
-            defaultUnit = gpConfig->getDefaultUnit(pqs.first());
+            dataQuantity = pqs.first();
+            desiredDefaultUnit = gpConfig->getDefaultUnit(dataQuantity);
         }
     }
     else
     {
-        // If not "Value", then lookup default unit based on data name (ex: "Position")
-        defaultUnit = gpConfig->getDefaultUnit(pCurve->getDataName());
+        desiredDefaultUnit = gpConfig->getDefaultUnit(dataQuantity);
     }
 
     // Use the default unit if it is not the same as the original unit
-    if (!defaultUnit.isEmpty() && (defaultUnit != originalDataUnit) )
+    if (!desiredDefaultUnit.isEmpty() && (desiredDefaultUnit != originalDataUnit) )
     {
-        pCurve->setCurveDataUnitScale(defaultUnit);
+        UnitScale us;
+        gpConfig->getUnitScale(dataQuantity, desiredDefaultUnit, us);
+        pCurve->setCurveDataUnitScale(us);
     }
 
     // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
@@ -2265,7 +2269,6 @@ void PlotArea::determineAddedCurveDataUnitScale(PlotCurve *pCurve)
                 }
             }
         }
-
         // If we have found a custom unit that is shared among the other curves, then set that custom scale
         // but only if it is different from the current unit, (we do not want a custom curve scale 1)
         if( !customUnit.isEmpty()  && (customUnit != pCurve->getCurrentPlotUnit()) )
@@ -2275,7 +2278,77 @@ void PlotArea::determineAddedCurveDataUnitScale(PlotCurve *pCurve)
     }
 }
 
-void PlotArea::determineAddedCurveTFUnitScale(PlotCurve *pCurve)
+void PlotArea::determineCurveXDataUnitScale(PlotCurve *pCurve)
+{
+    if (pCurve->hasCustomXData())
+    {
+        const QString originalXDataUnit = pCurve->getSharedCustomXVariable()->getDataUnit();
+        QString xDataQuantity = pCurve->getSharedCustomXVariable()->getDataQuantity();
+
+        // Figure out the desired default unit (set in configuration) for the data behind this curve
+        QString desiredDefaultUnit;
+        // If quantity is not set, try to lookup based on original unit
+        if ( xDataQuantity.isEmpty() )
+        {
+            // Figure out compatible default unit based on the original data unit
+            QStringList pqs = gpConfig->getQuantitiesForUnit(originalXDataUnit);
+            if (pqs.size() > 1)
+            {
+                gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(originalXDataUnit));
+            }
+            if (pqs.size() == 1)
+            {
+                xDataQuantity = pqs.first();
+                desiredDefaultUnit = gpConfig->getDefaultUnit(xDataQuantity);
+            }
+        }
+        else
+        {
+            desiredDefaultUnit = gpConfig->getDefaultUnit(xDataQuantity);
+        }
+
+        // Use the default unit if it is not the same as the original unit
+        if (!desiredDefaultUnit.isEmpty() && (desiredDefaultUnit != originalXDataUnit) )
+        {
+            UnitScale us;
+            gpConfig->getUnitScale(xDataQuantity, desiredDefaultUnit, us);
+            pCurve->setCurveXDataUnitScale(us);
+        }
+
+        // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
+        // But only if there is an original unit to begin with otherwise we should scale something with unknown original unit (bad)
+        if (!originalXDataUnit.isEmpty())
+        {
+            QString customUnit;
+            for(int i=0; i<mPlotCurves.size(); ++i)
+            {
+                // Skip checking the curve we are adding, and only check for curves on the same axis as we are adding to
+                if ( (mPlotCurves[i] != pCurve) && (mPlotCurves[i]->getAxisY() == pCurve->getAxisY()) )
+                {
+                    if( customUnit.isEmpty() )
+                    {
+                        // Assign custom unit on first occurrence
+                        customUnit = mPlotCurves[i]->getCurrentXPlotUnit();
+                    }
+                    else if(customUnit != mPlotCurves[i]->getCurrentXPlotUnit())
+                    {
+                        // Unit is different between the other curves, so we do not want to use it
+                        customUnit = QString();
+                        break;
+                    }
+                }
+            }
+            // If we have found a custom unit that is shared among the other curves, then set that custom scale
+            // but only if it is different from the current unit, (we do not want a custom curve scale 1)
+            if( !customUnit.isEmpty()  && (customUnit != pCurve->getCurrentXPlotUnit()) )
+            {
+                pCurve->setCurveXDataUnitScale(customUnit);
+            }
+        }
+    }
+}
+
+void PlotArea::determineCurveTFUnitScale(PlotCurve *pCurve)
 {
     SharedVectorVariableT tfVar = pCurve->getSharedTimeOrFrequencyVariable();
     if (tfVar)
@@ -2313,7 +2386,6 @@ void PlotArea::determineAddedCurveTFUnitScale(PlotCurve *pCurve)
                     }
                 }
             }
-
             // If we have found a custom unit that is shared among the other curves, then set that custom scale
             if( !customUnit.isEmpty() )
             {
@@ -2322,7 +2394,6 @@ void PlotArea::determineAddedCurveTFUnitScale(PlotCurve *pCurve)
                 pCurve->setCurveTFUnitScale(us);
             }
         }
-
     }
 }
 

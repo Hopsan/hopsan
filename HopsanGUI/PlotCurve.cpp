@@ -248,9 +248,14 @@ const QString &PlotCurve::getDataUnit() const
     return mData->getDataUnit();
 }
 
+const QString &PlotCurve::getDataQuantity() const
+{
+    return mData->getDataQuantity();
+}
+
 
 //! @brief Returns the current unit of a plot curve in the following priority (Local unit, Data unit or Original unit)
-const QString PlotCurve::getCurrentPlotUnit() const
+QString PlotCurve::getCurrentPlotUnit() const
 {
     QString localScale = QString::number(mCurveExtraDataScale);
     UnitScale us = getCurveDataUnitScale();
@@ -264,6 +269,24 @@ const QString PlotCurve::getCurrentPlotUnit() const
         {
             return us.mUnit;
         }
+    }
+    return "";
+}
+
+QString PlotCurve::getCurrentXPlotUnit() const
+{
+    //QString localScale = QString::number(mCurveExtraDataScale);
+    UnitScale us = getCurveXDataUnitScale();
+    if (!us.isEmpty())
+    {
+//        if (localScale != "1")
+//        {
+//            return QString("%1 * %2").arg(localScale).arg(us.mUnit);
+//        }
+//        else
+//        {
+            return us.mUnit;
+//        }
     }
     return "";
 }
@@ -377,28 +400,35 @@ bool PlotCurve::setGeneration(const int generation)
 {
     if(mData)
     {
-        //! @todo maybe not set generation if same as current but what about custom x-axis
         SharedVectorVariableT pNewData = switchVariableGeneration(mData, generation);
         if (pNewData)
         {
-            disconnectDataSignals();
-            mData = pNewData;
-            connectDataSignals();
+            if (hasCustomXData())
+            {
+                SharedVectorVariableT pNewXData = switchVariableGeneration(mCustomXdata, generation);
+                if (pNewXData)
+                {
+                    disconnectDataSignals();
+                    mData = pNewData;
+                    connectDataSignals();
+                    setCustomXData(pNewXData);
+                }
+                // If we cant switch the custom X data then the swithc shold not be allowed
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                disconnectDataSignals();
+                mData = pNewData;
+                connectDataSignals();
+            }
         }
         else
         {
-            //! @todo we should actually check custom x data also to make sure that we have data that will be ok
             return false;
-        }
-
-        if (hasCustomXData())
-        {
-            pNewData = switchVariableGeneration(mCustomXdata, generation);
-            if (pNewData)
-            {
-                setCustomXData(pNewData);
-            }
-            //! @todo else what ??
         }
 
         updateCurve();
@@ -419,8 +449,10 @@ bool PlotCurve::setGeneration(const int generation)
 //! @note If unit is not registered for data then nothing will happen
 void PlotCurve::setCurveDataUnitScale(const QString &rUnit)
 {
-    // For signal variables
-    if (getDataName() == "Value")
+    QString dataQuantity = getDataQuantity();
+
+    // For varaibles without quantity, try to lookup, but only unique quantities
+    if (dataQuantity.isEmpty())
     {
         // Only set the new unit if it represents the same physical quantity as the current unit
         QStringList pqs = gpConfig->getQuantitiesForUnit(rUnit);
@@ -435,14 +467,14 @@ void PlotCurve::setCurveDataUnitScale(const QString &rUnit)
             }
         }
     }
-    // For non signal variables
+    // If quantity known then make sure that unit is actually a valid unit for that quantity
     else
     {
         // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
-        if (gpConfig->hasUnitScale(getDataName(),rUnit))
+        if (gpConfig->hasUnitScale(dataQuantity,rUnit))
         {
             UnitScale us;
-            gpConfig->getUnitScale(getDataName(), rUnit, us);
+            gpConfig->getUnitScale(dataQuantity, rUnit, us);
             setCurveDataUnitScale(us);
         }
     }
@@ -470,7 +502,6 @@ void PlotCurve::setCurveDataUnitScale(const UnitScale &rUS)
             mpParentPlotArea->replot();
         }
     }
-
 }
 
 const UnitScale PlotCurve::getCurveDataUnitScale() const
@@ -498,6 +529,101 @@ const UnitScale PlotCurve::getCurveDataUnitScale() const
 void PlotCurve::resetCurveDataUnitScale()
 {
     mCurveDataUnitScale.clear();
+    updateCurve();
+
+    //! @todo shouldn't these be triggered by signal in update curve?
+    mpParentPlotArea->replot();
+}
+
+bool PlotCurve::hasCurveXDataUnitScale() const
+{
+    return !mCurveXDataUnitScale.isEmpty();
+}
+
+void PlotCurve::setCurveXDataUnitScale(const QString &rUnit)
+{
+    if (mCustomXdata)
+    {
+        // For varaibles without quantity, try to lookup, but only allow unique quantities
+        QString xDataQuantity = mCustomXdata->getDataQuantity();
+        if (xDataQuantity.isEmpty())
+        {
+            // Only set the new unit if it represents the same physical quantity as the current unit
+            QStringList pqs = gpConfig->getQuantitiesForUnit(rUnit);
+            QStringList pqsOrg = gpConfig->getQuantitiesForUnit(mCustomXdata->getDataUnit());
+            if ( !(pqs.isEmpty() || pqsOrg.isEmpty()) )
+            {
+                if (pqs.front() == pqsOrg.front())
+                {
+                    UnitScale us;
+                    gpConfig->getUnitScale(pqs.first(), rUnit, us);
+                    setCurveXDataUnitScale(us);
+                }
+            }
+        }
+        // If quantity known then make sure that unit is actually a valid unit for that quantity
+        else
+        {
+            // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
+            if (gpConfig->hasUnitScale(xDataQuantity,rUnit))
+            {
+                UnitScale us;
+                gpConfig->getUnitScale(xDataQuantity, rUnit, us);
+                setCurveXDataUnitScale(us);
+            }
+        }
+    }
+}
+
+void PlotCurve::setCurveXDataUnitScale(const UnitScale &rUS)
+{
+    if (rUS.isEmpty())
+    {
+        resetCurveXDataUnitScale();
+    }
+    else
+    {
+        mCurveXDataUnitScale = rUS;
+
+        // Clear the custom scale if it is one and we have a data unit
+        if (!mCustomXdata->getDataUnit().isEmpty() && mCurveXDataUnitScale.isOne())
+        {
+            resetCurveXDataUnitScale();
+        }
+        else
+        {
+            updateCurve();
+            //! @todo shouldn't these be triggered by signal in update curve?
+            mpParentPlotArea->replot();
+        }
+    }
+}
+
+const UnitScale PlotCurve::getCurveXDataUnitScale() const
+{
+    if (mCurveXDataUnitScale.isEmpty())
+    {
+        if (mCustomXdata)
+        {
+            // If data have an original unit then return that as a unit scale with scaling 1.0
+            if (!mCustomXdata->getDataUnit().isEmpty())
+            {
+                return UnitScale(mData->getDataName(), mData->getDataUnit(), "1.0");
+            }
+            // If not then return empty below
+        }
+        return UnitScale();
+    }
+    // Return the custom unitscale
+    else
+    {
+        return mCurveXDataUnitScale;
+    }
+}
+
+void PlotCurve::resetCurveXDataUnitScale()
+{
+    mCurveXDataUnitScale.clear();
     updateCurve();
 
     //! @todo shouldn't these be triggered by signal in update curve?
@@ -1019,9 +1145,8 @@ void PlotCurve::updateCurve()
             // Use special X-data
             // We copy here, it should be faster then peek (at least when data is cached on disc)
             tempX = mCustomXdata->getDataVectorCopy();
-            //! @todo need to have custom Scale for custom x-axis data
-            const double xScale = 1.0; // mCustomXdata->getPlotScale();
-            const double xOffset = 0.0; // mCustomXdata->getPlotOffset();
+            const double xScale = mCurveXDataUnitScale.toDouble(1.0);
+            const double xOffset = 0.0;
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = tempX[i]*xScale + xOffset;

@@ -98,6 +98,7 @@ public:
     const QString &getPortName() const;
     const QString &getDataName() const;
     const QString &getDataUnit() const;
+    const QString &getDataQuantity() const;
     const QString &getDataModelPath() const;
     QString getDataFullName() const;
     QString getDataSmartName() const;
@@ -109,9 +110,16 @@ public:
     const UnitScale getCurveDataUnitScale() const;
     void resetCurveDataUnitScale();
 
+    bool hasCurveXDataUnitScale() const;
+    void setCurveXDataUnitScale(const QString &rUnit);
+    void setCurveXDataUnitScale(const UnitScale &rUS);
+    const UnitScale getCurveXDataUnitScale() const;
+    void resetCurveXDataUnitScale();
+
     void setCurveExtraDataScaleAndOffset(const double scale, const double offset);
 
-    const QString getCurrentPlotUnit() const;
+    QString getCurrentPlotUnit() const;
+    QString getCurrentXPlotUnit() const;
 
     UnitScale getCurveTFUnitScale() const;
     double getCurveTFOffset() const;
@@ -184,6 +192,7 @@ private:
     bool mHaveCustomData;
     bool mShowVsSamples;
 
+    UnitScale mCurveXDataUnitScale;
     UnitScale mCurveDataUnitScale;
     UnitScale mCurveTFUnitScale;
     double mCurveTFOffset;

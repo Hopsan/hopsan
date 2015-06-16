@@ -1,5 +1,3 @@
-#include "PlotWidget2.h"
-
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
@@ -39,6 +37,7 @@
 #include <QInputDialog>
 
 //Hopsan includes
+#include "PlotWidget2.h"
 #include "global.h"
 #include "Configuration.h"
 #include "GraphicsView.h"
