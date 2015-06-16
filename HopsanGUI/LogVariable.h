@@ -73,6 +73,7 @@ public:
     SharedSystemHierarchyT mpSystemHierarchy;
 
     QString mDataUnit;
+    QString mDataQuantity;
     QString mDataDescription;
     QString mCustomLabel;
 
@@ -123,6 +124,7 @@ public:
     const QString &getPortName() const;
     virtual const QString &getDataName() const;
     const QString &getDataUnit() const;
+    const QString &getDataQuantity() const;
     const QString &getCustomLabel() const;
     UnitScale getUnitScale() const;
     bool hasAliasName() const;
@@ -225,6 +227,7 @@ signals:
     void beingRemoved();
     void dataChanged();
     void nameChanged();
+    void quantityChanged();
     void allowAutoRemovalChanged(bool);
 
 protected:

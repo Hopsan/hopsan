@@ -36,6 +36,7 @@
 #include <QDrag>
 #include <QPushButton>
 #include <QTreeWidget>
+#include <QInputDialog>
 
 //Hopsan includes
 #include "global.h"
@@ -107,6 +108,8 @@ protected:
         return 0;
     }
 
+    int mGen=-1;
+
     QPointF mDragStartPosition;
     QMap<QString, QTreeWidgetItem*> mFullVariableItemMap;
     QMap<QString, QTreeWidgetItem*> mAliasVariableItemMap;
@@ -131,9 +134,11 @@ public:
     const QString &getPortName() const;
     const QString &getDataName() const;
     const QString &getDataUnit() const;
+    const QString &getDataQuantity() const;
     const QString &getPlotDataUnit() const;
     const QString &getAliasName() const;
     const QString &getModelName() const;
+
     int getGeneration() const;
 
 protected:
@@ -161,7 +166,11 @@ public:
 class ImportedFileTreeItem : public QTreeWidgetItem
 {
 public:
-    ImportedFileTreeItem(const QString &rFileName, QTreeWidgetItem *pParent);
+    ImportedFileTreeItem(const QString &rName, const int gen, QTreeWidgetItem *pParent);
+    int getGeneration() const;
+    QString getName() const;
+private:
+    int mGen;
 };
 
 class ComponentHeaderTreeItem : public QTreeWidgetItem
@@ -338,6 +347,11 @@ const QString &BaseVariableTreeItem::getDataUnit() const
     return mData->getDataUnit();
 }
 
+const QString &BaseVariableTreeItem::getDataQuantity() const
+{
+    return mData->getDataQuantity();
+}
+
 const QString &BaseVariableTreeItem::getPlotDataUnit() const
 {
     //return mData->getActualPlotDataUnit();
@@ -488,12 +502,12 @@ bool VariableTree::addAliasVariable(SharedVectorVariableT data)
 
 void VariableTree::addImportedVariable(SharedVectorVariableT data)
 {
-    QString fName = data->getImportedFileName();
+    QString fName = QString("%1 (%2)").arg(data->getImportedFileName()).arg(data->getGeneration()+1);
     QTreeWidgetItem *pFileItem = mImportedFileItemMap.value(fName, 0);
     // If this file was not already added then create it
     if (!pFileItem)
     {
-        pFileItem = new ImportedFileTreeItem(QString("%1 (%2)").arg(fName).arg(data->getGeneration()+1),0);
+        pFileItem = new ImportedFileTreeItem(fName,data->getGeneration(),0);
 
         // Also remember that we created it
         mImportedFileItemMap.insert(fName, pFileItem);
@@ -509,10 +523,10 @@ void VariableTree::addImportedVariable(SharedVectorVariableT data)
 void VariableTree::refreshImportedVariables()
 {
     resetImportedItemParent();
-    QList<QString> importedFileNames = mpLogDataHandler->getImportedGenerationFileNames();
-    for (auto &fn : importedFileNames)
+    QList<int> importedGens = mpLogDataHandler->getImportedGenerations();
+    for (int g : importedGens)
     {
-        QList<SharedVectorVariableT> vars = mpLogDataHandler->getImportedVariablesForFile(fn);
+        QList<SharedVectorVariableT> vars = mpLogDataHandler->getAllVariablesAtGeneration(g);
         for (auto &var : vars)
         {
             addImportedVariable(var);
@@ -525,6 +539,8 @@ void VariableTree::refreshImportedVariables()
 //! @param gen The generation to show, (0 index based) -2 == ALL -1 == Current
 void VariableTree::updateList(const int gen)
 {
+    mGen = gen;
+
     QStringList expandedImportFiles, expandedFullVariableComponents;
     getExpandedFullVariables(expandedFullVariableComponents);
     getExpandedImportFiles(expandedImportFiles);
@@ -711,6 +727,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         QAction *pFindAliasAction = 0;
         QAction *pDeleteVariableThisGenAction = 0;
         QAction *pDeleteVariableAllGenAction = 0;
+        QAction *pSetQuantityAction = 0;
 
         // Add actions
         if (!isImportVariabel)
@@ -744,6 +761,9 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         }
         pDeleteVariableThisGenAction = menu.addAction(QString("Remove Variable @%1").arg(pItem->getGeneration()+1));
         pDeleteVariableAllGenAction = menu.addAction(QString("Remove Variable @*"));
+
+        menu.addSeparator();
+        pSetQuantityAction = menu.addAction("Set plot quantity");
 
         // Execute menu and wait for selected action
         QAction *pSelectedAction = menu.exec(QCursor::pos());
@@ -785,6 +805,20 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
                     mpLogDataHandler->removeVariable(pItem->getFullName(), -2);
                 }
             }
+            else if (pSelectedAction == pSetQuantityAction)
+            {
+                bool ok;
+                QString q = QInputDialog::getText(gpMainWindowWidget, gpMainWindowWidget->tr("Set Quantity"),
+                                                  QString("Quantity for: %1").arg(pItem->getFullName()), QLineEdit::Normal, pItem->getDataQuantity(), &ok);
+                if(ok)
+                {
+                    ok = mpLogDataHandler->registerQuantity(pItem->getFullName(), q, pItem->getGeneration());
+                    if (ok)
+                    {
+                        updateList(mGen);
+                    }
+                }
+            }
         }
     }
 
@@ -797,7 +831,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         QAction *selectedAction = menu.exec(QCursor::pos());
         if(selectedAction == pRemovefileAction)
         {
-           mpLogDataHandler->removeImportedFileGenerations(pFileItem->toolTip(0));
+           mpLogDataHandler->removeGeneration(pFileItem-> getGeneration(), true);
         }
     }
 
@@ -1016,15 +1050,26 @@ FullVariableTreeItem::FullVariableTreeItem(SharedVectorVariableT data, QTreeWidg
 }
 
 
-ImportedFileTreeItem::ImportedFileTreeItem(const QString &rFileName, QTreeWidgetItem *pParent)
+ImportedFileTreeItem::ImportedFileTreeItem(const QString &rName, const int gen, QTreeWidgetItem *pParent)
     : QTreeWidgetItem(pParent)
 {
-    QFileInfo fileInfo(rFileName);
+    mGen = gen;
+    QFileInfo fileInfo(rName);
     setText(0, fileInfo.fileName());
-    setToolTip(0, rFileName);
+    setToolTip(0, rName);
     QFont boldfont = font(0);
     boldfont.setBold(true);
     setFont(0, boldfont);
+}
+
+int ImportedFileTreeItem::getGeneration() const
+{
+    return mGen;
+}
+
+QString ImportedFileTreeItem::getName() const
+{
+    return toolTip(0);
 }
 
 

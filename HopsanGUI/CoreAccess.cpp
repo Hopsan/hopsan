@@ -1298,6 +1298,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
                 CoreVariableData data;
                 data.mName = pDescs->at(i).name.c_str();
                 data.mUnit = pDescs->at(i).unit.c_str();
+                data.mQuantity = pDescs->at(i).quantity.c_str();
                 data.mAlias = pPort->getVariableAlias(i).c_str();
                 //data.mDescription = pDescs->at(i).description.c_str();
                 data.mNodeDataVariableType = nodeDataVariableTypeAsString(pDescs->at(i).varType).c_str();

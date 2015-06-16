@@ -37,6 +37,7 @@ SharedVariableDescriptionT createTimeVariableDescription()
     SharedVariableDescriptionT pVarDesc(new VariableDescription());
     pVarDesc->mDataName = TIMEVARIABLENAME;
     pVarDesc->mDataUnit = "s";
+    pVarDesc->mDataQuantity = "Time";
     return pVarDesc;
 }
 
@@ -45,7 +46,8 @@ SharedVariableDescriptionT createFrequencyVariableDescription()
 {
     SharedVariableDescriptionT pVarDesc(new VariableDescription());
     pVarDesc->mDataName = FREQUENCYVARIABLENAME;
-    pVarDesc->mDataUnit = "Hz";
+    pVarDesc->mDataUnit = "rad/s";
+    pVarDesc->mDataQuantity = "Frequency";
     return pVarDesc;
 }
 
@@ -330,6 +332,11 @@ const QString &VectorVariable::getDataName() const
 const QString &VectorVariable::getDataUnit() const
 {
     return mpVariableDescription->mDataUnit;
+}
+
+const QString &VectorVariable::getDataQuantity() const
+{
+    return mpVariableDescription->mDataQuantity;
 }
 
 const QString &VectorVariable::getCustomLabel() const

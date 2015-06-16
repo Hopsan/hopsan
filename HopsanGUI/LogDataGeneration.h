@@ -52,6 +52,8 @@ public:
     QList<SharedVectorVariableT> getAllNonAliasVariables() const;
     QList<SharedVectorVariableT> getAllVariables() const;
 
+    bool registerQuantity(const QString &rFullName, const QString &rQuantity);
+
     bool registerAlias(const QString &rFullName, const QString &rAlias);
     bool unregisterAlias(const QString &rAlias);
     bool unregisterAliasForFullName(const QString &rFullName);

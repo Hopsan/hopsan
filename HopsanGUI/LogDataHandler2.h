@@ -22,9 +22,9 @@ class LogDataHandler2 : public QObject
 {
     Q_OBJECT
 
-    typedef QMap< int, LogDataGeneration* > GenerationMapT;
-
 public:
+    typedef QMap<int, QString > ImportedGenerationsMapT;
+
     LogDataHandler2(ModelWidget *pParentModel);
     ~LogDataHandler2();
 
@@ -72,11 +72,8 @@ public:
     QList<SharedVectorVariableT> getAllVariablesAtRespectiveNewestGeneration();
     QList<SharedVectorVariableT> getMatchingVariablesAtRespectiveNewestGeneration(const QRegExp &rNameExp) const;
 
-    QList<QString> getImportedGenerationFileNames() const;
-    QList<SharedVectorVariableT> getImportedVariablesForFile(const QString &rFileName);
-    QList<int> getImportFileGenerations(const QString &rFilePath) const;
-    QMap<QString, QList<int> > getImportFilesAndGenerations() const;
-    void removeImportedFileGenerations(const QString &rFileName);
+    QList<int> getImportedGenerations() const;
+    ImportedGenerationsMapT getImportFilesAndGenerations() const;
     bool isGenerationImported(const int gen);
 
     int getNumberOfGenerations() const;
@@ -128,6 +125,7 @@ public:
 public slots:
     void registerAlias(const QString &rFullName, const QString &rAlias, int gen=-1);
     void unregisterAlias(const QString &rAlias, int gen=-1);
+    bool registerQuantity(const QString &rFullName, const QString &rQuantity, int gen=-1);
 
 
 signals:
@@ -141,7 +139,7 @@ private slots:
     void forgetImportedVariable(SharedVectorVariableT pData);
 
 private:
-    typedef QMultiMap< QString, int > ImportedGenerationsMapT;
+    typedef QMap< int, LogDataGeneration* > GenerationMapT;
     typedef QMap<int, SharedMultiDataVectorCacheT> GenerationCacheMapT;
 
     SharedVectorVariableT insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc);

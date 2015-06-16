@@ -115,15 +115,12 @@ public:
 class CoreVariableData
 {
 public:
-    CoreVariableData() {}
-    CoreVariableData(const QString name, const QString value, const QString type, const QString unit="", const QString desc="")
-        : mName(name), mValue(value), mType(type), mUnit(unit), mDescription(desc){}
-
     QString mName;
     QString mAlias;
     QString mValue;
     QString mType;
     QString mUnit;
+    QString mQuantity;
     QString mDescription;
     QString mNodeDataVariableType;
 };

@@ -7,6 +7,8 @@
 //!
 
 #include "LogDataGeneration.h"
+#include "global.h"
+#include "Configuration.h"
 
 LogDataGeneration::LogDataGeneration(const QString &rImportfile)
 {
@@ -213,6 +215,20 @@ QList<SharedVectorVariableT> LogDataGeneration::getAllNonAliasVariables() const
 QList<SharedVectorVariableT> LogDataGeneration::getAllVariables() const
 {
     return mAliasVariables.values()+mVariables.values();
+}
+
+bool LogDataGeneration::registerQuantity(const QString &rFullName, const QString &rQuantity)
+{
+    SharedVectorVariableT var = getVariable(rFullName);
+    QString bu = gpConfig->getBaseUnit(rQuantity);
+    if (!bu.isEmpty())
+    {
+        var->mpVariableDescription->mDataQuantity = rQuantity;
+        var->mpVariableDescription->mDataUnit = bu;
+        emit var.data()->quantityChanged();
+        return true;
+    }
+    return false;
 }
 
 bool LogDataGeneration::registerAlias(const QString &rFullName, const QString &rAlias)

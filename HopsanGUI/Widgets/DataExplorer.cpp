@@ -257,22 +257,8 @@ void DataExplorer::refreshGenerationList()
         pGenerationListLayout->addWidget(new QLabel("Generations", mpGenerationsListWidget),0,Qt::AlignHCenter);
 
         QList<int> gens = mpLogDataHandler->getGenerations();
-        QMap<QString, QList<int> > importedFilesGensMap = mpLogDataHandler->getImportFilesAndGenerations();
-        QMultiMap<int, QString> importedGensFileMap;
-
-        //Ok this is a bit of madness, we need to rebuild that map into a gen,file multimap
-        QMap<QString, QList<int> >::iterator igf_it;
-        for (igf_it=importedFilesGensMap.begin(); igf_it!=importedFilesGensMap.end(); ++igf_it)
-        {
-            int g;
-            Q_FOREACH(g,igf_it.value())
-            {
-                importedGensFileMap.insertMulti(g,igf_it.key());
-            }
-        }
-
-        int g;
-        Q_FOREACH(g,gens)
+        LogDataHandler2::ImportedGenerationsMapT importedGensFileMap = mpLogDataHandler->getImportFilesAndGenerations();
+        for (int g : gens)
         {
             GenerationItem *pItem;
             if (importedGensFileMap.contains(g))

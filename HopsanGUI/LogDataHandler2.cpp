@@ -51,20 +51,20 @@
 #include "ComponentUtilities/CSVParser.h"
 #include "HopsanTypes.h"
 
-UnitScale figureOutCutomUnitScale2(QString quantity, double scale)
-{
-    QList<UnitScale> uss;
-    gpConfig->getUnitScales(quantity,uss);
-    Q_FOREACH(const UnitScale &us, uss)
-    {
-        double s = us.toDouble();
-        if (fuzzyEqual(us.toDouble(), scale, 0.1*qMin(s,scale)))
-        {
-            return us;
-        }
-    }
-    return UnitScale();
-}
+//UnitScale figureOutCutomUnitScale2(QString quantity, double scale)
+//{
+//    QList<UnitScale> uss;
+//    gpConfig->getUnitScales(quantity,uss);
+//    Q_FOREACH(const UnitScale &us, uss)
+//    {
+//        double s = us.toDouble();
+//        if (fuzzyEqual(us.toDouble(), scale, 0.1*qMin(s,scale)))
+//        {
+//            return us;
+//        }
+//    }
+//    return UnitScale();
+//}
 
 
 //! @brief Constructor for plot data object
@@ -255,17 +255,10 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     }
 
     // Write plotScalings line
+    // Note! Plotscale removed in 0.7 for backward compatibility write ones
     for(int i=0; i<variables.size(); ++i)
     {
-//        const double val =  variables[i]->getPlotScale();
-//        if (val < 0)
-//        {
-//            fileStream << " " << val;
-//        }
-//        else
-//        {
-//            fileStream << "  " << val;
-//        }
+        fileStream << "  " << 1.0;
     }
     fileStream << "\n";
 
@@ -358,7 +351,7 @@ class PLOImportData
 {
 public:
       QString mDataName;
-      double mPlotScale;
+      QString mPlotScale;
       double startvalue;
       QVector<double> mDataValues;
 };
@@ -513,22 +506,22 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
         if (importedPLODataVector.first().mDataName == TIMEVARIABLENAME)
         {
             pTimeVec = insertTimeVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
-            UnitScale us = figureOutCutomUnitScale2(TIMEVARIABLENAME, importedPLODataVector.first().mPlotScale);
-            if (!us.isOne() && !us.isEmpty())
-            {
-                //! @todo handle this somehow /Peter
-                //pTimeVec->setCustomUnitScale(us);
-            }
+//            UnitScale us = figureOutCutomUnitScale2(TIMEVARIABLENAME, importedPLODataVector.first().mPlotScale);
+//            if (!us.isOne() && !us.isEmpty())
+//            {
+//                //! @todo handle this somehow /Peter
+//                //pTimeVec->setCustomUnitScale(us);
+//            }
         }
         else if (importedPLODataVector.first().mDataName == FREQUENCYVARIABLENAME)
         {
             pFreqVec = insertFrequencyVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
-            UnitScale us = figureOutCutomUnitScale2(FREQUENCYVARIABLENAME, importedPLODataVector.first().mPlotScale);
-            if (!us.isOne() && !us.isEmpty())
-            {
-                //! @todo handle this somehow /Peter
-                //pFreqVec->setCustomUnitScale(us);
-            }
+//            UnitScale us = figureOutCutomUnitScale2(FREQUENCYVARIABLENAME, importedPLODataVector.first().mPlotScale);
+//            if (!us.isOne() && !us.isEmpty())
+//            {
+//                //! @todo handle this somehow /Peter
+//                //pFreqVec->setCustomUnitScale(us);
+//            }
         }
 
         // First decide if we should skip the first column (if time or frequency vector)
@@ -539,13 +532,21 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
         }
         // Go through all imported variable columns, and create the appropriate vector variable type and insert it
         // Note! You can not mix time frequency or plain vector types in the same plo (v1) file
+        SharedVectorVariableT pNewData;
         for (; i<importedPLODataVector.size(); ++i)
         {
             SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
             pVarDesc->mDataName = importedPLODataVector[i].mDataName;
-            //! @todo what about reading the unit
 
-            SharedVectorVariableT pNewData;
+            bool isNumber;
+            importedPLODataVector[i].mPlotScale.toDouble(&isNumber);
+            if (!isNumber)
+            {
+                pVarDesc->mDataQuantity = importedPLODataVector[i].mPlotScale;
+                pVarDesc->mDataUnit = gpConfig->getBaseUnit(pVarDesc->mDataQuantity);
+            }
+            // Right now we ignore nummeric plotscale, as we removed plotscale from data variables, we look for quantities instead
+
             // Insert time domain variable
             if (pTimeVec)
             {
@@ -565,6 +566,11 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
             }
             //pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
             //! @todo Fixa /Peter
+        }
+
+        if(pNewData)
+        {
+            mImportedGenerationsMap.insert(pNewData->getGeneration(), pNewData->getImportedFileName());
         }
 
         emit dataAdded();
@@ -686,6 +692,7 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
                 pTimeVec = insertTimeVectorVariable(allDatas[timeIdx], fileInfo.absoluteFilePath());
             }
 
+            SharedVectorVariableT pNewData;
             for (int i=0; i<allNames.size(); ++i)
             {
                 // We already inserted time
@@ -698,7 +705,12 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
                 pVarDesc->mDataName = allNames[i];
                 pVarDesc->mAliasName = allAlias[i];
                 pVarDesc->mDataUnit = allUnits[i];
-                insertTimeDomainVariable(pTimeVec, allDatas[i], pVarDesc, fileInfo.absoluteFilePath());
+                pNewData = insertTimeDomainVariable(pTimeVec, allDatas[i], pVarDesc, fileInfo.absoluteFilePath());
+            }
+
+            if(pNewData)
+            {
+                mImportedGenerationsMap.insert(pNewData->getGeneration(), pNewData->getImportedFileName());
             }
 
             // Limit number of plot generations if there are too many
@@ -755,11 +767,17 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath)
         // Ugly, assume that first vector is always time
         pTimeVec = insertTimeVectorVariable(data[0], fileInfo.absoluteFilePath());
 
+        SharedVectorVariableT pNewData;
         for (int i=1; i<data.size(); ++i)
         {
             SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
             pVarDesc->mDataName = "CSV"+QString::number(i);
-            insertTimeDomainVariable(pTimeVec, data[i], pVarDesc, fileInfo.absoluteFilePath());
+            pNewData = insertTimeDomainVariable(pTimeVec, data[i], pVarDesc, fileInfo.absoluteFilePath());
+        }
+
+        if(pNewData)
+        {
+            mImportedGenerationsMap.insert(pNewData->getGeneration(), pNewData->getImportedFileName());
         }
 
         emit dataAdded();
@@ -847,6 +865,7 @@ void LogDataHandler2::importTimeVariablesFromCSVColumns(const QString csvFilePat
             }
 
             // Ok now we have the data lets add it as a variable
+            SharedVectorVariableT pNewData;
             for (int n=0; n<datanames.size(); ++n)
             {
                 //! @todo what if data name already exists?
@@ -855,10 +874,15 @@ void LogDataHandler2::importTimeVariablesFromCSVColumns(const QString csvFilePat
 
                 // Lookup time vector to use, and insert time domain data
                 int tid = timecolumns[n];
-                insertTimeDomainVariable(timePtrs[tid], dataColumns[n], pVarDesc, fileInfo.absoluteFilePath());
+                pNewData = insertTimeDomainVariable(timePtrs[tid], dataColumns[n], pVarDesc, fileInfo.absoluteFilePath());
             }
 
             csvFile.close();
+
+            if(pNewData)
+            {
+                mImportedGenerationsMap.insert(pNewData->getGeneration(), pNewData->getImportedFileName());
+            }
 
             emit dataAdded();
         }
@@ -1020,6 +1044,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
                         pVarDesc->mPortName = pPort->getName();
                         pVarDesc->mDataName = varDesc.mName;
                         pVarDesc->mDataUnit = varDesc.mUnit;
+                        pVarDesc->mDataQuantity = varDesc.mQuantity;
                         pVarDesc->mDataDescription = varDesc.mDescription;
                         pVarDesc->mAliasName  = varDesc.mAlias;
                         pVarDesc->mVariableSourceType = ModelVariableType;
@@ -1502,6 +1527,9 @@ bool LogDataHandler2::removeGeneration(const int gen, const bool force)
                 // If the generation was removed then try to remove the cache object (if any), if it still have active subscribers it will remain
                 removeGenerationCacheIfEmpty(gen);
 
+                // Remove if it was an imported generation
+                mImportedGenerationsMap.remove(gen);
+
                 // Emit signal
                 emit dataRemoved();
 
@@ -1920,6 +1948,11 @@ QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtRespectiveNe
     return data.values();
 }
 
+QList<int> LogDataHandler2::getImportedGenerations() const
+{
+    return mImportedGenerationsMap.keys();
+}
+
 
 //void LogDataHandler2::getVariableNamesWithHighestGeneration(QStringList &rNames, QList<int> &rGens) const
 //{
@@ -2001,91 +2034,12 @@ QStringList LogDataHandler2::getVariableFullNames(int generation) const
     return QStringList();
 }
 
-QList<QString> LogDataHandler2::getImportedGenerationFileNames() const
+
+LogDataHandler2::ImportedGenerationsMapT LogDataHandler2::getImportFilesAndGenerations() const
 {
-    return mImportedGenerationsMap.keys();
+    return mImportedGenerationsMap;
 }
 
-QList<SharedVectorVariableT> LogDataHandler2::getImportedVariablesForFile(const QString &rFileName)
-{
-    int g = mImportedGenerationsMap.value(rFileName, -1);
-    if (g>=0)
-    {
-        auto pGen = getGeneration(g);
-        if (pGen)
-        {
-            return pGen->getAllVariables();
-        }
-    }
-    return QList<SharedVectorVariableT>();
-
-//    ImportedLogDataMapT::iterator fit;
-//    fit = mImportedLogDataMap.find(rFileName);
-//    if (fit != mImportedLogDataMap.end())
-//    {
-//        QList<SharedVectorVariableT> results;
-//        // Iterate over all variables
-//        QStringList keys = QStringList(fit.value().keys());
-//        keys.removeDuplicates();
-//        QString key;
-//        Q_FOREACH(key, keys)
-//        {
-//            // value(key) Returns the most recently inserted value (latest generation)
-//            results.append(fit.value().value(key));
-//        }
-//        return results;
-//    }
-//    else
-//    {
-//        // Return empty list if file not found
-//        return QList<SharedVectorVariableT>();
-//    }
-}
-
-QList<int> LogDataHandler2::getImportFileGenerations(const QString &rFilePath) const
-{
-    return mImportedGenerationsMap.values(rFilePath);
-
-//    QList<int> results;
-//    ImportedLogDataMapT::const_iterator fit = mImportedLogDataMap.find(rFilePath);
-//    if (fit != mImportedLogDataMap.end())
-//    {
-//        // Add generation for each variable
-//        QMultiMap<QString, SharedVectorVariableT>::const_iterator vit;
-//        for (vit=fit.value().begin(); vit!=fit.value().end(); ++vit)
-//        {
-//            const int g = vit.value().mpVariable->getGeneration();
-//            if (!results.contains(g))
-//            {
-//                results.append(g);
-//            }
-//        }
-//    }
-//    return results;
-}
-
-QMap<QString, QList<int> > LogDataHandler2::getImportFilesAndGenerations() const
-{
-    QMap<QString, QList<int> > results;
-    QList<QString> names = mImportedGenerationsMap.keys();
-
-    for (QString &name : names )
-    {
-        QList<int> gens = mImportedGenerationsMap.values(name);
-        results.insert(name, gens);
-    }
-    return results;
-}
-
-void LogDataHandler2::removeImportedFileGenerations(const QString &rFileName)
-{
-    QList<int> gens = getImportFileGenerations(rFileName);
-    int g;
-    Q_FOREACH(g,gens)
-    {
-        removeGeneration(g, true);
-    }
-}
 
 bool LogDataHandler2::isGenerationImported(const int gen)
 {
@@ -2136,7 +2090,7 @@ void LogDataHandler2::rememberIfImported(SharedVectorVariableT data)
 //        }
 
         //! @todo wasting time here re-adding every time, should be made only once preferably
-        mImportedGenerationsMap.insert(data->getImportedFileName(), data->getGeneration());
+
 
         // Make data description source know its imported
         data->mpVariableDescription->mVariableSourceType = ImportedVariableType;
@@ -2246,6 +2200,20 @@ void LogDataHandler2::unregisterAlias(const QString &rAlias, int gen)
             emit aliasChanged();
         }
     }
+}
+
+bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &rQuantity, int gen)
+{
+    if (gen < 0)
+    {
+        gen = mCurrentGenerationNumber;
+    }
+    auto pGen = mGenerationMap.value(gen, 0);
+    if (pGen)
+    {
+        return pGen->registerQuantity(rFullName, rQuantity);
+    }
+    return false;
 }
 
 //! @brief This slot should be signaled when a variable that might be registered as imported is removed
@@ -2392,8 +2360,11 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
         insertVariable(pVariable, pVariable->getAliasName(), gen);
     }
 
-    // Remember imported files in the import map, so that we know what generations belong to which file
-    rememberIfImported(pVariable);
+    // Make data description source know its imported
+    if (pVariable->isImported())
+    {
+        pVariable->mpVariableDescription->mVariableSourceType = ImportedVariableType;
+    }
 
     return pVariable;
 }
