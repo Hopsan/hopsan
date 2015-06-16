@@ -71,7 +71,7 @@ protected:
     int mMethod;
 
     //Method 3 members
-    int mNumDist, mNumDir;
+    int mNumDist, mNumDir, mNumStep;
     int mDistCount, mDirCount, mIterCount;
     QMap<QString, int> mActionCounter;
 
