@@ -5,6 +5,7 @@ include( $${PWD}/../HopsanRemoteBuild.pri )
 
 TEMPLATE = app
 CONFIG += console
+CONFIG += thread
 CONFIG -= app_bundle
 CONFIG -= qt
 
