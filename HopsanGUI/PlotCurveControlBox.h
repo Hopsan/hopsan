@@ -68,6 +68,8 @@ public:
 
 signals:
     void removeCurve(PlotCurve* pCurve);
+    void hideCurve(PlotCurve* pCurve);
+    void showCurve(PlotCurve* pCurve);
 
 public slots:
     void updateInfo();

@@ -202,10 +202,12 @@ public slots:
     void enableZoom();
     void resetZoom();
 
-    void shiftAllGenerationsDown();
-    void shiftAllGenerationsUp();
+    void shiftModelGenerationsDown();
+    void shiftModelGenerationsUp();
     void updateCurvesToNewGenerations();
 
+    void hideCurve(PlotCurve *pCurve);
+    void showCurve(PlotCurve *pCurve);
     void removeCurve(PlotCurve *pCurve);
 
     void insertMultiMarker(QPoint pos);
@@ -234,6 +236,7 @@ private:
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
     void updatePlotMarkers();
     void updateWindowtitleModelName();
+    void getLowestHighestGeneration(int &rLowest, int &rHighest);
 
     PlotTab *mpParentPlotTab;
 
@@ -245,7 +248,7 @@ private:
 
     QList<PlotMarker*> mPlotMarkers;
     QList<MultiPlotMarker*> mMultiPlotMarkers;
-    QList<PlotCurve*> mPlotCurves;
+    QList<PlotCurve*> mPlotCurves, mHiddenPlotCurves;
     PlotCurve *mpActivePlotCurve;
     quint32 mNumYlCurves, mNumYrCurves;
 

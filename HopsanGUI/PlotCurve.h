@@ -93,7 +93,9 @@ public:
     bool minMaxPositiveNonZeroYValues(double &rMin, double &rMax);
     bool minMaxPositiveNonZeroXValues(double &rMin, double &rMax);
 
-    int getGeneration() const;
+    bool isCurveGenerationValid() const;
+    int getCurveGeneration() const;
+    int getDataGeneration() const;
     const QString &getComponentName() const;
     const QString &getPortName() const;
     const QString &getDataName() const;
@@ -153,9 +155,9 @@ signals:
 
 public slots:
     bool setGeneration(const int generation);
-    bool setNonImportedGeneration(const int gen);
-    void gotoPreviousGeneration();
-    void gotoNextGeneration();
+    bool setNonImportedGeneration(const int generation);
+    bool autoDecrementModelSourceGeneration();
+    bool autoIncrementModelSourceGeneration();
 
     void setLineWidth(int);
     void setLineStyle(QString lineStyle);
@@ -192,12 +194,17 @@ private:
     bool mHaveCustomData;
     bool mShowVsSamples;
 
+    // Cruve scale
     UnitScale mCurveXDataUnitScale;
     UnitScale mCurveDataUnitScale;
     UnitScale mCurveTFUnitScale;
     double mCurveTFOffset;
     double mCurveExtraDataScale;
     double mCurveExtraDataOffset;
+
+    // Curve set generation
+    int mSetGeneration;
+    bool mSetGenerationIsValid;
 
     // Curve properties settings
     bool mAutoUpdate, mIsActive, mIncludeGenInTitle, mIncludeSourceInTitle;

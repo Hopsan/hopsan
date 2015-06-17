@@ -74,7 +74,7 @@ public:
 
     QList<int> getImportedGenerations() const;
     ImportedGenerationsMapT getImportFilesAndGenerations() const;
-    bool isGenerationImported(const int gen);
+    bool isGenerationImported(int generation);
 
     int getNumberOfGenerations() const;
     QList<int> getGenerations() const;
@@ -157,7 +157,6 @@ private:
     bool collectLogDataFromSystem(SystemContainer *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double> *, SharedVectorVariableT> &rGenTimeVectors);
 
     QString getNewCacheName(const QString &rDesiredName=QString());
-    void rememberIfImported(SharedVectorVariableT data);
     void removeGenerationCacheIfEmpty(const int gen);
     void pruneGenerationCache(const int generation, LogDataGeneration *pGeneration);
 

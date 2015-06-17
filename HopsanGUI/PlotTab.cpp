@@ -738,7 +738,7 @@ void PlotTab::shiftAllGenerationsDown()
 {
     Q_FOREACH(PlotArea *pArea, mPlotAreas)
     {
-        pArea->shiftAllGenerationsDown();
+        pArea->shiftModelGenerationsDown();
     }
 }
 
@@ -746,7 +746,7 @@ void PlotTab::shiftAllGenerationsUp()
 {
     Q_FOREACH(PlotArea *pArea, mPlotAreas)
     {
-        pArea->shiftAllGenerationsUp();
+        pArea->shiftModelGenerationsUp();
     }
 }
 

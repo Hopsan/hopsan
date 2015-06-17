@@ -61,6 +61,11 @@ const double DoubleMax = std::numeric_limits<double>::max();
 const double DoubleMin = std::numeric_limits<double>::min();
 const double Double1000Min = 1000*DoubleMin;
 
+inline int limitGen(int gen, int min, int max)
+{
+    return qMin(qMax(gen, min), max);
+}
+
 //! @brief Rectangle painter widget, used for painting transparent rectangles when dragging things to plot tabs
 class RectanglePainterWidget : public QWidget
 {
@@ -398,7 +403,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     {
         if (!pCurve->hasCustomXData())
         {
-            SharedVectorVariableT xdata = switchVariableGeneration(mCustomXData, pCurve->getGeneration());
+            SharedVectorVariableT xdata = switchVariableGeneration(mCustomXData, pCurve->getDataGeneration());
             pCurve->setCustomXData(xdata);
         }
     }
@@ -450,6 +455,8 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     // Create a curve info box for this curve
     PlotCurveControlBox *pControlBox = new PlotCurveControlBox(pCurve, this);
     connect(pControlBox, SIGNAL(removeCurve(PlotCurve*)), this, SLOT(removeCurve(PlotCurve*)));
+    connect(pControlBox, SIGNAL(hideCurve(PlotCurve*)), this, SLOT(hideCurve(PlotCurve*)));
+    connect(pControlBox, SIGNAL(showCurve(PlotCurve*)), this, SLOT(showCurve(PlotCurve*)));
     mPlotCurveControlBoxes.append(pControlBox);
     mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveControlBoxes.last());
     mPlotCurveControlBoxes.last()->show();
@@ -596,6 +603,110 @@ void PlotArea::removeAllCurves()
     {
         removeCurve(mPlotCurves.last());
     }
+}
+
+void PlotArea::hideCurve(PlotCurve *pCurve)
+{
+    // Hide any markers used by the curve
+    //! @todo maybe support hiding markers belonging to curve, for now discard them
+    for(int i=0; i<mPlotMarkers.size(); ++i)
+    {
+        if(mPlotMarkers[i]->getCurve() == pCurve)
+        {
+            removePlotMarker(mPlotMarkers[i]);
+            --i;
+        }
+    }
+
+//    // Remove the plot curve info box used by the curve
+//    for(int i=0; i<mPlotCurveControlBoxes.size(); ++i)
+//    {
+//        if(mPlotCurveControlBoxes[i]->getCurve() == pCurve)
+//        {
+//            mPlotCurveControlBoxes[i]->hide();
+//            mPlotCurveControlBoxes[i]->deleteLater();
+//            mPlotCurveControlBoxes.removeAt(i);
+//            break;
+//        }
+//    }
+
+    // Reduce the curve color counter for this curve color
+//    mCurveColorSelector.decrementCurveColorCounter(pCurve->pen().color());
+
+    if (pCurve->getAxisY() == QwtPlot::yLeft)
+    {
+        --mNumYlCurves;
+    }
+    else if (pCurve->getAxisY() == QwtPlot::yRight)
+    {
+        --mNumYrCurves;
+    }
+
+
+    // Update multi plot markers
+    for(int i=0; i<mMultiPlotMarkers.size(); ++i)
+    {
+        mMultiPlotMarkers[i]->removeMarker(pCurve);
+    }
+
+    pCurve->detach();
+    mHiddenPlotCurves.append(pCurve);
+    mPlotCurves.removeAll(pCurve);
+    //pCurve->mpParentPlotArea = 0;
+    //pCurve->disconnect();
+    //delete pCurve;
+
+    // Reset timevector in case we had special x-axis set previously
+    refreshPlotAreaCustomXData();
+
+    // Reset zoom and remove axis locks if last curve was removed (makes no sense to keep it zoomed in)
+    if(mPlotCurves.isEmpty())
+    {
+        mpXLockCheckBox->setChecked(false);
+        mpYLLockCheckBox->setChecked(false);
+        mpYRLockCheckBox->setChecked(false);
+        resetZoom();
+    }
+
+    rescaleAxesToCurves();
+    updateAxisLabels();
+    updateWindowtitleModelName();
+    replot();
+}
+
+void PlotArea::showCurve(PlotCurve *pCurve)
+{
+    int idx=-1;
+    for (int i=0; i<mHiddenPlotCurves.size(); ++i)
+    {
+        if (mHiddenPlotCurves[i] == pCurve)
+        {
+            idx = i;
+        }
+    }
+    if (idx < 0)
+    {
+        return;
+    }
+
+    pCurve->attach(mpQwtPlot);
+    mPlotCurves.append(pCurve);
+
+    if (pCurve->getAxisY() == QwtPlot::yLeft)
+    {
+        ++mNumYlCurves;
+    }
+    else if (pCurve->getAxisY() == QwtPlot::yRight)
+    {
+        ++mNumYrCurves;
+    }
+
+    mHiddenPlotCurves.removeAt(idx);
+
+    rescaleAxesToCurves();
+    updateAxisLabels();
+    updateWindowtitleModelName();
+    replot();
 }
 
 void PlotArea::removePlotMarker(PlotMarker *pMarker)
@@ -1614,7 +1725,7 @@ void PlotArea::openTimeScalingDialog()
     //! @todo what if massive amount of generations
     for (PlotCurve* pCurve : mPlotCurves)
     {
-        genCurveMap.insertMulti(pCurve->getGeneration(), pCurve);
+        genCurveMap.insertMulti(pCurve->getDataGeneration(), pCurve);
     }
 
     QGridLayout *pGridLayout = new QGridLayout(&scaleDialog);
@@ -1771,21 +1882,72 @@ void PlotArea::resetZoom()
     rescaleAxesToCurves();
 }
 
-void PlotArea::shiftAllGenerationsDown()
+void PlotArea::shiftModelGenerationsDown()
 {
-    PlotCurve *pCurve;
-    Q_FOREACH(pCurve, mPlotCurves)
+    // Working on copy since mPlotCurves will be modified during loop
+    QList<PlotCurve*> curves = mPlotCurves;
+    QList<PlotCurve*> curvesHidden;
+    for (PlotCurve *pCurve : curves)
     {
-        pCurve->gotoPreviousGeneration();
+        bool rc = pCurve->autoDecrementModelSourceGeneration();
+        if (!rc)
+        {
+            hideCurve(pCurve);
+            curvesHidden.append(pCurve);
+        }
+    }
+
+    // Working on copy since mHiddenPlotCurves will be modified during loop
+    curves = mHiddenPlotCurves;
+    for (PlotCurve *pCurve : curves)
+    {
+        // Prevent decrementing curves we did just hide again
+        if (curvesHidden.contains(pCurve))
+        {
+            continue;
+        }
+        // Attempt to show previously hidden curves
+        if (pCurve->isAutoUpdating())
+        {
+            bool rc = pCurve->autoDecrementModelSourceGeneration();
+            if (rc)
+            {
+                showCurve(pCurve);
+            }
+        }
     }
 }
 
-void PlotArea::shiftAllGenerationsUp()
+void PlotArea::shiftModelGenerationsUp()
 {
-    PlotCurve *pCurve;
-    Q_FOREACH(pCurve, mPlotCurves)
+    // Working on copy since mPlotCurves will be modified during loop
+    QList<PlotCurve*> curves = mPlotCurves;
+    QList<PlotCurve*> curvesHidden;
+    for (PlotCurve *pCurve : curves)
     {
-        pCurve->gotoNextGeneration();
+        bool rc = pCurve->autoIncrementModelSourceGeneration();
+        if (!rc)
+        {
+            hideCurve(pCurve);
+            curvesHidden.append(pCurve);
+        }
+    }
+
+    // Working on copy since mHiddenPlotCurves will be modified during loop
+    curves = mHiddenPlotCurves;
+    for (PlotCurve *pCurve : curves)
+    {
+        // Prevent decrementing curves we did just hide again
+        if (curvesHidden.contains(pCurve))
+        {
+            continue;
+        }
+        // Attempt to show previously hidden curves
+        bool rc = pCurve->autoIncrementModelSourceGeneration();
+        if (rc)
+        {
+            showCurve(pCurve);
+        }
     }
 }
 
@@ -1796,9 +1958,6 @@ void PlotArea::updateCurvesToNewGenerations()
         pCurve->updateToNewGeneration();
     }
 }
-
-
-
 
 
 //! @brief Inserts a curve marker at the specified curve
@@ -2606,6 +2765,42 @@ void PlotArea::updateWindowtitleModelName()
         }
     }
     emit refreshContainsDataFromModels();
+}
+
+void PlotArea::getLowestHighestGeneration(int &rLowest, int &rHighest)
+{
+    // We assume ehre that all curves come from teh same log data handler
+    SharedVectorVariableT pData;
+    if (mPlotCurves.empty())
+    {
+        if (mHiddenPlotCurves.empty())
+        {
+            // nothing
+        }
+        else
+        {
+            pData = mHiddenPlotCurves.front()->getSharedVectorVariable();
+        }
+    }
+    else
+    {
+        pData = mPlotCurves.front()->getSharedVectorVariable();
+    }
+
+    if (pData)
+    {
+        LogDataHandler2 *pLDH = pData->getLogDataHandler();
+        if (pLDH)
+        {
+            rLowest = pLDH->getLowestGenerationNumber();
+            rHighest = pLDH->getHighestGenerationNumber();
+            return;
+        }
+    }
+
+    // We get here on failure
+    rLowest = -1;
+    rHighest = -1;
 }
 
 void PlotArea::enableArrow()

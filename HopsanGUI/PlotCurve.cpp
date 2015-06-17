@@ -86,6 +86,8 @@ PlotCurve::PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, cons
     mHaveCustomData = false;
     mShowVsSamples = false;
     mData = data;
+    mSetGeneration = mData->getGeneration();
+    mSetGenerationIsValid = true;
 
     mCurveExtraDataScale = 1.0;
     mCurveExtraDataOffset = 0.0;
@@ -164,7 +166,7 @@ void PlotCurve::setIncludeSourceInTitle(bool doit)
 
 
 //! @brief Returns the current generation a plot curve is representing
-int PlotCurve::getGeneration() const
+int PlotCurve::getDataGeneration() const
 {
     return mData->getGeneration();
 }
@@ -369,6 +371,16 @@ bool PlotCurve::minMaxPositiveNonZeroXValues(double &rMin, double &rMax)
     }
 }
 
+bool PlotCurve::isCurveGenerationValid() const
+{
+    return mSetGenerationIsValid;
+}
+
+int PlotCurve::getCurveGeneration() const
+{
+    return mSetGeneration;
+}
+
 
 //! @brief Returns the shared time or frequency vector of the plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
@@ -398,25 +410,28 @@ const SharedVectorVariableT PlotCurve::getSharedCustomXVariable() const
 //! @param generation Generation to use
 bool PlotCurve::setGeneration(const int generation)
 {
+    mSetGeneration = generation;
     if(mData)
     {
         SharedVectorVariableT pNewData = switchVariableGeneration(mData, generation);
         if (pNewData)
         {
+            mSetGeneration = pNewData->getGeneration(); //Use this to replace gen=-1 (current) with actual generation number
             if (hasCustomXData())
             {
-                SharedVectorVariableT pNewXData = switchVariableGeneration(mCustomXdata, generation);
+                SharedVectorVariableT pNewXData = switchVariableGeneration(mCustomXdata, pNewData->getGeneration());
                 if (pNewXData)
                 {
                     disconnectDataSignals();
                     mData = pNewData;
                     connectDataSignals();
                     setCustomXData(pNewXData);
+                    mSetGenerationIsValid = true;
                 }
-                // If we cant switch the custom X data then the swithc shold not be allowed
+                // If we cant switch the custom X data then the swithc should not be allowed
                 else
                 {
-                    return false;
+                    mSetGenerationIsValid = false;
                 }
             }
             else
@@ -424,22 +439,99 @@ bool PlotCurve::setGeneration(const int generation)
                 disconnectDataSignals();
                 mData = pNewData;
                 connectDataSignals();
+                mSetGenerationIsValid = true;
             }
         }
         else
         {
-            return false;
+            mSetGenerationIsValid = false;
         }
 
         updateCurve();
         refreshCurveTitle();
+
+        // Abort if curve generation is not valid, retun false to indicate that the curve is currently not in a valid state
+        if (!mSetGenerationIsValid)
+        {
+            return false;
+        }
 
         //! @todo should this be done here
         mpParentPlotArea->resetZoom();
 
         return true;
     }
+    mSetGenerationIsValid = false;
     return false;
+}
+
+bool PlotCurve::setNonImportedGeneration(const int generation)
+{
+    if (mData)
+    {
+        LogDataHandler2 *pLDH = mData->getLogDataHandler();
+        if (pLDH)
+        {
+            if(!pLDH->isGenerationImported(generation))
+            {
+                return setGeneration(generation);
+            }
+        }
+    }
+    // Note! We return true here even if no switch was made, returning false only if we did switch and data was not available
+    return true;
+}
+
+bool PlotCurve::autoDecrementModelSourceGeneration()
+{
+    // We do not want to switch generations automatically for curves representing imported data.
+    // That would make it very difficult to compare imported data with a model variable of the same name
+    // This was decided based on how AC is using the program
+    if (mAutoUpdate && mData && !mData->isImported())
+    {
+        LogDataHandler2 *pLDH = mData->getLogDataHandler();
+        if (pLDH)
+        {
+            // Loop until we find next non-imported higher generation, abort if we reach the highest
+            int gen = mSetGeneration-1;
+            while ( gen >= pLDH->getLowestGenerationNumber() )
+            {
+                if(!pLDH->isGenerationImported(gen))
+                {
+                    return setGeneration(gen);
+                }
+                --gen;
+            }
+        }
+    }
+    // Note! We return true here even if no switch was made, returning false only if we did switch and data was not available
+    return true;
+}
+
+bool PlotCurve::autoIncrementModelSourceGeneration()
+{
+    // We do not want to switch generations automatically for curves representing imported data.
+    // That would make it very difficult to compare imported data with a model variable of the same name
+    // This was decided based on how AC is using the program
+    if (mAutoUpdate && mData && !mData->isImported())
+    {
+        LogDataHandler2 *pLDH = mData->getLogDataHandler();
+        if (pLDH)
+        {
+            // Loop until we find next non-imported higher generation, abort if we reach the highest
+            int gen = mSetGeneration+1;
+            while ( gen <= pLDH->getHighestGenerationNumber() )
+            {
+                if(!pLDH->isGenerationImported(gen))
+                {
+                    return setGeneration(gen);
+                }
+                ++gen;
+            }
+        }
+    }
+    // Note! We return true here even if no switch was made, returning false only if we did switch and data was not available
+    return true;
 }
 
 
@@ -775,50 +867,6 @@ void PlotCurve::resetLegendSize()
 }
 
 
-//! @brief Changes a curve to the previous available model generation
-void PlotCurve::gotoPreviousGeneration()
-{
-    // We do not want to switch generations automatically for curves representing imported data.
-    // That would make it very difficult to compare imported data with a model variable of the same name
-    // This was decided based on how AC is using the program
-    if (mData && !mData->isImported() && mAutoUpdate)
-    {
-        auto pLDH = mData->getLogDataHandler();
-        if (pLDH)
-        {
-            // Loop until we find next lower generation, abort if gen<0
-            int gen = getGeneration()-1;
-            while ((gen >= 0) && (gen >= pLDH->getLowestGenerationNumber())  && !setNonImportedGeneration(gen))
-            {
-                --gen;
-            }
-        }
-    }
-}
-
-
-//! @brief Changes a curve to the next available model generation
-void PlotCurve::gotoNextGeneration()
-{
-    // We do not want to switch generations automatically for curves representing imported data.
-    // That would make it very difficult to compare imported data with a model variable of the same name
-    // This was decided based on how AC is using the program
-    if (mData && !mData->isImported() && mAutoUpdate)
-    {
-        auto pLDH = mData->getLogDataHandler();
-        if (pLDH)
-        {
-            // Loop until we find next higher generation, abort if we reach the highest
-            int gen = getGeneration()+1;
-            while ((gen <= pLDH->getHighestGenerationNumber()) && !setNonImportedGeneration(gen))
-            {
-                ++gen;
-            }
-        }
-    }
-}
-
-
 //! @brief Sets the line width of a plot curve
 //! @param lineWidth Line width to give curve
 void PlotCurve::setLineWidth(int lineWidth)
@@ -1032,7 +1080,7 @@ void PlotCurve::openScaleDialog()
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout(pScaleDialog);
-    QLabel *pName = new QLabel(this->getCurveName() + QString(",     Generation: %1").arg(this->getGeneration()+1), pScaleDialog);
+    QLabel *pName = new QLabel(this->getCurveName() + QString(",     Generation: %1").arg(this->getDataGeneration()+1), pScaleDialog);
     QFont font = pName->font();
     font.setBold(true);
     pName->setFont(font);
@@ -1087,8 +1135,8 @@ void PlotCurve::updateCurveExtraDataScaleAndOffsetFromDialog()
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
-    // Only change the generation if auto update is on
-    if(mAutoUpdate)
+    // Only change the generation if auto update is on and if this is not an imported varaible
+    if(mAutoUpdate && mData && !mData->isImported())
     {
         setNonImportedGeneration(-1);
     }
@@ -1197,18 +1245,6 @@ void PlotCurve::dataIsBeingRemoved()
 void PlotCurve::customXDataIsBeingRemoved()
 {
     setCustomXData(SharedVectorVariableT());
-}
-
-bool PlotCurve::setNonImportedGeneration(const int gen)
-{
-    if (mData && mData->getLogDataHandler())
-    {
-        if (!mData->getLogDataHandler()->isGenerationImported(gen))
-        {
-            return setGeneration(gen);
-        }
-    }
-    return false;
 }
 
 void PlotCurve::deleteCustomData()

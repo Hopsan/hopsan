@@ -25,6 +25,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QHBoxLayout>
+#include <QPalette>
 
 #include "PlotCurveControlBox.h"
 #include "PlotArea.h"
@@ -205,13 +206,12 @@ void PlotCurveControlBox::updateColor(const QColor color)
 void PlotCurveControlBox::updateInfo()
 {
     // Enable/disable generation buttons
-    int gen = mpPlotCurve->getGeneration();
+    int gen = mpPlotCurve->getCurveGeneration();
     int lowGen, highGen;
     bool haveGens=false;
     auto pLDH = mpPlotCurve->getSharedVectorVariable()->getLogDataHandler();
     if (pLDH)
     {
-        //! @todo FIXA /Peter
         pLDH->getVariableGenerationInfo(mpPlotCurve->getDataFullName(), lowGen, highGen);
         haveGens = (lowGen != -1);
     }
@@ -222,13 +222,24 @@ void PlotCurveControlBox::updateInfo()
     }
     mpGenerationSpinBox->blockSignals(true);    // Need to temporarily disconnect to avoid loop
     mpGenerationSpinBox->setRange(lowGen+1, highGen+1);
+    if (mpPlotCurve->isCurveGenerationValid())
+    {
+        QPalette textColor = mpGenerationSpinBox->palette();
+        textColor.setColor(QPalette::Text,Qt::black);
+        mpGenerationSpinBox->setPalette(textColor);
+    }
+    else
+    {
+        QPalette textColor = mpGenerationSpinBox->palette();
+        textColor.setColor(QPalette::Text,Qt::red);
+        mpGenerationSpinBox->setPalette(textColor);
+    }
     mpGenerationSpinBox->setValue(gen+1);
     mpGenerationSpinBox->blockSignals(false);   // Unblock
     mpGenerationSpinBox->setEnabled(haveGens);
 
 
     // Set generation number strings
-    //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
     mpGenerationLabel->setText(QString("[%1,%2]").arg(lowGen+1).arg(highGen+1));
 
     // Set source label
@@ -312,13 +323,11 @@ void PlotCurveControlBox::setGeneration(const int gen)
     // Since info box begins counting at 1 we need to subtract one, but we do not want underflow as that would set latest generation (-1)
     if (!mpPlotCurve->setGeneration(qMax(gen-1,0)))
     {
-        mpGenerationSpinBox->setPrefix("NA<");
-        mpGenerationSpinBox->setSuffix(">");
+        emit hideCurve(mpPlotCurve);
     }
     else
     {
-        mpGenerationSpinBox->setPrefix("");
-        mpGenerationSpinBox->setSuffix("");
+        emit showCurve(mpPlotCurve);
     }
 }
 

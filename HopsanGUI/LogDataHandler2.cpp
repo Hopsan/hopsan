@@ -564,8 +564,6 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
                                                                             fileInfo.absoluteFilePath(), getGenerationMultiCache(mCurrentGenerationNumber)));
                 insertVariable(pNewData);
             }
-            //pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
-            //! @todo Fixa /Peter
         }
 
         if(pNewData)
@@ -2041,9 +2039,15 @@ LogDataHandler2::ImportedGenerationsMapT LogDataHandler2::getImportFilesAndGener
 }
 
 
-bool LogDataHandler2::isGenerationImported(const int gen)
+bool LogDataHandler2::isGenerationImported(int generation)
 {
-    auto pGen = getGeneration(gen);
+    // If gen < 0 use current generation
+    if (generation < 0)
+    {
+        generation = mCurrentGenerationNumber;
+    }
+
+    auto pGen = getGeneration(generation);
     if (pGen)
     {
         return pGen->isImported();
@@ -2066,36 +2070,6 @@ QString LogDataHandler2::getNewCacheName(const QString &rDesiredName)
     }
 }
 
-void LogDataHandler2::rememberIfImported(SharedVectorVariableT data)
-{
-    // Remember the imported file in the import map, so we know what generations belong to which file
-    if (data->isImported())
-    {
-//        ImportedLogDataMapT::iterator fit; // File name iterator
-//        fit = mImportedLogDataMap.find(data.mpVariable->getImportedFileName());
-//        if (fit != mImportedLogDataMap.end())
-//        {
-//            fit.value().insertMulti(data.mpVariable->getFullVariableName(),data);
-//        }
-//        else
-//        {
-//            QMultiMap<QString,SharedVectorVariableT> newFileMap;
-//            newFileMap.insert(data.mpVariable->getFullVariableName(),data);
-//            mImportedLogDataMap.insert(data.mpVariable->getImportedFileName(),newFileMap);
-//        }
-//        // connect delete signal so we know to remove this when generation is removed
-//        if (data.mpContainer)
-//        {
-//            connect(data.mpContainer.data(), SIGNAL(importedVariableBeingRemoved(SharedVectorVariableT)), this, SLOT(forgetImportedVariable(SharedVectorVariableT)));
-//        }
-
-        //! @todo wasting time here re-adding every time, should be made only once preferably
-
-
-        // Make data description source know its imported
-        data->mpVariableDescription->mVariableSourceType = ImportedVariableType;
-    }
-}
 
 //! @brief Removes a generation cache object from map if it has no subscribers
 void LogDataHandler2::removeGenerationCacheIfEmpty(const int gen)
