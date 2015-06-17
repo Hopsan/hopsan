@@ -88,11 +88,11 @@ def setLicense(filename,  license):
         file.write(contents)
     file.close()    
 
-def main(rootDir,  setNew):
+def main(rootDir, licFile,  setNew):
     suffixes = ('.cc', '.cpp', '.h', '.hpp')
     excludeDirs =  ('Dependencies', )
     
-    nlf = open('./newLicense')
+    nlf = open(licFile)
     newLicense=nlf.read()
     nlf.close()
     print(newLicense)
@@ -130,15 +130,16 @@ def main(rootDir,  setNew):
             replaceLicense(file,  newLicense)
     
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print('Error: You must give at least one argument, the root dir')
+    if len(sys.argv) < 3:
+        print('Error: You must give at least two argument, the root dir, and the new license header file')
         exit()
     else:
         rootDir = sys.argv[1]
+        licFile = sys.argv[2]
     
     setNew = False
-    if len(sys.argv) == 3:
-        if sys.argv[2] == r'set':
+    if len(sys.argv) == 4:
+        if sys.argv[3] == r'set':
             setNew = True
     
-    main(rootDir,  setNew)
+    main(rootDir, licFile, setNew)
