@@ -30,7 +30,7 @@
 //!
 //! @brief Contains a Hydraulic Node Sensor Component
 //!
-//$Id: HydraulicPressureSensor.hpp 7574 2015-01-27 12:46:45Z petno25 $
+//$Id$
 
 #ifndef HYDRAULICNODESENSOR_HPP_INCLUDED
 #define HYDRAULICNODESENSOR_HPP_INCLUDED

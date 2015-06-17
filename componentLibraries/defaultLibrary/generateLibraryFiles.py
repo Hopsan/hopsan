@@ -2,7 +2,7 @@
 # Script to generate all library files from teh existing directory structure and compoent hpp file
 # Author: Peter Nordin
 # Date:  20150319
-# $Id: generateLibraryFiles.py 7631 2015-02-06 14:07:58Z petno25 $
+# $Id$
 
 import os
 import sys

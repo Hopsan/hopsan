@@ -29,7 +29,7 @@
 //!
 //! @brief Contains the Core Utility PLOParser class
 //!
-//$Id: CSVParser.h 7179 2014-06-23 15:01:03Z petno25 $
+//$Id$
 
 #ifndef PLOPARSER_H
 #define PLOPARSER_H

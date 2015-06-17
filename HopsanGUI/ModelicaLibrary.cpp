@@ -29,7 +29,7 @@
 //!
 //! @brief Contains a handler for modelica models
 //!
-//$Id: ModelHandler.h 6629 2014-02-24 14:06:24Z petno25 $
+//$Id$
 
 #include <QString>
 #include <QMap>

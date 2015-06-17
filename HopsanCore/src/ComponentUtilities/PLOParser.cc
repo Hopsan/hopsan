@@ -29,7 +29,7 @@
 //!
 //! @brief Contains the Core Utility PLOParser class
 //!
-//$Id: CSVParser.cc 7195 2014-07-01 14:42:23Z petno25 $
+//$Id$
 
 #include "ComponentUtilities/PLOParser.h"
 #include "ComponentUtilities/num2string.hpp"

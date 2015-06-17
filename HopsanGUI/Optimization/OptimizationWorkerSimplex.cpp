@@ -26,7 +26,7 @@
 //! @file   OptimizationWorkerSimplex.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2015-05-25
-//! @version $Id: OptimizationWorkerComplexRF.cpp 8081 2015-05-22 13:56:59Z robbr48 $
+//! @version $Id$
 //!
 //! @brief Contains an optimization worker object for the Simplex algorithm
 //!

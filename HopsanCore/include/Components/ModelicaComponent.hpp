@@ -29,7 +29,7 @@
 //!
 //! @brief Contains an empty component to use for uncompiled Modelica components
 //!
-//$Id: DummyComponent.hpp 4622 2012-08-20 07:53:01Z petno25 $
+//$Id$
 
 #ifndef MODELICACOMPONENT_HPP_INCLUDED
 #define MODELICACOMPONENT_HPP_INCLUDED
