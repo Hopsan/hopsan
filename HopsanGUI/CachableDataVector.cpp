@@ -1,16 +1,25 @@
 /*-----------------------------------------------------------------------------
- This source file is part of Hopsan NG
+ This source file is a part of Hopsan
 
- Copyright (c) 2011
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
-    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+ Copyright (c) 2009 to present year, Hopsan Group
 
- This file is provided "as is", with no guarantee or warranty for the
- functionality or reliability of the contents. All contents in this file is
- the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- redistributing any part of this file is prohibited without explicit
- permission from the copyright holders.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ For license details and information about the Hopsan Group see the files
+ GPLv3 and HOPSANGROUP in the Hopsan source code root directory
+
+ For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
 //!
