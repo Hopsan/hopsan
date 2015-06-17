@@ -89,7 +89,7 @@ def setLicense(filename,  license):
     file.close()    
 
 def main(rootDir, licFile,  setNew):
-    suffixes = ('.cc', '.cpp', '.h', '.hpp')
+    suffixes = ('.c', '.cc', '.cpp', '.h', '.hpp')
     excludeDirs =  ('Dependencies', )
     
     nlf = open(licFile)
