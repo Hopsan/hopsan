@@ -464,7 +464,8 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
 
     // Connect some signals from the curve
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
-    connect(pCurve, SIGNAL(customXDataChanged()), this, SLOT(refreshPlotAreaCustomXData()));
+    connect(pCurve, SIGNAL(customXDataChanged(PlotCurve*)), this, SLOT(determineCurveXDataUnitScale(PlotCurve*)));
+    connect(pCurve, SIGNAL(customXDataChanged(PlotCurve*)), this, SLOT(refreshPlotAreaCustomXData()));
     connect(pCurve, SIGNAL(curveInfoUpdated()), this, SLOT(updateAxisLabels()));
     connect(pCurve, SIGNAL(dataRemoved(PlotCurve*)), this, SLOT(removeCurve(PlotCurve*)));
 
@@ -1611,7 +1612,16 @@ void PlotArea::updateAxisLabels()
                 else if (!sharedBottomVars.contains(pSharedXVector))
                 {
                     sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
-                    bottomLabel = QString("%1").arg(pSharedXVector->getDataName());
+                    // Use alias if it exist or data name
+                    if (pSharedXVector->hasAliasName())
+                    {
+                        bottomLabel = pSharedXVector->getAliasName();
+                    }
+                    else
+                    {
+                        bottomLabel = pSharedXVector->getDataName();
+                    }
+
                     if(customX)
                     {
                         QString xUS = pPlotCurve->getCurrentXPlotUnit();
@@ -1629,7 +1639,6 @@ void PlotArea::updateAxisLabels()
                             bottomLabel.append(QString(" [%1]").arg(tfUS.mUnit));
                         }
                     }
-
                 }
             }
 
@@ -1661,7 +1670,6 @@ void PlotArea::updateAxisLabels()
             mpQwtPlot->setAxisTitle(QwtPlot::yRight, QwtText(mpUserDefinedYrLabel->text()));
         }
     }
-
 }
 
 void PlotArea::openLegendSettingsDialog()

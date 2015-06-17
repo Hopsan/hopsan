@@ -253,6 +253,7 @@ bool LogDataGeneration::registerAlias(const QString &rFullName, const QString &r
             // existing data with alias name will be replaced (removed)
             pFullVar->mpVariableDescription->mAliasName = rAlias;
             addVariable(rAlias, pFullVar, true);
+            emit pFullVar->nameChanged();
             //! @todo this will overwrite existing fullname if alias same as a full name /Peter
             return true;
         }
@@ -278,6 +279,7 @@ bool LogDataGeneration::unregisterAliasForFullName(const QString &rFullName)
         QString alias = pFullVar->getAliasName();
         pFullVar->mpVariableDescription->mAliasName = "";
         removeVariable(alias);
+        emit pFullVar->nameChanged();
         return true;
     }
     return false;

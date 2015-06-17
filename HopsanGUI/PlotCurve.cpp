@@ -818,7 +818,7 @@ void PlotCurve::setCustomXData(SharedVectorVariableT data)
     // Redraw curve
     updateCurve();
 
-    emit customXDataChanged();
+    emit customXDataChanged(this);
 }
 
 void PlotCurve::setCustomXData(const QString fullName)
@@ -1268,6 +1268,7 @@ void PlotCurve::connectCustomXDataSignals()
     if (mCustomXdata)
     {
         connect(mCustomXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+        connect(mCustomXdata.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
         connect(mCustomXdata.data(), SIGNAL(beingRemoved()), this, SLOT(customXDataIsBeingRemoved()), Qt::UniqueConnection);
     }
 }

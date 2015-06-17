@@ -148,7 +148,7 @@ public:
 signals:
     void curveDataUpdated();
     void curveInfoUpdated();
-    void customXDataChanged();
+    void customXDataChanged(PlotCurve *pCurve);
     void colorChanged(QColor);
     void markedActive(bool);
     void dataRemoved(PlotCurve *pCurve);

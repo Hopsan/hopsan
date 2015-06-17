@@ -230,7 +230,6 @@ private:
     void setLegendSymbol(const QString symStyle);
     void setLegendSymbol(const QString symStyle, PlotCurve *pCurve);
     void determineCurveDataUnitScale(PlotCurve *pCurve);
-    void determineCurveXDataUnitScale(PlotCurve *pCurve);
     void determineCurveTFUnitScale(PlotCurve *pCurve);
     void setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisLimits);
     void calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
@@ -308,6 +307,7 @@ private:
 private slots:
     void refreshLockCheckBoxPositions();
     void refreshPlotAreaCustomXData();
+    void determineCurveXDataUnitScale(PlotCurve *pCurve);
     void axisLockHandler();
 };
 
