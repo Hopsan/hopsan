@@ -333,15 +333,21 @@ double RemoteModelSimulationQueuer::SUa(int numParallellEvaluators, int numParti
 double RemoteModelSimulationQueuer::SUq(int Pa, int Pm, int np, int nc)
 {
     int nAvailableQueues = np * (1+(nc-Pm));
+    if (nAvailableQueues < 1)
+    {
+        return 0;
+    }
+    else
+    {
+        //int intDiv = Pa / nAvailableQueues;
+        //int intDivRem = Pa % nAvailableQueues;
 
-    int intDiv = Pa / nAvailableQueues;
-    int intDivRem = Pa % nAvailableQueues;
+        //int maxNumJobsInQueue = Pa / nAvailableQueues + (Pa % nAvailableQueues);
+        //int maxNumJobsInQueue = intDiv + 1*(intDivRem != 0);
+        double maxNumJobsInQueueD = ceil(double(Pa) / double(nAvailableQueues));
 
-    //int maxNumJobsInQueue = Pa / nAvailableQueues + (Pa % nAvailableQueues);
-    int maxNumJobsInQueue = intDiv + 1*(intDivRem != 0);
-    double maxNumJobsInQueueD = ceil(double(Pa) / double(nAvailableQueues));
-
-    return 1.0/double(maxNumJobsInQueueD);
+        return 1.0/double(maxNumJobsInQueueD);
+    }
 }
 
 void RemoteModelSimulationQueuer::reset()
