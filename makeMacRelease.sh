@@ -15,8 +15,8 @@ rm -fr ../trunk/bin/*
 
 cd Dependencies
 
-. unpackPatchAndBuildQwt.sh --force
-. unpackAndBuildFMILibrary.sh --force
+. setupQwt.sh --force
+. setupFMILibrary.sh --force
 
 cd ..
 
