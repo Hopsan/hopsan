@@ -22,7 +22,7 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
-﻿#ifndef <<<headerguard>>>
+#ifndef <<<headerguard>>>
 #define <<<headerguard>>>
 
 #include <math.h>
