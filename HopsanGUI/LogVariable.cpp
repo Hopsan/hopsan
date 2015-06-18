@@ -526,6 +526,9 @@ void VectorVariable::diffBy(SharedVectorVariableT pOther)
         if (pThisData->size() != pOtherData->size())
         {
             // Abort
+            // Return data vectors
+            pOther->endFullVectorOperation(pOtherData);
+            mpCachedDataVector->endFullVectorOperation(pThisData);
             //! @todo error message
             return;
         }
