@@ -31,10 +31,10 @@ cd $fminame/build-fmil
 # Generate makefiles on different platforms
 if [ "$OSTYPE" == "linux-gnu" ]
 then
-	cmake ../
+	cmake -Wno-dev ../
 elif [ "$OSTYPE" == "darwin14" ]
 then
-        cmake ../
+        cmake -Wno-dev ../
 else
         echo "Unknown OS for qwt build and patch"
 fi

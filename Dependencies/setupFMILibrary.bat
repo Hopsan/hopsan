@@ -38,7 +38,7 @@ set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
 cd %dirname64%
 mkdir build-fmilib
 cd build-fmilib
-cmake -G "MinGW Makefiles" -DFMILIB_FMI_PLATFORM="win64" ../
+cmake -Wno-dev -G "MinGW Makefiles" -DFMILIB_FMI_PLATFORM="win64" ../
 mingw32-make.exe -j4
 mingw32-make.exe install
 

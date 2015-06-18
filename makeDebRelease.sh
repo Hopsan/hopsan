@@ -14,8 +14,8 @@ name=hopsan
 devversion=0.7.
 
 # Pbuilder dists and archs
-debianDistArchArray=( jessie:amd64 jessie:i386 wheezy:amd64 wheezy:i386 )
-ubuntuDistArchArray=( utopic:amd64 utopic:i386 trusty:amd64 trusty:i386 precise:amd64 precise:i386 )
+debianDistArchArray=( jessie:amd64:qt5 jessie:i386:qt5 wheezy:amd64:qt4 wheezy:i386:qt4 )
+ubuntuDistArchArray=( vivid:amd64:qt5 vivid:i386:qt5 trusty:amd64:qt4 trusty:i386:qt4 )
 
 # Pbuilder mirrors
 ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
@@ -55,6 +55,54 @@ boolAskYNQuestion()
   fi
 }
 
+dscFile="NoFile"
+builDSCFile()
+{
+  packagedir="$1"
+  packageorigsrcfile="$2"
+  qtver="$3"
+  doUsePythonQt="$4"
+  outputbasename="$5"
+
+  echo $packagedir
+  echo $packageorigsrcfile
+  echo $qtver
+  echo $doUsePythonQt
+  echo $outputbasename
+
+  # First clear dir if it already exist
+  rm -rf $packagedir
+
+  # Export template
+  svn export hopsan-template $packagedir
+  if [ "$qtver" = "qt5" ]; then
+      mv $packagedir/debian/control_qt5 $packagedir/debian/control
+      mv $packagedir/debian/rules_qt5 $packagedir/debian/rules
+  else
+      rm $packagedir/debian/control_qt5
+      rm $packagedir/debian/rules_qt5
+  fi
+
+  # Check if we should remove PythonQt if it should not be used
+  if [ "$doUsePythonQt" = "false" ]; then
+    sed "/setupPythonQt.sh/d" -i "$packagedir/debian/rules"
+  fi
+  # Copy "unpack" prepared source files to this dir
+  tar -xzf $packageorigsrcfile -C $packagedir
+
+  # Generate NEW change log file for this release version with no content in particular
+  cd $packagedir
+  rm debian/changelog
+  dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
+  dch -p -m --release ""
+  cd ..
+
+  # Generate dsc source file
+  dpkg-source --before-build $packagedir
+  dpkg-source -b $packagedir
+  dscFile=`ls $outputbasename*.dsc`
+}
+
 # Ask user for version input
 echo
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release: "
@@ -76,18 +124,15 @@ doUsePythonQt="$boolYNQuestionAnswer"
 
 echo
 distArchArrayDo=()
-boolAskYNQuestion "Do you want to build for multiple supported dists, using pbuilder?" "y"
-doPbuild="$boolYNQuestionAnswer"
-if [ "$doPbuild" = "true" ]; then
-  for i in "${debianDistArchArray[@]}"; do
-    boolAskYNQuestion "Do you want to build, "$i"?" "y"
-    distArchArrayDo+=("$i"":""D"":""$boolYNQuestionAnswer")
-  done
-  for i in "${ubuntuDistArchArray[@]}"; do
-    boolAskYNQuestion "Do you want to build, "$i"?" "y"
-    distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
-  done
-fi
+for i in "${debianDistArchArray[@]}"; do
+  boolAskYNQuestion "Do you want to build, "$i"?" "y"
+  distArchArrayDo+=("$i"":""D"":""$boolYNQuestionAnswer")
+done
+for i in "${ubuntuDistArchArray[@]}"; do
+  boolAskYNQuestion "Do you want to build, "$i"?" "y"
+  distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
+done
+
 
 echo
 echo ---------------------------------------
@@ -143,144 +188,140 @@ mv $srcExportDir/$packageorigsrcfile .
 #
 buildStatusArray=()
 
-# First clear dir if it already exist
-rm -rf $packagedir
+# # First clear dir if it already exist
+# rm -rf $packagedir
+#
+# # Export template
+# svn export hopsan-template $packagedir
+# # Check if we should remove PythonQt if it should not be used
+# if [ "$doUsePythonQt" = "false" ]; then
+#   sed "/unpackPatchAndBuildPythonQt.sh/d" -i "$packagedir/debian/rules"
+# fi
+# # Copy "unpack" prepared source files to this dir
+# tar -xzf $packageorigsrcfile -C $packagedir
+#
+# # Generate NEW changelog file for this release version with no content in particular
+# cd $packagedir
+# rm debian/changelog
+# dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
+# dch -p -m --release ""
+# cd ..
 
-# Export template
-svn export hopsan-template $packagedir
-# Check if we should remove PythonQt if it should not be used
-if [ "$doUsePythonQt" = "false" ]; then
-  sed "/unpackPatchAndBuildPythonQt.sh/d" -i "$packagedir/debian/rules"
-fi
-# Copy "unpack" prepared source files to this dir
-tar -xzf $packageorigsrcfile -C $packagedir
 
-# Generate NEW changelog file for this release version with no content in particular
-cd $packagedir
-rm debian/changelog
-dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
-dch -p -m --release ""
-cd ..
+#   # Generate dsc source file
+#   dpkg-source --before-build $packagedir
+#   dpkg-source -b $packagedir
+#   dscFile=`ls $outputbasename*.dsc`
 
-if [ "$doPbuild" = "true" ]; then
-  # Generate dsc source file
-  dpkg-source --before-build $packagedir
-  dpkg-source -b $packagedir
-  dscFile=`ls $outputbasename*.dsc`
+for i in "${distArchArrayDo[@]}"; do
+  # Split input into array to extract data
+  IFS=':' read -ra arr <<< "$i"
+  dist="${arr[0]}"
+  arch="${arr[1]}"
+  qtver="${arr[2]}"
+  distBase="${arr[3]}"
+  doBuild="${arr[4]}"
 
-  for i in "${distArchArrayDo[@]}"; do
-    # Split input into array to extract data
-    IFS=':' read -ra arr <<< "$i"
-    dist="${arr[0]}"
-    arch="${arr[1]}"
-    distBase="${arr[2]}"
-    doBuild="${arr[3]}"
+  if [ "$doBuild" = "true" ]; then
+    echo
+    echo "==========================="
+    echo "Building for $dist $arch"
+    echo "==========================="
+    sleep 1
 
-    if [ "$doBuild" = "true" ]; then
-      echo
-      echo "==========================="
-      echo "Building for $dist $arch"
-      echo "==========================="
-      sleep 1
-      doCreateUpdatePbuilderBaseTGZ="true"
-      basetgzFile="$pbuilderWorkDir$dist$arch.tgz"
-      pbuilderBuildDir="$pbuilderWorkDir""build/"
-      mkdir -p $pbuilderBuildDir
-      resultPath="$pbuilderWorkDir""result/$dist"
-      mkdir -p "$resultPath"
-      logFile="$resultPath/$outputbasename.log"
+    builDSCFile $packagedir $packageorigsrcfile $qtver $doUsePythonQt $outputbasename
 
-      # Set pbuild options specific to ubuntu or debian
-      if [ "$distBase" = "U" ]; then
-        #todo add mirror and keyring
-        optsComponents="main universe"
-        optsMirror="$ubuntuMirror"
-        optsDebootstrap="--debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
-      elif [ "$distBase" = "D" ]; then
-        optsComponents="main contrib"
-        optsMirror="$debianMirror"
-        optsDebootstrap="--debootstrapopts --keyring=/usr/share/keyrings/debian-archive-keyring.gpg"
-      fi
-      
-      # Debug
-      #echo $optsComponents
-      #echo $optsMirror
-      #echo $optsDebootstrap
-      #sleep 2
-      
-      # Set packages that need to be installed
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev fakeroot"
-      
-      # Update or create pbuild environments 
-      debootstrapOk="true"
-      if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
-	    if [ -f $basetgzFile ]; then
-	      echo
-	      echo "Updating existing TGZ: $basetgzFile"
-	      echo "------------------------"
-	      sudo pbuilder --update $distBaseOpts  --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
-	    else
-	      echo
-	      echo "Creating new TGZ: $basetgzFile"
-	      echo "------------------------"
-          sudo pbuilder --create --distribution $dist --architecture $arch --mirror $optsMirror $optsDebootstrap --components "$optsComponents" --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
-	    fi
-	    # Check for success
-	    if [ $? -ne 0 ]; then
-		debootstrapOk="false"
-		buildStatusArray+=("$dist""_""$arch"":DebootstrapFailed")
-		echo "pubulider create or update FAILED! for $dist $arch, aborting!"
-	    fi
-      fi
-      
-      if [ "$debootstrapOk" = "true" ]; then
-        # Now build source package
+    doCreateUpdatePbuilderBaseTGZ="true"
+    basetgzFile="$pbuilderWorkDir$dist$arch.tgz"
+    pbuilderBuildDir="$pbuilderWorkDir""build/"
+    mkdir -p $pbuilderBuildDir
+    resultPath="$pbuilderWorkDir""result/$dist"
+    mkdir -p "$resultPath"
+    logFile="$resultPath/$outputbasename.log"
+
+    # Set pbuild options specific to ubuntu or debian
+    if [ "$distBase" = "U" ]; then
+      #todo add mirror and keyring
+      optsComponents="main universe"
+      optsMirror="$ubuntuMirror"
+      optsDebootstrap="--debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
+    elif [ "$distBase" = "D" ]; then
+      optsComponents="main contrib"
+      optsMirror="$debianMirror"
+      optsDebootstrap="--debootstrapopts --keyring=/usr/share/keyrings/debian-archive-keyring.gpg"
+    fi
+
+    # Debug
+    #echo $optsComponents
+    #echo $optsMirror
+    #echo $optsDebootstrap
+    #sleep 2
+
+    # Set packages that need to be installed
+    if [ "$qtver = qt5 " ]; then
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev qtbase5-dev libqt5webkit5-dev libqt5svg5-dev  qtmultimedia5-dev libqt5opengl5-dev python-dev fakeroot cmake libtool-bin qt5-default automake"
+    else
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev fakeroot cmake automake libtool"
+    fi
+
+    # Update or create pbuild environments
+    debootstrapOk="true"
+    if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
+      if [ -f $basetgzFile ]; then
         echo
-	    echo "Building with pbuilder"
-	    echo "------------------------"
-	    sudo pbuilder --build --basetgz "$basetgzFile" --aptcache "" --buildplace "$pbuilderBuildDir" --logfile "$logFile" --buildresult $resultPath $dscFile
-	  
-	    # Figure out the actual output file name
-	    outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
-	  
-	    # Check if it exist (success)
-	    if [ -f "$outputDebName" ]; then
-	      buildStatusArray+=("$dist""_""$arch"":BuildOk")
-	    
-	      # Now move and rename output deb file to dist output dir
-	      mv $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
-	  
-	      # Check package with lintian
-	      lintian --color always -X files $outputDebDir/$outputbasename\_$dist\_$arch.deb
-	    else
-	      buildStatusArray+=("$dist""_""$arch"":BuildFailed")
-	    fi
+        echo "Updating existing TGZ: $basetgzFile"
+        echo "------------------------"
+        sudo pbuilder --update $distBaseOpts  --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
+      else
+        echo
+        echo "Creating new TGZ: $basetgzFile"
+        echo "------------------------"
+        sudo pbuilder --create --distribution $dist --architecture $arch --mirror $optsMirror $optsDebootstrap --components "$optsComponents" --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
+      fi
+      # Check for success
+      if [ $? -ne 0 ]; then
+      debootstrapOk="false"
+      buildStatusArray+=("$dist""_""$arch"":DebootstrapFailed")
+      echo "pubulider create or update FAILED! for $dist $arch, aborting!"
       fi
     fi
-  done
-  
-  # Move the package directory
-  mvrDir $packagedir $outputDir
-  # Move the package related files
-  mv $outputbasename* $outputDir
-  
-  echo
-  echo "Build Status:"
-  echo "-------------"
-  
-  printf "%s\n" "${buildStatusArray[@]}"
 
-else
-  # Now lets create and test the package
-  cd $packagedir
-  debuild -us -uc --lintian-opts --color always -X files
-  cd ..
+    if [ "$debootstrapOk" = "true" ]; then
+      # Now build source package
+      echo
+      echo "Building with pbuilder"
+      echo "------------------------"
+      sudo pbuilder --build --basetgz "$basetgzFile" --aptcache "" --buildplace "$pbuilderBuildDir" --logfile "$logFile" --buildresult $resultPath $dscFile
 
-  # Move new files to output dir
-  mkdir -p $outputDir/thismachine
-  mvrDir $packagedir $outputDir/thismachine
-  mv $outputbasename* $outputDir/thismachine
-fi
+      # Figure out the actual output file name
+      outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
+
+      # Check if it exist (success)
+      if [ -f "$outputDebName" ]; then
+        buildStatusArray+=("$dist""_""$arch"":BuildOk")
+
+        # Now move and rename output deb file to dist output dir
+        mv $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
+
+        # Check package with lintian
+        lintian --color always -X files $outputDebDir/$outputbasename\_$dist\_$arch.deb
+      else
+        buildStatusArray+=("$dist""_""$arch"":BuildFailed")
+      fi
+    fi
+  fi
+done
+  
+# Move the package directory
+mvrDir $packagedir $outputDir
+# Move the package related files
+mv $outputbasename* $outputDir
+
+echo
+echo "Build Status:"
+echo "-------------"
+
+printf "%s\n" "${buildStatusArray[@]}"
 
 echo
 echo Done!
