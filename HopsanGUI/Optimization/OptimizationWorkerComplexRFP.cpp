@@ -451,7 +451,12 @@ void OptimizationWorkerComplexRFP::run()
             }
 
             //Move first reflected point
-            for(int t=0; t<mNumModels && mNeedsIteration; ++t)
+            int iterModels = 1;
+            if(mMethod == 3 || mMethod == 4)
+            {
+                iterModels = mNumModels;
+            }
+            for(int t=0; t<iterModels && mNeedsIteration; ++t)
             {
                 double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
                 for(int j=0; j<mNumParameters; ++j)
@@ -488,7 +493,7 @@ void OptimizationWorkerComplexRFP::run()
 
 
             //Replace worst point with first candidate point that is better, if any
-            for(int o=0; o<mNumModels; ++o)
+            for(int o=0; o<iterModels; ++o)
             {
                 int nWorsePoints=0;
                 for(int j=0; j<mNumPoints; ++j)
@@ -501,13 +506,13 @@ void OptimizationWorkerComplexRFP::run()
 
                 if(nWorsePoints >= 1)
                 {
-                    qDebug() << "Iteration succeeded after " << mWorstCounter-mNumModels+o+1 << " iterations";
+                    qDebug() << "Iteration succeeded after " << mWorstCounter-iterModels+o+1 << " iterations";
                     mParameters[mWorstId] = mCandidateParticles[o];
                     mObjectives[mWorstId] = mCandidateObjectives[o];
                     logWorstPoint();
                     mNeedsIteration = false;
 
-                    mIterCount = mWorstCounter-mNumModels+o;
+                    mIterCount = mWorstCounter-iterModels+o;
 
                     break;
                 }
