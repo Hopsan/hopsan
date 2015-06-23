@@ -39,25 +39,24 @@ HEADERS +=  \
  $${PWD}/./Experimental/Signal1DPLOLookupTable.hpp \ 
  $${PWD}/./Experimental/Signal2DLookupTable.hpp \ 
  $${PWD}/./Experimental/Signal3DLookupTable.hpp \ 
- $${PWD}/./Hydraulic/LinearActuators/LinearActuators.h \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicCylinderC.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicCylinderQ.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicFourChamberPiston.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicSpringLoadedPistonC.hpp \ 
  $${PWD}/./Hydraulic/LinearActuators/HydraulicSymmetricCylinderC.hpp \ 
- $${PWD}/./Hydraulic/MachineParts/MachineParts.h \ 
+ $${PWD}/./Hydraulic/LinearActuators/LinearActuators.h \ 
  $${PWD}/./Hydraulic/MachineParts/HydraulicPumpPiston.hpp \ 
  $${PWD}/./Hydraulic/MachineParts/HydraulicValvePlate.hpp \ 
+ $${PWD}/./Hydraulic/MachineParts/MachineParts.h \ 
  $${PWD}/./Hydraulic/MachineParts/MechanicCylinderBlockWithSwashPlate.hpp \ 
  $${PWD}/./Hydraulic/MachineParts/MechanicSwashPlate.hpp \ 
- $${PWD}/./Hydraulic/Pumps&Motors/Pumps&Motors.h \ 
  $${PWD}/./Hydraulic/Pumps&Motors/HydraulicFixedDisplacementMotorQ.hpp \ 
  $${PWD}/./Hydraulic/Pumps&Motors/HydraulicFixedDisplacementPump.hpp \ 
  $${PWD}/./Hydraulic/Pumps&Motors/HydraulicMachineC.hpp \ 
  $${PWD}/./Hydraulic/Pumps&Motors/HydraulicPressureControlledPump.hpp \ 
  $${PWD}/./Hydraulic/Pumps&Motors/HydraulicVariableDisplacementMotorQ.hpp \ 
  $${PWD}/./Hydraulic/Pumps&Motors/HydraulicVariableDisplacementPump.hpp \ 
- $${PWD}/./Hydraulic/Restrictors/Restrictors.h \ 
+ $${PWD}/./Hydraulic/Pumps&Motors/Pumps&Motors.h \ 
  $${PWD}/./Hydraulic/Restrictors/HydraulicCheckValve.hpp \ 
  $${PWD}/./Hydraulic/Restrictors/HydraulicCheckValvePreLoaded.hpp \ 
  $${PWD}/./Hydraulic/Restrictors/HydraulicCheckValveWithOrifice.hpp \ 
@@ -67,12 +66,12 @@ HEADERS +=  \
  $${PWD}/./Hydraulic/Restrictors/HydraulicPilotClosableCheckValve.hpp \ 
  $${PWD}/./Hydraulic/Restrictors/HydraulicPilotControlledCheckValve.hpp \ 
  $${PWD}/./Hydraulic/Restrictors/HydraulicTurbulentOrifice.hpp \ 
- $${PWD}/./Hydraulic/Sensors/Sensors.h \ 
+ $${PWD}/./Hydraulic/Restrictors/Restrictors.h \ 
  $${PWD}/./Hydraulic/Sensors/HydraulicFlowSensor.hpp \ 
  $${PWD}/./Hydraulic/Sensors/HydraulicNodeSensor.hpp \ 
  $${PWD}/./Hydraulic/Sensors/HydraulicPowerSensor.hpp \ 
  $${PWD}/./Hydraulic/Sensors/HydraulicPressureSensor.hpp \ 
- $${PWD}/./Hydraulic/Sources&Sinks/Sources&Sinks.h \ 
+ $${PWD}/./Hydraulic/Sensors/Sensors.h \ 
  $${PWD}/./Hydraulic/Sources&Sinks/HydraulicFlowSourceQ.hpp \ 
  $${PWD}/./Hydraulic/Sources&Sinks/HydraulicMultiPressureSourceC.hpp \ 
  $${PWD}/./Hydraulic/Sources&Sinks/HydraulicMultiTankC.hpp \ 
@@ -80,7 +79,7 @@ HEADERS +=  \
  $${PWD}/./Hydraulic/Sources&Sinks/HydraulicPressureSourceC.hpp \ 
  $${PWD}/./Hydraulic/Sources&Sinks/HydraulicPressureSourceQ.hpp \ 
  $${PWD}/./Hydraulic/Sources&Sinks/HydraulicTankC.hpp \ 
- $${PWD}/./Hydraulic/Special/Special.h \ 
+ $${PWD}/./Hydraulic/Sources&Sinks/Sources&Sinks.h \ 
  $${PWD}/./Hydraulic/Special/HydraulicCounterBalanceValveG.hpp \ 
  $${PWD}/./Hydraulic/Special/HydraulicCyldamp.hpp \ 
  $${PWD}/./Hydraulic/Special/HydraulicMotorJload.hpp \ 
@@ -100,12 +99,7 @@ HEADERS +=  \
  $${PWD}/./Hydraulic/Special/HydraulicValve43.hpp \ 
  $${PWD}/./Hydraulic/Special/HydraulicValve43LS.hpp \ 
  $${PWD}/./Hydraulic/Special/HydraulicValve63OC.hpp \ 
- $${PWD}/./Hydraulic/Valves/Valves.h \ 
- $${PWD}/./Hydraulic/Valves/Hydraulic22PoppetValve.hpp \ 
- $${PWD}/./Hydraulic/Valves/Hydraulic33ShuttleValve.hpp \ 
- $${PWD}/./Hydraulic/Valves/HydraulicPressureControlValve33.hpp \ 
- $${PWD}/./Hydraulic/Valves/HydraulicShuttleValve.hpp \ 
- $${PWD}/./Hydraulic/Valves/HydraulicValve416.hpp \ 
+ $${PWD}/./Hydraulic/Special/Special.h \ 
  $${PWD}/./Hydraulic/Valves/DirectionalValves/DirectionalValves.h \ 
  $${PWD}/./Hydraulic/Valves/DirectionalValves/Hydraulic22DirectionalCheckValve.hpp \ 
  $${PWD}/./Hydraulic/Valves/DirectionalValves/Hydraulic22DirectionalValve.hpp \ 
@@ -121,17 +115,22 @@ HEADERS +=  \
  $${PWD}/./Hydraulic/Valves/FlowControlValves/Hydraulic43ValveNeutralSupplyToTank.hpp \ 
  $${PWD}/./Hydraulic/Valves/FlowControlValves/Hydraulic43ValveNeutralToTank.hpp \ 
  $${PWD}/./Hydraulic/Valves/FlowControlValves/HydraulicOpenCenterValve.hpp \ 
- $${PWD}/./Hydraulic/Valves/PressureControlValves/PressureControlValves.h \ 
+ $${PWD}/./Hydraulic/Valves/Hydraulic22PoppetValve.hpp \ 
+ $${PWD}/./Hydraulic/Valves/Hydraulic33ShuttleValve.hpp \ 
+ $${PWD}/./Hydraulic/Valves/HydraulicPressureControlValve33.hpp \ 
+ $${PWD}/./Hydraulic/Valves/HydraulicShuttleValve.hpp \ 
+ $${PWD}/./Hydraulic/Valves/HydraulicValve416.hpp \ 
  $${PWD}/./Hydraulic/Valves/PressureControlValves/HydraulicOverCenterValve.hpp \ 
  $${PWD}/./Hydraulic/Valves/PressureControlValves/HydraulicPressureCompensatingValve.hpp \ 
  $${PWD}/./Hydraulic/Valves/PressureControlValves/HydraulicPressureControlledValve.hpp \ 
  $${PWD}/./Hydraulic/Valves/PressureControlValves/HydraulicPressureDropValve.hpp \ 
  $${PWD}/./Hydraulic/Valves/PressureControlValves/HydraulicPressureReducingValve.hpp \ 
  $${PWD}/./Hydraulic/Valves/PressureControlValves/HydraulicPressureReliefValve.hpp \ 
- $${PWD}/./Hydraulic/Valves/PressureControlled/PressureControlled.h \ 
+ $${PWD}/./Hydraulic/Valves/PressureControlValves/PressureControlValves.h \ 
  $${PWD}/./Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve.hpp \ 
  $${PWD}/./Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve2.hpp \ 
- $${PWD}/./Hydraulic/Volumes&Lines/Volumes&Lines.h \ 
+ $${PWD}/./Hydraulic/Valves/PressureControlled/PressureControlled.h \ 
+ $${PWD}/./Hydraulic/Valves/Valves.h \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicAckumulator.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicHose.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicPistonAckumulator.hpp \ 
@@ -139,6 +138,7 @@ HEADERS +=  \
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicTLMlossless.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicVolume.hpp \ 
  $${PWD}/./Hydraulic/Volumes&Lines/HydraulicVolumeMultiPort.hpp \ 
+ $${PWD}/./Hydraulic/Volumes&Lines/Volumes&Lines.h \ 
  $${PWD}/./Mechanic/Linear/Linear.h \ 
  $${PWD}/./Mechanic/Linear/MechanicFixedPosition.hpp \ 
  $${PWD}/./Mechanic/Linear/MechanicFixedPositionMultiPort.hpp \ 
@@ -159,7 +159,6 @@ HEADERS +=  \
  $${PWD}/./Mechanic/Linear/MechanicTranslationalSpring.hpp \ 
  $${PWD}/./Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp \ 
  $${PWD}/./Mechanic/Linear/MechanicVelocityTransformer.hpp \ 
- $${PWD}/./Mechanic/Rotational/Rotational.h \ 
  $${PWD}/./Mechanic/Rotational/MechanicAngleSensor.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicAngularVelocitySensor.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicAngularVelocityTransformer.hpp \ 
@@ -181,6 +180,7 @@ HEADERS +=  \
  $${PWD}/./Mechanic/Rotational/MechanicTorqueSensor.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicTorqueTransformer.hpp \ 
  $${PWD}/./Mechanic/Rotational/MechanicTorsionalSpring.hpp \ 
+ $${PWD}/./Mechanic/Rotational/Rotational.h \ 
  $${PWD}/./Pneumatic/Pneumatic.h \ 
  $${PWD}/./Pneumatic/PneumaticMachine.hpp \ 
  $${PWD}/./Pneumatic/PneumaticOrifice.hpp \ 
@@ -264,11 +264,10 @@ HEADERS +=  \
  $${PWD}/./Signal/Non-Linearities/SignalTimeDelay.hpp \ 
  $${PWD}/./Signal/Non-Linearities/SignalUnitDelay.hpp \ 
  $${PWD}/./Signal/Non-Linearities/SignalVariableTimeDelay.hpp \ 
- $${PWD}/./Signal/SignalRouting/SignalRouting.h \ 
  $${PWD}/./Signal/SignalRouting/SignalDualRoute.hpp \ 
  $${PWD}/./Signal/SignalRouting/SignalQuadRoute.hpp \ 
+ $${PWD}/./Signal/SignalRouting/SignalRouting.h \ 
  $${PWD}/./Signal/SignalRouting/SignalTripleRoute.hpp \ 
- $${PWD}/./Signal/Sources&Sinks/Sources&Sinks.h \ 
  $${PWD}/./Signal/Sources&Sinks/SignalConstant.hpp \ 
  $${PWD}/./Signal/Sources&Sinks/SignalNoiseGenerator.hpp \ 
  $${PWD}/./Signal/Sources&Sinks/SignalPulse.hpp \ 
@@ -282,15 +281,13 @@ HEADERS +=  \
  $${PWD}/./Signal/Sources&Sinks/SignalStep.hpp \ 
  $${PWD}/./Signal/Sources&Sinks/SignalStepExponentialDelay.hpp \ 
  $${PWD}/./Signal/Sources&Sinks/SignalTime.hpp \ 
- $${PWD}/./Special/Special.h \ 
- $${PWD}/./Special/CombustionEngine.hpp \ 
- $${PWD}/./Special/MechanicVehicle1D.hpp \ 
- $${PWD}/./Special/AeroComponents/AeroComponents.h \ 
+ $${PWD}/./Signal/Sources&Sinks/Sources&Sinks.h \ 
  $${PWD}/./Special/AeroComponents/AeroAircraft6DOF.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroAircraft6DOFS.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroAircraft6DOFSS.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroAtmosphere.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroCombustionChamberMono.hpp \ 
+ $${PWD}/./Special/AeroComponents/AeroComponents.h \ 
  $${PWD}/./Special/AeroComponents/AeroFuelTank.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroJetEngine.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroPropeller.hpp \ 
@@ -298,6 +295,11 @@ HEADERS +=  \
  $${PWD}/./Special/AeroComponents/AeroVehicleTVC.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroVehicleTVC2.hpp \ 
  $${PWD}/./Special/AeroComponents/AeroWind.hpp \ 
+ $${PWD}/./Special/AeroComponents/FuelComponents/FuelComponents.h \ 
+ $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp \ 
+ $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \ 
+ $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicFuelTankG.hpp \ 
+ $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicTurboPumpJ.hpp \ 
  $${PWD}/./Special/AeroComponents/PneumaticTurboMachineJ.hpp \ 
  $${PWD}/./Special/AeroComponents/SignalAttitudeControl.hpp \ 
  $${PWD}/./Special/AeroComponents/SignalAttitudeTVCcontrol.hpp \ 
@@ -305,22 +307,19 @@ HEADERS +=  \
  $${PWD}/./Special/AeroComponents/SignalStateMonitor.hpp \ 
  $${PWD}/./Special/AeroComponents/SignalTimeAccelerator.hpp \ 
  $${PWD}/./Special/AeroComponents/SignalWaypoint.hpp \ 
- $${PWD}/./Special/AeroComponents/FuelComponents/FuelComponents.h \ 
- $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp \ 
- $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \ 
- $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicFuelTankG.hpp \ 
- $${PWD}/./Special/AeroComponents/FuelComponents/HydraulicTurboPumpJ.hpp \ 
  $${PWD}/./Special/Benchmarking/Benchmarking.h \ 
  $${PWD}/./Special/Benchmarking/HydraulicDummyC.hpp \ 
  $${PWD}/./Special/Benchmarking/HydraulicDummyQ.hpp \ 
  $${PWD}/./Special/Benchmarking/SignalDummy.hpp \ 
+ $${PWD}/./Special/CombustionEngine.hpp \ 
  $${PWD}/./Special/MechanicB/MechanicB.h \ 
  $${PWD}/./Special/MechanicB/MechanicGear.hpp \ 
  $${PWD}/./Special/MechanicB/MechanicM3load1D.hpp \ 
- $${PWD}/./Special/OptimizationTestFunctions/OptimizationTestFunctions.h \ 
+ $${PWD}/./Special/MechanicVehicle1D.hpp \ 
  $${PWD}/./Special/OptimizationTestFunctions/OptimizationTestFunction2D.hpp \ 
  $${PWD}/./Special/OptimizationTestFunctions/OptimizationTestFunction5D.hpp \ 
  $${PWD}/./Special/OptimizationTestFunctions/OptimizationTestFunction6D.hpp \ 
+ $${PWD}/./Special/OptimizationTestFunctions/OptimizationTestFunctions.h \ 
  $${PWD}/./Special/SignalFFB/SignalFFB.h \ 
  $${PWD}/./Special/SignalFFB/SignalFFB.hpp \ 
  $${PWD}/./Special/SignalFFB/SignalFFBand.hpp \ 
@@ -329,8 +328,9 @@ HEADERS +=  \
  $${PWD}/./Special/SignalFFB/SignalFFBloopIn.hpp \ 
  $${PWD}/./Special/SignalFFB/SignalFFBor.hpp \ 
  $${PWD}/./Special/SignalFFB/SignalFFBorIn.hpp \ 
- $${PWD}/./Special/TMMS04/TMMS04.h \ 
+ $${PWD}/./Special/Special.h \ 
  $${PWD}/./Special/TMMS04/Forks.hpp \ 
+ $${PWD}/./Special/TMMS04/TMMS04.h \ 
  $${PWD}/Components.h
 
 SOURCES += 
@@ -346,11 +346,11 @@ OTHER_FILES +=  \
  $${PWD}/./Hydraulic/Sensors/Sensors.cci \ 
  $${PWD}/./Hydraulic/Sources&Sinks/Sources&Sinks.cci \ 
  $${PWD}/./Hydraulic/Special/Special.cci \ 
- $${PWD}/./Hydraulic/Valves/Valves.cci \ 
  $${PWD}/./Hydraulic/Valves/DirectionalValves/DirectionalValves.cci \ 
  $${PWD}/./Hydraulic/Valves/FlowControlValves/FlowControlValves.cci \ 
  $${PWD}/./Hydraulic/Valves/PressureControlValves/PressureControlValves.cci \ 
  $${PWD}/./Hydraulic/Valves/PressureControlled/PressureControlled.cci \ 
+ $${PWD}/./Hydraulic/Valves/Valves.cci \ 
  $${PWD}/./Hydraulic/Volumes&Lines/Volumes&Lines.cci \ 
  $${PWD}/./Mechanic/Linear/Linear.cci \ 
  $${PWD}/./Mechanic/Rotational/Rotational.cci \ 
@@ -364,13 +364,13 @@ OTHER_FILES +=  \
  $${PWD}/./Signal/Non-Linearities/Non-Linearities.cci \ 
  $${PWD}/./Signal/SignalRouting/SignalRouting.cci \ 
  $${PWD}/./Signal/Sources&Sinks/Sources&Sinks.cci \ 
- $${PWD}/./Special/Special.cci \ 
  $${PWD}/./Special/AeroComponents/AeroComponents.cci \ 
  $${PWD}/./Special/AeroComponents/FuelComponents/FuelComponents.cci \ 
  $${PWD}/./Special/Benchmarking/Benchmarking.cci \ 
  $${PWD}/./Special/MechanicB/MechanicB.cci \ 
  $${PWD}/./Special/OptimizationTestFunctions/OptimizationTestFunctions.cci \ 
  $${PWD}/./Special/SignalFFB/SignalFFB.cci \ 
+ $${PWD}/./Special/Special.cci \ 
  $${PWD}/./Special/TMMS04/TMMS04.cci \ 
  $${PWD}/Components.cci
 
