@@ -150,22 +150,20 @@ def generatePRI(dirPath, filename, includeFiles, componentHeaders, componentSrcF
 
 def findFiles2(parentDir, suffixes, excludeDirs):
     for dirpath, dirnames, filenames in os.walk(parentDir.dirPath):
-        print('Dirpath:'+dirpath)
-        print(dirnames)
-
+        #print('Dirpath:'+dirpath)
+        #print(dirnames)
         for dirname in dirnames:
             enter_dir = True
             for d in excludeDirs:
                 if d in dirname:
                     enter_dir = False
             if enter_dir:
-                print('Dirname:'+dirname)
+                #print('Dirname:'+dirname)
                 new_dir = ComponentDir()
                 new_dir.dirName = dirname
                 new_dir.dirPath = os.path.join(dirpath, dirname)
                 new_dir = findFiles2(new_dir, suffixes, excludeDirs)
                 parentDir.subDirs.append(new_dir)
-            
         # Now go through local files
         for filename in filenames:
             # print('Filename:'+filename)
@@ -206,7 +204,7 @@ def checkTypeName(filepath):
     return typename
 
 def generateFiles(component_dir):
-    print(component_dir.dirPath)
+    #print(component_dir.dirPath)
     for subdir in component_dir.subDirs:
         generateFiles(subdir)
 
@@ -262,6 +260,8 @@ def main(rootDirPath):
 
     generateFiles(root_dir)
     generateRootFiles(root_dir)
+
+    print('Done!')
 
 
 if __name__ == "__main__":
