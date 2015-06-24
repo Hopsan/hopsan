@@ -214,6 +214,8 @@ void OptimizationWorkerComplexRFP::run()
     //Plot optimization points
     plotPoints();
 
+    mOrgAlpha = mAlpha; //Used in multi-distance
+
     mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(true);
 
     //Reset convergence reason variable (0 = failed to converge)
@@ -301,7 +303,6 @@ void OptimizationWorkerComplexRFP::run()
 
         //Calculate best and worst point
         calculateBestAndWorstId();
-        int wid = mWorstId;
 
         //Plot best and worst objective values
         plotObjectiveFunctionValues();
@@ -343,14 +344,13 @@ void OptimizationWorkerComplexRFP::run()
         gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
         //Calculate best and worst points
-        mLastWorstId=wid;
+        mLastWorstId=mWorstId;
         calculateBestAndWorstId();
-        wid = mWorstId;
 
         //Iterate until worst point is no longer the same
         mWorstCounter=0;
 
-        QVector<double> newPoint = mParameters[mWorstId];
+        //QVector<double> newPoint = mParameters[mWorstId];
         if(mNeedsIteration)
         {
             QVector< QVector<double> > otherPoints = mParameters;
@@ -358,12 +358,20 @@ void OptimizationWorkerComplexRFP::run()
             findCenter(otherPoints);
         }
 
+        bool abort=false;
         while(mNeedsIteration)
         {
-            plotPoints();
+            if(mMethod == 3 || mMethod == 4)
+            {
+                abort = iterate();
+            }
+            else
+            {
+                abort = iterateSingle();
+            }
+            ++mIterations;
 
-            qApp->processEvents();
-            if(mpHandler->mpHcomHandler->isAborted())
+            if(abort)
             {
                 execute("echo on");
                 print("Optimization aborted.");
@@ -372,183 +380,10 @@ void OptimizationWorkerComplexRFP::run()
                 return;
             }
 
-            if(i>mMaxEvals) break;
-
-
-            //Check the already evaluated iteration points (if any)
-            if(mFirstReflectionFailed && mWorstCounter==0)
-            {
-                int iterStart;
-                if(mMethod == 3)
-                {
-                    iterStart = mNumDir*mNumDist;
-                }
-                else if(mMethod == 4)
-                {
-                    iterStart = 1;
-                }
-                else
-                {
-                    iterStart = mNumPoints;
-                }
-                for(int o=iterStart; o<mNumModels; ++o)
-                {
-                    int nWorsePoints=0;
-                    for(int j=0; j<mNumPoints; ++j)
-                    {
-                        if(mObjectives[j] > mCandidateObjectives[o])
-                        {
-                            ++nWorsePoints;
-                        }
-                    }
-
-                    if(nWorsePoints >= 2)
-                    {
-                        mParameters[mWorstId] = mCandidateParticles[o];
-                        mObjectives[mWorstId] = mCandidateObjectives[o];
-                        logWorstPoint();
-                        mNeedsIteration = false;
-                        break;
-                    }
-                    ++mWorstCounter;
-                }
-            }
-            else if((mMethod == 0 || mMethod == 3) && mWorstCounter==0)
-            {
-                int idx = mNumDist*mNumDir+mFailedReflection;
-
-                if(mCandidateObjectives.size() > idx)
-                {
-                    newPoint = mCandidateParticles[idx];
-                    int nWorsePoints=0;
-                    for(int j=0; j<mNumPoints; ++j)
-                    {
-                        if(mObjectives[j] > mCandidateObjectives[idx])
-                        {
-                            ++nWorsePoints;
-                        }
-                    }
-
-                    if(nWorsePoints >= 2)
-                    {
-                        qDebug() << "Iteration succeeded using pre-calculated point";
-                        mParameters[mWorstId] = mCandidateParticles[idx];
-                        mObjectives[mWorstId] = mCandidateObjectives[idx];
-                        logWorstPoint();
-                        mNeedsIteration = false;
-                        break;
-                    }
-                    ++mWorstCounter;
-                }
-            }
-
-            if(!mNeedsIteration)
-            {
-                gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
-                plotParameters();
-                plotEntropy();
-                break;
-            }
-
-            //Move first reflected point
-            int iterModels = 1;
-            if(mMethod == 3 || mMethod == 4)
-            {
-                iterModels = mNumModels;
-            }
-            for(int t=0; t<iterModels && mNeedsIteration; ++t)
-            {
-                double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
-                for(int j=0; j<mNumParameters; ++j)
-                {
-                    double best = mParameters[mBestId][j];
-                    double maxDiff = getMaxParDiff();
-                    double r = (double)rand() / (double)RAND_MAX;
-                    mCandidateParticles[t][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-                    mCandidateParticles[t][j] = qMin(mCandidateParticles[t][j], mParMax[j]);
-                    mCandidateParticles[t][j] = qMax(mCandidateParticles[t][j], mParMin[j]);
-                }
-
-                newPoint = mCandidateParticles[t];
-                mParameters[mWorstId] = newPoint;
-                ++mWorstCounter;
-            }
-
-            newPoint = mCandidateParticles.last();
-
-            //Evaluate new point
-            bool evalOK2 = evaluateCandidateParticles(needsReschedule, i==0);
-            if (needsReschedule)
-            {
-                break;
-            }
-            else if (!evalOK2)
-            {
-                execute("echo on");
-                print("Simaultion failed during candidate evaluation.");
-                print("Optimization aborted.");
-                finalize();
-                return;
-            }
-
-
-            //Replace worst point with first candidate point that is better, if any
-            for(int o=0; o<iterModels; ++o)
-            {
-                int nWorsePoints=0;
-                for(int j=0; j<mNumPoints; ++j)
-                {
-                    if(j != mWorstId && mObjectives[j] > mCandidateObjectives[o])
-                    {
-                        ++nWorsePoints;
-                    }
-                }
-
-                if(nWorsePoints >= 1)
-                {
-                    qDebug() << "Iteration succeeded after " << mWorstCounter-iterModels+o+1 << " iterations";
-                    mParameters[mWorstId] = mCandidateParticles[o];
-                    mObjectives[mWorstId] = mCandidateObjectives[o];
-                    logWorstPoint();
-                    mNeedsIteration = false;
-
-                    mIterCount = mWorstCounter-iterModels+o;
-
-                    break;
-                }
-            }
-
-
-            if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
-            {
-                execute("echo on");
-                print("Optimization aborted.");
-                finalize();
-                return;
-            }
-
-            //Calculate best and worst points
-            mLastWorstId=wid;
-            calculateBestAndWorstId();
-            wid = mWorstId;
-
             ++i;
-            execute("echo off -nonerrors");
-
-
-            if(mNeedsIteration)
-            {
-                //Replace worst point with last candidate if no success (for updating parameter outputs)
-                mParameters[mWorstId] = mCandidateParticles.last();
-                mObjectives[mWorstId] = mCandidateObjectives.last();
-            }
-
-            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
-
-            plotParameters();
-            plotEntropy();
-
+            if(i>mMaxEvals) break;
         }
+
 
         QString actions = QString("%1,%2,%3").arg(mDirCount).arg(mDistCount).arg(mIterCount);
         if(mActionCounter.contains(actions))
@@ -975,7 +810,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 //        double alpha7 = (1+(mAlpha-1)*5);       //2.5
 //        double alpha8 = (1+(mAlpha-1)*6);       //2.8
 
-        double alpha1 = mAlpha;                 //1.3
+        double alpha1 = mOrgAlpha;                 //1.3
         double alpha2 = mAlpha1;//(1+(mAlpha-1)*2);       //1.6
         double alpha3 = mAlpha2;//(1+(mAlpha-1)*3);       //1.9
         double alpha4 = mAlpha3;//(1+(mAlpha-1)*4);       //2.2
@@ -1238,7 +1073,7 @@ bool OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool &rNeedsResche
     for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[i]);
-        execute("opt set evalid "+QString::number(i));
+        execute("opt set evalid "+QString::number(mNumPoints+i));
         execute("call obj");
     }
     mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs.first());
@@ -1298,7 +1133,7 @@ bool OptimizationWorkerComplexRFP::evaluatePoints(bool firstTime)
         for(int m=0; m<nMax && !mpHandler->mpHcomHandler->isAborted(); ++m)
         {
             mpHandler->mpHcomHandler->setModelPtr(mUsedModelPtrs[m]);
-            execute("opt set evalid "+QString::number(candidate_id));
+            execute("opt set evalid "+QString::number(mNumPoints+candidate_id));
             execute("call obj");
             mObjectives[point_id] = mCandidateObjectives[candidate_id];
             ++point_id;
@@ -1433,8 +1268,8 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         }
         else
         {
-            mParameters[mWorstId] = mCandidateParticles[minIdx];
-            mObjectives[mWorstId] = mCandidateObjectives[minIdx];
+            mParameters[mWorstId] = mCandidateParticles[0];
+            mObjectives[mWorstId] = mCandidateObjectives[0];
             mNeedsIteration=true;
         }
 
@@ -1605,9 +1440,273 @@ void OptimizationWorkerComplexRFP::plotPoints()
 
 void OptimizationWorkerComplexRFP::setOptimizationObjectiveValue(int idx, double value)
 {
-    if(idx<0 || idx > mCandidateObjectives.size()-1)
+    if(idx>=0 && idx < mNumPoints)
     {
-        return;
+        mObjectives[idx] = value;
     }
-    mCandidateObjectives[idx] = value;
+    else if(idx < mCandidateObjectives.size()+mNumPoints)
+    {
+        mCandidateObjectives[idx-mNumPoints] = value;
+    }
+}
+
+
+bool OptimizationWorkerComplexRFP::iterate()
+{
+    QVector<double> newPoint = mParameters[mWorstId];
+
+    plotPoints();
+
+    qApp->processEvents();
+    if(mpHandler->mpHcomHandler->isAborted())
+    {
+        execute("echo on");
+        print("Optimization aborted.");
+        finalize();
+        mpHandler->mpHcomHandler->abortHCOM();
+        return true;
+    }
+
+    //Check the already evaluated iteration points (if any)
+    if(mFirstReflectionFailed && mWorstCounter==0)
+    {
+        int iterStart;
+        if(mMethod == 3)
+        {
+            iterStart = mNumDir*mNumDist;
+        }
+        else if(mMethod == 4)
+        {
+            iterStart = 1;
+        }
+        else
+        {
+            iterStart = mNumPoints;
+        }
+        for(int o=iterStart; o<mNumModels; ++o)
+        {
+            int nWorsePoints=0;
+            for(int j=0; j<mNumPoints; ++j)
+            {
+                if(mObjectives[j] > mCandidateObjectives[o])
+                {
+                    ++nWorsePoints;
+                }
+            }
+
+            if(nWorsePoints >= 2)
+            {
+                mParameters[mWorstId] = mCandidateParticles[o];
+                mObjectives[mWorstId] = mCandidateObjectives[o];
+                logWorstPoint();
+                mNeedsIteration = false;
+                return false;
+            }
+            ++mWorstCounter;
+        }
+    }
+    else if((mMethod == 0 || mMethod == 3) && mWorstCounter==0)
+    {
+        int idx = mNumDist*mNumDir+mFailedReflection;
+
+        if(mCandidateObjectives.size() > idx)
+        {
+            newPoint = mCandidateParticles[idx];
+            int nWorsePoints=0;
+            for(int j=0; j<mNumPoints; ++j)
+            {
+                if(mObjectives[j] > mCandidateObjectives[idx])
+                {
+                    ++nWorsePoints;
+                }
+            }
+
+            if(nWorsePoints >= 2)
+            {
+                qDebug() << "Iteration succeeded using pre-calculated point";
+                mParameters[mWorstId] = mCandidateParticles[idx];
+                mObjectives[mWorstId] = mCandidateObjectives[idx];
+                logWorstPoint();
+                mNeedsIteration = false;
+                return false;
+            }
+            ++mWorstCounter;
+        }
+    }
+
+    if(!mNeedsIteration)
+    {
+        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+        plotParameters();
+        plotEntropy();
+        return false;
+    }
+
+    //Move first reflected point
+    int iterModels = 1;
+    if(mMethod == 3 || mMethod == 4)
+    {
+        iterModels = mNumModels;
+    }
+    for(int t=0; t<iterModels && mNeedsIteration; ++t)
+    {
+        double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
+        for(int j=0; j<mNumParameters; ++j)
+        {
+            double best = mParameters[mBestId][j];
+            double maxDiff = getMaxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mCandidateParticles[t][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+            mCandidateParticles[t][j] = qMin(mCandidateParticles[t][j], mParMax[j]);
+            mCandidateParticles[t][j] = qMax(mCandidateParticles[t][j], mParMin[j]);
+        }
+
+        newPoint = mCandidateParticles[t];
+        mParameters[mWorstId] = newPoint;
+        ++mWorstCounter;
+    }
+
+    //newPoint = mCandidateParticles.last();
+
+    //Evaluate new point
+    bool needsReschedule;
+    bool evalOK2 = evaluateCandidateParticles(needsReschedule, false);
+    if (needsReschedule)
+    {
+        return false;
+    }
+    else if (!evalOK2)
+    {
+        execute("echo on");
+        print("Simaultion failed during candidate evaluation.");
+        print("Optimization aborted.");
+        finalize();
+        return true;
+    }
+
+
+    //Replace worst point with first candidate point that is better, if any
+    for(int o=0; o<iterModels; ++o)
+    {
+        mParameters[mWorstId] = mCandidateParticles[o];
+        mObjectives[mWorstId] = mCandidateObjectives[o];
+
+        int prevWorst = mWorstId;
+        calculateBestAndWorstId();
+        if(prevWorst != mWorstId)
+        {
+            qDebug() << "Iteration succeeded after " << mWorstCounter-iterModels+o+1 << " iterations";
+            logWorstPoint();
+            mNeedsIteration = false;
+
+            mIterCount = mWorstCounter-iterModels+o;
+
+            return false;
+        }
+    }
+
+
+    if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+    {
+        execute("echo on");
+        print("Optimization aborted.");
+        finalize();
+        return true;
+    }
+
+    //Calculate best and worst points
+    mLastWorstId=mWorstId;
+    calculateBestAndWorstId();
+
+    execute("echo off -nonerrors");
+
+
+//            if(mNeedsIteration)
+//            {
+//                //Replace worst point with last candidate if no success (for updating parameter outputs)
+//                mParameters[mWorstId] = mCandidateParticles.last();
+//                mObjectives[mWorstId] = mCandidateObjectives.last();
+//            }
+
+    gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+    plotParameters();
+    plotEntropy();
+
+    return false;
+}
+
+
+
+bool OptimizationWorkerComplexRFP::iterateSingle()
+{
+    QVector<double> newPoint = mParameters[mWorstId];
+
+    plotPoints();
+
+    qApp->processEvents();
+    if(mpHandler->mpHcomHandler->isAborted())
+    {
+        execute("echo on");
+        print("Optimization aborted.");
+        finalize();
+        mpHandler->mpHcomHandler->abortHCOM();
+        return true;
+    }
+
+
+    //Move first reflected point
+    double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
+    for(int j=0; j<mNumParameters; ++j)
+    {
+        double best = mParameters[mBestId][j];
+        double maxDiff = getMaxParDiff()*10/(9.0+mWorstCounter);
+        double r = (double)rand() / (double)RAND_MAX;
+        mParameters[mWorstId][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+        mParameters[mWorstId][j] = qMin(mParameters[mWorstId][j], mParMax[j]);
+        mParameters[mWorstId][j] = qMax(mParameters[mWorstId][j], mParMin[j]);
+    }
+
+    ++mWorstCounter;
+
+    //Evaluate new point
+    bool multicore = gpConfig->getUseMulticore();
+    if(multicore)
+        execute("set multicore off");   //Temporary hack, remove later?
+    execute("call evalworst");
+    ++mEvaluations;
+    if(multicore)
+        execute("set multicore on");
+
+    //Replace worst point with first candidate point, if better
+    int prevWorst = mWorstId;
+    calculateBestAndWorstId();
+    if(prevWorst != mWorstId)
+    {
+        qDebug() << "Iteration succeeded after " << mWorstCounter << " iterations";
+        logWorstPoint();
+        mNeedsIteration = false;
+
+        mIterCount = mWorstCounter+1;
+
+        return false;
+    }
+
+
+    if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+    {
+        execute("echo on");
+        print("Optimization aborted.");
+        finalize();
+        return true;
+    }
+
+    execute("echo off -nonerrors");
+
+    gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+    plotParameters();
+    plotEntropy();
+
+    return false;
 }

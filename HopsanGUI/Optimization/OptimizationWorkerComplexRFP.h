@@ -66,6 +66,8 @@ protected:
     void findCenter(QVector< QVector<double> > &particles);
     void plotPoints();
     void setOptimizationObjectiveValue(int idx, double value);
+    bool iterate();
+    bool iterateSingle();
 
     QVector<ModelWidget *> mUsedModelPtrs;
     QString mModelPath;
@@ -76,7 +78,7 @@ protected:
     bool mFirstReflectionFailed;
     int mFailedReflection;
 
-    double mAlpha1, mAlpha2, mAlpha3, mAlpha4, mAlpha5, mAlpha6, mAlpha7;
+    double mAlpha1, mAlpha2, mAlpha3, mAlpha4, mAlpha5, mAlpha6, mAlpha7, mOrgAlpha;
     int mMethod;
 
     //Method 3 members
