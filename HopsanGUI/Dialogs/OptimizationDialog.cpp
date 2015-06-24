@@ -389,7 +389,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 //! @brief Updates output boxes displaying the parameters
 void OptimizationDialog::updateParameterOutputs(const QVector<double> &objectives, const QVector<QVector<double> > &values, const int bestId, const int worstId)
 {
-    if(!this->isVisible()) return;
+    if(mOutputDisabled || !this->isVisible()) return;
 
 //    double temp = objectives[0];
 //    objectives[0] = objectives[bestId];
@@ -488,7 +488,7 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 
 void OptimizationDialog::updateTotalProgressBar(double progress)
 {
-    if(!this->isVisible()) return;
+    if(mOutputDisabled || !this->isVisible()) return;
 
     mpTotalProgressBar->setValue(progress);
 }
@@ -891,6 +891,11 @@ void OptimizationDialog::okPressed()
     saveConfiguration();
 
     reject();
+}
+
+void OptimizationDialog::setOutputDisabled(bool disabled)
+{
+    mOutputDisabled = disabled;
 }
 
 
@@ -1918,6 +1923,8 @@ void OptimizationDialog::loadScriptFile()
 
 void OptimizationDialog::updateCoreProgressBars()
 {
+    if(mOutputDisabled || !this->isVisible()) return;
+
     if(!mCoreProgressBarsRecreated && mpTerminal->mpHandler->mpOptHandler->isRunning())
     {
         recreateCoreProgressBars();

@@ -122,6 +122,7 @@ protected:
     bool mPlotVariables;
     bool mPlotEntropy;
     int mPercent;
+    bool mNoOutput;
 
     int mIterations;
     int mEvaluations;

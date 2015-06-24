@@ -73,6 +73,7 @@ public slots:
     virtual void accept();
     virtual void reject();
     virtual void okPressed();
+    void setOutputDisabled(bool disabled);
 
 private slots:
     void setAlgorithm(int i);
@@ -206,6 +207,8 @@ private:
     QList<QStringList> mSelectedVariables;
     bool mCoreProgressBarsRecreated;
     QVector<int> mParameterOutputIndexes;
+
+    bool mOutputDisabled;
 };
 
 #endif // OPTIMIZATIONDIALOG_H

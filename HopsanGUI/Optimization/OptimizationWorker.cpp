@@ -66,6 +66,7 @@ OptimizationWorker::OptimizationWorker(OptimizationHandler *pHandler)
     mDoLog = true;
     mFinalEval = true;
     mNumModels = 1;
+    mNoOutput = false;
 }
 
 OptimizationWorker::~OptimizationWorker()
@@ -83,6 +84,8 @@ void OptimizationWorker::init(const ModelWidget *pModel, const QString &modelPat
 //        clearModels();
 //    }
     //for(int i=0; i<mpOptHandler->getOptVar("npoints"); ++i)
+    gpOptimizationDialog->setOutputDisabled(mNoOutput);
+
     while(mModelPtrs.size() < mNumModels)
     {
         mpHandler->addModel(gpModelHandler->loadModel(modelPath, true, true));
@@ -180,7 +183,9 @@ void OptimizationWorker::finalize()
         execute("call evalall");
     }
     calculateBestAndWorstId();
+    gpOptimizationDialog->setOutputDisabled(false);
     gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+    gpOptimizationDialog->setOutputDisabled(mNoOutput);
     double secondBestObj = mObjectives[mWorstId];
     mSecondBestId = mWorstId;
     for(int i=0; i<mNumPoints; ++i)
@@ -667,6 +672,10 @@ void OptimizationWorker::setOptVar(const QString &var, const QString &value)
     else if(var == "plotentropy")
     {
         mPlotEntropy = (value == "on");
+    }
+    else if(var == "output")
+    {
+        mNoOutput = (value == "off");
     }
     else if(var == "npoints")
     {
