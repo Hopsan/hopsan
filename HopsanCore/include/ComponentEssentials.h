@@ -32,6 +32,7 @@
 #include "Component.h"
 #include "Port.h"
 #include "version.h"
+#include "NodeRWHelpfuncs.hpp"
 
 
 #endif // COMPONENTESSENTIALS_H_INCLUDED

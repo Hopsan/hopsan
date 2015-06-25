@@ -180,7 +180,8 @@ HEADERS += \
     include/ComponentUtilities/PLOParser.h \
     ../Dependencies/IndexingCSVParser/IndexingCSVParser.h \
     ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
-    include/Quantities.h
+    include/Quantities.h \
+    include/NodeRWHelpfuncs.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
