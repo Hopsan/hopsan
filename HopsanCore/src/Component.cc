@@ -1229,7 +1229,16 @@ Port *Component::addOutputVariable(const HString &rName, const HString &rDescrip
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
 {
     Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
-    pPort->setSignalNodeQuantityOrUnit(rUnit);
+    if (rUnit.empty())
+    {
+        pPort->setSignalNodeQuantityModifyable(true);
+    }
+    else
+    {
+        pPort->setSignalNodeQuantityModifyable(true);
+        pPort->setSignalNodeQuantityOrUnit(rUnit);
+        pPort->setSignalNodeQuantityModifyable(false);
+    }
     setDefaultStartValue(pPort, 0, defaultValue);
 
     if (ppNodeData)
