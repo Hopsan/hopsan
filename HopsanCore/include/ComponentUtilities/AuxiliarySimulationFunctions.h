@@ -276,16 +276,20 @@ inline double greaterThanOrEqual(const double x, const double y)
 //! @returns Limited value
 inline double nonZero(const double x)
 {
-    double limit = DBL_MIN*10;
-    if(x > 0.0 && x < limit)
+    const double limit = DBL_MIN*10;
+    //! @todo we could turn this into a template function where you can specify the limit value at compile time
+    if( (x >= 0.0) && (x < limit) )
     {
         return limit;
     }
-    else if(x < 0.0 && x > -limit)
+    else if( (x < 0.0) && (x > -limit) )
     {
         return -limit;
     }
-//! @todo There is one return value missing here. return x? (magse)
+    else
+    {
+        return x;
+    }
 }
 
 }
