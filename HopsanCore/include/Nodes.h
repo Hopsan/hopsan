@@ -115,7 +115,7 @@ private:
         setDataCharacteristics(Pressure, "Pressure", "p", "Pressure", IntensityType);
         setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
         setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pressure", TLMType);
-        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "Pa s/m^3", TLMType);
         setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
 
         // Set default initial startvales to reasonable (non-zero) values
@@ -149,7 +149,7 @@ private:
 //        setDataCharacteristics(Flow, "Flow", "q", "Flow", FlowType);
 //        setDataCharacteristics(Pressure, "Pressure", "p", "Pressure", IntensityType);
 //        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pressure", TLMType);
-//        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
+//        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "Pa s/m^3", TLMType);
 
 //        // Set default initial startvales to reasonable (non-zero) values
 //        mDataValues[Pressure] = 100000;
@@ -181,7 +181,7 @@ private:
         setDataCharacteristics(Pressure, "Pressure", "p", "Pressure", IntensityType);
         setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
         setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pressure", TLMType);
-        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "Pa s/m^3", TLMType);
         setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
 
         // Set default initial startvales to reasonable (non-zero) values
