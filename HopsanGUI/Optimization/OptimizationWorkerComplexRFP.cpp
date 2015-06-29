@@ -247,11 +247,11 @@ void OptimizationWorkerComplexRFP::run()
     mLastWorstId = mWorstId;
 
     //Run optimization loop
-    int i=0;
+    mIterations=0;
     bool changed=false;
     bool needsReschedule = false;
     mNeedsIteration = false;
-    for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    for(; mIterations<mMaxEvals && !mpHandler->mpHcomHandler->isAborted();)
     {
         mDirCount=0;
         mDistCount=0;
@@ -293,7 +293,7 @@ void OptimizationWorkerComplexRFP::run()
         }
 
         //Print progress as percentage of maximum number of evaluations
-        updateProgressBar(i);
+        updateProgressBar(mIterations);
 
         //Check convergence
         if(checkForConvergence()) break;
@@ -316,10 +316,10 @@ void OptimizationWorkerComplexRFP::run()
         plotPoints();
 
         //Evaluate new point
-        bool evalOK = evaluateCandidateParticles(needsReschedule, i==0);
+        bool evalOK = evaluateCandidateParticles(needsReschedule, mIterations==0);
         if (needsReschedule)
         {
-            --i;
+            --mIterations;
             continue;
         }
         else if (!evalOK)
@@ -369,7 +369,6 @@ void OptimizationWorkerComplexRFP::run()
             {
                 abort = iterateSingle();
             }
-            ++mIterations;
 
             if(abort)
             {
@@ -380,8 +379,7 @@ void OptimizationWorkerComplexRFP::run()
                 return;
             }
 
-            ++i;
-            if(i>mMaxEvals) break;
+            if(mIterations>mMaxEvals) break;
         }
 
 
@@ -398,7 +396,7 @@ void OptimizationWorkerComplexRFP::run()
         // Check if we need to reshedule from this internal while reiteration needed loop
         if (needsReschedule)
         {
-            --i;
+            --mIterations;
             continue;
         }
 
@@ -416,13 +414,13 @@ void OptimizationWorkerComplexRFP::run()
     switch(mConvergenceReason)
     {
     case 0:
-        print("Optimization failed to converge after "+QString::number(i)+" iterations.");
+        print("Optimization failed to converge after "+QString::number(mIterations)+" iterations.");
         break;
     case 1:
-        print("Optimization converged in function values after "+QString::number(i)+" iterations.");
+        print("Optimization converged in function values after "+QString::number(mIterations)+" iterations.");
         break;
     case 2:
-        print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
+        print("Optimization converged in parameter values after "+QString::number(mIterations)+" iterations.");
         break;
     }
 
@@ -1675,6 +1673,7 @@ bool OptimizationWorkerComplexRFP::iterateSingle()
         execute("set multicore off");   //Temporary hack, remove later?
     execute("call evalworst");
     ++mEvaluations;
+    ++mIterations;
     if(multicore)
         execute("set multicore on");
 
