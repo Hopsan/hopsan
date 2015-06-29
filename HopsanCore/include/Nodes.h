@@ -163,63 +163,39 @@ private:
 //    }
 //};
 
-////! @brief A hydraulic node
-////! @ingroup NodeHydraulic
-//class NodeHydraulicTemperature :public Node
-//{
-//public:
-//    //! @brief The data variable indexes, DataLength is used internally
-//    //! @ingroup NodeHydraulicTemperature
-//    enum DataIndexEnumT {Flow, Pressure, Temperature, WaveVariable, CharImpedance, HeatFlow, DataLength};
-//    static Node* CreatorFunction() {return new NodeHydraulicTemperature;}
-
-//private:
-//    NodeHydraulicTemperature() : Node(DataLength)
-//    {
-//        setNiceName("hydraulic");
-//        setDataCharacteristics(Flow, "Flow", "q", "Flow", FlowType);
-//        setDataCharacteristics(Pressure, "Pressure", "p", "Pressure", IntensityType);
-//        setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
-//        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pressure", TLMType);
-//        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
-//        setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
-
-//        // Set default initial startvales to reasonable (non-zero) values
-//        mDataValues[Pressure] = 100000;
-//        mDataValues[WaveVariable] = 100000;
-//        mDataValues[Temperature] = 293;
-//    }
-
-//    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
-//    {
-//        pOtherNode->setDataValue(WaveVariable, mDataValues[Pressure]);
-//        //! todo Maybe also write CHARIMP?
-//    }
-//};
-
-typedef struct /*HydraulcNodeDataPointerStruct_*/
+//! @brief A hydraulic node
+//! @ingroup NodeHydraulicTemperature
+class NodeHydraulicTemperature :public Node
 {
-    double *pQ;
-    double *pP;
-//    double *pT;
-    double *pC;
-    double *pZc;
-//    double *pQdot;
-} HydraulicNodeDataPointerStructT;
+public:
+    //! @brief The data variable indexes, DataLength is used internally
+    //! @ingroup NodeHydraulicTemperature
+    enum DataIndexEnumT {Flow, Pressure, Temperature, WaveVariable, CharImpedance, HeatFlow, DataLength};
+    static Node* CreatorFunction() {return new NodeHydraulicTemperature;}
 
-typedef struct /*HydraulcNodeDataValueStruct_*/
-{
-    double q;
-    double p;
-//    double T;
-    double c;
-    double Zc;
-//    double Qdot;
-} HydraulicNodeDataValueStructT;
+private:
+    NodeHydraulicTemperature() : Node(DataLength)
+    {
+        setNiceName("hydraulic");
+        setDataCharacteristics(Flow, "Flow", "q", "Flow", FlowType);
+        setDataCharacteristics(Pressure, "Pressure", "p", "Pressure", IntensityType);
+        setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pressure", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
+        setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
 
-HydraulicNodeDataPointerStructT DLLIMPORTEXPORT getHydraulicNodeDataPointerStruct(const Port *pPort);
-HydraulicNodeDataValueStructT DLLIMPORTEXPORT getHydraulicNodeDataValueStruct(const Port *pPort);
-HydraulicNodeDataValueStructT DLLIMPORTEXPORT getHydraulicNodeDataValueStruct(const HydraulicNodeDataPointerStructT &rPtrStruct);
+        // Set default initial startvales to reasonable (non-zero) values
+        mDataValues[Pressure] = 100000;
+        mDataValues[WaveVariable] = 100000;
+        mDataValues[Temperature] = 293;
+    }
+
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
+    {
+        pOtherNode->setDataValue(WaveVariable, mDataValues[Pressure]);
+        //! todo Maybe also write CHARIMP?
+    }
+};
 
 //! @brief A pneumatic node
 //! @ingroup NodePneumatic

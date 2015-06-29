@@ -43,9 +43,24 @@ inline double readSignalPort(Port *pPort)
     return pPort->readNode(NodeSignal::Value);
 }
 
+inline double readInputVariable(Port *pPort)
+{
+    return readSignalPort(pPort);
+}
+
+//inline double readOutputVariable(Port *pPort)
+//{
+//    return readSignalPort(pPort);
+//}
+
 inline void readSignalPort(Port *pPort, double &y)
 {
     y = pPort->readNode(NodeSignal::Value);
+}
+
+inline void readInputVariable(Port *pPort, double &y)
+{
+    readSignalPort(pPort, y);
 }
 
 inline void writeSignalPort(Port *pPort, const double y)
@@ -53,23 +68,38 @@ inline void writeSignalPort(Port *pPort, const double y)
     pPort->writeNode(NodeSignal::Value, y);
 }
 
+inline void writeOutputVariable(Port *pPort, const double y)
+{
+    writeSignalPort(pPort, y);
+}
+
+typedef struct /*HydraulcNodeDataValueStruct_*/
+{
+    double q;
+    double p;
+//    double T;
+    double c;
+    double Zc;
+//    double Qdot;
+} HydraulicNodeDataValueStructT;
+
 inline void readHydraulicPort_pq(Port *pPort, double &p, double &q)
 {
-    std::vector<double> &rData = pPort->getNodeDataVector();
+    const std::vector<double> &rData = pPort->getNodeDataVector();
     q = rData[NodeHydraulic::Flow];
     p = rData[NodeHydraulic::Pressure];
 }
 
 inline void readHydraulicPort_cZc(Port *pPort, double &c, double &Zc)
 {
-    std::vector<double> &rData = pPort->getNodeDataVector();
+    const std::vector<double> &rData = pPort->getNodeDataVector();
     c = rData[NodeHydraulic::WaveVariable];
     Zc = rData[NodeHydraulic::CharImpedance];
 }
 
 inline void readHydraulicPort_all(Port *pPort, double &p, double &q, double &c, double &Zc)
 {
-    std::vector<double> &rData = pPort->getNodeDataVector();
+    const std::vector<double> &rData = pPort->getNodeDataVector();
     q = rData[NodeHydraulic::Flow];
     p = rData[NodeHydraulic::Pressure];
     c = rData[NodeHydraulic::WaveVariable];
@@ -78,7 +108,7 @@ inline void readHydraulicPort_all(Port *pPort, double &p, double &q, double &c, 
 
 inline void readHydraulicPort_all(Port *pPort, HydraulicNodeDataValueStructT &rValues)
 {
-    std::vector<double> &rData = pPort->getNodeDataVector();
+    const std::vector<double> &rData = pPort->getNodeDataVector();
     rValues.q = rData[NodeHydraulic::Flow];
     rValues.p = rData[NodeHydraulic::Pressure];
     rValues.c = rData[NodeHydraulic::WaveVariable];

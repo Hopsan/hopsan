@@ -95,6 +95,11 @@ namespace hopsan {
             return mpNode->mDataValues;
         }
 
+        virtual inline const std::vector<double> &getNodeDataVector() const
+        {
+            return mpNode->mDataValues;
+        }
+
         virtual double readNodeSafe(const size_t idx, const size_t subPortIdx=0) const;
         virtual void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
 

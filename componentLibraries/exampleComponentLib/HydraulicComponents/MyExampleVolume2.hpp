@@ -40,10 +40,7 @@ class MyExampleVolume2 : public ComponentC
 private:
     // Private member variables
     double mAlpha;
-    double *mpVolume, *mpBulkmodulus;
-    Port *mpP1, *mpP2;
-    HydraulicNodeDataPointerStructT mP1DataPtrs;
-    HydraulicNodeDataPointerStructT mP2DataPtrs;
+    Port *mpP1, *mpP2, *mpV, *mpBe;
 
 public:
     // The creator function that is registered when a component lib is loaded into Hopsan
@@ -63,8 +60,8 @@ public:
         mpP2 = addPowerPort("P2", "NodeHydraulic", "Port2");
 
         // Add inputVariables, if the ports is not connected the default value is used
-        addInputVariable("V", "Volume", "m^3", 1.0e-3, &mpVolume);
-        addInputVariable("Be", "Bulkmodulus", "Pa", 1.0e9, &mpBulkmodulus);
+        mpV = addInputVariable("V", "Volume", "m^3", 1.0e-3);
+        mpBe = addInputVariable("Be", "Bulkmodulus", "Pa", 1.0e9);
 
         // Register parameters that are constant during simulation
         addConstant("a", "Low pass coefficient to dampen standing delayline waves", "", 0.1, mAlpha);
@@ -78,21 +75,18 @@ public:
     void initialize()
     {
         // Read from node data ptrs
-        mP1DataPtrs = getHydraulicNodeDataPointerStruct(mpP1);
-        mP2DataPtrs = getHydraulicNodeDataPointerStruct(mpP2);
-
-        const double Be = (*mpBulkmodulus);
-        const double V = (*mpVolume);
+        const double Be = readInputVariable(mpBe);
+        const double V = readInputVariable(mpV);
+        double p1, q1, p2, q2;
+        readHydraulicPort_pq(mpP1, p1, q1);
+        readHydraulicPort_pq(mpP2, p2, q2);
 
         // Decide initial Zc
         const double Zc = Be/V*mTimestep/(1.0-mAlpha);
 
         // Write to nodes
-        mpP1->writeNode(NodeHydraulic::WaveVariable, (*mP2DataPtrs.pP)+Zc*(*mP2DataPtrs.pQ));
-        mpP1->writeNode(NodeHydraulic::CharImpedance,      Zc);
-
-        mpP2->writeNode(NodeHydraulic::WaveVariable, (*mP1DataPtrs.pP)+Zc*(*mP1DataPtrs.pQ));
-        mpP2->writeNode(NodeHydraulic::CharImpedance,      Zc);
+        writeHydraulicPort_cZc(mpP1, p2+Zc*q2, Zc);
+        writeHydraulicPort_cZc(mpP2, p1+Zc*q1, Zc);
     }
 
     // The simulateOneTimestep() function is called ONCE every time step
@@ -101,12 +95,13 @@ public:
     void simulateOneTimestep()
     {
         // First read the necessary data from nodes
-        HydraulicNodeDataValueStructT p1 = getHydraulicNodeDataValueStruct(mpP1);
-        HydraulicNodeDataValueStructT p2 = getHydraulicNodeDataValueStruct(mpP2);
+        HydraulicNodeDataValueStructT p1, p2;
+        readHydraulicPort_all(mpP1, p1);
+        readHydraulicPort_all(mpP2, p2);
 
         // Read from inputVariable node-data ptrs
-        const double Be = (*mpBulkmodulus);
-        const double V = (*mpVolume);
+        const double Be = readInputVariable(mpBe);
+        const double V = readInputVariable(mpV);
 
         // Update Zc, Be and V may have changed
         const double Zc = Be/V*mTimestep/(1.0-mAlpha);
@@ -118,10 +113,8 @@ public:
         p2.c = mAlpha*p2.c + (1.0-mAlpha)*c20;
 
         // Write new values back to the nodes
-        (*mP1DataPtrs.pC) = p1.c;
-        (*mP1DataPtrs.pZc) = Zc;
-        (*mP2DataPtrs.pC) = p2.c;
-        (*mP2DataPtrs.pZc) = Zc;
+        writeHydraulicPort_cZc(mpP1, p1.c, p1.Zc);
+        writeHydraulicPort_cZc(mpP2, p2.c, p2.Zc);
     }
 
     // The finalize function is called after simulation ends
