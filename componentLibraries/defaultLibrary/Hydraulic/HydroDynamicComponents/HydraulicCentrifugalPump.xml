@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="HydraulicCentrifugalPump.hpp" typename="HydraulicCentrifugalPump" displayname="Centrifugal Pump">
+        <icons>
+            <icon scale="1" path="HydraulicCentrifugalPump.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicCentrifugalPump.svg" iconrotation="ON" type="iso"/>
+        </icons>
+       <help>
+            <text>Centrifugal pump. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>HydraulicCentrifugalPump.nb</link>
+        </help>       
+        <ports>
+            <port x="0" y="0.45" enabled="true" a="180" name="P1" autoplaced="true"/>
+            <port x="0.9" y="0" enabled="true" a="270" name="P2" autoplaced="true"/>
+            <port x="0.15" y="1" enabled="true" a="90" name="omegap" autoplaced="true"/>
+            <port x="0.25" y="1" enabled="true" a="90" name="torp" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="Pin" autoplaced="true"/>
+            <port x="0.75" y="1" enabled="true" a="90" name="Pout" autoplaced="true"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
