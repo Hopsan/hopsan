@@ -219,50 +219,49 @@ double hopsan::CMoment(const double alpha, const double Cm0, const double Cmfs, 
 }
 
 //! @brief Segment area, used to calculate valve openings with circular holes
+//! @param[in] x How far into the circle
+//! @param[in] d Circle diameter
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::segare(const double x, const double d)
 {
     double x1;
-    x1=x;
     if(x < 0)
     {
         x1=0;
     }
+    else if(x > d)
+    {
+        x1=d;
+    }
     else
     {
-        if(x > d)
-        {
-           x1=d;
-        }
-        else
-        {
-           x1=x;
-        }
+        x1=x;
     }
-    return -(d*(2*(d - 2*x1)*sqrt(((d - x1)*x1)/pow(d,2)) - d*acos(1 - (2*x1)/d)))/4.;
+
+    return -(d*(2.*(d - 2.*x1)*sqrt(((d - x1)*x1)/pow(d,2.)) - d*acos(1. - (2.*x1)/d)))/4.;
 }
+
 //! @brief Segment area, used to calculate valve openings with circular holes
+//! @param[in] x How far into the circle
+//! @param[in] d Circle diameter
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::dxSegare(const double x, const double d)
 {
     double x1;
-    x1=x;
     if(x < 0)
     {
         x1=0;
     }
+    else if(x > d)
+    {
+        x1=d;
+    }
     else
     {
-        if(x > d)
-        {
-           x1=d;
-        }
-        else
-        {
-           x1=x;
-        }
+        x1=x;
     }
-    return 2*sqrt((d - x)*x);
+
+    return 2.*sqrt((d - x1)*x1);
 }
 
 //! @brief Overloads void hopsan::limitValue() with a return value.
