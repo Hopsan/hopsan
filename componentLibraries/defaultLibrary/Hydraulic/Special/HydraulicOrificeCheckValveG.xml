@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="HydraulicOrificeCheckValveG" displayname="HydraulicOrificeCheckValveG">
+    <icons>
+      <icon scale="1" type="user" iconrotation="ON" path="HydraulicOrificeCheckValveG.svg"/>
+      <icon scale="1" type="iso" iconrotation="ON" path="HydraulicOrificeCheckValveG.svg"/>
+    </icons>
+        <help>
+            <text>Cylinder damping. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>HydraulicOrificeCheckValveG.nb</link>
+        </help>       
+   <ports>
+      <port name="Ao" autoplaced="true" enabled="true" a="270" x="0.25" y="0"/>
+      <port name="dh" autoplaced="true" enabled="true" a="270" x="0.5" y="0"/>
+      <port name="lo" autoplaced="true" enabled="true" a="270" x="0.75" y="0"/>
+      <port name="Pp" autoplaced="true" enabled="true" a="180" x="0" y="0.75"/>
+      <port name="Pc" autoplaced="true" enabled="true" a="0" x="1" y="0.75"/>
+      <port name="Ro" autoplaced="true" enabled="true" a="90" x="0.25" y="1"/>
+      <port name="DRL" autoplaced="true" enabled="true" a="90" x="0.5" y="1"/>
+      <port name="Cd" autoplaced="true" enabled="true" a="90" x="0.75" y="1"/>
+     </ports>
+    <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+  </modelobject>
+</hopsanobjectappearance>
