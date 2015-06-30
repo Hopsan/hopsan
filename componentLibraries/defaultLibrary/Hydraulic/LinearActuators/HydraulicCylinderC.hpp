@@ -58,11 +58,11 @@ class HydraulicCylinderC : public ComponentC
         double mDen[2];
 
         //Node data pointers
-        std::vector<double*> mvpND_p1, mvpND_q1, mvpND_c1, mvpND_Zc1;
-        std::vector<double*> mvpND_p2, mvpND_q2, mvpND_c2, mvpND_Zc2;
+        std::vector<double*> mvpP1_p, mvpP1_q, mvpP1_c, mvpP1_Zc;
+        std::vector<double*> mvpP2_p, mvpP2_q, mvpP2_c, mvpP2_Zc;
         double *mpSl, *mpV01, *mpV02, *mpBp, *mpBetae, *mpCLeak;
 
-        double *mpf3, *mpx3, *mpv3, *mpc3, *mpZx3, *mpme;
+        double *mpP3_f, *mpP3_x, *mpP3_v, *mpP3_c, *mpP3_Zx, *mpP3_me;
         size_t mNumPorts1, mNumPorts2;
 
         //Ports
@@ -107,15 +107,15 @@ class HydraulicCylinderC : public ComponentC
             mNumPorts1 = mpP1->getNumPorts();
             mNumPorts2 = mpP2->getNumPorts();
 
-            mvpND_p1.resize(mNumPorts1);
-            mvpND_q1.resize(mNumPorts1);
-            mvpND_c1.resize(mNumPorts1);
-            mvpND_Zc1.resize(mNumPorts1);
+            mvpP1_p.resize(mNumPorts1);
+            mvpP1_q.resize(mNumPorts1);
+            mvpP1_c.resize(mNumPorts1);
+            mvpP1_Zc.resize(mNumPorts1);
 
-            mvpND_p2.resize(mNumPorts2);
-            mvpND_q2.resize(mNumPorts2);
-            mvpND_c2.resize(mNumPorts2);
-            mvpND_Zc2.resize(mNumPorts2);
+            mvpP2_p.resize(mNumPorts2);
+            mvpP2_q.resize(mNumPorts2);
+            mvpP2_c.resize(mNumPorts2);
+            mvpP2_Zc.resize(mNumPorts2);
 
             double A1 = (*mpA1);
             double A2 = (*mpA2);
@@ -130,32 +130,32 @@ class HydraulicCylinderC : public ComponentC
             for (size_t i=0; i<mNumPorts1; ++i)
             {
 
-                mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Pressure, 0.0);
-                mvpND_q1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Flow, 0.0);
-                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WaveVariable, 0.0);
-                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CharImpedance, 0.0);
+                mvpP1_p[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Pressure, 0.0);
+                mvpP1_q[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Flow, 0.0);
+                mvpP1_c[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WaveVariable, 0.0);
+                mvpP1_Zc[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CharImpedance, 0.0);
 
-                *mvpND_p1[i] = getDefaultStartValue(mpP1, NodeHydraulic::Pressure);
-                *mvpND_q1[i] = getDefaultStartValue(mpP1, NodeHydraulic::Flow)/double(mNumPorts1);
-                *mvpND_c1[i] = getDefaultStartValue(mpP1, NodeHydraulic::Pressure);
+                *mvpP1_p[i] = getDefaultStartValue(mpP1, NodeHydraulic::Pressure);
+                *mvpP1_q[i] = getDefaultStartValue(mpP1, NodeHydraulic::Flow)/double(mNumPorts1);
+                *mvpP1_c[i] = getDefaultStartValue(mpP1, NodeHydraulic::Pressure);
             }
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                mvpND_p2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::Pressure, 0.0);
-                mvpND_q2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::Flow, 0.0);
-                mvpND_c2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::WaveVariable, 0.0);
-                mvpND_Zc2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::CharImpedance, 0.0);
+                mvpP2_p[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::Pressure, 0.0);
+                mvpP2_q[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::Flow, 0.0);
+                mvpP2_c[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::WaveVariable, 0.0);
+                mvpP2_Zc[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::CharImpedance, 0.0);
 
-                *mvpND_p2[i] = getDefaultStartValue(mpP2, NodeHydraulic::Pressure);
-                *mvpND_q2[i] = getDefaultStartValue(mpP2, NodeHydraulic::Flow)/double(mNumPorts2);
-                *mvpND_c2[i] = getDefaultStartValue(mpP2, NodeHydraulic::Pressure);
+                *mvpP2_p[i] = getDefaultStartValue(mpP2, NodeHydraulic::Pressure);
+                *mvpP2_q[i] = getDefaultStartValue(mpP2, NodeHydraulic::Flow)/double(mNumPorts2);
+                *mvpP2_c[i] = getDefaultStartValue(mpP2, NodeHydraulic::Pressure);
             }
-            mpf3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
-            mpx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
-            mpv3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
-            mpc3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
-            mpZx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
-            mpme = getSafeNodeDataPtr(mpP3, NodeMechanic::EquivalentMass);
+            mpP3_f = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
+            mpP3_x = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
+            mpP3_v = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
+            mpP3_c = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
+            mpP3_Zx = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
+            mpP3_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EquivalentMass);
 
             //Declare local variables;
             double p1, p2, x3, v3;
@@ -163,10 +163,10 @@ class HydraulicCylinderC : public ComponentC
             double qi1, qi2, V1, V2, qLeak, V1min, V2min;
 
             //Read variables from nodes
-            p1 = (*mvpND_p1[0]);
-            p2 = (*mvpND_p2[0]);
-            x3 = (*mpx3);
-            v3 = (*mpv3);
+            p1 = (*mvpP1_p[0]);
+            p2 = (*mvpP2_p[0]);
+            x3 = (*mpP3_x);
+            v3 = (*mpP3_v);
 
             //Size of volumes
             V1 = V01+A1*(-x3);
@@ -198,16 +198,16 @@ class HydraulicCylinderC : public ComponentC
             //Write to nodes
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                *(mvpND_c1[i]) = p1 + Zc1*(*mvpND_q1[i]);
-                *(mvpND_Zc1[i]) = Zc1;
+                *(mvpP1_c[i]) = p1 + Zc1*(*mvpP1_q[i]);
+                *(mvpP1_Zc[i]) = Zc1;
             }
             for(size_t i=0; i<mNumPorts2; ++i)
             {
-                *(mvpND_c2[i]) = p2 + Zc2*(*mvpND_q2[i]);
-                *(mvpND_Zc2[i]) = Zc2;
+                *(mvpP2_c[i]) = p2 + Zc2*(*mvpP2_q[i]);
+                *(mvpP2_Zc[i]) = Zc2;
             }
-            (*mpc3) = c3;
-            (*mpZx3) = Zx3;
+            (*mpP3_c) = c3;
+            (*mpP3_Zx) = Zx3;
         }
 
         void simulateOneTimestep()
@@ -216,11 +216,11 @@ class HydraulicCylinderC : public ComponentC
             double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
 
             //Read variables from nodes
-            double Zc1 = (*mvpND_Zc1[0]);          //All Zc should be the same and Q components shall
-            double Zc2 = (*mvpND_Zc2[0]);          //never touch them, so let's just use first value
-            double x3 = (*mpx3);
-            double v3 = (*mpv3);
-            double me = (*mpme);
+            double Zc1 = (*mvpP1_Zc[0]);          //All Zc should be the same and Q components shall
+            double Zc2 = (*mvpP2_Zc[0]);          //never touch them, so let's just use first value
+            double x3 = (*mpP3_x);
+            double v3 = (*mpP3_v);
+            double me = (*mpP3_me);
 
             double A1 = (*mpA1);
             double A2 = (*mpA2);
@@ -273,7 +273,7 @@ class HydraulicCylinderC : public ComponentC
             p1mean = (ci1 + Zc1*2.0*qi1) + (cl1 + Zc1*2.0*(-qLeak));
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                p1mean += (*mvpND_c1[i]) + 2.0*Zc1*(*mvpND_q1[i]);
+                p1mean += (*mvpP1_c[i]) + 2.0*Zc1*(*mvpP1_q[i]);
             }
             p1mean = p1mean/(double(mNumPorts1)+2.0);
             ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2.0 - ci1 - 2.0*Zc1*qi1));
@@ -284,7 +284,7 @@ class HydraulicCylinderC : public ComponentC
             p2mean = (ci2 + Zc2*2.0*qi2) + (cl2 + Zc2*2.0*qLeak);
             for(size_t i=0; i<mNumPorts2; ++i)
             {
-                p2mean += (*mvpND_c2[i]) + 2.0*Zc2*(*mvpND_q2[i]);
+                p2mean += (*mvpP2_c[i]) + 2.0*Zc2*(*mvpP2_q[i]);
             }
             p2mean = p2mean/(double(mNumPorts2)+2.0);
             ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2.0 - ci2 - 2.0*Zc2*qi2));
@@ -302,16 +302,16 @@ class HydraulicCylinderC : public ComponentC
             //Write to nodes
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                *(mvpND_c1[i]) = std::max(0.0, alpha * (*mvpND_c1[i]) + (1.0 - alpha)*(p1mean*2 - (*mvpND_c1[i]) - 2*Zc1*(*mvpND_q1[i])));
-                *(mvpND_Zc1[i]) = Zc1;
+                *(mvpP1_c[i]) = std::max(0.0, alpha * (*mvpP1_c[i]) + (1.0 - alpha)*(p1mean*2 - (*mvpP1_c[i]) - 2*Zc1*(*mvpP1_q[i])));
+                *(mvpP1_Zc[i]) = Zc1;
             }
             for(size_t i=0; i<mNumPorts2; ++i)
             {
-                *(mvpND_c2[i]) = std::max(0.0, alpha * (*mvpND_c2[i]) + (1.0 - alpha)*(p2mean*2 - (*mvpND_c2[i]) - 2*Zc2*(*mvpND_q2[i])));
-                *(mvpND_Zc2[i]) = Zc2;
+                *(mvpP2_c[i]) = std::max(0.0, alpha * (*mvpP2_c[i]) + (1.0 - alpha)*(p2mean*2 - (*mvpP2_c[i]) - 2*Zc2*(*mvpP2_q[i])));
+                *(mvpP2_Zc[i]) = Zc2;
             }
-            (*mpc3) = c3;
-            (*mpZx3) = Zx3;
+            (*mpP3_c) = c3;
+            (*mpP3_Zx) = Zx3;
         }
 
 
