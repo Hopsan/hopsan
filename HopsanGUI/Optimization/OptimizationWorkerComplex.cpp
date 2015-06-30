@@ -44,6 +44,8 @@ OptimizationWorkerComplex::OptimizationWorkerComplex(OptimizationHandler *pHandl
 
 void OptimizationWorkerComplex::init(const ModelWidget *pModel, const QString &modelPath)
 {
+    mCenter.resize(mNumParameters);
+
     OptimizationWorker::init(pModel, modelPath);
 }
 
@@ -60,7 +62,6 @@ void OptimizationWorkerComplex::finalize()
 
 void OptimizationWorkerComplex::findCenter()
 {
-    mCenter.resize(mNumParameters);
     for(int i=0; i<mCenter.size(); ++i)
     {
         mCenter[i] = 0;
