@@ -97,7 +97,7 @@ namespace hopsan {
                 else
                 {
                     // Make sure that selected data vector is in range
-                    const int nDataCols = mDataFile.getNumDataCols();
+                    const size_t nDataCols = mDataFile.getNumDataCols();
                     if ( !mDataFile.allRowsHaveSameNumCols() || nDataCols != 4 )
                     {
                         addErrorMessage(HString("Wrong number of data columns: ")+to_hstring(nDataCols)+" != 4");

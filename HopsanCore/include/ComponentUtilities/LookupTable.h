@@ -119,7 +119,7 @@ public:
             {
                 if (mIndexIncreasingOrDecreasing[d] == Unknown)
                 {
-                    calcIncreasingOrDecreasing(d);
+                    calcIncreasingOrDecreasing(int(d));
                 }
 
                 isStrictlyInc = isStrictlyInc && (mIndexIncreasingOrDecreasing[d] == StrictlyIncreasing);
@@ -216,7 +216,7 @@ public:
         {
             if (mIndexIncreasingOrDecreasing[d] == Unknown)
             {
-                calcIncreasingOrDecreasing(d);
+                calcIncreasingOrDecreasing(int(d));
             }
 
             // If row is strictly decreasing the swap row order, else run quicksort and hope for the best

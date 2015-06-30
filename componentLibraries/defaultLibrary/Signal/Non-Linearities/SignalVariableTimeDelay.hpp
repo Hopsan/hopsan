@@ -107,7 +107,7 @@ namespace hopsan {
                 {
                     try
                     {
-                        pNewDelay->initialize(nSamps,0);
+                        pNewDelay->initialize(int(nSamps),0);
                     }
                     catch (int e)
                     {
