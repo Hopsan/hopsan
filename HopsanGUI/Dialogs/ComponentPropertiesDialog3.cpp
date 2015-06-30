@@ -503,7 +503,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                         htmlStream << "  <script type=\"text/javascript\">\n";
                         htmlStream << "    var eqns = document.getElementsByClassName(\"equation\");\n";
                         htmlStream << "    Array.prototype.forEach.call(eqns, function(eq) {\n";
-                        htmlStream << "      katex.render(\"\\\\displaystyle \"+eq.getAttribute(\"expr\"), eq);\n";
+                        htmlStream << "      katex.render(eq.getAttribute(\"expr\"), eq, { displayMode: true });\n";
                         htmlStream << "    });\n";
                         htmlStream << "  </script>\n";
 
