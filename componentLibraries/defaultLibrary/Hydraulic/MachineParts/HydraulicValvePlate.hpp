@@ -169,7 +169,7 @@ namespace hopsan {
             //Calculate opening areas
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                double start = i*360.0/mNumPorts1;
+                double start = double(i)*360.0/double(mNumPorts1);
                 double start2 = start+180;
 
                 xva[i] = groove(a1*180.0/pi, start, phiP, dAlpha, alphaF, phi1, th1, th2, phi2, th1, th2);

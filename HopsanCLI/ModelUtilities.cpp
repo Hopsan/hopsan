@@ -56,7 +56,7 @@ void generateFullSystemHierarchyName(const ComponentSystem *pSys, HString &rFull
     }
 }
 
-HString generateFullPortVariableName(const Port *pPort, const int dataId)
+HString generateFullPortVariableName(const Port *pPort, const size_t dataId)
 {
    HString fullName;
    const NodeDataDescription *pND = pPort->getNodeDataDescription(dataId);

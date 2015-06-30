@@ -79,14 +79,13 @@ namespace hopsan {
             alpha = (*mpAlpha);
 
             mNumPorts = mpPel1->getNumPorts();
-
             mvpN_uel.resize(mNumPorts);
             mvpN_iel.resize(mNumPorts);
             mvpN_cel.resize(mNumPorts);
             mvpN_Zcel.resize(mNumPorts);
             mvp_C0.resize(mNumPorts);
 
-            Zc = mNumPorts*mTimestep/(2.0*capacitance)/(1.0-alpha);
+            Zc = double(mNumPorts)*mTimestep/(2.0*capacitance)/(1.0-alpha);
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
@@ -96,7 +95,7 @@ namespace hopsan {
                 mvpN_Zcel[i] = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::CharImpedance, 0.0);
 
                 *mvpN_uel[i] = getDefaultStartValue(mpPel1, NodeElectric::Voltage);
-                *mvpN_iel[i] = getDefaultStartValue(mpPel1, NodeElectric::Current)/mNumPorts;
+                *mvpN_iel[i] = getDefaultStartValue(mpPel1, NodeElectric::Current)/double(mNumPorts);
                 *mvpN_cel[i] = getDefaultStartValue(mpPel1, NodeElectric::Voltage);
                 *mvpN_Zcel[i] = Zc;
             }

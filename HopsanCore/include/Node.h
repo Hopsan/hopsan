@@ -59,7 +59,7 @@ public:
     HString unit;
     bool userModifiableQuantity;
     NodeDataVariableTypeEnumT varType;
-    unsigned int id;
+    size_t id;
 };
 
 class DLLIMPORTEXPORT Node

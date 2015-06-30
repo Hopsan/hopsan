@@ -2346,7 +2346,7 @@ void ComponentSystem::setupLogSlotsAndTs(const double simStartT, const double si
         mLogTheseTimeSteps.reserve(mnLogSlots);
 
         // Figure out the first simulation step to log (the one where simT >= logT)
-        size_t n = (logT-simT)/double(simTs)+0.5;
+        size_t n = size_t((logT-simT)/simTs+0.5);
         mLogTheseTimeSteps.push_back(n);
         // Fast forward simT
         simT += double(n)*simTs;

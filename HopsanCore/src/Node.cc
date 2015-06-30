@@ -187,7 +187,7 @@ int Node::getDataIdFromName(const HString &rName) const
     {
         if (rName == mDataDescriptions[i].name)
         {
-            return i;
+            return int(i);
         }
     }
     return -1; //Did not find this name return -1 to signal failure

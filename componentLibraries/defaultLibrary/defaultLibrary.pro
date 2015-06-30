@@ -29,7 +29,7 @@ LIBS *= -lHopsanCore$${DEBUG_EXT}
 CONFIG += silent warn_on plugin
 
 # The compiler should be pedantic to catch all errors (optional)
-QMAKE_CXXFLAGS += -pedantic -Wno-long-long
+QMAKE_CXXFLAGS += -pedantic -Wno-long-long -Wconversion
 
 # -------------------------------------------------
 # Project files

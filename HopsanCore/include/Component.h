@@ -74,7 +74,7 @@ public:
     HString mDescription;
     VariameterTypeEnumT mVariameterType;
     NodeDataVariableTypeEnumT mVarType;
-    unsigned int mVariableId;
+    size_t mVariableId;
 };
 
 class DLLIMPORTEXPORT Component

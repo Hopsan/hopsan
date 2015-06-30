@@ -126,15 +126,15 @@ namespace hopsan {
             double offset = (*mpOffset);
 
             double s = r*tan(angle);
-            double diff = 2*pi/mNumPorts1;
+            double diff = 2*pi/double(mNumPorts1);
 
             double a1 = mIntegrator.update(w1);
 
             //Calculate positions and velocities
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                v1[i] = s*cos(a1-offset-diff*i)*w1;
-                x1[i] = startX+s*sin(a1-offset-diff*i);
+                v1[i] = s*cos(a1-offset-diff*double(i))*w1;
+                x1[i] = startX+s*sin(a1-offset-diff*double(i));
             }
 
             //Piston forces
@@ -149,7 +149,7 @@ namespace hopsan {
             double torque = 0;
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                torque += f1[i]*tan(angle)*r*cos(a1-offset-diff*i);
+                torque += f1[i]*tan(angle)*r*cos(a1-offset-diff*double(i));
             }
 
             //Write new values to nodes

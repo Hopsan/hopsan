@@ -56,7 +56,7 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
 
 // ===== Help Functions =====
 void generateFullSystemHierarchyName(const hopsan::ComponentSystem *pSys, hopsan::HString &rFullSysName);
-hopsan::HString generateFullPortVariableName(const hopsan::Port *pPort, const int dataId);
+hopsan::HString generateFullPortVariableName(const hopsan::Port *pPort, const size_t dataId);
 
 
 #endif // MODELUTILITIES_H

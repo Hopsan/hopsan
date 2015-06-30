@@ -170,7 +170,7 @@ namespace hopsan {
             double angle = (*mpAngle);
             double ta = tan(angle);
             double s = r*ta;
-            double diff = 2*pi/mNumPorts1;
+            double diff = 2*pi/double(mNumPorts1);
 
             //Calculate torque
             double cp = 0;
@@ -180,7 +180,7 @@ namespace hopsan {
             {
                 c1[i] = (*mvpND_c1[i]);
                 Zc1[i] = (*mvpND_Zc1[i]);
-                double co = cos(a1-offset-diff*i);
+                double co = cos(a1-offset-diff*double(i));
                 cp += c1[i]*ta*r*co;
                 Zp += Zc1[i]*ta*r*co*ta*r*co;
             }
@@ -200,7 +200,7 @@ namespace hopsan {
             //Calculate positions and velocities
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                double a = a1-offset-diff*i;
+                double a = a1-offset-diff*double(i);
                 v1[i] = s*cos(a)*w1;
                 x1[i] = startX+s*sin(a);
             }

@@ -357,11 +357,11 @@ void Port::eraseStartNode()
 }
 
 //! @note This one should be called by system, do not call this manually (that will create a mess)
-void Port::setVariableAlias(const HString &rAlias, const int id)
+void Port::setVariableAlias(const HString &rAlias, const size_t id)
 {
     //! @todo check id
     // First remove it if already set
-    std::map<HString, int>::iterator it = mVariableAliasMap.begin();
+    std::map<HString, size_t>::iterator it = mVariableAliasMap.begin();
     while (it!=mVariableAliasMap.end())
     {
         if (it->second == id)
@@ -379,16 +379,16 @@ void Port::setVariableAlias(const HString &rAlias, const int id)
     // Replace with new name, if not empty
     if (!rAlias.empty())
     {
-        mVariableAliasMap.insert(std::pair<HString, int>(rAlias, id));
+        mVariableAliasMap.insert(std::pair<HString, size_t>(rAlias, id));
     }
 }
 
 //! @brief Get the alias name for a specific node variable id
 //! @param [in] id The node data id of the requested variable (Ex: NodeHydraulic::Pressure)
 //! @return The alias name or empty string if no alias name exist for requested variable
-const HString &Port::getVariableAlias(const int id)
+const HString &Port::getVariableAlias(const size_t id)
 {
-    std::map<HString, int>::const_iterator it;
+    std::map<HString, size_t>::const_iterator it;
     for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
     {
         if (it->second == id)
@@ -404,11 +404,11 @@ const HString &Port::getVariableAlias(const int id)
 //! @returns The variable id (integer value) (Ex:: NodeHydarulic::Pressure) or -1 if not found
 int Port::getVariableIdByAlias(const HString &rAlias) const
 {
-    std::map<HString, int>::const_iterator it = mVariableAliasMap.find(rAlias);
+    std::map<HString, size_t>::const_iterator it = mVariableAliasMap.find(rAlias);
     {
         if (it!=mVariableAliasMap.end())
         {
-            return it->second;
+            return int(it->second);
         }
     }
     return -1;

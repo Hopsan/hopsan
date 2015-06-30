@@ -199,7 +199,7 @@ int PLOParser::getColIdxForDataName(const HString &rName) const
     {
         if (rName == mDataNames[i])
         {
-            return i;
+            return int(i);
         }
     }
     return -1;

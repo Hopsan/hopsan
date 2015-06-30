@@ -117,7 +117,7 @@ namespace hopsan {
         virtual HString getSignalNodeQuantity() const;
         virtual bool getSignalNodeQuantityModifyable() const;
 
-        const HString &getVariableAlias(const int id);
+        const HString &getVariableAlias(const size_t id);
         int getVariableIdByAlias(const HString &rAlias) const;
 
         virtual bool haveLogData(const size_t subPortIdx=0);
@@ -177,14 +177,14 @@ namespace hopsan {
         void createStartNode(const HString &rNodeType);
         void eraseStartNode();
 
-        void setVariableAlias(const HString &rAlias, const int id);
+        void setVariableAlias(const HString &rAlias, const size_t id);
 
     private:
         HString mPortName;
         HString mDescription;
         Node *mpNode;
         Node *mpStartNode;
-        std::map<HString, int> mVariableAliasMap;
+        std::map<HString, size_t> mVariableAliasMap;
         bool mConnectionRequired;
 
         const HString mEmptyString;

@@ -93,7 +93,7 @@ namespace hopsan {
             mvC0.resize(mNumPorts);
             mvCnew.resize(mNumPorts);
 
-            Zc = mNumPorts*betae/(2.0*V)*mTimestep/(1.0-alpha);
+            Zc = double(mNumPorts)*betae/(2.0*V)*mTimestep/(1.0-alpha);
 
             double pTot=0.0;
             for (size_t i=0; i<mNumPorts; ++i)
@@ -124,7 +124,7 @@ namespace hopsan {
             alpha = (*mpAlpha);
             V = (*mpV);
 
-            Zc = mNumPorts*betae/(2.0*V)*mTimestep/(1.0-alpha);
+            Zc = double(mNumPorts)*betae/(2.0*V)*mTimestep/(1.0-alpha);
 
             //Equations
             for (size_t i=0; i<mNumPorts; ++i)
