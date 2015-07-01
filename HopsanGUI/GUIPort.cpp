@@ -355,48 +355,73 @@ void Port::openRightClickMenu(QPoint screenPos)
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;
-        //! @todo This is a ugly special hack for Signal Value but I cant thing of anything better, (maybe make it impossible to have custom plot scales for Values)
-        //! @todo should have a help function for this as similar checks are done elsewhere
-        const QString &dataName = logVars[i]->getDataName();
-        const QString &dataUnit = logVars[i]->getDataUnit();
+//        //! @todo This is a ugly special hack for Signal Value but I cant thing of anything better, (maybe make it impossible to have custom plot scales for Values)
+//        //! @todo should have a help function for this as similar checks are done elsewhere
+//        const QString &dataName = logVars[i]->getDataName();
+//        const QString &dataUnit = logVars[i]->getDataUnit();
 
+//        QString displayUnit;
+//        UnitScale custUS;
+//        mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+dataName, custUS);
+//        if (custUS.isEmpty())
+//        {
+//            if ( dataName == "Value" && dataUnit != "-")
+//            {
+//                QStringList pqs = gpConfig->getQuantitiesForUnit(dataUnit);
+//                //! @todo if same unit exist in multiple places we have a problem
+//                if (pqs.size() > 1)
+//                {
+//                    gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
+//                }
+//                QString defaultUnit;
+//                if (pqs.size() == 1)
+//                {
+//                    defaultUnit = gpConfig->getDefaultUnit(pqs.first());
+//                }
+
+//                if (!defaultUnit.isEmpty())
+//                {
+//                    displayUnit = defaultUnit;
+//                }
+//                else
+//                {
+//                    displayUnit = dataUnit;
+//                }
+//            }
+//            else
+//            {
+//                displayUnit = gpConfig->getDefaultUnit(dataName);
+//            }
+//        }
+//        else
+//        {
+//            displayUnit = custUS.mUnit;
+//        }
+
+        const QString &dataName = logVars[i]->getDataName();
         QString displayUnit;
-        UnitScale custUS;
-        mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+dataName, custUS);
-        if (custUS.isEmpty())
+        const QString &quantity = logVars[i]->getDataQuantity();
+        if (quantity.isEmpty())
         {
-            if ( dataName == "Value" && dataUnit != "-")
+            const QString &dataUnit = logVars[i]->getDataUnit();
+            if (!dataUnit.isEmpty())
             {
                 QStringList pqs = gpConfig->getQuantitiesForUnit(dataUnit);
-                //! @todo if same unit exist in multiple places we have a problem
-                if (pqs.size() > 1)
-                {
-                    gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
-                }
-                QString defaultUnit;
                 if (pqs.size() == 1)
                 {
-                    defaultUnit = gpConfig->getDefaultUnit(pqs.first());
-                }
-
-                if (!defaultUnit.isEmpty())
-                {
-                    displayUnit = defaultUnit;
+                    displayUnit = gpConfig->getDefaultUnit(pqs.front());
                 }
                 else
                 {
                     displayUnit = dataUnit;
                 }
             }
-            else
-            {
-                displayUnit = gpConfig->getDefaultUnit(dataName);
-            }
         }
         else
         {
-            displayUnit = custUS.mUnit;
+            displayUnit = gpConfig->getDefaultUnit(quantity);
         }
+
 
         QString actionText;
         if (logVars[i]->hasAliasName())
@@ -425,9 +450,13 @@ void Port::openRightClickMenu(QPoint screenPos)
         it = plotActions.find(selectedAction);
         if (it != plotActions.end())
         {
-            if(getPortType() == QString("PowerMultiportType"))
+            if(getPortType() == "PowerMultiportType")
             {
-                getConnectedPorts().first()->plot(logVars[it.value()]->getDataName(), "");
+                QVector<Port*> ports = getConnectedPorts();
+                if (!ports.isEmpty())
+                {
+                    ports.first()->plot(logVars[it.value()]->getDataName(), "");
+                }
             }
             plot(logVars[it.value()]->getDataName(), "");
         }

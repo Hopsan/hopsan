@@ -783,66 +783,67 @@ void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &
     }
 }
 
-void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue)
-{
-    UnitScale us(rDescription, rScaleValue);
-    if (!rScaleValue.isEmpty() && us.isEmpty())
-    {
-        gpMessageHandler->addErrorMessage(QString("Invalid unit scale value: %1, ignoring!").arg(rScaleValue));
-    }
+//void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue)
+//{
+//    qFatal("This functionality has been removed");
+//    UnitScale us(rDescription, rScaleValue);
+//    if (!rScaleValue.isEmpty() && us.isEmpty())
+//    {
+//        gpMessageHandler->addErrorMessage(QString("Invalid unit scale value: %1, ignoring!").arg(rScaleValue));
+//    }
 
-    if (us.isEmpty())
-    {
-        unregisterCustomPlotUnitOrScale(rVariablePortDataName);
-    }
-    else
-    {
-        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, us);
-    }
-}
+//    if (us.isEmpty())
+//    {
+//        unregisterCustomPlotUnitOrScale(rVariablePortDataName);
+//    }
+//    else
+//    {
+//        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, us);
+//    }
+//}
 
-void ModelObject::unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName)
-{
-    mRegisteredCustomPlotUnitsOrScales.remove(rVariablePortDataName);
-}
+//void ModelObject::unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName)
+//{
+//    mRegisteredCustomPlotUnitsOrScales.remove(rVariablePortDataName);
+//}
 
 
-//! @brief Registers a default offset value for specified plot variable
-void ModelObject::registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset)
-{
-    mRegisteredCustomPlotOffsets.insert(rVariablePortDataName, offset);
-}
+////! @brief Registers a default offset value for specified plot variable
+//void ModelObject::registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset)
+//{
+//    mRegisteredCustomPlotOffsets.insert(rVariablePortDataName, offset);
+//}
 
-//! @brief Unregisters a default offset value for specified plot variable
-void ModelObject::unregisterCustomPlotOffset(const QString &rVariablePortDataName)
-{
-    mRegisteredCustomPlotOffsets.remove(rVariablePortDataName);
-}
+////! @brief Unregisters a default offset value for specified plot variable
+//void ModelObject::unregisterCustomPlotOffset(const QString &rVariablePortDataName)
+//{
+//    mRegisteredCustomPlotOffsets.remove(rVariablePortDataName);
+//}
 
-const QMap<QString, UnitScale> &ModelObject::getCustomPlotUnitsOrScales() const
-{
-    return mRegisteredCustomPlotUnitsOrScales;
-}
+//const QMap<QString, UnitScale> &ModelObject::getCustomPlotUnitsOrScales() const
+//{
+//    return mRegisteredCustomPlotUnitsOrScales;
+//}
 
-void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales)
-{
-    // Empty string list to indicate, no data
-    rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
-}
+//void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales)
+//{
+//    // Empty string list to indicate, no data
+//    rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
+//}
 
-//! @brief Returns the default plot offset value for specified variable
-double ModelObject::getCustomPlotOffset(const QString &rVariablePortDataName)
-{
-    if(mRegisteredCustomPlotOffsets.contains(rVariablePortDataName))
-    {
-        return mRegisteredCustomPlotOffsets.find(rVariablePortDataName).value();
-    }
-    else
-    {
-        return 0.0;
-    }
+////! @brief Returns the default plot offset value for specified variable
+//double ModelObject::getCustomPlotOffset(const QString &rVariablePortDataName)
+//{
+//    if(mRegisteredCustomPlotOffsets.contains(rVariablePortDataName))
+//    {
+//        return mRegisteredCustomPlotOffsets.find(rVariablePortDataName).value();
+//    }
+//    else
+//    {
+//        return 0.0;
+//    }
 
-}
+//}
 
 void ModelObject::setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
 {
@@ -1028,19 +1029,19 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     }
 
     // Save any custom selected plot scales
-    if (!mRegisteredCustomPlotUnitsOrScales.isEmpty())
-    {
-        QDomElement plotscales = appendDomElement(xmlGuiStuff, HMF_PLOTSCALES);
-        QMap<QString, UnitScale>::iterator psit;
-        for (psit=mRegisteredCustomPlotUnitsOrScales.begin(); psit!=mRegisteredCustomPlotUnitsOrScales.end(); ++psit)
-        {
-            UnitScale &val = psit.value();
-            QDomElement plotscale = appendDomElement(plotscales, HMF_PLOTSCALE);
-            plotscale.setAttribute(HMF_PLOTSCALEPORTDATANAME, psit.key());
-            plotscale.setAttribute(HMF_PLOTSCALEDESCRIPTION, val.mUnit);
-            plotscale.setAttribute(HMF_PLOTSCALEVALUE, val.mScale);
-        }
-    }
+//    if (!mRegisteredCustomPlotUnitsOrScales.isEmpty())
+//    {
+//        QDomElement plotscales = appendDomElement(xmlGuiStuff, HMF_PLOTSCALES);
+//        QMap<QString, UnitScale>::iterator psit;
+//        for (psit=mRegisteredCustomPlotUnitsOrScales.begin(); psit!=mRegisteredCustomPlotUnitsOrScales.end(); ++psit)
+//        {
+//            UnitScale &val = psit.value();
+//            QDomElement plotscale = appendDomElement(plotscales, HMF_PLOTSCALE);
+//            plotscale.setAttribute(HMF_PLOTSCALEPORTDATANAME, psit.key());
+//            plotscale.setAttribute(HMF_PLOTSCALEDESCRIPTION, val.mUnit);
+//            plotscale.setAttribute(HMF_PLOTSCALEVALUE, val.mScale);
+//        }
+//    }
 
     // Save animation settings
     QDomElement animationElement = appendDomElement(xmlGuiStuff, "animation");

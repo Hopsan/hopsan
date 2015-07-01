@@ -2506,7 +2506,8 @@ void HcomHandler::executeChangeDefaultPlotScaleCommand(const QString cmd)
             toLongDataNames(longVarName);
             if(pComponent->getPort(fields[1]) && NodeInfo(pComponent->getPort(fields[1])->getNodeType()).shortNames.contains(fields[2]))
             {
-                pComponent->registerCustomPlotUnitOrScale(longVarName, description, scale);
+                //pComponent->registerCustomPlotUnitOrScale(longVarName, description, scale);
+                HCOMERR("This function is no longer implemented"); //! @todo fixa /Peter
                 ++nChanged;
             }
         }
@@ -2581,7 +2582,8 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
             QString portAndVarName = fields[1]+"."+fields[2];
             toLongDataNames(portAndVarName);
 
-            pComponent->getCustomPlotUnitOrScale(portAndVarName, unitScale);
+            //pComponent->getCustomPlotUnitOrScale(portAndVarName, unitScale);
+            HCOMERR("This function is no  longer implemented"); //! @todo fixa /Peter
 
             const QString &scale = unitScale.mScale;
             const QString &unit = unitScale.mUnit;
@@ -2662,7 +2664,8 @@ void HcomHandler::executeChangeDefaultPlotOffsetCommand(const QString cmd)
             toLongDataNames(longVarName);
             if(pComponent->getPort(fields[1]) && NodeInfo(pComponent->getPort(fields[1])->getNodeType()).shortNames.contains(fields[2]))
             {
-                pComponent->registerCustomPlotOffset(longVarName, offset);
+                //pComponent->registerCustomPlotOffset(longVarName, offset);
+                HCOMERR("This function is no longer implemented"); //! @todo fixa /Peter
                 ++nChanged;
             }
         }
@@ -2737,7 +2740,8 @@ void HcomHandler::executeDisplayDefaultPlotOffsetCommand(const QString cmd)
             QString portAndVarName = fields[1]+"."+fields[2];
             toLongDataNames(portAndVarName);
 
-            offset = pComponent->getCustomPlotOffset(portAndVarName);
+            //offset = pComponent->getCustomPlotOffset(portAndVarName);
+            HCOMERR("This function is no longer implemented"); //! @todo fixa /Peter
 
             HCOMPRINT(QString("%1: %2").arg(dispName).arg(offset));
 

@@ -311,7 +311,7 @@ bool ComponentPropertiesDialog3::setAliasNames()
 bool ComponentPropertiesDialog3::setVariableValues()
 {
     bool isOK = mpVariableTableWidget->setStartValues();
-    isOK *= mpVariableTableWidget->setCustomPlotScaleValues();
+    //isOK *= mpVariableTableWidget->setCustomPlotScaleValues();
     return isOK;
 }
 
@@ -846,7 +846,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     resizeColumnToContents(Name);
     resizeColumnToContents(Unit);
     resizeColumnToContents(Value);
-    resizeColumnToContents(Scale);
+    resizeColumnToContents(Quantity);
     resizeColumnToContents(ShowPort);
     setColumnWidth(Description, 2*columnWidth(Description));
 
@@ -865,7 +865,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     horizontalHeader()->setResizeMode(Description, QHeaderView::Stretch);
     horizontalHeader()->setResizeMode(Value, QHeaderView::ResizeToContents);
     horizontalHeader()->setResizeMode(Unit, QHeaderView::ResizeToContents);
-    horizontalHeader()->setResizeMode(Scale, QHeaderView::ResizeToContents);
+    horizontalHeader()->setResizeMode(Quantity, QHeaderView::ResizeToContents);
     horizontalHeader()->setResizeMode(ShowPort, QHeaderView::ResizeToContents);
     horizontalHeader()->setClickable(false);
 #endif
@@ -985,33 +985,33 @@ bool VariableTableWidget::setStartValues()
     return allok;
 }
 
-bool VariableTableWidget::setCustomPlotScaleValues()
-{
-    bool allok=true;
-    for (int row=0; row<rowCount(); ++row)
-    {
+//bool VariableTableWidget::setCustomPlotScaleValues()
+//{
+//    bool allok=true;
+//    for (int row=0; row<rowCount(); ++row)
+//    {
 
-        // First check if row is separator, then skip it
-        if (columnSpan(row,0)>1)
-        {
-            continue;
-        }
+//        // First check if row is separator, then skip it
+//        if (columnSpan(row,0)>1)
+//        {
+//            continue;
+//        }
 
-        // Extract PlotScaleSelector from row
-        PlotScaleSelectionWidget *pPlotScaleSelector = qobject_cast<PlotScaleSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Scale)));
-        if (!pPlotScaleSelector)
-        {
-            continue;
-        }
+//        // Extract PlotScaleSelector from row
+//        PlotScaleSelectionWidget *pPlotScaleSelector = qobject_cast<PlotScaleSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Scale)));
+//        if (!pPlotScaleSelector)
+//        {
+//            continue;
+//        }
 
-        // Only register if changed
-        if (pPlotScaleSelector->hasChanged())
-        {
-            pPlotScaleSelector->registerCustomScale();
-        }
-    }
-    return allok;
-}
+//        // Only register if changed
+//        if (pPlotScaleSelector->hasChanged())
+//        {
+//            pPlotScaleSelector->registerCustomScale();
+//        }
+//    }
+//    return allok;
+//}
 
 bool VariableTableWidget::setAliasNames()
 {
@@ -1066,10 +1066,11 @@ bool VariableTableWidget::focusNextPrevChild(bool next)
             pParWidget->getValueEditPtr()->setFocus();
         }
     }
-    else if(currentColumn() == Scale)
+    else if(currentColumn() == Quantity)
     {
-        PlotScaleSelectionWidget *pScaleWidget = qobject_cast<PlotScaleSelectionWidget*>(pIndexWidget);
-        pScaleWidget->getPlotScaleEditPtr()->setFocus();
+        //! @todo quantitys?
+//        PlotScaleSelectionWidget *pScaleWidget = qobject_cast<PlotScaleSelectionWidget*>(pIndexWidget);
+//        pScaleWidget->getPlotScaleEditPtr()->setFocus();
     }
     else if(currentColumn() == ShowPort)
     {
@@ -1156,13 +1157,13 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
 //        QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(rData, mpModelObject, this);
 //        this->setIndexWidget(model()->index(row,Scale), pPlotScaleWidget);
         QWidget *pQuantityWidget = new QuantitySelectionWidget(rData, mpModelObject, this);
-        setIndexWidget(model()->index(row,Scale), pQuantityWidget);
+        setIndexWidget(model()->index(row,Quantity), pQuantityWidget);
     }
     else
     {
         pItem = new QTableWidgetItem();
         pItem->setFlags(Qt::NoItemFlags);
-        setItem(row,Scale,pItem);
+        setItem(row,Quantity,pItem);
     }
 
     // Set the port hide/show button
@@ -1257,183 +1258,183 @@ void TableWidgetTotalSize::setMaxVisibleRows(const int maxRows)
 }
 
 
-PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent) :
-    QWidget(pParent)
-{
-    mVariableTypeName = rData.mName;
-    mVariablePortDataName = rData.mPortName+"#"+rData.mName;
-    mOriginalUnit = rData.mUnit;
-    mpModelObject = pModelObject;
+//PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent) :
+//    QWidget(pParent)
+//{
+//    mVariableTypeName = rData.mName;
+//    mVariablePortDataName = rData.mPortName+"#"+rData.mName;
+//    mOriginalUnit = rData.mUnit;
+//    mpModelObject = pModelObject;
 
-    QHBoxLayout* pLayout = new QHBoxLayout(this);
-    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
-    pLayout->setContentsMargins(margins);
+//    QHBoxLayout* pLayout = new QHBoxLayout(this);
+//    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
+//    pLayout->setContentsMargins(margins);
 
-    mpPlotScaleEdit = new QLineEdit();
-    mpPlotScaleEdit->setAlignment(Qt::AlignCenter);
-    mpPlotScaleEdit->setFrame(false);
-    pLayout->addWidget(mpPlotScaleEdit);
+//    mpPlotScaleEdit = new QLineEdit();
+//    mpPlotScaleEdit->setAlignment(Qt::AlignCenter);
+//    mpPlotScaleEdit->setFrame(false);
+//    pLayout->addWidget(mpPlotScaleEdit);
 
-    UnitScale currCustom;
-    pModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, currCustom);
-    if (!currCustom.mScale.isEmpty()) // Check if data exists
-    {
-        // If minus one scale then show -1
-        if (currCustom.isMinusOne())
-        {
-            mpPlotScaleEdit->setText(currCustom.mScale);
-        }
-        // If unit not given, display the scale value
-        else if (currCustom.mUnit.isEmpty())
-        {
-            mpPlotScaleEdit->setText(currCustom.mScale);
-        }
-        // If description given use it (usually the custom unit)
-        else
-        {
-            mpPlotScaleEdit->setText(currCustom.mUnit);
-        }
+//    UnitScale currCustom;
+//    pModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, currCustom);
+//    if (!currCustom.mScale.isEmpty()) // Check if data exists
+//    {
+//        // If minus one scale then show -1
+//        if (currCustom.isMinusOne())
+//        {
+//            mpPlotScaleEdit->setText(currCustom.mScale);
+//        }
+//        // If unit not given, display the scale value
+//        else if (currCustom.mUnit.isEmpty())
+//        {
+//            mpPlotScaleEdit->setText(currCustom.mScale);
+//        }
+//        // If description given use it (usually the custom unit)
+//        else
+//        {
+//            mpPlotScaleEdit->setText(currCustom.mUnit);
+//        }
 
-        //! @todo what about showinf manually set custom units like "1 [m]"
-    }
+//        //! @todo what about showinf manually set custom units like "1 [m]"
+//    }
 
-    QToolButton *pScaleSelectionButton =  new QToolButton(this);
-    pScaleSelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
-    pScaleSelectionButton->setToolTip("Select Unit Scaling");
-    pScaleSelectionButton->setFixedSize(24,24);
-    connect(pScaleSelectionButton, SIGNAL(clicked()), this, SLOT(createPlotScaleSelectionMenu()));
-    pLayout->addWidget(pScaleSelectionButton);
-}
+//    QToolButton *pScaleSelectionButton =  new QToolButton(this);
+//    pScaleSelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
+//    pScaleSelectionButton->setToolTip("Select Unit Scaling");
+//    pScaleSelectionButton->setFixedSize(24,24);
+//    connect(pScaleSelectionButton, SIGNAL(clicked()), this, SLOT(createPlotScaleSelectionMenu()));
+//    pLayout->addWidget(pScaleSelectionButton);
+//}
 
-void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
-{
-    QMap<QString, double> unitScales;
-    QMenu menu;
-    if (mVariableTypeName == "Value")
-    {
-        QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
-        if (pqs.size() > 0)
-        {
-            unitScales = gpConfig->getUnitScales(pqs.first());
-        }
-    }
-    else
-    {
-        unitScales = gpConfig->getUnitScales(mVariableTypeName);
-    }
-    if (!unitScales.isEmpty())
-    {
-        QList<QString> keys = unitScales.keys();
-        QMap<QAction*, int> actionScaleMap;
+//void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
+//{
+//    QMap<QString, double> unitScales;
+//    QMenu menu;
+//    if (mVariableTypeName == "Value")
+//    {
+//        QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
+//        if (pqs.size() > 0)
+//        {
+//            unitScales = gpConfig->getUnitScales(pqs.first());
+//        }
+//    }
+//    else
+//    {
+//        unitScales = gpConfig->getUnitScales(mVariableTypeName);
+//    }
+//    if (!unitScales.isEmpty())
+//    {
+//        QList<QString> keys = unitScales.keys();
+//        QMap<QAction*, int> actionScaleMap;
 
-        for (int i=0; i<keys.size(); ++i)
-        {
-            QAction *tempAction = menu.addAction(keys[i]);
-            actionScaleMap.insert(tempAction, i);
-            tempAction->setIconVisibleInMenu(false);
-        }
+//        for (int i=0; i<keys.size(); ++i)
+//        {
+//            QAction *tempAction = menu.addAction(keys[i]);
+//            actionScaleMap.insert(tempAction, i);
+//            tempAction->setIconVisibleInMenu(false);
+//        }
 
-        //! @todo maybe add this
-        //    if(!menu.isEmpty())
-        //    {
-        //        menu.addSeparator();
-        //    }
-        //    QAction *pAddAction = menu.addAction("Add global unit scale");
-        QAction *pAddAction = 0;
-
-
-        QCursor cursor;
-        QAction *selectedAction = menu.exec(cursor.pos());
-        if(selectedAction == pAddAction)
-        {
-            //! @todo maybe add this
-            return;
-        }
-
-        int idx = actionScaleMap.value(selectedAction,-1);
-        if (idx >= 0)
-        {
-            QString key =  keys.at(idx);
-            if(!key.isEmpty())
-            {
-                // Set the selected unit scale
-                //mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, key, QString("%1").arg(unitScales.value(key)));
-                mpPlotScaleEdit->setText(key);
-            }
-        }
-    }
-}
-
-void PlotScaleSelectionWidget::registerCustomScale()
-{
-    QMap<QString, double> unitScales;
+//        //! @todo maybe add this
+//        //    if(!menu.isEmpty())
+//        //    {
+//        //        menu.addSeparator();
+//        //    }
+//        //    QAction *pAddAction = menu.addAction("Add global unit scale");
+//        QAction *pAddAction = 0;
 
 
-    QString val = mpPlotScaleEdit->text();
+//        QCursor cursor;
+//        QAction *selectedAction = menu.exec(cursor.pos());
+//        if(selectedAction == pAddAction)
+//        {
+//            //! @todo maybe add this
+//            return;
+//        }
 
-    if (val=="-1" || val=="-1.0")
-    {
-        val = QString("-1 [%1]").arg(mOriginalUnit);
-    }
-    else
-    {
-        if (mVariableTypeName == "Value")
-        {
-            QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
-            if (pqs.size() > 0)
-            {
-                unitScales = gpConfig->getUnitScales(pqs.first());
-            }
-        }
-        else
-        {
-            unitScales = gpConfig->getUnitScales(mVariableTypeName);
-        }
-    }
+//        int idx = actionScaleMap.value(selectedAction,-1);
+//        if (idx >= 0)
+//        {
+//            QString key =  keys.at(idx);
+//            if(!key.isEmpty())
+//            {
+//                // Set the selected unit scale
+//                //mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, key, QString("%1").arg(unitScales.value(key)));
+//                mpPlotScaleEdit->setText(key);
+//            }
+//        }
+//    }
+//}
 
-    if (unitScales.contains(val))
-    {
-        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, val, QString("%1").arg(unitScales.value(val)));
-    }
-    else if (val.contains('['))
-    {
-        // Ok the user want to add a custom specific scale
-        QStringList fields = val.split(' ');
-        if (fields.size() == 2)
-        {
-            //! @todo need to check if text is valid number
-            mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, fields.last().remove('[').remove(']'), fields.first());
-        }
-        else
-        {
-            //! @todo report error
-        }
-    }
-    else
-    {
-        //! @todo need to check if text is valid number
-        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", val);
-    }
-}
+//void PlotScaleSelectionWidget::registerCustomScale()
+//{
+//    QMap<QString, double> unitScales;
 
-bool PlotScaleSelectionWidget::hasChanged() const
-{
-    UnitScale us;
-    mpModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, us);
-    if (us.mUnit.isEmpty())
-    {
-        return us.mScale != mpPlotScaleEdit->text();
-    }
-    else
-    {
-        return us.mUnit != mpPlotScaleEdit->text();
-    }
-}
 
-QLineEdit *PlotScaleSelectionWidget::getPlotScaleEditPtr() const
-{
-    return mpPlotScaleEdit;
-}
+//    QString val = mpPlotScaleEdit->text();
+
+//    if (val=="-1" || val=="-1.0")
+//    {
+//        val = QString("-1 [%1]").arg(mOriginalUnit);
+//    }
+//    else
+//    {
+//        if (mVariableTypeName == "Value")
+//        {
+//            QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
+//            if (pqs.size() > 0)
+//            {
+//                unitScales = gpConfig->getUnitScales(pqs.first());
+//            }
+//        }
+//        else
+//        {
+//            unitScales = gpConfig->getUnitScales(mVariableTypeName);
+//        }
+//    }
+
+//    if (unitScales.contains(val))
+//    {
+//        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, val, QString("%1").arg(unitScales.value(val)));
+//    }
+//    else if (val.contains('['))
+//    {
+//        // Ok the user want to add a custom specific scale
+//        QStringList fields = val.split(' ');
+//        if (fields.size() == 2)
+//        {
+//            //! @todo need to check if text is valid number
+//            mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, fields.last().remove('[').remove(']'), fields.first());
+//        }
+//        else
+//        {
+//            //! @todo report error
+//        }
+//    }
+//    else
+//    {
+//        //! @todo need to check if text is valid number
+//        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", val);
+//    }
+//}
+
+//bool PlotScaleSelectionWidget::hasChanged() const
+//{
+//    UnitScale us;
+//    mpModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, us);
+//    if (us.mUnit.isEmpty())
+//    {
+//        return us.mScale != mpPlotScaleEdit->text();
+//    }
+//    else
+//    {
+//        return us.mUnit != mpPlotScaleEdit->text();
+//    }
+//}
+
+//QLineEdit *PlotScaleSelectionWidget::getPlotScaleEditPtr() const
+//{
+//    return mpPlotScaleEdit;
+//}
 
 
 ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent) :

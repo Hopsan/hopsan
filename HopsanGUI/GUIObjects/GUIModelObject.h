@@ -110,13 +110,13 @@ public:
     virtual void getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions) const;
 
     // Custom variable plot unit methods
-    void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);
-    void unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName);
-    void registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset);
-    void unregisterCustomPlotOffset(const QString &rVariablePortDataName);
-    const QMap<QString, UnitScale> &getCustomPlotUnitsOrScales() const;
-    void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
-    double getCustomPlotOffset(const QString &rVariablePortDataName);
+//    void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);
+//    void unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName);
+//    void registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset);
+//    void unregisterCustomPlotOffset(const QString &rVariablePortDataName);
+//    const QMap<QString, UnitScale> &getCustomPlotUnitsOrScales() const;
+//    void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
+//    double getCustomPlotOffset(const QString &rVariablePortDataName);
 
     // Custom quantity methods
     void setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity);
@@ -204,9 +204,9 @@ protected:
 
     QMap<QString, QString> mDefaultParameterValues;
     QStringList mActiveDynamicParameterPortNames;
-    QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
+    //QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
     QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
-    QMap<QString, double> mRegisteredCustomPlotOffsets;
+    //QMap<QString, double> mRegisteredCustomPlotOffsets;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

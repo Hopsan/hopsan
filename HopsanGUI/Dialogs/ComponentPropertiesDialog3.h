@@ -58,10 +58,10 @@ class VariableTableWidget :public TableWidgetTotalSize
     Q_OBJECT
 public:
     enum VariameterTypEnumT {InputVaraiable, OutputVariable, OtherVariable, Constant}; //!< @todo maybe not only here
-    enum ColumnEnumT {Name, Alias, Description, Unit, Value, Scale, ShowPort, NumCols};
+    enum ColumnEnumT {Name, Alias, Description, Unit, Value, Quantity, ShowPort, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
-    bool setCustomPlotScaleValues();
+    //bool setCustomPlotScaleValues();
     bool setAliasNames();
 
 protected:
@@ -125,23 +125,23 @@ private:
 // Help class declarations
 //----------------------------------------------------------------------
 
-class PlotScaleSelectionWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
-    void registerCustomScale();
-    bool hasChanged() const;
-    QLineEdit *getPlotScaleEditPtr() const;
+//class PlotScaleSelectionWidget : public QWidget
+//{
+//    Q_OBJECT
+//public:
+//    PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+//    void registerCustomScale();
+//    bool hasChanged() const;
+//    QLineEdit *getPlotScaleEditPtr() const;
 
-private slots:
-    void createPlotScaleSelectionMenu();
+//private slots:
+//    void createPlotScaleSelectionMenu();
 
-private:
-    QLineEdit *mpPlotScaleEdit;
-    ModelObject *mpModelObject;
-    QString mVariableTypeName, mVariablePortDataName, mOriginalUnit;
-};
+//private:
+//    QLineEdit *mpPlotScaleEdit;
+//    ModelObject *mpModelObject;
+//    QString mVariableTypeName, mVariablePortDataName, mOriginalUnit;
+//};
 
 class QuantitySelectionWidget : public QWidget
 {
