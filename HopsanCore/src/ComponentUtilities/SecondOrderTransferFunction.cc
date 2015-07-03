@@ -70,6 +70,7 @@ void SecondOrderTransferFunction::initialize(double timestep, double num[3], dou
     mDelayed2Y = mDelayedY-sy0*mTimeStep;
     mTimeStep = timestep;
     setNumDen(num, den);
+    setBackupLength(1);
 }
 
 
@@ -109,6 +110,26 @@ void SecondOrderTransferFunction::setMinMax(double min, double max)
     mMax = max;
 }
 
+void SecondOrderTransferFunction::backup()
+{
+    mBackupU.update(mDelayed2U);
+    mBackupU.update(mDelayedU);
+    mBackupY.update(mDelayed2Y);
+    mBackupY.update(mDelayedY);
+}
+
+void SecondOrderTransferFunction::restoreBackup(size_t nSteps)
+{
+    if (nSteps > 0)
+    {
+        nSteps -= 1;
+    }
+    mDelayedU = mBackupU.getIdx(0+nSteps*2);
+    mDelayed2U = mBackupU.getIdx(1+nSteps*2);
+    mDelayedY = mBackupY.getIdx(0+nSteps*2);
+    mDelayed2Y = mBackupY.getIdx(1+nSteps*2);
+}
+
 
 void SecondOrderTransferFunction::initializeValues(double u0, double y0)
 {
@@ -117,6 +138,12 @@ void SecondOrderTransferFunction::initializeValues(double u0, double y0)
     mDelayedY = y0;
     mDelayed2Y = y0;
     mValue = y0;
+}
+
+void SecondOrderTransferFunction::setBackupLength(size_t nStep)
+{
+    mBackupU.initialize(nStep*2, mDelayedU);
+    mBackupY.initialize(nStep*2, mDelayedY);
 }
 
 
@@ -174,6 +201,12 @@ double SecondOrderTransferFunction::update(double u)
     mDelayedY  = mValue;
 
     return mValue;
+}
+
+double SecondOrderTransferFunction::updateWithBackup(double u)
+{
+    backup();
+    return update(u);
 }
 
 

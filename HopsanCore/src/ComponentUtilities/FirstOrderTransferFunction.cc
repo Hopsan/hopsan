@@ -58,6 +58,7 @@ void FirstOrderTransferFunction::initialize(double timestep, double num[2], doub
     mDelayedY = std::max(std::min(y0, mMax), mMin);
     mTimeStep = timestep;
     setNumDen(num, den);
+    setBackupLength(1);
 }
 
 
@@ -94,6 +95,29 @@ void FirstOrderTransferFunction::setNumDen(double num[2], double den[2])
     mCoeffY[1] = den[0]*mTimeStep+2.0*den[1];
 }
 
+//! @brief Restore the backup at teh given step
+//! @param[in] nSteps The number of steps backwards in time to restore (1=last step) must be >=1
+//! @note The function assumes that the backup buffer has been allocated
+//! @see setBackupLength
+void FirstOrderTransferFunction::restoreBackup(size_t nSteps)
+{
+    if (nSteps > 0)
+    {
+        nSteps -= 1;
+    }
+    mDelayedU = mBackupU.getIdx(nSteps);
+    mDelayedY = mBackupY.getIdx(nSteps);
+}
+
+//! @brief Pushes a backup of transfere function states into the backup buffer
+//! @note Only the delayed states are backed up, not the current value or the coefficients
+//! @todo Maybe we should backup more things like coefficients, saturated flag, current value, but that will take time at every timestep
+void FirstOrderTransferFunction::backup()
+{
+    mBackupU.update(mDelayedU);
+    mBackupY.update(mDelayedY);
+}
+
 
 void FirstOrderTransferFunction::initializeValues(double u0, double y0)
 {
@@ -102,7 +126,18 @@ void FirstOrderTransferFunction::initializeValues(double u0, double y0)
     mValue = y0;
 }
 
+//! @brief Setup the number of backup steps to remember (size of the backup buffer)
+//! @param[in] nSteps The number of steps to remember
+void FirstOrderTransferFunction::setBackupLength(size_t nStep)
+{
+    mBackupU.initialize(nStep, mDelayedU);
+    mBackupY.initialize(nStep, mDelayedY);
+}
 
+
+//! @brief Updates the transfere function
+//! @param[in] u The new input value
+//! @returns The current transfere function ouput value after update
 double FirstOrderTransferFunction::update(double u)
 {
     //Filter equation
@@ -152,8 +187,17 @@ double FirstOrderTransferFunction::update(double u)
     return mValue;
 }
 
+//! @brief Make a backup of states and then calls update
+//! @param[in] u The new input value
+//! @returns The current transfere function ouput value after update
+double FirstOrderTransferFunction::updateWithBackup(double u)
+{
+    backup();
+    return update(u);
+}
 
-//! Read current filter output value
+
+//! @brief Read current transfere function output value
 //! @return The filtered actual value.
 double FirstOrderTransferFunction::value() const
 {

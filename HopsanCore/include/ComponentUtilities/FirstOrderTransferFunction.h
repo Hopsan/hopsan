@@ -35,6 +35,7 @@
 #define FIRSTORDERTRANSFERFUNCTION_H_INCLUDED
 
 #include "win32dll.h"
+#include "Delay.hpp"
 
 namespace hopsan {
 
@@ -43,11 +44,15 @@ namespace hopsan {
     public:
         void initialize(double timestep, double num[2], double den[2], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
         void initializeValues(double u0, double y0);
+        void setBackupLength(size_t nStep);
         void setMinMax(double min, double max);
         void setNum(double num[2]);
         void setDen(double den[2]);
         void setNumDen(double num[2], double den[2]);
+        void restoreBackup(size_t nSteps=1);
+        void backup();
         double update(double u);
+        double updateWithBackup(double u);
         double value() const;
         double delayedU() const;
         double delayedY() const;
@@ -61,6 +66,7 @@ namespace hopsan {
         double mMin, mMax;
         double mTimeStep;
         bool mIsSaturated;
+        Delay mBackupU, mBackupY;
     };
 
 
