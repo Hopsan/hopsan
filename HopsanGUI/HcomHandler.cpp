@@ -6194,7 +6194,11 @@ void HcomHandler::getComponents(const QString &rStr, QList<ModelObject*> &rCompo
     }
     else
     {
-        rComponents.append(pSystem->getModelObject(rStr));
+        auto pModel = pSystem->getModelObject(rStr);
+        if (pModel)
+        {
+            rComponents.append(pModel);
+        }
     }
 }
 

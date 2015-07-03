@@ -86,7 +86,7 @@ public:
     //GUIModelObject methods
     ModelObject *addModelObject(QString fullTypeName, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
     ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
-    ModelObject *getModelObject(const QString modelObjectName);
+    ModelObject *getModelObject(const QString &rModelObjectName);
     const QList<ModelObject* > getModelObjects() const;
     Port *getModelObjectPort(const QString modelObjectName, const QString portName);
     void deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings=Undo);

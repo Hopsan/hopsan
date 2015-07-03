@@ -1028,16 +1028,16 @@ QList<ModelObject *> ContainerObject::getSelectedModelObjectPtrs()
 
 
 //! @brief Returns a pointer to the component with specified name, 0 if not found
-ModelObject *ContainerObject::getModelObject(const QString modelObjectName)
+ModelObject *ContainerObject::getModelObject(const QString &rModelObjectName)
 {
-    ModelObjectMapT::Iterator moit = mModelObjectMap.find(modelObjectName);
+    ModelObjectMapT::Iterator moit = mModelObjectMap.find(rModelObjectName);
     if (moit != mModelObjectMap.end())
     {
         return moit.value();
     }
     else
     {
-        return 0;
+        return nullptr;
     }
 }
 
