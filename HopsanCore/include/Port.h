@@ -90,14 +90,26 @@ namespace hopsan {
             mpNode->mDataValues[idx] = value;
         }
 
-        virtual inline std::vector<double> &getNodeDataVector()
+        inline std::vector<double> &getNodeDataVector()
         {
             return mpNode->mDataValues;
         }
 
-        virtual inline const std::vector<double> &getNodeDataVector() const
+        inline const std::vector<double> &getNodeDataVector() const
         {
             return mpNode->mDataValues;
+        }
+
+        virtual inline std::vector<double> &getNodeDataVector(const size_t subPortIdx)
+        {
+            HOPSAN_UNUSED(subPortIdx);
+            return getNodeDataVector();
+        }
+
+        virtual inline const std::vector<double> &getNodeDataVector(const size_t subPortIdx) const
+        {
+            HOPSAN_UNUSED(subPortIdx);
+            return getNodeDataVector();
         }
 
         virtual double readNodeSafe(const size_t idx, const size_t subPortIdx=0) const;
@@ -240,6 +252,16 @@ namespace hopsan {
         inline void writeNode(const size_t idx, const double value, const size_t subPortIdx)
         {
             return mSubPortsVector[subPortIdx]->writeNode(idx,value);
+        }
+
+        inline std::vector<double> &getNodeDataVector(const size_t subPortIdx)
+        {
+            return mSubPortsVector[subPortIdx]->getNodeDataVector();
+        }
+
+        inline const std::vector<double> &getNodeDataVector(const size_t subPortIdx) const
+        {
+            return mSubPortsVector[subPortIdx]->getNodeDataVector();
         }
 
         const Node *getNodePtr(const size_t subPortIdx=0)const;

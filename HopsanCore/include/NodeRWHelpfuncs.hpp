@@ -88,13 +88,63 @@ inline void writeOutputVariable(Port *pPort, const double y)
 // Hydraulic Node Access
 // ---------------------------------------------------------------------
 
-typedef struct
+class HydraulicNodeDataValueStructT
 {
+public:
     double q;
     double p;
     double c;
     double Zc;
-} HydraulicNodeDataValueStructT;
+};
+
+class HydraulicNodeDataPointerStructT
+{
+public:
+    double *pQ;
+    double *pP;
+    double *pC;
+    double *pZc;
+
+    inline double q() const
+    {
+        return *pQ;
+    }
+
+    inline double p() const
+    {
+        return *pP;
+    }
+
+    inline double c() const
+    {
+        return *pC;
+    }
+
+    inline double Zc() const
+    {
+        return *pZc;
+    }
+
+    inline double &rq()
+    {
+        return *pQ;
+    }
+
+    inline double &rp()
+    {
+        return *pP;
+    }
+
+    inline double &rc()
+    {
+        return *pC;
+    }
+
+    inline double &rZc()
+    {
+        return *pZc;
+    }
+};
 
 inline void readHydraulicPort_pq(Port *pPort, double &p, double &q)
 {
@@ -128,6 +178,34 @@ inline void readHydraulicPort_all(Port *pPort, HydraulicNodeDataValueStructT &rV
     rValues.Zc = rData[NodeHydraulic::CharImpedance];
 }
 
+inline void getHydraulicPortNodeDataPointers(Port *pPort, HydraulicNodeDataPointerStructT &rPointers)
+{
+    rPointers.pQ  = pPort->getNodeDataPtr(NodeHydraulic::Flow, 0);
+    rPointers.pP  = pPort->getNodeDataPtr(NodeHydraulic::Pressure, 0);
+    rPointers.pC  = pPort->getNodeDataPtr(NodeHydraulic::WaveVariable, 0);
+    rPointers.pZc = pPort->getNodeDataPtr(NodeHydraulic::CharImpedance, 0);
+}
+
+inline void getHydraulicMultiPortNodeDataPointers(Port *pMainPort, const size_t subPortIdx, HydraulicNodeDataPointerStructT &rPointers)
+{
+    rPointers.pQ  = pMainPort->getNodeDataPtr(NodeHydraulic::Flow, subPortIdx);
+    rPointers.pP  = pMainPort->getNodeDataPtr(NodeHydraulic::Pressure, subPortIdx);
+    rPointers.pC  = pMainPort->getNodeDataPtr(NodeHydraulic::WaveVariable, subPortIdx);
+    rPointers.pZc = pMainPort->getNodeDataPtr(NodeHydraulic::CharImpedance, subPortIdx);
+}
+
+inline void getHydraulicMultiPortNodeDataPointers(Port *pMainPort, std::vector<HydraulicNodeDataPointerStructT> &rPointers)
+{
+    // nsp = numSubPorts
+    // spi = subPortIndex
+    const size_t nsp = pMainPort->getNumPorts();
+    rPointers.resize(nsp);
+    for (size_t spi=0; spi<nsp; ++spi)
+    {
+        getHydraulicMultiPortNodeDataPointers(pMainPort, spi, rPointers[spi]);
+    }
+}
+
 inline void writeHydraulicPort_pq(Port *pPort, const double p, const double q)
 {
     std::vector<double> &rData = pPort->getNodeDataVector();
@@ -135,9 +213,23 @@ inline void writeHydraulicPort_pq(Port *pPort, const double p, const double q)
     rData[NodeHydraulic::Pressure] = p;
 }
 
+inline void writeHydraulicMultiPort_pq(Port *pPort, const size_t subPortIdx, const double p, const double q)
+{
+    std::vector<double> &rData = pPort->getNodeDataVector(subPortIdx);
+    rData[NodeHydraulic::Flow] = q;
+    rData[NodeHydraulic::Pressure] = p;
+}
+
 inline void writeHydraulicPort_cZc(Port *pPort, const double c, const double Zc)
 {
     std::vector<double> &rData = pPort->getNodeDataVector();
+    rData[NodeHydraulic::WaveVariable] = c;
+    rData[NodeHydraulic::CharImpedance] = Zc;
+}
+
+inline void writeHydraulicMultiPort_cZc(Port *pPort, const size_t subPortIdx, const double c, const double Zc)
+{
+    std::vector<double> &rData = pPort->getNodeDataVector(subPortIdx);
     rData[NodeHydraulic::WaveVariable] = c;
     rData[NodeHydraulic::CharImpedance] = Zc;
 }
