@@ -213,7 +213,7 @@ class HydraulicCylinderC : public ComponentC
         void simulateOneTimestep()
         {
             //Declare local variables;
-            double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
+            double V1, V2, qLeak, qi1, qi2, c1mean, c2mean, V1min, V2min;
 
             //Read variables from nodes
             double Zc1 = (*mvpP1_Zc[0]);          //All Zc should be the same and Q components shall
@@ -269,45 +269,47 @@ class HydraulicCylinderC : public ComponentC
             //   cl1 = Wave variable for leakage port
 
             //Volume 1
-            Zc1 = (double(mNumPorts1)+2.0) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
-            p1mean = (ci1 + Zc1*2.0*qi1) + (cl1 + Zc1*2.0*(-qLeak));
+            Zc1 = double(mNumPorts1+2) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
+            c1mean = (ci1 + Zc1*2.0*qi1) + (cl1 + Zc1*2.0*(-qLeak));
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                p1mean += (*mvpP1_c[i]) + 2.0*Zc1*(*mvpP1_q[i]);
+                c1mean += (*mvpP1_c[i]) + 2.0*Zc1*(*mvpP1_q[i]);
             }
-            p1mean = p1mean/(double(mNumPorts1)+2.0);
-            ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2.0 - ci1 - 2.0*Zc1*qi1));
-            cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak)));
+            c1mean = c1mean/double(mNumPorts1+2);
+            ci1 = alpha * ci1 + (1.0 - alpha)*(c1mean*2.0 - ci1 - 2.0*Zc1*qi1);
+            cl1 = alpha * cl1 + (1.0 - alpha)*(c1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak));
+
 
             //Volume 2
-            Zc2 = ((double(mNumPorts2)+2.0) / 2.0) * betae/V2*mTimestep/(1.0-alpha);
-            p2mean = (ci2 + Zc2*2.0*qi2) + (cl2 + Zc2*2.0*qLeak);
+            Zc2 = double(mNumPorts2+2) / 2.0 * betae/V2*mTimestep/(1.0-alpha);
+            c2mean = (ci2 + Zc2*2.0*qi2) + (cl2 + Zc2*2.0*qLeak);
             for(size_t i=0; i<mNumPorts2; ++i)
             {
-                p2mean += (*mvpP2_c[i]) + 2.0*Zc2*(*mvpP2_q[i]);
+                c2mean += (*mvpP2_c[i]) + 2.0*Zc2*(*mvpP2_q[i]);
             }
-            p2mean = p2mean/(double(mNumPorts2)+2.0);
-            ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2.0 - ci2 - 2.0*Zc2*qi2));
-            cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2.0 - cl2 - 2.0*Zc2*qLeak));
+            c2mean = c2mean/double(mNumPorts2+2);
+            ci2 = alpha * ci2 + (1.0 - alpha)*(c2mean*2.0 - ci2 - 2.0*Zc2*qi2);
+            cl2 = alpha * cl2 + (1.0 - alpha)*(c2mean*2.0 - cl2 - 2.0*Zc2*qLeak);
 
 
+            // Add extra force and Zc in end positions to simulate stop.
+            // Stops could also be implemented in the mass component (connected Q-component)
             limitStroke(CxLim, ZxLim, x3, v3, me, sl);
 
             //Internal mechanical port
             double c3 = A1*ci1 - A2*ci2 + CxLim;
             double Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp + ZxLim;
-            //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
-            //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
+
 
             //Write to nodes
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                *(mvpP1_c[i]) = std::max(0.0, alpha * (*mvpP1_c[i]) + (1.0 - alpha)*(p1mean*2 - (*mvpP1_c[i]) - 2*Zc1*(*mvpP1_q[i])));
+                *(mvpP1_c[i]) = alpha * (*mvpP1_c[i]) + (1.0 - alpha)*(c1mean*2 - (*mvpP1_c[i]) - 2*Zc1*(*mvpP1_q[i]));
                 *(mvpP1_Zc[i]) = Zc1;
             }
             for(size_t i=0; i<mNumPorts2; ++i)
             {
-                *(mvpP2_c[i]) = std::max(0.0, alpha * (*mvpP2_c[i]) + (1.0 - alpha)*(p2mean*2 - (*mvpP2_c[i]) - 2*Zc2*(*mvpP2_q[i])));
+                *(mvpP2_c[i]) = alpha * (*mvpP2_c[i]) + (1.0 - alpha)*(c2mean*2 - (*mvpP2_c[i]) - 2*Zc2*(*mvpP2_q[i]));
                 *(mvpP2_Zc[i]) = Zc2;
             }
             (*mpP3_c) = c3;
