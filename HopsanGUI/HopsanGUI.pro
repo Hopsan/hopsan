@@ -136,6 +136,11 @@ unix {
         message(Not looking for python since we are not using PYTHONQT)
     }
 
+    system(ldconfig -p | grep libhdf5_cpp) {
+        message(Compiling with HDF5 support)
+        DEFINES += USEHDF5
+        LIBS += -lhdf5_cpp -lhdf5
+    }
 
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative the executable (regardless of working dir, VERY useful)
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to handle the $$ORIGIN stuff, adding manually to LFLAGS

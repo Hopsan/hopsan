@@ -67,6 +67,8 @@ public:
     void exportToPlo(const QString &rFilePath, QList<SharedVectorVariableT> variables, int version=-1) const;
     void exportToCSV(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const;
     void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
+    void exportToHDF5(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const;
+    void exportGenerationToHDF5(const QString &rFilePath, const int gen) const;
 
     SharedVectorVariableT insertNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType, const int gen=-1);
     SharedVectorVariableT insertNewVectorVariable(SharedVectorVariableT pVariable, const int gen=-1);

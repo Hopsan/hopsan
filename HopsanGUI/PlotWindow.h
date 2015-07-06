@@ -157,6 +157,7 @@ private:
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
     QAction *mpExportToOldHopAction;
+    QAction *mpExportToHdf5Action;
     QAction *mpExportToGraphicsAction;
     QAction *mpLocktheAxis;
     QAction *mpToggleAxisLockButton;

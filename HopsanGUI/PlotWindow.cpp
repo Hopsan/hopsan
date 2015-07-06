@@ -229,6 +229,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpExportToMatlabAction = new QAction("Export to Matlab Script File (.m)", mpToolBar);
     mpExportToGnuplotAction = new QAction("Export to gnuplot data file(.dat)", mpToolBar);
     mpExportToOldHopAction = new QAction("Export to Hopsan Classic file(.plo)", mpToolBar);
+    mpExportToHdf5Action = new QAction("Export to HDF5 file (.h5)", mpToolBar);
 
     mpExportMenu = new QMenu(mpToolBar);
     mpExportMenu->addAction(mpExportToXmlAction);
@@ -237,6 +238,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpExportMenu->addAction(mpExportToMatlabAction);
     mpExportMenu->addAction(mpExportToGnuplotAction);
     mpExportMenu->addAction(mpExportToOldHopAction);
+    mpExportMenu->addAction(mpExportToHdf5Action);
 
     mpExportButton = new QToolButton(mpToolBar);
     mpExportButton->setToolTip("Export Plot Tab");
@@ -811,6 +813,7 @@ void PlotWindow::changedTab()
     disconnect(mpExportToHvcAction,         SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToXmlAction,         SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToOldHopAction,      SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToHdf5Action,        SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToMatlabAction,      SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToGnuplotAction,     SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToGraphicsAction,    SIGNAL(triggered()),    0,  0);
@@ -839,6 +842,7 @@ void PlotWindow::changedTab()
             mpExportToHvcAction->setDisabled(true);
             mpExportToGnuplotAction->setDisabled(true);
             mpExportToOldHopAction->setDisabled(true);
+            mpExportToHdf5Action->setDisabled(true);
             mpExportToMatlabAction->setDisabled(true);
             //mpLoadFromXmlButton->setDisabled(true);
             mpGridButton->setDisabled(true);
@@ -862,6 +866,7 @@ void PlotWindow::changedTab()
             mpExportToHvcAction->setDisabled(false);
             mpExportToGnuplotAction->setDisabled(false);
             mpExportToOldHopAction->setDisabled(false);
+            mpExportToHdf5Action->setDisabled(false);
             mpExportToMatlabAction->setDisabled(false);
             //mpLoadFromXmlButton->setDisabled(false);
             mpGridButton->setDisabled(false);
@@ -892,6 +897,7 @@ void PlotWindow::changedTab()
         connect(mpExportToMatlabAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToMatlab()));
         connect(mpExportToGnuplotAction,    SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGnuplot()));
         connect(mpExportToOldHopAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPLO()));
+        connect(mpExportToHdf5Action,       SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToHDF5()));
         connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
         connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));

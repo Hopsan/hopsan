@@ -151,9 +151,11 @@ void DataExplorer::openExportDataDialog()
     QRadioButton *pPLOv1Button = new QRadioButton("PLO v1");
     QRadioButton *pPLOv2Button = new QRadioButton("PLO v2");
     QRadioButton *pCSVButton = new QRadioButton("csv");
+    QRadioButton *pHdf5Button = new QRadioButton("hdf5");
     pFormatButtons->addButton(pPLOv1Button);
     pFormatButtons->addButton(pPLOv2Button);
     pFormatButtons->addButton(pCSVButton);
+    pFormatButtons->addButton(pHdf5Button);
     pPLOv1Button->setChecked(true);
 
     QGroupBox *pFormatGroupBox = new QGroupBox("Choose Export Format:", &exportOptions);
@@ -161,6 +163,7 @@ void DataExplorer::openExportDataDialog()
     pFormatButtonLayout->addWidget(pPLOv1Button);
     pFormatButtonLayout->addWidget(pPLOv2Button);
     pFormatButtonLayout->addWidget(pCSVButton);
+    pFormatButtonLayout->addWidget(pHdf5Button);
     pFormatGroupBox->setLayout(pFormatButtonLayout);
 
 
@@ -202,10 +205,15 @@ void DataExplorer::openExportDataDialog()
         {
             suffixFilter = "*.plo *.PLO";
         }
+        else if (pFormatButtons->checkedButton() == pHdf5Button)
+        {
+            suffixFilter = "*.h5";
+        }
         else
         {
             suffixFilter = "*.csv *.CSV";
         }
+
 
         // Get save file name
         if ((pFilenameButtons->checkedButton() == pAppendGenButton) && (gens.size() > 1))
@@ -253,6 +261,10 @@ void DataExplorer::openExportDataDialog()
                 else if (pFormatButtons->checkedButton() == pPLOv2Button)
                 {
                     mpLogDataHandler->exportGenerationToPlo(file, g, 2);
+                }
+                else if (pFormatButtons->checkedButton() == pHdf5Button)
+                {
+                    mpLogDataHandler->exportGenerationToHDF5(file, g);
                 }
                 else
                 {

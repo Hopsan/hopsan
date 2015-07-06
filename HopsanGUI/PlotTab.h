@@ -217,6 +217,7 @@ public slots:
     void exportToMatlab();
     void exportToGnuplot();
     void exportToPLO();
+    void exportToHDF5();
     void exportToGraphics();
 
     void shiftAllGenerationsDown();

@@ -60,6 +60,20 @@
 #include "ComponentUtilities/CSVParser.h"
 #include "HopsanTypes.h"
 
+#ifdef USEHDF5
+#include "H5Cpp.h"
+
+// help function to append attribute
+void appendH5Attribute(H5::DataSet &rDataset, const H5std_string &attrName, const H5std_string &attrValue)
+{
+    hsize_t dims[1];
+    dims[0] = attrValue.size();
+    H5::DataSpace attr_dataspace = H5::DataSpace( 1, dims );
+    H5::Attribute attribute = rDataset.createAttribute(attrName, H5::PredType::C_S1, attr_dataspace);
+    attribute.write( H5::PredType::C_S1, attrValue);
+}
+#endif
+
 //UnitScale figureOutCutomUnitScale2(QString quantity, double scale)
 //{
 //    QList<UnitScale> uss;
@@ -74,6 +88,8 @@
 //    }
 //    return UnitScale();
 //}
+
+
 
 
 //! @brief Constructor for plot data object
@@ -333,6 +349,76 @@ void LogDataHandler2::exportGenerationToCSV(const QString &rFilePath, const int 
     QList<SharedVectorVariableT> vars = getAllNonAliasVariablesAtGeneration(gen);
     // Now export all of them
     exportToCSV(rFilePath, vars);
+}
+
+void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const
+{
+    QString error;
+#ifdef USEHDF5
+    const H5std_string filePath = rFilePath.toStdString().c_str();
+    try
+    {
+        // turn off auto printing of thrown exceptions so that they can be handled below
+        H5::Exception::dontPrint();
+
+        // Create and open a file
+        H5::H5File file(filePath, H5F_ACC_TRUNC);
+
+        for (const SharedVectorVariableT &rVar : rVariables)
+        {
+            // Create a dataspace for a vector of data
+            hsize_t dims[1];
+            dims[0] = rVar->getDataSize();
+            H5::DataSpace dataspace(1, dims);
+
+            // Create the data set
+            H5std_string name = rVar->getSmartName().toStdString().c_str();
+            H5::DataSet dataset = file.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dataspace);
+
+            // Write the data
+            QVector<double> *pData = rVar->beginFullVectorOperation();
+            dataset.write(pData->data(), H5::PredType::NATIVE_DOUBLE);
+            rVar->endFullVectorOperation(pData);
+
+            // Add meta data attributes
+            appendH5Attribute(dataset, "Unit", rVar->getDataUnit().toStdString().c_str());
+            appendH5Attribute(dataset, "Quantity", rVar->getDataQuantity().toStdString().c_str());
+        }
+
+        file.close();
+    }
+    // catch failure caused by the H5File operations
+    catch(H5::FileIException e)
+    {
+        error = e.getCDetailMsg();
+    }
+    // catch failure caused by the DataSet operations
+    catch(H5::DataSetIException e)
+    {
+        error = e.getCDetailMsg();
+    }
+    // catch failure caused by the DataSpace operations
+    catch(H5::DataSpaceIException e)
+    {
+        error = e.getCDetailMsg();
+    }
+
+#else
+    error = "HDF5 is not Supported in this build";
+#endif
+
+    if (!error.isEmpty())
+    {
+        gpMessageHandler->addErrorMessage(error);
+    }
+}
+
+void LogDataHandler2::exportGenerationToHDF5(const QString &rFilePath, const int gen) const
+{
+    //! @todo use a enum for choosing export format
+    QList<SharedVectorVariableT> vars = getAllNonAliasVariablesAtGeneration(gen);
+    // Now export all of them
+    exportToHDF5(rFilePath, vars);
 }
 
 SharedVectorVariableT LogDataHandler2::insertNewVectorVariable(const QString &rDesiredname, VariableTypeT type, const int gen)

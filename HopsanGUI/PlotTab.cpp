@@ -743,6 +743,34 @@ void PlotTab::exportToPLO()
     getCurves(0).first()->getSharedVectorVariable()->getLogDataHandler()->exportToPlo(filePath, variables);
 }
 
+void PlotTab::exportToHDF5()
+{
+    // Open file dialog and initialize the file stream
+    QString filePath;
+    QFileInfo fileInfo;
+    filePath = QFileDialog::getSaveFileName(this, tr("Export HDF5 Format File"),
+                                            gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                                            tr("Hopsan Classic file (*.h5)"));
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    fileInfo.setFile(filePath);
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
+
+    if (getPlotTabType() != XYPlotType)
+    {
+        gpMessageHandler->addWarningMessage("Will only export from first sub-plot");
+    }
+
+    QList<SharedVectorVariableT> variables;
+    QList<PlotCurve*> curves = getCurves(0);
+    for(PlotCurve *pCurve : curves)
+    {
+        variables.append(pCurve->getSharedVectorVariable());
+    }
+
+    //! @todo this assumes that all curves belong to the same model
+    curves.first()->getSharedVectorVariable()->getLogDataHandler()->exportToHDF5(filePath, variables);
+}
+
 void PlotTab::shiftAllGenerationsDown()
 {
     Q_FOREACH(PlotArea *pArea, mPlotAreas)
