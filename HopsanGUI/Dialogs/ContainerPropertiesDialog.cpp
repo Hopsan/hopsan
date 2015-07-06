@@ -51,7 +51,6 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "Widgets/LibraryWidget.h"
 #include "Dialogs/MovePortsDialog.h"
-#include "Dialogs/ParameterSettingsLayout.h"
 
 
 //! @brief Constructor for the container properties dialog

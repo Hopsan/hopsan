@@ -35,10 +35,54 @@
 #define MODELOBJECTPROPERTIESDIALOG_H
 
 #include <QDialog>
+#include <QGridLayout>
+#include <QToolButton>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QCheckBox>
 
 //Forward Declaration
 class ModelObject;
-class ParameterSettingsLayout;
+
+#include "CoreAccess.h" //!< @todo maybe should have parameter stuff in h file of its own so that we don't need to include core access whenever we want to work with parameters
+
+class ModelObject;
+
+class ParameterSettingsLayout : public QGridLayout
+{
+    Q_OBJECT
+    friend class ComponentPropertiesDialog;
+    friend class ContainerPropertiesDialog;
+
+public:
+    ParameterSettingsLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent=0);
+
+    QString getDataName();
+    double getDataValue();
+    QString getDataValueTxt();
+    void setDataValueTxt(QString valueTxt);
+    bool cleanAndVerifyParameterValue();
+
+protected slots:
+    void setDefaultValue();
+    void showListOfSystemParameters();
+    void makePort(bool isPort);
+    void pickValueTextColor();
+
+protected:
+    ModelObject *mpModelObject;
+    QLabel mNameLabel;
+    QLabel mDescriptionLabel;
+    QLabel mUnitLabel;
+    QString mParameterType;
+    QLineEdit mValueLineEdit;
+    QToolButton mResetDefaultToolButton;
+    QToolButton mSystemParameterToolButton;
+    QCheckBox mDynamicEnabledCheckBox;
+
+    QString mName;
+};
 
 class ModelObjectPropertiesDialog : public QDialog
 {

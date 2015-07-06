@@ -39,7 +39,6 @@
 #include "UnitScale.h"
 
 class ModelObject;
-class ParameterSettingsLayout;
 class SystemParametersWidget;
 
 

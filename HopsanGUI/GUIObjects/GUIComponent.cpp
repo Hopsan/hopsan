@@ -37,7 +37,6 @@
 //Hopsan includes
 #include "global.h"
 #include "Configuration.h"
-#include "Dialogs/ComponentPropertiesDialog.h"
 #include "Dialogs/ComponentPropertiesDialog3.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUIComponent.h"

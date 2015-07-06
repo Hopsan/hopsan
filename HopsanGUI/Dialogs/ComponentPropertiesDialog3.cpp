@@ -44,6 +44,9 @@
 #include <QWebView>
 #include <QWebFrame>
 #include <QMainWindow>
+#include <QLineEdit>
+#include <QGroupBox>
+#include <QToolButton>
 
 
 //Hopsan includes
@@ -54,7 +57,6 @@
 #include "DesktopHandler.h"
 #include "Dialogs/EditComponentDialog.h"
 #include "Dialogs/MovePortsDialog.h"
-#include "Dialogs/ParameterSettingsLayout.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"

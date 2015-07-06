@@ -222,7 +222,6 @@ SOURCES += main.cpp \
     Utilities/GUIUtilities.cpp \
     Configuration.cpp \
     CopyStack.cpp \
-    Dialogs/ComponentPropertiesDialog.cpp \
     Dialogs/ContainerPropertiesDialog.cpp \
     Dialogs/AboutDialog.cpp \
     CoreAccess.cpp \
@@ -243,7 +242,6 @@ SOURCES += main.cpp \
     GUIObjects/AnimatedComponent.cpp \
     AnimatedConnector.cpp \
     Dialogs/AnimatedIconPropertiesDialog.cpp \
-    Dialogs/ParameterSettingsLayout.cpp \
     Dialogs/ModelObjectPropertiesDialog.cpp \
     SimulationThreadHandler.cpp \
     Widgets/HcomWidget.cpp \
@@ -320,7 +318,6 @@ HEADERS += MainWindow.h \
     Utilities/GUIUtilities.h \
     Configuration.h \
     CopyStack.h \
-    Dialogs/ComponentPropertiesDialog.h \
     Dialogs/ContainerPropertiesDialog.h \
     Dialogs/AboutDialog.h \
     Widgets/UndoWidget.h \
@@ -340,7 +337,6 @@ HEADERS += MainWindow.h \
     GUIObjects/AnimatedComponent.h \
     AnimatedConnector.h \
     Dialogs/AnimatedIconPropertiesDialog.h \
-    Dialogs/ParameterSettingsLayout.h \
     Dialogs/ModelObjectPropertiesDialog.h \
     SimulationThreadHandler.h \
     Widgets/HcomWidget.h \
