@@ -1103,22 +1103,12 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
-    // Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject->isCreatingConnector())
-    {
-        setFlag(QGraphicsItem::ItemIsMovable, false);    // Make the component not movable during connection
-        setFlag(QGraphicsItem::ItemIsSelectable, false); // Make the component not selectable during connection
+    // Forward the mouse press event
+    WorkspaceObject::mousePressEvent(event);
 
-        setSelected(false);
-        setActive(false);
-    }
-    // If editing has been limited we should not do anything
-    // Else we can reenable movement and selection and check for drag copy and such
-    else if (!mpParentContainerObject->mpModelWidget->isEditingLimited())
+    // If not editing lmited then check for drag copy
+    if (!mpParentContainerObject->mpModelWidget->isEditingLimited())
     {
-        setFlag(QGraphicsItem::ItemIsMovable, true);    // Make the component movable if not (it is not movable during creation of connector)
-        setFlag(QGraphicsItem::ItemIsSelectable, true); // Make the component selectable if not (it is not selectable during creation of connector)
-
         if(event->button() == Qt::RightButton)
         {
             connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()));
@@ -1126,10 +1116,6 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
             mDragCopyTimer.start(100);
         }
     }
-
-    // Now forward the mouse press event
-    WorkspaceObject::mousePressEvent(event);
-
     qDebug() << "ModelObject::mousePressEvent(), button = " << event->button();
 }
 
@@ -1222,15 +1208,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         this->contextMenuEvent(test);
     }
 
-    // Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject && mpParentContainerObject->isCreatingConnector())
-    {
-        setSelected(false);
-        setActive(false);
-    }
-
-    //! @todo This crashes if we forward the event after calling "replace component". Not really needed, but figure out why.
-    QGraphicsWidget::mouseReleaseEvent(event);
+    WorkspaceObject::mouseReleaseEvent(event);
 }
 
 
