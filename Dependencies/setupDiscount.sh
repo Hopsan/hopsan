@@ -25,8 +25,6 @@ fi
 rm -rf $dirname
 # Unzip
 unzip -q $filename
-# Apply cpp patch only the others are for windows
-patch -p0 < $dirname-cpp.patch
 
 
 # Create Shadowbbuild directory

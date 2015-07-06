@@ -41,7 +41,7 @@ cd %dirname64%
 
 REM The first patch was taken from https://github.com/Alexpux/MINGW-packages/tree/master/mingw-w64-discount
 REM It was however modified to grep for Msys instead of MINGW (from uname -a)
-bash.exe -c "patch -p0 < ../discount-mingw-building.patch; patch -p1 < ../discount-2.1.8-msys.patch;  patch -p1 < ../discount-2.1.8-cpp.patch; CC=gcc ./configure.sh --shared; make -j4"
+bash.exe -c "patch -p0 < ../discount-mingw-building.patch; patch -p1 < ../discount-2.1.8-msys.patch; CC=gcc ./configure.sh --shared; make -j4"
 REM Note! We use msys make here as mingw32-make is to strict since 4.9.2
 
 echo.

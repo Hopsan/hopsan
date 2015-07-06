@@ -70,7 +70,9 @@
 #include "MessageHandler.h"
 
 #ifdef USEDISCOUNT
+extern "C" {
 #include "mkdio.h"
+}
 #endif
 
 //! @class ComponentPropertiesDialog3
