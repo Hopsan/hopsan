@@ -297,6 +297,7 @@ void Component::openPropertiesDialog()
     if (mpPropertiesDialog)
     {
         mpPropertiesDialog->show();
+        mpPropertiesDialog->setWindowState(Qt::WindowActive);
     }
     // Else create a new one
     else
