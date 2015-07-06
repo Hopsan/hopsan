@@ -114,7 +114,9 @@ bool Component::hasPowerPorts()
 //! @brief Event when double clicking on component icon.
 void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!mpParentContainerObject->mpModelWidget->isEditingEnabled())
+    // Allow even if editingLimited but we dont want to
+    // change parameters in external subsystems for example (fully disabled)
+    if(mpParentContainerObject->mpModelWidget->isEditingFullyDisabled())
         return;
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
@@ -291,16 +293,23 @@ bool Component::setStartValue(QString portName, QString /*variable*/, QString sy
 //! @brief Slot that opens the parameter dialog for the component
 void Component::openPropertiesDialog()
 {
-    //ComponentPropertiesDialog dialog(this, gpMainWindow);
-    ComponentPropertiesDialog3 dialog(this, mpDialogParentWidget);
-
-    if(getTypeName() != QString(MODELICATYPENAME)+" NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
+    // If properties dialog already exist, tehn show it (usefull if you forgot to close it)
+    if (mpPropertiesDialog)
     {
-        connect(this, SIGNAL(objectDeleted()), &dialog, SLOT(reject()));
-        //! @todo should we have delete on close
-        dialog.setModal(false);
-        dialog.show();
-        dialog.exec();
+        mpPropertiesDialog->show();
+    }
+    // Else create a new one
+    else
+    {
+        // Note! this is a smart pointer, it will automatically become NULL when dilog is deleted
+        mpPropertiesDialog = new ComponentPropertiesDialog3(this, mpDialogParentWidget);
+
+        if(getTypeName() != QString(MODELICATYPENAME)+" NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
+        {
+            connect(this, SIGNAL(objectDeleted()), mpPropertiesDialog, SLOT(reject()));
+            mpPropertiesDialog->setAttribute(Qt::WA_DeleteOnClose);
+            mpPropertiesDialog->show();
+        }
     }
 }
 
@@ -448,7 +457,7 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!mpParentContainerObject->mpModelWidget->isEditingEnabled())
+    if(mpParentContainerObject->mpModelWidget->isEditingFullyDisabled())
         return;
 
     QGraphicsWidget::mouseDoubleClickEvent(event);

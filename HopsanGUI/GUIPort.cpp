@@ -257,7 +257,7 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (mpPortAppearance->mEnabled)
     {
-        if(!mpParentModelObject->getParentContainerObject()->mpModelWidget->isEditingEnabled())
+        if(mpParentModelObject->getParentContainerObject()->mpModelWidget->isEditingLimited())
             return;
 
         //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called

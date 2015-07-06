@@ -83,7 +83,7 @@ public:
     ComponentPropertiesDialog3(ModelObject *pModelObject, QWidget *pParent=0);
 
 signals:
-    void lockModelWidget(bool);
+    void setLimitedModelEditingLock(bool);
 
 protected slots:
     void okPressed();

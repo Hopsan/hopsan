@@ -187,11 +187,9 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
-    setFlag(QGraphicsItem::ItemIsMovable, true);    // Make the component movable if not (it is not movable during creation of connector)
-    setFlag(QGraphicsItem::ItemIsSelectable, true); // Make the component selectable if not (it is not selectable during creation of connector)
-
     // Make sure current objects oldpos is changed (it may not be selected before being clicked)
     rememberPos();
+
     // Store old positions for all components, in case more than one is selected
     //! @todo this should be handled elsewhere
     if(mpParentContainerObject && event->button() == Qt::LeftButton )
@@ -203,31 +201,6 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
 
     QGraphicsWidget::mousePressEvent(event);
-
-    // Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject->isCreatingConnector())
-    {
-        setFlag(QGraphicsItem::ItemIsMovable, false);    // Make the component not movable during connection
-        setFlag(QGraphicsItem::ItemIsSelectable, false); // Make the component not selectable during connection
-
-        setSelected(false);
-        setActive(false);
-    }
-}
-
-
-//! @brief Defines what happens if a mouse key is released while hovering an object
-void WorkspaceObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    // Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject && mpParentContainerObject->isCreatingConnector())
-    {
-        setSelected(false);
-        setActive(false);
-    }
-
-    //! @todo This crashes if we forward the event after calling "replace component". Not really needed, but figure out why.
-    QGraphicsWidget::mouseReleaseEvent(event);
 }
 
 

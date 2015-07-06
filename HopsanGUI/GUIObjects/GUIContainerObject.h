@@ -306,9 +306,6 @@ protected:
     //Help function for creating container ports
     virtual void addExternalContainerPortObject(ModelObject *pModelObject);
 
-    // Helpfunctions for creating connectors
-    void disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port *pRealPort);
-
     //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

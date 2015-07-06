@@ -722,9 +722,9 @@ void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEn
 
         // Remove connectors that are connected to the model object
         QList<Connector *> connectorPtrList = pModelObject->getConnectorPtrs();
-        for(int i=0; i<connectorPtrList.size(); ++i)
+        for(Connector *pConn : connectorPtrList)
         {
-            this->removeSubConnector(connectorPtrList[i], undoSettings);
+            removeSubConnector(pConn, undoSettings);
         }
 
         if (undoSettings == Undo && !mUndoDisabled)
@@ -736,7 +736,7 @@ void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEn
         //! @todo maybe this should be handled somewhere else (not sure maybe this is the best place)
         if (pModelObject->type() == ContainerPortType )
         {
-            this->removeExternalPort(pModelObject->getName());
+            removeExternalPort(pModelObject->getName());
         }
 
         mModelObjectMap.erase(it);
@@ -1129,43 +1129,6 @@ void ContainerObject::forgetSelectedSubConnector(Connector *pConnector)
     mSelectedSubConnectorsList.removeAll(pConnector);
 }
 
-void ContainerObject::disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port *pRealPort)
-{
-    QVector<Port*> connPortsVect = pGroupPort->getConnectedPorts();
-    //! @todo what if a connected port is another group port
-
-    assert(connPortsVect[0] == pRealPort);
-
-    // The real port is the first so we skip it (begin at index 1), we cant disconnect from ourself
-    // The first connection to the group port does not have an actual core connection
-    // The GUI disconnect will come later in the function calling this one
-    // Disconnect all secondary connections
-    for (int i=1; i<connPortsVect.size(); ++i)
-    {
-        this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getParentModelObjectName(),
-                                                   connPortsVect[i]->getName(),
-                                                   pRealPort->getParentModelObjectName(),
-                                                   pRealPort->getName());
-
-    }
-
-    connPortsVect.erase(connPortsVect.begin());
-
-    // Reconnect all secondary ports, to the new base port
-    if (connPortsVect.size() > 0)
-    {
-        // New real port will be
-        Port* pNewGroupRealPort = connPortsVect[0];
-
-        for (int i=1; i<connPortsVect.size(); ++i)
-        {
-            this->getCoreSystemAccessPtr()->connect(pNewGroupRealPort->getParentModelObjectName(),
-                                                    pNewGroupRealPort->getName(),
-                                                    connPortsVect[i]->getParentModelObjectName(),
-                                                    connPortsVect[i]->getName());
-        }
-    }
-}
 
 //! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
@@ -1180,135 +1143,57 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
         return;
     }
 
-    //! @todo why do we have this loop, probably as safety not to try and remove connectors thats not in this system
-    for(int i=0; i<mSubConnectorList.size(); ++i)
+    // Make sure we can only remove connector that we own
+    if (mSubConnectorList.contains(pConnector))
     {
-        if(mSubConnectorList[i] == pConnector)
+        //! @todo some error handling both ports must exist and be connected to each other
+        if(pConnector->isConnected())
         {
-             //! @todo some error handling both ports must exist and be connected to each other
-             if(pConnector->isConnected())
-             {
-                 //GroupPort *pStartGroupPort=0, *pEndGroupPort=0;
-                 bool startPortIsGroupPort=false, endPortIsGroupPort=false;
-                 Port *pStartP = pConnector->getStartPort();
-                 Port *pEndP = pConnector->getEndPort();
+            Port *pStartP = pConnector->getStartPort();
+            Port *pEndP = pConnector->getEndPort();
 
-                 //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
-                 Port *pStartRealPort=0, *pEndRealPort=0;
-                 // If no group ports, do normal disconnect
-                 if(pStartP->getParentModelObject()->getTypeName() == MODELICATYPENAME ||
+            // Modelica component disconnect
+            if(pStartP->getParentModelObject()->getTypeName() == MODELICATYPENAME ||
                     pEndP->getParentModelObject()->getTypeName() == MODELICATYPENAME)
-                 {
-                     success = true;
-                 }
-                 else if ( !startPortIsGroupPort && !endPortIsGroupPort && pConnector->isVolunector())
-                 {
-                    bool ok1 = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
-                                                                         pStartP->getName(),
-                                                                         pConnector->getVolunectorComponent()->getName(),
-                                                                         "P1");
-                    bool ok2 = this->getCoreSystemAccessPtr()->disconnect(pConnector->getVolunectorComponent()->getName(),
-                                                                     "P2",
-                                                                         pEndP->getParentModelObjectName(),
-                                                                         pEndP->getName());
+            {
+                success = true;
+            }
+            // Volunector disconnect
+            else if ( pConnector->isVolunector() )
+            {
+                bool ok1 = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
+                                                                      pStartP->getName(),
+                                                                      pConnector->getVolunectorComponent()->getName(),
+                                                                      "P1");
+                bool ok2 = this->getCoreSystemAccessPtr()->disconnect(pConnector->getVolunectorComponent()->getName(),
+                                                                      "P2",
+                                                                      pEndP->getParentModelObjectName(),
+                                                                      pEndP->getName());
 
-                    Component *vComp = pConnector->getVolunectorComponent();
-                    vComp->scene()->removeItem(vComp);
-                    vComp->deleteInHopsanCore();
-                    vComp->deleteLater();
+                Component *vComp = pConnector->getVolunectorComponent();
+                vComp->scene()->removeItem(vComp);
+                vComp->deleteInHopsanCore();
+                vComp->deleteLater();
 
-                    success = (ok1 && ok2);
-                 }
-                 else if ( !startPortIsGroupPort && !endPortIsGroupPort )
-                 {
-                    success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
-                                                                         pStartP->getName(),
-                                                                         pEndP->getParentModelObjectName(),
-                                                                         pEndP->getName());
-                 }
-                 // If one or both of the ports were a group port
-                 else
-                 {
-                     bool disconStartRealPort=false;
-                     bool disconEndRealPort=false;
-
-                     // If start port is group port but not end port
-                     if ( startPortIsGroupPort && !endPortIsGroupPort)
-                     {
-                        pStartRealPort = pStartP->getRealPort();
-                        pEndRealPort = pEndP;
-
-                        // Determine if the port being disconnected is the actual REAL port, that is, the first port connected to the group port
-                        if (pStartRealPort == pEndRealPort)
-                        {
-                            disconStartRealPort = true;
-                        }
-                     }
-                     // If start port is not group port but end port is
-                     else if ( !startPortIsGroupPort && endPortIsGroupPort )
-                     {
-                         pStartRealPort = pStartP;
-                         pEndRealPort = pEndP->getRealPort();
-
-                         // Determine if the port being disconnected is the actual REAL port, that is, the first port connected to the group port
-                         if (pStartRealPort == pEndRealPort)
-                         {
-                             disconEndRealPort = true;
-                         }
-                     }
-                     // Else both were group ports
-                     else
-                     {
-                         pStartRealPort = pStartP->getRealPort();
-                         pEndRealPort = pEndP->getRealPort();
-
-                         //! @todo  do this
-                         assert(false);
-                     }
-
-                     // If one or both real ports are being disconnected
-                     if (disconStartRealPort || disconEndRealPort)
-                     {
-                         if (disconStartRealPort && disconEndRealPort)
-                         {
-                             gpMessageHandler->addErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
-                             success = false;
-                         }
-
-                         //Handle disconnection of start base port
-                         if (disconStartRealPort)
-                         {
-                             disconnectGroupPortFromItsRealPort(pStartP, pEndRealPort);
-                             success = true;
-                         }
-
-                         //Handle disconnection of end base port
-                         if (disconEndRealPort)
-                         {
-                             disconnectGroupPortFromItsRealPort(pEndP, pStartRealPort);
-                             success = true;
-                         }
-                     }
-                     else
-                     {
-                         // Disconnect appropriate core ports (when non is a real ports but one is groupport)
-                         success = this->getCoreSystemAccessPtr()->disconnect(pStartRealPort->getParentModelObjectName(),
-                                                                              pStartRealPort->getName(),
-                                                                              pEndRealPort->getParentModelObjectName(),
-                                                                              pEndRealPort->getName());
-                     }
-                 }
-                 emit checkMessages();
-             }
-             else if (pConnector->isBroken())
-             {
-                 success = true;
-             }
-             break;
+                success = (ok1 && ok2);
+            }
+            // Ordinary disconnect
+            else
+            {
+                success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
+                                                                     pStartP->getName(),
+                                                                     pEndP->getParentModelObjectName(),
+                                                                     pEndP->getName());
+            }
+            emit checkMessages();
+        }
+        else if (pConnector->isBroken())
+        {
+            success = true;
         }
     }
 
-    //Delete the connector and remove it from scene and lists
+    // Delete the connector and remove it from scene and lists
     if(success)
     {
         if(undoSettings == Undo)
@@ -1334,7 +1219,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
         emit connectorRemoved();
     }
 
-    //Refresh the graphics view
+    // Refresh the graphics view
     mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
@@ -1352,20 +1237,17 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
         bool success = false;
         if (mpTempConnector->isDangling() && pPort)
         {
-            // Check if we are connecting group ports
-            Port *pStartRealPort=0, *pEndRealPort=0;
+            Port *pStartPort = mpTempConnector->getStartPort();
+            Port *pEndPort = pPort;
 
-            pStartRealPort = mpTempConnector->getStartPort();
-            pEndRealPort = pPort;
-
-            if(pStartRealPort->getNodeType() == "NodeModelica" || pEndRealPort->getNodeType() == "NodeModelica")
+            if(pStartPort->getNodeType() == "NodeModelica" || pEndPort->getNodeType() == "NodeModelica")
             {
                 //! @todo Also make sure that the port in the Modelica code is correct physical type
-                if((pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getNodeType() == "NodeModelica") ||
-                   (pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getParentModelObject()->getTypeCQS() == "C") ||
-                   (pEndRealPort->getNodeType() == "NodeModelica" && pStartRealPort->getParentModelObject()->getTypeCQS() == "C") ||
-                   (pStartRealPort->getNodeType() == "NodeModelica" && pEndRealPort->getParentModelObject()->getTypeCQS() == "S") ||
-                   (pEndRealPort->getNodeType() == "NodeModelica" && pStartRealPort->getParentModelObject()->getTypeCQS() == "S"))
+                if((pStartPort->getNodeType() == "NodeModelica" && pEndPort->getNodeType() == "NodeModelica") ||
+                   (pStartPort->getNodeType() == "NodeModelica" && pEndPort->getParentModelObject()->getTypeCQS() == "C") ||
+                   (pEndPort->getNodeType() == "NodeModelica" && pStartPort->getParentModelObject()->getTypeCQS() == "C") ||
+                   (pStartPort->getNodeType() == "NodeModelica" && pEndPort->getParentModelObject()->getTypeCQS() == "S") ||
+                   (pEndPort->getNodeType() == "NodeModelica" && pStartPort->getParentModelObject()->getTypeCQS() == "S"))
                 {
                     success = true;
                 }
@@ -1376,30 +1258,30 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
                 }
             }
 #ifdef DEVELOPMENT
-            else if(pStartRealPort->getNodeType() == "NodeHydraulic" &&                 //Connecting two Q-type hydraulic ports, add a "volunector"
-                    pEndRealPort->getNodeType() == "NodeHydraulic" &&
-                    pStartRealPort->getParentModelObject()->getTypeCQS() == "Q" &&
-                    pEndRealPort->getParentModelObject()->getTypeCQS() == "Q")
+            else if(pStartPort->getNodeType() == "NodeHydraulic" &&                 //Connecting two Q-type hydraulic ports, add a "volunector"
+                    pEndPort->getNodeType() == "NodeHydraulic" &&
+                    pStartPort->getParentModelObject()->getTypeCQS() == "Q" &&
+                    pEndPort->getParentModelObject()->getTypeCQS() == "Q")
             {
                 mpTempConnector->makeVolunector();
-                bool ok1 = getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
-                                                             pStartRealPort->getName(),
+                bool ok1 = getCoreSystemAccessPtr()->connect(pStartPort->getParentModelObjectName(),
+                                                             pStartPort->getName(),
                                                              mpTempConnector->getVolunectorComponent()->getName(),
                                                              "P1");
                 bool ok2 = getCoreSystemAccessPtr()->connect(mpTempConnector->getVolunectorComponent()->getName(),
                                                              "P2",
-                                                             pEndRealPort->getParentModelObjectName(),
-                                                             pEndRealPort->getName());
+                                                             pEndPort->getParentModelObjectName(),
+                                                             pEndPort->getName());
                 success = ok1 && ok2;
             }
 #endif
             // Else treat as normal ports
             else
             {
-                success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
-                                                                  pStartRealPort->getName(),
-                                                                  pEndRealPort->getParentModelObjectName(),
-                                                                  pEndRealPort->getName());
+                success = this->getCoreSystemAccessPtr()->connect(pStartPort->getParentModelObjectName(),
+                                                                  pStartPort->getName(),
+                                                                  pEndPort->getParentModelObjectName(),
+                                                                  pEndPort->getName());
             }
         }
 
@@ -2913,9 +2795,8 @@ void ContainerObject::enterContainer()
 
     refreshInternalContainerPortGraphics();
 
-    mpModelWidget->setExternalSystem((this->isExternal() &&
-                                           this != mpModelWidget->getTopLevelSystemContainer()) ||
-                                           this->isAncestorOfExternalSubsystem());
+    mpModelWidget->setExternalSystem((this->isExternal() && this != mpModelWidget->getTopLevelSystemContainer()) ||
+                                     this->isAncestorOfExternalSubsystem());
 }
 
 //! @brief Exit a container object and make its the view represent its parents contents.
@@ -2931,9 +2812,8 @@ void ContainerObject::exitContainer()
     mpModelWidget->getGraphicsView()->setContainerPtr(mpParentContainerObject);
     mpModelWidget->getGraphicsView()->setViewPort(mpParentContainerObject->getGraphicsViewport());
 
-    mpModelWidget->setExternalSystem((mpParentContainerObject->isExternal() &&
-                                           mpParentContainerObject != mpModelWidget->getTopLevelSystemContainer()) ||
-                                           mpParentContainerObject->isAncestorOfExternalSubsystem());
+    mpModelWidget->setExternalSystem((mpParentContainerObject->isExternal() && mpParentContainerObject != mpModelWidget->getTopLevelSystemContainer()) ||
+                                     mpParentContainerObject->isAncestorOfExternalSubsystem());
 
     // Disconnect this system and connect parent system with undo and redo actions
     this->unmakeMainWindowConnectionsAndRefresh();

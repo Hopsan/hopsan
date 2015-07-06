@@ -1062,7 +1062,7 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
         return;
 
-    if(!mpParentContainerObject->mpModelWidget->isEditingEnabled())
+    if(mpParentContainerObject->mpModelWidget->isEditingLimited())
         return;
 
     QMenu menu;
@@ -1095,56 +1095,42 @@ void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-////! @brief Defines what happens if a mouse key is pressed while hovering an object
-//void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
-//{
-//        //Store old positions for all components, in case more than one is selected
-//    if(event->button() == Qt::LeftButton)
-//    {
-//        for(int i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
-//        {
-//            mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
-//        }
-//    }
-
-//        //Objects shall not be selectable while creating a connector
-//    if(mpParentSystem->mIsCreatingConnector)
-//    {
-//        this->setSelected(false);
-//        this->setActive(false);
-//    }
-//}
-
-
+//! @brief Defines what happens if a mouse key is pressed while hovering an object
 void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(!mpParentContainerObject)
+    {
+        return;
+    }
+
+    // Objects shall not be selectable while creating a connector
+    if(mpParentContainerObject->isCreatingConnector())
+    {
+        setFlag(QGraphicsItem::ItemIsMovable, false);    // Make the component not movable during connection
+        setFlag(QGraphicsItem::ItemIsSelectable, false); // Make the component not selectable during connection
+
+        setSelected(false);
+        setActive(false);
+    }
+    // If editing has been limited we should not do anything
+    // Else we can reenable movement and selection and check for drag copy and such
+    else if (!mpParentContainerObject->mpModelWidget->isEditingLimited())
+    {
+        setFlag(QGraphicsItem::ItemIsMovable, true);    // Make the component movable if not (it is not movable during creation of connector)
+        setFlag(QGraphicsItem::ItemIsSelectable, true); // Make the component selectable if not (it is not selectable during creation of connector)
+
+        if(event->button() == Qt::RightButton)
+        {
+            connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()));
+            mDragCopyTimer.setSingleShot(true);
+            mDragCopyTimer.start(100);
+        }
+    }
+
+    // Now forward the mouse press event
     WorkspaceObject::mousePressEvent(event);
 
     qDebug() << "ModelObject::mousePressEvent(), button = " << event->button();
-
-    if(event->button() == Qt::RightButton)
-    {
-        connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()));
-        mDragCopyTimer.setSingleShot(true);
-        mDragCopyTimer.start(100);
-    }
-
-//    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentModelWidget->getGraphicsView()->isShiftKeyPressed())
-//    {
-//        mpParentContainerObject->deselectAll();
-//        this->select();
-//        mpParentContainerObject->copySelected(mpParentContainerObject->getDragCopyStackPtr());
-
-//        QMimeData *mimeData = new QMimeData;
-//        mimeData->setText("HOPSANDRAGCOPY");
-
-//        QDrag *drag = new QDrag(mpParentContainerObject->mpParentModelWidget->getGraphicsView());
-//        drag->setMimeData(mimeData);
-//        drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
-//        drag->setHotSpot(QPoint(20, 20));
-//        drag->exec(Qt::CopyAction | Qt::MoveAction);
-//    }
-
 }
 
 
@@ -1236,7 +1222,15 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         this->contextMenuEvent(test);
     }
 
-    WorkspaceObject::mouseReleaseEvent(event);
+    // Objects shall not be selectable while creating a connector
+    if(mpParentContainerObject && mpParentContainerObject->isCreatingConnector())
+    {
+        setSelected(false);
+        setActive(false);
+    }
+
+    //! @todo This crashes if we forward the event after calling "replace component". Not really needed, but figure out why.
+    QGraphicsWidget::mouseReleaseEvent(event);
 }
 
 

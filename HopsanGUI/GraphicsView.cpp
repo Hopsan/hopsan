@@ -95,6 +95,9 @@ GraphicsView::GraphicsView(ModelWidget *parent)
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
+    if (mpParentModelWidget->isEditingLimited())
+        return;
+
     qDebug() << "GraphicsView::contextMenuEvent(), reason = " << event->reason();
     if(!mpContainerObject->isCreatingConnector() && !mIgnoreNextContextMenuEvent)
     {
@@ -146,7 +149,7 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
-    if(!mpParentModelWidget->isEditingEnabled())
+    if(mpParentModelWidget->isEditingLimited())
         return;
 
     //A HMF file was dropped in the graphics view, so try to open the model
@@ -560,7 +563,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
     emit unHighlightAll();
 
-        // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
+    // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
     if(event->key() == Qt::Key_Control)
     {
         mpContainerObject->makeConnectorDiagonal(false);
@@ -587,7 +590,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     //! @todo This is a stupid solution, graphics view need to remove the text from the library because mouse move event in library is too slow...
     emit hovered();
 
-        //If creating connector, the end port shall be updated to the mouse position.
+    // If creating connector, the end port shall be updated to the mouse position.
     if (mpContainerObject->isCreatingConnector())
     {
         mpContainerObject->updateTempConnector(mapToScene(event->pos()));
@@ -602,15 +605,14 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     emit unHighlightAll();
 
-    if(!mpParentModelWidget->isEditingEnabled())
+    if(mpParentModelWidget->isEditingLimited())
         return;
 
     mLeftMouseButtonPressed = true;
 
-    QCursor apa;
-    qDebug() << "GraphicsView::mousePressEvent(), pos: " << this->mapToScene(this->mapFromGlobal(apa.pos()));
+    qDebug() << "GraphicsView::mousePressEvent(), pos: " << this->mapToScene(this->mapFromGlobal(QCursor::pos()));
 
-        //No rubber band during connecting:
+    // No rubber band during connecting:
     if (mpContainerObject->isCreatingConnector())
     {
         this->setDragMode(NoDrag);
@@ -624,7 +626,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->setDragMode(RubberBandDrag);
     }
 
-    //! Remove one connector line if right clicking while creating a connector
+    // Remove one connector line if right clicking while creating a connector
     if ((event->button() == Qt::RightButton) && mpContainerObject->isCreatingConnector())
     {
         mpContainerObject->removeOneConnectorLine(mapToScene(event->pos()));

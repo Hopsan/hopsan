@@ -160,10 +160,10 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     setWindowTitle(tr("Component Properties"));
     createEditStuff();
 
-    connect(this, SIGNAL(lockModelWidget(bool)), mpModelObject->getParentContainerObject()->mpModelWidget, SLOT(lockTab(bool)));
+    connect(this, SIGNAL(setLimitedModelEditingLock(bool)), mpModelObject->getParentContainerObject()->mpModelWidget, SLOT(lockModelEditingLimited(bool)));
 
     // Lock model for changes
-    emit lockModelWidget(true);
+    emit setLimitedModelEditingLock(true);
 }
 
 
@@ -324,13 +324,12 @@ void ComponentPropertiesDialog3::setName()
 
 void ComponentPropertiesDialog3::closeEvent(QCloseEvent* event)
 {
-    emit lockModelWidget(false);
+    emit setLimitedModelEditingLock(false);
     QWidget::closeEvent(event);
 }
 
 void ComponentPropertiesDialog3::reject()
 {
-    emit lockModelWidget(false);
     QDialog::reject();
     QDialog::close();
 }

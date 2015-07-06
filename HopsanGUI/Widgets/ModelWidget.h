@@ -83,7 +83,8 @@ public:
     void setSaved(bool value);
     void hasChanged();
 
-    bool isEditingEnabled();
+    bool isEditingFullyDisabled();
+    bool isEditingLimited();
 
     bool defineVariableAlias(const QString &rFullName, const QString &rAlias="");
     bool undefineVariableAlias(const QString &rFullName);
@@ -119,9 +120,9 @@ public slots:
     void saveAs();
     void exportModelParameters();
     void setExternalSystem(bool value);
-    void setEditingEnabled(bool value);
+    void lockModelEditingFull(bool lock);
+    void lockModelEditingLimited(bool lock);
     void openAnimation();
-    void lockTab(bool locked);
     void simulateModelica();
     void collectPlotData(bool overWriteGeneration=false);
     void setUseRemoteSimulationCore(bool tf);
@@ -145,12 +146,13 @@ private:
     int mLastSimulationTime;
 
     bool mIsSaved;
-    bool mEditingEnabled;
+    int mLimitedLockModelEditingCounter=0;
+    int mFullLockModelEditingCounter=0;
     bool mUseRemoteCore=false;
     bool mUseRemoteCoreAddressServer=false;
 
     QuickNavigationWidget *mpQuickNavigationWidget;
-    QWidget *mpExternalSystemWidget;
+    QWidget *mpExternalSystemWarningWidget;
 
     SystemContainer *mpToplevelSystem;
     LogDataHandler2 *mpLogDataHandler;

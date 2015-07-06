@@ -38,11 +38,14 @@
 #include "common.h"
 #include "Utilities/XMLUtilities.h"
 
+#include <QPointer>
+
 //Forward declarations
 class Connector;
 class Port;
 class ContainerObject;
 class PlotWindow;
+class ComponentPropertiesDialog3;
 
 class Component : public ModelObject
 {
@@ -75,6 +78,8 @@ protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void createPorts();
+
+    QPointer<ComponentPropertiesDialog3> mpPropertiesDialog;
 };
 
 class ScopeComponent : public Component

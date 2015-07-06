@@ -89,15 +89,14 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     mStartTime.setNum(0.0,'g',10);
     mStopTime.setNum(10.0,'g',10);
 
-    mEditingEnabled = true;
     this->setPalette(gpConfig->getPalette());
     this->setMouseTracking(true);
 
     mpParentModelHandler = pModelHandler;
     mpQuickNavigationWidget = new QuickNavigationWidget(this);
 
-    mpExternalSystemWidget = new QWidget(this);
-    QLabel *pExternalSystemLabel = new QLabel("<font color='darkred'>External Subsystem (editing disabled)</font>", mpExternalSystemWidget);
+    mpExternalSystemWarningWidget = new QWidget(this);
+    QLabel *pExternalSystemLabel = new QLabel("<font color='darkred'>External Subsystem (editing disabled)</font>", mpExternalSystemWarningWidget);
     QFont tempFont = pExternalSystemLabel->font();
     tempFont.setPixelSize(18);
     tempFont.setBold(true);
@@ -110,8 +109,8 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     pExternalSystemLayout->addWidget(pExternalSystemLabel);
     pExternalSystemLayout->addStretch(1);
     pExternalSystemLayout->addWidget(pOpenExternalSystemButton);
-    mpExternalSystemWidget->setLayout(pExternalSystemLayout);
-    mpExternalSystemWidget->hide();
+    mpExternalSystemWarningWidget->setLayout(pExternalSystemLayout);
+    mpExternalSystemWarningWidget->hide();
 
     mpToplevelSystem = new SystemContainer(this, 0);
 
@@ -152,7 +151,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
 //#ifdef XMAS
 //    tabLayout->addWidget(pBalls, 1,1);
 //#endif
-    tabLayout->addWidget(mpExternalSystemWidget,3,0);
+    tabLayout->addWidget(mpExternalSystemWarningWidget,3,0);
     //this->setLayout(tabLayout);
 
     mpGraphicsView->centerView();
@@ -309,9 +308,14 @@ int ModelWidget::getLastSimulationTime()
 }
 
 
-bool ModelWidget::isEditingEnabled()
+bool ModelWidget::isEditingFullyDisabled()
 {
-    return mEditingEnabled;
+    return mFullLockModelEditingCounter!=0;
+}
+
+bool ModelWidget::isEditingLimited()
+{
+    return mLimitedLockModelEditingCounter!=0;
 }
 
 //! @brief Defines a new alias for specified variable (popup box)
@@ -781,71 +785,117 @@ void ModelWidget::exportModelParameters()
     saveModel(NewFile, ParametersOnly);
 }
 
-
+//! @todo this should not be in the model widget, it should be in the container
 void ModelWidget::setExternalSystem(bool value)
 {
-    setEditingEnabled(!value);
-    mpExternalSystemWidget->setVisible(value);
+    // If this is an external system and we have not already fully locked editing, then lock it
+    if (isEditingFullyDisabled() && value)
+    {
+        lockModelEditingFull(true);
+    }
+    // Else if this is not an external system but we have already locked it, then unlock
+    else if (!isEditingFullyDisabled() && !value)
+    {
+        lockModelEditingFull(false);
+    }
+
+    mpExternalSystemWarningWidget->setVisible(value);
 }
 
 
-void ModelWidget::setEditingEnabled(bool value)
+void ModelWidget::lockModelEditingFull(bool lock)
 {
-    mEditingEnabled = value;
-
-    if(!mEditingEnabled)
+    if (lock)
     {
-        QStringList objects = mpGraphicsView->getContainerPtr()->getModelObjectNames();
-        for(int i=0; i<objects.size(); ++i)
+        ++mFullLockModelEditingCounter;
+    }
+    else
+    {
+        --mFullLockModelEditingCounter;
+    }
+    lockModelEditingLimited(lock);
+}
+
+void ModelWidget::lockModelEditingLimited(bool lock)
+{
+    if (lock)
+    {
+        ++mLimitedLockModelEditingCounter;
+    }
+    else
+    {
+        --mLimitedLockModelEditingCounter;
+    }
+//#define USEDISABLEGRAYEFFECT
+    if(mLimitedLockModelEditingCounter != 0)
+    {
+        QList<ModelObject*> objects =  mpGraphicsView->getContainerPtr()->getModelObjects();
+        for (ModelObject* pObj : objects)
         {
-            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, false);
-            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, false);
-
-            QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
-            grayEffect->setColor(QColor("gray"));
-            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setGraphicsEffect(grayEffect);
-
-            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->getConnectorPtrs();
-            for(int j=0; j<connectors.size(); ++j)
+            pObj->setFlag(QGraphicsItem::ItemIsMovable, false);
+            pObj->setFlag(QGraphicsItem::ItemIsSelectable, false);
+#ifdef USEDISABLEGRAYEFFECT
+            QGraphicsColorizeEffect *pGrayEffect = new QGraphicsColorizeEffect();
+            pGrayEffect->setColor(QColor("gray"));
+            pObj->setGraphicsEffect(pGrayEffect);
+#endif
+            QList<Connector*> connectors = pObj->getConnectorPtrs();
+            for(Connector* pCon : connectors)
             {
-                QGraphicsColorizeEffect *grayEffect2 = new QGraphicsColorizeEffect();
-                grayEffect2->setColor(QColor("gray"));
-                connectors.at(j)->setGraphicsEffect(grayEffect2);
+#ifdef USEDISABLEGRAYEFFECT
+                pGrayEffect = new QGraphicsColorizeEffect();
+                pGrayEffect->setColor(QColor("gray"));
+                pCon->setGraphicsEffect(pGrayEffect);
+#endif
             }
         }
 
-        QList<Widget*> widgetList = mpGraphicsView->getContainerPtr()->getWidgets();
-        for(int w=0; w<widgetList.size(); ++w)
+        QList<Widget*> widgets = mpGraphicsView->getContainerPtr()->getWidgets();
+        for(Widget* pWidget : widgets)
         {
+#ifdef USEDISABLEGRAYEFFECT
             QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
             grayEffect->setColor(QColor("gray"));
-            widgetList.at(w)->setGraphicsEffect(grayEffect);
+            pWidget->setGraphicsEffect(grayEffect);
+#endif
         }
     }
     else
     {
-        QStringList objects = mpGraphicsView->getContainerPtr()->getModelObjectNames();
-        for(int i=0; i<objects.size(); ++i)
+        QList<ModelObject*> objects =  mpGraphicsView->getContainerPtr()->getModelObjects();
+        for (ModelObject* pObj : objects)
         {
-            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, true);
-            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            pObj->setFlag(QGraphicsItem::ItemIsMovable, true);
+            pObj->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-            if(mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->graphicsEffect())
-                mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->graphicsEffect()->setEnabled(false);
-
-            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->getConnectorPtrs();
-            for(int j=0; j<connectors.size(); ++j)
+            if (pObj->graphicsEffect())
             {
-                if(connectors.at(j)->graphicsEffect())
-                    connectors.at(j)->graphicsEffect()->setEnabled(false);
+                pObj->graphicsEffect()->setEnabled(false);
+                //pObj->graphicsEffect()->deleteLater();
+                pObj->setGraphicsEffect(nullptr);
+            }
+
+            QList<Connector*> connectors = pObj->getConnectorPtrs();
+            for(Connector* pCon : connectors)
+            {
+                if (pCon->graphicsEffect())
+                {
+                    pCon->graphicsEffect()->setEnabled(false);
+                    //pCon->graphicsEffect()->deleteLater();
+                    pCon->setGraphicsEffect(nullptr);
+                }
             }
         }
 
-        QList<Widget*> widgetList = mpGraphicsView->getContainerPtr()->getWidgets();
-        for(int w=0; w<widgetList.size(); ++w)
+        QList<Widget*> widgets = mpGraphicsView->getContainerPtr()->getWidgets();
+        for(Widget* pWidget : widgets)
         {
-            if(widgetList.at(w)->graphicsEffect())
-                widgetList.at(w)->graphicsEffect()->setEnabled(false);
+            if (pWidget->graphicsEffect())
+            {
+                pWidget->graphicsEffect()->setEnabled(false);
+                //pWidget->graphicsEffect()->deleteLater();
+                pWidget->setGraphicsEffect(nullptr);
+            }
         }
     }
 }
@@ -897,11 +947,6 @@ void ModelWidget::openAnimation()
         mpAnimationWidget->show();
         gpCentralTabWidget->hide();
     }
-}
-
-void ModelWidget::lockTab(bool locked)
-{
-    setDisabled(locked);
 }
 
 void ModelWidget::simulateModelica()
@@ -1416,8 +1461,8 @@ void ModelWidget::openCurrentContainerInNewTab()
         {
             //mpParentModelHandler->loadModel(pContainer->getModelFileInfo().filePath());
             pContainer->setModelFile("");
-            setEditingEnabled(true);
-            mpExternalSystemWidget->setVisible(false);
+            lockModelEditingFull(true);
+            mpExternalSystemWarningWidget->setVisible(false);
             break;
         }
     }
