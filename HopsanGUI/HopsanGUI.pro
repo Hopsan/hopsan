@@ -167,6 +167,18 @@ win32 {
         message(Not looking for python since we are not using PYTHONQT)
     }
 
+    # Set hdf5 paths
+    d = $$setHDF5PathInfo($$(HDF5_PATH), $$DESTDIR)
+    !isEmpty(d){
+        DEFINES *= USEHDF5
+        LIBS *= $$magic_hopsan_libpath
+        INCLUDEPATH *= $$magic_hopsan_includepath
+        QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+message(magiclib $$magic_hopsan_libpath)
+        message(Compiling with HDF5 support)
+    }
+
+
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
