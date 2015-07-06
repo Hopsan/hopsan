@@ -856,7 +856,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     horizontalHeader()->setSectionResizeMode(Description, QHeaderView::Stretch);
     horizontalHeader()->setSectionResizeMode(Value, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(Unit, QHeaderView::ResizeToContents);
-    horizontalHeader()->setSectionResizeMode(Scale, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionResizeMode(Quantity, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(ShowPort, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionsClickable(false);
 #else
