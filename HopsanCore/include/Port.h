@@ -61,8 +61,7 @@ namespace hopsan {
 
     public:
         //! @brief This enum specifies the RequiredConnection enums
-        //! @todo remove the uppercase enums later when stable 0.6.0 release exist (to force update)
-        enum RequireConnectionEnumT {Required, NotRequired, REQUIRED=Required, NOTREQUIRED=NotRequired};
+        enum RequireConnectionEnumT {Required, NotRequired};
 
         // Constructors - Destructors
         Port(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
@@ -71,9 +70,18 @@ namespace hopsan {
         //! @brief Reads a value from the connected node
         //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to read
-        //! @param [in] subPortIdx Ignored on non multi ports
         //! @return The data value
-        virtual inline double readNode(const size_t idx, const size_t subPortIdx=0) const
+        inline double readNode(const size_t idx) const
+        {
+            return mpNode->mDataValues[idx];
+        }
+
+        //! @brief Reads a value from the connected node
+        //! @ingroup ComponentSimulationFunctions
+        //! @param [in] idx The data id of the data to read
+        //! @param [in] subPortIdx (Ignored on non multi ports)
+        //! @return The data value
+        virtual inline double readNode(const size_t idx, const size_t subPortIdx) const
         {
             HOPSAN_UNUSED(subPortIdx)
             return mpNode->mDataValues[idx];
@@ -82,14 +90,26 @@ namespace hopsan {
         //! @brief Writes a value to the connected node
         //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to write
-        //! @param [in] value The value of the data to read
-        //! @param [in] subPortIdx Ignored on non multi ports
-        virtual inline void writeNode(const size_t idx, const double value, const size_t subPortIdx=0)
+        //! @param [in] value The value to write
+        inline void writeNode(const size_t idx, const double value)
+        {
+            mpNode->mDataValues[idx] = value;
+        }
+
+        //! @brief Writes a value to the connected node
+        //! @ingroup ComponentSimulationFunctions
+        //! @param [in] idx The data id of the data to write
+        //! @param [in] value The value to write
+        //! @param [in] subPortIdx (Ignored on non multi ports)
+        virtual inline void writeNode(const size_t idx, const double value, const size_t subPortIdx)
         {
             HOPSAN_UNUSED(subPortIdx)
             mpNode->mDataValues[idx] = value;
         }
 
+        ///@{
+        //! @brief Returns a reference to the Node data in the port
+        //! @returns A reference to the node data vector
         inline std::vector<double> &getNodeDataVector()
         {
             return mpNode->mDataValues;
@@ -99,7 +119,12 @@ namespace hopsan {
         {
             return mpNode->mDataValues;
         }
+        ///@}
 
+        ///@{
+        //! @brief Returns a reference to the Node data in the port
+        //! @param[in] subPortIdx The index of a multiport subport to access
+        //! @returns A reference to the node data vector
         virtual inline std::vector<double> &getNodeDataVector(const size_t subPortIdx)
         {
             HOPSAN_UNUSED(subPortIdx);
@@ -111,11 +136,13 @@ namespace hopsan {
             HOPSAN_UNUSED(subPortIdx);
             return getNodeDataVector();
         }
+        ///@}
 
         virtual double readNodeSafe(const size_t idx, const size_t subPortIdx=0) const;
         virtual void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
 
-        virtual const Node *getNodePtr(const size_t subPortIdx=0)const;
+        virtual Node *getNodePtr(const size_t subPortIdx=0);
+        virtual const Node *getNodePtr(const size_t subPortIdx=0) const;
         virtual double *getNodeDataPtr(const size_t idx, const size_t subPortIdx=0) const;
         virtual std::vector<double> *getDataVectorPtr(const size_t subPortIdx=0);
 
@@ -145,11 +172,13 @@ namespace hopsan {
 
         bool isInterfacePort() const;
         virtual bool isMultiPort() const;
-        Port *getParentPort() const;
         const HString &getNodeType() const;
         virtual PortTypesEnumT getPortType() const;
         virtual PortTypesEnumT getExternalPortType();
         virtual PortTypesEnumT getInternalPortType();
+
+        Port *getParentPort() const;
+        Component* getComponent() const;
 
         const HString &getName() const;
         const HString &getComponentName() const;
@@ -159,10 +188,6 @@ namespace hopsan {
         virtual double getStartValue(const size_t idx, const size_t subPortIdx=0);
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
-
-        Component* getComponent() const;
-
-        virtual Node *getNodePtr(const size_t subPortIdx=0);
 
     protected:
         HString mNodeType;
@@ -212,7 +237,7 @@ namespace hopsan {
     public:
         SystemPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
 
-        PortTypesEnumT getPortType() const;
+        PortTypesEnumT getPortType() const {return SystemPortType;}
         PortTypesEnumT getExternalPortType();
         PortTypesEnumT getInternalPortType();
     };
@@ -229,7 +254,7 @@ namespace hopsan {
         ~MultiPort();
 
         // Overloaded virtual functions
-        virtual PortTypesEnumT getPortType() const;
+        virtual PortTypesEnumT getPortType() const = 0;
         bool isMultiPort() const;
         double readNodeSafe(const size_t idx, const size_t subPortIdx) const;
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx);
@@ -247,13 +272,17 @@ namespace hopsan {
         //! @brief Writes a value to the connected node
         //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to write
-        //! @param [in] value The value of the data to read
+        //! @param [in] value The value to write
         //! @param [in] subPortIdx The subPort to write to (range is NOT checked)
         inline void writeNode(const size_t idx, const double value, const size_t subPortIdx)
         {
             return mSubPortsVector[subPortIdx]->writeNode(idx,value);
         }
 
+        ///@{
+        //! @brief Returns a reference to the Node data in the port
+        //! @param[in] subPortIdx The index of a multiport subport to access
+        //! @returns A reference to the node data vector
         inline std::vector<double> &getNodeDataVector(const size_t subPortIdx)
         {
             return mSubPortsVector[subPortIdx]->getNodeDataVector();
@@ -263,8 +292,9 @@ namespace hopsan {
         {
             return mSubPortsVector[subPortIdx]->getNodeDataVector();
         }
+        ///@}
 
-        const Node *getNodePtr(const size_t subPortIdx=0)const;
+        const Node *getNodePtr(const size_t subPortIdx=0) const;
         double *getNodeDataPtr(const size_t idx, const size_t subPortIdx) const;
         std::vector<double> *getDataVectorPtr(const size_t subPortIdx=0);
 
@@ -304,7 +334,7 @@ namespace hopsan {
 
     public:
         PowerPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
-        PortTypesEnumT getPortType() const;
+        PortTypesEnumT getPortType() const {return PowerPortType;}
     };
 
 
@@ -316,10 +346,10 @@ namespace hopsan {
 
     public:
         ReadPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
-        PortTypesEnumT getPortType() const;
+        PortTypesEnumT getPortType() const {return ReadPortType;}
 
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
-        void writeNode(const size_t idx, const double value, const size_t subPortIdx=0);
+//        void writeNode(const size_t idx, const double value, const size_t subPortIdx);
 
         virtual void loadStartValues();
         //virtual bool hasConnectedExternalSystemWritePort();
@@ -335,7 +365,7 @@ namespace hopsan {
 
     public:
         PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
-        PortTypesEnumT getPortType() const;
+        PortTypesEnumT getPortType() const {return PowerMultiportType;}
 
     protected:
         Port* addSubPort();
@@ -349,7 +379,7 @@ namespace hopsan {
 
     public:
         ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
-        PortTypesEnumT getPortType() const;
+        PortTypesEnumT getPortType() const {return ReadMultiportType;}
 
     protected:
         Port* addSubPort();
@@ -364,7 +394,7 @@ namespace hopsan {
 
     public:
         WritePort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
-        PortTypesEnumT getPortType() const;
+        PortTypesEnumT getPortType() const {return WritePortType;}
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);

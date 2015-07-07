@@ -773,10 +773,6 @@ SystemPort::SystemPort(const HString &rNodeType, const HString &rPortName, Compo
     // Do nothing special
 }
 
-PortTypesEnumT SystemPort::getPortType() const
-{
-    return SystemPortType;
-}
 
 //! @brief Get the External port type (virtual, should be overloaded in systemports only)
 PortTypesEnumT SystemPort::getExternalPortType()
@@ -825,11 +821,6 @@ PowerPort::PowerPort(const HString &rNodeType, const HString &rPortName, Compone
     }
 }
 
-PortTypesEnumT PowerPort::getPortType() const
-{
-    return PowerPortType;
-}
-
 
 ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
@@ -837,10 +828,6 @@ ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component
     createStartNode(rNodeType);
 }
 
-PortTypesEnumT ReadPort::getPortType() const
-{
-    return ReadPortType;
-}
 
 void ReadPort::writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx)
 {
@@ -851,13 +838,13 @@ void ReadPort::writeNodeSafe(const size_t idx, const double value, const size_t 
 }
 
 
-void ReadPort::writeNode(const size_t idx, const double value, const size_t subPortIdx)
-{
-    HOPSAN_UNUSED(idx)
-    HOPSAN_UNUSED(value)
-    HOPSAN_UNUSED(subPortIdx)
-    mpComponent->addErrorMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
-}
+//void ReadPort::writeNode(const size_t idx, const double value, const size_t subPortIdx)
+//{
+//    HOPSAN_UNUSED(idx)
+//    HOPSAN_UNUSED(value)
+//    HOPSAN_UNUSED(subPortIdx)
+//    mpComponent->addErrorMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
+//}
 
 void ReadPort::loadStartValues()
 {
@@ -894,10 +881,6 @@ WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Compone
     createStartNode(mNodeType);
 }
 
-PortTypesEnumT WritePort::getPortType() const
-{
-    return WritePortType;
-}
 
 MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
@@ -912,11 +895,6 @@ MultiPort::~MultiPort()
     {
         getComponent()->addFatalMessage("~MultiPort(): mSubPortsVector.size() != 0 in multiport destructor (will fix later)");
     }
-}
-
-PortTypesEnumT MultiPort::getPortType() const
-{
-    return MultiportType;
 }
 
 bool MultiPort::isMultiPort() const
@@ -1194,10 +1172,6 @@ PowerMultiPort::PowerMultiPort(const HString &rNodeType, const HString &rPortNam
     }
 }
 
-PortTypesEnumT PowerMultiPort::getPortType() const
-{
-    return PowerMultiportType;
-}
 
 //! @brief Adds a subport to a powermultiport
 Port* PowerMultiPort::addSubPort()
@@ -1212,10 +1186,6 @@ ReadMultiPort::ReadMultiPort(const HString &rNodeType, const HString &rPortName,
     // Do nothing special
 }
 
-PortTypesEnumT ReadMultiPort::getPortType() const
-{
-    return ReadMultiportType;
-}
 
 //! @brief Adds a subport to a readmultiport
 Port* ReadMultiPort::addSubPort()
