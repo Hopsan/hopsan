@@ -11,9 +11,6 @@ TARGET = HopsanGUI
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
-macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
-
-
 QT += svg xml
 QT += core gui network
 
@@ -23,28 +20,23 @@ isEqual(QT_MAJOR_VERSION, 5){
     QT += webkit
 }
 
-
 TARGET = $${TARGET}$${DEBUG_EXT}
-
-# Make c++11 mandatory but allow non-strict ANSI
-QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__ -Wno-c++0x-compat
 
 #--------------------------------------------------------
 # Set the QWT paths and dll/so/dylib/framework post linking copy command
 d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
-isEmpty(d):warning("ERROR: Failed to locate QWT libs, have you compiled them and put them in the expected location")
-#!macx:LIBS *= $$magic_hopsan_libpath
-#!macx:INCLUDEPATH *= $$magic_hopsan_includepath
+!isEmpty(d){
+    LIBS *= $$magic_hopsan_libpath
+    INCLUDEPATH *= $$magic_hopsan_includepath
+    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 
-LIBS *= $$magic_hopsan_libpath
-INCLUDEPATH *= $$magic_hopsan_includepath
-macx:QMAKE_LFLAGS *= -lqwt
-
-macx:message(LIBS=$$LIBS)
-macx:message(INCLUDEPATH=$$INCLUDEPATH)
-macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
-
-QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+    macx:QMAKE_LFLAGS *= -lqwt
+    macx:message(LIBS=$$LIBS)
+    macx:message(INCLUDEPATH=$$INCLUDEPATH)
+    macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
+} else {
+    error(ERROR: Failed to locate QWT libs, have you compiled them and put them in the expected location)
+}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
@@ -94,12 +86,6 @@ LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set HopsanGenerator Paths
-#INCLUDEPATH *= $${PWD}/../HopsanGenerator/include/
-#LIBS *= -L$${PWD}/../bin -lHopsanGenerator$${DEBUG_EXT}
-#--------------------------------------------------------
-
-#--------------------------------------------------------
 # Set Discount Paths
 d = $$setDiscountPathInfo($$(DISCOUNT_PATH), $$DESTDIR)
 !isEmpty(d){
@@ -122,24 +108,30 @@ INCLUDEPATH *= $${PWD}/
 # Development flag, will Gui be development version
 DEFINES *= DEVELOPMENT
 
+# Make c++11 mandatory but allow non-strict ANSI
+QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__ -Wno-c++0x-compat
+
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
-        message(Trying to find Python include and lib paths since USEPYTHONQT is defined)
+        message(Looking for Python include and lib paths since USEPYTHONQT is defined)
         QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
         LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
         INCLUDEPATH *= $$system(python$${PYTHON_VERSION}-config --includes)
     } else {
-        message(Not looking for python since we are not using PYTHONQT)
+        message(Not looking for Python since we are not using PythonQT)
     }
 
     system(ldconfig -p | grep libhdf5_cpp) {
+        message(Found libHDF5_cpp in system)
         message(Compiling with HDF5 support)
         DEFINES += USEHDF5
         LIBS += -lhdf5_cpp -lhdf5
+    } else {
+        message(Compiling without HDF5 support)
     }
 
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative the executable (regardless of working dir, VERY useful)
@@ -158,13 +150,13 @@ win32 {
 
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
-        message(Trying to find Python include and lib paths since USEPYTHONQT is defined)
+        message(Looking for Python include and lib paths since USEPYTHONQT is defined)
         PYTHON_DEFAULT_PATHS *= c:/Python27
         PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
         INCLUDEPATH += $${PYTHON_PATH}/include
         LIBS += -L$${PYTHON_PATH}/libs
     } else {
-        message(Not looking for python since we are not using PYTHONQT)
+        message(Not looking for Python since we are not using PythonQT)
     }
 
     # Set hdf5 paths
@@ -174,8 +166,10 @@ win32 {
         LIBS *= $$magic_hopsan_libpath
         INCLUDEPATH *= $$magic_hopsan_includepath
         QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-message(magiclib $$magic_hopsan_libpath)
         message(Compiling with HDF5 support)
+    } else
+    {
+        message(Compiling without HDF5 support)
     }
 
 
@@ -196,6 +190,9 @@ message(magiclib $$magic_hopsan_libpath)
     system($${PWD}/../getSvnRevision.bat){
         DEFINES *= "HOPSANGUISVNREVISION=$$system($${PWD}/../getSvnRevision.bat)"
     }
+}
+macx {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
 }
 
 #Debug output

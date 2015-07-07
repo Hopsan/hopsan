@@ -38,9 +38,7 @@ INCLUDEPATH *= $${PWD}/../Dependencies/IndexingCSVParser
 CONFIG(debug, debug|release) {
   QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 }
-CONFIG(release, debug|release) {
 
-}
 DEFINES *= MAINCORE
 
 # -------------------------------------------------

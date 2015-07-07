@@ -24,6 +24,15 @@ win32:LIB_PREFIX =
 macx:LIB_PREFIX = lib
 DEFINES *= DLL_PREFIX=$${LIB_PREFIX}
 
+# Set optimization flags
+# Og = optimization that does not interfere with debugging
+# O3 = highest optimization level for speed
+CONFIG(debug, debug|release) {
+  QMAKE_CXXFLAGS += -Og
+}
+CONFIG(release, debug|release) {
+  QMAKE_CXXFLAGS += -O3
+}
 
 #Determine if default component lib should be build in
 #DEFINES *= BUILTINDEFAULTCOMPONENTLIB
@@ -50,7 +59,7 @@ defineReplace(selectPath){
         message(Using custom $${NAME} path $${PATH})
     }
     !exists($${PATH}){
-        warning(The $${NAME} path $${PATH} does not exist)
+        message(The $${NAME} path $${PATH} does not exist)
     }
     return($${PATH})
 }
@@ -88,7 +97,7 @@ defineReplace(generateCopyDllCommand){
         }
     }
 
-    message(qmake_post_link $${qmake_post_link})
+    #message(qmake_post_link $${qmake_post_link})
     return($$qmake_post_link)
 }
 
