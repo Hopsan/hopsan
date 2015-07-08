@@ -167,8 +167,7 @@ win32 {
         INCLUDEPATH *= $$magic_hopsan_includepath
         QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
         message(Compiling with HDF5 support)
-    } else
-    {
+    } else {
         message(Compiling without HDF5 support)
     }
 
