@@ -1564,13 +1564,9 @@ void PlotArea::updateAxisLabels()
         for(PlotCurve *pPlotCurve : mPlotCurves)
         {
             // First decide new y-axis label
-            // If alias empty then use data name, else use the alias name
-            QString newLabel;
-            if (pPlotCurve->getSharedVectorVariable()->hasAliasName())
-            {
-                newLabel = pPlotCurve->getSharedVectorVariable()->getAliasName();
-            }
-            else
+            // Use quantity if it exists else go with the data name
+            QString newLabel = pPlotCurve->getDataQuantity();
+            if (newLabel.isEmpty())
             {
                 newLabel = pPlotCurve->getDataName();
             }
@@ -1621,14 +1617,18 @@ void PlotArea::updateAxisLabels()
                 else if (!sharedBottomVars.contains(pSharedXVector))
                 {
                     sharedBottomVars.append(pSharedXVector); // This one is used for faster comparison (often the curves share the same x-vector)
-                    // Use alias if it exist or data name
+                    // Use alias if it exist else data quantity and if that is empty go with data name
                     if (pSharedXVector->hasAliasName())
                     {
                         bottomLabel = pSharedXVector->getAliasName();
                     }
                     else
                     {
-                        bottomLabel = pSharedXVector->getDataName();
+                        bottomLabel = pSharedXVector->getDataQuantity();
+                        if (bottomLabel.isEmpty())
+                        {
+                            bottomLabel = pSharedXVector->getDataName();
+                        }
                     }
 
                     if(customX)
