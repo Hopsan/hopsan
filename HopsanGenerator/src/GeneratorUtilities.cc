@@ -261,7 +261,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 
     QString hopsanBinDir = pGenerator->getBinPath();
     QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath())+" "+extraIncludes;
-    QString lflags = QString("-L%1 -l%2").arg(hopsanBinDir).arg("HopsanCore"TO_STR(DEBUG_EXT))+" "+extraLFlags;
+    QString lflags = QString("-L\"%1\" -l%2").arg(hopsanBinDir).arg("HopsanCore"TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
     pGenerator->printMessage("\nCalling compiler utility:");
     pGenerator->printMessage("Path: "+path);
