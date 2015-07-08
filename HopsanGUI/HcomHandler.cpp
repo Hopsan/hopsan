@@ -728,10 +728,12 @@ void HcomHandler::createCommands()
 
     HcomCommand saplCmd;
     saplCmd.cmd = "sapl";
-    saplCmd.description.append("Save log variables to file");
+    saplCmd.description.append("Save log variables to file. Filename suffix determins format");
     saplCmd.help.append(" Usage: sapl [filepath] [-flags] [variables]\n");
     saplCmd.help.append("  Flags (optional):");
-    saplCmd.help.append("   -csv    Use CSV format (default is PLO format)");
+    saplCmd.help.append("   -csv    Force CSV format");
+    saplCmd.help.append("   -plo    Force PLO format");
+    saplCmd.help.append("   -h5     Force H5 (HDF5) format");
     saplCmd.fnc = &HcomHandler::executeSaveToPloCommand;
     saplCmd.group = "Plot Commands";
     mCmdList << saplCmd;
@@ -3216,90 +3218,138 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         return;
     }
 
-    bool useCsv = false;
-    QString temp = cmd;
-    if(args.contains("-csv"))
-    {
-        useCsv = true;
-        temp.remove("-csv");
-    }
-
-    QString path = args.first();
+    QString path = args.first(); args.removeFirst();
     path.remove("\"");
     if(!path.contains("/"))
     {
         path.prepend("./");
     }
-    QString dir = path.left(path.lastIndexOf("/"));
+
+    QString dir, fname, format;
+    splitFilepath(path, dir, fname, format);
+    format = format.toLower();
+
+    // Check if mwd or pwd should be used with dir
     dir = getDirectory(dir);
-    path = dir+path.right(path.size()-path.lastIndexOf("/"));
+    path = dir+fname;
 
-    temp = temp.right(temp.size()-path.size()-1);
-
-    QStringList splitCmdMajor;
-    bool withinQuotations = false;
-    int start=0;
-    for(int i=0; i<temp.size(); ++i)
+    // Determine format from file extension unless override in arg
+    if(args.contains("-csv"))
     {
-        if(temp[i] == '\"')
-        {
-            withinQuotations = !withinQuotations;
-        }
-        if(temp[i] == ' ' && !withinQuotations)
-        {
-            splitCmdMajor.append(temp.mid(start, i-start));
-            start = i+1;
-        }
+        format = "csv";
+        args.removeFirst();
     }
-    splitCmdMajor.append(temp.right(temp.size()-start));
-
-
-    // Handle special case where we want to export a specific generation only
-    // Example: *.g (g=15, g=l, g=h)
-    QString specialCase = splitCmdMajor.last();
-    if ( (splitCmdMajor.size() == 2) && specialCase.startsWith("*" GENERATIONSPECIFIERSTR) )
+    else if (args.contains("-h5"))
     {
-        bool parseOK;
-        int g=parseAndChopGenerationSpecifier(specialCase, parseOK);
-        if (parseOK)
+        format = "h5";
+        args.removeFirst();
+    }
+    else if (args.contains("-plo"))
+    {
+        format="plo";
+        args.removeFirst();
+    }
+
+    if (!args.isEmpty())
+    {
+        // Handle special case where we want to export a specific generation only
+        // Example: *.g (g=15, g=l, g=h)
+        QString specialCase = args.last();
+        if ( (args.size() == 1) && specialCase.startsWith("*" GENERATIONSPECIFIERSTR) )
         {
-            if (g>-2)
+            bool parseOK;
+            int g=parseAndChopGenerationSpecifier(specialCase, parseOK);
+            if (parseOK)
             {
-                mpModel->getViewContainerObject()->getLogDataHandler()->exportGenerationToPlo(path, g);
-                return;
+                if (g>-2)
+                {
+                    if (g == -1)
+                    {
+                        g = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
+                    }
+
+                    if (mpModel->getLogDataHandler()->hasGeneration(g))
+                    {
+                        if (format == "plo")
+                        {
+                            mpModel->getLogDataHandler()->exportGenerationToPlo(path, g);
+                        }
+                        else if (format == "csv")
+                        {
+                            mpModel->getLogDataHandler()->exportGenerationToCSV(path, g);
+                        }
+                        else if (format == "h5")
+                        {
+                            mpModel->getLogDataHandler()->exportGenerationToHDF5(path, g);
+                        }
+                    }
+                    else
+                    {
+                        HCOMERR(QString("Generation %1 does not exist").arg(g+1));
+                    }
+                    return;
+                }
+                else if(g==-2)
+                {
+                    HCOMERR("sapl can not export different full generations to the same file");
+                    return;
+                }
+                else
+                {
+                    HCOMERR("Generation could not be parsed or does not exist");
+                    return;
+                }
             }
             else
             {
-                HCOMERR("sapl can not export different generations to the same file");
+                HCOMERR("Could not parse generation specifier");
                 return;
             }
         }
+
+        // If we get here we should try to read all variable patterns explicitly
+        QList<SharedVectorVariableT> allVariables;
+        for(QString &arg : args)
+        {
+            arg.remove("\"");
+            if (arg.startsWith("*" GENERATIONSPECIFIERSTR))
+            {
+                HCOMWARN("Ignoring "+arg+" you can only use this as a single argument to sapl");
+            }
+            else
+            {
+                QStringList variables;
+                getMatchingLogVariableNames(arg, variables);
+                if (variables.isEmpty())
+                {
+                    HCOMERR("No matching variables found: "+arg);
+                }
+                for(QString &var : variables)
+                {
+                    allVariables.append(getLogVariable(var));
+                }
+            }
+        }
+
+        if (allVariables.isEmpty())
+        {
+            HCOMERR("No matching variables found");
+        }
         else
         {
-            HCOMERR("Could not parse generation specifier");
+            if (format == "plo")
+            {
+                mpModel->getLogDataHandler()->exportToPlo(path, allVariables);
+            }
+            else if (format == "csv")
+            {
+                mpModel->getLogDataHandler()->exportToCSV(path, allVariables);
+            }
+            else if (format == "h5")
+            {
+                mpModel->getLogDataHandler()->exportToHDF5(path, allVariables);
+            }
         }
-    }
-
-    // If we get here we should try to read all variable patterns explicitly
-    QList<SharedVectorVariableT> allVariables;
-    for(int i=1; i<splitCmdMajor.size(); ++i)
-    {
-        splitCmdMajor[i].remove("\"");
-        QStringList variables;
-        getMatchingLogVariableNames(splitCmdMajor[i], variables);
-        for(int v=0; v<variables.size(); ++v)
-        {
-            allVariables.append(getLogVariable(variables[v]));
-        }
-    }
-
-    if(useCsv)
-    {
-        mpModel->getViewContainerObject()->getLogDataHandler()->exportToCSV(path, allVariables);
-    }
-    else
-    {
-        mpModel->getViewContainerObject()->getLogDataHandler()->exportToPlo(path, allVariables);
     }
 }
 

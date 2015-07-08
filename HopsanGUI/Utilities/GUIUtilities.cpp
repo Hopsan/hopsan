@@ -929,3 +929,11 @@ bool isVersionGreaterThan(QString v1, QString v2)
 {
     return hopsan::isVersionGreaterThan(v1.toStdString().c_str(), v2.toStdString().c_str());
 }
+
+//! @brief Extracts the dirPath, fileName (including suffix), and the suffix from a file path
+void splitFilepath(const QString &rFilepath, QString &rDirPath, QString &rFilename, QString &rFilesuffix)
+{
+    rDirPath = rFilepath.left(rFilepath.lastIndexOf("/"));
+    rFilename = rFilepath.right(rFilepath.size()-rFilepath.lastIndexOf("/"));
+    rFilesuffix = extractFilenameExtension(rFilename);
+}

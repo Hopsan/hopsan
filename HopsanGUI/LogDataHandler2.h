@@ -66,9 +66,9 @@ public:
     void exportGenerationToPlo(const QString &rFilePath, int gen, const int version=-1) const;
     void exportToPlo(const QString &rFilePath, QList<SharedVectorVariableT> variables, int version=-1) const;
     void exportToCSV(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const;
-    void exportGenerationToCSV(const QString &rFilePath, const int gen) const;
+    void exportGenerationToCSV(const QString &rFilePath, int gen) const;
     void exportToHDF5(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const;
-    void exportGenerationToHDF5(const QString &rFilePath, const int gen) const;
+    void exportGenerationToHDF5(const QString &rFilePath, int gen) const;
 
     SharedVectorVariableT insertNewVectorVariable(const QString &rDesiredname, VariableTypeT type=VectorType, const int gen=-1);
     SharedVectorVariableT insertNewVectorVariable(SharedVectorVariableT pVariable, const int gen=-1);
@@ -109,6 +109,7 @@ public:
     int getCurrentGenerationNumber() const;
     const LogDataGeneration* getCurrentGeneration() const;
     const LogDataGeneration* getGeneration(const int gen) const;
+    bool hasGeneration(const int gen) const;
 
     void getVariableGenerationInfo(const QString &rFullName, int &rLowest, int &rHighest) const;
 

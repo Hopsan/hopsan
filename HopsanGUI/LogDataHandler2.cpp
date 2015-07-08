@@ -344,8 +344,13 @@ void LogDataHandler2::exportToCSV(const QString &rFilePath, const QList<SharedVe
     }
 }
 
-void LogDataHandler2::exportGenerationToCSV(const QString &rFilePath, const int gen) const
+void LogDataHandler2::exportGenerationToCSV(const QString &rFilePath, int gen) const
 {
+    if (gen == -1)
+    {
+        gen = mCurrentGenerationNumber;
+    }
+
     QList<SharedVectorVariableT> vars = getAllNonAliasVariablesAtGeneration(gen);
     // Now export all of them
     exportToCSV(rFilePath, vars);
@@ -377,6 +382,7 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
 
             // Write the data
             QVector<double> *pData = rVar->beginFullVectorOperation();
+            // Note! if name is already taken, then this will throw an exception
             dataset.write(pData->data(), H5::PredType::NATIVE_DOUBLE);
             rVar->endFullVectorOperation(pData);
 
@@ -413,8 +419,13 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
     }
 }
 
-void LogDataHandler2::exportGenerationToHDF5(const QString &rFilePath, const int gen) const
+void LogDataHandler2::exportGenerationToHDF5(const QString &rFilePath, int gen) const
 {
+    if (gen == -1)
+    {
+        gen = mCurrentGenerationNumber;
+    }
+
     //! @todo use a enum for choosing export format
     QList<SharedVectorVariableT> vars = getAllNonAliasVariablesAtGeneration(gen);
     // Now export all of them
@@ -2078,6 +2089,11 @@ const LogDataGeneration *LogDataHandler2::getCurrentGeneration() const
 const LogDataGeneration *LogDataHandler2::getGeneration(const int gen) const
 {
     return mGenerationMap.value(gen, 0);
+}
+
+bool LogDataHandler2::hasGeneration(const int gen) const
+{
+    return mGenerationMap.contains(gen);
 }
 
 void LogDataHandler2::getVariableGenerationInfo(const QString &rFullName, int &rLowest, int &rHighest) const
