@@ -1073,6 +1073,24 @@ bool ComponentSystem::renameParameter(const HString &rOldName, const HString &rN
     {
         unReserveUniqueName(rOldName);
         reserveUniqueName(rNewName);
+
+        // Now try to change the system parameter value in all sub components
+        SubComponentMapT::iterator scmit;
+        for (scmit=mSubComponentMap.begin(); scmit!=mSubComponentMap.end(); ++scmit)
+        {
+            Component* pComponent = scmit->second;
+            const std::vector<ParameterEvaluator*> *pParams = pComponent->mpParameters->getParametersVectorPtr();
+            for (size_t p=0; p<pParams->size(); ++p)
+            {
+                ParameterEvaluator *pParam = pParams->at(p);
+                // If we find a parameter with the old system par name as value then change that value
+                if (pParam->getValue() == rOldName)
+                {
+                    pComponent->setParameterValue(pParam->getName(), rNewName);
+                }
+            }
+        }
+
         return true;
     }
     return false;
