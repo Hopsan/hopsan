@@ -188,7 +188,7 @@ void Configuration::saveToXml()
         QDomElement libs = appendDomElement(configRoot, XML_LIBS);
         for(int i=0; i<mUserLibs.size(); ++i)
         {
-            appendDomTextNode(libs, XML_USERLIB, mUserLibs.at(i).absoluteFilePath());
+            QDomElement xmlUserLib = appendDomTextNode(libs, XML_USERLIB, mUserLibs.at(i).absoluteFilePath());
             QString typeStr = XML_LIBTYPE_INTERNAL;
             if(mUserLibTypes.at(i) == ExternalLib)
             {
@@ -198,7 +198,7 @@ void Configuration::saveToXml()
             {
                 typeStr = XML_LIBTYPE_FMU;
             }
-            libs.lastChildElement(XML_USERLIB).setAttribute(XML_LIBTYPE, typeStr);
+            xmlUserLib.setAttribute(XML_LIBTYPE, typeStr);
         }
 
         QDomElement modelicaFilesXml = appendDomElement(configRoot, XML_MODELICAFILES);
@@ -1085,8 +1085,8 @@ void Configuration::addUserLib(const QString &value, LibraryTypeEnumT type)
     QFileInfo file(value);
     if(!mUserLibs.contains(file))
     {
-        this->mUserLibs.append(file);
-        this->mUserLibTypes.append(type);
+        mUserLibs.append(file);
+        mUserLibTypes.append(type);
     }
     saveToXml();
 }
@@ -1114,8 +1114,18 @@ void Configuration::removeUserLib(const QString &value)
 //! @param value Path to the library
 bool Configuration::hasUserLib(const QString &value) const
 {
-    QFileInfo file(value);
-    return mUserLibs.contains(file);
+    QString valueFUllPath = QFileInfo(value).canonicalFilePath();
+    for (const QFileInfo &rFI : mUserLibs )
+    {
+        // In case a registered user lib is an xml file path, check exact canonical file match
+        // else also check if the canonical dir path to such a file matches, (if we try to load the root directory again)
+        if ( (rFI.canonicalFilePath() == valueFUllPath) ||
+             (rFI.canonicalPath() == valueFUllPath) )
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 

@@ -67,7 +67,7 @@ public slots:
     void update();
 
 private slots:
-    void handleItemClick(QTreeWidgetItem* item, int);
+    void handleItemClick(QTreeWidgetItem* item, int column);
     void handleItemClick(QListWidgetItem* item);
     void handleItemEntered(QListWidgetItem* item);
 

@@ -532,8 +532,9 @@ void LibraryWidget::update()
 }
 
 
-void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
+void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(column)
     if(mItemToTypeNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
@@ -666,9 +667,8 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                 {
                     typeNames.append(mItemToTypeNameMap.find(item).value());
                 }
-                if(!mItemToTypeNameMap.contains(item))
+                else
                 {
-                    QStringList typeNames;
                     for(int c=0; c<mpList->count(); ++c)
                     {
                         typeNames.append(mListItemToTypeNameMap.find(mpList->item(c)).value());
@@ -677,12 +677,11 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                     {
                         return;
                     }
-                    for(int s=0; s<typeNames.size(); ++s)
-                    {
-                        gpLibraryHandler->unloadLibraryByComponentType(typeNames[s]);
-                    }
                 }
-                gpLibraryHandler->unloadLibraryByComponentType(typeName);
+                for(const QString &typeName : typeNames)
+                {
+                    gpLibraryHandler->unloadLibraryByComponentType(typeName);
+                }
             }
             else if(pReply == pOpenFolderAction)
             {
@@ -694,8 +693,12 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
             QMenu contextMenu;
             QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
             QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
+            QAction *pRecompileAction = contextMenu.addAction("Recompile");
+            QAction *pReloadAction = contextMenu.addAction("Reload");
             pUnloadAction->setEnabled(false);
             pOpenFolderAction->setEnabled(false);
+            pRecompileAction->setEnabled(false);
+            pReloadAction->setEnabled(false);
 
             QTreeWidgetItem *pFirstSubComponentItem = item;
 
@@ -704,11 +707,18 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
             while(!mItemToTypeNameMap.contains(pFirstSubComponentItem))
             {
                 pFirstSubComponentItem = pFirstSubComponentItem->child(0);
+                // If we cant find a subcomponentn then exit
+                if (pFirstSubComponentItem == 0)
+                {
+                    return;
+                }
             }
 
             if(item->text(0) != EXTLIBSTR && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).path.startsWith(EXTLIBSTR))
             {
                 pUnloadAction->setEnabled(true);
+                pRecompileAction->setEnabled(true);
+                pReloadAction->setEnabled(true);
             }
 
             if(item != 0 && mItemToTypeNameMap.contains(pFirstSubComponentItem))
@@ -716,22 +726,22 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                 pOpenFolderAction->setEnabled(true);
             }
 
+
             if(contextMenu.actions().isEmpty())
                 return;
 
             QAction *pReply = contextMenu.exec(QCursor::pos());
 
-            if(pReply == pUnloadAction)
+            if(pReply == pUnloadAction || pReply == pRecompileAction || pReply == pReloadAction)
             {
                 if(mItemToTypeNameMap.contains(item))
                 {
                     typeNames.append(mItemToTypeNameMap.find(item).value());
                 }
-                if(!mItemToTypeNameMap.contains(item))
+                else
                 {
                     QList<QTreeWidgetItem *> subItems;
                     getAllSubTreeItems(item, subItems);
-                    QStringList typeNames;
                     for(int s=0; s<subItems.size(); ++s)
                     {
                         if(mItemToTypeNameMap.contains(subItems[s]))
@@ -743,9 +753,54 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int /*column*/)
                     {
                         return;
                     }
-                    for(int s=0; s<typeNames.size(); ++s)
+                }
+                // Handle unload
+                if (pReply == pUnloadAction)
+                {
+                    for(const QString &typeName : typeNames)
                     {
-                        gpLibraryHandler->unloadLibraryByComponentType(typeNames[s]);
+                        gpLibraryHandler->unloadLibraryByComponentType(typeName);
+                    }
+                }
+                // Handle reload
+                else if (pReply == pReloadAction && !typeNames.isEmpty())
+                {
+
+                    LibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
+                    if (le.pLibrary)
+                    {
+                        // First uload the library
+                        QString libPath = le.pLibrary->xmlFilePath;
+                        bool rc = gpLibraryHandler->unloadLibraryByComponentType(typeNames.first());
+                        // NOTE! Now le and le.pLibrary is useless the pointer is dangling
+                        if (rc)
+                        {
+                            // Now reload the library
+                            gpLibraryHandler->loadLibrary(libPath);
+                        }
+                    }
+                }
+                // Handle recompile
+                else if (!typeNames.isEmpty())
+                {
+                    LibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
+                    if (le.pLibrary)
+                    {
+                        // First uload teh library
+                        QString libPath = le.pLibrary->xmlFilePath;
+                        bool rc = gpLibraryHandler->unloadLibraryByComponentType(typeNames.first());
+                        // NOTE! Now le and le.pLibrary is useless the pointer is dangling
+                        if (rc)
+                        {
+                            // We use the core generator directly to aviod calling the save state code in the library handler it does not seem to be working so well
+                            // But since we only need to unload one particular library this should work
+                            //! @todo fix the problem with save state
+                            CoreGeneratorAccess coreGenerator;
+                            coreGenerator.compileComponentLibrary(libPath, "", true);
+
+                            // Now reload the library
+                            gpLibraryHandler->loadLibrary(libPath);
+                        }
                     }
                 }
             }

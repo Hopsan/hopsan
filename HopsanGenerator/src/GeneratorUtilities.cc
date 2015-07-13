@@ -117,7 +117,7 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 
 //! @brief Function for loading an XML DOM Document from file
 //! @param[in] rFile The file to load from
-//! @param[in] rDomDocument The DOM Document to load into
+//! @param[in,out] rDomDocument The DOM Document to load into
 //! @param[in] rootTagName The expected root tag name to extract from the Dom Document
 //! @returns The extracted DOM root element from the loaded DOM document
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName)
@@ -224,34 +224,42 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     pGenerator->printMessage("Writing compilation script...");
 
     QStringList ccFiles;
-    QString name;
+    QString libFile,dbg_ext,libRootDir;
     if(QFileInfo(path).isFile())
     {
         QFile xmlFile(path);
         xmlFile.open(QFile::ReadOnly);
-        QString xmlCode = xmlFile.readAll();
-        xmlFile.close();
-        QStringList xmlLines = xmlCode.split("\n");
 
-        QFileInfo xmlFileInfo(xmlFile);
-        path = xmlFileInfo.path();
+        QDomDocument doc;
+        QDomElement rootElement = loadXMLDomDocument(xmlFile, doc, "hopsancomponentlibrary");
 
-        for(int l=0; l<xmlLines.size(); ++l)
+        // Load lib info
+        QDomElement libElement = rootElement.firstChildElement("lib");
+
+        dbg_ext = libElement.attribute("debug_ext");
+        libFile = QString(LIBPREFIX)+libElement.text();
+
+        QDomElement sourceElement = rootElement.firstChildElement("source");
+        while (!sourceElement.isNull())
         {
-            if(xmlLines[l].trimmed().startsWith("<source>"))
-            {
-                ccFiles.append(xmlLines[l].section("<source>",1,1).section("</source>",0,0));
-            }
-            else if(xmlLines[l].trimmed().startsWith("<lib>"))
-            {
-                name = QString(LIBPREFIX)+xmlLines[l].section("<lib>",1,1).section("</lib>",0,0).section(".",0,0);
-            }
+            ccFiles.append(sourceElement.text());
+            sourceElement.nextSiblingElement("source");
         }
+
+        // If no cc files were specified then add at least the lib file
+        if (ccFiles.isEmpty())
+        {
+            ccFiles.append(libElement.text()+".cc");
+        }
+
+        xmlFile.close();
+        libRootDir = QFileInfo(path).canonicalPath();
     }
     else
     {
-        name = QString(LIBPREFIX)+QDir(path).dirName();
+        libFile = QString(LIBPREFIX)+QDir(path).dirName();
         ccFiles = QDir(path).entryList(QStringList() << "*.cc");
+        libRootDir = path;
     }
 
     QString c;
@@ -263,20 +271,28 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath())+" "+extraIncludes;
     QString lflags = QString("-L\"%1\" -l%2").arg(hopsanBinDir).arg("HopsanCore"TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
-    pGenerator->printMessage("\nCalling compiler utility:");
-    pGenerator->printMessage("Path: "+path);
-    pGenerator->printMessage("Objective: "+name);
-    qDebug() << "Objective: " << name;
-    pGenerator->printMessage("Source files: "+c);
-    pGenerator->printMessage("Includes: "+iflags);
-    pGenerator->printMessage("Links: "+lflags+"\n");
+    //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work) /Peter
+    QString cflags = QString("-Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(libRootDir);
 
-    //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work)
-    QString cflags = QString(" -Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(path);
+    // Modify if debug
+#ifdef DEBUGCOMPILING
+    libFile+=dbg_ext;
+    cflags.prepend("-g -Og -DDEBUGCOMPILING");
+#else
+    cflags.prepend("-DRELEASECOMPILING");
+#endif
+
+    pGenerator->printMessage("\nCalling compiler utility:");
+    pGenerator->printMessage("Path:     "+libRootDir);
+    pGenerator->printMessage("Output:   "+libFile);
+    pGenerator->printMessage("Sources:  "+c);
+    pGenerator->printMessage("Cflags:   "+cflags);
+    pGenerator->printMessage("Includes: "+iflags);
+    pGenerator->printMessage("Links:    "+lflags+"\n");
 
     QString output;
     QString gccPath = pGenerator->getGccPath();
-    bool success = compile(path, gccPath, name, c, iflags, cflags, lflags, output);
+    bool success = compile(libRootDir, gccPath, libFile, c, iflags, cflags, lflags, output);
     pGenerator->printMessage(output);
     return success;
 }
@@ -356,28 +372,6 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     output.append("\n");
     output.append(stdErr);
     output.append("\n");
-
-//    QString gccCommand = "cd \""+wdPath+"\" && gcc "+cflags+" ";
-//    gccCommand.append(srcFiles+" -fpermissive -o "+o+".so "+inclPaths+" "+lflags);
-//    //qDebug() << "Command = " << gccCommand;
-//    gccCommand +=" 2>&1";
-//    FILE *fp;
-//    char line[130];
-//    output.append("Compiler command: \""+gccCommand+"\"\n");
-//    qDebug() << "Compiler command: \"" << gccCommand << "\"";
-//    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
-//    if ( !fp )
-//    {
-//        output.append("Could not execute '" + gccCommand + "'! err=%d\n");
-//        return false;
-//    }
-//    else
-//    {
-//        while ( fgets( line, sizeof line, fp))
-//        {
-//            output.append(QString::fromUtf8(line));
-//        }
-//    }
 #endif
 
     QDir targetDir(wdPath);
@@ -391,8 +385,6 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
 #elif __linux__
     if(!targetDir.exists(o + ".so"))
     {
-        qDebug() << targetDir.absolutePath();
-        qDebug() << o + ".so";
         output.append("Compilation failed.");
         return false;
     }

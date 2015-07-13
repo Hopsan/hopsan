@@ -80,7 +80,7 @@ public:
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
     void generateLibrary(QString path, QStringList hppFiles);
-    bool compileComponentLibrary(QString path, QString extraLibs="", bool showDialog=true);
+    bool compileComponentLibrary(QString libPath, QString extraLibs="", bool showDialog=true);
 };
 
 class CoreLibraryAccess

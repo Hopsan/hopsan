@@ -277,10 +277,10 @@ void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 
 
 //! @brief Compiles a component library from specified source files
-//! @param path Path where source files are located
+//! @param libPath Path where source files are located
 //! @param extraLibs Extra libraries to use in compilation
 //! @param showDialog True if HopsanGenerator dialog shall be shown
-bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString extraLibs, bool showDialog)
+bool CoreGeneratorAccess::compileComponentLibrary(QString libPath, QString extraLibs, bool showDialog)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
@@ -290,12 +290,12 @@ bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString extraLib
 #else
         hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC32DIR).toStdString().c_str();
 #endif
-        hopsan::HString hPath = path.toStdString().c_str();
+        hopsan::HString hLibPath = libPath.toStdString().c_str();
         hopsan::HString hExtraLibs = extraLibs.toStdString().c_str();
         hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
         hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
 
-        pHandler->callComponentLibraryCompiler(hPath, hExtraLibs, hIncludePath, hBinPath, hGccPath, showDialog);
+        pHandler->callComponentLibraryCompiler(hLibPath, hExtraLibs, hIncludePath, hBinPath, hGccPath, showDialog);
         return true;
     }
     delete(pHandler);

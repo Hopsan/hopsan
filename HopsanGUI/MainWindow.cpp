@@ -413,10 +413,13 @@ void MainWindow::initializeWorkspace()
     // Load builtIn library (Container special components)
     gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "visible/builtin_visible.xml", InternalLib);
 
-    for(int i=0; i<gpConfig->getUserLibs().size(); ++i)
+    // Load previously loaded external libraries
+    QStringList userLibs = gpConfig->getUserLibs();
+    QList<LibraryTypeEnumT> userLibTypes = gpConfig->getUserLibTypes();
+    for(int i=0; i<qMin(userLibs.size(), userLibTypes.size()); ++i)
     {
-        gpSplash->showMessage("Loading library: "+gpConfig->getUserLibs()[i]+"...");
-        gpLibraryHandler->loadLibrary(gpConfig->getUserLibs()[i], gpConfig->getUserLibTypes()[i]);
+        gpSplash->showMessage("Loading library: "+userLibs[i]+"...");
+        gpLibraryHandler->loadLibrary(userLibs[i], userLibTypes[i]);
     }
 
     // Create the plot widget, only once! :)

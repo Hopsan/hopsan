@@ -94,9 +94,10 @@ void LibraryHandler::loadLibrary()
     {
         gpConfig->setStringSetting(CFG_EXTERNALLIBDIR,libDir);
 
-        if(!gpConfig->hasUserLib(libDir))     //Check so that path does not already exist
+        // Check so that lib is not already loaded
+        if(!gpConfig->hasUserLib(libDir))
         {
-            loadLibrary(libDir/*, QStringList() << EXTLIBSTR << libDir.section("/",-1,-1)*/);    //Load and register the library in configuration
+            loadLibrary(libDir);
         }
         else
         {
@@ -163,22 +164,32 @@ void LibraryHandler::createNewModelicaComponent()
 //! @param visibility Specifies whether library is visible or invisible
 void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
 {
-    QFileInfo info(xmlPath);
+    QFileInfo libraryRootXmlFileInfo(xmlPath);
+    QDir libraryRootDir;
+    QStringList loadedSubLibraryXmls;
     QStringList cafFiles;
-    QStringList loadedLibs;     //! @todo Used for fallback function, remove before 0.7
+    QStringList loadedDllLibs;     //! @todo Used for fallback function, remove before 0.7
     CoreLibraryAccess coreAccess;
     bool loadedSomething=false;
-    QDir dir;
-    if(info.isDir())
-        dir.setPath(info.absoluteFilePath());
+
+    // If xmlPath was a directory then try to find a root library xml in that directory
+    // it is best if we can load such a file instead of loading the directory (pre 0.7 style)
+    if(libraryRootXmlFileInfo.isDir())
+    {
+        // Remember root dir path (we use file path, to get all of the path)
+        libraryRootDir.setPath(libraryRootXmlFileInfo.absoluteFilePath());
+    }
+    // Ok a file was specified, lets set the root dir
     else
-        dir.setPath(info.absolutePath());
+    {
+        libraryRootDir.setPath(libraryRootXmlFileInfo.absolutePath());
+    }
 
 
     //Recurse sub directories and find all xml files
-    dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-    dir.setNameFilters(QStringList() << "*.xml");
-    QDirIterator it(dir, QDirIterator::Subdirectories);
+    libraryRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+    libraryRootDir.setNameFilters(QStringList() << "*.xml");
+    QDirIterator it(libraryRootDir, QDirIterator::Subdirectories);
     while(it.hasNext())
     {
         //Read from the xml file
@@ -204,7 +215,9 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                     ComponentLibrary tempLib;
 
                     //Store path to own xml file
-                    tempLib.xmlFilePath = info.filePath();//QFileInfo(file).filePath();
+                    //tempLib.xmlFilePath = libRootXmlFileInfo.filePath();
+                    tempLib.xmlFilePath = fileInfo.filePath();
+                    loadedSubLibraryXmls.append(tempLib.xmlFilePath);
 
                     //Store name of library
                     if(xmlRoot.hasAttribute(QString(XML_LIBRARY_NAME)))
@@ -221,7 +234,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                     if(!libElement.isNull())
                     {
                         tempLib.debugExtension = libElement.attribute(XML_LIBRARY_LIB_DBGEXT,"");
-                        tempLib.libFilePath = QFileInfo(file).absolutePath()+"/"+QString(LIBPREFIX)+libElement.text();
+                        tempLib.libFilePath = fileInfo.absolutePath()+"/"+QString(LIBPREFIX)+libElement.text();
 #ifdef DEBUGCOMPILING
                         tempLib.libFilePath += tempLib.debugExtension;
 #endif
@@ -236,7 +249,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                         sourceElement = sourceElement.nextSiblingElement(QString(XML_LIBRARY_SOURCE));
                     }
 
-                    //Store library entry
+                    // Remember library (we do this here even if no DLL/SO files are loaded as we might load internal or "gui only" components
                     mLoadedLibraries.append(tempLib);
 
                     //Try to load specified library file
@@ -261,14 +274,14 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                             {
                                 //Successful loading after recompilation
                                 gpMessageHandler->addInfoMessage("Recompilation successful!");
-                                loadedLibs.append(tempLib.libFilePath);
+                                loadedDllLibs.append(tempLib.libFilePath);
                                 loadedSomething = true;
                             }
                         }
                         else
                         {
                             //Successful loading
-                            loadedLibs.append(tempLib.libFilePath);
+                            loadedDllLibs.append(tempLib.libFilePath);
                             loadedSomething = true;
                         }
                     }
@@ -280,17 +293,17 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     // Determine where to store any backups of updated appearance xml files
     mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
-    //Recurse sub directories, find all dll files and load them (FALLBACK)
+    //Recurse sub directories, find all dll files and load them (FALLBACK for pre 0.7 load style (loading dll directly))
     if (!loadedSomething)
     {
         //! @todo Fallback, remove this before 0.7
-        dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-        dir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
-        QDirIterator itd(dir, QDirIterator::Subdirectories);
+        libraryRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+        libraryRootDir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
+        QDirIterator itd(libraryRootDir, QDirIterator::Subdirectories);
         while(itd.hasNext())
         {
             itd.next();
-            if(loadedLibs.contains(itd.filePath()))      //Ignore libraries already loaded above
+            if(loadedDllLibs.contains(itd.filePath()))      //Ignore libraries already loaded above
             {
                 continue;
             }
@@ -308,7 +321,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 tempLib.name = itd.filePath().section("/",-1,-1);
                 tempLib.libFilePath = itd.filePath();
                 tempLib.type = type;
-                tempLib.xmlFilePath.append(info.filePath());
+                tempLib.xmlFilePath.append(libraryRootDir.canonicalPath());
                 bool exists=false;
                 for(int l=0; l<mLoadedLibraries.size(); ++l)
                 {
@@ -328,13 +341,13 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     ComponentLibrary *pTempLibrary = 0; //Used in case we are loading components without dll files
 
     // Load Component XML (CAF Files)
-    for (int i = 0; i<cafFiles.size(); ++i)        //Iterate over the file names
+    for (const QString &cafFile : cafFiles)
     {
         //Open caf XML file and load it to an XML document
-        QFile file(cafFiles[i]);
+        QFile file(cafFile);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            gpMessageHandler->addErrorMessage("Failed to open file or not a text file: " + cafFiles[i]);
+            gpMessageHandler->addErrorMessage("Failed to open file or not a text file: " + cafFile);
             continue;
         }
         QDomDocument domDocument;
@@ -346,9 +359,9 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         }
 
         //Read appearance data from the caf xml file, begin with the first
-        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file, also not hardcoded tagnames
+        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file
         ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
-        pAppearanceData->setBasePath(QFileInfo(cafFiles[i]).absolutePath()+"/");
+        pAppearanceData->setBasePath(QFileInfo(cafFile).absolutePath()+"/");
         pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
         pAppearanceData->cacheIcons();
 
@@ -419,7 +432,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
         bool success = true;
         if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
         {
-            //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
+            //! @todo maybe they should be reserved in hopsan core instead
             success = coreAccess.hasComponent(pAppearanceData->getTypeName()) || !pAppearanceData->getHmfFile().isEmpty(); //Check so that there is such a component available in the Core
             if(!success)
             {
@@ -453,31 +466,33 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                     {
                         mLoadedLibraries.append(ComponentLibrary());
                         pTempLibrary = &mLoadedLibraries.last();
-                        pTempLibrary->name = info.absoluteDir().dirName();
+                        pTempLibrary->name = libraryRootDir.dirName();
                         pTempLibrary->type = ExternalLib;
-                        pTempLibrary->xmlFilePath = info.filePath();
+                        pTempLibrary->xmlFilePath = libraryRootXmlFileInfo.canonicalFilePath();
                     }
+                    //! @todo This is dangerous, pointing to a list element, what if the list is reallocated, normally it is not but still, also right now this list is never cleared when libraries are unloaded /Peter
                     entry.pLibrary = pTempLibrary;
                     pTempLibrary->guiOnlyComponents.append(entry.pAppearance->getTypeName());
                 }
             }
 
             //Store caf file
-            entry.pLibrary->cafFiles.append(cafFiles[i]);
+            entry.pLibrary->cafFiles.append(cafFile);
 
             //Calculate path to show in library
-            QString relDir = dir.relativeFilePath(cafFiles[i]);
+            QString relDir = libraryRootDir.relativeFilePath(cafFile);
             entry.path = relDir.split("/");
+            entry.path.removeLast();
             if(type == ExternalLib)
             {
-                entry.path.prepend(dir.dirName());
+                entry.path.prepend(libraryRootDir.dirName());
                 entry.path.prepend(QString(EXTLIBSTR));
             }
             else if(type == FmuLib)
             {
                 entry.path.prepend(QString(FMULIBSTR));
             }
-            entry.path.removeLast();
+
 
             //Store visibility
             entry.visibility = visibility;
@@ -504,13 +519,31 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     {
         if(type != InternalLib)
         {
-            gpConfig->addUserLib(xmlPath, type);
+            // If one unique library then remember the xml
+            if (loadedSubLibraryXmls.size() == 1)
+            {
+                gpConfig->addUserLib(loadedSubLibraryXmls.first(), type);
+            }
+            // Else remeber the root dir
+            else
+            {
+                gpConfig->addUserLib(libraryRootDir.canonicalPath(), type);
+            }
         }
         emit contentsChanged();
     }
     else
     {
-        gpConfig->removeUserLib(xmlPath);
+        // If one unique library then forget the xml
+        if (loadedSubLibraryXmls.size() == 1)
+        {
+            gpConfig->removeUserLib(loadedSubLibraryXmls.first());
+        }
+        // Else forget the root dir
+        else
+        {
+            gpConfig->removeUserLib(libraryRootDir.canonicalPath());
+        }
     }
 
     gpMessageHandler->collectHopsanCoreMessages();
@@ -767,7 +800,7 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
     }
 
     //Generate C++ code from Modelica if source files are Modelica code
-    Q_FOREACH(const QString &caf, lib.cafFiles)
+    for(const QString &caf : lib.cafFiles)
     {
         QFile cafFile(caf);
         cafFile.open(QFile::ReadOnly);
@@ -785,6 +818,7 @@ void LibraryHandler::recompileLibrary(ComponentLibrary lib, bool showDialog, int
     }
 
     //Add extra libs for FMU libraries
+    //! @todo Why is this needed ???? /Peter
     QString extraLibs = "";
     if(lib.type == FmuLib)
     {
