@@ -213,6 +213,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 else if(xmlRoot.tagName() == QString(XML_LIBRARY))
                 {
                     ComponentLibrary tempLib;
+                    tempLib.type = type;
 
                     //Store path to own xml file
                     //tempLib.xmlFilePath = libRootXmlFileInfo.filePath();
@@ -452,29 +453,31 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             //Find and store library from where component belongs
             QString libPath;
             coreAccess.getLibPathForComponent(pAppearanceData->getTypeName(), libPath);
-            entry.pLibrary = 0;
+            entry.pLibrary=nullptr;
             for(int l=0; l<mLoadedLibraries.size(); ++l)
             {
-                if(mLoadedLibraries[l].libFilePath == libPath && !libPath.isEmpty())
+                if( !libPath.isEmpty() && (mLoadedLibraries[l].libFilePath == libPath) )
                 {
                     entry.pLibrary = &mLoadedLibraries[l];
                     break;
                 }
-                else if(libPath.isEmpty())
-                {
-                    if(!pTempLibrary)
-                    {
-                        mLoadedLibraries.append(ComponentLibrary());
-                        pTempLibrary = &mLoadedLibraries.last();
-                        pTempLibrary->name = libraryRootDir.dirName();
-                        pTempLibrary->type = ExternalLib;
-                        pTempLibrary->xmlFilePath = libraryRootXmlFileInfo.canonicalFilePath();
-                    }
-                    //! @todo This is dangerous, pointing to a list element, what if the list is reallocated, normally it is not but still, also right now this list is never cleared when libraries are unloaded /Peter
-                    entry.pLibrary = pTempLibrary;
-                    pTempLibrary->guiOnlyComponents.append(entry.pAppearance->getTypeName());
-                }
             }
+            // If one was not found then create a new one
+            if(entry.pLibrary==nullptr)
+            {
+                if(!pTempLibrary)
+                {
+                    mLoadedLibraries.append(ComponentLibrary());
+                    pTempLibrary = &mLoadedLibraries.last();
+                    pTempLibrary->name = libraryRootDir.dirName();
+                    pTempLibrary->type = type;
+                    pTempLibrary->xmlFilePath = libraryRootXmlFileInfo.canonicalFilePath();
+                }
+                //! @todo This is dangerous, pointing to a list element, what if the list is reallocated, normally it is not but still, also right now this list is never cleared when libraries are unloaded /Peter
+                entry.pLibrary = pTempLibrary;
+                pTempLibrary->guiOnlyComponents.append(entry.pAppearance->getTypeName());
+            }
+
 
             //Store caf file
             entry.pLibrary->cafFiles.append(cafFile);
@@ -490,6 +493,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             }
             else if(type == FmuLib)
             {
+                entry.path.prepend(libraryRootDir.dirName());
                 entry.path.prepend(QString(FMULIBSTR));
             }
 
@@ -689,11 +693,10 @@ LibraryEntry LibraryHandler::getFMUEntry(const QString &rFmuName)
     //QString fullTypeString = makeFullTypeString(typeName, subTypeName);
     foreach (const LibraryEntry &le, mLibraryEntries.values())
     {
-        // This indexing hack assumes that the load code prepends FMULIBSTR before the actaul fmuName and fmu component type name
-        int i = le.path.size()-2;
-        if ( (i>=0) && (le.path[i] == FMULIBSTR) )
+        if (le.pLibrary && le.pLibrary->type == FmuLib)
         {
-            if (le.path[i+1] == rFmuName)
+            // Here it is assumed that the load code prepends FMULIBSTR before the actual path
+            if (le.path.last() == rFmuName)
             {
                 return le;
             }
