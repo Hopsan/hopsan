@@ -246,7 +246,7 @@ void LibraryWidget::update()
                     //Add top-level folder to tree view
                     pItem = new QTreeWidgetItem();
                     pItem->setFont(0,boldFont);
-                    if(folder == EXTLIBSTR)
+                    if(folder == EXTLIBSTR || folder == FMULIBSTR)
                     {
                         pItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
                     }
@@ -284,7 +284,7 @@ void LibraryWidget::update()
                     QTreeWidgetItem *pTopItem = pItem;
                     while(pTopItem->parent())
                         pTopItem = pTopItem->parent();
-                    if( pTopItem->text(0) == EXTLIBSTR)
+                    if( pTopItem->text(0) == EXTLIBSTR || pTopItem->text(0) == FMULIBSTR)
                         pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
                     else
                         pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
