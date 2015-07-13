@@ -243,7 +243,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
         while (!sourceElement.isNull())
         {
             ccFiles.append(sourceElement.text());
-            sourceElement.nextSiblingElement("source");
+            sourceElement = sourceElement.nextSiblingElement("source");
         }
 
         // If no cc files were specified then add at least the lib file
