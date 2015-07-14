@@ -277,9 +277,9 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     // Modify if debug
 #ifdef DEBUGCOMPILING
     libFile+=dbg_ext;
-    cflags.prepend("-g -Og -DDEBUGCOMPILING");
+    cflags.prepend("-g -Og -DDEBUGCOMPILING ");
 #else
-    cflags.prepend("-DRELEASECOMPILING");
+    cflags.prepend("-DRELEASECOMPILING ");
 #endif
 
     pGenerator->printMessage("\nCalling compiler utility:");
@@ -308,6 +308,9 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 //! @param output Reference to string where output messages are stored
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output)
 {
+    // Append dll extension for this platform
+    o = o+TO_STR(DLL_EXT);
+
     // Create compilation script file
     QFile compileScript;
 #ifdef _WIN32
@@ -321,8 +324,9 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     clBatchStream << "@echo off\n";
     clBatchStream << "set PATH=" << gccPath << ";%PATH%\n";
     clBatchStream << "@echo on\n";
+    clBatchStream << "del " << o << "\n";
     clBatchStream << "g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
-    clBatchStream << " -o " << o+".dll" << " " << lflags <<"\n";
+    clBatchStream << " -o " << o << " " << lflags <<"\n";
     compileScript.close();
 #elif __linux__
     compileScript.setFileName(wdPath + "/compile.sh");
@@ -333,8 +337,9 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     }
     QTextStream compileStream(&compileScript);
     compileStream << "#!/bin/sh\n";
+    compileStream << "rm " << o << "\n";
     compileStream << "gcc " << cflags << " " << srcFiles;
-    compileStream << " -fpermissive -o " << o << ".so ";
+    compileStream << " -fpermissive -o " << o << " ";
     compileStream << inclPaths << " " << lflags;
     compileScript.close();
 #endif
@@ -377,13 +382,13 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     QDir targetDir(wdPath);
 #ifdef _WIN32
 
-    if(!targetDir.exists(o + ".dll") || !gccErrorList.isEmpty())
+    if(!targetDir.exists(o) || !gccErrorList.isEmpty())
     {
         output.append("Compilation failed.");
         return false;
     }
 #elif __linux__
-    if(!targetDir.exists(o + ".so"))
+    if(!targetDir.exists(o))
     {
         output.append("Compilation failed.");
         return false;
