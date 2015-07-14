@@ -47,6 +47,11 @@ inline double readSignalPort(Port *pPort)
     return pPort->readNode(NodeSignal::Value);
 }
 
+inline double readSignal(double *pNodeData)
+{
+    return *pNodeData;
+}
+
 inline double readInputVariable(Port *pPort)
 {
     return readSignalPort(pPort);
@@ -307,6 +312,77 @@ typedef struct
     double me;
 } MechanicNodeDataValueStructT;
 
+class MechanicNodeDataPointerStructT
+{
+public:
+    double *pV;
+    double *pF;
+    double *pX;
+    double *pC;
+    double *pZc;
+    double *pMe;
+
+    inline double v() const
+    {
+        return *pV;
+    }
+
+    inline double f() const
+    {
+        return *pF;
+    }
+
+    inline double x() const
+    {
+        return *pX;
+    }
+
+    inline double c() const
+    {
+        return *pC;
+    }
+
+    inline double Zc() const
+    {
+        return *pZc;
+    }
+
+    inline double me() const
+    {
+        return *pMe;
+    }
+
+    inline double &rv()
+    {
+        return *pV;
+    }
+
+    inline double &rf()
+    {
+        return *pF;
+    }
+
+    inline double &rx()
+    {
+        return *pX;
+    }
+
+    inline double &rc()
+    {
+        return *pC;
+    }
+
+    inline double &rZc()
+    {
+        return *pZc;
+    }
+
+    inline double &rMe()
+    {
+        return *pMe;
+    }
+};
+
 inline void readMechanicPort_vfx(Port *pPort, double &v, double &f, double &x)
 {
     const std::vector<double> &rData = pPort->getNodeDataVector();
@@ -379,6 +455,16 @@ inline void writeMechanicPort_all(Port *pPort, const MechanicNodeDataValueStruct
     rData[NodeMechanic::WaveVariable] = rValues.c;
     rData[NodeMechanic::CharImpedance] = rValues.Zc;
     rData[NodeMechanic::EquivalentMass] = rValues.me;
+}
+
+inline void getMechanicPortNodeDataPointers(Port *pPort, MechanicNodeDataPointerStructT &rPointers)
+{
+    rPointers.pV   = pPort->getNodeDataPtr(NodeMechanic::Velocity, 0);
+    rPointers.pF   = pPort->getNodeDataPtr(NodeMechanic::Force, 0);
+    rPointers.pX   = pPort->getNodeDataPtr(NodeMechanic::Position, 0);
+    rPointers.pC   = pPort->getNodeDataPtr(NodeMechanic::WaveVariable, 0);
+    rPointers.pZc  = pPort->getNodeDataPtr(NodeMechanic::CharImpedance, 0);
+    rPointers.pMe  = pPort->getNodeDataPtr(NodeMechanic::EquivalentMass, 0);
 }
 
 }
