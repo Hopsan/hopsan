@@ -51,6 +51,8 @@ hopsan::QuantityRegister::QuantityRegister()
     registerQuantity("Frequency", "rad/s");
     registerQuantity("Time", "s");
 
+    // Register quantity aliases
+    registerQuantityAlias("Position", "Length");
 }
 
 void hopsan::QuantityRegister::registerQuantity(const hopsan::HString &rQuantity, const hopsan::HString &rBaseUnit)
@@ -58,19 +60,47 @@ void hopsan::QuantityRegister::registerQuantity(const hopsan::HString &rQuantity
     mQuantity2BaseUnit.insert(std::pair<HString, HString>(rQuantity, rBaseUnit));
 }
 
-hopsan::HString hopsan::QuantityRegister::lookupBaseUnit(const hopsan::HString &rQuantity)
+void hopsan::QuantityRegister::registerQuantityAlias(const hopsan::HString &rQuantity, const hopsan::HString &rAlias)
 {
-    std::map<HString, HString>::iterator it = mQuantity2BaseUnit.find(rQuantity);
+    mQuantityAliases.insert(std::pair<HString, HString>(rQuantity, rAlias));
+}
+
+hopsan::HString hopsan::QuantityRegister::lookupBaseUnit(const hopsan::HString &rQuantity) const
+{
+    // First check if alias, then lookup actual quantity
+    std::map<HString, HString>::const_iterator it = mQuantityAliases.find(rQuantity);
+    if (it != mQuantityAliases.end())
+    {
+        it = mQuantity2BaseUnit.find(it->second);
+    }
+    // else lookup directly
+    else
+    {
+        it = mQuantity2BaseUnit.find(rQuantity);
+    }
+    // If quantity registered, then return its base unit
     if (it != mQuantity2BaseUnit.end())
     {
         return it->second;
     }
+    // else return empty string
     return HString();
 }
 
 bool hopsan::QuantityRegister::haveQuantity(const hopsan::HString &rQuantity) const
 {
-    return (mQuantity2BaseUnit.find(rQuantity) != mQuantity2BaseUnit.end());
+    // First check if alias, then lookup actual quantity
+    std::map<HString, HString>::const_iterator it = mQuantityAliases.find(rQuantity);
+    if (it != mQuantityAliases.end())
+    {
+        it = mQuantity2BaseUnit.find(it->second);
+    }
+    // else lookup directly
+    else
+    {
+        it = mQuantity2BaseUnit.find(rQuantity);
+    }
+    return (it != mQuantity2BaseUnit.end());
 }
 
 hopsan::QuantityRegister hopsan::gHopsanQuantities;

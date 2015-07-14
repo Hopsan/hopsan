@@ -44,11 +44,13 @@ public:
     QuantityRegister();
 
     void registerQuantity(const HString &rQuantity, const HString &rBaseUnit);
-    HString lookupBaseUnit(const HString &rQuantity);
+    void registerQuantityAlias(const HString &rQuantity, const HString &rAlias);
+    HString lookupBaseUnit(const HString &rQuantity) const;
     bool haveQuantity(const HString &rQuantity) const;
 
 private:
     std::map<HString, HString> mQuantity2BaseUnit;
+    std::map<HString, HString> mQuantityAliases;
 };
 
 extern QuantityRegister gHopsanQuantities;
