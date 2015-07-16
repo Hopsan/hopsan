@@ -7,7 +7,7 @@
 #include <string>
 #include <mutex>
 
-#include "ServerStatusMessage.h"
+#include "StatusInfoStructs.h"
 #include "zmq.hpp"
 
 class RemoteHopsanClient

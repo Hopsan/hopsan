@@ -8,8 +8,7 @@
 #include "zmq.hpp"
 #include "Messages.h"
 #include "MessageUtilities.h"
-#include "ServerMessageUtilities.h"
-#include "ServerStatusMessage.h"
+#include "StatusInfoStructs.h"
 
 
 #include "ServerHandler.h"
@@ -194,10 +193,10 @@ int main(int argc, char* argv[])
                 bool idParseOK;
                 size_t msg_id = getMessageId(message, offset, idParseOK);
 
-                if (msg_id == S_Available)
+                if (msg_id == Available)
                 {
                     bool parseOK;
-                    SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
+                    infomsg_Available_t sm = unpackMessage<infomsg_Available_t>(message,offset,parseOK);
 
                     ServerInfo si;
                     si.ip = sm.ip;
@@ -208,7 +207,7 @@ int main(int argc, char* argv[])
                     if (gServerHandler.getServerIDMatching(sm.ip, sm.port) < 0)
                     {
                         gServerHandler.addServer(si);
-                        sendServerAck(socket);
+                        sendShortMessage(socket, Ack);
                         // Get the oldest one, (should be the one we just added, since it need emmediate update)
                         int id = gServerHandler.getOldestServer();
                         // Start a refresh thread for this one server, unless we have the maximum number of threads running
@@ -227,13 +226,13 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        sendServerNAck(socket, "Address is already registered");
+                        sendMessage(socket, NotAck, "Address is already registered");
                     }
                 }
-                else if (msg_id == S_Closing)
+                else if (msg_id == Closing)
                 {
                     bool parseOK;
-                    SM_Available_t sm = unpackMessage<SM_Available_t>(message,offset,parseOK);
+                    infomsg_Available_t sm = unpackMessage<infomsg_Available_t>(message,offset,parseOK);
                     cout << PRINTSERVER << nowDateTime() << " Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
 
                     // lookup server
@@ -242,30 +241,30 @@ int main(int argc, char* argv[])
                     if (id >= 0)
                     {
                         gServerHandler.removeServer(id);
-                        sendServerAck(socket);
+                        sendShortMessage(socket, Ack);
                     }
                     else
                     {
-                        sendServerNAck(socket, "You are not registered");
+                        sendMessage(socket, NotAck, "You are not registered");
                     }
                 }
-                else if (msg_id == C_ReqServerMachines)
+                else if (msg_id == ReqServerMachines)
                 {
                     //! @todo maybe refresh all before checking
 
                     //! @todo be smart
                     bool parseOK;
-                    CM_ReqServerMachines_t req = unpackMessage<CM_ReqServerMachines_t>(message,offset,parseOK);
+                    reqmsg_RequestServerMachines_t req = unpackMessage<reqmsg_RequestServerMachines_t>(message,offset,parseOK);
                     cout << PRINTSERVER << nowDateTime() << " Got server machines request" << endl;
                     auto ids = gServerHandler.getServers(req.maxBenchmarkTime, req.numMachines);
                     //! @todo what if a server is replaced or removed while we are processing this list
 
-                    MSM_ReqServerMachines_Reply_t reply;
+                    replymsg_ReplyServerMachines_t reply;
                     reply.ips.reserve(ids.size());
                     reply.ports.reserve(ids.size());
                     reply.descriptions.reserve(ids.size());
                     reply.numslots.reserve(ids.size());
-                    reply.speeds.reserve(ids.size());
+                    reply.evalTime.reserve(ids.size());
                     for (auto id : ids)
                     {
                         ServerInfo server = gServerHandler.getServer(id);
@@ -275,12 +274,12 @@ int main(int argc, char* argv[])
                             reply.ports.push_back(server.port);
                             reply.descriptions.push_back(server.description);
                             reply.numslots.push_back(server.numTotalSlots);
-                            reply.speeds.push_back(server.benchmarkTime);
+                            reply.evalTime.push_back(server.benchmarkTime);
                         }
                     }
 
                     cout << PRINTSERVER << nowDateTime() << " Responds with: " << reply.ips.size() << " servers" << endl;
-                    sendServerMessage<MSM_ReqServerMachines_Reply_t>(socket, S_ReqServerMachines_Reply, reply);
+                    sendMessage(socket, ReplyServerMachines, reply);
                 }
                 else if (!idParseOK)
                 {

@@ -12,7 +12,6 @@
 
 #include "Messages.h"
 #include "MessageUtilities.h"
-#include "ServerMessageUtilities.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -66,6 +65,7 @@ std::string nowDateTime()
     return string(&buff[0]);
 }
 
+
 bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNackReason)
 {
     zmq::message_t response;
@@ -75,11 +75,11 @@ bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNac
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
         //cout << "id: " << id << endl;
-        if (id == S_Ack)
+        if (id == Ack)
         {
             return true;
         }
-        else if (id == S_NAck)
+        else if (id == NotAck)
         {
             rNackReason = unpackMessage<std::string>(response, offset, parseOK);
         }
@@ -109,14 +109,14 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
         addressServerSocket.connect(makeZMQAddress(addressIP, addressPort).c_str());
 
         //! @todo check if ok
-        SM_Available_t message;
+        infomsg_Available_t message;
         message.ip = myIP;
         message.port = myPort;
         message.description = myDescription;
 
         if (isOnline)
         {
-            sendServerMessage(addressServerSocket, S_Available, message);
+            sendMessage(addressServerSocket, Available, message);
             std::string nackreason;
             bool ack = readAckNackServerMessage(addressServerSocket, 5000, nackreason);
             if (ack)
@@ -131,7 +131,7 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
         }
         else
         {
-            sendServerMessage(addressServerSocket, S_Closing, message);
+            sendMessage(addressServerSocket, Closing, message);
             std::string nackreason;
             bool ack = readAckNackServerMessage(addressServerSocket, 5000, nackreason);
             if (ack)
@@ -260,10 +260,10 @@ int main(int argc, char* argv[])
                 //        string identity = request.gets("Identity");
                 //        cout << "Socket-type: " << soxtype << " Identity: " << identity << endl;
 
-                if (msg_id == C_ReqSlot)
+                if (msg_id == ReqServerSlots)
                 {
                     bool parseOK;
-                    CM_ReqSlot_t msg = unpackMessage<CM_ReqSlot_t>(request, offset, parseOK);
+                    reqmsg_ReqServerSlots_t msg = unpackMessage<reqmsg_ReqServerSlots_t>(request, offset, parseOK);
                     int requestNumThreads = msg.numThreads;
 
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting: " << requestNumThreads << " slots... " << endl;
@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
                         if (result == 0)
                         {
                             std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
-                            sendServerNAck(socket, "Failed to launch worker process!");
+                            sendMessage(socket, "Failed to launch worker process!");
                         }
                         else
                         {
@@ -307,7 +307,7 @@ int main(int argc, char* argv[])
                             workerMap.insert({uid, {requestNumThreads, processInformation}});
 
                             SM_ReqSlot_Reply_t msg = {workerPort};
-                            sendServerMessage<SM_ReqSlot_Reply_t>(socket, S_ReqSlot_Reply, msg);
+                            sendMessage<SM_ReqSlot_Reply_t>(socket, ReplyServerSlots, msg);
                             nTakenSlots++;
                         }
 
@@ -330,30 +330,30 @@ int main(int argc, char* argv[])
                             std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads << endl;
                             workerMap.insert({uid,{requestNumThreads,pid}});
 
-                            SM_ReqSlot_Reply_t msg = {workerPort};
-                            sendServerMessage<SM_ReqSlot_Reply_t>(socket, S_ReqSlot_Reply, msg);
+                            replymsg_ReplyServerSlots_t msg = {workerPort};
+                            sendMessage(socket, ReplyServerSlots, msg);
                             nTakenSlots+=requestNumThreads;
                             std::cout << PRINTSERVER << nowDateTime() << " Remaining slots: " << gServerConfig.mMaxNumSlots-nTakenSlots << endl;
                         }
                         else
                         {
                             std::cout << PRINTSERVER << nowDateTime() << " Error: Failed to launch worker process!"<<endl;
-                            sendServerNAck(socket, "Failed to launch worker process!");
+                            sendMessage(socket, NotAck, "Failed to launch worker process!");
                         }
 #endif
                     }
                     else if (nTakenSlots == gServerConfig.mMaxNumSlots)
                     {
-                        sendServerNAck(socket, "All slots taken");
+                        sendMessage(socket, NotAck, "All slots taken");
                         cout << PRINTSERVER << nowDateTime() << " Denied! All slots taken." << endl;
                     }
                     else
                     {
-                        sendServerNAck(socket, "To few free slots");
+                        sendMessage(socket, NotAck, "To few free slots");
                         cout << PRINTSERVER << nowDateTime() << " Denied! To few free slots." << endl;
                     }
                 }
-                else if (msg_id == SW_Finished)
+                else if (msg_id == Finished)
                 {
                     bool parseOK;
                     string id_string = unpackMessage<std::string>(request,offset,parseOK);
@@ -365,7 +365,7 @@ int main(int argc, char* argv[])
                         auto it = workerMap.find(id);
                         if (it != workerMap.end())
                         {
-                            sendServerAck(socket);
+                            sendShortMessage(socket, Ack);
 
                             // Wait for process to stop (to avoid zombies)
 #ifdef _WIN32
@@ -387,7 +387,7 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            sendServerNAck(socket, "Wrong worker id specified");
+                            sendMessage(socket, NotAck, "Wrong worker id specified");
                         }
                     }
                     else
@@ -395,15 +395,15 @@ int main(int argc, char* argv[])
                         cout << PRINTSERVER << nowDateTime() << " Error: Could not server id string" << endl;
                     }
                 }
-                else if (msg_id == C_ReqServerStatus)
+                else if (msg_id == ReqServerStatus)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
-                    SM_ServerStatus_t status;
+                    replymsg__ReplyServerStatus_t status;
                     status.numTotalSlots = gServerConfig.mMaxNumSlots;
                     status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
                     status.isReady = true;
 
-                    sendServerMessage<SM_ServerStatus_t>(socket, S_ReqServerStatus_Reply, status);
+                    sendMessage(socket, ReplyServerStatus, status);
                     lastStatusRequestTime = chrono::steady_clock::now();
                 }
                 else if (!idParseOK)
@@ -415,7 +415,7 @@ int main(int argc, char* argv[])
                     stringstream ss;
                     ss << PRINTSERVER << nowDateTime() << " Error: Unknown message id " << msg_id << endl;
                     cout << ss.str() << endl;
-                    sendServerNAck(socket, ss.str());
+                    sendMessage(socket, NotAck, ss.str());
                 }
             }
             else

@@ -21,14 +21,15 @@ inline double elapsedSecondsSince(chrono::steady_clock::time_point &rSince)
 }
 
 template <typename T>
-void sendClientMessage(zmq::socket_t *pSocket, ClientMessageIdEnumT id, const T &rMessage)
+void sendClientMessage(zmq::socket_t *pSocket, MessageIdsEnumT id, const T &rMessage)
 {
-    msgpack::v1::sbuffer out_buffer;
-    msgpack::pack(out_buffer, id);
-    msgpack::pack(out_buffer, rMessage);
+//    msgpack::v1::sbuffer out_buffer;
+//    msgpack::pack(out_buffer, id);
+//    msgpack::pack(out_buffer, rMessage);
     try
     {
-        pSocket->send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+        sendMessage(*pSocket, id, rMessage);
+        //pSocket->send(static_cast<void*>(out_buffer.data()), out_buffer.size());
     }
     catch(zmq::error_t e)
     {
@@ -37,7 +38,7 @@ void sendClientMessage(zmq::socket_t *pSocket, ClientMessageIdEnumT id, const T 
 }
 
 
-void sendShortClientMessage(zmq::socket_t *pSocket, ClientMessageIdEnumT id)
+void sendShortClientMessage(zmq::socket_t *pSocket, MessageIdsEnumT id)
 {
     msgpack::v1::sbuffer out_buffer;
     msgpack::pack(out_buffer, id);
@@ -60,11 +61,11 @@ bool readAckNackServerMessage(zmq::socket_t *pSocket, long timeout, string &rNac
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
         //cout << "id: " << id << endl;
-        if (id == S_Ack)
+        if (id == Ack)
         {
             return true;
         }
-        else if (id == S_NAck)
+        else if (id == NotAck)
         {
             rNackReason = unpackMessage<std::string>(response, offset, parseOK);
         }
@@ -132,8 +133,8 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    CM_GetParam_t msg {rName};
-    sendClientMessage<CM_GetParam_t>(mpRWCSocket, C_GetParam, msg);
+    reqmsg_RequestParameter_t msg {rName};
+    sendClientMessage(mpRWCSocket, ReqParameter, msg);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRWCSocket, response, mShortReceiveTimeout))
@@ -141,7 +142,7 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == SW_GetParam_Reply)
+        if (id == ReplyParameter)
         {
             rValue = unpackMessage<string>(response, offset, parseOK);
             assert(response.size() == offset);
@@ -160,8 +161,8 @@ bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    CM_SetParam_t msg {rName, rValue};
-    sendClientMessage<CM_SetParam_t>(mpRWCSocket, C_SetParam, msg);
+    cmdmsg_SetParameter_t msg {rName, rValue};
+    sendClientMessage(mpRWCSocket, SetParameter, msg);
 
     string err;
     bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
@@ -176,7 +177,7 @@ bool RemoteHopsanClient::sendModelMessage(const std::string &rModel)
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    sendClientMessage<std::string>(mpRWCSocket, C_SendingHmf, rModel);
+    sendClientMessage<std::string>(mpRWCSocket, SetModel, rModel);
     string err;
     bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
     if (!rc)
@@ -191,8 +192,8 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    CM_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
-    sendClientMessage<CM_Simulate_t>(mpRWCSocket, C_Simulate, msg);
+    cmdmsg_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
+    sendClientMessage(mpRWCSocket, Simulate, msg);
     string err;
     bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
     if (!rc)
@@ -207,7 +208,7 @@ bool RemoteHopsanClient::abortSimulation()
     // Lock here to prevent problem if some other thread is requesting fore xample status
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    sendShortClientMessage(mpRWCSocket, C_Abort);
+    sendShortClientMessage(mpRWCSocket, Abort);
     string err;
     bool rc = readAckNackServerMessage(mpRWCSocket, mShortReceiveTimeout, err);
     if (!rc)
@@ -235,9 +236,9 @@ bool RemoteHopsanClient::blockingBenchmark(const string &rModel, const int nThre
 
     if (rc)
     {
-        CM_ReqBenchmark_t msg;
+        cmdmsg_Benchmark_t msg;
         msg.model = rModel;
-        sendClientMessage<CM_ReqBenchmark_t>(mpRWCSocket, C_ReqBenchmark, msg);
+        sendClientMessage(mpRWCSocket, Benchmark, msg);
         string errorMsg;
         rc = readAckNackServerMessage(mpRWCSocket, 5000,  errorMsg);
 
@@ -263,16 +264,16 @@ bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    sendShortClientMessage(mpRWCSocket, C_ReqBenchmarkResults);
+    sendShortClientMessage(mpRWCSocket, ReqServerBenchmarkResults);
     zmq::message_t reply;
     if (receiveWithTimeout(*mpRWCSocket, reply, mShortReceiveTimeout))
     {
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(reply, offset, parseOK);
-        if (id == S_ReqBenchmarkResults_Reply)
+        if (id == ReplyBenchmarkResults)
         {
-            SWM_ReqBenchmarkResults_Reply_t results = unpackMessage<SWM_ReqBenchmarkResults_Reply_t>(reply, offset, parseOK);
+            replymsg_ReplyBenchmarkResults_t results = unpackMessage<replymsg_ReplyBenchmarkResults_t>(reply, offset, parseOK);
             if (parseOK)
             {
                 //! @todo right now we bundle all times togheter
@@ -289,7 +290,7 @@ bool RemoteHopsanClient::requestWorkerStatus(WorkerStatusT &rWorkerStatus)
     // Lock here to prevent problem if som other thread is requesting abort
     std::lock_guard<std::mutex> lock(mWorkerMutex); //! @todo should use this mutex in more places (or build it into the send function)
 
-    sendShortClientMessage(mpRWCSocket, C_ReqWorkerStatus);
+    sendShortClientMessage(mpRWCSocket, ReqWorkerStatus);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRWCSocket, response, mShortReceiveTimeout))
@@ -298,9 +299,9 @@ bool RemoteHopsanClient::requestWorkerStatus(WorkerStatusT &rWorkerStatus)
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == SW_ReqWorkerStatus_Reply)
+        if (id == ReplyWorkerStatus)
         {
-            SWM_ReqWorkerStatus_Reply_t status = unpackMessage<SWM_ReqWorkerStatus_Reply_t>(response, offset, parseOK);
+            replymsg_ReplyWorkerStatus_t status = unpackMessage<replymsg_ReplyWorkerStatus_t>(response, offset, parseOK);
             if (parseOK)
             {
                 rWorkerStatus = status;
@@ -313,7 +314,7 @@ bool RemoteHopsanClient::requestWorkerStatus(WorkerStatusT &rWorkerStatus)
 
 bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
 {
-    sendShortClientMessage(mpRSCSocket, C_ReqServerStatus);
+    sendShortClientMessage(mpRSCSocket, ReqServerStatus);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRSCSocket, response, mShortReceiveTimeout))
@@ -322,9 +323,9 @@ bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_ReqServerStatus_Reply)
+        if (id == ReqServerStatus)
         {
-            SM_ServerStatus_t status = unpackMessage<SM_ServerStatus_t>(response, offset, parseOK);
+            replymsg__ReplyServerStatus_t status = unpackMessage<replymsg__ReplyServerStatus_t>(response, offset, parseOK);
             if (parseOK)
             {
                 rServerStatus = status;
@@ -340,7 +341,7 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    sendClientMessage<string>(mpRWCSocket, C_ReqResults, "*"); // Request all
+    sendClientMessage<string>(mpRWCSocket, ReqResults, "*"); // Request all
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRWCSocket, response, mLongReceiveTimeout))
@@ -349,9 +350,9 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == SW_ReqResults_Reply)
+        if (id == ReplyResults)
         {
-            vector<SM_Variable_Description_t> vars = unpackMessage<vector<SM_Variable_Description_t>>(response,offset, parseOK);
+            vector<replymsg_ResultsVariable_t> vars = unpackMessage<vector<replymsg_ResultsVariable_t>>(response,offset, parseOK);
             //cout << "Received: " << vars.size() << " vars" << endl;
             size_t nLogSamples;
             if (!vars.empty())
@@ -386,8 +387,8 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
 
 bool RemoteHopsanClient::requestSlot(int numThreads, size_t &rControlPort)
 {
-    CM_ReqSlot_t msg {numThreads};
-    sendClientMessage<CM_ReqSlot_t>(mpRSCSocket, C_ReqSlot, msg);
+    reqmsg_ReqServerSlots_t msg {numThreads};
+    sendClientMessage<reqmsg_ReqServerSlots_t>(mpRSCSocket, ReqServerSlots, msg);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRSCSocket, response, mShortReceiveTimeout))
@@ -395,9 +396,9 @@ bool RemoteHopsanClient::requestSlot(int numThreads, size_t &rControlPort)
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_ReqSlot_Reply)
+        if (id == ReplyServerSlots)
         {
-            SM_ReqSlot_Reply_t msg = unpackMessage<SM_ReqSlot_Reply_t>(response, offset, parseOK);
+            replymsg_ReplyServerSlots_t msg = unpackMessage<replymsg_ReplyServerSlots_t>(response, offset, parseOK);
             if (parseOK)
             {
                 rControlPort = msg.port;
@@ -409,7 +410,7 @@ bool RemoteHopsanClient::requestSlot(int numThreads, size_t &rControlPort)
                 mLastErrorMessage = "Could not parse slot request reply";
             }
         }
-        else if (id == S_NAck)
+        else if (id == NotAck)
         {
             mLastErrorMessage = unpackMessage<string>(response, offset, parseOK);
         }
@@ -463,7 +464,7 @@ void RemoteHopsanClient::disconnectWorker()
 {
     if (workerConnected())
     {
-        sendShortClientMessage(mpRWCSocket, C_Bye);
+        sendShortClientMessage(mpRWCSocket, Closing);
         readAckNackServerMessage(mpRWCSocket, 1000); //But we do not care about result
         try
         {
@@ -523,7 +524,7 @@ bool RemoteHopsanClient::requestMessages()
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    sendShortClientMessage(mpRWCSocket, C_ReqMessages);
+    sendShortClientMessage(mpRWCSocket, ReqMessages);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRWCSocket, response, mLongReceiveTimeout))
@@ -531,9 +532,9 @@ bool RemoteHopsanClient::requestMessages()
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == SW_ReqMessages_Reply)
+        if (id == ReplyMessages)
         {
-            vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset, parseOK);
+            vector<replymsg_ReplyMessage_t> messages = unpackMessage<vector<replymsg_ReplyMessage_t>>(response, offset, parseOK);
             cout << "Received: " << messages.size() << " messages from server" << endl;
             for (size_t m=0; m<messages.size(); ++m)
             {
@@ -553,7 +554,7 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    sendShortClientMessage(mpRWCSocket, C_ReqMessages);
+    sendShortClientMessage(mpRWCSocket, ReqMessages);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRWCSocket, response, mLongReceiveTimeout))
@@ -561,9 +562,9 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == SW_ReqMessages_Reply)
+        if (id == ReplyMessages)
         {
-            vector<SM_HopsanCoreMessage_t> messages = unpackMessage<vector<SM_HopsanCoreMessage_t>>(response, offset, parseOK);
+            vector<replymsg_ReplyMessage_t> messages = unpackMessage<vector<replymsg_ReplyMessage_t>>(response, offset, parseOK);
             //cout << "Received: " << messages.size() << " messages from server" << endl;
             rTypes.resize(messages.size());
             rTags.resize(messages.size());
@@ -587,12 +588,12 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
 bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<string> &rIps, std::vector<string> &rPorts,
                                                std::vector<std::string> &rDescriptions, std::vector<int> &rNumSlots, std::vector<double> &rSpeeds)
 {
-    CM_ReqServerMachines_t req;
+    reqmsg_RequestServerMachines_t req;
     req.numMachines = nMachines;
     req.maxBenchmarkTime = maxBenchmarkTime;
     req.numThreads = -1;
 
-    sendClientMessage<CM_ReqServerMachines_t>(mpRSCSocket, C_ReqServerMachines, req);
+    sendClientMessage<reqmsg_RequestServerMachines_t>(mpRSCSocket, ReqServerMachines, req);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpRSCSocket, response, mShortReceiveTimeout))
@@ -601,13 +602,13 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
         size_t offset=0;
         bool parseOK;
         size_t id = getMessageId(response, offset, parseOK);
-        if (id == S_ReqServerMachines_Reply)
+        if (id == ReplyServerMachines)
         {
-            MSM_ReqServerMachines_Reply_t repl = unpackMessage<MSM_ReqServerMachines_Reply_t>(response,offset,parseOK);
+            replymsg_ReplyServerMachines_t repl = unpackMessage<replymsg_ReplyServerMachines_t>(response,offset,parseOK);
             rIps = repl.ips;
             rPorts = repl.ports;
             rNumSlots = repl.numslots;
-            rSpeeds = repl.speeds;
+            rSpeeds = repl.evalTime;
             rDescriptions = repl.descriptions;
             return true;
         }

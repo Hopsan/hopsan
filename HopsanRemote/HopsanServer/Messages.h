@@ -4,56 +4,54 @@
 #define MESSAGES_H
 
 #include <string>
-#include "ServerStatusMessage.h"
+#include "StatusInfoStructs.h"
 #include "msgpack.hpp"
 
-enum ClientMessageIdEnumT {C_Ack=1,
-                           C_NAck,
-                           C_Bye,
-                           C_ReqServerStatus,
-                           C_ReqSlot,
-                           C_SendingHmf,
-                           C_SetParam,
-                           C_GetParam,
-                           C_Simulate,
-                           C_ReqResults,
-                           C_ReqMessages,
-                           C_ReqServerMachines,
-                           C_ReqWorkerStatus,
-                           C_ReqBenchmark,
-                           C_ReqBenchmarkResults,
-                           C_Abort};
-enum ServerMessageIdEnumT {S_Ack=128,
-                           S_NAck,
-                           S_Available,
-                           S_Closing,
-                           S_ReqServerStatus_Reply,
-                           S_ReqServerMachines_Reply,
-                           S_ReqSlot_Reply,
-                           S_ReqBenchmarkResults_Reply,
-                           SW_GetParam_Reply,
-                           SW_ReqWorkerStatus_Reply,
-                           SW_ReqResults_Reply,
-                           SW_ReqMessages_Reply,
-                           SW_Finished};
+enum MessageIdsEnumT {
+    /* Information messages */
+    Ack=1,
+    NotAck,
+    Available,
+    Finished,
+    Closing,
 
-MSGPACK_ADD_ENUM(ClientMessageIdEnumT)
-MSGPACK_ADD_ENUM(ServerMessageIdEnumT)
+    /* Command messages */
+    Abort,
+    Simulate,
+    Benchmark,
+    SetParameter,
+    SetModel,
 
-// Client messages
+    /* Request messages */
+    ReqServerMachines,
+    ReqServerStatus,
+    ReqServerBenchmarkResults,
+    ReqServerSlots,
+    ReqWorkerStatus,
+    ReqParameter,
+    ReqResults,
+    ReqMessages,
+
+    /* Reply messages (to requests) */
+    ReplyServerMachines,
+    ReplyServerStatus,
+    ReplyBenchmarkResults,
+    ReplyServerSlots,
+    ReplyWorkerStatus,
+    ReplyParameter,
+    ReplyResults,
+    ReplyMessages};
+
+MSGPACK_ADD_ENUM(MessageIdsEnumT)
+
+// Message structures for messages typically used by Clients
 
 typedef struct
 {
     std::string name;
     std::string value;
     MSGPACK_DEFINE(name, value)
-}CM_SetParam_t;
-
-typedef struct
-{
-    std::string name;
-    MSGPACK_DEFINE(name)
-}CM_GetParam_t;
+}cmdmsg_SetParameter_t;
 
 typedef struct
 {
@@ -63,13 +61,19 @@ typedef struct
     int simTimestep = -1;
     int simStopTime = -1;
     MSGPACK_DEFINE(nLogSamples, logStartTim, simStartTime, simTimestep, simStopTime)
-}CM_Simulate_t;
+}cmdmsg_Simulate_t;
 
 typedef struct
 {
     std::string model;
     MSGPACK_DEFINE(model)
-}CM_ReqBenchmark_t;
+}cmdmsg_Benchmark_t;
+
+typedef struct
+{
+    std::string name;
+    MSGPACK_DEFINE(name)
+}reqmsg_RequestParameter_t;
 
 typedef struct
 {
@@ -77,15 +81,15 @@ typedef struct
     int numThreads;
     double maxBenchmarkTime;
     MSGPACK_DEFINE(numMachines, numThreads, maxBenchmarkTime)
-}CM_ReqServerMachines_t;
+}reqmsg_RequestServerMachines_t;
 
 typedef struct
 {
     int numThreads;
     MSGPACK_DEFINE(numThreads)
-}CM_ReqSlot_t;
+}reqmsg_ReqServerSlots_t;
 
-// Server messages
+// Message structures for messages typically used by Servers
 
 typedef struct
 {
@@ -93,18 +97,18 @@ typedef struct
     std::string port;
     std::string description;
     MSGPACK_DEFINE(ip,port,description)
-}SM_Available_t;
+}infomsg_Available_t;
 
 typedef struct
 {
     size_t port;
     MSGPACK_DEFINE(port)
-}SM_ReqSlot_Reply_t;
+}replymsg_ReplyServerSlots_t;
 
-typedef struct SM_ServerStatus_ : ServerStatusT
+typedef struct replymsg__ReplyServerStatus_ : ServerStatusT
 {
     MSGPACK_DEFINE(numFreeSlots, numTotalSlots, startTime, stopTime, isReady)
-}SM_ServerStatus_t;
+}replymsg__ReplyServerStatus_t;
 
 typedef struct
 {
@@ -113,16 +117,17 @@ typedef struct
     double simutime;
     double finitime;
     MSGPACK_DEFINE(numthreads, inittime, simutime, finitime)
-}SWM_ReqBenchmarkResults_Reply_t;
+}replymsg_ReplyBenchmarkResults_t;
 
-// Worker messages
+
+// Message structs typically used be the Workers
 
 typedef struct
 {
     std::string value;
     std::string unit;
     MSGPACK_DEFINE(value,unit)
-}SM_GetParam_Reply_t;
+}replymsg_ReplyParameter_t;
 
 typedef struct
 {
@@ -131,7 +136,7 @@ typedef struct
     std::string unit;
     std::vector<double> data;
     MSGPACK_DEFINE(name,alias,unit,data)
-}SM_Variable_Description_t;
+}replymsg_ResultsVariable_t;
 
 typedef struct
 {
@@ -139,15 +144,15 @@ typedef struct
     std::string message;
     std::string tag;
     MSGPACK_DEFINE(type,message,tag)
-}SM_HopsanCoreMessage_t;
+}replymsg_ReplyMessage_t;
 
-typedef struct SWM_ReqWorkerStatus_Reply_ : WorkerStatusT
+typedef struct replymsg_ReplyWorkerStatus_ : WorkerStatusT
 {
     MSGPACK_DEFINE(model_loaded, simulation_inprogress, simualtion_success, simulation_finished,
                    current_simulation_time, simulation_progress, estimated_simulation_time_remaining)
-}SWM_ReqWorkerStatus_Reply_t;
+}replymsg_ReplyWorkerStatus_t;
 
-// Address server messages
+// Message structs typically used be the Adress server
 
 typedef struct
 {
@@ -155,9 +160,9 @@ typedef struct
     std::vector<std::string> ports;
     std::vector<std::string> descriptions;
     std::vector<int> numslots;
-    std::vector<double> speeds;     //! @todo calling it speed is bad, its the simtime lower is better (evaluationTime better name)
-    MSGPACK_DEFINE(ips, ports, descriptions, numslots, speeds)
-}MSM_ReqServerMachines_Reply_t;
+    std::vector<double> evalTime;
+    MSGPACK_DEFINE(ips, ports, descriptions, numslots, evalTime)
+}replymsg_ReplyServerMachines_t;
 
 
 

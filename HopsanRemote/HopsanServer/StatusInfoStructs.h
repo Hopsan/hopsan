@@ -1,5 +1,5 @@
-#ifndef SERVERSTATUSMESSAGE_H
-#define SERVERSTATUSMESSAGE_H
+#ifndef STATUSINFOSTRUCTS_H
+#define STATUSINFOSTRUCTS_H
 
 #include<string>
 
@@ -23,4 +23,4 @@ typedef struct
     double estimated_simulation_time_remaining=-1;
 }WorkerStatusT;
 
-#endif // SERVERSTATUSMESSAGE_H
+#endif // STATUSINFOSTRUCTS_H

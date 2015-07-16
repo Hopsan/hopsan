@@ -49,6 +49,5 @@ SOURCES += main.cpp
 HEADERS += \
     Messages.h \
     MessageUtilities.h \
-    ServerMessageUtilities.h \
-    ServerStatusMessage.h
+    StatusInfoStructs.h
 

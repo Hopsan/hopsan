@@ -13,7 +13,6 @@
 
 #include "Messages.h"
 #include "MessageUtilities.h"
-#include "ServerMessageUtilities.h"
 #include "FileAccess.h"
 
 #include "HopsanEssentials.h"
@@ -355,7 +354,7 @@ bool loadModel(string &rModel)
 void sendServerGoodby(zmq::socket_t &rSocket)
 {
     zmq::message_t response;
-    sendServerStringMessage(rSocket, SW_Finished, gWorkerId);
+    sendMessage(rSocket, Finished, gWorkerId);
     receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
 }
 
@@ -426,10 +425,10 @@ int main(int argc, char* argv[])
                 bool idParseOK;
                 size_t msg_id = getMessageId(request, offset, idParseOK);
                 //cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
-                if (msg_id == C_ReqWorkerStatus)
+                if (msg_id == ReqWorkerStatus)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Got status request" << endl;
-                    SWM_ReqWorkerStatus_Reply_t msg;
+                    replymsg_ReplyWorkerStatus_t msg;
                     msg.model_loaded = gIsModelLoaded;
                     msg.simualtion_success = gWasSimulationOK;
                     msg.simulation_finished = gSimulationFinnished;
@@ -447,18 +446,18 @@ int main(int argc, char* argv[])
                         msg.estimated_simulation_time_remaining = -1;
                     }
 
-                    sendServerMessage<SWM_ReqWorkerStatus_Reply_t>(socket, SW_ReqWorkerStatus_Reply, msg);
+                    sendMessage(socket, ReplyWorkerStatus, msg);
                 }
-                else if (msg_id == C_SetParam)
+                else if (msg_id == SetParameter)
                 {
                     if (gIsSimulating)
                     {
-                        sendServerNAck(socket, "You can not set parameters while simulating!");
+                        sendMessage(socket, NotAck, "You can not set parameters while simulating!");
                     }
                     else
                     {
                         bool parseOK;
-                        CM_SetParam_t msg = unpackMessage<CM_SetParam_t>(request, offset, parseOK);
+                        cmdmsg_SetParameter_t msg = unpackMessage<cmdmsg_SetParameter_t>(request, offset, parseOK);
                         cout << PRINTWORKER << nowDateTime() << " Client want to set parameter " << msg.name << " " << msg.value << endl;
 
                         // Set parameter
@@ -467,15 +466,15 @@ int main(int argc, char* argv[])
                         // Send ack or nack
                         if (rc)
                         {
-                            sendServerAck(socket);
+                            sendShortMessage(socket, Ack);
                         }
                         else
                         {
-                            sendServerNAck(socket, "Failed to set parameter: "+msg.name);
+                            sendMessage(socket, NotAck, "Failed to set parameter: "+msg.name);
                         }
                     }
                 }
-                else if (msg_id == C_GetParam)
+                else if (msg_id == ReqParameter)
                 {
                     //! @todo is this safe while simulating
 
@@ -491,18 +490,18 @@ int main(int argc, char* argv[])
                     // Send param value (as string) or nack
                     if (val.empty())
                     {
-                        sendServerNAck(socket, "Could not get parameter");
+                        sendMessage(socket, NotAck, "Could not get parameter");
                     }
                     else
                     {
-                        sendServerStringMessage(socket, SW_GetParam_Reply, val);
+                        sendMessage(socket, ReplyParameter, val);
                     }
                 }
-                else if (msg_id == C_SendingHmf)
+                else if (msg_id == SetModel)
                 {
                     if (gIsSimulating)
                     {
-                        sendServerNAck(socket, "You can not load a model while simulating!");
+                        sendMessage(socket, NotAck, "You can not load a model while simulating!");
                     }
                     else
                     {
@@ -515,30 +514,30 @@ int main(int argc, char* argv[])
                             bool rc = loadModel(hmf);
                             if (rc )
                             {
-                                sendServerAck(socket);
+                                sendShortMessage(socket, Ack);
                             }
                             else
                             {
-                                sendServerNAck(socket, "Server could not load model");
+                                sendMessage(socket, NotAck, "Server could not load model");
                             }
                         }
                         else
                         {
                             cout << PRINTWORKER << nowDateTime() << " Error: Could not parse model message" << endl;
-                            sendServerNAck(socket, "Could not parse model message");
+                            sendMessage(socket, NotAck, "Could not parse model message");
                         }
                     }
                 }
-                else if (msg_id == C_Simulate)
+                else if (msg_id == Simulate)
                 {
                     if (gIsSimulating)
                     {
-                        sendServerNAck(socket, "Simulation is already in progress!");
+                        sendMessage(socket, NotAck, "Simulation is already in progress!");
                     }
                     else
                     {
                         bool parseOK;
-                        CM_Simulate_t msg = unpackMessage<CM_Simulate_t>(request, offset, parseOK);
+                        cmdmsg_Simulate_t msg = unpackMessage<cmdmsg_Simulate_t>(request, offset, parseOK);
                         if (parseOK)
                         {
                             // Start simulation
@@ -551,31 +550,31 @@ int main(int argc, char* argv[])
                             {
                                 //std::thread ( simulationThread, &gWasSimulationOK ).detach();
                                 startSimulation(&gWasSimulationOK);
-                                sendServerAck(socket);
+                                sendShortMessage(socket, Ack);
                             }
                             else
                             {
                                 cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
-                                sendServerNAck(socket, "Could not initialize system");
+                                sendMessage(socket, NotAck, "Could not initialize system");
                             }
                         }
                         else
                         {
                             cout  << PRINTWORKER << nowDateTime() << " Error: Failed to parse simulation message" << endl;
-                            sendServerNAck(socket, "Failed to parse simulation message");
+                            sendMessage(socket, NotAck, "Failed to parse simulation message");
                         }
                     }
                 }
-                else if (msg_id == C_ReqBenchmark)
+                else if (msg_id == Benchmark)
                 {
                     if (gIsSimulating)
                     {
-                        sendServerNAck(socket, "Simulation is already in progress!");
+                        sendMessage(socket, NotAck, "Simulation is already in progress!");
                     }
                     else
                     {
                         bool parseOK;
-                        CM_ReqBenchmark_t benchreq = unpackMessage<CM_ReqBenchmark_t>(request, offset, parseOK);
+                        cmdmsg_Benchmark_t benchreq = unpackMessage<cmdmsg_Benchmark_t>(request, offset, parseOK);
                         if (parseOK)
                         {
                             bool rc = loadModel(benchreq.model);
@@ -590,45 +589,45 @@ int main(int argc, char* argv[])
                                     // Start simulation
                                     //std::thread ( simulationThreads, &gWasSimulationOK ).detach();
                                     startSimulation(&gWasSimulationOK);
-                                    sendServerAck(socket);
+                                    sendShortMessage(socket, Ack);
                                 }
                                 else
                                 {
                                     cout  << PRINTWORKER << nowDateTime() << " Model Init failed"  << endl;
-                                    sendServerNAck(socket, "Could not initialize system");
+                                    sendMessage(socket, NotAck, "Could not initialize system");
                                 }
                             }
                             else
                             {
-                                sendServerNAck(socket, "Server could not load the model to benchmark");
+                                sendMessage(socket, NotAck, "Server could not load the model to benchmark");
                             }
                         }
                         else
                         {
                             cout  << PRINTWORKER << nowDateTime() << " Error: Failed to parse simulation message" << endl;
-                            sendServerNAck(socket, "Failed to parse simulation message");
+                            sendMessage(socket, NotAck, "Failed to parse simulation message");
                         }
                     }
                 }
-                else if (msg_id == C_ReqBenchmarkResults)
+                else if (msg_id == ReqServerBenchmarkResults)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Got Benchmark times request" << endl;
                     //! @todo  Wait for benchmark to complete maybe
                     //!
-                    SWM_ReqBenchmarkResults_Reply_t msg;
+                    replymsg_ReplyBenchmarkResults_t msg;
                     msg.numthreads = gNumThreads;
                     msg.inittime = gInitTime;
                     msg.simutime = gSimulationTime;
                     msg.finitime = gFinilizeTime;
 
-                    sendServerMessage<SWM_ReqBenchmarkResults_Reply_t>(socket, S_ReqBenchmarkResults_Reply, msg);
+                    sendMessage(socket, ReplyBenchmarkResults, msg);
                 }
 
-                else if (msg_id == C_ReqResults)
+                else if (msg_id == ReqResults)
                 {
                     if (gIsSimulating)
                     {
-                        sendServerNAck(socket, "Simulation is still in progress!");
+                        sendMessage(socket, NotAck, "Simulation is still in progress!");
                     }
                     else
                     {
@@ -639,10 +638,10 @@ int main(int argc, char* argv[])
                         cout << PRINTWORKER << nowDateTime() << " Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
 
                         //! @todo Check if simulation finished, ACK Nack
-                        vector<SM_Variable_Description_t> vars;
+                        vector<replymsg_ResultsVariable_t> vars;
                         for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
                         {
-                            vars.push_back(SM_Variable_Description_t());
+                            vars.push_back(replymsg_ResultsVariable_t());
                             vars.back().name = vMVI[mvi].fullName.c_str();
                             vars.back().alias = "";
                             vars.back().unit = vMVI[mvi].unit.c_str();
@@ -665,13 +664,13 @@ int main(int argc, char* argv[])
                             }
                         }
 
-                        sendServerMessage<vector<SM_Variable_Description_t>>(socket,SW_ReqResults_Reply,vars);
+                        sendMessage(socket,ReplyResults,vars);
                     }
                 }
-                else if (msg_id == C_ReqMessages)
+                else if (msg_id == ReqMessages)
                 {
                     HopsanCoreMessageHandler *pHandler = gHopsanCore.getCoreMessageHandler();
-                    vector<SM_HopsanCoreMessage_t> messages;
+                    vector<replymsg_ReplyMessage_t> messages;
                     size_t nMessages = pHandler->getNumWaitingMessages();
                     messages.resize(nMessages);
                     cout << PRINTWORKER << nowDateTime() << " Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;
@@ -684,25 +683,25 @@ int main(int argc, char* argv[])
                         messages[i].type = type[0];
                     }
 
-                    sendServerMessage<vector<SM_HopsanCoreMessage_t>>(socket,SW_ReqMessages_Reply,messages);
+                    sendMessage(socket,ReplyMessages,messages);
                 }
-                else if (msg_id == C_Abort)
+                else if (msg_id == Abort)
                 {
                     if (gIsSimulating && gpRootSystem)
                     {
                         cout << PRINTWORKER << nowDateTime() << " Client request Abort simulation!" << endl;
                         gpRootSystem->stopSimulation("Got abort request");
-                        sendServerAck(socket);
+                        sendShortMessage(socket, Ack);
                     }
                     else
                     {
-                        sendServerNAck(socket, "No simulation running");
+                        sendMessage(socket, NotAck, "No simulation running");
                     }
                 }
-                else if (msg_id == C_Bye)
+                else if (msg_id == Closing)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Client said godbye!" << endl;
-                    sendServerAck(socket);
+                    sendShortMessage(socket, Ack);
                     keepRunning = false;
 
                     sendServerGoodby(serverSocket);
@@ -718,7 +717,7 @@ int main(int argc, char* argv[])
                     stringstream ss;
                     ss << PRINTWORKER << nowDateTime() << " Error: Unknown message id: " << msg_id << endl;
                     cout << ss.str() << endl;
-                    sendServerNAck(socket, ss.str());
+                    sendMessage(socket, NotAck, ss.str());
                 }
             }
             else

@@ -50,24 +50,35 @@ inline T unpackMessage(zmq::message_t &rRequest, size_t &rOffset, bool &rUnpackO
     }
 }
 
-//inline size_t parseMessageId(char* pBuffer, size_t len, size_t &rOffset)
-//{
-//    return msgpack::unpack(pBuffer, len, rOffset).get().as<size_t>();
-//}
-
 inline size_t getMessageId(zmq::message_t &rMsg, size_t &rOffset, bool &rUnpackOK)
 {
-    //return parseMessageId(static_cast<char*>(rMsg.data()), rMsg.size(), rOffset);
-    //return msgpack::unpack(static_cast<char*>(rMsg.data()), rMsg.size(), rOffset).get().as<size_t>();
     return unpackMessage<size_t>(rMsg, rOffset, rUnpackOK);
 }
 
-inline std::string makeZMQAddress(std::string ip, size_t port)
+inline
+void sendShortMessage(zmq::socket_t &rSocket, MessageIdsEnumT id)
+{
+    msgpack::v1::sbuffer out_buffer;
+    msgpack::pack(out_buffer, id);
+    rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+}
+
+template <typename T>
+inline
+void sendMessage(zmq::socket_t &rSocket, MessageIdsEnumT id, const T &rMessage)
+{
+    msgpack::v1::sbuffer out_buffer;
+    msgpack::pack(out_buffer, id);
+    msgpack::pack(out_buffer, rMessage);
+    rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
+}
+
+inline std::string makeZMQAddress(const std::string &ip, size_t port)
 {
     return "tcp://" + ip + ":" + std::to_string(port);
 }
 
-inline std::string makeZMQAddress(std::string ip, std::string port)
+inline std::string makeZMQAddress(const std::string &ip, const std::string &port)
 {
     return "tcp://" + ip + ":" + port;
 }
