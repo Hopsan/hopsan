@@ -66,7 +66,7 @@ std::string nowDateTime()
 }
 
 
-bool readAckNackServerMessage(zmq::socket_t &rSocket, long timeout, string &rNackReason)
+bool receiveAckNackMessage(zmq::socket_t &rSocket, long timeout, string &rNackReason)
 {
     zmq::message_t response;
     if(receiveWithTimeout(rSocket, timeout, response))
@@ -118,7 +118,7 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
         {
             sendMessage(addressServerSocket, Available, message);
             std::string nackreason;
-            bool ack = readAckNackServerMessage(addressServerSocket, 5000, nackreason);
+            bool ack = receiveAckNackMessage(addressServerSocket, 5000, nackreason);
             if (ack)
             {
                 cout << PRINTSERVER << nowDateTime() << " Successfully registered in address server" << endl;
@@ -133,7 +133,7 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
         {
             sendMessage(addressServerSocket, Closing, message);
             std::string nackreason;
-            bool ack = readAckNackServerMessage(addressServerSocket, 5000, nackreason);
+            bool ack = receiveAckNackMessage(addressServerSocket, 5000, nackreason);
             if (ack)
             {
                 cout << PRINTSERVER << nowDateTime() << " Successfully unregistered in address server" << endl;
@@ -260,7 +260,7 @@ int main(int argc, char* argv[])
                 //        string identity = request.gets("Identity");
                 //        cout << "Socket-type: " << soxtype << " Identity: " << identity << endl;
 
-                if (msg_id == ReqServerSlots)
+                if (msg_id == RequestServerSlots)
                 {
                     bool parseOK;
                     reqmsg_ReqServerSlots_t msg = unpackMessage<reqmsg_ReqServerSlots_t>(request, offset, parseOK);
@@ -395,10 +395,10 @@ int main(int argc, char* argv[])
                         cout << PRINTSERVER << nowDateTime() << " Error: Could not server id string" << endl;
                     }
                 }
-                else if (msg_id == ReqServerStatus)
+                else if (msg_id == RequestServerStatus)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
-                    replymsg__ReplyServerStatus_t status;
+                    replymsg_ReplyServerStatus_t status;
                     status.numTotalSlots = gServerConfig.mMaxNumSlots;
                     status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
                     status.isReady = true;

@@ -20,7 +20,7 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
 
-INCLUDEPATH += $${PWD}/../HopsanServer/
+INCLUDEPATH *= $${PWD}/../include
 
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../../Utilities/

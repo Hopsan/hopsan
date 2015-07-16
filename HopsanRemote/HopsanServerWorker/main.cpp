@@ -425,7 +425,7 @@ int main(int argc, char* argv[])
                 bool idParseOK;
                 size_t msg_id = getMessageId(request, offset, idParseOK);
                 //cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
-                if (msg_id == ReqWorkerStatus)
+                if (msg_id == RequestWorkerStatus)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Got status request" << endl;
                     replymsg_ReplyWorkerStatus_t msg;
@@ -474,7 +474,7 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-                else if (msg_id == ReqParameter)
+                else if (msg_id == RequestParameter)
                 {
                     //! @todo is this safe while simulating
 
@@ -609,7 +609,7 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-                else if (msg_id == ReqServerBenchmarkResults)
+                else if (msg_id == RequestBenchmarkResults)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Got Benchmark times request" << endl;
                     //! @todo  Wait for benchmark to complete maybe
@@ -623,7 +623,7 @@ int main(int argc, char* argv[])
                     sendMessage(socket, ReplyBenchmarkResults, msg);
                 }
 
-                else if (msg_id == ReqResults)
+                else if (msg_id == RequestResults)
                 {
                     if (gIsSimulating)
                     {
@@ -667,7 +667,7 @@ int main(int argc, char* argv[])
                         sendMessage(socket,ReplyResults,vars);
                     }
                 }
-                else if (msg_id == ReqMessages)
+                else if (msg_id == RequestMessages)
                 {
                     HopsanCoreMessageHandler *pHandler = gHopsanCore.getCoreMessageHandler();
                     vector<replymsg_ReplyMessage_t> messages;

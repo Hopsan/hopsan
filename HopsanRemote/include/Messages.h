@@ -23,14 +23,14 @@ enum MessageIdsEnumT {
     SetModel,
 
     /* Request messages */
-    ReqServerMachines,
-    ReqServerStatus,
-    ReqServerBenchmarkResults,
-    ReqServerSlots,
-    ReqWorkerStatus,
-    ReqParameter,
-    ReqResults,
-    ReqMessages,
+    RequestServerMachines,
+    RequestServerStatus,
+    RequestBenchmarkResults,
+    RequestServerSlots,
+    RequestWorkerStatus,
+    RequestParameter,
+    RequestResults,
+    RequestMessages,
 
     /* Reply messages (to requests) */
     ReplyServerMachines,
@@ -105,10 +105,10 @@ typedef struct
     MSGPACK_DEFINE(port)
 }replymsg_ReplyServerSlots_t;
 
-typedef struct replymsg__ReplyServerStatus_ : ServerStatusT
+typedef struct replymsg_ReplyServerStatus_ : ServerStatusT
 {
-    MSGPACK_DEFINE(numFreeSlots, numTotalSlots, startTime, stopTime, isReady)
-}replymsg__ReplyServerStatus_t;
+    MSGPACK_DEFINE(services, numFreeSlots, numTotalSlots, startTime, stopTime, isReady)
+}replymsg_ReplyServerStatus_t;
 
 typedef struct
 {

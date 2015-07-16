@@ -21,10 +21,7 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
 
-#INCLUDEPATH += $${PWD}/../../ThirdParty/msgpack-0.5.9/src/
-#INCLUDEPATH += $${PWD}/../../ThirdParty/zeromq-4.1.0/include/
-#INCLUDEPATH += $${PWD}/../../ThirdParty/cppzeromq-master/
-#QMAKE_CXXFLAGS += -std=c++11
+INCLUDEPATH *= $${PWD}/../include
 
 # -------------------------------------------------
 # Platform specific additional project options
@@ -45,9 +42,3 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES += main.cpp
-
-HEADERS += \
-    Messages.h \
-    MessageUtilities.h \
-    StatusInfoStructs.h
-

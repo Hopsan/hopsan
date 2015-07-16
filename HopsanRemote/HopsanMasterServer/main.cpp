@@ -248,7 +248,7 @@ int main(int argc, char* argv[])
                         sendMessage(socket, NotAck, "You are not registered");
                     }
                 }
-                else if (msg_id == ReqServerMachines)
+                else if (msg_id == RequestServerMachines)
                 {
                     //! @todo maybe refresh all before checking
 

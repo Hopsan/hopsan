@@ -5,6 +5,7 @@
 
 typedef struct
 {
+    std::string services;
     int numFreeSlots;
     int numTotalSlots;
     std::string startTime;

@@ -27,7 +27,7 @@ QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
 
 
-INCLUDEPATH += $${PWD}/../HopsanServer/
+INCLUDEPATH *= $${PWD}/../include
 
 # -------------------------------------------------
 # Platform specific additional project options
