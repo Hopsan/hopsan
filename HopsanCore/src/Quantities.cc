@@ -62,7 +62,7 @@ void hopsan::QuantityRegister::registerQuantity(const hopsan::HString &rQuantity
 
 void hopsan::QuantityRegister::registerQuantityAlias(const hopsan::HString &rQuantity, const hopsan::HString &rAlias)
 {
-    mQuantityAliases.insert(std::pair<HString, HString>(rQuantity, rAlias));
+    mQuantityAliases.insert(std::pair<HString, HString>(rAlias, rQuantity));
 }
 
 hopsan::HString hopsan::QuantityRegister::lookupBaseUnit(const hopsan::HString &rQuantity) const

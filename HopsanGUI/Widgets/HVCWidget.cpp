@@ -292,44 +292,46 @@ void HVCWidget::runHvcTest()
     gpModelHandler->loadModel(mModelFilePath, true);
     // Switch to that tab
 
+    // Get Log data handler for model
+    int simuGen=-1;
+    LogDataHandler2 *pLogDataHandler = gpModelHandler->getCurrentLogDataHandler();
+
     // Simulate the system
     if (gpModelHandler->getCurrentModel())
     {
         gpModelHandler->getCurrentModel()->simulate_blocking();
+        simuGen = pLogDataHandler->getCurrentGenerationNumber();
     }
 
 
-    // Run each test
+    // Compare each variable
     gpPlotHandler->closeAllOpenWindows(); //Close all plot windows to avoid confusion if we run several tests after each other
     for (int t=0; t<mDataConfigs.size(); ++t)
     {
-        LogDataHandler2 *pImportLogDataHandler = gpModelHandler->getCurrentLogDataHandler();
-        LogDataHandler2 *pVariableLogDataHandler = pImportLogDataHandler;
-        QString variableName = mDataConfigs[t].mFullVarName;
+//        QString variableName = mDataConfigs[t].mFullVarName;
 
-        // Handle subsystem variables
-        if (variableName.contains('$'))
-        {
-            QStringList fields = variableName.split('$');
-            fields.erase(fields.begin()); // Remove the first "top-level system" name
-            ContainerObject *pContainer=gpModelHandler->getCurrentTopLevelSystem();
-            while (!fields.front().contains('#'))
-            {
-                ModelObject *pObj = pContainer->getModelObject(fields.front());
-                if (pObj && (pObj->type() == SystemContainerType))
-                {
-                    pContainer = qobject_cast<ContainerObject*>(pObj);
-                }
-                else
-                {
-                    gpMessageHandler->addErrorMessage(QString("Could not find system: %1").arg(fields.front()));
-                    return;
-                }
-                fields.erase(fields.begin());
-            }
-            pVariableLogDataHandler = pContainer->getLogDataHandler();
-            variableName = fields.front();
-        }
+//        // Handle subsystem variables
+//        if (variableName.contains('$'))
+//        {
+//            QStringList fields = variableName.split('$');
+//            fields.erase(fields.begin()); // Remove the first "top-level system" name
+//            ContainerObject *pContainer=gpModelHandler->getCurrentTopLevelSystem();
+//            while (!fields.front().contains('#'))
+//            {
+//                ModelObject *pObj = pContainer->getModelObject(fields.front());
+//                if (pObj && (pObj->type() == SystemContainerType))
+//                {
+//                    pContainer = qobject_cast<ContainerObject*>(pObj);
+//                }
+//                else
+//                {
+//                    gpMessageHandler->addErrorMessage(QString("Could not find system: %1").arg(fields.front()));
+//                    return;
+//                }
+//                fields.erase(fields.begin());
+//            }
+//            variableName = fields.front();
+//        }
 
         QVector<int> columns, timecolumns;
         QStringList names;
@@ -337,12 +339,13 @@ void HVCWidget::runHvcTest()
         timecolumns.append(mDataConfigs[t].mTimeColumn);
         names.append(mDataConfigs[t].mFullVarName+"_valid");
 
-        pImportLogDataHandler->importTimeVariablesFromCSVColumns(mDataConfigs[t].mDataFile, columns, names, timecolumns);
+        pLogDataHandler->importTimeVariablesFromCSVColumns(mDataConfigs[t].mDataFile, columns, names, timecolumns);
+        int importGen = pLogDataHandler->getCurrentGenerationNumber();
 
         QString windowName = QString("Validation Plot %1").arg(t);
         gpPlotHandler->createNewOrReplacePlotwindow(windowName);
-        gpPlotHandler->plotDataToWindow(windowName, pVariableLogDataHandler->getVectorVariable(variableName,-1), 0);
-        gpPlotHandler->plotDataToWindow(windowName, pImportLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName+"_valid",-1), 0);
+        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName,simuGen), 0);
+        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName+"_valid", importGen), 0);
     }
 }
 

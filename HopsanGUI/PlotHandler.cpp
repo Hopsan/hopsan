@@ -172,7 +172,10 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorV
     }
     PlotCurve *pCurve = pPlotWindow->addPlotCurve(data, QwtPlot::Axis(axis), curveColor, thickness, type);
     // We want to preserve the internal auto update setting from the curve if it is off, so we can actually only turn it off here
-    pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
+    if (pCurve)
+    {
+        pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
+    }
     return pPlotWindow;
 }
 
@@ -184,7 +187,10 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorV
     }
     PlotCurve *pCurve = pPlotWindow->addPlotCurve(xdata, ydata, QwtPlot::Axis(axis), curveColor, thickness, type);
     // We want to preserve the internal auto update setting from the curve if it is off, so we can actually only turn it off here
-    pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
+    if (pCurve)
+    {
+        pCurve->setAutoUpdate(autoRefresh && pCurve->isAutoUpdating());
+    }
     return pPlotWindow;
 }
 

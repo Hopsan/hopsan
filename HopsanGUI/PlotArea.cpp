@@ -1207,27 +1207,29 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     QMap<QString, double>::iterator itu;
     for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
     {
-        QAction *pTempResetUnitAction = pResetUnitsMenu->addAction((*itc)->getCurveName());
-        actionToCurveMap.insert(pTempResetUnitAction, (*itc));
+        PlotCurve *pCurve = *itc;
 
-        QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu((*itc)->getCurveName());
-        if ((*itc)->getDataName() == "Value")
+        QAction *pTempResetUnitAction = pResetUnitsMenu->addAction(pCurve->getCurveName());
+        actionToCurveMap.insert(pTempResetUnitAction, pCurve);
+
+        QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu(pCurve->getCurveName());
+        if (pCurve->getDataQuantity().isEmpty())
         {
-            QStringList pqs = gpConfig->getQuantitiesForUnit((*itc)->getDataUnit());
-            if (pqs.size() > 0)
+            QStringList pqs = gpConfig->getQuantitiesForUnit(pCurve->getDataUnit());
+            if (pqs.size() == 1)
             {
                 unitMap = gpConfig->getUnitScales(pqs.first());
             }
         }
         else
         {
-            unitMap = gpConfig->getUnitScales((*itc)->getDataName());
+            unitMap = gpConfig->getUnitScales(pCurve->getDataQuantity());
         }
 
         for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
         {
             QAction *pTempAction = pTempChangeUnitMenu->addAction(itu.key());
-            actionToCurveMap.insert(pTempAction, (*itc));
+            actionToCurveMap.insert(pTempAction, pCurve);
         }
     }
 

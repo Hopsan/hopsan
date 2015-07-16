@@ -1270,6 +1270,7 @@ void PlotCurve::connectDataSignals()
     connect(mData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     connect(mData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
     connect(mData.data(), SIGNAL(beingRemoved()), this, SLOT(dataIsBeingRemoved()), Qt::UniqueConnection);
+    connect(mData.data(), SIGNAL(quantityChanged()), this, SIGNAL(curveInfoUpdated()), Qt::UniqueConnection);
 }
 
 void PlotCurve::connectCustomXDataSignals()
@@ -1279,6 +1280,7 @@ void PlotCurve::connectCustomXDataSignals()
         connect(mCustomXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
         connect(mCustomXdata.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
         connect(mCustomXdata.data(), SIGNAL(beingRemoved()), this, SLOT(customXDataIsBeingRemoved()), Qt::UniqueConnection);
+        connect(mCustomXdata.data(), SIGNAL(quantityChanged()), this, SIGNAL(curveInfoUpdated()), Qt::UniqueConnection);
     }
 }
 
