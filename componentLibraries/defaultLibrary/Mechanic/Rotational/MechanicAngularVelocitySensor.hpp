@@ -46,9 +46,7 @@ namespace hopsan {
     class MechanicAngularVelocitySensor : public ComponentSignal
     {
     private:
-        double *mpND_w, *mpND_out;
-        Port *mpP1;
-
+        double *mpP1_w, *mpOut;
 
     public:
         static Component *Creator()
@@ -58,22 +56,21 @@ namespace hopsan {
 
         void configure()
         {
-
-            mpP1 = addReadPort("P1", "NodeMechanicRotational", "", Port::NotRequired);
-            addOutputVariable("out", "AngularVelocity", "rad/s", &mpND_out);
+            addReadPort("P1", "NodeMechanicRotational", "", Port::NotRequired);
+            addOutputVariable("out", "AngularVelocity", "AngularVelocity", &mpOut);
         }
 
 
         void initialize()
         {
-            mpND_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
+            mpP1_w = getSafeNodeDataPtr("P1", NodeMechanicRotational::AngularVelocity);
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = (*mpND_w);
+            (*mpOut) = (*mpP1_w);
         }
     };
 }

@@ -58,9 +58,9 @@ namespace hopsan {
         void configure()
         {
             mpP1 = addReadPort("P1", "NodeHydraulic", "", Port::NotRequired);
-            addOutputVariable("p", "Pressure", "Pa", &mpOut_p);
-            addOutputVariable("q", "Flow", "m^3/s", &mpOut_q);
-            addOutputVariable("c", "WaveVariable", "",  &mpOut_c);
+            addOutputVariable("p", "Pressure", "Pressure", &mpOut_p);
+            addOutputVariable("q", "Flow", "Flow", &mpOut_q);
+            addOutputVariable("c", "WaveVariable", "Pressure",  &mpOut_c);
             addOutputVariable("Zc", "Charateristc Impedance", "", &mpOut_Zc);
         }
 

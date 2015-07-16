@@ -46,7 +46,7 @@ namespace hopsan {
     class MechanicForceSensor : public ComponentSignal
     {
     private:
-        double *mpND_f, *mpND_out;
+        double *mpP1_f, *mpOut;
 
     public:
         static Component *Creator()
@@ -58,20 +58,20 @@ namespace hopsan {
         {
 
             addReadPort("P1", "NodeMechanic", "", Port::NotRequired);
-            addOutputVariable("out", "Force", "N", &mpND_out);
+            addOutputVariable("out", "Force", "Force", &mpOut);
         }
 
 
         void initialize()
         {
-            mpND_f = getSafeNodeDataPtr("P1", NodeMechanic::Force);
+            mpP1_f = getSafeNodeDataPtr("P1", NodeMechanic::Force);
             simulateOneTimestep(); //Set initial output node value
         }
 
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = (*mpND_f);
+            (*mpOut) = (*mpP1_f);
         }
     };
 }

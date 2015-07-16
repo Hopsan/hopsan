@@ -45,7 +45,7 @@ namespace hopsan {
     class MechanicPositionSensor : public ComponentSignal
     {
     private:
-        double *mpND_x, *mpND_out;
+        double *mpP1_x, *mpOut;
         Port *mpP1;
 
 
@@ -58,20 +58,20 @@ namespace hopsan {
         void configure()
         {
             mpP1 = addReadPort("P1", "NodeMechanic", "", Port::NotRequired);
-            addOutputVariable("out", "Position", "m", &mpND_out);
+            addOutputVariable("out", "Position", "Position", &mpOut);
         }
 
 
         void initialize()
         {
-            mpND_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
             simulateOneTimestep(); //Set initial output node value
         }
 
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = (*mpND_x);
+            (*mpOut) = (*mpP1_x);
         }
     };
 }

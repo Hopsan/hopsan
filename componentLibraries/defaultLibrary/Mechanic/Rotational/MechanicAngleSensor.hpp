@@ -34,7 +34,6 @@
 #ifndef MECHANICANGLESENSOR_HPP_INCLUDED
 #define MECHANICANGLESENSOR_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 
 namespace hopsan {
@@ -46,9 +45,7 @@ namespace hopsan {
     class MechanicAngleSensor : public ComponentSignal
     {
     private:
-        double *mpND_phi, *mpND_out;
-        Port *mpP1;
-
+        double *mpP1_a, *mpOut;
 
     public:
         static Component *Creator()
@@ -58,22 +55,21 @@ namespace hopsan {
 
         void configure()
         {
-
-            mpP1 = addReadPort("P1", "NodeMechanicRotational", "", Port::NotRequired);
-            addOutputVariable("out", "Angle", "rad", &mpND_out);
+            addReadPort("P1", "NodeMechanicRotational", "", Port::NotRequired);
+            addOutputVariable("out", "Angle", "Angle", &mpOut);
         }
 
 
         void initialize()
         {
-            mpND_phi = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
+            mpP1_a = getSafeNodeDataPtr("P1", NodeMechanicRotational::Angle);
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = (*mpND_phi);
+            (*mpOut) = (*mpP1_a);
         }
     };
 }

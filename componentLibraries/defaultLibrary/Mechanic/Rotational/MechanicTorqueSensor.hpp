@@ -46,9 +46,7 @@ namespace hopsan {
     class MechanicTorqueSensor : public ComponentSignal
     {
     private:
-        double *mpND_t, *mpND_out;
-        Port *mpP1;
-
+        double *mpP1_T, *mpOut;
 
     public:
         static Component *Creator()
@@ -58,21 +56,21 @@ namespace hopsan {
 
         void configure()
         {
-            mpP1 = addReadPort("P1", "NodeMechanicRotational", "", Port::NotRequired);
-            addOutputVariable("out","Torque","Nm",&mpND_out);
+            addReadPort("P1", "NodeMechanicRotational", "", Port::NotRequired);
+            addOutputVariable("out","Torque","Torque",&mpOut);
         }
 
 
         void initialize()
         {
-            mpND_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
+            mpP1_T = getSafeNodeDataPtr("mpP1", NodeMechanicRotational::Torque);
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = (*mpND_t);
+            (*mpOut) = (*mpP1_T);
         }
     };
 }
