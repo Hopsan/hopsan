@@ -440,7 +440,7 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
         int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
         nThreads = qMax(nThreads, 1);
 
-        QStringList serveraddress;
+        QString serveraddress;
         if (mUseRemoteCoreAddressServer)
         {
             SharedRemoteCoreAddressHandlerT pAddressHandler = getSharedRemoteCoreAddressHandler();
@@ -456,19 +456,22 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
 
             pAddressHandler->requestAvailableServers();
 
-            QString addr = pAddressHandler->getBestAvailableServer(nThreads);
-            serveraddress = addr.split(":");
+            serveraddress = pAddressHandler->getBestAvailableServer(nThreads);
         }
         else
         {
-            serveraddress = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS).split(":");
+            serveraddress = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS);
         }
 
-        if (serveraddress.size() == 2)
+        if (!serveraddress.isEmpty())
         {
             mpRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
             mpRemoteCoreSimulationHandler->setNumThreads(nThreads);
-            mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress.first(), serveraddress.last());
+            if (mUseRemoteCoreAddressServer)
+            {
+                mpRemoteCoreSimulationHandler->setAddressServer(getSharedRemoteCoreAddressHandler()->getAddressAndPort());
+            }
+            mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress);
 
             bool rc = mpRemoteCoreSimulationHandler->connect();
             if (rc)
@@ -490,7 +493,6 @@ void ModelWidget::setUseRemoteSimulationCore(bool tf, bool useDispatch)
         {
             mpMessageHandler->addErrorMessage(QString("Could not find an availible server mathing your requirements; nThreads: %1").arg(nThreads));
             useRemoteCoreFailed = true;
-
         }
     }
 

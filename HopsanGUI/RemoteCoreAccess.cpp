@@ -84,24 +84,25 @@ RemoteCoreSimulationHandler::~RemoteCoreSimulationHandler()
     }
 }
 
-void RemoteCoreSimulationHandler::setHopsanServer(QString ip, QString port)
+void RemoteCoreSimulationHandler::setAddressServer(QString fullAddress)
 {
-    mRemoteServerAddress = ip;
-    mRemoteServerPort = port;
+    mRemoteAddressServerFullAddress = fullAddress;
 }
 
-void RemoteCoreSimulationHandler::setHopsanServer(QString ip_port)
+void RemoteCoreSimulationHandler::setHopsanServer(QString ip, QString port)
 {
-    QStringList fields = ip_port.split(":");
-    if (fields.size() == 2)
-    {
-        setHopsanServer(fields.first(), fields.last());
-    }
+    QString addr = ip+":"+port;
+    setHopsanServer(addr);
+}
+
+void RemoteCoreSimulationHandler::setHopsanServer(QString fullAddress)
+{
+    mRemoteServerFullAddress = fullAddress;
 }
 
 QString RemoteCoreSimulationHandler::getHopsanServerAddress() const
 {
-    return mRemoteServerAddress+":"+mRemoteServerPort;
+    return mRemoteServerFullAddress;
 }
 
 void RemoteCoreSimulationHandler::setNumThreads(int nThreads)
@@ -117,29 +118,12 @@ int RemoteCoreSimulationHandler::numThreads() const
 
 bool RemoteCoreSimulationHandler::connect()
 {
+    connectAddressServer();
     if (connectServer())
     {
         return connectWorker();
     }
     return false;
-//    if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
-//    {
-//        mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
-//        if (mpRemoteHopsanClient->serverConnected())
-//        {
-//            size_t workerPort;
-//            if (mpRemoteHopsanClient->requestSlot(mNumThreads, workerPort))
-//            {
-//                mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
-//                if (mpRemoteHopsanClient->workerConnected())
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//    }
-
-//    return false;
 }
 
 void RemoteCoreSimulationHandler::disconnect()
@@ -147,11 +131,24 @@ void RemoteCoreSimulationHandler::disconnect()
     mpRemoteHopsanClient->disconnect();
 }
 
+bool RemoteCoreSimulationHandler::connectAddressServer()
+{
+    if(!mRemoteAddressServerFullAddress.isEmpty())
+    {
+        mpRemoteHopsanClient->connectToAddressServer(mRemoteAddressServerFullAddress.toStdString());
+        if (mpRemoteHopsanClient->serverConnected())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool RemoteCoreSimulationHandler::connectServer()
 {
-    if (!mRemoteServerAddress.isEmpty() && !mRemoteServerPort.isEmpty())
+    if (!mRemoteServerFullAddress.isEmpty())
     {
-        mpRemoteHopsanClient->connectToServer(mRemoteServerAddress.toStdString(), mRemoteServerPort.toStdString());
+        mpRemoteHopsanClient->connectToServer(mRemoteServerFullAddress.toStdString());
         if (mpRemoteHopsanClient->serverConnected())
         {
             return true;
@@ -164,10 +161,10 @@ bool RemoteCoreSimulationHandler::connectWorker()
 {
     if (mpRemoteHopsanClient->serverConnected())
     {
-        size_t workerPort;
-        if (mpRemoteHopsanClient->requestSlot(mNumThreads, workerPort))
+        int ctrlPort;
+        if (mpRemoteHopsanClient->requestSlot(mNumThreads, ctrlPort))
         {
-            mpRemoteHopsanClient->connectToWorker(mRemoteServerAddress.toStdString(), QString("%1").arg(workerPort).toStdString());
+            mpRemoteHopsanClient->connectToWorker(ctrlPort);
             if (mpRemoteHopsanClient->workerConnected())
             {
                 return true;
@@ -175,6 +172,11 @@ bool RemoteCoreSimulationHandler::connectWorker()
         }
     }
     return false;
+}
+
+void RemoteCoreSimulationHandler::disconnectAddressServer()
+{
+    mpRemoteHopsanClient->disconnectAddressServer();
 }
 
 void RemoteCoreSimulationHandler::disconnectServer()
@@ -326,10 +328,10 @@ QString RemoteCoreSimulationHandler::getLastError() const
 
 void RemoteCoreAddressHandler::requestServerInfo(QString address)
 {
-    QStringList ad = address.split(":");
     // Here we create a new temporary HopsanClient to communicate with the HopsanServer
     RemoteHopsanClient client(zmqContext);
-    client.connectToServer(ad.first().toStdString(), ad.last().toStdString());
+    client.connectToAddressServer(getAddressAndPort().toStdString());
+    client.connectToServer(address.toStdString());
     if (client.serverConnected())
     {
         ServerStatusT status;
@@ -371,9 +373,9 @@ void RemoteCoreAddressHandler::removeNotRespondingServers()
         auto it = mAvailableServers.find(addr);
         if (it != mAvailableServers.end())
         {
-            double speed = it.value().speed;
+            double evalTime = it.value().evalTime;
             mAvailableServers.erase(it);
-            mServerSpeedMap.remove(speed, addr); //! @todo since speed is double maybe we can not remove here, speed maybe should be int (ms)
+            mServerSpeedMap.remove(evalTime, addr); //! @todo since speed is double maybe we can not remove here, speed maybe should be int (ms)
         }
     }
 }
@@ -385,7 +387,7 @@ RemoteCoreAddressHandler::RemoteCoreAddressHandler()
 
 RemoteCoreAddressHandler::~RemoteCoreAddressHandler()
 {
-    if (mpRemoteHopsanClient->serverConnected())
+    if (mpRemoteHopsanClient->addressServerConnected())
     {
         disconnect();
     }
@@ -423,15 +425,15 @@ QString RemoteCoreAddressHandler::getAddressAndPort() const
 
 bool RemoteCoreAddressHandler::isConnected()
 {
-    return mpRemoteHopsanClient->serverConnected();
+    return mpRemoteHopsanClient->addressServerConnected();
 }
 
 bool RemoteCoreAddressHandler::connect()
 {
     if (!mHopsanAddressServerIP.isEmpty() && !mHopsanAddressServerPort.isEmpty())
     {
-        mpRemoteHopsanClient->connectToServer(mHopsanAddressServerIP.toStdString(), mHopsanAddressServerPort.toStdString());
-        if (mpRemoteHopsanClient->serverConnected())
+        mpRemoteHopsanClient->connectToAddressServer(getAddressAndPort().toStdString());
+        if (mpRemoteHopsanClient->addressServerConnected())
         {
             return true;
         }
@@ -449,22 +451,25 @@ QList<QString> RemoteCoreAddressHandler::requestAvailableServers()
     //! @todo maybe should have a timer to prevent requesting multiple time within the same period
     mAvailableServers.clear();
     mServerSpeedMap.clear();
-    if (mpRemoteHopsanClient->serverConnected())
+    if (mpRemoteHopsanClient->addressServerConnected())
     {
-        std::vector<std::string> ips, ports, descs;
-        std::vector<int> numSlots;
-        std::vector<double> speeds;
-        mpRemoteHopsanClient->requestServerMachines(-1, 1e200, ips, ports, descs, numSlots, speeds);
-        for (size_t i=0; i<ips.size(); ++i)
+        std::vector<ServerMachineInfoT> machines;
+        mpRemoteHopsanClient->requestServerMachines(-1, 1e200, machines);
+        for (size_t i=0; i<machines.size(); ++i)
         {
             //! @todo need common function for this add/update
-            QString addr = QString("%1:%2").arg(ips[i].c_str()).arg(ports[i].c_str());
+            QString addr = QString::fromStdString(machines[i].relayaddress);
+            if (addr.isEmpty())
+            {
+                addr = QString::fromStdString(machines[i].address);
+            }
+
             ServerInfoT info;
             info.addr = addr;
-            info.nSlots = numSlots[i];
-            info.speed = speeds[i];
+            info.nSlots = machines[i].numslots;
+            info.evalTime = machines[i].evalTime;
             mAvailableServers.insert(addr, info);
-            mServerSpeedMap.insertMulti(info.speed, addr );
+            mServerSpeedMap.insertMulti(info.evalTime, addr );
         }
     }
     return mAvailableServers.keys();

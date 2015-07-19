@@ -48,7 +48,7 @@ private:
     typedef struct
     {
         QString addr;
-        double speed=-1;
+        double evalTime=-1;
         int nSlots=0;
         int nOpenSlots=0;
         bool mResponding=false;
@@ -91,7 +91,8 @@ SharedRemoteCoreAddressHandlerT getSharedRemoteCoreAddressHandler();
 class RemoteCoreSimulationHandler
 {
 private:
-    QString mRemoteServerAddress,   mRemoteServerPort;
+    QString mRemoteServerFullAddress;
+    QString mRemoteAddressServerFullAddress;
     RemoteHopsanClient *mpRemoteHopsanClient=0;
     int mNumThreads=1;
 
@@ -99,8 +100,9 @@ public:
     RemoteCoreSimulationHandler();
     ~RemoteCoreSimulationHandler();
 
-    void setHopsanServer(QString ip, QString port );
-    void setHopsanServer(QString ip_port );
+    void setAddressServer(QString fullAddress);
+    void setHopsanServer(QString ip, QString port);
+    void setHopsanServer(QString fullAddress );
     QString getHopsanServerAddress() const;
     void setNumThreads(int nThreads);
     int numThreads() const;
@@ -108,8 +110,10 @@ public:
     bool connect();
     void disconnect();
 
+    bool connectAddressServer();
     bool connectServer();
     bool connectWorker();
+    void disconnectAddressServer();
     void disconnectServer();
     void disconnectWorker();
 
