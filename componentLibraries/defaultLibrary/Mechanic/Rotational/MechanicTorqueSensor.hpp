@@ -63,7 +63,7 @@ namespace hopsan {
 
         void initialize()
         {
-            mpP1_T = getSafeNodeDataPtr("mpP1", NodeMechanicRotational::Torque);
+            mpP1_T = getSafeNodeDataPtr("P1", NodeMechanicRotational::Torque);
             simulateOneTimestep();
         }
 
