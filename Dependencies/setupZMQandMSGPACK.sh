@@ -5,7 +5,7 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-29
 
-zeromqname="zeromq4-1-master"
+zeromqname="zeromq4-1-4.1.2"
 msgpackname="msgpack-c-cpp-1.0.1"
 cppzeromqname="cppzmq-master"
 

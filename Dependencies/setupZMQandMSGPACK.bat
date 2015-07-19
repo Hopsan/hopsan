@@ -10,8 +10,8 @@ set msgpackdir=msgpack-c-cpp-1.0.1
 set cppzmqfile=cppzmq-master.zip
 set cppzmqdir=cppzmq-master
 
-set zmqfilename=zeromq4-1-master.zip
-set zmqdirname=zeromq4-1-master
+set zmqfilename=zeromq4-1-4.1.2.zip
+set zmqdirname=zeromq4-1-4.1.2
 
 REM Automatic code begins here
 set zmqdirname64=%zmqdirname%_x64
