@@ -113,7 +113,7 @@ bool RemoteHopsanClient::connectToServer(std::string address)
             if (!mServerRelayIdentity.empty())
             {
                 mpServerSocket->setsockopt( ZMQ_IDENTITY, (void*)mServerRelayIdentity.data(), mServerRelayIdentity.size());
-                cout << " Set server relay socket identity: " << mServerRelayIdentity << endl;
+                //cout << " Set server relay socket identity: " << mServerRelayIdentity << endl;
             }
             mpServerSocket->connect(mServerAddress.c_str());
             return true;
@@ -121,7 +121,7 @@ bool RemoteHopsanClient::connectToServer(std::string address)
         catch (zmq::error_t e)
         {
             setLastError(e.what());
-            deleteSockets();
+            deleteServerSocket();
         }
         return false;
     }
@@ -783,7 +783,6 @@ void RemoteHopsanClient::deleteAddressServerSocket()
         try
         {
             delete mpAddressServerSocket;
-            cout << "deleted address server socket" << endl;
         }
         catch(zmq::error_t e)
         {
@@ -907,20 +906,7 @@ void RemoteHopsanClient::setLastError(const string &rError)
 
 RemoteHopsanClient::RemoteHopsanClient(zmq::context_t &rContext)
 {
-//    int linger_ms = 1000;
-//    try
-//    {
-        mpContext = &rContext;
-//        mpServerSocket = new zmq::socket_t(rContext, ZMQ_REQ);
-//        mpWorkerSocket = new zmq::socket_t(rContext, ZMQ_REQ);
-//        mpServerSocket->setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-//        mpWorkerSocket->setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-//    }
-//    catch(zmq::error_t e)
-//    {
-//        deleteSockets();
-//        setLastError(e.what());
-//    }
+    mpContext = &rContext;
 }
 
 RemoteHopsanClient::~RemoteHopsanClient()
