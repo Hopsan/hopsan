@@ -286,15 +286,15 @@ int main(int argc, char* argv[])
                         if (result == 0)
                         {
                             std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
-                            sendMessage(socket, "Failed to launch worker process!");
+                            sendMessage(socket, NotAck, "Failed to launch worker process!");
                         }
                         else
                         {
                             std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads  << endl;
                             workerMap.insert({uid, {requestNumThreads, processInformation}});
 
-                            SM_ReqSlot_Reply_t msg = {workerPort};
-                            sendMessage<SM_ReqSlot_Reply_t>(socket, ReplyServerSlots, msg);
+                            replymsg_ReplyServerSlots_t msg = {workerPort};
+                            sendMessage<replymsg_ReplyServerSlots_t>(socket, ReplyServerSlots, msg);
                             nTakenSlots++;
                         }
 
