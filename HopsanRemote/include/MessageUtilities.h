@@ -5,6 +5,7 @@
 
 #include "Messages.h"
 #include "msgpack.hpp"
+#include "zmq.hpp"
 #include <string>
 #include <iostream>
 
@@ -12,11 +13,11 @@
 inline bool receiveWithTimeout(zmq::socket_t &rSocket, long timeout, zmq::message_t &rMessage)
 {
     // Create a poll item
-    zmq::pollitem_t pollitems[] = {{ rSocket, 0, ZMQ_POLLIN, 0 }};
+    std::vector<zmq::pollitem_t> pollitems {{ (void*)rSocket, 0, ZMQ_POLLIN, 0 }};
     try
     {
         // Poll socket for a reply, with timeout
-        zmq::poll(&pollitems[0], 1,  timeout);
+        zmq::poll(pollitems,  timeout);
 
         // If we have received a message then read message and return true
         if (pollitems[0].revents & ZMQ_POLLIN)
@@ -73,7 +74,21 @@ void sendMessage(zmq::socket_t &rSocket, MessageIdsEnumT id, const T &rMessage)
     rSocket.send(static_cast<void*>(out_buffer.data()), out_buffer.size());
 }
 
-inline std::string makeZMQAddress(const std::string &ip, size_t port)
+inline
+bool sendIdentityEnvelope(zmq::socket_t &rSocket, const std::string &rIdentity)
+{
+    zmq::message_t message(rIdentity.size());
+    memcpy (message.data(), rIdentity.data(), rIdentity.size());
+    bool rc = rSocket.send (message, ZMQ_SNDMORE);
+    if (rc)
+    {
+        zmq::message_t empty(0);
+        rc = rSocket.send (empty, ZMQ_SNDMORE);
+    }
+    return (rc);
+}
+
+inline std::string makeZMQAddress(const std::string &ip, int port)
 {
     return "tcp://" + ip + ":" + std::to_string(port);
 }
@@ -96,6 +111,73 @@ inline void splitZMQAddress(const std::string &rZMQAddress, std::string &rProtoc
             rPort = rZMQAddress.substr(ipe+1);
         }
     }
+}
+
+inline
+std::vector<std::string> splitstring(const std::string &str, const std::string &delim)
+{
+    std::vector<std::string> out;
+    size_t b=0, e, n;
+    bool exit=false;
+    do
+    {
+        e = str.find_first_of(delim, b);
+        if (e == std::string::npos)
+        {
+            n = e;
+            exit=true;
+        }
+        else
+        {
+            n = e-b;
+        }
+        out.push_back(str.substr(b,n));
+        b = e+1;
+    }while(!exit);
+    return out;
+}
+
+inline
+void splitaddress(const std::string &rStr, std::string &rIp, std::string &rPort, std::string &rRelayId)
+{
+    std::vector<std::string> fields = splitstring(rStr, ":");
+    if (fields.size() >= 2)
+    {
+        rIp = fields[0];
+        rPort = fields[1];
+    }
+    if (fields.size() >= 3)
+    {
+        rRelayId = fields[2];
+    }
+}
+
+inline
+void splitaddressandrelayid(const std::string &rStr, std::string &rIp, std::string &rPort, std::string &rFullRelayId, std::string &rBaseRelayId, std::string &rSubRelayId)
+{
+    splitaddress(rStr, rIp, rPort, rFullRelayId);
+    std::vector<std::string> fields = splitstring(rFullRelayId, ".");
+    if (fields.size() == 2)
+    {
+        rBaseRelayId = fields[0];
+        rSubRelayId = fields[1];
+    }
+    else
+    {
+        rBaseRelayId = rFullRelayId;
+        rSubRelayId.clear();
+    }
+}
+
+inline
+std::string getRealyId(const std::string &rAddress)
+{
+    std::vector<std::string> fields = splitstring(rAddress, ":");
+    if (fields.size() >= 3)
+    {
+        return fields[2];
+    }
+    return "";
 }
 
 #endif // PACKANDSEND_H

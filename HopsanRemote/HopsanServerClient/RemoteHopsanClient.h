@@ -7,7 +7,7 @@
 #include <string>
 #include <mutex>
 
-#include "StatusInfoStructs.h"
+#include "../include/StatusInfoStructs.h"
 #include "zmq.hpp"
 
 class RemoteHopsanClient
@@ -24,15 +24,17 @@ public:
 
     void setMaxWorkerStatusRequestWaitTime(double seconds);
 
-    bool connectToServer(std::string zmqaddres);
-    bool connectToServer(std::string ip, std::string port);
-    bool serverConnected() const;
-    bool requestSlot(int numThreads, size_t &rControlPort);
+    bool connectToAddressServer(std::string address);
+    bool addressServerConnected() const;
 
-    bool connectToWorker(std::string zmqaddres);
-    bool connectToWorker(std::string ip, std::string port);
+    bool connectToServer(std::string address);
+    bool serverConnected() const;
+    bool requestSlot(int numThreads, int &rControlPort);
+
+    bool connectToWorker(int ctrlPort);
     bool workerConnected() const;
 
+    void disconnectAddressServer();
     void disconnectWorker();
     void disconnectServer();
     void disconnect();
@@ -56,25 +58,34 @@ public:
     bool requestMessages();
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
 
-    bool requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<std::string> &rIps, std::vector<std::string> &rPorts,
-                               std::vector<std::string> &rDescriptions, std::vector<int> &rNumSlots, std::vector<double> &rSpeeds);
+    // Address server requests
+    bool requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<ServerMachineInfoT> &rMachines);
+    bool requestRelaySlot(const std::string &rBaseRelayIdentity, const int port, std::string &rRelayIdentityFull);
+    bool releaseRelaySlot(const std::string &rRelayIdentityFull);
 
     std::string getLastErrorMessage() const;
 
 private:
     bool receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage, long timeout);
     void deleteSockets();
+    void deleteAddressServerSocket();
     void requestWorkerStatusThread(double *pProgress, bool *pAlive);
+    void setLastError(const std::string &rError);
 
     double mMaxWorkerStatusRequestWaitTime = 30; //!< The maximum delay between worker status requests in seconds
     long mShortReceiveTimeout = 5000; //!< Receive timeout in ms
     long mLongReceiveTimeout = 30000; //!< Receive timeout in ms
     double mMaxNoProgressTime = 30; //!< The maximum allowed time in seconds with no progress before simulation is assumed frozen
     std::string mLastErrorMessage;
+    std::string mAddressServerAddress;
     std::string mServerAddress;
     std::string mWorkerAddress;
-    zmq::socket_t *mpRSCSocket = nullptr; //!< The Remote Server Control Socket
-    zmq::socket_t *mpRWCSocket = nullptr; //!< The Remote Worker Control Socket
+    std::string mServerRelayIdentity;
+    std::string mWorkerRelayIdentity;
+    zmq::socket_t *mpAddressServerSocket = nullptr; //!< The Remote Address Server Control Socket
+    zmq::socket_t *mpServerSocket = nullptr; //!< The Remote Server Control Socket
+    zmq::socket_t *mpWorkerSocket = nullptr; //!< The Remote Worker Control Socket
+    zmq::context_t *mpContext = nullptr;
     std::mutex mWorkerMutex;
 
 

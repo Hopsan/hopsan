@@ -4,11 +4,13 @@
 #include <ctime>
 #include <chrono>
 #include <atomic>
+#include <queue>
 
 #include "zmq.hpp"
 #include "Messages.h"
 #include "MessageUtilities.h"
 #include "StatusInfoStructs.h"
+#include "RelayHandler.h"
 
 
 #include "ServerHandler.h"
@@ -23,6 +25,8 @@
 
 using namespace std;
 using namespace std::chrono;
+
+
 
 std::string nowDateTime()
 {
@@ -70,7 +74,7 @@ static void s_catch_signals(void)
 //! @todo this thread should be a member of the server handler
 void refreshServerThread()
 {
-    const double maxAgeSeconds=120;
+    const double maxAgeSeconds=60;
     cout << PRINTSERVER << nowDateTime() << " Starting server refresh thread!" << endl;
 
     while (true)
@@ -155,23 +159,133 @@ void refreshServerThread()
     cout << PRINTSERVER << nowDateTime() << " Exiting server refresh thread!" << endl;
 }
 
+
+
+
+std::string gSubnetMatch;
+RelayHandler gRelayHandler;
+
+std::string readIdentityEnvelope(zmq::socket_t &rSocket)
+{
+    zmq::message_t message, empty;
+    rSocket.recv(&message);
+    std::string identitydata(static_cast<char*>(message.data()), message.size());
+    rSocket.recv(&empty);
+    return identitydata;
+}
+
+
+void masterRelayThread(zmq::socket_t *pFrontend)
+{
+    cout << PRINTSERVER << nowDateTime() << " Starting relay thread!" << endl;
+
+    //  Initialize poll set
+    std::vector<zmq::pollitem_t> pollitems {{ (void*)*pFrontend, 0, ZMQ_POLLIN, 0 }};
+
+    while (true)
+    {
+        // Check break condition
+        if (s_interrupted)
+        {
+            break;
+        }
+
+        zmq::message_t message;
+        zmq::poll (pollitems, 0);
+
+        if (pollitems[0].revents & ZMQ_POLLIN)
+        {
+            // Read identity
+            std::string identity = readIdentityEnvelope(*pFrontend);
+
+            // Read the actual message
+            pFrontend->recv(&message);
+
+            cout << "Relaying message for identity: " << identity << endl;
+
+            // Lookup relay
+            Relay *pRelay = gRelayHandler.getRelay(identity);
+            if (pRelay)
+            {
+                pRelay->pushMessage(message);
+            }
+            else
+            {
+                sendIdentityEnvelope(*pFrontend, identity);
+                sendMessage(*pFrontend, NotAck, "Invalid Relay Identity");
+                cout << "Invalid Identity returniong NotAck" << endl;
+            }
+        }
+
+        // Send all waiting responses
+        //! @todo need a response queue
+        std::list<Relay*> relays = gRelayHandler.getRelays();
+        for (Relay* pRelay : relays)
+        {
+            if (pRelay->haveResponse())
+            {
+                zmq::message_t response;
+                pRelay->popResponse(response);
+
+//                size_t offset=0;
+//                bool unpackok;
+//                size_t id = getMessageId(response, offset, unpackok);
+//                std::cout << "response id:" << id << std::endl;
+
+                std::string identity = pRelay->id();
+                std::cout << "Responding to relay message identity: " << identity << std::endl;
+
+                bool rc = sendIdentityEnvelope(*pFrontend, identity);
+                if (rc)
+                {
+                    pFrontend->send(response);
+                }
+            }
+        }
+    }
+
+    cout << PRINTSERVER << nowDateTime() << " Exiting relay thread!" << endl;
+}
+
 int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
-        cout << PRINTSERVER << nowDateTime() << " Error: you must specify what base port to use!" << endl;
+        cout << PRINTSERVER << nowDateTime() << " Error: you must at least specify what base port to use!" << endl;
         return 1;
     }
     string myPort = argv[1];
+    string myRelayPort = std::to_string(atoi(myPort.c_str())+1);
+    string myExternalIP="Unknown";
+
+    if (argc >= 3)
+    {
+        myExternalIP = argv[2];
+    }
+    if (argc >= 4)
+    {
+        gSubnetMatch = argv[3];
+    }
 
     cout << PRINTSERVER << nowDateTime() << " Listening on port: " << myPort  << endl;
+    cout << PRINTSERVER << nowDateTime() << " My External IP: " << myExternalIP  << endl;
+    if (!gSubnetMatch.empty())
+    {
+        cout << PRINTSERVER << nowDateTime() << " Relaying on port: " << myRelayPort  << endl;
+        cout << PRINTSERVER << nowDateTime() << " Matching subnets: " << gSubnetMatch  << endl;
+    }
 
     try
     {
         zmq::socket_t socket (gContext, ZMQ_REP);
+        zmq::socket_t frontend( gContext, ZMQ_ROUTER );
+
         int linger_ms = 1000;
         socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+        frontend.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+
         socket.bind( makeZMQAddress("*", myPort).c_str() );
+        frontend.bind( makeZMQAddress("*", myRelayPort).c_str() );
 
 #ifdef _WIN32
         SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
@@ -181,6 +295,13 @@ int main(int argc, char* argv[])
 
         // Start refresh thread
         std::thread refreshThread = std::thread( refreshServerThread );
+
+        // Start relay thread
+        std::thread relay_thread;
+        if (!gSubnetMatch.empty())
+        {
+            relay_thread = std::thread( masterRelayThread, &frontend );
+        }
 
         // Start main thread
         while (true)
@@ -192,6 +313,7 @@ int main(int argc, char* argv[])
                 size_t offset=0;
                 bool idParseOK;
                 size_t msg_id = getMessageId(message, offset, idParseOK);
+                cout << "msg_id: " << msg_id << endl;
 
                 if (msg_id == Available)
                 {
@@ -199,10 +321,12 @@ int main(int argc, char* argv[])
                     infomsg_Available_t sm = unpackMessage<infomsg_Available_t>(message,offset,parseOK);
 
                     ServerInfo si;
-                    si.ip = sm.ip;
-                    si.port = sm.port;
+                    si.address = sm.ip+":"+sm.port;
                     si.description = sm.description;
+                    si.numTotalSlots = sm.numTotalSlots;
+                    //! @todo services
                     si.lastCheckTime = steady_clock::time_point(); // Epoch time
+
 
                     if (gServerHandler.getServerIDMatching(sm.ip, sm.port) < 0)
                     {
@@ -229,7 +353,7 @@ int main(int argc, char* argv[])
                         sendMessage(socket, NotAck, "Address is already registered");
                     }
                 }
-                else if (msg_id == Closing)
+                else if (msg_id == ServerClosing)
                 {
                     bool parseOK;
                     infomsg_Available_t sm = unpackMessage<infomsg_Available_t>(message,offset,parseOK);
@@ -259,33 +383,89 @@ int main(int argc, char* argv[])
                     auto ids = gServerHandler.getServers(req.maxBenchmarkTime, req.numMachines);
                     //! @todo what if a server is replaced or removed while we are processing this list
 
-                    replymsg_ReplyServerMachines_t reply;
-                    reply.ips.reserve(ids.size());
-                    reply.ports.reserve(ids.size());
-                    reply.descriptions.reserve(ids.size());
-                    reply.numslots.reserve(ids.size());
-                    reply.evalTime.reserve(ids.size());
+                    std::vector<replymsg_ReplyServerMachine_t> reply;
+                    reply.reserve(ids.size());
                     for (auto id : ids)
                     {
                         ServerInfo server = gServerHandler.getServer(id);
                         if (server.isValid())
                         {
-                            reply.ips.push_back(server.ip);
-                            reply.ports.push_back(server.port);
-                            reply.descriptions.push_back(server.description);
-                            reply.numslots.push_back(server.numTotalSlots);
-                            reply.evalTime.push_back(server.benchmarkTime);
+                            replymsg_ReplyServerMachine_t repl;
+                            if (server.needsRelay())
+                            {
+                                repl.relayaddress = myExternalIP+":"+myRelayPort+":"+server.mRelayBaseIdentity;
+                            }
+
+                            repl.address = server.address;
+                            repl.description = server.description;
+                            repl.numslots = server.numTotalSlots;
+                            repl.evalTime = server.benchmarkTime;
+
+                            reply.push_back(repl);
                         }
                     }
 
-                    cout << PRINTSERVER << nowDateTime() << " Responds with: " << reply.ips.size() << " servers" << endl;
+                    cout << PRINTSERVER << nowDateTime() << " Responds with: " << reply.size() << " servers" << endl;
                     sendMessage(socket, ReplyServerMachines, reply);
+                }
+                else if (msg_id == RequestRelaySlot)
+                {
+                    bool parseOK;
+                    reqmsg_RelaySlot_t req = unpackMessage<reqmsg_RelaySlot_t>(message,offset,parseOK);
+                    cout << PRINTSERVER << nowDateTime() << " Got relay slot request for: " << req.relaybaseid << " port: " << req.ctrlport << endl;
+                    Relay* pRelay = nullptr;
+                    if (!req.relaybaseid.empty())
+                    {
+                        // Port -1 means use server ctrl port
+                        pRelay = gServerHandler.createNewRelay(req.relaybaseid, req.ctrlport);
+                    }
+                    if (pRelay)
+                    {
+                        pRelay->connectToEndpoint();
+                        pRelay->startRelaying();
+
+                        cout << PRINTSERVER << nowDateTime() << " Respondes with RelayId: " << pRelay->id() << endl;
+                        sendMessage(socket, ReplyRelaySlot, pRelay->id());
+                    }
+                    else
+                    {
+                        sendMessage(socket, NotAck, "Invalid Relay BaseId");
+                    }
+                }
+                else if (msg_id == ReleaseRelaySlot)
+                {
+                    bool parseOK;
+                    std::string relayslot_id = unpackMessage<std::string>(message,offset,parseOK);
+                    cout << PRINTSERVER << nowDateTime() << " Got release relay slot command: " << relayslot_id << endl;
+
+//                    std::vector<std::string> fields = splitstring(relayslot_id, ".");
+//                    if (fields.size() == 2)
+//                    {
+                        gRelayHandler.removeRelay(relayslot_id);
+                        gServerHandler.removeRelay(relayslot_id);
+                        sendShortMessage(socket, Ack);
+                        gRelayHandler.purgeRemoved();
+//                    }
+//                    else
+//                    {
+//                        sendMessage(socket, NotAck, "Incorrect relay idendity");
+//                    }
+                }
+                // Ignore the following messages silently
+                else if (msg_id == ClientClosing)
+                {
+                    sendShortMessage(socket, Ack);
                 }
                 else if (!idParseOK)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Error: Could not parse message id" << std::endl;
+                    sendMessage(socket, NotAck, "Could not parse message id");
                 }
-
+                else
+                {
+                    sendMessage(socket, NotAck, "Unhandled message");
+                    cout << PRINTSERVER << nowDateTime() << "Warning: Unhandled message: " << msg_id << endl;
+                }
             }
 
             // Check quit signal
@@ -297,6 +477,13 @@ int main(int argc, char* argv[])
         }
 
         s_interrupted = 1;
+
+        if (!gSubnetMatch.empty())
+        {
+            cout << PRINTSERVER << nowDateTime() << " Waiting for relay thread..." << endl;
+            relay_thread.join();
+        }
+
         cout << PRINTSERVER << nowDateTime() << " Waiting for server refresh thread..." << endl;
         refreshThread.join();
     }

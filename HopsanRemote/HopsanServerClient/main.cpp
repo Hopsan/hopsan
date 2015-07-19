@@ -35,18 +35,20 @@ int main(int argc, char* argv[])
         zmq::context_t context(1);
 #endif
         RemoteHopsanClient rhopsan(context);
-        rhopsan.connectToServer(serverAddrOption.getValue(), serverPortOption.getValue());
+        rhopsan.connectToServer(serverAddrOption.getValue()+":"+serverPortOption.getValue());
+        int serverPort = atoi(serverPortOption.getValue().c_str());
 
         cout << PRINTCLIENT << "Connected: " << rhopsan.serverConnected() << endl;
 
         try
         {
-            size_t ctrlPort;
+            int ctrlPort;
             bool rc = rhopsan.requestSlot(1, ctrlPort);
             if (rc)
             {
-                cout << PRINTCLIENT << "Got server worker slot at port: " << ctrlPort << endl;
-                rhopsan.connectToWorker(serverAddrOption.getValue(), to_string(ctrlPort));
+                size_t workerPort = serverPort + ctrlPort;
+                cout << PRINTCLIENT << "Got server worker slot at port: " << workerPort << endl;
+                rhopsan.connectToWorker(ctrlPort);
 
                 // Read model
                 ifstream hmf_file(hmfPathOption.getValue());

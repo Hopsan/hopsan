@@ -113,6 +113,8 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
         message.ip = myIP;
         message.port = myPort;
         message.description = myDescription;
+        message.numTotalSlots = gServerConfig.mMaxNumSlots;
+        message.identity = 0; // Identity should allways be 0 when a server starts, relay servers may set other values
 
         if (isOnline)
         {
@@ -131,7 +133,7 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
         }
         else
         {
-            sendMessage(addressServerSocket, Closing, message);
+            sendMessage(addressServerSocket, ServerClosing, message);
             std::string nackreason;
             bool ack = receiveAckNackMessage(addressServerSocket, 5000, nackreason);
             if (ack)
@@ -353,7 +355,7 @@ int main(int argc, char* argv[])
                         cout << PRINTSERVER << nowDateTime() << " Denied! To few free slots." << endl;
                     }
                 }
-                else if (msg_id == Finished)
+                else if (msg_id == WorkerFinished)
                 {
                     bool parseOK;
                     string id_string = unpackMessage<std::string>(request,offset,parseOK);
@@ -406,6 +408,11 @@ int main(int argc, char* argv[])
                     sendMessage(socket, ReplyServerStatus, status);
                     lastStatusRequestTime = chrono::steady_clock::now();
                 }
+                // Ignore the following messages silently
+                else if (msg_id == ClientClosing)
+                {
+                    sendShortMessage(socket, Ack);
+                }
                 else if (!idParseOK)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Error: Could not parse message id" << endl;
@@ -413,7 +420,7 @@ int main(int argc, char* argv[])
                 else
                 {
                     stringstream ss;
-                    ss << PRINTSERVER << nowDateTime() << " Error: Unknown message id " << msg_id << endl;
+                    ss << PRINTSERVER << nowDateTime() << " Warning: Unhandled message id " << msg_id << endl;
                     cout << ss.str() << endl;
                     sendMessage(socket, NotAck, ss.str());
                 }

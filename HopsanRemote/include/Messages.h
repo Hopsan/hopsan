@@ -12,8 +12,9 @@ enum MessageIdsEnumT {
     Ack=1,
     NotAck,
     Available,
-    Finished,
-    Closing,
+    WorkerFinished,
+    ClientClosing,
+    ServerClosing,
 
     /* Command messages */
     Abort,
@@ -21,6 +22,7 @@ enum MessageIdsEnumT {
     Benchmark,
     SetParameter,
     SetModel,
+    ReleaseRelaySlot,
 
     /* Request messages */
     RequestServerMachines,
@@ -31,6 +33,7 @@ enum MessageIdsEnumT {
     RequestParameter,
     RequestResults,
     RequestMessages,
+    RequestRelaySlot,
 
     /* Reply messages (to requests) */
     ReplyServerMachines,
@@ -40,7 +43,8 @@ enum MessageIdsEnumT {
     ReplyWorkerStatus,
     ReplyParameter,
     ReplyResults,
-    ReplyMessages};
+    ReplyMessages,
+    ReplyRelaySlot};
 
 MSGPACK_ADD_ENUM(MessageIdsEnumT)
 
@@ -89,6 +93,13 @@ typedef struct
     MSGPACK_DEFINE(numThreads)
 }reqmsg_ReqServerSlots_t;
 
+typedef struct
+{
+    std::string relaybaseid;
+    int ctrlport;
+    MSGPACK_DEFINE(relaybaseid, ctrlport)
+}reqmsg_RelaySlot_t;
+
 // Message structures for messages typically used by Servers
 
 typedef struct
@@ -96,13 +107,16 @@ typedef struct
     std::string ip;
     std::string port;
     std::string description;
-    MSGPACK_DEFINE(ip,port,description)
+    std::string services;
+    int numTotalSlots;
+    int identity;
+    MSGPACK_DEFINE(ip,port,description,services,numTotalSlots,identity)
 }infomsg_Available_t;
 
 typedef struct
 {
-    size_t port;
-    MSGPACK_DEFINE(port)
+    int portoffset;
+    MSGPACK_DEFINE(portoffset)
 }replymsg_ReplyServerSlots_t;
 
 typedef struct replymsg_ReplyServerStatus_ : ServerStatusT
@@ -154,15 +168,10 @@ typedef struct replymsg_ReplyWorkerStatus_ : WorkerStatusT
 
 // Message structs typically used be the Adress server
 
-typedef struct
+typedef struct replymsg_ReplyServerMachine_ : ServerMachineInfoT
 {
-    std::vector<std::string> ips;
-    std::vector<std::string> ports;
-    std::vector<std::string> descriptions;
-    std::vector<int> numslots;
-    std::vector<double> evalTime;
-    MSGPACK_DEFINE(ips, ports, descriptions, numslots, evalTime)
-}replymsg_ReplyServerMachines_t;
+    MSGPACK_DEFINE(address, relayaddress, description, numslots, evalTime)
+}replymsg_ReplyServerMachine_t;
 
 
 

@@ -1,6 +1,7 @@
 #include "ServerHandler.h"
 #include "common.h"
 #include "RemoteHopsanClient.h"
+#include "MessageUtilities.h"
 
 #include "zmq.hpp"
 
@@ -30,7 +31,64 @@ bool listContains(const std::list<T> &rList, const T &rValue)
 
 bool sameIP(const ServerInfo &rSI1, const ServerInfo &rSI2)
 {
-    return (rSI1.ip == rSI2.ip) && (rSI1.port == rSI2.port);
+    return (rSI1.address == rSI2.address);
+}
+
+//std::list<std::string> splitstring(const std::string &str, const std::string &delim)
+//{
+//    std::list<std::string> out;
+//    size_t b=0, e, n;
+//    bool exit=false;
+//    do
+//    {
+//        e = str.find_first_of(delim, b);
+//        if (e == std::string::npos)
+//        {
+//            n = e;
+//            exit=true;
+//        }
+//        else
+//        {
+//            n = e-b;
+//        }
+//        out.push_back(str.substr(b,n));
+//        b = e+1;
+//    }while(!exit);
+//    return out;
+//}
+
+bool matchSubnet(const std::string &ip, const std::string &subnetmatch)
+{
+    std::vector<std::string> ipfields, matchfields;
+
+    // IPV4
+    if (ip.find_first_of(".") != std::string::npos)
+    {
+        ipfields = splitstring(ip, ".");
+        matchfields = splitstring(subnetmatch, ".");
+
+        if (!ipfields.empty() && ipfields.size() == matchfields.size())
+        {
+            auto ipit = ipfields.begin();
+            auto mait = matchfields.begin();
+            while (ipit != ipfields.end())
+            {
+                // Check if not match
+                if ((*ipit != *mait) && *mait != "*")
+                {
+                    return false;
+                }
+
+                ++ipit;
+                ++mait;
+            }
+            // If we get here we have a match
+            return true;
+        }
+    }
+
+    //! @todo IPV6
+    return false;
 }
 
 ServerInfo ServerHandler::getServerNoLock(int id)
@@ -77,9 +135,25 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
         id = (mServerMap.rbegin())->first + 1;
     }
     // Now set the id in the server info opbject
-    rServerInfo.mId = id;
+    rServerInfo.mInternalId = id;
 
-    cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " IP: " << rServerInfo.ip << ":" << rServerInfo.port;
+    // Figure out if this is a subnet computer and what relay range it should have
+    std::string srvip,srvport,srvrelay;
+    splitaddress(rServerInfo.address, srvip, srvport, srvrelay);
+    if (matchSubnet(srvip, gSubnetMatch))
+    {
+        int relayBaseId = reserveRelayBaseIdentityNoLock();
+        if (relayBaseId != 0)
+        {
+            rServerInfo.mRelayBaseIdentity = to_string(relayBaseId);
+        }
+        else
+        {
+            cout << PRINTSERVER << nowDateTime() << " Error: Failed to reserv relay identities" << endl;
+        }
+    }
+
+    cout << PRINTSERVER << nowDateTime() << " Adding server: " << id << " Address: " << rServerInfo.address;
     if (!rServerInfo.description.empty())
     {
         cout << " (" << rServerInfo.description << ")";
@@ -90,7 +164,7 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
     mServerMap.insert( {id, rServerInfo} );
 
     // Here we push to front, bacause new servers need emmediate update
-    mServerAgeList.push_front(rServerInfo.mId);
+    mServerAgeList.push_front(rServerInfo.mInternalId);
 }
 
 void ServerHandler::updateServerInfoNoLock(const ServerInfo &rServerInfo)
@@ -98,9 +172,9 @@ void ServerHandler::updateServerInfoNoLock(const ServerInfo &rServerInfo)
     if (rServerInfo.isValid())
     {
         // Here we assume that serverId is in mServerRefreshList
-        mServerMap.at(rServerInfo.mId) = rServerInfo;
-        mServerRefreshList.remove(rServerInfo.mId);
-        mServerAgeList.push_back(rServerInfo.mId);
+        mServerMap.at(rServerInfo.mInternalId) = rServerInfo;
+        mServerRefreshList.remove(rServerInfo.mInternalId);
+        mServerAgeList.push_back(rServerInfo.mInternalId);
     }
     else
     {
@@ -113,6 +187,9 @@ void ServerHandler::removeServer(int id)
     mMutex.lock();
     cout << PRINTSERVER << nowDateTime() << " Removing server: " << id << endl;
     // Remove the server info object and any occurance in the age and refresh lists
+
+    //! @todo how to clear relays if we get here and has not clear them outside, could have timestamps in relays and purge them if not used for long
+
     mServerMap.erase(id);
     mServerAgeList.remove(id);
     mServerRefreshList.remove(id);
@@ -130,13 +207,56 @@ int ServerHandler::getServerIDMatching(std::string ip, std::string port)
     std::lock_guard<std::mutex> lock(mMutex);
     for(auto &item : mServerMap )
     {
-        if ( (item.second.ip == ip) && (item.second.port == port) )
+        if ( item.second.address == ip+":"+port )
         {
             return item.first;
         }
     }
     return -1;
 }
+
+Relay *ServerHandler::createNewRelay(const string &rRelayBaseIdentiy, int port)
+{
+    std::lock_guard<std::mutex> lock(mMutex);
+    for(auto &item : mServerMap )
+    {
+        ServerInfo &si = item.second;
+        if ( si.mRelayBaseIdentity == rRelayBaseIdentiy )
+        {
+            int subrelayid = si.mRelaySubIdentities.addOne();
+
+            std::string newrelayid = rRelayBaseIdentiy+"."+to_string(subrelayid);
+            std::string srvip, srvport, srvrelid;
+            splitaddress(si.address, srvip, srvport, srvrelid);
+
+            // Port -1 means use server port
+            if (port < 0)
+            {
+                port = atoi(srvport.c_str());
+            }
+            return gRelayHandler.addRelay(newrelayid, makeZMQAddress(srvip, port));
+        }
+    }
+    return nullptr;
+}
+
+void ServerHandler::removeRelay(const string &rRelayIdentiy)
+{
+    std::lock_guard<std::mutex> lock(mMutex);
+    vector<string> fields = splitstring(rRelayIdentiy, ".");
+    if (fields.size() == 2)
+    {
+        for(auto &item : mServerMap )
+        {
+            ServerInfo &si = item.second;
+            if ( si.mRelayBaseIdentity == fields.front() )
+            {
+                si.mRelaySubIdentities.remove(atoi(fields.back().c_str()));
+            }
+        }
+    }
+}
+
 
 ServerHandler::idlist_t ServerHandler::getServers(double maxTime, int minNumThreads, int maxNum)
 {
@@ -215,7 +335,7 @@ void ServerHandler::refreshServerStatusThread(int serverId)
         if (server.isValid())
         {
             cout << PRINTSERVER << nowDateTime() << " Requesting status from server: " << serverId << endl;
-            hopsanClient.connectToServer(server.ip, server.port);
+            hopsanClient.connectToServer(server.address);
             ServerStatusT status;
             bool rc = hopsanClient.requestServerStatus(status);
             if (rc)
@@ -254,7 +374,7 @@ void ServerHandler::refreshServerBenchmarkThread(int serverId)
         if (server.isValid())
         {
             cout << PRINTSERVER << nowDateTime() << " Requesting benchmark from server: " << serverId << endl;
-            hopsanClient.connectToServer(server.ip, server.port);
+            hopsanClient.connectToServer(server.address);
 
             ifstream benchmarkmodel(BENCHMARKMODEL);
             if (!benchmarkmodel.is_open())
@@ -293,6 +413,31 @@ void ServerHandler::refreshServerBenchmarkThread(int serverId)
         }
     }
     mNumRunningRefreshServerStatusThreads--;
+}
+
+int ServerHandler::reserveRelayBaseIdentityNoLock()
+{
+    // For simplicity allways reserve from the end
+    //! @todo maybe use indexintervalcollection here instead
+    int max = 0;
+    if (!mRelayBaseIdentites.empty())
+    {
+        max = *mRelayBaseIdentites.rbegin();
+    }
+    // This will start at max+1  which means that if the set is empty the first value will be 1
+    // and that is correct, 0 is not allowed as a relay identity
+    max++;
+    mRelayBaseIdentites.insert(max);
+    return max;
+}
+
+void ServerHandler::unreserveRelayIdentitiesNoLock(ServerHandler::idlist_t ids)
+{
+    //std::lock_guard<std::mutex> lock(mMutex);
+    for (auto it = ids.begin(); it != ids.end(); ++it)
+    {
+        mRelayBaseIdentites.erase(*it);
+    }
 }
 
 size_t ServerHandler::numServers()

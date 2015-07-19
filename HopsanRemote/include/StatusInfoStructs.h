@@ -24,4 +24,13 @@ typedef struct
     double estimated_simulation_time_remaining=-1;
 }WorkerStatusT;
 
+typedef struct
+{
+    std::string address;
+    std::string relayaddress;
+    std::string description;
+    int numslots;
+    double evalTime;
+}ServerMachineInfoT;
+
 #endif // STATUSINFOSTRUCTS_H

@@ -5,5 +5,6 @@
 
 #define PRINTSERVER "HopsanMasterServer; "
 std::string nowDateTime();
+extern std::string gSubnetMatch;
 
 #endif // COMMON_H

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <chrono>
 #include "RemoteHopsanClient.h"
+#include "MessageUtilities.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -43,38 +44,42 @@ std::string nowDateTime()
     return std::string(&buff[0]);
 }
 
-void printInfoFromAddressServer(vector<string> &ips, vector<string> &ports, vector<string> &descs, vector<int> &nslots, vector<int> &nopenslots, vector<double> &speeds)
+void printInfoFromAddressServer(vector<ServerMachineInfoT> &machines, vector<int> &nopenslots)
 {
     cout << endl << endl;
     cout << nowDateTime() << endl;
-    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "Speed:" << std::setw(10) << "Description:" << endl;
+    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "evalTime:" << std::setw(10) << "Description:" << endl;
     cout << "--------------------------------------------------------------------------" << endl;
-    for (size_t i=0; i<ips.size(); ++i)
+    for (size_t i=0; i<machines.size(); ++i)
     {
-        string addr = ips[i]+":"+ports[i];
-        stringstream ss;
-        ss << nopenslots[i] << "/" << nslots[i];
 
-        cout << std::setw(24) << addr << std::setw(10) << ss.str() << std::setw(10) << speeds[i] << std::setw(10) << descs[i] << endl;
+        string addr = machines[i].relayaddress;
+        if (addr.empty())
+        {
+            addr = machines[i].address;
+        }
+        stringstream ss;
+        ss << nopenslots[i] << "/" << machines[i].numslots;
+
+        cout << std::setw(24) << addr << std::setw(10) << ss.str() << std::setw(10) << machines[i].evalTime << std::setw(10) << machines[i].description << endl;
     }
 }
 
 
 int main(int argc, char* argv[])
 {
-    string addressServerAddress, addressServerPort;
+    string addressServerAddress;
 
-    if (argc < 3)
+    if (argc < 2)
     {
         cout << /*PRINTWORKER << nowDateTime() <<*/ " Error: To few arguments!" << endl;
         return 1;
     }
 
     addressServerAddress = argv[1];
-    addressServerPort = argv[2];
 
     cout << endl;
-    cout << "Starting server monitor, connecting to: " << addressServerAddress << ":" << addressServerPort << endl;
+    cout << "Starting server monitor, connecting to: " << addressServerAddress << endl;
     cout << "Enter  q  to quit or  uN  (where N is the refresh time in seconds)" << endl;
 
     thread inputThread(inputThreadFunc);
@@ -88,9 +93,8 @@ int main(int argc, char* argv[])
         zmq::context_t context(1);
 #endif
         RemoteHopsanClient rhc(context);
-        RemoteHopsanClient rhcDirect(context);
-        bool rc = rhc.connectToServer(addressServerAddress, addressServerPort);
-        if (rc && rhc.serverConnected())
+        bool rc = rhc.connectToAddressServer(addressServerAddress);
+        if (rc && rhc.addressServerConnected())
         {
             steady_clock::time_point lastRefreshTime;
             while (gKeepRunning)
@@ -98,44 +102,53 @@ int main(int argc, char* argv[])
                 fseconds dur = duration_cast<fseconds>(steady_clock::now() - lastRefreshTime);
                 if (dur.count() > gRefreshTime)
                 {
+                    vector<int> nopenslots;
+                    std::vector<ServerMachineInfoT> machines;
+                    bool rsm_rc = rhc.requestServerMachines(-1, 1e150, machines);
 
-                    vector<string> ips, ports, desc;
-                    vector<int> nslots, nopenslots;
-                    vector<double> speeds;
-                    bool rsm_rc = rhc.requestServerMachines(-1, 1e150, ips, ports, desc, nslots, speeds);
-
-                    nopenslots.resize(nslots.size(), -1);
+                    nopenslots.resize(machines.size(), -1);
 
                     lastRefreshTime = chrono::steady_clock::now();
                     if (rsm_rc)
                     {
-                        for (size_t i=0; i<ips.size(); ++i)
+                        for (size_t i=0; i<machines.size(); ++i)
                         {
-                            if (!rhcDirect.connectToServer(ips[i], ports[i]))
+                            //std::string relayIdentityFull;
+                            std::string addr = machines[i].address;
+                            if (!machines[i].relayaddress.empty())
                             {
-                                cout << rhcDirect.getLastErrorMessage() << endl;
+//                                std::string ip, relayport, actualport, relayBase;
+//                                splitaddress(machines[i].address, ip, actualport, relayBase);
+//                                splitaddress(machines[i].relayaddress, ip, relayport, relayBase);
+//                                rhc.requestRelaySlot(relayBase, atoi(actualport.c_str()), relayIdentityFull );
+//                                addr = ip+":"+relayport+":"+relayIdentityFull;
+                                addr = machines[i].relayaddress;
                             }
-                            if (rhcDirect.serverConnected())
+
+                            if (!rhc.connectToServer(addr))
+                            {
+                                cout << rhc.getLastErrorMessage() << endl;
+                            }
+                            if (rhc.serverConnected())
                             {
                                 ServerStatusT status;
-                                bool gotStatus = rhcDirect.requestServerStatus(status);
+                                bool gotStatus = rhc.requestServerStatus(status);
                                 if (gotStatus)
                                 {
                                     nopenslots[i] = status.numFreeSlots;
                                 }
                                 else
                                 {
-                                    cout << "Error: Could not get status from server: " << ips[i] << ":" << ports[i] << endl;
+                                    cout << "Error: Could not get status from server: " << addr << endl;
                                 }
                             }
                             else
                             {
-                                cout << "Error: Could not connect to server: " << ips[i] << ":" << ports[i] << endl;
+                                cout << "Error: Could not connect to server: " << addr << endl;
                             }
-                            rhcDirect.disconnectServer();
+                            rhc.disconnectServer();
                         }
-
-                        printInfoFromAddressServer(ips,ports,desc,nslots,nopenslots,speeds);
+                        printInfoFromAddressServer(machines, nopenslots);
                     }
                     else
                     {
@@ -146,7 +159,6 @@ int main(int argc, char* argv[])
                 {
                     this_thread::sleep_for(fseconds(min(max(gRefreshTime-dur.count(),0.), 1.0)));
                 }
-
             }
         }
         else

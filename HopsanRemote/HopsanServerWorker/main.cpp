@@ -346,6 +346,7 @@ bool loadModel(string &rModel)
     else
     {
         cout << PRINTWORKER << nowDateTime() << " Error: Could not load the model" << endl;
+        gHopsanCore.getCoreMessageHandler()->printMessagesToStdOut();
         return false;
     }
 }
@@ -354,7 +355,7 @@ bool loadModel(string &rModel)
 void sendServerGoodby(zmq::socket_t &rSocket)
 {
     zmq::message_t response;
-    sendMessage(rSocket, Finished, gWorkerId);
+    sendMessage(rSocket, WorkerFinished, gWorkerId);
     receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
 }
 
@@ -424,7 +425,7 @@ int main(int argc, char* argv[])
                 size_t offset=0;
                 bool idParseOK;
                 size_t msg_id = getMessageId(request, offset, idParseOK);
-                //cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
+                cout << PRINTWORKER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
                 if (msg_id == RequestWorkerStatus)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Got status request" << endl;
@@ -567,6 +568,7 @@ int main(int argc, char* argv[])
                 }
                 else if (msg_id == Benchmark)
                 {
+                    cout << "Got benchmark command " << endl;
                     if (gIsSimulating)
                     {
                         sendMessage(socket, NotAck, "Simulation is already in progress!");
@@ -587,7 +589,7 @@ int main(int argc, char* argv[])
                                 if (irc)
                                 {
                                     // Start simulation
-                                    //std::thread ( simulationThreads, &gWasSimulationOK ).detach();
+                                    cout << "start simulation  benchmark " << endl;
                                     startSimulation(&gWasSimulationOK);
                                     sendShortMessage(socket, Ack);
                                 }
@@ -698,7 +700,7 @@ int main(int argc, char* argv[])
                         sendMessage(socket, NotAck, "No simulation running");
                     }
                 }
-                else if (msg_id == Closing)
+                else if (msg_id == ClientClosing)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Client said godbye!" << endl;
                     sendShortMessage(socket, Ack);
@@ -715,7 +717,7 @@ int main(int argc, char* argv[])
                 else
                 {
                     stringstream ss;
-                    ss << PRINTWORKER << nowDateTime() << " Error: Unknown message id: " << msg_id << endl;
+                    ss << PRINTWORKER << nowDateTime() << " Warning: Unhandled message id: " << msg_id << endl;
                     cout << ss.str() << endl;
                     sendMessage(socket, NotAck, ss.str());
                 }

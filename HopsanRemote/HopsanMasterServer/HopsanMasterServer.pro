@@ -18,8 +18,10 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
 
-INCLUDEPATH *= $${PWD}/../include
+INCLUDEPATH += $${PWD}/../include
 INCLUDEPATH += $${PWD}/../HopsanServerClient/
+INCLUDEPATH += $${PWD}/../HopsanServerClient/../include
+
 
 # -------------------------------------------------
 # Platform specific additional project options
@@ -38,11 +40,13 @@ unix {
 
 
 SOURCES += main.cpp \
-    ../HopsanServerClient/RemoteHopsanClient.cpp \
-    ServerHandler.cpp
+    $${PWD}/../HopsanServerClient/RemoteHopsanClient.cpp \
+    ServerHandler.cpp \
+    RelayHandler.cpp
 
 HEADERS += \
-    ../HopsanServerClient/RemoteHopsanClient.h \
+    $${PWD}/../HopsanServerClient/RemoteHopsanClient.h \
     ServerHandler.h \
-    common.h
+    common.h \
+    RelayHandler.h
 
