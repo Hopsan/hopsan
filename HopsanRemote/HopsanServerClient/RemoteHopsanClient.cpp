@@ -339,7 +339,7 @@ bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
                 //cout << "Got status reply" << endl;
                 return true;
             }
-            cout << "PArse error" << endl;
+            cout << "Parse error" << endl;
         }
         else if (id == NotAck)
         {

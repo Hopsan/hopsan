@@ -248,13 +248,12 @@ void masterRelayThread(zmq::socket_t *pFrontend)
                     pFrontend->send(response);
                 }
                 ctrOut++;
+                // Debug
+                if (ctrIn != ctrOut)
+                {
+                    cout << "Warning: CtrIn:" << ctrIn << " CtrOut: " << ctrOut << endl;
+                }
             }
-        }
-
-        // Debug
-        if (ctrIn != ctrOut)
-        {
-            cout << "Error: CtrIn:" << ctrIn << " CtrOut: " << ctrOut << endl;
         }
     }
 

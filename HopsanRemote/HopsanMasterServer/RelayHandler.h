@@ -48,37 +48,39 @@ public:
     {
         while (true)
         {
-            mHaveFrontMessage.lock();
-            if (mStopThread)
-            {
-                break;
-            }
+            zmq::message_t *pFrontendMessage=nullptr;
 
-            zmq::message_t *pFront_msg=nullptr;
+            // Wait here until we have a message to relay through backend
+            mHaveFrontMessage.lock();
+
+            // If we ahve one then fetch it from queue
             mMutex.lock();
             mHaveFrontMessage.unlock();
-            if (!mFronInputQueue.empty())
+            if (!mFrontendQueue.empty())
             {
-                pFront_msg = mFronInputQueue.front();
-                mFronInputQueue.pop();
+                pFrontendMessage = mFrontendQueue.front();
+                mFrontendQueue.pop();
             }
-            if (mFronInputQueue.empty())
+            // If we have no more messages then lock the mutex so taht we will wait next time
+            if (mFrontendQueue.empty())
             {
                 mHaveFrontMessage.lock();
             }
             mMutex.unlock();
 
-            if (pFront_msg && mpBackendSocket)
+            // If we have a frontend message and the backend socket exists, tehn relay teh message
+            if (pFrontendMessage && mpBackendSocket)
             {
                 // Send message
-                mpBackendSocket->send(*pFront_msg);
+                mpBackendSocket->send(*pFrontendMessage);
 
                 // Wait for response
-                zmq::message_t back_msg;
-                bool rc = receiveWithTimeout(*mpBackendSocket, 10000, back_msg); //!< @todo timeout size
+                zmq::message_t backend_return_msg;
+                bool rc = receiveWithTimeout(*mpBackendSocket, 10000, backend_return_msg); //!< @todo timeout size
                 if (!rc)
                 {
                     std::cout << "Error: Timeout in Realy receive" << std::endl;
+                    backend_return_msg = createZmqMessage(NotAck, "Receive timeout in Relay");
                 }
 
                 //            size_t offset;
@@ -86,16 +88,15 @@ public:
                 //            size_t id = getMessageId(back_msg, offset, unpackok);
                 //            std::cout << "back_msg id:" << id << std::endl;
 
-                //! @todo handle timeout (Send Nack)
-                // Now it should be safe to delete teh front message (as we have gotten a reply)
-                delete pFront_msg;
+                // Now it should be safe to delete the front message (as we have gotten a reply)
+                delete pFrontendMessage;
 
-                // Push the return message onto queue
+                // Push the return message onto return queue
                 mMutex.lock();
                 zmq::message_t *pNewMsg = new zmq::message_t();
-                pNewMsg->move(&back_msg);
-                mBackInputQueue.push(pNewMsg);
-                mHaveResponse = true;
+                pNewMsg->move(&backend_return_msg);
+                mBackendQueue.push(pNewMsg);
+                mHaveResponse = true; // Raise flag
                 mMutex.unlock();
             }
 
@@ -122,6 +123,7 @@ public:
         mStopThread = true;
         mHaveFrontMessage.unlock();
         mpThread->join();
+        delete mpThread;
         mpThread = nullptr;
     }
 
@@ -143,10 +145,11 @@ public:
     void popResponse(zmq::message_t &rResponse)
     {
         std::lock_guard<std::mutex> lock(mMutex);
-        rResponse.move(mBackInputQueue.front());
-        delete mBackInputQueue.front();
-        mBackInputQueue.pop();
-        if (mBackInputQueue.empty())
+        rResponse.move(mBackendQueue.front());
+        delete mBackendQueue.front();
+        mBackendQueue.pop();
+        // IF we poped the last message then lower the flag
+        if (mBackendQueue.empty())
         {
             mHaveResponse = false;
         }
@@ -157,7 +160,8 @@ public:
         std::lock_guard<std::mutex> lock(mMutex);
         zmq::message_t *pNewMsg = new zmq::message_t();
         pNewMsg->move(&msg);
-        mFronInputQueue.push(pNewMsg);
+        mFrontendQueue.push(pNewMsg);
+        // When a new message is pushed, we unlock this mutex as asignal for the thread to move on and process it
         mHaveFrontMessage.unlock();
     }
 
@@ -169,8 +173,8 @@ public:
 private:
     std::string mId;
     std::string mEndpoint;
-    std::queue<zmq::message_t*> mFronInputQueue;
-    std::queue<zmq::message_t*> mBackInputQueue;
+    std::queue<zmq::message_t*> mFrontendQueue;
+    std::queue<zmq::message_t*> mBackendQueue;
     zmq::socket_t *mpBackendSocket;
     std::thread *mpThread=nullptr;
     std::mutex mMutex;

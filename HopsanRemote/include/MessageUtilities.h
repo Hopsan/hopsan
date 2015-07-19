@@ -66,6 +66,19 @@ void sendShortMessage(zmq::socket_t &rSocket, MessageIdsEnumT id)
 
 template <typename T>
 inline
+zmq::message_t createZmqMessage(MessageIdsEnumT id, const T &rMessage)
+{
+    msgpack::v1::sbuffer out_buffer;
+    msgpack::pack(out_buffer, id);
+    msgpack::pack(out_buffer, rMessage);
+
+    zmq::message_t msg(out_buffer.size());
+    memcpy(msg.data(), static_cast<void*>(out_buffer.data()), out_buffer.size());
+    return msg;
+}
+
+template <typename T>
+inline
 void sendMessage(zmq::socket_t &rSocket, MessageIdsEnumT id, const T &rMessage)
 {
     msgpack::v1::sbuffer out_buffer;
