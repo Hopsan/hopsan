@@ -69,6 +69,8 @@ private:
     bool receiveWithTimeout(zmq::socket_t &rSocket, zmq::message_t &rMessage, long timeout);
     void deleteSockets();
     void deleteAddressServerSocket();
+    void deleteServerSocket();
+    void deleteWorkerSocket();
     void requestWorkerStatusThread(double *pProgress, bool *pAlive);
     void setLastError(const std::string &rError);
 

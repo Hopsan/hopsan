@@ -568,7 +568,6 @@ int main(int argc, char* argv[])
                 }
                 else if (msg_id == Benchmark)
                 {
-                    cout << "Got benchmark command " << endl;
                     if (gIsSimulating)
                     {
                         sendMessage(socket, NotAck, "Simulation is already in progress!");
@@ -589,7 +588,6 @@ int main(int argc, char* argv[])
                                 if (irc)
                                 {
                                     // Start simulation
-                                    cout << "start simulation  benchmark " << endl;
                                     startSimulation(&gWasSimulationOK);
                                     sendShortMessage(socket, Ack);
                                 }
@@ -613,7 +611,7 @@ int main(int argc, char* argv[])
                 }
                 else if (msg_id == RequestBenchmarkResults)
                 {
-                    cout << PRINTWORKER << nowDateTime() << " Got Benchmark times request" << endl;
+                    cout << PRINTWORKER << nowDateTime() << " Got Benchmark results request" << endl;
                     //! @todo  Wait for benchmark to complete maybe
                     //!
                     replymsg_ReplyBenchmarkResults_t msg;

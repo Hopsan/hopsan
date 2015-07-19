@@ -329,7 +329,7 @@ void ServerHandler::refreshServerStatusThread(int serverId)
 {
     mNumRunningRefreshServerStatusThreads++;
     RemoteHopsanClient hopsanClient(gContext);
-    if (hopsanClient.areSocketsValid())
+    //if (hopsanClient.areSocketsValid())
     {
         ServerInfo server = getServer(serverId);
         if (server.isValid())
@@ -368,7 +368,7 @@ void ServerHandler::refreshServerBenchmarkThread(int serverId)
 {
     mNumRunningRefreshServerStatusThreads++;
     RemoteHopsanClient hopsanClient(gContext);
-    if (hopsanClient.areSocketsValid())
+    //if (hopsanClient.areSocketsValid())
     {
         ServerInfo server = getServer(serverId);
         if (server.isValid())

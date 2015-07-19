@@ -247,21 +247,6 @@ int main(int argc, char* argv[])
                 size_t msg_id = getMessageId(request, offset, idParseOK);
                 //cout << PRINTSERVER << nowDateTime() << " Received message with length: " << request.size() << " msg_id: " << msg_id << endl;
 
-                //        int fd = request.get(ZMQ_SRCFD);
-                //        struct sockaddr addr;
-                //        unsigned int len;
-                //        getpeername(fd, &addr, &len);
-                //        cout << "Addr len: " << len << " data: ";
-                //        for (int i=0; i<len; ++i)
-                //        {
-                //            cout << addr.sa_data[i];
-                //        }
-                //        cout << endl;
-
-                //        string soxtype = request.gets("Socket-Type");
-                //        string identity = request.gets("Identity");
-                //        cout << "Socket-type: " << soxtype << " Identity: " << identity << endl;
-
                 if (msg_id == RequestServerSlots)
                 {
                     bool parseOK;

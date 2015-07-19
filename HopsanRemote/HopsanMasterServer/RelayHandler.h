@@ -75,7 +75,11 @@ public:
 
                 // Wait for response
                 zmq::message_t back_msg;
-                receiveWithTimeout(*mpBackendSocket, 10000, back_msg); //!< @todo timeout size
+                bool rc = receiveWithTimeout(*mpBackendSocket, 10000, back_msg); //!< @todo timeout size
+                if (!rc)
+                {
+                    std::cout << "Error: Timeout in Realy receive" << std::endl;
+                }
 
                 //            size_t offset;
                 //            bool unpackok;

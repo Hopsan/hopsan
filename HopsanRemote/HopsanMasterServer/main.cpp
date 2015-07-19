@@ -181,6 +181,7 @@ void masterRelayThread(zmq::socket_t *pFrontend)
 
     //  Initialize poll set
     std::vector<zmq::pollitem_t> pollitems {{ (void*)*pFrontend, 0, ZMQ_POLLIN, 0 }};
+    size_t ctrIn=0,ctrOut=0;
 
     while (true)
     {
@@ -191,7 +192,7 @@ void masterRelayThread(zmq::socket_t *pFrontend)
         }
 
         zmq::message_t message;
-        zmq::poll (pollitems, 0);
+        zmq::poll (pollitems, 10);
 
         if (pollitems[0].revents & ZMQ_POLLIN)
         {
@@ -200,8 +201,13 @@ void masterRelayThread(zmq::socket_t *pFrontend)
 
             // Read the actual message
             pFrontend->recv(&message);
+            ctrIn++;
 
             cout << "Relaying message for identity: " << identity << endl;
+//            size_t offset=0;
+//            bool unpackok;
+//            size_t id = getMessageId(message, offset, unpackok);
+//            std::cout << "Message id:" << id << std::endl;
 
             // Lookup relay
             Relay *pRelay = gRelayHandler.getRelay(identity);
@@ -214,6 +220,7 @@ void masterRelayThread(zmq::socket_t *pFrontend)
                 sendIdentityEnvelope(*pFrontend, identity);
                 sendMessage(*pFrontend, NotAck, "Invalid Relay Identity");
                 cout << "Invalid Identity returniong NotAck" << endl;
+                ctrOut++;
             }
         }
 
@@ -240,7 +247,14 @@ void masterRelayThread(zmq::socket_t *pFrontend)
                 {
                     pFrontend->send(response);
                 }
+                ctrOut++;
             }
+        }
+
+        // Debug
+        if (ctrIn != ctrOut)
+        {
+            cout << "Error: CtrIn:" << ctrIn << " CtrOut: " << ctrOut << endl;
         }
     }
 
@@ -313,7 +327,7 @@ int main(int argc, char* argv[])
                 size_t offset=0;
                 bool idParseOK;
                 size_t msg_id = getMessageId(message, offset, idParseOK);
-                cout << "msg_id: " << msg_id << endl;
+                //cout << "msg_id: " << msg_id << endl;
 
                 if (msg_id == Available)
                 {
@@ -412,7 +426,7 @@ int main(int argc, char* argv[])
                 {
                     bool parseOK;
                     reqmsg_RelaySlot_t req = unpackMessage<reqmsg_RelaySlot_t>(message,offset,parseOK);
-                    cout << PRINTSERVER << nowDateTime() << " Got relay slot request for: " << req.relaybaseid << " port: " << req.ctrlport << endl;
+                    cout << PRINTSERVER << nowDateTime() << " Got relay slot request, RelayBaseId: " << req.relaybaseid << " port: " << req.ctrlport << endl;
                     Relay* pRelay = nullptr;
                     if (!req.relaybaseid.empty())
                     {
@@ -424,7 +438,7 @@ int main(int argc, char* argv[])
                         pRelay->connectToEndpoint();
                         pRelay->startRelaying();
 
-                        cout << PRINTSERVER << nowDateTime() << " Respondes with RelayId: " << pRelay->id() << endl;
+                        cout << PRINTSERVER << nowDateTime() << " Reserved RelayFullId: " << pRelay->id() << endl;
                         sendMessage(socket, ReplyRelaySlot, pRelay->id());
                     }
                     else
@@ -436,20 +450,12 @@ int main(int argc, char* argv[])
                 {
                     bool parseOK;
                     std::string relayslot_id = unpackMessage<std::string>(message,offset,parseOK);
-                    cout << PRINTSERVER << nowDateTime() << " Got release relay slot command: " << relayslot_id << endl;
+                    cout << PRINTSERVER << nowDateTime() << " Releasing relay slot : " << relayslot_id << endl;
 
-//                    std::vector<std::string> fields = splitstring(relayslot_id, ".");
-//                    if (fields.size() == 2)
-//                    {
-                        gRelayHandler.removeRelay(relayslot_id);
-                        gServerHandler.removeRelay(relayslot_id);
-                        sendShortMessage(socket, Ack);
-                        gRelayHandler.purgeRemoved();
-//                    }
-//                    else
-//                    {
-//                        sendMessage(socket, NotAck, "Incorrect relay idendity");
-//                    }
+                    gRelayHandler.removeRelay(relayslot_id);
+                    gServerHandler.removeRelay(relayslot_id);
+                    sendShortMessage(socket, Ack);
+                    gRelayHandler.purgeRemoved();
                 }
                 // Ignore the following messages silently
                 else if (msg_id == ClientClosing)
