@@ -34,7 +34,7 @@
 #ifndef HOPSANCOREMESSAGEHANDLER_H
 #define HOPSANCOREMESSAGEHANDLER_H
 
-#include <queue>
+#include <deque>
 #include "HopsanTypes.h"
 #include "win32dll.h"
 
@@ -51,32 +51,30 @@ class HopsanCoreMessage
 {
 public:
     enum MessageEnumT {Info, Warning, Error, Debug, Fatal};
-    HopsanCoreMessage()
-    {
-        mType = 0;
-        mDebugLevel = 0;
-    }
+    HopsanCoreMessage(const MessageEnumT type, const HString &rMessage, const HString &rTag, const int debugLevel) :
+        mType(type), mMessage(rMessage), mTag(rTag), mDebugLevel(debugLevel) {}
+    HopsanCoreMessage() : mType(0), mDebugLevel(0) {}
 
     HopsanCoreMessage &operator=(const HopsanCoreMessage &src)
     {
         mType = src.mType;
-        mDebugLevel = src.mDebugLevel;
-        mTag = src.mTag;
         mMessage = src.mMessage;
+        mTag = src.mTag;
+        mDebugLevel = src.mDebugLevel;
         return (*this);
     }
 
     int mType;
-    int mDebugLevel;
     HString mMessage;
     HString mTag;
+    int mDebugLevel;
 };
 
 class DLLIMPORTEXPORT HopsanCoreMessageHandler
 {
 private:
-    std::queue<HopsanCoreMessage*> mMessageQueue;
-    void addMessage(const int type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel=0);
+    std::deque<HopsanCoreMessage*> mMessageQueue;
+    void addMessage(const HopsanCoreMessage::MessageEnumT, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel=0);
     void clear();
     size_t mMaxQueueSize, mNumInfoMessages, mNumWarningMessages, mNumErrorMessages, mNumFatalMessages, mNumDebugMessages;
 
@@ -101,8 +99,9 @@ public:
     size_t getNumErrorMessages() const;
     size_t getNumDebugMessages() const;
     size_t getNumFatalMessages() const;
-};
 
+    void printMessagesToStdOut();
+};
 }
 
 #endif // HOPSANCOREMESSAGEHANDLER_H

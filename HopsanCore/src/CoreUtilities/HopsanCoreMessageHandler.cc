@@ -35,6 +35,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 #ifdef USETBB
 #include "tbb/mutex.h"
@@ -66,17 +67,13 @@ HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 //! @param [in] rMessage The message string
 //! @param [in] rTag A tag describing the message
 //! @param [in] debuglevel The debuglevel for the message
-void HopsanCoreMessageHandler::addMessage(const int type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel)
+void HopsanCoreMessageHandler::addMessage(const HopsanCoreMessage::MessageEnumT type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel)
 {
 #ifdef USETBB
     mpMutex->lock();
 #endif
-    HopsanCoreMessage* pMsg = new HopsanCoreMessage;
-    pMsg->mType = type;
-    pMsg->mDebugLevel = debuglevel;
-    pMsg->mMessage = rPreFix + rMessage;
-    pMsg->mTag = rTag;
-    mMessageQueue.push(pMsg);
+    HopsanCoreMessage* pMsg = new HopsanCoreMessage(type, rPreFix+rMessage, rTag, debuglevel);
+    mMessageQueue.push_back(pMsg);
     switch (type)
     {
     case HopsanCoreMessage::Fatal:
@@ -122,7 +119,7 @@ void HopsanCoreMessageHandler::addMessage(const int type, const HString &rPreFix
 
         // Delete the message and pop the message pointer
         delete mMessageQueue.front();
-        mMessageQueue.pop();
+        mMessageQueue.pop_front();
     }
 #ifdef USETBB
     mpMutex->unlock();
@@ -139,7 +136,7 @@ void HopsanCoreMessageHandler::clear()
     while(mMessageQueue.size() > 0)
     {
         delete mMessageQueue.front();
-        mMessageQueue.pop();
+        mMessageQueue.pop_front();
     }
     // Reset counters
     mNumInfoMessages = 0;
@@ -241,7 +238,7 @@ void HopsanCoreMessageHandler::getMessage(HString &rMessage, HString &rType, HSt
 
         // Delete the message and pop the message pointer
         delete mMessageQueue.front();
-        mMessageQueue.pop();
+        mMessageQueue.pop_front();
     }
     else
     {
@@ -330,5 +327,20 @@ size_t HopsanCoreMessageHandler::getNumFatalMessages() const
     return num;
 #else
     return mNumFatalMessages;
+#endif
+}
+
+void HopsanCoreMessageHandler::printMessagesToStdOut()
+{
+#ifdef USETBB
+    mpMutex->lock();
+#endif
+    std::deque<HopsanCoreMessage*>::iterator it;
+    for (it=mMessageQueue.begin(); it!=mMessageQueue.end(); ++it)
+    {
+        std::cout << (*it)->mType << " " << (*it)->mMessage.c_str() << std::endl;
+    }
+#ifdef USETBB
+    mpMutex->unlock();
 #endif
 }
