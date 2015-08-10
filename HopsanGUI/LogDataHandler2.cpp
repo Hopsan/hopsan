@@ -66,11 +66,10 @@
 // help function to append attribute
 void appendH5Attribute(H5::DataSet &rDataset, const H5std_string &attrName, const H5std_string &attrValue)
 {
-    hsize_t dims[1];
-    dims[0] = attrValue.size();
-    H5::DataSpace attr_dataspace = H5::DataSpace( 1, dims );
-    H5::Attribute attribute = rDataset.createAttribute(attrName, H5::PredType::C_S1, attr_dataspace);
-    attribute.write( H5::PredType::C_S1, attrValue);
+    H5::DataSpace attr_dataspace = H5::DataSpace( H5S_SCALAR );
+    H5::StrType attr_strtype( H5::PredType::C_S1, qMax(attrValue.size(), size_t(1)) );
+    H5::Attribute attribute = rDataset.createAttribute( attrName, attr_strtype, attr_dataspace );
+    attribute.write( attr_strtype, attrValue );
 }
 #endif
 
@@ -369,6 +368,41 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
         // Create and open a file
         H5::H5File file(filePath, H5F_ACC_TRUNC);
 
+        // Build directoy/group hierarchy
+        // We need this to avoid massive exception casting when creating directories as
+        // group names will be repeted, also we need to create one group depth at a time
+        // The map will sort the group names as unique values in the correct order
+        QMap<QString, char> varhier;
+        for (const SharedVectorVariableT &rVar : rVariables)
+        {
+            QStringList sysnames;
+            QString c,p,v;
+            splitFullVariableName(rVar->getFullVariableName(),sysnames,c,p,v);
+
+            QString hdf5name = "/";
+            for (const QString &sysname : sysnames)
+            {
+                hdf5name.append(sysname);
+                varhier.insert(hdf5name, 0);
+                hdf5name.append("/");
+            }
+            if (!c.isEmpty())
+            {
+                hdf5name.append(c);
+                varhier.insert(hdf5name, 0);
+                if (!p.isEmpty())
+                {
+                    hdf5name.append("/").append(p);
+                    varhier.insert(hdf5name, 0);
+                }
+            }
+        }
+        // Create all Groups
+        for (const QString &key : varhier.keys())
+        {
+            file.createGroup(key.toStdString());
+        }
+
         for (const SharedVectorVariableT &rVar : rVariables)
         {
             // Create a dataspace for a vector of data
@@ -376,19 +410,53 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
             dims[0] = rVar->getDataSize();
             H5::DataSpace dataspace(1, dims);
 
-            // Create the data set
-            H5std_string name = rVar->getSmartName().toStdString().c_str();
-            H5::DataSet dataset = file.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dataspace);
+            // Convert full or smart name to hdf5 path (groups) name
+            QStringList sysnames;
+            QString c,p,v;
+            splitFullVariableName(rVar->getFullVariableName(),sysnames,c,p,v);
 
-            // Write the data
-            QVector<double> *pData = rVar->beginFullVectorOperation();
-            // Note! if name is already taken, then this will throw an exception
-            dataset.write(pData->data(), H5::PredType::NATIVE_DOUBLE);
-            rVar->endFullVectorOperation(pData);
+            QStringList hdf5names;
+            QString hdf5fullname = "/";
+            for (const QString &sysname : sysnames)
+            {
+                hdf5fullname.append(sysname);
+                hdf5fullname.append("/");
+            }
+            if (!c.isEmpty())
+            {
+                hdf5fullname.append(c);
+                if (!p.isEmpty())
+                {
+                    hdf5fullname.append("/").append(p);
+                }
+            }
+            // Append last part of the name
+            hdf5fullname.append("/").append(v);
+            hdf5names.append(hdf5fullname);
 
-            // Add meta data attributes
-            appendH5Attribute(dataset, "Unit", rVar->getDataUnit().toStdString().c_str());
-            appendH5Attribute(dataset, "Quantity", rVar->getDataQuantity().toStdString().c_str());
+            // If we have an alias aswell then append it also
+            //! @todo should alias be model global ?
+            if (rVar->hasAliasName())
+            {
+                hdf5names.append(rVar->getSystemHierarchy()->join("/")+rVar->getAliasName());
+            }
+
+            for (const QString &rHdf5Name : hdf5names)
+            {
+                // Create the data set, we hope that the code above has created the group already
+                // if not then we will fail here and exit with an exception
+                H5::DataSet dataset = file.createDataSet(rHdf5Name.toStdString().c_str(), H5::PredType::NATIVE_DOUBLE, dataspace);
+
+                // Write the data
+                QVector<double> *pData = rVar->beginFullVectorOperation();
+                // Note! if name is already taken, then this will throw an exception
+                dataset.write(pData->data(), H5::PredType::NATIVE_DOUBLE);
+                rVar->endFullVectorOperation(pData);
+
+                // Add meta data attributes
+                appendH5Attribute(dataset, "Unit", rVar->getDataUnit().toStdString().c_str());
+                appendH5Attribute(dataset, "Quantity", rVar->getDataQuantity().toStdString().c_str());
+            }
         }
 
         file.close();
