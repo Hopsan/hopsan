@@ -63,32 +63,15 @@
 #ifdef USEHDF5
 #include "H5Cpp.h"
 
-// help function to append attribute
-void appendH5Attribute(H5::DataSet &rDataset, const H5std_string &attrName, const H5std_string &attrValue)
+//! @brief Help function to append string attribute to HDF5 object
+void appendH5Attribute(H5::H5Object &rObject, const H5std_string &attrName, const H5std_string &attrValue)
 {
     H5::DataSpace attr_dataspace = H5::DataSpace( H5S_SCALAR );
     H5::StrType attr_strtype( H5::PredType::C_S1, qMax(attrValue.size(), size_t(1)) );
-    H5::Attribute attribute = rDataset.createAttribute( attrName, attr_strtype, attr_dataspace );
+    H5::Attribute attribute = rObject.createAttribute( attrName, attr_strtype, attr_dataspace );
     attribute.write( attr_strtype, attrValue );
 }
 #endif
-
-//UnitScale figureOutCutomUnitScale2(QString quantity, double scale)
-//{
-//    QList<UnitScale> uss;
-//    gpConfig->getUnitScales(quantity,uss);
-//    Q_FOREACH(const UnitScale &us, uss)
-//    {
-//        double s = us.toDouble();
-//        if (fuzzyEqual(us.toDouble(), scale, 0.1*qMin(s,scale)))
-//        {
-//            return us;
-//        }
-//    }
-//    return UnitScale();
-//}
-
-
 
 
 //! @brief Constructor for plot data object
@@ -368,6 +351,11 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
         // Create and open a file
         H5::H5File file(filePath, H5F_ACC_TRUNC);
 
+        H5::Group root = file.openGroup("/");
+        appendH5Attribute(root, "date", QDateTime::currentDateTime().toString(Qt::ISODate).toStdString());
+        appendH5Attribute(root, "model", mpParentModel->getTopLevelSystemContainer()->getModelFileInfo().fileName().toStdString());
+        appendH5Attribute(root, "tool", QString("HopsanGUI %1").arg(HOPSANGUIVERSION).toStdString());
+
         // Build directoy/group hierarchy
         // We need this to avoid massive exception casting when creating directories as
         // group names will be repeted, also we need to create one group depth at a time
@@ -379,7 +367,8 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
             QString c,p,v;
             splitFullVariableName(rVar->getFullVariableName(),sysnames,c,p,v);
 
-            QString hdf5name = "/";
+            QString hdf5name = "/results/";
+            varhier.insert(hdf5name, 0);
             for (const QString &sysname : sysnames)
             {
                 hdf5name.append(sysname);
@@ -416,7 +405,7 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
             splitFullVariableName(rVar->getFullVariableName(),sysnames,c,p,v);
 
             QStringList hdf5names;
-            QString hdf5fullname = "/";
+            QString hdf5fullname = "/results/";
             for (const QString &sysname : sysnames)
             {
                 hdf5fullname.append(sysname);
@@ -680,22 +669,10 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
         if (importedPLODataVector.first().mDataName == TIMEVARIABLENAME)
         {
             pTimeVec = insertTimeVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
-//            UnitScale us = figureOutCutomUnitScale2(TIMEVARIABLENAME, importedPLODataVector.first().mPlotScale);
-//            if (!us.isOne() && !us.isEmpty())
-//            {
-//                //! @todo handle this somehow /Peter
-//                //pTimeVec->setCustomUnitScale(us);
-//            }
         }
         else if (importedPLODataVector.first().mDataName == FREQUENCYVARIABLENAME)
         {
             pFreqVec = insertFrequencyVectorVariable(importedPLODataVector.first().mDataValues, fileInfo.absoluteFilePath());
-//            UnitScale us = figureOutCutomUnitScale2(FREQUENCYVARIABLENAME, importedPLODataVector.first().mPlotScale);
-//            if (!us.isOne() && !us.isEmpty())
-//            {
-//                //! @todo handle this somehow /Peter
-//                //pFreqVec->setCustomUnitScale(us);
-//            }
         }
 
         // First decide if we should skip the first column (if time or frequency vector)
