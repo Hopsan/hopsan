@@ -307,15 +307,15 @@ def verifyPaths():
 
 def askForVersion():
     dodevrelease=False
-    version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')    
+    version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')
+    print runCmd("getSvnRevision.bat")[0]
+    revnum = raw_input('Enter the revision number shown above: ')
     if version == "": 
         print "Building DEV release"
-        print runCmd("getSvnRevision.bat")[0]
-        revnum = raw_input('Enter the revnum shown above: ')
         version = gDevVersion+"_r"+revnum
         dodevrelease=True
 
-    return (version,dodevrelease)
+    return (version,revnum,dodevrelease)
 
 def msvcCompile(msvcVersion, architecture):
     print "Compiling HopsanCore with Microsoft Visual Studio "+msvcVersion+" "+architecture+"..."
@@ -373,34 +373,44 @@ def msvcCompile(msvcVersion, architecture):
     callMove(hopsanDirBin+r'\HopsanCore.exp', targetDir+r'\HopsanCore.exp')
     
     return True
-   
-def buildRelease():
+
+
+def prepareSourceCode(versionnumber, revisionnumber):
     # Regenerate default library
     hopsanDefaultLibraryDir=hopsanDir+r'\componentLibraries\defaultLibrary'
-    os.chdir(hopsanDefaultLibraryDir)    
+    os.chdir(hopsanDefaultLibraryDir)
     os.system(r'generateLibraryFiles.bat -nopause')
     os.chdir(hopsanDir)
-    
+
+    callCopyFile(r'HopsanGUI\graphics\splash2.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
+
     if not dodevrelease:
-        #Set version numbers (by changing .h files) BEFORE build
-        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+version+r'\"|g" -i HopsanCore\include\version.h')
-        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+version+r'\"|g" -i HopsanGUI\version_gui.h')
-        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"'+version+r'\"|g" -i HopsanCLI\version_cli.h')
+        # Set version numbers (by changing .h files) BEFORE build
+        #callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+versionnumber+r'\"|g" -i HopsanCore\include\HopsanCoreVersion.h')
+        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+versionnumber+r'\"|g" -i HopsanGUI\version_gui.h')
+        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"'+versionnumber+r'\"|g" -i HopsanCLI\version_cli.h')
 
-        #Set splash screen version number
-        callCopyFile(r'HopsanGUI\graphics\splash2.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
-        callSed(r'"s|X\.X\.X|'+version+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
-        callEXE(inkscapeDir+r'\inkscape.exe', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-png HopsanGUI/graphics/splash.png')
-        callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
+        # Hide splash screen development warning
+        callSed(r'"s|Development version||g" -i HopsanGUI\graphics\tempdummysplash.svg')
 
-        #Make sure development flag is not defined
+        # Make sure development flag is not defined
         callSed(r'"s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro')
 
-    #Make sure we compile defaultLibrary into core
+    # Set splash screen version and revision number
+    callSed(r'"s|X\.X\.X|'+versionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
+    callSed(r'"s|R\.R\.R|r'+revisionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
+    # Regenerate splash screen
+    callEXE(inkscapeDir+r'\inkscape.exe', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-png HopsanGUI/graphics/splash.png')
+    callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
+
+    # Make sure we compile defaultLibrary into core
     callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
     callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
     callSed(r'"/.*<lib>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     callSed(r'"s|componentLibraries||" -i HopsanNG.pro')
+
+
+def buildRelease():
 
     #Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
     callSed(r'"s|.*DEFINES \*= MAINCORE|#DEFINES *= MAINCORE|g" -i HopsanCore\HopsanCore.pro')
@@ -519,8 +529,8 @@ def copyFiles():
     svnExport(r'Dependencies\katex',                tempDir+r'\Dependencies\katex')
     svnExport(r'Dependencies\IndexingCSVParser',    tempDir+r'\Dependencies\IndexingCSVParser')
     svnExport(r'Dependencies\rapidxml-1.13',        tempDir+r'\Dependencies\rapidxml-1.13')
-	
-	#Copy the FMILibrary include files
+
+    #Copy the FMILibrary include files
     if do64BitRelease:
         FMILibraryDir=r'./Dependencies/FMILibrary-2.0.1_x64'
     else:
@@ -722,16 +732,18 @@ success=True
 if success:
     global dodevrelease
     global version
+    global revision
     global buildVCpp
-    (version, dodevrelease) = askForVersion()
+    (version, revision, dodevrelease) = askForVersion()
 
-    pauseOnFailValidation = False;
+    pauseOnFailValidation = False
     buildVCpp = askYesNoQuestion("Do you want to build VC++ HopsanCore? (y/n): ")
 
     print "---------------------------------------"
     print "This is a DEV release: " + str(dodevrelease)
     print "This is a 64-bit release: " + str(do64BitRelease)
     print "Release version number: " + str(version)
+    print "Release revision number: " + str(revision)
     print "Build VC++ HopsanCore: " + str(buildVCpp)
     print "Pause on faild validation: " + str(pauseOnFailValidation)
     print "---------------------------------------"
@@ -751,12 +763,12 @@ else:
 print("Using TempDir: "+tempDir)
         
 if success:
+    prepareSourceCode(version, revision)
     if not buildRelease():
         success = False
         cleanUp()
         printError("Compilation script failed in compilation error.")
     
-
 if success:
     #Unpack depedency bin files to bin folder without asking stupid questions, we do this in the build step to have a run-able compiled version before running tests
     #call7z(r'x '+quotePath(hopsanDir+"\\"+dependecyBinFile)+r' -o'+quotePath(hopsanDir+r'\bin')+r' -y')

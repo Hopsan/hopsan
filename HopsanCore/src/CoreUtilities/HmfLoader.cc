@@ -38,7 +38,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
-#include "version.h"
+#include "HopsanCoreVersion.h"
 
 #include "hopsan_rapidxml.hpp"
 

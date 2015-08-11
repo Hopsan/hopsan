@@ -13,7 +13,7 @@ DESTDIR = $${PWD}/../../bin
 #--------------------------------------------------------
 # Set the ZMQ paths and dll/so post linking copy command
 d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
-isEmpty(d):warning("ERROR: Failed to locate ZeroMQ libs, have you compiled them and put them in the expected location?")
+isEmpty(d):!build_pass:warning("ERROR: Failed to locate ZeroMQ libs, have you compiled them and put them in the expected location?")
 LIBS *= $$magic_hopsan_libpath
 INCLUDEPATH *= $$magic_hopsan_includepath
 QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link

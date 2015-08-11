@@ -54,19 +54,19 @@ win32 {
     foundTBB = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
     equals(foundTBB, true) {
         DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
-        message(Compiling HopsanCore with TBB support)
+        !build_pass:message("Compiling HopsanCore with TBB support")
         LIBS *= $$magic_hopsan_libpath
         INCLUDEPATH *= $$magic_hopsan_includepath
         QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
     } else {
-        message(Compiling HopsanCore WITHOUT TBB support)
+        !build_pass:message("Compiling HopsanCore WITHOUT TBB support")
     }
     #--------------------------------------------------------
 
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
-    # Generate the svnrevnum.h file
+    # Retreive the hopsan core source code revision number
     system($${PWD}/../getSvnRevision.bat)
 }
 unix { 
@@ -74,7 +74,7 @@ unix {
     LIBS += -ltbb -ldl
     INCLUDEPATH += /usr/include/tbb/
 
-    # Generate the svnrevnum.h file
+    # Retreive the hopsan core source code revision number
     system($${PWD}/../getSvnRevision.sh include HOPSANCORESVNREVISION)
 }
 macx { 
@@ -129,7 +129,6 @@ SOURCES += \
     src/Quantities.cc
 HEADERS += \
     include/win32dll.h \
-    include/version.h \
     include/Port.h \
     include/Nodes.h \
     include/Node.h \
@@ -179,7 +178,8 @@ HEADERS += \
     ../Dependencies/IndexingCSVParser/IndexingCSVParser.h \
     ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
     include/Quantities.h \
-    include/NodeRWHelpfuncs.hpp
+    include/NodeRWHelpfuncs.hpp \
+    include/HopsanCoreVersion.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

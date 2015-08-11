@@ -35,7 +35,7 @@ d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
     macx:message(INCLUDEPATH=$$INCLUDEPATH)
     macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
 } else {
-    error(ERROR: Failed to locate QWT libs, have you compiled them and put them in the expected location)
+    !build_pass:error("ERROR: Failed to locate QWT libs, have you compiled them and put them in the expected location")
 }
 #--------------------------------------------------------
 
@@ -44,12 +44,12 @@ d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
 d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
 !isEmpty(d){
     DEFINES *= USEPYTHONQT       #If PythonQt was found then lets build GUI with PythonQt and Python support
-    message(Compiling HopsanGUI with PythonQt support)
+    !build_pass:message(Compiling HopsanGUI with PythonQt support)
     LIBS *= $$magic_hopsan_libpath
     INCLUDEPATH *= $$magic_hopsan_includepath
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 } else {
-    message(Compiling HopsanGUI WITHOUT PythonQt and Python support)
+    !build_pass:message(Compiling HopsanGUI WITHOUT PythonQt and Python support)
 }
 #--------------------------------------------------------
 
@@ -58,7 +58,7 @@ d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
 d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
 !isEmpty(d){
     DEFINES *= USEZMQ       #If ZMQ was found then lets build GUI with ZMQ / msgpack support
-    message(Compiling HopsanGUI with ZeroMQ and msgpack support)
+    !build_pass:message(Compiling HopsanGUI with ZeroMQ and msgpack support)
     LIBS *= $$magic_hopsan_libpath
     INCLUDEPATH *= $$magic_hopsan_includepath
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
@@ -69,7 +69,7 @@ d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
     HEADERS += $${PWD}/../HopsanRemote/HopsanServerClient/RemoteHopsanClient.h
 
 } else {
-    message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
+    !build_pass:message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
 }
 #--------------------------------------------------------
 
@@ -93,7 +93,7 @@ d = $$setDiscountPathInfo($$(DISCOUNT_PATH), $$DESTDIR)
     LIBS *= $$magic_hopsan_libpath
     INCLUDEPATH *= $$magic_hopsan_includepath
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-    message(Compiling with Discount (libmarkdown) support)
+    !build_pass:message(Compiling with Discount (libmarkdown) support)
 }
 #--------------------------------------------------------
 
@@ -117,21 +117,21 @@ QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__ -Wno-c++0x-compat
 unix {
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
-        message(Looking for Python include and lib paths since USEPYTHONQT is defined)
+        !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")
         QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
         LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
         INCLUDEPATH *= $$system(python$${PYTHON_VERSION}-config --includes)
     } else {
-        message(Not looking for Python since we are not using PythonQT)
+        !build_pass:message("Not looking for Python since we are not using PythonQT")
     }
 
     system(ldconfig -p | grep libhdf5_cpp) {
-        message(Found libHDF5_cpp in system)
-        message(Compiling with HDF5 support)
+        build_pass:message("Found libHDF5_cpp in system")
+        build_pass:message("Compiling with HDF5 support")
         DEFINES += USEHDF5
         LIBS += -lhdf5_cpp -lhdf5
     } else {
-        message(Compiling without HDF5 support)
+        !build_pass:message("Compiling without HDF5 support")
     }
 
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative the executable (regardless of working dir, VERY useful)
@@ -150,13 +150,13 @@ win32 {
 
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
-        message(Looking for Python include and lib paths since USEPYTHONQT is defined)
+        !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")
         PYTHON_DEFAULT_PATHS *= c:/Python27
         PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
         INCLUDEPATH += $${PYTHON_PATH}/include
         LIBS += -L$${PYTHON_PATH}/libs
     } else {
-        message(Not looking for Python since we are not using PythonQT)
+       !build_pass: message("Not looking for Python since we are not using PythonQT")
     }
 
     # Set hdf5 paths
@@ -166,9 +166,9 @@ win32 {
         LIBS *= $$magic_hopsan_libpath
         INCLUDEPATH *= $$magic_hopsan_includepath
         QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-        message(Compiling with HDF5 support)
+        !build_pass:message("Compiling with HDF5 support")
     } else {
-        message(Compiling without HDF5 support)
+        !build_pass:message("Compiling without HDF5 support")
     }
 
 

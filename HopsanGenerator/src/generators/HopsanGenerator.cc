@@ -57,7 +57,7 @@
 
 #include "ComponentSystem.h"
 #include "Port.h"
-#include "version.h"
+#include "HopsanCoreVersion.h"
 
 
 using namespace std;

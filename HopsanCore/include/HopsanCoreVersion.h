@@ -40,6 +40,11 @@
  #define HOPSANCORESVNREVISION UNKNOWN
 #endif
 
+// The code must "know" which core revision it is on, this file will be included in external libraries so that
+// They know which revision of the code they were build against
+// This value should be set by external script on every build
+//#define HOPSANCORESVNREVISION UNKNOWN
+
 #define HOPSANCOREVERSION "0.7.x_r" TO_STR(HOPSANCORESVNREVISION)
 #define HOPSANCOREMODELFILEVERSION "0.4"
 

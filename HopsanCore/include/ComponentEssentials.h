@@ -31,7 +31,7 @@
 #include "Nodes.h"
 #include "Component.h"
 #include "Port.h"
-#include "version.h"
+#include "HopsanCoreVersion.h"
 #include "NodeRWHelpfuncs.hpp"
 
 

@@ -67,7 +67,7 @@ defineReplace(setZMQPathInfo){
     }
 
     !exists($${libDir}){
-        warning('Could not find your compiled zmq dll')
+        !build_pass:warning("Could not find your compiled zmq dll")
         magic_hopsan_libpath =
         magic_hopsan_includepath =
         magic_hopsan_qmake_post_link =

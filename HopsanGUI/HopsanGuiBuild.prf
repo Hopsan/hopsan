@@ -57,7 +57,7 @@ defineReplace(setHDF5PathInfo){
     }
 
     !exists($${libDir}){
-        warning('Could not find your compiled HDF5 dll')
+        !build_pass:warning("Could not find your compiled HDF5 dll")
         magic_hopsan_libpath =
         magic_hopsan_includepath =
         magic_hopsan_qmake_post_link =
@@ -125,7 +125,7 @@ defineReplace(setDiscountPathInfo){
     }
 
     !exists($${libDir}){
-        warning('Could not find your compiled Discount (markdown) dll')
+        !build_pass:warning("Could not find your compiled Discount (markdown) dll")
         magic_hopsan_libpath =
         magic_hopsan_includepath =
         magic_hopsan_qmake_post_link =
@@ -195,7 +195,7 @@ defineReplace(setQWTPathInfo){
     }
 
     !exists($${libDir}){
-        warning('Could not find your compiled qwt dll')
+        !build_pass:warning("Could not find your compiled qwt dll")
         magic_hopsan_libpath =
         magic_hopsan_includepath =
         magic_hopsan_qmake_post_link =
@@ -255,7 +255,7 @@ defineReplace(setPythonQtPathInfo){
     }
 
     !exists($${libDir}){
-        warning('Could not find your compiled PythonQt dll dir')
+        !build_pass:warning("Could not find your compiled PythonQt dll dir")
         magic_hopsan_libpath =
         magic_hopsan_includepath =
         magic_hopsan_qmake_post_link =

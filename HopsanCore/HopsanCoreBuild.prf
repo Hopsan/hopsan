@@ -43,7 +43,7 @@ defineReplace(setTBBWindowsPathInfo){
     #message(magic_hopsan_qmake_post_link $${magic_hopsan_qmake_post_link})
 
     !exists($${libDir}){
-        warning(Could not find your compiled TBB dll)
+        !build_pass:warning("Could not find your compiled TBB dll")
         magic_hopsan_libpath =
         magic_hopsan_includepath =
         magic_hopsan_qmake_post_link =

@@ -34,7 +34,7 @@
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
 #include "Nodes.h"
-#include "version.h"
+#include "HopsanCoreVersion.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include "Components/DummyComponent.hpp"
 #include "Components/ModelicaComponent.hpp"

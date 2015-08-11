@@ -60,7 +60,7 @@
 #include "HopsanEssentials.h"
 #include "ComponentSystem.h"
 #include "Port.h"
-#include "version.h"
+#include "HopsanCoreVersion.h"
 
 
 using namespace std;
@@ -592,7 +592,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "HopsanCore/include/Parameters.h" <<
                     "HopsanCore/include/Port.h" <<
                     "HopsanCore/include/svnrevnum.h" <<
-                    "HopsanCore/include/version.h" <<
+                    "HopsanCore/include/HopsanCoreVersion.h" <<
                     "HopsanCore/include/win32dll.h" <<
                     "HopsanCore/include/Components/DummyComponent.hpp" <<
                     "HopsanCore/include/Components/ModelicaComponent.hpp" <<

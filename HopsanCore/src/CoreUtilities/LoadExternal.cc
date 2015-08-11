@@ -35,7 +35,7 @@
 #include "Component.h"
 #include "Node.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
-#include "version.h"
+#include "HopsanCoreVersion.h"
 
 #include <sstream>
 #include <cstring>
