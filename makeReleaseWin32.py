@@ -14,21 +14,24 @@ global qtRuntimeBins
 global qtPluginBins
 global mingwBins
 
+# -------------------- Setup Start --------------------
+# Version number
 gDevVersion='0.7.x'
+
+# Build directories and scripts
 tempDir=r'C:\temp_release'
 scriptFile="HopsanReleaseInnoSetupScript.iss"
-dependecyBinFile32=r'hopsan_bincontents_Qt485_MinGW44_Py275_OpenSSL101e.7z'
-dependecyBinFile64=r'hopsan_bincontents64_Qt485_MinGW64_481_OpenSSL101e.7z'
 
 # External programs
 inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
 innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 
-# Libs
-qtlibDirList = [r'C:\Qt\4.8.5']
-qtlib64DirList = [r'C:\Qt\Qt64-4.8.5']
+# Compilers and build tools
+qtcreatorDirList = [r'C:\Qt\qtcreator-2.8.1']
+msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
+msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
-# Runtime binaries
+# Runtime binaries to copy to bin directory (Note! Path to qt/bin and mingw/bin and plugin dirs is set by external script)
 qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
                  'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
                  'icuin54.dll', 'icuuc54.dll', 'icudt54.dll', 'Qt5PrintSupport.dll']
@@ -36,10 +39,8 @@ qtPluginBins  = [r'iconengines/qsvgicon.dll', r'imageformats/qjpeg.dll', r'image
 mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwOptBins  = ['libeay32.dll', 'ssleay32.dll']
 
-# Compilers and build tools
-qtcreatorDirList = [r'C:\Qt\qtcreator-2.8.1']
-msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
-msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
+# -------------------- Setup End --------------------
+
 
 # Remember current working dir
 hopsanDir=os.getcwd()
@@ -242,22 +243,22 @@ def verifyPaths():
     global jomDir
     global qmakeDir
     #global mingwDir
-    global dependecyBinFile
+    #global dependecyBinFile
 
     isOk = True
    
     
-    if do64BitRelease:
-        qtlibsdirs=qmakeDir
-        mingwdirs=mingwDir
-        dependecyBinFile=dependecyBinFile64
-    else:
-        qtlibsdirs=qmakeDir
-        mingwdirs=mingwDir
-        dependecyBinFile=dependecyBinFile32
+    #if do64BitRelease:
+        #qtlibsdirs=qmakeDir
+        #mingwdirs=mingwDir
+        #dependecyBinFile=dependecyBinFile64
+    #else:
+        #qtlibsdirs=qmakeDir
+        #mingwdirs=mingwDir
+        #dependecyBinFile=dependecyBinFile32
 
     #Check if Qt path exists
-    qtDir=selectPathFromList(qtlibsdirs, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
+    qtDir=selectPathFromList(qmakeDir, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
     if qtDir == "":
         isOk = False
         
@@ -374,6 +375,12 @@ def msvcCompile(msvcVersion, architecture):
     return True
    
 def buildRelease():
+    # Regenerate default library
+    hopsanDefaultLibraryDir=hopsanDir+r'\componentLibraries\defaultLibrary'
+    os.chdir(hopsanDefaultLibraryDir)    
+    os.system(r'generateLibraryFiles.bat -nopause')
+    os.chdir(hopsanDir)
+    
     if not dodevrelease:
         #Set version numbers (by changing .h files) BEFORE build
         callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+version+r'\"|g" -i HopsanCore\include\version.h')
