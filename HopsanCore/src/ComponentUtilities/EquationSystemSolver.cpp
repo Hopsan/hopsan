@@ -362,7 +362,7 @@ void NumericalIntegrationSolver::solveTrapezoidRule()
     mpParentComponent->reInitializeValuesFromNodes();
     mpParentComponent->solveSystem();
 
-    bool doBreak;
+    bool doBreak=true;
     size_t i;
     for(i=0; i<mMaxIter; ++i)
     {
