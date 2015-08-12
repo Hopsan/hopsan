@@ -22,7 +22,6 @@ echo "Copy installing Hopsan from $srcDir to $dstDir"
 mkdir -p                                                   $dstDir/HopsanCore
 cp -a    $srcDir/HopsanCore/include                        $dstDir/HopsanCore
 cp -a    $srcDir/HopsanCore/src                            $dstDir/HopsanCore
-cp -a    $srcDir/HopsanCore/Dependencies                   $dstDir/HopsanCore
 
 mkdir -p                                                   $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/IndexingCSVParser            $dstDir/Dependencies

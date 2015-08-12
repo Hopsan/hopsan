@@ -258,10 +258,10 @@ for i in "${distArchArrayDo[@]}"; do
     #sleep 2
 
     # Set packages that need to be installed
-    if [ "$qtver = qt5 " ]; then
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev qtbase5-dev libqt5webkit5-dev libqt5svg5-dev  qtmultimedia5-dev libqt5opengl5-dev python-dev fakeroot cmake libtool-bin qt5-default automake"
+    if [ "$qtver" = "qt5" ]; then
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev qtbase5-dev libqt5webkit5-dev libqt5svg5-dev qtmultimedia5-dev libqt5opengl5-dev python-dev libhdf5-dev  fakeroot cmake libtool-bin qt5-default automake"
     else
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev fakeroot cmake automake libtool"
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev libhdf5-dev fakeroot cmake automake libtool"
     fi
 
     # Update or create pbuild environments

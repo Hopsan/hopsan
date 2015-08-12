@@ -22,6 +22,7 @@ doBuildInComponents="$5"
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI svn rev numbers for this release
 #
+cd $srcDir; releasesvnrev=`./getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
@@ -34,33 +35,40 @@ rm -rf $dstDir
 svn export $srcDir $dstDir
 
 # -----------------------------------------------------------------------------
-# Prepare source dirs and files
+# Prepare files
 #
 cd $dstDir
 
 # Clean bin folder
 rm -rf ./bin/*
 
+# Generate default library files
+cd componentLibraries/defaultLibrary; ./generateLibraryFiles.py .; cd $OLDPWD
+
 # Remove the inclusion of the svnrevnum file in core. It is only useful for dev trunk use
-sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/version.h
+sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/HopsanCoreVersion.h
 
 # Set the Core Gui and CLI svn rev numbers for this release
-sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION $coresvnrev|g" -i HopsanCore/include/version.h
+sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION $coresvnrev|g" -i HopsanCore/include/HopsanCoreVersion.h
 sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION $guisvnrev|g" -i HopsanGUI/version_gui.h
 sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION $clisvnrev|g" -i HopsanCLI/version_cli.h
 
 if [ $doDevRelease = "false" ]; then
   # Set version numbers (by changing .h files) BEFORE build
-  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/version.h
+  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/HopsanCoreVersion.h
   sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i HopsanGUI/version_gui.h
 
-  # Set splash screen version number
-  sed "s|X\.X\.X|$version|g" -i HopsanGUI/graphics/splash2.svg
-  inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
-  
+  # Hide splash screen development warning
+  sed "s|Development version||g" -i HopsanGUI/graphics/splash2.svg
+
   # Make sure development flag is not defined
   sed "s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|g" -i HopsanGUI/HopsanGUI.pro
 fi
+
+# Set splash screen version number
+sed "s|X\.X\.X|$version|g" -i HopsanGUI/graphics/splash2.svg
+sed "s|R\.R\.R|$releasesvnrev|g" -i HopsanGUI/graphics/splash2.svg
+inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
 
 # Make sure we compile defaultLibrary into core
 if [ "$doBuildInComponents" = "true" ]; then
