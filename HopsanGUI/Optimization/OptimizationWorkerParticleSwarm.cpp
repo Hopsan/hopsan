@@ -267,6 +267,9 @@ void OptimizationWorkerParticleSwarm::run()
             //Update progress bar in dialog
             updateProgressBar(i);
 
+            //Update weight (linearly decreasing)
+            mPsOmega = mPsOmega1 + (mPsOmega2-mPsOmega1)*i/mMaxEvals;
+
             //Move particles
             moveParticles();
 
@@ -526,9 +529,13 @@ void OptimizationWorkerParticleSwarm::setOptVar(const QString &var, const QStrin
         int n = value.toInt();
         mBestPoint.resize(n);
     }
-    else if(var == "omega")
+    else if(var == "omega1")
     {
-        mPsOmega = value.toDouble();
+        mPsOmega1 = value.toDouble();
+    }
+    else if(var == "omega2")
+    {
+        mPsOmega2 = value.toDouble();
     }
     else if(var == "c1")
     {
@@ -549,9 +556,13 @@ double OptimizationWorkerParticleSwarm::getOptVar(const QString &var, bool &ok)
     }
 
     ok = true;
-    if(var == "omega")
+    if(var == "omega1")
     {
-        return mPsOmega;
+        return mPsOmega1;
+    }
+    else if(var == "omega2")
+    {
+        return mPsOmega2;
     }
     else if(var == "c1")
     {

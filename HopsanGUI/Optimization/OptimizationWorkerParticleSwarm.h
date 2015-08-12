@@ -60,7 +60,7 @@ public:
     double getOptVar(const QString &var, bool &ok);
 
 protected:
-    double mPsOmega, mPsC1, mPsC2;
+    double mPsOmega, mPsOmega1, mPsOmega2, mPsC1, mPsC2;
     bool mPrintLogOutput;
     QStringList mLogOutput;
     QVector< QVector<double> > mVelocities, mBestKnowns;
