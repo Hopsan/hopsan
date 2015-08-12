@@ -1,10 +1,15 @@
+% hopsanData = HopsanImportHDF5(fileName)
+%
+% The function hopsanData = HopsanImportHDF5(fileName) reads the whole 
+% hfd5 file in a Matlab structure.
+% This function may also with any HDF5 file not related to Hopsan.
+%
+% author:  Martin.Hochwallner@liu.se
+% license: BSD 
 
 function hopsanData = HopsanImportHDF5(fileName)
-
-fileInfo = h5info(fileName);
-
-hopsanData = readGroup(fileName, fileInfo);
-
+    fileInfo = h5info(fileName);
+    hopsanData = readGroup(fileName, fileInfo);
 end
 
 function hopsanData = readGroup(fileName, grp)
@@ -37,3 +42,4 @@ function hopsanData = readGroup(fileName, grp)
         hopsanData.(grName) = readGroup(fileName, gr);
     end    
 end
+%eof
