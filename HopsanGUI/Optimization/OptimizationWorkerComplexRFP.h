@@ -38,6 +38,21 @@
 
 class OptimizationHandler;
 
+
+
+class Candidate
+{
+public:
+    Candidate();
+    ~Candidate();
+    QVector<double> *mpPoint;
+    double *mpObjective;
+    QVector<Candidate*> subCandidates;
+    QVector<Candidate*> retractions;
+    int idx;
+};
+
+
 class OptimizationWorkerComplexRFP : public OptimizationWorkerComplex
 {
 public:
@@ -77,12 +92,15 @@ protected:
     bool mNeedsIteration;
     bool mFirstReflectionFailed;
     int mFailedReflection;
+    Candidate *mpFailedCandidate;
 
-    double mAlpha1, mAlpha2, mAlpha3, mAlpha4, mAlpha5, mAlpha6, mAlpha7, mOrgAlpha;
+    double mAlphaMin, mAlphaMax;
+    QVector<double> mvAlpha;
     int mMethod;
+    QVector<Candidate*> mTopLevelCandidates;
 
     //Method 3 members
-    int mNumDist, mNumDir, mNumStep;
+    int mNumDist, mNumDir, mNumStep, mNumRet;
     int mDistCount, mDirCount, mIterCount;
     QMap<QString, int> mActionCounter;
 
