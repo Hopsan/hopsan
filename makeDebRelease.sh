@@ -11,7 +11,7 @@
 #--------------------------------------------------------------------------------------------------
 buildRoot="buildDebPackage/"
 name=hopsan
-devversion=0.7.
+devversion=0.7.x
 
 # Pbuilder dists and archs
 debianDistArchArray=( jessie:amd64:qt5 jessie:i386:qt5 wheezy:amd64:qt4 wheezy:i386:qt4 )
@@ -106,13 +106,14 @@ builDSCFile()
 # Ask user for version input
 echo
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release: "
-read version
+read baseversion
 doDevRelease="false"
-if [ -z "$version" ]; then
+if [ -z "$baseversion" ]; then
   doDevRelease="true"
-  svnrev=`./getSvnRevision.sh`
-  version=$devversion"r"$svnrev
+  baseversion=$devversion
 fi
+releaserevision=`./getSvnRevision.sh`
+fullversionname=$baseversion"_r"$releaserevision
 
 echo
 boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" "n"
@@ -125,11 +126,11 @@ doUsePythonQt="$boolYNQuestionAnswer"
 echo
 distArchArrayDo=()
 for i in "${debianDistArchArray[@]}"; do
-  boolAskYNQuestion "Do you want to build, "$i"?" "y"
+  boolAskYNQuestion "Do you want to build, "$i"?" "n"
   distArchArrayDo+=("$i"":""D"":""$boolYNQuestionAnswer")
 done
 for i in "${ubuntuDistArchArray[@]}"; do
-  boolAskYNQuestion "Do you want to build, "$i"?" "y"
+  boolAskYNQuestion "Do you want to build, "$i"?" "n"
   distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
 done
 
@@ -137,7 +138,9 @@ done
 echo
 echo ---------------------------------------
 echo "This is a DEV release: $doDevRelease"
-echo "Release version number: $version"
+echo "Release baseversion number: $baseversion"
+echo "Release revision number: $releaserevision"
+echo "Release version name: $fullversionname"
 echo "Built in components: $doBuildInComponents"
 echo "Using PythonQt: $doUsePythonQt"
 echo "Using pbuilder: $doPbuild"
@@ -167,16 +170,17 @@ mkdir -p $pbuilderWorkDir
 # -----------------------------------------------------------------------------
 # Determine deb dir name
 #
-packagedir=$name-$version
-outputbasename=$name\_$version
+
+outputbasename=$name\_$baseversion.r$releaserevision
 packageorigsrcfile=$outputbasename.orig.tar.gz
-packagesrcfile=$name-$version.tar.gz
+packagedir=$name-$baseversion.r$releaserevision
+packagesrcfile=$name-$baseversion.r$releaserevision.tar.gz
 
 # -----------------------------------------------------------------------------
 # Prepare source code
 #
-srcExportDir=$outputDir/hopsanSrcExport\_$version
-./prepareSourceCode.sh ../  $srcExportDir $version $doDevRelease $doBuildInComponents
+srcExportDir=$outputDir/hopsanSrcExport\_$fullversionname
+./prepareSourceCode.sh `pwd`/../  $srcExportDir $baseversion $releaserevision $fullversionname $doDevRelease $doBuildInComponents
 
 cd $srcExportDir
 tar -czf $packageorigsrcfile *
@@ -257,7 +261,7 @@ for i in "${distArchArrayDo[@]}"; do
     #echo $optsDebootstrap
     #sleep 2
 
-    # Set packages that need to be installed
+    # Set packages that need to be installed, this installs them once and for all, and avoids wasting time on every build
     if [ "$qtver" = "qt5" ]; then
       extraPackages="debhelper unzip subversion lsb-release libtbb-dev qtbase5-dev libqt5webkit5-dev libqt5svg5-dev qtmultimedia5-dev libqt5opengl5-dev python-dev libhdf5-dev  fakeroot cmake libtool-bin qt5-default automake"
     else

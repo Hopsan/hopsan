@@ -4,25 +4,26 @@
 # Shell script for exporting and preparing the Hopsan source code before RELEASE build
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-04-01
-# For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
+# For use in Hopsan, requires "subversion command line" installed (apt-get install subversion)
 
 E_BADARGS=65
 if [ $# -lt 5 ]; then
   echo "Error: To few input arguments!"
-  echo "Usage: `basename $0` {srcDir dstDir version doDevRelease doBuildInComponents}"
+  echo "Usage: `basename $0` {srcDir dstDir baseversion releaserevision fullversionname doDevRelease doBuildInComponents}"
   exit $E_BADARGS
 fi
 
 srcDir="$1"
 dstDir="$2"
-version="$3"
-doDevRelease="$4"
-doBuildInComponents="$5"
+baseversion="$3"
+releaserevision="$4"
+fullversionname="$5"
+doDevRelease="$6"
+doBuildInComponents="$7"
 
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI svn rev numbers for this release
 #
-cd $srcDir; releasesvnrev=`./getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
@@ -55,8 +56,8 @@ sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION $clisvnrev|g"
 
 if [ $doDevRelease = "false" ]; then
   # Set version numbers (by changing .h files) BEFORE build
-  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/HopsanCoreVersion.h
-  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i HopsanGUI/version_gui.h
+  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$fullversionname\"|g" -i HopsanCore/include/HopsanCoreVersion.h
+  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$fullversionname\"|g" -i HopsanGUI/version_gui.h
 
   # Hide splash screen development warning
   sed "s|Development version||g" -i HopsanGUI/graphics/splash2.svg
@@ -66,8 +67,8 @@ if [ $doDevRelease = "false" ]; then
 fi
 
 # Set splash screen version number
-sed "s|X\.X\.X|$version|g" -i HopsanGUI/graphics/splash2.svg
-sed "s|R\.R\.R|$releasesvnrev|g" -i HopsanGUI/graphics/splash2.svg
+sed "s|X\.X\.X|$baseversion|g" -i HopsanGUI/graphics/splash2.svg
+sed "s|R\.R\.R|$releaserevision|g" -i HopsanGUI/graphics/splash2.svg
 inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
 
 # Make sure we compile defaultLibrary into core
