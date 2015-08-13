@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="MechanicSpring.hpp" typename="MechanicSpring" displayname="Spring">
+        <icons>
+            <icon scale="1" path="spring_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="spring_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <picture>springhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="0" name="Pm1"/>
+            <port x="1" y="0.5" a="0" name="Pm2"/>
+        </ports>
+        <animation>
+            <icon userpath="spring_user_base.svg"/>
+            <movable idx="0">
+                <icon userpath="spring_user_base.svg"/>
+                <data port="P1" dataname="Position" idx="0"/>
+                <start x="0" y="0" a="0"/>
+                <movement x="-77.5" y="0" a="0" idx="0"/>
+                <movingport startx="-16" portname="P1" starty="10"/>
+            </movable>
+            <movable idx="1">
+                <icon userpath="spring_user_base.svg"/>
+                <data port="P2" dataname="Position" idx="0"/>
+                <start x="0" y="0" a="0"/>
+                <movement x="77.5" y="0" a="0" idx="0"/>
+                <movingport startx="49" portname="P2" starty="10"/>
+            </movable>
+            <movable idx="2">
+                <icon userpath="spring_user_movable.svg"/>
+                <data port="P1" dataname="Position" idx="0"/>
+                <data port="P2" dataname="Position" idx="1"/>
+                <start x="0" y="0" a="0"/>
+                <movement x="-77.5" y="0" a="0" idx="0"/>
+                <resize x="1.19231" y="0" idx1="0" idx2="1"/>
+                <initscale x="1" y="1"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>
