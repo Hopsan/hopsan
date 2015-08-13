@@ -263,9 +263,9 @@ for i in "${distArchArrayDo[@]}"; do
 
     # Set packages that need to be installed, this installs them once and for all, and avoids wasting time on every build
     if [ "$qtver" = "qt5" ]; then
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev qtbase5-dev libqt5webkit5-dev libqt5svg5-dev qtmultimedia5-dev libqt5opengl5-dev python-dev libhdf5-dev  fakeroot cmake libtool-bin qt5-default automake"
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev qtbase5-dev libqt5webkit5-dev libqt5svg5-dev qtmultimedia5-dev libqt5opengl5-dev python-dev libhdf5-dev  fakeroot cmake libtool-bin qt5-default automake pkg-config"
     else
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev libhdf5-dev fakeroot cmake automake libtool"
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev libhdf5-dev fakeroot cmake automake libtool pkg-config"
     fi
 
     # Update or create pbuild environments
