@@ -254,6 +254,8 @@ void OptimizationWorker::finalize()
 
 void OptimizationWorker::printLogFile()
 {
+    if(!mDoLog) return;
+
     QString htmlCode;
 
     //Header

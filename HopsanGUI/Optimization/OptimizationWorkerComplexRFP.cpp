@@ -1268,8 +1268,8 @@ void OptimizationWorkerComplexRFP::examineCandidateParticles()
         }
         else
         {
-            mParameters[mWorstId] = mCandidateParticles[0];
-            mObjectives[mWorstId] = mCandidateObjectives[0];
+            mParameters[mWorstId] = mCandidateParticles[minIdx];
+            mObjectives[mWorstId] = mCandidateObjectives[minIdx];
             mNeedsIteration=true;
         }
 
