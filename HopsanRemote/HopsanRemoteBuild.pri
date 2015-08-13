@@ -12,10 +12,10 @@ defineReplace(setZMQPathInfo){
     #Set QWT paths, Paths that are higher up in the list will have priority if found
     win32:contains(QMAKE_HOST.arch, x86_64){
         # 64 bit Windows release
-        ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq4-1-master_x64
+        ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq4-1-4.1.2_x64
     } else {
         # 32 bit Windows version or Linux / Mac
-        ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq4-1-master
+        ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq4-1-4.1.2
     }
     ZMQ_PATH = $$selectPath($$externalSrc, $$ZMQ_PATHS, "zmq")
 
