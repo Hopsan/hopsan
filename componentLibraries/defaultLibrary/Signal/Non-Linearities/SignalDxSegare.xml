@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalDxSegare.hpp" typename="SignalDxSegare" displayname="DxSegare">
+        <icons>
+            <icon scale="1" path="SignalSegare.svg" iconrotation="" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="x"/>
+            <port x=".5" y="0" a="270" name="diameter"/>
+            <port x="1" y="0.5" a="0" name="width"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
