@@ -129,7 +129,18 @@ unix {
         build_pass:message("Found libHDF5_cpp in system")
         build_pass:message("Compiling with HDF5 support")
         DEFINES += USEHDF5
-        LIBS += -lhdf5_cpp -lhdf5
+        LIBS += -lhdf5_cpp
+
+        # This is kind of a hack, on newer versions of Ubuntu (where we choose to use Qt5, the HDF libraries and headers har stored elswhere and have slightly different names
+        isEqual(QT_MAJOR_VERSION, 5){
+            INCLUDEPATH += /usr/include/hdf5/serial
+            LIBS += -lhdf5_serial
+        } else {
+            # Includepath not needed here, H5Cpp.h file should reside directly in /usr/include (searched by default)
+            LIBS += -lhdf5
+        }
+
+        !build_pass:message("Compiling with HDF5 support")
     } else {
         !build_pass:message("Compiling without HDF5 support")
     }
