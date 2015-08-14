@@ -31,7 +31,7 @@
 //! @brief Contains an optimization worker object for the Complex-RFP algorithm
 //!
 
-//#define OPT_ROSENBROCK
+//#define OPT_ROSENBROCK 1
 //#define OPT_SPHERE
 
 //Hopsan includes
@@ -944,6 +944,7 @@ void OptimizationWorkerComplexRFP::pickCandidateParticles()
 bool OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool &rNeedsRescheduling, bool firstTime)
 {
 #ifdef OPT_ROSENBROCK
+    rNeedsRescheduling=false;
     for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         double x1 = mCandidateParticles[i][0];
@@ -961,6 +962,7 @@ bool OptimizationWorkerComplexRFP::evaluateCandidateParticles(bool &rNeedsResche
     return true;
 #endif
 #ifdef OPT_SPHERE
+    rNeedsRescheduling=false;
     for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
     {
         double x1 = mCandidateParticles[i][0];
@@ -1509,18 +1511,10 @@ bool OptimizationWorkerComplexRFP::iterate()
     }
     else if(mMethod == 0 && mWorstCounter == 0)
     {
-        Candidate *pCandidate;
-        if(mpFailedCandidate->retractions.isEmpty())
+        for(int i=0; i<mpFailedCandidate->retractions.size(); ++i)
         {
-            pCandidate = 0;
-        }
-        else
-        {
-            pCandidate = mpFailedCandidate->retractions.first();;
-        }
+            Candidate *pCandidate = mpFailedCandidate->retractions.at(i);
 
-        while(pCandidate)
-        {
             newPoint = (*pCandidate->mpPoint);
             int nWorsePoints=0;
             for(int j=0; j<mNumPoints; ++j)
@@ -1541,15 +1535,6 @@ bool OptimizationWorkerComplexRFP::iterate()
                 return false;
             }
             ++mWorstCounter;
-
-            if(pCandidate->retractions.isEmpty())
-            {
-                pCandidate = 0;
-            }
-            else
-            {
-                pCandidate = pCandidate->retractions.first();;
-            }
         }
     }
     else if((mMethod == 3) && mWorstCounter==0)
