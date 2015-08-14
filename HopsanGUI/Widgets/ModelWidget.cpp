@@ -310,12 +310,12 @@ int ModelWidget::getLastSimulationTime()
 
 bool ModelWidget::isEditingFullyDisabled()
 {
-    return mFullLockModelEditingCounter!=0;
+    return mFullLockModelEditingCounter > 0;
 }
 
 bool ModelWidget::isEditingLimited()
 {
-    return mLimitedLockModelEditingCounter!=0;
+    return mLimitedLockModelEditingCounter > 0;
 }
 
 //! @brief Defines a new alias for specified variable (popup box)
@@ -788,20 +788,20 @@ void ModelWidget::exportModelParameters()
 }
 
 //! @todo this should not be in the model widget, it should be in the container
-void ModelWidget::setExternalSystem(bool value)
+void ModelWidget::setExternalSystem(bool isExternal)
 {
     // If this is an external system and we have not already fully locked editing, then lock it
-    if (isEditingFullyDisabled() && value)
+    if (isExternal && !isEditingFullyDisabled())
     {
         lockModelEditingFull(true);
     }
     // Else if this is not an external system but we have already locked it, then unlock
-    else if (!isEditingFullyDisabled() && !value)
+    else if (!isExternal && isEditingFullyDisabled())
     {
         lockModelEditingFull(false);
     }
 
-    mpExternalSystemWarningWidget->setVisible(value);
+    mpExternalSystemWarningWidget->setVisible(isExternal);
 }
 
 
@@ -813,7 +813,7 @@ void ModelWidget::lockModelEditingFull(bool lock)
     }
     else
     {
-        --mFullLockModelEditingCounter;
+        mFullLockModelEditingCounter = qMax(mFullLockModelEditingCounter-1, 0);
     }
     lockModelEditingLimited(lock);
 }
@@ -826,10 +826,10 @@ void ModelWidget::lockModelEditingLimited(bool lock)
     }
     else
     {
-        --mLimitedLockModelEditingCounter;
+        mLimitedLockModelEditingCounter = qMax(mLimitedLockModelEditingCounter-1, 0);
     }
 //#define USEDISABLEGRAYEFFECT
-    if(mLimitedLockModelEditingCounter != 0)
+    if( isEditingLimited() )
     {
         QList<ModelObject*> objects =  mpGraphicsView->getContainerPtr()->getModelObjects();
         for (ModelObject* pObj : objects)
@@ -840,27 +840,26 @@ void ModelWidget::lockModelEditingLimited(bool lock)
             QGraphicsColorizeEffect *pGrayEffect = new QGraphicsColorizeEffect();
             pGrayEffect->setColor(QColor("gray"));
             pObj->setGraphicsEffect(pGrayEffect);
-#endif
+
             QList<Connector*> connectors = pObj->getConnectorPtrs();
             for(Connector* pCon : connectors)
             {
-#ifdef USEDISABLEGRAYEFFECT
                 pGrayEffect = new QGraphicsColorizeEffect();
                 pGrayEffect->setColor(QColor("gray"));
                 pCon->setGraphicsEffect(pGrayEffect);
-#endif
             }
+#endif
         }
 
+#ifdef USEDISABLEGRAYEFFECT
         QList<Widget*> widgets = mpGraphicsView->getContainerPtr()->getWidgets();
         for(Widget* pWidget : widgets)
         {
-#ifdef USEDISABLEGRAYEFFECT
             QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
             grayEffect->setColor(QColor("gray"));
             pWidget->setGraphicsEffect(grayEffect);
-#endif
         }
+#endif
     }
     else
     {

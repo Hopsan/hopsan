@@ -119,7 +119,7 @@ public slots:
     void save();
     void saveAs();
     void exportModelParameters();
-    void setExternalSystem(bool value);
+    void setExternalSystem(bool isExternal);
     void lockModelEditingFull(bool lock);
     void lockModelEditingLimited(bool lock);
     void openAnimation();
