@@ -51,7 +51,11 @@ bool FileAccess::createDir(string dirPath)
         if (!dirname.empty())
         {
             fullDirPath += dirname;
+#ifdef _WIN32
+            int rc = _mkdir(fullDirPath.c_str());
+#else
             int rc = mkdir(fullDirPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#endif
 
             if (rc == 0)
             {
