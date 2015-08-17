@@ -1,0 +1,62 @@
+/*!
+\page devSetupBuildEnvironment How to setup the Hopsan build environment
+
+The Hopsan build environment is centered around the QtCreator IDE and uses qmake project files and the qmake program to generate Makefiles.
+HopsanGUI and some other components require the Qt libraries but some components such as the HospanCore library are written in "Plain C++".
+This means that it is possible to build the core components of Hopsan without Qt if that would be needed.
+On Windows the MinGW-W64 compiler is used/expected by default.
+While it should be possible to use the Microsoft compiler as well this has not been tested for building all of Hopsan.
+It is possible, however, to build the HopsanCore and component libraries with the Microsoft compiler.
+
+We use a third party build of Qt (from http://www.tver-soft.org/qt64 ; http://sourceforge.net/projects/qt64ng/ ) using a custom build of MinGW-w64 from (http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/)
+
+\section devSetupBuildEnvironmentPage-Windows Development on Microsoft Windows
+
+From version 0.7 of Hopsan an onwards, 32-bit Windows versions are no longer supported by default. 
+If you want one, you have to build it yourself (it should work). 
+But you need to find the appropriate compiler version and compile all dependencies your self.
+
+_This guide is relevant for Hopsan version 0.7.* 64-bit development_
+__You must use the same compiler version for all components of Hopsan and dependencies, if you mix versions Hopsan may not work as expected!__
+
+It is important that you install to the exact destinations given below, otehrwise the automatic scripts for building dependencies will not work.
+If you want to use other destinations, you can, of course, change the scripts.
+
+<b>Installation Qt libraries and Compiler:</b>
+1. Download "qt-5.4.1-x64-mingw492r1-seh-rev1.exe" from http://downloads.sourceforge.net/project/qt64ng/qt/x86-64/5.4.1/mingw-4.9/seh/qt-5.4.1-x64-mingw492r1-seh-rev1.exe
+2. Install to `C:\Qt\qt-5.4.1-x64-mingw492r1-seh-rev1`
+
+<b>Installation of the Qt Creator IDE:</b>
+1. Download and install a \b Qt \b Creator version of your choice from http://www.qt.io/download-open-source/ \n
+\b Note! MAke sure taht you __ONLY__ install Qt Creator, and not the official QtLibraries! \n
+\b Note! When new releases are published the old ones can be found from http://download.qt.io/official_releases/qtcreator/ \n
+\b Note! A 32-bit version of Qt Creator will work fine even if you are building 64-bit, it is only the code editor.
+
+<b>Configure QtCreator:</b>
+1. In QtCreator, go to Tools->Options->Build&Run
+2. Under the tab "Qt Versions", add your "Qt Version" (if it does not exist) by pointing to `C:\Qt\qt-5.4.1-x64-mingw492r1-seh-rev1\qt-5.4.1-x64-mingw492r1-seh-rev1\bin\qmake.exe` \n
+   Select a clever name so that you know which Qt version is which (if you multiple versions installed)
+3. Make sure that the compiler is configured under "Compilers", add it manually has not been found, (point to `C:\Qt\qt-5.4.1-x64-mingw492r1-seh-rev1\mingw64\bin\g++.exe` ) \n
+   Make sure to select a clever name (if you are using multiple compilers) so that you can easily identify them. \n
+   Make sure that the ABI: field shows: __x86-windows-msys-pe-64bit__
+4. Configure a debugger under the Debuggers tab by pointing to `C:\Qt\qt-5.4.1-x64-mingw492r1-seh-rev1\mingw64\bin\gdb.exe` \n
+   Make sure to select a clever name (if you are using multiple debuggers) so that you can easily identify them. \n
+5. Configure a "Kit" (Combination of Qt version, Compiler and Debugger) under the Kits tab. \n
+   Again! Choose a clever name. \n
+   Choose Compiler, Debugger and Qt version in the drop down boxes. Make sure that the Qt mkspec: field is empty
+
+\section devBaseRequirementsPage-Ubuntu Development on GNU/Linux *Ubuntu or any Debian based system
+
+On Linux based operating systems you should use the default GCC compiler.
+You should use the Qt-libraries in you distribution package repository. 
+Make sure that you install the Qt development packages.
+
+1. To install GCC (and some other tools) on Ubuntu run `apt-get install build-essential`.
+2. The following packages seem to include all necessary components: `apt-get install qttools5-dev qttools5-dev-tools qt5-default libqt5svg5-dev libqt5xmlpatterns5-dev libqt5webkit5-dev qtmultimedia5-dev`\n
+   __Note!__ What packages are needed may change between OS versions (du to repacakging), you may need additional packages.
+3. If you want the newest version of Qt Creator you may choose one from http://download.qt.io/official_releases/qtcreator/ \n
+   If you do not care use the one in your package repsoitory.
+
+\subsection qt4-linux-gcc Installing Qt4 (If Qt5 is not available)
+If Qt5 libraries are not availible you will need the following packages instead: `apt-get install libqt4-dev qt4-dev-tools`.
+*/
