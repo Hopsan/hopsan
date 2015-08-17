@@ -9,9 +9,11 @@
 #include <iostream>
 #include <thread>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 const int gLinger_ms = 1000;
+#define MAXFILECHUNKSIZE 5000000 //(5 MB)
 
 // ---------- Help functions start ----------
 
@@ -206,6 +208,48 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
         cout << err << endl;
     }
     return rc;
+}
+
+bool RemoteHopsanClient::blockingSendFile(const string &rName, double *pProgress)
+{
+    std::ifstream in(rName, std::ifstream::ate | std::ifstream::binary);
+    std::ifstream::pos_type filesize = in.tellg();
+    in.seekg(0); //Rewind file ptr
+    array<char, MAXFILECHUNKSIZE>  buffer;
+
+    std::ifstream::pos_type readBytesNow, remaningBytes=filesize;
+    while( !in.eof() && (remaningBytes != 0) )
+    {
+        readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
+        in.read(buffer.data(), readBytesNow);
+        std::string data(buffer.data(), readBytesNow);
+        bool rc = sendFilePart(rName, data, (readBytesNow < MAXFILECHUNKSIZE));
+        if (!rc)
+        {
+            cout << "Failed to send file part! " << endl;
+            in.close();
+            return false;
+        }
+        remaningBytes -= readBytesNow;
+        *pProgress = double(filesize-remaningBytes)/double(filesize);
+        //cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " Progress: " << *pProgress << endl;
+    }
+    in.close();
+    return true;
+}
+
+bool RemoteHopsanClient::sendFilePart(const string &rName, const string &rData, bool isLastPart)
+{
+   std::lock_guard<std::mutex> lock(mWorkerMutex);
+   cmdmsg_SendFile_t msg {rName, rData, isLastPart};
+   sendClientMessage(mpWorkerSocket, SendFile, msg);
+   string err;
+   bool rc = receiveAckNackMessage(mpWorkerSocket, mLongReceiveTimeout, err);
+   if (!rc)
+   {
+       cout << err << endl;
+   }
+   return rc;
 }
 
 bool RemoteHopsanClient::abortSimulation()

@@ -19,14 +19,14 @@ int main(int argc, char* argv[])
         TCLAP::CmdLine cmd("RemoteHopsanClient", ' ');
 
         // Define a value argument and add it to the command line.
-        TCLAP::ValueArg<std::string> serverAddrOption("s", "serverip", "Server IP address (default is localhost)", false, "localhost", "IP address", cmd);
-        TCLAP::ValueArg<std::string> serverPortOption("p", "port", "Server port", true, "", "Port number", cmd);
+        TCLAP::ValueArg<std::string> serverAddrOption("s", "serverip", "Server IP address and port (default is localhost:45050)", false, "localhost:45050", "IP address", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
+        TCLAP::MultiArg<std::string> assets("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
 
-        cout << PRINTCLIENT << "Connecting to: " << serverAddrOption.getValue() << ":" << serverPortOption.getValue()  << endl;
+        cout << PRINTCLIENT << "Connecting to: " << serverAddrOption.getValue() << endl;
 
         // Prepare our context and socket
 #ifdef _WIN32
@@ -35,31 +35,37 @@ int main(int argc, char* argv[])
         zmq::context_t context(1);
 #endif
         RemoteHopsanClient rhopsan(context);
-        rhopsan.connectToServer(serverAddrOption.getValue()+":"+serverPortOption.getValue());
-        int serverPort = atoi(serverPortOption.getValue().c_str());
-
+        rhopsan.connectToServer(serverAddrOption.getValue());
         cout << PRINTCLIENT << "Connected: " << rhopsan.serverConnected() << endl;
 
         try
         {
-            int ctrlPort;
-            bool rc = rhopsan.requestSlot(1, ctrlPort);
+            int workerPort;
+            bool rc = rhopsan.requestSlot(1, workerPort);
             if (rc)
             {
-                size_t workerPort = serverPort + ctrlPort;
                 cout << PRINTCLIENT << "Got server worker slot at port: " << workerPort << endl;
-                rhopsan.connectToWorker(ctrlPort);
+                rhopsan.connectToWorker(workerPort);
 
                 // Read model
                 ifstream hmf_file(hmfPathOption.getValue());
                 if (!hmf_file.is_open())
                 {
-                    cout << PRINTCLIENT << "Error: Could not open file " << hmfPathOption.getValue() << endl;
+                    cout << PRINTCLIENT << "Error: Could not open model file " << hmfPathOption.getValue() << endl;
+                }
+
+                // Send model assets
+                const std::vector<std::string> rAssets = assets.getValue();
+                for (const string &rAsset: rAssets)
+                {
+                    cout << PRINTCLIENT << "Sending asset: " << rAsset <<  " ... ";
+                    double progress;
+                    rhopsan.blockingSendFile(rAsset, &progress);
+                    cout << "Done!" << endl;
                 }
 
                 std::stringstream filebuffer;
                 filebuffer << hmf_file.rdbuf();
-
                 rc = rhopsan.sendModelMessage(filebuffer.str());
                 rhopsan.requestMessages();
 

@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <ctime>
 #include <chrono>
@@ -49,6 +50,102 @@ std::string nowDateTime()
     std::strftime(buff, sizeof(buff), "%b %d %H:%M:%S", std::localtime(&now_time));
     return std::string(&buff[0]);
 }
+
+class ModelAssetHandler
+{
+public:
+    void setFileDestination(const std::string &rDestination)
+    {
+        // We do not allow empty destinations as that would cause writing of files relative root directory if absolute path files are added
+        if (!rDestination.empty())
+        {
+            mFileDestination = rDestination;
+        }
+    }
+
+    std::string fileDestination() const
+    {
+        return mFileDestination;
+    }
+
+    bool hasFile(const std::string &rName)
+    {
+        return mFileMap.find(rName) != mFileMap.end();
+    }
+
+    bool isFileComplete(const std::string &rName)
+    {
+        auto it = mFileMap.find(rName);
+        if (it != mFileMap.end())
+        {
+            return it->second;
+        }
+        return false;
+    }
+
+    bool addFilePart(const cmdmsg_SendFile_t &rFilePart)
+    {
+        // As a safety this must be set to avoid accidentally overwriting stuff on the local disc
+        // well you can do taht anyway if you set this to something stupid
+        if (mFileDestination.empty())
+        {
+            return false;
+        }
+
+        string dirPath, fileName;
+        splitFilePath(rFilePart.filename, dirPath, fileName);
+
+        FileAccess fa;
+        if(fa.enterDir(mFileDestination))
+        {
+            fa.createDir(dirPath);
+        }
+        string fullFilePath=mFileDestination+rFilePart.filename;
+
+        std::ofstream file;
+        //! @todo what if we have file and send it again, should we truncate or just abort somehow, here it would be nice to know checskum of entire file and tell client we already have it
+        //! @todo maybe better to have a "have file request instead"
+        if (hasFile(fullFilePath))
+        {
+            // Open to append
+            file.open(fullFilePath, ios::out | ios::app | ios::binary);
+        }
+        else
+        {
+            // Open to replace
+            file.open(fullFilePath, ios::out | ios::trunc | ios::binary);
+        }
+
+        if (file.is_open())
+        {
+            // Write data to file
+            file.write(rFilePart.data.data(), rFilePart.data.size());
+
+            // Remember file
+            mFileMap.insert(std::pair<std::string, bool>(fullFilePath, rFilePart.islastpart));
+
+            // Return success
+            //! @todo should check for errors in writing
+            file.close();
+            return true;
+        }
+        cout << PRINTWORKER << " Could not open "<< fullFilePath << " for writing!" << endl;
+        return false;
+    }
+
+    void clear()
+    {
+        // If we forget all files they will be replaced the next time they are received
+        mFileMap.clear();
+        mFileDestination = "./";
+    }
+
+private:
+    //! @todo some file meta data struct instead of iscomplete bool
+    std::map<std::string, bool> mFileMap;
+    std::string mFileDestination = "./";
+
+};
 
 // ------------------------------
 // Model utilities BEGIN
@@ -236,6 +333,7 @@ ComponentSystem *gpRootSystem=nullptr;
 double gSimStartTime, gSimStopTime;
 size_t gNumThreads = 1;
 SimulationHandler gSimulator;
+ModelAssetHandler gModelAssets;
 std::atomic_bool gIsSimulating(false);
 bool gIsModelLoaded = false;
 bool gWasSimulationOK = false;
@@ -386,6 +484,8 @@ int main(int argc, char* argv[])
     loadComponentLibraries("./componentLibraries");
     loadComponentLibraries("../componentLibraries/defaultLibrary");
 
+    gModelAssets.setFileDestination("./");
+
     // Prepare our context and sockets
     try
     {
@@ -512,14 +612,21 @@ int main(int argc, char* argv[])
                         {
                             cout << PRINTWORKER << nowDateTime() << " Received hmf with size: " << hmf.size() << endl; //<< hmf << endl;
 
-                            bool rc = loadModel(hmf);
-                            if (rc )
+                            if (hmf.empty())
                             {
-                                sendShortMessage(socket, Ack);
+                                sendMessage(socket, NotAck, "Server can not load empty model");
                             }
                             else
                             {
-                                sendMessage(socket, NotAck, "Server could not load model");
+                                bool rc = loadModel(hmf);
+                                if (rc )
+                                {
+                                    sendShortMessage(socket, Ack);
+                                }
+                                else
+                                {
+                                    sendMessage(socket, NotAck, "Server could not load model");
+                                }
                             }
                         }
                         else
@@ -527,6 +634,29 @@ int main(int argc, char* argv[])
                             cout << PRINTWORKER << nowDateTime() << " Error: Could not parse model message" << endl;
                             sendMessage(socket, NotAck, "Could not parse model message");
                         }
+                    }
+                }
+                else if (msg_id == SendFile)
+                {
+                    bool parseOK;
+                    cmdmsg_SendFile_t msg = unpackMessage<cmdmsg_SendFile_t>(request, offset, parseOK);
+                    cout << PRINTWORKER << nowDateTime() << " Got file chunk: " << msg.filename << " size: " << msg.data.size() << " finalPart: " << msg.islastpart << endl;
+                    if(parseOK)
+                    {
+                        bool isok = gModelAssets.addFilePart(msg);
+                        if (isok)
+                        {
+                            sendShortMessage(socket, Ack);
+                        }
+                        else
+                        {
+                            sendMessage(socket, NotAck, "Could not save file chunk");
+                        }
+                    }
+                    else
+                    {
+                        cout << PRINTWORKER << nowDateTime() << " Error: Could not parse file chunk" << endl;
+                        sendMessage(socket, NotAck, "Could not parse file chunk");
                     }
                 }
                 else if (msg_id == Simulate)

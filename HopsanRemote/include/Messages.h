@@ -22,6 +22,7 @@ enum MessageIdsEnumT {
     Benchmark,
     SetParameter,
     SetModel,
+    SendFile,
     ReleaseRelaySlot,
 
     /* Request messages */
@@ -99,6 +100,15 @@ typedef struct
     int ctrlport;
     MSGPACK_DEFINE(relaybaseid, ctrlport)
 }reqmsg_RelaySlot_t;
+
+typedef struct
+{
+    std::string filename;
+    std::string data;
+    bool islastpart;
+    MSGPACK_DEFINE(filename, data, islastpart)
+}cmdmsg_SendFile_t;
+
 
 // Message structures for messages typically used by Servers
 
