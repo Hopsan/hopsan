@@ -393,7 +393,8 @@ and/or accompanying materials:
 \endverbatim
 
 \subsection sec_optionalhopsandependencies_zeromq ZeroMQ
-Used for remote communication in Hopsan.
+Used for remote communication in Hopsan. \n
+http://zeromq.org/
 
 __License:__ \n
 \verbatim
@@ -408,7 +409,9 @@ libzmq is distributed in the hope that it will be useful, but WITHOUT ANY WARRAN
 \endverbatim
 
 \subsection sec_optionalhopsandependencies_msgpack MessagePack
-Binary serialization format for use with remote simulation and optimization framework.
+Binary serialization format for use with remote simulation and optimization framework. \n
+http://msgpack.org/index.html
+
 __License:__ \n
 \verbatim
 Apache License Version 2.0, January 2004
