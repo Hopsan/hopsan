@@ -80,4 +80,4 @@ if [ "$doBuildInComponents" = "true" ]; then
 fi
 
 # Build user documentation
-./buildDocumentation.sh user
+./buildDocumentation.sh

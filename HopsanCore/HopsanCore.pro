@@ -75,7 +75,7 @@ unix {
     INCLUDEPATH += /usr/include/tbb/
 
     # Retreive the hopsan core source code revision number
-    system($${PWD}/../getSvnRevision.sh include HOPSANCORESVNREVISION)
+    system($${PWD}/../getSvnRevision.sh include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
 }
 macx { 
     INCLUDEPATH += /opt/local/include/
@@ -179,7 +179,8 @@ HEADERS += \
     ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
     include/Quantities.h \
     include/NodeRWHelpfuncs.hpp \
-    include/HopsanCoreVersion.h
+    include/HopsanCoreVersion.h \
+    include/HopsanCoreSVNRevision.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

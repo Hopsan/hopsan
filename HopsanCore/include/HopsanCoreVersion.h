@@ -31,19 +31,13 @@
 
 // We need to use this include because external dependencies will need the revision of the core when it was compiled last time,
 // not the latest revision that you get when compiling the external component.
-// Only for trunk builds, NOT in RELEASE, (will be auto removed by script)
-#include "svnrevnum.h"
+#include "HopsanCoreSVNRevision.h"
 
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANCORESVNREVISION
  #define HOPSANCORESVNREVISION UNKNOWN
 #endif
-
-// The code must "know" which core revision it is on, this file will be included in external libraries so that
-// They know which revision of the code they were build against
-// This value should be set by external script on every build
-//#define HOPSANCORESVNREVISION UNKNOWN
 
 #define HOPSANCOREVERSION "0.7.x_r" TO_STR(HOPSANCORESVNREVISION)
 #define HOPSANCOREMODELFILEVERSION "0.4"
