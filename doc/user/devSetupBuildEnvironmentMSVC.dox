@@ -1,0 +1,32 @@
+/*!
+\page page_setupbuildenvironmentmsvc Setting up the MSVC++ (The Microsoft Visual C++ Compiler) environment
+
+__Note! This guide is not up to date. Also in only covers MSVC2008 and 2010, for newer versions you are on your own__
+
+This guide describes what you need to install to be able to build MSVC2008 and MSVC2010 versions of the HopsanCore
+If you do not need both of them, then read the guide first, then install the version that you want.
+The MSVC compiler is needed if you want to compile the HopsanCore or component libraries that works with certain other programs, such as Matlab/Simulink.
+
+<b>Do NOT!</b> install the Microsoft Visual Studio 2010 Express development environment, it will not work with the build scripts (at least on 64-bit Windows). You should use the Windows SDKs instead.
+
+If you have previous installations of Microsoft Windows SDKs installed you need to uninstall them and all traces of Microsoft Visual C++ Compilers (not redistributable packages), "Application Verifier", "Debugging Tools for Windows" and "Performance Toolkit" (and maybe others). Otherwise Windows SDK installation may/will fail if newer versions of these components are already installed).
+
+-# Download and install the "Microsoft Windows SDK for Windows 7 and .NET Framework 3.5 SP1" (Windows SDK 7.0) from <a href="http://www.microsoft.com/downloads/en/default.aspx " target="_blank">Microsoft Download Center</a>.
+You don't need to install the .NET stuff, but make sure that you install the "Debugging Tools for Windows"
+-# (Optional if you want to be able to debug) If you are using a 64-bit OS you will also need to install the 32-bit version of the debugging tools. The SDK will automatically only install the 64-bit version. If you can not get the newest version manually then select version 6.11.1.404 from the archive downloads list that you can find <a href="http://msdn.microsoft.com/en-us/windows/hardware/gg463009" target="_blank">here</a>. This link does no longer seem to contain the needed file though.
+-# Pay attention to the messages in the last window in the installation, if you have an error here you will have to remove the conflicting version and then reinstall the SDK components that failed.
+-# Repeat the above for "Microsoft Windows SDK for Windows 7 and .NET Framework 4" (Windows SDK 7.1)
+   -# If you are unable to install the Visual Compilers (because a newer version already seems to be installed) see Microsoft KB2519277 for a patch.
+      -# First install the Windows SDK 7.1 without compilers, then run the patch file to reinstall compilers.
+      -# The issue is most likely cause by you having previously installed "MS Visual Studio 2010 Express SP1"
+      -# Unfortunately the KB2519277 patch is missing files, this is also a known bug that will no be fixed by Microsoft (official statement)
+      -# Now go to add/remove programs and uninstall all Microsoft Visual C++ 2010 compilers
+      -# Hopefully you will now be able to reinstall Windows SDK 7.1 with compilers (which have a slightly older version then those that came with Visual Studio and KB2519277)
+
+If you get an error about "cl.exe" not being found when building, then the "Visual Studio 9.0/VC/bin" or "Visual Studio 10.0/VC/bin" folder has not been added to your PATH system environment variable.
+    -# Note! the release build script should do this automatically, adding the path manually is not recommended as that could mean that the wrong version will be used when you try to compile for a different MSVC version.
+	
+To get a working MSVC debugger in Qt creator
+-# Go into Tools->Options->Debugger->Cdb and check the Cdb box. Now set the path to the Debugging tools for Windows 32-bit version. (Autodetect should work).
+-# If you want the debugger to automatically download debugger symbols for the Windows libraries, then create a folder, eg. `C:\websymbols` and add the following line to "Symbol Paths:" under the Cdb tab: "SRV*c:\websymbols*http://msdl.microsoft.com/download/symbols" (without quotes). You websymbols folder will act as a cache for symbol retrieval.
+*/

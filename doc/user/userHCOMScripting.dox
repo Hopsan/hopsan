@@ -1,7 +1,7 @@
 /*!
 \page userScriptingPageHcomPage HCOM Scripting
 HCOM is the built-in scripting language in Hopsan. It can control most parts of the program, either from the terminal widget or through external script files. 
-Use the \c help command to list all available commands or \c help \c \<command\> \endverbatim to get help for a specific command.<br>
+Use the \c help command to list all available commands or \c help \c \<command\> to get help for a specific command.<br>
 
 All available commands are listed below. 
 

@@ -30,7 +30,7 @@ This feature is not implemented in the current version of Hopsan. In future rele
 When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results as a test model.
 You can later run this model again and automatically compare the simulation results.
 This is very important if you want to make sure that your component and models do not change their behaviour when new versions of Hopsan are released.
-<b>Remember<b> that you can not make any more changes (that affect simulation results) to the model file if you want the validation to match.
+__Remember__ that you can not make any more changes (that affect simulation results) to the model file if you want the validation to match.
 
 \section userUnitTestModelsAndComponentsPage-components_howtocreateCLI How to Create a Validation Model in Hopsan CLI
 The HopsanCLI can automatically create a validation data set based on all scopes in your model. If no scopes are available, no data set will be created.
@@ -43,8 +43,8 @@ The HopsanCLI can automatically create a validation data set based on all scopes
 \section userUnitTestModelsAndComponentsPage-components_howtocreateGUI How to Create a Validation Model in Hopsan GUI
 -# Open your model in HopsanGUI and simulate it.
   -# Add the variables (from ports) that you want to use as validation data to a plot window.
-  -# Export the data as <b>hvc<b>, <b>hvd<b> (Hopsan Validation Configuration and Data) files.
--# The generated <b>hvc<b> file contains default entries. You may want to manually edit it, see format description below.
+  -# Export the data as <b>hvc</b>, <b>hvd</b> (Hopsan Validation Configuration and Data) files.
+-# The generated <b>hvc</b> file contains default entries. You may want to manually edit it, see format description below.
 -# Store the model, dataset and hvc file in a safe place. 
 
 \section userUnitTestModelsAndComponentsPage-components_howtotestCLI How to Test a Validation Model in Hopsan CLI

@@ -1,0 +1,125 @@
+/*!
+\page page_buildhopsandependenciesmanually Building the Hopsan Dependencies manually
+
+This page contain instructions for how to build the dependencies manually.
+You are __advised__ to use the automatic scripts instead.
+The instructions on this page are __very likely outdated__
+
+\section tbb TBB Intel Thread Building Blocks
+HopsanCore depends on one external library for multi threaded simulations. Here is a description on how to build or install it.\n
+If TBB is not found by qmake, then the core will be compiled without multi-threading support.
+
+\subsection tbb-ubuntu Build/Install TBB on Ubuntu
+-# To make things easy, install from the package repository using, `sudo apt-get install libtbb-dev`
+
+\subsection tbb-windows-mingw Build TBB on Windows using MinGW
+-# Download the latest stable version 3 release source code, for example: "tbb30_20101215oss_src.tgz" from [https://www.threadingbuildingblocks.org/download](https://www.threadingbuildingblocks.org/download) stable release.
+  -# For 32-bit builds unpack the contents to Dependencies\\tbb30_20101215oss (or whatever your version is)
+  -# For 64-bit builds unpack the contents to Dependencies\\tbb30_20101215oss_64 (or whatever your version is)
+-# Open a command prompt (Start->run->cmd). Navigate to the TBB directory that you just unpacked
+-# Make sure that your desired compiler version is found in the beginning of your PATH variable, make sure you use the correct version (32 or 64 bit). It is **very important** that this is the same compiler as you will use to build Hopsan.
+  -# Check your path variable with the command  `PATH`
+  -# Set you PATH with the command  `set PATH=C:\path\to\your\mingw\bin;``%``PATH%`
+  -# Check your path variable with the command  `PATH`
+-# Run  `mingw32-make compiler=gcc tbb_build_prefix=output info` to see information before build, make sure *arch* is correct (32 or 64 bit)
+  -# Run  `mingw32-make compiler=gcc tbb_build_prefix=output` to build both release and debug libraries
+-# After a successful compilation you are done! You do not need to install or copy any files. The HopsanCore.pro file will automatically copy the needed binary files.
+  -# **Note!** HopsanCore will have a set of default paths to search for, if you install a newer stable version of TBB you should add this version to the TOP of the defaults list in the HopsanCoreBuild.prf file.
+
+\subsection tbb-windows-vcpp Build TBB on Windows using VC++ --Needs update after new project file structure--
+These libs are already build with VC++ in the Windows specific download.
+-# Download the latest stable release for windows, for example: "tbb30_20100406oss_win.zip"
+-# Unzip it into "Dependencies". Check the lib and include path in the HopsanCore project file to make sure that the unpacked path is correct.
+-# Add the appropriate tbb bin path (where the DLL is) to your build/run environment path, example: "C:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\bin\ia32\vc9" for 32-bit VC9.0 compiler compatability.
+
+\section fmilibrary Build FMILibrary
+HopsanGenerator depends on some external libraries. Here is a description on how to build them.
+\subsection fmulibrary-ubuntu Ubuntu
+-# Download FMILibrary-2.0.1-src.zip from <a href="http://www.jmodelica.org/FMILibrary" target="_blank">http://www.jmodelica.org/FMILibrary</a>
+-# Unpack the files to HopsanGenerator/Dependencies/FMILibrary-2.0.1
+-# Open a terminal and go to the new folder
+-# Create a build directory: 'mkdir build-fmilib'
+-# Go into the build directory: 'cd build-fmilib'
+-# Run CMake to generate the make files: 'cmake ../'
+-# Build the library: 'make install test'
+
+\subsection fmilibrary-windows Windows (MinGW)
+-# Download FMILibrary-2.0.1-src.zip from <a href="http://www.jmodelica.org/FMILibrary" target="_blank">http://www.jmodelica.org/FMILibrary</a>
+-# Unpack the files to HopsanGenerator/Dependencies/FMILibrary-2.0.1
+-# Download and install cmake-gui from <a href="http://www.cmake.com" target="_blank">http://www.cmake.com</a>
+-# Open the CMake GUI
+-# Set 'Where is the source code' to the FMILibrary-2.0.1 folder
+-# Set 'Where to build the binaries' to `<yourpath>/FMILibrary-2.0.1/build-fmilib`
+-# Click on 'Generate'. Choose to create the new direcory. Choose MinGW compiler.
+-# Make sure your MinGW compiler (32-bit or 64-bit) is located in your system PATH variable
+-# Open a terminal, go to the 'build-fmilib' directory and write the following command: 'mingw32-make install'
+
+\section qwt Build Qwt - Qt Widgets for Technical Applications
+\subsection qwt-ubuntu-auto Ubuntu (Automatically)
+This will build against your **system-version** of the Qt libs, if you have a different version in the QtSDK see how to manually build below
+-# Make sure that you have the libqt4-dev package installed. `apt-get install libqt4-dev``
+-# Run the `unpackPatchAndBuildQwt.sh` script in Dependencies, it will build Qwt
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
+
+\subsection qwt-ubuntu-manual Ubuntu (Manually)
+-# First download a version >=trunk from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
+-# Unpack into the Dependencies directory
+-# The default on Unix is to build only Release mode, if you want to change this (only if you want to debug into qwt), you can do that in the qwtbuild.pri file.
+  -# "Enable debug_and_release + build_all if you want to build both."
+-# Build the qwt project (you can use shadowbuild)
+-# If compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
+  -# \e Note! HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
+
+\subsection qwt-windows Windows (MinGW and VC++)
+-# Run the `unpackPatchAndBuildQwt.bat` script
+  -# Or download the desired version from [http://sourceforge.net/projects/qwt/files/](http://sourceforge.net/projects/qwt/files/) and unpack it into the Dependencies directory
+-# If you are going to build a 64-bit version, then rename the qwt-version directory to qwt-version_64 where "version" is the qwt version number.
+-# Build the Qwt project with QtCreator, make sure that you select the correct compiler. It is **very important** that you compile with the same compiler as you will use to build Hopsan.
+  -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
+  -# **Note!** HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
+
+\section pythonqt Build PythonQt (Optional)
+
+\subsection pythonqt-ubuntu-auto Ubuntu (Automatically)
+This will build against your \b system-version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
+-# Make sure that you have the libqt4-dev and the python-dev package installed. "apt-get install libqt4-dev python-dev"
+  -# \e Note! PythonQt will likely not work with Python version >= 3, use 2.7 if you can choose
+-# Run the unpackPatchAndBuildPythonQt.sh script in HopsanGUI/Dependencies, it will build PythonQt, (assumes python 2.7, (second command line arg to change))
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
+
+\subsection pythonqt-ubuntu-manual Ubuntu (Manually)
+-# Install the python-dev package "apt-get install python-dev"
+  -# \e Note! PythonQt will likely not work with Python version >= 3, use 2.7 if you can choose
+-# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+  -# Place the ex: PythonQt2.1 directory in HopsanGUI/Dependencies, HopsanGUI.pro will search for it there
+-# Go to the PythonQt directory and open the PythonQt project
+  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in build/common.prf (We need both a debug and a release build)
+  -# In build/python.prf, replace the line unix:PYTHON_VERSION=2.6 with your version of Python
+  -# \b DEACTIVATE shadow build in both debug and release config
+  -# Build the PythonQt project, if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
+
+\subsection pythonqt-windows-mingw Windows (with MinGW)
+-# Download and install Python 2.7 that can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
+-# Run the `unpackPatchAndBuildPythonQt.bat` script in the HopsanGUI\\Dependencies directory
+  -# If you wish to make a 64 bit build, then append "_64" to the directory name. Example: `PythonQt2.1_Qt4.8_64`
+-# Build PythonQt in release and debug mode with shadowbuild activated. (Both will be build at once, as the auto applied patch will have selected that in the common.prf file)
+  -# It is **very important** that you compile with the same compiler as you will use to build Hopsan.
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
+
+\subsection pythonqt-windows-vc Windows (with Visual C++) --OBSOLETE Needs update--
+-# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
+-# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN repository, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
+-# Open QT Creator and the PythonQT project. Use release settings. Deactivate shadowbuild.
+-# Go to the project tab and add the following build variables:\n
+PYTHON_PATH = c:\\Python26 \n
+PYTHON_LIB  = c:\\Python26\\libs
+-# Add the PythonQt*.*.*\\src folder to the "Include Path" in your project.
+-# Build PythonQt in release mode.
+-# If you want to run the tests add the PythonQt*.*.*\\lib directory to your path (in build environment)
+-# Add the PYTHONQT_PATH = C:\\Users\\petno25\\Downloads\\PythonQt2.0.1 (or whatever your path is), to the HopsanGui build environment
+-# Add the  C:\\Users\\petno25\\Downloads\\PythonQt2.0.1\\lib (or whatever your path is) to the PATH variable in your HopsanGui build environment
+
+*/

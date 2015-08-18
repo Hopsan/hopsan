@@ -1,6 +1,6 @@
 /*!
 
-\page userHopsanCLIPage Using The Hopsan CLI Application
+\page page_usinghopsancli Using The Hopsan CLI Application
 
 The Hopsan CLI (Command Line Interface) is an application that you can use to simulate Hopsan models from the command line.
 The CLI has a number of options that let you load models, import/export parameter sets, export the simulation results and run tests.

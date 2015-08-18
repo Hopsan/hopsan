@@ -1,24 +1,20 @@
 /*!
 
-\mainpage Hopsan Manual
--# \subpage userHopsanGUIPage
--# \subpage userHopsanCLIPage
--# \subpage componentDevelopmentPage
-\cond DEVELOPERDOCUMENTATION
--# \subpage hopsanDevelopmentPage
-\endcond
--# \subpage userAcknowledgementsPage
+\mainpage Hopsan Users Manual
+-# \subpage page_usinghopsangui
+-# \subpage page_usinghopsancli
+-# \subpage page_componentdevelopment
 
 
-\page componentDevelopmentPage Component Library Development
+\page page_componentdevelopment Component Library Development
 -# \subpage userTransmissionLineModelingMethodPage
 -# \subpage userModelingInHopsanPage
--# \subpage devBaseRequirementsPage
+-# \subpage page_setuplibrarydevelopmentenvironment
 -# \subpage devWritingCppComponentsPage
 -# \subpage userAutomaticCodeGenerationPage
 -# \subpage userUnitTestModelsAndComponentsPage
 
-\page userHopsanGUIPage Using The Hopsan GUI Application
+\page page_usinghopsangui Using The Hopsan GUI Application
 -# \subpage userGettingStartedPage
 -# \subpage userAnalysisToolsPage
 -# \subpage userOptimizationPage
@@ -28,13 +24,11 @@
 -# \subpage userMultiThreadedPage
 -# \subpage userShortkeysPage
 
-\cond DEVELOPERDOCUMENTATION
-\page hopsanDevelopmentPage For Hopsan Developers
--# \subpage devBaseRequirementsPage
--# \subpage devHowtoBuildDocumentationPage
--# \subpage devBuildHopsanPage
--# \subpage devCodingConventionsPage
--# \subpage devSubversionAutoPropsPage
-\endcond
+\page page_hopsandevelopment For Hopsan Developers
+-# \subpage page_setupbuildenvironment
+-# \subpage page_buildhopsan
+-# \subpage page_howtobuilddocumentation
+-# \subpage page_codingconventions
+-# \subpage page_subversionautoprops
 
 */

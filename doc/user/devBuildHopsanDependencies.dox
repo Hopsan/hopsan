@@ -1,0 +1,187 @@
+/*!
+\page page_hopsandependencies Hopsan Dependencies and their Licenses
+Hopsan depend on various third-party projects for some functionality. We would like to acknowledge these projects.
+
+\section sec_requiredhopsandependencies Required Hopsan Dependencies
+
+\subsection sec_requiredhopsandependencies_qt Qt - Cross-platform application and UI framework
+This framework is used as the basis for the HopsanGUI application and some other components of Hopsan \n
+http://www.qt.io/
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+\subsection sec_requiredhopsandependencies_qwt Qwt - Qt Widgets for Technical Applications
+This library is used for plotting in the HopsanGUI. \n
+http://qwt.sourceforge.net/
+
+__License:__ \n
+\verbatim
+                             Qwt License
+                           Version 1.0, January 1, 2003
+The Qwt library and included programs are provided under the terms
+of the GNU LESSER GENERAL PUBLIC LICENSE (LGPL) with the following
+exceptions:
+
+    1. Widgets that are subclassed from Qwt widgets do not
+       constitute a derivative work.
+    2. Static linking of applications and widgets to the
+       Qwt library does not constitute a derivative work
+       and does not require the author to provide source
+       code for the application or widget, use the shared
+       Qwt libraries, or link their applications or
+       widgets against a user-supplied version of Qwt.
+       If you link the application or widget to a modified
+       version of Qwt, then the changes to Qwt must be
+       provided under the terms of the LGPL in sections
+       1, 2, and 4.
+    3. You do not have to provide a copy of the Qwt license
+       with programs that are linked to the Qwt library, nor
+       do you have to identify the Qwt license in your
+       program or documentation as required by section 6
+       of the LGPL.
+
+       However, programs must still identify their use of Qwt.
+       The following example statement can be included in user
+       documentation to satisfy this requirement:
+
+           [program/widget] is based in part on the work of
+           the Qwt project (http://qwt.sf.net).
+\endverbatim
+
+\subsection sec_requiredhopsandependencies_fmilibrary FMI Library
+This library is used for FMI/FMU support \n
+http://www.jmodelica.org/FMILibrary
+
+__License:__ \n
+\verbatim
+Copyright (C) 2012 Modelon AB
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+- Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+- Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+- Neither the name of the Modelon AB nor the
+  names of its contributors may be used to endorse or promote products
+  derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL MODELON AB BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+\endverbatim
+
+\subsection sec_requiredhopsandependencies_tclap TCLAP
+Used for command-line argument parsing \n
+http://tclap.sourceforge.net/
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+
+\subsection sec_requiredhopsandependencies_rapidxml RapidXML
+Used for xml parsing in the HopsanCore and components where Qt XML is not available \n
+http://rapidxml.sourceforge.net/
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+
+\subsection sec_requiredhopsandependencies_csvparser CSV Parser
+The CSV parser utility (deprecated since 0.7.* \n
+http://code.google.com/p/csv-parser-cplusplus/
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+\subsection sec_requiredhopsandependencies_indexingcsvparser Indexing CSV Parser
+A better CSV parser utility available since 0.7.* \n
+link
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+
+
+\section sec_optionalhopsandependencies Optional Hopsan Dependencies
+
+\subsection sec_optionalhopsandependencies_tbb Intel - Thread Building Blocks
+Used for multi core simulation support in the Hopsan Core \n
+https://www.threadingbuildingblocks.org/
+
+__License:__ \n
+\verbatim
+GNU General Public License, version 2
+
+with
+
+Runtime Exception
+
+As a special exception, you may use this file as part of a free software
+library without restriction.  Specifically, if other files instantiate
+templates or use macros or inline functions from this file, or you compile
+this file and link it with other files to produce an executable, this
+file does not by itself cause the resulting executable to be covered by
+the GNU General Public License.  This exception does not however
+invalidate any other reasons why the executable file might be covered by
+the GNU General Public License.
+
+\endverbatim
+
+\subsection sec_optionalhopsandependencies_pythonqt PythonQt
+Gives python script access to GUI functions \n
+http://pythonqt.sourceforge.net
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+\subsection sec_optionalhopsandependencies_libmarkdown libmarkdown
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+\subsection sec_optionalhopsandependencies_libhdf5 HDF5
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+\subsection sec_optionalhopsandependencies_zeromq ZeroMQ
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+\subsection sec_optionalhopsandependencies_msgpack MessagePack
+
+__License:__ \n
+\verbatim
+licens text
+\endverbatim
+
+*/

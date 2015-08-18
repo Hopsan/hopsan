@@ -1,0 +1,26 @@
+/*!
+\page page_howtobuilddocumentation How to Build the Documentation
+The Hopsan Documentation is based on Doxygen. __You are only required to install Doxygen__, the other tools are optional.\n
+Graphviz and dvipng (with latex) are used to show pretty dependence graphs and latex equations in the documentation.\n
+If you want to build a pdf manual than latex must be installed (and pdf activated in the Doxyfile)
+
+\section sec_howtobuilddocumentation_ubuntu Install and build the documentation in Ubuntu
+-# Install the necessary packages with: `apt-get install doxygen graphviz dvipng`\n
+
+To build or later rebuild the documentation, run "buildDocumentation.sh". Add the argument \b full to build full documentation.\n
+Open `doc/html/index.html` in a web browser after building.
+
+\section sec_howtobuilddocumentation_windows Install and build the documentation in Windows
+
+-# The latest version of Doxygen can be downloaded here: http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
+-# The latest stable version of graphviz (for cool graphs) can be downloaded here: http://www.graphviz.org/Download_windows.php
+-# A LaTeX package including dvipng (to generate png for latex equations), 
+   We recommend: http://miktex.org/
+-# You will also need Ghostscript \b 9.05 \b win32 for formulas, install to default directory. c:/"ProgramFiles (or similar)"/gs/gs9.05\n
+   You must use 9.05 because paths are hard coded in buildDocumentation scripts, (you can set your global path as an alternative if you like some other version).
+   You can find it here:  http://sourceforge.net/projects/ghostscript/
+
+To build or later rebuild the documentation, double click the buildDocumentation.bat or buildFullDocumentation.bat file.\n
+Open `doc/html/index.html` in a web browser after building.
+
+*/

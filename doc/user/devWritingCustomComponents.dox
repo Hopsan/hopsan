@@ -24,7 +24,7 @@ The compiled library file can include one or several new components. It must als
     - Compiler, MinGW32 or MinGW64 (MS Windows), GNU GCC (Linux)
       VisualC++ (Windows) is needed if you want to compile for export to Matlab/Simulink.
       
-See the \ref devBaseRequirementsPage page for instructions on how to set up your development environment.
+See the \ref page_setupbuildenvironment page for instructions on how to set up your development environment.
 
 \section devWritingCppComponentsPageIntroPage-exampleComponentLibrary The Example Component Library
 The examples below are based on the exampleComponentLibrary that is included in each Hopsan release. You can find it in your Hopsan installation directory, under `componentLibraries/exampleComponentLib`. These examples contain subsets of the original files. Also, look at the original files for their full content and additional comments. When creating a new component library, you can use the example files as a "getting started" template.
