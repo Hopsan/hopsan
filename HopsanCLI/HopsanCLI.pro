@@ -21,7 +21,7 @@ CONFIG   -= app_bundle
 
 #--------------------------------------------------------
 # Set the tclap and rapidxml include path
-INCLUDEPATH *= $${PWD}/../Dependencies/tclap-1.2.0/include
+INCLUDEPATH *= $${PWD}/../Dependencies/tclap-1.2.1/include
 INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
 #--------------------------------------------------------
 
