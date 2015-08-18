@@ -523,7 +523,7 @@ def copyFiles():
     callMkdir(gTemporaryBuildDir+r'\Scripts')
     callMkdir(gTemporaryBuildDir+r'\bin')
     callMkdir(gTemporaryBuildDir+r'\componentLibraries')
-    callMkdir(gTemporaryBuildDir+r'\doc\user\html')
+    callMkdir(gTemporaryBuildDir+r'\doc\html')
     callMkdir(gTemporaryBuildDir+r'\doc\graphics')
     callMkdir(gTemporaryBuildDir+r'\ThirdParty')
     callMkdir(gTemporaryBuildDir+r'\Dependencies')
@@ -537,7 +537,7 @@ def copyFiles():
 
     # Build user documentation
     os.system("buildUserDocumentation")
-    if not fileExists(hopsanDir+r'\doc\user\html\index.html'):
+    if not fileExists(hopsanDir+r'\doc\html\index.html'):
         printError("Failed to build user documentation")
 
     # Export "HopsanCore" SVN directory to "include" in temporary directory
@@ -555,9 +555,6 @@ def copyFiles():
         FMILibraryDir = r'./Dependencies/FMILibrary-2.0.1'
     if not copyDirTo(FMILibraryDir+r'/install', gTemporaryBuildDir+FMILibraryDir):
         return False
- 
-    # Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
-    callXcopy(r'HopsanCore\include\svnrevnum.h', gTemporaryBuildDir+r'\HopsanCore\include')
 
     # Export "Example Models" SVN directory to temporary directory
     svnExport(r'Models\Example Models', gTemporaryBuildDir+r'\Models\Example Models')
@@ -599,7 +596,7 @@ def copyFiles():
     svnExport("ThirdParty\\fmi", gTemporaryBuildDir+r'\ThirdParty\fmi')
 
     # Copy documentation to temporary directory
-    callXcopy(r'doc\user\html\*', gTemporaryBuildDir+r'\doc\user\html')
+    callXcopy(r'doc\html\*', gTemporaryBuildDir+r'\doc\html')
     callXcopy(r'doc\graphics\*', gTemporaryBuildDir+r'\doc\graphics')
 
     # Write the do not save files here file

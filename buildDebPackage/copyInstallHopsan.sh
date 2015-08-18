@@ -39,8 +39,8 @@ mkdir -p                                                   $dstDir/Models
 cp -a    $srcDir/Models/Example\ Models                    $dstDir/Models
 cp -a    $srcDir/Models/Component\ Test                    $dstDir/Models
 
-mkdir -p                                                   $dstDir/doc/user
-cp -a    $srcDir/doc/user/html                             $dstDir/doc/user
+mkdir -p                                                   $dstDir/doc
+cp -a    $srcDir/doc/html                                  $dstDir/doc
 cp -a    $srcDir/doc/graphics                              $dstDir/doc
 
 cp -a    $srcDir/Scripts                                   $dstDir

@@ -139,7 +139,7 @@ DesktopHandler::DesktopHandler()
     mScriptsPath = mDefaultDocumentsPath+"Scripts/";
 #ifdef Q_OS_OSX
     mMainPath = getStandardLocation(QStandardPaths::HomeLocation);
-    mHelpPath = mResourcesPath+"/doc/user/html/";
+    mHelpPath = mResourcesPath+"/doc/html/";
     mComponentsPath = mExecPath+"../Frameworks/componentLibraries/defaultLibrary/";
     mAutoLibsPath = mExecPath+"../Frameworks/componentLibraries/autoLibs/";
     mCoreIncludePath = mResourcesPath+"HopsanCore/include/";
@@ -149,7 +149,7 @@ DesktopHandler::DesktopHandler()
     mMSVC2010X64Path = mResourcesPath+" MSVC2010_x64/";
 #else
     mMainPath = mExecPath+"../";
-    mHelpPath = mExecPath+"../doc/user/html/";
+    mHelpPath = mExecPath+"../doc/html/";
     mComponentsPath = mExecPath+"../componentLibraries/defaultLibrary/";
     mAutoLibsPath = mExecPath+"../componentLibraries/autoLibs/";
     mCoreIncludePath = mExecPath+"../HopsanCore/include/";

@@ -591,7 +591,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "HopsanCore/include/Nodes.h" <<
                     "HopsanCore/include/Parameters.h" <<
                     "HopsanCore/include/Port.h" <<
-                    "HopsanCore/include/svnrevnum.h" <<
+                    "HopsanCore/include/HopsanCoreSVNRevision.h" <<
                     "HopsanCore/include/HopsanCoreVersion.h" <<
                     "HopsanCore/include/win32dll.h" <<
                     "HopsanCore/include/Components/DummyComponent.hpp" <<
