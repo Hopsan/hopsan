@@ -6,7 +6,7 @@ Hopsan has a built-in component generator dialog, from where new components can 
 \htmlonly
 <table border="0">
 <tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/generatenewcomponent_icon.png" border=0>
+<td>&nbsp;&nbsp;&nbsp;<img src="../graphics/generatenewcomponent_icon.png" border=0>
 </td>
 <td><b>Generate New Component</b></td>
 </tr>
