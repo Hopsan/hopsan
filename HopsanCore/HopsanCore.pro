@@ -67,7 +67,7 @@ win32 {
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
     # Retreive the hopsan core source code revision number
-    system($${PWD}/../getSvnRevision.bat)
+    system($${PWD}/../getSvnRevision.bat include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
 }
 unix { 
     DEFINES *= USETBB
