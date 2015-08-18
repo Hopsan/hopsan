@@ -62,7 +62,7 @@ This is a short guide: you can find more instructions at http://msys2.github.io/
 3. Start msys2 (MSYS2 Shell) and run the command: `pacman --needed -Sy bash pacman pacman-mirrors msys2-runtime`
 4. Close msys (run `exit`) and then start it again
 5. Run the following command to upgrade the remaning packages: `pacman -Su`
-6. To install the required build tools, run: `pacman -S make automake autoconf libtool pkgconfig`
+6. To install the required build tools, run: `pacman -S make automake autoconf libtool pkgconfig patch`
 
 \section sec_setupbuildenvironment_ubuntu Development on GNU/Linux *Ubuntu or any Debian based system
 
