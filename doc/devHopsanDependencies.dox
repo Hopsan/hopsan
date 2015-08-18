@@ -10,7 +10,9 @@ http://www.qt.io/
 
 __License:__ \n
 \verbatim
-licens text
+LGPL v2.1 and LGPL v3.0
+http://www.gnu.org/licenses/lgpl-2.1
+http://www.gnu.org/licenses/lgpl-3.0
 \endverbatim
 
 \subsection sec_requiredhopsandependencies_qwt Qwt - Qt Widgets for Technical Applications
@@ -120,7 +122,25 @@ http://rapidxml.sourceforge.net/
 
 __License:__ \n
 \verbatim
-licens text
+Copyright (c) 2006, 2007 Marcin Kalicinski
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
 \endverbatim
 
 
@@ -130,16 +150,39 @@ http://code.google.com/p/csv-parser-cplusplus/
 
 __License:__ \n
 \verbatim
-licens text
+GNU GENERAL PUBLIC LICENSE Version 3
+http://www.gnu.org/licenses/gpl-3.0
 \endverbatim
 
 \subsection sec_requiredhopsandependencies_indexingcsvparser Indexing CSV Parser
 A better CSV parser utility available since 0.7.* \n
-link
+https://github.com/peterNordin/IndexingCSVParser
 
 __License:__ \n
 \verbatim
-licens text
+Copyright (c) 2015, Peter Nordin
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \endverbatim
 
 
@@ -153,6 +196,7 @@ https://www.threadingbuildingblocks.org/
 __License:__ \n
 \verbatim
 GNU General Public License, version 2
+http://www.gnu.org/licenses/gpl-2.0
 
 with
 
@@ -175,35 +219,200 @@ http://pythonqt.sourceforge.net
 
 __License:__ \n
 \verbatim
-licens text
+GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
+http://www.gnu.org/licenses/lgpl-2.1
 \endverbatim
 
-\subsection sec_optionalhopsandependencies_libmarkdown libmarkdown
+\subsection sec_optionalhopsandependencies_libmarkdown Discount
+Discount is Markdown to HTML converter used for displaying markdown help documentation for Hopsan components in the GUI \n
+http://www.pell.portland.or.us/~orc/Code/discount/
 
 __License:__ \n
 \verbatim
-licens text
+->Copyright (C) 2007 David Loren Parsons.
+All rights reserved.<-
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1.  Redistributions of works must retain the original copyright notice,
+    this list of conditions and the following disclaimer.
+2.  Redistributions in binary form must reproduce the original copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+3.  Neither my name (David L Parsons) nor the names of contributors to
+    this code may be used to endorse or promote products derived
+    from this work without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+\endverbatim
+
+\subsection sec_optionalhopsandependencies_katex KaTeX
+Math typesetting library to render LaTeX mathematics in the documentation browser in HopsanGUI.
+Used together with Discount \n
+http://khan.github.io/KaTeX/
+
+__License:__ \n
+\verbatim
+The MIT License (MIT)
+
+Copyright (c) 2015 Khan Academy
+
+This software also uses portions of the underscore.js project, which is
+MIT licensed with the following copyright:
+
+Copyright (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative
+Reporters & Editors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 \endverbatim
 
 \subsection sec_optionalhopsandependencies_libhdf5 HDF5
+Used for import and export of data in the HDF5 format. \n
+https://www.hdfgroup.org/HDF5/
 
 __License:__ \n
 \verbatim
-licens text
+Copyright Notice and License Terms for
+HDF5 (Hierarchical Data Format 5) Software Library and Utilities
+-----------------------------------------------------------------------------
+
+HDF5 (Hierarchical Data Format 5) Software Library and Utilities
+Copyright 2006-2015 by The HDF Group.
+
+NCSA HDF5 (Hierarchical Data Format 5) Software Library and Utilities
+Copyright 1998-2006 by the Board of Trustees of the University of Illinois.
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted for any purpose (including commercial purposes)
+provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice,
+   this list of conditions, and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions, and the following disclaimer in the documentation
+   and/or materials provided with the distribution.
+
+3. In addition, redistributions of modified forms of the source or binary
+   code must carry prominent notices stating that the original code was
+   changed and the date of the change.
+
+4. All publications or advertising materials mentioning features or use of
+   this software are asked, but not required, to acknowledge that it was
+   developed by The HDF Group and by the National Center for Supercomputing
+   Applications at the University of Illinois at Urbana-Champaign and
+   credit the contributors.
+
+5. Neither the name of The HDF Group, the name of the University, nor the
+   name of any Contributor may be used to endorse or promote products derived
+   from this software without specific prior written permission from
+   The HDF Group, the University, or the Contributor, respectively.
+
+DISCLAIMER:
+THIS SOFTWARE IS PROVIDED BY THE HDF GROUP AND THE CONTRIBUTORS
+"AS IS" WITH NO WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED.  In no
+event shall The HDF Group or the Contributors be liable for any damages
+suffered by the users arising out of the use of this software, even if
+advised of the possibility of such damage.
+
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+Contributors:   National Center for Supercomputing Applications (NCSA) at
+the University of Illinois, Fortner Software, Unidata Program Center (netCDF),
+The Independent JPEG Group (JPEG), Jean-loup Gailly and Mark Adler (gzip),
+and Digital Equipment Corporation (DEC).
+
+-----------------------------------------------------------------------------
+
+Portions of HDF5 were developed with support from the Lawrence Berkeley
+National Laboratory (LBNL) and the United States Department of Energy
+under Prime Contract No. DE-AC02-05CH11231.
+
+-----------------------------------------------------------------------------
+
+Portions of HDF5 were developed with support from the University of
+California, Lawrence Livermore National Laboratory (UC LLNL).
+The following statement applies to those portions of the product and must
+be retained in any redistribution of source code, binaries, documentation,
+and/or accompanying materials:
+
+   This work was partially produced at the University of California,
+   Lawrence Livermore National Laboratory (UC LLNL) under contract
+   no. W-7405-ENG-48 (Contract 48) between the U.S. Department of Energy
+   (DOE) and The Regents of the University of California (University)
+   for the operation of UC LLNL.
+
+   DISCLAIMER:
+   This work was prepared as an account of work sponsored by an agency of
+   the United States Government. Neither the United States Government nor
+   the University of California nor any of their employees, makes any
+   warranty, express or implied, or assumes any liability or responsibility
+   for the accuracy, completeness, or usefulness of any information,
+   apparatus, product, or process disclosed, or represents that its use
+   would not infringe privately- owned rights. Reference herein to any
+   specific commercial products, process, or service by trade name,
+   trademark, manufacturer, or otherwise, does not necessarily constitute
+   or imply its endorsement, recommendation, or favoring by the United
+   States Government or the University of California. The views and
+   opinions of authors expressed herein do not necessarily state or reflect
+   those of the United States Government or the University of California,
+   and shall not be used for advertising or product endorsement purposes.
+-----------------------------------------------------------------------------
 \endverbatim
 
 \subsection sec_optionalhopsandependencies_zeromq ZeroMQ
+Used for remote communication in Hopsan.
 
 __License:__ \n
 \verbatim
-licens text
+GNU Lesser General Public License V3
+http://www.gnu.org/licenses/lgpl-3.0
+
+libzmq is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License (LGPL) as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+
+As a special exception, the Contributors give you permission to link this library with independent modules to produce an executable, regardless of the license terms of these independent modules, and to copy and distribute the resulting executable under terms of your choice, provided that you also meet, for each linked independent module, the terms and conditions of the license of that module. An independent module is a module which is not derived from or based on this library. If you modify this library, you must extend this exception to your version of the library.
+
+libzmq is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
 \endverbatim
 
 \subsection sec_optionalhopsandependencies_msgpack MessagePack
-
+Binary serialization format for use with remote simulation and optimization framework.
 __License:__ \n
 \verbatim
-licens text
+Apache License Version 2.0, January 2004
+http://www.apache.org/licenses/
 \endverbatim
 
 */
