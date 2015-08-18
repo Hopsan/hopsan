@@ -1,3 +1,3 @@
 ::$Id$
 @ECHO OFF
-call buildDocumentation.bat dev
+call buildDocumentation.bat full

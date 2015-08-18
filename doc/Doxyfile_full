@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = ./dev
+OUTPUT_DIRECTORY       = ./
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -733,14 +733,12 @@ WARN_LOGFILE           = doxygenDevWarnings.log
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../HopsanCore \
+INPUT                  = ./ \
+                         ../HopsanCore \
                          ../HopsanGUI \
                          ../HopsanCLI \
-                         ./dev \
-                         ./user \
                          ../Utilities \
-                         ../componentLibraries/defaultLibrary/code/ \
-                         ./commonMainPage.dox
+                         ../componentLibraries/defaultLibrary/
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -2293,5 +2291,5 @@ GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
 
 ## Include aliases 
-## @INCLUDE = aliasDoxyfile
-@INCLUDE = aliasDoxyfile
+## @INCLUDE = Doxyfile_alias
+@INCLUDE = Doxyfile_alias

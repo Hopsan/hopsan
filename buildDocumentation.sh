@@ -6,15 +6,11 @@
 # Date:   2011-11-28
 
 cd doc
-if [ "$1" = "user" ]; then
-    echo "Building user documentation"
-    doxygen userDoxyfile
-elif [ "$1" = "dev" ]; then
-    echo "Building developer documentation"
-    doxygen devDoxyfile
+if [ "$1" = "full" ]; then
+    echo "Building full documentation"
+    doxygen Doxyfile_full
 else
-    echo "Building user and developer documentation"
-    doxygen userDoxyfile
-    doxygen devDoxyfile
+    echo "Building user documentation"
+    doxygen Doxyfile
 fi
 cd $OLDPWD
