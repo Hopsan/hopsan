@@ -761,14 +761,33 @@ void PlotTab::exportToHDF5()
     }
 
     QList<SharedVectorVariableT> variables;
+    QList<SharedVectorVariableT> xvariables;
+    QList<SharedVectorVariableT> timevariables;
     QList<PlotCurve*> curves = getCurves(0);
     for(PlotCurve *pCurve : curves)
     {
-        variables.append(pCurve->getSharedVectorVariable());
-    }
+        SharedVectorVariableT pVar, pToF, pCX;
+        pVar = pCurve->getSharedVectorVariable();
+        pToF = pCurve->getSharedTimeOrFrequencyVariable();
+        pCX  = pCurve->getSharedCustomXVariable();
 
-    //! @todo this assumes that all curves belong to the same model
-    curves.first()->getSharedVectorVariable()->getLogDataHandler()->exportToHDF5(filePath, variables);
+        variables.append(pVar);
+        if (pCX && !xvariables.contains(pCX))
+        {
+            xvariables.append(pCX);
+        }
+        if (pToF && !timevariables.contains(pToF))
+        {
+            timevariables.append(pToF);
+        }
+    }
+    //! @todo we might also want to save plot curve information in hdf5, so that plots can be reporduced outside
+
+    if (!curves.isEmpty())
+    {
+        //! @todo this assumes that all curves belong to the same model
+        curves.first()->getSharedVectorVariable()->getLogDataHandler()->exportToHDF5(filePath, variables+timevariables+xvariables);
+    }
 }
 
 void PlotTab::shiftAllGenerationsDown()

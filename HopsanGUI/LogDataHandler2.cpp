@@ -453,17 +453,17 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
     // catch failure caused by the H5File operations
     catch(H5::FileIException e)
     {
-        error = e.getCDetailMsg();
+        error = QString("%1 in %2").arg(e.getCDetailMsg()).arg(e.getCFuncName());
     }
     // catch failure caused by the DataSet operations
     catch(H5::DataSetIException e)
     {
-        error = e.getCDetailMsg();
+        error = QString("%1 in %2").arg(e.getCDetailMsg()).arg(e.getCFuncName());
     }
     // catch failure caused by the DataSpace operations
     catch(H5::DataSpaceIException e)
     {
-        error = e.getCDetailMsg();
+        error = QString("%1 in %2").arg(e.getCDetailMsg()).arg(e.getCFuncName());
     }
 
 #else
