@@ -51,6 +51,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "Widgets/HcomWidget.h"
 #include "HcomHandler.h"
+#include "Dialogs/LicenseDialog.h"
 
 // Declare global pointers
 MainWindow* gpMainWindow = 0;
@@ -124,6 +125,10 @@ int main(int argc, char *argv[])
         QString hcomScript = args[1];
         gpTerminalWidget->mpHandler->executeCommand("exec "+hcomScript);
     }
+
+    // Show license dialog
+    LicenseDialog *pLicenseDialog = new LicenseDialog(gpMainWindowWidget);
+    pLicenseDialog->show();
 
     // Execute application
     int rc = a.exec();

@@ -308,7 +308,8 @@ SOURCES += main.cpp \
     LogDataGeneration.cpp \
     RemoteCoreAccess.cpp \
     RemoteSimulationUtils.cpp \
-    Optimization/OptimizationWorkerSimplex.cpp
+    Optimization/OptimizationWorkerSimplex.cpp \
+    Dialogs/LicenseDialog.cpp
 
 
 
@@ -405,7 +406,8 @@ HEADERS += MainWindow.h \
     LogDataGeneration.h \
     RemoteCoreAccess.h \
     RemoteSimulationUtils.h \
-    Optimization/OptimizationWorkerSimplex.h
+    Optimization/OptimizationWorkerSimplex.h \
+    Dialogs/LicenseDialog.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp
