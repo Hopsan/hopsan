@@ -9,11 +9,13 @@ class QTimer;
 
 class LicenseDialog : public QDialog
 {
+    Q_OBJECT
 public:
     LicenseDialog(QWidget *pParent=0);
 
-private:
-
+private slots:
+    void toggleAlwaysShow(bool tf);
+    void showLicenseDocs();
 };
 
 #endif // LICENSEDIALOG_H

@@ -202,6 +202,7 @@ public:
     QAction *mpFlipVerticalAction;
     QAction *mpIssueTrackerAction;
     QAction *mpAboutAction;
+    QAction *mpLicenseAction;
     QAction *mpHelpAction;
     QAction *mpReleaseNotesAction;
     QAction *mpWebsiteAction;
@@ -247,6 +248,7 @@ private slots:
     void openModelByAction();
     void showReleaseNotes();
     void toggleHideShowDockAreas(bool show);
+    void openLicenseDialog();
 
 private:
     void createActions();

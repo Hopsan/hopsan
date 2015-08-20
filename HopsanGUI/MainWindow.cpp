@@ -87,6 +87,7 @@
 #include "Dialogs/HelpDialog.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
+#include "Dialogs/LicenseDialog.h"
 
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HelpPopUpWidget.h"
@@ -826,6 +827,10 @@ void MainWindow::createActions()
     connect(mpAboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
     connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
 
+    mpLicenseAction = new QAction(this);
+    mpLicenseAction->setText("License");
+    connect(mpLicenseAction, SIGNAL(triggered()), this, SLOT(openLicenseDialog()));
+
     mpIssueTrackerAction = new QAction(this);
     mpIssueTrackerAction->setText("Issue Tracker");
     connect(mpIssueTrackerAction, SIGNAL(triggered()), this, SLOT(openIssueTrackerDialog()));
@@ -1034,6 +1039,7 @@ void MainWindow::createMenus()
     mpHelpMenu->addAction(mpIssueTrackerAction);
     mpHelpMenu->addAction(mpWebsiteAction);
     mpHelpMenu->addAction(mpNewVersionsAction);
+    mpHelpMenu->addAction(mpLicenseAction);
     mpHelpMenu->addAction(mpAboutAction);
 
     mpMenuBar->addAction(mpFileMenu->menuAction());
@@ -1363,6 +1369,12 @@ void MainWindow::toggleHideShowDockAreas(bool show)
         mpPlotWidgetDock->hide();
         mpSystemParametersDock->hide();
     }
+}
+
+void MainWindow::openLicenseDialog()
+{
+    (new LicenseDialog(gpMainWindowWidget))->show();
+    // Note! It will deleate on close
 }
 
 

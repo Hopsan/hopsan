@@ -2,7 +2,14 @@
 
 #include <QVBoxLayout>
 #include <QFont>
+#include <QCheckBox>
+#include <QPushButton>
+
 #include "Utilities/GUIUtilities.h"
+#include "HelpDialog.h"
+#include "Configuration.h"
+#include "DesktopHandler.h"
+#include "global.h"
 
 LicenseDialog::LicenseDialog(QWidget *pParent) :
     QDialog(pParent)
@@ -56,7 +63,7 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     pDepHeader->setFont(bigFont);
 
     deps.append("Hopsan uses third-party dependencies released under various licenses such as:\n");
-    deps.append("LGPL v2.1, LGPL v3.0, BSD, MIT, Appache Public License 2.0\n\n");
+    deps.append("LGPL v2.1, LGPL v3.0, BSD, MIT, Apache License Version 2.0\n\n");
     deps.append("For details on third-party dependencies and their respective licenses, see the documentation!");
     pDependencies->setText(deps);
 
@@ -65,5 +72,25 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     pLayout->addWidget(pDepHeader, 1);
     pLayout->addWidget(pDependencies, 1);
     pLayout->addWidget(new QLabel(this), 4);
+
+    QPushButton *pDocsButton = new QPushButton("Show license documentation",  this);
+    connect(pDocsButton, SIGNAL(clicked(bool)), this, SLOT(showLicenseDocs()));
+    pLayout->addWidget(pDocsButton, 1);
+
+    QCheckBox *pAlwaysShow = new QCheckBox("Always show on startup", this);
+    pAlwaysShow->setChecked(gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP));
+    connect(pAlwaysShow, SIGNAL(clicked(bool)), this, SLOT(toggleAlwaysShow(bool)));
+    pLayout->addWidget(pAlwaysShow, 1);
+
     setLayout(pLayout);
+}
+
+void LicenseDialog::toggleAlwaysShow(bool tf)
+{
+    gpConfig->setBoolSetting(CFG_SHOWLICENSEONSTARTUP, tf);
+}
+
+void LicenseDialog::showLicenseDocs()
+{
+    gpHelpDialog->open("page_hopsandependencies.html");
 }

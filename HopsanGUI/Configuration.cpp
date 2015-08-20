@@ -107,6 +107,7 @@ Configuration::Configuration()
     mBoolSettings.insert(CFG_MULTICORE, false);
     mBoolSettings.insert(CFG_PROGRESSBAR, true);
     mBoolSettings.insert(CFG_SETPWDTOMWD, false);
+    mBoolSettings.insert(CFG_SHOWLICENSEONSTARTUP, true);
 
     // Integer settings
     mIntegerSettings.insert(CFG_LIBRARYSTYLE, 0);

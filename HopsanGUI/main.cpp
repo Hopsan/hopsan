@@ -127,8 +127,11 @@ int main(int argc, char *argv[])
     }
 
     // Show license dialog
-    LicenseDialog *pLicenseDialog = new LicenseDialog(gpMainWindowWidget);
-    pLicenseDialog->show();
+    if (gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP))
+    {
+        (new LicenseDialog(gpMainWindowWidget))->show();
+        // Note! it will delete on close automatically
+    }
 
     // Execute application
     int rc = a.exec();
