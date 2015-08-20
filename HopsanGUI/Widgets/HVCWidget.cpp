@@ -51,6 +51,17 @@
 #include "Widgets/ModelWidget.h"
 #include "MessageHandler.h"
 
+// Helpfunction to strip top-level system name from full name
+QString stripTopLevelSystemName(const QString &fullName)
+{
+    int p = fullName.indexOf("$");
+    if (p >= 0)
+    {
+        return fullName.right(fullName.size()-p-1);
+    }
+    return fullName;
+}
+
 
 HVCWidget::HVCWidget(QWidget *parent) :
     QDialog(parent)
@@ -344,7 +355,16 @@ void HVCWidget::runHvcTest()
 
         QString windowName = QString("Validation Plot %1").arg(t);
         gpPlotHandler->createNewOrReplacePlotwindow(windowName);
-        gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName,simuGen), 0);
+
+        SharedVectorVariableT pSimVar = pLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName, simuGen);
+        // In previous versions of the HopsanCLI full names included the root system name in the begining.
+        // The LogdataHandler does not do that, so if we did not find anything we need to retry with the first part removed
+        if (!pSimVar)
+        {
+            pSimVar = pLogDataHandler->getVectorVariable(stripTopLevelSystemName(mDataConfigs[t].mFullVarName), simuGen);
+        }
+
+        gpPlotHandler->plotDataToWindow(windowName, pSimVar, 0);
         gpPlotHandler->plotDataToWindow(windowName, pLogDataHandler->getVectorVariable(mDataConfigs[t].mFullVarName+"_valid", importGen), 0);
     }
 }
