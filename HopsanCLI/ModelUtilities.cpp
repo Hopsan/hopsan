@@ -48,11 +48,12 @@ void generateFullSubSystemHierarchyName(const ComponentSystem *pSys, HString &rF
     if (pSys->getSystemParent())
     {
         generateFullSubSystemHierarchyName(pSys->getSystemParent(), rFullSysName);
-        rFullSysName.append("$").append(pSys->getName());
+        rFullSysName.append(pSys->getName()).append("$");
     }
     else
     {
         // Do not include top-level name in sub-system hierarchy
+        rFullSysName.clear();
     }
 }
 
@@ -69,7 +70,7 @@ HString generateFullPortVariableName(const Port *pPort, const size_t dataId)
            generateFullSubSystemHierarchyName(pSys, fullName);
        }
 
-       fullName.append("$").append(pComp->getName()).append("#").append(pPort->getName()).append("#").append(pND->name);
+       fullName.append(pComp->getName()).append("#").append(pPort->getName()).append("#").append(pND->name);
    }
    return fullName;
 }
