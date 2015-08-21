@@ -55,7 +55,7 @@ namespace hopsan {
         bool mReloadCSV;
         HString mDataCurveFileName;
         HString mSeparatorChar;
-        CSVParserNNG mDataFile;
+        CSVParserNG mDataFile;
         LookupTable1D mLookupTable;
 
     public:

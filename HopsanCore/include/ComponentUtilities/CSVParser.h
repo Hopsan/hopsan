@@ -24,8 +24,7 @@
 
 //!
 //! @file   CSVParser.h
-//! @author Björn Eriksson <bjorn.eriksson@liu.se>
-//! @date   2011-04-12
+//! @author Peter Nordin <peter.nordin@liu.se>
 //!
 //! @brief Contains the Core Utility CSVParser class
 //!
@@ -48,6 +47,9 @@ class IndexingCSVParser;
 namespace hopsan {
 
 //! @ingroup ComponentUtilityClasses
+//! @deprecated
+//! @brief The old CSVParser utitlity, use CSVParserNG instead
+//! @see CSVParserNG
 class DLLIMPORTEXPORT CSVParser
 {
 public:
@@ -86,54 +88,13 @@ protected:
     HString mErrorString;
 };
 
+//! @ingroup ComponentUtilityClasses
+//! @brief The CSV file parser utility
 class DLLIMPORTEXPORT CSVParserNG
 {
 public:
-    CSVParserNG(const char line_terminator = '\n', const char enclosure_char = '"');
+    CSVParserNG(const char separator_char = ',');
     ~CSVParserNG();
-
-    void clearData();
-    bool isEmpty() const;
-
-    void setLineTerminator(const char lt);
-    void setFieldEnclosureChar(const char fec);
-
-    bool setFile(const HString &rFilepath);
-
-    bool parseEntireFile();
-
-    bool eof() const;
-
-    HString getErrorString() const;
-    size_t getNumDataRows() const;
-    size_t getNumDataCols() const;
-
-    bool copyRow(const size_t rowIdx, std::vector<double> &rRow);
-    bool copyRow(const size_t rowIdx, std::vector<long int> &rRow);
-    bool copyColumn(const size_t columnIdx, std::vector<double> &rColumn);
-    bool copyRangeFromColumn(const size_t columnIdx, const size_t startRow, const size_t numRows, std::vector<double> &rColumn);
-    bool copyEveryNthFromColumn(const size_t columnIdx, const size_t stepSize, std::vector<double> &rColumn);
-    bool copyEveryNthFromColumnRange(const size_t columnIdx, const size_t startRow, const size_t numRows, const size_t stepSize, std::vector<double> &rColumn);
-
-protected:
-    std::vector<HString> mData;
-    size_t mNumDataRows, mNumDataCols;
-
-    char mLineTerminator, mFieldEnclosureChar, mFieldSeparator;
-    size_t mNumLinesToSkip;
-    csv_parser *mpCsvParser;
-
-    HString mErrorString;
-    bool mConvertDecimalSeparator;
-};
-
-
-
-class DLLIMPORTEXPORT CSVParserNNG
-{
-public:
-    CSVParserNNG(const char separator_char = ',');
-    ~CSVParserNNG();
 
     bool openFile(const HString &rFilepath);
     void closeFile();
