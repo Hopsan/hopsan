@@ -55,7 +55,7 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
 void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::string> &rComps, std::vector<std::string> &rPorts);
 
 // ===== Help Functions =====
-void generateFullSystemHierarchyName(const hopsan::ComponentSystem *pSys, hopsan::HString &rFullSysName);
+void generateFullSubSystemHierarchyName(const hopsan::ComponentSystem *pSys, hopsan::HString &rFullSysName);
 hopsan::HString generateFullPortVariableName(const hopsan::Port *pPort, const size_t dataId);
 
 

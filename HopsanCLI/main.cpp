@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
         TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at the end to let you see its output", cmd);
         TCLAP::SwitchArg printDebugOption("", "printDebug", "Show debug messages in the output", cmd);
         TCLAP::SwitchArg createHvcTestOption("", "createValidationData","Create a model validation data set based on the variables connected to scopes in the model given by option -m", cmd);
+        TCLAP::SwitchArg prefixRootLevelName("", "prefixRootSystemName", "Prefix the root-level system name to exported results and parameters", cmd);
 
         TCLAP::ValueArg<std::string> destinationOption("d","destination","Destination for resulting files",false,"","Path to directory", cmd);
         TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
@@ -192,7 +193,12 @@ int main(int argc, char *argv[])
                 if (parameterExportOption.isSet())
                 {
                     cout << "Exporting parameter values to file: " << destinationPath+parameterExportOption.getValue() << endl;
-                    exportParameterValuesToCSV(destinationPath+parameterExportOption.getValue(), pRootSystem);
+                    string prefix;
+                    if (prefixRootLevelName.getValue())
+                    {
+                        prefix = pRootSystem->getName().c_str()+string("$");
+                    }
+                    exportParameterValuesToCSV(destinationPath+parameterExportOption.getValue(), pRootSystem, prefix);
                 }
 
                 cout << endl << "Model Hieararcy:" << endl;
@@ -282,7 +288,12 @@ int main(int argc, char *argv[])
                 if (resultsFinalCSVOption.isSet())
                 {
                     cout << "Saving Final results to file: " << destinationPath+resultsFinalCSVOption.getValue() << endl;
-                    saveResults(pRootSystem, destinationPath+resultsFinalCSVOption.getValue(), Final);
+                    string prefix;
+                    if (prefixRootLevelName.getValue())
+                    {
+                        prefix = pRootSystem->getName().c_str()+string("$");
+                    }
+                    saveResults(pRootSystem, destinationPath+resultsFinalCSVOption.getValue(), Final, prefix);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {
@@ -298,7 +309,12 @@ int main(int argc, char *argv[])
                 if (resultsFullCSVOption.isSet())
                 {
                     cout << "Saving Full results to file: " << destinationPath+resultsFullCSVOption.getValue() << endl;
-                    saveResults(pRootSystem, destinationPath+resultsFullCSVOption.getValue(), Full);
+                    string prefix;
+                    if (prefixRootLevelName.getValue())
+                    {
+                        prefix = pRootSystem->getName().c_str()+string("$");
+                    }
+                    saveResults(pRootSystem, destinationPath+resultsFullCSVOption.getValue(), Full, prefix);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {

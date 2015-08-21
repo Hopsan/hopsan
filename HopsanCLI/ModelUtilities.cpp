@@ -43,16 +43,16 @@
 using namespace std;
 using namespace hopsan;
 
-void generateFullSystemHierarchyName(const ComponentSystem *pSys, HString &rFullSysName)
+void generateFullSubSystemHierarchyName(const ComponentSystem *pSys, HString &rFullSysName)
 {
     if (pSys->getSystemParent())
     {
-        generateFullSystemHierarchyName(pSys->getSystemParent(), rFullSysName);
+        generateFullSubSystemHierarchyName(pSys->getSystemParent(), rFullSysName);
         rFullSysName.append("$").append(pSys->getName());
     }
     else
     {
-        rFullSysName.append(pSys->getName());
+        // Do not include top-level name in sub-system hierarchy
     }
 }
 
@@ -66,7 +66,7 @@ HString generateFullPortVariableName(const Port *pPort, const size_t dataId)
        ComponentSystem *pSys = pComp->getSystemParent();
        if (pSys)
        {
-           generateFullSystemHierarchyName(pSys, fullName);
+           generateFullSubSystemHierarchyName(pSys, fullName);
        }
 
        fullName.append("$").append(pComp->getName()).append("#").append(pPort->getName()).append("#").append(pND->name);
@@ -155,9 +155,6 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
 
     if (pSys)
     {
-        // Determine fullname prefix
-        prefix = prefix + pSys->getName().c_str() + "$";
-
         // First save time vector for this system
         //! @todo alias a for time ? is that even posible
         if (howMany == Final)
@@ -189,7 +186,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 if (pComp->isComponentSystem())
                 {
                     // Save results for subsystem
-                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix, pFile);
+                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix+pComp->getName().c_str()+"$", pFile);
                 }
                 else
                 {
@@ -331,7 +328,6 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
         }
 
         // Now handle subcomponent parameters
-        prefix = prefix + pSystem->getName().c_str() + "$";
         vector<HString> names = pSystem->getSubComponentNames();
         for (size_t c=0; c<names.size(); ++c)
         {
@@ -340,7 +336,7 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
             {
                 if (pComp->isComponentSystem())
                 {
-                    exportParameterValuesToCSV(rFileName, static_cast<ComponentSystem*>(pComp), prefix, pFile);
+                    exportParameterValuesToCSV(rFileName, static_cast<ComponentSystem*>(pComp), prefix+pComp->getName().c_str()+"$", pFile);
                 }
                 else
                 {

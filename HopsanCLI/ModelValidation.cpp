@@ -218,23 +218,48 @@ bool extractTestData(ComponentSystem *pRootSystem, string fullVarName, std::vect
     std::vector<std::string> sysfields;
     std::vector<std::string> namefields;
     splitStringOnDelimiter(fullVarName, '$', sysfields);
-    if (sysfields.size() < 2)
+    if (sysfields.size() < 1)
     {
-        printErrorMessage("To few system fields in: "+ fullVarName);
+        printErrorMessage("To few system/name fields in: "+ fullVarName);
         return false;
     }
 
     // Travle through the model to find the system to extract data from
     ComponentSystem *pSystemToExtractFrom = pRootSystem;
-    if (sysfields.size() > 2)
+    if (sysfields.size() > 1)
     {
-        for (size_t s=1; s<sysfields.size(); ++s)
+        ComponentSystem *pParentSystem = 0;
+        string soughtName;
+        for (size_t s=0; s<sysfields.size()-1; ++s)
         {
-            ComponentSystem *pParentSystem = pSystemToExtractFrom;
-            pSystemToExtractFrom = pSystemToExtractFrom->getSubComponentSystem(sysfields[s].c_str());
+            pParentSystem = pSystemToExtractFrom;
+            soughtName = sysfields[s];
+            pSystemToExtractFrom = pParentSystem->getSubComponentSystem(soughtName.c_str());
+
+            //----------------------------------------------------------------------------------------------------------
+            //! @todo in the future remove this hack
+            // Earlier versions of the CLI saved hvc paths including top-level system name but we do not do that anymore
+            // this is a backwards compatibility hack
+            if (!pSystemToExtractFrom && s==0 && sysfields.size() > 2)
+            {
+                //cout << "soughtname " <<  soughtName << endl;
+                //cout << "trying to use next sysname" << endl;
+                pSystemToExtractFrom = pParentSystem->getSubComponentSystem(sysfields[s+1].c_str());
+            }
+            else if (!pSystemToExtractFrom && s==0)
+            {
+                //cout << "soughtname " <<  soughtName << endl;
+                //cout << "skip first sysname using root sustem" << endl;
+                // Did not find anything so lets assume that system name was root name
+                pSystemToExtractFrom = pParentSystem;
+                continue;
+            }
+            //----------------------------------------------------------------------------------------------------------
+
+            // Write error message for original system (not the compatibility hack)
             if (!pSystemToExtractFrom)
             {
-                printErrorMessage("Could not find system: "+sysfields[s]+" in parent system: "+pParentSystem->getName().c_str());
+                printErrorMessage("Could not find system: "+soughtName+" in parent system: "+pParentSystem->getName().c_str());
                 return false;
             }
         }
