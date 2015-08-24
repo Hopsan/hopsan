@@ -25,6 +25,26 @@
 ******************************
     Version History
 ******************************
+0.6.12  (2015-08-**)
+- Note! We strongly suggest that you reset your configuration file ("Reset defaults" button in options dialog) after updating to this version, due to the erroneous handling of frequency unit scaling
+
+- Bug fixed: 
+- Bug fixed: Subsystem sometimes move from where you left them the second time you open them
+- Bug fixed: Lookup Tables fail to read CSV files with Windows line endings
+- Bug fixed: Calling initialize on SecondOrderFilter will not reset the output value variable, its value remains unchanged
+- Bug fixed: HopsanCore simulation freeze sometimes when calling stopSimulation() during multi-core simulation
+- Bug fixed: Fixed crash in optimization finalize function
+- Bug fixed: Made sure disabled ports in original model are respected by optimization handler
+
+- Fixed component: Fixed division by zero in hydraulic pressure controlled pump component
+- Fixed component: Enabled stroke limitation of HydraulicCylinderC. Hopefully it works as intended
+- Fixed component: Rewrote cavitation handling in CylinderQ
+- Fixed component: Allow negative c in volumes in CylinderC (to avoid creating oil out if nothing when we get cavitation)
+
+- Enhancement: When renaming a system parameter in the systems parameter widget, the values in components using the paramter should be updated to the new name
+- Enhancement: Added backup and restore functions to first and second order transfer functions
+
+------------------------------
 0.6.11  (2015-04-08)
 - Feature: Support for FMI 2.0 import and export
            Note! Only Signal, Hydraulic and Mechanic nodes can be exported / imported
