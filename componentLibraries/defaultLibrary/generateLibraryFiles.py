@@ -26,6 +26,13 @@ def pathjoinlist(path, thelist):
         newlist.append(os.path.join(path, item))
     return newlist
 
+def findduplicatesinlist(thelist):
+    results = list()
+    for item, count in collections.Counter(thelist).items():
+        if count > 1:
+            results.append(item)
+    return results
+
 class ComponentDir:
     def __init__(self):
         self.dirPath = ''
@@ -44,6 +51,15 @@ class ComponentDir:
             return True
         else:
             return False
+
+    def allTypenames(self):
+        tnames = list()
+        if len(self.typeNames) > 0:
+            tnames += self.typeNames
+        for subdir in self.subDirs:
+            tnames = tnames + subdir.allTypenames()
+        tnames = sorted(tnames)
+        return tnames
 
     def allCCIFiles(self):
         ccis = list()
@@ -88,6 +104,14 @@ class ComponentDir:
             else:
                 ccis = ccis + pathjoinlist(subdir.dirName, subdir.emmediateCCIs())
         return sorted(ccis)
+
+    def findTypenameEnteries(self, typename):
+        results = list()
+        if typename in self.typeNames:
+            results.append(self)
+        for subdir in self.subDirs:
+            results = results + subdir.findTypenameEnteries(typename)
+        return results
 
 def generateCCIFileForComponentRegistration(dirPath, filename, componentTypeNames, includeFiles):
     filepath = os.path.join(dirPath, filename)
@@ -276,6 +300,18 @@ def main(rootDirPath):
     generateFiles(root_dir)
     generateRootFiles(root_dir)
 
+    typenames = root_dir.allTypenames()
+    dupes = findduplicatesinlist(typenames)
+    if len(dupes) > 0:
+        print('')
+        print('    WARNING Duplicate Typenames Found!')
+        print('')
+        for d in dupes:
+            enteries = root_dir.findTypenameEnteries(d)
+            print(d+' in: ')
+            for e in enteries:
+                print('    '+e.dirPath)
+    print('')
     print('Done!')
 
 
