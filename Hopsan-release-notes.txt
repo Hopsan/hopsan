@@ -28,7 +28,13 @@
 0.6.12  (2015-08-**)
 - Note! We strongly suggest that you reset your configuration file ("Reset defaults" button in options dialog) after updating to this version, due to the erroneous handling of frequency unit scaling
 
-- Bug fixed: 
+- Bug fixed: The definition of Frequency scaling requires the base unit to be the SI-UNIT Hz, but in Hopsan we actually use rad/s.
+             The default configuration setting for Frequency was inverted so that it scales relative to rad/s instead of Hz
+			 You need to reset your configuration file after updating to this version.
+			 If you have used Frequency scaling previously, you should really reload that model and reset the scaled parameter.
+			 Then make sure that you enter the correct frequency value.
+			 If you do not, an incorrect scale will be used.
+
 - Bug fixed: Subsystem sometimes move from where you left them the second time you open them
 - Bug fixed: Lookup Tables fail to read CSV files with Windows line endings
 - Bug fixed: Calling initialize on SecondOrderFilter will not reset the output value variable, its value remains unchanged
@@ -41,7 +47,7 @@
 - Fixed component: Rewrote cavitation handling in CylinderQ
 - Fixed component: Allow negative c in volumes in CylinderC (to avoid creating oil out if nothing when we get cavitation)
 
-- Enhancement: When renaming a system parameter in the systems parameter widget, the values in components using the paramter should be updated to the new name
+- Enhancement: When renaming a system parameter in the systems parameter widget, the values in components using the parameter should be updated to the new name
 - Enhancement: Added backup and restore functions to first and second order transfer functions
 
 ------------------------------
