@@ -337,7 +337,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     }
     QTextStream compileStream(&compileScript);
     compileStream << "#!/bin/sh\n";
-    compileStream << "rm " << o << "\n";
+    compileStream << "rm -f" << o << "\n";
     compileStream << "gcc " << cflags << " " << srcFiles;
     compileStream << " -fpermissive -o " << o << " ";
     compileStream << inclPaths << " " << lflags;
