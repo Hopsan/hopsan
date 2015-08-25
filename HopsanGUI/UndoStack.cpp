@@ -781,6 +781,8 @@ void UndoStack::registerDeletedObject(ModelObject *item)
     if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
+    if (currentPostElement.isNull())
+        return;
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     if(item->getTypeName() == "HopsanGUIContainerPort")
     {
@@ -796,8 +798,6 @@ void UndoStack::registerDeletedObject(ModelObject *item)
     }
     item->saveToDomElement(stuffElement);
     gpUndoWidget->refreshList();
-
-    //qDebug() << mDomDocument.toString();
 }
 
 
@@ -808,6 +808,9 @@ void UndoStack::registerDeletedConnector(Connector *item)
     if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
+    //! @todo this check below is needed elsewhere also, to prevent crash under rare circumstances
+    if (currentPostElement.isNull())
+        return;
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", UNDO_DELETEDCONNECTOR);
     item->saveToDomElement(stuffElement);
@@ -1138,7 +1141,7 @@ QDomElement UndoStack::getCurrentPost()
     QDomElement postElement = mUndoRoot.firstChildElement("post");
     while(!postElement.isNull())
     {
-        if(postElement.attribute("number").toDouble() == mCurrentStackPosition)
+        if(postElement.attribute("number").toInt() == mCurrentStackPosition)
         {
             return postElement;
         }
