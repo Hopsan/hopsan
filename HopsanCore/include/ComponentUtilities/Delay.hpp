@@ -139,7 +139,8 @@ public:
     //! @return Value at specified index
     inline T getIdx(const size_t i) const
     {
-        if ( (int(mNewest)-int(i)) < 0 )
+        //if ( (int(mNewest)-int(i)) < 0 )
+        if ( i > mNewest )
         {
             return mpArray[mSize+mNewest-i];
         }
