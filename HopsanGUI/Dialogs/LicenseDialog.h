@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QLabel>
+#include <QObject>
 
 class MainWindow;
 class QTimer;
