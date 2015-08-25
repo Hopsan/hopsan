@@ -66,6 +66,7 @@ protected:
     QVector< QVector<double> > mVelocities, mBestKnowns;
     QVector<double> mBestObjectives, mBestPoint;
     double mPsBestObj;
+    double mVmax;
 private:
     void evaluateParticleNonBlocking(int p);
     void moveParticle(int p);

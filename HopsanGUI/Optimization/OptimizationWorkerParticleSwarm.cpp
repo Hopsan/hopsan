@@ -31,6 +31,9 @@
 //! @brief Contains an optimization worker object for the particle swarm algorithm
 //!
 
+//#define OPT_ROSENBROCK 1
+//#define OPT_SPHERE 1
+
 //Hopsan includes
 #include "OptimizationWorkerParticleSwarm.h"
 #include "OptimizationWorker.h"
@@ -59,6 +62,7 @@ OptimizationWorkerParticleSwarm::OptimizationWorkerParticleSwarm(OptimizationHan
     : OptimizationWorker(pHandler)
 {
     mPrintLogOutput = true;  //! @todo Should be changeable by user
+    mVmax = 1e100;
 }
 
 void OptimizationWorkerParticleSwarm::init(const ModelWidget *pModel, const QString &modelPath)
@@ -381,6 +385,7 @@ void OptimizationWorkerParticleSwarm::moveParticle(int p)
     for(int j=0; j<mNumParameters; ++j)
     {
         mVelocities[p][j] = mPsOmega*mVelocities[p][j] + mPsC1*r1*(mBestKnowns[p][j]-mParameters[p][j]) + mPsC2*r2*(mBestPoint[j]-mParameters[p][j]);
+        mVelocities[p][j] = qMin(mVelocities[p][j], mVmax);
         mParameters[p][j] = mParameters[p][j]+mVelocities[p][j];
         if(mParameters[p][j] <= mParMin[j])
         {
@@ -409,6 +414,38 @@ void OptimizationWorkerParticleSwarm::evaluateParticleNonBlocking(int p)
 
 bool OptimizationWorkerParticleSwarm::evaluateAllParticles()
 {
+#ifdef OPT_ROSENBROCK
+    for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    {
+        double x1 = mParameters[i][0];
+        double x2 = mParameters[i][1];
+        double x3 = mParameters[i][2];
+        double x4 = mParameters[i][3];
+        double x5 = mParameters[i][4];
+        mObjectives[i] = (1.0-x1)*(1.0-x1) + 100.0*(x2-x1*x1)*(x2-x1*x1) +
+                       (1.0-x2)*(1.0-x2) + 100.0*(x3-x2*x2)*(x3-x2*x2) +
+                       (1.0-x3)*(1.0-x3) + 100.0*(x4-x3*x3)*(x4-x3*x3) +
+                       (1.0-x4)*(1.0-x4) + 100.0*(x5-x4*x4)*(x5-x4*x4);
+    }
+    ++mIterations;
+    mEvaluations += mNumModels;
+    return true;
+#endif
+#ifdef OPT_SPHERE
+    for(int i=0; i<mNumModels && !mpHandler->mpHcomHandler->isAborted(); ++i)
+    {
+        double x1 = mParameters[i][0];
+        double x2 = mParameters[i][1];
+        double x3 = mParameters[i][2];
+        double x4 = mParameters[i][3];
+        double x5 = mParameters[i][4];
+        mObjectives[i] = x1*x1+x2*x2+x3*x3+x4*x4+x5*x5;
+    }
+    ++mIterations;
+    mEvaluations += mNumModels;
+    return true;
+#endif
+
     if(mpHandler->mpConfig->getUseMulticore())
     {
         //Multi-threading, we cannot use the "evalall" function
@@ -544,6 +581,10 @@ void OptimizationWorkerParticleSwarm::setOptVar(const QString &var, const QStrin
     else if(var == "c2")
     {
         mPsC2 = value.toDouble();
+    }
+    else if(var == "vmax")
+    {
+        mVmax = value.toDouble();
     }
 }
 
