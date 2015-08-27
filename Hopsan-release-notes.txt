@@ -41,6 +41,7 @@
 - Bug fixed: HopsanCore simulation freeze sometimes when calling stopSimulation() during multi-core simulation
 - Bug fixed: Fixed crash in optimization finalize function
 - Bug fixed: Made sure disabled ports in original model are respected by optimization handler
+- Bug fixed: When creating a new subsystem the default viewport is set to the top-left corner
 
 - Fixed component: Fixed division by zero in hydraulic pressure controlled pump component
 - Fixed component: Enabled stroke limitation of HydraulicCylinderC. Hopefully it works as intended

@@ -93,7 +93,7 @@
 ContainerObject::ContainerObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
-        //Initialize
+    // Initialize
     mIsCreatingConnector = false;
     mShowSubComponentPorts = gpMainWindow->mpTogglePortsAction->isChecked();
     mShowSubComponentNames = gpMainWindow->mpToggleNamesAction->isChecked();
@@ -103,18 +103,18 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
 
     mPasteOffset = -30;
 
-    //Create the scene
+    // Create the scene
     mpScene = new QGraphicsScene(this);
+    mGraphicsViewPort = GraphicsViewPort(2500, 2500, 1.0); // Default should be centered
 
-    //Create the undostack
+    // Create the undostack
     mpUndoStack = new UndoStack(this);
     mpUndoStack->clear();
 
     mpDragCopyStack = new CopyStack();
 
-    //Establish connections that should always remain
+    // Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
-
 }
 
 
