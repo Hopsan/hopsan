@@ -1612,26 +1612,6 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
 {
     QStringList splitCmd;
     splitWithRespectToQuotations(cmd, ' ', splitCmd);
-//    QStringList splitCmd;
-//    bool withinQuotations = false;
-//    int start=0;
-//    for(int i=0; i<cmd.size(); ++i)
-//    {
-//        if(cmd[i] == '\"')
-//        {
-//            withinQuotations = !withinQuotations;
-//        }
-//        if(cmd[i] == ' ' && !withinQuotations)
-//        {
-//            splitCmd.append(cmd.mid(start, i-start));
-//            start = i+1;
-//        }
-//    }
-//    splitCmd.append(cmd.right(cmd.size()-start));
-//    for(int i=0; i<splitCmd.size(); ++i)
-//    {
-//        splitCmd[i].remove("\"");
-//    }
 
     if(splitCmd.size() == 2)
     {
@@ -1655,7 +1635,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         }
 
         QString newValueStr;
-        if(mpModel->getViewContainerObject()->getParameterNames().contains(splitCmd[1]))
+        if(mpModel->getViewContainerObject()->hasParameter(splitCmd[1]))
         {
             newValueStr = splitCmd[1];  //If it is a system parameter, don't evaluate it!
                                         //We want to assign the parameter value with the
@@ -1682,25 +1662,41 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         int nChanged=0;
         for(int p=0; p<parameterNames.size(); ++p)
         {
-            if(pSystem->getParameterNames().contains(parameterNames[p]))
+            parameterNames[p].remove("\"");
+            toLongDataNames(parameterNames[p]);
+
+            // Handled subsystem names
+            QStringList sysnames;
+            QString compname, parname;
+            splitFullParameterName(parameterNames[p], sysnames, compname, parname);
+
+            pSystem = qobject_cast<SystemContainer*>(getModelPtr()->getViewContainerObject());
+            for(const QString &sysname : sysnames)
+            {
+                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+            }
+
+            // First check if this is a system parameter
+            if(pSystem->hasParameter(parname))
             {
                 CoreParameterData data;
-                pSystem->getParameter(parameterNames[p], data);     //Convert 1 to true and 0 to false in case of boolean parameters
+                pSystem->getParameter(parname, data);     //Convert 1 to true and 0 to false in case of boolean parameters
                 if(data.mType == "bool")
                 {
                     if(newValueStr == "0") newValueStr = "false";
                     else if(newValueStr == "1") newValueStr = "true";
                 }
-                if(pSystem->setParameterValue(parameterNames[p], newValueStr))
+                if(pSystem->setParameterValue(parname, newValueStr))
                     ++nChanged;
             }
-            else if(!pSystem->getFullNameFromAlias(parameterNames[p]).isEmpty())
+            // Else check if this is an alias
+            else if(!pSystem->getFullNameFromAlias(parname).isEmpty())
             {
                 pSystem = qobject_cast<SystemContainer*>(getModelPtr()->getViewContainerObject());
-                QString nameFromAlias = pSystem->getFullNameFromAlias(parameterNames[p]);
-                QStringList subsystems = nameFromAlias.split("|");
+                QString nameFromAlias = pSystem->getFullNameFromAlias(parname);
+                QStringList subsystems = nameFromAlias.split("$");
                 subsystems.removeLast();
-                nameFromAlias = nameFromAlias.split("|").last();
+                nameFromAlias = nameFromAlias.split("$").last();
                 QString compName = nameFromAlias.section("#",0,0);
                 QString parName = nameFromAlias.right(nameFromAlias.size()-compName.size()-1);
                 foreach(const QString &subsystem, subsystems)
@@ -1724,37 +1720,10 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
             }
             else
             {
-                parameterNames[p].remove("\"");
-                QStringList subsystems = parameterNames[p].split("|");
-                subsystems.removeLast();
-                parameterNames[p] = parameterNames[p].split("|").last();
-                pSystem = qobject_cast<SystemContainer*>(getModelPtr()->getViewContainerObject());
-                foreach(const QString &subsystem, subsystems)
+                ModelObject* pMO = pSystem->getModelObject(compname);
+                if (pMO && pMO->setParameterValue(parname, newValueStr))
                 {
-                    pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(subsystem));
-                }
-                QStringList splitFirstCmd = parameterNames[p].split(".");
-                if(splitFirstCmd.size() == 3)
-                {
-                    QString parName = splitFirstCmd[1]+"."+splitFirstCmd[2];
-                    splitFirstCmd.removeLast();
-                    splitFirstCmd[1] = parName;
-                }
-                if(splitFirstCmd.size() == 2)
-                {
-                    QList<ModelObject*> components;
-                    getComponents(splitFirstCmd[0], components, pSystem);
-                    for(int c=0; c<components.size(); ++c)
-                    {
-                        QStringList parameters;
-                        getParameters(splitFirstCmd[1], components[c], parameters);
-                        for(int p=0; p<parameters.size(); ++p)
-                        {
-                            toLongDataNames(parameters[p]);
-                            if(components[c]->setParameterValue(parameters[p], newValueStr))
-                                ++nChanged;
-                        }
-                    }
+                    ++nChanged;
                 }
             }
         }
@@ -6309,59 +6278,19 @@ QString HcomHandler::getfullNameFromAlias(const QString &rAlias) const
 }
 
 
-//! @brief Help function that returns a list of parameters according to input (with support for asterisks)
-//! @param str String to look for
-//! @param pComponent Pointer to component to look in
-//! @param parameters Reference to list of found parameters
-void HcomHandler::getParameters(QString str, ModelObject* pComponent, QStringList &parameters)
-{
-    if(str.contains("*"))
-    {
-        QString left = str.split("*").first();
-        QString right = str.split("*").last();
-
-        for(int n=0; n<pComponent->getParameterNames().size(); ++n)
-        {
-            if(pComponent->getParameterNames().at(n).startsWith(left) && pComponent->getParameterNames().at(n).endsWith(right))
-            {
-                parameters.append(pComponent->getParameterNames().at(n));
-            }
-        }
-    }
-    else
-    {
-        parameters.append(str);
-    }
-}
-
-
-//! @brief Generates a list of parameters based on wildcards
-//! @param str String with (or without) wildcards
-//! @param parameters Reference to list of parameters
-void HcomHandler::getParameters(const QString str, QStringList &parameters)
+//! @brief Generates a list of parameters based on regular expression with wildcards support
+//! @param[in] str String with (or without) wildcards
+//! @param[out] rParameters Reference to list of parameters
+void HcomHandler::getParameters(const QString str, QStringList &rParameters)
 {
     if(!mpModel) { return; }
 
-    ContainerObject *pSystem = mpModel->getViewContainerObject();
-
-    QStringList componentNames = pSystem->getModelObjectNames();
-
     QStringList allParameters;
-    getParametersFromContainer(allParameters, pSystem);
-
-    QStringList systemParameters = pSystem->getParameterNames();
-    for(int s=0; s<systemParameters.size(); ++s)
-    {
-        if(systemParameters[s].contains(" "))
-        {
-            systemParameters[s].prepend("\"");
-            systemParameters[s].append("\"");
-        }
-        allParameters.append(systemParameters[s]);
-    }
+    ContainerObject *pSystem = mpModel->getViewContainerObject();
+    getParametersFromContainer(pSystem, allParameters);
 
     QStringList aliasNames = pSystem->getAliasNames();
-    Q_FOREACH(const QString &alias, aliasNames)
+    for(const QString &alias : aliasNames)
     {
         QString fullName = pSystem->getFullNameFromAlias(alias);
         fullName.replace("#",".");
@@ -6372,147 +6301,123 @@ void HcomHandler::getParameters(const QString str, QStringList &parameters)
         }
     }
 
-
-    if(str.contains("*"))
+    // Use regexp pattern matching to filter out any name not matching pattern (or exact value)
+    QRegExp rx(str);
+    rx.setPatternSyntax(QRegExp::Wildcard);
+    for (const QString &rParname : allParameters)
     {
-        QString temp = str;
-        QStringList splitStr = temp.split("*");
-        for(int p=0; p<allParameters.size(); ++p)
+        if(rx.exactMatch(rParname))
         {
-            bool ok=true;
-            QString name = allParameters[p];
-            for(int s=0; s<splitStr.size(); ++s)
-            {
-                if(s==0)
-                {
-                    if(!name.startsWith(splitStr[s]))
-                    {
-                        ok=false;
-                        break;
-                    }
-                    name.remove(0, splitStr[s].size());
-                }
-                else if(s==splitStr.size()-1)
-                {
-                    if(!name.endsWith(splitStr[s]))
-                    {
-                        ok=false;
-                        break;
-                    }
-                }
-                else
-                {
-                    if(!name.contains(splitStr[s]))
-                    {
-                        ok=false;
-                        break;
-                    }
-                    name.remove(0, name.indexOf(splitStr[s])+splitStr[s].size());
-                }
-            }
-            if(ok)
-            {
-                parameters.append(allParameters[p]);
-            }
-        }
-    }
-    else
-    {
-        if(allParameters.contains(str))
-        {
-            parameters.append(str);
+            rParameters.append(rParname);
         }
     }
 }
 
-void HcomHandler::getParametersFromContainer(QStringList &parameters, ContainerObject *pSystem)
+void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters)
 {
     QString prefix;
-    if(pSystem != this->mpModel->getViewContainerObject())
+    if(pSystem != mpModel->getViewContainerObject())
     {
-        prefix.prepend(pSystem->getName()+"|");
+        prefix.prepend(pSystem->getName()+"$");
         ContainerObject *pParentSystem = pSystem->getParentContainerObject();
         while(pParentSystem != getModelPtr()->getViewContainerObject())
         {
-            prefix.prepend(pParentSystem->getName()+"|");
+            prefix.prepend(pParentSystem->getName()+"$");
             pParentSystem = pParentSystem->getParentContainerObject();
         }
     }
 
-    QStringList componentNames = pSystem->getModelObjectNames();
-
-    //Add quotation marks around component name if it contains spaces
-    for(int n=0; n<componentNames.size(); ++n)
+    QList<ModelObject*> modelObjects = pSystem->getModelObjects();
+    // Add quotation marks around component name if it contains spaces
+    for(ModelObject *pMO : modelObjects)
     {
-        if(pSystem->getModelObject(componentNames[n])->getTypeName() == "Subsystem")
+        // Recursively fetch paramters from subsystems
+        if(pMO->getTypeName() == "Subsystem")
         {
-            getParametersFromContainer(parameters, qobject_cast<ContainerObject*>(pSystem->getModelObject(componentNames[n])));
+            getParametersFromContainer(qobject_cast<ContainerObject*>(pMO), rParameters);
         }
         else
         {
-            QStringList parameterNames = pSystem->getModelObject(componentNames[n])->getParameterNames();
+            QString componentName = pMO->getName();
+            QStringList parameterNames = pMO->getParameterNames();
 
-            if(componentNames[n].contains(" "))
+            // Add quotation marks around component name if it contains spaces
+            //! @todo This should not be needed since spacec in names are no longer allowed
+            if(componentName.contains(" "))
             {
-                componentNames[n].prepend("\"");
-                componentNames[n].append("\"");
+                componentName.prepend("\"");
+                componentName.append("\"");
             }
 
-            for(int p=0; p<parameterNames.size(); ++p)
+            // Build full short name and append to results
+            for(QString &parName : parameterNames)
             {
-                parameterNames[p].replace("#", ".");
-                toShortDataNames(parameterNames[p]);
-                parameters.append(prefix+componentNames[n]+"."+parameterNames[p]);
+                toShortDataNames(parName);
+                rParameters.append(prefix+componentName+"."+parName);
             }
         }
+    }
+
+    // Now append this systems own parameters
+    QStringList systemParameters = pSystem->getParameterNames();
+    for(auto &sparname : systemParameters)
+    {
+        if(sparname.contains(" "))
+        {
+            sparname.prepend("\"");
+            sparname.append("\"");
+        }
+        rParameters.append(prefix+sparname);
     }
 }
 
 
 //! @brief Returns the value of specified parameter
-QString HcomHandler::getParameterValue(QString parameter) const
+//! @param[in] parameterName The full parameter name (relative to the current view container)
+QString HcomHandler::getParameterValue(QString parameterName) const
 {
-    toLongDataNames(parameter);
-    parameter.remove("\"");
-    QStringList subsystems = parameter.split("|");
-    subsystems.removeLast();
-    QString compName = parameter.split("|").last().split("#").first();
-    QString parName = parameter.split("|").last().right(parameter.split("|").last().size()-compName.size()-1);
+    if(mpModel)
+    {
+        // Convert to long name so that we can search in model
+        toLongDataNames(parameterName);
 
-    QString shortParName = parName;
-    shortParName.prepend(".");
-    toShortDataNames(shortParName);
-    shortParName.remove(0,1);
+        QStringList subsystems;
+        QString compName, parName;
+        splitFullParameterName(parameterName, subsystems, compName, parName);
 
-    if(!mpModel)
-    {
-        return "NaN";
-    }
+        // Seak into the correct system
+        ContainerObject *pContainer = getModelPtr()->getViewContainerObject();
+        foreach(const QString &subsystem, subsystems)
+        {
+            pContainer = qobject_cast<ContainerObject*>(pContainer->getModelObject(subsystem));
+        }
 
-    ContainerObject *pContainer = getModelPtr()->getViewContainerObject();
-    foreach(const QString &subsystem, subsystems)
-    {
-        pContainer = qobject_cast<ContainerObject*>(pContainer->getModelObject(subsystem));
-    }
+        ModelObject *pMO = nullptr;
+        // Handle ordinary component
+        if (!compName.isEmpty())
+        {
+            pMO = pContainer->getModelObject(compName);
+        }
+        // Handle system parameter
+        else
+        {
+            pMO = pContainer;
+        }
 
-    ModelObject *pComp = pContainer->getModelObject(compName);
-    QString fullNameFromAlias = pContainer->getFullNameFromAlias(parName);
-    ModelObject *pCompFromAlias = pContainer->getModelObject(fullNameFromAlias.section("#",0,0));
-    if(pComp && pComp->getParameterNames().contains(parName))
-    {
-        return pComp->getParameterValue(parName);
-    }
-    else if(pComp && pComp->getParameterNames().contains(shortParName))
-    {
-        return pComp->getParameterValue(shortParName);
-    }
-    else if(pCompFromAlias && pCompFromAlias->getParameterNames().contains(fullNameFromAlias.section("#",1)))
-    {
-        return pCompFromAlias->getParameterValue(fullNameFromAlias.section("#",1));
-    }
-    else if(pContainer->getParameterNames().contains(parameter))
-    {
-        return pContainer->getParameterValue(parameter);
+        // If we have component then try to find the actual parameter, by actual name
+        if (pMO && pMO->hasParameter(parName))
+        {
+            return pMO->getParameterValue(parName);
+        }
+
+        // If we get here we failed above, lets check if the paremter name was actually an alias
+        QString fullNameFromAlias = pContainer->getFullNameFromAlias(parName);
+        ModelObject *pCompFromAlias = pContainer->getModelObject(fullNameFromAlias.section("#",0,0));
+        QString actualParName = fullNameFromAlias.section("#",1);
+        if(pCompFromAlias && pCompFromAlias->hasParameter(actualParName))
+        {
+            return pCompFromAlias->getParameterValue(actualParName);
+        }
     }
     return "NaN";
 }

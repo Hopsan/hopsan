@@ -160,6 +160,54 @@ bool splitFullVariableName(const QString &rFullName, QStringList &rSystemHierarc
     return false;
 }
 
+//! @todo this should not be here, maybe in some global place
+bool splitFullParameterName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rParamName)
+{
+    rCompName.clear();
+    rParamName.clear();
+    rSystemHierarchy.clear();
+
+    QStringList syslist = rFullName.split("$");
+    if (!syslist.isEmpty())
+    {
+        // The component / port name is last
+        QString cp = syslist.last(); syslist.pop_back();
+        QStringList cp_list = cp.split('#');
+
+        // Check if this was a name to a system parameter
+        if (cp_list.size() == 1)
+        {
+            // Then pretend that the name was specified one level up
+            rParamName = cp_list.first();
+            if (!syslist.isEmpty())
+            {
+                rCompName = syslist.last();
+                syslist.pop_back();
+            }
+        }
+        // check if this is a normal component#parameter pair
+        else if (cp_list.size() == 2)
+        {
+            rCompName = cp_list.first();
+            rParamName = cp_list.last();
+        }
+        // check if this is a normal component#variable#startvalue pair
+        else if (cp_list.size() == 3)
+        {
+            rCompName = cp_list.first();
+            cp_list.removeFirst();
+            rParamName = cp_list.join("#");
+        }
+
+        if (!syslist.isEmpty())
+        {
+            rSystemHierarchy = syslist;
+        }
+        return true;
+    }
+    return false;
+}
+
 QString VariableDescription::getFullName() const
 {
     if (mpSystemHierarchy && !mpSystemHierarchy->isEmpty())

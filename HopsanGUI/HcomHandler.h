@@ -227,10 +227,9 @@ private:
     void getComponents(const QString &rStr, QList<ModelObject *> &rComponents, ContainerObject *pSystem=0) const;
     void getPorts(const QString &rStr, QList<Port *> &rPorts) const;
 
-    void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
-    void getParameters(QString str, QStringList &parameters);
-    void getParametersFromContainer(QStringList &parameters, ContainerObject *pSystem);
-    QString getParameterValue(QString parameter) const;
+    void getParameters(QString str, QStringList &rParameters);
+    void getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters);
+    QString getParameterValue(QString parameterName) const;
 
     bool evaluateArithmeticExpression(QString cmd);
 
