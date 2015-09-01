@@ -2210,3 +2210,34 @@ double peekVariable(SharedVectorVariableT a, const int index)
     return r;
 }
 
+
+
+QString makeFullParameterName(const QStringList &rSystemHierarchy, const QString &rCompName, const QString &rParamName)
+{
+    QString fullname;
+    // IF component name is empty then use last sysname as component name
+    if (rCompName.isEmpty())
+    {
+        if (!rSystemHierarchy.isEmpty())
+        {
+            for (int i=0; i<rSystemHierarchy.size()-1; ++i)
+            {
+                fullname.append(rSystemHierarchy[i]+"$");
+            }
+            fullname.append(rSystemHierarchy.last()+"#");
+        }
+    }
+    // If component name is set then prepend all of system hiearachy
+    else
+    {
+        for (const QString &str : rSystemHierarchy)
+        {
+            fullname.append(str+"$");
+        }
+        fullname.append(rCompName+"#");
+    }
+    // Now finaly append the parameter name
+    fullname.append(rParamName);
+
+    return fullname;
+}

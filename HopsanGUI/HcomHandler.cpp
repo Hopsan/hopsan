@@ -6315,14 +6315,14 @@ void HcomHandler::getParameters(const QString str, QStringList &rParameters)
 
 void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters)
 {
-    QString prefix;
+    QStringList sysnames;
     if(pSystem != mpModel->getViewContainerObject())
     {
-        prefix.prepend(pSystem->getName()+"$");
+        sysnames.prepend(pSystem->getName());
         ContainerObject *pParentSystem = pSystem->getParentContainerObject();
         while(pParentSystem != getModelPtr()->getViewContainerObject())
         {
-            prefix.prepend(pParentSystem->getName()+"$");
+            sysnames.prepend(pParentSystem->getName());
             pParentSystem = pParentSystem->getParentContainerObject();
         }
     }
@@ -6352,8 +6352,9 @@ void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringLi
             // Build full short name and append to results
             for(QString &parName : parameterNames)
             {
+                parName = makeFullParameterName(sysnames, componentName, parName);
                 toShortDataNames(parName);
-                rParameters.append(prefix+componentName+"."+parName);
+                rParameters.append(parName);
             }
         }
     }
@@ -6367,7 +6368,9 @@ void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringLi
             sparname.prepend("\"");
             sparname.append("\"");
         }
-        rParameters.append(prefix+sparname);
+        sparname = makeFullParameterName(sysnames, "", sparname);
+        toShortDataNames(sparname);
+        rParameters.append(sparname);
     }
 }
 
@@ -7252,11 +7255,12 @@ double HcomHandler::getNumber(const QString &rStr, bool *pOk)
 }
 
 
-//! @brief Converts long data names to short data names (e.g. "Component#Port#Pressure" -> "Component.Port.p")
+//! @brief Converts long data names to short data names (e.g. "Sysname$Component#Port#Pressure" -> "Sysname|Component.Port.p")
 //! @param rName Reference to variable name string
 void HcomHandler::toShortDataNames(QString &rName) const
 {
     rName.replace("#",".");
+    rName.replace("$","|");
 
     int li = rName.lastIndexOf(".");
     if (li>=0)
@@ -7271,10 +7275,11 @@ void HcomHandler::toShortDataNames(QString &rName) const
 }
 
 
-//! @brief Converts short data names to long data names (e.g. "Component.Port.p" -> "Component#Port#Pressure")
+//! @brief Converts short data names to long data names (e.g. "Sysname|Component.Port.p" -> "Sysname$Component#Port#Pressure")
 void HcomHandler::toLongDataNames(QString &rName) const
 {
     rName.replace(".", "#");
+    rName.replace("|", "$");
     rName.remove("\"");
 
     int li = rName.lastIndexOf("#");
