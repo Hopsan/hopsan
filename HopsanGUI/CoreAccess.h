@@ -102,6 +102,14 @@ public:
     void getMessage(QString &rMessage, QString &rType, QString &rTag);
 };
 
+
+class CoreQuantityAccess
+{
+public:
+    bool haveQuantity(const QString &rQuantity);
+};
+
+
 class CoreParameterData
 {
 public:
@@ -119,7 +127,6 @@ public:
     QStringList mConditions;
     bool    mIsDynamic;
 };
-
 
 class CoreVariableData
 {
@@ -200,7 +207,7 @@ public:
     QStringList getAliasNames() const;
 
     // Custom Quantitys
-    void setModifyableSignalQuantity(QString compPortVar, QString quantity);
+    bool setModifyableSignalQuantity(QString compPortVar, QString quantity);
     QString getModifyableSignalQuantity(QString compPortVar);
 
     // Port Functions

@@ -494,8 +494,7 @@ int Port::getNodeDataIdFromName(const HString &rName, const size_t subPortIdx)
     }
 }
 
-//! @brief A help function that makes it possible to overwrite the unit and description of scalar signal node variables
-//! @todo is this even needed any more now that we have in/out variables
+//! @brief A help function that makes it possible to overwrite the unit or quantity of scalar signal node variables
 void Port::setSignalNodeQuantityOrUnit(const HString &rQuantityOrUnit)
 {
     //! @todo multiport version needed

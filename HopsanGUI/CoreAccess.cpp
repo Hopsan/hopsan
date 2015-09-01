@@ -746,7 +746,7 @@ QStringList CoreSystemAccess::getAliasNames() const
     return qvec;
 }
 
-void CoreSystemAccess::setModifyableSignalQuantity(QString compPortVar, QString quantity)
+bool CoreSystemAccess::setModifyableSignalQuantity(QString compPortVar, QString quantity)
 {
    QStringList systems;
    QString c,p,v;
@@ -755,11 +755,13 @@ void CoreSystemAccess::setModifyableSignalQuantity(QString compPortVar, QString 
    if(pComp)
    {
        hopsan::Port *pPort = pComp->getPort(p.toStdString().c_str());
-       if (pPort)
+       if (pPort && pPort->getSignalNodeQuantityModifyable())
        {
            pPort->setSignalNodeQuantityOrUnit(quantity.toStdString().c_str());
+           return true;
        }
    }
+   return false;
 }
 
 QString CoreSystemAccess::getModifyableSignalQuantity(QString compPortVar)
@@ -1471,4 +1473,10 @@ QString getHopsanCoreArchitecture()
 QString getHopsanCoreBuildTime()
 {
     return QString::fromStdString(gHopsanCore.getCoreBuildTime());
+}
+
+
+bool CoreQuantityAccess::haveQuantity(const QString &rQuantity)
+{
+    return gHopsanCore.haveQuantity(rQuantity.toStdString().c_str());
 }

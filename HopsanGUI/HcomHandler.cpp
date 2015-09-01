@@ -663,6 +663,16 @@ void HcomHandler::createCommands()
     didfosCmd.group = "Variable Commands";
     mCmdList << didfosCmd;
 
+    HcomCommand sequCmd;
+    sequCmd.cmd = "sequ";
+    sequCmd.description.append("Set quantity on specified variable(s)");
+    sequCmd.help.append(" Usage: sequ [variable] [quantityname]\n");
+    sequCmd.help.append(" Usage: sequ [variable] -\n");
+    sequCmd.help.append("  The second example clears the quantity");
+    sequCmd.fnc = &HcomHandler::executeSetQuantityCommand;
+    sequCmd.group = "Variable Commands";
+    mCmdList << sequCmd;
+
     HcomCommand chscCmd;
     chscCmd.cmd = "chsc";
     chscCmd.description.append("Change plot scale of specified variable");
@@ -2763,6 +2773,91 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
     else
     {
         HCOMERR(QString("Could not find a variable matching: %1").arg(cmd));
+    }
+}
+
+void HcomHandler::executeSetQuantityCommand(const QString args)
+{
+    QStringList arglist = splitCommandArguments(args);
+    if(arglist.size() != 2)
+    {
+        HCOMERR("Needs two arguments");
+        return;
+    }
+    if(!mpModel) { return; }
+    SystemContainer *pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+    if(!pSystem) { return; }
+
+
+    QString &variableName = arglist.first();
+    QString &quantity = arglist.last();
+
+    // Check if we should clear qunatity
+    CoreQuantityAccess cqa;
+    if (quantity=="-")
+    {
+        quantity.clear();
+    }
+    // Else check if quantity is valid
+    else if (!cqa.haveQuantity(quantity))
+    {
+        HCOMERR("Invalid quantity: "+quantity);
+        return;
+    }
+
+    // Convert to model name format
+    toLongDataNames(variableName);
+
+    bool genOK;
+    int gen = parseAndChopGenerationSpecifier(variableName, genOK);
+    if (!genOK)
+    {
+        HCOMERR("Could not parse generation specifier");
+        return;
+    }
+
+    // If specifier was not given or set to current gen, then also set quantity in model
+    if (gen == -1 || gen == -3)
+    {
+        // Split fullname
+        QStringList sysnames;
+        QString comp,port,var;
+        bool splitOK = splitFullVariableName(variableName, sysnames, comp, port, var);
+        if (!splitOK)
+        {
+            HCOMERR("Invalid or incomplete variable name: "+variableName);
+            return;
+        }
+
+        // Search into subsystem
+        for (QString &sysname : sysnames)
+        {
+            pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+            if (!pSystem)
+            {
+                HCOMERR("Could not find subsystem: "+sysname);
+                return;
+            }
+        }
+
+        // Get component
+        ModelObject *pComponent = pSystem->getModelObject(comp);
+        if (!pComponent)
+        {
+            HCOMERR("Could not find component: "+comp);
+            return;
+        }
+
+        bool rc = pComponent->setModifyableSignalQuantity(port+"#"+var, quantity);
+        if (!rc)
+        {
+            HCOMERR("Could not set quantity: "+quantity+" on model variable: "+variableName);
+        }
+    }
+    else
+    {
+        // Set quantity for specified log data variable generation
+        mpModel->getLogDataHandler()->registerQuantity(variableName, quantity, gen);
     }
 }
 

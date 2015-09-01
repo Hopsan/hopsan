@@ -107,9 +107,11 @@ void LogDataHandler2::setParentModel(ModelWidget *pParentModel)
     if (mpParentModel)
     {
         disconnect(0, 0, this, SLOT(registerAlias(QString,QString)));
+        disconnect(0, 0, this, SLOT(registerQuantity(QString,QString)));
     }
     mpParentModel = pParentModel;
     connect(mpParentModel, SIGNAL(aliasChanged(QString,QString)), this, SLOT(registerAlias(QString,QString)));
+    connect(mpParentModel, SIGNAL(quantityChanged(QString,QString)), this, SLOT(registerQuantity(QString,QString)));
 }
 
 ModelWidget *LogDataHandler2::getParentModel()
@@ -2344,6 +2346,11 @@ bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &
         return pGen->registerQuantity(rFullName, rQuantity);
     }
     return false;
+}
+
+bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &rQuantity)
+{
+    registerQuantity(rFullName, rQuantity, -1);
 }
 
 //! @brief This slot should be signaled when a variable that might be registered as imported is removed

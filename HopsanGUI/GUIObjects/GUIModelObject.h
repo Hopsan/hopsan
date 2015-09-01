@@ -119,7 +119,7 @@ public:
 //    double getCustomPlotOffset(const QString &rVariablePortDataName);
 
     // Custom quantity methods
-    void setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity);
+    bool setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity);
     QString getModifyableSignalQuantity(const QString &rVariablePortDataName);
 
     // Load and save methods
@@ -166,6 +166,7 @@ public slots:
 
 signals:
     void nameChanged();
+    void quantityChanged(QString, QString);
 
 protected:
     // Protected methods

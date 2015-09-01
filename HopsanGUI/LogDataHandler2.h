@@ -152,7 +152,8 @@ public:
 public slots:
     void registerAlias(const QString &rFullName, const QString &rAlias, int gen=-1);
     void unregisterAlias(const QString &rAlias, int gen=-1);
-    bool registerQuantity(const QString &rFullName, const QString &rQuantity, int gen=-1);
+    bool registerQuantity(const QString &rFullName, const QString &rQuantity, int gen);
+    bool registerQuantity(const QString &rFullName, const QString &rQuantity);
 
 
 signals:

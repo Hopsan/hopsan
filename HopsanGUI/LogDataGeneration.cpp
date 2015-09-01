@@ -243,13 +243,13 @@ QList<SharedVectorVariableT> LogDataGeneration::getAllVariables() const
 
 bool LogDataGeneration::registerQuantity(const QString &rFullName, const QString &rQuantity)
 {
-    SharedVectorVariableT var = getVariable(rFullName);
+    SharedVectorVariableT pVar = getVariable(rFullName);
     QString bu = gpConfig->getBaseUnit(rQuantity);
-    if (!bu.isEmpty())
+    if (pVar && !bu.isEmpty())
     {
-        var->mpVariableDescription->mDataQuantity = rQuantity;
-        var->mpVariableDescription->mDataUnit = bu;
-        emit var.data()->quantityChanged();
+        pVar->mpVariableDescription->mDataQuantity = rQuantity;
+        pVar->mpVariableDescription->mDataUnit = bu;
+        emit pVar.data()->quantityChanged();
         return true;
     }
     return false;

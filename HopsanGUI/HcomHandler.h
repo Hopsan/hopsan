@@ -150,6 +150,7 @@ private:
     void executeChangeDefaultPlotOffsetCommand(const QString cmd);
     void executeDisplayDefaultPlotOffsetCommand(const QString cmd);
     void executeVariableInfoCommand(const QString cmd);
+    void executeSetQuantityCommand(const QString args);
 
     void executeDisplayParameterCommand(const QString cmd);
     void executeAddParameterCommand(const QString cmd);

@@ -109,7 +109,7 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
         hideName(NoUndo);
     }
 
-        //Create connections
+    // Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
     if(mpParentContainerObject != 0)
     {
@@ -118,6 +118,7 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
         connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)), this, SLOT(setIcon(GraphicsTypeEnumT)));
+        connect(this, SIGNAL(quantityChanged(QString,QString)), mpParentContainerObject->mpModelWidget, SIGNAL(quantityChanged(QString,QString)));
     }
     else
     {
@@ -845,9 +846,14 @@ void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &
 
 //}
 
-void ModelObject::setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
+bool ModelObject::setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
 {
-    getParentContainerObject()->getCoreSystemAccessPtr()->setModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName, rQuantity);
+    bool rc = getParentContainerObject()->getCoreSystemAccessPtr()->setModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName, rQuantity);
+    if (rc)
+    {
+        emit quantityChanged(makeFullVariableName(getSystemNameHieararchy(),"","",getName()+"#"+rVariablePortDataName), rQuantity);
+    }
+    return rc;
 }
 
 QString ModelObject::getModifyableSignalQuantity(const QString &rVariablePortDataName)

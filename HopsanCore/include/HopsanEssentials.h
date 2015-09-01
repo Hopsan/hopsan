@@ -87,6 +87,9 @@ public:
     Node* createNode(const HString &rNodeType);
     const std::vector<HString> getRegisteredNodeTypes() const;
 
+    // Quantities
+    bool haveQuantity(const HString &rQuantity) const;
+
     // Messages
     HopsanCoreMessageHandler* getCoreMessageHandler();
     void getMessage(HString &rMessage, HString &rType, HString &rTag);

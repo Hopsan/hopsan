@@ -41,6 +41,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "Quantities.h"
 #include <string.h>
 #include <stdio.h>
 #include <iostream>
@@ -250,6 +251,14 @@ Node* HopsanEssentials::createNode(const HString &rNodeType)
 const std::vector<HString> HopsanEssentials::getRegisteredNodeTypes() const
 {
     return mpNodeFactory->getRegisteredKeys();
+}
+
+//! @brief Check if a qunatity name is registered
+//! @param[in] rQuantity The name of the quantity
+//! @returns true if the quantity is regisitered, else false
+bool HopsanEssentials::haveQuantity(const HString &rQuantity) const
+{
+    return gHopsanQuantities.haveQuantity(rQuantity);
 }
 
 //! @brief Returns a pointer to the core message handler, do NOT use this function to get messages
