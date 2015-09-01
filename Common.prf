@@ -28,7 +28,7 @@ DEFINES *= DLL_PREFIX=$${LIB_PREFIX}
 # Og = optimization that does not interfere with debugging
 # O3 = highest optimization level for speed
 CONFIG(debug, debug|release) {
-  QMAKE_CXXFLAGS += -Og
+  #QMAKE_CXXFLAGS += -Og
 }
 CONFIG(release, debug|release) {
   QMAKE_CXXFLAGS += -O3
