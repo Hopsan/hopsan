@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.9pre" hopsancoreversion="0.6.9pre">
-  <requirements/>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.7.x_r8296" hopsancoreversion="0.7.x_r8296">
+  <requirements>
+    <componentlibrary>pistonFMU</componentlibrary>
+    <componentlibrary>DynaFMUHopsanComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
     <email>robert.braun@liu.se</email>
@@ -16,7 +20,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="0"/>
       <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
-      <viewport x="2524.5" y="2448" zoom="1"/>
+      <viewport x="2531.5" y="2531" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -114,6 +118,10 @@
         <ports>
           <port nodetype="NodeMechanic" name="P1"/>
           <port nodetype="NodeMechanic" name="P2"/>
+          <port nodetype="NodeSignal" name="B"/>
+          <port nodetype="NodeSignal" name="k"/>
+          <port nodetype="NodeSignal" name="x_min"/>
+          <port nodetype="NodeSignal" name="x_max"/>
         </ports>
         <hopsangui>
           <pose x="2669" y="2422" flipped="false" a="0"/>
@@ -177,10 +185,10 @@
       <component typename="HydraulicVolumeMultiPort" name="Hydraulic_Volume_Multi_Port">
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
-          <parameter unit="Pa" value="0" type="double" name="P1#Pressure"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="Pa s/m^3" value="0" type="double" name="P1#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
           <parameter unit="Pa" value="2e+007" type="double" name="P_high"/>
           <parameter unit="m^3" value="0.001" type="double" name="V#Value"/>
@@ -189,6 +197,9 @@
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeSignal" name="V"/>
+          <port nodetype="NodeSignal" name="Beta_e"/>
+          <port nodetype="NodeSignal" name="alpha"/>
         </ports>
         <hopsangui>
           <pose x="2573" y="2602" flipped="false" a="90"/>
@@ -224,8 +235,8 @@
           <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
-          <port nodetype="NodeSignal" name="in_right"/>
           <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_right"/>
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
@@ -267,6 +278,7 @@
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="k"/>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
@@ -307,9 +319,9 @@
           <parameter unit="" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
-          <port nodetype="NodeSignal" name="out"/>
           <port nodetype="NodeSignal" name="in1"/>
           <port nodetype="NodeSignal" name="in2"/>
+          <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
           <pose x="2302" y="2525" flipped="false" a="0"/>
@@ -355,6 +367,9 @@
           <port nodetype="NodeHydraulic" name="P1"/>
           <port nodetype="NodeHydraulic" name="P2"/>
           <port nodetype="NodeSignal" name="xv"/>
+          <port nodetype="NodeSignal" name="p_max"/>
+          <port nodetype="NodeSignal" name="tao"/>
+          <port nodetype="NodeSignal" name="p_h"/>
         </ports>
         <hopsangui>
           <pose x="2575" y="2682" flipped="false" a="0"/>
@@ -391,12 +406,15 @@
       </component>
       <component typename="SignalStep" name="Step">
         <parameters>
-          <parameter unit="-" value="0.2" type="double" name="y_0#Value"/>
-          <parameter unit="-" value="0.5" type="double" name="y_A#Value"/>
-          <parameter unit="-" value="1" type="double" name="t_step#Value"/>
+          <parameter unit="" value="0.2" type="double" name="y_0#Value"/>
+          <parameter unit="" value="0.5" type="double" name="y_A#Value"/>
+          <parameter unit="s" value="1" type="double" name="t_step#Value"/>
         </parameters>
         <ports>
-          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="out" signalquantity="Position"/>
+          <port nodetype="NodeSignal" name="y_0"/>
+          <port nodetype="NodeSignal" name="y_A"/>
+          <port nodetype="NodeSignal" name="t_step"/>
         </ports>
         <hopsangui>
           <pose x="2212" y="2525" flipped="false" a="0"/>
@@ -420,6 +438,9 @@
           <port nodetype="NodeHydraulic" name="P1"/>
           <port nodetype="NodeHydraulic" name="P2"/>
           <port nodetype="NodeSignal" name="a"/>
+          <port nodetype="NodeSignal" name="n_p"/>
+          <port nodetype="NodeSignal" name="D_p"/>
+          <port nodetype="NodeSignal" name="C_lp"/>
         </ports>
         <hopsangui>
           <pose x="2466" y="2681" flipped="false" a="0"/>
@@ -450,6 +471,7 @@
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="k"/>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
@@ -487,9 +509,9 @@
           <parameter unit="" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
-          <port nodetype="NodeSignal" name="out"/>
           <port nodetype="NodeSignal" name="in1"/>
           <port nodetype="NodeSignal" name="in2"/>
+          <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
           <pose x="2446" y="2525" flipped="false" a="0"/>
@@ -521,6 +543,7 @@
         <ports>
           <port nodetype="NodeMechanic" name="P1"/>
           <port nodetype="NodeMechanic" name="P2"/>
+          <port nodetype="NodeSignal" name="k"/>
         </ports>
         <hopsangui>
           <pose x="2828" y="2422" flipped="false" a="0"/>
@@ -589,11 +612,23 @@
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="PP"/>
+          <port nodetype="NodeHydraulic" name="PT"/>
           <port nodetype="NodeHydraulic" name="PA"/>
           <port nodetype="NodeHydraulic" name="PB"/>
-          <port nodetype="NodeHydraulic" name="PT"/>
-          <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="xv"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="C_q"/>
+          <port nodetype="NodeSignal" name="rho"/>
+          <port nodetype="NodeSignal" name="d"/>
+          <port nodetype="NodeSignal" name="f_pa"/>
+          <port nodetype="NodeSignal" name="f_pb"/>
+          <port nodetype="NodeSignal" name="f_at"/>
+          <port nodetype="NodeSignal" name="f_bt"/>
+          <port nodetype="NodeSignal" name="x_pa"/>
+          <port nodetype="NodeSignal" name="x_pb"/>
+          <port nodetype="NodeSignal" name="x_at"/>
+          <port nodetype="NodeSignal" name="x_bt"/>
+          <port nodetype="NodeSignal" name="x_vmax"/>
         </ports>
         <hopsangui>
           <pose x="2563" y="2515" flipped="false" a="0"/>
@@ -622,7 +657,6 @@
           <parameter unit="" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
-          <port nodetype="NodeSignal" name="in_right"/>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
@@ -640,23 +674,23 @@
       <component typename="HydraulicCylinderC" name="Cylinder_C">
         <parameters>
           <parameter unit="m^3/s" value="0" type="double" name="P1#Flow"/>
-          <parameter unit="Pa" value="0" type="double" name="P1#Pressure"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P1#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P1#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P1#CharImpedance"/>
+          <parameter unit="Pa" value="100000" type="double" name="P1#WaveVariable"/>
+          <parameter unit="Pa s/m^3" value="0" type="double" name="P1#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1#HeatFlow"/>
           <parameter unit="m^3/s" value="0" type="double" name="P2#Flow"/>
-          <parameter unit="Pa" value="0" type="double" name="P2#Pressure"/>
+          <parameter unit="Pa" value="100000" type="double" name="P2#Pressure"/>
           <parameter unit="K" value="0" type="double" name="P2#Temperature"/>
-          <parameter unit="Pa" value="0" type="double" name="P2#WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="P2#CharImpedance"/>
+          <parameter unit="Pa" value="100000" type="double" name="P2#WaveVariable"/>
+          <parameter unit="Pa s/m^3" value="0" type="double" name="P2#CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P2#HeatFlow"/>
           <parameter unit="m/s" value="0" type="double" name="P3#Velocity"/>
           <parameter unit="N" value="0" type="double" name="P3#Force"/>
           <parameter unit="m" value="0" type="double" name="P3#Position"/>
           <parameter unit="N" value="0" type="double" name="P3#WaveVariable"/>
           <parameter unit="N s/m" value="0" type="double" name="P3#CharImpedance"/>
-          <parameter unit="kg" value="0" type="double" name="P3#EquivalentMass"/>
+          <parameter unit="kg" value="1" type="double" name="P3#EquivalentMass"/>
           <parameter unit="m^2" value="0.001" type="double" name="A_1#Value"/>
           <parameter unit="m^2" value="0.001" type="double" name="A_2#Value"/>
           <parameter unit="m" value="1" type="double" name="s_l#Value"/>
@@ -670,6 +704,14 @@
           <port nodetype="NodeHydraulic" name="P1"/>
           <port nodetype="NodeHydraulic" name="P2"/>
           <port nodetype="NodeMechanic" name="P3"/>
+          <port nodetype="NodeSignal" name="A_1"/>
+          <port nodetype="NodeSignal" name="A_2"/>
+          <port nodetype="NodeSignal" name="s_l"/>
+          <port nodetype="NodeSignal" name="V_1"/>
+          <port nodetype="NodeSignal" name="V_2"/>
+          <port nodetype="NodeSignal" name="B_p"/>
+          <port nodetype="NodeSignal" name="Beta_e"/>
+          <port nodetype="NodeSignal" name="c_leak"/>
         </ports>
         <hopsangui>
           <pose x="2598" y="2422" flipped="false" a="0"/>
@@ -736,7 +778,7 @@
       <connect endport="P3" endcomponent="Cylinder_C" startport="P1" startcomponent="Mass">
         <hopsangui>
           <coordinates>
-            <coordinate x="2637.00000000000000000000" y="2422.00000000000000000000"/>
+            <coordinate x="2636.50000000000000000000" y="2422.00000000000000000000"/>
             <coordinate x="2668.50000000000000000000" y="2422.00000000000000000000"/>
             <coordinate x="2668.50000000000000000000" y="2422.00000000000000000000"/>
             <coordinate x="2657.50000000000000000000" y="2422.00000000000000000000"/>
@@ -785,7 +827,7 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2740.00000000000000000000" y="2379.00000000000000000000"/>
-            <coordinate x="2701.00000000000000000000" y="2422.00000000000000000000"/>
+            <coordinate x="2701.50000000000000000000" y="2422.00000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
@@ -975,7 +1017,7 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2811.50000000000000000000" y="2422.00000000000000000000"/>
-            <coordinate x="2701.00000000000000000000" y="2422.00000000000000000000"/>
+            <coordinate x="2701.50000000000000000000" y="2422.00000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
