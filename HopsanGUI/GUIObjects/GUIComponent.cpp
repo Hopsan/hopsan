@@ -398,22 +398,9 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
         QVector<CoreVariameterDescription> descs;
         getVariameterDescriptions(descs);
 
+        QString currentPort;
         for (CoreVariameterDescription &desc : descs)
         {
-//            Port *pPort = (*it);
-//            QDomElement xmlPort = appendDomElement(xmlPorts, "port");
-//            xmlPort.setAttribute(HMF_NAMETAG, pPort->getName());
-//            xmlPort.setAttribute("nodetype", pPort->getNodeType());
-//            if (pPort->getNodeType() == "NodeSignal")
-//            {
-//                QString q = pPort->getParentModelObject()->getModifyableSignalQuantity(pPort->getName()+"#"+"Value");
-//                if (!q.isEmpty())
-//                {
-//                    xmlPort.setAttribute("signalquantity", q);
-//                }
-//            }
-
-            QString currentPort;
             if (desc.mPortName != currentPort)
             {
                 currentPort = desc.mPortName;
@@ -428,7 +415,6 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
                         xmlPort.setAttribute("signalquantity", q);
                     }
                 }
-
             }
         }
     }
