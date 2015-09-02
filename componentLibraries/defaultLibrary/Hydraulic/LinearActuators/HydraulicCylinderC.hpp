@@ -214,6 +214,7 @@ class HydraulicCylinderC : public ComponentC
         {
             //Declare local variables;
             double V1, V2, qLeak, qi1, qi2, c1mean, c2mean, V1min, V2min;
+            bool p1cav=false, p2cav=false;
 
             //Read variables from nodes
             double Zc1 = (*mvpP1_Zc[0]);          //All Zc should be the same and Q components shall
@@ -274,6 +275,7 @@ class HydraulicCylinderC : public ComponentC
             for(size_t i=0; i<mNumPorts1; ++i)
             {
                 c1mean += (*mvpP1_c[i]) + 2.0*Zc1*(*mvpP1_q[i]);
+                p1cav = p1cav || ((*mvpP1_p[i] == 0) );
             }
             c1mean = c1mean/double(mNumPorts1+2);
             ci1 = alpha * ci1 + (1.0 - alpha)*(c1mean*2.0 - ci1 - 2.0*Zc1*qi1);
@@ -286,6 +288,7 @@ class HydraulicCylinderC : public ComponentC
             for(size_t i=0; i<mNumPorts2; ++i)
             {
                 c2mean += (*mvpP2_c[i]) + 2.0*Zc2*(*mvpP2_q[i]);
+                p2cav = p2cav || ((*mvpP2_p[i] == 0) );
             }
             c2mean = c2mean/double(mNumPorts2+2);
             ci2 = alpha * ci2 + (1.0 - alpha)*(c2mean*2.0 - ci2 - 2.0*Zc2*qi2);
@@ -296,9 +299,25 @@ class HydraulicCylinderC : public ComponentC
             // Stops could also be implemented in the mass component (connected Q-component)
             limitStroke(CxLim, ZxLim, x3, v3, me, sl);
 
-            //Internal mechanical port
-            double c3 = A1*ci1 - A2*ci2 + CxLim;
-            double Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp + ZxLim;
+
+            // If there is cavitation in the hydraulic nodes, then the hydraulic wave and impedance acting on the mechanics should be set to c>=0 and zc=0
+            // The pressure is one time-step old, this introduces a small modelling error, but since cavitation is not modelled accurately anyway,
+            // this does not matter
+            double ci1m=ci1, ci2m=ci2, Zc1m=Zc1, Zc2m=Zc2;
+            if (p1cav)
+            {
+                ci1m = std::max(ci1, 0.0);
+                Zc1m = 0;
+            }
+            if (p2cav)
+            {
+                ci2m = std::max(ci2, 0.0);
+                Zc2m = 0;
+            }
+
+            // Internal mechanical port
+            double c3 = A1*ci1m - A2*ci2m + CxLim;
+            double Zx3 = A1*A1*Zc1m + A2*A2*Zc2m + bp + ZxLim;
 
 
             //Write to nodes
