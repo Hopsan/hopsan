@@ -732,10 +732,12 @@ print "\n"
 success = True
 pauseOnFailValidation = False
 
-gARCH = 'x86'
-do64BitRelease = askYesNoQuestion("Do you want to build a 64Bit release? (y/n): ")
-if do64BitRelease:
-    gARCH = 'x64'
+#gARCH = 'x86'
+#do64BitRelease = askYesNoQuestion("Do you want to build a 64Bit release? (y/n): ")
+#if do64BitRelease:
+#    gARCH = 'x64'
+do64BitRelease = True
+gARCH = 'x64'
 
 mingwDir = extractHopsanBuildPath('0.7.x', gARCH, 'MinGW')
 qmakeDir = extractHopsanBuildPath('0.7.x', gARCH, 'QMake')
