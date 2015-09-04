@@ -102,7 +102,7 @@ public:
                (1.0-x2)*(1.0-x2) + 100.0*(x3-x2*x2)*(x3-x2*x2) +
                (1.0-x3)*(1.0-x3) + 100.0*(x4-x3*x3)*(x4-x3*x3) +
                (1.0-x4)*(1.0-x4) + 100.0*(x5-x4*x4)*(x5-x4*x4) +
-               (1.0-x5)*(1.0-x5) + 100.0*(1-x5*x5)*(1-x5*x5);
+               (1.0-x5)*(1.0-x5) + 100.0*(x6-x5*x5)*(x6-x5*x5);
     }
 
     inline double sphere(const double x1, const double x2, const double x3, const double x4, const double x5, const double x6) const
