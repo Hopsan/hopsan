@@ -116,8 +116,12 @@ public:
     SimulationHandler *getSimulationHandler();
 };
 
-void openLogFile();
+bool openLogFile();
 void closeLogFile();
 void addLogMess(const char* message);
+inline void addLogMess(const HString &rMessage)
+{
+    addLogMess(rMessage.c_str());
+}
 }
 #endif // HopsanEssentials_H

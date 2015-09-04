@@ -75,7 +75,7 @@ namespace hopsan {
             {
                 if (mMessage.empty())
                 {
-                    stopSimulation("No reason given");
+                    stopSimulation(HString("Caused by component: ")+getName());
                 }
                 else
                 {

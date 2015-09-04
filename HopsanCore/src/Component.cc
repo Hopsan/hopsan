@@ -380,14 +380,18 @@ void Component::setSubTypeName(const HString &rSubTypeName)
 //! @ingroup ComponentSimulationFunctions
 void Component::stopSimulation(const HString &rReason)
 {
+    HString infoMsg;
     if (rReason.empty())
     {
-        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime), "StopSimulation");
+        infoMsg = "Simulation was stopped at t="+to_hstring(mTime);
     }
     else
     {
-        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason, "StopSimulation");
+        infoMsg = "Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason;
     }
+    addInfoMessage(infoMsg);
+    addLogMess(infoMsg);
+
     mpSystemParent->stopSimulation(""); // We use string version here to make sure sub system hierarchy is printed
 }
 
@@ -712,7 +716,7 @@ double *Component::getTimePtr()
 //! @returns A pointer to the created port
 Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection)
 {
-    addLogMess((getName()+"::addPort").c_str());
+    addLogMess(getName()+"::addPort "+rPortName);
 
     //Make sure name is unique before insert
     HString newname = this->determineUniquePortName(rPortName);
@@ -956,7 +960,7 @@ double *Component::getSafeNodeDataPtr(const HString &rPortName, const int dataId
 //! @returns A pointer to the specified NodeData or a null pointer
 double *Component::getNodeDataPtr(Port *pPort, const int dataId)
 {
-    addLogMess((getName()+"::getNodeDataPtr").c_str());
+    addLogMess(getName()+"::getNodeDataPtr Id:"+to_hstring(dataId));
     //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a mistake
     if (pPort->getPortType() >= MultiportType)
     {
@@ -976,7 +980,6 @@ double *Component::getNodeDataPtr(Port *pPort, const int dataId)
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
 double *Component::getSafeMultiPortNodeDataPtr(Port *pPort, const size_t portIdx, const int dataId)
 {
-    addLogMess((getName()+"::getSafeMultiPortNodeDataPtr").c_str());
     //If this is not a multiport then give an error message to the user so that they KNOW that they have made a mistake
     if (pPort->getPortType() < MultiportType)
     {
@@ -1333,7 +1336,7 @@ void Component::addInfoMessage(const HString &rMessage, const HString &rTag) con
 //! @param [in] rTag The message tag, used to group similar messages
 void Component::addFatalMessage(const HString &rMessage, const HString &rTag) const
 {
-    addLogMess(rMessage.c_str());
+    addLogMess("Fatal error: "+rMessage+" in component: "+getName());
     if (mpMessageHandler)
     {
         mpMessageHandler->addFatalMessage(getName()+"::"+rMessage, rTag);
@@ -1392,7 +1395,6 @@ double Component::getDefaultStartValue(const HString &rPortName, const HString &
 //! @ingroup ComponentSetupFunctions
 void Component::setDefaultStartValue(Port *pPort, const size_t idx, const double value)
 {
-    addLogMess((getName()+"::setDefaultStartValue").c_str());
     pPort->setDefaultStartValue(idx, value);
     // If a description exist, then refresh the value text
     if (pPort->getNodeDataDescription(idx))

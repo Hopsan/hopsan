@@ -636,7 +636,14 @@ void Port::setDefaultStartValue(const size_t idx, const double value, const size
     HOPSAN_UNUSED(subPortIdx)
     if(mpStartNode)
     {
-        mpStartNode->setDataValue(idx, value);
+        if (idx < mpStartNode->getNumDataVariables())
+        {
+            mpStartNode->setDataValue(idx, value);
+        }
+        else
+        {
+            getComponent()->addWarningMessage("Port::setDefaultStartValue index out of range");
+        }
     }
     else
     {

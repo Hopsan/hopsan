@@ -360,14 +360,18 @@ size_t ComponentSystem::getNumActuallyLoggedSamples() const
 //! This method can be used by users e.g. GUIs to stop an start a initialization/simulation process
 void ComponentSystem::stopSimulation(const HString &rReason)
 {
+    HString infoMsg;
     if (rReason.empty())
     {
-        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime), "StopSimulation");
+        infoMsg = "Simulation was stopped at t="+to_hstring(mTime);
     }
     else
     {
-        addInfoMessage("Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason, "StopSimulation");
+        infoMsg = "Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason;
     }
+    addInfoMessage(infoMsg);
+    addLogMess(infoMsg);
+
 #ifdef USETBB
     mpStopMutex->lock();
     mStopSimulation = true;
@@ -1037,7 +1041,7 @@ void ComponentSystem::preAllocateLogSpace()
     // If we failed to allocate log memory then stop simulation
     if (!success)
     {
-        mStopSimulation = true;
+        stopSimulation("Failed to allocate log memory");
     }
 }
 
@@ -2726,7 +2730,7 @@ void ComponentSystem::loadParameters(const SetParametersMapT &rParameterMap)
 //! @param[in] stopT Stop time of simulation
 bool ComponentSystem::initialize(const double startT, const double stopT)
 {
-    addLogMess("ComponentSystem::initialize()");
+    addLogMess("ComponentSystem::initialize() in "+getName());
 
     if (this->isTopLevelSystem())
     {
@@ -2804,9 +2808,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setLogStartTime(mRequestedLogStartTime);
         }
 
+        addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentSignalptrs[s]->getName());
         if(!mComponentSignalptrs[s]->initialize(startT, stopT))
         {
-            stopSimulation();
+            stopSimulation("Failed to initialize: "+mComponentSignalptrs[s]->getName());
         }
     }
 
@@ -2828,9 +2833,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             static_cast<ComponentSystem*>(mComponentCptrs[c])->setLogStartTime(mRequestedLogStartTime);
         }
 
+        addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentCptrs[c]->getName());
         if(!mComponentCptrs[c]->initialize(startT, stopT))
         {
-            stopSimulation();
+            stopSimulation("Failed to initialize: "+mComponentCptrs[c]->getName());
         }
     }
 
@@ -2852,9 +2858,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             static_cast<ComponentSystem*>(mComponentQptrs[q])->setLogStartTime(mRequestedLogStartTime);
         }
 
+        addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentQptrs[q]->getName());
         if(!mComponentQptrs[q]->initialize(startT, stopT))
         {
-            stopSimulation();
+            stopSimulation("Failed to initialize: "+mComponentQptrs[q]->getName());
         }
     }
 

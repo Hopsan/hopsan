@@ -534,25 +534,25 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
             }
             else
             {
-                addLogMess("hopsan::loadHopsanModelFile(): No system found in file.");
+                addLogMess("hopsan::loadHopsanModelFileActual(): No system found in file.");
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has no system to load");
             }
         }
         else
         {
-            addLogMess("hopsan::loadHopsanModelFile(): Wrong root tag name.");
+            addLogMess("hopsan::loadHopsanModelFileActual(): Wrong root tag name.");
             pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
     }
     catch(std::exception &e)
     {
-        addLogMess("hopsan::loadHopsanModelFile(): Unable to parse xml doc.");
+        addLogMess("hopsan::loadHopsanModelFileActual(): Unable to parse xml doc.");
         pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Unable to parse xml doc");
         cout << "throws: " << e.what() << endl;
     }
 
-    addLogMess("hopsan::loadHopsanModelFile(): Failed.");
+    addLogMess("hopsan::loadHopsanModelFileActual(): Failed.");
 
     // We failed, return 0 ptr
     return 0;
@@ -569,7 +569,7 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
 //! @todo if possible merge the two differen main load functions
 ComponentSystem* hopsan::loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
-    addLogMess(("hopsan::loadHopsanModelFile("+rFilePath+")").c_str());
+    addLogMess("hopsan::loadHopsanModelFile("+rFilePath+")");
     try
     {
         rapidxml::file<> hmfFile(rFilePath.c_str());
@@ -643,7 +643,7 @@ ComponentSystem* hopsan::loadHopsanModel(char* xmlStr, HopsanEssentials* pHopsan
 //! @returns A pointer to the rootsystem of the loaded model
 void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
 {
-    addLogMess(("hopsan::loadHopsanParameterFile("+rFilePath+")").c_str());
+    addLogMess("hopsan::loadHopsanParameterFile("+rFilePath+")");
     try
     {
         rapidxml::file<> hmfFile(rFilePath.c_str());

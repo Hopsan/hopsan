@@ -39,7 +39,8 @@ CONFIG(debug, debug|release) {
   QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 }
 
-DEFINES *= MAINCORE
+# Turn on the Hopsan Core runtime log file
+DEFINES *= WRITEHOPSANCORELOG
 
 # -------------------------------------------------
 # Platform specific additional project options

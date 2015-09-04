@@ -163,7 +163,7 @@ bool HopsanEssentials::isCoreDebugCompiled() const
 //! @param [in] rTypeName The unique type identifier of the component to create
 Component* HopsanEssentials::createComponent(const HString &rTypeName)
 {
-    addLogMess((rTypeName+"::createComponent").c_str());
+    addLogMess(rTypeName+"::createComponent");
     Component* pComp = mpComponentFactory->createInstance(rTypeName);
     if (pComp)
     {
@@ -274,7 +274,6 @@ HopsanCoreMessageHandler *HopsanEssentials::getCoreMessageHandler()
 //! @returns A pointer to the rootsystem of the loaded model
 ComponentSystem* HopsanEssentials::loadHMFModelFile(const char *filePath, double &rStartTime, double &rStopTime)
 {
-    addLogMess("HopsanEssentials::loadHMFModel()");
     return loadHopsanModelFile(filePath, this, rStartTime, rStopTime);
 }
 
@@ -387,29 +386,34 @@ void HopsanEssentials::getExternalLibraryContents(const char *libPath, std::vect
 
 static std::ofstream hopsanLogFile;
 
-
-void hopsan::openLogFile()
+//! @brief Opens the HopsanCore runtime log
+bool hopsan::openLogFile()
 {
-#ifdef MAINCORE
+#ifdef WRITEHOPSANCORELOG
     hopsanLogFile.open("hopsan_logfile.txt");
+    return hopsanLogFile.is_open();
+#else
+    return false;
 #endif
 }
 
-
+//! @brief Closes the HopsanCore runtime log
 void hopsan::closeLogFile()
 {
-#ifdef MAINCORE
+#ifdef WRITEHOPSANCORELOG
     hopsanLogFile.close();
 #endif
 }
 
 //! @brief Adds a message to the HopsanCore runtime log
+//! @param[in] message The message to write to the log file
 void hopsan::addLogMess(const char *message)
 {
-#ifdef MAINCORE
+#ifdef WRITEHOPSANCORELOG
     if(hopsanLogFile.good())
     {
         hopsanLogFile << message << "\n";
+        hopsanLogFile.flush();
     }
 #endif
 }
