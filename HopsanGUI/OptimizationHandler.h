@@ -127,6 +127,7 @@ protected slots:
 
 private:
     void reInitialize(int nModels);
+    void rescheduleForBestSpeedup(int &pm, int &pa, double &su, bool doBenchmark=false);
 
     QString mModelPath;
     GUIMessageHandler *mpMessageHandler;

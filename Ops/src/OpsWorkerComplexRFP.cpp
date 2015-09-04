@@ -164,6 +164,11 @@ void WorkerComplexRFP::setParallelMethod(ParallelMethodT method)
     mMethod = method;
 }
 
+ParallelMethodT WorkerComplexRFP::getParallelMethod() const
+{
+    return mMethod;
+}
+
 void WorkerComplexRFP::setNumberOfPredictions(int value)
 {
     mnPredictions = value;

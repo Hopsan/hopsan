@@ -64,6 +64,7 @@ public:
     void run();
 
     void setParallelMethod(ParallelMethodT method);
+    ParallelMethodT getParallelMethod() const;
     void setNumberOfPredictions(int value);
     void setNumberOfRetractions(int value);
     void setMinimumReflectionFactor(double value);
