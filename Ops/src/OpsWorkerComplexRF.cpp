@@ -102,6 +102,7 @@ void WorkerComplexRF::run()
         while(mLastWorstId == mWorstId && !mIsAborted)
         {
             ++mIterationCounter;
+            emit stepCompleted(mIterationCounter);
             if(mIterationCounter>=mnMaxIterations)
             {
                 --mIterationCounter;    //Needed because for-loop will increase it by one anyway

@@ -257,7 +257,7 @@ void Worker::setNumberOfCandidates(int value)
 
     mCandidatePoints.resize(mNumCandidates);
     mCandidateObjectives.resize(mNumCandidates);
-    for(int p=0; p<mNumPoints; ++p)
+    for(int p=0; p<mNumCandidates; ++p)
     {
         mCandidatePoints[p].resize(mNumParameters);
     }

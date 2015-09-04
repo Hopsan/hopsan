@@ -114,6 +114,7 @@ void WorkerComplexRFP::run()
         bool doBreak = false;
         while(mLastWorstId == mWorstId && mIterationCounter<mnMaxIterations && !mIsAborted)
         {
+            emit stepCompleted(mIterationCounter);
             ++mIterationCounter;
         //! @note Always iterate multiple steps (iterateSingle() is used only for statistics)
 //            if(mMethod == TaskPrediction)
@@ -134,6 +135,8 @@ void WorkerComplexRFP::run()
         {
             break;
         }
+
+        emit stepCompleted(mIterationCounter);
     }
 
 
@@ -239,7 +242,7 @@ void WorkerComplexRFP::pickCandidateParticles()
 
         QVector< QVector<double> > otherPoints = mPoints;
         QVector< QVector<double> > centerPoints;
-        for(int i=0; i<mnPredictions; ++i)
+        for(int i=0; i<qMin(mnPredictions, mNumCandidates); ++i)
         {
             if(i!=0)
             {
@@ -283,7 +286,7 @@ void WorkerComplexRFP::pickCandidateParticles()
         int extraSteps = mNumCandidates-mnPredictions-mnRetractions;
 
         QVector<double> newPoint = (*mTopLevelCandidates[0]->mpPoint);
-        for(int t=mnPredictions; t<mNumCandidates-extraSteps; ++t)
+        for(int t=mnPredictions; t<qMin(mNumCandidates-extraSteps, mNumCandidates-mnPredictions); ++t)
         {
             double a1 = 1.0-exp(-double(worstCounter)/5.0);
             findCentroidPoint();
