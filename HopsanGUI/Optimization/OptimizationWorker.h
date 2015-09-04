@@ -121,6 +121,7 @@ protected:
     bool mPlotParameters;
     bool mPlotVariables;
     bool mPlotEntropy;
+    QVector<double> mEntropy;
     int mPercent;
     bool mNoOutput;
 

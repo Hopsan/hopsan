@@ -114,6 +114,9 @@ public slots:
     void abortHCOM();
     void setModelPtr(ModelWidget *pModel);
 
+signals:
+    void aborted();
+
 private:
 
     // Private command functions (to be accessed by public executeCommand function)
@@ -398,6 +401,7 @@ public:
     HcomFunctionoidOptPar(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double operator()(QString &str, bool &ok);
 };
+
 
 class HcomFunctionoidFC : public HcomFunctionoid
 {

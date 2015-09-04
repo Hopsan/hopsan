@@ -137,10 +137,6 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpCountMaxSpinBox = new QSpinBox(this);
     mpCountMaxSpinBox->setValue(2);
 
-    QLabel *pEpsilonFLabel = new QLabel("Tolerance for function convergence: ");
-    mpEpsilonFLineEdit = new QLineEdit("0.00001", this);
-    mpEpsilonFLineEdit->setValidator(new QDoubleValidator());
-
     QLabel *pEpsilonXLabel = new QLabel("Tolerance for parameter convergence: ");
     mpEpsilonXLineEdit = new QLineEdit("0.0001", this);
     mpEpsilonXLineEdit->setValidator(new QDoubleValidator());
@@ -197,8 +193,6 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpPercDiffLineEdit,     row++, 1);
     pSettingsLayout->addWidget(mpCountMaxLabel,        row,   0);
     pSettingsLayout->addWidget(mpCountMaxSpinBox,      row++, 1);
-    pSettingsLayout->addWidget(pEpsilonFLabel,         row,   0);
-    pSettingsLayout->addWidget(mpEpsilonFLineEdit,     row++, 1);
     pSettingsLayout->addWidget(pEpsilonXLabel,         row,   0);
     pSettingsLayout->addWidget(mpEpsilonXLineEdit,     row++, 1);
     pSettingsLayout->addWidget(mpPlottingCheckBox,     row++, 0, 1, 2);
@@ -412,7 +406,7 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 
     bool ok;
     OptimizationHandler::AlgorithmT algorithm = mpTerminal->mpHandler->mpOptHandler->mAlgorithm;
-    if(algorithm == OptimizationHandler::Simplex ||
+    if(algorithm == OptimizationHandler::NelderMead ||
        algorithm == OptimizationHandler::ComplexRF ||
        algorithm == OptimizationHandler::ComplexRFM ||
        algorithm == OptimizationHandler::ComplexRFP)
@@ -424,7 +418,7 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
             recreateParameterOutputLineEdits();
         }
     }
-    else if(algorithm == OptimizationHandler::ParticleSwarm)
+    else if(algorithm == OptimizationHandler::PSO)
     {
         int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
         if(nPoints != mParametersOutputLineEditPtrs.size())
@@ -524,7 +518,6 @@ void OptimizationDialog::loadConfiguration()
     mpAlphaLineEdit->setText(QString().setNum(optSettings.mRefcoeff));
     mpBetaLineEdit->setText(QString().setNum(optSettings.mRandfac));
     mpGammaLineEdit->setText(QString().setNum(optSettings.mForgfac));
-    mpEpsilonFLineEdit->setText(QString().setNum(optSettings.mFunctol));
     mpEpsilonXLineEdit->setText(QString().setNum(optSettings.mPartol));
     mpPlottingCheckBox->setChecked(optSettings.mPlot);
     mpExport2CSVBox->setChecked(optSettings.mSavecsv);
@@ -575,7 +568,6 @@ void OptimizationDialog::saveConfiguration()
     optSettings.mRefcoeff = mpAlphaLineEdit->text().toDouble();
     optSettings.mRandfac = mpBetaLineEdit->text().toDouble();
     optSettings.mForgfac = mpGammaLineEdit->text().toDouble();
-    optSettings.mFunctol = mpEpsilonFLineEdit->text().toDouble();
     optSettings.mPartol = mpEpsilonXLineEdit->text().toDouble();
     optSettings.mPlot = mpPlottingCheckBox->isChecked();
     optSettings.mSavecsv = mpExport2CSVBox->isChecked();
@@ -935,7 +927,7 @@ void OptimizationDialog::generateScriptFile()
     bool algorithmOk=true;
     switch (mpAlgorithmBox->currentIndex())
     {
-    case OptimizationHandler::Simplex :
+    case OptimizationHandler::NelderMead :
         generateComplexScript("simplex");
     case OptimizationHandler::ComplexRF :
         generateComplexScript("complexrf");
@@ -946,7 +938,7 @@ void OptimizationDialog::generateScriptFile()
     case OptimizationHandler::ComplexRFP :
         generateComplexScript("complexrfp");
         break;
-    case OptimizationHandler::ParticleSwarm :
+    case OptimizationHandler::PSO :
         generateParticleSwarmScript();
         break;
     case OptimizationHandler::ParameterSweep :
@@ -1103,9 +1095,8 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
     templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
     templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
     templateCode.replace("<<<alpha>>>", mpAlphaLineEdit->text());
-    templateCode.replace("<<<rfak>>>", mpBetaLineEdit->text());
+    templateCode.replace("<<<beta>>>", mpBetaLineEdit->text());
     templateCode.replace("<<<gamma>>>", mpGammaLineEdit->text());
-    templateCode.replace("<<<functol>>>", mpEpsilonFLineEdit->text());
     templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
     templateCode.replace("<<<extravars>>>", extraVars);
 
@@ -1205,11 +1196,11 @@ void OptimizationDialog::generateParticleSwarmScript()
     }
     if(mpPlotBestWorstCheckBox->isChecked())
     {
-        templateCode.replace("<<<plotbestworst>>>","on");
+        templateCode.replace("<<<plotobjectives>>>","on");
     }
     else
     {
-        templateCode.replace("<<<plotbestworst>>>","off");
+        templateCode.replace("<<<plotobjectives>>>","off");
     }
 
     templateCode.replace("<<<objfuncs>>>", objFuncs);
@@ -1232,7 +1223,6 @@ void OptimizationDialog::generateParticleSwarmScript()
     templateCode.replace("<<<omega>>>", mpOmegaLineEdit->text());
     templateCode.replace("<<<c1>>>", mpC1LineEdit->text());
     templateCode.replace("<<<c2>>>", mpC2LineEdit->text());
-    templateCode.replace("<<<functol>>>", mpEpsilonFLineEdit->text());
     templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
 
     mScript = templateCode;
@@ -1372,7 +1362,7 @@ void OptimizationDialog::setAlgorithm(int i)
 
     switch(i)
     {
-    case OptimizationHandler::Simplex:
+    case OptimizationHandler::NelderMead:
         mpSearchPointsLabel->setVisible(true);
         mpSearchPointsSpinBox->setVisible(true);
         mpAlphaLabel->setVisible(true);
@@ -1416,7 +1406,7 @@ void OptimizationDialog::setAlgorithm(int i)
         mpGammaLabel->setVisible(true);
         mpGammaLineEdit->setVisible(true);
         break;
-    case OptimizationHandler::ParticleSwarm:
+    case OptimizationHandler::PSO:
         mpParticlesLabel->setVisible(true);
         mpParticlesSpinBox->setVisible(true);
         mpOmegaLabel->setVisible(true);
@@ -1936,9 +1926,9 @@ void OptimizationDialog::updateCoreProgressBars()
         OptimizationHandler *pOptHandler = mpTerminal->mpHandler->mpOptHandler;
         if(pOptHandler && pOptHandler->mpWorker)
         {
-            if(pOptHandler->mpWorker->mModelPtrs.size() > p)
+            if(pOptHandler->mModelPtrs.size() > p)
             {
-                ModelWidget *pOptModel = pOptHandler->mpWorker->mModelPtrs[p];
+                ModelWidget *pOptModel = pOptHandler->mModelPtrs[p];
 #ifdef USEZMQ
                 if (pOptModel->isRemoteCoreConnected() || pOptModel->isExternalRemoteCoreConnected())
                 {
@@ -1983,7 +1973,7 @@ void OptimizationDialog::recreateCoreProgressBars()
     //Add new stuff depending on algorithm and number of threads
     switch (mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
     {
-    case OptimizationHandler::Simplex :    //Complex-RF
+    case OptimizationHandler::NelderMead :    //Complex-RF
         mCoreProgressBarPtrs.append(new QProgressBar(this));
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
@@ -2001,7 +1991,7 @@ void OptimizationDialog::recreateCoreProgressBars()
     case OptimizationHandler::ComplexRFP :    //Complex-RFP
         if(gpConfig->getUseMulticore())
         {
-            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)
+            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
             {
                 mCoreProgressBarPtrs.append(new QProgressBar(this));
                 mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
@@ -2015,10 +2005,10 @@ void OptimizationDialog::recreateCoreProgressBars()
             mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         }
         break;
-    case OptimizationHandler::ParticleSwarm :    //Particle swarm
+    case OptimizationHandler::PSO :    //Particle swarm
         if(gpConfig->getUseMulticore())
         {
-            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)
+            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
             {
                 mCoreProgressBarPtrs.append(new QProgressBar(this));
                 mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
@@ -2035,7 +2025,7 @@ void OptimizationDialog::recreateCoreProgressBars()
     case OptimizationHandler::ParameterSweep :    //Particle swarm
         if(gpConfig->getUseMulticore())
         {
-            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mpWorker->mModelPtrs.size(); ++n)
+            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
             {
                 mCoreProgressBarPtrs.append(new QProgressBar(this));
                 mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
@@ -2066,7 +2056,7 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
     int nPoints;
     switch(mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
     {
-    case OptimizationHandler::Simplex:
+    case OptimizationHandler::NelderMead:
         nPoints=mpSearchPointsSpinBox->value();
         break;
     case OptimizationHandler::ComplexRF:     //Complex-RF
@@ -2078,7 +2068,7 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
     case OptimizationHandler::ComplexRFP:     //Complex-RFP
         nPoints=mpSearchPointsSpinBox->value();
         break;
-    case OptimizationHandler::ParticleSwarm:     //Complex
+    case OptimizationHandler::PSO:     //Complex
         nPoints=mpParticlesSpinBox->value();
         break;
     default:

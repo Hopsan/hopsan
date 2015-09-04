@@ -402,7 +402,6 @@ void SystemContainer::saveOptimizationSettingsToDomElement(QDomElement &rDomElem
     appendDomValueNode(XMLsetting, HMF_REFLCOEFF, mOptSettings.mRefcoeff);
     appendDomValueNode(XMLsetting, HMF_RANDOMFACTOR, mOptSettings.mRandfac);
     appendDomValueNode(XMLsetting, HMF_FORGETTINGFACTOR, mOptSettings.mForgfac);
-    appendDomValueNode(XMLsetting, HMF_FUNCTOL, mOptSettings.mFunctol);
     appendDomValueNode(XMLsetting, HMF_PARTOL, mOptSettings.mPartol);
     appendDomBooleanNode(XMLsetting, HMF_PLOT, mOptSettings.mPlot);
     appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mSavecsv);
@@ -466,7 +465,6 @@ void SystemContainer::loadOptimizationSettingsFromDomElement(QDomElement &rDomEl
         mOptSettings.mRefcoeff = parseDomValueNode(settingsElement.firstChildElement(HMF_REFLCOEFF), mOptSettings.mRefcoeff);
         mOptSettings.mRandfac = parseDomValueNode(settingsElement.firstChildElement(HMF_RANDOMFACTOR), mOptSettings.mRandfac);
         mOptSettings.mForgfac = parseDomValueNode(settingsElement.firstChildElement(HMF_FORGETTINGFACTOR), mOptSettings.mForgfac);
-        mOptSettings.mFunctol = parseDomValueNode(settingsElement.firstChildElement(HMF_FUNCTOL), mOptSettings.mFunctol);
         mOptSettings.mPartol = parseDomValueNode(settingsElement.firstChildElement(HMF_PARTOL), mOptSettings.mPartol);
         mOptSettings.mPlot = parseDomBooleanNode(settingsElement.firstChildElement(HMF_PLOT), mOptSettings.mPlot);
         mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(HMF_SAVECSV), mOptSettings.mSavecsv);
@@ -1980,7 +1978,6 @@ OptimizationSettings::OptimizationSettings()
     mRefcoeff=1.3;
     mRandfac=.3;
     mForgfac=0.0;
-    mFunctol=.00001;
     mPartol=.0001;
     mPlot=true;
     mSavecsv=false;

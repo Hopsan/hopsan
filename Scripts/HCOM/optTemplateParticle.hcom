@@ -14,18 +14,22 @@ define obj
 enddefine
 
 opt set algorithm particleswarm
+opt set sampling latinhypercube
+#opt set sampling random
 opt set maxevals <<<maxevals>>>
 opt set datatype double
 opt set npoints <<<npoints>>>
 opt set nparams <<<nparams>>>
-opt set functol <<<functol>>>
 opt set partol <<<partol>>>
 opt set omega <<<omega>>>
 opt set c1 <<<c1>>>
 opt set c2 <<<c2>>>
-opt set plotbestworst <<<plotbestworst>>>
+opt set plotobjectives <<<plotobjectives>>>
 opt set plotpoints <<<plotpoints>>>
 opt set plotentropy <<<plotentropy>>>
+opt set plotparameters off
+opt set printresultfile on
+opt set printlogfile <<<log>>>
 
 <<<objpars>>>
 

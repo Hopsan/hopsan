@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------
  This source file is a part of Hopsan
 
@@ -35,16 +36,30 @@
 #include "Configuration.h"
 #include "HcomHandler.h"
 #include "OptimizationHandler.h"
-#include "Optimization/OptimizationWorkerSimplex.h"
-#include "Optimization/OptimizationWorkerComplexRF.h"
-#include "Optimization/OptimizationWorkerComplexRFM.h"
-#include "Optimization/OptimizationWorkerComplexRFP.h"
-#include "Optimization/OptimizationWorker.h"
-#include "Optimization/OptimizationWorkerParticleSwarm.h"
-#include "Optimization/OptimizationWorkerParameterSweep.h"
+#include "Dialogs/OptimizationDialog.h"
+//#include "Optimization/OptimizationWorkerSimplex.h"
+//#include "Optimization/OptimizationWorkerComplexRF.h"
+//#include "Optimization/OptimizationWorkerComplexRFM.h"
+//#include "Optimization/OptimizationWorkerComplexRFP.h"
+//#include "Optimization/OptimizationWorker.h"
+//#include "Optimization/OptimizationWorkerParticleSwarm.h"
+//#include "Optimization/OptimizationWorkerParameterSweep.h"
+#include "OpsWorkerComplexRF.h"
+#include "OpsWorkerComplexRFP.h"
+#include "OpsWorkerNelderMead.h"
+#include "OpsWorkerParticleSwarm.h"
 #include "MessageHandler.h"
 #include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
+#include "global.h"
+#include "PlotHandler.h"
+#include "PlotWindow.h"
+#include "PlotArea.h"
+#include "PlotCurve.h"
+#include "GUIObjects/GUISystem.h"
+#include "GUIPort.h"
+#include "DesktopHandler.h"
+#include "Widgets/HcomWidget.h"
 
 
 //! @brief Constructor for optimization  handler class
@@ -59,23 +74,165 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
     mpWorker = 0;
     mAlgorithm = Uninitialized;
     mIsRunning = false;
+
+    mPlotPoints = false;
+
+    mpEvaluator = new OptimizationEvaluator(this);
+
+    mPrintLogFile = false;
+    mPrintResultFile = true;
+    mPrintDebugFile = false;
 }
 
 void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelPath)
 {
     if(mpWorker)
     {
-        mpWorker->init(pModel, modelPath);
+        mModelPath = modelPath;
+
+        mEvaluations = 0;
+        mCurrentProgressBarPercent=0;
+        mLoggedParameters.clear();
+        connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
+        gpOptimizationDialog->setOutputDisabled(false);
+
+        connect(mpHcomHandler, SIGNAL(aborted()), mpWorker, SLOT(abort()));
+
+        connect(mpWorker, SIGNAL(objectiveChanged(int)),    this,               SLOT(updateOutputs()));
+        connect(mpWorker, SIGNAL(objectivesChanged()),      this,               SLOT(updateOutputs()));
+        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(updateOutputs()));
+        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(updateOutputs()));
+        connect(mpWorker, SIGNAL(message(QString)),         mpMessageHandler,   SLOT(addInfoMessage(QString)));
+        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotPoints()));
+        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotParameters()));
+        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotEntropy()));
+        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotPoints()));
+        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotParameters()));
+        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotEntropy()));
+        connect(mpWorker, SIGNAL(candidateChanged(int)),    this,               SLOT(plotPoints()));
+        connect(mpWorker, SIGNAL(candidatesChanged()),      this,               SLOT(plotPoints()));
+        connect(mpWorker, SIGNAL(objectivesChanged()),      this,               SLOT(plotObjectiveValues()));
+        connect(mpWorker, SIGNAL(objectiveChanged(int)),    this,               SLOT(plotObjectiveValues()));
+        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
+        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(logAllPoints()));
+        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
+        connect(mpWorker, SIGNAL(stepCompleted(int)),       this,               SLOT(checkIfRescheduleIsNeeded()));
+
+#ifdef USEZMQ
+        // Setup parallell server queues
+        if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+        {
+            if (mMethod == 0 )
+            {
+                chooseRemoteModelSimulationQueuer(Crfp0_Homo_Reschedule);
+            }
+            else
+            {
+                chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule);
+            }
+            gpRemoteModelSimulationQueuer->benchmarkModel(mUsedModelPtrs.front());
+            int pm, pa; double su;
+            gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, 8, pm, pa, su);
+            reInitialize(pa);
+
+            gpRemoteModelSimulationQueuer->setupModelQueues(mUsedModelPtrs, pm);
+
+            mNeedsRescheduling = false;
+        }
+#endif
+
+        int nModels = mpWorker->getNumberOfCandidates();
+        this->initModels(pModel, nModels, modelPath);
+        mpWorker->initialize();
         mpWorker->run();
+
+        mpMessageHandler->addInfoMessage("Optimization finished!");
+        gpOptimizationDialog->updateTotalProgressBar(mpWorker->getMaxNumberOfIterations());
+        this->setIsRunning(false);
+        if(mDisconnectedFromModelHandler)
+        {
+            connect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
+        }
+        mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(false);
+        gpOptimizationDialog->setOptimizationFinished();
+        mpHcomHandler->setModelPtr(gpModelHandler->getCurrentModel());
+
+        printResultFile();
+        printLogFile();
+        printDebugFile();
     }
     else
     {
         mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
         mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
     }
+
+#ifdef USEZMQ
+    // Clear and disconnect from parallell server queues
+    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    {
+        gpRemoteModelSimulationQueuer->clear();
+    }
+#endif
 }
 
-void OptimizationHandler::setOptimizationObjectiveValue(int idx, double value)
+void OptimizationHandler::initModels(ModelWidget *pModel, int nModels, QString &modelPath)
+{
+    while(mModelPtrs.size() < nModels)
+    {
+        addModel(gpModelHandler->loadModel(modelPath, true, true));
+
+        //Make sure logging is disabled/enabled for same ports as in original model
+        CoreSystemAccess *pCore = pModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
+        foreach(const QString &compName, pModel->getTopLevelSystemContainer()->getModelObjectNames())
+        {
+            foreach(const Port *port, pModel->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
+            {
+                QString portName = port->getName();
+                bool enabled = pCore->isLoggingEnabled(compName, portName);
+                SystemContainer *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
+                CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
+                pOptCore->setLoggingEnabled(compName, portName, enabled);
+            }
+        }
+    }
+
+    mDisconnectedFromModelHandler = disconnect(gpModelHandler, SIGNAL(modelChanged(ModelWidget*)), mpHcomHandler, SLOT(setModelPtr(ModelWidget*)));
+
+    //Clear previous data in case models were re-used
+    for(int i=0; i<mModelPtrs.size(); ++i)
+    {
+        mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        mpHcomHandler->executeCommand("rmvar *");
+    }
+    mpHcomHandler->setModelPtr(mModelPtrs.first());
+
+    //Load default optimization functions
+    QString oldPath = mpHcomHandler->getWorkingDirectory();
+    mpHcomHandler->setWorkingDirectory(gpDesktopHandler->getExecPath());
+    //executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
+    QFile testFile1(gpDesktopHandler->getScriptsPath()+"HCOM/optDefaultFunctions.hcom");
+    QFile testFile2(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optDefaultFunctions.hcom");
+    if(testFile1.exists())
+    {
+        mpHcomHandler->executeCommand("exec \""+testFile1.fileName()+"\"");
+    }
+    else if(testFile2.exists())
+    {
+        mpHcomHandler->executeCommand("exec \""+testFile2.fileName()+"\"");
+    }
+    else
+    {
+        QString msg = "Cannot find optimization default functions script file.";
+        getMessageHandler()->addErrorMessage(msg, "", false);
+        return;
+    }
+    mpHcomHandler->setWorkingDirectory(oldPath);
+
+    setIsRunning(true);
+}
+
+void OptimizationHandler::setCandidateObjectiveValue(int idx, double value)
 {
     if(!mpWorker)
     {
@@ -84,10 +241,10 @@ void OptimizationHandler::setOptimizationObjectiveValue(int idx, double value)
         return;
     }
 
-    mpWorker->setOptimizationObjectiveValue(idx, value);
+    mpWorker->setCandidateObjectiveValue(idx, value);
 }
 
-void OptimizationHandler::setParMin(int idx, double value)
+void OptimizationHandler::setParameterLimits(int idx, double min, double max)
 {
     if(!mpWorker)
     {
@@ -96,25 +253,12 @@ void OptimizationHandler::setParMin(int idx, double value)
         return;
     }
 
-    mpWorker->setParMin(idx, value);
-}
-
-
-void OptimizationHandler::setParMax(int idx, double value)
-{
-    if(!mpWorker)
-    {
-        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
-        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
-        return;
-    }
-
-    mpWorker->setParMax(idx, value);
+    mpWorker->setParameterLimits(idx, min, max);
 }
 
 
 //! @brief Returns objective value with specified index
-double OptimizationHandler::getOptimizationObjectiveValue(int idx)
+double OptimizationHandler::getObjectiveValue(int idx)
 {
     if(!mpWorker)
     {
@@ -123,7 +267,7 @@ double OptimizationHandler::getOptimizationObjectiveValue(int idx)
         return 0;
     }
 
-    return mpWorker->getOptimizationObjectiveValue(idx);
+    return mpWorker->getObjectiveValue(idx);
 }
 
 double OptimizationHandler::getOptVar(const QString &var)
@@ -134,6 +278,7 @@ double OptimizationHandler::getOptVar(const QString &var)
 
 double OptimizationHandler::getOptVar(const QString &var, bool &ok) const
 {
+    ok = true;
     if(var == "algorithm")
     {
         return mAlgorithm;
@@ -142,6 +287,24 @@ double OptimizationHandler::getOptVar(const QString &var, bool &ok) const
     {
         return mParameterType;
     }
+    else if(var == "nparams")
+    {
+        return mpWorker->getNumberOfParameters();
+    }
+    else if(var == "npoints")
+    {
+        return mpWorker->getNumberOfPoints();
+    }
+    else if(var == "nmodels")
+    {
+        return mpWorker->getNumberOfCandidates();
+    }
+    else if(var == "evalid")
+    {
+        return mEvalId;
+    }
+
+    ok = false;
 
     if(!mpWorker)
     {
@@ -150,7 +313,7 @@ double OptimizationHandler::getOptVar(const QString &var, bool &ok) const
         return 0;
     }
 
-    return mpWorker->getOptVar(var, ok);
+    return 0;
 }
 
 
@@ -159,34 +322,39 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
 {
     Q_UNUSED(ok);
 
-    if(var == "algorithm")
+    if(var == "printlogfile" || var == "log")   //Use both for backwards compatibility
     {
-        if(value == "simplex")
+        if(var == "log") mpMessageHandler->addWarningMessage("\"opt log\" command is deprecated. Use \"opt printlogfile\" instead.");
+        mPrintLogFile = (value == "on");
+    }
+    else if(var == "printresultfile")
+    {
+        mPrintResultFile = (value == "on");
+    }
+    else if(var == "printdebugfile")
+    {
+        mPrintDebugFile = (value == "on");
+    }
+    else if(var == "algorithm")
+    {
+        if(value == "neldermead")
         {
-            mAlgorithm = OptimizationHandler::Simplex;
+            mAlgorithm = OptimizationHandler::NelderMead;
             if(mpWorker)
             {
                 delete mpWorker;
             }
-            mpWorker = new OptimizationWorkerSimplex(this);
+            mpWorker = new Ops::WorkerNelderMead(mpEvaluator);
         }
-        else if(value == "complexrf")
+        else if(value == "complexrf" || value == "complex") //Use both for backwards compatibility
         {
+            if(value == "complex") mpMessageHandler->addWarningMessage("Algorithm \"complex\" is deprecated. Use \"complexrf\" instead.");
             mAlgorithm = OptimizationHandler::ComplexRF;
             if(mpWorker)
             {
                 delete mpWorker;
             }
-            mpWorker = new OptimizationWorkerComplexRF(this);
-        }
-        else if(value == "complexrfm")
-        {
-            mAlgorithm = OptimizationHandler::ComplexRFM;
-            if(mpWorker)
-            {
-                delete mpWorker;
-            }
-            mpWorker = new OptimizationWorkerComplexRFM(this);
+            mpWorker = new Ops::WorkerComplexRF(mpEvaluator);
         }
         else if(value == "complexrfp")
         {
@@ -195,34 +363,79 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new OptimizationWorkerComplexRFP(this);
+            mpWorker = new Ops::WorkerComplexRFP(mpEvaluator);
         }
-        else if(value == "particleswarm")
+        else if(value == "pso" || value == "particleswarm") //Use both for backwards compatibility
         {
-            mAlgorithm = OptimizationHandler::ParticleSwarm;
+            if(value == "particleswarm") mpMessageHandler->addWarningMessage("Algorithm \"particleswarm\" is deprecated. Use \"pso\" instead.");
+            mAlgorithm = OptimizationHandler::PSO;
             if(mpWorker)
             {
                 delete mpWorker;
             }
-            mpWorker = new OptimizationWorkerParticleSwarm(this);
-        }
-        else if(value == "parametersweep")
-        {
-            mAlgorithm = OptimizationHandler::ParameterSweep;
-            if(mpWorker)
-            {
-                delete mpWorker;
-            }
-            mpWorker = new OptimizationWorkerParameterSweep(this);
+            mpWorker = new Ops::WorkerParticleSwarm(mpEvaluator);
         }
         return;
     }
-    else if(var == "datatype")
+    else if(var == "evalid")
     {
-        if(value == "double")
-            mParameterType = OptimizationHandler::Double;
-        else if(value == "int")
-            mParameterType = OptimizationHandler::Integer;
+        mEvalId = value.toInt();
+    }
+    else if(!mpWorker)
+    {
+        mpMessageHandler->addErrorMessage("No algorithm selected.");
+        return;
+    }
+    else if(var == "nmodels")
+    {
+        mpWorker->setNumberOfCandidates(value.toDouble());
+    }
+    else if(var == "plotpoints")
+    {
+        mPlotPoints = (value == "on");
+    }
+    else if(var == "plotparameters")
+    {
+        mPlotParameters = (value == "on");
+    }
+    else if(var == "plotobjectives" || var == "plotbestworst")
+    {
+        mPlotObjectiveValues = (value == "on");
+    }
+    else if(var == "plotentropy")
+    {
+        mPlotEntropy = (value == "on");
+    }
+    else if(var == "npoints")
+    {
+        mpWorker->setNumberOfPoints(value.toInt());
+    }
+    else if(var == "nparams")
+    {
+        mpWorker->setNumberOfParameters(value.toInt());
+    }
+    else if(var == "parnames")
+    {
+        mpWorker->setParameterNames(value.split(","));
+    }
+    else if(var == "partol")
+    {
+        mpWorker->setTolerance(value.toDouble());
+    }
+    else if(var == "maxevals")
+    {
+        mpWorker->setMaxNumberOfIterations(value.toInt());
+    }
+    else if(var == "sampling")
+    {
+        if(value == "random")
+        {
+            mpWorker->setSamplingMethod(Ops::SamplingRandom);
+        }
+        else if(value == "latinhypercube")
+        {
+            mpWorker->setSamplingMethod(Ops::SamplingLatinHypercube);
+        }
     }
 
     if(!mpWorker)
@@ -232,7 +445,125 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         return;
     }
 
-    mpWorker->setOptVar(var, value);
+    if(mpWorker->getAlgorithm() == Ops::ComplexRF || mpWorker->getAlgorithm() == Ops::ComplexRFP)
+    {
+        Ops::WorkerComplexRF *pWorker = qobject_cast<Ops::WorkerComplexRF*>(mpWorker);
+        if(var == "alpha")
+        {
+            pWorker->setReflectionFactor(value.toDouble());
+        }
+        else if(var == "beta" || var == "rfak") //Use both for backwards compatibility
+        {
+            if(var == "rfak") mpMessageHandler->addWarningMessage("\"opt set rfak\" is deprecated. Use \"opt set beta\" instead.");
+            pWorker->setRandomFactor(value.toDouble());
+        }
+        else if(var == "gamma")
+        {
+            pWorker->setForgettingFactor(value.toDouble());
+        }
+    }
+    if(mpWorker->getAlgorithm() == Ops::ComplexRFP)
+    {
+        Ops::WorkerComplexRFP *pWorker = qobject_cast<Ops::WorkerComplexRFP*>(mpWorker);
+        if(var == "parallelmethod")
+        {
+            if(value == "taskprediction")
+            {
+                pWorker->setParallelMethod(Ops::TaskPrediction);
+            }
+            else if(value == "multidirection")
+            {
+                pWorker->setParallelMethod(Ops::MultiDirection);
+            }
+            else if(value == "multidistance")
+            {
+                pWorker->setParallelMethod(Ops::MultiDistance);
+            }
+        }
+        else if(var == "npredictions")
+        {
+            pWorker->setNumberOfPredictions(value.toInt());
+        }
+        else if(var == "nretractions")
+        {
+            pWorker->setNumberOfRetractions(value.toInt());
+        }
+        else if(var == "alphamin")
+        {
+            pWorker->setMinimumReflectionFactor(value.toDouble());
+        }
+        else if(var == "alphamax")
+        {
+            pWorker->setMaximumReflectionFactor(value.toDouble());
+        }
+    }
+    else if(mpWorker->getAlgorithm() == Ops::NelderMead)
+    {
+        Ops::WorkerNelderMead *pWorker = qobject_cast<Ops::WorkerNelderMead*>(mpWorker);
+        if(var == "alpha")
+        {
+            pWorker->setReflectionFactor(value.toDouble());
+        }
+        else if(var == "gamma")
+        {
+            pWorker->setExpansionFactor(value.toDouble());
+        }
+        else if(var == "rho")
+        {
+            pWorker->setContractionFactor(value.toDouble());
+        }
+        else if(var == "sigma")
+        {
+            pWorker->setReductionFactor(value.toDouble());
+        }
+    }
+    else if(mpWorker->getAlgorithm() == Ops::ParticleSwarm)
+    {
+        Ops::WorkerParticleSwarm *pWorker = qobject_cast<Ops::WorkerParticleSwarm*>(mpWorker);
+        if(var == "omega1")
+        {
+            pWorker->setOmega1(value.toDouble());
+        }
+        else if(var == "omega2")
+        {
+            pWorker->setOmega2(value.toDouble());
+        }
+        else if(var == "c1")
+        {
+            pWorker->setC1(value.toDouble());
+        }
+        else if(var == "c2")
+        {
+            pWorker->setC2(value.toDouble());
+        }
+        else if(var == "vmax")
+        {
+            pWorker->setVmax(value.toDouble());
+        }
+        else if(var == "inertiastrategy")
+        {
+            if(value == "constant")
+            {
+                pWorker->setInertiaStrategy(Ops::InertiaConstant);
+            }
+            else if(value == "lineardecreasing")
+            {
+                pWorker->setInertiaStrategy(Ops::InertiaLinearDecreasing);
+            }
+        }
+    }
+}
+
+double OptimizationHandler::getCandidateParameter(const int pointIdx, const int parIdx) const
+{
+    if(!mpWorker)
+    {
+        mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
+        mpMessageHandler->addInfoMessage("Hint: use \"opt set algorithm <type>\" to selected algorithm.");
+        return 0;
+    }
+
+    return mpWorker->getCandidateParameter(pointIdx, parIdx);
 }
 
 double OptimizationHandler::getParameter(const int pointIdx, const int parIdx) const
@@ -247,6 +578,7 @@ double OptimizationHandler::getParameter(const int pointIdx, const int parIdx) c
     return mpWorker->getParameter(pointIdx, parIdx);
 }
 
+
 void OptimizationHandler::setIsRunning(bool value)
 {
     mIsRunning = value;
@@ -259,7 +591,303 @@ bool OptimizationHandler::isRunning()
 
 QStringList *OptimizationHandler::getOptParNamesPtr()
 {
-    return mpWorker->getParNamesPtr();
+    return mpWorker->getParameterNamesPtr();
+}
+
+bool OptimizationHandler::evaluateCandidate(int idx)
+{
+    mEvalId = idx;
+    mpHcomHandler->setModelPtr(mModelPtrs.at(idx));
+    mpHcomHandler->executeCommand("opt set evalid "+QString::number(idx));
+    mpHcomHandler->executeCommand("call setpars");
+
+    bool simOK=false;
+    simOK = mModelPtrs.at(idx)->simulate_blocking();
+
+    if (!simOK)
+    {
+        return false;
+    }
+
+    mpHcomHandler->executeCommand("opt set evalid "+QString::number(idx));
+    mpHcomHandler->executeCommand("call obj");
+
+    mpHcomHandler->setModelPtr(mModelPtrs.at(0));
+
+    ++mEvaluations;
+
+    return true;
+}
+
+bool OptimizationHandler::evaluateAllCandidates()
+{
+    mNeedsRescheduling = false;
+
+    //Multi-threading, we cannot use the "evalall" function
+    for(int i=0; i<mpWorker->getNumberOfCandidates(); ++i)
+    {
+        mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        mpHcomHandler->executeCommand("opt set evalid "+QString::number(i));
+        mpHcomHandler->executeCommand("call setpars");
+    }
+
+    bool simOK=false;
+#ifdef USEZMQ
+    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    {
+        if (gpRemoteModelSimulationQueuer && gpRemoteModelSimulationQueuer->hasServers())
+        {
+            simOK = gpRemoteModelSimulationQueuer->simulateModels(mNeedsRescheduling);
+        }
+    }
+    else
+    {
+        simOK = gpModelHandler->simulateMultipleModels_blocking(mUsedModelPtrs, !firstTime);
+    }
+#else
+    //! @note The "mid()" function are used to make sure that the number of models simulated equals number of candidates (in case more models are opened)
+    simOK = gpModelHandler->simulateMultipleModels_blocking(mModelPtrs.mid(0,mpWorker->getNumberOfCandidates())/*, !firstTime*/);
+#endif
+    if (!simOK)
+    {
+        return false;
+    }
+
+    for(int i=0; i<mpWorker->getNumberOfCandidates(); ++i)
+    {
+        mpHcomHandler->setModelPtr(mModelPtrs[i]);
+        mpHcomHandler->executeCommand("opt set evalid "+QString::number(i));
+        mpHcomHandler->executeCommand("call obj");
+    }
+    mpHcomHandler->setModelPtr(mModelPtrs.at(0));
+
+    mEvaluations += mpWorker->getNumberOfCandidates();
+
+    return true;
+}
+
+
+void OptimizationHandler::plotPoints()
+{
+    if(!mPlotPoints || mpWorker->getNumberOfParameters() < 2)
+    {
+        return;
+    }
+
+    for(int p=0; p<mpWorker->getNumberOfPoints(); ++p)
+    {
+
+        double x = mpWorker->getParameter(p,0);
+        double y = mpWorker->getParameter(p,1);
+
+        if(mPointVars_x.size() <= p)
+        {
+            //! @todo we should set name and unit and maybe description (in define variable)
+            mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+            mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+
+            mPointVars_x.last()->assignFrom(x);
+            mPointVars_y.last()->assignFrom(y);
+
+            double min0, max0, min1, max1;
+            mpWorker->getParameterLimits(0, min0, max0);
+            mpWorker->getParameterLimits(1, min1, max1);
+
+            gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0, QColor("blue"));
+            PlotArea *pPlotArea = gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea();
+            pPlotArea->setAxisLimits(QwtPlot::xBottom, min0, max0);
+            pPlotArea->setAxisLimits(QwtPlot::yLeft, min1, max1);
+            pPlotArea->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
+            pPlotArea->setAxisLabel(QwtPlot::yLeft, "Optimization Parameter 1");
+        }
+        else
+        {
+            //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
+            mPointVars_x.at(p)->assignFrom(x);
+            mPointVars_y.at(p)->assignFrom(y);
+        }
+    }
+
+    for(int p=0; p<mpWorker->getNumberOfCandidates(); ++p)
+    {
+
+        double x = mpWorker->getCandidateParameter(p,0);
+        double y = mpWorker->getCandidateParameter(p,1);
+
+        if(mPointVars_x.size() <= mpWorker->getNumberOfPoints()+p)
+        {
+            //! @todo we should set name and unit and maybe description (in define variable)
+            mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+            mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+
+            mPointVars_x.last()->assignFrom(x);
+            mPointVars_y.last()->assignFrom(y);
+
+            double min0, max0, min1, max1;
+            mpWorker->getParameterLimits(0, min0, max0);
+            mpWorker->getParameterLimits(1, min1, max1);
+
+            gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0, QColor("red"));
+            PlotArea *pPlotArea = gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea();
+            pPlotArea->setAxisLimits(QwtPlot::xBottom, min0, max0);
+            pPlotArea->setAxisLimits(QwtPlot::yLeft, min1, max1);
+            pPlotArea->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
+            pPlotArea->setAxisLabel(QwtPlot::yLeft, "Optimization Parameter 1");
+        }
+        else
+        {
+            //! @todo need to turn of auto refresh on plot and trigger it manually to avoid multiple redraws here
+            mPointVars_x.at(mpWorker->getNumberOfPoints()+p)->assignFrom(x);
+            mPointVars_y.at(mpWorker->getNumberOfPoints()+p)->assignFrom(y);
+        }
+    }
+
+
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+    if(pPlotWindow)
+    {
+        PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
+        for(int c=0; c<pTab->getCurves(0).size(); ++c)
+        {
+            if(c==mpWorker->getBestId())
+            {
+                pTab->getCurves(0).at(c)->setLineSymbol("Star 1");
+            }
+            else
+            {
+                pTab->getCurves(0).at(c)->setLineSymbol("XCross");
+            }
+        }
+        pTab->update();
+    }
+}
+
+//! @brief Plots parameter values (if option is selected)
+void OptimizationHandler::plotParameters()
+{
+    if(!mPlotParameters) { return; }
+
+    for(int p=0; p<mpWorker->getNumberOfParameters(); ++p)
+    {
+        if(mParVars.size() <= p)
+        {
+            mParVars.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
+            mParVars.last()->assignFrom(mpWorker->getParameter(mpWorker->getWorstId(),p));
+        }
+        else
+        {
+            mParVars.at(p)->append(mpWorker->getParameter(mpWorker->getWorstId(),p));
+        }
+
+        // If this is the first time, then recreate the plotwindows
+        // Note! plots will auto update when new data is appended, so there is no need to call plotab->update()
+        if(mParVars.at(p)->getDataSize() == 1)
+        {
+            PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");
+            gpPlotHandler->plotDataToWindow(pPW, mParVars.at(p), 0, true);
+        }
+    }
+}
+
+void OptimizationHandler::plotObjectiveValues()
+{
+    if(!mPlotObjectiveValues) { return; }
+
+    double best = mpWorker->getObjectiveValue(mpWorker->getBestId());
+    double worst = mpWorker->getObjectiveValue(mpWorker->getWorstId());
+    double lastworst = mpWorker->getObjectiveValue(mpWorker->getLastWorstId());
+
+    //Best objective value
+    if(mBestVar.isNull())
+    {
+        mBestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mBestVar->assignFrom(best);
+    }
+    else
+    {
+        mBestVar->append(best);
+    }
+
+    //Worst objective value
+    if(mWorstVar.isNull())
+    {
+        mWorstVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mWorstVar->assignFrom(worst);
+    }
+    else
+    {
+        mWorstVar->append(worst);
+    }
+
+    //Newest objective value
+    if(mNewestVar.isNull())
+    {
+        mNewestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mNewestVar->assignFrom(lastworst);
+    }
+    else
+    {
+        mNewestVar->append(lastworst);
+    }
+
+    // If this is the first time, then recreate the plotwindows
+    // Note! plots will auto update when new data is appended, so there is no need to call plotab->update()
+    if(mBestVar->getDataSize() == 1)
+    {
+        PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("ObjectiveFunction");
+        gpPlotHandler->plotDataToWindow(pPW, mBestVar, 0, true, QColor("Green"));
+        gpPlotHandler->plotDataToWindow(pPW, mWorstVar, 0, true, QColor("Red"));
+        gpPlotHandler->plotDataToWindow(pPW, mNewestVar, 0, true, QColor("Orange"));
+    }
+}
+
+void OptimizationHandler::plotEntropy()
+{
+    if(!mPlotEntropy) { return; }
+
+    double deltaX = mpWorker->getMaxPercentalParameterDiff();
+    int n = mpWorker->getNumberOfParameters();
+    double entropy = -n*log2(deltaX);
+
+    if(mEntropyVar.isNull())
+    {
+        mEntropy.clear();
+        mEntropy.append(entropy);
+        mEntropyVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
+        mEntropyVar->assignFrom(entropy);
+    }
+    else
+    {
+        mEntropy.append(entropy);
+        mEntropyVar->append(entropy);
+    }
+
+    // If this is the first time, then recreate the plotwindows
+    if(mEntropyVar.data()->getDataSize() == 1)
+    {
+        PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("OptimizationEntropy");
+        gpPlotHandler->plotDataToWindow(pPW, mEntropyVar, 0, true);
+    }
+}
+
+void OptimizationHandler::updateProgressBar(int i)
+{
+    int maxEvals = mpWorker->getMaxNumberOfIterations();
+    int dummy=int(100.0*double(i)/maxEvals);
+
+    if(dummy != mCurrentProgressBarPercent)    //Only update at whole numbers
+    {
+        mCurrentProgressBarPercent = dummy;
+        gpOptimizationDialog->updateTotalProgressBar(dummy);
+    }
+    qApp->processEvents();
+}
+
+void OptimizationHandler::updateOutputs()
+{
+    gpOptimizationDialog->updateParameterOutputs(mpWorker->getObjectiveValues(), mpWorker->getPoints(),
+                                                 mpWorker->getBestId(), mpWorker->getWorstId());
+    qApp->processEvents();
 }
 
 
@@ -267,7 +895,7 @@ const QVector<ModelWidget *> *OptimizationHandler::getModelPtrs() const
 {
     if(mpWorker)
     {
-        return (&mpWorker->mModelPtrs);
+        return (&mModelPtrs);
     }
 
     //! @todo this is a memory leak
@@ -276,17 +904,21 @@ const QVector<ModelWidget *> *OptimizationHandler::getModelPtrs() const
 
 void OptimizationHandler::clearModels()
 {
-    if (mpWorker)
+    mpHcomHandler->setModelPtr(gpModelHandler->getCurrentModel());
+    for(int i=0; i<mModelPtrs.size(); ++i)
     {
-        mpWorker->clearModels();
+        mModelPtrs[i]->mpParentModelHandler->closeModel(mModelPtrs[i], true);
+        delete(mModelPtrs[i]);
     }
+    mModelPtrs.clear();
 }
+
 
 void OptimizationHandler::addModel(ModelWidget *pModel)
 {
     if (mpWorker)
     {
-        mpWorker->mModelPtrs.append(pModel);
+        mModelPtrs.append(pModel);
         pModel->setMessageHandler(mpMessageHandler);
     }
     else
@@ -305,3 +937,226 @@ GUIMessageHandler *OptimizationHandler::getMessageHandler()
     return mpMessageHandler;
 }
 
+
+
+
+OptimizationEvaluator::OptimizationEvaluator(OptimizationHandler *pHandler)
+{
+    mpHandler = pHandler;
+}
+
+void OptimizationEvaluator::evaluateCandidate(int idx)
+{
+    mpHandler->evaluateCandidate(idx);
+}
+
+void OptimizationEvaluator::evaluateAllCandidates()
+{
+    mpHandler->evaluateAllCandidates();
+}
+
+
+
+
+
+void OptimizationHandler::printResultFile()
+{
+    if(!mPrintResultFile) return;
+
+    QString htmlCode;
+
+    //Header
+    htmlCode.append("<html>\n<head>\n<title>Hopsan Optimization Log</title>\n</head>\n<body>\n\n");
+
+    //CSS style
+    htmlCode.append("<style type=\"text/css\">\n  td {\n    width: 170pt\n  }\n</style>\n\n");
+
+    //Title
+    htmlCode.append("<h1>Hopsan Optimization Log</h1>\n");
+
+    //Begin general information
+    htmlCode.append("<h3>General Information:</h3>\n<table>\n");
+
+    //Date & time
+    htmlCode.append("<tr>\n<td><b>Date & time:</b></td>\n<td>"+QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")+"</td>\n</tr>\n");
+
+    //Model name
+    htmlCode.append("<tr>\n<td><b>Model:</b></td>\n<td>"+mModelPtrs.first()->getViewContainerObject()->getName()+"</td>\n</tr>\n");
+
+    //Algorithm
+    QString algStr;
+    switch(getAlgorithm())
+    {
+    case OptimizationHandler::ComplexRF:
+        algStr = "Complex-RF";
+        break;
+    case OptimizationHandler::ComplexRFM:
+        algStr = "Complex-RFM";
+        break;
+    case OptimizationHandler::ComplexRFP:
+        algStr = "Complex-RFP";
+        break;
+    case OptimizationHandler::PSO:
+        algStr = "Particle Swarm";
+        break;
+    case OptimizationHandler::ParameterSweep:
+        algStr = "Parameter Sweep";
+        break;
+    case OptimizationHandler::Uninitialized:
+        algStr = "Uninitialized";
+    default:
+        algStr = "Unknown";
+    }
+    htmlCode.append("<tr>\n<td><b>Algorithm:</b></td>\n<td>"+algStr+"</td>\n</tr>\n");
+
+    //Iterations
+    htmlCode.append("<tr>\n<td><b>Iterations:</b></td>\n<td>"+QString::number(mpWorker->getCurrentNumberOfIterations())+"</td>\n</tr>\n");
+
+    //Function Evaluations
+    htmlCode.append("<tr>\n<td><b>Function Evaluations:</b></td>\n<td>"+QString::number(mEvaluations)+"</td>\n</tr>\n");
+
+    //Meta model evaluations
+    htmlCode.append("<tr>\n<td><b>Surrogate Model Evaluations:</b></td>\n<td>"+QString::number(0)+"</td>\n</tr>\n");
+
+    //End general information
+    htmlCode.append("</table>\n\n");
+
+    //Begin general information
+    htmlCode.append("<h3>Best Point:</h3>\n<table>\n");
+
+    //Objective function value
+    htmlCode.append("<tr>\n<td><b>f(x)</b></td>\n<td>"+QString::number(mpWorker->getObjectiveValue(mpWorker->getBestId()))+"</td>\n</tr>\n");
+
+    //Parameter values
+    for(int i=0; i<mpWorker->getNumberOfParameters(); ++i)
+    {
+        htmlCode.append("<tr>\n<td><b>x"+QString::number(i+1)+"</b></td>\n<td>"+QString::number(mpWorker->getParameter(mpWorker->getBestId(),i))+"</td>\n</tr>\n");
+
+    }
+
+    //End general information
+    htmlCode.append("</table>\n\n");
+
+    //End body
+    htmlCode.append("</body>\n");
+
+    QFile resultFile(gpDesktopHandler->getDocumentsPath()+"OptimizationResultFile_"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".html");
+    resultFile.open(QFile::WriteOnly | QFile::Text);
+    resultFile.write(htmlCode.toUtf8());
+    resultFile.close();
+}
+
+
+
+
+//! @brief Logs parameters and objective value of all points to log variables
+void OptimizationHandler::logAllPoints()
+{
+    for(int i=0; i<mpWorker->getNumberOfPoints(); ++i)
+    {
+        logPoint(i);
+    }
+}
+
+
+
+//! @brief Logs all parameters and the objective value of specified point to log variables
+//! @param idx Index of point to save
+void OptimizationHandler::logPoint(int idx)
+{
+    if(!mPrintLogFile) return;
+
+    mLoggedParameters.append(QVector<double>());
+    mLoggedParameters.last().append(mpWorker->getObjectiveValue(idx));
+    for(int p=0; p<mpWorker->getNumberOfParameters(); ++p)
+    {
+        mLoggedParameters.last().append(mpWorker->getParameter(idx,p));
+    }
+}
+
+
+void OptimizationHandler::printLogFile()
+{
+    if(!mPrintLogFile) return;
+
+
+    QFile logFile(gpDesktopHandler->getDocumentsPath()+"OptimizationLogFile_"+QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")+".csv");
+    logFile.open(QFile::WriteOnly | QFile::Text);
+    for(int i=0; i<mLoggedParameters.size(); ++i)
+    {
+        QString line;
+        for(int j=0; j<mLoggedParameters[i].size(); ++j)
+        {
+            line.append(QString::number(mLoggedParameters[i][j])+",");
+        }
+        line.chop(1);
+        line.append("\n");
+        logFile.write(line.toUtf8());
+    }
+    logFile.close();
+}
+
+void OptimizationHandler::printDebugFile()
+{
+    if(!mPrintDebugFile) return;
+
+    QFile debugFile(gpDesktopHandler->getDocumentsPath()+"OptimizationDebugFile_"+QDateTime::currentDateTime().toString("yyyyMMdd")+".txt");
+    debugFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
+    QString output = QString::number(getAlgorithm())+",";
+    output.append(QString::number(mpWorker->getNumberOfCandidates())+",");
+    output.append(QString::number(mpWorker->getCurrentNumberOfIterations())+",");
+    output.append(QString::number(mEvaluations)+",");
+    output.append(QString::number(0)+",");  //Surrogate models, not currently implemented
+    output.append(QString::number(mpWorker->getObjectiveValue(mpWorker->getBestId()))+",");
+    for(int i=0; i<mpWorker->getNumberOfParameters(); ++i)
+    {
+        output.append(QString::number(mpWorker->getParameter(mpWorker->getBestId(),i))+",");
+    }
+    output.chop(1);
+    output.append("\n");
+    debugFile.write(output.toUtf8());
+    debugFile.close();
+}
+
+void OptimizationHandler::checkIfRescheduleIsNeeded()
+{
+#ifdef USEZMQ
+        if (mNeedsReschedule)
+        {
+            int pm, pa;
+            double su;
+            gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, 8, pm, pa, su);
+            reInitialize(pa);
+            // Setup parallell server queues
+            if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+            {
+                gpRemoteModelSimulationQueuer->setupModelQueues(mUsedModelPtrs, pm);
+            }
+            mNeedsReschedule = false;
+        }
+#endif
+}
+
+void OptimizationHandler::reInitialize(int nModels)
+{
+    mpWorker->setNumberOfCandidates(nModels);   //! @todo This needs more error checking in algorithms, so they don't try to use no longer existing candidates
+
+    while(mModelPtrs.size() < nModels)
+    {
+        addModel(gpModelHandler->loadModel(mModelPath, true, true));
+
+        //Make sure logging is disabled/enabled for same ports as in original model
+        CoreSystemAccess *pCore = mModelPtrs.first()->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
+        foreach(const QString &compName, mModelPtrs.first()->getTopLevelSystemContainer()->getModelObjectNames())
+        {
+            foreach(const Port *port, mModelPtrs.first()->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
+            {
+                QString portName = port->getName();
+                bool enabled = pCore->isLoggingEnabled(compName, portName);
+                SystemContainer *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
+                CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
+                pOptCore->setLoggingEnabled(compName, portName, enabled);
+            }
+        }
+    }
+}

@@ -26,15 +26,18 @@
 #define OPTIMIZATIONWORKERSIMPLEX_H
 
 #include "OptimizationWorkerComplex.h"
+#include "../Ops/include/OpsWorkerNelderMead.h"
 
-class OptimizationWorkerSimplex : public OptimizationWorkerComplex
+class OptimizationWorkerNelderMead : public Ops::WorkerNelderMead
 {
 public:
-    OptimizationWorkerSimplex(OptimizationHandler *pHandler);
+    OptimizationWorkerNelderMead(OptimizationHandler *pHandler);
 
-    void init(const ModelWidget *pModel, const QString &modelPath);
-    void run();
-    void finalize();
+    void initialize(const ModelWidget *pModel, const QString &modelPath);
+
+    void evaluateCandidate(int idx);
+private:
+    OptimizationHandler *mpHandler;
 };
 
 #endif // OPTIMIZATIONWORKERSIMPLEX_H

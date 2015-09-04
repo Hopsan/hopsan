@@ -77,7 +77,6 @@ public:
     double mRefcoeff;
     double mRandfac;
     double mForgfac;
-    double mFunctol;
     double mPartol;
     bool mPlot;
     bool mSavecsv;

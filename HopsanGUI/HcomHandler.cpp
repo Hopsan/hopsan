@@ -1665,7 +1665,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
 
         if(parameterNames.isEmpty())
         {
-            HCOMERR("Parameter(s) not found.");
+            HCOMERR("Parameter(s) not found: "+splitCmd[0]);
             return;
         }
 
@@ -4184,7 +4184,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 return;
             }
 
-            mpOptHandler->setOptimizationObjectiveValue(idx, val);
+            mpOptHandler->setCandidateObjectiveValue(idx, val);
             return;
         }
         else if(split.size() == 5 && split[1] == "limits")
@@ -4217,8 +4217,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 return;
             }
 
-            mpOptHandler->setParMin(optParIdx, min);
-            mpOptHandler->setParMax(optParIdx, max);
+            mpOptHandler->setParameterLimits(optParIdx, min, max);
             return;
         }
         else if(split.size() == 3)
@@ -4288,7 +4287,7 @@ void HcomHandler::executeCallFunctionCommand(const QString cmd)
 
     if(!mFunctions.contains(funcName))
     {
-        HCOMERR("Undefined function.");
+        HCOMERR("Undefined function: "+funcName);
         return;
     }
 
@@ -7418,6 +7417,7 @@ QString HcomHandler::getDirectory(const QString &cmd) const
 void HcomHandler::abortHCOM()
 {
     mAborted = true;
+    emit aborted();
 }
 
 
@@ -7580,7 +7580,7 @@ double HcomFunctionoidObj::operator()(QString &str, bool &ok)
 {
     int idx = str.toDouble();
     ok=true;
-    return mpHandler->mpOptHandler->getOptimizationObjectiveValue(idx);
+    return mpHandler->mpOptHandler->getObjectiveValue(idx);
 }
 
 
@@ -7753,7 +7753,14 @@ double HcomFunctionoidOptPar::operator()(QString &str, bool &ok)
     {
         parIdx = mpHandler->mAnsScalar;
     }
-    return mpHandler->mpOptHandler->getParameter(pointIdx,parIdx);
+    if(mpHandler->mpOptHandler->isRunning())
+    {
+        return mpHandler->mpOptHandler->getCandidateParameter(pointIdx,parIdx);
+    }
+    else
+    {
+        return mpHandler->mpOptHandler->getParameter(pointIdx,parIdx);  //Hack for applying parameters
+    }
 }
 
     //! @brief Function operator for the "fc" functionoid

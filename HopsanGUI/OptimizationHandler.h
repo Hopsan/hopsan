@@ -38,6 +38,9 @@
 //Qt includes
 #include <QVector>
 #include <QStringList>
+#include "LogVariable.h"
+#include "../Ops/include/OpsWorker.h"
+#include "../Ops/include/OpsEvaluator.h"
 
 //Forward declarations
 class ModelWidget;
@@ -46,6 +49,20 @@ class HcomHandler;
 class Configuration;
 class OptimizationWorker;
 class GUIMessageHandler;
+class OptimizationHandler;
+
+
+class OptimizationEvaluator : public Ops::Evaluator
+{
+public:
+    OptimizationEvaluator(OptimizationHandler *pHandler);
+    //void evaluateAllPoints();
+    void evaluateCandidate(int idx);
+    void evaluateAllCandidates();
+private:
+    OptimizationHandler *mpHandler;
+};
+
 
 class OptimizationHandler : public QObject
 {
@@ -56,25 +73,28 @@ class OptimizationHandler : public QObject
 public:
     //Enums
     enum DataT{Integer, Double};
-    enum AlgorithmT{Simplex, ComplexRF, ComplexRFM, ComplexRFP, ParticleSwarm, ParameterSweep, Uninitialized};
+    enum AlgorithmT{NelderMead, ComplexRF, ComplexRFM, ComplexRFP, PSO, ParameterSweep, Uninitialized};
 
     //Constructor
     OptimizationHandler(HcomHandler *pHandler);
 
     //Public access functions
     void startOptimization(ModelWidget *pModel, QString &modelPath);
-    void setOptimizationObjectiveValue(int idx, double value);
-    void setParMin(int idx, double value);
-    void setParMax(int idx, double value);
-    double getOptimizationObjectiveValue(int idx);
+    void initModels(ModelWidget *pModel, int nModels, QString &modelPath);
+    void setCandidateObjectiveValue(int idx, double value);
+    void setParameterLimits(int idx, double min, double max);
+    double getObjectiveValue(int idx);
     double getOptVar(const QString &var);
     double getOptVar(const QString &var, bool &ok) const;
     void setOptVar(const QString &var, const QString &value, bool &ok);
+    double getCandidateParameter(const int pointIdx, const int parIdx) const;
     double getParameter(const int pointIdx, const int parIdx) const;
     void setIsRunning(bool value);
     bool isRunning();
     QStringList *getOptParNamesPtr();
 
+    bool evaluateCandidate(int idx);
+    bool evaluateAllCandidates();
 
     const QVector<ModelWidget *> *getModelPtrs() const;
     void clearModels();
@@ -85,14 +105,65 @@ public:
 
     Configuration *mpConfig;
     HcomHandler *mpHcomHandler;
+    bool mDisconnectedFromModelHandler;
 
     DataT mParameterType; //! @todo Should be public
+    int mEvalId;
+    int mEvaluations;
+
+protected slots:
+    void plotPoints();
+    void plotParameters();
+    void plotObjectiveValues();
+    void plotEntropy();
+    void updateProgressBar(int i);
+    void updateOutputs();
+    void printResultFile();
+    void logPoint(int idx);
+    void logAllPoints();
+    void printLogFile();
+    void printDebugFile();
+    void checkIfRescheduleIsNeeded();
 
 private:
+    void reInitialize(int nModels);
+
+    QString mModelPath;
     GUIMessageHandler *mpMessageHandler;
-    OptimizationWorker *mpWorker;
+    OptimizationEvaluator *mpEvaluator;
+    Ops::Worker *mpWorker;
     AlgorithmT mAlgorithm;
     bool mIsRunning;
+
+    QVector<ModelWidget *> mModelPtrs;
+
+    //Plotting points
+    bool mPlotPoints;
+    QList<SharedVectorVariableT> mPointVars_x;
+    QList<SharedVectorVariableT> mPointVars_y;
+
+    //Plotting best/worst/newest objective
+    bool mPlotObjectiveValues;
+    SharedVectorVariableT mBestVar;
+    SharedVectorVariableT mWorstVar;
+    SharedVectorVariableT mNewestVar;
+
+    //Plotting parameters
+    bool mPlotParameters;
+    QList<SharedVectorVariableT> mParVars;
+
+    //Plotting entropy
+    bool mPlotEntropy;
+    QVector<double> mEntropy;
+    SharedVectorVariableT mEntropyVar;
+
+    bool mPrintLogFile, mPrintResultFile, mPrintDebugFile;
+
+    int mCurrentProgressBarPercent;
+
+    QVector< QVector<double> > mLoggedParameters;
+
+    bool mNeedsRescheduling;
 };
 
 #endif // OPTIMIZATIONHANDLER_H

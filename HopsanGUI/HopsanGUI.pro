@@ -86,6 +86,12 @@ LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
+# Set Ops Paths
+INCLUDEPATH *= $${PWD}/../Ops/include/
+LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
+#--------------------------------------------------------
+
+#--------------------------------------------------------
 # Set Discount Paths
 d = $$setDiscountPathInfo($$(DISCOUNT_PATH), $$DESTDIR)
 !isEmpty(d){
@@ -293,13 +299,6 @@ SOURCES += main.cpp \
     Utilities/HelpPopUpWidget.cpp \
     PlotCurveControlBox.cpp \
     MessageHandler.cpp \
-    Optimization/OptimizationWorker.cpp \
-    Optimization/OptimizationWorkerComplex.cpp \
-    Optimization/OptimizationWorkerComplexRF.cpp \
-    Optimization/OptimizationWorkerComplexRFM.cpp \
-    Optimization/OptimizationWorkerComplexRFP.cpp \
-    Optimization/OptimizationWorkerParticleSwarm.cpp \
-    Optimization/OptimizationWorkerParameterSweep.cpp \
     Widgets/FindWidget.cpp \
     ModelicaLibrary.cpp \
     Widgets/ModelicaEditor.cpp \
@@ -308,10 +307,7 @@ SOURCES += main.cpp \
     LogDataGeneration.cpp \
     RemoteCoreAccess.cpp \
     RemoteSimulationUtils.cpp \
-    Optimization/OptimizationWorkerSimplex.cpp \
     Dialogs/LicenseDialog.cpp
-
-
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -390,13 +386,6 @@ HEADERS += MainWindow.h \
     Utilities/HelpPopUpWidget.h \
     PlotCurveControlBox.h \
     MessageHandler.h \
-    Optimization/OptimizationWorker.h \
-    Optimization/OptimizationWorkerComplex.h \
-    Optimization/OptimizationWorkerComplexRF.h \
-    Optimization/OptimizationWorkerComplexRFM.h \
-    Optimization/OptimizationWorkerComplexRFP.h \
-    Optimization/OptimizationWorkerParticleSwarm.h \
-    Optimization/OptimizationWorkerParameterSweep.h \
     Widgets/FindWidget.h \
     ModelicaLibrary.h \
     Widgets/ModelicaEditor.h \
@@ -406,7 +395,6 @@ HEADERS += MainWindow.h \
     LogDataGeneration.h \
     RemoteCoreAccess.h \
     RemoteSimulationUtils.h \
-    Optimization/OptimizationWorkerSimplex.h \
     Dialogs/LicenseDialog.h
 
     contains(DEFINES, USEPYTHONQT) {

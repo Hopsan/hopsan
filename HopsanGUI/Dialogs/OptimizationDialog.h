@@ -137,7 +137,6 @@ private:
     QLineEdit *mpPercDiffLineEdit;
     QLabel *mpCountMaxLabel;
     QSpinBox *mpCountMaxSpinBox;
-    QLineEdit *mpEpsilonFLineEdit;
     QLineEdit *mpEpsilonXLineEdit;
     QCheckBox *mpPlotParticlesCheckBox;
     QCheckBox *mpPlotEntropyCheckBox;

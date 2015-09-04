@@ -83,6 +83,7 @@ protected:
     void setOptimizationObjectiveValue(int idx, double value);
     bool iterate();
     bool iterateSingle();
+    QVector<double> reflect(QVector<double> point, QVector<double> center, double alpha);
 
     QVector<ModelWidget *> mUsedModelPtrs;
     QString mModelPath;

@@ -250,6 +250,8 @@ void OptimizationWorker::finalize()
 
     gpConfig->setBoolSetting(CFG_PROGRESSBAR, mOrgProgressBarSetting);
     gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mOrgLimitDataGenerationsSetting);
+
+    //qDebug() << mEntropy;
 }
 
 void OptimizationWorker::printLogFile()
@@ -289,7 +291,7 @@ void OptimizationWorker::printLogFile()
     case OptimizationHandler::ComplexRFP:
         algStr = "Complex-RFP";
         break;
-    case OptimizationHandler::ParticleSwarm:
+    case OptimizationHandler::PSO:
         algStr = "Particle Swarm";
         break;
     case OptimizationHandler::ParameterSweep:
@@ -452,6 +454,13 @@ bool OptimizationWorker::checkForConvergence()
         return true;
     }
     return false;
+
+//    if(getMaxParDiff() < mParTol)
+//    {
+//        mConvergenceReason=2;
+//        return true;
+//    }
+//    return false;
 }
 
 
@@ -627,17 +636,19 @@ void OptimizationWorker::plotEntropy()
     if(!mPlotEntropy) { return; }
 
     double deltaX = getMaxParDiff();
-    int n = mParameters.size();
+    int n = mNumParameters;
     double entropy = -n*log2(deltaX);
-
 
     if(mEntropyVar.isNull())
     {
+        mEntropy.clear();
+        mEntropy.append(entropy);
         mEntropyVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mEntropyVar->assignFrom(entropy);
     }
     else
     {
+        mEntropy.append(entropy);
         mEntropyVar->append(entropy);
     }
 

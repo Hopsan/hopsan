@@ -47,284 +47,307 @@
 //C++ includes
 #include <math.h>
 
-OptimizationWorkerComplexRF::OptimizationWorkerComplexRF(OptimizationHandler *pHandler)
-    : OptimizationWorkerComplex(pHandler)
-{
 
+
+OptimizationWorkerComplexRF::OptimizationWorkerComplexRF(OptimizationHandler *pHandler)
+    : Ops::WorkerComplexRF(0)
+{
+    mpHandler = pHandler;
 }
 
 
 //! @brief Initializes a Complex-RF optimization
-void OptimizationWorkerComplexRF::init(const ModelWidget *pModel, const QString &modelPath)
+void OptimizationWorkerComplexRF::initialize(const ModelWidget *pModel, const QString &modelPath)
 {
-    OptimizationWorkerComplex::init(pModel, modelPath);
+    Ops::WorkerComplexRF::initialize();
+}
 
-
-    mLastWorstId = -1;
-    mWorstCounter = 0;
-
-    for(int p=0; p<mNumPoints; ++p)
-    {
-        mParameters[p].resize(mNumParameters);
-        if(!mDontChangeStartValues)
-        {
-            for(int i=0; i<mNumParameters; ++i)
-            {
-                double r = (double)rand() / (double)RAND_MAX;
-                mParameters[p][i] = mParMin[i] + r*(mParMax[i]-mParMin[i]);
-                if(mpHandler->mParameterType == OptimizationHandler::Integer)
-                {
-                    mParameters[p][i] = round(mParameters[p][i]);
-                }
-            }
-        }
-    }
-    mObjectives.resize(mNumPoints);
-
-    mKf = 1.0-pow(mAlpha/2.0, mGamma/mNumPoints);
-
-    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
-    // Check if exist at any generation first to avoid error message
-    if (pHandler->hasVariable("WorstObjective"))
-    {
-        pHandler->removeVariable("WorstObjective", -1);
-    }
-    if (pHandler->hasVariable("BestObjective"))
-    {
-        pHandler->removeVariable("BestObjective", -1);
-    }
-
-    // Close these plotwindows before optimization to make sure old data is removed
-    //! @todo should have define or const for this name "parplot"
-    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
-    if(pPlotWindow)
-    {
-        PlotTab *pPlotTab = pPlotWindow->getCurrentPlotTab();
-        if(pPlotTab)
-        {
-            while(!pPlotTab->getCurves().isEmpty())
-            {
-                pPlotTab->removeCurve(pPlotTab->getCurves().first());
-            }
-        }
-    }
+void OptimizationWorkerComplexRF::evaluateCandidate(int idx)
+{
+    mpHandler->evaluateCandidate(idx);
 }
 
 
 
-//! @brief Executes a Complex-RF optimization. optComplexInit() must be called before this one.
-void OptimizationWorkerComplexRF::run()
-{
-    //Plot optimization points
-    plotPoints();
-    qDebug() << "Parnames: " << mParNames;
 
-    mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(true);
+//OptimizationWorkerComplexRF::OptimizationWorkerComplexRF(OptimizationHandler *pHandler)
+//    : OptimizationWorkerComplex(pHandler)
+//{
 
-    //Reset convergence reason variable (0 = failed to converge)
-    mConvergenceReason=0;
+//}
 
-    //Verify that everything is ok
-    if(!mpHandler->mpHcomHandler->hasFunction("evalall"))
-    {
-        printError("Function \"evalall\" not defined.","",false);
-        return;
-    }
-    if(!mpHandler->mpHcomHandler->hasFunction("evalworst"))
-    {
-        printError("Function \"evalworst\" not defined.","",false);
-        return;
-    }
 
-    print("Running optimization...", "", true);
+////! @brief Initializes a Complex-RF optimization
+//void OptimizationWorkerComplexRF::init(const ModelWidget *pModel, const QString &modelPath)
+//{
+//    OptimizationWorkerComplex::init(pModel, modelPath);
 
-    //Turn of terminal output during optimization
-    execute("echo off -nonerrors");
 
-    //Evaluate initial objective values
-    execute("call evalall");
-    logAllPoints();
-    mEvaluations = mNumPoints;
+//    mLastWorstId = -1;
+//    mWorstCounter = 0;
 
-    //Calculate best and worst id, and initialize last worst id
-    calculateBestAndWorstId();
-    mLastWorstId = mWorstId;
+//    for(int p=0; p<mNumPoints; ++p)
+//    {
+//        mParameters[p].resize(mNumParameters);
+//        if(!mDontChangeStartValues)
+//        {
+//            for(int i=0; i<mNumParameters; ++i)
+//            {
+//                double r = (double)rand() / (double)RAND_MAX;
+//                mParameters[p][i] = mParMin[i] + r*(mParMax[i]-mParMin[i]);
+//                if(mpHandler->mParameterType == OptimizationHandler::Integer)
+//                {
+//                    mParameters[p][i] = round(mParameters[p][i]);
+//                }
+//            }
+//        }
+//    }
+//    mObjectives.resize(mNumPoints);
 
-    //Store parameters for undo
-    mParameters = mParameters;
+//    mKf = 1.0-pow(mAlpha/2.0, mGamma/mNumPoints);
 
-    //Run optimization loop
-    int i=0;
-    for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
-    {
-        //Plot optimization points
-        plotPoints();
+//    LogDataHandler2 *pHandler = mModelPtrs[0]->getViewContainerObject()->getLogDataHandler();
+//    // Check if exist at any generation first to avoid error message
+//    if (pHandler->hasVariable("WorstObjective"))
+//    {
+//        pHandler->removeVariable("WorstObjective", -1);
+//    }
+//    if (pHandler->hasVariable("BestObjective"))
+//    {
+//        pHandler->removeVariable("BestObjective", -1);
+//    }
 
-        //Process UI events (required so that we don't lock up the program)
-        qApp->processEvents();
+//    // Close these plotwindows before optimization to make sure old data is removed
+//    //! @todo should have define or const for this name "parplot"
+//    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+//    if(pPlotWindow)
+//    {
+//        PlotTab *pPlotTab = pPlotWindow->getCurrentPlotTab();
+//        if(pPlotTab)
+//        {
+//            while(!pPlotTab->getCurves().isEmpty())
+//            {
+//                pPlotTab->removeCurve(pPlotTab->getCurves().first());
+//            }
+//        }
+//    }
+//}
 
-        //Stop if user pressed abort button
-        if(mpHandler->mpHcomHandler->isAborted())
-        {
-            print("Optimization aborted.");
-            finalize();
-            return;
-        }
 
-        //Print progress as percentage of maximum number of evaluations
-        updateProgressBar(i);
 
-        //Check convergence
-        if(checkForConvergence()) break;
+////! @brief Executes a Complex-RF optimization. optComplexInit() must be called before this one.
+//void OptimizationWorkerComplexRF::run()
+//{
+//    //Plot optimization points
+//    plotPoints();
+//    qDebug() << "Parnames: " << mParNames;
 
-        //Increase all objective values (forgetting principle)
-        forget();
+//    mpHandler->mpHcomHandler->mpConsole->mpTerminal->setAbortButtonEnabled(true);
 
-        //Calculate best and worst point
-        calculateBestAndWorstId();
-        int wid = mWorstId;
+//    //Reset convergence reason variable (0 = failed to converge)
+//    mConvergenceReason=0;
 
-        //Plot best and worst objective values
-        plotObjectiveFunctionValues();
+//    //Verify that everything is ok
+//    if(!mpHandler->mpHcomHandler->hasFunction("evalall"))
+//    {
+//        printError("Function \"evalall\" not defined.","",false);
+//        return;
+//    }
+//    if(!mpHandler->mpHcomHandler->hasFunction("evalworst"))
+//    {
+//        printError("Function \"evalworst\" not defined.","",false);
+//        return;
+//    }
 
-        //Find geometrical center
-        findCenter();
+//    print("Running optimization...", "", true);
 
-        //Reflect worst point
-        reflectWorst();
-        QVector<double> newPoint;
-        newPoint.resize(mNumParameters);
-        newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
+//    //Turn of terminal output during optimization
+//    execute("echo off -nonerrors");
 
-        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+//    //Evaluate initial objective values
+//    execute("call evalall");
+//    logAllPoints();
+//    mEvaluations = mNumPoints;
 
-        //Evaluate new point
-        execute("call evalworst");
+//    //Calculate best and worst id, and initialize last worst id
+//    calculateBestAndWorstId();
+//    mLastWorstId = mWorstId;
 
-        ++mEvaluations;
-        if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
-        {
-            execute("echo on");
-            print("Optimization aborted.");
-            finalize();
-            return;
-        }
+//    //Store parameters for undo
+//    mParameters = mParameters;
 
-        //Calculate best and worst points
-        mLastWorstId=wid;
-        calculateBestAndWorstId();
-        wid = mWorstId;
+//    //Run optimization loop
+//    int i=0;
+//    for(; i<mMaxEvals && !mpHandler->mpHcomHandler->isAborted(); ++i)
+//    {
+//        //Plot optimization points
+//        plotPoints();
 
-        if(wid != mLastWorstId)
-        {
-            logPoint(mLastWorstId);
-        }
+//        //Process UI events (required so that we don't lock up the program)
+//        qApp->processEvents();
 
-        //Iterate until worst point is no longer the same
-        mWorstCounter=0;
-        while(mLastWorstId == wid)
-        {
-            plotPoints();
+//        //Stop if user pressed abort button
+//        if(mpHandler->mpHcomHandler->isAborted())
+//        {
+//            print("Optimization aborted.");
+//            finalize();
+//            return;
+//        }
 
-            qApp->processEvents();
-            if(mpHandler->mpHcomHandler->isAborted())
-            {
-                execute("echo on");
-                print("Optimization aborted.");
-                finalize();
-                mpHandler->mpHcomHandler->abortHCOM();
-                return;
-            }
+//        //Print progress as percentage of maximum number of evaluations
+//        updateProgressBar(i);
 
-            ++i;
-            if(i>=mMaxEvals)
-            {
-                --i;    //Needed because for-loop will increase it by one anyway
-                break;
-            }
+//        //Check convergence
+//        if(checkForConvergence()) break;
 
-            double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
+//        //Increase all objective values (forgetting principle)
+//        forget();
 
-            //Reflect worst point
-            for(int j=0; j<mNumParameters; ++j)
-            {
-                double best = mParameters[mBestId][j];
-                double maxDiff = getMaxParDiff();
-                double r = (double)rand() / (double)RAND_MAX;
-                mParameters[wid][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
-                mParameters[wid][j] = qMin(mParameters[wid][j], mParMax[j]);
-                mParameters[wid][j] = qMax(mParameters[wid][j], mParMin[j]);
-            }
-            newPoint = mParameters[wid];
-            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+//        //Calculate best and worst point
+//        calculateBestAndWorstId();
+//        int wid = mWorstId;
 
-            //Evaluate new point
-            execute("call evalworst");
+//        //Plot best and worst objective values
+//        plotObjectiveFunctionValues();
 
-            ++mEvaluations;
-            if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
-            {
-                execute("echo on");
-                print("Optimization aborted.");
-                finalize();
-                return;
-            }
+//        //Find geometrical center
+//        findCenter();
 
-            //Calculate best and worst points
-            mLastWorstId=wid;
-            calculateBestAndWorstId();
-            wid = mWorstId;
+//        //Reflect worst point
+//        reflectWorst();
+//        QVector<double> newPoint;
+//        newPoint.resize(mNumParameters);
+//        newPoint = mParameters[wid]; //Remember the new point, in case we need to iterate below
 
-            if(wid != mLastWorstId)
-            {
-                logPoint(mLastWorstId);
-            }
+//        gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
-            ++mWorstCounter;
-            execute("echo off -nonerrors");
+//        //Evaluate new point
+//        execute("call evalworst");
 
-            updateProgressBar(i);
-        }
+//        ++mEvaluations;
+//        if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+//        {
+//            execute("echo on");
+//            print("Optimization aborted.");
+//            finalize();
+//            return;
+//        }
 
-        plotParameters();
-        plotEntropy();
-    }
+//        //Calculate best and worst points
+//        mLastWorstId=wid;
+//        calculateBestAndWorstId();
+//        wid = mWorstId;
 
-    gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+//        if(wid != mLastWorstId)
+//        {
+//            logPoint(mLastWorstId);
+//        }
 
-    execute("echo on");
+//        //Iterate until worst point is no longer the same
+//        mWorstCounter=0;
+//        while(mLastWorstId == wid)
+//        {
+//            plotPoints();
 
-    switch(mConvergenceReason)
-    {
-    case 0:
-        print("Optimization failed to converge after "+QString::number(i)+" iterations.");
-        break;
-    case 1:
-        print("Optimization converged in function values after "+QString::number(i)+" iterations.");
-        break;
-    case 2:
-        print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
-        break;
-    }
+//            qApp->processEvents();
+//            if(mpHandler->mpHcomHandler->isAborted())
+//            {
+//                execute("echo on");
+//                print("Optimization aborted.");
+//                finalize();
+//                mpHandler->mpHcomHandler->abortHCOM();
+//                return;
+//            }
 
-    mIterations = mEvaluations;
+//            ++i;
+//            if(i>=mMaxEvals)
+//            {
+//                --i;    //Needed because for-loop will increase it by one anyway
+//                break;
+//            }
 
-    print("\nBest point:");
-    for(int i=0; i<mNumParameters; ++i)
-    {
-        if(mParNames.size() < i+1)
-            print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
-        else
-            print(mParNames[i]+": "+QString::number(mParameters[mBestId][i]));
-    }
+//            double a1 = 1.0-exp(-double(mWorstCounter)/5.0);
 
-    // Clean up
-    finalize();
+//            //Reflect worst point
+//            for(int j=0; j<mNumParameters; ++j)
+//            {
+//                double best = mParameters[mBestId][j];
+//                double maxDiff = getMaxParDiff();
+//                double r = (double)rand() / (double)RAND_MAX;
+//                mParameters[wid][j] = (mCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRfak*(mParMax[j]-mParMin[j])*maxDiff*(r-0.5);
+//                mParameters[wid][j] = qMin(mParameters[wid][j], mParMax[j]);
+//                mParameters[wid][j] = qMax(mParameters[wid][j], mParMin[j]);
+//            }
+//            newPoint = mParameters[wid];
+//            gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
 
-    return;
-}
+//            //Evaluate new point
+//            execute("call evalworst");
 
-void OptimizationWorkerComplexRF::finalize()
-{
-    OptimizationWorkerComplex::finalize();
-}
+//            ++mEvaluations;
+//            if(mpHandler->mpHcomHandler->getVar("ans") == -1)    //This check is needed if abort key is pressed while evaluating
+//            {
+//                execute("echo on");
+//                print("Optimization aborted.");
+//                finalize();
+//                return;
+//            }
+
+//            //Calculate best and worst points
+//            mLastWorstId=wid;
+//            calculateBestAndWorstId();
+//            wid = mWorstId;
+
+//            if(wid != mLastWorstId)
+//            {
+//                logPoint(mLastWorstId);
+//            }
+
+//            ++mWorstCounter;
+//            execute("echo off -nonerrors");
+
+//            updateProgressBar(i);
+//        }
+
+//        plotParameters();
+//        plotEntropy();
+//    }
+
+//    gpOptimizationDialog->updateParameterOutputs(mObjectives, mParameters, mBestId, mWorstId);
+
+//    execute("echo on");
+
+//    switch(mConvergenceReason)
+//    {
+//    case 0:
+//        print("Optimization failed to converge after "+QString::number(i)+" iterations.");
+//        break;
+//    case 1:
+//        print("Optimization converged in function values after "+QString::number(i)+" iterations.");
+//        break;
+//    case 2:
+//        print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
+//        break;
+//    }
+
+//    mIterations = mEvaluations;
+
+//    print("\nBest point:");
+//    for(int i=0; i<mNumParameters; ++i)
+//    {
+//        if(mParNames.size() < i+1)
+//            print("par("+QString::number(i)+"): "+QString::number(mParameters[mBestId][i]));
+//        else
+//            print(mParNames[i]+": "+QString::number(mParameters[mBestId][i]));
+//    }
+
+//    // Clean up
+//    finalize();
+
+//    return;
+//}
+
+//void OptimizationWorkerComplexRF::finalize()
+//{
+//    OptimizationWorkerComplex::finalize();
+//}

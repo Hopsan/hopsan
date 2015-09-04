@@ -13,19 +13,21 @@ define obj
 enddefine
 
 opt set algorithm <<<subalgorithm>>>
+opt set sampling latinhypercube
+#opt set sampling random
 opt set maxevals <<<maxevals>>>
-opt set datatype double
 opt set npoints <<<npoints>>>
 opt set nparams <<<nparams>>>
-opt set functol <<<functol>>>
 opt set partol <<<partol>>>
 opt set alpha <<<alpha>>>
-opt set rfak <<<rfak>>>
+opt set beta <<<beta>>>
 opt set gamma <<<gamma>>>
 opt set finaleval <<<finaleval>>>
-opt set log <<<log>>>
+opt set printresultfile on
+opt set printlogfile <<<log>>>
 opt set plotpoints <<<plotpoints>>>
-opt set plotbestworst <<<plotbestworst>>>
+opt set plotobjectives <<<plotobjectives>>>
+opt set plotparameters off
 opt set plotentropy <<<plotentropy>>>
 
 <<<extravars>>>

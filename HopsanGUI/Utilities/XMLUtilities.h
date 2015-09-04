@@ -195,7 +195,6 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_REFLCOEFF "refcoeff"
 #define HMF_RANDOMFACTOR "randfac"
 #define HMF_FORGETTINGFACTOR "forgfac"
-#define HMF_FUNCTOL "functol"
 #define HMF_PARTOL "partol"
 #define HMF_PLOT "plot"
 #define HMF_SAVECSV "savecsv"

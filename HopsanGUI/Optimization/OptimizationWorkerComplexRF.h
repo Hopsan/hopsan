@@ -36,16 +36,34 @@
 
 #include "OptimizationWorkerComplex.h"
 
+#include "../Ops/include/OpsWorkerComplexRF.h"
+
 class OptimizationHandler;
 
-class OptimizationWorkerComplexRF : public OptimizationWorkerComplex
+class OptimizationWorkerComplexRF : public Ops::WorkerComplexRF
 {
 public:
     OptimizationWorkerComplexRF(OptimizationHandler *pHandler);
 
-    void init(const ModelWidget *pModel, const QString &modelPath);
-    void run();
-    void finalize();
+    void initialize(const ModelWidget *pModel, const QString &modelPath);
+
+
+    void evaluateCandidate(int idx);
+private:
+    OptimizationHandler *mpHandler;
 };
+
+
+//class OptimizationHandler;
+
+//class OptimizationWorkerComplexRF : public OptimizationWorkerComplex
+//{
+//public:
+//    OptimizationWorkerComplexRF(OptimizationHandler *pHandler);
+
+//    void init(const ModelWidget *pModel, const QString &modelPath);
+//    void run();
+//    void finalize();
+//};
 
 #endif // OPTIMIZATIONWORKERCOMPLEXRF_H
