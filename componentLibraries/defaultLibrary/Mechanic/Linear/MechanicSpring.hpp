@@ -10,7 +10,7 @@
 //! @file MechanicSpring.hpp
 //! @author Petter Krus <petter.krus@liu.se>
 //  co-author/auditor **Not yet audited by a second person**
-//! @date Mon 22 Jun 2015 12:52:38
+//! @date Mon 7 Sep 2015 14:40:08
 //! @brief Linear spring
 //! @ingroup MechanicComponents
 //!
@@ -96,7 +96,7 @@ public:
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("Ks", "Spring constant", "Nm/rad", 100.,&mpKs);
+            addInputVariable("Ks", "Spring constant", "N/m", 100.,&mpKs);
             addInputVariable("alpha", "numerical damping", "", 0.3,&mpalpha);
         //Add outputVariables to the component
 
