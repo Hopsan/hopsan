@@ -62,7 +62,7 @@ Worker::~Worker()
 
 AlgorithmT Worker::getAlgorithm()
 {
-    return OpsUndefined;
+    return Undefined;
 }
 
 

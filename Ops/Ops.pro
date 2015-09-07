@@ -48,7 +48,8 @@ SOURCES += \
     src/OpsWorkerNelderMead.cpp \
     src/OpsEvaluator.cpp \
     src/OpsWorkerParticleSwarm.cpp \
-    src/OpsWorkerComplexRFP.cpp
+    src/OpsWorkerComplexRFP.cpp \
+    src/OpsWorkerParamterSweep.cpp
 
 HEADERS += \
     include/win32dll.h \
@@ -58,7 +59,8 @@ HEADERS += \
     include/OpsWorkerNelderMead.h \
     include/OpsEvaluator.h \
     include/OpsWorkerParticleSwarm.h \
-    include/OpsWorkerComplexRFP.h
+    include/OpsWorkerComplexRFP.h \
+    include/OpsWorkerParameterSweep.h
 
 
 

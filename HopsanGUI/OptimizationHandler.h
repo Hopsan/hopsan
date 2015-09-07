@@ -100,7 +100,7 @@ public:
     void clearModels();
     void addModel(ModelWidget *pModel);
 
-    int getAlgorithm() const;
+    Ops::AlgorithmT getAlgorithm() const;
     GUIMessageHandler *getMessageHandler();
 
     Configuration *mpConfig;

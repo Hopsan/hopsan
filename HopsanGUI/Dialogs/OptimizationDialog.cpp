@@ -385,6 +385,11 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 {
     if(mOutputDisabled || !this->isVisible()) return;
 
+    if(mParametersOutputLineEditPtrs.size() != objectives.size())
+    {
+        recreateParameterOutputLineEdits();
+    }
+
 //    double temp = objectives[0];
 //    objectives[0] = objectives[bestId];
 //    objectives.insert(bestId, temp);
@@ -405,11 +410,10 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 //    worstId = 1;
 
     bool ok;
-    OptimizationHandler::AlgorithmT algorithm = mpTerminal->mpHandler->mpOptHandler->mAlgorithm;
-    if(algorithm == OptimizationHandler::NelderMead ||
-       algorithm == OptimizationHandler::ComplexRF ||
-       algorithm == OptimizationHandler::ComplexRFM ||
-       algorithm == OptimizationHandler::ComplexRFP)
+    Ops::AlgorithmT algorithm = mpTerminal->mpHandler->mpOptHandler->getAlgorithm();
+    if(algorithm == Ops::NelderMead ||
+       algorithm == Ops::ComplexRF ||
+       algorithm == Ops::ComplexRFP)
     {
         int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
         if(nPoints != mParametersOutputLineEditPtrs.size())
@@ -418,7 +422,7 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
             recreateParameterOutputLineEdits();
         }
     }
-    else if(algorithm == OptimizationHandler::PSO)
+    else if(algorithm == Ops::ParticleSwarm)
     {
         int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
         if(nPoints != mParametersOutputLineEditPtrs.size())
@@ -1971,24 +1975,19 @@ void OptimizationDialog::recreateCoreProgressBars()
     mCoreProgressBarPtrs.clear();
 
     //Add new stuff depending on algorithm and number of threads
-    switch (mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
+    switch (mpTerminal->mpHandler->mpOptHandler->getAlgorithm())
     {
-    case OptimizationHandler::NelderMead :    //Complex-RF
+    case Ops::NelderMead :    //Complex-RF
         mCoreProgressBarPtrs.append(new QProgressBar(this));
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         break;
-    case OptimizationHandler::ComplexRF :    //Complex-RF
+    case Ops::ComplexRF :    //Complex-RF
         mCoreProgressBarPtrs.append(new QProgressBar(this));
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         break;
-    case OptimizationHandler::ComplexRFM :    //Complex-RFM
-        mCoreProgressBarPtrs.append(new QProgressBar(this));
-        mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
-        mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
-        break;
-    case OptimizationHandler::ComplexRFP :    //Complex-RFP
+    case Ops::ComplexRFP :    //Complex-RFP
         if(gpConfig->getUseMulticore())
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
@@ -2005,7 +2004,7 @@ void OptimizationDialog::recreateCoreProgressBars()
             mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         }
         break;
-    case OptimizationHandler::PSO :    //Particle swarm
+    case Ops::ParticleSwarm :    //Particle swarm
         if(gpConfig->getUseMulticore())
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
@@ -2022,7 +2021,7 @@ void OptimizationDialog::recreateCoreProgressBars()
             mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         }
         break;
-    case OptimizationHandler::ParameterSweep :    //Particle swarm
+    case Ops::ParameterSweep :    //Particle swarm
         if(gpConfig->getUseMulticore())
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
@@ -2053,27 +2052,27 @@ void OptimizationDialog::recreateCoreProgressBars()
 
 void OptimizationDialog::recreateParameterOutputLineEdits()
 {
-    int nPoints;
-    switch(mpTerminal->mpHandler->mpOptHandler->mAlgorithm)
-    {
-    case OptimizationHandler::NelderMead:
-        nPoints=mpSearchPointsSpinBox->value();
-        break;
-    case OptimizationHandler::ComplexRF:     //Complex-RF
-        nPoints=mpSearchPointsSpinBox->value();
-        break;
-    case OptimizationHandler::ComplexRFM:     //Complex-RFM
-        nPoints=mpSearchPointsSpinBox->value();
-        break;
-    case OptimizationHandler::ComplexRFP:     //Complex-RFP
-        nPoints=mpSearchPointsSpinBox->value();
-        break;
-    case OptimizationHandler::PSO:     //Complex
-        nPoints=mpParticlesSpinBox->value();
-        break;
-    default:
-        nPoints=0;
-    }
+    int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints");
+//    switch(mpTerminal->mpHandler->mpOptHandler->getAlgorithm())
+//    {
+//    case Ops::NelderMead:
+//        nPoints=mpSearchPointsSpinBox->value();
+//        break;
+//    case Ops::ComplexRF:     //Complex-RF
+//        nPoints=mpSearchPointsSpinBox->value();
+//        break;
+////    case OptimizationHandler::ComplexRFM:     //Complex-RFM
+////        nPoints=mpSearchPointsSpinBox->value();
+////        break;
+//    case Ops::ComplexRFP:     //Complex-RFP
+//        nPoints=mpSearchPointsSpinBox->value();
+//        break;
+//    case Ops::ParticleSwarm:     //Complex
+//        nPoints=mpParticlesSpinBox->value();
+//        break;
+//    default:
+//        nPoints=0;
+//    }
 
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);

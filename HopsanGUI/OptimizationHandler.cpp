@@ -37,13 +37,7 @@
 #include "HcomHandler.h"
 #include "OptimizationHandler.h"
 #include "Dialogs/OptimizationDialog.h"
-//#include "Optimization/OptimizationWorkerSimplex.h"
-//#include "Optimization/OptimizationWorkerComplexRF.h"
-//#include "Optimization/OptimizationWorkerComplexRFM.h"
-//#include "Optimization/OptimizationWorkerComplexRFP.h"
-//#include "Optimization/OptimizationWorker.h"
-//#include "Optimization/OptimizationWorkerParticleSwarm.h"
-//#include "Optimization/OptimizationWorkerParameterSweep.h"
+#include "OpsWorkerParameterSweep.h"
 #include "OpsWorkerComplexRF.h"
 #include "OpsWorkerComplexRFP.h"
 #include "OpsWorkerNelderMead.h"
@@ -75,7 +69,6 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
     mpConfig->loadFromXml();        //This should work, since changes are always saved to file immediately from gpConfig
 
     mpWorker = 0;
-    mAlgorithm = Uninitialized;
     mIsRunning = false;
 
     mPlotPoints = false;
@@ -303,18 +296,17 @@ double OptimizationHandler::getOptVar(const QString &var, bool &ok) const
     ok = true;
     if(var == "algorithm")
     {
-        return mAlgorithm;
-    }
-    else if(var == "datatype")
-    {
-        return mParameterType;
+        if(!mpWorker) return 0;
+        return (int)mpWorker->getAlgorithm();
     }
     else if(var == "nparams")
     {
+        if(!mpWorker) return 0;
         return mpWorker->getNumberOfParameters();
     }
     else if(var == "npoints")
     {
+        if(!mpWorker) return 0;
         return mpWorker->getNumberOfPoints();
     }
     else if(var == "nmodels")
@@ -361,7 +353,6 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
     {
         if(value == "neldermead")
         {
-            mAlgorithm = OptimizationHandler::NelderMead;
             if(mpWorker)
             {
                 delete mpWorker;
@@ -371,7 +362,6 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         else if(value == "complexrf" || value == "complex") //Use both for backwards compatibility
         {
             if(value == "complex") mpMessageHandler->addWarningMessage("Algorithm \"complex\" is deprecated. Use \"complexrf\" instead.");
-            mAlgorithm = OptimizationHandler::ComplexRF;
             if(mpWorker)
             {
                 delete mpWorker;
@@ -380,7 +370,6 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         }
         else if(value == "complexrfp")
         {
-            mAlgorithm = OptimizationHandler::ComplexRFP;
             if(mpWorker)
             {
                 delete mpWorker;
@@ -390,12 +379,19 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         else if(value == "pso" || value == "particleswarm") //Use both for backwards compatibility
         {
             if(value == "particleswarm") mpMessageHandler->addWarningMessage("Algorithm \"particleswarm\" is deprecated. Use \"pso\" instead.");
-            mAlgorithm = OptimizationHandler::PSO;
             if(mpWorker)
             {
                 delete mpWorker;
             }
             mpWorker = new Ops::WorkerParticleSwarm(mpEvaluator);
+        }
+        else if(value == "parametersweep")
+        {
+            if(mpWorker)
+            {
+                delete mpWorker;
+            }
+            mpWorker = new Ops::WorkerParameterSweep(mpEvaluator);
         }
         return;
     }
@@ -949,9 +945,16 @@ void OptimizationHandler::addModel(ModelWidget *pModel)
     }
 }
 
-int OptimizationHandler::getAlgorithm() const
+Ops::AlgorithmT OptimizationHandler::getAlgorithm() const
 {
-    return (int)mAlgorithm;
+    if(mpWorker)
+    {
+        return mpWorker->getAlgorithm();
+    }
+    else
+    {
+        return Ops::Undefined;
+    }
 }
 
 GUIMessageHandler *OptimizationHandler::getMessageHandler()
