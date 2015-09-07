@@ -530,7 +530,6 @@ def copyFiles():
 
     # Common export dirs
     tempDirBin = gTemporaryBuildDir+r'\bin'
-    tempDirScripts = gTemporaryBuildDir+r'\Scripts'
     
     # Copy "bin" folder to temporary directory
     callXcopy(r'bin\*.*', tempDirBin)
@@ -578,10 +577,7 @@ def copyFiles():
     svnExport(r'componentLibraries\autoLibs', gTemporaryBuildDir+r'\componentLibraries\autoLibs')
    
     # Export "Scripts" folder to temporary directory
-    svnExport(r'Scripts\HopsanOptimization.py', tempDirScripts)
-    svnExport(r'Scripts\OptimizationObjectiveFunctions.py', tempDirScripts)
-    svnExport(r'Scripts\OptimizationObjectiveFunctions.xml', tempDirScripts)
-    svnExport(r'Scripts\HCOM', tempDirScripts+r'\HCOM')
+    svnExport(r'Scripts', gTemporaryBuildDir+r'\Scripts')
 
     # Copy "hopsandefaults" file to temporary directory
     svnExport("hopsandefaults", gTemporaryBuildDir+r'\hopsandefaults')
@@ -590,10 +586,10 @@ def copyFiles():
     svnExport("Hopsan-release-notes.txt", gTemporaryBuildDir+r'\Hopsan-release-notes.txt')
     
     # Copy 7zip to temporary directory
-    svnExport("ThirdParty\\7z", gTemporaryBuildDir+r'\ThirdParty\7z')
+    svnExport(r'ThirdParty\7z', gTemporaryBuildDir+r'\ThirdParty\7z')
 
     # Copy fmi to temporary directory
-    svnExport("ThirdParty\\fmi", gTemporaryBuildDir+r'\ThirdParty\fmi')
+    svnExport(r'ThirdParty\fmi', gTemporaryBuildDir+r'\ThirdParty\fmi')
 
     # Copy documentation to temporary directory
     callXcopy(r'doc\html\*', gTemporaryBuildDir+r'\doc\html')
