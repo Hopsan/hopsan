@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="HydraulicPressureControlValve33.hpp" typename="HydraulicPressureControlValve33" displayname="3/3 Pressure controlled valve Valve">
+        <icons>
+            <icon scale="1" path="HydraulicPressureControlValve33.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicPressureControlValve33.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Hydraulic 3-3 valve with pressure control. Dynamics of spool position is first order</text>
+            <picture>33valvehelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0.44" y="1" a="90" name="P1"/>
+            <port x="0.44" y="0" a="270" name="P3"/>
+            <port x="0.565" y="1" a="90" name="P2"/>
+            <port x="0" y="0.7" a="180" name="P4"/>
+            <port x="1" y="0.5" a="0" name="xv"/>
+        </ports>
+     </modelobject>
+</hopsanobjectappearance>
