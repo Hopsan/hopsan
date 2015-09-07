@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     33251,        803]
-NotebookOptionsPosition[     30703,        725]
-NotebookOutlinePosition[     31260,        746]
-CellTagsIndexPosition[     31217,        743]
+NotebookDataLength[     34270,        817]
+NotebookOptionsPosition[     31722,        739]
+NotebookOutlinePosition[     32278,        760]
+CellTagsIndexPosition[     32235,        757]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -92,8 +92,8 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-  "2015", ",", "4", ",", "19", ",", "17", ",", "59", ",", 
-   "15.471054`8.9420948502328"}], "}"}]], "Output",
+  "2015", ",", "9", ",", "7", ",", "14", ",", "45", ",", 
+   "15.9073824`8.95417366951752"}], "}"}]], "Output",
  CellChangeTimes->{
   3.6058501946730304`*^9, 3.6199268457661552`*^9, 3.61992699393097*^9, 
    3.6199270798005567`*^9, 3.620451207765235*^9, 3.620451256014167*^9, 
@@ -104,7 +104,8 @@ Cell[BoxData[
    3.6382401170548677`*^9, 3.638240273819663*^9, 3.6383504294238834`*^9, 
    3.63835046695903*^9, 3.638364925071987*^9, 3.6383649672563996`*^9, 
    3.638365144700549*^9, 3.638385798720891*^9, 3.638386263685486*^9, 
-   3.638388379214487*^9, 3.6384479554840546`*^9}]
+   3.638388379214487*^9, 3.6384479554840546`*^9, 3.6446890106556377`*^9, 
+   3.644689209653536*^9, 3.6506187159183836`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -542,21 +543,8 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
 \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.638447956732126*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
-\[LeftDoubleBracket] \\(\\(1, 1\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is \
-longer than depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
-\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479567351265`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187161754093`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -570,7 +558,23 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
 \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479567371264`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187161794095`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
+\[LeftDoubleBracket] \\(\\(2, 1\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is \
+longer than depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187161804094`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -584,7 +588,8 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
 \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479568081303`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.65061871618141*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -610,7 +615,8 @@ a list of contents, even if it is an empty list. \\!\\(\\*ButtonBox[\\\"\
 ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
 \\\"XMLElement::cntsList\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479571071477`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187162064123`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -623,7 +629,8 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
 \\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.638447957185152*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.650618716208412*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -637,7 +644,8 @@ an attribute in an XMLElement. The value of the attribute must be a string. \
 ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
 \\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479572621565`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.650618716210413*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -650,7 +658,8 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
 \\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479572631564`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.650618716212413*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -664,7 +673,8 @@ XMLElement. The value of the attribute must be a string. \
 ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
 \\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479572651567`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187162134132`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -677,7 +687,8 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
 \\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479572661567`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.650618716215413*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -691,7 +702,8 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
 \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479572671566`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187162164135`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -705,7 +717,8 @@ an attribute in an XMLElement. The value of the attribute must be a string. \
 ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
 \\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.6384479572691565`*^9}],
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187162174134`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -719,12 +732,13 @@ Cell[BoxData[
 ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/stop\\\", \
 ButtonNote -> \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.638385798928903*^9, 3.638386263882497*^9, 
-  3.638388379461501*^9, 3.638447957271157*^9}]
+  3.638388379461501*^9, 3.638447956732126*^9, 3.6446890109156637`*^9, 
+  3.6446892098695574`*^9, 3.6506187162194138`*^9}]
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{797, 731},
-WindowMargins->{{154, Automatic}, {Automatic, 80}},
+WindowSize->{797, 690},
+WindowMargins->{{51, Automatic}, {Automatic, 28}},
 PrintingCopies->1,
 PrintingPageRange->{32000, 32000},
 PrintingOptions->{"Magnification"->1.,
@@ -752,57 +766,57 @@ Cell[973, 30, 248, 4, 32, "Input"],
 Cell[1224, 36, 421, 11, 53, "Input"],
 Cell[CellGroupData[{
 Cell[1670, 51, 1867, 38, 193, "Input"],
-Cell[3540, 91, 877, 15, 32, "Output"]
+Cell[3540, 91, 952, 16, 32, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4454, 111, 43, 0, 40, "Subsection"],
+Cell[4529, 112, 43, 0, 40, "Subsection"],
 Cell[CellGroupData[{
-Cell[4522, 115, 551, 9, 49, "Text",
+Cell[4597, 116, 551, 9, 49, "Text",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[5076, 126, 315, 7, 63, "Input",
+Cell[5151, 127, 315, 7, 75, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5440, 139, 46, 0, 40, "Subsection"],
-Cell[5489, 141, 1395, 26, 99, "Input"],
-Cell[6887, 169, 3078, 70, 331, "Input"],
-Cell[9968, 241, 1171, 25, 113, "Input"],
-Cell[11142, 268, 901, 22, 93, "Input"]
+Cell[5515, 140, 46, 0, 40, "Subsection"],
+Cell[5564, 142, 1395, 26, 99, "Input"],
+Cell[6962, 170, 3078, 70, 331, "Input"],
+Cell[10043, 242, 1171, 25, 113, "Input"],
+Cell[11217, 269, 901, 22, 93, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[12080, 295, 45, 0, 40, "Subsection"],
-Cell[12128, 297, 660, 10, 104, "Text",
+Cell[12155, 296, 45, 0, 44, "Subsection"],
+Cell[12203, 298, 660, 10, 114, "Text",
  Evaluatable->False],
-Cell[12791, 309, 154, 3, 30, "Text"],
-Cell[12948, 314, 330, 8, 53, "Input"],
-Cell[13281, 324, 2077, 50, 332, "Input"],
-Cell[15361, 376, 2188, 47, 163, "Input"],
-Cell[17552, 425, 877, 17, 164, "Input"],
-Cell[18432, 444, 92, 1, 30, "Text"],
-Cell[18527, 447, 1151, 21, 93, "Input"],
-Cell[19681, 470, 29, 0, 30, "Text"],
-Cell[19713, 472, 800, 17, 93, "Input"],
-Cell[20516, 491, 132, 1, 30, "Text"],
-Cell[20651, 494, 455, 9, 32, "Input"],
-Cell[21109, 505, 107, 1, 30, "Text"],
-Cell[21219, 508, 410, 11, 32, "Input"],
-Cell[21632, 521, 196, 4, 30, "Text"],
-Cell[21831, 527, 160, 3, 32, "Input",
+Cell[12866, 310, 154, 3, 30, "Text"],
+Cell[13023, 315, 330, 8, 53, "Input"],
+Cell[13356, 325, 2077, 50, 332, "Input"],
+Cell[15436, 377, 2188, 47, 163, "Input"],
+Cell[17627, 426, 877, 17, 164, "Input"],
+Cell[18507, 445, 92, 1, 30, "Text"],
+Cell[18602, 448, 1151, 21, 93, "Input"],
+Cell[19756, 471, 29, 0, 30, "Text"],
+Cell[19788, 473, 800, 17, 93, "Input"],
+Cell[20591, 492, 132, 1, 30, "Text"],
+Cell[20726, 495, 455, 9, 32, "Input"],
+Cell[21184, 506, 107, 1, 30, "Text"],
+Cell[21294, 509, 410, 11, 32, "Input"],
+Cell[21707, 522, 196, 4, 30, "Text"],
+Cell[21906, 528, 160, 3, 32, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[21994, 532, 601, 12, 23, "Message"],
-Cell[22598, 546, 603, 12, 23, "Message"],
-Cell[23204, 560, 603, 12, 23, "Message"],
-Cell[23810, 574, 599, 12, 23, "Message"],
-Cell[24412, 588, 1511, 24, 119, "Message"],
-Cell[25926, 614, 527, 11, 23, "Message"],
-Cell[26456, 627, 646, 12, 43, "Message"],
-Cell[27105, 641, 529, 11, 23, "Message"],
-Cell[27637, 654, 644, 12, 43, "Message"],
-Cell[28284, 668, 529, 11, 23, "Message"],
-Cell[28816, 681, 603, 12, 23, "Message"],
-Cell[29422, 695, 646, 12, 43, "Message"],
-Cell[30071, 709, 604, 12, 23, "Message"]
+Cell[22069, 533, 676, 13, 23, "Message"],
+Cell[22748, 548, 676, 13, 23, "Message"],
+Cell[23427, 563, 676, 13, 23, "Message"],
+Cell[24106, 578, 669, 13, 23, "Message"],
+Cell[24778, 593, 1584, 25, 119, "Message"],
+Cell[26365, 620, 600, 12, 23, "Message"],
+Cell[26968, 634, 717, 13, 43, "Message"],
+Cell[27688, 649, 600, 12, 23, "Message"],
+Cell[28291, 663, 717, 13, 43, "Message"],
+Cell[29011, 678, 600, 12, 23, "Message"],
+Cell[29614, 692, 676, 13, 23, "Message"],
+Cell[30293, 707, 719, 13, 43, "Message"],
+Cell[31015, 722, 679, 13, 23, "Message"]
 }, Open  ]]
 }, Open  ]]
 }

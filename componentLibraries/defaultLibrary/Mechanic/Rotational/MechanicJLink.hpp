@@ -33,7 +33,8 @@
 //!
 //! @file MechanicJLink.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 19 Jan 2015 17:47:00
+//  co-author/auditor **Not yet audited by a second person**
+//! @date Mon 11 May 2015 12:42:41
 //! @brief Link with inertia
 //! @ingroup MechanicComponents
 //!
@@ -154,7 +155,7 @@ public:
             addInputVariable("link", "Link length x1/sin(thetarot2)", "", \
 0.1,&mplink);
             addInputVariable("x0", "x position for zero angle", "", \
-0.1,&mpx0);
+-0.1,&mpx0);
             addInputVariable("theta0", "link angle for zero angle", "", \
 0.1,&mptheta0);
             addInputVariable("thetamin", "Min angle", "rad", \
@@ -243,6 +244,9 @@ fm1*link*Power(mTimestep,2)*Cos(thetamr2))/(4.*JL);
         delayedPart[2][2] = mDelayedPart22.getIdx(1);
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
+
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {
@@ -259,6 +263,15 @@ fm1*link*Power(mTimestep,2)*Cos(thetamr2))/(4.*JL);
         Zcmr2 = (*mpND_Zcmr2);
 
         //Read inputVariables from nodes
+
+        //Read inputParameters from nodes
+        JL = (*mpJL);
+        BL = (*mpBL);
+        link = (*mplink);
+        x0 = (*mpx0);
+        theta0 = (*mptheta0);
+        thetamin = (*mpthetamin);
+        thetamax = (*mpthetamax);
 
         //LocalExpressions
 

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     16608,        403]
-NotebookOptionsPosition[     15605,        369]
-NotebookOutlinePosition[     15949,        384]
-CellTagsIndexPosition[     15906,        381]
+NotebookDataLength[     18265,        447]
+NotebookOptionsPosition[     17074,        407]
+NotebookOutlinePosition[     17418,        422]
+CellTagsIndexPosition[     17375,        419]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,6 +28,44 @@ Cell["CounterBalanceValveG", "Section",
    3.5731444722970257`*^9, 3.5731444763132553`*^9}, {3.573144509032127*^9, 
    3.5731445114602656`*^9}, {3.5731516615712285`*^9, 3.573151663333329*^9}, {
    3.5778931623121567`*^9, 3.5778931743368444`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG.mx"}]], "Input",
+ CellChangeTimes->{{3.5772037650720577`*^9, 3.5772037650780582`*^9}, {
+  3.611474457184202*^9, 3.611474523938877*^9}, {3.6114745588913717`*^9, 
+  3.61147456057154*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"path", "=", 
+   RowBox[{"ToFileName", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", 
+      "\"\<ComponentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
+      "\"\<Hydraulic\>\"", ",", "\"\<Special\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5757727777685804`*^9, 3.575772792541806*^9}, {
+   3.5757728423954945`*^9, 3.5757728498367076`*^9}, {3.57577333888545*^9, 
+   3.5757733706315055`*^9}, 3.5757734316206255`*^9, 3.6031909973287797`*^9, 
+   3.6057717887213297`*^9, {3.605771829393656*^9, 3.605771830929744*^9}, 
+   3.6058530990363216`*^9, {3.621138851005574*^9, 3.621138863716845*^9}, {
+   3.626686112671085*^9, 3.6266861209310846`*^9}, {3.632581474573143*^9, 
+   3.632581481776555*^9}, {3.6363469199835668`*^9, 3.636346925752144*^9}, {
+   3.6366417097867303`*^9, 3.636641716455112*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Component description", "Subsection",
+ PageWidth->WindowWidth],
+
+Cell["\<\
+This subroutine simulates a counter balance valve (or over-ceter valve, load \
+holding valve).\
+\>", "Text",
+ PageWidth->WindowWidth,
+ CellChangeTimes->{{3.6506169657205753`*^9, 3.650616998597575*^9}}]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -367,7 +405,7 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{707, 817},
+WindowSize->{995, 817},
 WindowMargins->{{417, Automatic}, {Automatic, 17}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->"Default.nb"
@@ -385,24 +423,30 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[579, 22, 521, 7, 71, "Section"],
+Cell[1103, 31, 248, 4, 31, "Input"],
+Cell[1354, 37, 896, 17, 31, "Input"],
 Cell[CellGroupData[{
-Cell[1125, 33, 100, 1, 36, "Subsection"],
-Cell[1228, 36, 1786, 38, 192, "Input"],
-Cell[3017, 76, 1391, 28, 112, "Input"],
-Cell[4411, 106, 438, 11, 72, "Input"],
-Cell[4852, 119, 407, 11, 72, "Input"],
-Cell[5262, 132, 3922, 76, 272, "Input",
+Cell[2275, 58, 68, 1, 36, "Subsection"],
+Cell[2346, 61, 211, 5, 29, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2594, 71, 100, 1, 36, "Subsection"],
+Cell[2697, 74, 1786, 38, 192, "Input"],
+Cell[4486, 114, 1391, 28, 112, "Input"],
+Cell[5880, 144, 438, 11, 72, "Input"],
+Cell[6321, 157, 407, 11, 72, "Input"],
+Cell[6731, 170, 3922, 76, 272, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[9187, 210, 162, 4, 31, "Input"],
-Cell[9352, 216, 1157, 22, 144, "Input"],
-Cell[10512, 240, 373, 10, 52, "Input"],
-Cell[10888, 252, 1718, 36, 130, "Input"],
-Cell[12609, 290, 1066, 21, 112, "Input"],
-Cell[13678, 313, 506, 11, 31, "Input"],
-Cell[14187, 326, 613, 13, 92, "Input"],
-Cell[14803, 341, 215, 6, 31, "Input"],
-Cell[15021, 349, 446, 12, 31, "Input"],
-Cell[15470, 363, 107, 2, 31, "Input"]
+Cell[10656, 248, 162, 4, 31, "Input"],
+Cell[10821, 254, 1157, 22, 144, "Input"],
+Cell[11981, 278, 373, 10, 52, "Input"],
+Cell[12357, 290, 1718, 36, 130, "Input"],
+Cell[14078, 328, 1066, 21, 112, "Input"],
+Cell[15147, 351, 506, 11, 31, "Input"],
+Cell[15656, 364, 613, 13, 92, "Input"],
+Cell[16272, 379, 215, 6, 31, "Input"],
+Cell[16490, 387, 446, 12, 31, "Input"],
+Cell[16939, 401, 107, 2, 31, "Input"]
 }, Open  ]]
 }, Open  ]]
 }
