@@ -61,7 +61,9 @@ public:
     virtual void run();
     virtual void finalize();
 
-    virtual void distributePoints();
+    void distrubteCandidatePoints();
+    void distributePoints();
+    virtual void distributePoints(QVector<QVector<double> > *pVector);
 
     virtual bool checkForConvergence();
     void calculateBestAndWorstId();
@@ -79,6 +81,7 @@ public:
     double getObjectiveValue(int idx);
     QVector<double> &getObjectiveValues();
     QVector<QVector<double> > &getPoints();
+    QVector<QVector<double> > &getCandidatePoints();
     double getCandidateParameter(const int pointIdx, const int parIdx) const;
     double getParameter(const int pointIdx, const int parIdx) const;
     double getMaxPercentalParameterDiff();

@@ -68,13 +68,28 @@ void WorkerParameterSweep::run()
     for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
     {
         //Move particles
-        distributePoints();
+        distrubteCandidatePoints();
 
         //Evaluate objective values
-        mpEvaluator->evaluateAllPoints();
+        mpEvaluator->evaluateAllCandidates();
         emit objectivesChanged();
 
-        calculateBestAndWorstId();
+        QVector<int> ids = getIdsSortedFromWorstToBest();
+
+        for(int i=0; i<mCandidateObjectives.size(); ++i)
+        {
+            ids = getIdsSortedFromWorstToBest();
+            for(int j=0; j<mObjectives.size(); ++j)
+            {
+                if(mCandidateObjectives[i] < mObjectives[ids[j]])
+                {
+                    mObjectives[ids[j]] = mCandidateObjectives[i];
+                    mPoints[ids[j]] = mCandidatePoints[i];
+                    break;
+                }
+            }
+        }
+
         emit pointsChanged();
 
         emit stepCompleted(mIterationCounter);

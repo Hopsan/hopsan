@@ -87,24 +87,35 @@ void Worker::finalize()
 {
 }
 
+void Worker::distrubteCandidatePoints()
+{
+    distributePoints(&mCandidatePoints);
+}
 
 void Worker::distributePoints()
 {
+    distributePoints(&mPoints);
+}
+
+
+void Worker::distributePoints(QVector<QVector<double> > *pVector)
+{
+    int nPoints = pVector->size();
+
     if(mDistribution == SamplingRandom)
     {
-        for(int p=0; p<mNumPoints; ++p)
+        for(int p=0; p<nPoints; ++p)
         {
             for(int i=0; i<mNumParameters; ++i)
             {
                 double r = (double)rand() / (double)RAND_MAX;
-                mPoints[p][i] = mParameterMin[i] + r*(mParameterMax[i]-mParameterMin[i]);
+                (*pVector)[p][i] = mParameterMin[i] + r*(mParameterMax[i]-mParameterMin[i]);
             }
         }
     }
     else if(mDistribution == SamplingLatinHypercube)
     {
-        //DEBUG
-        int m=mNumPoints;
+        int m=nPoints;
         int n=mNumParameters;
 
         QList<QVector<int> > usedIntervals;
@@ -130,12 +141,9 @@ void Worker::distributePoints()
             else
             {
                 usedIntervals.append(interval);
-                mPoints[i] = newPoint;
+                (*pVector)[i] = newPoint;
             }
         }
-        qDebug() << "INTERVALS: " << usedIntervals;
-        qDebug() << "POINTS: " << mPoints;
-        //END DEBUG
     }
 
     emit pointsChanged();
@@ -362,6 +370,11 @@ QVector<double> &Worker::getObjectiveValues()
 QVector<QVector<double> > &Worker::getPoints()
 {
     return mPoints;
+}
+
+QVector<QVector<double> > &Worker::getCandidatePoints()
+{
+    return mCandidatePoints;
 }
 
 

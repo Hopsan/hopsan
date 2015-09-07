@@ -55,6 +55,7 @@
 #include "PlotCurve.h"
 #include "MessageHandler.h"
 #include "SimulationThreadHandler.h"
+#include "OpsWorkerParameterSweep.h"
 
 #ifndef _WIN32
 #include <unistd.h> //Needed for sysctl
@@ -530,18 +531,205 @@ void SensitivityAnalysisDialog::updateChosenVariables(QTreeWidgetItem* item, int
 
 void SensitivityAnalysisDialog::run()
 {
-    mAborted = false;
+//    mAborted = false;
 
-    DistributionEnumT type;
-    if(mpUniformDistributionRadioButton->isChecked())
-    {
-        type = UniformDistribution;
-    }
-    else
-    {
-        type = NormalDistribution;
-    }
+//    DistributionEnumT type;
+//    if(mpUniformDistributionRadioButton->isChecked())
+//    {
+//        type = UniformDistribution;
+//    }
+//    else
+//    {
+//        type = NormalDistribution;
+//    }
 
+
+//    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+//    if(nThreads == 0)
+//    {
+//#ifdef _WIN32
+//        std::string temp = getenv("NUMBER_OF_PROCESSORS");
+//        nThreads = atoi(temp.c_str());
+//#else
+//        nThreads = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+//#endif
+//    }
+//    if(nThreads == 0)   //Extra check, just to be sure
+//    {
+//        nThreads = 1;
+//    }
+//    if(!gpConfig->getUseMulticore())
+//    {
+//        nThreads = 1;
+//    }
+
+//    int nSteps = mpStepsSpinBox->value();
+//    int nParameteres = mSelectedParameters.size();
+
+//    //Save hidden copy of model to load multiple copies of and run sensitivity analysis against
+//    QString name = mpModel->getTopLevelSystemContainer()->getName();
+//    QString appearanceDataBasePath = mpModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
+//    QDir().mkpath(gpDesktopHandler->getDataPath()+"sensitivity/");
+//    QString savePath = gpDesktopHandler->getDataPath()+"sensitivity/"+name+".hmf";
+//    mpModel->saveTo(savePath);
+//    mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
+
+//    //Load correct number of models depending on number of cores
+//    mModelPtrs.clear();
+//    if(gpConfig->getUseMulticore())
+//    {
+//        for(int i=0; i<nThreads; ++i)
+//        {
+//            mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+//        }
+//    }
+//    else
+//    {
+//        mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+//    }
+
+//    //Add base path from original model as search path, for components that load files with relative paths
+//    for(int m=0; m<mModelPtrs.size(); ++m)
+//    {
+//        mModelPtrs.at(m)->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
+//    }
+
+//    bool progressBarOrgSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
+//    gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
+//    for(int i=0; i<nSteps/nThreads; ++i)
+//    {
+//        if(mAborted)
+//        {
+//            return;
+//        }
+
+//        for(int m=0; m<mModelPtrs.size(); ++m)
+//        {
+//            for(int p=0; p<nParameteres; ++p)
+//            {
+//                double randPar;
+//                if(type == UniformDistribution)
+//                {
+//                    double min = mpParameterMinLineEdits.at(p)->text().toDouble();
+//                    double max = mpParameterMaxLineEdits.at(p)->text().toDouble();
+//                    randPar = uniformDistribution(min, max);
+//                }
+//                else
+//                {
+//                    randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
+//                }
+//                if(mSelectedComponents.at(p).isEmpty())
+//                {
+//                    mModelPtrs[m]->getTopLevelSystemContainer()->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+//                }
+//                else
+//                {
+//                    mModelPtrs[m]->getTopLevelSystemContainer()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+//                }
+//            }
+//        }
+//        if(gpConfig->getUseMulticore())
+//        {
+//            if(!gpModelHandler->simulateMultipleModels_blocking(mModelPtrs))
+//            {
+//                gpMessageHandler->addErrorMessage("Unable to perform sensitivity analysis: Failed to simulate model.");
+//                gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+//                return;
+//            }
+//        }
+//        else
+//        {
+//            mModelPtrs.first()->simulate_blocking();
+//        }
+//        mpProgressBar->setValue(double(i)*double(nThreads)/double(nSteps)*100);
+//    }
+
+//    mpProgressBar->setValue(100);   //Just to make it look better
+//    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+
+//    for(int v=0; v<mOutputVariables.size(); ++v)
+//    {
+//        int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGenerationNumber()+1;
+//        int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
+
+//        QVector<double> vMin(nSamples, 100000000000.0);
+//        QVector<double> vMax(nSamples, -100000000000.0);
+//        double totalMin=100000000000.0;
+//        double totalMax=-100000000000.0;
+
+//        QString component = mOutputVariables.at(v).at(0);
+//        QString port = mOutputVariables.at(v).at(1);
+//        QString variable = mOutputVariables.at(v).at(2);
+
+//        //! @todo there is no subsystem support here right now
+//        QString fullName = makeFullVariableName(QStringList(), component,port,variable);
+
+//        //PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
+
+
+
+
+//        for(int m=0; m<mModelPtrs.size(); ++m)
+//        {
+//            for(int g=nGenerations-nSteps/nThreads; g<nGenerations; ++g)
+//            {
+//                SharedVectorVariableT pVector = mModelPtrs[m]->getTopLevelSystemContainer()->getLogDataHandler()->getVectorVariable(fullName, g);
+//                if(!pVector.isNull())
+//                {
+//                    QVector<double> temp = pVector->getDataVectorCopy();
+//                    for(int i=0; i<temp.size(); ++i)
+//                    {
+//                        if(temp[i] > vMax[i]) vMax[i] = temp[i];
+//                        if(temp[i] < vMin[i]) vMin[i] = temp[i];
+//                        if(temp[i] > totalMax) totalMax = temp[i];
+//                        if(temp[i] < totalMin) totalMin = temp[i];
+//                    }
+//                }
+//            }
+//        }
+
+//        //Commented out code = add curve for max and min
+//        SharedVectorVariableT pTime = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorVariable(nGenerations-1);
+//        SharedVariableDescriptionT minDesc(new VariableDescription);
+//        minDesc.data()->mAliasName = "min("+fullName+")";
+//        SharedVectorVariableT pMinData(new TimeDomainVariable(pTime, vMin, -1, minDesc, SharedMultiDataVectorCacheT(0)));
+//        SharedVariableDescriptionT maxDesc = SharedVariableDescriptionT(new VariableDescription);
+//        maxDesc.data()->mAliasName = "max("+fullName+")";
+//        SharedVectorVariableT pMaxData(new TimeDomainVariable(pTime, vMax, -1, maxDesc, SharedMultiDataVectorCacheT(0)));
+
+//        PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
+//        gpPlotHandler->plotDataToWindow(pPlotWindow, pMaxData, QwtPlot::yLeft);
+//        pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
+//        gpPlotHandler->plotDataToWindow(pPlotWindow, pMinData, QwtPlot::yLeft);
+//        pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
+//        pPlotWindow->hidePlotCurveControls();
+//        pPlotWindow->setLegendsVisible(false);
+
+//        //! @todo Implement interval curve type support in plot window instead!
+//        //! @note This is not compatible with most plot functions
+//        QwtPlotIntervalCurve *pCurve = new QwtPlotIntervalCurve();
+//        pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+//        QVector<QwtIntervalSample> data;
+//        QVector<double> time = pTime->getDataVectorCopy();
+//        for(int i=0; i<vMin.size(); ++i)
+//        {
+//            data.append(QwtIntervalSample(time[i], vMin[i], vMax[i]));
+//        }
+//        pCurve->setSamples(data);
+//        pCurve->setPen(QColor(0,0,255,150), 1.0);
+//        pCurve->setBrush(QColor(0,0,255,150));
+
+//        pCurve->attach(static_cast<QwtPlot*>(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getQwtPlot()));
+////        pPlotWindow->getCurrentPlotTab()->toggleAxisLock();
+////        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::yLeft, totalMin, totalMax);
+////        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::xBottom, time.first(), time.last());
+//    }
+
+
+
+
+    int nSteps = mpStepsSpinBox->value();
+    int nParameters = mSelectedParameters.size();
 
     int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
     if(nThreads == 0)
@@ -562,91 +750,52 @@ void SensitivityAnalysisDialog::run()
         nThreads = 1;
     }
 
-    int nSteps = mpStepsSpinBox->value();
-    int nParameteres = mSelectedParameters.size();
-
-    //Save hidden copy of model to load multiple copies of and run sensitivity analysis against
-    QString name = mpModel->getTopLevelSystemContainer()->getName();
-    QString appearanceDataBasePath = mpModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
-    QDir().mkpath(gpDesktopHandler->getDataPath()+"sensitivity/");
-    QString savePath = gpDesktopHandler->getDataPath()+"sensitivity/"+name+".hmf";
-    mpModel->saveTo(savePath);
-    mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
-
-    //Load correct number of models depending on number of cores
-    mModelPtrs.clear();
-    if(gpConfig->getUseMulticore())
+    QVector<QPair<double, double> > parLimits;
+    for(int p=0; p<mpParameterMinLineEdits.size(); ++p)
     {
-        for(int i=0; i<nThreads; ++i)
-        {
-            mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-        }
-    }
-    else
-    {
-        mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+        QPair<double, double> minMax;
+        minMax.first = mpParameterMinLineEdits.at(p)->text().toDouble();
+        minMax.second = mpParameterMaxLineEdits.at(p)->text().toDouble();
+        parLimits.append(minMax);
     }
 
-    //Add base path from original model as search path, for components that load files with relative paths
-    for(int m=0; m<mModelPtrs.size(); ++m)
+    mpEvaluator = new SensitivityAnalysisEvaluator(this, mpModel, parLimits, mSelectedComponents, mSelectedParameters, mOutputVariables, nThreads);
+    mpWorker = new Ops::WorkerParameterSweep(mpEvaluator);
+
+    mpWorker->setNumberOfCandidates(nThreads);
+    mpWorker->setNumberOfPoints(nThreads);
+    mpWorker->setNumberOfParameters(nParameters);
+    mpWorker->setMaxNumberOfIterations(nSteps/nThreads);
+    for(int p=0; p<parLimits.size(); ++p)
     {
-        mModelPtrs.at(m)->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
+        mpWorker->setParameterLimits(p, parLimits[p].first, parLimits[p].second);
     }
 
-    bool progressBarOrgSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
-    gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
-    for(int i=0; i<nSteps/nThreads; ++i)
-    {
-        if(mAborted)
-        {
-            return;
-        }
+    connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
 
-        for(int m=0; m<mModelPtrs.size(); ++m)
-        {
-            for(int p=0; p<nParameteres; ++p)
-            {
-                double randPar;
-                if(type == UniformDistribution)
-                {
-                    double min = mpParameterMinLineEdits.at(p)->text().toDouble();
-                    double max = mpParameterMaxLineEdits.at(p)->text().toDouble();
-                    randPar = uniformDistribution(min, max);
-                }
-                else
-                {
-                    randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
-                }
-                if(mSelectedComponents.at(p).isEmpty())
-                {
-                    mModelPtrs[m]->getTopLevelSystemContainer()->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
-                }
-                else
-                {
-                    mModelPtrs[m]->getTopLevelSystemContainer()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
-                }
-            }
-        }
-        if(gpConfig->getUseMulticore())
-        {
-            if(!gpModelHandler->simulateMultipleModels_blocking(mModelPtrs))
-            {
-                gpMessageHandler->addErrorMessage("Unable to perform sensitivity analysis: Failed to simulate model.");
-                gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
-                return;
-            }
-        }
-        else
-        {
-            mModelPtrs.first()->simulate_blocking();
-        }
-        mpProgressBar->setValue(double(i)*double(nThreads)/double(nSteps)*100);
-    }
+    mpEvaluator->init();
+    mpWorker->initialize();
+    mpWorker->run();
 
-    mpProgressBar->setValue(100);   //Just to make it look better
-    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+    mpEvaluator->finalize();
+}
 
-    for(int v=0; v<mOutputVariables.size(); ++v)
+void SensitivityAnalysisDialog::abort()
+{
+    mAborted = true;
+}
+
+void SensitivityAnalysisDialog::updateProgressBar(int i)
+{
+    mpProgressBar->setValue(100*i/mpWorker->getMaxNumberOfIterations());
+}
+
+void SensitivityAnalysisEvaluator::plot()
+{
+    mpDialog->updateProgressBar(mpWorker->getMaxNumberOfIterations());   //Just to make it look better
+//    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+
+    for(int v=0; v<mOutputVars.size(); ++v)
     {
         int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGenerationNumber()+1;
         int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
@@ -656,21 +805,19 @@ void SensitivityAnalysisDialog::run()
         double totalMin=100000000000.0;
         double totalMax=-100000000000.0;
 
-        QString component = mOutputVariables.at(v).at(0);
-        QString port = mOutputVariables.at(v).at(1);
-        QString variable = mOutputVariables.at(v).at(2);
+        QString component = mOutputVars.at(v).at(0);
+        QString port = mOutputVars.at(v).at(1);
+        QString variable = mOutputVars.at(v).at(2);
 
         //! @todo there is no subsystem support here right now
         QString fullName = makeFullVariableName(QStringList(), component,port,variable);
 
         //PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
 
-
-
-
+        int nThreads = mModelPtrs.size();
         for(int m=0; m<mModelPtrs.size(); ++m)
         {
-            for(int g=nGenerations-nSteps/nThreads; g<nGenerations; ++g)
+            for(int g=nGenerations-mpWorker->getMaxNumberOfIterations(); g<nGenerations; ++g)
             {
                 SharedVectorVariableT pVector = mModelPtrs[m]->getTopLevelSystemContainer()->getLogDataHandler()->getVectorVariable(fullName, g);
                 if(!pVector.isNull())
@@ -719,13 +866,99 @@ void SensitivityAnalysisDialog::run()
         pCurve->setBrush(QColor(0,0,255,150));
 
         pCurve->attach(static_cast<QwtPlot*>(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getQwtPlot()));
-//        pPlotWindow->getCurrentPlotTab()->toggleAxisLock();
-//        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::yLeft, totalMin, totalMax);
-//        pPlotWindow->getCurrentPlotTab()->getPlot()->setAxisScale(QwtPlot::xBottom, time.first(), time.last());
     }
 }
 
-void SensitivityAnalysisDialog::abort()
+
+
+SensitivityAnalysisEvaluator::SensitivityAnalysisEvaluator(SensitivityAnalysisDialog *pDialog, ModelWidget *pModel, QVector<QPair<double, double> > parLimits, QStringList &parComps, QStringList &pars, QList<QStringList> &outputVars, int nThreads)
+    : Ops::Evaluator()
 {
-    mAborted = true;
+    mpDialog = pDialog;
+    mLimits = parLimits;
+    mpModel = pModel;
+    mPars = pars;
+    mParComps = parComps;
+    mOutputVars = outputVars;
+    mnThreads = nThreads;
+}
+
+
+
+void SensitivityAnalysisEvaluator::init()
+{
+    //Save hidden copy of model to load multiple copies of and run sensitivity analysis against
+    QString name = mpModel->getTopLevelSystemContainer()->getName();
+    QString appearanceDataBasePath = mpModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
+    QDir().mkpath(gpDesktopHandler->getDataPath()+"sensitivity/");
+    QString savePath = gpDesktopHandler->getDataPath()+"sensitivity/"+name+".hmf";
+    mpModel->saveTo(savePath);
+    mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
+
+    //Load correct number of models depending on number of cores
+    mModelPtrs.clear();
+    if(gpConfig->getUseMulticore())
+    {
+        for(int i=0; i<mnThreads; ++i)
+        {
+            mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+        }
+    }
+    else
+    {
+        mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+    }
+
+    //Add base path from original model as search path, for components that load files with relative paths
+    for(int m=0; m<mModelPtrs.size(); ++m)
+    {
+        mModelPtrs.at(m)->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
+    }
+}
+
+void SensitivityAnalysisEvaluator::finalize()
+{
+    plot();
+
+    //Clear all models
+    for(int m=0; m<mModelPtrs.size(); ++m)
+    {
+        delete mModelPtrs[m];
+    }
+    mModelPtrs.clear();
+}
+
+
+void SensitivityAnalysisEvaluator::setParameters(QVector<QVector<double> > *pPoints)
+{
+    int nParameters = mLimits.size();
+
+    for(int m=0; m<mModelPtrs.size(); ++m)
+    {
+        for(int p=0; p<nParameters; ++p)
+        {
+            if(mParComps.at(p).isEmpty())
+            {
+                mModelPtrs[m]->getTopLevelSystemContainer()->setParameterValue(mPars.at(p), QString().setNum(pPoints->at(m).at(p)));
+            }
+            else
+            {
+                mModelPtrs[m]->getTopLevelSystemContainer()->getModelObject(mParComps.at(p))->setParameterValue(mPars.at(p), QString().setNum(pPoints->at(m).at(p)));
+            }
+        }
+    }
+}
+
+
+void SensitivityAnalysisEvaluator::evaluateAllPoints()
+{
+    setParameters(&mpWorker->getPoints());
+    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs.mid(0,mpWorker->getNumberOfPoints()));
+}
+
+void SensitivityAnalysisEvaluator::evaluateAllCandidates()
+{
+    setParameters(&mpWorker->getCandidatePoints());
+
+    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs.mid(0,mpWorker->getNumberOfCandidates()));
 }

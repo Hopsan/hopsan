@@ -39,8 +39,8 @@
 #include <QVector>
 #include <QStringList>
 #include "LogVariable.h"
-#include "../Ops/include/OpsWorker.h"
-#include "../Ops/include/OpsEvaluator.h"
+#include "OpsWorker.h"
+#include "OpsEvaluator.h"
 
 //Forward declarations
 class ModelWidget;

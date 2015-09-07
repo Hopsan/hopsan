@@ -49,7 +49,7 @@ public:
     virtual void evaluateCandidate(int idx);        //Must be re-implemented
     virtual void evaluateAllCandidates();           //Can be re-implemented
 
-private:
+protected:
     Worker *mpWorker;
 };
 

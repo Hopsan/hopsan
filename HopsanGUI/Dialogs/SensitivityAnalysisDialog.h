@@ -34,6 +34,9 @@
 #ifndef SENSITIVITYANALYSISDIALOG_H
 #define SENSITIVITYANALYSISDIALOG_H
 
+#include "OpsEvaluator.h"
+#include "OpsWorkerParameterSweep.h"
+
 #include <QDialog>
 
 // Qt forward declaration
@@ -50,6 +53,30 @@ class QLineEdit;
 class ModelWidget;
 class SensitivityAnalysisSettings;
 class SystemContainer;
+class SensitivityAnalysisDialog;
+
+class SensitivityAnalysisEvaluator : public Ops::Evaluator
+{
+    friend class SensitivityAnalysisDialog;
+public:
+    SensitivityAnalysisEvaluator(SensitivityAnalysisDialog *pDialog, ModelWidget *pModel, QVector<QPair<double, double> > parLimits, QStringList &parComps, QStringList &par, QList<QStringList> &outputVars, int nThreads);
+    void init();
+    void finalize();
+    void evaluateAllPoints();
+    void evaluateAllCandidates();
+private:
+    void plot();
+    void setParameters(QVector<QVector<double> > *pPoints);
+    SensitivityAnalysisDialog *mpDialog;
+    QVector<QPair<double, double> > mLimits;
+    ModelWidget *mpModel;
+    QVector<ModelWidget *> mModelPtrs;
+    QStringList mParComps, mPars;
+    QList<QStringList> mOutputVars;
+
+    int mnThreads;
+};
+
 
 class SensitivityAnalysisDialog : public QDialog
 {
@@ -63,6 +90,7 @@ public slots:
     void open();
     void loadSettings();
     void saveSettings();
+    void updateProgressBar(int i);
 
 private slots:
     void updateChosenParameters(QTreeWidgetItem* item, int i);
@@ -96,7 +124,6 @@ private:
     //Member variables
     ModelWidget *mpModel;
     SensitivityAnalysisSettings *mpSettings;
-    QVector<ModelWidget *> mModelPtrs;
     QStringList mSelectedComponents;
     QStringList mSelectedParameters;
     QList<QLabel*> mpParameterLabels;
@@ -109,6 +136,9 @@ private:
     QList<QLabel*> mpOutputLabels;
 
     bool mAborted;
+
+    SensitivityAnalysisEvaluator *mpEvaluator;
+    Ops::WorkerParameterSweep *mpWorker;
 };
 
 #endif // SENSITIVITYANALYSISDIALOG_H
