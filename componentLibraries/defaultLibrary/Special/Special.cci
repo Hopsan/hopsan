@@ -29,5 +29,4 @@ pComponentFactory->registerCreatorFunction("MechanicVehicle1D",MechanicVehicle1D
 #include "Benchmarking/Benchmarking.cci"
 #include "MechanicB/MechanicB.cci"
 #include "OptimizationTestFunctions/OptimizationTestFunctions.cci"
-#include "SignalFFB/SignalFFB.cci"
 #include "TMMS04/TMMS04.cci"

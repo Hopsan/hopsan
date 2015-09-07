@@ -34,6 +34,7 @@
 #include "MechanicPositionSensor.hpp"
 #include "MechanicPulley.hpp"
 #include "MechanicSpeedSensor.hpp"
+#include "MechanicSpring.hpp"
 #include "MechanicTranslationalLosslessConnector.hpp"
 #include "MechanicTranslationalMass.hpp"
 #include "MechanicTranslationalMassWithCoulombFriction.hpp"

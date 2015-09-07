@@ -36,10 +36,3 @@ pComponentFactory->registerCreatorFunction("AeroVehicleTVC",AeroVehicleTVC::Crea
 pComponentFactory->registerCreatorFunction("AeroVehicleTVC2",AeroVehicleTVC2::Creator);
 pComponentFactory->registerCreatorFunction("AeroWind",AeroWind::Creator);
 pComponentFactory->registerCreatorFunction("PneumaticTurboMachineJ",PneumaticTurboMachineJ::Creator);
-pComponentFactory->registerCreatorFunction("SignalAttitudeControl",SignalAttitudeControl::Creator);
-pComponentFactory->registerCreatorFunction("SignalAttitudeTVCcontrol",SignalAttitudeTVCcontrol::Creator);
-pComponentFactory->registerCreatorFunction("SignalEarthCoordinates",SignalEarthCoordinates::Creator);
-pComponentFactory->registerCreatorFunction("SignalStateMonitor",SignalStateMonitor::Creator);
-pComponentFactory->registerCreatorFunction("SignalTimeAccelerator",SignalTimeAccelerator::Creator);
-pComponentFactory->registerCreatorFunction("SignalWaypoint",SignalWaypoint::Creator);
-#include "FuelComponents/FuelComponents.cci"

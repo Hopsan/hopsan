@@ -29,6 +29,7 @@
 #include "HydraulicLaminarOrifice.hpp"
 #include "HydraulicLossLessConnector.hpp"
 #include "HydraulicLossLessTConnector.hpp"
+#include "HydraulicOrificeG.hpp"
 #include "HydraulicPilotClosableCheckValve.hpp"
 #include "HydraulicPilotControlledCheckValve.hpp"
 #include "HydraulicTurbulentOrifice.hpp"

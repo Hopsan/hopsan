@@ -29,6 +29,7 @@ pComponentFactory->registerCreatorFunction("HydraulicCheckValveWithOrifice",Hydr
 pComponentFactory->registerCreatorFunction("HydraulicLaminarOrifice",HydraulicLaminarOrifice::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicLosslessConnector",HydraulicLosslessConnector::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicLosslessTConnector",HydraulicLosslessTConnector::Creator);
+pComponentFactory->registerCreatorFunction("HydraulicOrificeG",HydraulicOrificeG::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPilotClosableCheckValve",HydraulicPilotClosableCheckValve::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPilotControlledCheckValve",HydraulicPilotControlledCheckValve::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicTurbulentOrifice",HydraulicTurbulentOrifice::Creator);
