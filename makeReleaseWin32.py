@@ -520,7 +520,6 @@ def copyFiles():
 
     # Create directories    
     callMkdir(gTemporaryBuildDir+r'\Models')
-    callMkdir(gTemporaryBuildDir+r'\Scripts')
     callMkdir(gTemporaryBuildDir+r'\bin')
     callMkdir(gTemporaryBuildDir+r'\componentLibraries')
     callMkdir(gTemporaryBuildDir+r'\doc\html')
