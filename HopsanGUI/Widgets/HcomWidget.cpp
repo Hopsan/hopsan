@@ -682,7 +682,7 @@ void TerminalConsole::handleTabKeyPress()
 
         QStringList variableCmds = QStringList() << "disp" << "chpv" << "chpvr" << "chpvl" << "adpv" << "adpvl" << "adpvr" << "peek"
                                                  << "poke" << "alias" << "aver" << "min" << "max" << "rmvar" << "chdfsc" << "didfsc"
-                                                 << "chdfos" << "didfos" << "chos" << "dios";
+                                                 << "chdfos" << "didfos" << "chos" << "dios" << "sequ";
         for(int c=0; c<variableCmds.size(); ++c)
         {
             if(args[0] == variableCmds[c])

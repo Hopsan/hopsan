@@ -2816,7 +2816,15 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
         return;
     }
 
-    // If specifier was not given or set to current gen, then also set quantity in model
+    // First look for variable in logdata
+    SharedVectorVariableT pLogDataVariable;
+    if (gen >= -1 || gen == -3)
+    {
+        pLogDataVariable = mpModel->getLogDataHandler()->getVectorVariable(variableName, gen);
+    }
+
+    // If specifier was not given or set to current gen, then also search for variable in model
+    bool foundInModel=false;
     if (gen == -1 || gen == -3)
     {
         // Split fullname
@@ -2835,26 +2843,36 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
             pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
             if (!pSystem)
             {
-                HCOMERR("Could not find subsystem: "+sysname);
-                return;
+                break;
             }
         }
 
-        // Get component
-        ModelObject *pComponent = pSystem->getModelObject(comp);
-        if (!pComponent)
+        if (pSystem)
         {
-            HCOMERR("Could not find component: "+comp);
-            return;
+            // Get component
+            ModelObject *pComponent = pSystem->getModelObject(comp);
+            if (pComponent)
+            {
+                foundInModel=true;
+                // Set the quantity in the model
+                // Note! The quantity change wil lbe signaled to the log data handler as well
+                bool rc = pComponent->setModifyableSignalQuantity(port+"#"+var, quantity);
+                if (!rc)
+                {
+                    HCOMERR("Could not set quantity: "+quantity+" on model variable: "+variableName);
+                }
+            }
         }
 
-        bool rc = pComponent->setModifyableSignalQuantity(port+"#"+var, quantity);
-        if (!rc)
+        // If we did not find it in the model and we do not have an alternate log data variable, then give an error message
+        if(!foundInModel && !pLogDataVariable)
         {
-            HCOMERR("Could not set quantity: "+quantity+" on model variable: "+variableName);
+            HCOMERR("Could not find model variable with full name: "+variableName);
+            return;
         }
     }
-    else
+
+    if (!foundInModel)
     {
         // Set quantity for specified log data variable generation
         mpModel->getLogDataHandler()->registerQuantity(variableName, quantity, gen);
