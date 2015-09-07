@@ -108,7 +108,7 @@ void Worker::distributePoints(QVector<QVector<double> > *pVector)
         {
             for(int i=0; i<mNumParameters; ++i)
             {
-                double r = (double)rand() / (double)RAND_MAX;
+                double r = opsRand();
                 (*pVector)[p][i] = mParameterMin[i] + r*(mParameterMax[i]-mParameterMin[i]);
             }
         }
@@ -128,7 +128,7 @@ void Worker::distributePoints(QVector<QVector<double> > *pVector)
             {
                 double min = mParameterMin[j];
                 double max = mParameterMax[j];
-                double x = min+double(qrand())/double(RAND_MAX)*(max-min);
+                double x = min+opsRand()*(max-min);
                 newPoint.append(x);
                 //interval.append((max-min)/m),fmod(newPoint.last());
                 interval.append(int(floor(x/(max-min)*m)));
@@ -322,6 +322,11 @@ int Worker::getMaxNumberOfIterations()
 int Worker::getCurrentNumberOfIterations()
 {
     return mIterationCounter;
+}
+
+double Worker::opsRand()
+{
+    return double(rand())/double(RAND_MAX);
 }
 
 void Worker::abort()

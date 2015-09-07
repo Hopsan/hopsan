@@ -164,7 +164,7 @@ bool WorkerComplexRF::retract()
     {
         double best = mPoints[mBestId][j];
         double maxDiff = getMaxPercentalParameterDiff()*10/(9.0+mRetractionCounter);
-        double r = (double)rand() / (double)RAND_MAX;
+        double r = opsRand();
         mCandidatePoints[0][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0;
         mCandidatePoints[0][j] += mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
         mCandidatePoints[0][j] = qMin(mCandidatePoints[0][j], mParameterMax[j]);

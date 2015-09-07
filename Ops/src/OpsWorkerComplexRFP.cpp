@@ -301,7 +301,7 @@ void WorkerComplexRFP::pickCandidateParticles()
                 QVector<QVector<double> > points = mPoints;
                 points[mWorstId] = newPoint;
                 double maxDiff = getMaxPercentalParameterDiff(points);
-                double r = (double)rand() / (double)RAND_MAX;
+                double r = opsRand();
                 mCandidatePoints[t][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
                 mCandidatePoints[t][j] = qMin(mCandidatePoints[t][j], mParameterMax[j]);
                 mCandidatePoints[t][j] = qMax(mCandidatePoints[t][j], mParameterMin[j]);
@@ -333,7 +333,7 @@ void WorkerComplexRFP::pickCandidateParticles()
                     QVector<QVector<double> > points = mPoints;
                     points[mWorstId] = newPoint;
                     double maxDiff = getMaxPercentalParameterDiff(points);
-                    double r = (double)rand() / (double)RAND_MAX;
+                    double r = opsRand();
                     mCandidatePoints[t][j] = (mCentroidPoint[j] + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
                     mCandidatePoints[t][j] = qMin(mCandidatePoints[t][j], mParameterMax[j]);
                     mCandidatePoints[t][j] = qMax(mCandidatePoints[t][j], mParameterMin[j]);
@@ -443,7 +443,7 @@ bool WorkerComplexRFP::multiRetract()
         {
             double best = mPoints[mBestId][j];
             double maxDiff = getMaxPercentalParameterDiff();
-            double r = (double)rand() / (double)RAND_MAX;
+            double r = opsRand();
             mCandidatePoints[t][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
             mCandidatePoints[t][j] = qMin(mCandidatePoints[t][j], mParameterMax[j]);
             mCandidatePoints[t][j] = qMax(mCandidatePoints[t][j], mParameterMin[j]);

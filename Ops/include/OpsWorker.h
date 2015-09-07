@@ -41,7 +41,7 @@
 
 namespace Ops {
 
-enum AlgorithmT {Undefined, ComplexRF, ComplexRFP, NelderMead, ParticleSwarm, ParameterSweep};
+enum AlgorithmT {Undefined, ComplexRF, ComplexRFP, NelderMead, ParticleSwarm, ParameterSweep, DifferentialEvolution};
 enum SamplingT {SamplingRandom, SamplingLatinHypercube};
 
 class Evaluator;
@@ -104,6 +104,7 @@ public:
     int getMaxNumberOfIterations();
     int getCurrentNumberOfIterations();
 
+    double opsRand();
 
 public slots:
     void abort();

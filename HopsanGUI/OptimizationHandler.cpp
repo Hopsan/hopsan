@@ -42,6 +42,7 @@
 #include "OpsWorkerComplexRFP.h"
 #include "OpsWorkerNelderMead.h"
 #include "OpsWorkerParticleSwarm.h"
+#include "OpsWorkerDifferentialEvolution.h"
 #include "MessageHandler.h"
 #include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
@@ -393,6 +394,14 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             }
             mpWorker = new Ops::WorkerParameterSweep(mpEvaluator);
         }
+        else if(value == "differentialevolution")
+        {
+            if(mpWorker)
+            {
+                delete mpWorker;
+            }
+            mpWorker = new Ops::WorkerDifferentialEvolution(mpEvaluator);
+        }
         return;
     }
     else if(var == "evalid")
@@ -568,6 +577,18 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 pWorker->setInertiaStrategy(Ops::InertiaLinearDecreasing);
             }
+        }
+    }
+    else if(mpWorker->getAlgorithm() == Ops::DifferentialEvolution)
+    {
+        Ops::WorkerDifferentialEvolution *pWorker = qobject_cast<Ops::WorkerDifferentialEvolution*>(mpWorker);
+        if(var == "F")
+        {
+            pWorker->setF(value.toDouble());
+        }
+        else if(var == "CR")
+        {
+            pWorker->setCR(value.toDouble());
         }
     }
 }

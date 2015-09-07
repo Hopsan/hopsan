@@ -63,7 +63,7 @@ void WorkerParticleSwarm::initialize()
             //Initialize velocities
             double minVel = -fabs(mParameterMax[i]-mParameterMin[i]);
             double maxVel = fabs(mParameterMax[i]-mParameterMin[i]);
-            double r = double(rand()) / double(RAND_MAX);
+            double r = opsRand();
             mVelocities[p][i] = minVel + r*(maxVel-minVel);
         }
     }
@@ -73,6 +73,12 @@ void WorkerParticleSwarm::initialize()
 //! @brief Executes a particle swarm algorithm. optParticleInit() must be called before this one.
 void WorkerParticleSwarm::run()
 {
+    if(mNumCandidates != mNumPoints)
+    {
+        emit message("Error: Differential evolution algorithm requires same number of candidates and points.");
+        return;
+    }
+
     emit message("Running optimization with particle swarm algorithm.");
 
     distributePoints();
@@ -117,16 +123,16 @@ void WorkerParticleSwarm::run()
         emit pointsChanged();
 
         //Evaluate objective values
-        mpEvaluator->evaluateAllPoints();
+        mpEvaluator->evaluateAllCandidates();
         emit objectivesChanged();
 
         //Calculate best known positions
         for(int p=0; p<mNumPoints; ++p)
         {
-            if(mObjectives[p] < mLocalBestObjectives[p])
+            if(mCandidateObjectives[p] < mObjectives[p])
             {
-                mLocalBestPoints[p] = mPoints[p];
-                mLocalBestObjectives[p] = mObjectives[p];
+                mPoints[p] = mCandidatePoints[p];
+                mObjectives[p] = mCandidateObjectives[p];
             }
         }
 
@@ -206,21 +212,21 @@ void WorkerParticleSwarm::moveParticles()
 //! @brief Moves specified particles (for particle swarm optimization)
 void WorkerParticleSwarm::moveParticle(int p)
 {
-    double r1 = double(rand())/double(RAND_MAX);
-    double r2 = double(rand())/double(RAND_MAX);
+    double r1 = opsRand();
+    double r2 = opsRand();
     for(int j=0; j<mNumParameters; ++j)
     {
-        mVelocities[p][j] = mOmega*mVelocities[p][j] + mC1*r1*(mLocalBestPoints[p][j]-mPoints[p][j]) + mC2*r2*(mBestPoint[j]-mPoints[p][j]);
+        mVelocities[p][j] = mOmega*mVelocities[p][j] + mC1*r1*(mPoints[p][j]-mCandidatePoints[p][j]) + mC2*r2*(mBestPoint[j]-mCandidatePoints[p][j]);
         mVelocities[p][j] = qMin(mVelocities[p][j], mVmax);
-        mPoints[p][j] = mPoints[p][j]+mVelocities[p][j];
-        if(mPoints[p][j] <= mParameterMin[j])
+        mCandidatePoints[p][j] = mCandidatePoints[p][j]+mVelocities[p][j];
+        if(mCandidatePoints[p][j] <= mParameterMin[j])
         {
-            mPoints[p][j] = mParameterMin[j];
+            mCandidatePoints[p][j] = mParameterMin[j];
             mVelocities[p][j] = 0.0;
         }
-        if(mPoints[p][j] >= mParameterMax[j])
+        if(mCandidatePoints[p][j] >= mParameterMax[j])
         {
-            mPoints[p][j] = mParameterMax[j];
+            mCandidatePoints[p][j] = mParameterMax[j];
             mVelocities[p][j] = 0.0;
         }
     }

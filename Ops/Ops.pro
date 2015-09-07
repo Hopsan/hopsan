@@ -49,7 +49,8 @@ SOURCES += \
     src/OpsEvaluator.cpp \
     src/OpsWorkerParticleSwarm.cpp \
     src/OpsWorkerComplexRFP.cpp \
-    src/OpsWorkerParamterSweep.cpp
+    src/OpsWorkerParamterSweep.cpp \
+    src/OpsWorkerDifferentialEvolution.cpp
 
 HEADERS += \
     include/win32dll.h \
@@ -60,7 +61,8 @@ HEADERS += \
     include/OpsEvaluator.h \
     include/OpsWorkerParticleSwarm.h \
     include/OpsWorkerComplexRFP.h \
-    include/OpsWorkerParameterSweep.h
+    include/OpsWorkerParameterSweep.h \
+    include/OpsWorkerDifferentialEvolution.h
 
 
 
