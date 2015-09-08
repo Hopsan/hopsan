@@ -387,7 +387,7 @@ QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
 
 QWidget *ComponentPropertiesDialog3::createHelpWidget()
 {
-    if(!mpModelObject->getHelpText().isNull() || !mpModelObject->getHelpPicture().isNull() || !mpModelObject->getHelpLink().isNull() || !mpModelObject->getHelpHtmlPath().isNull())
+    if(!mpModelObject->getHelpText().isEmpty() || !mpModelObject->getHelpPicture().isEmpty() || !mpModelObject->getHelpLinks().isEmpty() || !mpModelObject->getHelpHtmlPath().isEmpty())
     {
         QScrollArea *pHelpScrollArea = new QScrollArea();
         QGroupBox *pHelpWidget = new QGroupBox();
@@ -401,7 +401,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         pHelpHeading->setFont(tempFont);
         pHelpLayout->addWidget(pHelpHeading);
 
-        if (!mpModelObject->getHelpHtmlPath().isNull())
+        if (!mpModelObject->getHelpHtmlPath().isEmpty())
         {
             QWebView * pHtmlView = new QWebView();
             QString path = mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath();
@@ -549,7 +549,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             pHelpLayout->addWidget(pHtmlView);
         }
 
-        if(!mpModelObject->getHelpPicture().isNull())
+        if(!mpModelObject->getHelpPicture().isEmpty())
         {
             QLabel *pHelpPicture = new QLabel();
             QPixmap helpPixMap(mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpPicture());
@@ -558,7 +558,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             pHelpPicture->setAlignment(Qt::AlignLeft);
         }
 
-        if(!mpModelObject->getHelpText().isNull())
+        if(!mpModelObject->getHelpText().isEmpty())
         {
             QLabel *pHelpText = new QLabel(mpModelObject->getHelpText(), this);
             pHelpText->setWordWrap(true);
@@ -566,17 +566,18 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             pHelpText->setAlignment(Qt::AlignLeft);
         }
 
-        if (!mpModelObject->getHelpLink().isNull())
+        const QStringList &links = mpModelObject->getHelpLinks();
+        for (auto &link : links)
         {
-            QString link = QString("External document: <a href=\"%1\">%2</a>").arg(mpModelObject->getAppearanceData()->getBasePath()+mpModelObject->getHelpLink()).arg(mpModelObject->getHelpLink());
-            QLabel *pHelpLink = new QLabel(link,this);
+            QString linkstr = QString("External document: <a href=\"%1\">%2</a>").arg(mpModelObject->getAppearanceData()->getBasePath()+link).arg(link);
+            QLabel *pHelpLink = new QLabel(linkstr,this);
             pHelpLink->setOpenExternalLinks(true);
             pHelpLayout->addWidget(pHelpLink);
             pHelpLink->setAlignment(Qt::AlignLeft);
         }
 
         // Add dummy stretch widget at bottom if no html is pressent (to force image / text / link together)
-        if (mpModelObject->getHelpHtmlPath().isNull())
+        if (mpModelObject->getHelpHtmlPath().isEmpty())
         {
             QWidget *pDummyWidget = new QWidget(this);
             pHelpLayout->addWidget(pDummyWidget, 1);

@@ -497,9 +497,9 @@ const QString &ModelObjectAppearance::getHelpText() const
     return mHelpText;
 }
 
-const QString &ModelObjectAppearance::getHelpLink() const
+const QStringList &ModelObjectAppearance::getHelpLinks() const
 {
-    return mHelpLink;
+    return mHelpLinks;
 }
 
 QString ModelObjectAppearance::getHelpHtmlPath() const
@@ -806,9 +806,10 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         }
 
         QDomElement xmlHelpLink = xmlHelp.firstChildElement(CAF_HELPLINK);
-        if (!xmlHelpLink.isNull())
+        while (!xmlHelpLink.isNull())
         {
-            mHelpLink = xmlHelpLink.text();
+            mHelpLinks.append(xmlHelpLink.text());
+            xmlHelpLink = xmlHelpLink.nextSiblingElement(CAF_HELPLINK);
         }
 
         QDomElement xmlHelpHtml = xmlHelp.firstChildElement(CAF_HELPHTML);
@@ -1023,7 +1024,7 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     }
 
     // Save help text and picture data
-    if(!mHelpText.isEmpty() || !mHelpPicture.isEmpty() || !mHelpLink.isEmpty() || !mHelpHtmlPath.isEmpty() )
+    if(!mHelpText.isEmpty() || !mHelpPicture.isEmpty() || !mHelpLinks.isEmpty() || !mHelpHtmlPath.isEmpty() )
     {
         QDomElement xmlHelp = appendDomElement(xmlObject, CAF_HELP);
         if( !mHelpText.isEmpty() )
@@ -1036,9 +1037,9 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
             appendDomTextNode(xmlHelp, CAF_HELPPICTURE, mHelpPicture);
         }
 
-        if( !mHelpLink.isEmpty() )
+        for( QString &link : mHelpLinks )
         {
-            appendDomTextNode(xmlHelp, CAF_HELPLINK, mHelpLink);
+            appendDomTextNode(xmlHelp, CAF_HELPLINK, link);
         }
 
         if( !mHelpHtmlPath.isEmpty() )

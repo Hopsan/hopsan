@@ -235,7 +235,7 @@ public:
     QString getNonEmptyName() const;
     const QString &getHelpPicture() const;
     const QString &getHelpText() const;
-    const QString &getHelpLink() const;
+    const QStringList &getHelpLinks() const;
     QString getHelpHtmlPath() const;
     const QMap<QString, QString> &getOverridedDefaultParameters() const;
     bool isParameterHidden(const QString &name) const;
@@ -276,7 +276,8 @@ private:
     QString mSourceCode;
     QString mLibPath;
     bool mIsRecompilable;
-    QString mHelpText,mHelpPicture,mHelpLink,mHelpHtmlPath;
+    QString mHelpText,mHelpPicture,mHelpHtmlPath;
+    QStringList mHelpLinks;
     QMap<QString,QString> mOverridedDefaultParameters;
     QStringList mHiddenParameters;
     ModelObjectIconAppearance mIsoIconAppearance;

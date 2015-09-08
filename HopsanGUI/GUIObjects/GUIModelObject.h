@@ -83,7 +83,7 @@ public:
     // Help methods
     const QString &getHelpPicture() const;
     const QString &getHelpText() const;
-    const QString &getHelpLink() const;
+    const QStringList &getHelpLinks() const;
     QString getHelpHtmlPath() const;
 
     // Parameter methods

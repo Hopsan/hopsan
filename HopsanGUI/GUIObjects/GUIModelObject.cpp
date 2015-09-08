@@ -1720,9 +1720,9 @@ const QString &ModelObject::getHelpText() const
     return mModelObjectAppearance.getHelpText();
 }
 
-const QString &ModelObject::getHelpLink() const
+const QStringList &ModelObject::getHelpLinks() const
 {
-    return mModelObjectAppearance.getHelpLink();
+    return mModelObjectAppearance.getHelpLinks();
 }
 
 QString ModelObject::getHelpHtmlPath() const
