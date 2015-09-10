@@ -76,10 +76,25 @@ void hAssert(const bool cond)
 //! "onNegative", "signedSquareL", "limit", "nonZero"
 
 
+
+//! @brief Copy constructor for non-const reference
+//! @param other Expression to copy from
+Expression::Expression(Expression &other)
+{
+    this->replaceBy(other);
+}
+
+//! @brief Copy constructor for const reference
+//! @param other Expression to copy from
+Expression::Expression(const Expression &other)
+{
+    this->replaceBy(other);
+}
+
+
 //! @brief Constructor for Expression class using QString
 //! @param indata String containing a numerical expression
 //! @param simplifications Specifies the degree of simplification
-//FIXED
 Expression::Expression(const QString indata, bool *ok, const ExpressionSimplificationT simplifications)
 {
     bool isDouble;
@@ -188,10 +203,15 @@ Expression::Expression(const double value)
     //    }
 }
 
+
+//! @brief Destructor
 Expression::~Expression()
 {
+    this->cleanUp();
 }
 
+
+//! @brief Recursive cleanup function
 void Expression::cleanUp()
 {
     if(mpLeft)
@@ -971,10 +991,19 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
 }
 
 
+//! @brief Replaces this expression by another one, but first makes a copy of the other expression
+//! @note Use this version if replacing an expression with a sub-expression of itself
+//! @param expr Expression to replace by
+void Expression::replaceByCopy(const Expression expr)
+{
+    replaceBy(expr);
+}
+
+
 //! @brief Replaces this expression by another one
 //! @param expr Expression to replace by
 //FIXED
-void Expression::replaceBy(const Expression expr)
+void Expression::replaceBy(const Expression &expr)
 {
     mString = expr.mString;
     mFunction = expr.mFunction;
@@ -1014,7 +1043,7 @@ void Expression::replaceBy(const Expression expr)
     if(expr.getBase())
     {
         mpBase = new Expression();
-        (*mpBase).replaceBy(*expr.getBase());
+        (*mpBase).replaceBy(*(expr.getBase()));
     }
     if(expr.getPower())
     {
@@ -2185,7 +2214,7 @@ void Expression::expand(const ExpressionSimplificationT simplifications)
     }
     if(mFactors.size() == 1 && mDivisors.isEmpty())
     {
-        replaceBy(mFactors.first());
+        replaceByCopy(mFactors.first());
     }
 
     _simplify(simplifications);
@@ -2697,7 +2726,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
             }
         }
 
-        if(mFactors.size() == 1 && mDivisors.isEmpty()) { replaceBy(mFactors.first()); }
+        if(mFactors.size() == 1 && mDivisors.isEmpty()) { replaceByCopy(mFactors.first()); }
 
         //Join multiple divisors to powers
         restart3:
@@ -3189,9 +3218,12 @@ Expression Expression::removeNumericalFactors() const
     }
     ret.mDivisors.append(mDivisors);
 
+    qDebug() << "ret.toString(): " << ret.toString();
+    qDebug() << "Ret factors: " << ret.mFactors.size();
     if(ret.mFactors.size() == 1 && ret.mDivisors.isEmpty())
     {
-        ret.replaceBy(ret.mFactors.first());
+        //Expression expr = Expression(ret.mFactors.first());
+        ret.replaceByCopy(ret.mFactors.first());
     }
     else if(ret.mFactors.isEmpty() && !ret.mDivisors.isEmpty())
     {

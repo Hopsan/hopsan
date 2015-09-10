@@ -66,6 +66,8 @@ public:
     enum ExpressionTypeT {Null, Equality,Symbol,Operator,Function};
     enum ExpressionSimplificationT {FullSimplification, TrivialSimplifications, NoSimplifications};
     enum ExpressionRecursiveT {Recursive, NonRecursive};
+    Expression(Expression &other);
+    Expression(const Expression &other);
     Expression(QString const indata=QString(), bool *ok=0, const ExpressionSimplificationT simplifications=FullSimplification);
     Expression(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification);
     //Expression(const Expression left, const QString mid, const Expression right, const ExpressionSimplificationT simplifications=FullSimplification);
@@ -92,7 +94,8 @@ public:
     double evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHopFunctionoid*> *functions=0 /* = QMap<QString, SymHop::Function>() */, bool *ok=0) const;
     // magse says: QMap is a derived type, you can't have reference this way.
 
-    void replaceBy(Expression const expr);
+    void replaceByCopy(const Expression expr);
+    void replaceBy(const Expression &expr);
     void divideBy(Expression const div);
     void multiplyBy(Expression const fac);
     void addBy(Expression const term);
