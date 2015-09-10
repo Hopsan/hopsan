@@ -190,24 +190,33 @@ Expression::Expression(const double value)
 
 Expression::~Expression()
 {
+}
+
+void Expression::cleanUp()
+{
     if(mpLeft)
     {
+        mpLeft->cleanUp();
         delete mpLeft;
     }
     if(mpRight)
     {
+        mpRight->cleanUp();
         delete mpRight;
     }
     if(mpBase)
     {
+        mpBase->cleanUp();
         delete mpBase;
     }
     if(mpPower)
     {
+        mpPower->cleanUp();
         delete mpPower;
     }
     if(mpDividend)
     {
+        mpDividend->cleanUp();
         delete mpDividend;
     }
 }
@@ -2745,8 +2754,16 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             }
             else
             {
-                if(mpLeft) delete mpLeft;
-                if(mpRight) delete mpRight;
+                if(mpLeft)
+                {
+                    mpLeft->cleanUp();
+                    delete mpLeft;
+                }
+                if(mpRight)
+                {
+                    mpRight->cleanUp();
+                    delete mpRight;
+                }
                 mpLeft = new Expression(left);
                 mpRight = new Expression(right);
             }
@@ -2856,8 +2873,16 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             {
                 return false;
             }
-            if(mpBase) delete mpBase;
-            if(mpPower) delete mpPower;
+            if(mpBase)
+            {
+                mpBase->cleanUp();
+                delete mpBase;
+            }
+            if(mpPower)
+            {
+                mpPower->cleanUp();
+                delete mpPower;
+            }
             mpBase = new Expression(base);
             mpPower = new Expression(power);
         }
@@ -2880,7 +2905,11 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                     mDivisors.append(subSymbols[i]);
                 }
             }
-            if(mpDividend) delete mpDividend;
+            if(mpDividend)
+            {
+                mpDividend->cleanUp();
+                delete mpDividend;
+            }
             mpDividend = new Expression(dividend);
         }
         else if(sep == "!")
