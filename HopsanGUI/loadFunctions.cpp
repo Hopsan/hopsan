@@ -449,7 +449,24 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
             }
             //---------------------------
 
-//            // Load any custom set plot scales
+            // Load any custom variable plot settings
+            QDomElement plotsetting = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_VARIABLEPLOTSETTINGS).firstChildElement(HMF_VARIABLEPLOTSETTING);
+            while (!plotsetting.isNull())
+            {
+                QString name = plotsetting.attribute("name");
+                if (!name.isEmpty())
+                {
+                    if(plotsetting.hasAttribute("invert"))
+                    {
+                        pObj->setInvertPlotVariable(name, parseAttributeBool(plotsetting, "invert", false));
+                    }
+                    if(plotsetting.hasAttribute("label"))
+                    {
+                        pObj->setVariablePlotLabel(name, plotsetting.attribute("label"));
+                    }
+                }
+                plotsetting = plotsetting.nextSiblingElement(HMF_VARIABLEPLOTSETTING);
+            }
 //            QDomElement plotscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PLOTSCALES).firstChildElement(HMF_PLOTSCALE);
 //            while (!plotscale.isNull())
 //            {

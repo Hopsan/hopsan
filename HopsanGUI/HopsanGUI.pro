@@ -395,7 +395,8 @@ HEADERS += MainWindow.h \
     LogDataGeneration.h \
     RemoteCoreAccess.h \
     RemoteSimulationUtils.h \
-    Dialogs/LicenseDialog.h
+    Dialogs/LicenseDialog.h \
+    Utilities/EventFilters.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

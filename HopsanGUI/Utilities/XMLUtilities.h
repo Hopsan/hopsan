@@ -161,6 +161,11 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_PLOTSCALEDESCRIPTION "description"
 #define HMF_PLOTSCALEVALUE "scale"
 
+#define HMF_VARIABLEPLOTSETTINGS "variableplotsettings"
+#define HMF_VARIABLEPLOTSETTING "variableplotsetting"
+#define HMF_VARIABLEINVERTPLOT "variableinvertplot"
+#define HMF_VARIABLEPLOTLABEL "variableplotlabel"
+
 #define HMF_POSETAG "pose"
 #define HMF_VIEWPORTTAG "viewport"
 #define HMF_NAMETEXTTAG "nametext"

@@ -1194,7 +1194,13 @@ void PlotCurve::updateCurve()
         // We copy here, it should be faster then peek (at least when data is cached on disc)
         //! @todo maybe be smart about doing this copy
         tempY = mData->getDataVectorCopy();
-        const double yScale = mCurveExtraDataScale*mCurveDataUnitScale.toDouble(1.0);
+
+        double direction = 1;
+        if (mData->getVariableDescription()->mInvertData)
+        {
+            direction = -1;
+        }
+        const double yScale = mCurveExtraDataScale*mCurveDataUnitScale.toDouble(1.0)*direction;
         const double yOffset = mCurveExtraDataOffset;
 
         if (mCustomXdata && !mShowVsSamples)
@@ -1202,7 +1208,12 @@ void PlotCurve::updateCurve()
             // Use special X-data
             // We copy here, it should be faster then peek (at least when data is cached on disc)
             tempX = mCustomXdata->getDataVectorCopy();
-            const double xScale = mCurveXDataUnitScale.toDouble(1.0);
+            double direction = 1;
+            if (mCustomXdata->getVariableDescription()->mInvertData)
+            {
+                direction = -1;
+            }
+            const double xScale = mCurveXDataUnitScale.toDouble(1.0)*direction;
             const double xOffset = 0.0;
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
@@ -1225,7 +1236,7 @@ void PlotCurve::updateCurve()
         }
         else
         {
-            // No timevector or special x-vector, plot vs samples
+            // No time vector or special x-vector, plot vs samples
             tempX.resize(tempY.size());
             for (int i=0; i< tempX.size(); ++i)
             {

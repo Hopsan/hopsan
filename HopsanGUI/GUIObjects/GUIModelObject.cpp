@@ -784,6 +784,42 @@ void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &
     }
 }
 
+void ModelObject::setInvertPlotVariable(const QString &rName, bool tf)
+{
+    if (tf)
+    {
+        mRegisteredInvertPlotVariables.insert(rName, tf);
+    }
+    else
+    {
+        // No point in keeping negative values, so actually this could be a string list
+        mRegisteredInvertPlotVariables.remove(rName);
+    }
+}
+
+bool ModelObject::getInvertPlotVariable(const QString &rName) const
+{
+    return mRegisteredInvertPlotVariables.value(rName, false);
+}
+
+void ModelObject::setVariablePlotLabel(const QString &rName, const QString &rLabel)
+{
+    // If label is empty that means Remove
+    if (rLabel.isEmpty())
+    {
+        mRegisteredPlotLabels.remove(rName);
+    }
+    else
+    {
+        mRegisteredPlotLabels.insert(rName, rLabel);
+    }
+}
+
+QString ModelObject::getVariablePlotLabel(const QString &rName) const
+{
+    return mRegisteredPlotLabels.value(rName, "");
+}
+
 //void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue)
 //{
 //    qFatal("This functionality has been removed");
@@ -1034,7 +1070,30 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
         }
     }
 
-    // Save any custom selected plot scales
+    // Save custom selected plot settings
+    if (!mRegisteredInvertPlotVariables.isEmpty())
+    {
+        QDomElement plotsettings = appendDomElement(xmlGuiStuff, HMF_VARIABLEPLOTSETTINGS);
+        QList<QString> invkeys = mRegisteredInvertPlotVariables.keys();
+        QList<QString> labelkeys = mRegisteredPlotLabels.keys();
+        for (QString &invkey : invkeys)
+        {
+            QDomElement plotsetting = appendDomElement(plotsettings, HMF_VARIABLEPLOTSETTING);
+            plotsetting.setAttribute("name", invkey);
+            plotsetting.setAttribute("invert", mRegisteredInvertPlotVariables.value(invkey));
+            if (labelkeys.contains(invkey))
+            {
+                plotsetting.setAttribute("label", mRegisteredPlotLabels.value(invkey));
+                labelkeys.removeAll(invkey);
+            }
+        }
+        for (QString &labelkey : labelkeys)
+        {
+            QDomElement plotsetting = appendDomElement(plotsettings, HMF_VARIABLEPLOTSETTING);
+            plotsetting.setAttribute("name", labelkey);
+            plotsetting.setAttribute("label", mRegisteredPlotLabels.value(labelkey));
+        }
+    }
 //    if (!mRegisteredCustomPlotUnitsOrScales.isEmpty())
 //    {
 //        QDomElement plotscales = appendDomElement(xmlGuiStuff, HMF_PLOTSCALES);

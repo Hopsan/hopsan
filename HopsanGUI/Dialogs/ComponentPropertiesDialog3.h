@@ -22,6 +22,13 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//!
+//! @file   ComponentPropertiesDialog3.h
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @brief Contains the component properties dialog
+//!
+//$Id$
+
 #ifndef COMPONENTPROPERTIESDIALOG3_H
 #define COMPONENTPROPERTIESDIALOG3_H
 
@@ -35,8 +42,11 @@
 #include <QEvent>
 #include <QCheckBox>
 #include <QLabel>
+
 #include "CoreAccess.h"
 #include "UnitScale.h"
+#include "Utilities/EventFilters.h"
+
 
 class ModelObject;
 class SystemParametersWidget;
@@ -57,7 +67,7 @@ class VariableTableWidget :public TableWidgetTotalSize
     Q_OBJECT
 public:
     enum VariameterTypEnumT {InputVaraiable, OutputVariable, OtherVariable, Constant}; //!< @todo maybe not only here
-    enum ColumnEnumT {Name, Alias, Description, Unit, Value, Quantity, ShowPort, NumCols};
+    enum ColumnEnumT {Name, Alias, Description, Unit, Value, Quantity, PlotSettings, ShowPort, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
     //bool setCustomPlotScaleValues();
@@ -142,6 +152,21 @@ private:
 //    QString mVariableTypeName, mVariablePortDataName, mOriginalUnit;
 //};
 
+class PlotRelatedWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    PlotRelatedWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+private slots:
+    void invertPlot(bool tf);
+    void setPlotLabel(QString label);
+private:
+    ModelObject *mpModelObject;
+    QString mVariablePortDataName, mOriginalPlotLabel;
+    bool mOrigInverted;
+
+};
+
 class QuantitySelectionWidget : public QWidget
 {
     Q_OBJECT
@@ -158,31 +183,6 @@ private:
     QLabel *mpQuantityLabel;
     ModelObject *mpModelObject;
     QString mVariableTypeName, mVariablePortDataName, mOriginalUnit, mQuantity;
-};
-
-//! @todo maybe should have eventfilters in a specific file
-class MouseWheelEventEater : public QObject
-{
-    Q_OBJECT
-public:
-    MouseWheelEventEater(QWidget *pParent) : QObject(pParent)
-    {
-        // Nothing in particular
-    }
-protected:
-    bool eventFilter(QObject *pObj, QEvent *pEvent)
-    {
-        if (pEvent->type() == QEvent::Wheel)
-        {
-            //QWheelEvent *pWheelEvent = static_cast<QKeyEvent *>(pEvent);
-            return true;
-        }
-        else
-        {
-            // standard event processing
-            return QObject::eventFilter(pObj, pEvent);
-        }
-    }
 };
 
 class UnitSelectionWidget : public QWidget

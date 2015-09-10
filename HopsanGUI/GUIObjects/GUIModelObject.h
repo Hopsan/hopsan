@@ -109,7 +109,11 @@ public:
     virtual void getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions);
     virtual void getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions) const;
 
-    // Custom variable plot unit methods
+    // Custom variable plot settings methods
+    void setInvertPlotVariable(const QString &rName, bool tf);
+    bool getInvertPlotVariable(const QString &rName) const;
+    void setVariablePlotLabel(const QString &rName, const QString &rLabel);
+    QString getVariablePlotLabel(const QString &rName) const;
 //    void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);
 //    void unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName);
 //    void registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset);
@@ -204,10 +208,12 @@ protected:
     double mLastIconScale;
 
     QMap<QString, QString> mDefaultParameterValues;
-    QStringList mActiveDynamicParameterPortNames;
+    //QStringList mActiveDynamicParameterPortNames;
     //QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
     QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
     //QMap<QString, double> mRegisteredCustomPlotOffsets;
+    QMap<QString, bool> mRegisteredInvertPlotVariables;
+    QMap<QString, QString> mRegisteredPlotLabels;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

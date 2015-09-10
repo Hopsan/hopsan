@@ -733,6 +733,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     columnHeaders.append("Unit");
     columnHeaders.append("Value");
     columnHeaders.append("Quantity");
+    columnHeaders.append("PlotSettings");
     columnHeaders.append("Port");
     this->setHorizontalHeaderLabels(columnHeaders);
 
@@ -851,6 +852,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     resizeColumnToContents(Unit);
     resizeColumnToContents(Value);
     resizeColumnToContents(Quantity);
+    resizeColumnToContents(PlotSettings);
     resizeColumnToContents(ShowPort);
     setColumnWidth(Description, 2*columnWidth(Description));
 
@@ -861,6 +863,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     horizontalHeader()->setSectionResizeMode(Value, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(Unit, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(Quantity, QHeaderView::ResizeToContents);
+    horizontalHeader()->setSectionResizeMode(PlotSettings, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionResizeMode(ShowPort, QHeaderView::ResizeToContents);
     horizontalHeader()->setSectionsClickable(false);
 #else
@@ -870,6 +873,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     horizontalHeader()->setResizeMode(Value, QHeaderView::ResizeToContents);
     horizontalHeader()->setResizeMode(Unit, QHeaderView::ResizeToContents);
     horizontalHeader()->setResizeMode(Quantity, QHeaderView::ResizeToContents);
+    horizontalHeader()->setResizeMode(PlotSettings, QHeaderView::ResizeToContents);
     horizontalHeader()->setResizeMode(ShowPort, QHeaderView::ResizeToContents);
     horizontalHeader()->setClickable(false);
 #endif
@@ -1141,6 +1145,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     pItem = new QTableWidgetItem(rData.mDescription);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+    pItem->setToolTip(rData.mDescription);
     setItem(row,Description,pItem);
 
     // Set the unit field
@@ -1155,7 +1160,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     // Trigger signal to unit selector if syspar entered to disable the unit scroll box
     pValueWidget->checkIfSysParEntered();
 
-    // Create the custom plot unit display and selection button
+    // Create the quantity widget
     if (variametertype != Constant)
     {
 //        QWidget *pPlotScaleWidget = new PlotScaleSelectionWidget(rData, mpModelObject, this);
@@ -1169,6 +1174,20 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
         pItem->setFlags(Qt::NoItemFlags);
         setItem(row,Quantity,pItem);
     }
+
+    // Set invert plot check box
+    if (variametertype != Constant)
+    {
+        QWidget *pPlotWidget = new PlotRelatedWidget(rData, mpModelObject, this);
+        setIndexWidget(model()->index(row,PlotSettings), pPlotWidget);
+    }
+    else
+    {
+        pItem = new QTableWidgetItem();
+        pItem->setFlags(Qt::NoItemFlags);
+        setItem(row,PlotSettings,pItem);
+    }
+
 
     // Set the port hide/show button
     if ( (variametertype == InputVaraiable) || (variametertype == OutputVariable))
@@ -1532,7 +1551,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
                 }
             }
 
-            // Get teh default unit scale (should be one but also contains quantity and unit name)
+            // Get the default unit scale (should be one but also contains quantity and unit name)
             if (!quantity.isEmpty())
             {
                 UnitScale us;
@@ -2070,4 +2089,36 @@ void QuantitySelectionWidget::createQuantitySelectionMenu()
             registerCustomQuantity();
         }
     }
+}
+
+PlotRelatedWidget::PlotRelatedWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent)
+    : QWidget(pParent)
+{
+    mpModelObject = pModelObject;
+    mVariablePortDataName = rData.mPortName+"#"+rData.mName;
+    mOrigInverted = mpModelObject->getInvertPlotVariable(mVariablePortDataName);
+    mOriginalPlotLabel = mpModelObject->getVariablePlotLabel(mVariablePortDataName);
+
+    QHBoxLayout *pLayout = new QHBoxLayout(this);
+    QCheckBox *pInverCheckbox = new QCheckBox(this);
+    pInverCheckbox->setToolTip("Invert plot");
+    pInverCheckbox->setChecked(mOrigInverted);
+    QLineEdit *pLabelEdit = new QLineEdit(mOriginalPlotLabel,this);
+    pLabelEdit->setFrame(false);
+    pLabelEdit->setToolTip("Custom label");
+    pLayout->addWidget(pInverCheckbox);
+    pLayout->addWidget(pLabelEdit);
+
+    connect(pInverCheckbox, SIGNAL(toggled(bool)), this, SLOT(invertPlot(bool)));
+    connect(pLabelEdit, SIGNAL(textChanged(QString)), this, SLOT(setPlotLabel(QString)));
+}
+
+void PlotRelatedWidget::invertPlot(bool tf)
+{
+    mpModelObject->setInvertPlotVariable(mVariablePortDataName, tf);
+}
+
+void PlotRelatedWidget::setPlotLabel(QString label)
+{
+    mpModelObject->setVariablePlotLabel(mVariablePortDataName, label);
 }

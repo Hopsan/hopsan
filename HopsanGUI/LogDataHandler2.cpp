@@ -1147,7 +1147,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
     auto pCoreSysTimeVector = pCurrentSystem->getCoreSystemAccessPtr()->getLogTimeData();
     if (pCoreSysTimeVector && !pCoreSysTimeVector->empty())
     {
-        // Check so taht we have not already stored this time vector in this generation
+        // Check so that we have not already stored this time vector in this generation
         if (!rGenTimeVectors.contains(pCoreSysTimeVector))
         {
             //! @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
@@ -1199,6 +1199,8 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
                         pVarDesc->mDataDescription = varDesc.mDescription;
                         pVarDesc->mAliasName  = varDesc.mAlias;
                         pVarDesc->mVariableSourceType = ModelVariableType;
+                        pVarDesc->mInvertData = pModelObject->getInvertPlotVariable(pPort->getName()+"#"+varDesc.mName);
+                        pVarDesc->mCustomLabel = pModelObject->getVariablePlotLabel(pPort->getName()+"#"+varDesc.mName);
 
                         SharedVectorVariableT pNewData;
 
@@ -2350,7 +2352,7 @@ bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &
 
 bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &rQuantity)
 {
-    registerQuantity(rFullName, rQuantity, -1);
+    return registerQuantity(rFullName, rQuantity, -1);
 }
 
 //! @brief This slot should be signaled when a variable that might be registered as imported is removed

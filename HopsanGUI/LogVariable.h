@@ -91,6 +91,8 @@ public:
     QString mModelPath;
     VariableSourceTypeT mVariableSourceType;
 
+    bool mInvertData;
+
     QString getFullName() const;
     QString getFullNameWithSeparator(const QString sep) const;
     void setFullName(const QString compName, const QString portName, const QString dataName);
