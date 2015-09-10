@@ -2272,7 +2272,7 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
         QStringList output;
         if(cmd.isEmpty())
         {
-            getMatchingLogVariableNames("*" GENERATIONSPECIFIERSTR "H", output);
+            getMatchingLogVariableNames("*" GENERATIONSPECIFIERSTR "H", output, false);
         }
         else
         {
@@ -4574,7 +4574,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             int desiredGen = parseAndChopGenerationSpecifier(tempVarName, parseOK);
             if (desiredGen == -3 && mpModel && mpModel->getLogDataHandler() )
             {
-                getMatchingLogVariableNames(varNames[s], variables, mpModel->getLogDataHandler()->getCurrentGenerationNumber());
+                getMatchingLogVariableNames(varNames[s], variables, false, mpModel->getLogDataHandler()->getCurrentGenerationNumber());
             }
             else
             {
@@ -4594,9 +4594,9 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             else
             {
                 found = true;
-                for(auto &var : variables)
+                for(auto &varname : variables)
                 {
-                    addPlotCurve(var, axisId, type, color, thickness);
+                    addPlotCurve(varname, axisId, type, color, thickness);
                 }
             }
 
@@ -6577,9 +6577,10 @@ void HcomHandler::getMatchingLogVariableNamesWithoutLogDataHandler(QString patte
 //! @brief Help function that returns a list of variables according to input (with support for * regexp search)
 //! @param [in] pattern Name to look for
 //! @param [out] rVariables Reference to list that will contain the found variable names with generation appended
+//! @param [in] addGenerationSpecifier Set wheter to add generation @gen specifier to end of found names
 //! @param [in] generationOverride Lets you override the generation specifier (or decide generation if it is missing)  must be >= 0
 //! @warning If you make changes to this function you MUST MAKE SURE that all other Hcom functions using this is are still working for all cases. Many depend on the behavior of this function.
-void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVariables, const int generationOverride ) const
+void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVariables, bool addGenerationSpecifier, const int generationOverride ) const
 {
     //TicToc timer;
     rVariables.clear();
@@ -6622,7 +6623,11 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
         {
             QString name = var->getSmartName();
             toShortDataNames(name);
-            rVariables.append(name+QString(GENERATIONSPECIFIERSTR"%1").arg(var->getGeneration()+1));
+            rVariables.append(name);
+            if (addGenerationSpecifier)
+            {
+                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+            }
         }
     }
     // Do more costly name lookup, generate a list of all variables and all generations
@@ -6634,11 +6639,14 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             QString name = var->getSmartName();
             toShortDataNames(name);
             int gen = var->getGeneration();
-            QString name2 = QString("%1" GENERATIONSPECIFIERSTR "%2").arg(name).arg(gen+1);
-            rVariables.append(name2);
+            rVariables.append(name);
+            if (addGenerationSpecifier)
+            {
+                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(gen+1));
+            }
         }
     }
-    // Else generation number was not specified, lookup names at all generations but do not store duplicates and do not append generations numbers to names
+    // Else generation number was not specified, lookup names at all generations
     else if (desiredGen == -3)
     {
         QList<SharedVectorVariableT> variables = pLogDataHandler->getMatchingVariablesAtRespectiveNewestGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
@@ -6647,6 +6655,10 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             QString name = var->getSmartName();
             toShortDataNames(name);
             rVariables.append(name);
+            if (addGenerationSpecifier)
+            {
+                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+            }
         }
     }
     //timer.toc("getMatchingLogVariableNames("+pattern+")");
@@ -7864,7 +7876,7 @@ double HcomFunctionoidFC::operator()(QString &str, bool &ok)
     }
     else if ((pData1 || pData2) && (isScalar1 || isScalar2))
     {
-        //! @todo maybe support this as a elementwise comparison
+        //! @todo maybe support this as a element wise comparison
         mpHandler->mpConsole->printWarningMessage("Comparing scalar with vector (will fail)", "", false);
     }
 
