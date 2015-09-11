@@ -1007,7 +1007,7 @@ void PlotWidget2::setLogDataHandler(QPointer<LogDataHandler2> pLogDataHandler)
     mpGenerationSelector->setLogDataHandler(pLogDataHandler);
     mpVariableTree->setLogDataHandler(pLogDataHandler);
 
-    // Connect signals if the pLogdataHndler is not a null pointer
+    // Connect signals if the pLogDataHandler is not a null pointer
     if (pLogDataHandler)
     {
         connect(pLogDataHandler, SIGNAL(dataAdded()), this, SLOT(updateList()));
@@ -1036,14 +1036,24 @@ void PlotWidget2::openNewPlotWindow()
 ImportedVariableTreeItem::ImportedVariableTreeItem(SharedVectorVariableT data, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(data, pParent)
 {
-    setText(0, getFullName() + ", [" + getPlotDataUnit() + "]");
+    QString uq = getDataQuantity();
+    if (uq.isEmpty())
+    {
+        uq = getPlotDataUnit();
+    }
+    setText(0, getFullName() + ", [" + uq + "]");
 }
 
 
 AliasVariableTreeItem::AliasVariableTreeItem(SharedVectorVariableT data, QTreeWidgetItem *pParent)
     : BaseVariableTreeItem(data, pParent)
 {
-    setText(0, getAliasName() + ", [" + getPlotDataUnit() + "]");
+    QString uq = getDataQuantity();
+    if (uq.isEmpty())
+    {
+        uq = getPlotDataUnit();
+    }
+    setText(0, getAliasName() + ", [" + uq + "]");
 }
 
 FullVariableTreeItem::FullVariableTreeItem(SharedVectorVariableT data, QTreeWidgetItem *pParent)
