@@ -673,6 +673,14 @@ void HcomHandler::createCommands()
     sequCmd.group = "Variable Commands";
     mCmdList << sequCmd;
 
+    HcomCommand ivpvCmd;
+    ivpvCmd.cmd = "ivpv";
+    ivpvCmd.description.append("Toggle invert plot of specified variable");
+    ivpvCmd.help.append(" Usage: ivpv [variable]");
+    ivpvCmd.fnc = &HcomHandler::executeInvertPlotVariableCommand;
+    ivpvCmd.group = "Variable Commands";
+    mCmdList << ivpvCmd;
+
     HcomCommand chscCmd;
     chscCmd.cmd = "chsc";
     chscCmd.description.append("Change plot scale of specified variable");
@@ -3124,6 +3132,30 @@ void HcomHandler::executeSavePlotWindowCommand(const QString cmd)
     else
     {
         HCOMERR("At least one argumetn rewquired (filename)");
+    }
+}
+
+void HcomHandler::executeInvertPlotVariableCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 1)
+    {
+        HCOMERR("Wrong number of arguments. At most one arguemnt supported.");
+        return;
+    }
+
+    QStringList variables;
+    getMatchingLogVariableNames(cmd, variables);
+
+    if(variables.isEmpty())
+    {
+        HCOMERR("Could not find variable matching: "+cmd);
+        return;
+    }
+    for(const QString &var : variables)
+    {
+        SharedVectorVariableT pVar = getLogVariable(var);
+        pVar->togglePlotInverted();
     }
 }
 

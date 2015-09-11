@@ -147,6 +147,8 @@ public:
     virtual QString getImportedFileName() const;
 
     // Data plot scaling
+    bool isPlotInverted() const;
+    void togglePlotInverted();
 //    void setCustomUnitScale(const UnitScale &rUnitScale);
 //    void removeCustomUnitScale();
 //    const UnitScale &getCustomUnitScale() const;

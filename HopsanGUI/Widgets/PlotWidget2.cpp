@@ -736,6 +736,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         QAction *pDeleteVariableThisGenAction = 0;
         QAction *pDeleteVariableAllGenAction = 0;
         QAction *pSetQuantityAction = 0;
+        QAction *pInvertAction = 0;
 
         // Add actions
         if (!isImportVariabel)
@@ -772,6 +773,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
 
         menu.addSeparator();
         pSetQuantityAction = menu.addAction("Set plot quantity");
+        pInvertAction = menu.addAction("Invert plot");
 
         // Execute menu and wait for selected action
         QAction *pSelectedAction = menu.exec(QCursor::pos());
@@ -825,6 +827,14 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
                     {
                         updateList(mGen);
                     }
+                }
+            }
+            else if (pSelectedAction == pInvertAction)
+            {
+                SharedVectorVariableT pVar = mpLogDataHandler->getVectorVariable(pItem->getFullName(), pItem->getGeneration());
+                if (pVar)
+                {
+                    pVar->togglePlotInverted();
                 }
             }
         }

@@ -455,6 +455,17 @@ QString VectorVariable::getImportedFileName() const
     return QString();
 }
 
+bool VectorVariable::isPlotInverted() const
+{
+    return mpVariableDescription->mInvertData;
+}
+
+void VectorVariable::togglePlotInverted()
+{
+    mpVariableDescription->mInvertData = !mpVariableDescription->mInvertData;
+    emit dataChanged();
+}
+
 
 const SharedVectorVariableT VectorVariable::getSharedTimeOrFrequencyVector() const
 {

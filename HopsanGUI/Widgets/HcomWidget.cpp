@@ -655,7 +655,6 @@ void TerminalConsole::handleDownKeyPress()
 
 
 //! @brief Handles tab key press (used for autocomplete
-//! @todo This functionality belongs in the HCOM handler I think
 void TerminalConsole::handleTabKeyPress()
 {
     ++mCurrentAutoCompleteIndex;
@@ -680,9 +679,10 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
+        //! @todo This list belongs in the HCOM handler I think, you should not be forced to manually update this list for every new command
         QStringList variableCmds = QStringList() << "disp" << "chpv" << "chpvr" << "chpvl" << "adpv" << "adpvl" << "adpvr" << "peek"
                                                  << "poke" << "alias" << "aver" << "min" << "max" << "rmvar" << "chdfsc" << "didfsc"
-                                                 << "chdfos" << "didfos" << "chos" << "dios" << "sequ";
+                                                 << "chdfos" << "didfos" << "chos" << "dios" << "sequ" << "ivpv";
         for(int c=0; c<variableCmds.size(); ++c)
         {
             if(args[0] == variableCmds[c])
