@@ -91,7 +91,7 @@ public:
     QString mModelPath;
     VariableSourceTypeT mVariableSourceType;
 
-    bool mInvertData;
+    bool mInvertData=false;
 
     QString getFullName() const;
     QString getFullNameWithSeparator(const QString sep) const;
