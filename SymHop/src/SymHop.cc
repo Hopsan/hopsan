@@ -604,7 +604,10 @@ bool Expression::operator==(const Expression &other) const
 //! @param other Expression to assign from
 void Expression::operator=(const Expression &other)
 {
-    this->replaceBy(other);
+    if(this != &other)
+    {
+        this->replaceByCopy(other);
+    }
 }
 
 
@@ -612,7 +615,10 @@ void Expression::operator=(const Expression &other)
 //! @param other Expression to assign from
 void Expression::operator=(Expression &other)
 {
-    this->replaceBy(other);
+    if(this != &other)
+    {
+        this->replaceByCopy(other);
+    }
 }
 
 
