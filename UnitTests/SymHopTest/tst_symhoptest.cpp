@@ -651,6 +651,30 @@ private Q_SLOTS:
         QTest::newRow("0") << Expression("4*sin(x)+3*cos(x)-2*sin(x)+sin(x)") << Expression("sin(x)") << 3.0;
     }
 
+    void SymHop_Change_Sign()
+    {
+        QFETCH(Expression, pos);//Expression, pos);
+        QFETCH(Expression, neg);
+
+        pos.changeSign();
+
+        QString failmsg("Failure! changeSign() did something wrong.");
+        QVERIFY2(pos == neg, failmsg.toStdString().c_str());
+
+    }
+
+    void SymHop_Change_Sign_data()
+    {
+        QTest::addColumn<Expression>("pos");
+        QTest::addColumn<Expression>("neg");
+
+        QTest::newRow("0") << Expression("4") << Expression("-4");
+        QTest::newRow("1") << Expression("-4") << Expression("4");
+        QTest::newRow("2") << Expression("x") << Expression("-x");
+        QTest::newRow("3") << Expression("-x") << Expression("x");
+        QTest::newRow("4") << Expression("-sin(x)") << Expression("sin(x)");
+    }
+
     void SymHop_Remove_Term()
     {
         QFETCH(Expression, expr);
@@ -881,3 +905,4 @@ private Q_SLOTS:
 QTEST_APPLESS_MAIN(SymHopTests)
 
 #include "tst_symhoptest.moc"
+

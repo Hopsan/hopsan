@@ -1454,7 +1454,7 @@ void Expression::changeSign()
         mFactors.removeOne(Expression("-1"));
         if(mFactors.size() == 1 && mDivisors.isEmpty())
         {
-            this->replaceBy(mFactors.first());
+            this->replaceByCopy(mFactors.first());
         }
         else if(mFactors.isEmpty())
         {
@@ -3218,8 +3218,8 @@ Expression Expression::removeNumericalFactors() const
     }
     ret.mDivisors.append(mDivisors);
 
-    qDebug() << "ret.toString(): " << ret.toString();
-    qDebug() << "Ret factors: " << ret.mFactors.size();
+    //qDebug() << "ret.toString(): " << ret.toString();
+    //qDebug() << "Ret factors: " << ret.mFactors.size();
     if(ret.mFactors.size() == 1 && ret.mDivisors.isEmpty())
     {
         //Expression expr = Expression(ret.mFactors.first());
