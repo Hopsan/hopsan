@@ -466,16 +466,21 @@ void VectorVariable::togglePlotInverted()
     emit dataChanged();
 }
 
+void VectorVariable::setPlotOffset(const double offset)
+{
+    mDataPlotOffset = offset;
+    emit dataChanged();
+}
+
+double VectorVariable::getPlotOffset() const
+{
+    return mDataPlotOffset;
+}
 
 const SharedVectorVariableT VectorVariable::getSharedTimeOrFrequencyVector() const
 {
     return mpSharedTimeOrFrequencyVector;
 }
-
-//double VectorVariable::getPlotOffset() const
-//{
-//    return mDataPlotOffset;
-//}
 
 void VectorVariable::addToData(const SharedVectorVariableT pOther)
 {

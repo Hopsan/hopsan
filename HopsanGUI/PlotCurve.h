@@ -133,10 +133,7 @@ public:
     QString getCurrentXPlotUnit() const;
 
     UnitScale getCurveTFUnitScale() const;
-    double getCurveTFOffset() const;
     void setCurveTFUnitScale(UnitScale us);
-    void setCurveTFOffset(double offset);
-    void setCurveTFUnitScaleAndOffset(const UnitScale &rUS, double offset);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
@@ -203,11 +200,10 @@ private:
     bool mHaveCustomData;
     bool mShowVsSamples;
 
-    // Cruve scale
+    // Curve scale
     UnitScale mCurveXDataUnitScale;
     UnitScale mCurveDataUnitScale;
     UnitScale mCurveTFUnitScale;
-    double mCurveTFOffset;
     double mCurveExtraDataScale;
     double mCurveExtraDataOffset;
 

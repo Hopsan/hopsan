@@ -144,6 +144,8 @@ private:
     void executeDisplayPlotScaleCommand(const QString cmd);
     void executeChangePlotOffsetCommand(const QString cmd);
     void executeDisplayPlotOffsetCommand(const QString cmd);
+    void executeChangeTimePlotOffsetCommand(const QString cmd);
+    void executeChangeFrequencyPlotOffsetCommand(const QString cmd);
     void executeSavePlotWindowCommand(const QString cmd);
     void executeInvertPlotVariableCommand(const QString cmd);
 
@@ -220,6 +222,7 @@ private:
     void addPlotCurve(SharedVectorVariableT data, const int axis, bool autoRefresh=true, int type=0, QColor color=QColor(), int thickness=2);
     void removePlotCurves(const int axis) const;
     void extractCurveStyle(QString &value, int &style, QColor &color, int &thickness);
+    void changeToFPlotOffset(const QString &args, const QString &type);
 
     void removeLogVariable(QString fullShortVarNameWithGen) const;
 

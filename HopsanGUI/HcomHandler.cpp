@@ -663,6 +663,24 @@ void HcomHandler::createCommands()
     didfosCmd.group = "Variable Commands";
     mCmdList << didfosCmd;
 
+    HcomCommand chtoCmd;
+    chtoCmd.cmd = "chto";
+    chtoCmd.description.append("Change default plot offset of specified time variable\n");
+    chtoCmd.description.append("offset should be given in default plotscale units");
+    chtoCmd.help.append(" Usage: chto [variable] [offset]");
+    chtoCmd.fnc = &HcomHandler::executeChangeTimePlotOffsetCommand;
+    chtoCmd.group = "Variable Commands";
+    mCmdList << chtoCmd;
+
+    HcomCommand chfoCmd;
+    chfoCmd.cmd = "chfo";
+    chfoCmd.description.append("Change default plot offset of specified frequency variable\n");
+    chfoCmd.description.append("offset should be given in default plotscale units");
+    chfoCmd.help.append(" Usage: chfo [variable] [offset]");
+    chfoCmd.fnc = &HcomHandler::executeChangeFrequencyPlotOffsetCommand;
+    chfoCmd.group = "Variable Commands";
+    mCmdList << chfoCmd;
+
     HcomCommand sequCmd;
     sequCmd.cmd = "sequ";
     sequCmd.description.append("Set quantity on specified variable(s)");
@@ -2753,15 +2771,17 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
     if (pVar)
     {
         QString type = variableTypeAsString(pVar->getVariableType());
-        //QString plotscale = QString("%1 (%2)").arg(pVar->getCustomUnitScale().mUnit).arg(pVar->getCustomUnitScale().mScale);
-        QString plotscale = "NULL";
         QString gen = QString("%1").arg(pVar->getGeneration());
         QString length = QString("%1").arg(pVar->getDataSize());
 
         QString infotext("\n");
         infotext.append("       Name: ").append(pVar->getFullVariableName()).append("\n");
         infotext.append("       Type: ").append(type).append("\n");
-        infotext.append(" Plot Scale: ").append(plotscale.trimmed()).append("\n");
+        infotext.append("   Quantity: ").append(pVar->getDataQuantity()).append("\n");
+        if (pVar->getDataQuantity() == TIMEVARIABLENAME || pVar->getDataQuantity() == FREQUENCYVARIABLENAME)
+        {
+            infotext.append(QString("Plot offset: %1").arg(pVar->getPlotOffset())).append("\n");
+        }
         infotext.append("     Length: ").append(length).append("\n");
         infotext.append(" Generation: ").append(gen);
 
@@ -3059,6 +3079,17 @@ void HcomHandler::executeDisplayPlotOffsetCommand(const QString cmd)
         }
     }
     return;
+}
+
+
+void HcomHandler::executeChangeTimePlotOffsetCommand(const QString cmd)
+{
+    changeToFPlotOffset(cmd, TIMEVARIABLENAME);
+}
+
+void HcomHandler::executeChangeFrequencyPlotOffsetCommand(const QString cmd)
+{
+    changeToFPlotOffset(cmd, FREQUENCYVARIABLENAME);
 }
 
 
@@ -4798,6 +4829,53 @@ void HcomHandler::extractCurveStyle(QString &value, int &type, QColor &color, in
 
     QString thicknessStr = style.section(",",2,2);
     thickness = thicknessStr.toInt();
+}
+
+void HcomHandler::changeToFPlotOffset(const QString &args, const QString &type)
+{
+    QStringList arglist = splitCommandArguments(args);
+    if(arglist.size() != 2)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    const QString &varName = arglist[0];
+    evaluateExpression(arglist[1]);
+    if(mAnsType != Scalar)
+    {
+        HCOMERR("Second argument must be a scalar variable.");
+        return;
+    }
+    double offset = mAnsScalar;
+
+    QStringList vars;
+    getMatchingLogVariableNames(varName,vars);
+    if(vars.isEmpty())
+    {
+        HCOMERR("Unknown variable: "+varName);
+        return;
+    }
+
+    int ctr=0;
+    for(const QString &var : vars)
+    {
+        SharedVectorVariableT pVar = getLogVariable(var);
+        if (pVar->getDataQuantity() == type)
+        {
+            UnitScale us;
+            gpConfig->getUnitScale(pVar->getDataQuantity(), gpConfig->getDefaultUnit(pVar->getDataQuantity()), us);
+            pVar->setPlotOffset(us.invRescale(offset));
+        }
+        else
+        {
+            ++ctr;
+        }
+    }
+    if (ctr > 0)
+    {
+        HCOMERR(QString("Ingored %1 variables that were not of %2 type").arg(ctr).arg(type));
+    }
 }
 
 

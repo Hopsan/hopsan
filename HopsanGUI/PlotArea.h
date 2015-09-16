@@ -102,21 +102,16 @@ class TimeOrFrequencyScaleWidget : public QWidget
 {
     Q_OBJECT
 public:
-    TimeOrFrequencyScaleWidget(const QList<PlotCurve*> &rPlotCurves, QWidget *pParent=0);
-//    void setScale(const QString &rUnitScale);
-//    void setOffset(const QString &rOffset);
+    TimeOrFrequencyScaleWidget(SharedVectorVariableT pToFVector, QWidget *pParent=0);
 
 signals:
     void valuesChanged();
 
-public slots:
-    void setVaules();
+private slots:
+    void setOffset(const QString &rOffset);
 
 private:
-    QList<PlotCurve*> mPlotCurves;
-    QString mQuantity;
-    QComboBox *mpScaleComboBox;
-    QLineEdit *mpOffsetLineEdit;
+    SharedVectorVariableT mpToFVector;
 };
 
 class CurveColorSelector

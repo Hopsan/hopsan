@@ -159,104 +159,42 @@ void HopQwtPlot::resizeEvent(QResizeEvent *e)
     emit sizeChanged(width(), height());
 }
 
-
-TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(const QList<PlotCurve*> &rPlotCurves, QWidget *pParent) :
-    QWidget(pParent)
+TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pToFVector, QWidget *pParent)
+    : QWidget(pParent)
 {
-    mPlotCurves = rPlotCurves;
-    if (!mPlotCurves.isEmpty())
+    mpToFVector = pToFVector;
+    if (mpToFVector)
     {
-        SharedVectorVariableT dataVar = mPlotCurves.first()->getSharedVectorVariable();
-        SharedVectorVariableT tfVar = dataVar->getSharedTimeOrFrequencyVector();
-
         QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-        mpScaleComboBox = new QComboBox(this);
-        mpOffsetLineEdit = new QLineEdit(this);
-        mpOffsetLineEdit->setValidator(new QDoubleValidator(this));
+        QLineEdit * pOffsetLineEdit = new QLineEdit(this);
+        pOffsetLineEdit->setValidator(new QDoubleValidator(this));
 
-        if ( dataVar->getVariableType() == TimeDomainType )
-        {
-            mQuantity = "Time";
-        }
-        else if ( dataVar->getVariableType() == FrequencyDomainType )
-        {
-            mQuantity = "Frequency";
-        }
-        else
-        {
-            mQuantity = "Invalid";
-        }
-        pHBoxLayout->addWidget(new QLabel(mQuantity, this));
-
-        pHBoxLayout->addWidget(new QLabel("Scale: ", this));
-        pHBoxLayout->addWidget(mpScaleComboBox);
+        //! @todo cant know we actually have default unit here
+        UnitScale us;
+        gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
+        pHBoxLayout->addWidget(new QLabel(QString("%1 [%2]: ").arg(us.mQuantity).arg(us.mUnit), this));
         pHBoxLayout->addWidget(new QLabel("Offset: ", this));
-        pHBoxLayout->addWidget(mpOffsetLineEdit);
+        pHBoxLayout->addWidget(pOffsetLineEdit);
 
-        // Don't do stuff if tfVar = NULL ptr
-        if (tfVar)
-        {
-            // Populate time scale box and try to figure out current time unit, (we assume all curves have same, they should belong to same generation)
-            //! @todo what if time = 0
-            //! @todo would be nice if we could sort on scale size
-            QMap<QString,double> units = gpConfig->getUnitScales(tfVar->getDataName());
-            QString currUnit = mPlotCurves.first()->getCurveTFUnitScale().mUnit;
-            if (currUnit.isEmpty())
-            {
-                //! @todo if we get here something is wrong (time should alwasy have a unit) /Peter
-                currUnit = gpConfig->getDefaultUnit(tfVar->getDataName());
-            }
+        // Set the current offset value
+        pOffsetLineEdit->setText(QString("%1").arg(us.rescale(mpToFVector->getPlotOffset())));
 
-            int ctr=0;
-            for (auto it=units.begin(); it!=units.end(); ++it)
-            {
-                mpScaleComboBox->addItem(QString("%1 [%2]").arg(it.value()).arg(it.key()));
-                if (currUnit == it.key())
-                {
-                    mpScaleComboBox->setCurrentIndex(ctr);
-                }
-                ++ctr;
-            }
-
-            // Set the current offset value
-            mpOffsetLineEdit->setText(QString("%1").arg(mPlotCurves.first()->getCurveTFOffset()));
-
-
-            // Connect signals to update time scale and offset when changing values
-            connect(mpScaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setVaules()));
-            connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setVaules()));
-        }
-        else
-        {
-            mpScaleComboBox->setDisabled(true);
-            mpOffsetLineEdit->setDisabled(true);
-        }
+        // Connect signals to update time scale and offset when changing values
+        connect(pOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setOffset(QString)));
     }
 }
 
-//void TimeOrFrequencyScaleWidget::setScale(const QString &rUnitScale)
-//{
-//    mpScaleComboBox->findText(rUnitScale, Qt::MatchContains);
-//    setVaules();
-//}
-
-//void TimeOrFrequencyScaleWidget::setOffset(const QString &rOffset)
-//{
-//    mpOffsetLineEdit->setText(rOffset);
-//    setVaules();
-//}
-
-void TimeOrFrequencyScaleWidget::setVaules()
+void TimeOrFrequencyScaleWidget::setOffset(const QString &rOffset)
 {
-    QString newUnit = extractBetweenFromQString(mpScaleComboBox->currentText().split(" ").last(), '[', ']');
-    for (PlotCurve* pCurve : mPlotCurves)
+    bool parseOK;
+    double val = rOffset.toDouble(&parseOK);
+    if (mpToFVector && parseOK)
     {
         UnitScale us;
-        gpConfig->getUnitScale(mQuantity, newUnit, us);
-        pCurve->setCurveTFUnitScaleAndOffset(us, mpOffsetLineEdit->text().toDouble());
+        gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
+        mpToFVector->setPlotOffset(us.invRescale(val));
+        emit valuesChanged();
     }
-    emit valuesChanged();
-
 }
 
 PlotArea::PlotArea(PlotTab *pParentPlotTab)
@@ -482,8 +420,8 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     LogDataHandler2 *pLDH = pCurve->getSharedVectorVariable()->getLogDataHandler();
     if (pLDH)
     {
-        // Uniqur connection will prevnet multiple connections to same log data handler
-        // Note! We connect here but we never disconnect, but that is OK, most of the time only data from same handler will be pressent
+        // Unique connection will prevent multiple connections to same log data handler
+        // Note! We connect here but we never disconnect, but that is OK, most of the time only data from same handler will be present
         // if that is not the case, well then update will be triggered more often, but who cares (not me)
         connect(pLDH, SIGNAL(dataAdded()), this, SLOT(updateCurvesToNewGenerations()), Qt::UniqueConnection);
     }
@@ -570,7 +508,7 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
     pCurve->disconnect();
     delete pCurve;
 
-    // Reset timevector in case we had special x-axis set previously
+    // Reset time vector in case we had special x-axis set previously
     refreshPlotAreaCustomXData();
 
     // Reset zoom and remove axis locks if last curve was removed (makes no sense to keep it zoomed in)
@@ -666,7 +604,7 @@ void PlotArea::hideCurve(PlotCurve *pCurve)
     //pCurve->disconnect();
     //delete pCurve;
 
-    // Reset timevector in case we had special x-axis set previously
+    // Reset time vector in case we had special x-axis set previously
     refreshPlotAreaCustomXData();
 
     // Reset zoom and remove axis locks if last curve was removed (makes no sense to keep it zoomed in)
@@ -763,7 +701,7 @@ QList<PlotCurve *> &PlotArea::getCurves()
 
 void PlotArea::setActivePlotCurve(PlotCurve *pCurve)
 {
-    // Mark deactive all others
+    // Mark deactivate all others
     //! @todo if only one can be active it should be enough to deactivate that one
     for(int i=0; i<mPlotCurves.size(); ++i)
     {
@@ -1739,28 +1677,40 @@ void PlotArea::openTimeScalingDialog()
     QDialog scaleDialog(this);
     scaleDialog.setWindowTitle("Change Time scaling and offset");
 
-    // One for each generation, automatic sort on key
-    QMultiMap<int, PlotCurve*> genCurveMap;
+    // Multi maps for time and frequency vectors in each generation
+    QMultiMap<int, SharedVectorVariableT> tofVectors;
+
+    // Go through every curve and collect time or frequency vectors in each generation
     //! @todo what if massive amount of generations
     for (PlotCurve* pCurve : mPlotCurves)
     {
-        genCurveMap.insertMulti(pCurve->getDataGeneration(), pCurve);
+        SharedVectorVariableT pToFVar = pCurve->getSharedTimeOrFrequencyVariable();
+        if (pToFVar->getDataName() == TIMEVARIABLENAME || pToFVar->getDataName() == FREQUENCYVARIABLENAME)
+        {
+            tofVectors.insertMulti(pCurve->getDataGeneration(), pToFVar);
+        }
     }
 
     QGridLayout *pGridLayout = new QGridLayout(&scaleDialog);
     pGridLayout->addWidget(new QLabel("Changing generation time scale and offset will affect all curves at that generation",&scaleDialog), 0, 0, 1, 2, Qt::AlignLeft);
     int row = 1;
-    for (int key : genCurveMap.uniqueKeys())
+    for (int gen : tofVectors.uniqueKeys())
     {
-        // Create and push scale widgets into grid, in sorted order from map
-        auto list = genCurveMap.values(key);
+        // Retrieve a list for each generation
+        QList<SharedVectorVariableT> list = tofVectors.values(gen);
 
-        TimeOrFrequencyScaleWidget *pTimeScaleW = new TimeOrFrequencyScaleWidget(list, &scaleDialog);
-        connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
+        // Extract unique time or frequency vectors from the list
+        QSet<SharedVectorVariableT> set = list.toSet();
 
-        pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(key+1), &scaleDialog), row, 0);
-        pGridLayout->addWidget(pTimeScaleW, row, 1);
-        ++row;
+        // Now create an editor widget for each unique time or frequency vector at this generation
+        for (auto it=set.begin(); it!=set.end(); ++it)
+        {
+            TimeOrFrequencyScaleWidget *pTimeScaleW = new TimeOrFrequencyScaleWidget(*it, &scaleDialog);
+            connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
+            pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(gen+1), &scaleDialog), row, 0);
+            pGridLayout->addWidget(pTimeScaleW, row, 1);
+            ++row;
+        }
     }
 
     // Add button box

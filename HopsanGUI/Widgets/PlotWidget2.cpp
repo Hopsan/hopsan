@@ -737,6 +737,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         QAction *pDeleteVariableAllGenAction = 0;
         QAction *pSetQuantityAction = 0;
         QAction *pInvertAction = 0;
+        QAction *pSetToFPlotOffsetAction = 0;
 
         // Add actions
         if (!isImportVariabel)
@@ -775,6 +776,12 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         pSetQuantityAction = menu.addAction("Set plot quantity");
         pInvertAction = menu.addAction("Invert plot");
 
+        if (pItem->getDataQuantity() == TIMEVARIABLENAME || pItem->getDataQuantity() == FREQUENCYVARIABLENAME)
+        {
+            pSetToFPlotOffsetAction = menu.addAction("Set Plot Offset");
+            pSetToFPlotOffsetAction->setDisabled(true); //! @todo fix this /Peter
+        }
+
         // Execute menu and wait for selected action
         QAction *pSelectedAction = menu.exec(QCursor::pos());
         if (pSelectedAction != 0)
@@ -807,7 +814,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             {
                 if (isAliasVariabel)
                 {
-                    //! @todo -2 (all) is not supported right now (will only rempove current) /Peter
+                    //! @todo -2 (all) is not supported right now (will only remove current) /Peter
                     mpLogDataHandler->unregisterAlias(pItem->getAliasName(), -2);
                 }
                 else
@@ -835,6 +842,15 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
                 if (pVar)
                 {
                     pVar->togglePlotInverted();
+                }
+            }
+            else if (pSelectedAction == pSetToFPlotOffsetAction)
+            {
+                //! @todo implement this
+                SharedVectorVariableT pVar = mpLogDataHandler->getVectorVariable(pItem->getFullName(), pItem->getGeneration());
+                if (pVar)
+                {
+
                 }
             }
         }

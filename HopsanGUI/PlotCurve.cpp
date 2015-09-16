@@ -100,7 +100,6 @@ PlotCurve::PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, cons
 
     mCurveExtraDataScale = 1.0;
     mCurveExtraDataOffset = 0.0;
-    mCurveTFOffset = 0.0;
 
     mpCurveSymbol = 0;
     mCurveSymbolSize = 8;
@@ -757,26 +756,6 @@ UnitScale PlotCurve::getCurveTFUnitScale() const
     }
 }
 
-void PlotCurve::setCurveTFOffset(double offset)
-{
-    mCurveTFOffset = offset;
-    updateCurve();
-}
-
-double PlotCurve::getCurveTFOffset() const
-{
-    return mCurveTFOffset;
-}
-
-
-//! @brief Sets the curve specific time or frequency vector scale and offset
-void PlotCurve::setCurveTFUnitScaleAndOffset(const UnitScale &rUS, double offset)
-{
-    mCurveTFUnitScale = rUS;
-    mCurveTFOffset = offset;
-    updateCurve();
-}
-
 void PlotCurve::setCurveExtraDataScaleAndOffset(const double scale, const double offset)
 {
     mCurveExtraDataScale = scale;
@@ -1226,11 +1205,11 @@ void PlotCurve::updateCurve()
         {
             tempX = mData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
             const double timeScale = mCurveTFUnitScale.toDouble(1.0);
-            const double timeOffset = mCurveTFOffset;
+            const double basePlotOffset =  mData->getSharedTimeOrFrequencyVector()->getPlotOffset();
 
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
-                tempX[i] = tempX[i]*timeScale + timeOffset;
+                tempX[i] = (tempX[i]+basePlotOffset)*timeScale;
                 tempY[i] = tempY[i]*yScale + yOffset;
             }
         }

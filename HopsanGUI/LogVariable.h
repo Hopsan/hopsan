@@ -155,7 +155,8 @@ public:
 //    const QString &getPlotScaleDataUnit() const;
 //    const QString &getActualPlotDataUnit() const;
 //    double getPlotScale() const;
-//    double getPlotOffset() const;
+    void setPlotOffset(const double offset);
+    double getPlotOffset() const;
 
     // Functions that only read data
     int getDataSize() const;
@@ -256,7 +257,7 @@ protected:
     SharedVectorVariableT mpSharedTimeOrFrequencyVector;
 
     //UnitScale mCustomUnitScale;
-    //double mDataPlotOffset;
+    double mDataPlotOffset = 0;
     int mGeneration;
     bool mAllowAutoRemove = true;
 };
