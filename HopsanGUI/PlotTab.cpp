@@ -134,11 +134,11 @@ void PlotTab::openAxisLabelDialog()
 }
 
 //! @todo currently only supports settings axis for top plot
-void PlotTab::openTimeScalingDialog()
+void PlotTab::openTimeOffsetDialog()
 {
     if (!mPlotAreas.empty())
     {
-        mPlotAreas[0]->openTimeScalingDialog();
+        mPlotAreas[0]->openTimeOffsetDialog();
     }
 }
 

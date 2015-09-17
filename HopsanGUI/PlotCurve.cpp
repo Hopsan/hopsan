@@ -1180,7 +1180,8 @@ void PlotCurve::updateCurve()
             direction = -1;
         }
         const double yScale = mCurveExtraDataScale*mCurveDataUnitScale.toDouble(1.0)*direction;
-        const double yOffset = mCurveExtraDataOffset;
+        const double yCurveLocalOffset = mCurveExtraDataOffset;
+        const double yBaseOffset = mData->getPlotOffset();
 
         if (mCustomXdata && !mShowVsSamples)
         {
@@ -1193,11 +1194,11 @@ void PlotCurve::updateCurve()
                 direction = -1;
             }
             const double xScale = mCurveXDataUnitScale.toDouble(1.0)*direction;
-            const double xOffset = 0.0;
+            const double xBaseOffset = mCustomXdata->getPlotOffset();
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
-                tempX[i] = tempX[i]*xScale + xOffset;
-                tempY[i] = tempY[i]*yScale + yOffset;
+                tempX[i] = (tempX[i]+xBaseOffset)*xScale;
+                tempY[i] = (tempY[i]+yBaseOffset)*yScale + yCurveLocalOffset;
             }
         }
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
@@ -1205,12 +1206,12 @@ void PlotCurve::updateCurve()
         {
             tempX = mData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
             const double timeScale = mCurveTFUnitScale.toDouble(1.0);
-            const double basePlotOffset =  mData->getSharedTimeOrFrequencyVector()->getPlotOffset();
+            const double baseTimeOffset = mData->getSharedTimeOrFrequencyVector()->getPlotOffset();
 
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
-                tempX[i] = (tempX[i]+basePlotOffset)*timeScale;
-                tempY[i] = tempY[i]*yScale + yOffset;
+                tempX[i] = (tempX[i]+baseTimeOffset)*timeScale;
+                tempY[i] = (tempY[i]+yBaseOffset)*yScale + yCurveLocalOffset;
             }
         }
         else
@@ -1220,7 +1221,7 @@ void PlotCurve::updateCurve()
             for (int i=0; i< tempX.size(); ++i)
             {
                 tempX[i] = i;
-                tempY[i] = tempY[i]*yScale + yOffset;
+                tempY[i] = (tempY[i]+yBaseOffset)*yScale + yCurveLocalOffset;
             }
         }
 

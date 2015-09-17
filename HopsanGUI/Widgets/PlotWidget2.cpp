@@ -65,6 +65,7 @@
 #include "Utilities/HelpPopUpWidget.h"
 #include "Widgets/FindWidget.h"
 #include "LogDataHandler2.h"
+#include "Widgets/TimeOffsetWidget.h"
 
 // Plot Widget help classes declarations
 // ----------------------------------------------------------------------------
@@ -776,10 +777,9 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         pSetQuantityAction = menu.addAction("Set plot quantity");
         pInvertAction = menu.addAction("Invert plot");
 
-        if (pItem->getDataQuantity() == TIMEVARIABLENAME || pItem->getDataQuantity() == FREQUENCYVARIABLENAME)
+        if (pItem->getDataQuantity() == TIMEVARIABLENAME)
         {
-            pSetToFPlotOffsetAction = menu.addAction("Set Plot Offset");
-            pSetToFPlotOffsetAction->setDisabled(true); //! @todo fix this /Peter
+            pSetToFPlotOffsetAction = menu.addAction("Set Time Offset");
         }
 
         // Execute menu and wait for selected action
@@ -846,11 +846,16 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
             }
             else if (pSelectedAction == pSetToFPlotOffsetAction)
             {
-                //! @todo implement this
                 SharedVectorVariableT pVar = mpLogDataHandler->getVectorVariable(pItem->getFullName(), pItem->getGeneration());
                 if (pVar)
                 {
-
+                    QDialog dialog;
+                    QVBoxLayout *pLayout = new QVBoxLayout(&dialog);
+                    pLayout->addWidget(new TimeOffsetWidget(pVar, &dialog));
+                    QPushButton *pCloseButton = new QPushButton("Close", &dialog);
+                    pLayout->addWidget(pCloseButton,0,Qt::AlignRight);
+                    connect(pCloseButton, SIGNAL(clicked(bool)), &dialog, SLOT(close()));
+                    dialog.exec();
                 }
             }
         }

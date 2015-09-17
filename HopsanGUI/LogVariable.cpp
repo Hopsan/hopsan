@@ -466,12 +466,18 @@ void VectorVariable::togglePlotInverted()
     emit dataChanged();
 }
 
-void VectorVariable::setPlotOffset(const double offset)
+//! @brief Set the plot offset if this is a Time vector otherwise do nothing
+//! @param[in] offset The desired time offset in Time base unit [seconds]
+void VectorVariable::setPlotOffsetIfTime(const double offset)
 {
-    mDataPlotOffset = offset;
-    emit dataChanged();
+    if (getDataQuantity() == TIMEVARIABLENAME)
+    {
+        mDataPlotOffset = offset;
+        emit dataChanged();
+    }
 }
 
+//! @brief Returns the plot offset
 double VectorVariable::getPlotOffset() const
 {
     return mDataPlotOffset;

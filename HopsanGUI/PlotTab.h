@@ -194,7 +194,7 @@ public slots:
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
     void openAxisLabelDialog();
-    void openTimeScalingDialog();
+    void openTimeOffsetDialog();
 
     void openCreateBodePlotDialog();
 

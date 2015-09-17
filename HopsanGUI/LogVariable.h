@@ -155,7 +155,7 @@ public:
 //    const QString &getPlotScaleDataUnit() const;
 //    const QString &getActualPlotDataUnit() const;
 //    double getPlotScale() const;
-    void setPlotOffset(const double offset);
+    void setPlotOffsetIfTime(const double offset);
     double getPlotOffset() const;
 
     // Functions that only read data

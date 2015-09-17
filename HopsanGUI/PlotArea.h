@@ -98,21 +98,7 @@ protected:
      virtual void resizeEvent( QResizeEvent *e );
 };
 
-class TimeOrFrequencyScaleWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    TimeOrFrequencyScaleWidget(SharedVectorVariableT pToFVector, QWidget *pParent=0);
 
-signals:
-    void valuesChanged();
-
-private slots:
-    void setOffset(const QString &rOffset);
-
-private:
-    SharedVectorVariableT mpToFVector;
-};
 
 class CurveColorSelector
 {
@@ -190,7 +176,7 @@ public slots:
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
     void openAxisLabelDialog();
-    void openTimeScalingDialog();
+    void openTimeOffsetDialog();
     void applyAxisSettings();
     void applyAxisLabelSettings();
     void applyLegendSettings();

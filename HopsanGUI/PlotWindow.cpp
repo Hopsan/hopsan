@@ -901,7 +901,7 @@ void PlotWindow::changedTab()
         connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
         connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));
-        connect(mpOpentimeScaleDialog,      SIGNAL(triggered()),    pCurrentTab,    SLOT(openTimeScalingDialog()));
+        connect(mpOpentimeScaleDialog,      SIGNAL(triggered()),    pCurrentTab,    SLOT(openTimeOffsetDialog()));
         connect(mpAllGenerationsDown,       SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsDown()));
         connect(mpAllGenerationsUp,         SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsUp()));
         connect(mpToggleAxisLockButton,     SIGNAL(triggered()),    pCurrentTab,    SLOT(toggleAxisLock()));

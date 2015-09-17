@@ -307,7 +307,8 @@ SOURCES += main.cpp \
     LogDataGeneration.cpp \
     RemoteCoreAccess.cpp \
     RemoteSimulationUtils.cpp \
-    Dialogs/LicenseDialog.cpp
+    Dialogs/LicenseDialog.cpp \
+    Widgets/TimeOffsetWidget.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -396,7 +397,8 @@ HEADERS += MainWindow.h \
     RemoteCoreAccess.h \
     RemoteSimulationUtils.h \
     Dialogs/LicenseDialog.h \
-    Utilities/EventFilters.h
+    Utilities/EventFilters.h \
+    Widgets/TimeOffsetWidget.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

@@ -51,6 +51,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "PlotWindow.h"
 #include "MessageHandler.h"
+#include "Widgets/TimeOffsetWidget.h"
 
 //Qwt includes
 #include "qwt_legend.h"
@@ -159,43 +160,6 @@ void HopQwtPlot::resizeEvent(QResizeEvent *e)
     emit sizeChanged(width(), height());
 }
 
-TimeOrFrequencyScaleWidget::TimeOrFrequencyScaleWidget(SharedVectorVariableT pToFVector, QWidget *pParent)
-    : QWidget(pParent)
-{
-    mpToFVector = pToFVector;
-    if (mpToFVector)
-    {
-        QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-        QLineEdit * pOffsetLineEdit = new QLineEdit(this);
-        pOffsetLineEdit->setValidator(new QDoubleValidator(this));
-
-        //! @todo cant know we actually have default unit here
-        UnitScale us;
-        gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
-        pHBoxLayout->addWidget(new QLabel(QString("%1 [%2]: ").arg(us.mQuantity).arg(us.mUnit), this));
-        pHBoxLayout->addWidget(new QLabel("Offset: ", this));
-        pHBoxLayout->addWidget(pOffsetLineEdit);
-
-        // Set the current offset value
-        pOffsetLineEdit->setText(QString("%1").arg(us.rescale(mpToFVector->getPlotOffset())));
-
-        // Connect signals to update time scale and offset when changing values
-        connect(pOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setOffset(QString)));
-    }
-}
-
-void TimeOrFrequencyScaleWidget::setOffset(const QString &rOffset)
-{
-    bool parseOK;
-    double val = rOffset.toDouble(&parseOK);
-    if (mpToFVector && parseOK)
-    {
-        UnitScale us;
-        gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
-        mpToFVector->setPlotOffset(us.invRescale(val));
-        emit valuesChanged();
-    }
-}
 
 PlotArea::PlotArea(PlotTab *pParentPlotTab)
     : QWidget(pParentPlotTab)
@@ -1672,10 +1636,10 @@ void PlotArea::openAxisLabelDialog()
     mpUserDefinedLabelsDialog->exec();
 }
 
-void PlotArea::openTimeScalingDialog()
+void PlotArea::openTimeOffsetDialog()
 {
-    QDialog scaleDialog(this);
-    scaleDialog.setWindowTitle("Change Time scaling and offset");
+    QDialog offsetDialog(this);
+    offsetDialog.setWindowTitle("Change Time Offset");
 
     // Multi maps for time and frequency vectors in each generation
     QMultiMap<int, SharedVectorVariableT> tofVectors;
@@ -1685,14 +1649,14 @@ void PlotArea::openTimeScalingDialog()
     for (PlotCurve* pCurve : mPlotCurves)
     {
         SharedVectorVariableT pToFVar = pCurve->getSharedTimeOrFrequencyVariable();
-        if (pToFVar->getDataName() == TIMEVARIABLENAME || pToFVar->getDataName() == FREQUENCYVARIABLENAME)
+        if (pToFVar && pToFVar->getDataName() == TIMEVARIABLENAME)
         {
             tofVectors.insertMulti(pCurve->getDataGeneration(), pToFVar);
         }
     }
 
-    QGridLayout *pGridLayout = new QGridLayout(&scaleDialog);
-    pGridLayout->addWidget(new QLabel("Changing generation time scale and offset will affect all curves at that generation",&scaleDialog), 0, 0, 1, 2, Qt::AlignLeft);
+    QGridLayout *pGridLayout = new QGridLayout(&offsetDialog);
+    pGridLayout->addWidget(new QLabel("Changing generation time offset will affect all curves in all plots",&offsetDialog), 0, 0, 1, 2, Qt::AlignLeft);
     int row = 1;
     for (int gen : tofVectors.uniqueKeys())
     {
@@ -1705,23 +1669,23 @@ void PlotArea::openTimeScalingDialog()
         // Now create an editor widget for each unique time or frequency vector at this generation
         for (auto it=set.begin(); it!=set.end(); ++it)
         {
-            TimeOrFrequencyScaleWidget *pTimeScaleW = new TimeOrFrequencyScaleWidget(*it, &scaleDialog);
+            TimeOffsetWidget *pTimeScaleW = new TimeOffsetWidget(*it, &offsetDialog);
             connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
-            pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(gen+1), &scaleDialog), row, 0);
+            pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(gen+1), &offsetDialog), row, 0);
             pGridLayout->addWidget(pTimeScaleW, row, 1);
             ++row;
         }
     }
 
     // Add button box
-    QPushButton *pDoneButton = new QPushButton("Close", &scaleDialog);
+    QPushButton *pDoneButton = new QPushButton("Close", &offsetDialog);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
     pGridLayout->addWidget(pButtonBox, row, 1);
-    connect(pDoneButton,SIGNAL(clicked()),&scaleDialog,SLOT(close()));
+    connect(pDoneButton,SIGNAL(clicked()),&offsetDialog,SLOT(close()));
     connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateAxisLabels()));
 
-    scaleDialog.exec();
+    offsetDialog.exec();
 }
 
 void PlotArea::applyAxisSettings()
