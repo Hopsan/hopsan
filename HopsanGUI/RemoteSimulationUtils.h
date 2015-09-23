@@ -34,13 +34,13 @@ class ModelWidget;
 
 #include "RemoteCoreAccess.h"
 
-class RemoteModelSimulationQueuer
+class RemoteSimulationQueueHandler
 {
 public:
     enum ReschedulingMethodEnumT {None, InternalLoadBalance, ExternalRescheduling};
 
-    RemoteModelSimulationQueuer() : mReschedulingMethod(None) {}
-    virtual ~RemoteModelSimulationQueuer();
+    RemoteSimulationQueueHandler() : mReschedulingMethod(None) {}
+    virtual ~RemoteSimulationQueueHandler();
     void reset();
     void clear();
 
@@ -72,22 +72,22 @@ protected:
     double SUm(int nThreads);
 };
 
-
-class RemoteModelSimulationQueuerLB : public RemoteModelSimulationQueuer
+//! @breif Internal Load Balance version
+class RemoteSimulationQueueHandlerLB : public RemoteSimulationQueueHandler
 {
 public:
     virtual bool simulateModels(bool &rExternalReschedulingNeeded);
     virtual bool simulateModels();
 };
 
-class RemoteModelSimulationQueuerCRFP : public RemoteModelSimulationQueuerLB
+class RemoteModelSimulationQueuerCRFP : public RemoteSimulationQueueHandlerLB
 {
 public:
     virtual bool simulateModels();
 };
 
 
-class RemoteModelSimulationQueuer_Homo_Re_PSO : public RemoteModelSimulationQueuerLB
+class RemoteModelSimulationQueuer_Homo_Re_PSO : public RemoteSimulationQueueHandlerLB
 {
 public:
     RemoteModelSimulationQueuer_Homo_Re_PSO()
@@ -126,9 +126,9 @@ protected:
 
 
 
-enum RemoteModelSimulationQueuerType {Basic, Pso_Homo_Reschedule, Crfp0_Homo_Reschedule, Crfp1_Homo_Reschedule};
-void chooseRemoteModelSimulationQueuer(RemoteModelSimulationQueuerType type);
-extern RemoteModelSimulationQueuer *gpRemoteModelSimulationQueuer;
+enum RemoteSimulationQueueHandlerType {Basic, Pso_Homo_Reschedule, Crfp0_Homo_Reschedule, Crfp1_Homo_Reschedule};
+RemoteSimulationQueueHandler* createRemoteSimulationQueueHandler(RemoteSimulationQueueHandlerType type);
+void removeRemoteSimulationQueueHandler(RemoteSimulationQueueHandler* pHandler);
 
 
 #endif

@@ -1974,6 +1974,9 @@ void OptimizationDialog::recreateCoreProgressBars()
     }
     mCoreProgressBarPtrs.clear();
 
+    // Decide if we should show progress per particle or just current simulation
+    bool showProgressPerParticle = gpConfig->getUseMulticore() || gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION);
+
     //Add new stuff depending on algorithm and number of threads
     switch (mpTerminal->mpHandler->mpOptHandler->getAlgorithm())
     {
@@ -1988,7 +1991,7 @@ void OptimizationDialog::recreateCoreProgressBars()
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         break;
     case Ops::ComplexRFP :    //Complex-RFP
-        if(gpConfig->getUseMulticore())
+        if(showProgressPerParticle)
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
             {
@@ -2005,7 +2008,7 @@ void OptimizationDialog::recreateCoreProgressBars()
         }
         break;
     case Ops::ParticleSwarm :    //Particle swarm
-        if(gpConfig->getUseMulticore())
+        if(showProgressPerParticle)
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
             {
@@ -2022,7 +2025,7 @@ void OptimizationDialog::recreateCoreProgressBars()
         }
         break;
     case Ops::ParameterSweep :    //Particle swarm
-        if(gpConfig->getUseMulticore())
+        if(showProgressPerParticle)
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
             {

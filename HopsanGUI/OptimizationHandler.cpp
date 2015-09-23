@@ -115,50 +115,19 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
         connect(mpWorker, SIGNAL(stepCompleted(int)),       this,               SLOT(checkIfRescheduleIsNeeded()));
 
+        int nModels = mpWorker->getNumberOfCandidates();
+        this->initModels(pModel, nModels, modelPath);
+
 #ifdef USEZMQ
         // Setup parallell server queues
         if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
         {
             int pm, pa; double su;
-
-//            // Check algorithm
-//            Ops::AlgorithmT algo = mpWorker->getAlgorithm();
-//            if (algo == Ops::ComplexRFP)
-//            {
-//                Ops::WorkerComplexRFP *pCRFPWorker = qobject_cast<Ops::WorkerComplexRFP*>(mpWorker);
-//                if (pCRFPWorker && pCRFPWorker->getParallelMethod() == Ops::TaskPrediction)
-//                {
-//                    //! @todo this Crfp0... method needs replacing with new data
-//                    chooseRemoteModelSimulationQueuer(Crfp0_Homo_Reschedule);
-//                }
-//                else if (pCRFPWorker && pCRFPWorker->getParallelMethod() == Ops::MultiDistance)
-//                {
-//                    //! @todo this Crfp0... method needs replacing with new data
-//                    chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule);
-//                }
-
-//                gpRemoteModelSimulationQueuer->benchmarkModel(mModelPtrs.front());
-//                gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, 8, pm, pa, su);
-//                reInitialize(pa);
-//            }
-//            else if (algo == Ops::ParticleSwarm)
-//            {
-//                //doit
-//                chooseRemoteModelSimulationQueuer(Pso_Homo_Reschedule);
-
-//                gpRemoteModelSimulationQueuer->benchmarkModel(mModelPtrs.front());
-//                gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, mModelPtrs.size(), pm, pa, su);
-//                mNeedsRescheduling = false;
-//            }
             rescheduleForBestSpeedup(pm,pa,su,true);
-
-            gpRemoteModelSimulationQueuer->setupModelQueues(mModelPtrs.mid(0, mpWorker->getNumberOfCandidates()), pm);
-
+            mpRemoteSimulationQueueHandler->setupModelQueues(mModelPtrs.mid(0, mpWorker->getNumberOfCandidates()), pm);
         }
 #endif
 
-        int nModels = mpWorker->getNumberOfCandidates();
-        this->initModels(pModel, nModels, modelPath);
         mpWorker->initialize();
         mpWorker->run();
 
@@ -187,7 +156,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
     // Clear and disconnect from parallell server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        gpRemoteModelSimulationQueuer->clear();
+        mpRemoteSimulationQueueHandler->clear();
     }
 #endif
 }
@@ -674,9 +643,9 @@ bool OptimizationHandler::evaluateAllCandidates()
 #ifdef USEZMQ
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
-        if (gpRemoteModelSimulationQueuer && gpRemoteModelSimulationQueuer->hasServers())
+        if (mpRemoteSimulationQueueHandler && mpRemoteSimulationQueueHandler->hasServers())
         {
-            simOK = gpRemoteModelSimulationQueuer->simulateModels(mNeedsRescheduling);
+            simOK = mpRemoteSimulationQueueHandler->simulateModels(mNeedsRescheduling);
         }
     }
     else
@@ -1170,13 +1139,11 @@ void OptimizationHandler::checkIfRescheduleIsNeeded()
         if (mNeedsRescheduling)
         {
             int pm, pa; double su;
-//            gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, 8, pm, pa, su);
-//            reInitialize(pa);
             rescheduleForBestSpeedup(pm,pa,su);
             // Setup parallell server queues
             if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
             {
-                gpRemoteModelSimulationQueuer->setupModelQueues(mModelPtrs.mid(0, mpWorker->getNumberOfCandidates()), pm);
+                mpRemoteSimulationQueueHandler->setupModelQueues(mModelPtrs.mid(0, mpWorker->getNumberOfCandidates()), pm);
             }
             mNeedsRescheduling = false;
         }
@@ -1218,30 +1185,33 @@ void OptimizationHandler::rescheduleForBestSpeedup(int &pm, int &pa, double &su,
         if (pCRFPWorker && pCRFPWorker->getParallelMethod() == Ops::TaskPrediction)
         {
             //! @todo this Crfp0... method needs replacing with new data
-            chooseRemoteModelSimulationQueuer(Crfp0_Homo_Reschedule);
+            removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
+            mpRemoteSimulationQueueHandler = createRemoteSimulationQueueHandler(Crfp0_Homo_Reschedule);
         }
         else if (pCRFPWorker && pCRFPWorker->getParallelMethod() == Ops::MultiDistance)
         {
             //! @todo this Crfp0... method needs replacing with new data
-            chooseRemoteModelSimulationQueuer(Crfp1_Homo_Reschedule);
+            removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
+            mpRemoteSimulationQueueHandler = createRemoteSimulationQueueHandler(Crfp1_Homo_Reschedule);
         }
 
         if (doBenchmark)
         {
-            gpRemoteModelSimulationQueuer->benchmarkModel(mModelPtrs.front());
+            mpRemoteSimulationQueueHandler->benchmarkModel(mModelPtrs.front());
         }
-        gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, 8, pm, pa, su);
+        mpRemoteSimulationQueueHandler->determineBestSpeedup(-1, 8, pm, pa, su);
         reInitialize(pa);
     }
     else if (algo == Ops::ParticleSwarm)
     {
-        chooseRemoteModelSimulationQueuer(Pso_Homo_Reschedule);
+        removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
+        mpRemoteSimulationQueueHandler = createRemoteSimulationQueueHandler(Pso_Homo_Reschedule);
 
         if (doBenchmark)
         {
-            gpRemoteModelSimulationQueuer->benchmarkModel(mModelPtrs.front());
+            mpRemoteSimulationQueueHandler->benchmarkModel(mModelPtrs.front());
         }
-        gpRemoteModelSimulationQueuer->determineBestSpeedup(-1, mModelPtrs.size(), pm, pa, su);
+        mpRemoteSimulationQueueHandler->determineBestSpeedup(-1, mModelPtrs.size(), pm, pa, su);
         mNeedsRescheduling = false; //! @todo maybe returnode
     }
 #endif

@@ -37,6 +37,9 @@
 #include <QEventLoop>
 #include <QDebug>
 #include <QTime>
+#include <chrono>
+
+using namespace std::chrono;
 
 
 class MyBarrier : public QObject
@@ -71,12 +74,105 @@ public slots:
     }
 };
 
-RemoteModelSimulationQueuer::~RemoteModelSimulationQueuer()
+class MyProgressTracker
+{
+public:
+    MyProgressTracker(int historyLength=1)
+    {
+        initialize(historyLength);
+    }
+
+    void initialize(int historyLength)
+    {
+        mLastAddTime = steady_clock::now();
+        mTimes = QVector<steady_clock::time_point>(qMax(historyLength,1), steady_clock::now());
+        mProgress = QVector<double>(qMax(historyLength,1), 0.0);
+        mLastCalculatedEta=0;
+    }
+
+    double secondsSinceLastCheck() const
+    {
+        return duration_cast<seconds>(steady_clock::now()-mLastAddTime).count();
+    }
+
+    void addProgress(const double progress)
+    {
+        mProgress.push_back(progress);
+        mTimes.push_back(steady_clock::now());
+        mProgress.pop_front();
+        mTimes.pop_front();
+        mLastAddTime = steady_clock::now();
+        //! @todo circle buffer would be better
+    }
+
+    double estimateRemainingTime()
+    {
+        // yi = k*xi+m, y=progress, m=oldestprogress, x=time relativ oldest time
+        // => estimate k from samples using least squares method
+        // Yi = yi-m
+        // sum ( Yi - k*xi)^2 -> 0
+        // => sum ( Yi^2 + (kxi)^2 - 2(Yi*k*xi) ) = 0 .... hmm get code from wikipedia instead
+
+        QVector<double> vx,vy;
+        vx.resize(mTimes.size());
+        vy.resize(mTimes.size());
+        double sumxi=0, sumyi=0, sumxiyi=0, sumxi2=0;
+        double n = mTimes.size();
+        for (int i=0; i<mTimes.size(); ++i)
+        {
+            const double xi = duration_cast<seconds>(mTimes[i]-mTimes[0]).count();
+            const double yi = mProgress[i]-mProgress[0];
+            vx[i] = xi;
+            vy[i] = yi;
+            sumxi += xi;
+            sumyi += yi;
+            sumxi2 += xi*xi;
+            sumxiyi += xi+yi;
+        }
+        double k_est = (sumxiyi-(sumxi*sumyi)/n)/(sumxi2-(sumxi*sumxi)/n);
+
+        if (mProgress[0] > 0)
+        {
+            gpMessageHandler->addInfoMessage(QString("%1").arg(k_est));
+        }
+
+
+        // Now figure out estimated remaining time
+        // y = 1-m = k_est * dX => dX = (1-m)/k_est;
+
+        mLastCalculatedEta = (1.0-mProgress[0])/k_est;
+        return mLastCalculatedEta;
+    }
+
+    double lastCalculatedEta() const
+    {
+        return mLastCalculatedEta;
+    }
+
+    double lastTrackedProgress() const
+    {
+        return mProgress.last();
+    }
+
+    int length() const
+    {
+        return mProgress.size();
+    }
+
+
+private:
+    steady_clock::time_point mLastAddTime;
+    QVector<steady_clock::time_point> mTimes;
+    QVector<double> mProgress;
+    double mLastCalculatedEta;
+};
+
+RemoteSimulationQueueHandler::~RemoteSimulationQueueHandler()
 {
     clear();
 }
 
-void RemoteModelSimulationQueuer::setupModelQueues(QVector<ModelWidget *> models, int numThreads)
+void RemoteSimulationQueueHandler::setupModelQueues(QVector<ModelWidget *> models, int numThreads)
 {
     reset();
     mAllModels = models;
@@ -137,13 +233,13 @@ void RemoteModelSimulationQueuer::setupModelQueues(QVector<ModelWidget *> models
     }
 }
 
-bool RemoteModelSimulationQueuer::simulateModels(bool &rExternalReschedulingNeeded)
+bool RemoteSimulationQueueHandler::simulateModels(bool &rExternalReschedulingNeeded)
 {
     rExternalReschedulingNeeded = false;
     return simulateModels();
 }
 
-bool RemoteModelSimulationQueuer::simulateModels()
+bool RemoteSimulationQueueHandler::simulateModels()
 {
     // Now start simulation of the first qued models
     QEventLoop event_loop;
@@ -219,7 +315,7 @@ bool RemoteModelSimulationQueuer::simulateModels()
 }
 
 
-void RemoteModelSimulationQueuer::determineBestSpeedup(int maxNumThreads, int maxPA, int &rPM, int &rPA, double &rSU)
+void RemoteSimulationQueueHandler::determineBestSpeedup(int maxNumThreads, int maxPA, int &rPM, int &rPA, double &rSU)
 {
     rPM = 1;
     rPA = 1;
@@ -296,12 +392,12 @@ void RemoteModelSimulationQueuer::determineBestSpeedup(int maxNumThreads, int ma
     }
 }
 
-bool RemoteModelSimulationQueuer::hasServers() const
+bool RemoteSimulationQueueHandler::hasServers() const
 {
     return !mRemoteCoreSimulationHandlers.isEmpty();
 }
 
-bool RemoteModelSimulationQueuer::connectToAddressServer()
+bool RemoteSimulationQueueHandler::connectToAddressServer()
 {
     // Get address server handler
     if(mpRemoteCoreAddressHandler.isNull())
@@ -326,12 +422,12 @@ bool RemoteModelSimulationQueuer::connectToAddressServer()
     return addrserver_connected;
 }
 
-double RemoteModelSimulationQueuer::SUa(int numParallellEvaluators, int numParticles)
+double RemoteSimulationQueueHandler::SUa(int numParallellEvaluators, int numParticles)
 {
     return 1;
 }
 
-double RemoteModelSimulationQueuer::SUq(int Pa, int Pm, int np, int nc)
+double RemoteSimulationQueueHandler::SUq(int Pa, int Pm, int np, int nc)
 {
     int nAvailableQueues = np * (1+(nc-Pm));
     if (nAvailableQueues < 1)
@@ -351,7 +447,7 @@ double RemoteModelSimulationQueuer::SUq(int Pa, int Pm, int np, int nc)
     }
 }
 
-void RemoteModelSimulationQueuer::reset()
+void RemoteSimulationQueueHandler::reset()
 {
     // Reset (to NULL) the shared pointers first, before clearing
     for (ModelWidget *pModel : mAllModels)
@@ -364,13 +460,13 @@ void RemoteModelSimulationQueuer::reset()
     mpRemoteCoreAddressHandler.clear();
 }
 
-void RemoteModelSimulationQueuer::clear()
+void RemoteSimulationQueueHandler::clear()
 {
     reset();
     mServerBlacklist.clear();
 }
 
-void RemoteModelSimulationQueuer::benchmarkModel(ModelWidget *pModel)
+void RemoteSimulationQueueHandler::benchmarkModel(ModelWidget *pModel)
 {
     bool addrserver_connected = connectToAddressServer();
     if (addrserver_connected)
@@ -413,7 +509,7 @@ void RemoteModelSimulationQueuer::benchmarkModel(ModelWidget *pModel)
     }
 }
 
-bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNeeded)
+bool RemoteSimulationQueueHandlerLB::simulateModels(bool &rExternalReschedulingNeeded)
 {
     rExternalReschedulingNeeded = false;
 
@@ -433,12 +529,15 @@ bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNe
         // Create a copy since we will deque and pop pointers
         QVector<QQueue<ModelWidget*>> modelQueues = mModelQueues;
 
-        MySemaphore semaphore(numQueues);
+        // This semaphore will asyncronusly keep track on each queues availability
+        MySemaphore numQueuesSemaphore(numQueues);
+        // A vector of the models currently being simulated
         QVector<ModelWidget*> modelsInProgress;
-        QVector<double> modelsInProgressProgress;
+        // A vector of the simulation progress for the  models currently being simulated
+        QVector<MyProgressTracker> modelsInProgressProgress;
 
         int numProcessedModels=0;
-        while (numProcessedModels < mAllModels.size() || (semaphore.available() != numQueues))
+        while (numProcessedModels < mAllModels.size() || (numQueuesSemaphore.available() != numQueues))
         {
             // Abort if no simulation resources exist
             if (numQueues == 0)
@@ -446,38 +545,44 @@ bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNe
                 break;
             }
 
-            if (semaphore.available() == numQueues)
+            // If all queues are available then start the remote parallel simulation of "numQueues" models
+            if (numQueuesSemaphore.available() == numQueues)
             {
+                // Disconnect any existing "simulationFinished" signals from the numQueuesSemaphore unlock slot
                 for (int m=0; m<modelsInProgress.size(); ++m)
                 {
-                    // Disconnect old signals from unlock slot
-                    QObject::disconnect(modelsInProgress[m], SIGNAL(simulationFinished()), &semaphore, SLOT(releaseSlot()));
+                    QObject::disconnect(modelsInProgress[m], SIGNAL(simulationFinished()), &numQueuesSemaphore, SLOT(releaseSlot()));
                 }
 
+                // Reinitialize "in prgoress" vectors
                 modelsInProgress.clear();
                 modelsInProgress.reserve(numQueues);
                 modelsInProgressProgress.clear();
-                modelsInProgressProgress.reserve(numQueues);
+                modelsInProgressProgress.resize(numQueues);
+                for (MyProgressTracker &pt : modelsInProgressProgress)
+                {
+                    //! @todo not hardcoded 10
+                    pt.initialize(10);
+                }
 
-                // Prepare simulation of the first in line in the queues
-                // Set handlers to models and hanlde signal slot connections
+
+                // Prepare simulation of the "first in line" models in each queue
                 for (int q=0; q<modelQueues.size(); ++q)
                 {
                     if (!modelQueues[q].empty())
                     {
                         ModelWidget *pModel = modelQueues[q].dequeue();
-
                         modelsInProgress.push_back(pModel);
-                        modelsInProgressProgress.push_back(0);
                         SharedRemoteCoreSimulationHandlerT pRCSH = mRemoteCoreSimulationHandlers[q];
 
+                        // Assign remote simulator wrapper class to models
                         pModel->setUseRemoteSimulationCore(pRCSH);
                         // Load model remotely
                         bool rc = pModel->loadModelRemote();
                         if (rc)
                         {
-                            // Connect this models signal to unlock slot
-                            QObject::connect(pModel, SIGNAL(simulationFinished()), &semaphore, SLOT(releaseSlot()));
+                            // Connect this models "finished" signal to semaphore unlock slot
+                            QObject::connect(pModel, SIGNAL(simulationFinished()), &numQueuesSemaphore, SLOT(releaseSlot()));
                         }
                         else
                         {
@@ -492,16 +597,18 @@ bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNe
                     }
                 }
 
-                // Start simulation
+                // Start nonblocking remote simulation of each queued model
                 for (int m=0; m<modelsInProgress.size(); ++m)
                 {
                     //! @todo they are not started in paralell exactly which may cause problems if we have manny particles
                     bool rc = modelsInProgress[m]->simulate_nonblocking();
+                    // If the simulation was initiated sucessfully then acquire one semaphore lock to indicate that one resource is taken
                     if (rc)
                     {
-                        semaphore.acquire();
+                        numQueuesSemaphore.acquire();
                         numProcessedModels++;
                     }
+                    // If simulation would not start then abort
                     else
                     {
                         remoteFailure = true;
@@ -509,6 +616,7 @@ bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNe
                     }
                 }
             }
+            // If all queus are not available for paralell simulation, then monitor the progress in order to detect slowdowns or lost resources
             else
             {
                 event_loop.processEvents();
@@ -516,48 +624,121 @@ bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNe
                 // If all are running then monitor progress
                 //! @todo right now ,slighlty unfair since models are not started at exactly the same time
 
-                double bestProgress=0;
-                for (int m=0; m<modelsInProgress.size(); ++m)
+                const int numModelsInProgress = modelsInProgress.size();
+
+                for (int m=0; m<numModelsInProgress; ++m)
                 {
-                    ModelWidget *pModel = modelsInProgress[m];
-                    //! @todo this is unfair as getSimualtionProgress is blocking (should maybe get estimated time remaining, instead)
-                    double progress = pModel->getSimulationProgress();
-                    modelsInProgressProgress[m] = progress;
+                    //! @todo not hardcoded 1 second
+                    if (modelsInProgressProgress[m].secondsSinceLastCheck() > 0.5)
+                    {
+                        ModelWidget *pModel = modelsInProgress[m];
+                        //! @todo this is unfair as getSimualtionProgress is blocking (should maybe get estimated time remaining, instead)
+                        double progress = pModel->getSimulationProgress();
+                        modelsInProgressProgress[m].addProgress(progress);
+                        modelsInProgressProgress[m].estimateRemainingTime();
+                    }
+                }
+
+                double bestETA=1e200;
+                double bestProgress=0;
+                QString etastr="eta ", progressstr="prog ";
+                for (int m=0; m<numModelsInProgress; ++m)
+                {
+                    double progress = modelsInProgressProgress[m].lastTrackedProgress();
+                    double eta = modelsInProgressProgress[m].lastCalculatedEta();
+
+                    etastr.append(QString("%1 ").arg(eta));
+                    progressstr.append(QString("%1 ").arg(progress));
+                    if (eta < bestETA)
+                    {
+                        bestETA = eta;
+                    }
                     if (progress > bestProgress)
                     {
                         bestProgress = progress;
                     }
                 }
+                gpMessageHandler->addInfoMessage(etastr);
+                gpMessageHandler->addInfoMessage(progressstr);
 
                 // Calc progress difference
-                double maxDiff=0;
-                QVector<double> diffs;
-                diffs.reserve(modelsInProgress.size());
-                for (int i=0; i<modelsInProgress.size(); ++i)
+                double maxEtaDiff=0;
+                QVector<double> etaDiffs;
+                QVector<double> progressDiffs;
+                etaDiffs.reserve(numModelsInProgress);
+                progressDiffs.reserve(numModelsInProgress);
+                for (int i=0; i<numModelsInProgress; ++i)
                 {
-                    double diff = (modelsInProgressProgress[i]-bestProgress)*100;
-                    diffs.push_back( diff );
-                    if ( fabs(diff) > maxDiff)
+                    double etaDiff = (modelsInProgressProgress[i].lastCalculatedEta()-bestETA);
+                    double progressDiff = (modelsInProgressProgress[i].lastTrackedProgress()-bestProgress);
+                    etaDiffs.push_back( etaDiff );
+                    progressDiffs.push_back( progressDiff );
+                    if ( fabs(etaDiff) > maxEtaDiff)
                     {
-                        maxDiff = fabs(diff);
+                        maxEtaDiff = fabs(etaDiff);
                     }
                     //qDebug() << "Parallel diffs: " << diffs;
                 }
 
-#define MAXDIFFTHRESH 50
-                //! @todo not hardcoded threshold, use smarter method
-                if (maxDiff > MAXDIFFTHRESH)
+#define MAXETADIFFTHRESH 60
+                //! @todo not hardcoded threshold, use smarter method, should scale with total expected simulation time
+                if (maxEtaDiff > MAXETADIFFTHRESH)
                 {
-                    someServerSlowdownProblem = true;
-                    for (int i=0; i<diffs.size(); ++i)
+                    for (int i=0; i<etaDiffs.size(); ++i)
                     {
                         // Blacklist servers trailing behind
-                        if (diffs[i] < -MAXDIFFTHRESH)
+                        // We scale the threshold to the progress diff, so that a large diff causes earlier abort
+                        double progressDiff = fabs(modelsInProgressProgress[i].lastTrackedProgress() - bestProgress);
+                        if ((etaDiffs[i] > MAXETADIFFTHRESH*(1.0-progressDiff)))
                         {
+                            someServerSlowdownProblem = true;
                             mServerBlacklist.append(mRemoteCoreSimulationHandlers[i]->getHopsanServerAddress());
                         }
                     }
                 }
+
+//                double bestProgress=0;
+//                for (int m=0; m<modelsInProgress.size(); ++m)
+//                {
+//                    ModelWidget *pModel = modelsInProgress[m];
+//                    //! @todo this is unfair as getSimualtionProgress is blocking (should maybe get estimated time remaining, instead)
+//                    double progress = pModel->getSimulationProgress();
+//                    modelsInProgressProgress[m] = progress;
+//                    if (progress > bestProgress)
+//                    {
+//                        bestProgress = progress;
+//                    }
+//                }
+
+//                // Calc progress difference
+//                double maxDiff=0;
+//                QVector<double> diffs;
+//                diffs.reserve(modelsInProgress.size());
+//                for (int i=0; i<modelsInProgress.size(); ++i)
+//                {
+//                    double diff = (modelsInProgressProgress[i]-bestProgress)*100;
+//                    diffs.push_back( diff );
+//                    if ( fabs(diff) > maxDiff)
+//                    {
+//                        maxDiff = fabs(diff);
+//                    }
+//                    //qDebug() << "Parallel diffs: " << diffs;
+//                }
+
+//#define MAXDIFFTHRESH 50
+//                //! @todo not hardcoded threshold, use smarter method
+//                if (maxDiff > MAXDIFFTHRESH)
+//                {
+//                    someServerSlowdownProblem = true;
+//                    for (int i=0; i<diffs.size(); ++i)
+//                    {
+//                        // Blacklist servers trailing behind
+//                        if (diffs[i] < -MAXDIFFTHRESH)
+//                        {
+//                            mServerBlacklist.append(mRemoteCoreSimulationHandlers[i]->getHopsanServerAddress());
+//                        }
+//                    }
+//                }
 
                 // Terminate simulation
                 if (someServerSlowdownProblem)
@@ -574,8 +755,8 @@ bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNe
             }
         }
 
-        // Wait until all simualtions finnished, and data collected and such things
-        while (semaphore.available() != numQueues)
+        // Wait until all simulations finnished, and data collected and such things
+        while (numQueuesSemaphore.available() != numQueues)
         {
             event_loop.processEvents();
         }
@@ -601,16 +782,30 @@ bool RemoteModelSimulationQueuerLB::simulateModels(bool &rExternalReschedulingNe
                 if (pa != mAllModels.size())
                 {
                     rExternalReschedulingNeeded = true;
-                    gpMessageHandler->addInfoMessage("Aborting iteration, rescheduling by optimization algorithm needed");
-                    return false;
+                    gpMessageHandler->addInfoMessage("Note! Rescheduling of optimization algorithm needed");
                 }
-                else
-                {
-                    // Do internal load balancing only
-                    // Note! We do not need to run benchmark again
-                    gpMessageHandler->addInfoMessage("External rescheduling is not needed, using internal load balancing");
-                    setupModelQueues(mAllModels, pm);
-                }
+
+                // Do internal load balancing
+                // Note! We do not need to run benchmark again
+                gpMessageHandler->addInfoMessage("Using internal load balancing");
+                setupModelQueues(mAllModels, pm);
+
+//                int pm,pa;
+//                double su;
+//                determineBestSpeedup(-1, -1, pm, pa, su);
+//                if (pa != mAllModels.size())
+//                {
+//                    rExternalReschedulingNeeded = true;
+//                    gpMessageHandler->addInfoMessage("Aborting iteration, rescheduling by optimization algorithm needed");
+//                    return false;
+//                }
+//                else
+//                {
+//                    // Do internal load balancing only
+//                    // Note! We do not need to run benchmark again
+//                    gpMessageHandler->addInfoMessage("External rescheduling is not needed, using internal load balancing");
+//                    setupModelQueues(mAllModels, pm);
+//                }
             }
             else if (mReschedulingMethod == InternalLoadBalance)
             {
@@ -645,7 +840,7 @@ bool RemoteModelSimulationQueuerCRFP::simulateModels()
 }
 
 
-bool RemoteModelSimulationQueuerLB::simulateModels()
+bool RemoteSimulationQueueHandlerLB::simulateModels()
 {
     bool dummy;
     return simulateModels(dummy);
@@ -667,7 +862,7 @@ double RemoteModelSimulationQueuer_Homo_Re_PSO::SUa(int numParallellEvaluators, 
     return 0;
 }
 
-double RemoteModelSimulationQueuer::SUm(int nThreads)
+double RemoteSimulationQueueHandler::SUm(int nThreads)
 {
     // Convert to zero-based index
     nThreads--;
@@ -740,33 +935,42 @@ double RemoteModelSimulationQueuer_Homo_Re_CRFP1::SUq(int Pa, int Pm, int np, in
 
 
 
-void chooseRemoteModelSimulationQueuer(RemoteModelSimulationQueuerType type)
+RemoteSimulationQueueHandler* createRemoteSimulationQueueHandler(RemoteSimulationQueueHandlerType type)
 {
-    if (gpRemoteModelSimulationQueuer)
-    {
-        delete gpRemoteModelSimulationQueuer;
-    }
-
     if (type == Basic)
     {
-        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer();
+        return new RemoteSimulationQueueHandler();
     }
     else if (type == Pso_Homo_Reschedule)
     {
-        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_Homo_Re_PSO();
+        return new RemoteModelSimulationQueuer_Homo_Re_PSO();
     }
     else if (type == Crfp0_Homo_Reschedule)
     {
-        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_Homo_Re_CRFP0();
+        return new RemoteModelSimulationQueuer_Homo_Re_CRFP0();
     }
     else if (type == Crfp1_Homo_Reschedule)
     {
-        gpRemoteModelSimulationQueuer = new RemoteModelSimulationQueuer_Homo_Re_CRFP1();
+        return new RemoteModelSimulationQueuer_Homo_Re_CRFP1();
+    }
+    else
+    {
+        return 0;
     }
 }
 
-RemoteModelSimulationQueuer *gpRemoteModelSimulationQueuer=0;
+void removeRemoteSimulationQueueHandler(RemoteSimulationQueueHandler *pHandler)
+{
+    if (pHandler)
+    {
+        delete pHandler;
+    }
+}
+
 
 #include "RemoteSimulationUtils.moc"
 
 #endif
+
+
+

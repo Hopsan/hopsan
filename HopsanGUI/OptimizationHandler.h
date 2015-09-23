@@ -63,6 +63,8 @@ private:
     OptimizationHandler *mpHandler;
 };
 
+// Forward declaration
+class RemoteSimulationQueueHandler;
 
 class OptimizationHandler : public QObject
 {
@@ -165,6 +167,7 @@ private:
     QVector< QVector<double> > mLoggedParameters;
 
     bool mNeedsRescheduling;
+    RemoteSimulationQueueHandler *mpRemoteSimulationQueueHandler=0;
 };
 
 #endif // OPTIMIZATIONHANDLER_H
