@@ -1234,11 +1234,11 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
     }
     if(mpPlotBestWorstCheckBox->isChecked())
     {
-        templateCode.replace("<<<plotbestworst>>>","on");
+        templateCode.replace("<<<plotobjectives>>>","on");
     }
     else
     {
-        templateCode.replace("<<<plotbestworst>>>","off");
+        templateCode.replace("<<<plotobjectives>>>","off");
     }
 
     QString extraVars;
