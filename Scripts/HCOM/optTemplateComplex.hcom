@@ -30,7 +30,9 @@ opt set plotobjectives <<<plotobjectives>>>
 opt set plotparameters off
 opt set plotentropy <<<plotentropy>>>
 
-<<<extravars>>><<<extraplots>>><<<setminmax>>>
+<<<extravars>>>
+<<<extraplots>>>
+<<<setminmax>>>
 
 set backup off
 
