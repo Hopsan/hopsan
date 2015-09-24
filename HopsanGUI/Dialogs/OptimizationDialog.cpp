@@ -1249,7 +1249,7 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
         if(mpMethodComboBox->currentIndex() == 0)
         {
             extraVars.append("\nopt set method 0");
-            int nstep = nmodels/2;
+            int nstep = qMax(1,nmodels/2);
             int nret = nmodels-nstep;
             extraVars.append("\nopt set nstep "+QString::number(nstep));
             extraVars.append("\nopt set nret "+QString::number(nret));
