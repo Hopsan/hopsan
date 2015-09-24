@@ -2,12 +2,12 @@
 
 #Evaluate function
 define setpars
-<<<setpars>>>
+    <<<setpars>>>
 enddefine
 
 #Objective function
 define obj
-<<<objfuncs>>>
+    <<<objfuncs>>>
     totalObj = <<<totalobj>>>
     opt set obj optvar(evalid) totalObj
 enddefine

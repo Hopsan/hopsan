@@ -79,6 +79,7 @@ QVector<int> linspace(const int start, const int stop, const int step=1);
 QString extractFilenameExtension(const QString &rFilename);
 void splitFilepath(const QString &rFilepath, QString &rDirPath, QString &rFilename, QString &rFilesuffix);
 bool isVersionGreaterThan(QString v1, QString v2);
+bool replacePattern(const QString &rPattern, const QString &rReplacement, QString &rText);
 
 // Inline utility functions
 //! @brief Compare two doubles with given tolerance

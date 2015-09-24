@@ -61,6 +61,7 @@
 #include "Utilities/HighlightingUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"
+#include "Utilities/GUIUtilities.h"
 
 class CentralTabWidget;
 
@@ -327,7 +328,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     QWizardPage *pOutputWidget = new QWizardPage(this);
     pOutputWidget->setLayout(pOutputLayout);
 
-    //Toolbar
+    //Tool bar
     QToolButton *pHelpButton = new QToolButton(this);
     pHelpButton->setToolTip(tr("Show context help"));
     pHelpButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
@@ -1141,8 +1142,6 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
     for(int i=0; i<mFunctionName.size(); ++i)
     {
         QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
-        objFunc.prepend("    ");
-        objFunc.replace("\n", "\n    ");
         objFunc.replace("<<<id>>>", QString::number(i+1));
         for(int j=0; j<mFunctionComponents[i].size(); ++j)
         {
@@ -1190,10 +1189,11 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
             par = mSelectedComponents[p]+"."+mSelectedParameters[p];
         }
         gpTerminalWidget->mpHandler->toShortDataNames(par);
-        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
+        setPars.append("chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
+    // Remove last newlines
     setPars.chop(1);
     setMinMax.chop(1);
 
@@ -1218,11 +1218,11 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
     }
     if(mpPlotParticlesCheckBox->isChecked())
     {
-        templateCode.replace("<<<plotpoints>>>","on");
+        replacePattern("<<<plotpoints>>>", "on", templateCode);
     }
     else
     {
-        templateCode.replace("<<<plotpoints>>>","off");
+        replacePattern("<<<plotpoints>>>", "off", templateCode);
     }
     if(mpPlotEntropyCheckBox->isChecked())
     {
@@ -1263,12 +1263,12 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
         }
     }
 
-    templateCode.replace("<<<objfuncs>>>", objFuncs);
+    replacePattern("<<<objfuncs>>>", objFuncs, templateCode);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<plotvars>>>", "");
 
     templateCode.replace("<<<subalgorithm>>>", subAlgorithm);
-    templateCode.replace("<<<extraplots>>>", extraPlots);
+    replacePattern("<<<extraplots>>>", extraPlots, templateCode);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
     templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
@@ -1868,7 +1868,7 @@ QTreeWidgetItem* OptimizationDialog::findParameterTreeItem(QString componentName
 }
 
 
-//! @brief Removes an objevtive function from the selected functions
+//! @brief Removes an objective function from the selected functions
 void OptimizationDialog::removeParameter()
 {
     QToolButton *button = qobject_cast<QToolButton *>(sender());
@@ -2038,7 +2038,7 @@ void OptimizationDialog::addObjectiveFunction(int idx, double weight, double nor
 }
 
 
-//! @brief Removes an objevtive function from the selected functions
+//! @brief Removes an objective function from the selected functions
 void OptimizationDialog::removeFunction()
 {
     QToolButton *button = qobject_cast<QToolButton *>(sender());
@@ -2205,7 +2205,7 @@ void OptimizationDialog::loadScriptFile()
     QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Script File)"),
                                                     gpConfig->getStringSetting(CFG_SCRIPTDIR),
                                                     tr("HCOM Script (*.hcom)"));
-    if(filePath.isEmpty())      //Cancelled by user
+    if(filePath.isEmpty())      //Canceled by user
         return;
 
     gpConfig->setStringSetting(CFG_SCRIPTDIR, QFileInfo(filePath).absolutePath());
@@ -2434,7 +2434,7 @@ void OptimizationDialog::applyParameters()
     QStringList code;
     mpTerminal->mpHandler->getFunctionCode("setpars", code);
     bool abort;
-    bool oldEchoState = gpTerminalWidget->mpHandler->mpConsole->getDontPrint();     //Remember old dont print setting (necessary in case the setpars function contains an "echo off" command)
+    bool oldEchoState = gpTerminalWidget->mpHandler->mpConsole->getDontPrint();     //Remember old don't print setting (necessary in case the setpars function contains an "echo off" command)
     bool oldEchoStateError = gpTerminalWidget->mpHandler->mpConsole->getDontPrintErrors();
     gpTerminalWidget->mpHandler->setAcceptsOptimizationCommands(true);              //Temporarily allow optimization commands in main terminal
     gpTerminalWidget->mpHandler->runScriptCommands(QStringList() << "opt set evalid "+QString::number(idx), &abort);    //Set evalId corresponding to clicked button
