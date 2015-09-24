@@ -2243,7 +2243,7 @@ void OptimizationDialog::updateCoreProgressBars()
             {
                 ModelWidget *pOptModel = pOptHandler->mModelPtrs[p];
 #ifdef USEZMQ
-                if (pOptModel->isRemoteCoreConnected() || pOptModel->isExternalRemoteCoreConnected())
+                if (pOptModel->isRemoteCoreConnected())
                 {
                     mCoreProgressBarPtrs[p]->setValue(pOptModel->getSimulationProgress()*100);
                 }

@@ -119,7 +119,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         this->initModels(pModel, nModels, modelPath);
 
 #ifdef USEZMQ
-        // Setup parallell server queues
+        // Setup parallel server queues
         if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
         {
             int pm, pa; double su;
@@ -153,7 +153,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
     }
 
 #ifdef USEZMQ
-    // Clear and disconnect from parallell server queues
+    // Clear and disconnect from parallel server queues
     if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
     {
         mpRemoteSimulationQueueHandler->clear();
@@ -1140,7 +1140,7 @@ void OptimizationHandler::checkIfRescheduleIsNeeded()
         {
             int pm, pa; double su;
             rescheduleForBestSpeedup(pm,pa,su);
-            // Setup parallell server queues
+            // Setup parallel server queues
             if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
             {
                 mpRemoteSimulationQueueHandler->setupModelQueues(mModelPtrs.mid(0, mpWorker->getNumberOfCandidates()), pm);

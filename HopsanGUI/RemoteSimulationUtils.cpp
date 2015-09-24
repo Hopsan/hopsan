@@ -427,6 +427,8 @@ bool RemoteSimulationQueueHandler::connectToAddressServer()
 
 double RemoteSimulationQueueHandler::SUa(int numParallellEvaluators, int numParticles)
 {
+    Q_UNUSED(numParallellEvaluators)
+    Q_UNUSED(numParticles)
     return 1;
 }
 

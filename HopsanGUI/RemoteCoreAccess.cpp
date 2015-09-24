@@ -50,7 +50,7 @@ zmq::context_t zmqContext(1, 63);
 zmq::context_t zmqContext(1);
 #endif
 
-// This variable must be instansiated AFTER zmqContext so that they are destoryed in the correct order
+// This variable must be instantiated AFTER zmqContext so that they are destroyed in the correct order
 // It must be in this file so that we can be sure of that
 SharedRemoteCoreAddressHandlerT gpRemoteCoreAddressHandler;
 
@@ -67,7 +67,7 @@ SharedRemoteCoreAddressHandlerT getSharedRemoteCoreAddressHandler()
 RemoteCoreSimulationHandler::RemoteCoreSimulationHandler()
 {
     mpRemoteHopsanClient = new RemoteHopsanClient(zmqContext);
-    mpRemoteHopsanClient->setMaxWorkerStatusRequestWaitTime(0.2); //!< @todo This is a temprary hack, need to set this from the outside and maybe not request so often
+    mpRemoteHopsanClient->setMaxWorkerStatusRequestWaitTime(0.2); //!< @todo This is a temporary hack, need to set this from the outside and maybe not request so often
 }
 
 
@@ -299,7 +299,7 @@ bool RemoteCoreSimulationHandler::getCoreMessages(QVector<QString> &rTypes, QVec
                 }
                 else
                 {
-                    //! @todo This will realocate message vectors not very clever, should use reserve and push_back instead maybe
+                    //! @todo This will reallocate message vectors not very clever, should use reserve and push_back instead maybe
                     rTypes.pop_back();
                     rMessages.pop_back();
                     rTags.pop_back();
@@ -338,7 +338,7 @@ void RemoteCoreAddressHandler::requestServerInfo(QString address)
         if (client.requestServerStatus(status))
         {
             // If we got status then update our mapped info, we use iterator and reference to avoid
-            // inserting into map and therby destorying iterators that might be used when this function is called
+            // inserting into map and thereby destroying iterators that might be used when this function is called
             auto it = mAvailableServers.find(address);
             if (it != mAvailableServers.end())
             {
@@ -348,11 +348,11 @@ void RemoteCoreAddressHandler::requestServerInfo(QString address)
                 //it.value().speed = status.
             }
         }
-        //else server is dead maybe? Then discard the server entery
+        //else server is dead maybe? Then discard the server entry
         else
         {
             // Cant remove here will break iterators in calling functions
-            // Tagg it instead and schedule for later removal
+            // Tag it instead and schedule for later removal
             auto it = mAvailableServers.find(address);
             if (it != mAvailableServers.end())
             {

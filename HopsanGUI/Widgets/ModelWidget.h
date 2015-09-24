@@ -90,14 +90,13 @@ public:
     bool undefineVariableAlias(const QString &rFullName);
     QString getVariableAlias(const QString &rFullName);
 
-    void setUseRemoteSimulationCore(bool tf, bool useDispatch);
+    void setUseRemoteSimulationCore(bool useRemoteCore, bool useAddressServer);
 #ifdef USEZMQ
     void setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT pRSCH);
     double getSimulationProgress() const;
 #endif
     bool getUseRemoteSimulationCore() const;
     bool isRemoteCoreConnected() const;
-    bool isExternalRemoteCoreConnected() const;
     bool loadModelRemote();
 
     SystemContainer *getTopLevelSystemContainer() const;
@@ -149,8 +148,6 @@ private:
     bool mIsSaved;
     int mLimitedLockModelEditingCounter=0;
     int mFullLockModelEditingCounter=0;
-    bool mUseRemoteCore=false;
-    bool mUseRemoteCoreAddressServer=false;
 
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWarningWidget;
@@ -161,7 +158,6 @@ private:
     SimulationThreadHandler *mpSimulationThreadHandler;
 #ifdef USEZMQ
     SharedRemoteCoreSimulationHandlerT mpRemoteCoreSimulationHandler;
-    SharedRemoteCoreSimulationHandlerT mpExternalRemoteCoreSimulationHandler;
     double mSimulationProgress;
 #endif
     QMutex mSimulateMutex;
