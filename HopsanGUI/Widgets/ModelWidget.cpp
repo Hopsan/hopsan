@@ -518,7 +518,11 @@ double ModelWidget::getSimulationProgress() const
 
 bool ModelWidget::getUseRemoteSimulationCore() const
 {
+#ifdef USEZMQ
     return !mpRemoteCoreSimulationHandler.isNull();
+#else
+    return false;
+#endif
 }
 
 bool ModelWidget::isRemoteCoreConnected() const
