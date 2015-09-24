@@ -72,7 +72,7 @@ protected:
     double SUm(int nThreads);
 };
 
-//! @breif Internal Load Balance version
+//! @brief Internal Load Balance version
 class RemoteSimulationQueueHandlerLB : public RemoteSimulationQueueHandler
 {
 public:
@@ -80,17 +80,17 @@ public:
     virtual bool simulateModels();
 };
 
-class RemoteModelSimulationQueuerCRFP : public RemoteSimulationQueueHandlerLB
+class RemoteSimulationQueueHandlerCRFP : public RemoteSimulationQueueHandlerLB
 {
 public:
     virtual bool simulateModels();
 };
 
 
-class RemoteModelSimulationQueuer_Homo_Re_PSO : public RemoteSimulationQueueHandlerLB
+class RemoteSimulationQueueHandler_Homo_Re_PSO : public RemoteSimulationQueueHandlerLB
 {
 public:
-    RemoteModelSimulationQueuer_Homo_Re_PSO()
+    RemoteSimulationQueueHandler_Homo_Re_PSO()
     {
         mReschedulingMethod=InternalLoadBalance;
         mAlgorithmMaxPa = 1024;
@@ -99,10 +99,10 @@ protected:
     virtual double SUa(int numParallellEvaluators, int numParticles);
 };
 
-class RemoteModelSimulationQueuer_Homo_Re_CRFP0 : public RemoteModelSimulationQueuerCRFP
+class RemoteSimulationQueueHandler_Homo_Re_CRFP0 : public RemoteSimulationQueueHandlerCRFP
 {
 public:
-    RemoteModelSimulationQueuer_Homo_Re_CRFP0()
+    RemoteSimulationQueueHandler_Homo_Re_CRFP0()
     {
         mReschedulingMethod=ExternalRescheduling;
         mAlgorithmMaxPa = 8;
@@ -111,10 +111,10 @@ protected:
     double SUa(int numParallellEvaluators, int numParticles);
 };
 
-class RemoteModelSimulationQueuer_Homo_Re_CRFP1 : public RemoteModelSimulationQueuerCRFP
+class RemoteSimulationQueueHandler_Homo_Re_CRFP1 : public RemoteSimulationQueueHandlerCRFP
 {
 public:
-    RemoteModelSimulationQueuer_Homo_Re_CRFP1()
+    RemoteSimulationQueueHandler_Homo_Re_CRFP1()
     {
         mReschedulingMethod=ExternalRescheduling;
         mAlgorithmMaxPa = 8;
