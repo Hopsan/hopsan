@@ -142,7 +142,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpCRLineEdit->setValidator(new QDoubleValidator());
 
     mpNumModelsLabel = new QLabel("Number of models: ");
-    mpNumModelsLineEdit = new QLineEdit(QString::number(gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS)), this);
+    mpNumModelsLineEdit = new QLineEdit(QString::number(qMax(1,gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS))), this);
     mpNumModelsLineEdit->setValidator(new QIntValidator());
 
     mpMethodLabel = new QLabel("Parallel method: ");
@@ -1242,22 +1242,22 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
     }
 
     QString extraVars;
+    int nmodels = mpNumModelsLineEdit->text().toInt();
     if(subAlgorithm == "complexrfp")
     {
-        extraVars.append("opt set nmodels "+mpNumModelsLineEdit->text());
-        int nthreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+        extraVars.append("opt set nmodels "+QString::number(nmodels));
         if(mpMethodComboBox->currentIndex() == 0)
         {
             extraVars.append("\nopt set method 0");
-            int nstep = nthreads/2;
-            int nret = nthreads-nstep;
+            int nstep = nmodels/2;
+            int nret = nmodels-nstep;
             extraVars.append("\nopt set nstep "+QString::number(nstep));
-            extraVars.append("\nopt set nsret "+QString::number(nret));
+            extraVars.append("\nopt set nret "+QString::number(nret));
         }
         else
         {
             extraVars.append("\nopt set method 1");
-            extraVars.append("\nopt set ndist "+QString::number(nthreads));
+            extraVars.append("\nopt set ndist "+QString::number(nmodels));
             extraVars.append("\nopt set alphamin 0.0");
             extraVars.append("\nopt set alphamin 2.0");
         }
