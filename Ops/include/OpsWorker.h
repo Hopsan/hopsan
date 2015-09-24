@@ -41,7 +41,7 @@
 
 namespace Ops {
 
-enum AlgorithmT {Undefined, ComplexRF, ComplexRFP, NelderMead, ParticleSwarm, ParameterSweep, DifferentialEvolution};
+enum AlgorithmT {Undefined, NelderMead, ComplexRF, ComplexRFP,  ParticleSwarm, DifferentialEvolution, ParameterSweep};
 enum SamplingT {SamplingRandom, SamplingLatinHypercube};
 
 class Evaluator;

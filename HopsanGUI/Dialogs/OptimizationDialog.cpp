@@ -82,7 +82,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     QLabel *pAlgorithmLabel = new QLabel("Optimiation algorithm:");
     mpAlgorithmBox = new QComboBox(this);
-    mpAlgorithmBox->addItems(QStringList() << "Complex-RF" << "Complex-RFM" << "Complex-RFP" << "Particle Swarm" << "Parameter Sweep");
+    mpAlgorithmBox->addItems(QStringList() << "Simplex" << "Complex-RF" << "Complex-RFP" << "Particle Swarm" << "Differential Evolution" << "Parameter Sweep");
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
 
     QLabel *pIterationsLabel = new QLabel("Number of iterations:");
@@ -112,17 +112,41 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpGammaLineEdit = new QLineEdit("0.3", this);
     mpGammaLineEdit->setValidator(new QDoubleValidator());
 
+    mpRhoLabel = new QLabel("Contraction factor: ");
+    mpRhoLineEdit = new QLineEdit("0.3", this);
+    mpRhoLineEdit->setValidator(new QDoubleValidator());
+
+    mpSigmaLabel = new QLabel("Reduction factor: ");
+    mpSigmaLineEdit = new QLineEdit("0.3", this);
+    mpSigmaLineEdit->setValidator(new QDoubleValidator());
+
     mpOmegaLabel = new QLabel("Inertia Weight: ");
     mpOmegaLineEdit = new QLineEdit("1", this);
     mpOmegaLineEdit->setValidator(new QDoubleValidator());
 
-    mpC1Label = new QLabel("Learning Factor 1: ");
+    mpC1Label = new QLabel("Learning factor 1: ");
     mpC1LineEdit = new QLineEdit("2", this);
     mpC1LineEdit->setValidator(new QDoubleValidator());
 
-    mpC2Label = new QLabel("Learning Factor 2: ");
+    mpC2Label = new QLabel("Learning factor 2: ");
     mpC2LineEdit = new QLineEdit("2", this);
     mpC2LineEdit->setValidator(new QDoubleValidator());
+
+    mpFLabel = new QLabel("Differential weight: ");
+    mpFLineEdit = new QLineEdit("1.0", this);
+    mpFLineEdit->setValidator(new QDoubleValidator());
+
+    mpCRLabel = new QLabel("Crossover probability: ");
+    mpCRLineEdit = new QLineEdit("0.5", this);
+    mpCRLineEdit->setValidator(new QDoubleValidator());
+
+    mpNumModelsLabel = new QLabel("Number of models: ");
+    mpNumModelsLineEdit = new QLineEdit(QString::number(gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS)), this);
+    mpNumModelsLineEdit->setValidator(new QIntValidator());
+
+    mpMethodLabel = new QLabel("Parallel method: ");
+    mpMethodComboBox = new QComboBox(this);
+    mpMethodComboBox->addItems(QStringList() << "Task prediction" << "Multi-distance");
 
     mpLengthLabel = new QLabel("Length: ");
     mpLengthSpinBox = new QSpinBox(this);
@@ -185,8 +209,20 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpC1LineEdit,           row++, 1);
     pSettingsLayout->addWidget(mpGammaLabel,           row,   0);
     pSettingsLayout->addWidget(mpGammaLineEdit,        row++, 1);
+    pSettingsLayout->addWidget(mpRhoLabel,             row,   0);
+    pSettingsLayout->addWidget(mpRhoLineEdit,          row++, 1);
+    pSettingsLayout->addWidget(mpSigmaLabel,           row,   0);
+    pSettingsLayout->addWidget(mpSigmaLineEdit,        row++, 1);
     pSettingsLayout->addWidget(mpC2Label,              row,   0);
     pSettingsLayout->addWidget(mpC2LineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpFLabel,               row,   0);
+    pSettingsLayout->addWidget(mpFLineEdit,            row++, 1);
+    pSettingsLayout->addWidget(mpCRLabel,              row,   0);
+    pSettingsLayout->addWidget(mpCRLineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpNumModelsLabel,       row,   0);
+    pSettingsLayout->addWidget(mpNumModelsLineEdit,    row++, 1);
+    pSettingsLayout->addWidget(mpMethodLabel,          row,   0);
+    pSettingsLayout->addWidget(mpMethodComboBox,       row++, 1);
     pSettingsLayout->addWidget(mpLengthLabel,          row,   0);
     pSettingsLayout->addWidget(mpLengthSpinBox,        row++, 1);
     pSettingsLayout->addWidget(mpPercDiffLabel,        row,   0);
@@ -929,23 +965,25 @@ void OptimizationDialog::generateScriptFile()
     }
 
     bool algorithmOk=true;
-    switch (mpAlgorithmBox->currentIndex())
+    int idx = mpAlgorithmBox->currentIndex()+1;
+    switch (idx)
     {
-    case OptimizationHandler::NelderMead :
-        generateComplexScript("simplex");
-    case OptimizationHandler::ComplexRF :
-        generateComplexScript("complexrf");
+    case Ops::NelderMead :
+        generateNelderMeadScript();
         break;
-    case OptimizationHandler::ComplexRFM :
-        generateComplexScript("complexrfm");
+    case Ops::ComplexRF :
+        generateComplexRFScript("complexrf");
         break;
-    case OptimizationHandler::ComplexRFP :
-        generateComplexScript("complexrfp");
+    case Ops::ComplexRFP :
+        generateComplexRFScript("complexrfp");
         break;
-    case OptimizationHandler::PSO :
+    case Ops::ParticleSwarm :
         generateParticleSwarmScript();
         break;
-    case OptimizationHandler::ParameterSweep :
+    case Ops::DifferentialEvolution :
+        generateDifferentialEvolutionScript();
+        break;
+    case Ops::ParameterSweep :
         generateParameterSweepScript();
         break;
     default:
@@ -962,7 +1000,137 @@ void OptimizationDialog::generateScriptFile()
 
 }
 
-void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
+void OptimizationDialog::generateNelderMeadScript()
+{
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateNelderMead.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    QString objFuncs;
+    QString totalObj;
+
+    QString setMinMax;
+    QString setPars;
+    for(int i=0; i<mFunctionName.size(); ++i)
+    {
+        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
+        objFunc.prepend("    ");
+        objFunc.replace("\n", "\n    ");
+        objFunc.replace("<<<id>>>", QString::number(i+1));
+        for(int j=0; j<mFunctionComponents[i].size(); ++j)
+        {
+            QString varName;
+            if(mFunctionComponents[i][j].isEmpty())   //Alias
+            {
+                varName = mFunctionVariables[i][j];
+            }
+            else
+            {
+                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            }
+            gpTerminalWidget->mpHandler->toShortDataNames(varName);
+            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
+
+        }
+        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
+        {
+            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
+        }
+        objFuncs.append(objFunc+"\n");
+
+        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
+        {
+            totalObj.append("+");
+        }
+        else
+        {
+            totalObj.append("-");
+        }
+        QString idx = QString::number(i+1);
+        totalObj.append(mWeightLineEditPtrs[i]->text()+"*"+mNormLineEditPtrs[i]->text()+"*exp("+mExpLineEditPtrs[i]->text()+")*obj"+idx);
+    }
+    objFuncs.chop(1);
+
+    for(int p=0; p<mSelectedParameters.size(); ++p)
+    {
+        QString par;
+        if(mSelectedComponents[p] == "_System Parameters")
+        {
+            par = mSelectedParameters[p];
+        }
+        else
+        {
+            par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        }
+        gpTerminalWidget->mpHandler->toShortDataNames(par);
+        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
+
+        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
+    }
+    setPars.chop(1);
+    setMinMax.chop(1);
+
+    if(mpExport2CSVBox->isChecked())
+    {
+        templateCode.replace("<<<log>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<log>>>","off");
+    }
+    if(mpFinalEvalCheckBox->isChecked())
+    {
+        templateCode.replace("<<<finaleval>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<finaleval>>>","off");
+    }
+    if(mpPlotParticlesCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotpoints>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotpoints>>>","off");
+    }
+    if(mpPlotEntropyCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotentropy>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotentropy>>>","off");
+    }
+    if(mpPlotBestWorstCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotbestworst>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotbestworst>>>","off");
+    }
+
+    templateCode.replace("<<<objfuncs>>>", objFuncs);
+    templateCode.replace("<<<totalobj>>>", totalObj);
+    templateCode.replace("<<<plotvars>>>", "");
+
+    templateCode.replace("<<<setminmax>>>", setMinMax);
+    templateCode.replace("<<<setpars>>>", setPars);
+    templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
+    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
+    templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
+    templateCode.replace("<<<alpha>>>", mpAlphaLineEdit->text());
+    templateCode.replace("<<<gamma>>>", mpGammaLineEdit->text());
+    templateCode.replace("<<<rho>>>", mpRhoLineEdit->text());
+    templateCode.replace("<<<sigma>>>", mpSigmaLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+
+    mScript = templateCode;
+}
+
+void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
 {
     QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateComplex.hcom");
     templateFile.open(QFile::ReadOnly | QFile::Text);
@@ -1080,12 +1248,26 @@ void OptimizationDialog::generateComplexScript(const QString &subAlgorithm)
     }
 
     QString extraVars;
-    if(subAlgorithm == "complexrfm")
+    if(subAlgorithm == "complexrfp")
     {
-        extraVars = "percDiff = "+mpPercDiffLineEdit->text()+"\n";
-        extraVars.append("countMax = "+QString::number(mpCountMaxSpinBox->value())+"\n");
+        extraVars.append("opt set nmodels "+mpNumModelsLineEdit->text());
+        int nthreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+        if(mpMethodComboBox->currentIndex() == 0)
+        {
+            extraVars.append("\nopt set method 0");
+            int nstep = nthreads/2;
+            int nret = nthreads-nstep;
+            extraVars.append("\nopt set nstep "+QString::number(nstep));
+            extraVars.append("\nopt set nsret "+QString::number(nret));
+        }
+        else
+        {
+            extraVars.append("\nopt set method 1");
+            extraVars.append("\nopt set ndist "+QString::number(nthreads));
+            extraVars.append("\nopt set alphamin 0.0");
+            extraVars.append("\nopt set alphamin 2.0");
+        }
     }
-
 
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
@@ -1232,6 +1414,122 @@ void OptimizationDialog::generateParticleSwarmScript()
     mScript = templateCode;
 }
 
+void OptimizationDialog::generateDifferentialEvolutionScript()
+{
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateDifferential.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    QString objFuncs;
+    QString totalObj;
+    QString objPars;
+
+    QString setMinMax;
+    QString setPars;
+    for(int i=0; i<mFunctionName.size(); ++i)
+    {
+        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
+        objFunc.prepend("    ");
+        objFunc.replace("\n", "\n    ");
+        objFunc.replace("<<<id>>>", QString::number(i+1));
+        for(int j=0; j<mFunctionComponents[i].size(); ++j)
+        {
+            QString varName;
+            if(mFunctionComponents[i][j].isEmpty())   //Alias
+            {
+                varName = mFunctionVariables[i][j];
+            }
+            else
+            {
+                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            }
+            gpTerminalWidget->mpHandler->toShortDataNames(varName);
+            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
+        }
+        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
+        {
+            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
+        }
+        objFuncs.append(objFunc+"\n");
+
+        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
+        {
+            totalObj.append("+");
+        }
+        else
+        {
+            totalObj.append("-");
+        }
+        QString idx = QString::number(i+1);
+        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
+
+        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
+        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
+        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
+
+    }
+
+    for(int p=0; p<mSelectedParameters.size(); ++p)
+    {
+        QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        gpTerminalWidget->mpHandler->toShortDataNames(par);
+        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
+
+        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
+    }
+
+    QString extraPlots;
+    if(mpPlotParticlesCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotpoints>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotpoints>>>","off");
+    }
+    if(mpPlotEntropyCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotentropy>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotentropy>>>","off");
+    }
+    if(mpPlotBestWorstCheckBox->isChecked())
+    {
+        templateCode.replace("<<<plotobjectives>>>","on");
+    }
+    else
+    {
+        templateCode.replace("<<<plotobjectives>>>","off");
+    }
+
+    templateCode.replace("<<<objfuncs>>>", objFuncs);
+    templateCode.replace("<<<totalobj>>>", totalObj);
+    templateCode.replace("<<<objpars>>>", objPars);
+//    if(mpPlottingCheckBox->isChecked())
+//    {
+//        templateCode.replace("<<<plotvars>>>", plotVars);
+//    }
+//    else
+//    {
+        templateCode.replace("<<<plotvars>>>", "");
+   // }
+    templateCode.replace("<<<extraplots>>>", extraPlots);
+    templateCode.replace("<<<setminmax>>>", setMinMax);
+    templateCode.replace("<<<setpars>>>", setPars);
+    templateCode.replace("<<<npoints>>>", QString::number(mpParticlesSpinBox->value()));
+    templateCode.replace("<<<nmodels>>>", QString::number(mpParticlesSpinBox->value()));
+    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
+    templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
+    templateCode.replace("<<<f>>>", mpFLineEdit->text());
+    templateCode.replace("<<<cr>>>", mpCRLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+
+    mScript = templateCode;
+}
+
 
 void OptimizationDialog::generateParameterSweepScript()
 {
@@ -1351,22 +1649,54 @@ void OptimizationDialog::setAlgorithm(int i)
     mpGammaLineEdit->setVisible(false);
     mpParticlesLabel->setVisible(false);
     mpParticlesSpinBox->setVisible(false);
+    mpRhoLabel->setVisible(false);
+    mpRhoLineEdit->setVisible(false);
+    mpSigmaLabel->setVisible(false);
+    mpSigmaLineEdit->setVisible(false);
     mpOmegaLabel->setVisible(false);
     mpOmegaLineEdit->setVisible(false);
     mpC1Label->setVisible(false);
     mpC1LineEdit->setVisible(false);
     mpC2Label->setVisible(false);
     mpC2LineEdit->setVisible(false);
+    mpFLabel->setVisible(false);
+    mpFLineEdit->setVisible(false);
+    mpCRLabel->setVisible(false);
+    mpCRLineEdit->setVisible(false);
     mpLengthLabel->setVisible(false);
     mpLengthSpinBox->setVisible(false);
     mpPercDiffLabel->setVisible(false);
     mpPercDiffLineEdit->setVisible(false);
     mpCountMaxLabel->setVisible(false);
     mpCountMaxSpinBox->setVisible(false);
+    mpMethodLabel->setVisible(false);
+    mpMethodComboBox->setVisible(false);
 
+    //mpAlgorithmBox->addItems(QStringList() << "Simplex" << "Complex-RF" << "Complex-RFP" << "Particle Swarm" << "Differential Evolution" << "Parameter Sweep");
+
+    //enum AlgorithmT {Undefined, ComplexRF, ComplexRFP, NelderMead, ParticleSwarm, ParameterSweep, DifferentialEvolution};
+
+    ++i;    //i=0 means undefined
     switch(i)
     {
-    case OptimizationHandler::NelderMead:
+    case Ops::NelderMead:
+        mpSearchPointsLabel->setVisible(true);
+        mpSearchPointsSpinBox->setVisible(true);
+        mpAlphaLabel->setVisible(true);
+        mpAlphaLineEdit->setVisible(true);
+        mpGammaLabel->setVisible(true);
+        mpGammaLabel->setText("Expansion Factor");  //Used by multiple algorithms
+        mpGammaLineEdit->setVisible(true);
+        mpRhoLabel->setVisible(true);
+        mpRhoLineEdit->setVisible(true);
+        mpSigmaLabel->setVisible(true);
+        mpSigmaLineEdit->setVisible(true);
+        mpAlphaLineEdit->setText("1.0");
+        mpGammaLineEdit->setText("2.0");
+        mpRhoLineEdit->setText("-0.5");
+        mpSigmaLineEdit->setText("0.5");
+        break;
+    case Ops::ComplexRF:
         mpSearchPointsLabel->setVisible(true);
         mpSearchPointsSpinBox->setVisible(true);
         mpAlphaLabel->setVisible(true);
@@ -1374,9 +1704,13 @@ void OptimizationDialog::setAlgorithm(int i)
         mpBetaLabel->setVisible(true);
         mpBetaLineEdit->setVisible(true);
         mpGammaLabel->setVisible(true);
+        mpGammaLabel->setText("Forgetting Factor");  //Used by multiple algorithms
         mpGammaLineEdit->setVisible(true);
+        mpAlphaLineEdit->setText("1.3");
+        mpBetaLineEdit->setText("0.3");
+        mpRhoLineEdit->setText("0.3");
         break;
-    case OptimizationHandler::ComplexRF:
+    case Ops::ComplexRFP:
         mpSearchPointsLabel->setVisible(true);
         mpSearchPointsSpinBox->setVisible(true);
         mpAlphaLabel->setVisible(true);
@@ -1384,33 +1718,14 @@ void OptimizationDialog::setAlgorithm(int i)
         mpBetaLabel->setVisible(true);
         mpBetaLineEdit->setVisible(true);
         mpGammaLabel->setVisible(true);
+        mpGammaLabel->setText("Forgetting Factor");  //Used by multiple algorithms
         mpGammaLineEdit->setVisible(true);
+        mpNumModelsLabel->setVisible(true);
+        mpNumModelsLineEdit->setVisible(true);
+        mpMethodLabel->setVisible(true);
+        mpMethodComboBox->setVisible(true);
         break;
-    case OptimizationHandler::ComplexRFM:
-        mpSearchPointsLabel->setVisible(true);
-        mpSearchPointsSpinBox->setVisible(true);
-        mpAlphaLabel->setVisible(true);
-        mpAlphaLineEdit->setVisible(true);
-        mpBetaLabel->setVisible(true);
-        mpBetaLineEdit->setVisible(true);
-        mpGammaLabel->setVisible(true);
-        mpGammaLineEdit->setVisible(true);
-        mpPercDiffLabel->setVisible(true);
-        mpPercDiffLineEdit->setVisible(true);
-        mpCountMaxLabel->setVisible(true);
-        mpCountMaxSpinBox->setVisible(true);
-        break;
-    case OptimizationHandler::ComplexRFP:
-        mpSearchPointsLabel->setVisible(true);
-        mpSearchPointsSpinBox->setVisible(true);
-        mpAlphaLabel->setVisible(true);
-        mpAlphaLineEdit->setVisible(true);
-        mpBetaLabel->setVisible(true);
-        mpBetaLineEdit->setVisible(true);
-        mpGammaLabel->setVisible(true);
-        mpGammaLineEdit->setVisible(true);
-        break;
-    case OptimizationHandler::PSO:
+    case Ops::ParticleSwarm:
         mpParticlesLabel->setVisible(true);
         mpParticlesSpinBox->setVisible(true);
         mpOmegaLabel->setVisible(true);
@@ -1420,9 +1735,15 @@ void OptimizationDialog::setAlgorithm(int i)
         mpC2Label->setVisible(true);
         mpC2LineEdit->setVisible(true);
         break;
-    case OptimizationHandler::ParameterSweep:
-        mpLengthLabel->setVisible(true);
-        mpLengthSpinBox->setVisible(true);
+    case Ops::DifferentialEvolution:
+        mpParticlesLabel->setVisible(true);
+        mpParticlesSpinBox->setVisible(true);
+        mpFLabel->setVisible(true);
+        mpFLineEdit->setVisible(true);
+        mpCRLabel->setVisible(true);
+        mpCRLineEdit->setVisible(true);
+        break;
+    case Ops::ParameterSweep:
         break;
     default:
         break;

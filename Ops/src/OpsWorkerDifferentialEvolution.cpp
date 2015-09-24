@@ -130,13 +130,13 @@ void WorkerDifferentialEvolution::run()
 }
 
 
-void WorkerDifferentialEvolution::setCR(double value)
+void WorkerDifferentialEvolution::setCrossoverProbability(double value)
 {
     mCR = value;
 }
 
 
-void WorkerDifferentialEvolution::setF(double value)
+void WorkerDifferentialEvolution::setDifferentialWeight(double value)
 {
     mF = value;
 }

@@ -553,11 +553,11 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         Ops::WorkerDifferentialEvolution *pWorker = qobject_cast<Ops::WorkerDifferentialEvolution*>(mpWorker);
         if(var == "F")
         {
-            pWorker->setF(value.toDouble());
+            pWorker->setDifferentialWeight(value.toDouble());
         }
         else if(var == "CR")
         {
-            pWorker->setCR(value.toDouble());
+            pWorker->setCrossoverProbability(value.toDouble());
         }
     }
 }

@@ -96,9 +96,11 @@ private slots:
 
 private:
     void generateScriptFile();
-    void generateComplexScript(const QString &subAlgorithm);
+    void generateNelderMeadScript();
+    void generateComplexRFScript(const QString &subAlgorithm);
     void generateComplexScriptOld();
     void generateParticleSwarmScript();
+    void generateDifferentialEvolutionScript();
     void generateParameterSweepScript();
     void generateParticleSwarmScriptOld();
     bool verifyNumberOfVariables(int i, int nSelVar);
@@ -123,14 +125,26 @@ private:
     QLabel *mpAlphaLabel;
     QLabel *mpBetaLabel;
     QLabel *mpGammaLabel;
+    QLabel *mpRhoLabel;
+    QLabel *mpSigmaLabel;
     QLineEdit *mpBetaLineEdit;
     QLineEdit *mpGammaLineEdit;
+    QLineEdit *mpRhoLineEdit;
+    QLineEdit *mpSigmaLineEdit;
     QLabel *mpOmegaLabel;
     QLineEdit *mpOmegaLineEdit;
     QLabel *mpC1Label;
     QLineEdit *mpC1LineEdit;
     QLabel *mpC2Label;
     QLineEdit *mpC2LineEdit;
+    QLabel *mpFLabel;
+    QLineEdit *mpFLineEdit;
+    QLabel *mpCRLabel;
+    QLineEdit *mpCRLineEdit;
+    QLabel *mpNumModelsLabel;
+    QLineEdit *mpNumModelsLineEdit;
+    QLabel *mpMethodLabel;
+    QComboBox *mpMethodComboBox;
     QLabel *mpLengthLabel;
     QSpinBox *mpLengthSpinBox;
     QLabel *mpPercDiffLabel;

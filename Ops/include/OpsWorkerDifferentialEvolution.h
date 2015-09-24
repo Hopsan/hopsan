@@ -47,13 +47,12 @@ public:
 
     void run();
 
-    void setCR(double value);
-    void setF(double value);
+    void setCrossoverProbability(double value);
+    void setDifferentialWeight(double value);
 
 private:
     void moveParticle(int p);
 protected:
-    double mRandomFactor;
     double mCR, mF;
     void getRandomIds(int notId, int &id1, int &id2, int &id3, int &id4);
 };
