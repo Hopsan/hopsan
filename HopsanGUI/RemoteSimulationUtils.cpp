@@ -266,7 +266,7 @@ bool RemoteSimulationQueueHandler::simulateModels()
             ModelWidget *pModel = modelQueues[h].dequeue();
             SharedRemoteCoreSimulationHandlerT pRCSH = mRemoteCoreSimulationHandlers[h];
 
-            pModel->setUseRemoteSimulationCore(pRCSH);
+            pModel->setExternalRemoteCoreSimulationHandler(pRCSH);
             // Load model remotely
             //! @todo handle failure
             bool rc = pModel->loadModelRemote();
@@ -457,7 +457,7 @@ void RemoteSimulationQueueHandler::reset()
     // Reset (to NULL) the shared pointers first, before clearing
     for (ModelWidget *pModel : mAllModels)
     {
-        pModel->setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT());
+        pModel->setExternalRemoteCoreSimulationHandler(SharedRemoteCoreSimulationHandlerT());
     }
     mAllModels.clear();
     mModelQueues.clear();
@@ -581,7 +581,7 @@ bool RemoteSimulationQueueHandlerLB::simulateModels(bool &rExternalReschedulingN
                         SharedRemoteCoreSimulationHandlerT pRCSH = mRemoteCoreSimulationHandlers[q];
 
                         // Assign remote simulator wrapper class to models
-                        pModel->setUseRemoteSimulationCore(pRCSH);
+                        pModel->setExternalRemoteCoreSimulationHandler(pRCSH);
                         // Load model remotely
                         bool rc = pModel->loadModelRemote();
                         if (rc)
@@ -701,6 +701,7 @@ bool RemoteSimulationQueueHandlerLB::simulateModels(bool &rExternalReschedulingN
 #define DEFAULTETADIFFTHRESH 60.0
 #define MINETADIFFTHRESH 5.0
 #define ETADIFFTHRESHSCALE 2.0
+                //! @todo this wont work, need to estimate total simulation time for this to be relevant
                 double maxEtaDiffThreshold = DEFAULTETADIFFTHRESH;
                 if (expecteadSimulationTime > 0)
                 {
@@ -790,7 +791,7 @@ bool RemoteSimulationQueueHandlerLB::simulateModels(bool &rExternalReschedulingN
         // Now all communication with worker should be finished, lets disconnect
         if (someServerSlowdownProblem)
         {
-            for (int m=0; m<modelsInProgress.size(); ++m)
+            for (int m=0; m<mRemoteCoreSimulationHandlers.size(); ++m)
             {
                 mRemoteCoreSimulationHandlers[m]->disconnect();
             }

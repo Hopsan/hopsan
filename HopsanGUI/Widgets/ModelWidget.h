@@ -90,9 +90,9 @@ public:
     bool undefineVariableAlias(const QString &rFullName);
     QString getVariableAlias(const QString &rFullName);
 
-    void setUseRemoteSimulationCore(bool useRemoteCore, bool useAddressServer);
+    void setUseRemoteSimulation(bool useRemoteCore, bool useAddressServer);
 #ifdef USEZMQ
-    void setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT pRSCH);
+    void setExternalRemoteCoreSimulationHandler(SharedRemoteCoreSimulationHandlerT pRSCH);
     double getSimulationProgress() const;
 #endif
     bool getUseRemoteSimulationCore() const;
@@ -124,7 +124,7 @@ public slots:
     void openAnimation();
     void simulateModelica();
     void collectPlotData(bool overWriteGeneration=false);
-    void setUseRemoteSimulationCore(bool tf);
+    void setUseRemoteSimulation(bool tf);
 
 private slots:
     void openCurrentContainerInNewTab();
@@ -157,7 +157,9 @@ private:
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;
 #ifdef USEZMQ
-    SharedRemoteCoreSimulationHandlerT mpRemoteCoreSimulationHandler;
+    SharedRemoteCoreSimulationHandlerT mpLocalRemoteCoreSimulationHandler;
+    SharedRemoteCoreSimulationHandlerT mpExternalRemoteCoreSimulationHandler;
+    SharedRemoteCoreSimulationHandlerT chooseRemoteCoreSimulationHandler() const;
     double mSimulationProgress;
 #endif
     QMutex mSimulateMutex;

@@ -162,7 +162,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
 
 ModelWidget::~ModelWidget()
 {
-    setUseRemoteSimulationCore(false, false);
+    setUseRemoteSimulation(false, false);
 
     delete mpAnimationWidget;
 
@@ -426,7 +426,7 @@ QString ModelWidget::getVariableAlias(const QString &rFullName)
     return QString();
 }
 
-void ModelWidget::setUseRemoteSimulationCore(bool useRemoteCore, bool useAddressServer)
+void ModelWidget::setUseRemoteSimulation(bool useRemoteCore, bool useAddressServer)
 {
 #ifdef USEZMQ
     bool useRemoteCoreFailed=false;
@@ -462,28 +462,28 @@ void ModelWidget::setUseRemoteSimulationCore(bool useRemoteCore, bool useAddress
         if (!serveraddress.isEmpty())
         {
             // If we have found the best available server, then create a local remote simulation handler and connect it to the server
-            mpRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
-            mpRemoteCoreSimulationHandler->setNumThreads(nThreads);
+            mpLocalRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
+            mpLocalRemoteCoreSimulationHandler->setNumThreads(nThreads);
             if (useAddressServer)
             {
-                mpRemoteCoreSimulationHandler->setAddressServer(getSharedRemoteCoreAddressHandler()->getAddressAndPort());
+                mpLocalRemoteCoreSimulationHandler->setAddressServer(getSharedRemoteCoreAddressHandler()->getAddressAndPort());
             }
-            mpRemoteCoreSimulationHandler->setHopsanServer(serveraddress);
+            mpLocalRemoteCoreSimulationHandler->setHopsanServer(serveraddress);
 
             // Connect and attempt to load the model remotely
-            bool rc = mpRemoteCoreSimulationHandler->connect();
+            bool rc = mpLocalRemoteCoreSimulationHandler->connect();
             if (rc)
             {
                 rc = loadModelRemote();
                 if (!rc)
                 {
-                    mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(mpRemoteCoreSimulationHandler->getLastError()));
+                    mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(mpLocalRemoteCoreSimulationHandler->getLastError()));
                     useRemoteCoreFailed = true;
                 }
             }
             else
             {
-                mpMessageHandler->addErrorMessage(QString("Could not connect to remote server: %1").arg(mpRemoteCoreSimulationHandler->getLastError()));
+                mpMessageHandler->addErrorMessage(QString("Could not connect to remote server: %1").arg(mpLocalRemoteCoreSimulationHandler->getLastError()));
                 useRemoteCoreFailed = true;
             }
         }
@@ -496,18 +496,18 @@ void ModelWidget::setUseRemoteSimulationCore(bool useRemoteCore, bool useAddress
 
     // If use remote core is false and a core simulation handler is set, then delete it
     // This should trigger when we deactivate remote simulation or if connect or load model failed
-    if ( (!useRemoteCore || useRemoteCoreFailed) && mpRemoteCoreSimulationHandler)
+    if ( (!useRemoteCore || useRemoteCoreFailed) && mpLocalRemoteCoreSimulationHandler)
     {
-        mpRemoteCoreSimulationHandler->disconnect(); //! @todo maybe should not disconnect here should wait for destructor when all refs gone
-        mpRemoteCoreSimulationHandler.clear();
+        mpLocalRemoteCoreSimulationHandler->disconnect(); //! @todo maybe should not disconnect here should wait for destructor when all refs gone, but that never seem to happen
+        mpLocalRemoteCoreSimulationHandler.clear();
     }
 #endif
 }
 
 #ifdef USEZMQ
-void ModelWidget::setUseRemoteSimulationCore(SharedRemoteCoreSimulationHandlerT pRSCH)
+void ModelWidget::setExternalRemoteCoreSimulationHandler(SharedRemoteCoreSimulationHandlerT pRSCH)
 {
-    mpRemoteCoreSimulationHandler = pRSCH;
+    mpExternalRemoteCoreSimulationHandler = pRSCH;
 }
 
 double ModelWidget::getSimulationProgress() const
@@ -519,7 +519,8 @@ double ModelWidget::getSimulationProgress() const
 bool ModelWidget::getUseRemoteSimulationCore() const
 {
 #ifdef USEZMQ
-    return !mpRemoteCoreSimulationHandler.isNull();
+    SharedRemoteCoreSimulationHandlerT pRSH = chooseRemoteCoreSimulationHandler();
+    return !pRSH.isNull();
 #else
     return false;
 #endif
@@ -529,7 +530,8 @@ bool ModelWidget::isRemoteCoreConnected() const
 {
 #ifdef USEZMQ
     //! @todo should check is connected also
-    return !mpRemoteCoreSimulationHandler.isNull();
+    SharedRemoteCoreSimulationHandlerT pRSH = chooseRemoteCoreSimulationHandler();
+    return !pRSH.isNull();
 #else
     return false;
 #endif
@@ -591,7 +593,7 @@ bool ModelWidget::simulate_nonblocking()
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
             mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
-            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(chooseRemoteCoreSimulationHandler(), &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
 #endif
         }
         else
@@ -661,7 +663,7 @@ bool ModelWidget::simulate_blocking()
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
             mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
-            mpSimulationThreadHandler->initSimulateFinalizeRemote(mpRemoteCoreSimulationHandler, &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(chooseRemoteCoreSimulationHandler(), &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
             //! @todo is this really blocking hmm
 #endif
         }
@@ -868,9 +870,9 @@ void ModelWidget::collectPlotData(bool overWriteGeneration)
 
 }
 
-void ModelWidget::setUseRemoteSimulationCore(bool tf)
+void ModelWidget::setUseRemoteSimulation(bool tf)
 {
-    setUseRemoteSimulationCore(tf, gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
+    setUseRemoteSimulation(tf, gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
 }
 
 
@@ -1413,7 +1415,7 @@ void ModelWidget::openCurrentContainerInNewTab()
 }
 
 
-//! Saves the model and the viewport settings in the tab to a model file.
+//! Saves the model and the view port settings in the tab to a model file.
 //! @param saveAsFlag tells whether or not an already existing file name shall be used
 //! @see saveModel()
 //! @see loadModel()
@@ -1500,19 +1502,38 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     }
 }
 
+SharedRemoteCoreSimulationHandlerT ModelWidget::chooseRemoteCoreSimulationHandler() const
+{
+    // Prefere external remote simulator, if present
+    if (mpExternalRemoteCoreSimulationHandler)
+    {
+        return mpExternalRemoteCoreSimulationHandler;
+    }
+    // otherwise choose the local one, if present
+    else if (mpLocalRemoteCoreSimulationHandler)
+    {
+        return mpLocalRemoteCoreSimulationHandler;
+    }
+    else
+    {
+        return SharedRemoteCoreSimulationHandlerT();
+    }
+}
+
 bool ModelWidget::loadModelRemote()
 {
 #ifdef USEZMQ
-    if (mpRemoteCoreSimulationHandler)
+    SharedRemoteCoreSimulationHandlerT pRSH = chooseRemoteCoreSimulationHandler();
+    if (pRSH)
     {
         QDomDocument doc = saveToDom();
-        bool rc = mpRemoteCoreSimulationHandler->loadModelStr(doc.toString(-1));
+        bool rc = pRSH->loadModelStr(doc.toString(-1));
         if (!rc)
         {
-            mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(mpRemoteCoreSimulationHandler->getLastError()));
+            mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(pRSH->getLastError()));
         }
         QVector<QString> types,tags,messages;
-        bool rc2 = mpRemoteCoreSimulationHandler->getCoreMessages(types, tags, messages);
+        bool rc2 = pRSH->getCoreMessages(types, tags, messages);
         for (int i=0; i<messages.size(); ++i)
         {
             mpMessageHandler->addMessageFromCore(types[i], tags[i], messages[i]);
