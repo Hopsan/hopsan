@@ -1251,8 +1251,8 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
             extraVars.append("\nopt set method 0");
             int nstep = qMax(1,nmodels/2);
             int nret = nmodels-nstep;
-            extraVars.append("\nopt set nstep "+QString::number(nstep));
-            extraVars.append("\nopt set nret "+QString::number(nret));
+            extraVars.append("\nopt set npredictions "+QString::number(nstep));
+            extraVars.append("\nopt set nretractions "+QString::number(nret));
         }
         else
         {
