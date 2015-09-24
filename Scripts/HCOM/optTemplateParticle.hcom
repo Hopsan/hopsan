@@ -5,7 +5,6 @@ define setpars
 <<<setpars>>>
 enddefine
 
-
 #Objective function
 define obj
 <<<objfuncs>>>
@@ -13,11 +12,12 @@ define obj
     opt set obj optvar(evalid) totalObj
 enddefine
 
-opt set algorithm particleswarm
+opt set algorithm pso
 opt set sampling latinhypercube
 #opt set sampling random
 opt set maxevals <<<maxevals>>>
 opt set datatype double
+opt set nmodels <<<npoints>>>
 opt set npoints <<<npoints>>>
 opt set nparams <<<nparams>>>
 opt set partol <<<partol>>>
@@ -29,12 +29,9 @@ opt set plotpoints <<<plotpoints>>>
 opt set plotentropy <<<plotentropy>>>
 opt set plotparameters off
 opt set printresultfile on
-opt set printlogfile <<<log>>>
+opt set printlogfile off
 
-<<<objpars>>>
-
-<<<plotvars>>>
-<<<extraplots>>>
+<<<objpars>>><<<plotvars>>><<<extraplots>>>
 
 #Set min and max values for parameters
 <<<setminmax>>>
@@ -43,5 +40,4 @@ set backup off
 
 opt run
 
-set backup on
-   
+set backup on  

@@ -174,9 +174,6 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpPlotEntropyCheckBox = new QCheckBox("Plot entropy", this);
     mpPlotEntropyCheckBox->setChecked(false);
 
-    mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
-    mpPlottingCheckBox->setChecked(true);
-
     mpExport2CSVBox= new QCheckBox("Export trace data to CSV file", this);
     mpExport2CSVBox->setChecked(false);
 
@@ -231,7 +228,6 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpCountMaxSpinBox,      row++, 1);
     pSettingsLayout->addWidget(pEpsilonXLabel,         row,   0);
     pSettingsLayout->addWidget(mpEpsilonXLineEdit,     row++, 1);
-    pSettingsLayout->addWidget(mpPlottingCheckBox,     row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpPlotBestWorstCheckBox,row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpPlotParticlesCheckBox,row++, 0, 1, 2);
     pSettingsLayout->addWidget(mpPlotEntropyCheckBox,  row++, 0, 1, 2);
@@ -559,7 +555,6 @@ void OptimizationDialog::loadConfiguration()
     mpBetaLineEdit->setText(QString().setNum(optSettings.mRandfac));
     mpGammaLineEdit->setText(QString().setNum(optSettings.mForgfac));
     mpEpsilonXLineEdit->setText(QString().setNum(optSettings.mPartol));
-    mpPlottingCheckBox->setChecked(optSettings.mPlot);
     mpExport2CSVBox->setChecked(optSettings.mSavecsv);
     mpFinalEvalCheckBox->setChecked(optSettings.mFinalEval);
     mpParametersLogCheckBox->setChecked(optSettings.mlogPar);
@@ -609,7 +604,6 @@ void OptimizationDialog::saveConfiguration()
     optSettings.mRandfac = mpBetaLineEdit->text().toDouble();
     optSettings.mForgfac = mpGammaLineEdit->text().toDouble();
     optSettings.mPartol = mpEpsilonXLineEdit->text().toDouble();
-    optSettings.mPlot = mpPlottingCheckBox->isChecked();
     optSettings.mSavecsv = mpExport2CSVBox->isChecked();
     optSettings.mFinalEval = mpFinalEvalCheckBox->isChecked();
     optSettings.mlogPar = mpParametersLogCheckBox->isChecked();
@@ -1309,6 +1303,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     {
         QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
         objFunc.prepend("    ");
+        objFunc.chop(1);
         objFunc.replace("\n", "\n    ");
         objFunc.replace("<<<id>>>", QString::number(i+1));
         for(int j=0; j<mFunctionComponents[i].size(); ++j)
@@ -1351,8 +1346,9 @@ void OptimizationDialog::generateParticleSwarmScript()
         objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
         objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
         objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
-
     }
+    objFuncs.chop(1);
+    objPars.chop(1);
 
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
@@ -1362,6 +1358,8 @@ void OptimizationDialog::generateParticleSwarmScript()
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
+    setPars.chop(1);
+    setMinMax.chop(1);
 
     QString extraPlots;
     if(mpPlotParticlesCheckBox->isChecked())
@@ -1392,14 +1390,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<objpars>>>", objPars);
-//    if(mpPlottingCheckBox->isChecked())
-//    {
-//        templateCode.replace("<<<plotvars>>>", plotVars);
-//    }
-//    else
-//    {
-        templateCode.replace("<<<plotvars>>>", "");
-   // }
+    templateCode.replace("<<<plotvars>>>", "");
     templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
@@ -1431,6 +1422,7 @@ void OptimizationDialog::generateDifferentialEvolutionScript()
     {
         QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
         objFunc.prepend("    ");
+        objFunc.chop(1);
         objFunc.replace("\n", "\n    ");
         objFunc.replace("<<<id>>>", QString::number(i+1));
         for(int j=0; j<mFunctionComponents[i].size(); ++j)
@@ -1469,6 +1461,8 @@ void OptimizationDialog::generateDifferentialEvolutionScript()
         objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
 
     }
+    objFuncs.chop(1);
+    objPars.chop(1);
 
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
@@ -1478,6 +1472,8 @@ void OptimizationDialog::generateDifferentialEvolutionScript()
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
+    setPars.chop(1);
+    setMinMax.chop(1);
 
     QString extraPlots;
     if(mpPlotParticlesCheckBox->isChecked())
@@ -1508,19 +1504,11 @@ void OptimizationDialog::generateDifferentialEvolutionScript()
     templateCode.replace("<<<objfuncs>>>", objFuncs);
     templateCode.replace("<<<totalobj>>>", totalObj);
     templateCode.replace("<<<objpars>>>", objPars);
-//    if(mpPlottingCheckBox->isChecked())
-//    {
-//        templateCode.replace("<<<plotvars>>>", plotVars);
-//    }
-//    else
-//    {
-        templateCode.replace("<<<plotvars>>>", "");
-   // }
+    templateCode.replace("<<<plotvars>>>", "");
     templateCode.replace("<<<extraplots>>>", extraPlots);
     templateCode.replace("<<<setminmax>>>", setMinMax);
     templateCode.replace("<<<setpars>>>", setPars);
     templateCode.replace("<<<npoints>>>", QString::number(mpParticlesSpinBox->value()));
-    templateCode.replace("<<<nmodels>>>", QString::number(mpParticlesSpinBox->value()));
     templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
     templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
     templateCode.replace("<<<f>>>", mpFLineEdit->text());

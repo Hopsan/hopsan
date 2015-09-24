@@ -18,7 +18,7 @@ opt set sampling latinhypercube
 #opt set sampling random
 opt set maxevals <<<maxevals>>>
 opt set datatype double
-opt set nmodels <<<nmodels>>>
+opt set nmodels <<<npoints>>>
 opt set npoints <<<npoints>>>
 opt set nparams <<<nparams>>>
 opt set partol <<<partol>>>
@@ -29,7 +29,7 @@ opt set plotpoints <<<plotpoints>>>
 opt set plotentropy <<<plotentropy>>>
 opt set plotparameters off
 opt set printresultfile on
-opt set printlogfile <<<log>>>
+opt set printlogfile off
 
 <<<objpars>>>
 

@@ -38,5 +38,3 @@ set backup off
 opt run
 
 set backup on
-
-<<<plotvars>>>
