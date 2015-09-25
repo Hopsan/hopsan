@@ -83,7 +83,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     QLabel *pAlgorithmLabel = new QLabel("Optimiation algorithm:");
     mpAlgorithmBox = new QComboBox(this);
-    mpAlgorithmBox->addItems(QStringList() << "Simplex" << "Complex-RF" << "Complex-RFP" << "Particle Swarm" << "Differential Evolution" << "Parameter Sweep");
+    mpAlgorithmBox->addItems(QStringList() << "Simplex (Nelder-Mead)" << "Complex-RF" << "Complex-RFP" << "Particle Swarm" << "Differential Evolution" << "Parameter Sweep");
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
 
     QLabel *pIterationsLabel = new QLabel("Number of iterations:");
@@ -1146,8 +1146,8 @@ void OptimizationDialog::generateObjectiveFunctionCode(QString &templateCode)
     }
     objFuncs.chop(1);
 
-    templateCode.replace("<<<objfuncs>>>", objFuncs);
-    templateCode.replace("<<<totalobj>>>", totalObj);
+    replacePattern("<<<objfuncs>>>", objFuncs, templateCode);
+    replacePattern("<<<totalobj>>>", totalObj, templateCode);
 }
 
 void OptimizationDialog::generateParameterCode(QString &templateCode)
@@ -1173,9 +1173,8 @@ void OptimizationDialog::generateParameterCode(QString &templateCode)
     setPars.chop(1);
     setMinMax.chop(1);
 
-    templateCode.replace("<<<setminmax>>>", setMinMax);
-    templateCode.replace("<<<setpars>>>", setPars);
-
+    replacePattern("<<<setminmax>>>", setMinMax, templateCode);
+    replacePattern("<<<setpars>>>", setPars, templateCode);
 }
 
 void OptimizationDialog::generateCommonOptions(QString &templateCode)
@@ -2094,12 +2093,8 @@ bool OptimizationDialog::loadObjectiveFunctions()
         QString code = templateFile.readAll();
         templateFile.close();
 
-        //Add indentation
-        code.prepend("    ");
-        code.replace("\n","\n    ");
-
         //Get description
-        if(code.startsWith("    #"))
+        if(code.startsWith("#"))
         {
             mObjectiveFunctionDescriptions << code.section("#",1,1).section("\n",0,0);
         }
