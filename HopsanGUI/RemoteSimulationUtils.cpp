@@ -84,10 +84,13 @@ public:
 
     void initialize(int historyLength)
     {
-        mLastAddTime = steady_clock::now();
+        mHasAddedFirstTime=false;
+        mFirstAddTime = steady_clock::time_point();
+        mLastAddTime = steady_clock::time_point();
         mTimes = QVector<steady_clock::time_point>(qMax(historyLength,1), steady_clock::now());
         mProgress = QVector<double>(qMax(historyLength,1), 0.0);
-        mLastCalculatedEta=-1;
+        mLastCalculatedRemainingTime=-1;
+        mLastEstimatedTotalSimtime=-1;
     }
 
     double secondsSinceLastAdd() const
@@ -103,6 +106,11 @@ public:
         mTimes.pop_front();
         mLastAddTime = steady_clock::now();
         //! @todo circle buffer would be better
+        if (!mHasAddedFirstTime)
+        {
+            mFirstAddTime = steady_clock::now();
+            mHasAddedFirstTime=true;
+        }
     }
 
     double estimateRemainingTime()
@@ -142,14 +150,21 @@ public:
 
         if (k_est > 0)
         {
-            mLastCalculatedEta = (1.0-mProgress.last())/k_est;
+            mLastCalculatedRemainingTime = (1.0-mProgress.last())/k_est;
+            double progressedTime = duration_cast<seconds>(steady_clock::now() - mFirstAddTime).count();
+            mLastEstimatedTotalSimtime = progressedTime+mLastCalculatedRemainingTime;
         }
-        return mLastCalculatedEta;
+        return mLastCalculatedRemainingTime;
     }
 
-    double lastCalculatedEta() const
+    double lastCalculatedRemainingTime() const
     {
-        return mLastCalculatedEta;
+        return mLastCalculatedRemainingTime;
+    }
+
+    double lastEstimatedTotalSimtime() const
+    {
+        return mLastEstimatedTotalSimtime;
     }
 
     double lastTrackedProgress() const
@@ -164,10 +179,13 @@ public:
 
 
 private:
+    bool mHasAddedFirstTime;
+    steady_clock::time_point mFirstAddTime;
     steady_clock::time_point mLastAddTime;
     QVector<steady_clock::time_point> mTimes;
     QVector<double> mProgress;
-    double mLastCalculatedEta;
+    double mLastCalculatedRemainingTime;
+    double mLastEstimatedTotalSimtime;
 };
 
 RemoteSimulationQueueHandler::~RemoteSimulationQueueHandler()
@@ -644,82 +662,83 @@ bool RemoteSimulationQueueHandlerLB::simulateModels(bool &rExternalReschedulingN
                     }
                 }
 
-                double bestETA=1e200;
+                double bestEST=1e200;
                 double bestProgress=0;
-                QString etastr="eta ", progressstr="prog ";
+                QString eststr="est ", progressstr="prog ";
                 for (int m=0; m<numModelsInProgress; ++m)
                 {
                     double progress = modelsInProgressProgress[m].lastTrackedProgress();
                     // Get ETA, Note! eta<0 if it could not be calculated
-                    double eta = modelsInProgressProgress[m].lastCalculatedEta();
+                    double est = modelsInProgressProgress[m].lastEstimatedTotalSimtime();
 
-                    etastr.append(QString("%1 ").arg(eta));
+                    eststr.append(QString("%1 ").arg(est));
                     progressstr.append(QString("%1 ").arg(progress));
-                    if ( (eta>=0) && (eta<bestETA))
+                    if ( (est>=0) && (est<bestEST))
                     {
-                        bestETA = eta;
+                        bestEST = est;
                     }
                     if (progress > bestProgress)
                     {
                         bestProgress = progress;
                     }
                 }
-                gpMessageHandler->addInfoMessage(etastr);
+                gpMessageHandler->addInfoMessage(eststr);
                 gpMessageHandler->addInfoMessage(progressstr);
 
                 // Calculate progress difference
-                double maxEtaDiff=0;
-                QVector<double> etaDiffs;
+                double maxESTDiff=0;
+                QVector<double> estDiffs;
                 QVector<double> progressDiffs;
-                etaDiffs.reserve(numModelsInProgress);
+                estDiffs.reserve(numModelsInProgress);
                 progressDiffs.reserve(numModelsInProgress);
                 for (int i=0; i<numModelsInProgress; ++i)
                 {
-                    double etai = modelsInProgressProgress[i].lastCalculatedEta();
-                    if (etai>=0)
+                    double esti = modelsInProgressProgress[i].lastEstimatedTotalSimtime();
+                    if (esti>=0)
                     {
-                        double etaDiff = (-bestETA);
+                        double estDiffi = (esti-bestEST);
                         double progressDiff = (modelsInProgressProgress[i].lastTrackedProgress()-bestProgress);
-                        etaDiffs.push_back( etaDiff );
+                        estDiffs.push_back( estDiffi );
                         progressDiffs.push_back( progressDiff );
-                        if ( fabs(etaDiff) > maxEtaDiff)
+                        if ( fabs(estDiffi) > maxESTDiff)
                         {
-                            maxEtaDiff = fabs(etaDiff);
+                            maxESTDiff = fabs(estDiffi);
                         }
                     }
                     //qDebug() << "Parallel diffs: " << diffs;
                 }
 
                 // Get expected evaluation time
-                double expecteadSimulationTime=-1;
-                //! @todo this is a bit scary since the benchmark time may not be accurate (also we may not benchmark the entire model, so the benchmark results need to know about this)
-                if (mNumThreadsVsModelEvalTime.size()>=mNumThreadsPerModel && mNumThreadsPerModel>0)
-                {
-                    expecteadSimulationTime = mNumThreadsVsModelEvalTime[mNumThreadsPerModel-1];
-                }
+//                double expecteadSimulationTime=-1;
+//                //! @todo this is a bit scary since the benchmark time may not be accurate (also we may not benchmark the entire model, so the benchmark results need to know about this)
+//                if (mNumThreadsVsModelEvalTime.size()>=mNumThreadsPerModel && mNumThreadsPerModel>0)
+//                {
+//                    expecteadSimulationTime = mNumThreadsVsModelEvalTime[mNumThreadsPerModel-1];
+//                }
 
-#define DEFAULTETADIFFTHRESH 60.0
-#define MINETADIFFTHRESH 5.0
-#define ETADIFFTHRESHSCALE 2.0
-                //! @todo this wont work, need to estimate total simulation time for this to be relevant
-                double maxEtaDiffThreshold = DEFAULTETADIFFTHRESH;
-                if (expecteadSimulationTime > 0)
+                if (bestEST < 1e199)
                 {
-                    maxEtaDiffThreshold = qMax(expecteadSimulationTime*ETADIFFTHRESHSCALE, MINETADIFFTHRESH);
-                }
 
-                //! @todo not hard coded threshold, use smarter method, should scale with total expected simulation time
-                if (maxEtaDiff > maxEtaDiffThreshold)
-                {
-                    for (int i=0; i<etaDiffs.size(); ++i)
+#define ESTDEFAULTDIFFTHRESH 60.0
+#define ESTMINDIFFTHRESH 5.0
+#define ESTDIFFTHRESHSCALE 2.0
+                    //! @todo this wont work, need to estimate total simulation time for this to be relevant
+                    double maxEstDiffThreshold = ESTDEFAULTDIFFTHRESH;
+//                    if (expecteadSimulationTime > 0)
+//                    {
+                    maxEstDiffThreshold = qMax(bestEST*ESTDIFFTHRESHSCALE, ESTMINDIFFTHRESH);
+//                    }
+
+                    if (maxESTDiff > maxEstDiffThreshold)
                     {
-                        // Blacklist servers trailing behind
-                        // We scale the threshold to the progress diff, so that a large diff causes earlier abort
-                        double progressDiff = fabs(modelsInProgressProgress[i].lastTrackedProgress() - bestProgress);
-                        if ( etaDiffs[i] > qMax(maxEtaDiffThreshold*(1.0-progressDiff), DEFAULTETADIFFTHRESH) )
+                        for (int i=0; i<estDiffs.size(); ++i)
                         {
-                            someServerSlowdownProblem = true;
-                            mServerBlacklist.append(mRemoteCoreSimulationHandlers[i]->getHopsanServerAddress());
+                            // Blacklist servers trailing behind
+                            if ( estDiffs[i] > maxEstDiffThreshold)
+                            {
+                                someServerSlowdownProblem = true;
+                                mServerBlacklist.append(mRemoteCoreSimulationHandlers[i]->getHopsanServerAddress());
+                            }
                         }
                     }
                 }
