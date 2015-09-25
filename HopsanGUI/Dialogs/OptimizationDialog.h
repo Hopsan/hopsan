@@ -96,16 +96,19 @@ private slots:
 
 private:
     void generateScriptFile();
+
     void generateNelderMeadScript();
     void generateComplexRFScript(const QString &subAlgorithm);
-    void generateComplexScriptOld();
     void generateParticleSwarmScript();
     void generateDifferentialEvolutionScript();
     void generateParameterSweepScript();
-    void generateParticleSwarmScriptOld();
+
+    void generateObjectiveFunctionCode(QString &templateCode);
+    void generateParameterCode(QString &templateCode);
+    void generateCommonOptions(QString &templateCode);
+    QString generateFunctionCode(int i);
     bool verifyNumberOfVariables(int i, int nSelVar);
     bool loadObjectiveFunctions();
-    QString generateFunctionCode(int i);
 
     void loadConfiguration();
 
@@ -117,8 +120,6 @@ private:
     //Settings page
     QComboBox *mpAlgorithmBox;
     QSpinBox *mpIterationsSpinBox;
-    QLabel *mpSearchPointsLabel;
-    QSpinBox *mpSearchPointsSpinBox;
     QLabel *mpParticlesLabel;
     QSpinBox *mpParticlesSpinBox;
     QLineEdit *mpAlphaLineEdit;
@@ -131,12 +132,16 @@ private:
     QLineEdit *mpGammaLineEdit;
     QLineEdit *mpRhoLineEdit;
     QLineEdit *mpSigmaLineEdit;
-    QLabel *mpOmegaLabel;
-    QLineEdit *mpOmegaLineEdit;
+    QLabel *mpOmega1Label;
+    QLineEdit *mpOmega1LineEdit;
+    QLabel *mpOmega2Label;
+    QLineEdit *mpOmega2LineEdit;
     QLabel *mpC1Label;
     QLineEdit *mpC1LineEdit;
     QLabel *mpC2Label;
     QLineEdit *mpC2LineEdit;
+    QLabel *mpVmaxLabel;
+    QLineEdit *mpVmaxLineEdit;
     QLabel *mpFLabel;
     QLineEdit *mpFLineEdit;
     QLabel *mpCRLabel;

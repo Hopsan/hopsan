@@ -91,11 +91,6 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpIterationsSpinBox->setRange(0, std::numeric_limits<int>::max());
     mpIterationsSpinBox->setValue(100);
 
-    mpSearchPointsLabel = new QLabel("Number of search points:" );
-    mpSearchPointsSpinBox = new QSpinBox(this);
-    mpSearchPointsSpinBox->setRange(1, std::numeric_limits<int>::max());
-    mpSearchPointsSpinBox->setValue(8);
-
     mpParticlesLabel = new QLabel("Number of particles:" );
     mpParticlesSpinBox = new QSpinBox(this);
     mpParticlesSpinBox->setRange(1, std::numeric_limits<int>::max());
@@ -121,9 +116,13 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpSigmaLineEdit = new QLineEdit("0.3", this);
     mpSigmaLineEdit->setValidator(new QDoubleValidator());
 
-    mpOmegaLabel = new QLabel("Inertia Weight: ");
-    mpOmegaLineEdit = new QLineEdit("1", this);
-    mpOmegaLineEdit->setValidator(new QDoubleValidator());
+    mpOmega1Label = new QLabel("Initial inertia weight: ");
+    mpOmega1LineEdit = new QLineEdit("1", this);
+    mpOmega1LineEdit->setValidator(new QDoubleValidator());
+
+    mpOmega2Label = new QLabel("Final inertia weight: ");
+    mpOmega2LineEdit = new QLineEdit("0.5", this);
+    mpOmega2LineEdit->setValidator(new QDoubleValidator());
 
     mpC1Label = new QLabel("Learning factor 1: ");
     mpC1LineEdit = new QLineEdit("2", this);
@@ -132,6 +131,10 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpC2Label = new QLabel("Learning factor 2: ");
     mpC2LineEdit = new QLineEdit("2", this);
     mpC2LineEdit->setValidator(new QDoubleValidator());
+
+    mpVmaxLabel = new QLabel("Maximum particle velocity: ");
+    mpVmaxLineEdit = new QLineEdit("2", this);
+    mpVmaxLineEdit->setValidator(new QDoubleValidator());
 
     mpFLabel = new QLabel("Differential weight: ");
     mpFLineEdit = new QLineEdit("1.0", this);
@@ -189,18 +192,16 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateCoreProgressBars()));
     pSettingsLayout->addWidget(pIterationsLabel,       row,   0);
     pSettingsLayout->addWidget(mpIterationsSpinBox,    row++, 1);
-    pSettingsLayout->addWidget(mpSearchPointsLabel,    row,   0);
-    pSettingsLayout->addWidget(mpSearchPointsSpinBox,  row++, 1);
-    connect(mpSearchPointsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateCoreProgressBars()));
-    connect(mpSearchPointsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateParameterOutputLineEdits()));
     pSettingsLayout->addWidget(mpParticlesLabel,       row,   0);
     pSettingsLayout->addWidget(mpParticlesSpinBox,     row++, 1);
     connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateCoreProgressBars()));
     connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateParameterOutputLineEdits()));
     pSettingsLayout->addWidget(mpAlphaLabel,           row,   0);
     pSettingsLayout->addWidget(mpAlphaLineEdit,        row++, 1);
-    pSettingsLayout->addWidget(mpOmegaLabel,           row,   0);
-    pSettingsLayout->addWidget(mpOmegaLineEdit,        row++, 1);
+    pSettingsLayout->addWidget(mpOmega1Label,          row,   0);
+    pSettingsLayout->addWidget(mpOmega1LineEdit,       row++, 1);
+    pSettingsLayout->addWidget(mpOmega2Label,          row,   0);
+    pSettingsLayout->addWidget(mpOmega2LineEdit,       row++, 1);
     pSettingsLayout->addWidget(mpBetaLabel,            row,   0);
     pSettingsLayout->addWidget(mpBetaLineEdit,         row++, 1);
     pSettingsLayout->addWidget(mpC1Label,              row,   0);
@@ -213,6 +214,8 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpSigmaLineEdit,        row++, 1);
     pSettingsLayout->addWidget(mpC2Label,              row,   0);
     pSettingsLayout->addWidget(mpC2LineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpVmaxLabel,            row,   0);
+    pSettingsLayout->addWidget(mpVmaxLineEdit,         row++, 1);
     pSettingsLayout->addWidget(mpFLabel,               row,   0);
     pSettingsLayout->addWidget(mpFLineEdit,            row++, 1);
     pSettingsLayout->addWidget(mpCRLabel,              row,   0);
@@ -443,27 +446,13 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
 //    worstId = 1;
 
     bool ok;
-    Ops::AlgorithmT algorithm = mpTerminal->mpHandler->mpOptHandler->getAlgorithm();
-    if(algorithm == Ops::NelderMead ||
-       algorithm == Ops::ComplexRF ||
-       algorithm == Ops::ComplexRFP)
+    int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
+    if(nPoints != mParametersOutputLineEditPtrs.size())
     {
-        int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
-        if(nPoints != mParametersOutputLineEditPtrs.size())
-        {
-            mpSearchPointsSpinBox->setValue(nPoints);
-            recreateParameterOutputLineEdits();
-        }
+        mpParticlesSpinBox->setValue(nPoints);
+        recreateParameterOutputLineEdits();
     }
-    else if(algorithm == Ops::ParticleSwarm)
-    {
-        int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints", ok);        //! @todo Slow to use strings, should use direct access somehow
-        if(nPoints != mParametersOutputLineEditPtrs.size())
-        {
-            mpParticlesSpinBox->setValue(nPoints);
-            recreateParameterOutputLineEdits();
-        }
-    }
+
 
     mParameterOutputIndexes.clear();
     mParameterOutputIndexes.append(bestId);
@@ -551,7 +540,7 @@ void OptimizationDialog::loadConfiguration()
     mpSystem->getOptimizationSettings(optSettings);
 
     mpIterationsSpinBox->setValue(optSettings.mNiter);
-    mpSearchPointsSpinBox->setValue(optSettings.mNsearchp);
+    mpParticlesSpinBox->setValue(optSettings.mNsearchp);
     mpAlphaLineEdit->setText(QString().setNum(optSettings.mRefcoeff));
     mpBetaLineEdit->setText(QString().setNum(optSettings.mRandfac));
     mpGammaLineEdit->setText(QString().setNum(optSettings.mForgfac));
@@ -600,7 +589,7 @@ void OptimizationDialog::saveConfiguration()
 
     //Settings
     optSettings.mNiter = mpIterationsSpinBox->value();
-    optSettings.mNsearchp = mpSearchPointsSpinBox->value();
+    optSettings.mNsearchp = mpParticlesSpinBox->value();
     optSettings.mRefcoeff = mpAlphaLineEdit->text().toDouble();
     optSettings.mRandfac = mpBetaLineEdit->text().toDouble();
     optSettings.mForgfac = mpGammaLineEdit->text().toDouble();
@@ -1002,120 +991,10 @@ void OptimizationDialog::generateNelderMeadScript()
     QString templateCode = templateFile.readAll();
     templateFile.close();
 
-    QString objFuncs;
-    QString totalObj;
+    generateObjectiveFunctionCode(templateCode);
+    generateParameterCode(templateCode);
+    generateCommonOptions(templateCode);
 
-    QString setMinMax;
-    QString setPars;
-    for(int i=0; i<mFunctionName.size(); ++i)
-    {
-        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
-        objFunc.prepend("    ");
-        objFunc.replace("\n", "\n    ");
-        objFunc.replace("<<<id>>>", QString::number(i+1));
-        for(int j=0; j<mFunctionComponents[i].size(); ++j)
-        {
-            QString varName;
-            if(mFunctionComponents[i][j].isEmpty())   //Alias
-            {
-                varName = mFunctionVariables[i][j];
-            }
-            else
-            {
-                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
-            }
-            gpTerminalWidget->mpHandler->toShortDataNames(varName);
-            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
-
-        }
-        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
-        {
-            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
-        }
-        objFuncs.append(objFunc+"\n");
-
-        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
-        {
-            totalObj.append("+");
-        }
-        else
-        {
-            totalObj.append("-");
-        }
-        QString idx = QString::number(i+1);
-        totalObj.append(mWeightLineEditPtrs[i]->text()+"*"+mNormLineEditPtrs[i]->text()+"*exp("+mExpLineEditPtrs[i]->text()+")*obj"+idx);
-    }
-    objFuncs.chop(1);
-
-    for(int p=0; p<mSelectedParameters.size(); ++p)
-    {
-        QString par;
-        if(mSelectedComponents[p] == "_System Parameters")
-        {
-            par = mSelectedParameters[p];
-        }
-        else
-        {
-            par = mSelectedComponents[p]+"."+mSelectedParameters[p];
-        }
-        gpTerminalWidget->mpHandler->toShortDataNames(par);
-        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
-
-        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
-    }
-    setPars.chop(1);
-    setMinMax.chop(1);
-
-    if(mpExport2CSVBox->isChecked())
-    {
-        templateCode.replace("<<<log>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<log>>>","off");
-    }
-    if(mpFinalEvalCheckBox->isChecked())
-    {
-        templateCode.replace("<<<finaleval>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<finaleval>>>","off");
-    }
-    if(mpPlotParticlesCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotpoints>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotpoints>>>","off");
-    }
-    if(mpPlotEntropyCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotentropy>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotentropy>>>","off");
-    }
-    if(mpPlotBestWorstCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotbestworst>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotbestworst>>>","off");
-    }
-
-    templateCode.replace("<<<objfuncs>>>", objFuncs);
-    templateCode.replace("<<<totalobj>>>", totalObj);
-    templateCode.replace("<<<plotvars>>>", "");
-
-    templateCode.replace("<<<setminmax>>>", setMinMax);
-    templateCode.replace("<<<setpars>>>", setPars);
-    templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
-    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
-    templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
     templateCode.replace("<<<alpha>>>", mpAlphaLineEdit->text());
     templateCode.replace("<<<gamma>>>", mpGammaLineEdit->text());
     templateCode.replace("<<<rho>>>", mpRhoLineEdit->text());
@@ -1132,13 +1011,103 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
     QString templateCode = templateFile.readAll();
     templateFile.close();
 
-    QString objFuncs;
-    QString totalObj;
-    //QStringList plotVarsList;
-    //! @todo Reimplement plotting variables support
-    //QString plotVars = "chpv ";
-    QString setMinMax;
-    QString setPars;
+    generateObjectiveFunctionCode(templateCode);
+    generateParameterCode(templateCode);
+    generateCommonOptions(templateCode);
+
+    QString extraVars;
+    int nmodels = mpNumModelsLineEdit->text().toInt();
+    if(subAlgorithm == "complexrfp")
+    {
+        extraVars.append("opt set nmodels "+QString::number(nmodels));
+        if(mpMethodComboBox->currentIndex() == 0)
+        {
+            extraVars.append("\nopt set method 0");
+            int nstep = qMax(1,nmodels/2);
+            int nret = nmodels-nstep;
+            extraVars.append("\nopt set npredictions "+QString::number(nstep));
+            extraVars.append("\nopt set nretractions "+QString::number(nret));
+        }
+        else
+        {
+            extraVars.append("\nopt set method 1");
+            extraVars.append("\nopt set ndist "+QString::number(nmodels));
+            extraVars.append("\nopt set alphamin 0.0");
+            extraVars.append("\nopt set alphamin 2.0");
+        }
+    }
+
+    templateCode.replace("<<<subalgorithm>>>", subAlgorithm);
+    templateCode.replace("<<<alpha>>>", mpAlphaLineEdit->text());
+    templateCode.replace("<<<beta>>>", mpBetaLineEdit->text());
+    templateCode.replace("<<<gamma>>>", mpGammaLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+    templateCode.replace("<<<extravars>>>", extraVars);
+
+    mScript = templateCode;
+}
+
+
+void OptimizationDialog::generateParticleSwarmScript()
+{
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateParticle.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    generateObjectiveFunctionCode(templateCode);
+    generateParameterCode(templateCode);
+    generateCommonOptions(templateCode);
+
+    templateCode.replace("<<<omega1>>>", mpOmega1LineEdit->text());
+    templateCode.replace("<<<omega2>>>", mpOmega2LineEdit->text());
+    templateCode.replace("<<<c1>>>", mpC1LineEdit->text());
+    templateCode.replace("<<<c2>>>", mpC2LineEdit->text());
+    templateCode.replace("<<<vmax>>>", mpVmaxLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+
+    mScript = templateCode;
+}
+
+void OptimizationDialog::generateDifferentialEvolutionScript()
+{
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateDifferential.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    generateObjectiveFunctionCode(templateCode);
+    generateParameterCode(templateCode);
+    generateCommonOptions(templateCode);
+
+    templateCode.replace("<<<f>>>", mpFLineEdit->text());
+    templateCode.replace("<<<cr>>>", mpCRLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+
+    mScript = templateCode;
+}
+
+
+void OptimizationDialog::generateParameterSweepScript()
+{
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateParameterSweep.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    generateObjectiveFunctionCode(templateCode);
+    generateParameterCode(templateCode);
+    generateCommonOptions(templateCode);
+
+    templateCode.replace("<<<length>>>", QString::number(mpLengthSpinBox->value()));
+
+
+    mScript = templateCode;
+}
+
+void OptimizationDialog::generateObjectiveFunctionCode(QString &templateCode)
+{
+    QString objFuncs, totalObj;
     for(int i=0; i<mFunctionName.size(); ++i)
     {
         QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
@@ -1177,6 +1146,13 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
     }
     objFuncs.chop(1);
 
+    templateCode.replace("<<<objfuncs>>>", objFuncs);
+    templateCode.replace("<<<totalobj>>>", totalObj);
+}
+
+void OptimizationDialog::generateParameterCode(QString &templateCode)
+{
+    QString setMinMax, setPars;
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
         QString par;
@@ -1197,9 +1173,13 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
     setPars.chop(1);
     setMinMax.chop(1);
 
-    QString extraPlots;
-    extraPlots.chop(1);
+    templateCode.replace("<<<setminmax>>>", setMinMax);
+    templateCode.replace("<<<setpars>>>", setPars);
 
+}
+
+void OptimizationDialog::generateCommonOptions(QString &templateCode)
+{
     if(mpExport2CSVBox->isChecked())
     {
         templateCode.replace("<<<log>>>","on");
@@ -1241,412 +1221,35 @@ void OptimizationDialog::generateComplexRFScript(const QString &subAlgorithm)
         templateCode.replace("<<<plotobjectives>>>","off");
     }
 
-    QString extraVars;
-    int nmodels = mpNumModelsLineEdit->text().toInt();
-    if(subAlgorithm == "complexrfp")
-    {
-        extraVars.append("opt set nmodels "+QString::number(nmodels));
-        if(mpMethodComboBox->currentIndex() == 0)
-        {
-            extraVars.append("\nopt set method 0");
-            int nstep = qMax(1,nmodels/2);
-            int nret = nmodels-nstep;
-            extraVars.append("\nopt set npredictions "+QString::number(nstep));
-            extraVars.append("\nopt set nretractions "+QString::number(nret));
-        }
-        else
-        {
-            extraVars.append("\nopt set method 1");
-            extraVars.append("\nopt set ndist "+QString::number(nmodels));
-            extraVars.append("\nopt set alphamin 0.0");
-            extraVars.append("\nopt set alphamin 2.0");
-        }
-    }
-
-    replacePattern("<<<objfuncs>>>", objFuncs, templateCode);
-    templateCode.replace("<<<totalobj>>>", totalObj);
-    templateCode.replace("<<<plotvars>>>", "");
-
-    templateCode.replace("<<<subalgorithm>>>", subAlgorithm);
-    replacePattern("<<<extraplots>>>", extraPlots, templateCode);
-    templateCode.replace("<<<setminmax>>>", setMinMax);
-    templateCode.replace("<<<setpars>>>", setPars);
-    templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
-    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
-    templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
-    templateCode.replace("<<<alpha>>>", mpAlphaLineEdit->text());
-    templateCode.replace("<<<beta>>>", mpBetaLineEdit->text());
-    templateCode.replace("<<<gamma>>>", mpGammaLineEdit->text());
-    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
-    templateCode.replace("<<<extravars>>>", extraVars);
-
-    mScript = templateCode;
-}
-
-
-void OptimizationDialog::generateParticleSwarmScript()
-{
-    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateParticle.hcom");
-    templateFile.open(QFile::ReadOnly | QFile::Text);
-    QString templateCode = templateFile.readAll();
-    templateFile.close();
-
-    QString objFuncs;
-    QString totalObj;
-    QString objPars;
-    //! @todo Reimplement plotting variables support
-    //QStringList plotVarsList;
-    //QString plotVars="chpv ";
-    QString setMinMax;
-    QString setPars;
-    for(int i=0; i<mFunctionName.size(); ++i)
-    {
-        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
-        objFunc.prepend("    ");
-        objFunc.chop(1);
-        objFunc.replace("\n", "\n    ");
-        objFunc.replace("<<<id>>>", QString::number(i+1));
-        for(int j=0; j<mFunctionComponents[i].size(); ++j)
-        {
-            QString varName;
-            if(mFunctionComponents[i][j].isEmpty())   //Alias
-            {
-                varName = mFunctionVariables[i][j];
-            }
-            else
-            {
-                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
-            }
-            gpTerminalWidget->mpHandler->toShortDataNames(varName);
-            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
-
-//            if(!plotVarsList.contains(varName))
-//            {
-//                plotVarsList.append(varName);
-//                plotVars.append(varName+" ");
-//            }
-        }
-        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
-        {
-            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
-        }
-        objFuncs.append(objFunc+"\n");
-
-        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
-        {
-            totalObj.append("+");
-        }
-        else
-        {
-            totalObj.append("-");
-        }
-        QString idx = QString::number(i+1);
-        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
-
-        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
-        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
-        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
-    }
-    objFuncs.chop(1);
-    objPars.chop(1);
-
-    for(int p=0; p<mSelectedParameters.size(); ++p)
-    {
-        QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
-        gpTerminalWidget->mpHandler->toShortDataNames(par);
-        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
-
-        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
-    }
-    setPars.chop(1);
-    setMinMax.chop(1);
-
-    QString extraPlots;
-    if(mpPlotParticlesCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotpoints>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotpoints>>>","off");
-    }
-    if(mpPlotEntropyCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotentropy>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotentropy>>>","off");
-    }
-    if(mpPlotBestWorstCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotobjectives>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotobjectives>>>","off");
-    }
-
-    templateCode.replace("<<<objfuncs>>>", objFuncs);
-    templateCode.replace("<<<totalobj>>>", totalObj);
-    templateCode.replace("<<<objpars>>>", objPars);
-    templateCode.replace("<<<plotvars>>>", "");
-    templateCode.replace("<<<extraplots>>>", extraPlots);
-    templateCode.replace("<<<setminmax>>>", setMinMax);
-    templateCode.replace("<<<setpars>>>", setPars);
     templateCode.replace("<<<npoints>>>", QString::number(mpParticlesSpinBox->value()));
     templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
     templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
-    templateCode.replace("<<<omega>>>", mpOmegaLineEdit->text());
-    templateCode.replace("<<<c1>>>", mpC1LineEdit->text());
-    templateCode.replace("<<<c2>>>", mpC2LineEdit->text());
-    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
-
-    mScript = templateCode;
-}
-
-void OptimizationDialog::generateDifferentialEvolutionScript()
-{
-    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateDifferential.hcom");
-    templateFile.open(QFile::ReadOnly | QFile::Text);
-    QString templateCode = templateFile.readAll();
-    templateFile.close();
-
-    QString objFuncs;
-    QString totalObj;
-    QString objPars;
-
-    QString setMinMax;
-    QString setPars;
-    for(int i=0; i<mFunctionName.size(); ++i)
-    {
-        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
-        objFunc.prepend("    ");
-        objFunc.chop(1);
-        objFunc.replace("\n", "\n    ");
-        objFunc.replace("<<<id>>>", QString::number(i+1));
-        for(int j=0; j<mFunctionComponents[i].size(); ++j)
-        {
-            QString varName;
-            if(mFunctionComponents[i][j].isEmpty())   //Alias
-            {
-                varName = mFunctionVariables[i][j];
-            }
-            else
-            {
-                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
-            }
-            gpTerminalWidget->mpHandler->toShortDataNames(varName);
-            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
-        }
-        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
-        {
-            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
-        }
-        objFuncs.append(objFunc+"\n");
-
-        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
-        {
-            totalObj.append("+");
-        }
-        else
-        {
-            totalObj.append("-");
-        }
-        QString idx = QString::number(i+1);
-        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
-
-        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
-        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
-        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
-
-    }
-    objFuncs.chop(1);
-    objPars.chop(1);
-
-    for(int p=0; p<mSelectedParameters.size(); ++p)
-    {
-        QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
-        gpTerminalWidget->mpHandler->toShortDataNames(par);
-        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
-
-        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
-    }
-    setPars.chop(1);
-    setMinMax.chop(1);
-
-    QString extraPlots;
-    if(mpPlotParticlesCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotpoints>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotpoints>>>","off");
-    }
-    if(mpPlotEntropyCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotentropy>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotentropy>>>","off");
-    }
-    if(mpPlotBestWorstCheckBox->isChecked())
-    {
-        templateCode.replace("<<<plotobjectives>>>","on");
-    }
-    else
-    {
-        templateCode.replace("<<<plotobjectives>>>","off");
-    }
-
-    templateCode.replace("<<<objfuncs>>>", objFuncs);
-    templateCode.replace("<<<totalobj>>>", totalObj);
-    templateCode.replace("<<<objpars>>>", objPars);
-    templateCode.replace("<<<plotvars>>>", "");
-    templateCode.replace("<<<extraplots>>>", extraPlots);
-    templateCode.replace("<<<setminmax>>>", setMinMax);
-    templateCode.replace("<<<setpars>>>", setPars);
-    templateCode.replace("<<<npoints>>>", QString::number(mpParticlesSpinBox->value()));
-    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
-    templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
-    templateCode.replace("<<<f>>>", mpFLineEdit->text());
-    templateCode.replace("<<<cr>>>", mpCRLineEdit->text());
-    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
-
-    mScript = templateCode;
-}
-
-
-void OptimizationDialog::generateParameterSweepScript()
-{
-    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateParameterSweep.hcom");
-    templateFile.open(QFile::ReadOnly | QFile::Text);
-    QString templateCode = templateFile.readAll();
-    templateFile.close();
-
-    QString objFuncs;
-    QString totalObj;
-    //QStringList plotVarsList;
-    //! @todo Reimplement plotting variables support
-    //QString plotVars = "chpv ";
-    QString setMinMax;
-    QString setPars;
-    for(int i=0; i<mFunctionName.size(); ++i)
-    {
-        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
-        objFunc.prepend("    ");
-        objFunc.replace("\n", "\n    ");
-        objFunc.replace("<<<id>>>", QString::number(i+1));
-        for(int j=0; j<mFunctionComponents[i].size(); ++j)
-        {
-            QString varName;
-            if(mFunctionComponents[i][j].isEmpty())   //Alias
-            {
-                varName = mFunctionVariables[i][j];
-            }
-            else
-            {
-                varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
-            }
-            gpTerminalWidget->mpHandler->toShortDataNames(varName);
-            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
-
-        }
-        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
-        {
-            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
-        }
-        objFuncs.append(objFunc+"\n");
-
-        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
-        {
-            totalObj.append("+");
-        }
-        else
-        {
-            totalObj.append("-");
-        }
-        QString idx = QString::number(i+1);
-        totalObj.append(mWeightLineEditPtrs[i]->text()+"*"+mNormLineEditPtrs[i]->text()+"*exp("+mExpLineEditPtrs[i]->text()+")*obj"+idx);
-    }
-    objFuncs.chop(1);
-
-    for(int p=0; p<mSelectedParameters.size(); ++p)
-    {
-        QString par;
-        if(mSelectedComponents[p] == "_System Parameters")
-        {
-            par = mSelectedParameters[p];
-        }
-        else
-        {
-            par = mSelectedComponents[p]+"."+mSelectedParameters[p];
-        }
-        gpTerminalWidget->mpHandler->toShortDataNames(par);
-        setPars.append("    chpa "+par+" optpar(optvar(evalid),"+QString::number(p)+")\n");
-
-        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
-    }
-    setPars.chop(1);
-    setMinMax.chop(1);
-
-    QString extraPlots;
-    if(mpPlotParticlesCheckBox->isChecked())
-    {
-        extraPlots.append("opt set plotpoints on\n");
-    }
-    if(mpPlotBestWorstCheckBox->isChecked())
-    {
-        extraPlots.append("opt set plotbestworst on\n");
-    }
-    if(mpPlotEntropyCheckBox->isChecked())
-    {
-        extraPlots.append("opt set plotentropy on\n");
-    }
-    extraPlots.chop(1);
-
-
-    templateCode.replace("<<<objfuncs>>>", objFuncs);
-    templateCode.replace("<<<totalobj>>>", totalObj);
-    templateCode.replace("<<<plotvars>>>", "");
-
-    templateCode.replace("<<<subalgorithm>>>", "parametersweep");
-    templateCode.replace("<<<extraplots>>>", extraPlots);
-    templateCode.replace("<<<setminmax>>>", setMinMax);
-    templateCode.replace("<<<setpars>>>", setPars);
-    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
-    templateCode.replace("<<<length>>>", QString::number(mpLengthSpinBox->value()));
-
-
-    mScript = templateCode;
 }
 
 
 
 void OptimizationDialog::setAlgorithm(int i)
 {
-    mpSearchPointsLabel->setVisible(false);
-    mpSearchPointsSpinBox->setVisible(false);
     mpAlphaLabel->setVisible(false);
     mpAlphaLineEdit->setVisible(false);
     mpBetaLabel->setVisible(false);
     mpBetaLineEdit->setVisible(false);
     mpGammaLabel->setVisible(false);
     mpGammaLineEdit->setVisible(false);
-    mpParticlesLabel->setVisible(false);
-    mpParticlesSpinBox->setVisible(false);
     mpRhoLabel->setVisible(false);
     mpRhoLineEdit->setVisible(false);
     mpSigmaLabel->setVisible(false);
     mpSigmaLineEdit->setVisible(false);
-    mpOmegaLabel->setVisible(false);
-    mpOmegaLineEdit->setVisible(false);
+    mpOmega1Label->setVisible(false);
+    mpOmega1LineEdit->setVisible(false);
+    mpOmega2Label->setVisible(false);
+    mpOmega2LineEdit->setVisible(false);
     mpC1Label->setVisible(false);
     mpC1LineEdit->setVisible(false);
     mpC2Label->setVisible(false);
     mpC2LineEdit->setVisible(false);
+    mpVmaxLabel->setVisible(false);
+    mpVmaxLineEdit->setVisible(false);
     mpFLabel->setVisible(false);
     mpFLineEdit->setVisible(false);
     mpCRLabel->setVisible(false);
@@ -1668,8 +1271,6 @@ void OptimizationDialog::setAlgorithm(int i)
     switch(i)
     {
     case Ops::NelderMead:
-        mpSearchPointsLabel->setVisible(true);
-        mpSearchPointsSpinBox->setVisible(true);
         mpAlphaLabel->setVisible(true);
         mpAlphaLineEdit->setVisible(true);
         mpGammaLabel->setVisible(true);
@@ -1685,8 +1286,6 @@ void OptimizationDialog::setAlgorithm(int i)
         mpSigmaLineEdit->setText("0.5");
         break;
     case Ops::ComplexRF:
-        mpSearchPointsLabel->setVisible(true);
-        mpSearchPointsSpinBox->setVisible(true);
         mpAlphaLabel->setVisible(true);
         mpAlphaLineEdit->setVisible(true);
         mpBetaLabel->setVisible(true);
@@ -1699,8 +1298,6 @@ void OptimizationDialog::setAlgorithm(int i)
         mpRhoLineEdit->setText("0.3");
         break;
     case Ops::ComplexRFP:
-        mpSearchPointsLabel->setVisible(true);
-        mpSearchPointsSpinBox->setVisible(true);
         mpAlphaLabel->setVisible(true);
         mpAlphaLineEdit->setVisible(true);
         mpBetaLabel->setVisible(true);
@@ -1714,18 +1311,18 @@ void OptimizationDialog::setAlgorithm(int i)
         mpMethodComboBox->setVisible(true);
         break;
     case Ops::ParticleSwarm:
-        mpParticlesLabel->setVisible(true);
-        mpParticlesSpinBox->setVisible(true);
-        mpOmegaLabel->setVisible(true);
-        mpOmegaLineEdit->setVisible(true);
+        mpOmega1Label->setVisible(true);
+        mpOmega1LineEdit->setVisible(true);
+        mpOmega2Label->setVisible(true);
+        mpOmega2LineEdit->setVisible(true);
         mpC1Label->setVisible(true);
         mpC1LineEdit->setVisible(true);
         mpC2Label->setVisible(true);
         mpC2LineEdit->setVisible(true);
+        mpVmaxLabel->setVisible(true);
+        mpVmaxLineEdit->setVisible(true);
         break;
     case Ops::DifferentialEvolution:
-        mpParticlesLabel->setVisible(true);
-        mpParticlesSpinBox->setVisible(true);
         mpFLabel->setVisible(true);
         mpFLineEdit->setVisible(true);
         mpCRLabel->setVisible(true);
@@ -1736,11 +1333,6 @@ void OptimizationDialog::setAlgorithm(int i)
     default:
         break;
     }
-
-    //Complex
-
-    //Particle swarm
-
 }
 
 
@@ -2502,8 +2094,12 @@ bool OptimizationDialog::loadObjectiveFunctions()
         QString code = templateFile.readAll();
         templateFile.close();
 
+        //Add indentation
+        code.prepend("    ");
+        code.replace("\n","\n    ");
+
         //Get description
-        if(code.startsWith("#"))
+        if(code.startsWith("    #"))
         {
             mObjectiveFunctionDescriptions << code.section("#",1,1).section("\n",0,0);
         }
@@ -2566,7 +2162,11 @@ QString OptimizationDialog::generateFunctionCode(int i)
 
     int fnc = mSelectedFunctions.at(i);
 
-    retval.append("w"+QString().setNum(i)+"*("+mObjectiveFunctionCalls.at(fnc)+"(data"+QString().setNum(i)+"0");
+    QString w = mWeightLineEditPtrs.at(i)->text();
+    QString n = mNormLineEditPtrs.at(i)->text();
+    QString e = mExpLineEditPtrs.at(i)->text();
+
+    retval.append(w+QString().setNum(i)+"*("+mObjectiveFunctionCalls.at(fnc)+"(data"+QString().setNum(i)+"0");
     for(int v=1; v<mObjectiveFunctionNumberOfVariables.at(fnc); ++v)
         retval.append(", data"+QString().setNum(i)+QString().setNum(v));
     if(mObjectiveFunctionUsesTimeVector.at(fnc))
@@ -2576,7 +2176,7 @@ QString OptimizationDialog::generateFunctionCode(int i)
         double num = mDataLineEditPtrs.at(i).at(d)->text().toDouble();
         retval.append(", "+QString().setNum(num));
     }
-    retval.append(")/n"+QString().setNum(i)+")**g"+QString().setNum(i));
+    retval.append(")/"+n+QString().setNum(i)+")**"+e+QString().setNum(i));
 
     return retval;
 }

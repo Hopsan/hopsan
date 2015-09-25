@@ -31,11 +31,6 @@ opt set plotparameters off
 opt set printresultfile on
 opt set printlogfile off
 
-<<<objpars>>>
-
-<<<plotvars>>>
-<<<extraplots>>>
-
 #Set min and max values for parameters
 <<<setminmax>>>
 

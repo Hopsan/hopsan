@@ -12,7 +12,7 @@ define obj
     opt set obj optvar(evalid) totalObj
 enddefine
 
-opt set algorithm <<<subalgorithm>>>
+opt set algorithm parametersweep
 opt set datatype double
 opt set nparams <<<nparams>>>
 opt set length <<<length>>>
@@ -25,4 +25,3 @@ opt run
 
 set backup on
 
-<<<plotvars>>>

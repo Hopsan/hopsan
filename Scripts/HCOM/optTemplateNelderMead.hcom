@@ -25,7 +25,7 @@ opt set rho <<<rho>>>
 opt set sigma <<<sigma>>>
 opt set finaleval <<<finaleval>>>
 opt set printresultfile on
-opt set printlogfile <<<log>>>
+opt set printlogfile off
 opt set plotpoints <<<plotpoints>>>
 opt set plotobjectives <<<plotobjectives>>>
 opt set plotparameters off
