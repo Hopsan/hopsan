@@ -96,6 +96,8 @@ public:
     QString name;
     QString xmlFilePath;
     QString debugExtension;
+    QString lflags;
+    QString cflags;
     QString libFilePath;
     QStringList cafFiles;
     QStringList sourceFiles;

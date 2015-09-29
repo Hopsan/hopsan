@@ -144,6 +144,9 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
 
     xmlCode.replace("<<<libname>>>", mLibName);
     xmlCode.replace("<<<debugext>>>", mLibDebugExt);
+    //! @todo add support for entering cflags and lflags
+    xmlCode.replace("<<<cflags>>>", "");
+    xmlCode.replace("<<<lflags>>>", "");
     xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
     replacePatternLine(xmlCode,"<<<components>>>",xmlCompString);
     replacePatternLine(xmlCode,"<<<auxiliary>>>","");

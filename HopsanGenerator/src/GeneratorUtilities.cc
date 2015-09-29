@@ -224,7 +224,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     pGenerator->printMessage("Writing compilation script...");
 
     QStringList ccFiles;
-    QString libFile,dbg_ext,libRootDir;
+    QString libFile,dbg_ext,libRootDir, cflags, lflags;
     if(QFileInfo(path).isFile())
     {
         QFile xmlFile(path);
@@ -238,6 +238,21 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 
         dbg_ext = libElement.attribute("debug_ext");
         libFile = QString(LIBPREFIX)+libElement.text();
+
+        QDomElement bfElement = rootElement.firstChildElement("buildflags").firstChildElement();
+        while (!bfElement.isNull())
+        {
+            if (bfElement.tagName() == "cflags")
+            {
+                cflags.append(" "+bfElement.text());
+            }
+            else if (bfElement.tagName() == "lflags")
+            {
+                lflags.append(" "+bfElement.text());
+            }
+            //! @todo handle other elements such as includepath libpath libflag defineflag and such
+            bfElement = bfElement.nextSiblingElement();
+        }
 
         QDomElement sourceElement = rootElement.firstChildElement("source");
         while (!sourceElement.isNull())
@@ -269,10 +284,10 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 
     QString hopsanBinDir = pGenerator->getBinPath();
     QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath())+" "+extraIncludes;
-    QString lflags = QString("-L\"%1\" -l%2").arg(hopsanBinDir).arg("HopsanCore"TO_STR(DEBUG_EXT))+" "+extraLFlags;
+    lflags += QString(" -L\"%1\" -l%2").arg(hopsanBinDir).arg("HopsanCore"TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
     //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work) /Peter
-    QString cflags = QString("-Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(libRootDir);
+    cflags += QString(" -Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(libRootDir);
 
     // Modify if debug
 #ifdef DEBUGCOMPILING

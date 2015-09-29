@@ -242,6 +242,22 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                         tempLib.libFilePath += QString(LIBEXT);
                     }
 
+                    //Store build flags
+                    QDomElement bfElement = xmlRoot.firstChildElement("buildflags").firstChildElement();
+                    while (!bfElement.isNull())
+                    {
+                        if (bfElement.tagName() == "cflags")
+                        {
+                            tempLib.cflags.append(" "+bfElement.text());
+                        }
+                        else if (bfElement.tagName() == "lflags")
+                        {
+                            tempLib.lflags.append(" "+bfElement.text());
+                        }
+                        //! @todo handle other elements such as includepath libpath libflag defineflag and such
+                        bfElement = bfElement.nextSiblingElement();
+                    }
+
                     //Store source files
                     QDomElement sourceElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_SOURCE));
                     while(!sourceElement.isNull())
