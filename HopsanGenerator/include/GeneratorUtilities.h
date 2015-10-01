@@ -171,7 +171,7 @@ public:
 };
 
 
-
+bool matchOSString(QString os);
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 bool removeDir(QString path);
 bool copyDir(const QString fromPath, QString toPath, QString &rErrorMessage);

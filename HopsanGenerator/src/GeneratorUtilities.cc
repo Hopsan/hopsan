@@ -250,13 +250,22 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
         QDomElement bfElement = rootElement.firstChildElement("buildflags").firstChildElement();
         while (!bfElement.isNull())
         {
+            QString os = bfElement.attribute("os");
             if (bfElement.tagName() == "cflags")
             {
-                cflags.append(" "+bfElement.text());
+                // Only add flag if os attribute match current os
+                if (os.isEmpty() || matchOSString(os))
+                {
+                    cflags.append(" "+bfElement.text());
+                }
             }
             else if (bfElement.tagName() == "lflags")
             {
-                lflags.append(" "+bfElement.text());
+                // Only add flag if os attribute match current os
+                if (os.isEmpty() || matchOSString(os))
+                {
+                    lflags.append(" "+bfElement.text());
+                }
             }
             //! @todo handle other elements such as includepath libpath libflag defineflag and such
             bfElement = bfElement.nextSiblingElement();
@@ -1003,4 +1012,44 @@ QStringList listDefaultLibrarySourceFiles(const QString rootPath)
     }
 
     return allFiles;
+}
+
+bool matchOSString(QString os)
+{
+    if (os == "win32")
+    {
+#ifdef _WIN32
+      return true;
+#else
+      return false;
+#endif
+    }
+    else if (os == "win64")
+    {
+#ifdef _WIN64
+      return true;
+#else
+      return false;
+#endif
+    }
+    else if (os == "linux")
+    {
+#ifdef __linux__
+      return true;
+#else
+      return false;
+#endif
+    }
+    else if (os == "apple")
+    {
+#ifdef __APPLE__
+      return true;
+#else
+      return false;
+#endif
+    }
+    else
+    {
+        return false;
+    }
 }
