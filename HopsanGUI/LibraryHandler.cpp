@@ -278,7 +278,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                             gpMessageHandler->collectHopsanCoreMessages();
                             gpMessageHandler->addErrorMessage("Failed to load library: "+it.filePath());
                             gpMessageHandler->addInfoMessage("Attempting to recompile library: "+tempLib.name+"...");
-                            recompileLibrary(tempLib,false,0,true);
+                            recompileLibrary(tempLib,true,0,true);
                             gpMessageHandler->collectHopsanCoreMessages();
 
                             //Try to load again
