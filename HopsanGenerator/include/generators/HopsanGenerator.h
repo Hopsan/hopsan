@@ -93,11 +93,11 @@ protected:
     void callProcess(const QString &name, const QStringList &args, const QString workingDirectory=QString()) const;
     bool runUnixCommand(QString cmd) const;
     bool replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const;
-    bool copyIncludeFilesToDir(QString path, bool skipDependencies=false) const;
-    bool copySourceFilesToDir(QString tgtPath) const;
+    bool copyHopsanCoreSourceFilesToDir(QString tgtPath) const;
     bool copyDefaultComponentCodeToDir(const QString &path) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     bool copyFile(const QString &source, const QString &target) const;
+    bool copyDir(const QString fromPath, const QString toPath) const;
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
     void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
 

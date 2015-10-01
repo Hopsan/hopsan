@@ -172,13 +172,19 @@ bool removeDir(QString path)
 
 
 //! @brief Copy a directory with contents
-//! @param [in] fromPath The absolute path to the directory to copy
-//! @param [in] toPath The absolute path to the destination (including resulting dir name)
+//! @param[in] fromPath The absolute path to the directory to copy
+//! @param[in] toPath The absolute path to the destination (including resulting dir name)
+//! @param[out] rErrorMessage Error message if copy fail
+//! @returns True if success else False
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
-void copyDir(const QString fromPath, QString toPath)
+bool copyDir(const QString fromPath, QString toPath, QString &rErrorMessage)
 {
     QDir toDir(toPath);
-    toDir.mkpath(toPath);
+    if (!toDir.mkpath(toPath))
+    {
+        rErrorMessage = "Could not create directory: "+toPath;
+        return false;
+    }
     if (toPath.endsWith('/'))
     {
         toPath.chop(1);
@@ -189,15 +195,17 @@ void copyDir(const QString fromPath, QString toPath)
     {
         if (info.isDir())
         {
-            copyDir(info.absoluteFilePath(), toPath+"/"+info.fileName());
+            if(!copyDir(info.absoluteFilePath(), toPath+"/"+info.fileName(), rErrorMessage))
+            {
+                return false;
+            }
         }
         else
         {
-            if(QFile::exists(toPath+"/"+info.fileName()))
+            if(!copyFile(info.absoluteFilePath(), toPath+"/"+info.fileName(), rErrorMessage))
             {
-                QFile::remove(toPath+"/"+info.fileName());
+                return false;
             }
-            QFile::copy(info.absoluteFilePath(), toPath+"/"+info.fileName());
         }
     }
 }
@@ -551,129 +559,14 @@ void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &f
 }
 
 
-
-QStringList getHopsanCoreSourceFiles()
-{
-    QStringList srcFiles;
-    srcFiles << "HopsanCore/src/Component.cc" <<
-                "HopsanCore/src/ComponentSystem.cc" <<
-                "HopsanCore/src/HopsanEssentials.cc" <<
-                "HopsanCore/src/HopsanTypes.cc" <<
-                "HopsanCore/src/Node.cc" <<
-                "HopsanCore/src/Nodes.cc" <<
-                "HopsanCore/src/Parameters.cc" <<
-                "HopsanCore/src/Port.cc" <<
-                "HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc" <<
-                "HopsanCore/src/ComponentUtilities/CSVParser.cc" <<
-                "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc" <<
-                "HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" <<
-                "HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp" <<
-                "HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc" <<
-                "HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc" <<
-                "HopsanCore/src/ComponentUtilities/Integrator.cc" <<
-                "HopsanCore/src/ComponentUtilities/IntegratorLimited.cc" <<
-                "HopsanCore/src/ComponentUtilities/ludcmp.cc" <<
-                "HopsanCore/src/ComponentUtilities/matrix.cc" <<
-                "HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc" <<
-                "HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc" <<
-                "HopsanCore/src/ComponentUtilities/PLOParser.cc" <<
-                "HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp" <<
-                "HopsanCore/src/CoreUtilities/GeneratorHandler.cpp" <<
-                "HopsanCore/src/CoreUtilities/HmfLoader.cc" <<
-                "HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc" <<
-                "HopsanCore/src/CoreUtilities/LoadExternal.cc" <<
-                "HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" <<
-                "HopsanCore/src/CoreUtilities/StringUtilities.cpp" <<
-                "componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" <<
-                "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
-                "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
-    return srcFiles;
-}
-
-
-QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
-{
-    QStringList includeFiles;
-    includeFiles << "HopsanCore/include/Component.h" <<
-                    "HopsanCore/include/ComponentEssentials.h" <<
-                    "HopsanCore/include/ComponentSystem.h" <<
-                    "HopsanCore/include/ComponentUtilities.h" <<
-                    "HopsanCore/include/HopsanCore.h" <<
-                    "HopsanCore/include/HopsanCoreMacros.h" <<
-                    "HopsanCore/include/HopsanEssentials.h" <<
-                    "HopsanCore/include/HopsanTypes.h" <<
-                    "HopsanCore/include/Node.h" <<
-                    "HopsanCore/include/Nodes.h" <<
-                    "HopsanCore/include/Parameters.h" <<
-                    "HopsanCore/include/Port.h" <<
-                    "HopsanCore/include/HopsanCoreSVNRevision.h" <<
-                    "HopsanCore/include/HopsanCoreVersion.h" <<
-                    "HopsanCore/include/win32dll.h" <<
-                    "HopsanCore/include/Components/DummyComponent.hpp" <<
-                    "HopsanCore/include/Components/ModelicaComponent.hpp" <<
-                    "HopsanCore/include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h" <<
-                    "HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.h" <<
-                    "HopsanCore/include/ComponentUtilities/CSVParser.h" <<
-                    "HopsanCore/include/ComponentUtilities/Delay.hpp" <<
-                    "HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.h" <<
-                    "HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h" <<
-                    "HopsanCore/include/ComponentUtilities/EquationSystemSolver.h" <<
-                    "HopsanCore/include/ComponentUtilities/FirstOrderTransferFunction.h" <<
-                    "HopsanCore/include/ComponentUtilities/HopsanPowerUser.h" <<
-                    "HopsanCore/include/ComponentUtilities/Integrator.h" <<
-                    "HopsanCore/include/ComponentUtilities/IntegratorLimited.h" <<
-                    "HopsanCore/include/ComponentUtilities/ludcmp.h" <<
-                    "HopsanCore/include/ComponentUtilities/LookupTable.h" <<
-                    "HopsanCore/include/ComponentUtilities/matrix.h" <<
-                    "HopsanCore/include/ComponentUtilities/num2string.hpp" <<
-                    "HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.h" <<
-                    "HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.h" <<
-                    "HopsanCore/include/ComponentUtilities/ValveHysteresis.h" <<
-                    "HopsanCore/include/ComponentUtilities/WhiteGaussianNoise.h" <<
-                    "HopsanCore/include/ComponentUtilities/PLOParser.h" <<
-                    "HopsanCore/include/CoreUtilities/ClassFactory.hpp" <<
-                    "HopsanCore/include/CoreUtilities/ClassFactoryStatusCheck.hpp" <<
-                    "HopsanCore/include/CoreUtilities/CoSimulationUtilities.h" <<
-                    "HopsanCore/include/CoreUtilities/GeneratorHandler.h" <<
-                    "HopsanCore/include/CoreUtilities/HmfLoader.h" <<
-                    "HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
-                    "HopsanCore/include/CoreUtilities/LoadExternal.h" <<
-                    "HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h" <<
-                    "HopsanCore/include/CoreUtilities/StringUtilities.h" <<
-                    "HopsanCore/include/HopsanTypes.h" <<
-                    "HopsanCore/include/ComponentUtilities/HopsanPowerUser.h" <<
-                    "HopsanCore/include/HopsanCoreMacros.h" <<
-                    //"componentLibraries/defaultLibrary/code/defaultComponents.h" <<
-                    //"componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
-                    "HopsanCore/include/compiler_info.h";
-
-    if (!skipDependencies)
-    {
-        includeFiles << "Dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
-                        "Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp" <<
-                        "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp" <<
-                        "Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp" <<
-                        "Dependencies/rapidxml-1.13/rapidxml.hpp" <<
-                        "Dependencies/rapidxml-1.13/rapidxml_iterators.hpp" <<
-                        "Dependencies/rapidxml-1.13/rapidxml_print.hpp" <<
-                        "Dependencies/rapidxml-1.13/rapidxml_utils.hpp";
-    }
-
-    return includeFiles;
-}
-
-QStringList getHopsanCoreIncludePaths(bool skipDependencies)
+QStringList getHopsanCoreIncludePaths()
 {
     QStringList includePaths;
     includePaths << "HopsanCore/include" <<
                     "componentLibraries/defaultLibrary";
-    if (!skipDependencies)
-    {
-        includePaths << "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/" <<
-                        "Dependencies/rapidxml-1.13/" <<
-                        "Dependencies/IndexingCSVParser/";
-    }
-
+    includePaths << "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/" <<
+                    "Dependencies/rapidxml-1.13/" <<
+                    "Dependencies/IndexingCSVParser/";
     return includePaths;
 }
 
@@ -1003,4 +896,111 @@ void callProcess(const QString &name, const QStringList &args, const QString wor
     rStdOut = p.readAllStandardOutput();
     rStdErr = p.readAllStandardError();
     //p.readAll();
+}
+
+//! @brief Copies a file to a target and informs user of the outcome
+//! @param[in] source Source file
+//! @param[in] target Target where to copy file
+//! @param[out] rErrorMessage If copy fail, this contains an error message
+//! @returns True if copy successful, otherwise false
+bool copyFile(const QString &source, const QString &target, QString &rErrorMessage)
+{
+    QFile sourceFile;
+    sourceFile.setFileName(source);
+    // Remove target file if it already exists
+    if(QFile::exists(target))
+    {
+        if (!QFile::remove(target))
+        {
+            rErrorMessage = "The file already exists, and it could not be overwritten: "+target;
+            return false;
+        }
+    }
+    // Create directory if it does not exist before copying
+    QDir tgtDir = QFileInfo(target).dir();
+    if (!tgtDir.exists())
+    {
+        tgtDir.mkpath(".");
+    }
+    // Now copy the files
+    if(!sourceFile.copy(target))
+    {
+        rErrorMessage = "Unable to copy file: " +sourceFile.fileName() + " to " + target;
+        return false;
+    }
+    QFile::setPermissions(target, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser);
+    return true;
+}
+
+void getHopsanCoreDependecyFiles(QStringList &rSrcFiles, QStringList &rIncludeFiles)
+{
+    rSrcFiles.clear();
+    rIncludeFiles.clear();
+    rIncludeFiles << "Dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
+                     "Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp" <<
+                     "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp" <<
+                     "Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp" <<
+                     "Dependencies/rapidxml-1.13/rapidxml.hpp" <<
+                     "Dependencies/rapidxml-1.13/rapidxml_iterators.hpp" <<
+                     "Dependencies/rapidxml-1.13/rapidxml_print.hpp" <<
+                     "Dependencies/rapidxml-1.13/rapidxml_utils.hpp";
+
+    rSrcFiles << "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
+                 "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
+}
+
+QStringList listHopsanCoreSourceFiles(const QString rootPath)
+{
+    QStringList allFiles;
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "cpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "cpp", allFiles);
+
+    QDir rootDir(rootPath);
+
+    // Make path relative to root dir
+    for(int i=0; i<allFiles.size(); ++i)
+    {
+        allFiles[i] = rootDir.relativeFilePath(allFiles[i]);
+    }
+
+    return allFiles;
+}
+
+QStringList listHopsanCoreIncludeFiles(const QString rootPath)
+{
+    QStringList allFiles;
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "hpp", allFiles);
+
+    QDir rootDir(rootPath);
+
+    // Make path relative to root dir
+    for(int i=0; i<allFiles.size(); ++i)
+    {
+        allFiles[i] = rootDir.relativeFilePath(allFiles[i]);
+    }
+
+    return allFiles;
+}
+
+QStringList listDefaultLibrarySourceFiles(const QString rootPath)
+{
+    QStringList allFiles;
+    //! @todo handle external internal library
+    // Now only internal
+    allFiles << rootPath+"/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc";
+
+    QDir rootDir(rootPath);
+
+    // Make path relative to root dir
+    for(int i=0; i<allFiles.size(); ++i)
+    {
+        allFiles[i] = rootDir.relativeFilePath(allFiles[i]);
+    }
+
+    return allFiles;
 }

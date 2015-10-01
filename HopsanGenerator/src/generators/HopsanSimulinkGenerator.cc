@@ -65,6 +65,10 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         modelFile = "untitled.hmf";
     }
 
+    printMessage("Copying necessary files...");
+    this->copyHopsanCoreSourceFilesToDir(savePath);
+    this->copyDefaultComponentCodeToDir(savePath);
+
     std::vector<HString> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
@@ -76,7 +80,6 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QList<InterfacePortSpec> interfacePortSpecs;
     QStringList path = QStringList();
     getInterfaces(interfacePortSpecs, pSystem, path);
-
 
     printMessage("Generating files...");
 
@@ -96,6 +99,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         return;
     }
 
+    printMessage("Writing HopsanSimulinkCompile.m...");
     QFile compileScriptFile;
     compileScriptFile.setFileName(savePath + "/HopsanSimulinkCompile.m");
     if(!compileScriptFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -116,7 +120,8 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         compileScriptStream << QString(" -I%1").arg(s);
     }
-    Q_FOREACH(const QString &s, getHopsanCoreSourceFiles())
+    QStringList coreSourcefiles = listHopsanCoreSourceFiles(savePath)+listDefaultLibrarySourceFiles(savePath);
+    Q_FOREACH(const QString &s, coreSourcefiles)
     {
         compileScriptStream << " " << s;
     }
@@ -322,65 +327,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     wrapperStream << wrapperCode;
     wrapperFile.close();
 
-
-    printMessage("Writing HopsanSimulinkCompile.m...");
-
-
-//    QTextStream compileStream(&compileFile);
-#ifdef _WIN32
-    //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /HopsanCore/include/Component.cc /HopsanCore/include/ComponentSystem.cc /HopsanCore/include/HopsanEssentials.cc /HopsanCore/include/Node.cc /HopsanCore/include/Port.cc /HopsanCore/include/Components/Components.cc /HopsanCore/include/CoreUtilities/HmfLoader.cc /HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.cc /HopsanCore/include/CoreUtilities/LoadExternal.cc /HopsanCore/include/Nodes/Nodes.cc /HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /HopsanCore/include/ComponentUtilities/Delay.cc /HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /HopsanCore/include/ComponentUtilities/FirstOrderFilter.cc /HopsanCore/include/ComponentUtilities/Integrator.cc /HopsanCore/include/ComponentUtilities/IntegratorLimited.cc /HopsanCore/include/ComponentUtilities/ludcmp.cc /HopsanCore/include/ComponentUtilities/matrix.cc /HopsanCore/include/ComponentUtilities/SecondOrderFilter.cc /HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.cc /HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.cc /HopsanCore/include/ComponentUtilities/ValveHysteresis.cc\n";
-//    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -IHopsanCore/include -lHopsanCore "+name+".cpp\n";
-
-//    printMessage("Copying Visual Studio binaries...");
-
-
-//    //Select path to MSVC library depending on user selection
-//    QString msvcPath;
-//    if(compiler == 0)                           //MSVC2008 32-bit
-//        msvcPath = mBinPath+"MSVC2008_x86/";
-//    else if(compiler == 1)                      //MSVC2008 64-bit
-//        msvcPath = mBinPath+"MSVC2008_x64/";
-//    else if(compiler == 2)                      //MSVC2010 32-bit
-//        msvcPath = mBinPath+"MSVC2010_x86/";
-//    else if(compiler == 3)                      //MSVC2010 64-bit
-//        msvcPath = mBinPath+"MSVC2010_x64/";
-
-
-//    //Copy MSVC binaries to export folder
-//    if(!copyFile(msvcPath+"HopsanCore.dll", savePath+"/HopsanCore.dll")) return ;
-//    if(!copyFile(msvcPath+"HopsanCore.lib", savePath+"/HopsanCore.lib")) return ;
-//    if(!copyFile(msvcPath+"HopsanCore.exp", savePath+"/HopsanCore.exp")) return ;
-
-#else
-//    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
-//    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
-
-//    //! @todo copy all of the symbolic links and the .so
-
-#endif
-    //compileFile.close();
-
-    printMessage("Copying include files...");
-
-    this->copyIncludeFilesToDir(savePath, false);
-    this->copySourceFilesToDir(savePath);
-    this->copyDefaultComponentCodeToDir(savePath);
-
-//    //! @todo should not overwrite this wile if it already exists
-//    QFile externalLibsFile;
-//    externalLibsFile.setFileName(savePath + "/externalLibs.txt");
-//    if(!externalLibsFile.open(QIODevice::WriteOnly | QIODevice::Text))
-//    {
-//        printErrorMessage("Failed to open externalLibs.txt for writing.");
-//        return;
-//    }
-//    QTextStream externalLibsFileStream(&externalLibsFile);
-//    externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
-//    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
-//    externalLibsFile.close();
-
-    if(!assertFilesExist(savePath, QStringList() << modelFile << /*"externalLibs.txt" <<*/
-                     /*"HopsanCore.dll" << "HopsanCore.lib" << "HopsanCore.exp" <<*/ name+".cpp" <<
+    if(!assertFilesExist(savePath, QStringList() << modelFile <<  name+".cpp" <<
                      "HopsanSimulinkCompile.m" << name+"PortLabels.m"))
     {
         return;
@@ -859,7 +806,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
 
     printMessage("Copying include files");
 
-    this->copyIncludeFilesToDir(savePath, true);
+    //this->copyIncludeFilesToDir(savePath, true);
     this->copyBoostIncludeFilesToDir(savePath);
 
     //! @todo should not overwrite this wile if it already exists

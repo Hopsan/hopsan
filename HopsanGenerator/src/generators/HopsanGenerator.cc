@@ -53,6 +53,7 @@
 #endif
 
 #include "generators/HopsanGenerator.h"
+#include "GeneratorUtilities.h"
 #include "SymHop.h"
 
 #include "ComponentSystem.h"
@@ -1097,53 +1098,31 @@ bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &
 
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
-//! @todo Weird name because of name conflict with HopsanGUI
-bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies) const
+bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(QString tgtPath) const
 {
-    printMessage("Copying HopsanCore include files...");
-
-    if(!path.endsWith("/") && !path.endsWith("\\"))
-        path.append("/");
-
-    //Make sure HopsanCore include files are available
-    QStringList includeFiles = getHopsanCoreIncludeFiles(skipDependencies);
-    if(!assertFilesExist(mHopsanRootPath, includeFiles))
-        return false;
-
-    QDir saveDir(path);
-    saveDir.mkpath(".");
-
-    Q_FOREACH(const QString &file, includeFiles)
-    {
-        if(!copyFile(mHopsanRootPath+file, path+file)) return false;
-    }
-
-    return true;
-}
-
-
-//! @todo maybe this function should not be among general utils
-//! @todo should not copy .svn folders
-bool HopsanGenerator::copySourceFilesToDir(QString tgtPath) const
-{
-    printMessage("Copying HopsanCore source files...");
+    printMessage("Copying HopsanCore source and include files...");
 
     if(!tgtPath.endsWith("/") && !tgtPath.endsWith("\\"))
         tgtPath.append("/");
 
-    //Make sure HopsanCore source files are available
-    QStringList srcFiles = getHopsanCoreSourceFiles();
-    if(!assertFilesExist(mHopsanRootPath, srcFiles))
-        return false;
-
     QDir saveDir(tgtPath);
     saveDir.mkpath(".");
 
-    Q_FOREACH(const QString &file, srcFiles)
+    if (!copyDir(mHopsanRootPath+"/HopsanCore", tgtPath+"/HopsanCore"))
     {
-        if(!copyFile(mHopsanRootPath+file, tgtPath+file)) return false;
+        return false;
     }
 
+    printMessage("Copying HopsanCore dependency files...");
+    QStringList src, include;
+    getHopsanCoreDependecyFiles(src, include);
+    Q_FOREACH(const QString &file, src+include)
+    {
+        if(!copyFile(mHopsanRootPath+file, tgtPath+file))
+        {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -1208,42 +1187,45 @@ bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
     return true;
 }
 
-
 //! @brief Copies a file to a target and informs user of the outcome
-//! @param source Source file
-//! @param target Target where to copy file
+//! @param[in] source Source file
+//! @param[in] target Target where to copy file
 //! @returns True if copy successful, otherwise false
 bool HopsanGenerator::copyFile(const QString &source, const QString &target) const
 {
-    QFile sourceFile;
-    sourceFile.setFileName(source);
-    QFileInfo sourceFileInfo(sourceFile);
-    // Remove target file if it already exists
-    if(QFile::exists(target))
+    QString error;
+    if (::copyFile(source, target, error))
     {
-        if (!QFile::remove(target))
-        {
-            printErrorMessage("The file already exists, and it could not be overwritten: "+target);
-            return false;
-        }
+        QFileInfo sourceFileInfo(source);
+        printMessage("Copying " + sourceFileInfo.fileName());
+        return true;
     }
-    // Create directory if it does not exist before copying
-    QDir tgtDir = QFileInfo(target).dir();
-    if (!tgtDir.exists())
+    else
     {
-        tgtDir.mkpath(".");
-    }
-    // Now copy the files
-    if(!sourceFile.copy(target))
-    {
-        printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target);
+        printErrorMessage(error);
         return false;
     }
-    QFile::setPermissions(target, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser);
-    printMessage("Copying " + sourceFileInfo.fileName());
-    return true;
 }
 
+//! @brief Copy a directory with contents
+//! @param[in] fromPath The absolute path to the directory to copy
+//! @param[in] toPath The absolute path to the destination (including resulting dir name)
+//! @returns True if success else False
+//! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
+bool HopsanGenerator::copyDir(const QString fromPath, const QString toPath) const
+{
+    QString error;
+    if(::copyDir(fromPath, toPath, error))
+    {
+        printMessage("Copying " + fromPath);
+        return true;
+    }
+    else
+    {
+        printErrorMessage(error);
+        return false;
+    }
+}
 
 //! @brief Cleans up after import/export operation by removing all specified files and sub directories
 //! @param path Path to directory to clean up

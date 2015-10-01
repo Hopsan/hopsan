@@ -174,7 +174,8 @@ public:
 
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 bool removeDir(QString path);
-void copyDir(const QString fromPath, QString toPath);
+bool copyDir(const QString fromPath, QString toPath, QString &rErrorMessage);
+bool copyFile(const QString &source, const QString &target, QString &rErrorMessage);
 bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLFlags="", QString extraIncludes="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);
 void callProcess(const QString &name, const QStringList &args, const QString workingDirectory, QString &rStdOut, QString &rStdErr);
@@ -188,9 +189,11 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
 
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files);
-QStringList getHopsanCoreSourceFiles();
-QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
-QStringList getHopsanCoreIncludePaths(bool skipDependencies=false);
+void getHopsanCoreDependecyFiles(QStringList &rSrcFiles, QStringList &rIncludeFiles);
+QStringList listHopsanCoreSourceFiles(const QString rootPath);
+QStringList listDefaultLibrarySourceFiles(const QString rootPath);
+QStringList listHopsanCoreIncludeFiles(const QString rootPath);
+QStringList getHopsanCoreIncludePaths();
 
 void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 

@@ -598,9 +598,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     //Copy HopsanCore files to export directory
     //qDebug() << "TARGET DIR: " << fileInfo.absoluteDir().path();
 
-    if(!this->copyIncludeFilesToDir(fileInfo.absoluteDir().path()))
-        return;
-    if(!this->copySourceFilesToDir(fileInfo.absoluteDir().path()))
+    if(!this->copyHopsanCoreSourceFilesToDir(fileInfo.absoluteDir().path()))
         return;
     if(!this->copyDefaultComponentCodeToDir(fileInfo.absoluteDir().path()))
         return;
