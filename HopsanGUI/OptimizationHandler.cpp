@@ -115,13 +115,16 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
         connect(mpWorker, SIGNAL(stepCompleted(int)),       this,               SLOT(checkIfRescheduleIsNeeded()));
 
+        mOrgSetPwdToMwdSetting = gpConfig->getBoolSetting(CFG_SETPWDTOMWD);
+        mOrgProgressBarSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
+        mOrgLimitDataGenerationsSetting = gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS);
+        gpConfig->setBoolSetting(CFG_SETPWDTOMWD, false);
+        gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
+        gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, true);
+
         int nModels = mpWorker->getNumberOfCandidates();
         this->initModels(pModel, nModels, modelPath);
 
-        mOrgProgressBarSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
-        mOrgLimitDataGenerationsSetting = gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS);
-        gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
-        gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, true);
 
 #ifdef USEZMQ
         // Setup parallel server queues
@@ -151,6 +154,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         printLogFile();
         printDebugFile();
 
+        gpConfig->setBoolSetting(CFG_SETPWDTOMWD, mOrgSetPwdToMwdSetting);
         gpConfig->setBoolSetting(CFG_PROGRESSBAR, mOrgProgressBarSetting);
         gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mOrgLimitDataGenerationsSetting);
     }

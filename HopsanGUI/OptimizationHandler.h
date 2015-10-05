@@ -169,6 +169,7 @@ private:
     bool mNeedsRescheduling;
     RemoteSimulationQueueHandler *mpRemoteSimulationQueueHandler=0;
 
+    bool mOrgSetPwdToMwdSetting;
     bool mOrgProgressBarSetting;
     bool mOrgLimitDataGenerationsSetting;
 };
