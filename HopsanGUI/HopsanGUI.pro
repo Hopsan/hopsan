@@ -35,7 +35,7 @@ d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
     macx:message(INCLUDEPATH=$$INCLUDEPATH)
     macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
 } else {
-    !build_pass:error("ERROR: Failed to locate QWT libs, have you compiled them and put them in the expected location")
+    !build_pass:error(Failed to locate QWT libs, have you compiled them and put them in the expected location)
 }
 #--------------------------------------------------------
 
