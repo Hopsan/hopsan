@@ -118,6 +118,11 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         int nModels = mpWorker->getNumberOfCandidates();
         this->initModels(pModel, nModels, modelPath);
 
+        mOrgProgressBarSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
+        mOrgLimitDataGenerationsSetting = gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS);
+        gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
+        gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, true);
+
 #ifdef USEZMQ
         // Setup parallel server queues
         if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
@@ -145,6 +150,9 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         printResultFile();
         printLogFile();
         printDebugFile();
+
+        gpConfig->setBoolSetting(CFG_PROGRESSBAR, mOrgProgressBarSetting);
+        gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mOrgLimitDataGenerationsSetting);
     }
     else
     {

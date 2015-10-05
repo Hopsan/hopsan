@@ -168,6 +168,9 @@ private:
 
     bool mNeedsRescheduling;
     RemoteSimulationQueueHandler *mpRemoteSimulationQueueHandler=0;
+
+    bool mOrgProgressBarSetting;
+    bool mOrgLimitDataGenerationsSetting;
 };
 
 #endif // OPTIMIZATIONHANDLER_H
