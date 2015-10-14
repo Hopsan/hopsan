@@ -119,6 +119,7 @@ public:
 
     bool loadModel(QString hmfModelFile);
     bool loadModelStr(QString hmfStr);
+    bool sendAsset(QString fullFilePath, QString relativeFilePath, double *pProgress);
     bool simulateModel_blocking(double *pProgress);
     bool simulateModel_nonblocking();
     bool abortSimulation();

@@ -210,9 +210,14 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     return rc;
 }
 
-bool RemoteHopsanClient::blockingSendFile(const string &rName, double *pProgress)
+//! @brief Send a file (blocking until the entire file is transferred)
+//! @param[in] rAbsFilePath The absolute filepath, (what file to read from on the local machine)
+//! @param[in] rRelFilePath The filepath "relative to the model", (the file path entered in the model parameter value), this is also the file identifier
+//! @param[out] pProgress The transfer progress 0..1
+bool RemoteHopsanClient::blockingSendFile(const string &rAbsFilePath, const string &rRelFilePath, double *pProgress)
 {
-    std::ifstream in(rName, std::ifstream::ate | std::ifstream::binary);
+    *pProgress=0;
+    std::ifstream in(rAbsFilePath, std::ifstream::ate | std::ifstream::binary);
     std::ifstream::pos_type filesize = in.tellg();
     in.seekg(0); //Rewind file ptr
     array<char, MAXFILECHUNKSIZE>  buffer;
@@ -223,7 +228,7 @@ bool RemoteHopsanClient::blockingSendFile(const string &rName, double *pProgress
         readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
         in.read(buffer.data(), readBytesNow);
         std::string data(buffer.data(), readBytesNow);
-        bool rc = sendFilePart(rName, data, (readBytesNow < MAXFILECHUNKSIZE));
+        bool rc = sendFilePart(rRelFilePath, data, (readBytesNow < MAXFILECHUNKSIZE));
         if (!rc)
         {
             cout << "Failed to send file part! " << endl;
@@ -238,10 +243,14 @@ bool RemoteHopsanClient::blockingSendFile(const string &rName, double *pProgress
     return true;
 }
 
-bool RemoteHopsanClient::sendFilePart(const string &rName, const string &rData, bool isLastPart)
+//! @brief Send a part of a file (blocking with timeout)
+//! @param[in] rRelFilePath The filepath "relative to the model", (the file path entered in the model parameter value), this is also the file identifier
+//! @param[in] rData The data chunk buffer (as a string)
+//! @param[in] isLastPart Signal that this is the last part of the file
+bool RemoteHopsanClient::sendFilePart(const string &rRelFilePath, const string &rData, bool isLastPart)
 {
    std::lock_guard<std::mutex> lock(mWorkerMutex);
-   cmdmsg_SendFile_t msg {rName, rData, isLastPart};
+   cmdmsg_SendFile_t msg {rRelFilePath, rData, isLastPart};
    sendClientMessage(mpWorkerSocket, SendFile, msg);
    string err;
    bool rc = receiveAckNackMessage(mpWorkerSocket, mLongReceiveTimeout, err);

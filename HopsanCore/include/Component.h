@@ -39,6 +39,7 @@
 #include "Parameters.h"
 #include "win32dll.h"
 #include <map>
+#include <list>
 
 namespace hopsan {
 
@@ -139,6 +140,7 @@ public:
 
     // Variables and Parameters
     const std::vector<VariameterDescription>* getVariameters();
+    virtual std::list<HString> getModelAssets() const;
 
     //! @todo clean this mess up /Peter
     void registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rValue);
@@ -205,8 +207,9 @@ public:
     // HopsanEssentials
     HopsanEssentials *getHopsanEssentials();
 
-    //Search path
-    HString findFilePath(const HString &rFileName);
+    // Search path
+    HString findFilePath(const HString &rFileName) const;
+    std::vector<HString> getSearchPaths() const;
 
     //Numerical integration members
     virtual void reInitializeValuesFromNodes();

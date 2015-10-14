@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
                 {
                     cout << PRINTCLIENT << "Sending asset: " << rAsset <<  " ... ";
                     double progress;
-                    rhopsan.blockingSendFile(rAsset, &progress);
+                    rhopsan.blockingSendFile(rAsset, rAsset, &progress);
                     cout << "Done!" << endl;
                 }
 

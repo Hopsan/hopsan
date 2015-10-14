@@ -208,6 +208,7 @@ namespace hopsan {
 
         // System Parameter functions
         bool renameParameter(const HString &rOldName, const HString &rNewName);
+        virtual std::list<HString> getModelAssets() const;
 
         // Handle system ports
         Port* addSystemPort(HString portName, const HString &rDescription="");

@@ -49,8 +49,8 @@ public:
     bool sendSimulateMessage(const int nLogsamples, const int logStartTime, const int simStarttime,
                              const int simSteptime, const int simStoptime);
 
-    bool blockingSendFile(const std::string &rName, double *pProgress);
-    bool sendFilePart(const std::string &rName, const std::string &rData, bool isLastPart);
+    bool blockingSendFile(const std::string &rAbsFilePath, const std::string &rRelFilePath, double *pProgress);
+    bool sendFilePart(const std::string &rRelFilePath, const std::string &rData, bool isLastPart);
 
     bool abortSimulation();
 

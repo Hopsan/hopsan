@@ -1100,6 +1100,20 @@ bool ComponentSystem::renameParameter(const HString &rOldName, const HString &rN
     return false;
 }
 
+std::list<HString> ComponentSystem::getModelAssets() const
+{
+    // Get any system parameter assets
+    std::list<HString> assets = Component::getModelAssets();
+    // Append assets from sub components
+    SubComponentMapT::const_iterator compIt;
+    for(compIt = mSubComponentMap.begin(); compIt!=mSubComponentMap.end(); ++compIt)
+    {
+        std::list<HString> sub = compIt->second->getModelAssets();
+        assets.splice(assets.end(), sub);
+    }
+    return assets;
+}
+
 //! @brief Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(HString portName, const HString &rDescription)
 {

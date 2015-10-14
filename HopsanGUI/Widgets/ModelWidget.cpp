@@ -1532,6 +1532,39 @@ bool ModelWidget::loadModelRemote()
         {
             mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(pRSH->getLastError()));
         }
+
+        QStringList paths = mpToplevelSystem->getCoreSystemAccessPtr()->getSearchPaths();
+        QStringList assets = mpToplevelSystem->getCoreSystemAccessPtr()->getModelAssets();
+        for (QString &rAsset : assets)
+        {
+            // Try all paths (for relative assets), and use the one that first matches
+            QFileInfo fileInfo(rAsset);
+            if (!fileInfo.exists())
+            {
+                for (QString &path : paths)
+                {
+
+                    fileInfo.setFile(path+"/"+rAsset);
+                    if (fileInfo.exists())
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (fileInfo.exists())
+            {
+                double dummy;
+                mpMessageHandler->addInfoMessage("Sending asset: "+rAsset);
+                pRSH->sendAsset(fileInfo.absoluteFilePath(), rAsset, &dummy);
+            }
+            else
+            {
+                mpMessageHandler->addErrorMessage("Could not find asset: "+rAsset);
+            }
+        }
+
+
         QVector<QString> types,tags,messages;
         bool rc2 = pRSH->getCoreMessages(types, tags, messages);
         for (int i=0; i<messages.size(); ++i)

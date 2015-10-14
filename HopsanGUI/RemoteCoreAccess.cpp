@@ -215,6 +215,11 @@ bool RemoteCoreSimulationHandler::loadModelStr(QString hmfStr)
     return false;
 }
 
+bool RemoteCoreSimulationHandler::sendAsset(QString fullFilePath, QString relativeFilePath, double *pProgress)
+{
+    return mpRemoteHopsanClient->blockingSendFile(fullFilePath.toStdString(), relativeFilePath.toStdString(), pProgress);
+}
+
 bool RemoteCoreSimulationHandler::simulateModel_blocking(double *pProgress)
 {
     return mpRemoteHopsanClient->blockingSimulation(-1, -1, -1, -1, -1, pProgress);

@@ -199,6 +199,8 @@ public:
 
     void getVariameters(QString componentName, QVector<CoreVariameterDescription>& rVariameterDescriptions);
 
+    QStringList getModelAssets() const;
+
     // Alias functions
     bool setVariableAlias(QString compName, QString portName, QString varName, QString alias);
     QString getVariableAlias(QString compName, QString portName, QString varName);
@@ -284,8 +286,9 @@ public:
     //Time measurements
     void measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes, int nSteps=5);
 
-    //Search path
+    // Search path
     void addSearchPath(QString searchPath);
+    QStringList getSearchPaths() const;
 
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();

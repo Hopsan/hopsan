@@ -202,6 +202,30 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     return &mVariameters;
 }
 
+std::list<HString> Component::getModelAssets() const
+{
+    std::list<HString> assets;
+    const std::vector<ParameterEvaluator*>* pParameters = mpParameters->getParametersVectorPtr();
+    std::vector<ParameterEvaluator*>::const_iterator it;
+    for (it=pParameters->begin(); it!=pParameters->end(); ++it)
+    {
+        ParameterEvaluator* pPE = *it;
+        if (pPE->getType() == "string" && !pPE->getValue().empty())
+        {
+            //! @todo add parameter type (file or asset)
+            // Check if parameter value represents a file
+            HString filePath = findFilePath(pPE->getValue());
+            if (FILE *pFile = fopen(filePath.c_str(), "r"))
+            {
+                fclose(pFile);
+                // Remember the identifier (relative file path) (it may be an absolute path as-well)
+                assets.push_back(pPE->getValue());
+            }
+        }
+    }
+    return assets;
+}
+
 
 
 ///@{
@@ -1538,7 +1562,7 @@ void Component::loadStartValuesFromSimulation()
 //! @param rFileName the name of the file to search for
 //! @return full file name path, empty string if it does not exists
 //! @ingroup ComponentSetupFunctions
-HString Component::findFilePath(const HString &rFileName)
+HString Component::findFilePath(const HString &rFileName) const
 {
     bool found = false;
     HString fullPath;
@@ -1576,6 +1600,11 @@ HString Component::findFilePath(const HString &rFileName)
     }
 
     return fullPath;
+}
+
+std::vector<HString> Component::getSearchPaths() const
+{
+    return mSearchPaths;
 }
 
 void Component::reInitializeValuesFromNodes()

@@ -709,6 +709,19 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
     }
 }
 
+QStringList CoreSystemAccess::getModelAssets() const
+{
+    std::list<hopsan::HString> assets = mpCoreComponentSystem->getModelAssets();
+    assets.sort();
+    assets.unique();
+    QStringList ret;
+    for (auto it=assets.begin(); it!=assets.end(); ++it)
+    {
+        ret << it->c_str();
+    }
+    return ret;
+}
+
 bool CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
     return mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString().c_str(), compName.toStdString().c_str(),
@@ -1349,6 +1362,17 @@ void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParamete
 void CoreSystemAccess::addSearchPath(QString searchPath)
 {
     mpCoreComponentSystem->addSearchPath(searchPath.toStdString().c_str());
+}
+
+QStringList CoreSystemAccess::getSearchPaths() const
+{
+    QStringList ret;
+    std::vector<hopsan::HString> paths = mpCoreComponentSystem->getSearchPaths();
+    for (auto &path : paths)
+    {
+        ret << path.c_str();
+    }
+    return ret;
 }
 
 
