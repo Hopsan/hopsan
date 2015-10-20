@@ -1235,7 +1235,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
     return (foundData || foundDataInSubsys);
 }
 
-void LogDataHandler2::collectLogDataFromRemoteModel(std::vector<std::string> &rNames, std::vector<double> &rData, bool overWriteLastGeneration)
+void LogDataHandler2::collectLogDataFromRemoteModel(QVector<RemoteResultVariable> &rResultVariables, bool overWriteLastGeneration)
 {
     TicToc tictoc;
     if(!overWriteLastGeneration)
@@ -1243,16 +1243,13 @@ void LogDataHandler2::collectLogDataFromRemoteModel(std::vector<std::string> &rN
         ++mCurrentGenerationNumber;
     }
 
-    if(rData.size() == 0)
+    if(rResultVariables.size() == 0)
     {
         return;         //Don't collect plot data if logging is disabled (to avoid empty generations)
     }
 
 
     bool foundData = false;
-
-    std::vector<double> *pCoreSysTimeVector=0, *pPrevInsertedCoreVarTimeVector=0;
-    SharedVectorVariableT pSysTimeVec, pVarTimeVec;
 
     //! @todo why not run multiappend when overwriting generation ? Because then we are not appending, need some common open mode
     if(!overWriteLastGeneration)
@@ -1261,28 +1258,28 @@ void LogDataHandler2::collectLogDataFromRemoteModel(std::vector<std::string> &rN
     }
 
     QList<SharedVariableDescriptionT> varDescs;
-    varDescs.reserve(rNames.size());
+    varDescs.reserve(rResultVariables.size());
     QMap<size_t, SharedSystemHierarchyT> systemTimeVarIdAndSysname;
     QMap<QString, SharedVectorVariableT> systemHierarchy2TimeVariable;
 
     // Iterate over variables
-    for(int v=0; v<rNames.size(); ++v)
+    for(int v=0; v<rResultVariables.size(); ++v)
     {
         foundData=true;
         QStringList sh;
         QString comp, port, data;
-        splitFullVariableName(QString::fromStdString(rNames[v]),sh,comp,port,data);
-
+        splitFullVariableName(rResultVariables[v].fullname,sh,comp,port,data);
 
         SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-        pVarDesc->mModelPath = "UNKNOWN";
+        pVarDesc->mModelPath = "RemoteModel";
         pVarDesc->mComponentName = comp;
         pVarDesc->mpSystemHierarchy = SharedSystemHierarchyT(new QStringList(sh)); //!< @todo would be nice if we could avoid duplicates here
         pVarDesc->mPortName = port;
         pVarDesc->mDataName = data;
-        pVarDesc->mDataUnit = "UNKOWN";
-        pVarDesc->mDataDescription = "UNKOWN";
-        pVarDesc->mAliasName  = "";
+        pVarDesc->mDataUnit = rResultVariables[v].unit;
+        pVarDesc->mDataQuantity = rResultVariables[v].quantity;
+        pVarDesc->mDataDescription = "";
+        pVarDesc->mAliasName  = rResultVariables[v].alias;
         pVarDesc->mVariableSourceType = ModelVariableType;
 
         varDescs.push_back(pVarDesc);
@@ -1293,27 +1290,19 @@ void LogDataHandler2::collectLogDataFromRemoteModel(std::vector<std::string> &rN
         }
     }
 
-    // Figure out number of plot elements for each variable
-    long int nElements = rData.size() / rNames.size();
-    qDebug() << "nElements: " << nElements;
-
     // First process time variables
     for (auto it=systemTimeVarIdAndSysname.begin(); it!=systemTimeVarIdAndSysname.end(); ++it)
     {
-        QVector<double> timeData;
-        timeData.reserve(nElements);
         size_t v = it.key();
-        for (size_t i=nElements*v; i<nElements*(v+1); ++i)
-        {
-            timeData.push_back(rData[i]);
-        }
+        QVector<double> timeData;
+        timeData.fromStdVector(rResultVariables[v].data);
 
         auto pNewData = insertTimeVectorVariable(timeData, it.value());
         systemHierarchy2TimeVariable.insert(it.value()->join("$"), pNewData);
     }
 
     auto timeIds = systemTimeVarIdAndSysname.keys();
-    for(size_t v=0; v<rNames.size(); ++v)
+    for(int v=0; v<rResultVariables.size(); ++v)
     {
         // skip variables that were time variables
         if (timeIds.contains(v))
@@ -1322,17 +1311,13 @@ void LogDataHandler2::collectLogDataFromRemoteModel(std::vector<std::string> &rN
         }
 
         QVector<double> newData;
-        newData.reserve(nElements);
-        for (size_t i=nElements*v; i<nElements*(v+1); ++i)
-        {
-            newData.push_back(rData[i]);
-        }
+        newData.fromStdVector(rResultVariables[v].data);
 
         // Lookup time variable
         SharedVectorVariableT pTime = systemHierarchy2TimeVariable.value(varDescs[v]->mpSystemHierarchy->join("$"));
         if (pTime)
         {
-            varDescs[v]->mpSystemHierarchy = pTime->mpVariableDescription->mpSystemHierarchy; // Replace systems hierachy with shared version (to save some memmory)
+            varDescs[v]->mpSystemHierarchy = pTime->mpVariableDescription->mpSystemHierarchy; // Replace systems hierarchy with shared version (to save some memmory)
         }
 
         // Insert time domain variable

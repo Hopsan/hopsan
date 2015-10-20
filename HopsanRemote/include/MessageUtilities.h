@@ -43,7 +43,15 @@ inline T unpackMessage(zmq::message_t &rRequest, size_t &rOffset, bool &rUnpackO
         //! @todo if extra bytes and some other conditions, unpack will not throw an exception and as<T>() will krash the program with SIG ABORT
         return msgpack::unpack(static_cast<char*>(rRequest.data()), rRequest.size(), rOffset).get().as<T>();
     }
+    // Catch an unpack error
     catch( msgpack::unpack_error e)
+    {
+        std::cout << "EXCEPTION in unpackMessage: " << e.what() << std::endl;
+        rUnpackOK = false;
+        return T();
+    }
+    // Catch any other exception
+    catch( std::exception e)
     {
         std::cout << "EXCEPTION in unpackMessage: " << e.what() << std::endl;
         rUnpackOK = false;

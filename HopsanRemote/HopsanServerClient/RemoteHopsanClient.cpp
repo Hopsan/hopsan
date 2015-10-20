@@ -263,7 +263,7 @@ bool RemoteHopsanClient::sendFilePart(const string &rRelFilePath, const string &
 
 bool RemoteHopsanClient::abortSimulation()
 {
-    // Lock here to prevent problem if some other thread is requesting fore xample status
+    // Lock here to prevent problem if some other thread is requesting for example status
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
     sendShortClientMessage(mpWorkerSocket, Abort);
@@ -300,8 +300,8 @@ bool RemoteHopsanClient::blockingBenchmark(const string &rModel, const int nThre
 
         if (rc)
         {
-            // Block until benchamark is done
-            //! @todo what if benchmark freeces, need a timeout here
+            // Block until benchmark is done
+            //! @todo what if benchmark freezes, need a timeout here
             double progress; bool isAlive;
             std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, &progress, &isAlive);
             t.join();
@@ -336,7 +336,7 @@ bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
             replymsg_ReplyBenchmarkResults_t results = unpackMessage<replymsg_ReplyBenchmarkResults_t>(reply, offset, parseOK);
             if (parseOK)
             {
-                //! @todo right now we bundle all times togheter
+                //! @todo right now we bundle all times together
                 rSimTime = results.inittime+results.simutime+results.finitime;
                 return true;
             }
@@ -347,7 +347,7 @@ bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
 
 bool RemoteHopsanClient::requestWorkerStatus(WorkerStatusT &rWorkerStatus)
 {
-    // Lock here to prevent problem if som other thread is requesting abort
+    // Lock here to prevent problem if some other thread is requesting abort
     std::lock_guard<std::mutex> lock(mWorkerMutex); //! @todo should use this mutex in more places (or build it into the send function)
 
     sendShortClientMessage(mpWorkerSocket, RequestWorkerStatus);
@@ -403,7 +403,7 @@ bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
     return false;
 }
 
-bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, vector<double> *pData)
+bool RemoteHopsanClient::requestSimulationResults(std::vector<ResultVariableT> &rResultVariables)
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
@@ -418,30 +418,14 @@ bool RemoteHopsanClient::requestSimulationResults(vector<string> *pDataNames, ve
         size_t id = getMessageId(response, offset, parseOK);
         if (id == ReplyResults)
         {
-            vector<replymsg_ResultsVariable_t> vars = unpackMessage<vector<replymsg_ResultsVariable_t>>(response,offset, parseOK);
-            //cout << "Received: " << vars.size() << " vars" << endl;
-            size_t nLogSamples;
-            if (!vars.empty())
+            std::vector<replymsg_ResultsVariable_t> repls = unpackMessage<vector<replymsg_ResultsVariable_t>>(response,offset, parseOK);
+            rResultVariables.clear();
+            rResultVariables.reserve(repls.size());
+            for (replymsg_ResultsVariable_t &repl : repls)
             {
-                nLogSamples = vars[0].data.size();
+                rResultVariables.push_back(repl);
             }
-
-            pDataNames->reserve(vars.size());
-            pData->reserve(nLogSamples*vars.size());
-
-            for (auto &v : vars)
-            {
-                pDataNames->push_back(v.name);
-                //cout << v.name << " " << v.alias << " " << v.unit << " Data:");
-                for (auto d : v.data)
-                {
-                    pData->push_back(d);
-                    //cout << " " << d;
-                }
-                //cout << endl;
-            }
-
-            return true;
+            return parseOK;
         }
         else
         {
@@ -908,14 +892,14 @@ void RemoteHopsanClient::requestWorkerStatusThread(double *pProgress, bool *pAli
         progressedTime = elapsedSecondsSince(startT);
         rc = requestWorkerStatus(status);
         *pProgress = status.simulation_progress;
-        // Ok make an estimate of remaning time based on progressed time
+        // OK make an estimate of remaining time based on progressed time
         if (status.simulation_progress > 1e-6)
         {
-            // Calulate an estimate of the remaining time
+            // Calculate an estimate of the remaining time
             double  remaining_time = progressedTime / status.simulation_progress - progressedTime;
 
             // Make sure that we request status within at most mMaxWorkerStatusRequestWaitTime seconds
-            // If remaning time lower, then wait estimated remaning time + 100 ms
+            // If remaining time lower, then wait estimated remaining time + 100 ms
             double sleep_time = min( remaining_time+0.1, mMaxWorkerStatusRequestWaitTime );
             if (sleep_time > 0 )
             {

@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "../include/StatusInfoStructs.h"
+#include "../include/DataStructs.h"
 #include "zmq.hpp"
 
 class RemoteHopsanClient
@@ -57,7 +58,7 @@ public:
     bool requestBenchmarkResults(double &rSimTime);
     bool requestWorkerStatus(WorkerStatusT &rWorkerStatus);
     bool requestServerStatus(ServerStatusT &rServerStatus);
-    bool requestSimulationResults(std::vector<std::string> *pDataNames, std::vector<double> *pData);
+    bool requestSimulationResults(std::vector<ResultVariableT> &rResultVariables);
     bool requestMessages();
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
 

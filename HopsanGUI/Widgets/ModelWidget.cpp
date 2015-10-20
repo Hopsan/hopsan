@@ -593,7 +593,7 @@ bool ModelWidget::simulate_nonblocking()
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
             mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
-            mpSimulationThreadHandler->initSimulateFinalizeRemote(chooseRemoteCoreSimulationHandler(), &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(chooseRemoteCoreSimulationHandler(), &mRemoteResultVariables, &mSimulationProgress);
 #endif
         }
         else
@@ -663,7 +663,7 @@ bool ModelWidget::simulate_blocking()
             mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
             mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
             mSimulationProgress=0; // Set this to zero here since it may take some time before launched threads will update this value (we do not want the previous value to remain)
-            mpSimulationThreadHandler->initSimulateFinalizeRemote(chooseRemoteCoreSimulationHandler(), &mRemoteLogNames, &mRemoteLogData, &mSimulationProgress);
+            mpSimulationThreadHandler->initSimulateFinalizeRemote(chooseRemoteCoreSimulationHandler(), &mRemoteResultVariables, &mSimulationProgress);
             //! @todo is this really blocking hmm
 #endif
         }
@@ -853,7 +853,8 @@ void ModelWidget::collectPlotData(bool overWriteGeneration)
     //gpMainWindow->mpShowLossesAction->setEnabled(true); //! @todo Can this be done without including main window?
    // gpMainWindow->mpAnimateAction->setEnabled(true);
 
-    if (mRemoteLogNames.empty())
+
+    if (mRemoteResultVariables.empty())
     {
         // Collect local data
         mpLogDataHandler->collectLogDataFromModel(overWriteGeneration);
@@ -861,13 +862,10 @@ void ModelWidget::collectPlotData(bool overWriteGeneration)
     else
     {
         // Collect remote data instead
-        mpLogDataHandler->collectLogDataFromRemoteModel(mRemoteLogNames,mRemoteLogData);
+        mpLogDataHandler->collectLogDataFromRemoteModel(mRemoteResultVariables);
         // Clear now obsolete data
-        mRemoteLogNames.clear();
-        mRemoteLogData.clear();
+        mRemoteResultVariables.clear();
     }
-
-
 }
 
 void ModelWidget::setUseRemoteSimulation(bool tf)

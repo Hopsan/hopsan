@@ -162,10 +162,9 @@ private:
     SharedRemoteCoreSimulationHandlerT chooseRemoteCoreSimulationHandler() const;
     double mSimulationProgress;
 #endif
-    QMutex mSimulateMutex;
-
     // Remote collected data
-    std::vector<std::string> mRemoteLogNames; std::vector<double> mRemoteLogData;
+    QVector<RemoteResultVariable> mRemoteResultVariables;
+    QMutex mSimulateMutex;
 };
 
 

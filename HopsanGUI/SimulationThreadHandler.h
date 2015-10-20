@@ -99,11 +99,10 @@ class RemoteSimulationWorkerObject : public SimulationWorkerObjectBase
     Q_OBJECT
 private:
     SharedRemoteCoreSimulationHandlerT mpRCSH;
-    std::vector<std::string> *mpLogDataNames;
-    std::vector<double> *mpLogData;
+    QVector<RemoteResultVariable> *mpRemoteResultVariables;
     double *mpProgress;
 public:
-    RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress,
+    RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress,
                                  const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     int swoType() const {return RemoteSWO;}
 
@@ -189,7 +188,7 @@ public:
     void setProgressDilaogBehaviour(bool enabled, bool modal);
     void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
 #ifdef USEZMQ
-    void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress);
+    void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress);
 #endif
     void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);

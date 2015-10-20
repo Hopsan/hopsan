@@ -36,8 +36,9 @@ typedef struct
     vector< double > *pTimeData = 0;
     size_t dataLength = 0;
     size_t dataId = 0;
-    NodeDataDescription *pDataDescription = 0;
     string unit;
+    string quantity;
+    string alias;
 }ModelVariableInfo_t;
 
 string gWorkerId;
@@ -86,7 +87,7 @@ public:
     bool addFilePart(const cmdmsg_SendFile_t &rFilePart)
     {
         // As a safety this must be set to avoid accidentally overwriting stuff on the local disc
-        // well you can do taht anyway if you set this to something stupid
+        // well you can do that anyway if you set this to something stupid
         if (mFileDestination.empty())
         {
             return false;
@@ -103,7 +104,7 @@ public:
         string fullFilePath=mFileDestination+rFilePart.filename;
 
         std::ofstream file;
-        //! @todo what if we have file and send it again, should we truncate or just abort somehow, here it would be nice to know checskum of entire file and tell client we already have it
+        //! @todo what if we have file and send it again, should we truncate or just abort somehow, here it would be nice to know checksum of entire file and tell client we already have it
         //! @todo maybe better to have a "have file request instead"
         if (hasFile(fullFilePath))
         {
@@ -159,7 +160,7 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
     vector<double> *pTime = pSys->getLogTimeVector();
     ModelVariableInfo_t tmvi;
     tmvi.fullName = (systemHierarchy+"Time").c_str();
-    tmvi.unit = "s";
+    tmvi.quantity = "Time";
     tmvi.pTimeData = pTime;
     tmvi.dataLength = pSys->getNumActuallyLoggedSamples();
     rvMVI.push_back(tmvi);
@@ -202,12 +203,12 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
                             const NodeDataDescription *pVarDesc = &(*pVars)[v];
                             ModelVariableInfo_t mvi;
                             mvi.fullName = (systemHierarchy+pComp->getName()+"#"+pPort->getName()+"#"+pVarDesc->name).c_str();
-                            //mvi.pDataDescription = pVarDesc;
+                            mvi.alias = pPort->getVariableAlias(pVarDesc->id).c_str();
+                            mvi.quantity = pVarDesc->quantity.c_str();
                             mvi.unit = pVarDesc->unit.c_str();
                             mvi.pData = pLogData;
-                            mvi.dataId = v;
+                            mvi.dataId = pVarDesc->id;
                             mvi.dataLength = pSys->getNumActuallyLoggedSamples();
-
                             rvMVI.push_back(mvi);
                         }
                     }
@@ -310,7 +311,7 @@ string getParameter(ComponentSystem *pSystem, HString &fullname)
                     }
                     else if (cpv.size() == 3)
                     {
-                        // Set component name and restor the (startvalue) name
+                        // Set component name and restore the (start value) name
                         parameter = cpv[1]+"#"+cpv[2];
                     }
 
@@ -390,7 +391,7 @@ void startSimulation(bool *pSimOK)
 {
     // We set this first to signal that simulation is not yet finished
     // we need to set them before launching the thread, since it may take a while to start it
-    // staus requests received would return incorrect values in such cases
+    // status requests received would return incorrect values in such cases
     gSimulationFinnished = false;
     gIsSimulating = true;
     *pSimOK = false;
@@ -588,7 +589,7 @@ int main(int argc, char* argv[])
                     string val = getParameter(gpRootSystem, fullName);
                     //! @todo what if root system name is first?
 
-                    // Send param value (as string) or nack
+                    // Send parameter value (as string) or nack
                     if (val.empty())
                     {
                         sendMessage(socket, NotAck, "Could not get parameter");
@@ -771,25 +772,28 @@ int main(int argc, char* argv[])
                         vector<replymsg_ResultsVariable_t> vars;
                         for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
                         {
+                            const ModelVariableInfo_t &rMvi = vMVI[mvi];
+
                             vars.push_back(replymsg_ResultsVariable_t());
-                            vars.back().name = vMVI[mvi].fullName.c_str();
-                            vars.back().alias = "";
-                            vars.back().unit = vMVI[mvi].unit.c_str();
-                            vars.back().data.reserve(vMVI[mvi].dataLength);
+                            vars.back().name = rMvi.fullName;
+                            vars.back().alias = rMvi.alias;
+                            vars.back().quantity = rMvi.quantity;
+                            vars.back().unit = rMvi.unit.c_str();
+                            vars.back().data.reserve(rMvi.dataLength);
                             // Copy if a data variable
-                            if (vMVI[mvi].pData)
+                            if (rMvi.pData)
                             {
-                                for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
+                                for (size_t t=0; t<rMvi.dataLength; ++t)
                                 {
-                                    vars.back().data.push_back((*vMVI[mvi].pData)[t][vMVI[mvi].dataId]);
+                                    vars.back().data.push_back((*rMvi.pData)[t][rMvi.dataId]);
                                 }
                             }
                             // Copy if a time data variable
-                            else if (vMVI[mvi].pTimeData)
+                            else if (rMvi.pTimeData)
                             {
                                 for (size_t t=0; t<vMVI[mvi].dataLength; ++t)
                                 {
-                                    vars.back().data.push_back((*vMVI[mvi].pTimeData)[t]);
+                                    vars.back().data.push_back((*rMvi.pTimeData)[t]);
                                 }
                             }
                         }
@@ -852,13 +856,13 @@ int main(int argc, char* argv[])
             }
             else
             {
-                //Handle timout / exception
+                //Handle timeout / exception
                 nClientTimeouts++;
                 if (double(nClientTimeouts)*double(client_timeout)/60000.0 >= dead_client_timout_min)
                 {
                     // Force quit after 5 minutes
                     cout << PRINTWORKER << nowDateTime() << " Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
-                    //! @todo should hanlde loong simulation time
+                    //! @todo should handle long simulation time
                     sendServerGoodby(serverSocket);
                     keepRunning = false;
                 }

@@ -112,12 +112,11 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
 
 #ifdef USEZMQ
 
-RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress,
+RemoteSimulationWorkerObject::RemoteSimulationWorkerObject(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress,
                                                            const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples)
 {
     mpRCSH = pRCSH;
-    mpLogDataNames = pLogNames;
-    mpLogData = pLogData;
+    mpRemoteResultVariables = pRemoteResultVariables;
     mpProgress = pProgress;
 
     mStartTime = startTime;
@@ -144,7 +143,11 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
     //! @todo should open a separate window with remote messages
 
     // Collect data before emitting finalizeDone as that will signal that data is ready to be collected
-    bool gotLogData = mpRCSH->getLogData(mpLogDataNames, mpLogData);
+    bool gotLogData = mpRCSH->getLogData(*mpRemoteResultVariables);
+    if (!gotLogData)
+    {
+        mpMessageHandler->addWarningMessage("Failed to get remote results");
+    }
 
     if (simulateSuccess && gotMessages && gotLogData)
     {
@@ -260,10 +263,10 @@ void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, con
 }
 
 #ifdef USEZMQ
-void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, std::vector<std::string> *pLogNames, std::vector<double> *pLogData, double *pProgress)
+void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress)
 {
     mvpSystems.clear();
-    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(pRCSH, pLogNames, pLogData, pProgress, mStartT, mStopT, mLogStartTime, mnLogSamples);
+    mpSimulationWorkerObject = new RemoteSimulationWorkerObject(pRCSH, pRemoteResultVariables, pProgress, mStartT, mStopT, mLogStartTime, mnLogSamples);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }

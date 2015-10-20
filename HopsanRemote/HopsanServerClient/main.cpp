@@ -77,9 +77,8 @@ int main(int argc, char* argv[])
                     rhopsan.requestMessages();
                     if (rc)
                     {
-                        vector<string> names;
-                        vector<double> data;
-                        rc = rhopsan.requestSimulationResults(&names, &data);
+                        vector<ResultVariableT> vars;
+                        rc = rhopsan.requestSimulationResults(vars);
                         cout << PRINTCLIENT << "Results: " << rc << endl;
                     }
                     else

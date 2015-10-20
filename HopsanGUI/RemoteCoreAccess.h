@@ -39,6 +39,16 @@
 #include <QSharedPointer>
 #include <QStringList>
 
+class RemoteResultVariable
+{
+public:
+    QString fullname;
+    QString quantity;
+    QString unit;
+    QString alias;
+    std::vector<double> data;
+};
+
 #ifdef USEZMQ
 class RemoteHopsanClient;
 
@@ -131,7 +141,7 @@ public:
 
     bool getCoreMessages(QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages, bool includeDebug=true);
 
-    bool getLogData(std::vector<std::string> *pNames, std::vector<double> *pData);
+    bool getLogData(QVector<RemoteResultVariable> &rResultVariables);
 
     QString getLastError() const;
 };

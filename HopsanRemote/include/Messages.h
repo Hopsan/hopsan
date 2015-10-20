@@ -5,6 +5,7 @@
 
 #include <string>
 #include "StatusInfoStructs.h"
+#include "DataStructs.h"
 #include "msgpack.hpp"
 
 enum MessageIdsEnumT {
@@ -153,13 +154,9 @@ typedef struct
     MSGPACK_DEFINE(value,unit)
 }replymsg_ReplyParameter_t;
 
-typedef struct
+typedef struct replymsg_ResultsVariable_ : ResultVariableT
 {
-    std::string name;
-    std::string alias;
-    std::string unit;
-    std::vector<double> data;
-    MSGPACK_DEFINE(name,alias,unit,data)
+    MSGPACK_DEFINE(name,alias,quantity,unit,data)
 }replymsg_ResultsVariable_t;
 
 typedef struct
