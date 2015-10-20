@@ -12,9 +12,10 @@
 #include "StatusInfoStructs.h"
 #include "RelayHandler.h"
 
-
 #include "ServerHandler.h"
 #include "common.h"
+
+#include <tclap/CmdLine.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -137,7 +138,7 @@ void refreshServerThread()
             // If oldest is still the same then spawn a refresh thread for it, else we do nothing
             if (id == id2)
             {
-                // Spawn refresh threads (the threds will dealocate themselves when done)
+                // Spawn refresh threads (the threads will deallocate themselves when done)
                 //std::thread (refreshServerStatus, server_id ).detach();
                 //std::thread (&ServerHandler::refreshServerStatus, &gServerHandler, id).detach();
                 gServerHandler.refreshServerStatus(id);
@@ -262,25 +263,34 @@ void masterRelayThread(zmq::socket_t *pFrontend)
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2)
-    {
-        cout << PRINTSERVER << nowDateTime() << " Error: you must at least specify what base port to use!" << endl;
-        return 1;
-    }
-    string myPort = argv[1];
-    string myRelayPort = std::to_string(atoi(myPort.c_str())+1);
-    string myExternalIP="Unknown";
+    TCLAP::CmdLine cmd("HopsanAddressServer", ' ', "0.1");
 
-    if (argc >= 3)
-    {
-        myExternalIP = argv[2];
-    }
-    if (argc >= 4)
-    {
-        gSubnetMatch = argv[3];
-    }
+    // Define a value argument and add it to the command line.
+    TCLAP::ValueArg<std::string> argListenPort("p","port","The server listen port",true,"","Port number", cmd);
+    TCLAP::ValueArg<std::string> argExternalIP("", "externalip", "The IP address to use for external connections if behind firewall", false, "", "ip address", cmd);
+    TCLAP::ValueArg<std::string> argRelayPort("","relayport","The server relay port",false,"","Port number", cmd);
+    TCLAP::ValueArg<std::string> argSubnetMatch("", "subnetmatch", "Subnet match filter", false, "", "", cmd);
 
-    cout << PRINTSERVER << nowDateTime() << " Listening on port: " << myPort  << endl;
+    // Parse the argv array.
+    cmd.parse( argc, argv );
+
+    string myListenPort, myRelayPort, myExternalIP="Unknown";
+    myListenPort = argListenPort.getValue();
+    if (argRelayPort.isSet())
+    {
+        myRelayPort = argRelayPort.getValue();
+    }
+    else
+    {
+        myRelayPort = std::to_string(atoi(myListenPort.c_str())+1);
+    }
+    if (argExternalIP.isSet())
+    {
+        myExternalIP = argExternalIP.getValue();
+    }
+    gSubnetMatch = argSubnetMatch.getValue();
+
+    cout << PRINTSERVER << nowDateTime() << " Listening on port: " << myListenPort  << endl;
     cout << PRINTSERVER << nowDateTime() << " My External IP: " << myExternalIP  << endl;
     if (!gSubnetMatch.empty())
     {
@@ -297,7 +307,7 @@ int main(int argc, char* argv[])
         socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
         frontend.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
 
-        socket.bind( makeZMQAddress("*", myPort).c_str() );
+        socket.bind( makeZMQAddress("*", myListenPort).c_str() );
         frontend.bind( makeZMQAddress("*", myRelayPort).c_str() );
 
 #ifdef _WIN32
@@ -345,7 +355,7 @@ int main(int argc, char* argv[])
                     {
                         gServerHandler.addServer(si);
                         sendShortMessage(socket, Ack);
-                        // Get the oldest one, (should be the one we just added, since it need emmediate update)
+                        // Get the oldest one, (should be the one we just added, since it need immediate update)
                         int id = gServerHandler.getOldestServer();
                         // Start a refresh thread for this one server, unless we have the maximum number of threads running
                         // In that case we let the ordinary refresh thread handle this server later
@@ -354,10 +364,10 @@ int main(int argc, char* argv[])
                             gServerHandler.refreshServerStatus(id);
                             std::chrono::milliseconds ms{50};
                             std::this_thread::sleep_for(ms);
-                            //! @todo sleeping here is bad if manny connect at the same time
+                            //! @todo sleeping here is bad if many connect at the same time
                             gServerHandler.refreshServerBenchmark(id);
                         }
-                        //! @todo if server is not responnding here tehn additional adds will get the SAME server ID
+                        //! @todo if server is not responding here then additional adds will get the SAME server ID
                         // When we add a server, then request benchmark from it
 
                     }
@@ -373,7 +383,7 @@ int main(int argc, char* argv[])
                     cout << PRINTSERVER << nowDateTime() << " Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
 
                     // lookup server
-                    //! @todo need to give servers a unique id to avoid others from beeing able to close them
+                    //! @todo need to give servers a unique id to avoid others from being able to close them
                     int id = gServerHandler.getServerIDMatching(sm.ip, sm.port);
                     if (id >= 0)
                     {

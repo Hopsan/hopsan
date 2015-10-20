@@ -101,14 +101,19 @@ bool sendIdentityEnvelope(zmq::socket_t &rSocket, const std::string &rIdentity)
     return (rc);
 }
 
-inline std::string makeZMQAddress(const std::string &ip, int port)
+inline std::string makeZMQAddress(const std::string &ipwithport)
 {
-    return "tcp://" + ip + ":" + std::to_string(port);
+    return "tcp://" + ipwithport;
 }
 
 inline std::string makeZMQAddress(const std::string &ip, const std::string &port)
 {
-    return "tcp://" + ip + ":" + port;
+    return makeZMQAddress(ip+":"+port);
+}
+
+inline std::string makeZMQAddress(const std::string &ip, int port)
+{
+    return makeZMQAddress(ip, std::to_string(port));
 }
 
 inline void splitZMQAddress(const std::string &rZMQAddress, std::string &rProtocol, std::string &rIP, std::string &rPort)

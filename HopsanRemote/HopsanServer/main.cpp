@@ -13,6 +13,8 @@
 #include "Messages.h"
 #include "MessageUtilities.h"
 
+#include <tclap/CmdLine.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #include <tchar.h>
@@ -46,6 +48,9 @@ public:
     int mControlPort = 23300;
     string mControlPortStr = "23300";
     int mMaxNumSlots = 4;
+    string mDescription;
+    string mExternalIP;
+    string mAddressServerIPandPort;
 };
 
 ServerConfig gServerConfig;
@@ -99,22 +104,22 @@ bool receiveAckNackMessage(zmq::socket_t &rSocket, long timeout, string &rNackRe
     return false;
 }
 
-void reportToAddressServer(std::string addressIP, std::string addressPort, std::string myIP, std::string myPort, std::string myDescription, bool isOnline)
+void reportToAddressServer(const ServerConfig &rServerConfig, bool isOnline)
 {
     try
     {
         zmq::socket_t addressServerSocket (gContext, ZMQ_REQ);
         int linger_ms = 1000;
         addressServerSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-        addressServerSocket.connect(makeZMQAddress(addressIP, addressPort).c_str());
+        addressServerSocket.connect(makeZMQAddress(rServerConfig.mAddressServerIPandPort).c_str());
 
-        //! @todo check if ok
+        //! @todo check if OK
         infomsg_Available_t message;
-        message.ip = myIP;
-        message.port = myPort;
-        message.description = myDescription;
+        message.ip = rServerConfig.mExternalIP;
+        message.port = rServerConfig.mControlPortStr;
+        message.description = rServerConfig.mDescription;
         message.numTotalSlots = gServerConfig.mMaxNumSlots;
-        message.identity = 0; // Identity should allways be 0 when a server starts, relay servers may set other values
+        message.identity = 0; // Identity should always be 0 when a server starts, relay servers may set other values
 
         if (isOnline)
         {
@@ -145,7 +150,7 @@ void reportToAddressServer(std::string addressIP, std::string addressPort, std::
                 cout << PRINTSERVER << nowDateTime() << " Error: Could not unregister in master server: " << nackreason << endl;
             }
         }
-        addressServerSocket.disconnect(makeZMQAddress(addressIP, addressPort).c_str());
+        addressServerSocket.disconnect(makeZMQAddress(gServerConfig.mAddressServerIPandPort).c_str());
     }
     catch(zmq::error_t e)
     {
@@ -182,38 +187,27 @@ map<int, WorkerInfo> workerMap;
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3)
-    {
-        cout << PRINTSERVER << nowDateTime() << " Error: you must specify what number of threads to use and what base port to use!" << endl;
-        return 1;
-    }
+    TCLAP::CmdLine cmd("HopsanServer", ' ', "0.1");
 
-    string numThreadsToUse = argv[1];
-    gServerConfig.mMaxNumSlots = atoi(numThreadsToUse.c_str());
+    // Define a value argument and add it to the command line.
+    TCLAP::ValueArg<int> argBasePort("p","port","The server listen base port",true,50100,"Port number (int)", cmd);
+    TCLAP::ValueArg<int> argNumSlots("n","numslots","The number of slots (threads) to use",true,2,"int", cmd);
+    TCLAP::ValueArg<std::string> argExternalIP("", "externalip", "The external IP address to report (for use behind NAT)", false, "127.0.0.1", "ip address", cmd);
 
-    string myPort = argv[2];
-    gServerConfig.mControlPortStr = myPort;
-    gServerConfig.mControlPort = atoi(myPort.c_str());
+    TCLAP::ValueArg<std::string> argDescription("", "description", "Label for this server", false, "", "", cmd);
+    TCLAP::ValueArg<std::string> argAddressServerIP("", "addresserver", "IP:port to address server", false, "", "", cmd);
 
-    std::string masterserverip, masterserverport;
+    // Parse the argv array.
+    cmd.parse( argc, argv );
+
+    gServerConfig.mMaxNumSlots = argNumSlots.getValue();
+    gServerConfig.mControlPortStr = to_string(argBasePort.getValue());
+    gServerConfig.mControlPort = argBasePort.getValue();
+    gServerConfig.mDescription = argDescription.getValue();
+    gServerConfig.mExternalIP = argExternalIP.getValue();
+    gServerConfig.mAddressServerIPandPort = argAddressServerIP.getValue();
+
     steady_clock::time_point lastStatusRequestTime;
-    if (argc >= 5)
-    {
-        masterserverip = argv[3];
-        masterserverport = argv[4];
-    }
-
-    string myExternalIP = "127.0.0.1";
-    if (argc >= 6)
-    {
-        myExternalIP = argv[5];
-    }
-
-    string myDescription;
-    if (argc >= 7)
-    {
-        myDescription = argv[6];
-    }
 
     cout << PRINTSERVER << nowDateTime() << " Starting with: " << gServerConfig.mMaxNumSlots << " slots, Listening on port: " << gServerConfig.mControlPort  << endl;
 
@@ -223,12 +217,12 @@ int main(int argc, char* argv[])
         zmq::socket_t socket (gContext, ZMQ_REP);
         int linger_ms = 1000;
         socket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
-        socket.bind( makeZMQAddress("*", myPort).c_str() );
+        socket.bind( makeZMQAddress("*", argBasePort.getValue()).c_str() );
 
-        if (!masterserverip.empty())
+        if (argAddressServerIP.isSet())
         {
-            //! @todo somehow automatically figure out my ip
-            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, myDescription, true);
+            //! @todo somehow automatically figure out my IP
+            reportToAddressServer(gServerConfig, true);
         }
 
 #ifdef _WIN32
@@ -367,7 +361,7 @@ int main(int argc, char* argv[])
 #endif
                             int nThreads = it->second.numThreads;
 
-                            //! @todo check returncodes maybe
+                            //! @todo check return codes maybe
                             workerMap.erase(it);
                             nTakenSlots -= nThreads;
                             std::cout << PRINTSERVER << nowDateTime() << " Open slots: " << gServerConfig.mMaxNumSlots-nTakenSlots << endl;
@@ -420,12 +414,12 @@ int main(int argc, char* argv[])
             {
                 cout << PRINTSERVER << nowDateTime() << " Too long since status check: " << time_span.count() << endl;
 
-                // If noone has requested status for this long (and we have a master server) we assume that the master server
+                // If no one has requested status for this long (and we have a master server) we assume that the master server
                 // has gone down, lets reconnect to it to make sure it knows that we still exist
                 //! @todo maybe this should be handled in the server by saving known servers to file instead
-                if (!masterserverip.empty())
+                if (argAddressServerIP.isSet())
                 {
-                    reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, myDescription, true);
+                    reportToAddressServer(gServerConfig, true);
                 }
             }
 
@@ -444,10 +438,10 @@ int main(int argc, char* argv[])
         }
 
         // Tell master server we are closing
-        if (!masterserverip.empty())
+        if (argAddressServerIP.isSet())
         {
-            //! @todo somehow automatically figure out my ip
-            reportToAddressServer(masterserverip, masterserverport, myExternalIP, myPort, myDescription, false);
+            //! @todo somehow automatically figure out my IP
+            reportToAddressServer(gServerConfig, false);
         }
 
     }

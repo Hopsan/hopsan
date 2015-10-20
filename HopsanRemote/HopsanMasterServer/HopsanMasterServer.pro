@@ -7,6 +7,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 DESTDIR = $${PWD}/../../bin
+TARGET = HopsanAddressServer
 
 #--------------------------------------------------------
 # Set the ZMQ paths and dll/so post linking copy command
@@ -16,6 +17,11 @@ LIBS *= $$magic_hopsan_libpath
 INCLUDEPATH *= $$magic_hopsan_includepath
 QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 QMAKE_CXXFLAGS *= -std=c++11
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Set the tclap include path
+INCLUDEPATH *= $${PWD}/../../Dependencies/tclap-1.2.1/include
 #--------------------------------------------------------
 
 INCLUDEPATH += $${PWD}/../include
