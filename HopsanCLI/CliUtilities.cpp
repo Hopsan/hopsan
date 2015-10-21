@@ -298,7 +298,8 @@ string getCurrentExecPath()
 {
 #ifdef _WIN32
     char result[ MAX_PATH ];
-    size_t count = GetModuleFileName( NULL, result, MAX_PATH );
+    //size_t count = GetModuleFileName( NULL, result, MAX_PATH );
+    size_t count=0;
 #else
     char result[ PATH_MAX ];
     ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
