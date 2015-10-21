@@ -1294,9 +1294,7 @@ void LogDataHandler2::collectLogDataFromRemoteModel(QVector<RemoteResultVariable
     for (auto it=systemTimeVarIdAndSysname.begin(); it!=systemTimeVarIdAndSysname.end(); ++it)
     {
         size_t v = it.key();
-        QVector<double> timeData;
-        timeData.fromStdVector(rResultVariables[v].data);
-
+        QVector<double> timeData = QVector<double>::fromStdVector(rResultVariables[v].data);
         auto pNewData = insertTimeVectorVariable(timeData, it.value());
         systemHierarchy2TimeVariable.insert(it.value()->join("$"), pNewData);
     }
@@ -1310,8 +1308,7 @@ void LogDataHandler2::collectLogDataFromRemoteModel(QVector<RemoteResultVariable
             continue;
         }
 
-        QVector<double> newData;
-        newData.fromStdVector(rResultVariables[v].data);
+        QVector<double> newData = QVector<double>::fromStdVector(rResultVariables[v].data);
 
         // Lookup time variable
         SharedVectorVariableT pTime = systemHierarchy2TimeVariable.value(varDescs[v]->mpSystemHierarchy->join("$"));

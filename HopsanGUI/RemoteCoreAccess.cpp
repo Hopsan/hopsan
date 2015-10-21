@@ -330,10 +330,10 @@ bool RemoteCoreSimulationHandler::getLogData(QVector<RemoteResultVariable> &rRes
     for (ResultVariableT &r : results)
     {
         rResultVariables.push_back(RemoteResultVariable());
-        rResultVariables.last().fullname.fromStdString(r.name);
-        rResultVariables.last().alias.fromStdString(r.alias);
-        rResultVariables.last().quantity.fromStdString(r.quantity);
-        rResultVariables.last().unit.fromStdString(r.unit);
+        rResultVariables.last().fullname = QString::fromStdString(r.name);
+        rResultVariables.last().alias = QString::fromStdString(r.alias);
+        rResultVariables.last().quantity = QString::fromStdString(r.quantity);
+        rResultVariables.last().unit = QString::fromStdString(r.unit);
         rResultVariables.last().data.swap(r.data);
     }
     return rc;
