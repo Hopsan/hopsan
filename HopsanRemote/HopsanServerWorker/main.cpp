@@ -730,6 +730,7 @@ int main(int argc, char* argv[])
                         {
                             process = command;
                         }
+                        cout << "Process: " << process << " Args: " << args << endl;
 
                         char *argv[] = {&process[0], &args[0], nullptr};
 
