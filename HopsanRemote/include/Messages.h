@@ -25,6 +25,7 @@ enum MessageIdsEnumT {
     SetModel,
     SendFile,
     ReleaseRelaySlot,
+    ShellExecute,
 
     /* Request messages */
     RequestServerMachines,
@@ -35,6 +36,7 @@ enum MessageIdsEnumT {
     RequestParameter,
     RequestResults,
     RequestMessages,
+    RequestShellOutput,
     RequestRelaySlot,
 
     /* Reply messages (to requests) */
@@ -46,6 +48,7 @@ enum MessageIdsEnumT {
     ReplyParameter,
     ReplyResults,
     ReplyMessages,
+    ReplyShellOutput,
     ReplyRelaySlot};
 
 MSGPACK_ADD_ENUM(MessageIdsEnumT)

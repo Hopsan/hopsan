@@ -22,6 +22,10 @@
 
 #ifdef _WIN32
 #include "windows.h"
+#else
+#include <spawn.h>
+#include <sys/wait.h>
+extern char **environ;
 #endif
 
 using namespace hopsan;
@@ -458,6 +462,7 @@ void sendServerGoodby(zmq::socket_t &rSocket)
     receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
 }
 
+string gShellExecuteOutput;
 
 int main(int argc, char* argv[])
 {
@@ -697,6 +702,44 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
+                else if (msg_id == ShellExecute)
+                {
+                    bool parseOK;
+                    string command = unpackMessage<string>(request, offset, parseOK);
+                    if (parseOK)
+                    {
+                        gShellExecuteOutput.clear();
+#ifdef _WIN32
+                        gShellExecuteOutput = "ShellExecute not supported on Windows Yet";
+                        sendMessage(socket, NotAck, gShellExecuteOutput);
+#else
+                        //! @todo This should be a help function shared between server and worker
+                        //! @todo how to abort if child hangs
+
+
+                        char *argv[] = {"command", nullptr};
+
+                        pid_t pid;
+                        int status = posix_spawn(&pid,command.c_str(),nullptr,nullptr,argv,environ);
+                        if(status == 0)
+                        {
+                            std::cout << PRINTWORKER << nowDateTime() << " Executed command: " << command << " with pid: "<< pid << endl;
+                            sendShortMessage(socket, Ack);
+                        }
+                        else
+                        {
+                            std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command! " << command << endl;
+                            sendMessage(socket, NotAck, "Failed to execute command!");
+                        }
+
+                        // Wait for process to prevent zombies from taking over the world
+                        int stat_loc;
+                        pid_t waitstatus = waitpid(pid, &stat_loc, WUNTRACED);
+                        gShellExecuteOutput = "No ouput availible yet!";
+#endif
+                    }
+
+                }
                 else if (msg_id == Benchmark)
                 {
                     if (gIsSimulating)
@@ -818,6 +861,11 @@ int main(int argc, char* argv[])
                     }
 
                     sendMessage(socket,ReplyMessages,messages);
+                }
+                else if (msg_id == RequestShellOutput)
+                {
+                    cout << PRINTWORKER << nowDateTime() << " Client requests shell output!" << endl;
+                    sendMessage(socket,ReplyShellOutput,gShellExecuteOutput);
                 }
                 else if (msg_id == Abort)
                 {

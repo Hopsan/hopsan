@@ -49,6 +49,7 @@ public:
     bool sendModelMessage(const std::string &rModel);
     bool sendSimulateMessage(const int nLogsamples, const int logStartTime, const int simStarttime,
                              const int simSteptime, const int simStoptime);
+    bool executeShellCommand(const std::string &rCommand);
 
     bool blockingSendFile(const std::string &rAbsFilePath, const std::string &rRelFilePath, double *pProgress);
     bool sendFilePart(const std::string &rRelFilePath, const std::string &rData, bool isLastPart);
@@ -61,6 +62,7 @@ public:
     bool requestSimulationResults(std::vector<ResultVariableT> &rResultVariables);
     bool requestMessages();
     bool requestMessages(std::vector<char> &rTypes, std::vector<std::string> &rTags, std::vector<std::string> &rMessages);
+    bool requestShellOutput(std::string &rOutput);
 
     // Address server requests
     bool requestServerMachines(int nMachines, double maxBenchmarkTime, std::vector<ServerMachineInfoT> &rMachines);

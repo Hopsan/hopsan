@@ -210,6 +210,19 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     return rc;
 }
 
+bool RemoteHopsanClient::executeShellCommand(const string &rCommand)
+{
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+    sendClientMessage(mpWorkerSocket, ShellExecute, rCommand);
+    string err;
+    bool rc = receiveAckNackMessage(mpWorkerSocket, mShortReceiveTimeout, err);
+    if (!rc)
+    {
+        cout << err << endl;
+    }
+    return rc;
+}
+
 //! @brief Send a file (blocking until the entire file is transferred)
 //! @param[in] rAbsFilePath The absolute filepath, (what file to read from on the local machine)
 //! @param[in] rRelFilePath The filepath "relative to the model", (the file path entered in the model parameter value), this is also the file identifier
@@ -679,6 +692,31 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
                 rMessages[m] = messages[m].message;
             }
             return true;
+        }
+        else
+        {
+            setLastError("Got wrong reply");
+        }
+    }
+    return false;
+}
+
+bool RemoteHopsanClient::requestShellOutput(string &rOutput)
+{
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+
+    sendShortClientMessage(mpWorkerSocket, RequestShellOutput);
+
+    zmq::message_t response;
+    if (receiveWithTimeout(*mpWorkerSocket, response, mLongReceiveTimeout))
+    {
+        size_t offset=0;
+        bool parseOK;
+        size_t id = getMessageId(response, offset, parseOK);
+        if (id == ReplyShellOutput)
+        {
+            rOutput = unpackMessage<string>(response, offset, parseOK);
+            return parseOK;
         }
         else
         {
