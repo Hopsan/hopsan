@@ -723,7 +723,7 @@ int main(int argc, char* argv[])
                         string process, args;
                         if (p != string::npos)
                         {
-                            process = command.substr(0,p+1);
+                            process = command.substr(0,p);
                             args = command.substr(p+1);
                         }
                         else
@@ -749,7 +749,8 @@ int main(int argc, char* argv[])
 
                         // Wait for process to prevent zombies from taking over the world
                         int stat_loc;
-                        pid_t waitstatus = waitpid(pid, &stat_loc, WUNTRACED);
+                        pid_t waitstatus = waitpid(pid, &stat_loc, 0);
+                        std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< pid << " status: " << waitstatus <<  endl;
                         gShellExecuteOutput = "No ouput availible yet!";
 #endif
                     }
