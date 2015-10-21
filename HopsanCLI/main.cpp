@@ -46,6 +46,7 @@
 
 #include "CliUtilities.h"
 #include "ModelValidation.h"
+#include "BuildUtilities.h"
 
 // If debug extension has not already been defined then define it to prevent compilation error
 #ifndef DEBUG_EXT
@@ -75,6 +76,7 @@ int main(int argc, char *argv[])
         TCLAP::SwitchArg createHvcTestOption("", "createValidationData","Create a model validation data set based on the variables connected to scopes in the model given by option -m", cmd);
         TCLAP::SwitchArg prefixRootLevelName("", "prefixRootSystemName", "Prefix the root-level system name to exported results and parameters", cmd);
 
+        TCLAP::ValueArg<std::string> buildCompLibOption("", "buildComponentLibrary", "Build the specified component library (point to the library xml)", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> destinationOption("d","destination","Destination for resulting files",false,"","Path to directory", cmd);
         TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultsFinalCSVOption("", "resultsFinalCSV", "Export the results (only final values)", false, "", "Path to file", cmd);
@@ -97,6 +99,16 @@ int main(int argc, char *argv[])
             if ( destinationPath[destinationPath.size()-1] != '/')
             {
                 destinationPath.push_back('/');
+            }
+        }
+
+        if (buildCompLibOption.isSet())
+        {
+            string output;
+            bool rc = buildComponentLibrary(buildCompLibOption.getValue(), output);
+            if (!rc)
+            {
+                printErrorMessage("Failed to build component library: "+buildCompLibOption.getValue());
             }
         }
 

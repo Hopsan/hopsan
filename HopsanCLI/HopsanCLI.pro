@@ -80,11 +80,13 @@ SOURCES += main.cpp \
     CliUtilities.cpp \
     ModelValidation.cpp \
     core_cli.cpp \
-    ModelUtilities.cpp
+    ModelUtilities.cpp \
+    BuildUtilities.cpp
 
 HEADERS += \
     version_cli.h \
     CliUtilities.h \
     ModelValidation.h \
     core_cli.h \
-    ModelUtilities.h
+    ModelUtilities.h \
+    BuildUtilities.h

@@ -40,6 +40,7 @@
 
 #ifndef _WIN32
 #include <unistd.h>
+#include <limits.h>
 #else
 #include <windows.h>
 #endif
@@ -288,4 +289,26 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
     {
         printErrorMessage(string("Could not open externalLibsToLoadFile: ") + filePath );
     }
+}
+
+
+//! @brief Return the path to the current executable (HopsanCLI most likely)
+//! @returns The path or empty string if path can not be found
+string getCurrentExecPath()
+{
+#ifdef _WIN32
+    char result[ MAX_PATH ];
+    size_t count = GetModuleFileName( NULL, result, MAX_PATH );
+#else
+    char result[ PATH_MAX ];
+    ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+#endif
+    if (count > 0)
+    {
+        string base, file;
+        splitFilePath(string(result, count), base, file);
+        cout << "base, file: " << base << " " << file << endl;
+        return base;
+    }
+    return "";
 }

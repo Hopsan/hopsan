@@ -43,6 +43,7 @@ void splitFilePath(const std::string fullPath, std::string &rBasePath, std::stri
 void splitFileName(const std::string fileName, std::string &rBaseName, std::string &rExt);
 void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector);
 std::string relativePath(std::string basePath, std::string fullPath);
+std::string getCurrentExecPath();
 
 template <typename T>
 std::string to_string(T val)
