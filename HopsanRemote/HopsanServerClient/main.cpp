@@ -21,7 +21,8 @@ int main(int argc, char* argv[])
         // Define a value argument and add it to the command line.
         TCLAP::ValueArg<std::string> serverAddrOption("s", "serverip", "Server IP address and port (default is localhost:45050)", false, "localhost:45050", "IP address", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
-        TCLAP::MultiArg<std::string> assets("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
+        TCLAP::MultiArg<std::string> assetsOptions("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
+        TCLAP::MultiArg<std::string> shellOptions("", "shellexec", "Command to execute in shell", false, "string", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -55,7 +56,7 @@ int main(int argc, char* argv[])
                 }
 
                 // Send model assets
-                const std::vector<std::string> rAssets = assets.getValue();
+                const std::vector<std::string> &rAssets = assetsOptions.getValue();
                 for (const string &rAsset: rAssets)
                 {
                     cout << PRINTCLIENT << "Sending asset: " << rAsset <<  " ... ";
@@ -63,6 +64,24 @@ int main(int argc, char* argv[])
                     rhopsan.blockingSendFile(rAsset, rAsset, &progress);
                     cout << "Done!" << endl;
                 }
+
+                // Execute shell commands
+                const std::vector<std::string> &rShellcommands =  shellOptions.getValue();
+                for (const string &rCommand: rShellcommands)
+                {
+                    cout << PRINTCLIENT << "Remote executing shell command: " << rCommand <<  " ... ";
+                    bool rc = rhopsan.executeShellCommand(rCommand);
+                    if (rc)
+                    {
+                        cout << "Success!" << endl;
+                    }
+                    else
+                    {
+                        cout << "Failed!" << endl;
+                    }
+                }
+
+
 
                 std::stringstream filebuffer;
                 filebuffer << hmf_file.rdbuf();

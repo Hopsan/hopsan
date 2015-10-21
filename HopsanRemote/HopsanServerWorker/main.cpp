@@ -715,12 +715,26 @@ int main(int argc, char* argv[])
 #else
                         //! @todo This should be a help function shared between server and worker
                         //! @todo how to abort if child hangs
+                        //!
 
 
-                        char *argv[] = {"command", nullptr};
+                        // Split command on first space
+                        size_t p = command.find_first_of(" ");
+                        string process, args;
+                        if (p != string::npos)
+                        {
+                            process = command.substr(0,p+1);
+                            args = command.substr(p+1);
+                        }
+                        else
+                        {
+                            process = command;
+                        }
+
+                        char *argv[] = {&process[0], &args[0], nullptr};
 
                         pid_t pid;
-                        int status = posix_spawn(&pid,command.c_str(),nullptr,nullptr,argv,environ);
+                        int status = posix_spawn(&pid,process.c_str(),nullptr,nullptr,argv,environ);
                         if(status == 0)
                         {
                             std::cout << PRINTWORKER << nowDateTime() << " Executed command: " << command << " with pid: "<< pid << endl;
