@@ -163,7 +163,7 @@ void ServerHandler::addServer(ServerInfo &rServerInfo)
     // Insert into the map
     mServerMap.insert( {id, rServerInfo} );
 
-    // Here we push to front, bacause new servers need emmediate update
+    // Here we push to front, because new servers need immediate update
     mServerAgeList.push_front(rServerInfo.mInternalId);
 }
 
@@ -186,7 +186,7 @@ void ServerHandler::removeServer(int id)
 {
     mMutex.lock();
     cout << PRINTSERVER << nowDateTime() << " Removing server: " << id << endl;
-    // Remove the server info object and any occurance in the age and refresh lists
+    // Remove the server info object and any occurrence in the age and refresh lists
 
     //! @todo how to clear relays if we get here and has not clear them outside, could have timestamps in relays and purge them if not used for long
 
@@ -417,7 +417,7 @@ void ServerHandler::refreshServerBenchmarkThread(int serverId)
 
 int ServerHandler::reserveRelayBaseIdentityNoLock()
 {
-    // For simplicity allways reserve from the end
+    // For simplicity always reserve from the end
     //! @todo maybe use indexintervalcollection here instead
     int max = 0;
     if (!mRelayBaseIdentites.empty())
@@ -444,4 +444,10 @@ size_t ServerHandler::numServers()
 {
     std::lock_guard<std::mutex> lock(mMutex);
     return mServerMap.size();
+}
+
+size_t ServerHandler::numServersInAgeList()
+{
+    std::lock_guard<std::mutex> lock(mMutex);
+    return mServerAgeList.size();
 }

@@ -76,6 +76,7 @@ static void s_catch_signals(void)
 void refreshServerThread()
 {
     const double maxAgeSeconds=60;
+    const int maxSleepSeconds=20;
     cout << PRINTSERVER << nowDateTime() << " Starting server refresh thread!" << endl;
 
     while (true)
@@ -91,14 +92,14 @@ void refreshServerThread()
         steady_clock::time_point tp, tp2;
 
         int nRunning = gServerHandler.mNumRunningRefreshServerStatusThreads;
-        cout << "Num RefreshThreads running: " << nRunning << endl;
-        cout << "Num Servers: " << gServerHandler.numServers() << endl;
+        cout << PRINTSERVER << "Num RefreshThreads running: " << nRunning << " Num Servers: " << gServerHandler.numServers()
+             << " Num AgeList: " << gServerHandler.numServersInAgeList() << endl;
 
         // If no servers are available, then sleep for a while
         if (gServerHandler.numServers() == 0)
         {
-            std::chrono::milliseconds ms{int(floor(maxAgeSeconds*1000))};
-            cout << "No servers sleeping for: " << ms.count() << " milliseconds" << endl;
+            std::chrono::milliseconds ms{maxSleepSeconds*1000};
+            cout << "No servers, sleeping for: " << ms.count() << " milliseconds" << endl;
             std::this_thread::sleep_for(ms);
         }
         // Else if we have maxed out our refresh threads then sleep for a while
@@ -106,6 +107,13 @@ void refreshServerThread()
         {
             std::chrono::milliseconds ms{1000};
             cout << "Max num refresh threads running, sleeping for: " << ms.count() << " milliseconds" << endl;
+            std::this_thread::sleep_for(ms);
+        }
+        // In this case we sleep a short time
+        else if (gServerHandler.numServersInAgeList() == 0)
+        {
+            std::chrono::milliseconds ms{maxSleepSeconds/2*1000};
+            cout << "No old servers, sleeping for: " << ms.count() << " milliseconds" << endl;
             std::this_thread::sleep_for(ms);
         }
         // Else we fetch the oldest server
@@ -121,6 +129,7 @@ void refreshServerThread()
         }
 
         // If we got a server, then process it, else skip
+        //cout << "Processing id: " << id << endl;
         if (id >= 0)
         {
             // If the oldest server is not old enough for refresh then lets wait until it is
@@ -136,6 +145,7 @@ void refreshServerThread()
             // Now the oldest server should be old enough, but lets request oldest again just to be sure it has not been removed
             gServerHandler.getOldestServer(id2,tp2);
             // If oldest is still the same then spawn a refresh thread for it, else we do nothing
+            //cout << "Check id1==id2: " << id << " " << id2 << endl;
             if (id == id2)
             {
                 // Spawn refresh threads (the threads will deallocate themselves when done)

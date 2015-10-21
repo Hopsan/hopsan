@@ -150,6 +150,7 @@ public :
 
     void removeServer(int id);
     size_t numServers();
+    size_t numServersInAgeList();
 
     ServerInfo getServer(int id);
 
