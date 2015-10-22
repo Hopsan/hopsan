@@ -26,7 +26,6 @@
 #include "GeneratorUtilities.h"
 #include "ComponentSystem.h"
 #include "Component.h"
-#include <QApplication>
 #include <cassert>
 
 

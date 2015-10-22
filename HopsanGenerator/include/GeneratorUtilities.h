@@ -41,10 +41,6 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QDebug>
-#include <QDialog>
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <QPushButton>
 #include <QDomElement>
 #include "win32dll.h"
 

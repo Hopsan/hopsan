@@ -25,7 +25,6 @@
 #include "generators/HopsanModelicaGenerator.h"
 #include "GeneratorUtilities.h"
 #include "SymHop.h"
-#include <QtConcurrentMap>
 #include <QTime>
 
 

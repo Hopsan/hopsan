@@ -25,12 +25,10 @@
 #include "generators/HopsanFMIGenerator.h"
 #include "GeneratorUtilities.h"
 #include "ComponentSystem.h"
-#include <QApplication>
 #include <cassert>
 #include <QProcess>
 #include <QUuid>
 #include <QDateTime>
-//#include "../ThirdParty/FMILibrary-2.0.1/Config.cmake/fmilib.h"
 
 #include <stddef.h>
 

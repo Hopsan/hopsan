@@ -33,17 +33,20 @@
 
 #include <QStringList>
 #include <QProcess>
+#include <QDomElement>
+#include <QDirIterator>
+
+#ifdef USEQTGUI
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QApplication>
 #include <QPushButton>
 #include <QProgressDialog>
-#include <QDomElement>
 #include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QLabel>
-#include <QDirIterator>
+#endif
 
 #include <cassert>
 

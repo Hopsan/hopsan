@@ -39,7 +39,7 @@
 #include "HopsanTypes.h"
 #include "win32dll.h"
 
-#include <QMessageBox>
+//#include <QMessageBox>
 
 using namespace std;
 

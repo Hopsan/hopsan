@@ -49,17 +49,21 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QDebug>
-#include <QDialog>
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <QPushButton>
 #include <QDomElement>
-#include "win32dll.h"
 
+#include "win32dll.h"
 #include "SymHop.h"
 #include "GeneratorUtilities.h"
 
 //class ModelObjectAppearance;
+
+// Forward declarations
+#ifdef USEQTGUI
+class QTextEdit;
+class QVBoxLayout;
+class QDialog;
+class QPushButton;
+#endif
 
 namespace hopsan {
 class ComponentSystem;
@@ -78,7 +82,7 @@ public:
     QString getBinPath() const;
     QString getHopsanRootPath() const;
     QString getGccPath() const;
-    void printMessage(const QString &msg) const;
+    void printMessage(const QString &msg, const QString &color="Black") const;
     void printWarningMessage(const QString &msg) const;
     void printErrorMessage(const QString &msg) const;
     void compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
@@ -110,12 +114,13 @@ protected:
     QString mHopsanRootPath;
     QString mGccPath;
 
+#ifdef USEQTGUI
     QTextEdit *mpTextEdit;
     QVBoxLayout *mpLayout;
     QPushButton *mpDoneButton;
     QWidget *mpDialog;
-
     QDialog *mpPortsDialog;
+#endif
 
     bool mShowDialog;
 };

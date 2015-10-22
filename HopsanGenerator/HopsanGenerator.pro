@@ -8,18 +8,26 @@ TARGET = HopsanGenerator
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
+TARGET = $${TARGET}$${DEBUG_EXT}
 
-QT += xml core gui
-isEqual(QT_MAJOR_VERSION, 5){
-QT += widgets concurrent
+QT += xml core
+
+# Keep these QtGui related options by tehm self so that external scrip may deactivate them when needed
+useqtgui=True
+contains( useqtgui, True ) {
+    DEFINES += USEQTGUI
+    QT += gui
+    isEqual(QT_MAJOR_VERSION, 5){
+        QT += widgets
+    }
 }
 
-TARGET = $${TARGET}$${DEBUG_EXT}
+
 
 #--------------------------------------------------------
 # Set the FMILibrary paths and dll/so/dylib/framework post linking copy command
 d = $$setFMILIBPathInfo($$(FMI_PATH), $$DESTDIR)
-isEmpty(d):!build_pass:warning("ERROR: Failed to locate FMILibrary, have you compiled it and put it in the expected location?")
+isEmpty(d):!build_pass:warning(Failed to locate FMILibrary, have you compiled it and put it in the expected location?)
 
 LIBS *= $$magic_hopsan_libpath
 INCLUDEPATH *= $$magic_hopsan_includepath

@@ -33,16 +33,21 @@
 
 #include <QStringList>
 #include <QProcess>
+#include <QDomElement>
+
+#ifdef USEQTGUI
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QApplication>
 #include <QPushButton>
 #include <QProgressDialog>
-#include <QDomElement>
 #include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QLabel>
+#else
+#include <iostream>
+#endif
 
 #include <cassert>
 
@@ -85,11 +90,10 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
         mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
     }
 
-
     mShowDialog = showDialog;
-
     if(mShowDialog)
     {
+#ifdef USEQTGUI
         mpTextEdit = new QTextEdit();
         mpTextEdit->setReadOnly(true);
         QFont monoFont = QFont("Monospace", 10, 50);
@@ -114,23 +118,28 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
 
         mpDialog->show();
         QApplication::processEvents();
-
+#endif
         printMessage("##########################\n# Loaded HopsanGenerator #\n##########################\n");
     }
 }
 
 
-void HopsanGenerator::printMessage(const QString &msg) const
+void HopsanGenerator::printMessage(const QString &msg, const QString &color) const
 {
     if(mShowDialog)
     {
-        mpTextEdit->setTextColor(QColor("Black"));
+#ifdef USEQTGUI
+        mpTextEdit->setTextColor(QColor(color));
         mpTextEdit->append(msg);
         QApplication::processEvents();
 #ifdef _WIN32
         Sleep(10);
 #else
         usleep(10000);
+#endif
+#else
+        Q_UNUSED(color)
+        cout << msg.toStdString() << endl;
 #endif
     }
     else
@@ -144,18 +153,7 @@ void HopsanGenerator::printWarningMessage(const QString &msg) const
 {
     if(mShowDialog)
     {
-        mpTextEdit->setTextColor(QColor("Orange"));
-        mpTextEdit->append(msg);
-        QApplication::processEvents();
-#ifdef _WIN32
-        Sleep(10);
-#else
-        usleep(10000);
-#endif
-    }
-    else
-    {
-        //qDebug() << msg;
+        printMessage(msg, "Orange");
     }
 }
 
@@ -164,33 +162,9 @@ void HopsanGenerator::printErrorMessage(const QString &msg) const
 {
     if(mShowDialog)
     {
-        mpTextEdit->setTextColor(QColor("Red"));
-        mpTextEdit->append(msg);
-        QApplication::processEvents();
-#ifdef _WIN32
-        Sleep(10);
-#else
-        usleep(10000);
-#endif
-    }
-    else
-    {
-        //qDebug() << msg;
+        printMessage(msg, "Red");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues) const
