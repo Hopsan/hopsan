@@ -13,7 +13,7 @@ public:
     bool enterDir(const std::string &rDir);
     std::string currentDir() const;
     bool createDir(std::string dirPath);
-    std::vector<std::string> findFilesWithSuffix(std::string suffix);
+    std::vector<std::string> findFilesWithSuffix(std::string suffix, bool doRecursiveSearch=false);
 private:
     std::string mCurrentDir;
 };

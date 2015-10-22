@@ -73,20 +73,30 @@ bool FileAccess::createDir(string dirPath)
     return true;
 }
 
-std::vector<std::string> FileAccess::findFilesWithSuffix(std::string suffix)
+std::vector<std::string> FileAccess::findFilesWithSuffix(std::string suffix, bool doRecursiveSearch)
 {
     vector<std::string> files;
     DIR *pDir = opendir(mCurrentDir.c_str());
     dirent *pEntery;
     while ((pEntery = readdir(pDir)) != nullptr)
     {
-        string name(pEntery->d_name);
-        size_t p = name.find_last_of(".");
-        if (p != string::npos)
+        if ( (pEntery->d_type == DT_DIR) && doRecursiveSearch)
         {
-            if (name.substr(p) == suffix)
+            FileAccess fa;
+            fa.enterDir(mCurrentDir+"/"+string(pEntery->d_name));
+            vector<std::string> subfiles = fa.findFilesWithSuffix(suffix, doRecursiveSearch);
+            files.insert(files.end(), subfiles.begin(), subfiles.end());
+        }
+        else
+        {
+            string name(pEntery->d_name);
+            size_t p = name.find_last_of(".");
+            if (p != string::npos)
             {
-                files.push_back(mCurrentDir+"/"+name);
+                if (name.substr(p) == suffix)
+                {
+                    files.push_back(mCurrentDir+"/"+name);
+                }
             }
         }
     }

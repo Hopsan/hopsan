@@ -411,7 +411,7 @@ void loadComponentLibraries(const std::string &rDir)
     FileAccess fa;
     if (fa.enterDir(rDir))
     {
-        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT));
+        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT), true);
         for (string f : soFiles)
         {
             cout << PRINTWORKER << nowDateTime() << " Loading library file: " << f << endl;
@@ -728,16 +728,13 @@ int main(int argc, char* argv[])
                             do
                             {
                                 size_t n = command.find_first_of(" ",p+1);
-                                cout << "p: " << p << " n: " << n << endl;
                                 string arg = command.substr(p+1, n-p-1);
                                 if (arg != " ")
                                 {
-                                    cout << "ARG: " << arg << endl;
                                     args.push_back(arg);
                                 }
                                 if (n==string::npos)
                                 {
-                                    cout << "break" << endl;
                                     break;
                                 }
                                 p = n;
