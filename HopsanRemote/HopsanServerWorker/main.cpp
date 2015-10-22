@@ -406,12 +406,12 @@ void startSimulation(bool *pSimOK)
 
 
 
-void loadComponentLibraries(const std::string &rDir)
+void loadComponentLibraries(const std::string &rDir, bool doRecurse)
 {
     FileAccess fa;
     if (fa.enterDir(rDir))
     {
-        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT), true);
+        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT), doRecurse);
         for (string f : soFiles)
         {
             cout << PRINTWORKER << nowDateTime() << " Loading library file: " << f << endl;
@@ -487,8 +487,8 @@ int main(int argc, char* argv[])
     cout << PRINTWORKER << nowDateTime() << " Server control port is: " << serverCtrlPort << endl;
 
     // Loading component libraries
-    loadComponentLibraries("./componentLibraries");
-    loadComponentLibraries("../componentLibraries/defaultLibrary");
+    loadComponentLibraries("./componentLibraries", true);
+    loadComponentLibraries("../componentLibraries/defaultLibrary", false);
 
     gModelAssets.setFileDestination("./");
 
