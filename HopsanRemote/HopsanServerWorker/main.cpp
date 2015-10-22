@@ -717,22 +717,50 @@ int main(int argc, char* argv[])
                         //! @todo how to abort if child hangs
                         //!
 
-
                         // Split command on first space
+                        string process;
+                        vector<string> args;
+
                         size_t p = command.find_first_of(" ");
-                        string process, args;
                         if (p != string::npos)
                         {
                             process = command.substr(0,p);
-                            args = command.substr(p+1);
+                            do
+                            {
+                                size_t n = command.find_first_of(" ",p+1);
+                                cout << "p: " << p << " n: " << n << endl;
+                                string arg = command.substr(p+1, n-p-1);
+                                if (arg != " ")
+                                {
+                                    cout << "ARG: " << arg << endl;
+                                    args.push_back(arg);
+                                }
+                                if (n==string::npos)
+                                {
+                                    cout << "break" << endl;
+                                    break;
+                                }
+                                p = n;
+                                n = command.find_first_of(" ",p+1);
+                            }while(true);
                         }
                         else
                         {
                             process = command;
                         }
-                        cout << "Process: " << process << " Args: " << args << endl;
+                        cout << args.size() << endl;
+                        cout << "Process: " << process << " Args:";// << args << endl;
 
-                        char *argv[] = {&process[0], &args[0], nullptr};
+                        // Populate argv ptrs
+                        char** argv = new char*[args.size()+2];
+                        argv[0] = &process[0];
+                        argv[args.size()+1] = nullptr;
+                        for (size_t i=1; i<args.size()+1; ++i)
+                        {
+                            cout << args[i-1] << ",";
+                            argv[i] = &args[i-1][0];
+                        }
+                        cout << endl;
 
                         pid_t pid;
                         int status = posix_spawn(&pid,process.c_str(),nullptr,nullptr,argv,environ);
@@ -746,6 +774,8 @@ int main(int argc, char* argv[])
                             std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command! " << command << endl;
                             sendMessage(socket, NotAck, "Failed to execute command!");
                         }
+
+                        delete[] argv;
 
                         // Wait for process to prevent zombies from taking over the world
                         int stat_loc;

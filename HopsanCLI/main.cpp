@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
         if (buildCompLibOption.isSet())
         {
             string output;
+            cout << "Building component library: " << buildCompLibOption.getValue() << endl;
             bool rc = buildComponentLibrary(buildCompLibOption.getValue(), output);
             if (!rc)
             {
