@@ -25,7 +25,7 @@ enum MessageIdsEnumT {
     SetModel,
     SendFile,
     ReleaseRelaySlot,
-    ShellExecute,
+    ExecuteInShell,
 
     /* Request messages */
     RequestServerMachines,

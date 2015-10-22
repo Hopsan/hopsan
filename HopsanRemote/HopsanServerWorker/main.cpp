@@ -462,7 +462,7 @@ void sendServerGoodby(zmq::socket_t &rSocket)
     receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
 }
 
-string gShellExecuteOutput;
+string gExecuteInShellOutput;
 
 int main(int argc, char* argv[])
 {
@@ -702,16 +702,16 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-                else if (msg_id == ShellExecute)
+                else if (msg_id == ExecuteInShell)
                 {
                     bool parseOK;
                     string command = unpackMessage<string>(request, offset, parseOK);
                     if (parseOK)
                     {
-                        gShellExecuteOutput.clear();
+                        gExecuteInShellOutput.clear();
 #ifdef _WIN32
-                        gShellExecuteOutput = "ShellExecute not supported on Windows Yet";
-                        sendMessage(socket, NotAck, gShellExecuteOutput);
+                        gExecuteInShellOutput = "ExecuteInShell not supported on Windows Yet";
+                        sendMessage(socket, NotAck, gExecuteInShellOutput);
 #else
                         //! @todo This should be a help function shared between server and worker
                         //! @todo how to abort if child hangs
@@ -751,7 +751,7 @@ int main(int argc, char* argv[])
                         int stat_loc;
                         pid_t waitstatus = waitpid(pid, &stat_loc, 0);
                         std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< pid << " status: " << waitstatus <<  endl;
-                        gShellExecuteOutput = "No ouput availible yet!";
+                        gExecuteInShellOutput = "No ouput availible yet!";
 #endif
                     }
 
@@ -881,7 +881,7 @@ int main(int argc, char* argv[])
                 else if (msg_id == RequestShellOutput)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Client requests shell output!" << endl;
-                    sendMessage(socket,ReplyShellOutput,gShellExecuteOutput);
+                    sendMessage(socket,ReplyShellOutput,gExecuteInShellOutput);
                 }
                 else if (msg_id == Abort)
                 {
