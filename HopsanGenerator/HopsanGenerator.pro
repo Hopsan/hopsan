@@ -10,7 +10,8 @@ CONFIG += shared
 DESTDIR = $${PWD}/../bin
 TARGET = $${TARGET}$${DEBUG_EXT}
 
-QT += xml core
+QT -= gui
+QT += core xml
 
 # Keep these QtGui related options by tehm self so that external scrip may deactivate them when needed
 useqtgui=True
