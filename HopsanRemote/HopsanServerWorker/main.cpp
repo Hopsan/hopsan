@@ -32,6 +32,7 @@ using namespace hopsan;
 using namespace std;
 
 HopsanEssentials gHopsanCore;
+bool gHaveLoadedComponentLibraries=false;
 
 typedef struct
 {
@@ -426,6 +427,14 @@ void loadComponentLibraries(const std::string &rDir, bool doRecurse)
 
 bool loadModel(string &rModel)
 {
+    // Load component libraries if not already done
+    if (!gHaveLoadedComponentLibraries)
+    {
+        loadComponentLibraries("./componentLibraries", true);
+        loadComponentLibraries("../componentLibraries/defaultLibrary", false);
+        gHaveLoadedComponentLibraries=true;
+    }
+
     // If a model is already loaded then delete it
     if (gpRootSystem)
     {
@@ -485,10 +494,6 @@ int main(int argc, char* argv[])
 
     cout << PRINTWORKER << nowDateTime() << " Listening on port: " << workerCtrlPort << " Using: " << gNumThreads << " threads" << endl;
     cout << PRINTWORKER << nowDateTime() << " Server control port is: " << serverCtrlPort << endl;
-
-    // Loading component libraries
-    loadComponentLibraries("./componentLibraries", true);
-    loadComponentLibraries("../componentLibraries/defaultLibrary", false);
 
     gModelAssets.setFileDestination("./");
 
