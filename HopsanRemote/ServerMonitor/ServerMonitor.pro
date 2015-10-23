@@ -18,6 +18,11 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
 
+#--------------------------------------------------------
+# Set the tclap include path
+INCLUDEPATH *= $${PWD}/../../Dependencies/tclap-1.2.1/include
+#--------------------------------------------------------
+
 INCLUDEPATH *= $${PWD}/../include
 INCLUDEPATH += $${PWD}/../HopsanServerClient/
 

@@ -7,6 +7,8 @@
 #include "RemoteHopsanClient.h"
 #include "MessageUtilities.h"
 
+#include <tclap/CmdLine.h>
+
 using namespace std;
 using namespace std::chrono;
 typedef duration<double> fseconds;
@@ -70,19 +72,31 @@ int main(int argc, char* argv[])
 {
     string addressServerAddress;
 
-    if (argc < 2)
+    TCLAP::CmdLine cmd("ServerMonitor", ' ', "0.1");
+
+    // Define a value argument and add it to the command line.
+    TCLAP::SwitchArg argList("l", "list", "List the servers and exit", cmd);
+    TCLAP::ValueArg<double> argRefreshtime("r","refreshtime","The number of seconds between each refresh attempt",false,gRefreshTime,"double", cmd);
+    TCLAP::ValueArg<std::string> argAddressServerIP("a", "addresserver", "IP:port to address server", true, "127.0.0.1:50000", "IP:Port", cmd);
+
+    // Parse the argv array.
+    cmd.parse( argc, argv );
+
+    addressServerAddress = argAddressServerIP.getValue();
+    if (argRefreshtime.isSet())
     {
-        cout << /*PRINTWORKER << nowDateTime() <<*/ " Error: To few arguments!" << endl;
-        return 1;
+        gRefreshTime = argRefreshtime.getValue();
     }
 
-    addressServerAddress = argv[1];
+    thread inputThread;
 
     cout << endl;
     cout << "Starting server monitor, connecting to: " << addressServerAddress << endl;
-    cout << "Enter  q  to quit or  uN  (where N is the refresh time in seconds)" << endl;
-
-    thread inputThread(inputThreadFunc);
+    if (!argList.isSet())
+    {
+        cout << "Enter  q  to quit or  uN  (where N is the refresh time in seconds)" << endl;
+        inputThread = thread(inputThreadFunc);
+    }
 
     // Prepare our context
     try
@@ -96,6 +110,23 @@ int main(int argc, char* argv[])
         bool rc = rhc.connectToAddressServer(addressServerAddress);
         if (rc && rhc.addressServerConnected())
         {
+            if (argList.isSet())
+            {
+                std::vector<ServerMachineInfoT> machines;
+                if (rhc.requestServerMachines(-1, 1e150, machines))
+                {
+                    for (ServerMachineInfoT &m : machines)
+                    {
+                        cout << m.address << endl;
+                    }
+                }
+                else
+                {
+                    cout << "Error: could not get servers" << endl;
+                }
+                gKeepRunning=false;
+            }
+
             steady_clock::time_point lastRefreshTime;
             while (gKeepRunning)
             {
@@ -168,13 +199,15 @@ int main(int argc, char* argv[])
     }
     catch(zmq::error_t e)
     {
-        cout /*<< PRINTWORKER << nowDateTime()*/ << " Error: Preparing our context: " << e.what() << endl;
+        cout << " Error: Preparing our context: " << e.what() << endl;
     }
 
     gKeepRunning = false;
-    inputThread.join();
-    cout /*<< PRINTWORKER << nowDateTime()*/ << " Closed!" << endl;
-
+    if (inputThread.joinable())
+    {
+        inputThread.join();
+        cout << " Closed!" << endl;
+    }
     return 0;
 }
 
