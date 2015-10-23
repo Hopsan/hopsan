@@ -938,7 +938,7 @@ void VariableTree::getExpandedFullVariables(QStringList &rList)
         {
             if ((*it)->isExpanded())
             {
-                rList << (*it)->text(0);
+                rList << mFullVariableItemMap.key(*it);;
             }
         }
         ++it;
@@ -955,7 +955,7 @@ void VariableTree::getExpandedImportFiles(QStringList &rList)
         {
             if ((*it)->isExpanded())
             {
-                rList << (*it)->text(0);
+                rList << mImportedFileItemMap.key(*it);
             }
             ++it;
         }
