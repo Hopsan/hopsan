@@ -298,12 +298,12 @@ string getCurrentExecPath()
 {
 #ifdef _WIN32
     char result[ MAX_PATH ];
-    //size_t count = GetModuleFileName( NULL, result, MAX_PATH );
-    size_t count=0;
+    size_t count = GetModuleFileNameA( NULL, result, MAX_PATH );
 #else
     char result[ PATH_MAX ];
     ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
 #endif
+
     if (count > 0)
     {
         string base, file;
@@ -311,5 +311,6 @@ string getCurrentExecPath()
         cout << "base, file: " << base << " " << file << endl;
         return base;
     }
+
     return "";
 }

@@ -12,8 +12,9 @@
 #include <direct.h>
 #else
 #include <unistd.h>
-#include <sys/stat.h>
 #endif
+
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -80,7 +81,9 @@ std::vector<std::string> FileAccess::findFilesWithSuffix(std::string suffix, boo
     dirent *pEntry;
     while ((pEntry = readdir(pDir)) != nullptr)
     {
-        if ( (pEntry->d_type == DT_DIR) && doRecursiveSearch &&
+        struct stat s;
+        stat(pEntry->d_name, &s);
+        if ( S_ISDIR(s.st_mode) && doRecursiveSearch &&
              !((strcmp(pEntry->d_name, ".")==0 || strcmp(pEntry->d_name, "..")==0)) )
         {
             FileAccess fa;
