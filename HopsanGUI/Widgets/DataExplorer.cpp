@@ -150,18 +150,21 @@ void DataExplorer::openExportDataDialog()
     QButtonGroup *pFormatButtons = new QButtonGroup(&exportOptions);
     QRadioButton *pPLOv1Button = new QRadioButton("PLO v1");
     QRadioButton *pPLOv2Button = new QRadioButton("PLO v2");
+    QRadioButton *pPLOv3Button = new QRadioButton("PLO v3");
     QRadioButton *pCSVButton = new QRadioButton("csv");
     QRadioButton *pHdf5Button = new QRadioButton("hdf5");
     pFormatButtons->addButton(pPLOv1Button);
     pFormatButtons->addButton(pPLOv2Button);
+    pFormatButtons->addButton(pPLOv3Button);
     pFormatButtons->addButton(pCSVButton);
     pFormatButtons->addButton(pHdf5Button);
-    pPLOv1Button->setChecked(true);
+    pPLOv2Button->setChecked(true);
 
     QGroupBox *pFormatGroupBox = new QGroupBox("Choose Export Format:", &exportOptions);
     QHBoxLayout *pFormatButtonLayout = new QHBoxLayout();
     pFormatButtonLayout->addWidget(pPLOv1Button);
     pFormatButtonLayout->addWidget(pPLOv2Button);
+    pFormatButtonLayout->addWidget(pPLOv3Button);
     pFormatButtonLayout->addWidget(pCSVButton);
     pFormatButtonLayout->addWidget(pHdf5Button);
     pFormatGroupBox->setLayout(pFormatButtonLayout);
@@ -201,7 +204,8 @@ void DataExplorer::openExportDataDialog()
         QString suffixFilter;
 
         // Select suffix filter for file format
-        if ( (pFormatButtons->checkedButton() == pPLOv1Button) || (pFormatButtons->checkedButton() == pPLOv2Button) )
+        if ( (pFormatButtons->checkedButton() == pPLOv1Button) || (pFormatButtons->checkedButton() == pPLOv2Button)
+             || (pFormatButtons->checkedButton() == pPLOv3Button) )
         {
             suffixFilter = "*.plo *.PLO";
         }
@@ -261,6 +265,10 @@ void DataExplorer::openExportDataDialog()
                 else if (pFormatButtons->checkedButton() == pPLOv2Button)
                 {
                     mpLogDataHandler->exportGenerationToPlo(file, g, 2);
+                }
+                else if (pFormatButtons->checkedButton() == pPLOv3Button)
+                {
+                    mpLogDataHandler->exportGenerationToPlo(file, g, 3);
                 }
                 else if (pFormatButtons->checkedButton() == pHdf5Button)
                 {

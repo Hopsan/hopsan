@@ -122,7 +122,7 @@ ModelWidget *LogDataHandler2::getParentModel()
 
 void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVariableT> variables, int version) const
 {
-    if ( (version < 1) || (version > 2) )
+    if ( (version < 1) || (version > 3) )
     {
         version = gpConfig->getIntegerSetting(CFG_PLOEXPORTVERSION);
     }
@@ -220,10 +220,10 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     int nDataCols = variables.size();
 
     // Write initial Header data
-    if (version == 1)
+    if (version == 1 || version == 2)
     {
         fileStream << "    'VERSION'\n";
-        fileStream << "    1\n";
+        fileStream << "    " << version << "\n";
         fileStream << "    '"<<ploFileInfo.baseName()<<".PLO'\n";
         if ((timeVectors.size() > 0) || (freqVectors.size() > 0))
         {
@@ -241,10 +241,10 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
         }
         fileStream << "\n";
     }
-    else if (version == 2)
+    else if (version == 3)
     {
         fileStream << "    'VERSION'\n";
-        fileStream << "    2\n";
+        fileStream << "    3\n";
         fileStream << "    '"<<ploFileInfo.baseName()<<".PLO' " << "'" << modelFileInfo.fileName() << "' '" << dateTimeString << "' 'HopsanGUI " << QString(HOPSANGUIVERSION) << "'\n";
         fileStream << "    " << nDataCols  <<"    "<< nDataRows <<"\n";
         if (nDataCols > 0)
@@ -267,7 +267,15 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     // Note! Plotscale removed in 0.7 for backward compatibility write ones
     for(int i=0; i<variables.size(); ++i)
     {
-        fileStream << "  " << 1.0;
+        const QString &q = variables[i]->getDataQuantity();
+        if (version==1 || q.isEmpty())
+        {
+            fileStream << " " << 1;
+        }
+        else
+        {
+            fileStream << "  " << q;
+        }
     }
     fileStream << "\n";
 
@@ -297,7 +305,7 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     }
 
     // Write plot data ending header
-    if (version==1)
+    if (version==1 || version==2)
     {
         fileStream << "  "+ploFileInfo.baseName()+".PLO.DAT_-1" <<"\n";
         fileStream << "  "+modelFileInfo.fileName() <<"\n";
@@ -602,7 +610,7 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
             // Else check for data header info
             else if(lineNum == 5)//(line.startsWith("'Time"))
             {
-                if ( (ploVersion == 1) && (line.startsWith("'" TIMEVARIABLENAME) || line.startsWith("'" FREQUENCYVARIABLENAME)) )
+                if ( ((ploVersion == 1) || (ploVersion == 2)) && (line.startsWith("'" TIMEVARIABLENAME) || line.startsWith("'" FREQUENCYVARIABLENAME)) )
                 {
                     // We add one to include "time or frequency x column"
                     nDataColumns+=1;

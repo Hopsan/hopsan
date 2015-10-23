@@ -316,6 +316,12 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpGenerationLimitSpinBox->setMaximum(5000000);
     mpGenerationLimitSpinBox->setSingleStep(1);
 
+    QLabel *pDefaultPloExportLabel = new QLabel(tr("Default PLO export version"));
+    mpDefaultPloExportVersion = new QSpinBox();
+    mpDefaultPloExportVersion->setMinimum(1);
+    mpDefaultPloExportVersion->setMaximum(3);
+    mpDefaultPloExportVersion->setSingleStep(1);
+
     mpAutoLimitGenerationsCheckBox = new QCheckBox("Autoremove last generation when limit is reached");
     mpCacheLogDataCeckBox = new QCheckBox("Cache log data on hard drive");
     mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden node data variables");
@@ -349,6 +355,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pPlottingLayout->addWidget(mpShowHiddenNodeDataVarCheckBox,   r, 0, 1, 3);
     ++r;
     pPlottingLayout->addWidget(mpPlotWindowsOnTop,                r, 0, 1, 3);
+    ++r;
+    pPlottingLayout->addWidget(pDefaultPloExportLabel,            r, 0, 1, 3);
+    pPlottingLayout->addWidget(mpDefaultPloExportVersion,         r, 2, 1, 1);
     ++r;
     pPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 3);
     pPlottingLayout->setRowStretch(10, 1);
@@ -534,6 +543,7 @@ void OptionsDialog::setValues()
     gpConfig->setBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES, mpShowHiddenNodeDataVarCheckBox->isChecked());
     gpConfig->setBoolSetting(CFG_PLOTWINDOWSONTOP, mpPlotWindowsOnTop->isChecked());
     gpConfig->setIntegerSetting(CFG_GENERATIONLIMIT, mpGenerationLimitSpinBox->value());
+    gpConfig->setIntegerSetting(CFG_PLOEXPORTVERSION, mpDefaultPloExportVersion->value());
     gpConfig->setBoolSetting(CFG_CACHELOGDATA, mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
@@ -635,6 +645,7 @@ void OptionsDialog::show()
     mpThreadsSpinBox->setValue(gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS));
     mpThreadsLabel->setEnabled(gpConfig->getBoolSetting(CFG_MULTICORE));
     mpGenerationLimitSpinBox->setValue(gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT));
+    mpDefaultPloExportVersion->setValue(gpConfig->getIntegerSetting(CFG_PLOEXPORTVERSION));
     mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS));
     mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES));
     mpPlotWindowsOnTop->setChecked(gpConfig->getBoolSetting(CFG_PLOTWINDOWSONTOP));

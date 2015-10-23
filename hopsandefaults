@@ -19,7 +19,7 @@
         <cachelogdata>true</cachelogdata>
         <autobackup>true</autobackup>
         <autolimitgenerations>false</autolimitgenerations>
-        <ploexportversion>1</ploexportversion>
+        <ploexportversion>2</ploexportversion>
 	<showhiddennodedatavariables>false</showhiddennodedatavariables>
         <loadmodeldir/>
         <plotgfximageformat>png</plotgfximageformat>

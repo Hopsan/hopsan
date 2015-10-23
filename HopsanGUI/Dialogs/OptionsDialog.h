@@ -106,6 +106,7 @@ private:
     QCheckBox *mpCacheLogDataCeckBox;
     QCheckBox *mpShowHiddenNodeDataVarCheckBox;
     QCheckBox *mpPlotWindowsOnTop;
+    QSpinBox *mpDefaultPloExportVersion;
 };
 
 #endif // OPTIONSDIALOG_H
