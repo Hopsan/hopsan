@@ -436,6 +436,8 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                         // Overwrite name
                         string displayNameExt = readStringAttribute(pObject, "name", typeName );
                         pSys->setName(displayNameExt.c_str());
+                        // Make sure system knows its an externally loaded system
+                        pSys->setExternalModelFilePath(readStringAttribute(pObject,"external_path","").c_str());
                     }
                 }
                 else

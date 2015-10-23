@@ -1524,13 +1524,6 @@ bool ModelWidget::loadModelRemote()
     SharedRemoteCoreSimulationHandlerT pRSH = chooseRemoteCoreSimulationHandler();
     if (pRSH)
     {
-        QDomDocument doc = saveToDom();
-        bool rc = pRSH->loadModelStr(doc.toString(-1));
-        if (!rc)
-        {
-            mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(pRSH->getLastError()));
-        }
-
         QStringList paths = mpToplevelSystem->getCoreSystemAccessPtr()->getSearchPaths();
         QStringList assets = mpToplevelSystem->getCoreSystemAccessPtr()->getModelAssets();
         for (QString &rAsset : assets)
@@ -1560,6 +1553,13 @@ bool ModelWidget::loadModelRemote()
             {
                 mpMessageHandler->addErrorMessage("Could not find asset: "+rAsset);
             }
+        }
+
+        QDomDocument doc = saveToDom();
+        bool rc = pRSH->loadModelStr(doc.toString(-1));
+        if (!rc)
+        {
+            mpMessageHandler->addErrorMessage(QString("Could not load model in remote server: %1").arg(pRSH->getLastError()));
         }
 
 

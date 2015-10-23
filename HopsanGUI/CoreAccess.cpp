@@ -551,6 +551,11 @@ QString CoreSystemAccess::getSubComponentTypeCQS(const QString componentName)
     return ans;
 }
 
+void CoreSystemAccess::setExternalModelFilePath(const QString path)
+{
+    mpCoreComponentSystem->setExternalModelFilePath(path.toStdString().c_str());
+}
+
 // Commented by Peter, maybe should be used in the future
 //QString CoreSystemAccess::getSubComponentSubTypeName(const QString componentName) const
 //{

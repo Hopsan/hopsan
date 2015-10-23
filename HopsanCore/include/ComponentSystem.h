@@ -196,6 +196,9 @@ namespace hopsan {
         bool changeSubComponentSystemTypeCQS(const HString &rName, const CQSEnumT newType);
         void determineCQSType();
         bool isTopLevelSystem() const;
+        bool isExternalSystem() const;
+        void setExternalModelFilePath(const HString &rPath);
+        HString getExternalModelFilePath() const;
 
         // Adding removing and renaming components
         void addComponents(std::vector<Component*> &rComponents);
@@ -340,6 +343,7 @@ namespace hopsan {
 
         //==========Private member variables==========
         CQSEnumT mTypeCQS;
+        HString mExternalModelFilePath;
 
         std::vector<Component*> mComponentSignalptrs;
         std::vector<Component*> mComponentQptrs;

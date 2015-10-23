@@ -1014,9 +1014,10 @@ void ModelObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT c
     }
 }
 
-void ModelObject::setModelFileInfo(QFile &rFile)
+void ModelObject::setModelFileInfo(QFile &rFile, const QString relModelPath)
 {
     Q_UNUSED(rFile)
+    Q_UNUSED(relModelPath)
     // Does nothing by default, should be overloaded
 }
 

@@ -349,7 +349,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                     QDomElement externalRoot = loadXMLDomDocument(externalModelFile, domDocument, HMF_ROOTTAG);
                     QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
                     //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
-                    pObj->setModelFileInfo(externalModelFile);
+                    pObj->setModelFileInfo(externalModelFile, rDomElement.attribute(HMF_EXTERNALPATHTAG));
                     pObj->loadFromDomElement(externalSystemRoot);
                     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embedded subsystems will will need to fix this
 

@@ -1889,9 +1889,14 @@ void SystemContainer::exportToSimulinkCoSim()
 
 //! @brief Sets the modelfile info from the file representing this system
 //! @param[in] rFile The QFile objects representing the file we want to information about
-void SystemContainer::setModelFileInfo(QFile &rFile)
+//! @param[in] relModelPath Relative filepath to parent model file (model asset path)
+void SystemContainer::setModelFileInfo(QFile &rFile, const QString relModelPath)
 {
-    this->mModelFileInfo.setFile(rFile);
+    mModelFileInfo.setFile(rFile);
+    if (!relModelPath.isEmpty())
+    {
+        getCoreSystemAccessPtr()->setExternalModelFilePath(relModelPath);
+    }
 }
 
 

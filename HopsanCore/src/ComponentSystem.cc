@@ -1104,6 +1104,11 @@ std::list<HString> ComponentSystem::getModelAssets() const
 {
     // Get any system parameter assets
     std::list<HString> assets = Component::getModelAssets();
+    // If this is an external system, then also consider the external model as an asset
+    if (isExternalSystem())
+    {
+        assets.push_back(getExternalModelFilePath());
+    }
     // Append assets from sub components
     SubComponentMapT::const_iterator compIt;
     for(compIt = mSubComponentMap.begin(); compIt!=mSubComponentMap.end(); ++compIt)
@@ -1305,6 +1310,21 @@ void ComponentSystem::determineCQSType()
 bool ComponentSystem::isTopLevelSystem() const
 {
     return (mpSystemParent==0);
+}
+
+bool ComponentSystem::isExternalSystem() const
+{
+    return !mExternalModelFilePath.empty();
+}
+
+void ComponentSystem::setExternalModelFilePath(const HString &rPath)
+{
+    mExternalModelFilePath = rPath;
+}
+
+HString ComponentSystem::getExternalModelFilePath() const
+{
+    return mExternalModelFilePath;
 }
 
 

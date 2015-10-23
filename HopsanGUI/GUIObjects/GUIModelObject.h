@@ -129,7 +129,7 @@ public:
     // Load and save methods
     virtual void loadFromDomElement(QDomElement domElement);
     virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
-    virtual void setModelFileInfo(QFile &rFile);
+    virtual void setModelFileInfo(QFile &rFile, const QString relModelPath="");
 
     // Connector methods
     QList<Connector*> getConnectorPtrs();

@@ -179,6 +179,7 @@ public:
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
     QString getSystemTypeCQS();
     QString getSubComponentTypeCQS(const QString componentName);
+    void setExternalModelFilePath(const QString path);
 
     // Commented by Peter, maybe should be used in the future
     // QString getSubComponentSubTypeName(const QString componentName) const;
