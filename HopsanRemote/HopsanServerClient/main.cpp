@@ -61,7 +61,14 @@ int main(int argc, char* argv[])
                 {
                     cout << PRINTCLIENT << "Sending asset: " << rAsset <<  " ... ";
                     double progress;
-                    rhopsan.blockingSendFile(rAsset, rAsset, &progress);
+                    // Set relative path to filename only
+                    size_t e = rAsset.find_last_of('/');
+                    string relname = rAsset;
+                    if (e != string::npos)
+                    {
+                        relname = rAsset.substr(e+1);
+                    }
+                    rhopsan.blockingSendFile(rAsset, relname, &progress);
                     cout << "Done!" << endl;
                 }
 
