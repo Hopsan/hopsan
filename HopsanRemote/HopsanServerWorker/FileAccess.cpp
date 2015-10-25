@@ -112,7 +112,17 @@ std::vector<std::string> FileAccess::findFilesWithSuffix(std::string suffix, boo
 
 void splitFilePath(const string &rFullPath, string &rPath, string &rFileName)
 {
+#ifdef _WIN32
+    // On windows search first for \ if we can find it then test with / (in case we use posix path strings)
+    size_t e = rFullPath.find_last_of("\\");
+    if (e == string::npos)
+    {
+        e = rFullPath.find_last_of("/");
+    }
+#else
+    // If not windows then use POSIX path separator
     size_t e = rFullPath.find_last_of("/");
+#endif
     if (e != string::npos)
     {
         rPath = rFullPath.substr(0, e+1);

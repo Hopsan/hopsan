@@ -231,26 +231,34 @@ bool RemoteHopsanClient::blockingSendFile(const string &rAbsFilePath, const stri
 {
     *pProgress=0;
     std::ifstream in(rAbsFilePath, std::ifstream::ate | std::ifstream::binary);
-    std::ifstream::pos_type filesize = in.tellg();
-    in.seekg(0); //Rewind file ptr
-    array<char, MAXFILECHUNKSIZE>  buffer;
-
-    std::ifstream::pos_type readBytesNow, remaningBytes=filesize;
-    while( !in.eof() && (remaningBytes != 0) )
+    if (in.is_open())
     {
-        readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
-        in.read(buffer.data(), readBytesNow);
-        std::string data(buffer.data(), readBytesNow);
-        bool rc = sendFilePart(rRelFilePath, data, (readBytesNow < MAXFILECHUNKSIZE));
-        if (!rc)
+        std::ifstream::pos_type filesize = in.tellg();
+        in.seekg(0); //Rewind file ptr
+        std::vector<char>  buffer(MAXFILECHUNKSIZE);
+
+        std::ifstream::pos_type readBytesNow, remaningBytes=filesize;
+        while( !in.eof() && (remaningBytes != 0) )
         {
-            cout << "Failed to send file part! " << endl;
-            in.close();
-            return false;
+            readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
+            in.read(buffer.data(), readBytesNow);
+            std::string data(buffer.data(), readBytesNow);
+            bool rc = sendFilePart(rRelFilePath, data, (readBytesNow < MAXFILECHUNKSIZE));
+            if (!rc)
+            {
+                cout << "Failed to send file part! " << endl;
+                in.close();
+                return false;
+            }
+            remaningBytes -= readBytesNow;
+            *pProgress = double(filesize-remaningBytes)/double(filesize);
+            //cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " Progress: " << *pProgress << endl;
         }
-        remaningBytes -= readBytesNow;
-        *pProgress = double(filesize-remaningBytes)/double(filesize);
-        //cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " Progress: " << *pProgress << endl;
+    }
+    else
+    {
+        cout << "Could not open file: " << rAbsFilePath << endl;
+        return false;
     }
     in.close();
     return true;

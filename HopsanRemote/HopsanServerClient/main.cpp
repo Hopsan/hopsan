@@ -16,7 +16,7 @@ using namespace std;
 int main(int argc, char* argv[])
 {
     try {
-        TCLAP::CmdLine cmd("RemoteHopsanClient", ' ');
+        TCLAP::CmdLine cmd("RemoteHopsanClient");
 
         // Define a value argument and add it to the command line.
         TCLAP::ValueArg<std::string> serverAddrOption("s", "serverip", "Server IP address and port (default is localhost:45050)", false, "localhost:45050", "IP address", cmd);
@@ -57,12 +57,21 @@ int main(int argc, char* argv[])
 
                 // Send model assets
                 const std::vector<std::string> &rAssets = assetsOptions.getValue();
-                for (const string &rAsset: rAssets)
+                for (const string &rAsset : rAssets)
                 {
                     cout << PRINTCLIENT << "Sending asset: " << rAsset <<  " ... ";
                     double progress;
                     // Set relative path to filename only
+#ifdef _WIN32
+                    //! @todo use common utility (see fileacces in worker)
+                    size_t e = rAsset.find_last_of('\\');
+                    if (e == string::npos)
+                    {
+                        e = rAsset.find_last_of('/');
+                    }
+#else
                     size_t e = rAsset.find_last_of('/');
+#endif
                     string relname = rAsset;
                     if (e != string::npos)
                     {
