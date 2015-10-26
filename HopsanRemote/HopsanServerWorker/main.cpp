@@ -438,6 +438,11 @@ bool loadModel(string &rModel)
     // Remember number of errors during loading libraries so that we can detect additional errors below when loading the model
     // Even if some library could not load, the model might still load successfully (if at least one library could be loaded, usually the default library)
     size_t numLibErrors = gHopsanCore.getNumErrorMessages()+gHopsanCore.getNumFatalMessages();
+    if (numLibErrors > 0)
+    {
+        cout << PRINTWORKER << nowDateTime() << " Errors when loading some libraries" << endl;
+        gHopsanCore.getCoreMessageHandler()->printMessagesToStdOut();
+    }
 
     // If a model is already loaded then delete it
     if (gpRootSystem)
