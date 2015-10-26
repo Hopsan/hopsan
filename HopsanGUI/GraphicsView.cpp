@@ -67,7 +67,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
         : QGraphicsView(parent)
 {
     mpParentModelWidget = parent;
-    mpContainerObject = mpParentModelWidget->getTopLevelSystemContainer();
+    setContainerPtr(mpParentModelWidget->getTopLevelSystemContainer());
 
     mIgnoreNextContextMenuEvent = false;
     mCtrlKeyPressed = false;
@@ -236,7 +236,8 @@ void GraphicsView::updateViewPort()
 //! @brief Set the system that the view is representing
 void GraphicsView::setContainerPtr(ContainerObject *pContainer)
 {
-    this->mpContainerObject = pContainer;
+    mpContainerObject = pContainer;
+    setScene(mpContainerObject->getContainedScenePtr());
 }
 
 

@@ -112,7 +112,10 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     mpExternalSystemWarningWidget->setLayout(pExternalSystemLayout);
     mpExternalSystemWarningWidget->hide();
 
-    mpToplevelSystem = new SystemContainer(this, 0);
+    createOrDestroyToplevelSystem(true);
+
+    mpGraphicsView  = new GraphicsView(this);
+    //mpGraphicsView->setScene(mpToplevelSystem->getContainedScenePtr());
 
     mpLogDataHandler = new LogDataHandler2(this);
 
@@ -127,9 +130,6 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     emit checkMessages();
 
     mIsSaved = true;
-
-    mpGraphicsView  = new GraphicsView(this);
-    mpGraphicsView->setScene(mpToplevelSystem->getContainedScenePtr());
 
 //#ifdef XMAS
 //    QLabel *pBalls = new QLabel(this);
@@ -166,13 +166,8 @@ ModelWidget::~ModelWidget()
 
     delete mpAnimationWidget;
 
-    //First make sure that we go to the top level system, we don't want to be inside a subsystem while it is being deleted
-    this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
-    //Now delete the root system, first remove in core (will also trigger delete for all sub modelobjects)
-    mpToplevelSystem->deleteInHopsanCore();
-    mpToplevelSystem->deleteLater();
+    createOrDestroyToplevelSystem(false);
     mpSimulationThreadHandler->deleteLater();
-
     mpLogDataHandler->deleteLater();
 }
 
@@ -873,6 +868,24 @@ void ModelWidget::setUseRemoteSimulation(bool tf)
     setUseRemoteSimulation(tf, gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
 }
 
+void ModelWidget::revertModel()
+{
+    QFileInfo modelfileinfo = mpToplevelSystem->getModelFileInfo();
+
+    // This will remove the current model and create a new empty one
+    createOrDestroyToplevelSystem(true);
+
+    // Now reload the model
+    QFile modelFile(modelfileinfo.absoluteFilePath());
+    if(!modelFile.exists())
+    {
+        gpMessageHandler->addErrorMessage("File not found: " + modelfileinfo.absoluteFilePath());
+    }
+    loadModel(modelFile);
+    mpGraphicsView->setContainerPtr(mpToplevelSystem);
+    emit mpParentModelHandler->modelChanged(this);
+}
+
 
 void ModelWidget::openAnimation()
 {
@@ -1500,6 +1513,37 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     }
 }
 
+//! @brief (Re)Create or Destroy the top-level system
+void ModelWidget::createOrDestroyToplevelSystem(bool recreate)
+{
+    if (recreate)
+    {
+        // Delete old
+        if (mpToplevelSystem)
+        {
+            createOrDestroyToplevelSystem(false);
+        }
+
+        // Create new
+        mpToplevelSystem = new SystemContainer(this, 0);
+    }
+    // Destroy
+    else
+    {
+        // First make sure that we go to the top level system, we don't want to be inside a subsystem while it is being deleted
+        mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
+
+        // Unmake any main window connections
+        mpToplevelSystem->unmakeMainWindowConnectionsAndRefresh();
+        // Deactivate Undo to prevent each component from registering it being deleted in the undo stack (waste of time)
+        mpToplevelSystem->setUndoEnabled(false, true);
+
+        // Now delete the root system, first remove in core (will also trigger delete for all sub modelobjects)
+        mpToplevelSystem->deleteInHopsanCore();
+        mpToplevelSystem->deleteLater();
+    }
+}
+
 SharedRemoteCoreSimulationHandlerT ModelWidget::chooseRemoteCoreSimulationHandler() const
 {
     // Prefere external remote simulator, if present
@@ -1573,6 +1617,58 @@ bool ModelWidget::loadModelRemote()
     }
     return false;
 #endif
+}
+
+bool ModelWidget::loadModel(QFile &rModelFile)
+{
+    QFileInfo modelFileInfo(rModelFile);
+
+    mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(modelFileInfo.absoluteDir().absolutePath());
+    mpToplevelSystem->setUndoEnabled(false, true);
+
+    // Check if this is an expected hmf xml file
+    QDomDocument domDocument;
+    QDomElement hmfRoot = loadXMLDomDocument(rModelFile, domDocument, HMF_ROOTTAG);
+    if (!hmfRoot.isNull())
+    {
+        //! @todo check if we could load else give error message and don't attempt to load
+        QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+
+        // Check if Format version OK
+        QString hmfFormatVersion = hmfRoot.attribute(HMF_VERSIONTAG, "0");
+        if (!verifyHmfFormatVersion(hmfFormatVersion))
+        {
+            gpMessageHandler->addErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
+            return false;
+        }
+        else if (hmfFormatVersion < HMF_VERSIONNUM)
+        {
+            gpMessageHandler->addWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
+        }
+
+        mpToplevelSystem->setModelFileInfo(rModelFile); //Remember info about the file from which the data was loaded
+        mpToplevelSystem->setAppearanceDataBasePath(modelFileInfo.absolutePath());
+        mpToplevelSystem->loadFromDomElement(systemElement);
+
+        //! @todo not hardcoded strings
+        //! @todo in the future not only debug message but an actual check that libs are present
+        QDomElement reqDom = hmfRoot.firstChildElement("requirements");
+        QDomElement compLib = reqDom.firstChildElement("componentlibrary");
+        while (!compLib.isNull())
+        {
+            gpMessageHandler->addDebugMessage("This model MIGHT require Lib: " + compLib.text());
+            compLib = compLib.nextSiblingElement("componentlibrary");
+        }
+
+        setSaved(true);
+        mpToplevelSystem->setUndoEnabled(true, true);
+        return true;
+    }
+    else
+    {
+        gpMessageHandler->addErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
+        return false;
+    }
 }
 
 QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)

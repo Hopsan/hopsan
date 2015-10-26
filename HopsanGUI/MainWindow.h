@@ -167,6 +167,7 @@ public:
     QAction *mpOpenHvcWidgetAction;
     QAction *mpOpenDataExplorerAction;
     QAction *mpOpenFindWidgetAction;
+    QAction *mpRevertModelAction;
     QAction *mpDisableUndoAction;
     QAction *mpCutAction;
     QAction *mpCopyAction;
@@ -235,6 +236,7 @@ private slots:
     void openHVCWidget();
     void openDataExplorerWidget();
     void openFindWidget();
+    void revertModel();
     void toggleVisiblePlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();

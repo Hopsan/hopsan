@@ -40,6 +40,7 @@
 #include <QMutex>
 #include <QMap>
 #include <QDomDocument>
+#include <QFile>
 
 //Hopsan includes
 #include "common.h"
@@ -57,9 +58,7 @@ class GUIMessageHandler;
 class LogDataHandler2;
 
 #include "CoreAccess.h"
-#ifdef USEZMQ
 #include "RemoteCoreAccess.h"
-#endif
 
 class ModelWidget : public QWidget
 {
@@ -97,7 +96,9 @@ public:
 #endif
     bool getUseRemoteSimulationCore() const;
     bool isRemoteCoreConnected() const;
+
     bool loadModelRemote();
+    bool loadModel(QFile &rModelFile);
 
     SystemContainer *getTopLevelSystemContainer() const;
     ContainerObject *getViewContainerObject();
@@ -125,6 +126,7 @@ public slots:
     void simulateModelica();
     void collectPlotData(bool overWriteGeneration=false);
     void setUseRemoteSimulation(bool tf);
+    void revertModel();
 
 private slots:
     void openCurrentContainerInNewTab();
@@ -141,6 +143,7 @@ signals:
 
 private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
+    void createOrDestroyToplevelSystem(bool recreate);
 
     QString mStartTime, mStopTime;
     int mLastSimulationTime;
@@ -152,7 +155,7 @@ private:
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWarningWidget;
 
-    SystemContainer *mpToplevelSystem;
+    SystemContainer *mpToplevelSystem=nullptr;
     LogDataHandler2 *mpLogDataHandler;
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;

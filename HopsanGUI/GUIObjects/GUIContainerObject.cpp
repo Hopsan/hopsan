@@ -2784,7 +2784,6 @@ void ContainerObject::enterContainer()
     mpParentContainerObject->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());
 
     // Show this scene
-    mpModelWidget->getGraphicsView()->setScene(getContainedScenePtr());
     mpModelWidget->getGraphicsView()->setContainerPtr(this);
     mpModelWidget->getQuickNavigationWidget()->addOpenContainer(this);
     mpModelWidget->getGraphicsView()->setViewPort(getGraphicsViewport());
@@ -2808,7 +2807,6 @@ void ContainerObject::exitContainer()
     this->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());
 
     // Go back to parent system
-    mpModelWidget->getGraphicsView()->setScene(mpParentContainerObject->getContainedScenePtr());
     mpModelWidget->getGraphicsView()->setContainerPtr(mpParentContainerObject);
     mpModelWidget->getGraphicsView()->setViewPort(mpParentContainerObject->getGraphicsViewport());
 

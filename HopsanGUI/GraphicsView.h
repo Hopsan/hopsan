@@ -50,13 +50,14 @@ class GraphicsView : public QGraphicsView
 
 public:
     GraphicsView(ModelWidget *parent = 0);
+    void setContainerPtr(ContainerObject *pContainer);
+    ContainerObject *getContainerPtr();
 
     void updateViewPort();
     void getViewPort(double &rX, double &rY, double &rZoom) const;
     GraphicsViewPort getViewPort() const;
     void setViewPort(GraphicsViewPort vp);
-    void setContainerPtr(ContainerObject *pContainer);
-    ContainerObject *getContainerPtr();
+
     bool isCtrlKeyPressed();
     bool isShiftKeyPressed();
     bool isLeftMouseButtonPressed();

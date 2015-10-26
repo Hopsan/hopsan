@@ -579,6 +579,10 @@ void MainWindow::createActions()
     mpOpenFindWidgetAction->setToolTip("Open the Find Widget (Ctrl+Shift+f)");
     connect(mpOpenFindWidgetAction, SIGNAL(triggered()), this, SLOT(openFindWidget()));
 
+    mpRevertModelAction = new QAction(tr("&Revert model"), this);
+    mpRevertModelAction->setToolTip("Revert model to original state");
+    connect(mpRevertModelAction, SIGNAL(triggered()), this, SLOT(revertModel()));
+
     mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     mpCutAction->setShortcut(tr("Ctrl+x"));
     mpCutAction->setToolTip(tr("Cut (Ctrl+X)"));
@@ -1014,6 +1018,7 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOpenHvcWidgetAction);
     mpToolsMenu->addAction(mpOpenDataExplorerAction);
     mpToolsMenu->addAction(mpOpenFindWidgetAction);
+    mpToolsMenu->addAction(mpRevertModelAction);
 
     mpImportMenu->addAction(mpImportDataFileAction);
     mpImportMenu->addAction(mpLoadModelParametersAction);
@@ -1534,6 +1539,15 @@ void MainWindow::openDataExplorerWidget()
 void MainWindow::openFindWidget()
 {
     gpFindWidget->setVisible(true);
+}
+
+void MainWindow::revertModel()
+{
+    ModelWidget *pModel = gpModelHandler->getCurrentModel();
+    if (pModel)
+    {
+        pModel->revertModel();
+    }
 }
 
 

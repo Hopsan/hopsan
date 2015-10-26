@@ -265,97 +265,53 @@ void ModelHandler::loadModelParameters()
 ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen, bool detatched)
 {
     //! @todo maybe  write utility function that opens file, checks existence and sets fileinfo
-    QFile file(modelFileName);   //Create a QFile object
-    if(!file.exists())
+    QFile modelFile(modelFileName);   //Create a QFile object
+    if(!modelFile.exists())
     {
-        qDebug() << "File not found: " + file.fileName();
-        gpMessageHandler->addErrorMessage("File not found: " + file.fileName());
+        gpMessageHandler->addErrorMessage("File not found: " + modelFile.fileName());
         return 0;
     }
-    QFileInfo fileInfo(file);
+    QFileInfo modelFileInfo(modelFile);
 
-    //Make sure file not already open
+    // Make sure file not already open
     if(!ignoreAlreadyOpen)
     {
         for(int t=0; t!=mModelPtrs.size(); ++t)
         {
-            if(this->getTopLevelSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath() && gpCentralTabWidget->indexOf(mModelPtrs[t]) > -1)
+            if(this->getTopLevelSystem(t)->getModelFileInfo().filePath() == modelFileInfo.filePath() && gpCentralTabWidget->indexOf(mModelPtrs[t]) > -1)
             {
                 QMessageBox::information(gpMainWindowWidget, tr("Error"), tr("Unable to load model. File is already open."));
-                return 0;
+                return nullptr;
             }
         }
-    }
-
-    if(!detatched)
-    {
-        gpConfig->addRecentModel(fileInfo.filePath());
     }
 
     ModelWidget *pNewModel = new ModelWidget(this, gpCentralTabWidget);
     connect(pNewModel->getSimulationThreadHandler(), SIGNAL(startSimulation()), gpMainWindow, SLOT(hideSimulateButton()));
     connect(pNewModel->getSimulationThreadHandler(), SIGNAL(done(bool)), gpMainWindow, SLOT(showSimulateButton()));
 
-    this->addModelWidget(pNewModel, fileInfo.baseName(), detatched);
-    pNewModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
-    pNewModel->getTopLevelSystemContainer()->setUndoEnabled(false, true);
-
     if(!detatched)
-        gpMessageHandler->addInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
-
-    //Check if this is an expected hmf xml file
-    //! @todo maybe write helpfunction that does this directly in system (or container)
-    QDomDocument domDocument;
-    QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-    if (!hmfRoot.isNull())
     {
-        //! @todo check if we could load else give error message and don't attempt to load
-        QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
-
-        // Check if Format version OK
-        QString hmfFormatVersion = hmfRoot.attribute(HMF_VERSIONTAG, "0");
-        if (!verifyHmfFormatVersion(hmfFormatVersion))
-        {
-            gpMessageHandler->addErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
-            closeModel(pNewModel);
-            gpConfig->removeRecentModel(fileInfo.filePath());
-            return pNewModel;
-        }
-        else if (hmfFormatVersion < HMF_VERSIONNUM)
-        {
-            gpMessageHandler->addWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
-        }
-
-        pNewModel->getTopLevelSystemContainer()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-        pNewModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(pNewModel->getTopLevelSystemContainer()->getModelFileInfo().absolutePath());
-        pNewModel->getTopLevelSystemContainer()->loadFromDomElement(systemElement);
-
-        //! @todo not hardcoded strings
-        //! @todo in the future not only debug message but an actual check that libs are present
-        QDomElement reqDom = hmfRoot.firstChildElement("requirements");
-        QDomElement compLib = reqDom.firstChildElement("componentlibrary");
-        while (!compLib.isNull())
-        {
-            gpMessageHandler->addDebugMessage("This model MIGHT require Lib: " + compLib.text());
-            compLib = compLib.nextSiblingElement("componentlibrary");
-        }
-        pNewModel->setSaved(true);
-        pNewModel->getTopLevelSystemContainer()->setUndoEnabled(true, true);
-        emit newModelWidgetAdded();
-        if(!detatched)
-        {
-            emit modelChanged(pNewModel);
-        }
+        gpMessageHandler->addInfoMessage("Loading model: "+modelFileInfo.absoluteFilePath());
     }
-    else
-    {
-        gpMessageHandler->addErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
+
+   addModelWidget(pNewModel, modelFileInfo.baseName(), detatched);
+   bool loadOK = pNewModel->loadModel(modelFile);
+   if (loadOK)
+   {
+       emit newModelWidgetAdded();
+       if(!detatched)
+       {
+           emit modelChanged(pNewModel);
+           gpConfig->addRecentModel(modelFileInfo.filePath());
+       }
+       return pNewModel;
+   }
+   else
+   {
         closeModel(pNewModel);
-        gpConfig->removeRecentModel(fileInfo.filePath());
-
-    }
-
-    return pNewModel;
+        return nullptr;
+   }
 }
 
 
@@ -448,10 +404,10 @@ bool ModelHandler::closeModel(int idx, bool force)
 
         // Disconnect signals
         disconnectMainWindowConnections(pModelToClose);
-        pModelToClose->getViewContainerObject()->unmakeMainWindowConnectionsAndRefresh();
+//        pModelToClose->getViewContainerObject()->unmakeMainWindowConnectionsAndRefresh();
 
-        // Deactivate Undo to prevent each component from registering it being deleted in the undo stack (waste of time)
-        pModelToClose->getViewContainerObject()->setUndoEnabled(false, true);
+//        // Deactivate Undo to prevent each component from registering it being deleted in the undo stack (waste of time)
+//        pModelToClose->getViewContainerObject()->setUndoEnabled(false, true);
 
         // Disconnect and delete model tab if any
         int tabIdx = gpCentralTabWidget->indexOf(pModelToClose);
@@ -467,7 +423,6 @@ bool ModelHandler::closeModel(int idx, bool force)
         delete pModelToClose;
         mModelPtrs.removeAt(idx);
         //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgets before it has been deleted because of this. This behavior is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
-
         // When a model widget is removed all previous indexes for later models will become incorrect,
         // lets set the new current to the latest in that case
         if (mCurrentIdx >= idx)
