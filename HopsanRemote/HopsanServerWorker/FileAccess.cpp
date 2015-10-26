@@ -81,16 +81,17 @@ std::vector<std::string> FileAccess::findFilesWithSuffix(std::string suffix, boo
     dirent *pEntry;
     while ((pEntry = readdir(pDir)) != nullptr)
     {
+        std::string entrypath = mCurrentDir+"/"+string(pEntry->d_name);
         struct stat s;
-        stat(pEntry->d_name, &s);
+        stat(entrypath.c_str(), &s);
         cout << "pEntery->d_name: " << pEntry->d_name << endl;
-        cout << "stat->st_mode: " << s.st_mode << endl;
+        cout << "stat->st_mode: " << s.st_mode << "\t path: " << entrypath <<  endl;
         if ( S_ISDIR(s.st_mode) && doRecursiveSearch &&
              !((strcmp(pEntry->d_name, ".")==0 || strcmp(pEntry->d_name, "..")==0)) )
         {
             FileAccess fa;
-            cout << "Entering: " << mCurrentDir+"/"+string(pEntry->d_name) << endl;
-            fa.enterDir(mCurrentDir+"/"+string(pEntry->d_name));
+            cout << "Entering: " << entrypath << endl;
+            fa.enterDir(entrypath);
             vector<std::string> subfiles = fa.findFilesWithSuffix(suffix, doRecursiveSearch);
             files.insert(files.end(), subfiles.begin(), subfiles.end());
         }
