@@ -83,6 +83,8 @@ std::vector<std::string> FileAccess::findFilesWithSuffix(std::string suffix, boo
     {
         struct stat s;
         stat(pEntry->d_name, &s);
+        cout << "pEntery->d_name: " << pEntry->d_name << endl;
+        cout << "stat->st_mode: " << s.st_mode << endl;
         if ( S_ISDIR(s.st_mode) && doRecursiveSearch &&
              !((strcmp(pEntry->d_name, ".")==0 || strcmp(pEntry->d_name, "..")==0)) )
         {
