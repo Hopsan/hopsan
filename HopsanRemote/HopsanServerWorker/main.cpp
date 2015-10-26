@@ -435,6 +435,10 @@ bool loadModel(string &rModel)
         gHaveLoadedComponentLibraries=true;
     }
 
+    // Remember number of errors during loading libraries so that we can detect additional errors below when loading the model
+    // Even if some library could not load, the model might still load successfully (if at least one library could be loaded, usually the default library)
+    size_t numLibErrors = gHopsanCore.getNumErrorMessages()+gHopsanCore.getNumFatalMessages();
+
     // If a model is already loaded then delete it
     if (gpRootSystem)
     {
@@ -449,7 +453,8 @@ bool loadModel(string &rModel)
         gpRootSystem = gHopsanCore.loadHMFModel(rModel.c_str(), gSimStartTime, gSimStopTime);
     }
 
-    if (gpRootSystem && (gHopsanCore.getNumErrorMessages() == 0) && (gHopsanCore.getNumFatalMessages() == 0) )
+    // Check so that model is loaded ant that no additional error messages were returned
+    if (gpRootSystem && (gHopsanCore.getNumErrorMessages()+gHopsanCore.getNumFatalMessages() <= numLibErrors) )
     {
         cout << PRINTWORKER << nowDateTime() << " Model was loaded sucessfully" << endl;
         gIsModelLoaded = true;
