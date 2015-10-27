@@ -798,7 +798,8 @@ void SensitivityAnalysisEvaluator::plot()
     for(int v=0; v<mOutputVars.size(); ++v)
     {
         int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGenerationNumber()+1;
-        int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
+        //int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
+        int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorVariable(nGenerations-1)->getDataSize();
 
         QVector<double> vMin(nSamples, 100000000000.0);
         QVector<double> vMax(nSamples, -100000000000.0);
