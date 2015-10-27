@@ -385,6 +385,11 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     //connect(mpSysParamTableView->horizontalHeader(), SIGNAL(sectionClicked(int)), mpProxyModel, SLOT(sortByColumn(int)));
 }
 
+QPointer<ContainerObject> SystemParametersWidget::getRepresentedContainerObject()
+{
+    return mpContainerObject;
+}
+
 void SystemParametersWidget::update(ContainerObject *pNewContainer)
 {
     if (mpContainerObject != pNewContainer)

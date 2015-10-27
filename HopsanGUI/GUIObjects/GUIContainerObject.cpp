@@ -191,8 +191,11 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 //! This is useful when we are switching what container we want the buttons to trigger actions in
 void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 {
-    // Update Systemparameter widget to have no contents
-    gpMainWindow->mpSystemParametersWidget->update(0);
+    // Update Systemparameter widget to have no contents, but only if this is the system that is actually represented
+    if (gpMainWindow->mpSystemParametersWidget->getRepresentedContainerObject() == this)
+    {
+        gpMainWindow->mpSystemParametersWidget->update(0);
+    }
 
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));

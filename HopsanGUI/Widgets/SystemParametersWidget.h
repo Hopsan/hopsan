@@ -103,6 +103,7 @@ class SystemParametersWidget : public QWidget
     Q_OBJECT
 public:
     SystemParametersWidget(QWidget *pParent=0);
+    QPointer<ContainerObject> getRepresentedContainerObject();
 
 public slots:
     void update();
