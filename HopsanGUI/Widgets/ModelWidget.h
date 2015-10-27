@@ -140,6 +140,7 @@ signals:
     void modelSaved(ModelWidget*);
     void aliasChanged(QString fullName, QString alias);
     void quantityChanged(QString fullName, QString quantity);
+    void modelChanged(ModelWidget *);
 
 private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);

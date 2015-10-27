@@ -126,6 +126,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     connect(gpModelHandler->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
+    connect(this, SIGNAL(modelChanged(ModelWidget*)), mpParentModelHandler, SIGNAL(modelChanged(ModelWidget*)));
 
     emit checkMessages();
 
@@ -883,7 +884,7 @@ void ModelWidget::revertModel()
     }
     loadModel(modelFile);
     mpGraphicsView->setContainerPtr(mpToplevelSystem);
-    emit mpParentModelHandler->modelChanged(this);
+    emit modelChanged(this);
 }
 
 
