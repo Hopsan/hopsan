@@ -1544,6 +1544,7 @@ void ModelWidget::createOrDestroyToplevelSystem(bool recreate)
     }
 }
 
+#ifdef USEZMQ
 SharedRemoteCoreSimulationHandlerT ModelWidget::chooseRemoteCoreSimulationHandler() const
 {
     // Prefere external remote simulator, if present
@@ -1561,6 +1562,7 @@ SharedRemoteCoreSimulationHandlerT ModelWidget::chooseRemoteCoreSimulationHandle
         return SharedRemoteCoreSimulationHandlerT();
     }
 }
+#endif
 
 bool ModelWidget::loadModelRemote()
 {
@@ -1615,8 +1617,8 @@ bool ModelWidget::loadModelRemote()
         }
         return rc && rc2;
     }
-    return false;
 #endif
+    return false;
 }
 
 bool ModelWidget::loadModel(QFile &rModelFile)
