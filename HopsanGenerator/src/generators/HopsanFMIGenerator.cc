@@ -141,26 +141,27 @@ HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath,
 
 
 //! @brief Generates a Hopsan component from a Functional Mockup Unit (.FMU) file using the FMI standard (1.0 or 2.0)
-//! @param rPath Reference to string containing the path to .FMU file
-//! @param rTargetPath Reference to string containing the path where to generate the component
-//! @param rTypeName Reference to string used to return the type name of the generated component
-//! @param rHppPath Reference to string used to return the path to the generated .HPP file
-bool HopsanFMIGenerator::generateFromFmu(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath)
+//! @param[in] rFmuPath The path to .FMU file
+//! @param[in] rTargetPath Where to generate the component
+//! @param[out] rTypeName Return the type name of the generated component (FMU Name)
+//! @param[out] rHppPath Return the path to the generated .HPP file
+//! @returns True if successful else false
+bool HopsanFMIGenerator::generateFromFmu(const QString &rFmuPath, QString targetPath, QString &rTypeName, QString &rHppPath)
 {
     //----------------------------------------//
     printMessage("Initializing FMU import");
-    printMessage("path = "+rPath);
-    printMessage("targetPath = "+rTargetPath);
+    printMessage("fmupath = "+rFmuPath);
+    printMessage("targetPath = "+targetPath);
     //----------------------------------------//
 
-    QByteArray pathArray = rPath.toLocal8Bit();
+    QByteArray pathArray = rFmuPath.toLocal8Bit();
     const char* FMUPath = pathArray.data();
-    rTargetPath = rTargetPath+QFileInfo(rPath).baseName();
-    if(!QFileInfo(rTargetPath).exists())
+    targetPath = targetPath+QFileInfo(rFmuPath).baseName();
+    if(!QFileInfo(targetPath).exists())
     {
-        QDir().mkpath(rTargetPath);
+        QDir().mkpath(targetPath);
     }
-    QByteArray targetArray = rTargetPath.toLocal8Bit();
+    QByteArray targetArray = targetPath.toLocal8Bit();
     const char* tmpPath = targetArray.data();
     jm_callbacks callbacks;
     fmi_import_context_t* context;
@@ -181,12 +182,12 @@ bool HopsanFMIGenerator::generateFromFmu(QString &rPath, QString &rTargetPath, Q
     if(version == fmi_version_1_enu)
     {
         printMessage("FMU is of version 1.0");
-        return generateFromFmu1(rPath, rTargetPath, rTypeName, rHppPath, callbacks, context);
+        return generateFromFmu1(rFmuPath, targetPath, rTypeName, rHppPath, callbacks, context);
     }
     else if(version == fmi_version_2_0_enu)
     {
         printMessage("FMU is of version 2.0");
-        return generateFromFmu2(rPath, rTargetPath, rTypeName, rHppPath, callbacks, context);
+        return generateFromFmu2(rFmuPath, targetPath, rTypeName, rHppPath, callbacks, context);
     }
     else if(version == fmi_version_unknown_enu)
     {
@@ -206,12 +207,12 @@ bool HopsanFMIGenerator::generateFromFmu(QString &rPath, QString &rTargetPath, Q
 
 
 //! @brief Generates a Hopsan component from an FMU using FMI 1.0
-//! @param rPath Reference to a string with the path to the .FMU file
-//! @param rTargetPath Reference to a string with the path where to export the new component
+//! @param rFmuPath The path to the .FMU file
+//! @param rTargetPath Where to export the new component
 //! @param rHppPath Reference to string used to return the actual path to the generated .HPP file
 //! @param callbacks Callbacks struct used by FMILibrary
 //! @param context Context struct used by FMILibrary
-bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
+bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
 {
     fmi1_callback_functions_t callBackFunctions;
     jm_status_enu_t status;
@@ -431,7 +432,7 @@ bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, 
     fmuComponentCode.replace("<<<addconstants>>>", addConstants);
     fmuComponentCode.replace("<<<addinputs>>>", addInputs);
     fmuComponentCode.replace("<<<addoutputs>>>", addOutputs);
-    fmuComponentCode.replace("<<<fmupath>>>", rPath);
+    fmuComponentCode.replace("<<<fmupath>>>", rFmuPath);
     QDir().mkpath(rTargetPath+"/temp");
     fmuComponentCode.replace("<<<temppath>>>", rTargetPath+"/temp/");
     replaceTaggedSection(fmuComponentCode, "setpars", setPars);
@@ -488,12 +489,13 @@ bool HopsanFMIGenerator::generateFromFmu1(QString &rPath, QString &rTargetPath, 
 
 
 //! @brief Generates a Hopsan component from an FMU using FMI 2.0
-//! @param rPath Reference to a string with the path to the .FMU file
-//! @param rTargetPath Reference to a string with the path where to export the new component
-//! @param rHppPath Reference to string used to return the actual path to the generated .HPP file
+//! @param[in] rFmuPath Path to the .FMU file
+//! @param[in] rTargetPath Where to export the new component library files
+//! @param[out] rTypeName The FMU name (will be used as typename in Hopsan)
+//! @param[out] rHppPath The actual path to the generated .HPP file
 //! @param callbacks Callbacks struct used by FMILibrary
 //! @param context Context struct used by FMILibrary
-bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
+bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
 {
     fmi2_callback_functions_t callBackFunctions;
     jm_status_enu_t status;
@@ -1049,7 +1051,7 @@ bool HopsanFMIGenerator::generateFromFmu2(QString &rPath, QString &rTargetPath, 
     replacePattern("<<<addoutputs>>>"  , addOutputs  , fmuComponentCode);
     replacePattern("<<<addports>>>"    , addPorts    , fmuComponentCode);
     replacePattern("<<<setnodedatapointers>>>", setNodeDataPointers, fmuComponentCode);
-    replacePattern("<<<fmupath>>>"     , rPath       , fmuComponentCode);
+    replacePattern("<<<fmupath>>>"     , rFmuPath       , fmuComponentCode);
     QDir().mkpath(rTargetPath+"/temp");
     replacePattern("<<<temppath>>>"    , rTargetPath+"/temp/", fmuComponentCode);
     replaceTaggedSection(fmuComponentCode, "setpars", setPars);

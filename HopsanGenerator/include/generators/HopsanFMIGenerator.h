@@ -38,14 +38,12 @@ class HopsanFMIGenerator : public HopsanGenerator
 {
 public:
     HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog=false);
-    bool generateFromFmu(QString &rPath, QString &rTargetPath, QString &rTypeName, QString &rHppPath);
+    bool generateFromFmu(const QString &rFmuPath, QString targetPath, QString &rTypeName, QString &rHppPath);
     void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, int version=2, bool x64=true);
 
 private:
-    bool generateFromFmu1(QString &rPath, QString &targetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
-    bool generateFromFmu2(QString &rPath, QString &targetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
-    //void generateToFmu1(QString savePath, hopsan::ComponentSystem *pSystem, bool me, bool x64);
-    //void generateToFmu2(QString savePath, hopsan::ComponentSystem *pSystem, bool me, bool x64);
+    bool generateFromFmu1(const QString &rFmuPath, const QString &targetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
+    bool generateFromFmu2(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
 
     //Utility functions
     void getInterfaceInfo(QString typeName, QString compName,

@@ -51,7 +51,8 @@ class LibraryHandler : public QObject
 public:
     LibraryHandler(QObject *parent=0);
 
-    void loadLibrary(QString xmlPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
+    void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
+    bool isLibraryLoaded(const QString &rLibraryXmlPath) const;
     bool unloadLibraryByComponentType(QString typeName);
     bool unloadLibraryFMU(QString fmuName);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
@@ -94,6 +95,7 @@ class ComponentLibrary
 {
 public:
     QString name;
+    QString loadPath;
     QString xmlFilePath;
     QString debugExtension;
     QString lflags;

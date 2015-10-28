@@ -160,19 +160,15 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
 {
     HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), QString(gccPath.c_str()), showDialog);
     QString typeName, hppFile;
-    QString rPath = QString(path.c_str());
-    QString rTargetPath = QString(targetPath.c_str());
-    if(!pGenerator->generateFromFmu(rPath, rTargetPath, typeName, hppFile))
+    if(!pGenerator->generateFromFmu(path.c_str(), targetPath.c_str(), typeName, hppFile))
     {
         pGenerator->printErrorMessage("Import of FMU failed.");
         return;
     }
 
-    QString fmuFileName = QFileInfo(QString(path.c_str())).baseName();
-    QFileInfo libDirInfo = QFileInfo(QString(targetPath.c_str())+"/"+fmuFileName+"/"+typeName+"/");
-    QFileInfo hppFileInfo = QFileInfo(QDir(libDirInfo.absoluteFilePath()).relativeFilePath(hppFile));
-
-    pGenerator->generateNewLibrary(libDirInfo.absoluteFilePath(), QStringList() << hppFileInfo.filePath());
+    QString fmuFileName = QFileInfo(path.c_str()).baseName();
+    QFileInfo fmuImportRoot(QString("%1/%2").arg(targetPath.c_str()).arg(fmuFileName));
+    QFileInfo hppFileInfo(QDir(fmuImportRoot.absoluteFilePath()).relativeFilePath(hppFile));
 
 #ifdef _WIN64
     QString fmiLibDir="/Dependencies/FMILibrary-2.0.1_x64/";
@@ -180,20 +176,22 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
     QString fmiLibDir="/Dependencies/FMILibrary-2.0.1/";
 #endif
 
-    QString inc = QString("-I\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/include/");
-    QString lib = QString("-L\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/lib");
+    QStringList cflags, lflags;
+    cflags << QString("-I\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/include/");
+    lflags << QString("-L\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/lib");
+
 #ifdef _WIN32
-    lib.append(" -llibfmilib_shared");
+    lflags << " -llibfmilib_shared";
 #else
-    lib.append(" -lfmilib_shared");  //Remove extra "lib" prefix in Linux
+    lflags << " -lfmilib_shared";  //Remove extra "lib" prefix in Linux
 #endif
-    compileComponentLibrary(libDirInfo.absoluteFilePath()+typeName+"_lib.xml", pGenerator, lib, inc);
 
+    // Generate the component library files
+    pGenerator->generateNewLibrary(fmuImportRoot.absoluteFilePath(), QStringList() << hppFileInfo.filePath(), cflags, lflags);
 
-    //pGenerator->generateFromFmu(QString(path.c_str()), QString(targetPath.c_str()));
-    //Find
-    //QString typeName = QFileInfo(QString(path.c_str())).baseName();
-    //pGenerator->generateNewLibrary(QString(targetPath.c_str())+"/"+typeName+"/", QStringList() << QString(targetPath.c_str())+"/component_code/"+typeName+".hpp");
+    // Compile the generated component library
+    compileComponentLibrary(fmuImportRoot.absoluteFilePath()+"/"+typeName+"_lib.xml", pGenerator);
+
     delete(pGenerator);
 }
 

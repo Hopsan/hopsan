@@ -1100,7 +1100,7 @@ void Configuration::removeUserLib(const QString &value)
     QFileInfo file(value);
     for(int i=0; i<mUserLibs.size(); ++i)
     {
-        if(mUserLibs[i] == file)
+        if(mUserLibs[i].absoluteFilePath() == file.absoluteFilePath())
         {
             mUserLibs.removeAt(i);
             mUserLibTypes.removeAt(i);

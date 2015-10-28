@@ -94,15 +94,17 @@ void LibraryHandler::loadLibrary()
     {
         gpConfig->setStringSetting(CFG_EXTERNALLIBDIR,libDir);
 
-        // Check so that lib is not already loaded
-        if(!gpConfig->hasUserLib(libDir))
-        {
-            loadLibrary(libDir);
-        }
-        else
-        {
-            gpMessageHandler->addErrorMessage("Error: Library " + libDir + " is already loaded!");
-        }
+        loadLibrary(libDir);
+
+//        // Check so that lib is not already loaded
+//        if(!gpConfig->hasUserLib(libDir))
+//        {
+//            loadLibrary(libDir);
+//        }
+//        else
+//        {
+//            gpMessageHandler->addErrorMessage("Library " + libDir + " is already loaded!");
+//        }
     }
 }
 
@@ -159,18 +161,25 @@ void LibraryHandler::createNewModelicaComponent()
 
 
 //! @brief Loads a component library from either XML or folder (deprecated, for backwards compatibility)
-//! @param xmlPath Path to .xml file (or folder)
+//! @param loadPath Path to .xml file (or folder)
 //! @param type Specifies whether library is internal or external
 //! @param visibility Specifies whether library is visible or invisible
-void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
+void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
 {
-    QFileInfo libraryRootXmlFileInfo(xmlPath);
+    QFileInfo libraryRootXmlFileInfo(loadPath);
     QDir libraryRootDir;
     QStringList loadedSubLibraryXmls;
     QStringList cafFiles;
     QStringList loadedDllLibs;     //! @todo Used for fallback function, remove before 0.7
     CoreLibraryAccess coreAccess;
     bool loadedSomething=false;
+
+    if (!libraryRootXmlFileInfo.exists())
+    {
+        gpMessageHandler->addWarningMessage("Library: "+libraryRootXmlFileInfo.absoluteFilePath()+" does not exist");
+        gpConfig->removeUserLib(loadPath);
+        return;
+    }
 
     // If xmlPath was a directory then try to find a root library xml in that directory
     // it is best if we can load such a file instead of loading the directory (pre 0.7 style)
@@ -183,6 +192,14 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     else
     {
         libraryRootDir.setPath(libraryRootXmlFileInfo.absolutePath());
+    }
+
+    // If this lib has already been loaded then skip it
+    if (isLibraryLoaded(libraryRootXmlFileInfo.canonicalFilePath()))
+    {
+        gpMessageHandler->addWarningMessage("Library: "+libraryRootXmlFileInfo.canonicalFilePath()+" is already loaded");
+        gpConfig->removeUserLib(loadPath);
+        return;
     }
 
 
@@ -213,11 +230,12 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 else if(xmlRoot.tagName() == QString(XML_LIBRARY))
                 {
                     ComponentLibrary tempLib;
+                    tempLib.loadPath = loadPath;
                     tempLib.type = type;
 
                     //Store path to own xml file
                     //tempLib.xmlFilePath = libRootXmlFileInfo.filePath();
-                    tempLib.xmlFilePath = fileInfo.filePath();
+                    tempLib.xmlFilePath = fileInfo.canonicalFilePath();
                     loadedSubLibraryXmls.append(tempLib.xmlFilePath);
 
                     //Store name of library
@@ -227,7 +245,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                     }
                     else
                     {
-                        tempLib.name = QFileInfo(xmlPath).fileName().section(".", 0,0);  //Use filename in case no lib name is provided
+                        tempLib.name = QFileInfo(loadPath).fileName().section(".", 0,0);  //Use filename in case no lib name is provided
                     }
 
                     //Store library file
@@ -286,6 +304,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                             {
                                 //Still no success, recompilation failed. Ignore and go on.
                                 gpMessageHandler->addErrorMessage("Recompilation failed.");
+                                mLoadedLibraries.pop_back(); //Discard library
                             }
                             else
                             {
@@ -335,6 +354,7 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             {
                 loadedSomething = true;
                 ComponentLibrary tempLib;
+                tempLib.loadPath = loadPath;
                 tempLib.name = itd.filePath().section("/",-1,-1);
                 tempLib.libFilePath = itd.filePath();
                 tempLib.type = type;
@@ -465,17 +485,29 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
 
             //Store appearance data
             entry.pAppearance = pAppearanceData;
+            QString subTypeName = pAppearanceData->getSubTypeName();
+            QString fullTypeName = makeFullTypeString(entry.pAppearance->getTypeName(), subTypeName);
 
-            //Find and store library from where component belongs
+            //Find what library this component depend on (main component type) and make sure that library knows bout this dependency
             QString libPath;
             coreAccess.getLibPathForComponent(pAppearanceData->getTypeName(), libPath);
             entry.pLibrary=nullptr;
-            for(int l=0; l<mLoadedLibraries.size(); ++l)
+            if( !libPath.isEmpty() )
             {
-                if( !libPath.isEmpty() && (mLoadedLibraries[l].libFilePath == libPath) )
+                for(int l=0; l<mLoadedLibraries.size(); ++l)
                 {
-                    entry.pLibrary = &mLoadedLibraries[l];
-                    break;
+                    if( mLoadedLibraries[l].libFilePath == libPath )
+                    {
+                        ComponentLibrary *pLib = &mLoadedLibraries[l];
+                        pLib->guiOnlyComponents.append(fullTypeName);
+                        // Only set library for pure main components
+                        if (subTypeName.isEmpty())
+                        {
+                            //! @todo This is dangerous, pointing to a list element, what if the list is reallocated, normally it is not but still, also right now this list is never cleared when libraries are unloaded /Peter
+                            entry.pLibrary = &mLoadedLibraries[l];
+                        }
+                        break;
+                    }
                 }
             }
             // If one was not found then create a new one
@@ -485,14 +517,21 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
                 {
                     mLoadedLibraries.append(ComponentLibrary());
                     pTempLibrary = &mLoadedLibraries.last();
+                    pTempLibrary->loadPath = loadPath;
                     pTempLibrary->name = libraryRootDir.dirName();
                     pTempLibrary->type = type;
                     pTempLibrary->xmlFilePath = libraryRootXmlFileInfo.canonicalFilePath();
                 }
                 //! @todo This is dangerous, pointing to a list element, what if the list is reallocated, normally it is not but still, also right now this list is never cleared when libraries are unloaded /Peter
                 entry.pLibrary = pTempLibrary;
-                pTempLibrary->guiOnlyComponents.append(entry.pAppearance->getTypeName());
+                pTempLibrary->guiOnlyComponents.append(fullTypeName);
             }
+            // If we have a subtype, then we need to remember that this is a GUI only component representing one in core
+            else if (!subTypeName.isEmpty())
+            {
+                entry.pLibrary->guiOnlyComponents.append(fullTypeName);
+            }
+
 
 
             //Store caf file
@@ -518,7 +557,6 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
             entry.visibility = visibility;
 
             //Store new entry, but only if it does not already exist
-            QString fullTypeName = makeFullTypeString(pAppearanceData->getTypeName(), pAppearanceData->getSubTypeName());
             if(!mLibraryEntries.contains(fullTypeName))
             {
                 mLibraryEntries.insert(fullTypeName, entry);
@@ -554,19 +592,22 @@ void LibraryHandler::loadLibrary(QString xmlPath, LibraryTypeEnumT type, HiddenV
     }
     else
     {
-        // If one unique library then forget the xml
-        if (loadedSubLibraryXmls.size() == 1)
-        {
-            gpConfig->removeUserLib(loadedSubLibraryXmls.first());
-        }
-        // Else forget the root dir
-        else
-        {
-            gpConfig->removeUserLib(libraryRootDir.canonicalPath());
-        }
+        gpConfig->removeUserLib(loadPath);
     }
 
     gpMessageHandler->collectHopsanCoreMessages();
+}
+
+bool LibraryHandler::isLibraryLoaded(const QString &rLibraryXmlPath) const
+{
+    for (const ComponentLibrary &lib : mLoadedLibraries)
+    {
+        if ((lib.xmlFilePath == rLibraryXmlPath) || (lib.loadPath == rLibraryXmlPath))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -626,18 +667,32 @@ bool LibraryHandler::unloadLibrary(ComponentLibrary *pLibrary)
             mLibraryEntries.remove(components[c]);
         }
 
-        //Remove user library from configuration (might remove other libraries as well if they were loaded together, they will not appear next time Hopsan restarts then)
+        //Remove user library from configuration
         gpConfig->removeUserLib(pLibrary->xmlFilePath);
+        QString loadPath = pLibrary->loadPath;
+        int ctr=0;
 
         //Remove library from list of loaded libraries
         QString libFilePath = pLibrary->libFilePath;
         for(int l=0; l<mLoadedLibraries.size(); ++l)
         {
+            if (mLoadedLibraries[l].loadPath == loadPath)
+            {
+                ctr++;
+            }
+
             if(mLoadedLibraries[l].libFilePath == libFilePath)
             {
                 mLoadedLibraries.removeAt(l);
                 --l;
             }
+        }
+
+        // Check if we should remove the "loadPath" as well, (useful if you loaded multiple libraries by loading their root directory)
+        // Check if anyone else is using it (else forget it)
+        if (ctr < 2)
+        {
+            gpConfig->removeUserLib(loadPath);
         }
 
         gpMessageHandler->collectHopsanCoreMessages();

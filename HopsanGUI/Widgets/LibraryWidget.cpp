@@ -721,6 +721,11 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 pReloadAction->setEnabled(true);
             }
 
+            if(item->text(0) != FMULIBSTR && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).path.startsWith(FMULIBSTR))
+            {
+                pUnloadAction->setEnabled(true);
+            }
+
             if(item != 0 && mItemToTypeNameMap.contains(pFirstSubComponentItem))
             {
                 pOpenFolderAction->setEnabled(true);

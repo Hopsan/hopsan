@@ -323,8 +323,9 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     pGenerator->printMessage("Sources:  "+c);
     pGenerator->printMessage("Cflags:   "+cflags);
     pGenerator->printMessage("Includes: "+iflags);
-    pGenerator->printMessage("Links:    "+lflags+"\n");
+    pGenerator->printMessage("Lflags:   "+lflags+"\n");
 
+    pGenerator->printMessage("Compiling please wait!");
     QString output;
     QString gccPath = pGenerator->getGccPath();
     bool success = compile(libRootDir, gccPath, libFile, c, iflags, cflags, lflags, output);
