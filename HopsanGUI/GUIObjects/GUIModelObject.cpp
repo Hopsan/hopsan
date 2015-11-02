@@ -623,21 +623,6 @@ Port *ModelObject::getPort(const QString &rName)
 }
 
 
-void ModelObject::hideExternalDynamicParameterPort(QString portName)
-{
-    QList<Port*>::iterator plit;
-    for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
-    {
-        if ((*plit)->getName() == portName )
-        {
-            // Disconnect port, hide it and forget its a dynamic parameter port (to prevent saving it)
-            (*plit)->disconnectAndRemoveAllConnectedConnectors();
-            (*plit)->setEnable(false);
-            break;
-        }
-    }
-}
-
 //! @brief This method creates ONE external port. Or refreshes existing ports. If port appearance information for this port does not exist, it is created
 //! @param[portName] The name of the port to create
 Port *ModelObject::createRefreshExternalPort(QString portName)

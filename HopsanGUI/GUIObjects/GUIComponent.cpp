@@ -426,18 +426,29 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
     QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
 
+    ModelObjectAppearance *pLibraryAppearance = gpLibraryHandler->getModelObjectAppearancePtr(getTypeName(), getSubTypeName());
+
     // Save those ports that have changed appearance (position)
     QStringList ports;
-    for (int i=0; i<mPortListPtrs.size(); ++i)
+    for (Port *pPort : mPortListPtrs)
     {
-        const PortAppearance *app = mPortListPtrs[i]->getPortAppearance();
-        if (app->mEnabled && app->mPoseModified) //!< @todo need to rethink this condition
+        bool differentPortEnabled=false;
+        const PortAppearance *pPortAppearance = pPort->getPortAppearance();
+        // Check if "port enabled" different from default state in library
+        if (pLibraryAppearance)
         {
-            ports.append(mPortListPtrs[i]->getName());
+            PortAppearance *pLibraryPortAppearance = pLibraryAppearance->getPortAppearance(pPort->getName());
+            if (pLibraryPortAppearance && pPortAppearance)
+            {
+                differentPortEnabled = pLibraryPortAppearance->mEnabled != pPortAppearance->mEnabled;
+            }
+        }
+        if (differentPortEnabled || pPortAppearance->mPoseModified)
+        {
+            ports.append(pPort->getName());
         }
     }
     mModelObjectAppearance.saveSpecificPortsToDomElement(xmlApp, ports);
-
     return rDomElement;
 }
 

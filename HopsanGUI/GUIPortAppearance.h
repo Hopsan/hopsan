@@ -50,7 +50,6 @@ public:
     bool mEnabled;
     bool mAutoPlaced;
     bool mPoseModified;
-    QString mDescription;
 };
 
 typedef QHash<QString, PortAppearance> PortAppearanceMapT;

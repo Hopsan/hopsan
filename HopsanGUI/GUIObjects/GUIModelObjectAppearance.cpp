@@ -176,19 +176,6 @@ void appendPortDomElement(QDomElement &rDomElement, const QString portName, cons
     {
         xmlPort.setAttribute(CAF_ENABLED, HMF_FALSETAG);
     }
-
-//    // Save visible or not, only write if hidden is set, as default is visible (to avoid clutter in xml file)
-//    //! @todo maybe should always write, this is wrong, should look at if it is hide or not instead... Now that is not in appearance
-//    if (!rPortAppearance.mVisible) //This is wrong
-//    {
-//        xmlPort.setAttribute("visible", HMF_FALSETAG);
-//    }
-
-    // Save description if any
-    if (!rPortAppearance.mDescription.isEmpty())
-    {
-        appendDomTextNode(xmlPort, CAF_DESCRIPTION, rPortAppearance.mDescription);
-    }
 }
 
 //! @brief Help function that parses a port DOM Element
@@ -203,15 +190,7 @@ void parsePortDomElement(QDomElement domElement, QString &rPortName, PortAppeara
     rPortAppearance.rot = parseAttributeQreal(domElement, "a", 0);
 
     rPortAppearance.mAutoPlaced = parseAttributeBool(domElement, CAF_AUTOPLACED, true);
-    rPortAppearance.mEnabled = parseAttributeBool(domElement, CAF_ENABLED, parseAttributeBool(domElement, "visible", true));
-    //! @todo should we use enabled or visible, should not be both
-
-    //! @todo port descriptions have been moved into core, remove this load code later /Peter
-    QDomElement xmlPortDescription = domElement.firstChildElement(CAF_DESCRIPTION);
-    if (!xmlPortDescription.isNull())
-    {
-        rPortAppearance.mDescription = xmlPortDescription.text();
-    }
+    rPortAppearance.mEnabled = parseAttributeBool(domElement, CAF_ENABLED, true);
 }
 
 
@@ -1070,17 +1049,16 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 }
 
 //! @brief Convenience function to save only specific ports to dom element, used to save dynamic parameter ports
-void ModelObjectAppearance::saveSpecificPortsToDomElement(QDomElement &rDomElement, const QStringList &rParametNames)
+void ModelObjectAppearance::saveSpecificPortsToDomElement(QDomElement &rDomElement, const QStringList &rPortNames)
 {
     //! @todo maybe make the port appearance  class capable of saving itself to DOM
     QDomElement xmlModelObject = addModelObjectRootElement(rDomElement);
 
-    // First check if ports already exist, else add the element
+    // First check if the ports element already exist, else add the element
     QDomElement xmlPorts = getOrAppendNewDomElement(xmlModelObject, CAF_PORTS);
-    QStringList::const_iterator pnit; // PortName iterator
-    for (pnit=rParametNames.begin(); pnit!=rParametNames.end(); ++pnit)
+    for (const QString &portName : rPortNames)
     {
-        appendPortDomElement(xmlPorts, *pnit, mPortAppearanceMap.value(*pnit));
+        appendPortDomElement(xmlPorts, portName, mPortAppearanceMap.value(portName));
     }
 }
 

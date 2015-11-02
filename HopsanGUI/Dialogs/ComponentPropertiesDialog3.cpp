@@ -1891,7 +1891,11 @@ void HideShowPortWidget::hideShowPort(const bool doShow)
     }
     else
     {
-        mpModelObject->hideExternalDynamicParameterPort(mPortName);
+        Port *pPort = mpModelObject->getPort(mPortName);
+        if (pPort)
+        {
+            pPort->setEnable(false);
+        }
     }
 }
 

@@ -265,7 +265,7 @@ public:
 
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
-    void saveSpecificPortsToDomElement(QDomElement &rDomElement, const QStringList &rParametNames);
+    void saveSpecificPortsToDomElement(QDomElement &rDomElement, const QStringList &rPortNames);
     void saveToXMLFile(QString filename);
 
 private:

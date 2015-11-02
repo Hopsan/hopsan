@@ -721,18 +721,7 @@ void Port::refreshPortLabelText()
     //! @todo should get port description once and store it instead of getting it every time (search in core)
     //! @todo we should show unit here as well (for signal ports)
     QString desc = getPortDescription();
-    if (desc.isEmpty())
-    {
-        // backwards compatible
-        if (!mpPortAppearance->mDescription.isEmpty())
-        {
-            gpMessageHandler->addWarningMessage("You seem to have entered a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
-            //Append description
-           desc = mpPortAppearance->mDescription;
-           label.append("<br>\"" + desc + "\"");
-        }
-    }
-    else
+    if (!desc.isEmpty())
     {
         label.append("<br>\"" + desc + "\"");;
     }
