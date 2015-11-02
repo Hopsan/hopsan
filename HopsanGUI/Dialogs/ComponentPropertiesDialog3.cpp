@@ -2108,6 +2108,8 @@ PlotRelatedWidget::PlotRelatedWidget(const CoreVariameterDescription &rData, Mod
     mOriginalPlotLabel = mpModelObject->getVariablePlotLabel(mVariablePortDataName);
 
     QHBoxLayout *pLayout = new QHBoxLayout(this);
+    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
+    pLayout->setContentsMargins(margins);
     QCheckBox *pInverCheckbox = new QCheckBox(this);
     pInverCheckbox->setToolTip("Invert plot");
     pInverCheckbox->setChecked(mOrigInverted);
