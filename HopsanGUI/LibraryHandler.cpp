@@ -251,7 +251,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
     // Fall back, load dll/so/dynlibs
     else
     {
-        gpMessageHandler->addWarningMessage("Did not find any libary xml files, falling back to ." TO_STR(DLL_EXT) " loading!");
+        gpMessageHandler->addWarningMessage("Did not find any libary xml files, falling back to " TO_STR(DLL_EXT) " loading for: "+loadPath);
         libraryLoadPathRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
         libraryLoadPathRootDir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
         QDirIterator itd(libraryLoadPathRootDir, QDirIterator::Subdirectories);
