@@ -805,67 +805,6 @@ QString ModelObject::getVariablePlotLabel(const QString &rName) const
     return mRegisteredPlotLabels.value(rName, "");
 }
 
-//void ModelObject::registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue)
-//{
-//    qFatal("This functionality has been removed");
-//    UnitScale us(rDescription, rScaleValue);
-//    if (!rScaleValue.isEmpty() && us.isEmpty())
-//    {
-//        gpMessageHandler->addErrorMessage(QString("Invalid unit scale value: %1, ignoring!").arg(rScaleValue));
-//    }
-
-//    if (us.isEmpty())
-//    {
-//        unregisterCustomPlotUnitOrScale(rVariablePortDataName);
-//    }
-//    else
-//    {
-//        mRegisteredCustomPlotUnitsOrScales.insert(rVariablePortDataName, us);
-//    }
-//}
-
-//void ModelObject::unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName)
-//{
-//    mRegisteredCustomPlotUnitsOrScales.remove(rVariablePortDataName);
-//}
-
-
-////! @brief Registers a default offset value for specified plot variable
-//void ModelObject::registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset)
-//{
-//    mRegisteredCustomPlotOffsets.insert(rVariablePortDataName, offset);
-//}
-
-////! @brief Unregisters a default offset value for specified plot variable
-//void ModelObject::unregisterCustomPlotOffset(const QString &rVariablePortDataName)
-//{
-//    mRegisteredCustomPlotOffsets.remove(rVariablePortDataName);
-//}
-
-//const QMap<QString, UnitScale> &ModelObject::getCustomPlotUnitsOrScales() const
-//{
-//    return mRegisteredCustomPlotUnitsOrScales;
-//}
-
-//void ModelObject::getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales)
-//{
-//    // Empty string list to indicate, no data
-//    rCustomUnitsOrScales = mRegisteredCustomPlotUnitsOrScales.value(rVariablePortDataName, UnitScale());
-//}
-
-////! @brief Returns the default plot offset value for specified variable
-//double ModelObject::getCustomPlotOffset(const QString &rVariablePortDataName)
-//{
-//    if(mRegisteredCustomPlotOffsets.contains(rVariablePortDataName))
-//    {
-//        return mRegisteredCustomPlotOffsets.find(rVariablePortDataName).value();
-//    }
-//    else
-//    {
-//        return 0.0;
-//    }
-
-//}
 
 bool ModelObject::setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
 {

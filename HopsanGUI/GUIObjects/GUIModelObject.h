@@ -114,13 +114,6 @@ public:
     bool getInvertPlotVariable(const QString &rName) const;
     void setVariablePlotLabel(const QString &rName, const QString &rLabel);
     QString getVariablePlotLabel(const QString &rName) const;
-//    void registerCustomPlotUnitOrScale(const QString &rVariablePortDataName, const QString &rDescription, const QString &rScaleValue);
-//    void unregisterCustomPlotUnitOrScale(const QString &rVariablePortDataName);
-//    void registerCustomPlotOffset(const QString &rVariablePortDataName, const double offset);
-//    void unregisterCustomPlotOffset(const QString &rVariablePortDataName);
-//    const QMap<QString, UnitScale> &getCustomPlotUnitsOrScales() const;
-//    void getCustomPlotUnitOrScale(const QString &rVariablePortDataName, UnitScale &rCustomUnitsOrScales); //!< @todo should this one be in the variameter description also? maybe
-//    double getCustomPlotOffset(const QString &rVariablePortDataName);
 
     // Custom quantity methods
     bool setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity);
@@ -207,10 +200,7 @@ protected:
     double mLastIconScale;
 
     QMap<QString, QString> mDefaultParameterValues;
-    //QStringList mActiveDynamicParameterPortNames;
-    //QMap<QString, UnitScale> mRegisteredCustomPlotUnitsOrScales;
     QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
-    //QMap<QString, double> mRegisteredCustomPlotOffsets;
     QMap<QString, bool> mRegisteredInvertPlotVariables;
     QMap<QString, QString> mRegisteredPlotLabels;
 
