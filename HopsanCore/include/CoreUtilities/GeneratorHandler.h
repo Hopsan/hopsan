@@ -26,10 +26,9 @@
 #define GENERATORHANDLER_H
 
 #ifdef _WIN32
+#undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0502
 #include "Windows.h"
-#else
-#include "dlfcn.h"
 #endif
 #include <vector>
 #include "win32dll.h"

@@ -23,10 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 #include <stdio.h>
-#ifdef _WIN32
-#define _WIN32_WINNT 0x0502
-#include "Windows.h"
-#else
+#ifndef _WIN32
 #include "dlfcn.h"
 #endif
 #include "win32dll.h"
