@@ -236,6 +236,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
         }
     }
 
+    bool loadedSomething=false;
     if (!foundLibraryXmlFiles.isEmpty())
     {
         for (QString &xmlFile : foundLibraryXmlFiles)
@@ -244,7 +245,10 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
             pLib->loadPath = loadPath;
             pLib->xmlFilePath = xmlFile;
             pLib->type = type;
-            loadLibrary(pLib, type, visibility);
+            if (loadLibrary(pLib, type, visibility))
+            {
+                loadedSomething = true;
+            }
         }
         return;
     }
@@ -262,8 +266,16 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
             pLib->name = itd.filePath().section("/",-1,-1);
             pLib->libFilePath = itd.filePath();
             pLib->type = type;
-            loadLibrary(pLib, type, visibility);
+            if (loadLibrary(pLib, type, visibility))
+            {
+                loadedSomething=true;
+            }
         }
+    }
+
+    if (!loadedSomething)
+    {
+        gpConfig->removeUserLib(loadPath);
     }
 }
 
@@ -361,7 +373,7 @@ bool LibraryHandler::unloadLibrary(SharedComponentLibraryPtrT pLibrary)
     return false;
 }
 
-void LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
+bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
 {
     CoreLibraryAccess coreAccess;
     bool loadedSomething=false;
@@ -387,7 +399,7 @@ void LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     if ( isLibraryLoaded(libraryMainFileInfo.canonicalFilePath(), libraryDLLFileInfo.canonicalFilePath()) )
     {
         gpMessageHandler->addWarningMessage("Library: "+libraryMainFileInfo.canonicalFilePath()+" is already loaded");
-        return;
+        return true; // We return true anywawy, since the library is actually loaded
     }
 
     // Load the xml libarry file
@@ -689,6 +701,7 @@ void LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
         cafFile.close();
     }
 
+    gpMessageHandler->collectHopsanCoreMessages();
 
     if(loadedSomething)
     {
@@ -702,8 +715,7 @@ void LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     {
         gpConfig->removeUserLib(pLibrary->getLibraryMainFilePath());
     }
-
-    gpMessageHandler->collectHopsanCoreMessages();
+    return loadedSomething;
 }
 
 bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)

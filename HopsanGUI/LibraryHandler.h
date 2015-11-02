@@ -108,7 +108,7 @@ signals:
 
 private:
     bool unloadLibrary(SharedComponentLibraryPtrT pLibrary);
-    void loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
+    bool loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
 
     YesNoToAllEnumT mUpConvertAllCAF;
 
