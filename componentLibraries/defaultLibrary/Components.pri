@@ -257,6 +257,13 @@ HEADERS +=  \
  $${PWD}/Signal/MathFunctions/SignalSqrt.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalTan.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalTanh.hpp \ 
+ $${PWD}/Signal/Navigation/Navigation.h \ 
+ $${PWD}/Signal/Navigation/SignalAttitudeControl.hpp \ 
+ $${PWD}/Signal/Navigation/SignalAttitudeTVCcontrol.hpp \ 
+ $${PWD}/Signal/Navigation/SignalEarthCoordinates.hpp \ 
+ $${PWD}/Signal/Navigation/SignalStateMonitor.hpp \ 
+ $${PWD}/Signal/Navigation/SignalTimeAccelerator.hpp \ 
+ $${PWD}/Signal/Navigation/SignalWaypoint.hpp \ 
  $${PWD}/Signal/Non-Linearities/Non-Linearities.h \ 
  $${PWD}/Signal/Non-Linearities/SignalAdditiveNoise.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalDeadZone.hpp \ 
@@ -358,6 +365,7 @@ OTHER_FILES +=  \
  $${PWD}/Signal/Filters/Filters.cci \ 
  $${PWD}/Signal/Logic/Logic.cci \ 
  $${PWD}/Signal/MathFunctions/MathFunctions.cci \ 
+ $${PWD}/Signal/Navigation/Navigation.cci \ 
  $${PWD}/Signal/Non-Linearities/Non-Linearities.cci \ 
  $${PWD}/Signal/SignalFFB/SignalFFB.cci \ 
  $${PWD}/Signal/SignalRouting/SignalRouting.cci \ 

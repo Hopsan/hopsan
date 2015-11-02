@@ -45,6 +45,7 @@
 #include "Signal/Filters/Filters.h"
 #include "Signal/Logic/Logic.h"
 #include "Signal/MathFunctions/MathFunctions.h"
+#include "Signal/Navigation/Navigation.h"
 #include "Signal/Non-Linearities/Non-Linearities.h"
 #include "Signal/SignalFFB/SignalFFB.h"
 #include "Signal/SignalRouting/SignalRouting.h"

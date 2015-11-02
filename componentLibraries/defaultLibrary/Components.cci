@@ -45,6 +45,7 @@
 #include "Signal/Filters/Filters.cci"
 #include "Signal/Logic/Logic.cci"
 #include "Signal/MathFunctions/MathFunctions.cci"
+#include "Signal/Navigation/Navigation.cci"
 #include "Signal/Non-Linearities/Non-Linearities.cci"
 #include "Signal/SignalFFB/SignalFFB.cci"
 #include "Signal/SignalRouting/SignalRouting.cci"
