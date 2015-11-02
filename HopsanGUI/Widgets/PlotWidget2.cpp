@@ -1034,6 +1034,7 @@ void PlotWidget2::setLogDataHandler(QPointer<LogDataHandler2> pLogDataHandler)
         connect(pLogDataHandler, SIGNAL(dataAdded()), this, SLOT(updateList()));
         connect(pLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(updateList()));
         connect(pLogDataHandler, SIGNAL(aliasChanged()), this, SLOT(updateList()));
+        connect(pLogDataHandler, SIGNAL(quantityChanged()), this, SLOT(updateList()));
     }
     updateList();
 }

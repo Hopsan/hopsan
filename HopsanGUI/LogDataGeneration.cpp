@@ -245,7 +245,7 @@ bool LogDataGeneration::registerQuantity(const QString &rFullName, const QString
 {
     SharedVectorVariableT pVar = getVariable(rFullName);
     QString bu = gpConfig->getBaseUnit(rQuantity);
-    if (pVar && !bu.isEmpty())
+    if ( (pVar && !bu.isEmpty()) || (pVar && rQuantity.isEmpty()) )
     {
         pVar->mpVariableDescription->mDataQuantity = rQuantity;
         pVar->mpVariableDescription->mDataUnit = bu;

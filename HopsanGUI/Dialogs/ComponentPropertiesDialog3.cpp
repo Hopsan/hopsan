@@ -2056,7 +2056,11 @@ void QuantitySelectionWidget::registerCustomQuantity()
 {
     if (hasChanged())
     {
-        mpModelObject->setModifyableSignalQuantity(mVariablePortDataName, mpQuantityLabel->text());
+        bool rc = mpModelObject->setModifyableSignalQuantity(mVariablePortDataName, mpQuantityLabel->text());
+        if (rc)
+        {
+            mQuantity = mpQuantityLabel->text();
+        }
     }
 }
 

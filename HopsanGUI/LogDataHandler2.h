@@ -161,6 +161,7 @@ signals:
     void dataAddedFromModel(bool);
     void dataRemoved();
     void aliasChanged();
+    void quantityChanged();
     void closePlotsWithOwnedData();
 
 private slots:

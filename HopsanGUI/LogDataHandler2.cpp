@@ -2335,7 +2335,12 @@ bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &
     auto pGen = mGenerationMap.value(gen, 0);
     if (pGen)
     {
-        return pGen->registerQuantity(rFullName, rQuantity);
+        bool rc = pGen->registerQuantity(rFullName, rQuantity);
+        if (rc)
+        {
+            emit quantityChanged();
+        }
+        return rc;
     }
     return false;
 }
