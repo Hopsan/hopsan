@@ -32,29 +32,26 @@
 #include "win32dll.h"
 
 #include "CoreUtilities/GeneratorHandler.h"
+#include "HopsanCoreMacros.h"
 
 using namespace hopsan;
 
 GeneratorHandler::GeneratorHandler()
 {
     mLoadedSuccessfully = false;
+    HString generatorLibName = TO_STR(DLL_PREFIX) "HopsanGenerator" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT);
 
 #ifdef _WIN32
-    HINSTANCE lib_ptr;
-#ifdef QT_NO_DEBUG
-    lib_ptr = LoadLibrary("HopsanGenerator.dll"); //Load the dll
-#else
-    lib_ptr = LoadLibrary("HopsanGenerator_d.dll"); //Load the dll
-#endif
+    mpLib = LoadLibrary(generatorLibName.c_str()); //Load the dll
 
-    if (!lib_ptr)
+    if (!mpLib)
     {
         //! @todo Error message
         return;
     }
 
     //Load modelica generator function
-    callModelicaGenerator = (call_modelica_generator_t)GetProcAddress(lib_ptr, "callModelicaGenerator");
+    callModelicaGenerator = (call_modelica_generator_t)GetProcAddress(mpLib, "callModelicaGenerator");
     if (!callModelicaGenerator)
     {
         //! @todo Error message
@@ -62,7 +59,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load C++ generator function
-    callCppGenerator = (call_cpp_generator_t)GetProcAddress(lib_ptr, "callCppGenerator");
+    callCppGenerator = (call_cpp_generator_t)GetProcAddress(mpLib, "callCppGenerator");
     if (!callCppGenerator)
     {
         //! @todo Error message
@@ -70,7 +67,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load FMU generator function
-    callFmuImportGenerator = (call_fmu_import_generator_t)GetProcAddress(lib_ptr, "callFmuImportGenerator");
+    callFmuImportGenerator = (call_fmu_import_generator_t)GetProcAddress(mpLib, "callFmuImportGenerator");
     if (!callFmuImportGenerator)
     {
         //! @todo Error message
@@ -78,7 +75,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load FMU generator function
-    callFmuExportGenerator = (call_fmu_export_generator_t)GetProcAddress(lib_ptr, "callFmuExportGenerator");
+    callFmuExportGenerator = (call_fmu_export_generator_t)GetProcAddress(mpLib, "callFmuExportGenerator");
     if (!callFmuExportGenerator)
     {
         //! @todo Error message
@@ -86,7 +83,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load Simulink generator function
-    callSimulinkExportGenerator = (call_simulink_export_generator_t)GetProcAddress(lib_ptr, "callSimulinkExportGenerator");
+    callSimulinkExportGenerator = (call_simulink_export_generator_t)GetProcAddress(mpLib, "callSimulinkExportGenerator");
     if (!callSimulinkExportGenerator)
     {
         //! @todo Error message
@@ -94,7 +91,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load Simulink Co-Simulation generator function
-    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)GetProcAddress(lib_ptr, "callSimulinkCoSimExportGenerator");
+    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)GetProcAddress(mpLib, "callSimulinkCoSimExportGenerator");
     if (!callSimulinkCoSimExportGenerator)
     {
         //! @todo Error message
@@ -102,7 +99,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load LabVIEW/SIT generator function
-    callLabViewSITGenerator = (call_lvsit_export_generator_t)GetProcAddress(lib_ptr, "callLabViewSITGenerator");
+    callLabViewSITGenerator = (call_lvsit_export_generator_t)GetProcAddress(mpLib, "callLabViewSITGenerator");
     if (!callLabViewSITGenerator)
     {
         //! @todo Error message
@@ -110,7 +107,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load compile component library function
-    callComponentLibraryCompiler = (call_complib_compiler_t)GetProcAddress(lib_ptr, "callComponentLibraryCompiler");
+    callComponentLibraryCompiler = (call_complib_compiler_t)GetProcAddress(mpLib, "callComponentLibraryCompiler");
     if(!callComponentLibraryCompiler)
     {
         //! @todo Error message
@@ -118,7 +115,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load library generator function
-    callLibraryGenerator = (call_library_generator_t)GetProcAddress(lib_ptr, "callLibraryGenerator");
+    callLibraryGenerator = (call_library_generator_t)GetProcAddress(mpLib, "callLibraryGenerator");
     if(!callLibraryGenerator)
     {
         //! @todo Error message
@@ -126,21 +123,10 @@ GeneratorHandler::GeneratorHandler()
     }
 
 #else
-    void *lib_ptr;
-#ifdef QT_NO_DEBUG // magse: why NO_DEBUG?
-#ifdef Q_OS_OSX
-    lib_ptr = dlopen("libHopsanGenerator.dylib", RTLD_NOW);  //Load the dylib
-#else
-    lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll
-#endif
-#else
-#ifdef Q_OS_OSX
-    lib_ptr = dlopen("libHopsanGenerator_d.dylib", RTLD_NOW);  //Load the dylib
-#else
-    lib_ptr = dlopen("libHopsanGenerator_d.so", RTLD_NOW);  //Load the dll
-#endif
-#endif
-    if(!lib_ptr)
+
+    mpLib = dlopen(generatorLibName.c_str(), RTLD_NOW);  //Load the dll
+
+    if(!mpLib)
     {
         fprintf (stderr, "%s\n", dlerror());
         //! @todo Error message
@@ -148,7 +134,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load Modelica generator function
-    callModelicaGenerator = (call_modelica_generator_t)dlsym(lib_ptr, "callModelicaGenerator");
+    callModelicaGenerator = (call_modelica_generator_t)dlsym(mpLib, "callModelicaGenerator");
     char *dlsym_error = dlerror();
     if(dlsym_error)
     {
@@ -157,7 +143,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load C++ generator function
-    callCppGenerator = (call_cpp_generator_t)dlsym(lib_ptr, "callCppGenerator");
+    callCppGenerator = (call_cpp_generator_t)dlsym(mpLib, "callCppGenerator");
     dlsym_error = dlerror();
     if(dlsym_error)
     {
@@ -166,7 +152,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load FMU generator function
-    callFmuImportGenerator = (call_fmu_import_generator_t)dlsym(lib_ptr, "callFmuImportGenerator");
+    callFmuImportGenerator = (call_fmu_import_generator_t)dlsym(mpLib, "callFmuImportGenerator");
     dlsym_error = dlerror();
     if(dlsym_error)
     {
@@ -175,7 +161,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load FMU generator function
-    callFmuExportGenerator = (call_fmu_export_generator_t)dlsym(lib_ptr, "callFmuExportGenerator");
+    callFmuExportGenerator = (call_fmu_export_generator_t)dlsym(mpLib, "callFmuExportGenerator");
     dlsym_error = dlerror();
     if(dlsym_error)
     {
@@ -184,7 +170,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load Simulink Co-Simulation generator function
-    callSimulinkExportGenerator = (call_simulink_export_generator_t)dlsym(lib_ptr, "callSimulinkExportGenerator");
+    callSimulinkExportGenerator = (call_simulink_export_generator_t)dlsym(mpLib, "callSimulinkExportGenerator");
     dlsym_error = dlerror();
     if(dlsym_error)
     {
@@ -194,7 +180,7 @@ GeneratorHandler::GeneratorHandler()
 
     //! @todo Shall not be here, since Simulink export does not currently work under Linux
     //Load Simulink Co-Simulation generator function
-    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)dlsym(lib_ptr, "callSimulinkCoSimExportGenerator");
+    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)dlsym(mpLib, "callSimulinkCoSimExportGenerator");
     dlsym_error = dlerror();
     if(dlsym_error)
     {
@@ -203,7 +189,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load LabVIEW/SIT generator function
-    callLabViewSITGenerator = (call_lvsit_export_generator_t)dlsym(lib_ptr, "callLabViewSITGenerator");
+    callLabViewSITGenerator = (call_lvsit_export_generator_t)dlsym(mpLib, "callLabViewSITGenerator");
     dlsym_error = dlerror();
     if (dlsym_error)
     {
@@ -212,7 +198,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load compile component library function
-    callComponentLibraryCompiler = (call_complib_compiler_t)dlsym(lib_ptr, "callComponentLibraryCompiler");
+    callComponentLibraryCompiler = (call_complib_compiler_t)dlsym(mpLib, "callComponentLibraryCompiler");
     dlsym_error = dlerror();
     if(dlsym_error)
     {
@@ -221,7 +207,7 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load library generator function
-    callLibraryGenerator = (call_library_generator_t)dlsym(lib_ptr, "callLibraryGenerator");
+    callLibraryGenerator = (call_library_generator_t)dlsym(mpLib, "callLibraryGenerator");
     if(dlsym_error)
     {
         //! @todo Error message
@@ -237,11 +223,14 @@ GeneratorHandler::GeneratorHandler()
 
 GeneratorHandler::~GeneratorHandler()
 {
+    if (mpLib)
+    {
 #ifdef _WIN32
-    FreeLibrary(lib_ptr);
+        FreeLibrary(mpLib);
 #else
-    dlclose(lib_ptr);
+        dlclose(mpLib);
 #endif
+    }
 }
 
 

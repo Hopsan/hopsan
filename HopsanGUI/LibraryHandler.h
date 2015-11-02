@@ -36,14 +36,45 @@
 #include <QStringList>
 #include <QDir>
 #include <QMap>
+#include <QSharedPointer>
 
 //Hopsan includes
-#include <common.h>
+#include "common.h"
 
 //Forward declarations
 class ModelObjectAppearance;
-class ComponentLibrary;
-class LibraryEntry;
+
+//! @brief Component Library metadata class
+class ComponentLibrary
+{
+public:
+    QString name;
+    QString loadPath;
+    QString xmlFilePath;
+    QString debugExtension;
+    QString lflags;
+    QString cflags;
+    QString libFilePath;
+    QStringList cafFiles;
+    QStringList sourceFiles;
+    LibraryTypeEnumT type;
+    QStringList guiOnlyComponents;
+
+    QString getLibraryMainFilePath() const;
+};
+typedef QSharedPointer<ComponentLibrary> SharedComponentLibraryPtrT;
+
+//! @brief Library entry class
+class LibraryEntry
+{
+public:
+    bool isNull() const;
+
+    ModelObjectAppearance *pAppearance=nullptr;
+    SharedComponentLibraryPtrT pLibrary;
+    HiddenVisibleEnumT visibility=Hidden;
+    QStringList path;
+};
 
 class LibraryHandler : public QObject
 {
@@ -52,11 +83,11 @@ public:
     LibraryHandler(QObject *parent=0);
 
     void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
-    bool isLibraryLoaded(const QString &rLibraryXmlPath) const;
+    bool isLibraryLoaded(const QString &rLibraryXmlPath, const QString &rLibraryFilePath="") const;
     bool unloadLibraryByComponentType(QString typeName);
     bool unloadLibraryFMU(QString fmuName);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
-    void recompileLibrary(ComponentLibrary lib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
+    void recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames();
     LibraryEntry getEntry(const QString &typeName, const QString &subTypeName="");
@@ -76,50 +107,17 @@ signals:
     void contentsChanged();
 
 private:
-    bool unloadLibrary(ComponentLibrary *pLibrary);
+    bool unloadLibrary(SharedComponentLibraryPtrT pLibrary);
+    void loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
 
     YesNoToAllEnumT mUpConvertAllCAF;
 
     //Contents
-    QList<ComponentLibrary> mLoadedLibraries;
+    QList<SharedComponentLibraryPtrT> mLoadedLibraries;
     QMap<QString, LibraryEntry> mLibraryEntries;
-    QStringList mFailedComponents;
+//    QStringList mFailedComponents;
     QDir mUpdateXmlBackupDir;
-    QStringList mLastLoadedLibFiles;
     QMap<QString, QStringList> mReplacementsMap;
 };
-
-
-//! @brief Library entry class
-class ComponentLibrary
-{
-public:
-    QString name;
-    QString loadPath;
-    QString xmlFilePath;
-    QString debugExtension;
-    QString lflags;
-    QString cflags;
-    QString libFilePath;
-    QStringList cafFiles;
-    QStringList sourceFiles;
-    LibraryTypeEnumT type;
-    QStringList guiOnlyComponents;
-};
-
-
-//! @brief Library entry class
-class LibraryEntry
-{
-public:
-    LibraryEntry();
-    bool isNull() const;
-
-    ModelObjectAppearance *pAppearance;
-    ComponentLibrary *pLibrary;
-    HiddenVisibleEnumT visibility;
-    QStringList path;
-};
-
 
 #endif // LIBRARYHANDLER_H

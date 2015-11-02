@@ -801,7 +801,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                             // But since we only need to unload one particular library this should work
                             //! @todo fix the problem with save state
                             CoreGeneratorAccess coreGenerator;
-                            coreGenerator.compileComponentLibrary(libPath, "", true);
+                            coreGenerator.compileComponentLibrary(libPath, "", "", true);
 
                             // Now reload the library
                             gpLibraryHandler->loadLibrary(libPath);

@@ -172,7 +172,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 bool removeDir(QString path);
 bool copyDir(const QString fromPath, QString toPath, QString &rErrorMessage);
 bool copyFile(const QString &source, const QString &target, QString &rErrorMessage);
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLFlags="", QString extraIncludes="");
+bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraCFlags="", QString extraLFlags="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);
 void callProcess(const QString &name, const QStringList &args, const QString workingDirectory, QString &rStdOut, QString &rStdErr);
 QString toValidVarName(const QString &rOrg);

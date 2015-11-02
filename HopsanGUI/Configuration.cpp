@@ -1088,8 +1088,8 @@ void Configuration::addUserLib(const QString &value, LibraryTypeEnumT type)
     {
         mUserLibs.append(file);
         mUserLibTypes.append(type);
+        saveToXml();
     }
-    saveToXml();
 }
 
 
@@ -1097,6 +1097,7 @@ void Configuration::addUserLib(const QString &value, LibraryTypeEnumT type)
 //! @param value Path to the library that is to be removed
 void Configuration::removeUserLib(const QString &value)
 {
+    bool didRemove=false;
     QFileInfo file(value);
     for(int i=0; i<mUserLibs.size(); ++i)
     {
@@ -1105,28 +1106,13 @@ void Configuration::removeUserLib(const QString &value)
             mUserLibs.removeAt(i);
             mUserLibTypes.removeAt(i);
             --i;
+            didRemove=true;
         }
     }
-    saveToXml();
-}
-
-
-//! @brief Tells whether or not a specified user library exist in the library list
-//! @param value Path to the library
-bool Configuration::hasUserLib(const QString &value) const
-{
-    QString valueFUllPath = QFileInfo(value).canonicalFilePath();
-    for (const QFileInfo &rFI : mUserLibs )
+    if (didRemove)
     {
-        // In case a registered user lib is an xml file path, check exact canonical file match
-        // else also check if the canonical dir path to such a file matches, (if we try to load the root directory again)
-        if ( (rFI.canonicalFilePath() == valueFUllPath) ||
-             (rFI.canonicalPath() == valueFUllPath) )
-        {
-            return true;
-        }
+        saveToXml();
     }
-    return false;
 }
 
 

@@ -230,7 +230,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const QString &input)
 
 
 
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraLFlags, QString extraIncludes)
+bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraCFlags, QString extraLFlags)
 {
     pGenerator->printMessage("Writing compilation script...");
 
@@ -303,11 +303,12 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     c.chop(1);
 
     QString hopsanBinDir = pGenerator->getBinPath();
-    QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath())+" "+extraIncludes;
+    QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath());
     lflags += QString(" -L\"%1\" -l%2").arg(hopsanBinDir).arg("HopsanCore"TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
     //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work) /Peter
     cflags += QString(" -Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(libRootDir);
+    cflags += extraCFlags+" ";
 
     // Modify if debug
 #ifdef DEBUGCOMPILING

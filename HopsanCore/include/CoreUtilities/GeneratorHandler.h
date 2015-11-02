@@ -54,7 +54,7 @@ public:
     typedef void (*call_simulink_export_generator_t)(HString path, HString modelName, hopsan::ComponentSystem *pSystem, bool disablePortLabels, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_simulink_cosim_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, HString coreIncludePath, HString binPath, bool showDialog);
     typedef void (*call_lvsit_export_generator_t)(HString path, hopsan::ComponentSystem *pSystem, HString coreIncludePath, HString binPath, bool showDialog);
-    typedef void (*call_complib_compiler_t)(HString path, HString extraLinks, HString coreIncludePath, HString binPath, HString gccPath, bool showDialog);
+    typedef void (*call_complib_compiler_t)(HString path, HString extraCFlags, HString extraLFlags, HString coreIncludePath, HString binPath, HString gccPath, bool showDialog);
     typedef void (*call_library_generator_t)(HString path, std::vector<HString> hppFiles, bool showDialog);
 
     call_modelica_generator_t callModelicaGenerator;
@@ -71,9 +71,9 @@ private:
     bool mLoadedSuccessfully;
 
 #ifdef _WIN32
-    HINSTANCE lib_ptr;
+    HINSTANCE mpLib;
 #else
-    void* lib_ptr;
+    void* mpLib;
 #endif
 };
 

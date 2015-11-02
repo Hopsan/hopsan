@@ -181,7 +181,6 @@ public:
     QStringList getModelicaFiles() const;
     void addUserLib(const QString &value, LibraryTypeEnumT type);
     void removeUserLib(const QString &value);
-    bool hasUserLib(const QString &value) const;
     QStringList getUserLibs() const;
     QList<LibraryTypeEnumT> getUserLibTypes() const;
 
