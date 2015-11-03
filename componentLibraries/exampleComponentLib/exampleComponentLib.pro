@@ -40,7 +40,7 @@ SOURCES += \
 HEADERS += \
     HydraulicComponents/MyExampleVolume.hpp \
     HydraulicComponents/MyExampleOrifice.hpp \
-    SignalComponents/SignalSum.hpp \
+    SignalComponents/MyExampleSignalSum.hpp \
     HydraulicComponents/MyExampleVolume2.hpp \
     HydraulicComponents/MyExampleConstantOrifice.hpp
 
