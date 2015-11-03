@@ -5,11 +5,15 @@
             <icon scale="1" path="SignalNDLookupTable.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <text>The input is a text file with comma separated values, a .csv file. The supported formats are " decimal '.' and separator ',' " or " decimal ',' and separator ';' ".
+            <text>
+            The input is a text file with comma separated values, a .csv file. The supported formats are " decimal '.' and separator ',' " or " decimal ',' and separator ';' ".
+
+            The lookup table index data must be in grid format.
             Data must be stored in three columns in the CSV file in the following format: "row_idx_value,column_idx_value,data_value".
             Row and column index value vectors can be floating point decimal values.
-            The last value line should consist of "nR = The number of rows", "nC = The number of columns" and 0 (a dummy value)
-            Example for 2x3 matrix:
+            The last line should consist of "nR = The number of index rows", "nC = The number of index columns" and 0 (a dummy value)
+
+            Example for 2x3 matrix where (nR=2, nC=3):
             r1, c1, v11
             r1, c2, v12
             r1, c3, v13
@@ -17,8 +21,9 @@
             r2, c2, v22
             r2, c3, v23
             nR, nC, 0
-The index value vectors has to be strictly increasing, if this is not the case, it will be automatically sorted. Duplicate values in the input data vectors are not allowed.
-One blank (empty) line must be present at the end of the data file.</text>
+
+            The index value vectors have to be strictly increasing, if this is not the case, they will be automatically sorted. Duplicate values in the index data vectors are not allowed.
+            One blank (empty) line must be present at the end of the data file.</text>
         </help>
         <ports>
             <port x="0" y="0.25" a="180" name="row"/>

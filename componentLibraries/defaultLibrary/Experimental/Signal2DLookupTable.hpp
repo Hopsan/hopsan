@@ -145,15 +145,15 @@ namespace hopsan {
                         return;
                     }
 
-                    // Now the data is in the lookuptable and we can throw away the csv data to conserve memory
+                    // Now the data is in the lookup table and we can throw away the csv data to conserve memory
                     mDataFile.closeFile();
 
                     // Make sure the correct number of rows and columns are available
                     if ( (nRows != mLookupTable.getDimSize(0)) || (nCols != mLookupTable.getDimSize(1)) )
                     {
-                        addErrorMessage(HString("Wrong number of rows: "+to_hstring(mLookupTable.getDimSize(0))+
-                                                " "+to_hstring(mLookupTable.getDimSize(1))+
-                                                " Should have been: "+to_hstring(nRows)+
+                        addErrorMessage(HString("The actual number of extracted rows: "+to_hstring(mLookupTable.getDimSize(0))+
+                                                " and cols: "+to_hstring(mLookupTable.getDimSize(1))+
+                                                ", Does not match the specification (last line): "+to_hstring(nRows)+
                                                 " "+to_hstring(nCols)));
                         stopSimulation();
                         return;
