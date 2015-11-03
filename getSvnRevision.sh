@@ -23,7 +23,7 @@ writeFile()
   echo "#ifndef $hguard" >> $1
   echo "#define $hguard" >> $1
   if [ -z "$3" ]; then
-    echo echo "#define $2 UNKNOWN" >> $1
+    echo "#define $2 UNKNOWN" >> $1
   else
     echo "#define $2 $3" >> $1
   fi
