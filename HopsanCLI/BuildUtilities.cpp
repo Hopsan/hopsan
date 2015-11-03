@@ -18,6 +18,7 @@ bool buildComponentLibrary(const std::string &rLibraryXML, std::string &rOutput)
         string hopsanBinPath = path;
 
         pHandler->callComponentLibraryCompiler(rLibraryXML.c_str(), "", "", hopsanIncludePath.c_str(), hopsanBinPath.c_str(), "", false);
+        delete(pHandler);
         return true;
     }
     delete(pHandler);

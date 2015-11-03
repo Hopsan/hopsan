@@ -75,7 +75,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
 {
     qDebug() << "SOLVER: " << solver;
 
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
 
     if(pHandler->isLoadedSuccessfully())
     {
@@ -91,7 +91,6 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
         pHandler->callModelicaGenerator(hPath, hGccPath, showDialog, solver, compile, hIncludePath, hBinPath);
         return true;
     }
-    delete(pHandler);
     return false;
 }
 
@@ -99,7 +98,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
 //! @todo Return false if compilation fails!
 bool CoreGeneratorAccess::generateFromCpp(QString hppFile, bool compile)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
 #ifdef HOPSANCOMPILED64BIT
@@ -114,14 +113,13 @@ bool CoreGeneratorAccess::generateFromCpp(QString hppFile, bool compile)
         pHandler->callCppGenerator(hHppFile, hGccPath, compile, hIncludePath, hBinPath);
         return true;
     }
-    delete(pHandler);
     return false;
 }
 
 
 bool CoreGeneratorAccess::generateFromFmu(QString path)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
         QFileInfo fmuFileInfo = QFileInfo(path);
@@ -174,7 +172,6 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             return true;
         }
     }
-    delete(pHandler);
     return false;
 }
 
@@ -186,7 +183,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 //! @param pSystem Pointer to system that shall be exported
 bool CoreGeneratorAccess::generateToFmu(QString path, int version, TargetArchitectureT architecture, SystemContainer *pSystem)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
         hopsan::HString hGccPath;
@@ -207,7 +204,6 @@ bool CoreGeneratorAccess::generateToFmu(QString path, int version, TargetArchite
         pHandler->callFmuExportGenerator(hPath, pCoreSystem, hIncludePath, hBinPath, hGccPath, version, use64bit, true);
         return true;
     }
-    delete(pHandler);
     return false;
 }
 
@@ -218,26 +214,24 @@ bool CoreGeneratorAccess::generateToFmu(QString path, int version, TargetArchite
 //! @param Tells whether or not to disable port labels (for older versions of Matlab)
 bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
         pHandler->callSimulinkExportGenerator(path.toStdString().c_str(), pSystem->getModelFileInfo().fileName().toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
-    delete(pHandler);
     return false;
 }
 
 
 bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels, int compiler)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
         pHandler->callSimulinkCoSimExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
-    delete(pHandler);
     return false;
 }
 
@@ -247,13 +241,12 @@ bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer 
 //! @param pSystem Pointer to system that shall be exported
 bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pSystem)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
         pHandler->callLabViewSITGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
-    delete(pHandler);
     return false;
 }
 
@@ -263,7 +256,7 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
 //! @param hppFiles List with component source code files to use in library
 void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
         std::vector<hopsan::HString> hppList;
@@ -282,7 +275,7 @@ void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 //! @param showDialog True if HopsanGenerator dialog shall be shown
 bool CoreGeneratorAccess::compileComponentLibrary(QString libPath, QString extraCFlags, QString extraLFlags, bool showDialog)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
 #ifdef HOPSANCOMPILED64BIT
@@ -299,7 +292,6 @@ bool CoreGeneratorAccess::compileComponentLibrary(QString libPath, QString extra
         pHandler->callComponentLibraryCompiler(hLibPath, hExtraCFlags, hExtraLFlags, hIncludePath, hBinPath, hGccPath, showDialog);
         return true;
     }
-    delete(pHandler);
     return false;
 }
 
