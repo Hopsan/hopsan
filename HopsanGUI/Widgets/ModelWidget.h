@@ -64,6 +64,8 @@ class ModelWidget : public QWidget
 {
     Q_OBJECT
 
+    friend class ModelHandler;
+
 public:
     ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentTabWidget = nullptr);
     ~ModelWidget();
