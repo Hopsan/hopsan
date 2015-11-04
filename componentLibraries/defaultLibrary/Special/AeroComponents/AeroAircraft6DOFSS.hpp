@@ -1,27 +1,3 @@
-/*-----------------------------------------------------------------------------
- This source file is a part of Hopsan
-
- Copyright (c) 2009 to present year, Hopsan Group
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
- For license details and information about the Hopsan Group see the files
- GPLv3 and HOPSANGROUP in the Hopsan source code root directory
-
- For author and contributor information see the AUTHORS file
------------------------------------------------------------------------------*/
-
 #ifndef AEROAIRCRAFT6DOFSS_HPP_INCLUDED
 #define AEROAIRCRAFT6DOFSS_HPP_INCLUDED
 
@@ -33,7 +9,8 @@
 //!
 //! @file AeroAircraft6DOFSS.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 23 Feb 2015 15:54:34
+//  co-author/auditor **Not yet audited by a second person**
+//! @date Fri 18 Sep 2015 15:46:39
 //! @brief Flight dynamics model of super-sonic aircraft
 //! @ingroup AeroComponents
 //!
@@ -100,6 +77,9 @@ private:
      double Ixz0;
      double Iy0;
      double Iz0;
+     double lambda1;
+     double lambda2;
+     double lambdafin;
      double lc10;
      double lc20;
      double lc120;
@@ -443,6 +423,9 @@ private:
      double *mpIxz0;
      double *mpIy0;
      double *mpIz0;
+     double *mplambda1;
+     double *mplambda2;
+     double *mplambdafin;
      double *mplc10;
      double *mplc20;
      double *mplc120;
@@ -658,61 +641,63 @@ z","rad/s",0.,&mpwturbz);
             addInputVariable("ia1", "incidence angle 1", "rad", 0.,&mpia1);
             addInputVariable("ia2", "incidence angle 1", " rad", \
 0.02,&mpia2);
-            addInputVariable("Ix0", "Norm. Inertia moment Ix/(Me mac^2)", " \
-", 0.0147,&mpIx0);
-            addInputVariable("Ixz0", "Norm. Inertia moment Ixz/(Me S1)", " ", \
+            addInputVariable("Ix0", "Norm. Inertia moment Ix/(Me S1)", " ", \
+0.0147,&mpIx0);
+            addInputVariable("Ixz0", "Norm. Inertia moment", " ", \
 0.0055,&mpIxz0);
-            addInputVariable("Iy0", "Norm. Inertia moment Iy/(Me b1^2)", " ", \
+            addInputVariable("Iy0", "Norm. Inertia moment", " ", \
 1.131,&mpIy0);
-            addInputVariable("Iz0", "Inertia moment Iz/(Me b1^2)", " ", \
-1.279,&mpIz0);
+            addInputVariable("Iz0", "Inertia moment", " ", 1.279,&mpIz0);
+            addInputVariable("lambda1", "sweep 1", "rad", \
+0.436332,&mplambda1);
+            addInputVariable("lambda2", "sweep 2", "rad", \
+0.436332,&mplambda2);
+            addInputVariable("lambdafin", "sweep fin", "rad", \
+0.785398,&mplambdafin);
             addInputVariable("lc10", "norm. ctrl surf. 1 ac fr hinge \
-lc1/mac", "", 0.01,&mplc10);
+lc1/sqrt(AR1 S1)", "", 0.01,&mplc10);
             addInputVariable("lc20", "norm. ctrl surf. 2 ac fr hinge \
-lc2/mac", "", 0.05,&mplc20);
-            addInputVariable("lc120", "norm. flap 1 ac fr hinge lc12/mac", \
-"", 0.01,&mplc120);
-            addInputVariable("lcfin0", "ctrl s. fin ac fr hinge lcfin2/mac", \
-"", 0.01,&mplcfin0);
+lc1/sqrt(AR1 S1)", "", 0.05,&mplc20);
+            addInputVariable("lc120", "norm. flap 1 ac fr hinge", "", \
+0.01,&mplc120);
+            addInputVariable("lcfin0", "ctrl s. fin ac fr hinge", "", \
+0.01,&mplcfin0);
             addInputVariable("Me", "Empty weight", "kg", 8700.,&mpMe);
             addInputVariable("mac0", "mean aerodynamic cord/Sqrt(S1/b1)", "", \
 1.,&mpmac0);
-            addInputVariable("rc10", "norm. ctrl surface 1 mom. arm rc1/b1", \
-"", 0.25,&mprc10);
-            addInputVariable("rc120", "norm. ctrl surface 12 mom. arm \
-rc12/b1", "", 0.25,&mprc120);
-            addInputVariable("rc20", "norm. ctrl surface 1 mom. arm rc2/b1", \
-"", 0.15,&mprc20);
-            addInputVariable("rcfin0", "norm. ctrl surf. fin mom. arm \
-rcfin1/b1)", "", 0.1,&mprcfin0);
+            addInputVariable("rc10", "norm. ctrl surface 1 mom. arm", "", \
+0.25,&mprc10);
+            addInputVariable("rc120", "norm. ctrl surface 12 mom. arm", "", \
+0.25,&mprc120);
+            addInputVariable("rc20", "norm. ctrl surface 1 mom. arm", "", \
+0.15,&mprc20);
+            addInputVariable("rcfin0", "norm. ctrl surf. fin mom. arm", "", \
+0.1,&mprcfin0);
             addInputVariable("S1", "wing area 1", "m2", 27.,&mpS1);
-            addInputVariable("S20", "norm. wing area 2. S2/S20", "", \
-0.36,&mpS20);
-            addInputVariable("Sbh0", "norm. hor. proj. area. Sbh0/S20", "", \
+            addInputVariable("S20", "norm. wing area 2", "", 0.36,&mpS20);
+            addInputVariable("Sbh0", "norm. hor. proj. area", "", \
 0.2,&mpSbh0);
-            addInputVariable("Sbv0", "norm.body vert. proj. area. Sbv0/S20", \
-"", 0.1,&mpSbv0);
-            addInputVariable("Sfin0", "norm. fin area. Sfin0/S20", "", \
-0.17,&mpSfin0);
-            addInputVariable("xbach0", "norm. body ac. hor. xbach/mac", "", \
+            addInputVariable("Sbv0", "norm.body vert. proj. area", "", \
+0.1,&mpSbv0);
+            addInputVariable("Sfin0", "norm. fin area", "", 0.17,&mpSfin0);
+            addInputVariable("xbach0", "norm. body ac. hor.", "", \
 3,&mpxbach0);
-            addInputVariable("xbacv0", "norm. body ac vert. xbacv/mac", " ", \
+            addInputVariable("xbacv0", "norm. body ac vert.", " ", \
 3,&mpxbacv0);
-            addInputVariable("xbcge0", "norm. body cg xbcge/mac", " ", \
-3,&mpxbcge0);
-            addInputVariable("xcargo0", "norm. cargo pos. xcargo/mac", " ", \
+            addInputVariable("xbcge0", "norm. body cg", " ", 3,&mpxbcge0);
+            addInputVariable("xcargo0", "norm. cargo pos.", " ", \
 3,&mpxcargo0);
             addInputVariable("xfuel0", "", " ", 3,&mpxfuel0);
-            addInputVariable("xw10", "norm. wing1 position. xw1/mac", " ", \
+            addInputVariable("xw10", "norm. wing1  position", " ", \
 3,&mpxw10);
-            addInputVariable("xw20", "norm. wing 2 position. xw2/mac", " ", \
+            addInputVariable("xw20", "norm. wing 2 position", " ", \
 4.8,&mpxw20);
-            addInputVariable("xwfin0", "norm. fin position. xwfin/mac", "", \
+            addInputVariable("xwfin0", "norm. fin position", "", \
 4.8,&mpxwfin0);
-            addInputVariable("xeng0", "norm. fin position. xeng/mac", "", \
+            addInputVariable("xeng0", "norm. fin position", "", \
 4.8,&mpxeng0);
-            addInputVariable("yeng0", "engines off. from center. yeng/b1", \
-"", 0.,&mpyeng0);
+            addInputVariable("yeng0", "engines off. from center", "", \
+0.,&mpyeng0);
             addInputVariable("g0", "Gravity acceleration", "m/s^2", \
 9.81,&mpg0);
             addInputVariable("kground", "Ground stiffness (for limitiation)", \
@@ -975,6 +960,9 @@ NodeMechanicRotational::EquivalentInertia);
         Ixz0 = (*mpIxz0);
         Iy0 = (*mpIy0);
         Iz0 = (*mpIz0);
+        lambda1 = (*mplambda1);
+        lambda2 = (*mplambda2);
+        lambdafin = (*mplambdafin);
         lc10 = (*mplc10);
         lc20 = (*mplc20);
         lc120 = (*mplc120);
@@ -1154,10 +1142,10 @@ Cydeelev*qpress*S2*(thetaal2 - thetaar2) + CLalphabv*qpress*Sbv*Sin(Beta)) - \
 thrustl*Cos(deythrustl)*Sin(dezthrustr) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr);
         Lb = (Liftl1 - Liftr1)*rc1 + (Liftl2 - Liftr2)*rc2 - \
-(qpress*(CLalpha1e*Power(rc1,2)*S1 + CLalpha2e*Power(rc2,2)*S2)*(Pb + \
-(Power(q0,2) + Power(q1,2) - Power(q2,2) - Power(q3,2))*wturbx + 2*(q1*q2 - \
-q0*q3)*wturby + 2*(q0*q2 + q1*q3)*wturbz))/(0.1 + v) + \
-yeng*(thrustl*Cos(deythrustl)*Sin(dezthrustl) - \
+(0.12249999999999998*qpress*(Power(b1,2)*CLalpha1e*S1 + \
+Power(b2,2)*CLalpha2e*S2)*(Pb + (Power(q0,2) + Power(q1,2) - Power(q2,2) - \
+Power(q3,2))*wturbx + 2*(q1*q2 - q0*q3)*wturby + 2*(q0*q2 + \
+q1*q3)*wturbz))/(0.1 + v) + yeng*(thrustl*Cos(deythrustl)*Sin(dezthrustl) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr));
         Mb = -(Mdvtheta*(Qb + 2*(q1*q2 + q0*q3)*wturbx + (Power(q0,2) - \
 Power(q1,2) + Power(q2,2) - Power(q3,2))*wturby + 2*(-(q0*q1) + \
@@ -1256,6 +1244,9 @@ mTimestep*Power(q3,2)*Wb - 2*zcg)/2.;
         delayedPart[11][1] = delayParts11[1];
         delayedPart[12][1] = delayParts12[1];
         delayedPart[13][1] = delayParts13[1];
+
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {
@@ -1372,6 +1363,9 @@ mTimestep*Power(q3,2)*Wb - 2*zcg)/2.;
         Ixz0 = (*mpIxz0);
         Iy0 = (*mpIy0);
         Iz0 = (*mpIz0);
+        lambda1 = (*mplambda1);
+        lambda2 = (*mplambda2);
+        lambdafin = (*mplambdafin);
         lc10 = (*mplc10);
         lc20 = (*mplc20);
         lc120 = (*mplc120);
@@ -1509,10 +1503,10 @@ Cydeelev*qpress*S2*(thetaal2 - thetaar2) + CLalphabv*qpress*Sbv*Sin(Beta)) - \
 thrustl*Cos(deythrustl)*Sin(dezthrustr) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr);
         Lb = (Liftl1 - Liftr1)*rc1 + (Liftl2 - Liftr2)*rc2 - \
-(qpress*(CLalpha1e*Power(rc1,2)*S1 + CLalpha2e*Power(rc2,2)*S2)*(Pb + \
-(Power(q0,2) + Power(q1,2) - Power(q2,2) - Power(q3,2))*wturbx + 2*(q1*q2 - \
-q0*q3)*wturby + 2*(q0*q2 + q1*q3)*wturbz))/(0.1 + v) + \
-yeng*(thrustl*Cos(deythrustl)*Sin(dezthrustl) - \
+(0.12249999999999998*qpress*(Power(b1,2)*CLalpha1e*S1 + \
+Power(b2,2)*CLalpha2e*S2)*(Pb + (Power(q0,2) + Power(q1,2) - Power(q2,2) - \
+Power(q3,2))*wturbx + 2*(q1*q2 - q0*q3)*wturby + 2*(q0*q2 + \
+q1*q3)*wturbz))/(0.1 + v) + yeng*(thrustl*Cos(deythrustl)*Sin(dezthrustl) - \
 thrustr*Cos(deythrustr)*Sin(dezthrustr));
         Mb = -(Mdvtheta*(Qb + 2*(q1*q2 + q0*q3)*wturbx + (Power(q0,2) - \
 Power(q1,2) + Power(q2,2) - Power(q3,2))*wturby + 2*(-(q0*q1) + \
