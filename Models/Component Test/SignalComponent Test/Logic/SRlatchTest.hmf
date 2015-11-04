@@ -1,36 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5339" hopsancoreversion="0.6.x_r5334">
+<hopsanmodelfile hopsancoreversion="0.6.x_r7734" hopsanguiversion="0.6.x_r7736" hmfversion="0.4">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>PettersComponentLibrary</componentlibrary>
   </requirements>
   <info/>
-  <system logsamples="2048" typename="Subsystem" name="SRlatchTest">
-    <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+  <system name="SRlatchTest" typename="Subsystem">
+    <simulationtime inherit_timestep="true" timestep="0.001" stop="10" start="0"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
     <parameters/>
     <aliases/>
     <hopsangui>
-      <pose x="0" y="0" flipped="false" a="0"/>
-      <nametext position="0" visible="1"/>
-      <animation flowspeed="100"/>
-      <viewport x="2571.5" y="2443.5" zoom="1"/>
+      <pose a="0" flipped="false" x="0" y="0"/>
+      <nametext visible="0" position="0"/>
+      <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+      <viewport zoom="1" x="2256.5" y="2346"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
       <scriptfile path=""/>
       <hopsanobjectappearance version="0.3">
-        <modelobject typename="Subsystem" displayname="SRlatchTest">
+        <modelobject displayname="SRlatchTest" typename="Subsystem">
           <icons>
             <icon path="subsystemDefault.svg" type="defaultmissing"/>
           </icons>
           <ports/>
-          <animation flowspeed="100"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
         </modelobject>
       </hopsanobjectappearance>
-      <favoritevariables/>
       <optimization>
         <settings>
-          <niter>100</niter>
+          <iterations>100</iterations>
           <nsearchp>8</nsearchp>
           <refcoeff>1.3</refcoeff>
           <randfac>0.3</randfac>
@@ -39,105 +38,256 @@
           <partol>0.0001</partol>
           <plot>true</plot>
           <savecsv>false</savecsv>
+          <savecsv>true</savecsv>
           <logpar>false</logpar>
         </settings>
         <parameters/>
         <objectives/>
       </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
     </hopsangui>
     <objects>
-      <component typename="SignalPulse" name="Pulse">
+      <component name="Pulse" typename="SignalPulse">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter name="y_0#Value" unit="-" value="0" type="double"/>
+          <parameter name="y_A#Value" unit="-" value="1" type="double"/>
+          <parameter name="t_start#Value" unit="s" value="1" type="double"/>
+          <parameter name="t_end#Value" unit="s" value="3" type="double"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2075" y="2460" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <pose a="0" flipped="false" x="1992" y="2460"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalPulse" displayname="Pulse">
+            <modelobject displayname="Pulse" typename="SignalPulse">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalSRlatch" name="SignalSRlatch">
+      <component name="Scope" typename="SignalSink">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="setCond::Value"/>
-          <parameter unit="-" value="0" type="double" name="resetCond::Value"/>
-          <parameter unit="-" value="0" type="double" name="Qstate::Value"/>
-          <parameter unit="-" value="0" type="double" name="notQstate::Value"/>
+          <parameter name="in_bottom#Value" unit="" value="0" type="double"/>
         </parameters>
         <ports>
-          <port nodetype="NodeSignal" name="Qstate"/>
-          <port nodetype="NodeSignal" name="notQstate"/>
-          <port nodetype="NodeSignal" name="setCond"/>
-          <port nodetype="NodeSignal" name="resetCond"/>
-        </ports>
-        <hopsangui>
-          <pose x="2334" y="2477" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalSRlatch" displayname="SignalSRlatch">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component typename="SignalPulse" name="Pulse_1">
-        <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="-" value="4" type="double" name="t_start::Value"/>
-          <parameter unit="-" value="5" type="double" name="t_end::Value"/>
-          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="out"/>
-        </ports>
-        <hopsangui>
-          <pose x="2146" y="2494" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalPulse" displayname="Pulse_1">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component typename="SignalSink" name="Scope">
-        <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="in_right"/>
-          <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="in_bottom"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_right"/>
         </ports>
         <hopsangui>
-          <pose x="2503" y="2460" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
+          <pose a="0" flipped="false" x="2503" y="2461"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
           <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalSink" displayname="Scope">
+            <modelobject displayname="Scope" typename="SignalSink">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
         </hopsangui>
       </component>
+      <component name="SignalSRlatch" typename="SignalSRlatch">
+        <parameters>
+          <parameter name="setCond#Value" unit="" value="0" type="double"/>
+          <parameter name="resetCond#Value" unit="" value="0" type="double"/>
+          <parameter name="Qstate#Value" unit="" value="0" type="double"/>
+          <parameter name="notQstate#Value" unit="" value="0" type="double"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="resetCond"/>
+          <port nodetype="NodeSignal" name="Qstate"/>
+          <port nodetype="NodeSignal" name="setCond"/>
+          <port nodetype="NodeSignal" name="notQstate"/>
+        </ports>
+        <hopsangui>
+          <pose a="0" flipped="false" x="2334" y="2477"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="SignalSRlatch" typename="SignalSRlatch">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Pulse_1" typename="SignalPulse">
+        <parameters>
+          <parameter name="y_0#Value" unit="-" value="0" type="double"/>
+          <parameter name="y_A#Value" unit="-" value="1" type="double"/>
+          <parameter name="t_start#Value" unit="s" value="2" type="double"/>
+          <parameter name="t_end#Value" unit="s" value="5" type="double"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose a="0" flipped="false" x="1994" y="2529"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Pulse_1" typename="SignalPulse">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_1" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" unit="" value="0" type="double"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_right"/>
+        </ports>
+        <hopsangui>
+          <pose a="0" flipped="false" x="2504" y="2353"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Scope_1" typename="SignalSink">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Pulse_2" typename="SignalPulse">
+        <parameters>
+          <parameter name="y_0#Value" unit="-" value="0" type="double"/>
+          <parameter name="y_A#Value" unit="-" value="1" type="double"/>
+          <parameter name="t_start#Value" unit="s" value="4" type="double"/>
+          <parameter name="t_end#Value" unit="s" value="6" type="double"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose a="0" flipped="false" x="1991" y="2424"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Pulse_2" typename="SignalPulse">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Pulse_3" typename="SignalPulse">
+        <parameters>
+          <parameter name="y_0#Value" unit="-" value="0" type="double"/>
+          <parameter name="y_A#Value" unit="-" value="1" type="double"/>
+          <parameter name="t_start#Value" unit="s" value="7" type="double"/>
+          <parameter name="t_end#Value" unit="s" value="8" type="double"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose a="0" flipped="false" x="1993" y="2494"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Pulse_3" typename="SignalPulse">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Add" typename="SignalAdd">
+        <parameters>
+          <parameter name="in1#Value" unit="" value="0" type="double"/>
+          <parameter name="in2#Value" unit="" value="0" type="double"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose a="0" flipped="false" x="2059" y="2460"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Add" typename="SignalAdd">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Add_1" typename="SignalAdd">
+        <parameters>
+          <parameter name="in1#Value" unit="" value="0" type="double"/>
+          <parameter name="in2#Value" unit="" value="0" type="double"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose a="0" flipped="false" x="2060" y="2529"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Add_1" typename="SignalAdd">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2186.429688" y="2256.000000"/>
+          <textobject font="Calibri,18,-1,0,75,0,0,0,0,0" fontcolor="#000000" text="Test of S-R latch" reflow="0"/>
+          <size height="44.000000" width="197.140625"/>
+          <line visible="0" style="solidline" color="#556b2f" width="2"/>
+        </hopsangui>
+      </textboxwidget>
     </objects>
     <connections>
-      <connect endport="setCond" endcomponent="SignalSRlatch" startport="out" startcomponent="Pulse">
+      <connect startcomponent="SignalSRlatch" endcomponent="Scope" endport="in" startport="Qstate">
         <hopsangui>
           <coordinates>
-            <coordinate x="2087.50000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2360.00000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2483.00000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2483.00000000000000000000" y="2461.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startcomponent="Pulse" endcomponent="Add" endport="in1" startport="out">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2004.50000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2027.50000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2027.50000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2046.50000000000000000000" y="2460.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startcomponent="Add" endcomponent="SignalSRlatch" endport="setCond" startport="out">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2071.50000000000000000000" y="2460.00000000000000000000"/>
             <coordinate x="2288.00000000000000000000" y="2460.00000000000000000000"/>
             <coordinate x="2288.00000000000000000000" y="2460.00000000000000000000"/>
             <coordinate x="2308.00000000000000000000" y="2460.00000000000000000000"/>
@@ -150,11 +300,57 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="resetCond" endcomponent="SignalSRlatch" startport="out" startcomponent="Pulse_1">
+      <connect startcomponent="Pulse_2" endcomponent="Add" endport="in2" startport="out">
         <hopsangui>
           <coordinates>
-            <coordinate x="2158.50000000000000000000" y="2494.00000000000000000000"/>
-            <coordinate x="2288.00000000000000000000" y="2494.00000000000000000000"/>
+            <coordinate x="2003.50000000000000000000" y="2424.00000000000000000000"/>
+            <coordinate x="2059.00000000000000000000" y="2424.00000000000000000000"/>
+            <coordinate x="2059.00000000000000000000" y="2447.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startcomponent="Add" endcomponent="Scope_1" endport="in" startport="out">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2071.50000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2175.00000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2175.00000000000000000000" y="2353.00000000000000000000"/>
+            <coordinate x="2484.00000000000000000000" y="2353.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startcomponent="Pulse_1" endcomponent="Add_1" endport="in1" startport="out">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2006.50000000000000000000" y="2529.00000000000000000000"/>
+            <coordinate x="2055.50000000000000000000" y="2529.00000000000000000000"/>
+            <coordinate x="2055.50000000000000000000" y="2529.00000000000000000000"/>
+            <coordinate x="2047.50000000000000000000" y="2529.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startcomponent="Add_1" endcomponent="SignalSRlatch" endport="resetCond" startport="out">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2072.50000000000000000000" y="2529.00000000000000000000"/>
+            <coordinate x="2288.00000000000000000000" y="2529.00000000000000000000"/>
             <coordinate x="2288.00000000000000000000" y="2494.00000000000000000000"/>
             <coordinate x="2308.00000000000000000000" y="2494.00000000000000000000"/>
           </coordinates>
@@ -166,16 +362,32 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="in" endcomponent="Scope" startport="Qstate" startcomponent="SignalSRlatch">
+      <connect startcomponent="Pulse_3" endcomponent="Add_1" endport="in2" startport="out">
         <hopsangui>
           <coordinates>
-            <coordinate x="2360.00000000000000000000" y="2460.00000000000000000000"/>
-            <coordinate x="2483.00000000000000000000" y="2460.00000000000000000000"/>
-            <coordinate x="2483.00000000000000000000" y="2460.00000000000000000000"/>
+            <coordinate x="2005.50000000000000000000" y="2494.00000000000000000000"/>
+            <coordinate x="2060.00000000000000000000" y="2494.00000000000000000000"/>
+            <coordinate x="2060.00000000000000000000" y="2516.50000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startcomponent="Add_1" endcomponent="Scope_1" endport="in" startport="out">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2072.50000000000000000000" y="2529.00000000000000000000"/>
+            <coordinate x="2191.00000000000000000000" y="2529.00000000000000000000"/>
+            <coordinate x="2191.00000000000000000000" y="2353.00000000000000000000"/>
+            <coordinate x="2484.00000000000000000000" y="2353.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
