@@ -28,7 +28,6 @@ pComponentFactory->registerCreatorFunction("AeroAircraft6DOFS",AeroAircraft6DOFS
 pComponentFactory->registerCreatorFunction("AeroAircraft6DOFSS",AeroAircraft6DOFSS::Creator);
 pComponentFactory->registerCreatorFunction("AeroAtmosphere",AeroAtmosphere::Creator);
 pComponentFactory->registerCreatorFunction("AeroCombustionChamberMono",AeroCombustionChamberMono::Creator);
-pComponentFactory->registerCreatorFunction("AeroFlightRecorder",AeroFlightRecorder::Creator);
 pComponentFactory->registerCreatorFunction("AeroFuelTank",AeroFuelTank::Creator);
 pComponentFactory->registerCreatorFunction("AeroJetEngine",AeroJetEngine::Creator);
 pComponentFactory->registerCreatorFunction("AeroPropeller",AeroPropeller::Creator);
