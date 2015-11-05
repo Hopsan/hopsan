@@ -23,7 +23,7 @@ inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inksca
 innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 
 # Compilers and build tools
-qtcreatorDirList = [r'C:\Qt\qtcreator-2.8.1']
+qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1\bin']
 msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
 msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
@@ -298,13 +298,13 @@ def verifyPaths():
 
     #Make sure Visual Studio 2008 is installed in correct location
     msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
-    if msvc2008Dir == "":
-        isOk = False
+    #if msvc2008Dir == "":
+    #    isOk = False
 
     #Make sure Visual Studio 2010 is installed in correct location
     msvc2010Dir=selectPathFromList(msvc2010DirList, "Microsoft Windows SDK 7.1 (MSVC2010) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.1 (MSVC2010)!")
-    if msvc2010Dir == "":
-        isOk = False
+    #if msvc2010Dir == "":
+    #    isOk = False
     
     #Make sure the 3d party dependency file exists
     #if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
@@ -426,7 +426,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     # Make sure we compile defaultLibrary into core
     callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
     callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
-    callSed(r'"/.*<lib>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
+    callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     callSed(r'"s|componentLibraries||" -i HopsanNG.pro')
 
 
@@ -566,9 +566,6 @@ def copyFiles():
 
     # Export defaultLibrary" SVN directory to temporary directory
     svnExport(r'componentLibraries\defaultLibrary', gTemporaryBuildDir+r'\componentLibraries\defaultLibrary')
-    
-    # Remove xml file for default component library (will be compiled into HopsanCore.dll)
-    callDel(gTemporaryBuildDir+r'\componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     
     # Export "exampleComponentLib" SVN directory to temporary directory
     svnExport(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries\exampleComponentLib')
