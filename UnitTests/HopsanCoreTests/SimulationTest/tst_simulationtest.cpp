@@ -56,7 +56,9 @@ class SimulationTests : public QObject
 public:
     SimulationTests()
     {
+#ifndef BUILTINDEFAULTCOMPONENTLIB
         mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+#endif
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 "<hopsanmodelfile hmfversion=\"0.4\" hopsanguiversion=\"0.6.0\" hopsancoreversion=\"0.6.0\">"
                 "  <system logsamples=\"2048\" typename=\"Subsystem\" name=\"unittestmodel\">"

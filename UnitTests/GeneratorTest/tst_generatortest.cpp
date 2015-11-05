@@ -31,8 +31,8 @@
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
-#define LIBEXT TO_STR(DLL_EXT)
 #endif
+#define LIBEXT TO_STR(DLL_EXT)
 
 using namespace hopsan;
 
@@ -50,7 +50,9 @@ class GeneratorTests : public QObject
 public:
     GeneratorTests()
     {
+#ifndef BUILTINDEFAULTCOMPONENTLIB
         mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+#endif
     }
 
 private:
