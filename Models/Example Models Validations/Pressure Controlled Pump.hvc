@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.2">
   <validation hopsanguiversion="0.6.12" time="084459" date="20150903" hopsancoreversion="0.6.12">
-    <modelfile>../../../../../../Program Files/Hopsan/Models/Example Models/Pressure Controlled Pump.hmf</modelfile>
+    <modelfile>../Example Models/Pressure Controlled Pump.hmf</modelfile>
     <hvdfile>Pressure Controlled Pump.hvd</hvdfile>
     <variable name="Pressure_Controlled_Pump$Load#P2#Pressure">
       <timecolumn>0</timecolumn>
