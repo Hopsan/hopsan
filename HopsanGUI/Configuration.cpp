@@ -1239,3 +1239,12 @@ void Configuration::setParallelAlgorithm(int value)
 {
     mParallelAlgorighm = value;
 }
+
+QString Configuration::getGCCPath() const
+{
+#ifdef HOPSANCOMPILED64BIT
+    return getStringSetting(CFG_GCC64DIR);
+#else
+    return getStringSetting(CFG_GCC32DIR);
+#endif
+}

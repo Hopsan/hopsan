@@ -470,25 +470,34 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     {
                         if(!coreAccess.loadComponentLib(pLibrary->libFilePath))
                         {
-                            // Failed to load, attempt recompilation
+                            // Failed to load
                             gpMessageHandler->collectHopsanCoreMessages();
                             gpMessageHandler->addErrorMessage("Failed to load library: "+pLibrary->libFilePath);
-                            gpMessageHandler->addInfoMessage("Attempting to recompile library: "+pLibrary->name+"...");
-                            recompileLibrary(pLibrary,true,0,true);
-                            gpMessageHandler->collectHopsanCoreMessages();
-
-                            // Try to load again
-                            if(!coreAccess.loadComponentLib(pLibrary->libFilePath))
+                            // Attempt recompilation if we have a compiler set
+                            if (!gpConfig->getGCCPath().isEmpty())
                             {
-                                // Still no success, recompilation failed. Ignore and go on.
-                                gpMessageHandler->addErrorMessage("Recompilation failed.");
-                                mLoadedLibraries.pop_back(); //Discard library
+                                gpMessageHandler->addInfoMessage("Attempting to recompile library: "+pLibrary->name+"...");
+                                recompileLibrary(pLibrary,true,0,true);
+                                gpMessageHandler->collectHopsanCoreMessages();
+
+                                // Try to load again
+                                if(!coreAccess.loadComponentLib(pLibrary->libFilePath))
+                                {
+                                    // Still no success, recompilation failed. Ignore and go on.
+                                    gpMessageHandler->addErrorMessage("Recompilation failed.");
+                                    mLoadedLibraries.pop_back(); //Discard library
+                                }
+                                else
+                                {
+                                    // Successful loading after recompilation
+                                    gpMessageHandler->addInfoMessage("Recompilation successful!");
+                                    loadedSomething = true;
+                                }
                             }
                             else
                             {
-                                // Successful loading after recompilation
-                                gpMessageHandler->addInfoMessage("Recompilation successful!");
-                                loadedSomething = true;
+                                gpMessageHandler->addWarningMessage("No compiler path set, cant recompile");
+                                mLoadedLibraries.pop_back(); //Discard library
                             }
                         }
                         else

@@ -363,7 +363,6 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pPlottingLayout->setRowStretch(10, 1);
 
 
-#ifdef _WIN32
     QLabel *pCompiler32Label = new QLabel("32-bit GCC Compiler Path:");
     mpCompiler32LineEdit = new QLineEdit(this);
     QToolButton *pCompiler32Button = new QToolButton(this);
@@ -403,7 +402,6 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     connect(mpCompiler32LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler32Path(QString)));
     connect(pCompiler64Button, SIGNAL(clicked()), this, SLOT(setCompiler64Path()));
     connect(mpCompiler64LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler64Path(QString)));
-#endif
 
     QWidget *pRemoteHopsanSettingsWidget = new QWidget();
     QGridLayout *pRemoteHopsanSettingsLayout = new QGridLayout(pRemoteHopsanSettingsWidget);
@@ -561,10 +559,8 @@ void OptionsDialog::setValues()
         }
     }
 
-#ifdef _WIN32
     gpConfig->setStringSetting(CFG_GCC32DIR, mpCompiler32LineEdit->text());
     gpConfig->setStringSetting(CFG_GCC64DIR, mpCompiler64LineEdit->text());
-#endif
 
     gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESS, mpRemoteHopsanAddress->text());
     gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, mpRemoteHopsanAddressServerAddress->text());

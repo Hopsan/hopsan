@@ -167,6 +167,7 @@ public:
     int getParallelAlgorithm();
     void setPlotGfxSize(const QSizeF size);
     void setParallelAlgorithm(int value);
+    QString getGCCPath() const;
 
     // Style and appeanrace related methods
     QColor getBackgroundColor() const;
