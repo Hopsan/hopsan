@@ -361,7 +361,9 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     clBatchStream << "@echo off\n";
     clBatchStream << "set PATH=" << gccPath << ";%PATH%\n";
     clBatchStream << "@echo on\n";
-    clBatchStream << "del " << o << "\n";
+    clBatchStream << "if exist " << o << " (" << "\n";
+    clBatchStream << "  del " << o << "\n";
+    clBatchStream << ")" << "\n";
     clBatchStream << "g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
     clBatchStream << " -o " << o << " " << lflags <<"\n";
     compileScript.close();
