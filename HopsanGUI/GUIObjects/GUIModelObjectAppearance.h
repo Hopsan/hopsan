@@ -231,6 +231,7 @@ public:
     QString getHmfFile() const;
     QString getTypeName() const;
     QString getSubTypeName() const;
+    QString getFullTypeName(const QString sep=":") const;
     QString getDisplayName() const;
     QString getNonEmptyName() const;
     const QString &getHelpPicture() const;

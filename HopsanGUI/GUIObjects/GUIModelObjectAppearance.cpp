@@ -442,6 +442,18 @@ QString ModelObjectAppearance::getSubTypeName() const
     return mSubTypeName;
 }
 
+QString ModelObjectAppearance::getFullTypeName(const QString sep) const
+{
+    if (mSubTypeName.isEmpty())
+    {
+        return getTypeName();
+    }
+    else
+    {
+        return getTypeName()+sep+getSubTypeName();
+    }
+}
+
 //! @brief get the display name, even if it is empty
 //! @returns The display name
 QString ModelObjectAppearance::getDisplayName() const
