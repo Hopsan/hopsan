@@ -261,10 +261,11 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
         QDirIterator itd(libraryLoadPathRootDir, QDirIterator::Subdirectories);
         while(itd.hasNext())
         {
+            QString filePath = itd.next();
             SharedComponentLibraryPtrT pLib(new ComponentLibrary);
             pLib->loadPath = loadPath;
-            pLib->name = itd.filePath().section("/",-1,-1);
-            pLib->libFilePath = itd.filePath();
+            pLib->name = filePath.section("/",-1,-1);
+            pLib->libFilePath = filePath;
             pLib->type = type;
             if (loadLibrary(pLib, type, visibility))
             {
