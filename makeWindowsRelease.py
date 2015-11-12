@@ -23,7 +23,7 @@ inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inksca
 innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 
 # Compilers and build tools
-qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1\bin']
+qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1']
 msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
 msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
@@ -249,7 +249,7 @@ def copyDirTo(srcDir, dstDir):
         return False
 
 
-def makeMSVCDirName(version, arch):
+def makeMSVCOutDirName(version, arch):
     return "MSVC"+version+"_"+arch
     
 
@@ -259,8 +259,8 @@ def verifyPaths():
     global inkscapeDir
     global innoDir
     global qtDir
-    global msvc2008Dir
-    global msvc2010Dir
+    global msvc2008Path
+    global msvc2010Path
     global jomDir
     global qmakeDir
     #global mingwDir
@@ -279,31 +279,31 @@ def verifyPaths():
         #dependecyBinFile=dependecyBinFile32
 
     #Check if Qt path exists
-    qtDir=selectPathFromList(qmakeDir, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
+    qtDir = selectPathFromList(qmakeDir, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
     if qtDir == "":
         isOk = False
         
 
     #Check if qtcreator path exist  
-    creatorDir=selectPathFromList(qtcreatorDirList, "Qt Creator could not be found in one of the expected locations.", "Found Qt Creator!")
+    creatorDir = selectPathFromList(qtcreatorDirList, "Qt Creator could not be found in one of the expected locations.", "Found Qt Creator!")
     if creatorDir == "":
         isOk = False
         
-    jomDir=creatorDir+r'\bin'
-    qmakeDir=qmakeDir
+    jomDir = creatorDir+r'\bin'
+    qmakeDir = qmakeDir
 
     #mingwDir=selectPathFromList(mingwdirs, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
     #if mingwDir == "":
     #    isOk = False
 
     #Make sure Visual Studio 2008 is installed in correct location
-    msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
-    #if msvc2008Dir == "":
+    msvc2008Path = selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
+    #if msvc2008Path == "":
     #    isOk = False
 
     #Make sure Visual Studio 2010 is installed in correct location
-    msvc2010Dir=selectPathFromList(msvc2010DirList, "Microsoft Windows SDK 7.1 (MSVC2010) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.1 (MSVC2010)!")
-    #if msvc2010Dir == "":
+    msvc2010Path = selectPathFromList(msvc2010DirList, "Microsoft Windows SDK 7.1 (MSVC2010) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.1 (MSVC2010)!")
+    #if msvc2010Path == "":
     #    isOk = False
     
     #Make sure the 3d party dependency file exists
@@ -311,12 +311,12 @@ def verifyPaths():
     #    isOk = False
         
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
-    innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
+    innoDir = selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
     if innoDir == "":
         isOk = False  
             
     #Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
-    inkscapeDir=selectPathFromList(inkscapeDirList, "Inkscape is not installed in expected place.", "Found Inkscape!")
+    inkscapeDir = selectPathFromList(inkscapeDirList, "Inkscape is not installed in expected place.", "Found Inkscape!")
     if inkscapeDir == "":
         risOk = False
 
@@ -336,32 +336,33 @@ def askForVersion():
     return version, revnum, dodevrelease
 
 
-def msvcCompile(msvcVersion, architecture):
+def msvcCompile(msvcVersion, architecture, msvcpath):
     print "Compiling HopsanCore with Microsoft Visual Studio "+msvcVersion+" "+architecture+"..."
     
-    # Find correct path (perhaps we should test if it exists first, or this will crash)
-    exec "msvcPath = msvc"+msvcVersion+"Dir"
+    if msvcpath == "":
+        print(r'Error: msvcpath not set!')
+        return False
     
-    #Remove previous files
+    # Remove previous files
     callDel(hopsanDir+r'\bin\HopsanCore*.*')
 
-    #Create clean build directory
-    hopsanBuildDir=hopsanDir+r'\HopsanCore_bd'
+    # Create clean build directory
+    hopsanBuildDir = hopsanDir+r'\HopsanCore_bd'
     callRd(hopsanBuildDir)
     callMkdir(hopsanBuildDir)
       
-    #Create compilation script and compile
+    # Create compilation script and compile
     os.chdir(hopsanDir)
     # Generate compile script, setup compiler and compile
-    mkspec="win32-msvc"+msvcVersion
-    jom=quotePath(jomDir+r'\jom.exe')
-    qmake=quotePath(qmakeDir+r'\qmake.exe')
-    hopcorepro=quotePath(hopsanDir+r'\HopsanCore\HopsanCore.pro')
+    mkspec = "win32-msvc"+msvcVersion
+    jom = quotePath(jomDir+r'\jom.exe')
+    qmake = quotePath(qmakeDir+r'\qmake.exe')
+    hopcorepro = quotePath(hopsanDir+r'\HopsanCore\HopsanCore.pro')
     f = open('compileWithMSVC.bat', 'w')
     f.write(r'echo off'+"\n")
     f.write(r'REM This file has been automatically generated by the python build script. Do NOT commit it to svn!'+"\n")
     f.write(r'setlocal enabledelayedexpansion'+"\n")
-    f.write(r'call '+quotePath(msvcPath+r'\SetEnv.cmd')+r' /Release /'+architecture+"\n")
+    f.write(r'call '+quotePath(msvcpath+r'\SetEnv.cmd')+r' /Release /'+architecture+"\n")
     f.write(r'COLOR 07'+"\n")
     f.write(r'cd '+quotePath(hopsanBuildDir)+"\n")
     f.write(r'call '+jom+r' clean'+"\n")
@@ -384,7 +385,7 @@ def msvcCompile(msvcVersion, architecture):
         return False
 
     #Move files to correct MSVC directory
-    targetDir = hopsanDirBin+"\\"+makeMSVCDirName(msvcVersion,architecture)
+    targetDir = hopsanDirBin+"\\"+makeMSVCOutDirName(msvcVersion, architecture)
     callRd(targetDir)
     callMkdir(targetDir)
     callMove(hopsanDirBin+r'\HopsanCore.dll', targetDir+r'\HopsanCore.dll')
@@ -442,20 +443,22 @@ def buildRelease():
     #  Build HOPSANCORE with MSVC, else remove those folders
     # ========================================================
     if buildVCpp:
-        if not msvcCompile("2008", "x86"):
-            return False
-        if not msvcCompile("2008", "x64"):
-            return False
-        if not msvcCompile("2010", "x86"):
-            return False
-        if not msvcCompile("2010", "x64"):
-            return False
+        if msvc2008Path != "":
+            if not msvcCompile("2008", "x86", msvc2008Path):
+                return False
+            if not msvcCompile("2008", "x64", msvc2008Path):
+                return False
+        if msvc2010Path != "":
+            if not msvcCompile("2010", "x86", msvc2010Path):
+                return False
+            if not msvcCompile("2010", "x64", msvc2010Path):
+                return False
     else:
-        hopsanBinDir=hopsanDir+"\\bin\\"
-        callRd(hopsanBinDir+makeMSVCDirName("2008", "x86"))
-        callRd(hopsanBinDir+makeMSVCDirName("2008", "x64"))
-        callRd(hopsanBinDir+makeMSVCDirName("2010", "x86"))
-        callRd(hopsanBinDir+makeMSVCDirName("2010", "x64"))
+        hopsanBinDir = hopsanDir+"\\bin\\"
+        callRd(hopsanBinDir+makeMSVCOutDirName("2008", "x86"))
+        callRd(hopsanBinDir+makeMSVCOutDirName("2008", "x64"))
+        callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x86"))
+        callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x64"))
     
     # Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
     callSed(r'"s|.*DEFINES \*= MAINCORE|DEFINES *= MAINCORE|" -i HopsanCore\HopsanCore.pro')
