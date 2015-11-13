@@ -117,7 +117,8 @@ Configuration::Configuration()
     mIntegerSettings.insert(CFG_PLOEXPORTVERSION, 1);
 
     // Double settings
-    mDoubleSettings.insert(CFG_PLOTGFXDPI, 96);
+    mDoubleSettings.insert(CFG_PLOTGFXDPI, 96.0);
+    mDoubleSettings.insert(CFG_ZOOMSTEP, 15.0);
 }
 
 void Configuration::saveToXml()
@@ -751,6 +752,7 @@ void Configuration::refreshQuickAccessVariables()
     mProgressBarStep = getIntegerSetting(CFG_PROGRESSBARSTEP);
     mSnapping = getBoolSetting(CFG_SNAPPING);
     mGenerationLimit = getIntegerSetting(CFG_GENERATIONLIMIT);
+    mZoomStep = getDoubleSetting(CFG_ZOOMSTEP);
 }
 
 
@@ -836,6 +838,11 @@ QStringList Configuration::getModelicaFiles() const
 bool Configuration::getSnapping() const
 {
     return mSnapping;
+}
+
+double Configuration::getZoomStep() const
+{
+    return mZoomStep;
 }
 
 

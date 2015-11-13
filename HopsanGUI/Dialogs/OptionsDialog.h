@@ -80,6 +80,7 @@ private:
     QCheckBox *mpAntiAliasingCheckBox;
     QCheckBox *mpSnappingCheckBox;
     QCheckBox *mpAutoSetPwdToMwdCheckBox;
+    QDoubleSpinBox *mpZoomStepSpinBox;
 
     QWidget *mpSimulationWidget;
     QCheckBox *mpUseMulticoreCheckBox;

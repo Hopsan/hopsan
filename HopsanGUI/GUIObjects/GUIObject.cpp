@@ -294,7 +294,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
         if(mpParentContainerObject && pGraphicsView->isCtrlKeyPressed() && pGraphicsView->isLeftMouseButtonPressed())
         {
             QPointF diff = this->pos()-mPreviousPos;
-            if( diff.manhattanLength() < SNAPDISTANCE)
+            if( diff.manhattanLength() < 0.5*SNAPDISTANCE)
             {
                 setPos(mPreviousPos);
             }

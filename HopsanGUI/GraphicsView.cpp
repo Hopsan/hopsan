@@ -323,7 +323,7 @@ void GraphicsView::setViewPort(GraphicsViewPort vp)
 //! @param event contains information of the scrolling operation.
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
-        //Get value from scroll wheel change
+    // Get value from scroll wheel change
     double wheelDelta;
     if(gpConfig->getInvertWheel())
     {
@@ -334,20 +334,28 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
         wheelDelta = -event->delta();
     }
 
-        //Zoom with wheel if ctrl or alt is pressed
+    // Zoom with wheel if ctrl or alt is pressed
     if (event->modifiers().testFlag(Qt::ControlModifier) ||  event->modifiers().testFlag(Qt::AltModifier))
     {
-        double factor = pow(1.41,(-wheelDelta/240.0));
-        this->scale(factor,factor);
-        mZoomFactor = mZoomFactor * factor;
-        emit zoomChange(mZoomFactor);
+//        double factor = pow(1.41,(-wheelDelta/240.0));
+//        this->scale(factor,factor);
+//        mZoomFactor = mZoomFactor * factor;
+//        emit zoomChange(mZoomFactor);
+        if (wheelDelta < 0)
+        {
+            zoomIn();
+        }
+        else
+        {
+            zoomOut();
+        }
     }
-        //Scroll horizontally with wheel if shift is pressed
+    // Scroll horizontally with wheel if shift is pressed
     else if(event->modifiers().testFlag(Qt::ShiftModifier))
     {
         this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->value()-wheelDelta);
     }
-        //Scroll vertically with wheel by default
+    // Scroll vertically with wheel by default
     else
     {
         this->verticalScrollBar()->setValue(this->verticalScrollBar()->value()+wheelDelta);
@@ -677,24 +685,26 @@ void GraphicsView::resetZoom()
 }
 
 
-//! Increases zoom factor by 15%.
+//! Increases zoom factor
 //! @see resetZoom()
 //! @see zoomOut()
 void GraphicsView::zoomIn()
 {
-    this->scale(1.15, 1.15);
-    mZoomFactor = mZoomFactor * 1.15;
+    const double zoomStep = 1.0+gpConfig->getZoomStep()/100.0;
+    this->scale(zoomStep, zoomStep);
+    mZoomFactor = mZoomFactor * zoomStep;
     emit zoomChange(mZoomFactor);
 }
 
 
-//! Decreases zoom factor by 13.04% (1 - 1/1.15).
+//! Decreases zoom factor
 //! @see resetZoom()
 //! @see zoomIn()
 void GraphicsView::zoomOut()
 {
-    this->scale(1/1.15, 1/1.15);
-    mZoomFactor = mZoomFactor / 1.15;
+    const double zoomStep = 1.0/(1.0+gpConfig->getZoomStep()/100.0);
+    this->scale(zoomStep, zoomStep);
+    mZoomFactor = mZoomFactor * zoomStep;
     emit zoomChange(mZoomFactor);
 }
 

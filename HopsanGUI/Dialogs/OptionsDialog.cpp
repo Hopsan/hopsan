@@ -217,7 +217,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     this->setPalette(gpConfig->getPalette());
 
     // Interface Options
-    QLabel *mpBackgroundColorLabel = new QLabel(tr("Work Area Background Color:"));
+    QLabel *pBackgroundColorLabel = new QLabel(tr("Work Area Background Color:"));
     mpBackgroundColorButton = new QToolButton();
     QString redString;
     QString greenString;
@@ -253,6 +253,12 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpSnappingCheckBox = new QCheckBox(tr("Auto Snap Components"));
     mpSnappingCheckBox->setCheckable(true);
 
+    QLabel *pZoomStepLabel = new QLabel(tr("Zoom step in %"));
+    mpZoomStepSpinBox = new QDoubleSpinBox();
+    mpZoomStepSpinBox->setMinimum(1);
+    mpZoomStepSpinBox->setMaximum(50);
+    mpZoomStepSpinBox->setSingleStep(0.1);
+
     mpAutoSetPwdToMwdCheckBox = new QCheckBox(tr("Automtaically set HCOM working directory to model diretory"));
     mpAutoSetPwdToMwdCheckBox->setCheckable(true);
 
@@ -264,9 +270,11 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        4, 0);
     pInterfaceLayout->addWidget(mpSnappingCheckBox,            5, 0);
     pInterfaceLayout->addWidget(mpAutoSetPwdToMwdCheckBox,     6, 0);
-    pInterfaceLayout->addWidget(mpBackgroundColorLabel,        7, 0);
-    pInterfaceLayout->addWidget(mpBackgroundColorButton,       7, 1);
-    pInterfaceLayout->addWidget(new QWidget(),                 8, 0, 1, 2);
+    pInterfaceLayout->addWidget(pZoomStepLabel,                7, 0);
+    pInterfaceLayout->addWidget(mpZoomStepSpinBox,             7, 1, 1, 1);
+    pInterfaceLayout->addWidget(pBackgroundColorLabel,         8, 0);
+    pInterfaceLayout->addWidget(mpBackgroundColorButton,       8, 1);
+    pInterfaceLayout->addWidget(new QWidget(),                 9, 0, 1, 2);
     pInterfaceLayout->setRowStretch(8,1);
     mpInterfaceWidget->setLayout(pInterfaceLayout);
 
@@ -500,7 +508,7 @@ void OptionsDialog::openConfigFile()
 //! Slot that updates and saves the settings based on the choices made in the dialog box
 void OptionsDialog::setValues()
 {
-    // Toggle writing to disk off, since we would write manny times fore each set below
+    // Toggle writing to disk off, since we would write many times fore each set below
     gpConfig->beginMultiSet();
 
     gpConfig->setBoolSetting(CFG_SHOWPOPUPHELP, mpShowPopupHelpCheckBox->isChecked());
@@ -524,6 +532,7 @@ void OptionsDialog::setValues()
     gpConfig->setBoolSetting(CFG_ANTIALIASING, mpAntiAliasingCheckBox->isChecked());
     gpConfig->setBoolSetting(CFG_SNAPPING, mpSnappingCheckBox->isChecked());
     gpConfig->setBoolSetting(CFG_SETPWDTOMWD, mpAutoSetPwdToMwdCheckBox->isChecked());
+    gpConfig->setDoubleSetting(CFG_ZOOMSTEP, mpZoomStepSpinBox->value());
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
         gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
@@ -632,6 +641,7 @@ void OptionsDialog::show()
     mpAntiAliasingCheckBox->setChecked(gpConfig->getBoolSetting(CFG_ANTIALIASING));
     mpInvertWheelCheckBox->setChecked(gpConfig->getBoolSetting(CFG_INVERTWHEEL));
     mpSnappingCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SNAPPING));
+    mpZoomStepSpinBox->setValue(gpConfig->getDoubleSetting(CFG_ZOOMSTEP));
     mpAutoSetPwdToMwdCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SETPWDTOMWD));
     mpEnableProgressBarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_PROGRESSBAR));
     mpProgressBarSpinBox->setValue(gpConfig->getIntegerSetting(CFG_PROGRESSBARSTEP));

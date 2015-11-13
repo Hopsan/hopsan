@@ -46,6 +46,7 @@
 #define CFG_NATIVESTYLESHEET "nativestylesheet"
 #define CFG_ANTIALIASING "antialiasing"
 #define CFG_INVERTWHEEL "invertwheel"
+#define CFG_ZOOMSTEP "zoomstep"
 #define CFG_SNAPPING "snapping"
 #define CFG_PROGRESSBAR "progressbar"
 #define CFG_PROGRESSBARSTEP "progressbar_step"
@@ -153,7 +154,7 @@ public:
     void setIntegerSetting(const QString &rName, const int value);
     void setDoubleSetting(const QString &rName, const double value);
 
-    // Quick acces methods (to avoid cost of settings lookup)
+    // Quick access methods (to avoid cost of settings lookup)
     bool getShowPopupHelp() const;
     bool getInvertWheel() const;
     bool getCacheLogData() const;
@@ -161,6 +162,7 @@ public:
     int getProgressBarStep() const;
     int getGenerationLimit() const;
     bool getSnapping() const;
+    double getZoomStep() const;
 
     // Other settings
     QSizeF getPlotGfxSize();
@@ -169,7 +171,7 @@ public:
     void setParallelAlgorithm(int value);
     QString getGCCPath() const;
 
-    // Style and appeanrace related methods
+    // Style and appearance related methods
     QColor getBackgroundColor() const;
     void setBackgroundColor(const QColor &value);
     QPalette getPalette() const;
@@ -283,6 +285,7 @@ private:
     int mProgressBarStep;
     int mGenerationLimit;
     bool mSnapping;
+    double mZoomStep;
 
 signals:
     void recentModelsListChanged();
