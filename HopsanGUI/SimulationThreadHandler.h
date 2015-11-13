@@ -64,7 +64,6 @@ protected:
 
 public:
     void setMessageHandler(GUIMessageHandler *pMessageHandler);
-    void connectProgressDialog(QProgressDialog *pProgressDialog);
     virtual int swoType() const = 0;
 
 public slots:
@@ -117,9 +116,9 @@ class ProgressBarWorkerObject : public QObject
 
 private:
     QVector<SystemContainer*> mvSystems;
+    QTimer *mpProgressDialogRefreshTimer;
 
 protected:
-    QTimer mProgressDialogRefreshTimer;
     int mLastProgressRefreshStep;
     double mStartT, mStopT;
 
@@ -129,14 +128,15 @@ protected slots:
 
 public slots:
     void startRefreshTimer(int ts);
+    void stopRefreshTimer();
 
 public:
-    ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems, QProgressDialog *pProgressDialog);
+    ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems);
 
 signals:
-    void stopRefreshTimer();
     void setProgressBarValue(int);
     void aborted();
+
 };
 
 #ifdef USEZMQ
@@ -147,7 +147,7 @@ private:
     double mProgress;
     SharedRemoteCoreSimulationHandlerT mpRCSH;
 public:
-    RemoteProgressbarWorkerObject(const double startTime, const double stopTime, SharedRemoteCoreSimulationHandlerT pRCSH, QProgressDialog *pProgressDialog);
+    RemoteProgressbarWorkerObject(const double startTime, const double stopTime, SharedRemoteCoreSimulationHandlerT pRCSH);
     //! @todo finnish this
 };
 #endif
@@ -160,7 +160,6 @@ private:
     QVector<SystemContainer*> mvpSystems;
 
     SimulationWorkerObjectBase *mpSimulationWorkerObject;
-    ProgressBarWorkerObject *mpProgressBarWorkerObject;
     QProgressDialog *mpProgressDialog;
     GUIMessageHandler *mpMessageHandler;
 

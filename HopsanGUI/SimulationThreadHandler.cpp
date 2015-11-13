@@ -160,8 +160,8 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
     mpRCSH.clear();
 }
 
-RemoteProgressbarWorkerObject::RemoteProgressbarWorkerObject(const double startTime, const double stopTime, SharedRemoteCoreSimulationHandlerT pRCSH, QProgressDialog *pProgressDialog) :
-    ProgressBarWorkerObject(startTime, stopTime, QVector<SystemContainer*>(), pProgressDialog)
+RemoteProgressbarWorkerObject::RemoteProgressbarWorkerObject(const double startTime, const double stopTime, SharedRemoteCoreSimulationHandlerT pRCSH) :
+    ProgressBarWorkerObject(startTime, stopTime, QVector<SystemContainer*>())
 {
     mpRCSH = pRCSH;
     mProgress = 0;
@@ -174,37 +174,26 @@ void SimulationWorkerObjectBase::setMessageHandler(GUIMessageHandler *pMessageHa
      mpMessageHandler = pMessageHandler;
 }
 
-void SimulationWorkerObjectBase::connectProgressDialog(QProgressDialog *pProgressDialog)
-{
-    // Disconnect from old progress bar if any
-    disconnect(this, SIGNAL(setProgressBarRange(int,int)), 0, 0);
-    disconnect(this, SIGNAL(setProgressBarText(QString)), 0, 0);
-
-    // Establish new connections
-    connect(this, SIGNAL(setProgressBarRange(int,int)), pProgressDialog, SLOT(setRange(int,int)), Qt::UniqueConnection);
-    connect(this, SIGNAL(setProgressBarText(QString)), pProgressDialog, SLOT(setLabelText(QString)), Qt::UniqueConnection);
-}
-
-ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems, QProgressDialog *pProgressDialog)
+ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems)
 {
     mLastProgressRefreshStep = -1;
     mStartT = startTime;
     mStopT = stopTime;
     mvSystems = rvSystems;
 
-    mProgressDialogRefreshTimer.setParent(this);
-
-    connect(pProgressDialog, SIGNAL(canceled()), this, SLOT(abort()), Qt::UniqueConnection);
-    connect(this, SIGNAL(setProgressBarValue(int)), pProgressDialog, SLOT(setValue(int)), Qt::UniqueConnection);
-
-    connect(&mProgressDialogRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshProgressBar()), Qt::UniqueConnection);
-    connect(this, SIGNAL(stopRefreshTimer()), &mProgressDialogRefreshTimer, SLOT(stop()), Qt::UniqueConnection);
+    mpProgressDialogRefreshTimer = new QTimer(this); //Note! delete is handled autoamtically since this is parent
+    connect(mpProgressDialogRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshProgressBar()));
 }
 
 void ProgressBarWorkerObject::startRefreshTimer(int ts)
 {
     // Start progress bar refresh timer with at least 50ms timestep (20 Hz), low values (close to 1) will freeze everything
-    mProgressDialogRefreshTimer.start(std::max(ts, 50));
+    mpProgressDialogRefreshTimer->start(qMax(ts, 50));
+}
+
+void ProgressBarWorkerObject::stopRefreshTimer()
+{
+    mpProgressDialogRefreshTimer->stop();
 }
 
 void ProgressBarWorkerObject::refreshProgressBar()
@@ -224,8 +213,8 @@ void ProgressBarWorkerObject::refreshProgressBar()
         else
         {
             // adapt timer timestep to the simulation model
-            int currentTimeStep = mProgressDialogRefreshTimer.interval();
-            mProgressDialogRefreshTimer.setInterval( currentTimeStep + 10);
+            int currentTimeStep = mpProgressDialogRefreshTimer->interval();
+            mpProgressDialogRefreshTimer->setInterval( currentTimeStep + 10);
         }
     }
 }
@@ -237,7 +226,7 @@ void ProgressBarWorkerObject::abort()
     {
         mvSystems[i]->getCoreSystemAccessPtr()->stop();
     }
-    emit stopRefreshTimer();
+    stopRefreshTimer();
     emit aborted();
 }
 
@@ -292,15 +281,15 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
 {
     mInitSuccess=false; mSimuSucess=false; mFiniSucess=false; mAborted=false;
     mpSimulationWorkerObject->moveToThread(&mSimulationWorkerThread);
-
-    connect(this, SIGNAL(startSimulation()), mpSimulationWorkerObject, SLOT(initSimulateFinalize()), Qt::UniqueConnection);
-    connect(mpSimulationWorkerObject, SIGNAL(initDone(bool,int)), this, SLOT(initDone(bool,int)), Qt::UniqueConnection);
-    connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)), Qt::UniqueConnection);
-    connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)), Qt::UniqueConnection);
+    connect(&mSimulationWorkerThread, SIGNAL(finished()), mpSimulationWorkerObject, SLOT(deleteLater()));
 
     if (gpConfig->getBoolSetting(CFG_PROGRESSBAR) && mProgressBarEnabled)
     {
-        mpProgressDialog = new QProgressDialog(gpMainWindowWidget);
+        // Create it if it does not exist (first time)
+        if (!mpProgressDialog)
+        {
+            mpProgressDialog = new QProgressDialog(gpMainWindowWidget);
+        }
         mpProgressDialog->setWindowTitle("Running Simulation");
         if (mProgressBarModal)
         {
@@ -312,15 +301,25 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
         }
         mpProgressDialog->show();
 
-        mpProgressBarWorkerObject = new ProgressBarWorkerObject(mStartT, mStopT, mvpSystems, mpProgressDialog); //!< @todo what about multiple systems
-        connect(mpProgressDialog, SIGNAL(canceled()), mpProgressBarWorkerObject, SLOT(abort()), Qt::UniqueConnection);
-        connect(mpProgressBarWorkerObject, SIGNAL(aborted()), this, SLOT(aborted()), Qt::UniqueConnection);
-        connect(this, SIGNAL(startProgressBarRefreshTimer(int)), mpProgressBarWorkerObject, SLOT(startRefreshTimer(int)), Qt::UniqueConnection);
-        connect(&mProgressBarWorkerThread, SIGNAL(finished()), mpProgressBarWorkerObject, SIGNAL(stopRefreshTimer()), Qt::UniqueConnection); //When thread finish we need to turn of timer
+        // Create a new progress update worker object
+        ProgressBarWorkerObject *pProgressBarWorkerObject = new ProgressBarWorkerObject(mStartT, mStopT, mvpSystems); //!< @todo what about multiple systems
+        pProgressBarWorkerObject->moveToThread(&mProgressBarWorkerThread);
+        connect(&mProgressBarWorkerThread, SIGNAL(finished()), pProgressBarWorkerObject, SLOT(deleteLater()));
 
-        // Move to worker thread and then connect the progress bar signals when both worker objects are in their respective threads
-        mpProgressBarWorkerObject->moveToThread(&mProgressBarWorkerThread);
-        mpSimulationWorkerObject->connectProgressDialog(mpProgressDialog);
+        // Connect signals between progress update worker object and progress dialog
+        connect(mpProgressDialog, SIGNAL(canceled()), pProgressBarWorkerObject, SLOT(abort()), Qt::QueuedConnection);
+        connect(pProgressBarWorkerObject, SIGNAL(setProgressBarValue(int)), mpProgressDialog, SLOT(setValue(int)), Qt::QueuedConnection);
+
+        // Connect signals between progress update worker object and this thread handler
+        connect(pProgressBarWorkerObject, SIGNAL(aborted()), this, SLOT(aborted()), Qt::QueuedConnection);
+        connect(this, SIGNAL(startProgressBarRefreshTimer(int)), pProgressBarWorkerObject, SLOT(startRefreshTimer(int)), Qt::QueuedConnection);
+
+        // Connect signals between progress update worker object and the simulation worker object
+        connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), pProgressBarWorkerObject, SLOT(stopRefreshTimer()), Qt::QueuedConnection); //When thread finish we need to turn of timer
+
+        // Connect signals between simulation worker object and the progress dialog
+        connect(mpSimulationWorkerObject, SIGNAL(setProgressBarRange(int,int)), mpProgressDialog, SLOT(setRange(int,int)), Qt::QueuedConnection);
+        connect(mpSimulationWorkerObject, SIGNAL(setProgressBarText(QString)), mpProgressDialog, SLOT(setLabelText(QString)), Qt::QueuedConnection);
 
         // Start the progress bar worker thread and then signal the timer to start, so that it is started in the correct thread, will be problems otherwise
         mProgressBarWorkerThread.start(QThread::LowPriority);
@@ -331,17 +330,23 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
     // But not if we run multi threaded or a remote simulation
     if( (mpSimulationWorkerObject->swoType() != RemoteSWO) && !gpConfig->getUseMulticore())
     {
-        //! @todo This timer is never stopped or deleted apperantly (very bad)
-        QTimer *pCheckMessagesTimer = new QTimer();
+        QTimer *pCheckMessagesTimer = new QTimer(this);
         connect(pCheckMessagesTimer, SIGNAL(timeout()), mpMessageHandler, SLOT(collectHopsanCoreMessages()));
-        connect(this, SIGNAL(done(bool)), pCheckMessagesTimer, SLOT(deleteLater()));
+        // The following connections should stop and delete the time when the simulation has finished
+        connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), pCheckMessagesTimer, SLOT(stop()));
+        connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), pCheckMessagesTimer, SLOT(deleteLater()));
         pCheckMessagesTimer->setSingleShot(false);
         pCheckMessagesTimer->start(1000);
     }
 
+    // Connect simulation worker object signals
+    connect(this, SIGNAL(startSimulation()), mpSimulationWorkerObject, SLOT(initSimulateFinalize()), Qt::QueuedConnection);
+    connect(mpSimulationWorkerObject, SIGNAL(initDone(bool,int)), this, SLOT(initDone(bool,int)), Qt::QueuedConnection);
+    connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)), Qt::QueuedConnection);
+    connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)), Qt::QueuedConnection);
+
     //! @todo make it possible to select priority in options
     // Start the simulation thread and then signal that the simulation can start
-    //simulationThread.start(QThread::TimeCriticalPriority);
     mSimulationWorkerThread.start(QThread::HighestPriority);
     emit startSimulation();
 }
@@ -363,9 +368,11 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
     mFiniSucess = success;
     mFiniTime = ms;
 
-    // Request threads to shut down
-    mSimulationWorkerThread.quit();
-    mProgressBarWorkerThread.quit();
+    // Disconnect signals from dialog, to avoid "abort button signal spaming"
+    if (mpProgressDialog)
+    {
+        mpProgressDialog->disconnect();
+    }
 
     // Collect core messages prior to showing Simulation finished message
     mpMessageHandler->collectHopsanCoreMessages();
@@ -404,30 +411,27 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
         mpMessageHandler->addInfoMessage(msg);
     }
 
-    // Wait until threads have been shut down before we delete objects
+    // Forget the worker object (it should be auto deleted)
+    if (mpSimulationWorkerObject)
+    {
+        mpSimulationWorkerObject = nullptr;
+    }
+
+    // Request threads to shut down
+    mSimulationWorkerThread.quit();
+    mProgressBarWorkerThread.quit();
+
+    // Wait until threads have been shut down
     mSimulationWorkerThread.wait();
     mProgressBarWorkerThread.wait();
 
-    if (mpProgressBarWorkerObject != 0)
+    // Close the progress dialog
+    if (mpProgressDialog)
     {
-        mpProgressBarWorkerObject->disconnect();
-        mpProgressBarWorkerObject->deleteLater();
-        mpProgressBarWorkerObject = 0;
-    }
-
-    if (mpProgressDialog != 0)
-    {
-        mpProgressDialog->disconnect();
         mpProgressDialog->close();
-        mpProgressDialog->deleteLater();
-        mpProgressDialog = 0;
-    }
-
-    if (mpSimulationWorkerObject != 0)
-    {
-        mpSimulationWorkerObject->disconnect();
-        mpSimulationWorkerObject->deleteLater();
-        mpSimulationWorkerObject = 0;
+        //! @todo deleting here may crash hopsan "later" due to some strange signal/slot/thread madness, for now let the dialog live for ever
+        //mpProgressDialog->deleteLater();
+        //mpProgressDialog = 0;
     }
 
     // Send done signal containing success or failed
@@ -440,7 +444,7 @@ void SimulationThreadHandler::aborted()
 }
 
 SimulationThreadHandler::SimulationThreadHandler() :
-    mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true)
+    mpSimulationWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true)
 {
     mpMessageHandler = gpMessageHandler;
 }
