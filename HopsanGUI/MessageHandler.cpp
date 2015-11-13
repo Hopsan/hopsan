@@ -108,6 +108,7 @@ void GUIMessageHandler::stopPublish()
 
 void GUIMessageHandler::collectHopsanCoreMessages()
 {
+    mCoreMutex.lock();
     if (mpCoreAccess)
     {
         //bool playErrorSound = false;
@@ -119,6 +120,7 @@ void GUIMessageHandler::collectHopsanCoreMessages()
             addMessageFromCore(type, tag, message);
         }
     }
+    mCoreMutex.unlock();
 }
 
 void GUIMessageHandler::addMessageFromCore(QString &rType, QString &rTag, QString &rMessage)

@@ -93,6 +93,7 @@ private:
     QList<GUIMessage> mMessageList;
     bool mIsPublishing;
     QMutex mMutex;
+    QMutex mCoreMutex;
 };
 
 #endif // MESSAGEHANDLER_H
