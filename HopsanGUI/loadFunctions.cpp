@@ -340,6 +340,8 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 if (!extFileInfo.isAbsolute())
                 {
                     externalFilePath = pContainer->getModelPath() + "/" + externalFilePath;
+                    // Update extFileInfo with full path
+                    extFileInfo.setFile(externalFilePath);
                 }
 
                 QFile externalModelFile(externalFilePath);
@@ -350,6 +352,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                     QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
                     //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
                     pObj->setModelFileInfo(externalModelFile, rDomElement.attribute(HMF_EXTERNALPATHTAG));
+                    pObj->getAppearanceData()->setBasePath(extFileInfo.absolutePath()); // Set the basepath for relative icon paths
                     pObj->loadFromDomElement(externalSystemRoot);
                     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embedded subsystems will will need to fix this
 

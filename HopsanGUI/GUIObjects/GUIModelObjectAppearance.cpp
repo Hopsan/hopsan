@@ -618,18 +618,17 @@ void ModelObjectAppearance::setRelativePathFromAbsolute()
 
 void ModelObjectAppearance::setAbsoultePathFromRelative()
 {
-    QFileInfo relUserPath(mUserIconAppearance.mRelativePath);
-    QFileInfo relIsoPath(mIsoIconAppearance.mRelativePath);
-
     //Check if given filepath is absolute or relative, if relative assume relative to basepath, but don do anything if path empty (no icon specified)
     if (!mUserIconAppearance.mRelativePath.isEmpty())
     {
+        QFileInfo relUserPath(mUserIconAppearance.mRelativePath);
         relUserPath.setFile(QDir(mBasePath), mUserIconAppearance.mRelativePath);
         mUserIconAppearance.mAbsolutePath = relUserPath.absoluteFilePath();
     }
 
     if (!mIsoIconAppearance.mRelativePath.isEmpty())
     {
+        QFileInfo relIsoPath(mIsoIconAppearance.mRelativePath);
         relIsoPath.setFile(QDir(mBasePath), mIsoIconAppearance.mRelativePath);
         mIsoIconAppearance.mAbsolutePath = relIsoPath.absoluteFilePath();
     }
@@ -1212,22 +1211,8 @@ bool ModelObjectAppearance::iconValid(const GraphicsTypeEnumT gfxType) const
 
 void ModelObjectAppearance::refreshIconValid()
 {
-    if (hasIcon(UserGraphics))
-    {
-        mUserIconAppearance.mIsValid = true;
-    }
-    else
-    {
-        mUserIconAppearance.mIsValid = false;
-    }
-    if (hasIcon(ISOGraphics))
-    {
-        mIsoIconAppearance.mIsValid = true;
-    }
-    else
-    {
-        mIsoIconAppearance.mIsValid = false;
-    }
+    mUserIconAppearance.mIsValid = hasIcon(UserGraphics);
+    mIsoIconAppearance.mIsValid = hasIcon(ISOGraphics);
 }
 
 GraphicsTypeEnumT ModelObjectAppearance::selectAvailableGraphicsType(const GraphicsTypeEnumT type)

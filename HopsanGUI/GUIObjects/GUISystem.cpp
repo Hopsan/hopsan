@@ -818,7 +818,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
 
-        // Now lets check if the icons were loaded sucessfully else we may want to ask the library widget for the graphics (components saved as subsystems)
+        // Now lets check if the icons were loaded successfully else we may want to ask the library widget for the graphics (components saved as subsystems)
         if (!mModelObjectAppearance.iconValid(UserGraphics) || !mModelObjectAppearance.iconValid(ISOGraphics))
         {
             ModelObjectAppearance *pApp = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getSubTypeName());
