@@ -508,8 +508,7 @@ void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, Con
     QString value = rDomElement.attribute(HMF_VALUETAG);
     QString type = rDomElement.attribute(HMF_TYPE);
     type = rDomElement.attribute(HMF_TYPENAME, type); //!< @deprecated load old typename
-    QString quantity = rDomElement.attribute(HMF_QUANTITY);
-    QString unit = rDomElement.attribute(HMF_UNIT);
+    QString quantityORunit = rDomElement.attribute(HMF_QUANTITY, rDomElement.attribute(HMF_UNIT));
     QString description = rDomElement.attribute(HMF_DESCRIPTIONTAG);
 
     if( (hmfVersion <= "0.3") && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
@@ -517,7 +516,8 @@ void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, Con
         type = "double";
     }
 
-    CoreParameterData paramData(name, value, type, quantity, unit, description);
+    // Core will take care of deciding about quantity or unit, leave unit empty
+    CoreParameterData paramData(name, value, type, quantityORunit, "", description);
     pContainer->setOrAddParameter(paramData, true);
 }
 
