@@ -525,7 +525,24 @@ void AnimationWidget::updateAnimationSpeed(double speed)
 //! @brief Slot that updates the animation, called by animation timer object
 void AnimationWidget::updateAnimation()
 {
-    if(!mRealTime && !mTimeValues.isEmpty())      //Not real-time simulation
+    // Real-time simulation
+    if(mRealTime)
+    {
+        //Calculate time to simulate (equals interval of animation timer)
+        double dT = mSimulationSpeed/double(mFps);
+
+        //Simulate one interval (does NOT equal one time step, time step is usually much smaller)
+        mpContainer->getCoreSystemAccessPtr()->simulate(mLastAnimationTime, mLastAnimationTime+dT, -1, true);
+
+        //Update last animation time
+        mLastAnimationTime = mLastAnimationTime+dT;
+        mpTimeDisplay->setText(QString::number(mLastAnimationTime));
+
+        //Update animated connectors and components
+        updateMovables();
+    }
+    // Not real-time simulation (and we have time data)
+    else if(!mTimeValues.isEmpty())
     {
         //Calculate animation time (with limitations)
         mCurrentAnimationTime = mLastAnimationTime+double(mSimulationSpeed)/mFps;
@@ -548,34 +565,18 @@ void AnimationWidget::updateAnimation()
         //Update animated connectors and components
         updateMovables();
     }
-    else    //Real-time simulation
-    {
-        //Calculate time to simulate (equals interval of animation timer)
-        double dT = mSimulationSpeed/double(mFps);
 
-        //Simulate one interval (does NOT equal one time step, time step is usually much smaller)
-        mpContainer->getCoreSystemAccessPtr()->simulate(mLastAnimationTime, mLastAnimationTime+dT, -1, true);
-
-        //Update last animation time
-        mLastAnimationTime = mLastAnimationTime+dT;
-        mpTimeDisplay->setText(QString::number(mLastAnimationTime));
-
-        //Update animated connectors and components
-        updateMovables();
-    }
-
-
-    //Auto-adjust FPS
+    // Auto-adjust FPS
     int dT = mpTime->elapsed();
     if(dT > 100)    //Only do this every .1 seconds
     {
         if(mpTimeDisplay->text().toDouble()*1000-mLastTimeCheck < 0.95*dT)
         {
-            mFps = std::max(10.0, mFps*0.8);    //Too slow, decrease FPS
+            mFps = qMax(10.0, mFps*0.8);    //Too slow, decrease FPS
         }
         else
         {
-            mFps = std::min(100.0, mFps*1.11);  //Not too slow, increase FPS slightly
+            mFps = qMin(100.0, mFps*1.11);  //Not too slow, increase FPS slightly
         }
         mpTimer->start(1000.0/double(mFps));                    //Set timer interval
         mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000; //Store last check time

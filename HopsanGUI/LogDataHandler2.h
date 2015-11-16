@@ -84,10 +84,10 @@ public:
     QStringList getVariableFullNames(int generation=-1) const;
     bool hasVariable(const QString &rFullName, const int generation=-1);
 
-    const SharedVectorVariableT getTimeVectorVariable(int generation) const;
-    QVector<double> copyTimeVector(const int generation) const;
+    const SharedVectorVariableT getTimeVectorVariable(int generation=-1) const;
+    QVector<double> copyTimeVector(const int generation=-1) const;
 
-    QVector<double> copyVariableDataVector(const QString &rName, const int generation);
+    QVector<double> copyVariableDataVector(const QString &rName, const int generation=-1);
     SharedVectorVariableT getVectorVariable(const QString &rName, int generation=-1) const;
 
     QList<SharedVectorVariableT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, int generation=-1) const;

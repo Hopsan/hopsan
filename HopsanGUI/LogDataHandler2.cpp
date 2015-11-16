@@ -1449,6 +1449,12 @@ QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesFromAllGenerat
 //! @param[in] generation Generation
 const SharedVectorVariableT LogDataHandler2::getTimeVectorVariable(int generation) const
 {
+    // Should we take current
+    if (generation < 0)
+    {
+        generation = mCurrentGenerationNumber;
+    }
+
     // Find the generation
     auto *pGen = mGenerationMap.value(generation, 0);
     if(pGen)
