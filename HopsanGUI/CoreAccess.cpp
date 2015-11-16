@@ -61,9 +61,9 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
     rGUIParam.mName = QString(pCoreParam->getName().c_str());
     rGUIParam.mType = QString(pCoreParam->getType().c_str());
     rGUIParam.mValue = QString(pCoreParam->getValue().c_str());
+    rGUIParam.mQuantity = QString::fromStdString(pCoreParam->getQuantity().c_str());
     rGUIParam.mUnit = QString(pCoreParam->getUnit().c_str());
     rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription().c_str());
-    rGUIParam.mQuantity = QString::fromStdString(pCoreParam->getQuantity().c_str());
     for(size_t c=0; c<pCoreParam->getConditions().size(); ++c)
     {
         rGUIParam.mConditions.append(QString(pCoreParam->getConditions()[c].c_str()));
@@ -1265,7 +1265,7 @@ bool CoreSystemAccess::setSystemParameter(const CoreParameterData &rParameter, b
                                                      rParameter.mValue.toStdString().c_str(),
                                                      rParameter.mType.toStdString().c_str(),
                                                      rParameter.mDescription.toStdString().c_str(),
-                                                     rParameter.mUnit.toStdString().c_str(),
+                                                     rParameter.mQuantity.toStdString().c_str(),
                                                      force);
 }
 

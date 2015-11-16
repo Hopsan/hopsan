@@ -68,22 +68,6 @@ ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rVal
     mQuantity = rQuantity;
     mUnit = rUnit;
 
-//    // If quantity not speecified, use the specified unit
-//    if (mQuantity.empty())
-//    {
-//        mUnit = rUnit;
-//    }
-//    // If quantity is specified but not, unit, try to lookup unit
-//    else if (rUnit.empty())
-//    {
-//        mUnit = gHopsanQuantities.lookupBaseUnit(mQuantity);
-//    }
-//    // If both quantity and unit is specified then use both (it is up to the componet developer to choose a relevant unit for this quantity)
-//    else
-//    {
-//        mUnit = rUnit;
-//    }
-
     mpData = pDataPtr;
     mpParentParameters = pParentParameters;
     evaluate();
@@ -97,16 +81,21 @@ void* ParameterEvaluator::getDataPtr()
     return mpData;
 }
 
-bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, ParameterEvaluator **pNeedEvaluation, bool force)
+bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, ParameterEvaluator **pNeedEvaluation, bool force)
 {
     bool success;
     HString oldValue = mParameterValue;
     HString oldDescription = mDescription;
     HString oldUnit = mUnit;
     HString oldType = mType;
+    HString oldQuantity = mQuantity;
     if(!rDescription.empty())
     {
         mDescription = rDescription;
+    }
+    if (!rQuantity.empty())
+    {
+        mQuantity = rQuantity;
     }
     if(!rUnit.empty())
     {
@@ -126,6 +115,7 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
     {
         mParameterValue = oldValue;
         mDescription = oldDescription;
+        mQuantity = oldQuantity;
         mUnit = oldUnit;
         mType = oldType;
     }
@@ -615,7 +605,7 @@ const std::vector<ParameterEvaluator*> *ParameterEvaluatorHandler::getParameters
 
 
 bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString &rValue, const HString &rDescription,
-                              const HString &rUnit, const HString &rType,  const bool force)
+                                             const HString &rQuantity, const HString &rUnit, const HString &rType,  const bool force)
 {
     bool success = false;
 
@@ -626,7 +616,7 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
         if( (rName == mParameters[i]->getName()) )//&& (value != mParameters[i]->getName()) ) //By commenting this a parameter can be set to a systems parameter with same name as component parameter e.g. mass m = m (system parameter) related to issue #783
         {
             ParameterEvaluator *needEvaluation=0;
-            success = mParameters[i]->setParameter(rValue, rDescription, rUnit, rType, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
+            success = mParameters[i]->setParameter(rValue, rDescription, rQuantity, rUnit, rType, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
             if(needEvaluation)
             {
                 if(mParametersNeedEvaluation.end() == find(mParametersNeedEvaluation.begin(), mParametersNeedEvaluation.end(), needEvaluation))
@@ -662,7 +652,7 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
 //! @return true if success, otherwise false
 bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HString &rValue, bool force)
 {
-    return setParameter(rName, rValue, "", "", "", force);
+    return setParameter(rName, rValue, "", "", "", "", force);
 }
 
 

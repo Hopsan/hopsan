@@ -50,6 +50,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
 #include "FindWidget.h"
+#include "Configuration.h"
 
 
 QWidget *ParamTypeComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -440,49 +441,43 @@ void SystemParametersWidget::update()
 //! Slot that opens "Add Parameter" dialog, where the user can add new System parameters
 void SystemParametersWidget::openAddParameterDialog()
 {
-    QLabel *pNameLabel;
-    QLabel *pValueLabel;
-    QLabel *pTypeLabel;
-
-    QPushButton *pAddInDialogButton;
-    QPushButton *pCancelInDialogButton;
-    QPushButton *pAddAndCloseInDialogButton;
-
     mpAddParameterDialog = new QDialog(this);
     mpAddParameterDialog->setWindowTitle("Set System Parameter");
 
-    pNameLabel = new QLabel("Name: ", this);
-    mpNameBox = new QLineEdit(this);
-    pValueLabel = new QLabel("Value: ", this);
-    mpValueBox = new QLineEdit(this);
-    pTypeLabel = new QLabel("Type: ", this);
+    mpNewParamNameEdit = new QLineEdit(mpAddParameterDialog);
+    mpNewParamValueEdit = new QLineEdit(mpAddParameterDialog);
+    mpNewParamDescriptionEdit = new QLineEdit(mpAddParameterDialog);
+    mpNewParamUnitQuantityEdit = new QLineEdit(mpAddParameterDialog);
+    mpNewParamTypeBox = new ParameterTypeComboBox();
 
-    mpTypeBox = new ParameterTypeComboBox();
-
-    pCancelInDialogButton = new QPushButton("Cancel", this);
-    pAddInDialogButton = new QPushButton(trUtf8("Add && Continue"), this);
-    pAddAndCloseInDialogButton = new QPushButton("Add && Close", this);
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    pButtonBox->addButton(pCancelInDialogButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(pAddInDialogButton, QDialogButtonBox::ActionRole);
+    QDialogButtonBox *pButtonBox            = new QDialogButtonBox(Qt::Horizontal);
+    QPushButton *pCancelInDialogButton      = new QPushButton("Cancel", mpAddParameterDialog);
+    QPushButton *pAddInDialogButton         = new QPushButton(trUtf8("Add && Continue"), mpAddParameterDialog);
+    QPushButton *pAddAndCloseInDialogButton = new QPushButton("Add && Close", mpAddParameterDialog);
+    pButtonBox->addButton(pCancelInDialogButton,      QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pAddInDialogButton,         QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pAddAndCloseInDialogButton, QDialogButtonBox::ActionRole);
 
-    QGridLayout *pDialogLayout = new QGridLayout(this);
-    pDialogLayout->addWidget(pNameLabel,0,0);
-    pDialogLayout->addWidget(mpNameBox,0,1);
-    pDialogLayout->addWidget(pValueLabel,1,0);
-    pDialogLayout->addWidget(mpValueBox,1,1);
-    pDialogLayout->addWidget(pTypeLabel,2,0);
-    pDialogLayout->addWidget(mpTypeBox,2,1);
-    pDialogLayout->addWidget(pButtonBox,3,0,1,2);
+    QGridLayout *pDialogLayout = new QGridLayout(mpAddParameterDialog);
+    pDialogLayout->addWidget(new QLabel("Name: ", mpAddParameterDialog),0,0);
+    pDialogLayout->addWidget(mpNewParamNameEdit,0,1);
+    pDialogLayout->addWidget(new QLabel("Value: ", mpAddParameterDialog),1,0);
+    pDialogLayout->addWidget(mpNewParamValueEdit,1,1);
+    pDialogLayout->addWidget(new QLabel("Description: ", mpAddParameterDialog),2,0);
+    pDialogLayout->addWidget(mpNewParamDescriptionEdit,2,1);
+    pDialogLayout->addWidget(new QLabel("Quantity or Unit: ", mpAddParameterDialog),3,0);
+    pDialogLayout->addWidget(mpNewParamUnitQuantityEdit,3,1);
+    pDialogLayout->addWidget(new QLabel("Type: ", mpAddParameterDialog),4,0);
+    pDialogLayout->addWidget(mpNewParamTypeBox,4,1);
+    pDialogLayout->addWidget(pButtonBox,5,0,1,2);
     mpAddParameterDialog->setLayout(pDialogLayout);
 
     pAddInDialogButton->setDefault(true);
     mpAddParameterDialog->show();
 
     connect(pCancelInDialogButton,      SIGNAL(clicked()), mpAddParameterDialog, SLOT(close()));
-    connect(pAddAndCloseInDialogButton, SIGNAL(clicked()), this,                SLOT(addParameterAndCloseDialog()));
-    connect(pAddInDialogButton,         SIGNAL(clicked()), this,                SLOT(addParameter()));
+    connect(pAddAndCloseInDialogButton, SIGNAL(clicked()), this,                 SLOT(addParameterAndCloseDialog()));
+    connect(pAddInDialogButton,         SIGNAL(clicked()), this,                 SLOT(addParameter()));
 }
 
 void SystemParametersWidget::highlightComponents(QModelIndex index)
@@ -499,16 +494,17 @@ void SystemParametersWidget::highlightComponents(QModelIndex index)
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 bool SystemParametersWidget::addParameter()
 {
-    if (mpModel->hasParameter(mpNameBox->text()))
+    if (mpModel->hasParameter(mpNewParamNameEdit->text()))
     {
         //! @todo maybe we should warn about overwriting instead
         QMessageBox::critical(0, "Hopsan GUI",
                               QString("'%1' already exists, will not add!")
-                              .arg(mpNameBox->text()));
+                              .arg(mpNewParamNameEdit->text()));
     }
     else
     {
-        CoreParameterData data(mpNameBox->text(), mpValueBox->text(), mpTypeBox->currentText());
+        // The unit field should be "" here, quantityOrunit in core will deal with deciding if quantity or unit should be used
+        CoreParameterData data(mpNewParamNameEdit->text(), mpNewParamValueEdit->text(), mpNewParamTypeBox->currentText(), mpNewParamUnitQuantityEdit->text(), "", mpNewParamDescriptionEdit->text());
         if (mpModel->addOrSetParameter(data))
         {
             return true;

@@ -270,9 +270,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
         appendLogSettingsTag(rDomElement, getLogStartTime(), getNumberOfLogSamples());
     }
 
-    //Save the parameter values for the system
-    // In case of external system save those that have been changed
-    //! @todo right now we save all of them, but I think this is good even if they have not changed
+    // Save the parameter values for the system
     QVector<CoreParameterData> paramDataVector;
     this->getParameters(paramDataVector);
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
@@ -282,13 +280,24 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
         xmlParameter.setAttribute(HMF_NAMETAG, paramDataVector[i].mName);
         xmlParameter.setAttribute(HMF_VALUETAG, paramDataVector[i].mValue);
         xmlParameter.setAttribute(HMF_TYPE, paramDataVector[i].mType);
-        xmlParameter.setAttribute(HMF_UNIT, paramDataVector[i].mUnit);
+        if (!paramDataVector[i].mQuantity.isEmpty())
+        {
+            xmlParameter.setAttribute(HMF_QUANTITY, paramDataVector[i].mQuantity);
+        }
+        if (!paramDataVector[i].mUnit.isEmpty())
+        {
+            xmlParameter.setAttribute(HMF_UNIT, paramDataVector[i].mUnit);
+        }
+        if (!paramDataVector[i].mDescription.isEmpty())
+        {
+            xmlParameter.setAttribute(HMF_DESCRIPTIONTAG, paramDataVector[i].mDescription);
+        }
     }
 
     // Save the alias names in this system
     QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
     QStringList aliases = getAliasNames();
-    //! @todo need one function that gets both alias anf full maybe
+    //! @todo need one function that gets both alias and full maybe
     for (int i=0; i<aliases.size(); ++i)
     {
         QDomElement alias = appendDomElement(xmlAliases, HMF_ALIAS);

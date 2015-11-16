@@ -212,6 +212,7 @@ public:
     QString getBaseUnit(const QString &rQuantity);
     bool isRegisteredBaseUnit(const QString &rUnitName) const;
     void removeUnitScale(const QString &rQuantity, const QString &rUnit);
+    bool haveQuantity(const QString &rQuantity) const;
 
 
     // Termianal and scripts

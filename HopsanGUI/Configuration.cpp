@@ -982,6 +982,11 @@ void Configuration::removeUnitScale(const QString &rQuantity, const QString &rUn
     }
 }
 
+bool Configuration::haveQuantity(const QString &rQuantity) const
+{
+    return mUnitScales.contains(rQuantity);
+}
+
 //! @brief Returns connector pen for specified connector type
 //! @param style Style of connector (POWERCONNECTOR, SIGNALCONNECTOR or UNDEFINEDCONNECTOR)
 //! @param gfxType Graphics type (User or Iso)

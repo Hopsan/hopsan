@@ -104,3 +104,26 @@ bool hopsan::QuantityRegister::haveQuantity(const hopsan::HString &rQuantity) co
 }
 
 hopsan::QuantityRegister hopsan::gHopsanQuantities;
+
+//! @brief Lookup a quantity base unit, or return as a unit if not a valid quantity is given
+//! @param[in] rQuantityOrUnit The name of the quantity (or unit)
+//! @param[out] rQuantity The quantity, empty if rQuantityOrUnit is not a valid quantity
+//! @param[out] rUnitOrBaseUnit The base unit for the given quantity, or the value of rQuantityOrUnit if it is not a valid quantity
+//! @returns true if rQuantityOrUnit is a valid quantity else false
+bool hopsan::checkIfQuantityOrUnit(const hopsan::HString &rQuantityOrUnit, hopsan::HString &rQuantity, hopsan::HString &rUnitOrBaseUnit)
+{
+    rUnitOrBaseUnit = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
+    // rUnitOrQuantity is treated as a unit because no valid quantity has been specified
+    if (rUnitOrBaseUnit.empty())
+    {
+        rQuantity.clear();
+        rUnitOrBaseUnit = rQuantityOrUnit;
+        return false;
+    }
+    // rUnitOrQuantity is actually a quantity, and bu is the corresponding base unit
+    else
+    {
+        rQuantity = rQuantityOrUnit;
+        return true;
+    }
+}

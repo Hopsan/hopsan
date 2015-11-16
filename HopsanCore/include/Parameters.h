@@ -51,7 +51,7 @@ public:
                        const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* parentParameters=0);
 
     bool setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation=0);
-    bool setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit,
+    bool setParameter(const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
                       const HString &rType, ParameterEvaluator **pNeedEvaluation=0, bool force=false);
 
     bool evaluate(HString &rResult, ParameterEvaluator *ignoreMe=0);
@@ -99,7 +99,7 @@ public:
     const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
     const ParameterEvaluator* getParameter(const HString &rName) const;
     void getParameterNames(std::vector<HString> &rParameterNames);
-    bool setParameter(const HString &rName, const HString &rValue, const HString &rDescription="",
+    bool setParameter(const HString &rName, const HString &rValue, const HString &rDescription="", const HString &rQuantity="",
                       const HString &rUnit="", const HString &rType="", const bool force=false);
 
     void getParameterValue(const HString &rName, HString &rValue);

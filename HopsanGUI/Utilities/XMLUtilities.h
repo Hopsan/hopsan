@@ -129,6 +129,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_CQSTYPETAG "cqs_type"
 #define HMF_TYPE "type"
 #define HMF_UNIT "unit"
+#define HMF_QUANTITY "quantity"
 #define HMF_CPPCODETAG "cppcode"
 #define HMF_CPPINPUTS "inputs"
 #define HMF_CPPOUTPUTS "outputs"

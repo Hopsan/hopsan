@@ -123,9 +123,11 @@ private:
     SysParamTableModel *mpModel;
 
     QDialog *mpAddParameterDialog;
-    QLineEdit *mpNameBox;
-    QLineEdit *mpValueBox;
-    QComboBox *mpTypeBox;
+    QLineEdit *mpNewParamNameEdit;
+    QLineEdit *mpNewParamValueEdit;
+    QLineEdit *mpNewParamDescriptionEdit;
+    QLineEdit *mpNewParamUnitQuantityEdit;
+    QComboBox *mpNewParamTypeBox;
 
     QPushButton *mpAddButton;
     QPushButton *mpRemoveButton;

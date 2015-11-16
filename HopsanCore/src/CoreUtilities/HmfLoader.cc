@@ -338,10 +338,12 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
             string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
             string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
             //! @todo maybe type should be data type or value type or something
+            string quantityORunit = readStringAttribute(pParameter, "quantity", readStringAttribute(pParameter, "unit", ""));
+            string description = readStringAttribute(pParameter, "description", "");
 
-            // Here we use force=true to make sure system parameters laoded even if they do not evaluate
-            //! @todo if system parameters are loaded in the correct order (top to bottom) they should evaluete, why dont they?
-            bool ok = pSystem->setSystemParameter(HString(paramName.c_str()), HString(val.c_str()), HString(type.c_str()), "", "", true);
+            // Here we use force=true to make sure system parameters load even if they do not evaluate
+            //! @todo if system parameters are loaded in the correct order (top to bottom) they should evaluate, why don't they?
+            bool ok = pSystem->setSystemParameter(paramName.c_str(), val.c_str(), type.c_str(), description.c_str(), quantityORunit.c_str(), true);
             if(!ok)
             {
                 pSystem->addErrorMessage(HString("Failed to load parameter: ")+(paramName+"="+val).c_str());
@@ -455,7 +457,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                     }
                     else
                     {
-                        //! @todo dont know how to report this error, but it is unlikely to happen
+                        //! @todo don't know how to report this error, but it is unlikely to happen
                         return;
                     }
                     // Add new system to parent

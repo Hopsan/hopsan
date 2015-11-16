@@ -67,19 +67,19 @@ public:
 protected slots:
     void setDefaultValue();
     void showListOfSystemParameters();
-    void makePort(bool isPort);
+    //void makePort(bool isPort);
     void pickValueTextColor();
 
 protected:
     ModelObject *mpModelObject;
     QLabel mNameLabel;
     QLabel mDescriptionLabel;
+    QLabel mQuantityLabel;
     QLabel mUnitLabel;
     QString mParameterType;
     QLineEdit mValueLineEdit;
     QToolButton mResetDefaultToolButton;
     QToolButton mSystemParameterToolButton;
-    QCheckBox mDynamicEnabledCheckBox;
 
     QString mName;
 };

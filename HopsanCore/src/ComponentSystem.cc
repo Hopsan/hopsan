@@ -47,6 +47,7 @@
 #include "CoreUtilities/CoSimulationUtilities.h"
 #include "CoreUtilities/HmfLoader.h"
 #include "ComponentUtilities/num2string.hpp"
+#include "Quantities.h"
 
 #ifdef USETBB
 #include "tbb/parallel_for.h"
@@ -55,7 +56,7 @@
 using namespace std;
 using namespace hopsan;
 
-//! @brief Figure out whether or not a vector contains a certain "object", exact comparisson
+//! @brief Figure out whether or not a vector contains a certain "object", exact comparison
 //! @param[in] rVector Vector of objects
 //! @param[in] rObj Object to find
 //! @return Returns true if found else false
@@ -444,12 +445,14 @@ ParameterEvaluatorHandler &ComponentSystem::getSystemParameters()
 }
 
 //!
-bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnit, const bool force)
+bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool force)
 {
     bool success;
+    HString quantity, bu;
     if(mpParameters->hasParameter(rName.c_str()))
     {
-        success = mpParameters->setParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), rUnit.c_str(), rType.c_str(), force);
+        checkIfQuantityOrUnit(rUnitOrQuantity, quantity, bu);
+        success = mpParameters->setParameter(rName, rValue, rDescription, quantity, bu, rType, force);
     }
     else
     {
@@ -460,8 +463,8 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
         }
         else
         {
-            //! @todo support quantities in system parameters (only for doubles)
-            success = mpParameters->addParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), "", rUnit.c_str(), rType.c_str(), 0, force);
+            checkIfQuantityOrUnit(rUnitOrQuantity, quantity, bu);
+            success = mpParameters->addParameter(rName, rValue, rDescription, quantity, bu, rType, 0, force);
             if (success)
             {
                 reserveUniqueName(rName,UniqueSysparamNameType);

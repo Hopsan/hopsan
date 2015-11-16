@@ -166,8 +166,9 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
 //! @brief xml version
 //! @todo Make undo settings work or remove it
 //! @todo Make loadParameterValue and loadSystemParameter same function
-void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT /*undoSettings*/)
+void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT undoSettings)
 {
+    Q_UNUSED(undoSettings)
     QString parameterName;
     QString parameterValue;
     QString parameterType;
@@ -507,13 +508,16 @@ void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, Con
     QString value = rDomElement.attribute(HMF_VALUETAG);
     QString type = rDomElement.attribute(HMF_TYPE);
     type = rDomElement.attribute(HMF_TYPENAME, type); //!< @deprecated load old typename
+    QString quantity = rDomElement.attribute(HMF_QUANTITY);
+    QString unit = rDomElement.attribute(HMF_UNIT);
+    QString description = rDomElement.attribute(HMF_DESCRIPTIONTAG);
 
     if( (hmfVersion <= "0.3") && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
     {
         type = "double";
     }
 
-    CoreParameterData paramData(name,value, type);
+    CoreParameterData paramData(name, value, type, quantity, unit, description);
     pContainer->setOrAddParameter(paramData, true);
 }
 

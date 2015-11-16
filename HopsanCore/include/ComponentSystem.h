@@ -289,7 +289,7 @@ namespace hopsan {
         bool wasSimulationAborted();
 
         // System parameters
-        bool setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnit="", const bool force=false);
+        bool setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnitOrQuantity="", const bool force=false);
         void unRegisterParameter(const HString &name);
         ParameterEvaluatorHandler &getSystemParameters();
         void addSearchPath(const HString &searchPath);

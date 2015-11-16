@@ -482,17 +482,10 @@ void Component::addConditionalConstant(const HString &rName, const HString &rDes
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double &rData)
 {
     // If unit is actually a quantity, then register the quantity with the base unit
-    HString bu = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
-    if (!bu.empty())
-    {
-        addConstant(rName, rDescription, rQuantityOrUnit, bu, defaultValue, rData);
-    }
-    // Else unit is a unit and no quantity has been specified
-    else
-    {
-        rData = defaultValue;
-        registerParameter(rName, rDescription, "", rQuantityOrUnit, rData);
-    }
+    HString quantity, baseunit;
+    checkIfQuantityOrUnit(rQuantityOrUnit, quantity, baseunit);
+    rData = defaultValue;
+    registerParameter(rName, rDescription, quantity, baseunit, rData);
 }
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData)

@@ -68,6 +68,10 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     //mDescriptionNameLabel.setWordWrap(true);
     mDescriptionLabel.adjustSize();
 
+    mQuantityLabel.setMinimumWidth(100);
+    mQuantityLabel.setMaximumWidth(100);
+    mQuantityLabel.setText(rParameterData.mQuantity);
+
     // Set unit label
     mUnitLabel.setMinimumWidth(50);
     mUnitLabel.setMaximumWidth(50);
@@ -85,49 +89,21 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
     mSystemParameterToolButton.setToolTip("Map To System Parameter");
 
-    // If dynamic parameter add switch button
-    //! @todo dynamic parameters are deprecated
-    if (rParameterData.mIsDynamic)
-    {
-        bool checked=false;
-        //mDynamicEnabledCheckBox.setText("Dynamic");
-        mDynamicEnabledCheckBox.setToolTip("Make Port (Experimental)");
-        Port *pPort = mpModelObject->getPort(rParameterData.mName);
-        if ( pPort != 0)
-        {
-            checked=true;
-
-            // If the port exist and is connected then show in value editor that value will not be used
-            // NOTE! We cant us "isEnabled from core since it will not be reset until a new simulation is run"
-            //! @todo maybe disable is not best way, you may want to change value without having to disconnect first.
-            if (pPort->isConnected())
-            {
-                mValueLineEdit.setEnabled(false);
-            }
-        }
-        mDynamicEnabledCheckBox.setChecked(checked);
-        addWidget(&mDynamicEnabledCheckBox, 0, 0);
-    }
-
     // Add labels, edits and buttons
     int i=1;
-    if(!mDescriptionLabel.text().isEmpty())
-    {
-        addWidget(&mDescriptionLabel, 0, i);
-        ++i;
-    }
     addWidget(&mNameLabel, 0, i);
     ++i;
     addWidget(&mValueLineEdit, 0, i);
     ++i;
-    if(!mUnitLabel.text().isEmpty())
-    {
-        addWidget(&mUnitLabel, 0, i);
-        ++i;
-    }
     addWidget(&mResetDefaultToolButton, 0, i);
     ++i;
     addWidget(&mSystemParameterToolButton, 0, i);
+    ++i;
+    addWidget(&mUnitLabel, 0, i);
+    ++i;
+    addWidget(&mQuantityLabel, 0, i);
+    ++i;
+    addWidget(&mDescriptionLabel, 0, i);
     ++i;
 
     // Determine value text color
@@ -137,7 +113,6 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
     connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
     connect(&mValueLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickValueTextColor()));
-    connect(&mDynamicEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(makePort(bool)));
 }
 
 
@@ -203,22 +178,22 @@ void ParameterSettingsLayout::showListOfSystemParameters()
     }
 }
 
-void ParameterSettingsLayout::makePort(bool isPort)
-{
-    if (isPort)
-    {
-        Port * pPort = mpModelObject->createRefreshExternalPort(mName);
-        if (pPort)
-        {
-            // Make sure that our new port has the "correct" angle
-            pPort->setRotation(180);
-        }
-    }
-    else
-    {
-        mpModelObject->removeExternalPort(mName);
-    }
-}
+//void ParameterSettingsLayout::makePort(bool isPort)
+//{
+//    if (isPort)
+//    {
+//        Port * pPort = mpModelObject->createRefreshExternalPort(mName);
+//        if (pPort)
+//        {
+//            // Make sure that our new port has the "correct" angle
+//            pPort->setRotation(180);
+//        }
+//    }
+//    else
+//    {
+//        mpModelObject->removeExternalPort(mName);
+//    }
+//}
 
 
 void ParameterSettingsLayout::pickValueTextColor()

@@ -55,6 +55,7 @@ private:
 
 extern QuantityRegister gHopsanQuantities;
 
+bool checkIfQuantityOrUnit(const HString &rQuantityOrUnit, HString &rQuantity, HString &rUnitOrBaseUnit);
 
 }
 #endif // QUANTITIES_H
