@@ -1,10 +1,9 @@
 REM $Id: buildDevDocumentation.bat 4117 2012-03-02 12:33:23Z petno25 $
 @ECHO OFF
 
-REM Now we need to add the ghostscript bin folder to path so that formulas can be built, (the 32 bit version MUST be used)
+REM Now we need to add the ghostscript bin folder to path so that formulas can be built
 REM Lets add defualt path for installation on both 32 and 64 bit Windows
-set PATH=%PATH%;C:\Program Files (x86)\gs\gs9.05\bin;C:\Program Files\gs\gs9.05\bin
-set PATH=%PATH%;C:\Program Files (x86)\gs\gs9.07\bin;C:\Program Files\gs\gs9.07\bin
+set PATH=C:\Program Files\gs\gs9.18\bin;C:\Program Files (x86)\gs\gs9.18\bin;%PATH%
 
 cd doc
 if "%~1"=="" (

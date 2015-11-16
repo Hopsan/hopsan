@@ -21,6 +21,7 @@ scriptFile = "HopsanReleaseInnoSetupScript.iss"
 # External programs
 inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
 innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
+gsDirList = [r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin']
 
 # Compilers and build tools
 qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1']
@@ -320,6 +321,9 @@ def verifyPaths():
     if inkscapeDir == "":
         risOk = False
 
+    #Make sure that ghostscript is present for documentation build, but we dont care about result jsut print error if missing
+    selectPathFromList(gsDirList, "Ghostscript is not installed in expected place.", "Found Ghostscript!")
+    
     if isOk:
         printSuccess("Verification of path variables.")
 
