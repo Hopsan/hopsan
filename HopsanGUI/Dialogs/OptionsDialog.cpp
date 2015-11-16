@@ -463,9 +463,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pTabWidget->addTab(mpSimulationWidget, "Simulation");
     pTabWidget->addTab(pUnitScaleScrollArea, "Unit Scaling");
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
-#ifdef _WIN32
     pTabWidget->addTab(pCompilersWidget, "Compilers");
-#endif
     pTabWidget->addTab(pRemoteHopsanSettingsWidget, "Remote Hopsan");
 
     QGridLayout *pLayout = new QGridLayout;
