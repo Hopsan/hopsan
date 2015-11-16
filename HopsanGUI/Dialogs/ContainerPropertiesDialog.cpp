@@ -52,6 +52,13 @@
 #include "Widgets/LibraryWidget.h"
 #include "Dialogs/MovePortsDialog.h"
 
+// Help functions
+inline bool isPathAbsolute(const QString &path)
+{
+    QFileInfo fi(path);
+    return fi.isAbsolute();
+}
+
 
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
@@ -436,14 +443,19 @@ void ContainerPropertiesDialog::setValues()
     mpContainerObject->setSaveUndo(mpSaveUndoCheckBox->isChecked());
 
     //Set the icon paths, only update and refresh appearance if a change has occurred
-    if ( mpContainerObject->getIconPath(ISOGraphics, Absolute) != mpIsoIconPath->text() )
+    AbsoluteRelativeEnumT absrel=Relative;
+    if (isPathAbsolute(mpIsoIconPath->text()))
     {
-        mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGraphics, Absolute);
+        absrel=Absolute;
+    }
+    if ( mpContainerObject->getIconPath(ISOGraphics, absrel) != mpIsoIconPath->text() )
+    {
+        mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGraphics, absrel);
         mpContainerObject->refreshAppearance();
     }
-    if ( mpContainerObject->getIconPath(UserGraphics, Absolute) != mpUserIconPath->text() )
+    if ( mpContainerObject->getIconPath(UserGraphics, absrel) != mpUserIconPath->text() )
     {
-        mpContainerObject->setIconPath(mpUserIconPath->text(), UserGraphics, Absolute);
+        mpContainerObject->setIconPath(mpUserIconPath->text(), UserGraphics, absrel);
         mpContainerObject->refreshAppearance();
     }
 

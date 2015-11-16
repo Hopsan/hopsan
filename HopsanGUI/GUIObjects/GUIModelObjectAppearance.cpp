@@ -604,7 +604,7 @@ void ModelObjectAppearance::setRelativePathFromAbsolute()
     QFileInfo absUserPath(mUserIconAppearance.mAbsolutePath);
     QFileInfo absIsoPath(mIsoIconAppearance.mAbsolutePath);
 
-    //Check if given filepath is absolute or relative, if absolute assume we want relative to basepath
+    // Check if given filepath is absolute or relative, if absolute assume we want relative to basepath
     if (absUserPath.isAbsolute())
     {
         mUserIconAppearance.mRelativePath = relativePath(absUserPath, QDir(mBasePath));
@@ -618,21 +618,28 @@ void ModelObjectAppearance::setRelativePathFromAbsolute()
 
 void ModelObjectAppearance::setAbsoultePathFromRelative()
 {
-    //Check if given filepath is absolute or relative, if relative assume relative to basepath, but don do anything if path empty (no icon specified)
-    if (!mUserIconAppearance.mRelativePath.isEmpty())
+    // If relative assume relative to basepath, if empty then clear absolute paths
+    if (mUserIconAppearance.mRelativePath.isEmpty())
     {
-        QFileInfo relUserPath(mUserIconAppearance.mRelativePath);
+        mUserIconAppearance.mAbsolutePath.clear();
+    }
+    else
+    {
+        QFileInfo relUserPath;
         relUserPath.setFile(QDir(mBasePath), mUserIconAppearance.mRelativePath);
         mUserIconAppearance.mAbsolutePath = relUserPath.absoluteFilePath();
     }
 
-    if (!mIsoIconAppearance.mRelativePath.isEmpty())
+    if (mIsoIconAppearance.mRelativePath.isEmpty())
     {
-        QFileInfo relIsoPath(mIsoIconAppearance.mRelativePath);
+        mIsoIconAppearance.mAbsolutePath.clear();
+    }
+    else
+    {
+        QFileInfo relIsoPath;
         relIsoPath.setFile(QDir(mBasePath), mIsoIconAppearance.mRelativePath);
         mIsoIconAppearance.mAbsolutePath = relIsoPath.absoluteFilePath();
     }
-
 }
 
 //! @todo This is a bit wrong, it will return the scale for the available type not necessarily the requested
