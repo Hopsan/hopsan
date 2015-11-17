@@ -285,6 +285,14 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
     return isOk;
 }
 
+void SysParamTableModel::getFullParameterData(const QModelIndex &index, CoreParameterData &rParameterData)
+{
+    if (index.isValid() && index.row() < mParameterData.size())
+    {
+       rParameterData = mParameterData[index.row()];
+    }
+}
+
 bool SysParamTableModel::hasParameter(const QString name)
 {
     if (mpContainerObject)
@@ -350,6 +358,13 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     buttonFont.setBold(true);
     mpAddButton->setFont(buttonFont);
 
+    mpEditButton = new QPushButton(tr("&Edit"));
+    mpEditButton->setFixedHeight(30);
+    mpEditButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    mpEditButton->setAutoDefault(false);
+    mpEditButton->setEnabled(false);
+    mpEditButton->setFont(buttonFont);
+
     mpRemoveButton = new QPushButton(tr("&Unset"));
     mpRemoveButton->setFixedHeight(30);
     mpRemoveButton->setAutoDefault(false);
@@ -368,7 +383,8 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     QGridLayout *pGridLayout = new QGridLayout(this);
     pGridLayout->addWidget(mpSysParamTableView, 0, 0);
     pGridLayout->addWidget(mpAddButton, 1, 0);
-    pGridLayout->addWidget(mpRemoveButton, 2, 0);
+    pGridLayout->addWidget(mpEditButton, 2, 0);
+    pGridLayout->addWidget(mpRemoveButton, 3, 0);
 
     pGridLayout->setContentsMargins(4,4,4,4);
 
@@ -382,8 +398,8 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     update();
 
     connect(mpAddButton, SIGNAL(clicked()), this, SLOT(openAddParameterDialog()));
+    connect(mpEditButton, SIGNAL(clicked()), this, SLOT(openEditParameterDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeSelected()));
-    //connect(mpSysParamTableView->horizontalHeader(), SIGNAL(sectionClicked(int)), mpProxyModel, SLOT(sortByColumn(int)));
 }
 
 QPointer<ContainerObject> SystemParametersWidget::getRepresentedContainerObject()
@@ -420,27 +436,33 @@ void SystemParametersWidget::update()
     if (mpContainerObject)
     {
         mpAddButton->setEnabled(true);
+        mpEditButton->setEnabled(true);
         mpRemoveButton->setEnabled(true);
 
         // Make sure we show the widget, if it is hidden
         mpSysParamTableView->show();
 
-        qDebug() << "--------------List isEnabled: " << mpSysParamTableView->isEnabled();
-        qDebug() << "--------------List isHidden: " << mpSysParamTableView->isHidden();
-        qDebug() << "--------------List isVisible: " << mpSysParamTableView->isVisible();
-        qDebug() << "--------------SysParWidget isVisible: " << this->isVisible();
-        qDebug() << "--------------SysParWidget Parent isVisible: " << gpMainWindowWidget->isVisible();
+//        qDebug() << "--------------List isEnabled: " << mpSysParamTableView->isEnabled();
+//        qDebug() << "--------------List isHidden: " << mpSysParamTableView->isHidden();
+//        qDebug() << "--------------List isVisible: " << mpSysParamTableView->isVisible();
+//        qDebug() << "--------------SysParWidget isVisible: " << this->isVisible();
+//        qDebug() << "--------------SysParWidget Parent isVisible: " << gpMainWindowWidget->isVisible();
     }
     else
     {
         mpAddButton->setEnabled(false);
+        mpEditButton->setEnabled(false);
         mpRemoveButton->setEnabled(false);
     }
 }
 
-//! Slot that opens "Add Parameter" dialog, where the user can add new System parameters
+//! @brief Slot that opens "Add Parameter" dialog, where the user can add new System parameters
 void SystemParametersWidget::openAddParameterDialog()
 {
+    // Abort if a dialog is already open
+    if (mpAddParameterDialog)
+        return;
+
     mpAddParameterDialog = new QDialog(this);
     mpAddParameterDialog->setWindowTitle("Set System Parameter");
 
@@ -475,9 +497,65 @@ void SystemParametersWidget::openAddParameterDialog()
     pAddInDialogButton->setDefault(true);
     mpAddParameterDialog->show();
 
-    connect(pCancelInDialogButton,      SIGNAL(clicked()), mpAddParameterDialog, SLOT(close()));
-    connect(pAddAndCloseInDialogButton, SIGNAL(clicked()), this,                 SLOT(addParameterAndCloseDialog()));
-    connect(pAddInDialogButton,         SIGNAL(clicked()), this,                 SLOT(addParameter()));
+    connect(pCancelInDialogButton,      SIGNAL(clicked()),      this,   SLOT(closeDialog()));
+    connect(pAddAndCloseInDialogButton, SIGNAL(clicked()),      this,   SLOT(addParameterAndCloseDialog()));
+    connect(pAddInDialogButton,         SIGNAL(clicked()),      this,   SLOT(addParameter()));
+}
+
+//! @brief Slot that opens "Edit Parameter" dialog, where the user can edit existing system parameters
+void SystemParametersWidget::openEditParameterDialog()
+{
+    // Abort if a dialog is already open
+    if (mpAddParameterDialog)
+        return;
+
+    QModelIndexList idxList = mpSysParamTableView->selectionModel()->selectedRows();
+    if (!idxList.isEmpty())
+    {
+        CoreParameterData data;
+        mpModel->getFullParameterData(idxList.first(), data);
+
+        mpAddParameterDialog = new QDialog(this);
+        mpAddParameterDialog->setWindowTitle("Edit System Parameter");
+
+        mpNewParamNameEdit = new QLineEdit(data.mName, mpAddParameterDialog);
+        mpNewParamValueEdit = new QLineEdit(data.mValue, mpAddParameterDialog);
+        mpNewParamDescriptionEdit = new QLineEdit(data.mDescription, mpAddParameterDialog);
+        QString qu = data.mQuantity;
+        if (qu.isEmpty())
+        {
+            qu = data.mUnit;
+        }
+        mpNewParamUnitQuantityEdit = new QLineEdit(qu, mpAddParameterDialog);
+        mpNewParamTypeBox = new ParameterTypeComboBox();
+        //mpNewParamTypeBox->setCurrentText(data.mType);
+
+        QDialogButtonBox *pButtonBox            = new QDialogButtonBox(Qt::Horizontal);
+        QPushButton *pCancelInDialogButton      = new QPushButton(tr("Cancel"), mpAddParameterDialog);
+        QPushButton *pOkInDialogButton          = new QPushButton(tr("Ok"),     mpAddParameterDialog);
+        pButtonBox->addButton(pCancelInDialogButton,     QDialogButtonBox::ActionRole);
+        pButtonBox->addButton(pOkInDialogButton,         QDialogButtonBox::ActionRole);
+
+        QGridLayout *pDialogLayout = new QGridLayout(mpAddParameterDialog);
+        pDialogLayout->addWidget(new QLabel("Name: ", mpAddParameterDialog),0,0);
+        pDialogLayout->addWidget(mpNewParamNameEdit,0,1);
+        pDialogLayout->addWidget(new QLabel("Value: ", mpAddParameterDialog),1,0);
+        pDialogLayout->addWidget(mpNewParamValueEdit,1,1);
+        pDialogLayout->addWidget(new QLabel("Description: ", mpAddParameterDialog),2,0);
+        pDialogLayout->addWidget(mpNewParamDescriptionEdit,2,1);
+        pDialogLayout->addWidget(new QLabel("Quantity or Unit: ", mpAddParameterDialog),3,0);
+        pDialogLayout->addWidget(mpNewParamUnitQuantityEdit,3,1);
+        pDialogLayout->addWidget(new QLabel("Type: ", mpAddParameterDialog),4,0);
+        pDialogLayout->addWidget(mpNewParamTypeBox,4,1);
+        pDialogLayout->addWidget(pButtonBox,5,0,1,2);
+        mpAddParameterDialog->setLayout(pDialogLayout);
+
+        pOkInDialogButton->setDefault(true);
+        mpAddParameterDialog->show();
+
+        connect(pCancelInDialogButton,      SIGNAL(clicked()), this,   SLOT(closeDialog()));
+        connect(pOkInDialogButton,          SIGNAL(clicked()), this,   SLOT(addParameterAndCloseDialog()));
+    }
 }
 
 void SystemParametersWidget::highlightComponents(QModelIndex index)
@@ -518,8 +596,7 @@ void SystemParametersWidget::addParameterAndCloseDialog()
 {
     if(addParameter())
     {
-        mpAddParameterDialog->close();
-        delete(mpAddParameterDialog);
+        closeDialog();
     }
 }
 
@@ -531,4 +608,11 @@ void SystemParametersWidget::removeSelected()
         mpSysParamTableView->model()->removeRows(idxList[0].row(), 1);
         idxList = mpSysParamTableView->selectionModel()->selectedRows();
     }
+}
+
+void SystemParametersWidget::closeDialog()
+{
+    mpAddParameterDialog->close();
+    mpAddParameterDialog->deleteLater();
+    mpAddParameterDialog = nullptr;
 }

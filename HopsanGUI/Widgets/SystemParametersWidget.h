@@ -85,6 +85,7 @@ public:
 
     void setContainer(ContainerObject *pContainerObject);
     bool addOrSetParameter(CoreParameterData &rParameterData);
+    void getFullParameterData(const QModelIndex &index, CoreParameterData &rParameterData);
     bool hasParameter(const QString name);
 
 public slots:
@@ -109,12 +110,14 @@ public slots:
     void update();
     void update(ContainerObject* pNewContainer);
     void openAddParameterDialog();
+    void openEditParameterDialog();
     void highlightComponents(QModelIndex index);
 
 protected slots:
     bool addParameter();
     void addParameterAndCloseDialog();
     void removeSelected();
+    void closeDialog();
 
 private:
     QPointer<ContainerObject> mpContainerObject;
@@ -122,7 +125,7 @@ private:
     QSortFilterProxyModel *mpProxyModel;
     SysParamTableModel *mpModel;
 
-    QDialog *mpAddParameterDialog;
+    QDialog *mpAddParameterDialog=nullptr;
     QLineEdit *mpNewParamNameEdit;
     QLineEdit *mpNewParamValueEdit;
     QLineEdit *mpNewParamDescriptionEdit;
@@ -130,6 +133,7 @@ private:
     QComboBox *mpNewParamTypeBox;
 
     QPushButton *mpAddButton;
+    QPushButton *mpEditButton;
     QPushButton *mpRemoveButton;
 };
 
