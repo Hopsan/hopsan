@@ -689,6 +689,7 @@ QWidget *SystemProperties::createSystemSettings()
     mpPyScriptPath->setMinimumWidth(200);
     mpPyScriptPath->setText(mpSystemObject->getScriptFile());
     QPushButton* pPyScriptBrowseButton = new QPushButton(tr("..."), pSettingsWidget);
+    connect(pPyScriptBrowseButton, SIGNAL(clicked(bool)), this, SLOT(browseScript()));
 
     QGridLayout *pSettingsLayout = new QGridLayout(pSettingsWidget);
     pSettingsLayout->addWidget(pPyScriptLabel,         0, 0);
@@ -805,6 +806,9 @@ QWidget *SystemProperties::createAppearanceSettings()
     r++;
     pAppearanceLayout->addWidget(new QWidget(pAppearanceWidget), r, 0, 1, 2);
     pAppearanceLayout->setRowStretch(r, 1);
+
+    connect(pUserIconBrowseButton, SIGNAL(clicked(bool)), this, SLOT(browseUser()));
+    connect(pIsoIconBrowseButton, SIGNAL(clicked(bool)), this, SLOT(browseIso()));
 
     return pAppearanceWidget;
 }
