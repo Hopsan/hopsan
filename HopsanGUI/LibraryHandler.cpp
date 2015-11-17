@@ -927,12 +927,12 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool show
     QString fmiLibDir="/Dependencies/FMILibrary-2.0.1/";
 #endif
         extraCFlags = QString("-I%1").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"install/include");
-        extraLFlags = QString("-L%1 -l%2").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"install/lib");
-//#ifdef _WIN32
-//    extraLFlags += "libfmilib_shared";
-//#else
-//    extraLFlags += "fmilib_shared";  //Remove extra "lib" prefix in Linux
-//#endif
+        extraLFlags = QString("-L%1 -l").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"install/lib");
+#ifdef _WIN32
+    extraLFlags += "libfmilib_shared";
+#else
+    extraLFlags += "fmilib_shared";  //Remove extra "lib" prefix in Linux
+#endif
     }
 
     //Call compile utility
