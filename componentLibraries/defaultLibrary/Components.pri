@@ -152,10 +152,12 @@ HEADERS +=  \
  $${PWD}/Mechanic/Linear/MechanicM2load1D.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicMkcload1D.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicMultiPortTranslationalMass.hpp \ 
+ $${PWD}/Mechanic/Linear/MechanicNodeSensor.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicPositionSensor.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicPulley.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicSpeedSensor.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicSpring.hpp \ 
+ $${PWD}/Mechanic/Linear/MechanicTranslationalCSource.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicTranslationalLosslessConnector.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicTranslationalMass.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicTranslationalMassWithCoulombFriction.hpp \ 
@@ -302,6 +304,7 @@ HEADERS +=  \
  $${PWD}/Signal/Sources&Sinks/SignalStep.hpp \ 
  $${PWD}/Signal/Sources&Sinks/SignalStepExponentialDelay.hpp \ 
  $${PWD}/Signal/Sources&Sinks/SignalTime.hpp \ 
+ $${PWD}/Signal/Sources&Sinks/SignalTimestep.hpp \ 
  $${PWD}/Signal/Sources&Sinks/Sources&Sinks.h \ 
  $${PWD}/Special/AeroComponents/AeroAircraft6DOF.hpp \ 
  $${PWD}/Special/AeroComponents/AeroAircraft6DOFS.hpp \ 

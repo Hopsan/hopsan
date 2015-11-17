@@ -31,10 +31,12 @@ pComponentFactory->registerCreatorFunction("MechanicFreeLengthWall",MechanicFree
 pComponentFactory->registerCreatorFunction("MechanicM2load1D",MechanicM2load1D::Creator);
 pComponentFactory->registerCreatorFunction("MechanicMkcload1D",MechanicMkcload1D::Creator);
 pComponentFactory->registerCreatorFunction("MechanicMultiPortTranslationalMass",MechanicMultiPortTranslationalMass::Creator);
+pComponentFactory->registerCreatorFunction("MechanicNodeSensor",MechanicNodeSensor::Creator);
 pComponentFactory->registerCreatorFunction("MechanicPositionSensor",MechanicPositionSensor::Creator);
 pComponentFactory->registerCreatorFunction("MechanicPulley",MechanicPulley::Creator);
 pComponentFactory->registerCreatorFunction("MechanicSpeedSensor",MechanicSpeedSensor::Creator);
 pComponentFactory->registerCreatorFunction("MechanicSpring",MechanicSpring::Creator);
+pComponentFactory->registerCreatorFunction("MechanicTranslationalCSource",MechanicTranslationalCSource::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTranslationalLosslessConnector",MechanicTranslationalLosslessConnector::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTranslationalMass",MechanicTranslationalMass::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulombFriction",MechanicTranslationalMassWithCoulombFriction::Creator);

@@ -82,6 +82,11 @@ inline void writeOutputVariable(Port *pPort, const double y)
     writeSignalPort(pPort, y);
 }
 
+inline void writeOutputVariable(double *pNodeData, const double y)
+{
+    *pNodeData = y;
+}
+
 //inline double writeInputVariable(Port *pPort)
 //{
 //    return writeSignalPort(pPort);

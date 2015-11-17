@@ -22,10 +22,15 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//!
+//! @file   MechanicSpeedSensor.hpp
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2015-11-17
+
 //$Id$
 
-#ifndef MECHANICFORCETRANSFORMER_HPP_INCLUDED
-#define MECHANICFORCETRANSFORMER_HPP_INCLUDED
+#ifndef MECHANICNODESENSOR_HPP
+#define MECHANICNODESENSOR_HPP
 
 #include "ComponentEssentials.h"
 
@@ -35,44 +40,46 @@ namespace hopsan {
 //! @brief
 //! @ingroup MechanicalComponents
 //!
-class MechanicForceTransformer : public ComponentC
+class MechanicNodeSensor : public ComponentSignal
 {
-
 private:
-    double *mpF_signal, *mpP1_f, *mpP1_c, *mpP1_Zx;
-    Port *mpP1;
+    MechanicNodeDataPointerStructT mP1;
+    double *mpOut_f, *mpOut_v, *mpOut_x, *mpOut_c, *mpOut_z, *mpOut_em;
 
 public:
     static Component *Creator()
     {
-        return new MechanicForceTransformer();
+        return new MechanicNodeSensor();
     }
 
     void configure()
     {
-        addInputVariable("F", "Generated force", "N", 0.0, &mpF_signal);
-        mpP1 = addPowerPort("P1", "NodeMechanic");
-        disableStartValue(mpP1, NodeMechanic::Force);
+        addReadPort("P1", "NodeMechanic", "Sensor port", Port::NotRequired);
+        addOutputVariable("out_f", "Force", "Force", &mpOut_f);
+        addOutputVariable("out_v", "Velocity", "Velocity", &mpOut_v);
+        addOutputVariable("out_x", "Position", "Position", &mpOut_x);
+        addOutputVariable("out_c", "Wave variable", "Force", &mpOut_c);
+        addOutputVariable("out_z", "Char. impedance", "", &mpOut_z);
+        addOutputVariable("out_em", "Equivalent mass", "Mass", &mpOut_em);
     }
-
 
     void initialize()
     {
-        mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-        mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-        mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
-
-        (*mpP1_f) = (*mpF_signal);
-        (*mpP1_Zx) = 0.0;
+        getMechanicPortNodeDataPointers(getPort("P1"), mP1);
+        simulateOneTimestep(); //Set initial output node value
     }
-
 
     void simulateOneTimestep()
     {
-        (*mpP1_c) = (*mpF_signal);
-        (*mpP1_Zx) = 0.0;
+        writeOutputVariable(mpOut_f, mP1.f());
+        writeOutputVariable(mpOut_v, mP1.v());
+        writeOutputVariable(mpOut_x, mP1.x());
+        writeOutputVariable(mpOut_c, mP1.c());
+        writeOutputVariable(mpOut_z, mP1.Zc());
+        writeOutputVariable(mpOut_em, mP1.me());
     }
 };
 }
 
-#endif // MECHANICFORCETRANSFORMER_HPP_INCLUDED
+#endif // MECHANICNODESENSOR_HPP
+

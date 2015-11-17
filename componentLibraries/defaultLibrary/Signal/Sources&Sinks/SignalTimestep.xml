@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalTimestep.hpp" typename="SignalTimestep" displayname="Timestep">
+        <icons>
+            <icon scale="1" path="SignalTimestep.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.5" a="0" name="ts"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
