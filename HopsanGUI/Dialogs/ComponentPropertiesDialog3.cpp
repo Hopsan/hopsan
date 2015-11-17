@@ -47,6 +47,7 @@
 #include <QLineEdit>
 #include <QGroupBox>
 #include <QToolButton>
+#include <QFileDialog>
 
 
 //Hopsan includes
@@ -59,6 +60,7 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
@@ -67,6 +69,7 @@
 #include "Widgets/ModelWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "LibraryHandler.h"
+#include "Widgets/LibraryWidget.h"
 #include "MessageHandler.h"
 
 #ifdef USEDISCOUNT
@@ -82,11 +85,15 @@ extern "C" {
 //!
 
 
-
-
+// Help functions
+inline bool isPathAbsolute(const QString &path)
+{
+    QFileInfo fi(path);
+    return fi.isAbsolute();
+}
 
 //! @brief Constructor for the parameter dialog for components
-//! @param pGUIComponent Pointer to the component
+//! @param pModelObject Pointer to the component
 //! @param parent Pointer to the parent widget
 ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject, QWidget *pParent)
     : QDialog(pParent)
@@ -217,6 +224,7 @@ void ComponentPropertiesDialog3::okPressed()
 {
     setName();
     setAliasNames();
+    setSystemProperties();
     if (setVariableValues())
     {
         close();
@@ -326,6 +334,14 @@ bool ComponentPropertiesDialog3::setVariableValues()
 void ComponentPropertiesDialog3::setName()
 {
     mpModelObject->getParentContainerObject()->renameModelObject(mpModelObject->getName(), mpNameEdit->text());
+}
+
+void ComponentPropertiesDialog3::setSystemProperties()
+{
+    if (mpSystemProperties)
+    {
+        mpSystemProperties->setValues();
+    }
 }
 
 void ComponentPropertiesDialog3::closeEvent(QCloseEvent* event)
@@ -580,7 +596,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             pHelpLink->setAlignment(Qt::AlignLeft);
         }
 
-        // Add dummy stretch widget at bottom if no html is pressent (to force image / text / link together)
+        // Add dummy stretch widget at bottom if no html is present (to force image / text / link together)
         if (mpModelObject->getHelpHtmlPath().isEmpty())
         {
             QWidget *pDummyWidget = new QWidget(this);
@@ -630,21 +646,206 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     mpSolverComboBox = new QComboBox(this);
     mpSolverComboBox->addItem("Numerical Integration");
     mpSolverComboBox->addItem("Bilinear Transform");
-    mpNewComponentButton = new QPushButton(tr("&Copy to new component"), this);
-    connect(mpNewComponentButton, SIGNAL(clicked()), this, SLOT(copyToNewComponent()));
-    mpRecompileButton = new QPushButton(tr("&Recompile"), this);
-    mpRecompileButton->setEnabled(true);
-    connect(mpRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
+    QPushButton *pNewComponentButton = new QPushButton(tr("&Copy to new component"), this);
+    connect(pNewComponentButton, SIGNAL(clicked()), this, SLOT(copyToNewComponent()));
+    QPushButton *pRecompileButton = new QPushButton(tr("&Recompile"), this);
+    pRecompileButton->setEnabled(true);
+    connect(pRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
     QHBoxLayout *pSolverLayout = new QHBoxLayout();
     pSolverLayout->addWidget(pSolverLabel);
     pSolverLayout->addWidget(mpSolverComboBox);
     pSolverLayout->addWidget(new QWidget(this));
-    pSolverLayout->addWidget(mpNewComponentButton);
-    pSolverLayout->addWidget(mpRecompileButton);
+    pSolverLayout->addWidget(pNewComponentButton);
+    pSolverLayout->addWidget(pRecompileButton);
     pSolverLayout->setStretch(2,1);
     pLayout->addLayout(pSolverLayout);
 
     return pTempWidget;//return pSourceCodeTextEdit;
+}
+
+QWidget *SystemProperties::createSystemSettings()
+{
+    QWidget *pSettingsWidget = new QWidget();
+
+    // Load start values or not
+    mpUseStartValues = new QCheckBox("Keep start values from previous simulation", pSettingsWidget);
+    mpUseStartValues->setCheckable(true);
+    mpUseStartValues->setChecked(mpSystemObject->getCoreSystemAccessPtr()->doesKeepStartValues());
+
+    // Disable undo check box
+    mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), pSettingsWidget);
+    mpDisableUndoCheckBox->setCheckable(true);
+    mpDisableUndoCheckBox->setChecked(!mpSystemObject->isUndoEnabled());
+
+    // Save undo check box
+    mpSaveUndoCheckBox = new QCheckBox(tr("Save Undo Function In Model File"), pSettingsWidget);
+    mpSaveUndoCheckBox->setCheckable(true);
+    mpSaveUndoCheckBox->setChecked(mpSystemObject->getSaveUndo());
+
+    // Startup python script file
+    QLabel *pPyScriptLabel = new QLabel("Script File:", pSettingsWidget);
+    pPyScriptLabel->setMinimumWidth(80);
+    mpPyScriptPath = new QLineEdit(pSettingsWidget);
+    mpPyScriptPath->setMinimumWidth(200);
+    mpPyScriptPath->setText(mpSystemObject->getScriptFile());
+    QPushButton* pPyScriptBrowseButton = new QPushButton(tr("..."), pSettingsWidget);
+
+    QGridLayout *pSettingsLayout = new QGridLayout(pSettingsWidget);
+    pSettingsLayout->addWidget(pPyScriptLabel,         0, 0);
+    pSettingsLayout->addWidget(mpPyScriptPath,         0, 1);
+    pSettingsLayout->addWidget(pPyScriptBrowseButton,  0, 2);
+    pSettingsLayout->addWidget(mpUseStartValues,       1, 0, 1, 2);
+    pSettingsLayout->addWidget(mpDisableUndoCheckBox,  2, 0, 1, 2);
+    pSettingsLayout->addWidget(mpSaveUndoCheckBox,     3, 0, 1, 2);
+    pSettingsLayout->addWidget(new QWidget(pSettingsWidget), 4, 0, 1, 2);
+    pSettingsLayout->setRowStretch(4, 1);
+
+    // Time step
+    mpTimeStepCheckBox = new QCheckBox("Inherit time step from parent system", pSettingsWidget);
+    mpTimeStepCheckBox->setChecked(mpSystemObject->getCoreSystemAccessPtr()->doesInheritTimeStep());
+    QLabel *pTimeStepLabel = new QLabel(" Time Step:", pSettingsWidget);
+    pTimeStepLabel->setDisabled(mpTimeStepCheckBox->isChecked());
+    QString timeStepText;
+    if(mpTimeStepCheckBox->isChecked())
+    {
+        timeStepText.setNum(mpSystemObject->getParentContainerObject()->getCoreSystemAccessPtr()->getDesiredTimeStep());
+    }
+    else
+    {
+        timeStepText.setNum(mpSystemObject->getCoreSystemAccessPtr()->getDesiredTimeStep());
+    }
+    mpTimeStepEdit = new QLineEdit(pSettingsWidget);
+    mpTimeStepEdit->setValidator(new QDoubleValidator(0.0, 2000000000.0, 10, pSettingsWidget));
+    mpTimeStepEdit->setText(timeStepText);
+    mpTimeStepEdit->setDisabled(mpTimeStepCheckBox->isChecked());
+
+    connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), pTimeStepLabel, SLOT(setDisabled(bool)));
+    connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepEdit, SLOT(setDisabled(bool)));
+    connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), this,           SLOT(fixTimeStepInheritance(bool)));
+    pSettingsLayout->addWidget(mpTimeStepCheckBox, 4, 0, 1, 2);
+    pSettingsLayout->addWidget(pTimeStepLabel,                         5, 0, 1, 1);
+    pSettingsLayout->addWidget(mpTimeStepEdit,     5, 1, 1, 1);
+
+    // Log samples
+    mpNumLogSamplesEdit = new QLineEdit(pSettingsWidget);
+    mpNumLogSamplesEdit->setValidator(new QIntValidator(0, 2000000000, pSettingsWidget));
+    mpNumLogSamplesEdit->setText(QString("%1").arg(mpSystemObject->getNumberOfLogSamples())); //!< @todo what if group
+    pSettingsLayout->addWidget(new QLabel(tr("Log Samples:"), pSettingsWidget), 6, 0);
+    pSettingsLayout->addWidget(mpNumLogSamplesEdit, 6, 1);
+
+    // Log start time
+    mpLogStartTimeEdit = new QLineEdit(pSettingsWidget);
+    mpLogStartTimeEdit->setValidator(new QDoubleValidator(pSettingsWidget));
+    mpLogStartTimeEdit->setText(QString("%1").arg(mpSystemObject->getLogStartTime())); //!< @todo what if group
+    pSettingsLayout->addWidget(new QLabel(tr("Log Start:"), pSettingsWidget), 7, 0);
+    pSettingsLayout->addWidget(mpLogStartTimeEdit, 7, 1);
+
+    QPushButton *pClearLogDataButton = new QPushButton("Clear All Log Data", pSettingsWidget);
+    pClearLogDataButton->setEnabled(!mpSystemObject->getLogDataHandler()->isEmpty());
+    connect(pClearLogDataButton, SIGNAL(clicked()), this, SLOT(clearLogData()));
+    pSettingsLayout->addWidget(pClearLogDataButton, 8,0);
+
+    pSettingsLayout->addWidget(new QWidget(pSettingsWidget), 9, 0, 1, 2);
+    pSettingsLayout->setRowStretch(9, 1);
+
+    return pSettingsWidget;
+}
+
+QWidget *SystemProperties::createAppearanceSettings()
+{
+    QWidget *pAppearanceWidget = new QWidget();
+
+    // Icon paths
+    QLabel* pUserIconLabel = new QLabel("User Icon Path:", pAppearanceWidget);
+    QLabel* pIsoIconLabel  = new QLabel("ISO Icon Path:",  pAppearanceWidget);
+    mpUserIconPath  = new QLineEdit(mpSystemObject->getIconPath(UserGraphics, Absolute), pAppearanceWidget);
+    mpIsoIconPath   = new QLineEdit(mpSystemObject->getIconPath(ISOGraphics, Absolute), pAppearanceWidget);
+    pUserIconLabel->setMinimumWidth(80);
+    mpUserIconPath->setMinimumWidth(200);
+    QPushButton* pIsoIconBrowseButton = new QPushButton(tr("..."), pAppearanceWidget);
+    QPushButton* pUserIconBrowseButton = new QPushButton(tr("..."), pAppearanceWidget);
+    //    mpIsoIconBrowseButton->setFixedSize(25, 22);
+    //    mpUserIconBrowseButton->setFixedSize(25, 22);
+    pIsoIconBrowseButton->setAutoDefault(false);
+    pUserIconBrowseButton->setAutoDefault(false);
+
+    // Icon type
+    mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"), pAppearanceWidget);
+    mpIsoCheckBox->setCheckable(true);
+    mpIsoCheckBox->setChecked(mpSystemObject->getGfxType());
+
+    // Graphics scales
+    QLabel *pUserIconScaleLabel = new QLabel("User Icon Scale:", pAppearanceWidget);
+    QLabel *pIsoIconScaleLabel = new QLabel("ISO Icon Scale:", pAppearanceWidget);
+    mpUserIconScaleEdit = new QLineEdit(pAppearanceWidget);
+    mpUserIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, pAppearanceWidget));
+    mpUserIconScaleEdit->setText(QString("%1").arg(mpSystemObject->getAppearanceData()->getIconScale(UserGraphics)));
+    mpIsoIconScaleEdit = new QLineEdit(pAppearanceWidget);
+    mpIsoIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, pAppearanceWidget));
+    mpIsoIconScaleEdit->setText(QString("%1").arg(mpSystemObject->getAppearanceData()->getIconScale(ISOGraphics)));
+
+
+    QGridLayout *pAppearanceLayout = new QGridLayout(pAppearanceWidget);
+    int r=0;
+    pAppearanceLayout->addWidget(pUserIconLabel, r, 0);
+    pAppearanceLayout->addWidget(mpUserIconPath, r, 1);
+    pAppearanceLayout->addWidget(pUserIconBrowseButton, r, 2);
+    r++;
+    pAppearanceLayout->addWidget(pIsoIconLabel, r, 0);
+    pAppearanceLayout->addWidget(mpIsoIconPath, r, 1);
+    pAppearanceLayout->addWidget(pIsoIconBrowseButton, r, 2);
+    r++;
+    pAppearanceLayout->addWidget(pUserIconScaleLabel, r, 0);
+    pAppearanceLayout->addWidget(mpUserIconScaleEdit, r, 1);
+    r++;
+    pAppearanceLayout->addWidget(pIsoIconScaleLabel, r, 0);
+    pAppearanceLayout->addWidget(mpIsoIconScaleEdit, r, 1);
+    r++;
+    pAppearanceLayout->addWidget(mpIsoCheckBox, r, 0, 1, -1);
+    r++;
+    pAppearanceLayout->addWidget(new QWidget(pAppearanceWidget), r, 0, 1, 2);
+    pAppearanceLayout->setRowStretch(r, 1);
+
+    return pAppearanceWidget;
+}
+
+QWidget *SystemProperties::createModelinfoSettings()
+{
+    QString author, email, affiliation, description;
+    mpSystemObject->getModelInfo(author, email, affiliation, description);
+
+    QWidget *pInfoWidget = new QWidget();
+    QGridLayout *pInfoLayout = new QGridLayout();
+
+    QLabel *pAuthorLabel = new QLabel("Author: ", pInfoWidget);
+    QLabel *pEmailLabel = new QLabel("Email: ", pInfoWidget);
+    QLabel *pAffiliationLabel = new QLabel("Affiliation: ", pInfoWidget);
+    QLabel *pDescriptionLabel = new QLabel("Description: ", pInfoWidget);
+    QLabel *pBasePathLabel = new QLabel("BasePath: ", pInfoWidget);
+
+    mpAuthorEdit = new QLineEdit(author, pInfoWidget);
+    mpEmailEdit = new QLineEdit(email, pInfoWidget);
+    mpAffiliationEdit = new QLineEdit(affiliation, pInfoWidget);
+    mpDescriptionEdit = new QTextEdit(description, pInfoWidget);
+    mpDescriptionEdit->setFixedHeight(100);
+    QLineEdit *pBasePathEdit = new QLineEdit(mpSystemObject->getAppearanceData()->getBasePath(), pInfoWidget);
+    pBasePathEdit->setReadOnly(true);
+
+    pInfoLayout->addWidget(pAuthorLabel,       0, 0);
+    pInfoLayout->addWidget(mpAuthorEdit,       0, 1);
+    pInfoLayout->addWidget(pEmailLabel,        1, 0);
+    pInfoLayout->addWidget(mpEmailEdit,        1, 1);
+    pInfoLayout->addWidget(pAffiliationLabel,  2, 0);
+    pInfoLayout->addWidget(mpAffiliationEdit,  2, 1);
+    pInfoLayout->addWidget(pDescriptionLabel,  3, 0);
+    pInfoLayout->addWidget(mpDescriptionEdit,  3, 1);
+    pInfoLayout->addWidget(pBasePathLabel,     4, 0);
+    pInfoLayout->addWidget(pBasePathEdit,      4, 1);
+    pInfoLayout->addWidget(new QWidget(pInfoWidget), 5, 0, 1, 2);
+    pInfoLayout->setRowStretch(5, 1);
+    pInfoWidget->setLayout(pInfoLayout);
+
+    return pInfoWidget;
 }
 
 void ComponentPropertiesDialog3::createEditStuff()
@@ -712,6 +913,19 @@ void ComponentPropertiesDialog3::createEditStuff()
         QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
         pTabWidget->addTab(pSourceBrowser, "Source Code");
     }
+
+    // Add tabs for subsystems
+    if (mpModelObject->type() == SystemContainerType)
+    {
+        mpSystemProperties = new SystemProperties(qobject_cast<SystemContainer*>(mpModelObject), this);
+        QWidget *pSystemSettingsWidget = mpSystemProperties->createSystemSettings();
+        QWidget *pSystemAppearanceWidget = mpSystemProperties->createAppearanceSettings();
+        QWidget *pModelInfoWidget = mpSystemProperties->createModelinfoSettings();
+        pTabWidget->addTab(pSystemSettingsWidget, "SystemSettings");
+        pTabWidget->addTab(pSystemAppearanceWidget, "Appearance");
+        pTabWidget->addTab(pModelInfoWidget, "ModelInfo");
+    }
+
     pMainLayout->addWidget(pTabWidget);
 
     //------------------------------------------------------------------------------------------------------------------------------
@@ -997,34 +1211,6 @@ bool VariableTableWidget::setStartValues()
     return allok;
 }
 
-//bool VariableTableWidget::setCustomPlotScaleValues()
-//{
-//    bool allok=true;
-//    for (int row=0; row<rowCount(); ++row)
-//    {
-
-//        // First check if row is separator, then skip it
-//        if (columnSpan(row,0)>1)
-//        {
-//            continue;
-//        }
-
-//        // Extract PlotScaleSelector from row
-//        PlotScaleSelectionWidget *pPlotScaleSelector = qobject_cast<PlotScaleSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Scale)));
-//        if (!pPlotScaleSelector)
-//        {
-//            continue;
-//        }
-
-//        // Only register if changed
-//        if (pPlotScaleSelector->hasChanged())
-//        {
-//            pPlotScaleSelector->registerCustomScale();
-//        }
-//    }
-//    return allok;
-//}
-
 bool VariableTableWidget::setAliasNames()
 {
     for (int r=0; r<rowCount(); ++r)
@@ -1283,185 +1469,6 @@ void TableWidgetTotalSize::setMaxVisibleRows(const int maxRows)
 {
     mMaxVisibleRows = maxRows;
 }
-
-
-//PlotScaleSelectionWidget::PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent) :
-//    QWidget(pParent)
-//{
-//    mVariableTypeName = rData.mName;
-//    mVariablePortDataName = rData.mPortName+"#"+rData.mName;
-//    mOriginalUnit = rData.mUnit;
-//    mpModelObject = pModelObject;
-
-//    QHBoxLayout* pLayout = new QHBoxLayout(this);
-//    QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
-//    pLayout->setContentsMargins(margins);
-
-//    mpPlotScaleEdit = new QLineEdit();
-//    mpPlotScaleEdit->setAlignment(Qt::AlignCenter);
-//    mpPlotScaleEdit->setFrame(false);
-//    pLayout->addWidget(mpPlotScaleEdit);
-
-//    UnitScale currCustom;
-//    pModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, currCustom);
-//    if (!currCustom.mScale.isEmpty()) // Check if data exists
-//    {
-//        // If minus one scale then show -1
-//        if (currCustom.isMinusOne())
-//        {
-//            mpPlotScaleEdit->setText(currCustom.mScale);
-//        }
-//        // If unit not given, display the scale value
-//        else if (currCustom.mUnit.isEmpty())
-//        {
-//            mpPlotScaleEdit->setText(currCustom.mScale);
-//        }
-//        // If description given use it (usually the custom unit)
-//        else
-//        {
-//            mpPlotScaleEdit->setText(currCustom.mUnit);
-//        }
-
-//        //! @todo what about showinf manually set custom units like "1 [m]"
-//    }
-
-//    QToolButton *pScaleSelectionButton =  new QToolButton(this);
-//    pScaleSelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
-//    pScaleSelectionButton->setToolTip("Select Unit Scaling");
-//    pScaleSelectionButton->setFixedSize(24,24);
-//    connect(pScaleSelectionButton, SIGNAL(clicked()), this, SLOT(createPlotScaleSelectionMenu()));
-//    pLayout->addWidget(pScaleSelectionButton);
-//}
-
-//void PlotScaleSelectionWidget::createPlotScaleSelectionMenu()
-//{
-//    QMap<QString, double> unitScales;
-//    QMenu menu;
-//    if (mVariableTypeName == "Value")
-//    {
-//        QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
-//        if (pqs.size() > 0)
-//        {
-//            unitScales = gpConfig->getUnitScales(pqs.first());
-//        }
-//    }
-//    else
-//    {
-//        unitScales = gpConfig->getUnitScales(mVariableTypeName);
-//    }
-//    if (!unitScales.isEmpty())
-//    {
-//        QList<QString> keys = unitScales.keys();
-//        QMap<QAction*, int> actionScaleMap;
-
-//        for (int i=0; i<keys.size(); ++i)
-//        {
-//            QAction *tempAction = menu.addAction(keys[i]);
-//            actionScaleMap.insert(tempAction, i);
-//            tempAction->setIconVisibleInMenu(false);
-//        }
-
-//        //! @todo maybe add this
-//        //    if(!menu.isEmpty())
-//        //    {
-//        //        menu.addSeparator();
-//        //    }
-//        //    QAction *pAddAction = menu.addAction("Add global unit scale");
-//        QAction *pAddAction = 0;
-
-
-//        QCursor cursor;
-//        QAction *selectedAction = menu.exec(cursor.pos());
-//        if(selectedAction == pAddAction)
-//        {
-//            //! @todo maybe add this
-//            return;
-//        }
-
-//        int idx = actionScaleMap.value(selectedAction,-1);
-//        if (idx >= 0)
-//        {
-//            QString key =  keys.at(idx);
-//            if(!key.isEmpty())
-//            {
-//                // Set the selected unit scale
-//                //mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, key, QString("%1").arg(unitScales.value(key)));
-//                mpPlotScaleEdit->setText(key);
-//            }
-//        }
-//    }
-//}
-
-//void PlotScaleSelectionWidget::registerCustomScale()
-//{
-//    QMap<QString, double> unitScales;
-
-
-//    QString val = mpPlotScaleEdit->text();
-
-//    if (val=="-1" || val=="-1.0")
-//    {
-//        val = QString("-1 [%1]").arg(mOriginalUnit);
-//    }
-//    else
-//    {
-//        if (mVariableTypeName == "Value")
-//        {
-//            QStringList pqs = gpConfig->getQuantitiesForUnit(mOriginalUnit);
-//            if (pqs.size() > 0)
-//            {
-//                unitScales = gpConfig->getUnitScales(pqs.first());
-//            }
-//        }
-//        else
-//        {
-//            unitScales = gpConfig->getUnitScales(mVariableTypeName);
-//        }
-//    }
-
-//    if (unitScales.contains(val))
-//    {
-//        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, val, QString("%1").arg(unitScales.value(val)));
-//    }
-//    else if (val.contains('['))
-//    {
-//        // Ok the user want to add a custom specific scale
-//        QStringList fields = val.split(' ');
-//        if (fields.size() == 2)
-//        {
-//            //! @todo need to check if text is valid number
-//            mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, fields.last().remove('[').remove(']'), fields.first());
-//        }
-//        else
-//        {
-//            //! @todo report error
-//        }
-//    }
-//    else
-//    {
-//        //! @todo need to check if text is valid number
-//        mpModelObject->registerCustomPlotUnitOrScale(mVariablePortDataName, "", val);
-//    }
-//}
-
-//bool PlotScaleSelectionWidget::hasChanged() const
-//{
-//    UnitScale us;
-//    mpModelObject->getCustomPlotUnitOrScale(mVariablePortDataName, us);
-//    if (us.mUnit.isEmpty())
-//    {
-//        return us.mScale != mpPlotScaleEdit->text();
-//    }
-//    else
-//    {
-//        return us.mUnit != mpPlotScaleEdit->text();
-//    }
-//}
-
-//QLineEdit *PlotScaleSelectionWidget::getPlotScaleEditPtr() const
-//{
-//    return mpPlotScaleEdit;
-//}
 
 
 ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent) :
@@ -2135,4 +2142,135 @@ void PlotRelatedWidget::invertPlot(bool tf)
 void PlotRelatedWidget::setPlotLabel(QString label)
 {
     mpModelObject->setVariablePlotLabel(mVariablePortDataName, label);
+}
+
+SystemProperties::SystemProperties(SystemContainer *pSystemObject, QWidget *pParentWidget) :
+    QObject(pParentWidget)
+{
+    mpSystemObject = pSystemObject;
+}
+
+void SystemProperties::fixTimeStepInheritance(bool value)
+{
+    double ts;
+    if(value)
+    {
+        ts = mpSystemObject->getParentContainerObject()->getCoreSystemAccessPtr()->getDesiredTimeStep();
+    }
+    else
+    {
+        ts = mpSystemObject->getCoreSystemAccessPtr()->getDesiredTimeStep();
+    }
+    mpTimeStepEdit->setText(QString("%1").arg(ts));
+}
+
+//! @brief Updates model settings according to the selected values
+void SystemProperties::setValues()
+{
+    if(mpIsoCheckBox->isChecked() && mpSystemObject->getGfxType() != ISOGraphics)
+    {
+        mpSystemObject->setGfxType(ISOGraphics);
+        gpLibraryWidget->setGfxType(ISOGraphics);
+    }
+    else if(!mpIsoCheckBox->isChecked() && mpSystemObject->getGfxType() != UserGraphics)
+    {
+        mpSystemObject->setGfxType(UserGraphics);
+        gpLibraryWidget->setGfxType(UserGraphics);
+    }
+
+    mpSystemObject->getCoreSystemAccessPtr()->setLoadStartValues(mpUseStartValues->isChecked());
+
+    if(mpSystemObject->isUndoEnabled() == mpDisableUndoCheckBox->isChecked())
+    {
+        mpSystemObject->setUndoEnabled(!mpDisableUndoCheckBox->isChecked());
+    }
+
+    mpSystemObject->setSaveUndo(mpSaveUndoCheckBox->isChecked());
+
+    // Set the icon paths, only update and refresh appearance if a change has occurred
+    AbsoluteRelativeEnumT absrel=Relative;
+    if (isPathAbsolute(mpIsoIconPath->text()))
+    {
+        absrel=Absolute;
+    }
+    if ( mpSystemObject->getIconPath(ISOGraphics, absrel) != mpIsoIconPath->text() )
+    {
+        mpSystemObject->setIconPath(mpIsoIconPath->text(), ISOGraphics, absrel);
+        mpSystemObject->refreshAppearance();
+    }
+    if ( mpSystemObject->getIconPath(UserGraphics, absrel) != mpUserIconPath->text() )
+    {
+        mpSystemObject->setIconPath(mpUserIconPath->text(), UserGraphics, absrel);
+        mpSystemObject->refreshAppearance();
+    }
+
+    // Set scale if they have changed
+    //! @todo maybe use fuzzy compare utility function instead (but then we need to include utilities here)
+    if ( fabs(mpSystemObject->getAppearanceData()->getIconScale(ISOGraphics) - mpIsoIconScaleEdit->text().toDouble()) > 0.001 )
+    {
+        mpSystemObject->getAppearanceData()->setIconScale(mpIsoIconScaleEdit->text().toDouble(), ISOGraphics);
+        mpSystemObject->refreshAppearance();
+    }
+    if ( fabs(mpSystemObject->getAppearanceData()->getIconScale(UserGraphics) - mpUserIconScaleEdit->text().toDouble()) > 0.001 )
+    {
+        mpSystemObject->getAppearanceData()->setIconScale(mpUserIconScaleEdit->text().toDouble(), UserGraphics);
+        mpSystemObject->refreshAppearance();
+    }
+
+    // Set GuiSystem specific stuff
+    mpSystemObject->getCoreSystemAccessPtr()->setInheritTimeStep(mpTimeStepCheckBox->isChecked());
+    mpSystemObject->getCoreSystemAccessPtr()->setDesiredTimeStep(mpTimeStepEdit->text().toDouble());
+    mpSystemObject->setNumberOfLogSamples(mpNumLogSamplesEdit->text().toInt());
+    mpSystemObject->setLogStartTime(mpLogStartTimeEdit->text().toDouble());
+    mpSystemObject->setScriptFile(mpPyScriptPath->text());
+
+    // Set model info
+    mpSystemObject->setModelInfo(mpAuthorEdit->text(), mpEmailEdit->text(), mpAffiliationEdit->text(), mpDescriptionEdit->toPlainText());
+}
+
+//! @brief Slot that opens a file dialog where user can select a user icon for the system
+void SystemProperties::browseUser()
+{
+    QString iconFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose user icon"),
+                                                        gpDesktopHandler->getModelsPath());
+    if (!iconFileName.isEmpty())
+    {
+        mpUserIconPath->setText(iconFileName);
+    }
+}
+
+//! @brief Slot that opens a file dialog where user can select an iso icon for the system
+void SystemProperties::browseIso()
+{
+    QString iconFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose ISO icon"),
+                                                        gpDesktopHandler->getModelsPath());
+    if (!iconFileName.isEmpty())
+    {
+        mpIsoIconPath->setText(iconFileName);
+    }
+}
+
+//! @brief Slot that opens a file dialog where user can select a script file for the system
+void SystemProperties::browseScript()
+{
+    QString scriptFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose script"),
+                                                          gpDesktopHandler->getModelsPath());
+    if (!scriptFileName.isEmpty())
+    {
+        mpPyScriptPath->setText(scriptFileName);
+    }
+}
+
+void SystemProperties::clearLogData()
+{
+    QMessageBox existWarningBox(QMessageBox::Warning, "Warning","ALL log data in current model will be cleared. Continue?", 0, 0);
+    existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
+    existWarningBox.addButton("No", QMessageBox::RejectRole);
+    existWarningBox.setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+    bool doIt = (existWarningBox.exec() == QMessageBox::AcceptRole);
+
+    if(doIt)
+    {
+        mpSystemObject->getLogDataHandler()->clear();
+    }
 }

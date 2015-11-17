@@ -185,6 +185,10 @@ protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
 
+    //Protected overloaded Qt methods
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
     void openPropertiesDialog();
 
     void loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rDomElement);

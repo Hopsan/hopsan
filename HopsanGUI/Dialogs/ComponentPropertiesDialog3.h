@@ -42,6 +42,7 @@
 #include <QEvent>
 #include <QCheckBox>
 #include <QLabel>
+#include <QGroupBox>
 
 #include "CoreAccess.h"
 #include "UnitScale.h"
@@ -50,6 +51,7 @@
 
 class ModelObject;
 class SystemParametersWidget;
+class SystemProperties;
 
 
 class TableWidgetTotalSize : public QTableWidget
@@ -107,6 +109,7 @@ protected:
     bool setAliasNames();
     bool setVariableValues();
     void setName();
+    void setSystemProperties();
     virtual void closeEvent(QCloseEvent* event);
 
 private:
@@ -117,16 +120,10 @@ private:
     void createEditStuff();
 
     ModelObject *mpModelObject;
-    LibraryWidget *mpLibrary;
-    SystemParametersWidget *mpSystemParametersWidget;
     QLineEdit *mpNameEdit;
     VariableTableWidget *mpVariableTableWidget;
+    SystemProperties *mpSystemProperties=nullptr;
 
-    QSpinBox *mpInputPortsSpinBox;
-    QSpinBox *mpOutputPortsSpinBox;
-    QTextEdit *mpTextEdit;
-    QPushButton *mpNewComponentButton;
-    QPushButton *mpRecompileButton;
     QTextEdit *mpSourceCodeTextEdit;
     QComboBox *mpSolverComboBox;
 };
@@ -134,23 +131,53 @@ private:
 // Help class declarations
 //----------------------------------------------------------------------
 
-//class PlotScaleSelectionWidget : public QWidget
-//{
-//    Q_OBJECT
-//public:
-//    PlotScaleSelectionWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
-//    void registerCustomScale();
-//    bool hasChanged() const;
-//    QLineEdit *getPlotScaleEditPtr() const;
+class SystemProperties : public QObject
+{
+    Q_OBJECT
 
-//private slots:
-//    void createPlotScaleSelectionMenu();
+public:
+    SystemProperties(SystemContainer *pSystemObject, QWidget *pParentWidget);
 
-//private:
-//    QLineEdit *mpPlotScaleEdit;
-//    ModelObject *mpModelObject;
-//    QString mVariableTypeName, mVariablePortDataName, mOriginalUnit;
-//};
+    QWidget* createSystemSettings();
+    QWidget* createAppearanceSettings();
+    QWidget* createModelinfoSettings();
+
+public slots:
+    void setValues();
+
+private:
+    SystemContainer *mpSystemObject;
+
+    QLineEdit *mpUserIconPath;
+    QLineEdit *mpIsoIconPath;
+    QLineEdit *mpNumLogSamplesEdit;
+    QLineEdit *mpLogStartTimeEdit;
+    QLineEdit *mpIsoIconScaleEdit;
+    QLineEdit *mpUserIconScaleEdit;
+    QPushButton *mpIsoIconBrowseButton;
+    QPushButton *mpUserIconBrowseButton;
+    QCheckBox *mpIsoCheckBox;
+    QCheckBox *mpDisableUndoCheckBox;
+    QCheckBox *mpSaveUndoCheckBox;
+
+    QLineEdit *mpPyScriptPath;
+
+    QCheckBox *mpTimeStepCheckBox;
+    QCheckBox *mpUseStartValues;
+    QLineEdit *mpTimeStepEdit;
+
+    QLineEdit *mpAuthorEdit;
+    QLineEdit *mpEmailEdit;
+    QLineEdit *mpAffiliationEdit;
+    QTextEdit *mpDescriptionEdit;
+
+private slots:
+    void fixTimeStepInheritance(bool value);
+    void browseUser();
+    void browseIso();
+    void browseScript();
+    void clearLogData();
+};
 
 class PlotRelatedWidget : public QWidget
 {

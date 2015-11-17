@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ContainerPropertiesDialog.cpp
+//! @file   ContainerPortPropertiesDialog.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-01-03
 //!
@@ -49,7 +49,7 @@
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
 ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pContainerPort, QWidget *pParentWidget)
-    : ModelObjectPropertiesDialog(pContainerPort, pParentWidget)
+    : QDialog(pParentWidget)
 {
     mpContainerPort = pContainerPort;
 

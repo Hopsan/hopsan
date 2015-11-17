@@ -298,7 +298,7 @@ protected:
     //Protected methods
     virtual Port* createRefreshExternalPort(QString portName);
     virtual void renameExternalPort(QString oldName, QString newName);
-    virtual void openPropertiesDialog();
+    //virtual void openPropertiesDialog();
     void clearContents();
     void forgetSubConnector(Connector *pConnector);
     void refreshInternalContainerPortGraphics();
@@ -307,8 +307,8 @@ protected:
     virtual void addExternalContainerPortObject(ModelObject *pModelObject);
 
     //Protected overloaded Qt methods
-    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    //virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     //Scene pointer and graphics viewport
     QGraphicsScene *mpScene;

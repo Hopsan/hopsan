@@ -31,20 +31,17 @@
 //!
 //$Id$
 
-#ifndef CONTAINERPROPERTIESDIALOG_H
-#define CONTAINERPROPERTIESDIALOG_H
+#ifndef CONTAINERPORTPROPERTIESDIALOG_H
+#define CONTAINERPORTPROPERTIESDIALOG_H
 
 #include <QDialog>
 #include <QCheckBox>
 #include <QLineEdit>
 
-#include "Dialogs/ModelObjectPropertiesDialog.h"
-
 //Forward Declaration
 class ContainerPort;
 
-//! @todo We have three different properties dialog with basically the same "style", maybe we could have a class hierarchy, no big deal right now though
-class ContainerPortPropertiesDialog : public ModelObjectPropertiesDialog
+class ContainerPortPropertiesDialog : public QDialog
 {
     Q_OBJECT
 
@@ -59,4 +56,4 @@ private slots:
     void setValues();
 };
 
-#endif // CONTAINERPROPERTIESDIALOG_H
+#endif // CONTAINERPORTPROPERTIESDIALOG_H
