@@ -10,8 +10,8 @@
             <picture>43valvehelp.svg</picture>
         </help>
         <ports>
-            <port x="0.5624" y="1" a="90" name="PP"/>
-            <port x="0.5624" y="0" a="270" name="PA"/>
+            <port x="0.5634" y="1" a="90" name="PP"/>
+            <port x="0.5634" y="0" a="270" name="PA"/>
             <port x="0.6885" y="0" a="270" name="PB"/>
             <port x="0.6885" y="1" a="90" name="PT"/>
             <port x="0" y="0.7" a="180" name="in"/>
