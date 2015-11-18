@@ -143,26 +143,6 @@ double hopsan::Atan2L(const double y, const double x)
     }
 }
 
-//! @brief Returns 1.0 if input variables have same sign, else returns 0.0
-//! @ingroup AuxiliarySimulationFunctions
-double hopsan::equalSigns(const double x, const double y)
-{
-//    //! @warning This will NOT work (double != double)
-//    if (hopsan::sign(x) != hopsan::sign(y)) {
-//        return 0.0;
-//    }
-//    return 1.0;
-
-    if ( ((x < 0.0) && ( y < 0.0)) || ((x >= 0.0) && (y >= 0.0)) )
-    {
-        return 1.0;
-    }
-    else
-    {
-        return 0.0;
-    }
-}
-
 //! @brief Safe variant of asin
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::ArcSinL(const double x)

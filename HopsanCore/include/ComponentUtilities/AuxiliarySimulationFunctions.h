@@ -49,7 +49,7 @@ const double pi = 3.14159265358979323846;
 void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
 bool DLLIMPORTEXPORT fuzzyEqual(const double x, const double y, const double epsilon=0.00001);
 
-// ----------Functions converted from auxhop in old Hopsan----------
+// ----------Exported Functions converted from auxhop in old Hopsan----------
 double DLLIMPORTEXPORT signedSquareL(const double x, const double x0);
 double DLLIMPORTEXPORT dxSignedSquareL(const double x, const double x0);
 double DLLIMPORTEXPORT squareAbsL(const double x, const double x0);
@@ -63,7 +63,6 @@ double DLLIMPORTEXPORT CDragInd(const double alpha, const double AR, const doubl
 double DLLIMPORTEXPORT CMoment(double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double expclp, const double expcln);
 double DLLIMPORTEXPORT segare(const double x, const double d);
 double DLLIMPORTEXPORT dxSegare(const double x, const double d);
-double DLLIMPORTEXPORT equalSigns(const double x, const double y);
 double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
 double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
 double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
@@ -71,8 +70,6 @@ double DLLIMPORTEXPORT lowLimit(const double x, const double xmin);
 double DLLIMPORTEXPORT dxLowLimit(const double x, const double xmin);
 double DLLIMPORTEXPORT dxLowLimit2(const double x, const double sx, const double xmin);
 double DLLIMPORTEXPORT div(const double x, const double y);
-double DLLIMPORTEXPORT greaterThan(const double x, const double y);
-double DLLIMPORTEXPORT greaterThanOrEqual(const double x, const double y);
 
 
 // ----------Inline Functions converted from auxhop in old Hopsan----------
@@ -211,8 +208,6 @@ inline double limit2(const double x, const double /*sx*/, const double xmin, con
     return hopsan::limit(x, xmin, xmax);
 }
 
-// ----------Inline Functions ----------
-
 //! @brief Converts an angle in degrees to radians
 //! @ingroup AuxiliarySimulationFunctions
 //! @param[in] deg The angle in degrees
@@ -230,6 +225,32 @@ inline double rad2deg(const double rad)
 {
     return (180.0/pi)*rad;
 }
+
+//! @brief Check if input variables have the same sign
+//! @ingroup AuxiliarySimulationFunctions
+//! @returns true or false
+inline bool equalSignsBool(const double x, const double y)
+{
+    //    //! @warning This will NOT work (double != double)
+    //    return (hopsan::sign(x) != hopsan::sign(y)) {
+    return ( ((x < 0.0) && ( y < 0.0)) || ((x >= 0.0) && (y >= 0.0)) );
+}
+
+//! @brief Check if input variables have the same sign
+//! @ingroup AuxiliarySimulationFunctions
+//! @returns 1.0 (true) or 0.0 (false)
+inline double equalSigns(const double x, const double y)
+{
+    if ( equalSignsBool(x,y) )
+    {
+        return 1.0;
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
 
 // ----------Inline Functions Modelica Wrappers----------
 
@@ -258,12 +279,24 @@ inline double rem(const double x, const double y)
     return x - div(x,y)*y;
 }
 
+//! @brief Check if x > y
+//! @ingroup AuxiliarySimlationFunctions
+//! @ingroup ModelicaWrapperFunctions
+//! @param[in] x Value x
+//! @param[in] y Value y
+//! @returns true if x>y
 inline double greaterThan(const double x, const double y)
 {
     if(x>y) return 1;
     else return 0;
 }
 
+//! @brief Check if x >= y
+//! @ingroup AuxiliarySimlationFunctions
+//! @ingroup ModelicaWrapperFunctions
+//! @param[in] x Value x
+//! @param[in] y Value y
+//! @returns true if x>=y
 inline double greaterThanOrEqual(const double x, const double y)
 {
     if(x>=y) return 1;
