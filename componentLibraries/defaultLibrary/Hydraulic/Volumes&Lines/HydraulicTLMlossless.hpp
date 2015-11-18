@@ -34,7 +34,6 @@
 #ifndef HYDRAULICTLMLOSSLESS_HPP_INCLUDED
 #define HYDRAULICTLMLOSSLESS_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -51,7 +50,7 @@ namespace hopsan {
         double mTimeDelay;
         double *mpAlpha, *mpZc;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+        double *mpP1_p, *mpP1_q, *mpP1_c, *mpP1_Zc, *mpP2_p, *mpP2_q, *mpP2_c, *mpP2_Zc;
 
         Delay mDelayedC1;
         Delay mDelayedC2;
@@ -82,28 +81,28 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpP1_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpP1_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpP2_p = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpP2_q = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
             double Zc;
             Zc = (*mpZc);
 
             //Write to nodes
-            (*mpND_q1) = getDefaultStartValue(mpP1,NodeHydraulic::Flow);
-            (*mpND_p1) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure);
-            (*mpND_c1) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP1,NodeHydraulic::Flow);
-            (*mpND_Zc1) = Zc;
-            (*mpND_q2) = getDefaultStartValue(mpP2,NodeHydraulic::Flow);
-            (*mpND_p2) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure);
-            (*mpND_c2) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP2,NodeHydraulic::Flow);
-            (*mpND_Zc2) = Zc;
+            (*mpP1_q) = getDefaultStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpP1_p) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure);
+            (*mpP1_c) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpP1_Zc) = Zc;
+            (*mpP2_q) = getDefaultStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpP2_p) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure);
+            (*mpP2_c) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpP2_Zc) = Zc;
 
             if (mTimeDelay-mTimestep < 0)
             {
@@ -111,11 +110,11 @@ namespace hopsan {
                 //stopSimulation();
             }
 
-            // Init delay
-            // We use -Ts to make the delay one step shorter as the TLM already have one built in timstep delay
+            // Initialize delay
+            // We use -Ts to make the delay one step shorter as the TLM already have one built in time step delay
             //! @todo for Td=Ts the delay will actually be 2Ts (the delay and inherited) need if check to avoid using delays if Td=Ts
-            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c1));
-            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c2));
+            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, (*mpP1_c));
+            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, (*mpP2_c));
         }
 
 
@@ -125,12 +124,12 @@ namespace hopsan {
             double p1, q1, c1, p2, q2, c2, c10, c20, alpha, Zc;
 
             //Read variables from nodes
-            p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
-            c1 = (*mpND_c1);
-            c2 = (*mpND_c2);
+            p1 = (*mpP1_p);
+            q1 = (*mpP1_q);
+            p2 = (*mpP2_p);
+            q2 = (*mpP2_q);
+            c1 = (*mpP1_c);
+            c2 = (*mpP2_c);
             alpha = (*mpAlpha);
             Zc = (*mpZc);
 
@@ -141,10 +140,10 @@ namespace hopsan {
             c2  = alpha*c2 + (1.0-alpha)*c20;
 
             //Write new values to nodes
-            (*mpND_c1) = mDelayedC1.update(c1);
-            (*mpND_Zc1) = Zc;
-            (*mpND_c2) = mDelayedC2.update(c2);
-            (*mpND_Zc2) = Zc;
+            (*mpP1_c) = mDelayedC1.update(c1);
+            (*mpP1_Zc) = Zc;
+            (*mpP2_c) = mDelayedC2.update(c2);
+            (*mpP2_Zc) = Zc;
 
         }
     };
