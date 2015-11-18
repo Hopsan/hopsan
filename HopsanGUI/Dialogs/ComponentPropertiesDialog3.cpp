@@ -835,6 +835,15 @@ QWidget *SystemProperties::createModelinfoSettings()
     QLineEdit *pBasePathEdit = new QLineEdit(mpSystemObject->getAppearanceData()->getBasePath(), pInfoWidget);
     pBasePathEdit->setReadOnly(true);
 
+    // If this is a subsystem that is external, then prevent editing model information
+    if (mpSystemObject->isExternal() && !mpSystemObject->isTopLevelContainer())
+    {
+        mpAuthorEdit->setReadOnly(true);
+        mpEmailEdit->setReadOnly(true);
+        mpAffiliationEdit->setReadOnly(true);
+        mpDescriptionEdit->setReadOnly(true);
+    }
+
     pInfoLayout->addWidget(pAuthorLabel,       0, 0);
     pInfoLayout->addWidget(mpAuthorEdit,       0, 1);
     pInfoLayout->addWidget(pEmailLabel,        1, 0);
