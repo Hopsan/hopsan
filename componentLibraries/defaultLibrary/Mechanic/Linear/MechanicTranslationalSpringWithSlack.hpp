@@ -22,22 +22,6 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
-
-/*-----------------------------------------------------------------------------
- This source file is part of Hopsan NG
-
- Copyright (c) 2011
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
-    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
-
- This file is provided "as is", with no guarantee or warranty for the
- functionality or reliability of the contents. All contents in this file is
- the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- redistributing any part of this file is prohibited without explicit
- permission from the copyright holders.
------------------------------------------------------------------------------*/
-
 //!
 //! @file   MechanicTranslationalSpringWithSlack.hpp
 //! @author Robert Braun <robert.braun@liu.se>
@@ -63,7 +47,7 @@ namespace hopsan {
 
     private:
         double *mpK;
-        double *mpND_f1, *mpND_f2, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zc1, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zc2;
+        double *mpP1_f, *mpP2_f, *mpP1_x, *mpP1_v, *mpP1_c, *mpP1_Zc, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zc;
         Port *mpP1, *mpP2;
 
     public:
@@ -74,33 +58,33 @@ namespace hopsan {
 
         void configure()
         {
-            //Add ports to the component
+            // Add power ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
-            //Register changeable parameters to the HOPSAN++ core
+            // Add input variables
             addInputVariable("k", "Spring Coefficient", "N/m", 100.0,  &mpK);
         }
 
 
         void initialize()
         {
-            mpND_f1 =  getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
-            mpND_f2 =  getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
-            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
+            mpP1_f =  getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+            mpP2_f =  getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpP2_x = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+            mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
             //! @todo Is this correct? Ask Petter!
             //(*mpND_c1) = (*mpND_f2)+2.0*Zc*(*mpND_v2);
             //(*mpND_c2) = (*mpND_f1)+2.0*Zc*(*mpND_v1);
-            (*mpND_Zc1) = (*mpK)*mTimestep;
-            (*mpND_Zc2) = (*mpK)*mTimestep;
+            (*mpP1_Zc) = (*mpK)*mTimestep;
+            (*mpP2_Zc) = (*mpK)*mTimestep;
         }
 
 
@@ -109,8 +93,8 @@ namespace hopsan {
             double c1,c2,Zc;
 
             //Get variable values from nodes
-            const double x1 = (*mpND_x1);
-            const double x2 = (*mpND_x2);
+            const double x1 = (*mpP1_x);
+            const double x2 = (*mpP2_x);
             if(x1+x2 > 0)
             {
                 c1 = 0;
@@ -119,10 +103,10 @@ namespace hopsan {
             }
             else
             {
-                const double v1 = (*mpND_v1);
-                const double lastc1 = (*mpND_c1);
-                const double v2 = (*mpND_v2);
-                const double lastc2 = (*mpND_c2);
+                const double v1 = (*mpP1_v);
+                const double lastc1 = (*mpP1_c);
+                const double v2 = (*mpP2_v);
+                const double lastc2 = (*mpP2_c);
 
                 //Spring equations
                 Zc = (*mpK)*mTimestep;
@@ -131,10 +115,10 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            (*mpND_c1) = c1;
-            (*mpND_Zc1) = Zc;
-            (*mpND_c2) = c2;
-            (*mpND_Zc2) = Zc;
+            (*mpP1_c) = c1;
+            (*mpP1_Zc) = Zc;
+            (*mpP2_c) = c2;
+            (*mpP2_Zc) = Zc;
         }
     };
 }

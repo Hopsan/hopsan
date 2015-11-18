@@ -51,7 +51,7 @@ namespace hopsan {
     private:
         double mLength;         //This length is not accessible by the user,
                                 //it is set from the start values by the c-components in the ends
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
+        double *mpP1_f, *mpP1_x, *mpP1_v, *mpP1_c, *mpP1_Zx, *mpP2_f, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zx;  //Node data pointers
         Integrator mInt;
         Port *mpP1, *mpP2;
 
@@ -74,22 +74,22 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+            mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
-            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
-            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
+            mpP2_f = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpP2_x = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+            mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpP2_Zx = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
             //Initialization
-            double x1 = (*mpND_x1);
-            double v1 = (*mpND_v1);
-            double x2 = (*mpND_x2);
+            double x1 = (*mpP1_x);
+            double v1 = (*mpP1_v);
+            double x2 = (*mpP2_x);
 
             mLength = x1+x2;
 
@@ -107,10 +107,10 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double c1 = (*mpND_c1);
-            double Zx1 = (*mpND_Zx1);
-            double c2 = (*mpND_c2);
-            double Zx2 = (*mpND_Zx2);
+            double c1 = (*mpP1_c);
+            double Zx1 = (*mpP1_Zx);
+            double c2 = (*mpP2_c);
+            double Zx2 = (*mpP2_Zx);
 
             //Connector equations
             double v2 = (c1-c2)/(Zx1+Zx2);
@@ -121,12 +121,12 @@ namespace hopsan {
             double f2 = c2 + Zx2*v2;
 
             //Write new values to nodes
-            (*mpND_f1) = f1;
-            (*mpND_x1) = x1;
-            (*mpND_v1) = v1;
-            (*mpND_f2) = f2;
-            (*mpND_x2) = x2;
-            (*mpND_v2) = v2;
+            (*mpP1_f) = f1;
+            (*mpP1_x) = x1;
+            (*mpP1_v) = v1;
+            (*mpP2_f) = f2;
+            (*mpP2_x) = x2;
+            (*mpP2_v) = v2;
         }
     };
 }

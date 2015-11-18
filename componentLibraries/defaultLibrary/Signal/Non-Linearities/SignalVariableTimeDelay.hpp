@@ -47,10 +47,11 @@ namespace hopsan {
     {
 
     private:
-        double *mpTimeDelay;
+
         double mMaxMemSize;
         Delay *mpDelay;
-        double *mpND_in, *mpND_out;
+        double *mpTimeDelay;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -65,8 +66,8 @@ namespace hopsan {
             addInputVariable("dT", "Time delay", "s", 1.0, &mpTimeDelay);
             addConstant("maxMem", "Maximum allowed memory consumption", "MB", 50, mMaxMemSize);
 
-            addInputVariable("in", "", "", 0.0, &mpND_in);
-            addOutputVariable("out", "", "", &mpND_out);
+            addInputVariable("in", "", "", 0.0, &mpIn);
+            addOutputVariable("out", "", "", &mpOut);
         }
 
 
@@ -75,21 +76,19 @@ namespace hopsan {
             if (*mpTimeDelay < 0)
             {
                 addWarningMessage("Can not have timedelay < 0 s");
-//                stopSimulation();
-//                return;
+                // Note, delay < 0 will be handled by Delay class (you will get 1 delay step)
             }
 
             mpDelay = new Delay;
-            mpDelay->initialize((*mpTimeDelay), mTimestep, (*mpND_in));
-            (*mpND_out) = (*mpND_in);
+            simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
             // Check if delay have changed, using int truncation and + 0.5  to round to nearest int
-            // First make sure timedelay not negative
-            const size_t nSamps = int(std::max((*mpTimeDelay),0.0)/mTimestep+0.5);
+            // First make sure the time delay is not negative
+            const size_t nSamps = size_t(std::max(*mpTimeDelay,0.0)/mTimestep+0.5);
 
             if ( nSamps != mpDelay->getSize())
             {
@@ -139,7 +138,7 @@ namespace hopsan {
                             }
                             else
                             {
-                                pNewDelay->update(*mpND_in);
+                                pNewDelay->update(*mpIn);
                             }
                         }
                     }
@@ -153,11 +152,11 @@ namespace hopsan {
             // If delay is populated, use it , else not
             if (mpDelay->getSize() == 0)
             {
-                *mpND_out = *mpND_in;
+                *mpOut = *mpIn;
             }
             else
             {
-                (*mpND_out) =  mpDelay->update(*mpND_in);
+                (*mpOut) =  mpDelay->update(*mpIn);
             }
         }
 

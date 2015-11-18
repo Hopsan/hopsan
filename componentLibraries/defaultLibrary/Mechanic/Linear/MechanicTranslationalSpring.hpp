@@ -40,7 +40,7 @@ namespace hopsan {
 
     private:
         double *mpK;
-        double *mpND_f1, *mpND_f2, *mpND_v1, *mpND_c1, *mpND_Zc1, *mpND_v2, *mpND_c2, *mpND_Zc2;
+        double *mpP1_f, *mpP2_f, *mpP1_v, *mpP1_c, *mpP1_Zc, *mpP2_v, *mpP2_c, *mpP2_Zc;
         Port *mpP1, *mpP2;
 
     public:
@@ -51,41 +51,41 @@ namespace hopsan {
 
         void configure()
         {
-            //Add ports to the component
+            // Add power ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
-            //Register changeable parameters to the HOPSAN++ core
+            // Add input variables
             addInputVariable("k", "Spring Coefficient", "N/m", 100.0,  &mpK);
         }
 
 
         void initialize()
         {
-            mpND_f1 =  getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-            mpND_f2 =  getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
+            mpP1_f =  getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpP2_f =  getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpP1_Zc = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+            mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
-            //! @todo Is this correct? Ask Petter!
-            //(*mpND_c1) = (*mpND_f2)+2.0*Zc*(*mpND_v2);
-            //(*mpND_c2) = (*mpND_f1)+2.0*Zc*(*mpND_v1);
-            (*mpND_Zc1) = (*mpK)*mTimestep;
-            (*mpND_Zc2) = (*mpK)*mTimestep;
+            const double Zc = (*mpK)*mTimestep;
+            (*mpP1_c) = (*mpP2_f)+Zc*(*mpP2_v);
+            (*mpP2_c) = (*mpP1_f)+Zc*(*mpP1_v);
+            (*mpP1_Zc) = Zc;
+            (*mpP2_Zc) = Zc;
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            const double v1 = (*mpND_v1);
-            const double lastc1 = (*mpND_c1);
-            const double v2 = (*mpND_v2);
-            const double lastc2 = (*mpND_c2);
+            const double v1 = (*mpP1_v);
+            const double lastc1 = (*mpP1_c);
+            const double v2 = (*mpP2_v);
+            const double lastc2 = (*mpP2_c);
 
             //Spring equations
             const double Zc = (*mpK)*mTimestep;
@@ -93,10 +93,10 @@ namespace hopsan {
             const double c2 = lastc1 + 2.0*Zc*v1;
 
             //Write new values to nodes
-            (*mpND_c1) = c1;
-            (*mpND_Zc1) = Zc;
-            (*mpND_c2) = c2;
-            (*mpND_Zc2) = Zc;
+            (*mpP1_c) = c1;
+            (*mpP1_Zc) = Zc;
+            (*mpP2_c) = c2;
+            (*mpP2_Zc) = Zc;
         }
     };
 }
