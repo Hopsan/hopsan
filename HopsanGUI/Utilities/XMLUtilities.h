@@ -126,7 +126,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_NAMETAG "name"
 #define HMF_TYPENAME "typename"
 #define HMF_SUBTYPENAME "subtypename"
-#define HMF_CQSTYPETAG "cqs_type"
+#define HMF_CQSTYPE "cqstype"
 #define HMF_TYPE "type"
 #define HMF_UNIT "unit"
 #define HMF_QUANTITY "quantity"

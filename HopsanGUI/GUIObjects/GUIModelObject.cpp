@@ -952,6 +952,7 @@ void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContent
         rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
     }
     rDomElement.setAttribute(HMF_NAMETAG, getName());
+    rDomElement.setAttribute(HMF_CQSTYPE, getTypeCQS());
 }
 
 QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
