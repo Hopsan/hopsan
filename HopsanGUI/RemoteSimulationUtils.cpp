@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #include "RemoteSimulationUtils.h"
 #include "Configuration.h"
 #include "global.h"

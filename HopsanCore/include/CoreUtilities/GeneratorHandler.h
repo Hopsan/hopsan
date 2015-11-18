@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #ifndef GENERATORHANDLER_H
 #define GENERATORHANDLER_H
 

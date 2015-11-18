@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #ifndef INDEXINTERVALCOLLECTION_H
 #define INDEXINTERVALCOLLECTION_H
 

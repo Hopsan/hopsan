@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #include "CoreUtilities/CoSimulationUtilities.h"
 
 #ifdef USEBOOST

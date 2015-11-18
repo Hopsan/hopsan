@@ -57,7 +57,6 @@
 #include "Utilities/HelpPopUpWidget.h"
 #include "ModelHandler.h"
 #include "OptimizationHandler.h"
-#include "Optimization/OptimizationWorker.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/ModelWidget.h"

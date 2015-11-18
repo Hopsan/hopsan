@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #include <stdio.h>
 #ifndef _WIN32
 #include "dlfcn.h"

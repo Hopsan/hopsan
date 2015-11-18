@@ -29,6 +29,7 @@
 //!
 //! @brief Contains the LogDataGeneration class
 //!
+//$Id$
 
 #include "LogDataGeneration.h"
 #include "global.h"

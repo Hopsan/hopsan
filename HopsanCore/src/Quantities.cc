@@ -22,6 +22,7 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
 
 #include "Quantities.h"
 

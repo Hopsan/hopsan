@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef BUILDUTILITIES_H
 #define BUILDUTILITIES_H
 

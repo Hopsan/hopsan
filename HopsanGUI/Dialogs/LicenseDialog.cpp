@@ -1,3 +1,5 @@
+//$Id$
+
 #include "LicenseDialog.h"
 
 #include <QVBoxLayout>

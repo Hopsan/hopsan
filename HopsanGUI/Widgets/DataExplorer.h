@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #ifndef DATAEXPLORER_H
 #define DATAEXPLORER_H
 

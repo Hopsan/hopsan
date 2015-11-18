@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #ifndef REMOTESIMULATIONUTILS_H
 #define REMOTESIMULATIONUTILS_H
 

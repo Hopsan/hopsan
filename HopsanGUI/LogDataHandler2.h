@@ -22,6 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
+//$Id$
+
 #ifndef LOGDATAHANDLER2_H
 #define LOGDATAHANDLER2_H
 

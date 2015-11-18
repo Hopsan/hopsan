@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef LICENSEDIALOG_H
 #define LICENSEDIALOG_H
 
