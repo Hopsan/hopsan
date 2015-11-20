@@ -117,6 +117,11 @@ public:
     virtual bool setOrAddParameter(const CoreParameterData &rParameter, bool force=false);
     virtual bool renameParameter(const QString oldName, const QString newName);
 
+    // NumHop Methods
+    void setNumHopScript(const QString &rScript);
+    QString getNumHopScript() const;
+    void runNumHopScript(const QString &rScript, bool printOutput, QString &rOutput);
+
     //Handle connector methods
     bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     Connector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
@@ -317,6 +322,7 @@ protected:
     //Model and script file members
     QFileInfo mModelFileInfo;
     QString mScriptFilePath;
+    QString mNumHopScript;
 
     //Model object members
     typedef QHash<QString, ModelObject*> ModelObjectMapT;

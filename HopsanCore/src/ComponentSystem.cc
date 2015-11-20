@@ -46,6 +46,7 @@
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "CoreUtilities/CoSimulationUtilities.h"
 #include "CoreUtilities/HmfLoader.h"
+#include "CoreUtilities/NumHopHelper.h"
 #include "ComponentUtilities/num2string.hpp"
 #include "Quantities.h"
 
@@ -295,6 +296,7 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
 #else
     mpStopMutex = 0;
 #endif
+    mpNumHopHelper = 0;
 
     // Set default (disabled) values for log data
     disableLog();
@@ -741,6 +743,13 @@ void ComponentSystem::clear()
     while (!mSubComponentMap.empty())
     {
         removeSubComponent((*mSubComponentMap.begin()).second, true);
+    }
+
+    // Remove the numhop storage if present
+    if (mpNumHopHelper)
+    {
+        delete mpNumHopHelper;
+        mpNumHopHelper = 0;
     }
 }
 
@@ -2758,6 +2767,17 @@ void ComponentSystem::loadParameters(const SetParametersMapT &rParameterMap)
             }
         }
     }
+}
+
+void ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput)
+{
+    // Create if helper does not already exist
+    if (!mpNumHopHelper)
+    {
+        mpNumHopHelper = new NumHopHelper();
+        mpNumHopHelper->setSystem(this);
+    }
+    mpNumHopHelper->evalNumHopScript(rScript, printOutput, rOutput);
 }
 
 

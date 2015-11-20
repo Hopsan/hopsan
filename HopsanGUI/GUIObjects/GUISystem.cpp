@@ -269,6 +269,12 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
         appendLogSettingsTag(rDomElement, getLogStartTime(), getNumberOfLogSamples());
     }
 
+    // Save the NumHop script
+    if (!mNumHopScript.isEmpty())
+    {
+        appendDomTextNode(rDomElement, HMF_NUMHOPSCRIPT, mNumHopScript);
+    }
+
     // Save the parameter values for the system
     QVector<CoreParameterData> paramDataVector;
     this->getParameters(paramDataVector);
@@ -1074,6 +1080,9 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         //Now load the core specific data, might need inherited function for this
         this->setName(domElement.attribute(HMF_NAMETAG));
 
+        // Load the NumHop script
+        mNumHopScript = parseDomStringNode(domElement.firstChildElement(HMF_NUMHOPSCRIPT), "");
+
         // Begin loading GUI stuff like appearance data and viewport
         QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
         mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
@@ -1300,6 +1309,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         //11. Load sensitivity analysis settings
         xmlSubObject = guiStuff.firstChildElement(HMF_SENSITIVITYANALYSIS);
         loadSensitivityAnalysisSettingsFromDomElement(xmlSubObject);
+
 
         //Replace volunector components with volunectors
         for(int i=0; i<volunectorObjectPtrs.size(); ++i)

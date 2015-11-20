@@ -35,6 +35,7 @@
 #define STRINGUTILITIES_H
 
 #include <sstream>
+#include <vector>
 #include "HopsanTypes.h"
 
 namespace hopsan {
@@ -44,6 +45,7 @@ HString DLLIMPORTEXPORT santizeName(const HString &rName);
 
 bool DLLIMPORTEXPORT isNameValid(const HString &rString);
 bool DLLIMPORTEXPORT isNameValid(const HString &rString, const HString &rExceptions);
+void DLLIMPORTEXPORT splitString(const HString &rString, const char delim, std::vector<HString> &rParts);
 
 //! @brief Help function for create a unique name among names from one STL Container
 template<typename ContainerT>

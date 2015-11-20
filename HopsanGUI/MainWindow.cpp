@@ -88,6 +88,7 @@
 #include "Dialogs/OptimizationDialog.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
 #include "Dialogs/LicenseDialog.h"
+#include "Dialogs/NumHopScriptDialog.h"
 
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HelpPopUpWidget.h"
@@ -583,6 +584,11 @@ void MainWindow::createActions()
     mpRevertModelAction->setToolTip("Revert model to original state");
     connect(mpRevertModelAction, SIGNAL(triggered()), this, SLOT(revertModel()));
 
+    mpNumHopAction = new QAction(tr("&NumHop Script"), this);
+    mpNumHopAction->setShortcut(QKeySequence("Ctrl+Shift+n"));
+    mpNumHopAction->setToolTip("Open NumHop Script Dialogue for this System (Ctrl+Shift+n)");
+    connect(mpNumHopAction, SIGNAL(triggered()), this, SLOT(openNumHopDialog()));
+
     mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     mpCutAction->setShortcut(tr("Ctrl+x"));
     mpCutAction->setToolTip(tr("Cut (Ctrl+X)"));
@@ -626,14 +632,14 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpOpenDebuggerAction, "Open debugger dialog to examine the current model in detail.");
 
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
-    mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
+    mpOptimizeAction->setToolTip(tr("Open Optimization Dialogue (Ctrl+Shift+Z)"));
     mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+z"));
     connect(mpOptimizeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpOptimizeAction, SIGNAL(triggered()), mpOptimizationDialog, SLOT(open()));
     mHelpPopupTextMap.insert(mpOptimizeAction, "Open optimization dialog to initialize numerical optimization of current model.");
 
     mpSensitivityAnalysisAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SensitivityAnalysis.png"), tr("&Sensitivity Analysis"), this);
-    mpSensitivityAnalysisAction->setToolTip(tr("Open Sensitivity Analysis Dialog (Ctrl+Shift+A)"));
+    mpSensitivityAnalysisAction->setToolTip(tr("Open Sensitivity Analysis Dialogue (Ctrl+Shift+A)"));
     mpSensitivityAnalysisAction->setShortcut(QKeySequence("Ctrl+Shift+A"));
     connect(mpSensitivityAnalysisAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpSensitivityAnalysisAction, SIGNAL(triggered()), mpSensitivityAnalysisDialog, SLOT(open()));
@@ -1018,6 +1024,7 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOpenHvcWidgetAction);
     mpToolsMenu->addAction(mpOpenDataExplorerAction);
     mpToolsMenu->addAction(mpOpenFindWidgetAction);
+    mpToolsMenu->addAction(mpNumHopAction);
     mpToolsMenu->addAction(mpRevertModelAction);
 
     mpImportMenu->addAction(mpImportDataFileAction);
@@ -1547,6 +1554,17 @@ void MainWindow::revertModel()
     if (pModel)
     {
         pModel->revertModel();
+    }
+}
+
+void MainWindow::openNumHopDialog()
+{
+    ContainerObject *pContainer = gpModelHandler->getCurrentViewContainerObject();
+    if (pContainer)
+    {
+        NumHopScriptDialog *pDialog = new NumHopScriptDialog(pContainer, gpMainWindowWidget);
+        pDialog->show();
+        //Note! Dialog will auto destruct when closed
     }
 }
 

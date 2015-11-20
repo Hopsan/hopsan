@@ -168,6 +168,7 @@ public:
     QAction *mpOpenDataExplorerAction;
     QAction *mpOpenFindWidgetAction;
     QAction *mpRevertModelAction;
+    QAction *mpNumHopAction;
     QAction *mpDisableUndoAction;
     QAction *mpCutAction;
     QAction *mpCopyAction;
@@ -237,6 +238,7 @@ private slots:
     void openDataExplorerWidget();
     void openFindWidget();
     void revertModel();
+    void openNumHopDialog();
     void toggleVisiblePlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();

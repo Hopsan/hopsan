@@ -41,6 +41,7 @@ namespace tbb {
 }
 
 namespace hopsan {
+    class NumHopHelper;
 
     enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm, TaskStealingAlgorithm, ParallelForAlgorithm, ParallelForTbbAlgorithm, GroupedParallelForAlgorithm, RandomTaskPoolAlgorithm, OfflineReschedulingAlgorithm};
 
@@ -249,6 +250,9 @@ namespace hopsan {
         void loadParameters(const HString &rFilePath);
         void loadParameters(const SetParametersMapT &rParameterMap);
 
+        // NumHop script
+        void runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput);
+
         // Initialize and simulate
         bool checkModelBeforeSimulation();
         virtual bool preInitialize();
@@ -313,6 +317,8 @@ namespace hopsan {
 
         typedef std::map<HString, Component*> SubComponentMapT;
         SubComponentMapT mSubComponentMap;
+
+        NumHopHelper *mpNumHopHelper;
 
     private:
         //==========Private functions==========

@@ -1007,6 +1007,25 @@ bool ContainerObject::renameParameter(const QString oldName, const QString newNa
     return rc;
 }
 
+void ContainerObject::setNumHopScript(const QString &rScript)
+{
+    mNumHopScript = rScript;
+}
+
+QString ContainerObject::getNumHopScript() const
+{
+    return mNumHopScript;
+}
+
+void ContainerObject::runNumHopScript(const QString &rScript, bool printOutput, QString &rOutput)
+{
+    CoreSystemAccess *pCoreSys = getCoreSystemAccessPtr();
+    if (pCoreSys)
+    {
+        pCoreSys->runNumHopScript(rScript, printOutput, rOutput);
+    }
+}
+
 //! @brief Notifies container object that a gui model object has been selected
 void ContainerObject::rememberSelectedModelObject(ModelObject *object)
 {

@@ -720,6 +720,13 @@ QStringList CoreSystemAccess::getModelAssets() const
     return ret;
 }
 
+void CoreSystemAccess::runNumHopScript(const QString &rScript, bool printOutput, QString &rOutput)
+{
+    hopsan::HString output;
+    mpCoreComponentSystem->runNumHopScript(rScript.toStdString().c_str(), printOutput, output);
+    rOutput = QString::fromLocal8Bit(output.c_str());
+}
+
 bool CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
     return mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString().c_str(), compName.toStdString().c_str(),

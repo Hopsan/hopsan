@@ -32,6 +32,13 @@ INCLUDEPATH *= $${PWD}/../Dependencies/IndexingCSVParser
 #INCLUDEPATH *= $${PWD}/Dependencies/boost
 #--------------------------------------------------------
 
+#--------------------------------------------------------
+# Set numHop paths, (static linking)
+#DEFINES *= USENUMHOP
+#INCLUDEPATH *= $${PWD}/../Dependencies/libNumHop/
+#LIBS *= -L$${PWD}/../Dependencies/libNumHop/ -lNumHop$${DEBUG_EXT}
+#--------------------------------------------------------
+
 # -------------------------------------------------
 # Non platform specific HopsanCore options
 # -------------------------------------------------
@@ -127,7 +134,8 @@ SOURCES += \
     src/ComponentUtilities/LookupTable.cc \
     src/ComponentUtilities/PLOParser.cc \
     ../Dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
-    src/Quantities.cc
+    src/Quantities.cc \
+    src/CoreUtilities/NumHopHelper.cc
 HEADERS += \
     include/win32dll.h \
     include/Port.h \
@@ -181,7 +189,8 @@ HEADERS += \
     include/Quantities.h \
     include/NodeRWHelpfuncs.hpp \
     include/HopsanCoreVersion.h \
-    include/HopsanCoreSVNRevision.h
+    include/HopsanCoreSVNRevision.h \
+    include/CoreUtilities/NumHopHelper.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
