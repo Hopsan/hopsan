@@ -212,6 +212,9 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
     }
     else if (libraryLoadPathInfo.isFile())
     {
+        // Remember root dir path
+        libraryLoadPathRootDir.setPath(libraryLoadPathInfo.absolutePath());
+
         // Read from the file
         QFile file(libraryLoadPathInfo.absoluteFilePath());
         QFileInfo fileInfo(file);
