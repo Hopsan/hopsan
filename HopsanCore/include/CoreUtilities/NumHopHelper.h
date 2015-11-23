@@ -15,7 +15,7 @@ public:
     ~NumHopHelper();
 
     void setSystem(ComponentSystem *pSystem);
-    void evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput);
+    bool evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput);
 
 private:
     ComponentSystem *mpSystem;

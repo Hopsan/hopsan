@@ -132,12 +132,13 @@ void NumHopHelper::setSystem(ComponentSystem *pSystem)
 #endif
 }
 
-void NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput)
+bool NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput)
 {
 #ifdef USENUMHOP
     list<string> expressions;
-    numhop::splitExprRows(script.c_str(), '#', expressions);
+    numhop::extractExpressionRows(script.c_str(), '#', expressions);
 
+    bool allOK=true;
     for (list<string>::iterator it = expressions.begin(); it!=expressions.end(); ++it)
     {
         numhop::Expression e;
@@ -153,6 +154,7 @@ void NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, H
             }
             else
             {
+                allOK=false;
                 rOutput.append("FAILED: ");
             }
             rOutput.append(e.print().c_str());
@@ -161,8 +163,10 @@ void NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, H
             rOutput.append("\n");
         }
     }
+    return allOK;
 #else
     rOutput = "Error: NumHop is not pressent!";
+    return false;
 #endif
 }
 
