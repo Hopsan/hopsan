@@ -213,9 +213,7 @@ bool interpretExpressionStringRecursive(std::string exprString, Expression &rExp
 //! @brief Default constructor
 Expression::Expression()
 {
-    mOperator = UndefinedT;
-    mHadRightOuterParanthesis = false;
-    mHadLeftOuterParanthesis = false;
+    commonConstructorCode();
 }
 
 //! @brief Copy constructor
@@ -227,20 +225,33 @@ Expression::Expression(const Expression &other)
 //! @brief Constructor taking one expression string (rhs)
 Expression::Expression(const std::string &exprString, ExpressionOperatorT op)
 {
+    commonConstructorCode();
     mRightExpressionString = exprString;
     removeAllWhitespaces(mRightExpressionString);
     stripLeadingTrailingParanthesis(mRightExpressionString, mHadRightOuterParanthesis);
     mOperator = op;
 
-    if (mOperator != ValueT)
+    if (mOperator == ValueT)
+    {
+        mIsValue = true;
+    }
+    else
     {
         interpretExpressionStringRecursive(mRightExpressionString, mRightChildExpressions);
+        // If child expression is a value, then move the value into this expression
+        if (mRightChildExpressions.size() == 1 && mRightChildExpressions.front().isValue())
+        {
+            mRightExpressionString = mRightChildExpressions.front().rightExprString();
+            mRightChildExpressions.clear();
+            mIsValue = true;
+        }
     }
 }
 
 //! @brief Constructor taking two expression strings (lhs and rhs)
 Expression::Expression(const std::string &leftExprString, const std::string &rightExprString, ExpressionOperatorT op)
 {
+    commonConstructorCode();
     mLeftExpressionString = leftExprString;
     removeAllWhitespaces(mLeftExpressionString);
     stripLeadingTrailingParanthesis(mLeftExpressionString, mHadLeftOuterParanthesis);
@@ -292,7 +303,14 @@ bool Expression::empty() const
 //! @brief Check if this expression represents a value or variable
 bool Expression::isValue() const
 {
-    return mOperator == ValueT;
+    return mIsValue;
+}
+
+//! @brief Check if this expression represents a constant value
+//! @note Evaluate must have been called at least once before this function returns a relevant value
+bool Expression::isConstantValue() const
+{
+    return mIsConstantValue;
 }
 
 //! @brief Returns the (right hand side) expression string (without outer parenthesis)
@@ -328,7 +346,15 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
     bool lhsOK=false,rhsOK=false;
     double value=0;
 
-    if (mOperator == ValueT)
+    // If this is a constant value, then return it
+    if (mIsConstantValue)
+    {
+        // We take a shortcut here and return immediately
+        rEvalOK = true;
+        return mConstantValue;
+    }
+    // If this expression contains a value then evaluate it
+    else if (mIsValue)
     {
         lhsOK=true;
         char* pEnd;
@@ -337,6 +363,13 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
         if (!rhsOK)
         {
             value = rVariableStorage.value(mRightExpressionString, rhsOK);
+        }
+        else
+        {
+            // If we could evaluate the string directly then this is a constant value
+            // we can remember that so that the next evaluation is faster
+            mIsConstantValue = true;
+            mConstantValue = value;
         }
     }
     else if (mOperator == AssignmentT)
@@ -424,7 +457,7 @@ std::string Expression::print()
         }
         fullexp = l+"^"+r;
     }
-    else if (mOperator == ValueT)
+    else if (mIsValue)
     {
         fullexp = mRightExpressionString;
         if (mHadRightOuterParanthesis)
@@ -465,6 +498,16 @@ std::string Expression::print()
     return fullexp;
 }
 
+void Expression::commonConstructorCode()
+{
+    mOperator = UndefinedT;
+    mHadRightOuterParanthesis = false;
+    mHadLeftOuterParanthesis = false;
+    mIsValue = false;
+    mIsConstantValue = false;
+    mConstantValue = 0;
+}
+
 //! @brief Copy from other expression (help function for assignment and copy constructor)
 //! @param[in] other The expression to copy from
 void Expression::copyFromOther(const Expression &other)
@@ -476,6 +519,9 @@ void Expression::copyFromOther(const Expression &other)
     mRightChildExpressions = other.mRightChildExpressions;
     mLeftExpressionString = other.mLeftExpressionString;
     mRightExpressionString = other.mRightExpressionString;
+    mIsValue = other.mIsValue;
+    mIsConstantValue = other.mIsConstantValue;
+    mConstantValue = other.mConstantValue;
 }
 
 }

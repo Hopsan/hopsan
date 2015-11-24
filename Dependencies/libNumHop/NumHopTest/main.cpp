@@ -100,6 +100,7 @@ int main()
             {
                 bool evalOK;
                 double value = e.evaluate(variableStorage, evalOK);
+                double value2 = e.evaluate(variableStorage, evalOK); // evaluate again, should give same result
                 cout << "Evaluating: ";
                 if (evalOK)
                 {
@@ -109,7 +110,7 @@ int main()
                 {
                     cout << "FAILED: ";
                 }
-                cout << e.print() << "\t\t Value: " << value << endl;
+                cout << e.print() << "\t\t Value: " << value << " " << value2 << endl;
             }
             else
             {

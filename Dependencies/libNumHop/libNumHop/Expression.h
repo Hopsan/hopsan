@@ -21,6 +21,7 @@ public:
 
     bool empty() const;
     bool isValue() const;
+    bool isConstantValue() const;
 
     const std::string &exprString() const;
     const std::string &leftExprString() const;
@@ -32,11 +33,14 @@ public:
     std::string print();
 
 protected:
+    void commonConstructorCode();
     void copyFromOther(const Expression &other);
 
     std::string mLeftExpressionString, mRightExpressionString;
     bool mHadLeftOuterParanthesis, mHadRightOuterParanthesis;
     std::list<Expression> mLeftChildExpressions, mRightChildExpressions;
+    bool mIsValue, mIsConstantValue;
+    double mConstantValue;
     ExpressionOperatorT mOperator;
 };
 
