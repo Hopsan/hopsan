@@ -63,7 +63,6 @@ void NumHopScriptDialog::run()
     QString output;
     mpSystem->runNumHopScript(mpTextEdit->toPlainText(), true, output);
     output.prepend("Running NumHop\n");
-    output.chop(1);
     gpMessageHandler->addInfoMessage(output);
 }
 

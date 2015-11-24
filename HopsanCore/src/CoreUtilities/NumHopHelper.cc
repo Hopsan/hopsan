@@ -146,7 +146,7 @@ void NumHopHelper::setSystem(ComponentSystem *pSystem)
     }
     mpPrivate->mpHopsanAccess = new HopsanParameterAccess(pSystem);
     mpPrivate->mVarStorage.setExternalStorage(mpPrivate->mpHopsanAccess);
-    mpPrivate->mVarStorage.setDissallowedInternalNameCharacters(".");
+    mpPrivate->mVarStorage.setDisallowedInternalNameCharacters(".");
 #endif
 }
 
@@ -159,27 +159,42 @@ bool NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, H
     bool allOK=true;
     for (list<string>::iterator it = expressions.begin(); it!=expressions.end(); ++it)
     {
-        numhop::Expression2 e;
-        numhop::interpretExpressionStringRecursive2(*it, e);
+        numhop::Expression e;
+        bool interpretOK = numhop::interpretExpressionStringRecursive(*it, e);
         bool evalOK;
         double value = e.evaluate(mpPrivate->mVarStorage, evalOK);
+        if (!(interpretOK && evalOK))
+        {
+            allOK = false;
+        }
         if (doPrintOutput)
         {
-            rOutput.append("Evaluated ");
-            if (evalOK)
+            if (interpretOK)
             {
-                rOutput.append("OK    : ");
+                rOutput.append("Evaluated ");
+                if (evalOK)
+                {
+                    rOutput.append("OK    : ");
+                }
+                else
+                {
+                    rOutput.append("FAILED: ");
+                }
+                rOutput.append(e.print().c_str());
+                rOutput.append("     Value: ");
+                rOutput.append(to_hstring(value).c_str());
             }
             else
             {
-                allOK=false;
-                rOutput.append("FAILED: ");
+                rOutput.append("Interpreting FAILED in: ").append(it->c_str());
             }
-            rOutput.append(e.print().c_str());
-            rOutput.append("     Value: ");
-            rOutput.append(to_hstring(value).c_str());
             rOutput.append("\n");
         }
+    }
+    // remove the last newline
+    if (doPrintOutput)
+    {
+        rOutput.erase(rOutput.size()-1);
     }
     return allOK;
 #else
