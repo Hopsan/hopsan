@@ -30,9 +30,18 @@ public:
         }
         else
         {
-            // Now try to find the component/port/variable
             vector<HString> parts;
-            splitString(hname, '.', parts);
+            if (mpSystem->getAliasHandler().hasAlias(hname))
+            {
+                parts.resize(3);
+                mpSystem->getAliasHandler().getVariableFromAlias(hname,parts[0],parts[1],parts[2]);
+            }
+            else
+            {
+                splitString(hname, '.', parts);
+            }
+
+            // Now try to find the component/port/variable
             //! @todo handle pointing into subsystems or parent system
             if (parts.size() == 3)
             {
@@ -62,9 +71,18 @@ public:
         }
         else
         {
-            // Now try to find the component/port/variable
             vector<HString> parts;
-            splitString(hname, '.', parts);
+            if (mpSystem->getAliasHandler().hasAlias(hname))
+            {
+                parts.resize(3);
+                mpSystem->getAliasHandler().getVariableFromAlias(hname,parts[0],parts[1],parts[2]);
+            }
+            else
+            {
+                splitString(hname, '.', parts);
+            }
+
+            // Now try to find the component/port/variable
             //! @todo handle pointing into subsystems or parent system
             if (parts.size() == 3)
             {
@@ -141,8 +159,8 @@ bool NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, H
     bool allOK=true;
     for (list<string>::iterator it = expressions.begin(); it!=expressions.end(); ++it)
     {
-        numhop::Expression e;
-        numhop::interpretExpressionStringRecursive(*it, e);
+        numhop::Expression2 e;
+        numhop::interpretExpressionStringRecursive2(*it, e);
         bool evalOK;
         double value = e.evaluate(mpPrivate->mVarStorage, evalOK);
         if (doPrintOutput)
