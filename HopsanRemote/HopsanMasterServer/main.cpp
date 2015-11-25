@@ -351,7 +351,7 @@ int main(int argc, char* argv[])
                 if (msg_id == Available)
                 {
                     bool parseOK;
-                    infomsg_Available_t sm = unpackMessage<infomsg_Available_t>(message,offset,parseOK);
+                    InfomsgAvailable sm = unpackMessage<InfomsgAvailable>(message,offset,parseOK);
 
                     ServerInfo si;
                     si.address = sm.ip+":"+sm.port;
@@ -389,7 +389,7 @@ int main(int argc, char* argv[])
                 else if (msg_id == ServerClosing)
                 {
                     bool parseOK;
-                    infomsg_Available_t sm = unpackMessage<infomsg_Available_t>(message,offset,parseOK);
+                    InfomsgAvailable sm = unpackMessage<InfomsgAvailable>(message,offset,parseOK);
                     cout << PRINTSERVER << nowDateTime() << " Server at IP: " << sm.ip << ":" << sm.port << " is closing!" << endl;
 
                     // lookup server
@@ -411,19 +411,19 @@ int main(int argc, char* argv[])
 
                     //! @todo be smart
                     bool parseOK;
-                    reqmsg_RequestServerMachines_t req = unpackMessage<reqmsg_RequestServerMachines_t>(message,offset,parseOK);
+                    ReqmsgRequestServerMachines req = unpackMessage<ReqmsgRequestServerMachines>(message,offset,parseOK);
                     cout << PRINTSERVER << nowDateTime() << " Got server machines request" << endl;
                     auto ids = gServerHandler.getServers(req.maxBenchmarkTime, req.numMachines);
                     //! @todo what if a server is replaced or removed while we are processing this list
 
-                    std::vector<replymsg_ReplyServerMachine_t> reply;
+                    std::vector<ReplymsgReplyServerMachine> reply;
                     reply.reserve(ids.size());
                     for (auto id : ids)
                     {
                         ServerInfo server = gServerHandler.getServer(id);
                         if (server.isValid())
                         {
-                            replymsg_ReplyServerMachine_t repl;
+                            ReplymsgReplyServerMachine repl;
                             if (server.needsRelay())
                             {
                                 repl.relayaddress = myExternalIP+":"+myRelayPort+":"+server.mRelayBaseIdentity;
@@ -444,7 +444,7 @@ int main(int argc, char* argv[])
                 else if (msg_id == RequestRelaySlot)
                 {
                     bool parseOK;
-                    reqmsg_RelaySlot_t req = unpackMessage<reqmsg_RelaySlot_t>(message,offset,parseOK);
+                    ReqmsgRelaySlot req = unpackMessage<ReqmsgRelaySlot>(message,offset,parseOK);
                     cout << PRINTSERVER << nowDateTime() << " Got relay slot request, RelayBaseId: " << req.relaybaseid << " port: " << req.ctrlport << endl;
                     Relay* pRelay = nullptr;
                     if (!req.relaybaseid.empty())

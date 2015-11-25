@@ -89,7 +89,7 @@ public:
         return false;
     }
 
-    bool addFilePart(const cmdmsg_SendFile_t &rFilePart)
+    bool addFilePart(const CmdmsgSendFile &rFilePart)
     {
         // As a safety this must be set to avoid accidentally overwriting stuff on the local disc
         // well you can do that anyway if you set this to something stupid
@@ -550,7 +550,7 @@ int main(int argc, char* argv[])
                 if (msg_id == RequestWorkerStatus)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Got status request" << endl;
-                    replymsg_ReplyWorkerStatus_t msg;
+                    ReplymsgReplyWorkerStatus msg;
                     msg.model_loaded = gIsModelLoaded;
                     msg.simualtion_success = gWasSimulationOK;
                     msg.simulation_finished = gSimulationFinnished;
@@ -579,7 +579,7 @@ int main(int argc, char* argv[])
                     else
                     {
                         bool parseOK;
-                        cmdmsg_SetParameter_t msg = unpackMessage<cmdmsg_SetParameter_t>(request, offset, parseOK);
+                        CmdmsgSetParameter msg = unpackMessage<CmdmsgSetParameter>(request, offset, parseOK);
                         cout << PRINTWORKER << nowDateTime() << " Client want to set parameter " << msg.name << " " << msg.value << endl;
 
                         // Set parameter
@@ -660,7 +660,7 @@ int main(int argc, char* argv[])
                 else if (msg_id == SendFile)
                 {
                     bool parseOK;
-                    cmdmsg_SendFile_t msg = unpackMessage<cmdmsg_SendFile_t>(request, offset, parseOK);
+                    CmdmsgSendFile msg = unpackMessage<CmdmsgSendFile>(request, offset, parseOK);
                     cout << PRINTWORKER << nowDateTime() << " Got file chunk: " << msg.filename << " size: " << msg.data.size() << " finalPart: " << msg.islastpart << endl;
                     if(parseOK)
                     {
@@ -689,7 +689,7 @@ int main(int argc, char* argv[])
                     else
                     {
                         bool parseOK;
-                        cmdmsg_Simulate_t msg = unpackMessage<cmdmsg_Simulate_t>(request, offset, parseOK);
+                        CmdmsgSimulate msg = unpackMessage<CmdmsgSimulate>(request, offset, parseOK);
                         if (parseOK)
                         {
                             // Start simulation
@@ -807,7 +807,7 @@ int main(int argc, char* argv[])
                     else
                     {
                         bool parseOK;
-                        cmdmsg_Benchmark_t benchreq = unpackMessage<cmdmsg_Benchmark_t>(request, offset, parseOK);
+                        CmdmsgBenchmark benchreq = unpackMessage<CmdmsgBenchmark>(request, offset, parseOK);
                         if (parseOK)
                         {
                             bool rc = loadModel(benchreq.model);
@@ -846,7 +846,7 @@ int main(int argc, char* argv[])
                     cout << PRINTWORKER << nowDateTime() << " Got Benchmark results request" << endl;
                     //! @todo  Wait for benchmark to complete maybe
                     //!
-                    replymsg_ReplyBenchmarkResults_t msg;
+                    ReplymsgReplyBenchmarkResults msg;
                     msg.numthreads = gNumThreads;
                     msg.inittime = gInitTime;
                     msg.simutime = gSimulationTime;
@@ -870,12 +870,12 @@ int main(int argc, char* argv[])
                         cout << PRINTWORKER << nowDateTime() << " Client requests variable: " << varName << " Sending: " << vMVI.size() << " variables!" << endl;
 
                         //! @todo Check if simulation finished, ACK Nack
-                        vector<replymsg_ResultsVariable_t> vars;
+                        vector<ReplymsgResultsVariable> vars;
                         for (size_t mvi=0; mvi<vMVI.size(); ++mvi )
                         {
                             const ModelVariableInfo_t &rMvi = vMVI[mvi];
 
-                            vars.push_back(replymsg_ResultsVariable_t());
+                            vars.push_back(ReplymsgResultsVariable());
                             vars.back().name = rMvi.fullName;
                             vars.back().alias = rMvi.alias;
                             vars.back().quantity = rMvi.quantity;
@@ -905,7 +905,7 @@ int main(int argc, char* argv[])
                 else if (msg_id == RequestMessages)
                 {
                     HopsanCoreMessageHandler *pHandler = gHopsanCore.getCoreMessageHandler();
-                    vector<replymsg_ReplyMessage_t> messages;
+                    vector<ReplymsgReplyMessage> messages;
                     size_t nMessages = pHandler->getNumWaitingMessages();
                     messages.resize(nMessages);
                     cout << PRINTWORKER << nowDateTime() << " Client requests messages! " <<  "Sending: " << nMessages << " messages!" << endl;

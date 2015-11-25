@@ -140,7 +140,7 @@ bool RemoteHopsanClient::sendGetParamMessage(const string &rName, string &rValue
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    reqmsg_RequestParameter_t msg {rName};
+    ReqmsgRequestParameter msg {rName};
     sendClientMessage(mpWorkerSocket, RequestParameter, msg);
 
     zmq::message_t response;
@@ -168,7 +168,7 @@ bool RemoteHopsanClient::sendSetParamMessage(const string &rName, const string &
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    cmdmsg_SetParameter_t msg {rName, rValue};
+    CmdmsgSetParameter msg {rName, rValue};
     sendClientMessage(mpWorkerSocket, SetParameter, msg);
 
     string err;
@@ -199,7 +199,7 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
 
-    cmdmsg_Simulate_t msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
+    CmdmsgSimulate msg;// {nLogsamples, logStartTime, simStarttime, simSteptime, simStoptime};
     sendClientMessage(mpWorkerSocket, Simulate, msg);
     string err;
     bool rc = receiveAckNackMessage(mpWorkerSocket, mShortReceiveTimeout, err);
@@ -271,7 +271,7 @@ bool RemoteHopsanClient::blockingSendFile(const string &rAbsFilePath, const stri
 bool RemoteHopsanClient::sendFilePart(const string &rRelFilePath, const string &rData, bool isLastPart)
 {
    std::lock_guard<std::mutex> lock(mWorkerMutex);
-   cmdmsg_SendFile_t msg {rRelFilePath, rData, isLastPart};
+   CmdmsgSendFile msg {rRelFilePath, rData, isLastPart};
    sendClientMessage(mpWorkerSocket, SendFile, msg);
    string err;
    bool rc = receiveAckNackMessage(mpWorkerSocket, mLongReceiveTimeout, err);
@@ -313,7 +313,7 @@ bool RemoteHopsanClient::blockingBenchmark(const string &rModel, const int nThre
 
     if (rc)
     {
-        cmdmsg_Benchmark_t msg;
+        CmdmsgBenchmark msg;
         msg.model = rModel;
         sendClientMessage(mpWorkerSocket, Benchmark, msg);
         string errorMsg;
@@ -354,7 +354,7 @@ bool RemoteHopsanClient::requestBenchmarkResults(double &rSimTime)
         size_t id = getMessageId(reply, offset, parseOK);
         if (id == ReplyBenchmarkResults)
         {
-            replymsg_ReplyBenchmarkResults_t results = unpackMessage<replymsg_ReplyBenchmarkResults_t>(reply, offset, parseOK);
+            ReplymsgReplyBenchmarkResults results = unpackMessage<ReplymsgReplyBenchmarkResults>(reply, offset, parseOK);
             if (parseOK)
             {
                 //! @todo right now we bundle all times together
@@ -382,7 +382,7 @@ bool RemoteHopsanClient::requestWorkerStatus(WorkerStatusT &rWorkerStatus)
         size_t id = getMessageId(response, offset, parseOK);
         if (id == ReplyWorkerStatus)
         {
-            replymsg_ReplyWorkerStatus_t status = unpackMessage<replymsg_ReplyWorkerStatus_t>(response, offset, parseOK);
+            ReplymsgReplyWorkerStatus status = unpackMessage<ReplymsgReplyWorkerStatus>(response, offset, parseOK);
             if (parseOK)
             {
                 rWorkerStatus = status;
@@ -406,7 +406,7 @@ bool RemoteHopsanClient::requestServerStatus(ServerStatusT &rServerStatus)
         size_t id = getMessageId(response, offset, parseOK);
         if (id == ReplyServerStatus)
         {
-            replymsg_ReplyServerStatus_t status = unpackMessage<replymsg_ReplyServerStatus_t>(response, offset, parseOK);
+            ReplymsgReplyServerStatus status = unpackMessage<ReplymsgReplyServerStatus>(response, offset, parseOK);
             if (parseOK)
             {
                 rServerStatus = status;
@@ -439,10 +439,10 @@ bool RemoteHopsanClient::requestSimulationResults(std::vector<ResultVariableT> &
         size_t id = getMessageId(response, offset, parseOK);
         if (id == ReplyResults)
         {
-            std::vector<replymsg_ResultsVariable_t> repls = unpackMessage<vector<replymsg_ResultsVariable_t>>(response,offset, parseOK);
+            std::vector<ReplymsgResultsVariable> repls = unpackMessage<vector<ReplymsgResultsVariable>>(response,offset, parseOK);
             rResultVariables.clear();
             rResultVariables.reserve(repls.size());
-            for (replymsg_ResultsVariable_t &repl : repls)
+            for (ReplymsgResultsVariable &repl : repls)
             {
                 rResultVariables.push_back(repl);
             }
@@ -458,8 +458,8 @@ bool RemoteHopsanClient::requestSimulationResults(std::vector<ResultVariableT> &
 
 bool RemoteHopsanClient::requestSlot(int numThreads, int &rControlPort)
 {
-    reqmsg_ReqServerSlots_t msg {numThreads};
-    sendClientMessage<reqmsg_ReqServerSlots_t>(mpServerSocket, RequestServerSlots, msg);
+    ReqmsgReqServerSlots msg {numThreads};
+    sendClientMessage<ReqmsgReqServerSlots>(mpServerSocket, RequestServerSlots, msg);
 
     zmq::message_t response;
     if (receiveWithTimeout(*mpServerSocket, response, mShortReceiveTimeout))
@@ -469,7 +469,7 @@ bool RemoteHopsanClient::requestSlot(int numThreads, int &rControlPort)
         size_t id = getMessageId(response, offset, parseOK);
         if (id == ReplyServerSlots)
         {
-            replymsg_ReplyServerSlots_t msg = unpackMessage<replymsg_ReplyServerSlots_t>(response, offset, parseOK);
+            ReplymsgReplyServerSlots msg = unpackMessage<ReplymsgReplyServerSlots>(response, offset, parseOK);
             if (parseOK)
             {
                 rControlPort = msg.portoffset;
@@ -658,7 +658,7 @@ bool RemoteHopsanClient::requestMessages()
         size_t id = getMessageId(response, offset, parseOK);
         if (id == ReplyMessages)
         {
-            vector<replymsg_ReplyMessage_t> messages = unpackMessage<vector<replymsg_ReplyMessage_t>>(response, offset, parseOK);
+            vector<ReplymsgReplyMessage> messages = unpackMessage<vector<ReplymsgReplyMessage>>(response, offset, parseOK);
             cout << "Received: " << messages.size() << " messages from server" << endl;
             for (size_t m=0; m<messages.size(); ++m)
             {
@@ -688,7 +688,7 @@ bool RemoteHopsanClient::requestMessages(std::vector<char> &rTypes, std::vector<
         size_t id = getMessageId(response, offset, parseOK);
         if (id == ReplyMessages)
         {
-            vector<replymsg_ReplyMessage_t> messages = unpackMessage<vector<replymsg_ReplyMessage_t>>(response, offset, parseOK);
+            vector<ReplymsgReplyMessage> messages = unpackMessage<vector<ReplymsgReplyMessage>>(response, offset, parseOK);
             //cout << "Received: " << messages.size() << " messages from server" << endl;
             rTypes.resize(messages.size());
             rTags.resize(messages.size());
@@ -738,7 +738,7 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
 {
     if (addressServerConnected())
     {
-        reqmsg_RequestServerMachines_t req;
+        ReqmsgRequestServerMachines req;
         req.numMachines = nMachines;
         req.maxBenchmarkTime = maxBenchmarkTime;
         req.numThreads = -1;
@@ -754,7 +754,7 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
             size_t id = getMessageId(response, offset, parseOK);
             if (id == ReplyServerMachines)
             {
-                std::vector<replymsg_ReplyServerMachine_t> repl = unpackMessage<std::vector<replymsg_ReplyServerMachine_t>>(response,offset,parseOK);
+                std::vector<ReplymsgReplyServerMachine> repl = unpackMessage<std::vector<ReplymsgReplyServerMachine>>(response,offset,parseOK);
                 rMachines.reserve(repl.size());
                 for (auto &rMachine : repl)
                 {
@@ -776,7 +776,7 @@ bool RemoteHopsanClient::requestRelaySlot(const std::string &rBaseRelayIdentity,
     if (addressServerConnected())
     {
         std::vector<std::string> fields = splitstring(rBaseRelayIdentity, "."); // Split in case socket id included (we dont want that)
-        reqmsg_RelaySlot_t msg {fields.front(), port};
+        ReqmsgRelaySlot msg {fields.front(), port};
         sendClientMessage(mpAddressServerSocket, RequestRelaySlot, msg);
 
         zmq::message_t response;

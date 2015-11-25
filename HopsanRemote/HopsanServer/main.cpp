@@ -114,7 +114,7 @@ void reportToAddressServer(const ServerConfig &rServerConfig, bool isOnline)
         addressServerSocket.connect(makeZMQAddress(rServerConfig.mAddressServerIPandPort).c_str());
 
         //! @todo check if OK
-        infomsg_Available_t message;
+        InfomsgAvailable message;
         message.ip = rServerConfig.mExternalIP;
         message.port = rServerConfig.mControlPortStr;
         message.description = rServerConfig.mDescription;
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
                 if (msg_id == RequestServerSlots)
                 {
                     bool parseOK;
-                    reqmsg_ReqServerSlots_t msg = unpackMessage<reqmsg_ReqServerSlots_t>(request, offset, parseOK);
+                    ReqmsgReqServerSlots msg = unpackMessage<ReqmsgReqServerSlots>(request, offset, parseOK);
                     int requestNumThreads = msg.numThreads;
 
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting: " << requestNumThreads << " slots... " << endl;
@@ -293,7 +293,9 @@ int main(int argc, char* argv[])
                         }
 
 #else
-                        char sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
+                        char name_buff[64], sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
+                        // Write name
+                        sprintf(name_buff, "%s", "HopsanServerWorker");
                         // Write port as char in buffer
                         sprintf(sport_buff, "%d", gServerConfig.mControlPort);
                         sprintf(wport_buff, "%d", int(workerPort));
@@ -302,7 +304,7 @@ int main(int argc, char* argv[])
                         // Write id as char in buffer
                         sprintf(uid_buff, "%d", uid);
 
-                        char *argv[] = {"HopsanServerWorker", uid_buff, sport_buff, wport_buff, thread_buff, nullptr};
+                        char *argv[] = {name_buff, uid_buff, sport_buff, wport_buff, thread_buff, nullptr};
 
                         pid_t pid;
                         int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
@@ -311,7 +313,7 @@ int main(int argc, char* argv[])
                             std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads << endl;
                             workerMap.insert({uid,{requestNumThreads,pid}});
 
-                            replymsg_ReplyServerSlots_t msg = {workerPort};
+                            ReplymsgReplyServerSlots msg = {int(workerPort)};
                             sendMessage(socket, ReplyServerSlots, msg);
                             nTakenSlots+=requestNumThreads;
                             std::cout << PRINTSERVER << nowDateTime() << " Remaining slots: " << gServerConfig.mMaxNumSlots-nTakenSlots << endl;
@@ -379,7 +381,7 @@ int main(int argc, char* argv[])
                 else if (msg_id == RequestServerStatus)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
-                    replymsg_ReplyServerStatus_t status;
+                    ReplymsgReplyServerStatus status;
                     status.numTotalSlots = gServerConfig.mMaxNumSlots;
                     status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
                     status.isReady = true;

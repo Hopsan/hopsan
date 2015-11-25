@@ -55,133 +55,163 @@ MSGPACK_ADD_ENUM(MessageIdsEnumT)
 
 // Message structures for messages typically used by Clients
 
-typedef struct
+class CmdmsgSetParameter
 {
+public:
     std::string name;
     std::string value;
-    MSGPACK_DEFINE(name, value)
-}cmdmsg_SetParameter_t;
 
-typedef struct
+    MSGPACK_DEFINE(name, value)
+};
+
+class CmdmsgSimulate
 {
+public:
     int nLogSamples = -1;
     int logStartTim = -1;
     int simStartTime = -1;
     int simTimestep = -1;
     int simStopTime = -1;
+
     MSGPACK_DEFINE(nLogSamples, logStartTim, simStartTime, simTimestep, simStopTime)
-}cmdmsg_Simulate_t;
+};
 
-typedef struct
+class CmdmsgBenchmark
 {
+public:
     std::string model;
+
     MSGPACK_DEFINE(model)
-}cmdmsg_Benchmark_t;
+};
 
-typedef struct
+class ReqmsgRequestParameter
 {
+public:
     std::string name;
-    MSGPACK_DEFINE(name)
-}reqmsg_RequestParameter_t;
 
-typedef struct
+    MSGPACK_DEFINE(name)
+};
+
+class ReqmsgRequestServerMachines
 {
+public:
     int numMachines;
     int numThreads;
     double maxBenchmarkTime;
+
     MSGPACK_DEFINE(numMachines, numThreads, maxBenchmarkTime)
-}reqmsg_RequestServerMachines_t;
+};
 
-typedef struct
+class ReqmsgReqServerSlots
 {
+public:
     int numThreads;
-    MSGPACK_DEFINE(numThreads)
-}reqmsg_ReqServerSlots_t;
 
-typedef struct
+    MSGPACK_DEFINE(numThreads)
+};
+
+class ReqmsgRelaySlot
 {
+public:
     std::string relaybaseid;
     int ctrlport;
-    MSGPACK_DEFINE(relaybaseid, ctrlport)
-}reqmsg_RelaySlot_t;
 
-typedef struct
+    MSGPACK_DEFINE(relaybaseid, ctrlport)
+};
+
+class CmdmsgSendFile
 {
+public:
     std::string filename;
     std::string data;
     bool islastpart;
+
     MSGPACK_DEFINE(filename, data, islastpart)
-}cmdmsg_SendFile_t;
+};
 
 
 // Message structures for messages typically used by Servers
 
-typedef struct
+class InfomsgAvailable
 {
+public:
     std::string ip;
     std::string port;
     std::string description;
     std::string services;
     int numTotalSlots;
     int identity;
+
     MSGPACK_DEFINE(ip,port,description,services,numTotalSlots,identity)
-}infomsg_Available_t;
+};
 
-typedef struct
+class ReplymsgReplyServerSlots
 {
+public:
     int portoffset;
+
     MSGPACK_DEFINE(portoffset)
-}replymsg_ReplyServerSlots_t;
+};
 
-typedef struct replymsg_ReplyServerStatus_ : ServerStatusT
+class ReplymsgReplyServerStatus : public ServerStatusT
 {
+public:
     MSGPACK_DEFINE(services, numFreeSlots, numTotalSlots, startTime, stopTime, isReady)
-}replymsg_ReplyServerStatus_t;
+};
 
-typedef struct
+class ReplymsgReplyBenchmarkResults
 {
+public:
     int numthreads;
     double inittime;
     double simutime;
     double finitime;
+
     MSGPACK_DEFINE(numthreads, inittime, simutime, finitime)
-}replymsg_ReplyBenchmarkResults_t;
+};
 
 
 // Message structs typically used be the Workers
 
-typedef struct
+class ReplymsgReplyParameter
 {
+public:
     std::string value;
     std::string unit;
+
     MSGPACK_DEFINE(value,unit)
-}replymsg_ReplyParameter_t;
+};
 
-typedef struct replymsg_ResultsVariable_ : ResultVariableT
+class ReplymsgResultsVariable : public ResultVariableT
 {
+public:
     MSGPACK_DEFINE(name,alias,quantity,unit,data)
-}replymsg_ResultsVariable_t;
+};
 
-typedef struct
+class ReplymsgReplyMessage
 {
+public:
     char type;
     std::string message;
     std::string tag;
-    MSGPACK_DEFINE(type,message,tag)
-}replymsg_ReplyMessage_t;
 
-typedef struct replymsg_ReplyWorkerStatus_ : WorkerStatusT
+    MSGPACK_DEFINE(type,message,tag)
+};
+
+class ReplymsgReplyWorkerStatus : public WorkerStatusT
 {
+public:
     MSGPACK_DEFINE(model_loaded, simulation_inprogress, simualtion_success, simulation_finished,
                    current_simulation_time, simulation_progress, estimated_simulation_time_remaining)
-}replymsg_ReplyWorkerStatus_t;
+};
 
 // Message structs typically used be the Adress server
 
-typedef struct replymsg_ReplyServerMachine_ : ServerMachineInfoT
+class ReplymsgReplyServerMachine : public ServerMachineInfoT
 {
+public:
     MSGPACK_DEFINE(address, relayaddress, description, numslots, evalTime)
-}replymsg_ReplyServerMachine_t;
+};
 
 
 
