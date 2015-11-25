@@ -420,7 +420,8 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
             // If evaluation error in child expression, abort and return false
             if (!rhsOK)
             {
-                return false;
+                rEvalOK=false;
+                return value;
             }
         }
     }

@@ -43,12 +43,19 @@ public:
 
             // Now try to find the component/port/variable
             //! @todo handle pointing into subsystems or parent system
-            if (parts.size() == 3)
+            if (parts.size() >= 2)
             {
                 Component* pC = mpSystem->getSubComponent(parts[0]);
                 if (pC)
                 {
-                    pC->getParameterValue(parts[1]+"#"+parts[2], value);
+                    if (parts.size() == 2)
+                    {
+                        pC->getParameterValue(parts[1], value);
+                    }
+                    else if (parts.size() == 3)
+                    {
+                        pC->getParameterValue(parts[1]+"#"+parts[2], value);
+                    }
                     if (!value.empty())
                     {
                         return value.toDouble(&rFound);
@@ -84,12 +91,19 @@ public:
 
             // Now try to find the component/port/variable
             //! @todo handle pointing into subsystems or parent system
-            if (parts.size() == 3)
+            if (parts.size() >= 2)
             {
                 Component* pC = mpSystem->getSubComponent(parts[0]);
                 if (pC)
                 {
-                    return pC->setParameterValue(parts[1]+"#"+parts[2], to_hstring(value));
+                    if (parts.size() == 2)
+                    {
+                        return pC->setParameterValue(parts[1], to_hstring(value));
+                    }
+                    else if (parts.size() == 3)
+                    {
+                        return pC->setParameterValue(parts[1]+"#"+parts[2], to_hstring(value));
+                    }
                 }
             }
         }
@@ -155,6 +169,8 @@ bool NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, H
 #ifdef USENUMHOP
     list<string> expressions;
     numhop::extractExpressionRows(script.c_str(), '#', expressions);
+
+    mpPrivate->mVarStorage.clearInternalVariables();
 
     bool allOK=true;
     for (list<string>::iterator it = expressions.begin(); it!=expressions.end(); ++it)

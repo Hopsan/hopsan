@@ -24,7 +24,7 @@ bool VariableStorage::setVariable(const std::string &name, double value, bool &r
         rDidSetExternally = mpExternalStorage->setExternalValue(name, value);
     }
     // If we could not set externally, then set it internally
-    if (isNameInternalValid(name))
+    if (!rDidSetExternally && isNameInternalValid(name))
     {
         std::map<std::string,double>::iterator it = mVariableMap.find(name);
         if (it == mVariableMap.end())
@@ -102,6 +102,12 @@ void VariableStorage::setExternalStorage(ExternalVariableStorage *pExternalStora
 void VariableStorage::setParentStorage(VariableStorage *pParentStorage)
 {
     mpParentStorage = pParentStorage;
+}
+
+//! @brief Clear the internal variable storage
+void VariableStorage::clearInternalVariables()
+{
+    mVariableMap.clear();
 }
 
 }

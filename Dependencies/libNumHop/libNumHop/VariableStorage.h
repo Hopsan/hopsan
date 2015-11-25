@@ -32,6 +32,8 @@ public:
     void setExternalStorage(ExternalVariableStorage *pExternalStorage);
     void setParentStorage(VariableStorage *pParentStorage);
 
+    void clearInternalVariables();
+
 private:
     ExternalVariableStorage *mpExternalStorage;
     VariableStorage *mpParentStorage;
