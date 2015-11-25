@@ -5,8 +5,8 @@ REM Bat script building ZeroMQ and unpacking messagepack automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Date:   2015-02-07
 
-set msgpackfile=msgpack-c-cpp-1.0.1.zip
-set msgpackdir=msgpack-c-cpp-1.0.1
+set msgpackfile=msgpack-c-cpp-1.3.0.zip
+set msgpackdir=msgpack-c-cpp-1.3.0
 set cppzmqfile=cppzmq-master.zip
 set cppzmqdir=cppzmq-master
 

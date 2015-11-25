@@ -84,5 +84,5 @@ defineReplace(setZMQPathInfo){
     return($$magic_hopsan_libpath)
 }
 
-INCLUDEPATH *= $${PWD}/../Dependencies/msgpack-c-cpp-1.0.1/include/
+INCLUDEPATH *= $${PWD}/../Dependencies/msgpack-c-cpp-1.3.0/include/
 INCLUDEPATH *= $${PWD}/../Dependencies/cppzmq-master/
