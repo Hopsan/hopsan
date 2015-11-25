@@ -70,18 +70,9 @@ Port::Port(const HString &rNodeType, const HString &rPortName, Component *pParen
 }
 
 
-//Destructor
+//! @brief Destructor
 Port::~Port()
 {
-    if (mpStartNode != 0)
-    {
-        //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted port.
-//        for(size_t i = 0; i < mpStartNode->getNumDataVariables(); ++i)
-//        {
-//FIXA, the parameters will probably be deleted when parent component is deleted -> no problems            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
-//        }
-    }
-
     if (mpStartNode)
     {
         getComponent()->getHopsanEssentials()->removeNode(mpStartNode);
@@ -783,37 +774,65 @@ SystemPort::SystemPort(const HString &rNodeType, const HString &rPortName, Compo
 //! @brief Get the External port type (virtual, should be overloaded in systemports only)
 PortTypesEnumT SystemPort::getExternalPortType()
 {
+    Port* pPortFound=0;
     std::vector<Port*>::iterator pit;
     for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
     {
-        //External ports component parents will belong to the same system as our component parent
+        // External port component parents will belong to this system ports component parents parent system
+        // If we have an external power port, then we want to return that, else we return the port type that we find
+        // Usually the first one we find is correct, except when we mix powerports and sensor ports (read ports)
         if ( (*pit)->getComponent()->getSystemParent() == this->getComponent()->getSystemParent() )
         {
-            //! @todo for now we return the first one we find, usually this is correct except when you are mixing powerports and readports, powerports should be returned in that case but I don't know how to fix this except going through ALL ports every time
-            return (*pit)->getPortType();
+            pPortFound = *pit;
+            //! @todo what about multpowerporttype (not sure if that is supported yet (systemport <-> multiport that is)
+            if (pPortFound->getPortType() == PowerPortType)
+            {
+                return pPortFound->getPortType();
+            }
         }
     }
-
-    //If no external ports found return our actual type (systemport)
-    return getPortType();
+    // If we did not find a power port but found some other port type, then return this other type
+    if (pPortFound)
+    {
+        return pPortFound->getPortType();
+    }
+    // If no external ports found return our actual type (systemport)
+    else
+    {
+        return getPortType();
+    }
 }
 
 //! @brief Get the Internal port type (virtual, should be overloaded in systemports only)
 PortTypesEnumT SystemPort::getInternalPortType()
 {
+    Port* pPortFound=0;
     std::vector<Port*>::iterator pit;
     for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
     {
-        //Internal ports component parents will belong to our component parent
+        // Internal port component parents will belong to this systemports parent component (the system)
+        // If we have an internal power port, then we want to return that, else we return the port type that we find
+        // Usually the first one we find is correct, except when we mix powerports and sensor ports (read ports)
         if ( (*pit)->getComponent()->getSystemParent() == this->getComponent() )
         {
-            //! @todo for now we return the first one we find, usually this is correct except when you are mixing powerports and readports, powerports should be returned in that case but I don't know how to fix this except going through ALL ports every time
-            return (*pit)->getPortType();
+            pPortFound = *pit;
+            //! @todo what about multpowerporttype (not sure if that is supported yet (systemport <-> multiport that is)
+            if (pPortFound->getPortType() == PowerPortType)
+            {
+                return pPortFound->getPortType();
+            }
         }
     }
-
-    //If no internal ports found return our actual type (systemport)
-    return getPortType();
+    // If we did not find a power port but found some other port type, then return this other type
+    if (pPortFound)
+    {
+        return pPortFound->getPortType();
+    }
+    // If no internal ports found return our actual type (systemport)
+    else
+    {
+        return getPortType();
+    }
 }
 
 
