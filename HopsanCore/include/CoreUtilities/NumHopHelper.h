@@ -5,6 +5,7 @@
 
 namespace hopsan {
 
+class Component;
 class ComponentSystem;
 class NumHopHelperPrivate;
 
@@ -15,10 +16,17 @@ public:
     ~NumHopHelper();
 
     void setSystem(ComponentSystem *pSystem);
+    void setComponent(Component *pComponent);
+
+    void registerDataPtr(const HString &name, double *pData);
+
     bool evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput);
+    bool interpretNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput);
+    bool eval(bool doPrintOutput, HString &rOutput);
 
 private:
     ComponentSystem *mpSystem;
+    Component *mpComponent;
     NumHopHelperPrivate *mpPrivate;
 };
 

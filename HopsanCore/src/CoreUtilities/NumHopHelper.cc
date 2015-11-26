@@ -9,10 +9,45 @@ using namespace hopsan;
 #ifdef USENUMHOP
 #include "numhop.h"
 
-class HopsanParameterAccess : public numhop::ExternalVariableStorage
+class HopsanParameterAccess :  public numhop::ExternalVariableStorage
 {
 public:
-    HopsanParameterAccess(ComponentSystem *pSystem)
+    bool setRegistered(const HString &name, double value)
+    {
+        std::map<HString, double*>::iterator it = mRegisteredDataPtrs.find(name.c_str());
+        if (it != mRegisteredDataPtrs.end())
+        {
+            *it->second = value;
+            return true;
+        }
+        return false;
+    }
+
+    double getRegistered(const HString &name, bool &rFound) const
+    {
+        std::map<HString, double*>::const_iterator it = mRegisteredDataPtrs.find(name.c_str());
+        if (it != mRegisteredDataPtrs.end())
+        {
+            rFound = true;
+            return *it->second;
+        }
+        rFound=false;
+        return -1;
+    }
+
+    void registerDataPointer(const HString &name, double *pData)
+    {
+        mRegisteredDataPtrs.insert(std::pair<HString,double*>(name, pData));
+    }
+
+protected:
+    std::map<HString, double*> mRegisteredDataPtrs;
+};
+
+class HopsanSystemAccess : public HopsanParameterAccess
+{
+public:
+    HopsanSystemAccess(ComponentSystem *pSystem)
     {
         mpSystem = pSystem;
     }
@@ -114,6 +149,94 @@ private:
     ComponentSystem *mpSystem;
 };
 
+class HopsanComponentAccess : public HopsanParameterAccess
+{
+public:
+    HopsanComponentAccess(Component *pComponent)
+    {
+        mpComponent = pComponent;
+    }
+
+    double externalValue(string name, bool &rFound) const
+    {
+        HString hname = name.c_str();
+
+        // First try registered data pointer
+        double vr = getRegistered(hname, rFound);
+        if (rFound)
+        {
+            return vr;
+        }
+
+        HString value;
+        vector<HString> parts;
+        splitString(hname, '.', parts);
+
+        // Check if this is a local constant, or system parameter
+        if (parts.size() == 1)
+        {
+            mpComponent->getParameterValue(parts[0], value);
+        }
+        // Check if this is a local port.value pair
+        else if (parts.size() == 2)
+        {
+            mpComponent->getParameterValue(parts[0]+"#"+parts[1], value);
+            // Try system parameter
+            if (value.empty() && mpComponent->getSystemParent())
+            {
+                mpComponent->getSystemParent()->getParameterValue(parts[0], value);
+            }
+        }
+
+        if (!value.empty())
+        {
+            return value.toDouble(&rFound);
+        }
+        else
+        {
+            rFound = false;
+            return -1;
+        }
+    }
+
+    bool setExternalValue(string name, double value)
+    {
+        HString hname = name.c_str();
+
+        // First try registered data pointer
+        if (setRegistered(hname, value))
+        {
+            return true;
+        }
+
+        vector<HString> parts;
+        splitString(hname, '.', parts);
+
+        // Check if this is a local constant, or system parameter
+        bool didSet = false;
+        if (parts.size() == 1)
+        {
+            //! @todo speed this up by not looking every time (use data pointer)
+            didSet = mpComponent->setParameterValue(parts[0], to_hstring(value));
+            // Try system parameter
+            if (!didSet && mpComponent->getSystemParent() && mpComponent->getSystemParent()->hasParameter(parts[0]))
+            {
+                didSet= mpComponent->getSystemParent()->setParameterValue(parts[0], to_hstring(value));
+            }
+        }
+        // Check if this is a local port.value pair
+        else if (parts.size() == 2)
+        {
+            didSet = mpComponent->setParameterValue(parts[0]+"#"+parts[1], to_hstring(value));
+        }
+
+        return didSet;
+    }
+
+private:
+    Component *mpComponent;
+};
+
 namespace hopsan {
 
 class NumHopHelperPrivate
@@ -122,6 +245,7 @@ public:
     NumHopHelperPrivate() : mpHopsanAccess(0) {}
     numhop::VariableStorage mVarStorage;
     HopsanParameterAccess *mpHopsanAccess;
+    std::list<numhop::Expression> mExpressions;
 };
 
 }
@@ -131,6 +255,7 @@ public:
 NumHopHelper::NumHopHelper()
 {
     mpSystem = 0;
+    mpComponent = 0;
     mpPrivate = 0;
 #ifdef USENUMHOP
     mpPrivate = new NumHopHelperPrivate();
@@ -158,56 +283,120 @@ void NumHopHelper::setSystem(ComponentSystem *pSystem)
     {
         delete mpPrivate->mpHopsanAccess;
     }
-    mpPrivate->mpHopsanAccess = new HopsanParameterAccess(pSystem);
+    mpPrivate->mpHopsanAccess = new HopsanSystemAccess(pSystem);
     mpPrivate->mVarStorage.setExternalStorage(mpPrivate->mpHopsanAccess);
     mpPrivate->mVarStorage.setDisallowedInternalNameCharacters(".");
 #endif
 }
 
+void NumHopHelper::setComponent(Component *pComponent)
+{
+#ifdef USENUMHOP
+    mpComponent = pComponent;
+
+    if (mpPrivate->mpHopsanAccess)
+    {
+        delete mpPrivate->mpHopsanAccess;
+    }
+    mpPrivate->mpHopsanAccess = new HopsanComponentAccess(pComponent);
+    mpPrivate->mVarStorage.setExternalStorage(mpPrivate->mpHopsanAccess);
+    mpPrivate->mVarStorage.setDisallowedInternalNameCharacters(".");
+#endif
+}
+
+void NumHopHelper::registerDataPtr(const HString &name, double *pData)
+{
+    if (mpPrivate->mpHopsanAccess)
+    {
+        mpPrivate->mpHopsanAccess->registerDataPointer(name, pData);
+    }
+}
+
 bool NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput)
+{
+#ifdef USENUMHOP
+    if (interpretNumHopScript(script, doPrintOutput, rOutput))
+    {
+        if (doPrintOutput)
+        {
+            rOutput.append("\n");
+        }
+        return eval(doPrintOutput, rOutput);
+    }
+#else
+    rOutput = "Error: NumHop is not pressent!";
+#endif
+    mpPrivate->mExpressions.clear();
+    return false;
+}
+
+bool NumHopHelper::interpretNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput)
 {
 #ifdef USENUMHOP
     list<string> expressions;
     numhop::extractExpressionRows(script.c_str(), '#', expressions);
 
     mpPrivate->mVarStorage.clearInternalVariables();
+    mpPrivate->mExpressions.clear();
 
     bool allOK=true;
     for (list<string>::iterator it = expressions.begin(); it!=expressions.end(); ++it)
     {
-        numhop::Expression e;
-        bool interpretOK = numhop::interpretExpressionStringRecursive(*it, e);
+        mpPrivate->mExpressions.push_back(numhop::Expression());
+        bool interpretOK = numhop::interpretExpressionStringRecursive(*it, mpPrivate->mExpressions.back());
+        if (!interpretOK)
+        {
+            allOK = false;
+        }
+        if (doPrintOutput && !interpretOK)
+        {
+            rOutput.append("Interpreting FAILED in: ").append(it->c_str());
+            rOutput.append("\n");
+        }
+    }
+    // Remove the last newline
+    if (doPrintOutput)
+    {
+        rOutput.erase(rOutput.size()-1);
+    }
+    return allOK;
+#else
+    rOutput = "Error: NumHop is not pressent!";
+    return false;
+#endif
+}
+
+bool NumHopHelper::eval(bool doPrintOutput, HString &rOutput)
+{
+#ifdef USENUMHOP
+    bool allOK=true;
+    for (list<numhop::Expression>::iterator it = mpPrivate->mExpressions.begin(); it!=mpPrivate->mExpressions.end(); ++it)
+    {
+        numhop::Expression &e = *it;
         bool evalOK;
         double value = e.evaluate(mpPrivate->mVarStorage, evalOK);
-        if (!(interpretOK && evalOK))
+        if (!evalOK)
         {
             allOK = false;
         }
         if (doPrintOutput)
         {
-            if (interpretOK)
+            rOutput.append("Evaluated ");
+            if (evalOK)
             {
-                rOutput.append("Evaluated ");
-                if (evalOK)
-                {
-                    rOutput.append("OK    : ");
-                }
-                else
-                {
-                    rOutput.append("FAILED: ");
-                }
-                rOutput.append(e.print().c_str());
-                rOutput.append("     Value: ");
-                rOutput.append(to_hstring(value).c_str());
+                rOutput.append("OK    : ");
             }
             else
             {
-                rOutput.append("Interpreting FAILED in: ").append(it->c_str());
+                rOutput.append("FAILED: ");
             }
+            rOutput.append(e.print().c_str());
+            rOutput.append("     Value: ");
+            rOutput.append(to_hstring(value).c_str());
             rOutput.append("\n");
         }
     }
-    // remove the last newline
+    // Remove the last newline
     if (doPrintOutput)
     {
         rOutput.erase(rOutput.size()-1);
