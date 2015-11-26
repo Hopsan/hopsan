@@ -35,6 +35,8 @@
 #define COMPONENTSYSTEM_H
 
 #include "Component.h"
+#include "CoreUtilities/SimulationHandler.h"
+#include "CoreUtilities/AliasHandler.h"
 
 namespace tbb {
     class mutex;
@@ -42,139 +44,6 @@ namespace tbb {
 
 namespace hopsan {
     class NumHopHelper;
-
-    enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm, TaskStealingAlgorithm, ParallelForAlgorithm, ParallelForTbbAlgorithm, GroupedParallelForAlgorithm, RandomTaskPoolAlgorithm, OfflineReschedulingAlgorithm};
-
-    class ConnectionAssistant
-    {
-    public:
-        ConnectionAssistant(ComponentSystem *pComponentSystem);
-
-        bool mergeNodeConnection(Port *pPort1, Port *pPort2);
-        bool splitNodeConnection(Port *pPort1, Port *pPort2);
-
-        void determineWhereToStoreNodeAndStoreIt(Node* pNode);
-        void clearSysPortNodeTypeIfEmpty(Port *pPort);
-
-        bool ensureNotCrossConnecting(Port *pPort1, Port *pPort2);
-        bool ensureSameNodeType(Port *pPort1, Port *pPort2);
-        bool ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2);
-
-        Port* ifMultiportAddSubport(Port *pMaybeMultiport);
-        void ifMultiportPrepareDissconnect(Port *pMaybeMultiport1, Port *pMaybeMultiport2, Port *&rpActualPort1, Port *&rpActualPort2);
-
-        void ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, Port **ppActualPort, const bool wasSucess);
-        void ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port **ppActualPort, const bool wasSucess);
-
-    private:
-        class ConnOKCounters
-        {
-        public:
-            size_t nReadPorts;
-            size_t nWritePorts;
-            size_t nPowerPorts;
-            size_t nSystemPorts;
-            size_t nOwnSystemPorts; // Number of systemports that belong to the connecting system
-            size_t nInterfacePorts; // This can be system ports or other ports acting as interface ports in systems
-            //size_t nMultiPorts;
-
-            size_t nCComponents;
-            size_t nQComponents;
-            size_t nSYScomponentCs;
-            size_t nSYScomponentQs;
-
-            size_t nNonInterfaceQPowerPorts;
-            size_t nNonInterfaceCPowerPorts;
-
-            ConnOKCounters()
-            {
-                nReadPorts = 0;
-                nWritePorts = 0;
-                nPowerPorts = 0;
-                nSystemPorts = 0;
-                nOwnSystemPorts = 0;
-                nInterfacePorts = 0;
-                //nMultiPorts = 0;
-
-                nCComponents = 0;
-                nQComponents = 0;
-                nSYScomponentCs = 0;
-                nSYScomponentQs = 0;
-
-                nNonInterfaceQPowerPorts = 0;
-                nNonInterfaceCPowerPorts = 0;
-            }
-        };
-
-        void checkPort(const Port *pPort, ConnOKCounters &rCounters);
-        void removeNode(Node *pNode);
-        void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
-        Port* findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort);
-        ComponentSystem *mpComponentSystem; //The system to assist
-    };
-
-    class DLLIMPORTEXPORT AliasHandler
-    {
-    public:
-        AliasHandler(ComponentSystem *pSystem);
-        HString getVariableAlias(const HString &rCompName, const HString &rPortName, const HString &rVarName);
-        bool setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const HString &rVarName);
-        bool setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const int varId);
-        bool setParameterAlias(const HString &rAlias, const HString &rCompName, const HString &rParameterName);
-        void componentRenamed(const HString &rOldCompName, const HString &rNewCompName);
-        void portRenamed(const HString &rCompName, const HString &rOldPortName, const HString &rNewPortName);
-        void componentRemoved(const HString &rCompName);
-        void portRemoved(const HString &rCompName, const HString &rPortName);
-        bool hasAlias(const HString &rAlias);
-        bool removeAlias(const HString &rAlias);
-
-        std::vector<HString> getAliases() const;
-
-        void getVariableFromAlias(const HString &rAlias, HString &rCompName, HString &rPortName, int &rVarId);
-        void getVariableFromAlias(const HString &rAlias, HString &rCompName, HString &rPortName, HString &rVarName);
-        void getParameterFromAlias(const HString &rAlias, HString &rCompName, HString &rParameterName);
-
-    private:
-        enum {Parameter, Variable};
-        typedef struct _ParamOrVariable
-        {
-            int type;
-            HString componentName;
-            HString name;
-        } ParamOrVariableT;
-
-        typedef std::map<HString, ParamOrVariableT> AliasMapT;
-        AliasMapT mAliasMap;
-        ComponentSystem *mpSystem;
-    };
-
-    class DLLIMPORTEXPORT SimulationHandler
-    {
-    public:
-        enum SimulationErrorTypesT {NotRedy, InitFailed, SimuFailed, FiniFailed};
-
-        //! @todo a doitall function
-        //! @todo use the error enums
-        bool initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem);
-        bool initializeSystem(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
-
-        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
-        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
-
-        void finalizeSystem(ComponentSystem* pSystem);
-        void finalizeSystem(std::vector<ComponentSystem*> &rSystemVector);
-
-        void runCoSimulation(ComponentSystem *pSystem);
-
-    private:
-        bool simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
-        bool simulateMultipleSystems(const double stopT, std::vector<ComponentSystem*> &rSystemVector);
-
-        std::vector< std::vector<ComponentSystem*> > distributeSystems(const std::vector<ComponentSystem*> &rSystemVector, size_t nThreads);
-        void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector);
-
-        std::vector< std::vector<ComponentSystem*> > mSplitSystemVector;
-    };
 
     class DLLIMPORTEXPORT ComponentSystem :public Component
     {
