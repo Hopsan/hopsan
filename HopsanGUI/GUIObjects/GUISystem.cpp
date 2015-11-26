@@ -1081,7 +1081,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         this->setName(domElement.attribute(HMF_NAMETAG));
 
         // Load the NumHop script
-        mNumHopScript = parseDomStringNode(domElement.firstChildElement(HMF_NUMHOPSCRIPT), "");
+        setNumHopScript(parseDomStringNode(domElement.firstChildElement(HMF_NUMHOPSCRIPT), ""));
 
         // Begin loading GUI stuff like appearance data and viewport
         QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);

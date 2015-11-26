@@ -120,7 +120,8 @@ namespace hopsan {
         void loadParameters(const SetParametersMapT &rParameterMap);
 
         // NumHop script
-        void runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput);
+        bool runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput);
+        void setNumHopScript(const HString &rScript);
 
         // Initialize and simulate
         bool checkModelBeforeSimulation();
@@ -188,6 +189,7 @@ namespace hopsan {
         SubComponentMapT mSubComponentMap;
 
         NumHopHelper *mpNumHopHelper;
+        HString mNumHopScript;
 
     private:
         //==========Private functions==========

@@ -1010,6 +1010,11 @@ bool ContainerObject::renameParameter(const QString oldName, const QString newNa
 void ContainerObject::setNumHopScript(const QString &rScript)
 {
     mNumHopScript = rScript;
+    CoreSystemAccess *pCoreSys = getCoreSystemAccessPtr();
+    if (pCoreSys)
+    {
+        pCoreSys->setNumHopScript(mNumHopScript);
+    }
 }
 
 QString ContainerObject::getNumHopScript() const

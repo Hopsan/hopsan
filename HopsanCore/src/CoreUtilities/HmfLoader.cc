@@ -406,6 +406,9 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     // Load system parameters (needed before objects are loaded as they may be using sys-parameters)
     loadSystemParameters(pSysNode, pSystem);
 
+    // Load NumHop script
+    pSystem->setNumHopScript(readStringNodeValue(pSysNode->first_node("numhopscript"), "").c_str());
+
     // Load contents
     rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");
     if (pObjects)

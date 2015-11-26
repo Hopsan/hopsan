@@ -202,6 +202,7 @@ public:
     QStringList getModelAssets() const;
 
     void runNumHopScript(const QString &rScript, bool printOutput, QString &rOutput);
+    void setNumHopScript(const QString &rScript);
 
     // Alias functions
     bool setVariableAlias(QString compName, QString portName, QString varName, QString alias);

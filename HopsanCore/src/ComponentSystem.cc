@@ -1930,7 +1930,7 @@ void ComponentSystem::loadParameters(const SetParametersMapT &rParameterMap)
     }
 }
 
-void ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput)
+bool ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput)
 {
     // Create if helper does not already exist
     if (!mpNumHopHelper)
@@ -1938,7 +1938,12 @@ void ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, 
         mpNumHopHelper = new NumHopHelper();
         mpNumHopHelper->setSystem(this);
     }
-    mpNumHopHelper->evalNumHopScript(rScript, printOutput, rOutput);
+    return mpNumHopHelper->evalNumHopScript(rScript, printOutput, rOutput);
+}
+
+void ComponentSystem::setNumHopScript(const HString &rScript)
+{
+    mNumHopScript = rScript;
 }
 
 
@@ -2003,6 +2008,18 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         if(!mKeepStartValues)
         {
             loadStartValues();
+        }
+    }
+
+    // If we have a numhop script, then now is the time to run it, so that we can use it to set some startvalues (based on others set in loadStartValues()
+    if (!mNumHopScript.empty())
+    {
+        HString dummy;
+        bool evalOK = runNumHopScript(mNumHopScript, true, dummy);
+        if (!evalOK)
+        {
+            addErrorMessage("Num script evaluation failed: "+dummy);
+            return false;
         }
     }
 

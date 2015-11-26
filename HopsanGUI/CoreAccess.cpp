@@ -727,6 +727,11 @@ void CoreSystemAccess::runNumHopScript(const QString &rScript, bool printOutput,
     rOutput = QString::fromLocal8Bit(output.c_str());
 }
 
+void CoreSystemAccess::setNumHopScript(const QString &rScript)
+{
+   mpCoreComponentSystem->setNumHopScript(rScript.toStdString().c_str());
+}
+
 bool CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
     return mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString().c_str(), compName.toStdString().c_str(),
