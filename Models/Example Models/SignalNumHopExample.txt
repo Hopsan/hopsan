@@ -1,0 +1,7 @@
+# Example script for SignalNumHopSISO
+# "in" represents the signal component inputVariable
+# "out" represents the signal component outputVariable
+
+b=2
+a = 2 * b
+out = a * in +3
