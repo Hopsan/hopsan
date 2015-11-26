@@ -1168,89 +1168,79 @@ void ComponentSystem::deleteSystemPort(const HString &rName)
 //! @brief Set the type C, Q, or S of the subsystem
 void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
 {
-    //! @todo should really try to figure out a better way to do this
-    //! @todo need to do error checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
-
-    //If type same as before do nothing
-    //if (cqs_type !=  mTypeCQS)
-    //{
-        // If we have a system parent, then tell it to change our CQS type
-        if ( !this->isTopLevelSystem() && !doOnlyLocalSet )
+    // If we have a system parent, then tell it to change our CQS type
+    if ( !this->isTopLevelSystem() && !doOnlyLocalSet )
+    {
+        //Request change by our parent (some parent changes are needed)
+        mpSystemParent->changeSubComponentSystemTypeCQS(mName, cqs_type);
+    }
+    else
+    {
+        switch (cqs_type)
         {
-            //Request change by our parent (some parent changes are needed)
-            mpSystemParent->changeSubComponentSystemTypeCQS(mName, cqs_type);
-        }
-        else
-        {
-            switch (cqs_type)
+        case Component::CType :
+            mTypeCQS = Component::CType;
+            for(size_t i=0; i<mPortPtrVector.size(); ++i)   //C-type, create start node for all power ports
             {
-            case Component::CType :
-                mTypeCQS = Component::CType;
-                for(size_t i=0; i<mPortPtrVector.size(); ++i)   //C-type, create start node for all power ports
+                if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
                 {
-                    if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
+                    Node *pStartNode = mPortPtrVector[i]->getStartNodePtr();
+                    if (!pStartNode || pStartNode->getNodeType() == "NodeEmpty")
                     {
-                        Node *pStartNode = mPortPtrVector[i]->getStartNodePtr();
-                        if (!pStartNode || pStartNode->getNodeType() == "NodeEmpty")
-                        {
-                            mPortPtrVector[i]->createStartNode(mPortPtrVector[i]->getNodeType());
-                        }
+                        mPortPtrVector[i]->createStartNode(mPortPtrVector[i]->getNodeType());
                     }
                 }
-                break;
-
-            case Component::QType :
-                mTypeCQS = Component::QType;
-                for(size_t i=0; i<mPortPtrVector.size(); ++i)   //Q-type, remove start node for all powerports
-                {
-                    if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
-                    {
-                        mPortPtrVector[i]->eraseStartNode();
-                    }
-                }
-                break;
-
-            case Component::SType :
-                mTypeCQS = Component::SType;
-                for(size_t i=0; i<mPortPtrVector.size(); ++i)   //S-type, remove start node for all powerports
-                {
-                    if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
-                    {
-                        mPortPtrVector[i]->eraseStartNode();
-                    }
-                }
-                break;
-
-            case Component::UndefinedCQSType :
-                mTypeCQS = Component::UndefinedCQSType;
-                break;
-
-            default :
-                addWarningMessage("Specified type: "+getTypeCQSString()+" does not exist!, System CQStype unchanged");
             }
+            break;
+
+        case Component::QType :
+            mTypeCQS = Component::QType;
+            for(size_t i=0; i<mPortPtrVector.size(); ++i)   //Q-type, remove start node for all powerports
+            {
+                if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
+                {
+                    mPortPtrVector[i]->eraseStartNode();
+                }
+            }
+            break;
+
+        case Component::SType :
+            mTypeCQS = Component::SType;
+            for(size_t i=0; i<mPortPtrVector.size(); ++i)   //S-type, remove start node for all powerports
+            {
+                if(mPortPtrVector[i]->getInternalPortType() == PowerPortType)
+                {
+                    mPortPtrVector[i]->eraseStartNode();
+                }
+            }
+            break;
+
+        case Component::UndefinedCQSType :
+            mTypeCQS = Component::UndefinedCQSType;
+            break;
+
+        default :
+            addWarningMessage("Specified type: "+getTypeCQSString()+" does not exist!, System CQStype unchanged");
         }
-   //}
+    }
 }
 
-//! @brief Change the cqs type of a stored subsystem component
+//! @brief Change the CQS type of a stored subsystem component
 bool ComponentSystem::changeSubComponentSystemTypeCQS(const HString &rName, const CQSEnumT newType)
 {
-    //First get the componentsystem ptr and check if we are requesting new type
-    ComponentSystem* tmpptr = getSubComponentSystem(rName);
-    if (tmpptr != 0)
+    //First get a pointer to the system component
+    ComponentSystem* pSubSystem = getSubComponentSystem(rName);
+    if (pSubSystem)
     {
-        // If the ptr was not = 0 then we have found a subsystem, lets change the type
-        //if (newType != tmpptr->getTypeCQS())
-        //{
-            //Remove old version
-            this->removeSubComponentPtrFromStorage(tmpptr);
+        //Remove current pointer
+        removeSubComponentPtrFromStorage(pSubSystem);
 
-            //Change cqsType locally in the subcomponent, make sure to set true to avoid looping back to this rename
-            tmpptr->setTypeCQS(newType, true);
+        //Change cqsType locally in the subcomponent, make sure to set true to avoid looping back to this rename
+        pSubSystem->setTypeCQS(newType, true);
 
-            //re-add to system
-            this->addSubComponentPtrToStorage(tmpptr);
-        //}
+        //re-add to pointer system
+        addSubComponentPtrToStorage(pSubSystem);
+
         return true;
     }
     return false;
@@ -1488,22 +1478,6 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
     {
         mpComponentSystem->addFatalMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): No system found!");
     }
-
-//    //! @todo what if we are connecting only subsystems within the same level AND they have different timesteps
-//    if (pMinLevelComp==0)
-//    {
-//        mpComponentSystem->addSubNode(pNode);
-//    }
-//    else if (pMinLevelComp->isComponentSystem())
-//    {
-//        // If minimum level component is a system (we are connecting to our system parant), dyncast the pointer
-//        ComponentSystem *pParentSystem = dynamic_cast<ComponentSystem*>(pMinLevelComp);
-//        pParentSystem->addSubNode(pNode);
-//    }
-//    else
-//    {
-//        pMinLevelComp->getSystemParent()->addSubNode(pNode);
-//    }
 }
 
 void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode)
@@ -1580,7 +1554,7 @@ ConnectionAssistant::ConnectionAssistant(ComponentSystem *pComponentSystem)
     mpComponentSystem = pComponentSystem;
 }
 
-//! Helpfunction that clears the nodetype in empty systemports, It will not clear the type if the port is not empty or if the port is not a systemport
+//! @brief Helpfunction that clears the nodetype in empty systemports, It will not clear the type if the port is not empty or if the port is not a systemport
 void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 {
     if ( pPort && (pPort->getPortType() == SystemPortType) && (!pPort->isConnected()) )
@@ -1709,10 +1683,11 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
-    // Update the CQS type
+    // Update the CQS type, we need to run this always even if not directly connecting to a systemport
+    // In some cases the port we are connecting to may be indirectly connected to the systemport
     this->determineCQSType();
 
-    // Update parent cqs-type
+    // Also Update parent CQS-type
     //! @todo we should only do this if we are actually connected directly to our parent, but I don't know what will take the most time, to check if we are connected to parent or to just refresh parent
     if (!this->isTopLevelSystem())
     {
@@ -1727,81 +1702,12 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
 bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 {
-//    size_t nReadPorts = 0;
-//    size_t nWritePorts = 0;
-//    size_t nPowerPorts = 0;
-//    size_t nSystemPorts = 0;
-//    size_t nOwnSystemPorts = 0; // Number of systemports that belong to the connecting system
-//    size_t nInterfacePorts = 0; // This can be system ports or other ports acting as interface ports in systems
-//    //size_t n_MultiPorts = 0;
-
-//    size_t nCComponents = 0;
-//    size_t nQComponents = 0;
-//    size_t nSYScomponentCs = 0;
-//    size_t nSYScomponentQs = 0;
-
-//    size_t nNonInterfaceQPowerPorts = 0;
-//    size_t nNonInterfaceCPowerPorts = 0;
     ConnOKCounters counters;
 
-    //Count the different kind of ports and C,Q components in the node
+    // Count the different kind of ports and C,Q components in the node
     vector<Port*>::iterator it;
-    for (it=(*pNode).mConnectedPorts.begin(); it!=(*pNode).mConnectedPorts.end(); ++it)
+    for (it=pNode->mConnectedPorts.begin(); it!=pNode->mConnectedPorts.end(); ++it)
     {
-//        if ((*it)->isInterfacePort())
-//        {
-//            counters.nInterfacePorts += 1;
-//        }
-
-//        if ((*it)->getPortType() == ReadPortType)
-//        {
-//            counters.nReadPorts += 1;
-//        }
-//        else if ((*it)->getPortType() == WritePortType)
-//        {
-//            counters.nWritePorts += 1;
-//        }
-//        else if ((*it)->getPortType() == PowerPortType)
-//        {
-//            counters.nPowerPorts += 1;
-//            if ((*it)->getComponent()->isComponentC())
-//            {
-//                counters.nNonInterfaceCPowerPorts += 1;
-//            }
-//            else if ((*it)->getComponent()->isComponentQ())
-//            {
-//                counters.nNonInterfaceQPowerPorts += 1;
-//            }
-//        }
-//        else if ((*it)->getPortType() == SystemPortType)
-//        {
-//            counters.nSystemPorts += 1;
-//            if ((*it)->getComponent() == mpComponentSystem)
-//            {
-//                counters.nOwnSystemPorts += 1;
-//            }
-//        }
-////        else if((*it)->getPortType() > MULTIPORT)
-////        {
-////            counters.n_MultiPorts += 1;
-////        }
-//        if ((*it)->getComponent()->isComponentC())
-//        {
-//            counters.nCComponents += 1;
-//            if ((*it)->getComponent()->isComponentSystem())
-//            {
-//                counters.nSYScomponentCs += 1;
-//            }
-//        }
-//        else if ((*it)->getComponent()->isComponentQ())
-//        {
-//            counters.nQComponents += 1;
-//            if ((*it)->getComponent()->isComponentSystem())
-//            {
-//                counters.nSYScomponentQs += 1;
-//            }
-//        }
-
         checkPort(*it, counters);
 
         // Also count how many own systemports are already connected
@@ -1820,110 +1726,12 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     if ( !pNode->isConnectedToPort(pPort1) )
     {
         checkPort(pPort1, counters);
-//        if (pPort1->isInterfacePort())
-//        {
-//            nInterfacePorts += 1;
-//        }
-
-//        if ( pPort1->getPortType() == ReadPortType )
-//        {
-//            nReadPorts += 1;
-//        }
-//        if ( pPort1->getPortType() == WritePortType )
-//        {
-//            nWritePorts += 1;
-//        }
-//        if ( pPort1->getPortType() == PowerPortType )
-//        {
-//            nPowerPorts += 1;
-//            //if ((*it)->getComponent()->isComponentC())
-//            if (pPort1->getComponent()->isComponentC())
-//            {
-//                nNonInterfaceCPowerPorts += 1;
-//            }
-//            //else if ((*it)->getComponent()->isComponentQ())
-//            else if (pPort2->getComponent()->isComponentQ())
-//            {
-//                nNonInterfaceQPowerPorts += 1;
-//            }
-//        }
-//        if ( pPort1->getPortType() == SystemPortType )
-//        {
-//            nSystemPorts += 1;
-//        }
-////        if( pPort1->getPortType() > MULTIPORT)
-////        {
-////            n_MultiPorts += 1;
-////        }
-//        if ( pPort1->getComponent()->isComponentC() )
-//        {
-//            nCComponents += 1;
-//            if ( pPort1->getComponent()->isComponentSystem() )
-//            {
-//                nSYScomponentCs += 1;
-//            }
-//        }
-//        if ( pPort1->getComponent()->isComponentQ() )
-//        {
-//            nQComponents += 1;
-//            if ( pPort1->getComponent()->isComponentSystem() )
-//            {
-//                nSYScomponentQs += 1;
-//            }
-//        }
     }
 
     //Don't count port if it is already connected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort2) )
     {
         checkPort(pPort2, counters);
-//        if (pPort2->isInterfacePort())
-//        {
-//            nInterfacePorts += 1;
-//        }
-
-//        if ( pPort2->getPortType() == ReadPortType )
-//        {
-//            nReadPorts += 1;
-//        }
-//        if ( pPort2->getPortType() == WritePortType )
-//        {
-//            nWritePorts += 1;
-//        }
-//        if ( pPort2->getPortType() == PowerPortType )
-//        {
-//            nPowerPorts += 1;
-//            //if ((*it)->getComponent()->isComponentC())
-//            if (pPort2->getComponent()->isComponentC())
-//            {
-//                nNonInterfaceCPowerPorts += 1;
-//            }
-//            //else if ((*it)->getComponent()->isComponentQ())
-//            else if (pPort2->getComponent()->isComponentQ())
-//            {
-//                nNonInterfaceQPowerPorts += 1;
-//            }
-//        }
-//        if ( pPort2->getPortType() == SystemPortType )
-//        {
-//            nSystemPorts += 1;
-//        }
-//        if ( pPort2->getComponent()->isComponentC() )
-//        {
-//            nCComponents += 1;
-//            if ( pPort2->getComponent()->isComponentSystem() )
-//            {
-//                nSYScomponentCs += 1;
-//            }
-//        }
-//        if ( pPort2->getComponent()->isComponentQ() )
-//        {
-//            nQComponents += 1;
-//            if ( pPort2->getComponent()->isComponentSystem() )
-//            {
-//                nSYScomponentQs += 1;
-//            }
-//        }
     }
 
     //  Check if there are some problems with the connection
@@ -2226,10 +2034,10 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
             disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort2);
             //! @todo maybe incorporate the clear checks into delete node and unmerge
 
-            //Update the CQS type
+            // Update the CQS type, we need to run this always even if not directly connecting to a systemport
+            // In some cases the port we are connecting to may be indirectly connected to the systemport
             this->determineCQSType();
-
-            //Update parent cqs-type
+            // Also update parent CQS-type
             //! @todo we should only do this if we are actually connected directly to our parent, but I don't know what will take the most time, to check if we are connected to parent or to just always refresh parent
             if (!this->isTopLevelSystem())
             {
