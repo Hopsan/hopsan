@@ -940,20 +940,7 @@ void Connector::setActive()
     connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if( !isDangling() || isBroken() )
     {
-        // Decide which pen to use
-        QPen pen = mpConnectorAppearance->getPen("Active");
-        if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
-        {
-            pen.setDashPattern(QVector<double>() << 1.5 << 3.5);
-            pen.setStyle(Qt::CustomDashLine);
-        }
-
-        // Set pen for all lines
-        for (int i=0; i<mpLines.size(); ++i )
-        {
-            mpLines[i]->setPen(pen);
-            //mpLines[i]->setSelected(true);         //???
-        }
+        refreshPen("Active");
         mIsActive = true;
     }
     this->setZValue(ConnectorZValue);
@@ -972,28 +959,11 @@ void Connector::setPassive()
     if(!isDangling() || isBroken())
     {
         mIsActive = false;
-
-        // Decide pen
-        QPen pen;
-        if(!isConnected() && !isBroken())
+        refreshPen("Passive");
+        // Deactivate lines
+        for (ConnectorLine *pLine : mpLines )
         {
-            pen = mpConnectorAppearance->getPen("NonFinished");
-        }
-        else
-        {
-            pen = mpConnectorAppearance->getPen("Primary");
-        }
-        if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
-        {
-            pen.setDashPattern(QVector<double>() << 1.5 << 3.5);
-            pen.setStyle(Qt::CustomDashLine);
-        }
-
-        // Set pen for all lines
-        for (int i=0; i<mpLines.size(); ++i )
-        {
-            mpLines[i]->setPen(pen);
-            mpLines[i]->setSelected(false);       //OBS! Kanske inte blir bra...
+            pLine->setSelected(false);
         }
     }
     this->setZValue(ConnectorZValue);
@@ -1010,17 +980,7 @@ void Connector::setHovered()
 {
     if( (!isDangling() || isBroken()) && !mIsActive)
     {
-        QPen pen = mpConnectorAppearance->getPen("Hover");
-        if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
-        {
-            pen.setDashPattern(QVector<double>() << 1.5 << 3.5);
-            pen.setStyle(Qt::CustomDashLine);
-        }
-
-        for (int i=0; i<mpLines.size(); ++i)
-        {
-            mpLines[i]->setPen(pen);
-        }
+        refreshPen("Hover");
     }
 }
 
@@ -1125,7 +1085,7 @@ void Connector::determineAppearance()
     }
 
     //Run this to actually change the pen
-    this->setPassive();
+    refreshPen();
 }
 
 //! @brief Redraws the connector after redetermining what appearance to use
@@ -1133,6 +1093,64 @@ void Connector::refreshConnectorAppearance()
 {
     determineAppearance();
     drawConnector();
+}
+
+void Connector::refreshPen(const QString &type)
+{
+    // Decide which pen to use
+    QPen pen;
+    if (type == "Active")
+    {
+        pen = mpConnectorAppearance->getPen("Active");
+    }
+    else if (type == "Passive")
+    {
+        // Decide pen
+        if(!isConnected() && !isBroken())
+        {
+            pen = mpConnectorAppearance->getPen("NonFinished");
+        }
+        else
+        {
+            pen = mpConnectorAppearance->getPen("Primary");
+        }
+
+    }
+    else if (type == "Hover")
+    {
+        pen = mpConnectorAppearance->getPen("Hover");
+    }
+
+    // Dashed or not
+    if (mpConnectorAppearance->getStyle() != SignalConnectorStyle)
+    {
+        if(mIsDashed)
+        {
+            pen.setDashPattern(QVector<double>() << 1.5 << 3.5);
+            pen.setStyle(Qt::CustomDashLine);
+        }
+        else
+        {
+            pen.setStyle(Qt::SolidLine);
+        }
+    }
+    // Set pen for all lines
+    for (ConnectorLine *pLine : mpLines )
+    {
+        pLine->setPen(pen);
+    }
+}
+
+void Connector::refreshPen()
+{
+    if (mIsActive)
+    {
+        refreshPen("Active");
+    }
+    else
+    {
+        refreshPen("Passive");
+    }
 }
 
 
@@ -1157,32 +1175,21 @@ void Connector::setDashed(bool value)
     if(mpConnectorAppearance->getStyle() == SignalConnectorStyle)
         return;
 
-    mpParentContainerObject->mpModelWidget->hasChanged();
     mIsDashed=value;
-    for(int i=0; i<mpLines.size(); ++i)
-    {
-        QPen tempPen = mpLines.at(i)->pen();
-        if(value)
-        {
-            tempPen.setDashPattern(QVector<double>() << 1.5 << 3.5);
-            tempPen.setStyle(Qt::CustomDashLine);
-        }
-        else
-            tempPen.setStyle(Qt::SolidLine);
-        mpLines.at(i)->setPen(tempPen);
-    }
+    refreshPen();
+    mpParentContainerObject->mpModelWidget->hasChanged();
 }
 
 
 void Connector::setVisible(bool visible)
 {
-    for(int i=0; i<mpLines.size(); ++i)
+    for(ConnectorLine *pLine : mpLines)
     {
-        mpLines.at(i)->setVisible(visible);
+        pLine->setVisible(visible);
     }
 }
 
-//! @brief Helpfunction to setup points and create line segments, if all points are already known, old lines will be removed
+//! @brief Help function to setup points and create line segments, if all points are already known, old lines will be removed
 void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QStringList &rGeometries)
 {
     // First clear any old lines, points and geometries

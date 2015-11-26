@@ -88,8 +88,8 @@ public:
     bool isFirstAndLastDiagonal();
     ConnectorGeometryEnumT getGeometry(const int lineNumber);
 
-    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     void refreshConnectorAppearance();
+    void refreshPen();
 
     bool isConnected();
     bool isMakingDiagonal() const;
@@ -132,6 +132,7 @@ signals:
     void connectionFinished();
 
 private:
+    void refreshPen(const QString &type);
     void determineAppearance();
     void refreshConnectedSystemportsGraphics();
     void disconnectPortSigSlots(Port* pPort);
