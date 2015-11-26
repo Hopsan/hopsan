@@ -176,16 +176,16 @@ public:
         if (parts.size() == 1)
         {
             mpComponent->getParameterValue(parts[0], value);
-        }
-        // Check if this is a local port.value pair
-        else if (parts.size() == 2)
-        {
-            mpComponent->getParameterValue(parts[0]+"#"+parts[1], value);
             // Try system parameter
             if (value.empty() && mpComponent->getSystemParent())
             {
                 mpComponent->getSystemParent()->getParameterValue(parts[0], value);
             }
+        }
+        // Check if this is a local port.value pair
+        else if (parts.size() == 2)
+        {
+            mpComponent->getParameterValue(parts[0]+"#"+parts[1], value);
         }
 
         if (!value.empty())
@@ -312,7 +312,7 @@ void NumHopHelper::registerDataPtr(const HString &name, double *pData)
     }
 }
 
-bool NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput)
+bool NumHopHelper::evalNumHopScript(const HString &script, double &rValue, bool doPrintOutput, HString &rOutput)
 {
 #ifdef USENUMHOP
     if (interpretNumHopScript(script, doPrintOutput, rOutput))
@@ -321,7 +321,7 @@ bool NumHopHelper::evalNumHopScript(const HString &script, bool doPrintOutput, H
         {
             rOutput.append("\n");
         }
-        return eval(doPrintOutput, rOutput);
+        return eval(rValue, doPrintOutput, rOutput);
     }
 #else
     rOutput = "Error: NumHop is not pressent!";
@@ -366,15 +366,16 @@ bool NumHopHelper::interpretNumHopScript(const HString &script, bool doPrintOutp
 #endif
 }
 
-bool NumHopHelper::eval(bool doPrintOutput, HString &rOutput)
+bool NumHopHelper::eval(double &rValue, bool doPrintOutput, HString &rOutput)
 {
 #ifdef USENUMHOP
     bool allOK=true;
+    double value;
     for (list<numhop::Expression>::iterator it = mpPrivate->mExpressions.begin(); it!=mpPrivate->mExpressions.end(); ++it)
     {
         numhop::Expression &e = *it;
         bool evalOK;
-        double value = e.evaluate(mpPrivate->mVarStorage, evalOK);
+        value = e.evaluate(mpPrivate->mVarStorage, evalOK);
         if (!evalOK)
         {
             allOK = false;
@@ -401,6 +402,7 @@ bool NumHopHelper::eval(bool doPrintOutput, HString &rOutput)
     {
         rOutput.erase(rOutput.size()-1);
     }
+    rValue = value;
     return allOK;
 #else
     rOutput = "Error: NumHop is not pressent!";

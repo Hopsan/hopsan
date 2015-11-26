@@ -233,17 +233,17 @@ Expression::Expression(const std::string &exprString, ExpressionOperatorT op)
 
     if (mOperator == ValueT)
     {
-        mIsValue = true;
+        mHasValue = true;
     }
     else
     {
         interpretExpressionStringRecursive(mRightExpressionString, mRightChildExpressions);
         // If child expression is a value, then move the value into this expression
-        if (mRightChildExpressions.size() == 1 && mRightChildExpressions.front().isValue())
+        if (mRightChildExpressions.size() == 1 && mRightChildExpressions.front().operatorType()==ValueT)
         {
             mRightExpressionString = mRightChildExpressions.front().rightExprString();
             mRightChildExpressions.clear();
-            mIsValue = true;
+            mHasValue = true;
         }
     }
 }
@@ -290,7 +290,7 @@ Expression &Expression::operator=(const Expression &other)
 //! @brief Check if this expression is empty
 bool Expression::empty() const
 {
-    if (isValue())
+    if (hasValue())
     {
         return mRightExpressionString.empty();
     }
@@ -300,17 +300,17 @@ bool Expression::empty() const
     }
 }
 
-//! @brief Check if this expression represents a value or variable
-bool Expression::isValue() const
+//! @brief Check if this expression has a value or variable in its right expression string
+bool Expression::hasValue() const
 {
-    return mIsValue;
+    return mHasValue;
 }
 
 //! @brief Check if this expression represents a constant value
 //! @note Evaluate must have been called at least once before this function returns a relevant value
-bool Expression::isConstantValue() const
+bool Expression::hasConstantValue() const
 {
-    return mIsConstantValue;
+    return mHasConstantValue;
 }
 
 //! @brief Returns the (right hand side) expression string (without outer parenthesis)
@@ -347,14 +347,14 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
     double value=0;
 
     // If this is a constant value, then return it
-    if (mIsConstantValue)
+    if (mHasConstantValue)
     {
         // We take a shortcut here and return immediately
         rEvalOK = true;
         return mConstantValue;
     }
     // If this expression contains a value then evaluate it
-    else if (mIsValue)
+    else if (mHasValue)
     {
         lhsOK=true;
         char* pEnd;
@@ -368,7 +368,7 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
         {
             // If we could evaluate the string directly then this is a constant value
             // we can remember that so that the next evaluation is faster
-            mIsConstantValue = true;
+            mHasConstantValue = true;
             mConstantValue = value;
         }
     }
@@ -458,7 +458,7 @@ std::string Expression::print()
         }
         fullexp = l+"^"+r;
     }
-    else if (mIsValue)
+    else if (mHasValue)
     {
         fullexp = mRightExpressionString;
         if (mHadRightOuterParanthesis)
@@ -504,8 +504,8 @@ void Expression::commonConstructorCode()
     mOperator = UndefinedT;
     mHadRightOuterParanthesis = false;
     mHadLeftOuterParanthesis = false;
-    mIsValue = false;
-    mIsConstantValue = false;
+    mHasValue = false;
+    mHasConstantValue = false;
     mConstantValue = 0;
 }
 
@@ -520,8 +520,8 @@ void Expression::copyFromOther(const Expression &other)
     mRightChildExpressions = other.mRightChildExpressions;
     mLeftExpressionString = other.mLeftExpressionString;
     mRightExpressionString = other.mRightExpressionString;
-    mIsValue = other.mIsValue;
-    mIsConstantValue = other.mIsConstantValue;
+    mHasValue = other.mHasValue;
+    mHasConstantValue = other.mHasConstantValue;
     mConstantValue = other.mConstantValue;
 }
 

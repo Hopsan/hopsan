@@ -1938,7 +1938,8 @@ bool ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, 
         mpNumHopHelper = new NumHopHelper();
         mpNumHopHelper->setSystem(this);
     }
-    return mpNumHopHelper->evalNumHopScript(rScript, printOutput, rOutput);
+    double dummy;
+    return mpNumHopHelper->evalNumHopScript(rScript, dummy, printOutput, rOutput);
 }
 
 void ComponentSystem::setNumHopScript(const HString &rScript)

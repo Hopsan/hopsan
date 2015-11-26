@@ -41,12 +41,11 @@ public:
 
     void initialize()
     {
-        mScriptFile.c_str();
         HString filepath = findFilePath(mScriptFile);
-
         std::ifstream is(filepath.c_str());
         std::string script;
-        if (is.is_open())
+
+        if (!mScriptFile.empty() && is.is_open())
         {
             while (!is.eof())
             {
@@ -82,7 +81,8 @@ public:
         // Note! Read and Write to nodes is handled internally in NumHopHelper (due to registered pointers)
 
         HString dummy;
-        bool evalOK = mpNumHop->eval(false, dummy);
+        double dummy2;
+        bool evalOK = mpNumHop->eval(dummy2, false, dummy);
         if (!evalOK)
         {
             stopSimulation("NumHop evaluation failed");

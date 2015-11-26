@@ -20,9 +20,9 @@ public:
 
     void registerDataPtr(const HString &name, double *pData);
 
-    bool evalNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput);
+    bool evalNumHopScript(const HString &script, double &rValue, bool doPrintOutput, HString &rOutput);
     bool interpretNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput);
-    bool eval(bool doPrintOutput, HString &rOutput);
+    bool eval(double &rValue, bool doPrintOutput, HString &rOutput);
 
 private:
     ComponentSystem *mpSystem;

@@ -20,8 +20,8 @@ public:
     Expression& operator= (const Expression &other);
 
     bool empty() const;
-    bool isValue() const;
-    bool isConstantValue() const;
+    bool hasValue() const;
+    bool hasConstantValue() const;
 
     const std::string &exprString() const;
     const std::string &leftExprString() const;
@@ -39,7 +39,7 @@ protected:
     std::string mLeftExpressionString, mRightExpressionString;
     bool mHadLeftOuterParanthesis, mHadRightOuterParanthesis;
     std::list<Expression> mLeftChildExpressions, mRightChildExpressions;
-    bool mIsValue, mIsConstantValue;
+    bool mHasValue, mHasConstantValue;
     double mConstantValue;
     ExpressionOperatorT mOperator;
 };
