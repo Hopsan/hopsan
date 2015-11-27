@@ -287,8 +287,8 @@ int main(int argc, char* argv[])
                             std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads  << endl;
                             workerMap.insert({uid, {requestNumThreads, processInformation}});
 
-                            replymsg_ReplyServerSlots_t msg = {workerPort};
-                            sendMessage<replymsg_ReplyServerSlots_t>(socket, ReplyServerSlots, msg);
+                            ReplymsgReplyServerSlots msg = {workerPort};
+                            sendMessage<ReplymsgReplyServerSlots>(socket, ReplyServerSlots, msg);
                             nTakenSlots++;
                         }
 

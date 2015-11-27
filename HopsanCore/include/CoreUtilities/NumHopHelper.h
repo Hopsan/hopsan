@@ -2,6 +2,7 @@
 #define NUMHOPHELPER_H
 
 #include "HopsanTypes.h"
+#include "win32dll.h"
 
 namespace hopsan {
 
@@ -9,7 +10,7 @@ class Component;
 class ComponentSystem;
 class NumHopHelperPrivate;
 
-class NumHopHelper
+class DLLIMPORTEXPORT NumHopHelper
 {
 public:
     NumHopHelper();
