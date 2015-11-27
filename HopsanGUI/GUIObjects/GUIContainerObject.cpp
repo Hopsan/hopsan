@@ -1546,15 +1546,17 @@ void ContainerObject::paste(CopyStack *xmlStack)
     while(!objectElement.isNull())
     {
         ModelObject *pObj = loadModelObject(objectElement, this);
-
+        if (pObj)
+        {
             //Apply offset to pasted object
-        QPointF oldPos = pObj->pos();
-        pObj->moveBy(xOffset, yOffset);
-        mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+            QPointF oldPos = pObj->pos();
+            pObj->moveBy(xOffset, yOffset);
+            mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
 
-        renameMap.insert(objectElement.attribute(HMF_NAMETAG), pObj->getName());
-        //objectElement.setAttribute("name", renameMap.find(objectElement.attribute(HMF_NAMETAG)).value());
-        objectElement = objectElement.nextSiblingElement("component");
+            renameMap.insert(objectElement.attribute(HMF_NAMETAG), pObj->getName());
+            //objectElement.setAttribute("name", renameMap.find(objectElement.attribute(HMF_NAMETAG)).value());
+            objectElement = objectElement.nextSiblingElement("component");
+        }
     }
 
         // Paste subsystems
@@ -1563,13 +1565,16 @@ void ContainerObject::paste(CopyStack *xmlStack)
     while (!systemElement.isNull())
     {
         ModelObject* pObj = loadModelObject(systemElement, this, Undo);
-        renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
-        systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
+        if (pObj)
+        {
+            renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
 
             //Apply offset to pasted object
-        QPointF oldPos = pObj->pos();
-        pObj->moveBy(xOffset, yOffset);
-        mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+            QPointF oldPos = pObj->pos();
+            pObj->moveBy(xOffset, yOffset);
+            mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+        }
+        systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
     }
 
         // Paste container ports
@@ -1577,13 +1582,16 @@ void ContainerObject::paste(CopyStack *xmlStack)
     while (!systemPortElement.isNull())
     {
         ModelObject* pObj = loadContainerPortObject(systemPortElement, this, Undo);
-        renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
-        systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
+        if (pObj)
+        {
+            renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
 
             //Apply offset to pasted object
-        QPointF oldPos = pObj->pos();
-        pObj->moveBy(xOffset, yOffset);
-        mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+            QPointF oldPos = pObj->pos();
+            pObj->moveBy(xOffset, yOffset);
+            mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+        }
+        systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
     }
 
         //Paste connectors
@@ -1619,10 +1627,12 @@ void ContainerObject::paste(CopyStack *xmlStack)
     while(!textBoxElement.isNull())
     {
         TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, NoUndo);
-
-        pWidget->setSelected(true);
-        pWidget->moveBy(xOffset, yOffset);
-        mpUndoStack->registerAddedWidget(pWidget);
+        if (pWidget)
+        {
+            pWidget->setSelected(true);
+            pWidget->moveBy(xOffset, yOffset);
+            mpUndoStack->registerAddedWidget(pWidget);
+        }
         textBoxElement = textBoxElement.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
     }
 
