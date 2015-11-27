@@ -317,7 +317,7 @@ bool NumHopHelper::evalNumHopScript(const HString &script, double &rValue, bool 
 #ifdef USENUMHOP
     if (interpretNumHopScript(script, doPrintOutput, rOutput))
     {
-        if (doPrintOutput)
+        if (doPrintOutput && !rOutput.empty())
         {
             rOutput.append("\n");
         }
@@ -355,7 +355,7 @@ bool NumHopHelper::interpretNumHopScript(const HString &script, bool doPrintOutp
         }
     }
     // Remove the last newline
-    if (doPrintOutput)
+    if (doPrintOutput && !rOutput.empty())
     {
         rOutput.erase(rOutput.size()-1);
     }
@@ -398,7 +398,7 @@ bool NumHopHelper::eval(double &rValue, bool doPrintOutput, HString &rOutput)
         }
     }
     // Remove the last newline
-    if (doPrintOutput)
+    if (doPrintOutput && !rOutput.empty())
     {
         rOutput.erase(rOutput.size()-1);
     }

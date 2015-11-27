@@ -6,20 +6,63 @@
 
 namespace numhop {
 
-std::string allOperators="=+-*/^";
+const std::string allOperators="=+-*/^";
+const std::string operatorsNotAllowedAfterEqualSign="=*/^";
+const std::string operatorsNotPME="*/^";
 
-// Internal help function
-bool checkForDoubleOperators(size_t e, const std::string &expr)
+// Internal help functions
+inline bool checkOperatorsNexttoEqualSign(size_t e, const std::string &expr)
 {
-    if (e<expr.size()-1 && contains(allOperators, expr[e+1]))
+    if ( (int(e) < int(expr.size())-1) && contains(operatorsNotAllowedAfterEqualSign, expr[e+1]) )
     {
-         return true;
+        return false;
     }
     if (e>0 && contains(allOperators, expr[e-1]))
     {
-        return true;
+        return false;
     }
-    return false;
+    return true;
+}
+
+bool fixMultiOperators(size_t e, std::string &expr)
+{
+    char op = expr[e];
+    const size_t s=e;
+
+    // Now check + and minus signs
+    if (op == '+' || op == '-')
+    {
+        bool isPositive=true;
+        // Search forward and compress multiple signs into one
+        for (; e<expr.size(); ++e)
+        {
+            if (expr[e] == '-')
+            {
+                isPositive = !isPositive;
+            }
+            else if (expr[e] != '+')
+            {
+                break;
+            }
+        }
+        // Now replace the sequence of operators with one sign character
+        if (isPositive)
+        {
+            expr.replace(s, e-s, 1, '+');
+        }
+        else
+        {
+            expr.replace(s, e-s, 1, '-');
+        }
+    }
+    else if (contains(operatorsNotPME, op))
+    {
+        if (e<expr.size()-1 && contains(allOperators, expr[e+1]))
+        {
+             return false;
+        }
+    }
+    return true;
 }
 
 //! @brief Find an operator and branch the expression tree at this point
@@ -58,8 +101,11 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
             if ( (c == '=') && contains(evalOperators, '=') )
             {
                 foundOperator=true;
-                foundOperatorAtThisLocation=true;
                 breakpts.push_back(e);
+                if (!checkOperatorsNexttoEqualSign(e, exprString))
+                {
+                    return false;
+                }
             }
             else if ( (c == '+') && contains(evalOperators, '+') )
             {
@@ -98,7 +144,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                 breakpts.push_back(e);
             }
             // Make sure that next character is not also an operator (not allowed right now)
-            if (foundOperatorAtThisLocation && checkForDoubleOperators(e, exprString))
+            if (foundOperatorAtThisLocation && !fixMultiOperators(e, exprString))
             {
                 // Error in parsing
                 return false;
@@ -207,7 +253,7 @@ bool interpretExpressionStringRecursive(std::string exprString, std::list<Expres
 bool interpretExpressionStringRecursive(std::string exprString, Expression &rExpr)
 {
     rExpr = Expression(exprString, AdditionT);
-    return !rExpr.empty();
+    return rExpr.isValid();
 }
 
 //! @brief Default constructor
@@ -233,17 +279,29 @@ Expression::Expression(const std::string &exprString, ExpressionOperatorT op)
 
     if (mOperator == ValueT)
     {
-        mHasValue = true;
+        if (!mRightExpressionString.empty())
+        {
+            mHasValue = true;
+            mIsValid = true;
+        }
     }
     else
     {
-        interpretExpressionStringRecursive(mRightExpressionString, mRightChildExpressions);
+        mIsValid = interpretExpressionStringRecursive(mRightExpressionString, mRightChildExpressions);
         // If child expression is a value, then move the value into this expression
         if (mRightChildExpressions.size() == 1 && mRightChildExpressions.front().operatorType()==ValueT)
         {
             mRightExpressionString = mRightChildExpressions.front().rightExprString();
             mRightChildExpressions.clear();
-            mHasValue = true;
+            if (!mRightExpressionString.empty())
+            {
+                mHasValue = true;
+                mIsValid = true;
+            }
+            else
+            {
+                mIsValid = false;
+            }
         }
     }
 }
@@ -269,6 +327,7 @@ Expression::Expression(const std::string &leftExprString, const std::string &rig
         mLeftChildExpressions.push_back(Expression(mLeftExpressionString, AdditionT));
         mRightChildExpressions.push_back(Expression(mRightExpressionString, AdditionT));
     }
+    mIsValid = true;
 }
 
 //! @brief The assignment operator
@@ -311,6 +370,34 @@ bool Expression::hasValue() const
 bool Expression::hasConstantValue() const
 {
     return mHasConstantValue;
+}
+
+//! @brief Recursively check if an expression tree is valid after interpretation
+bool Expression::isValid() const
+{
+    if (!mIsValid)
+    {
+        return false;
+    }
+
+    std::list<Expression>::const_iterator it;
+    for (it=mLeftChildExpressions.begin(); it!=mLeftChildExpressions.end(); ++it)
+    {
+        if (!it->isValid())
+        {
+            return false;
+        }
+    }
+
+    for (it=mRightChildExpressions.begin(); it!=mRightChildExpressions.end(); ++it)
+    {
+        if (!it->isValid())
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 //! @brief Returns the (right hand side) expression string (without outer parenthesis)
@@ -506,6 +593,7 @@ void Expression::commonConstructorCode()
     mHadLeftOuterParanthesis = false;
     mHasValue = false;
     mHasConstantValue = false;
+    mIsValid = false;
     mConstantValue = 0;
 }
 
@@ -523,6 +611,7 @@ void Expression::copyFromOther(const Expression &other)
     mHasValue = other.mHasValue;
     mHasConstantValue = other.mHasConstantValue;
     mConstantValue = other.mConstantValue;
+    mIsValid = other.mIsValid;
 }
 
 }

@@ -22,6 +22,7 @@ public:
     bool empty() const;
     bool hasValue() const;
     bool hasConstantValue() const;
+    bool isValid() const;
 
     const std::string &exprString() const;
     const std::string &leftExprString() const;
@@ -39,7 +40,7 @@ protected:
     std::string mLeftExpressionString, mRightExpressionString;
     bool mHadLeftOuterParanthesis, mHadRightOuterParanthesis;
     std::list<Expression> mLeftChildExpressions, mRightChildExpressions;
-    bool mHasValue, mHasConstantValue;
+    bool mHasValue, mHasConstantValue, mIsValid;
     double mConstantValue;
     ExpressionOperatorT mOperator;
 };
