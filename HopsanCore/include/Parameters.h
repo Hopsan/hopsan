@@ -110,6 +110,9 @@ public:
     bool evaluateParameters();
     bool refreshParameterValueText(const HString &rParameterName);
 
+    bool evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
+    bool evaluateParameterExpression(const HString &rExpression, HString &rEvaluatedParameterValue);
+
     bool hasParameter(const HString &rName) const;
     bool checkParameters(HString &rErrParName);
 

@@ -1152,10 +1152,11 @@ bool VariableTableWidget::setStartValues()
         UnitSelectionWidget *pUnitWidget = pValueWideget->getUnitSelectionWidget();
         if (pUnitWidget)
         {
+            // Check if this is a numeric value
             bool isDouble=false;
             value.toDouble(&isDouble);
 
-            // Unregister unitscale if default unit has been reset or if the value is not a number (but a parameter name, (Actually a string))
+            // Unregister unit scale if default unit has been reset or if the value is not a number (but a parameter name or expression, (Actually a string))
             if (pUnitWidget->isDefaultSelected() || !isDouble)
             {
                 mpModelObject->unregisterCustomParameterUnitScale(name);
@@ -1176,9 +1177,9 @@ bool VariableTableWidget::setStartValues()
 
         // Get the old value to see if a change has occurred
         // We also check the unit scale as that may have changed to even if the value (in original unit) is the same
-        QString oldValue = mpModelObject->getParameterValue(name);
+        QString previousValue = mpModelObject->getParameterValue(name);
         bool setNewValueSucess=false;
-        if ((oldValue != value) || (previousUnitScale != newCustomUnitScale))
+        if ((previousValue != value) || (previousUnitScale != newCustomUnitScale))
         {
             // Parameter has changed, add to undo stack and set the parameter
             if( cleanAndVerifyParameterValue(value, qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getDataType()) )
@@ -1195,7 +1196,7 @@ bool VariableTableWidget::setStartValues()
                     // Register the change in undo stack
                     mpModelObject->getParentContainerObject()->getUndoStackPtr()->registerChangedParameter(mpModelObject->getName(),
                                                                                                            name,
-                                                                                                           oldValue,
+                                                                                                           previousValue,
                                                                                                            value);
                     // Mark project tab as changed
                     mpModelObject->getParentContainerObject()->hasChanged();
@@ -1205,7 +1206,7 @@ bool VariableTableWidget::setStartValues()
                 // If we fail to set the parameter, then warning box
                 else
                 {
-                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(oldValue));
+                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(previousValue));
                 }
             }
 
@@ -1213,7 +1214,7 @@ bool VariableTableWidget::setStartValues()
             if (!setNewValueSucess)
             {
                 ParameterValueSelectionWidget *pWidget = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)));
-                pWidget->setValueAndScale_nosignals(previousUnitScale.rescale(oldValue), previousUnitScale);
+                pWidget->setValueAndScale_nosignals(previousUnitScale.rescale(previousValue), previousUnitScale);
                 mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
                 allok = false;
                 break;
@@ -1698,8 +1699,16 @@ void ParameterValueSelectionWidget::setValueAndScale_nosignals(QString value, Un
 
 void ParameterValueSelectionWidget::setValue()
 {
-    //! @todo maybe do something here, would be nice if we could check if value is OK, or maybe we should even set the value here
     refreshValueTextStyle();
+    if (mpValueEdit && mpUnitSelectionWidget)
+    {
+        bool isNumeric;
+        mpValueEdit->text().toDouble(&isNumeric);
+        if (!isNumeric)
+        {
+            mpUnitSelectionWidget->resetDefault();
+        }
+    }
 }
 
 void ParameterValueSelectionWidget::setConditionalValue(const int idx)
@@ -1794,12 +1803,12 @@ void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitScale &rUnitSca
 {
     if (mpValueEdit)
     {
-        bool isOK=false;
-        mpValueEdit->text().toDouble(&isOK);
+        bool isNumericValue=false;
+        mpValueEdit->text().toDouble(&isNumericValue);
         QString valS = mpValueEdit->text();
-        if (isOK)
+        if (isNumericValue)
         {
-            // If we already have a custom scale then unconvert first
+            // If we already have a custom scale then convert back to base unit first
             if (!mCustomScale.isEmpty())
             {
                 //val = val / mCustomScale.toDouble();
@@ -1812,6 +1821,10 @@ void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitScale &rUnitSca
             mpValueEdit->setText(QString("%1").arg(valS));
             mCustomScale = rUnitScale;
             refreshValueTextStyle();
+        }
+        else if (mpUnitSelectionWidget)
+        {
+            mpUnitSelectionWidget->resetDefault();
         }
     }
 }

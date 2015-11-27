@@ -35,6 +35,8 @@
 #include "Component.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/StringUtilities.h"
+#include "CoreUtilities/NumHopHelper.h"
+#include "ComponentUtilities/num2string.hpp"
 //#include "Quantities.h"
 #include <cassert>
 #include <sstream>
@@ -236,51 +238,72 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     HString evaluatedParameterValue, prefix, strippedValue;
 
     // Strip + or - from name in case we want to take a negative value of a system parameter
-    splitSignPrefix(mParameterValue, prefix, strippedValue);
+//    splitSignPrefix(mParameterValue, prefix, strippedValue);
 
     // Determine if we should look for parameter among other parameters and system parameters
     bool doCheckOthers=false;
     //! @todo handle conditional also
     if (mType=="double" || mType=="integer")
     {
-        doCheckOthers = !strippedValue.isNummeric();
+//        doCheckOthers = !strippedValue.isNummeric();
+        doCheckOthers = !mParameterValue.isNummeric();
     }
     else if (mType=="bool")
     {
-        doCheckOthers = !strippedValue.isBool();
+//        doCheckOthers = !strippedValue.isBool();
+        doCheckOthers = !mParameterValue.isBool();
     }
     else if (mType=="string")
     {
         doCheckOthers = true;
     }
 
-    // First check if this parameter value is in fact the name of one of the other parameters or system parameter
-//        if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, ignoreMe) ) //To allow a parameter to use a systemsparameter with same name the component parameter itself has to be excluded in this check by ignore it here, issue #783
-    if( doCheckOthers && mpParentParameters->evaluateParameter(strippedValue, evaluatedParameterValue, mType, this) )
+    // Check parent system parameters
+    if (doCheckOthers && (mType=="string" || mType=="integer" || mType=="bool") )
     {
-        // Make sure sign is sane
-        splitSignPrefix(prefix + evaluatedParameterValue, prefix, strippedValue);
-        resolveSignPrefix(prefix);
-        evaluatedParameterValue = prefix + strippedValue;
+        if(!mpParentParameters->evaluateInSystemParent(mParameterValue,  evaluatedParameterValue, mType))
+        {
+            evaluatedParameterValue = mParameterValue;
+        }
+    }
+    // Need expression evaluation for doubles
+    else if (doCheckOthers)
+    {
+        if (!mpParentParameters->evaluateParameterExpression(mParameterValue, evaluatedParameterValue))
+        {
+            evaluatedParameterValue = mParameterValue;
+        }
     }
     else
     {
-        // If not then the value is actually the value, resolve sign prefix to make it sane
-        resolveSignPrefix(prefix);
-        evaluatedParameterValue = prefix + strippedValue;
+        evaluatedParameterValue = mParameterValue;
     }
+//    // First check if this parameter value is in fact the name of one of the other parameters or system parameter
+//    if( doCheckOthers && mpParentParameters->evaluateParameter(strippedValue, evaluatedParameterValue, mType, this) )
+//    {
+//        // Make sure sign is sane
+//        splitSignPrefix(prefix + evaluatedParameterValue, prefix, strippedValue);
+//        resolveSignPrefix(prefix);
+//        evaluatedParameterValue = prefix + strippedValue;
+//    }
+//    else
+//    {
+//        // If not then the value is actually the value, resolve sign prefix to make it sane
+//        resolveSignPrefix(prefix);
+//        evaluatedParameterValue = prefix + strippedValue;
+//    }
 
     // Now try to evaluate the actual parameter value based on type
     if(mType=="double")
     {
-        double tmpParameterValue;
-        istringstream is(evaluatedParameterValue.c_str());
-        if(is >> tmpParameterValue)
+        bool isOK;
+        double v = evaluatedParameterValue.toDouble(&isOK);
+        if(isOK)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData!=0)
+            if(mpData)
             {
-                *static_cast<double*>(mpData) = tmpParameterValue;
+                *static_cast<double*>(mpData) = v;
             }
         }
         else
@@ -295,7 +318,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData!=0)
+            if(mpData)
             {
                 *static_cast<int*>(mpData) = tmpParameterValue;
             }
@@ -312,7 +335,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         if((is >> tmpParameterValue) && (tmpParameterValue >= 0) && (tmpParameterValue < int(this->mConditions.size())))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData!=0)
+            if(mpData)
             {
                 *static_cast<int*>(mpData) = tmpParameterValue;
             }
@@ -329,7 +352,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData!=0)
+            if(mpData)
             {
                 *static_cast<bool*>(mpData) = tmpParameterValue;
             }
@@ -337,7 +360,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         else if((evaluatedParameterValue == "false") || (evaluatedParameterValue == "0"))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData!=0)
+            if(mpData)
             {
                 *static_cast<bool*>(mpData) = false;
             }
@@ -345,7 +368,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         else if((evaluatedParameterValue == "true") || (evaluatedParameterValue == "1"))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData!=0)
+            if(mpData)
             {
                 *static_cast<bool*>(mpData) = true;
             }
@@ -358,7 +381,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     else if(mType=="string")
     {
         // If a data pointer has been set, then write evaluated value to data variable
-        if(mpData!=0)
+        if(mpData)
         {
             static_cast<HString*>(mpData)->setString(evaluatedParameterValue.c_str());
         }
@@ -664,8 +687,7 @@ bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HS
 bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, ParameterEvaluator *ignoreMe)
 {
     bool success = false;
-    //Try our own parameters
-    //! @todo we should remove this, it is confusing to look among your own parameters, users will expact a system parameter
+    // Try our own parameters
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
         if ( (mParameters[i]->getName() == rName) &&
@@ -677,13 +699,10 @@ bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString 
     }
     if(!success)
     {
-        //Try one of our components systemparents parameters
-        if(mParentComponent)
+        // Try one of our system parent component parameters
+        if(mParentComponent && mParentComponent->getSystemParent())
         {
-            if(mParentComponent->getSystemParent())
-            {
-                success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(rName, rEvaluatedParameterValue , rType);
-            }
+            success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(rName, rEvaluatedParameterValue , rType);
         }
     }
     return success;
@@ -712,6 +731,31 @@ bool ParameterEvaluatorHandler::refreshParameterValueText(const HString &rParame
         }
     }
     return false;
+}
+
+bool ParameterEvaluatorHandler::evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
+{
+    // Try one of our system parent component parameters
+    if(mParentComponent && mParentComponent->getSystemParent())
+    {
+        return mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(rName, rEvaluatedParameterValue , rType);
+    }
+    return false;
+}
+
+bool ParameterEvaluatorHandler::evaluateParameterExpression(const HString &rExpression, HString &rEvaluatedParameterValue)
+{
+    //! @todo waste of time recreating the helper every time, should reuse one that always exists
+    NumHopHelper nh;
+    nh.setComponent(mParentComponent);
+    HString dummy;
+    double value;
+    bool evalOK = nh.evalNumHopScript(rExpression.c_str(), value, false,dummy);
+    if (evalOK)
+    {
+        rEvaluatedParameterValue = to_hstring(value);
+    }
+    return evalOK;
 }
 
 //! @brief Check if a parameter with given name exist among the parameters

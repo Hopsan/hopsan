@@ -609,7 +609,51 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
     //Strip trailing and leading spaces
     stripLTSpaces(rValue);
 
-    //! @todo what if empty
+    // Removed checks to allow numhop expressions for doubles /Peter 20151126
+    if (type == "double")
+    {
+//        bool onlyNumbers=true;
+//        if ( rValue[0].isNumber() || rValue[0] == '.')
+//        {
+            // Replace incorrect decimal separator
+            rValue.replace(",", ".");
+
+//            if( rValue.count("e") > 1 || rValue.count(".") > 1 || rValue.count("E") > 1 )
+//            {
+//                onlyNumbers=false;
+//            }
+//            else
+//            {
+//                // Since we have already checked the first digit we begin this loop at one to check the rest of them
+//                for(int i=1; i<rValue.size(); ++i)
+//                {
+//                    if(!rValue[i].isDigit() && (rValue[i] != 'e') && (rValue[i] != 'E') && (rValue[i] != '+') && (rValue[i] != '-') && (rValue[i] != '.'))
+//                    {
+//                        onlyNumbers=false;
+//                        break;
+//                    }
+//                    else if( (rValue[i] == '+' || rValue[i] == '-') && !((rValue[i-1] == 'e') || (rValue[i-1] == 'E')) )
+//                    {
+//                        onlyNumbers=false;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//        else
+//        {
+//            onlyNumbers = false;
+//        }
+
+//        rValue.prepend(initialSign);
+//        if(!onlyNumbers)
+//        {
+//            rErrorString = QString("Invalid [double] parameter value \"%1\". Only numbers are allowed. Numeric strings like [-]1[eE][+-]5 will work.").arg(rValue);
+//        }
+//        return onlyNumbers;
+            return true;
+    }
+
     QString initialSign="";
     // Strip initial +- sign to simplify further checks
     if ( (rValue[0] == '+') || (rValue[0] == '-') )
@@ -624,50 +668,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
         return true;
     }
 
-    if (type == "double")
-    {
-        bool onlyNumbers=true;
-        if ( rValue[0].isNumber() || rValue[0] == '.')
-        {
-            // Replace incorrect decimal separator
-            rValue.replace(",", ".");
-
-            if( rValue.count("e") > 1 || rValue.count(".") > 1 || rValue.count("E") > 1 )
-            {
-                onlyNumbers=false;
-            }
-            else
-            {
-                // Since we have already checked the first digit we begin this loop at one to check the rest of them
-                for(int i=1; i<rValue.size(); ++i)
-                {
-                    if(!rValue[i].isDigit() && (rValue[i] != 'e') && (rValue[i] != 'E') && (rValue[i] != '+') && (rValue[i] != '-') && (rValue[i] != '.'))
-                    {
-                        onlyNumbers=false;
-                        break;
-                    }
-                    else if( (rValue[i] == '+' || rValue[i] == '-') && !((rValue[i-1] == 'e') || (rValue[i-1] == 'E')) )
-                    {
-                        onlyNumbers=false;
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            onlyNumbers = false;
-        }
-
-        rValue.prepend(initialSign);
-        if(!onlyNumbers)
-        {
-            rErrorString = QString("Invalid [double] parameter value \"%1\". Only numbers are allowed. Nummeric strings like [-]1[eE][+-]5 will work.").arg(rValue);
-        }
-
-        return onlyNumbers;
-    }
-    else if (type == "integer")
+    if (type == "integer")
     {
         bool onlyNumbers=true;
         for(int i=0; i<rValue.size(); ++i)
