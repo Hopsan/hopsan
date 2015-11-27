@@ -2003,16 +2003,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     this->sortComponentVector(mComponentCptrs);
     this->sortComponentVector(mComponentQptrs);
 
-    // Only set startvalues from top-level system, else they will be set again in the subsystem initialize calls
-    if (this->isTopLevelSystem())
-    {
-        if(!mKeepStartValues)
-        {
-            loadStartValues();
-        }
-    }
-
-    // If we have a numhop script, then now is the time to run it, so that we can use it to set some startvalues (based on others set in loadStartValues()
+    // If we have a numhop script, then now is the time to run it
     if (!mNumHopScript.empty())
     {
         HString dummy;
@@ -2024,8 +2015,17 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
     }
 
+    // Only set startvalues from top-level system, else they will be set again in the subsystem initialize calls
+    if (this->isTopLevelSystem())
+    {
+        if(!mKeepStartValues)
+        {
+            loadStartValues();
+        }
+    }
+
     //Init
-    updateParameters();
+    updateParameters(); //!< @todo I am not sure why this is needed here really, and maybe it should be called before the loadStartValue code above, but I am not sure /Peter 20151127
     //Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
