@@ -63,6 +63,7 @@ using namespace std;
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
 ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParentParameters)
 {
+    mDepthCounter=0;
     mParameterName = rName;
     mParameterValue = rValue;
     mDescription = rDescription;
@@ -227,6 +228,13 @@ bool ParameterEvaluator::refreshParameterValueText()
 //! @see evaluate()
 bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe)
 {
+    ++mDepthCounter;
+    if (mDepthCounter > 1000)
+    {
+        mpParentParameters->getParentComponent()->addErrorMessage("You seem to be stuck in a parameter evaluation loop (aborting): " + mParameterName);
+        mDepthCounter = 0;
+        return false;
+    }
     HOPSAN_UNUSED(ignoreMe);
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="conditional")))
@@ -392,6 +400,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
     }
 
     rResult = evaluatedParameterValue;
+    --mDepthCounter;
     return success;
 }
 

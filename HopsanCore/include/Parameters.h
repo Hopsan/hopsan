@@ -79,6 +79,7 @@ protected:
     HString mQuantity;
     HString mType;
     void* mpData;
+    size_t mDepthCounter;
     ParameterEvaluatorHandler* mpParentParameters;
     std::vector<HString> mConditions;
 };
