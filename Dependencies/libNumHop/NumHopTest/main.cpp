@@ -82,7 +82,9 @@ int main()
     expr.push_back("-1-(2-3)*4-4-3");
     expr.push_back("-(((-2-2)-3)*4)");
 
-    expr.push_back("#The following does not work!\n 2*-2; 2--3; 1+-3; 1-+3");
+    expr.push_back("2--3; 1+-3; 1-+3; 1++3; 1---3");
+
+    expr.push_back("#The following will not work!\n 2*-2; a += 5; 1+1-; = 5");
 
     for (size_t i=0; i<expr.size(); ++i)
     {

@@ -17,7 +17,7 @@ inline bool checkOperatorsNexttoEqualSign(size_t e, const std::string &expr)
     {
         return false;
     }
-    if (e>0 && contains(allOperators, expr[e-1]))
+    if ( e==0 || (e>0 && contains(allOperators, expr[e-1])) )
     {
         return false;
     }
