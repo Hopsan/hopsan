@@ -150,6 +150,7 @@ public:
     void getParameterNames(std::vector<HString> &rParameterNames);
     const ParameterEvaluator *getParameter(const HString &rName);
     void getParameterValue(const HString &rName, HString &rValue);
+    double evaluateDoubleParameter(const HString &rName, bool &rEvalOK);
     void* getParameterDataPtr(const HString &rName);
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
     void updateParameters();

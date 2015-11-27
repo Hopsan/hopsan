@@ -127,6 +127,15 @@ void Component::getParameterValue(const HString &rName, HString &rValue)
     mpParameters->getParameterValue(rName, rValue);
 }
 
+double Component::evaluateDoubleParameter(const HString &rName, bool &rEvalOK)
+{
+    HString val;
+    bool rc = mpParameters->evaluateParameter(rName, val, "double");
+    double v = val.toDouble(&rEvalOK);
+    rEvalOK = (rEvalOK && rc);
+    return v;
+}
+
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Don't use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 void* Component::getParameterDataPtr(const HString &rName)
