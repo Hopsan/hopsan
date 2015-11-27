@@ -33,6 +33,7 @@ HEADERS +=  \
  $${PWD}/Electric/ElectricSwitch.hpp \ 
  $${PWD}/Electric/ElectricUsensor.hpp \ 
  $${PWD}/Electric/ElectricUsource.hpp \ 
+ $${PWD}/Electric/ElectricVoltageSourceQ.hpp \
  $${PWD}/Electric/ElectricVarResistor.hpp \ 
  $${PWD}/Experimental/Experimental.h \ 
  $${PWD}/Experimental/Signal1DLookupTable.hpp \ 
@@ -339,6 +340,9 @@ HEADERS +=  \
  $${PWD}/Special/Special.h \ 
  $${PWD}/Special/TMMS04/Forks.hpp \ 
  $${PWD}/Special/TMMS04/TMMS04.h \ 
+ $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled22Valve.hpp \
+ $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled22Valve2.hpp \
+ $${PWD}/Electric/ElectricVoltageSourceQ.hpp \
  $${PWD}/Components.h
 
 SOURCES += 
