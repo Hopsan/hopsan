@@ -34,6 +34,7 @@
 #include "loadFunctions.h"
 
 #include "global.h"
+#include "DesktopHandler.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
@@ -327,7 +328,11 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
         if (rDomElement.tagName() == HMF_SYSTEMTAG)
         {
             //Check if we should load an embedded or external system
-            QString externalFilePath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
+            QString externalFilePath = appearanceData.getBasePath()+"/"+appearanceData.getHmfFile();
+            if(!QFile::exists(externalFilePath) || appearanceData.getSubTypeName().isEmpty())
+            {
+                externalFilePath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
+            }
             if (externalFilePath.isEmpty())
             {
                 //Load embedded system
@@ -338,11 +343,19 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
             {
                 //Now read the external file to change appearance and populate the system
                 QFileInfo extFileInfo(externalFilePath);
-                if (!extFileInfo.isAbsolute())
+                if(!extFileInfo.exists())
                 {
-                    externalFilePath = pContainer->getModelPath() + "/" + externalFilePath;
-                    // Update extFileInfo with full path
-                    extFileInfo.setFile(externalFilePath);
+                    if (!extFileInfo.isAbsolute() && !pContainer->getModelPath().isEmpty())
+                    {
+                        externalFilePath = pContainer->getModelPath() + "/" + externalFilePath;
+                        // Update extFileInfo with full path
+                        extFileInfo.setFile(externalFilePath);
+                    }
+                    else
+                    {
+                        externalFilePath = gpDesktopHandler->getExecPath()+"/"+externalFilePath;
+                        extFileInfo.setFile(externalFilePath);
+                    }
                 }
 
                 QFile externalModelFile(externalFilePath);

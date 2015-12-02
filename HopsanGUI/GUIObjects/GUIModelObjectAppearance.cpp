@@ -764,7 +764,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     mHmfFile        = domElement.attribute(CAF_HMFFILE, mHmfFile);
     mTypeName       = domElement.attribute(CAF_TYPENAME, mTypeName);
-    mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, "");
+    mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, mSubTypeName);
     mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
     QString newSourceCode     = domElement.attribute(CAF_SOURCECODE, "");
     if(!newSourceCode.isEmpty())

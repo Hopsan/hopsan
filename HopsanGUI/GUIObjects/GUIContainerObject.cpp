@@ -553,6 +553,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
         QString hmfFile = pAppearanceData->getHmfFile();
         QString subTypeName = pAppearanceData->getSubTypeName();
         ContainerObject *pObj = dynamic_cast<ContainerObject*>(addModelObject("Subsystem", position, rotation, startSelected, nameStatus, undoSettings));
+        pObj->setSubTypeName(subTypeName);
         //pObj->clearContents();
 
         QFile file(pAppearanceData->getBasePath()+hmfFile);
