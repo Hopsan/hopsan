@@ -67,6 +67,8 @@ public:
 
     // Other methods
     bool isFlipped();
+    LocklevelEnumT getModelLockLevel() const;
+    bool isLocallyLocked() const;
 
     // Type info
     enum { Type = WorkspaceObjectType };
@@ -111,6 +113,7 @@ protected:
     ContainerObject *mpParentContainerObject;
     bool mIsFlipped;
     bool mEnableSnap;
+    bool mIsLocked=false;
     WorkspaceObjectSelectionBox *mpSelectionBox;
     QPointF mPreviousPos;
 };

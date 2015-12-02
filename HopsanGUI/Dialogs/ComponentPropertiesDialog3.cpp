@@ -99,6 +99,10 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     : QDialog(pParent)
 {
     mpModelObject = pModelObject;
+    if (mpModelObject)
+    {
+        mAllowEditing = (!mpModelObject->isLocallyLocked() && (mpModelObject->getModelLockLevel() < FullyLocked));
+    }
 
     if(mpModelObject->getTypeName() == MODELICATYPENAME && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
     {
@@ -402,6 +406,7 @@ QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pEditPortPos, SIGNAL(clicked()), this, SLOT(editPortPos()));
+    pOkButton->setEnabled(mAllowEditing);
     return pButtonBox;
 }
 
@@ -878,6 +883,7 @@ void ComponentPropertiesDialog3::createEditStuff()
     QGridLayout *pNameTypeLayout = createNameAndTypeEdit();
     pPropertiesLayout->addLayout(pNameTypeLayout, row, 0, Qt::AlignLeft);
     pPropertiesLayout->setRowStretch(row,0);
+    pNameTypeLayout->setEnabled(mAllowEditing);
     //------------------------------------------------------------------------------------------------------------------------------
 
     // Add button widget with description and copy to clipboard buttons
@@ -911,6 +917,7 @@ void ComponentPropertiesDialog3::createEditStuff()
     QWidget *pPropertiesWidget = new QWidget(this);
     pPropertiesWidget->setLayout(pPropertiesLayout);
     pPropertiesWidget->setPalette(gpConfig->getPalette());
+    pPropertiesWidget->setEnabled(mAllowEditing);
 
     // Add Code edit stuff, A new tab in a new widget will be created
     //------------------------------------------------------------------------------------------------------------------------------
@@ -925,6 +932,7 @@ void ComponentPropertiesDialog3::createEditStuff()
     {
         QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
         pTabWidget->addTab(pSourceBrowser, "Source Code");
+        pSourceBrowser->setEnabled(mAllowEditing);
     }
 
     // Add tabs for subsystems

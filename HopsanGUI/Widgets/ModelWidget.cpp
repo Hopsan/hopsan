@@ -304,14 +304,30 @@ int ModelWidget::getLastSimulationTime()
 }
 
 
-bool ModelWidget::isEditingFullyDisabled()
+bool ModelWidget::isEditingFullyDisabled() const
 {
     return mFullLockModelEditingCounter > 0;
 }
 
-bool ModelWidget::isEditingLimited()
+bool ModelWidget::isEditingLimited() const
 {
     return mLimitedLockModelEditingCounter > 0;
+}
+
+LocklevelEnumT ModelWidget::getCurrentLockLevel() const
+{
+    if (isEditingFullyDisabled())
+    {
+        return FullyLocked;
+    }
+    else if (isEditingLimited())
+    {
+        return LimitedLock;
+    }
+    else
+    {
+        return NotLocked;
+    }
 }
 
 //! @brief Defines a new alias for specified variable (popup box)
@@ -773,8 +789,8 @@ void ModelWidget::lockModelEditingLimited(bool lock)
         QList<ModelObject*> objects =  mpGraphicsView->getContainerPtr()->getModelObjects();
         for (ModelObject* pObj : objects)
         {
-            pObj->setFlag(QGraphicsItem::ItemIsMovable, false);
-            pObj->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            //pObj->setFlag(QGraphicsItem::ItemIsMovable, false);
+            //pObj->setFlag(QGraphicsItem::ItemIsSelectable, false);
 #ifdef USEDISABLEGRAYEFFECT
             QGraphicsColorizeEffect *pGrayEffect = new QGraphicsColorizeEffect();
             pGrayEffect->setColor(QColor("gray"));
@@ -805,8 +821,8 @@ void ModelWidget::lockModelEditingLimited(bool lock)
         QList<ModelObject*> objects =  mpGraphicsView->getContainerPtr()->getModelObjects();
         for (ModelObject* pObj : objects)
         {
-            pObj->setFlag(QGraphicsItem::ItemIsMovable, true);
-            pObj->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            //pObj->setFlag(QGraphicsItem::ItemIsMovable, true);
+            //pObj->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
             if (pObj->graphicsEffect())
             {

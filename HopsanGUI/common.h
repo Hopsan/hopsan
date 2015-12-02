@@ -91,6 +91,7 @@ enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue
 enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
 enum LibraryTypeEnumT {InternalLib, ExternalLib, FmuLib};
 enum HiddenVisibleEnumT {Hidden, Visible};
+enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
 
 extern const char* getHopsanGUIBuildTime();
 extern bool isHospanGUIVersionHigherThan(const char*);

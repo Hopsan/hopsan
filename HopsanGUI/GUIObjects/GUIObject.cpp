@@ -198,9 +198,8 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         setSelected(false);
         setActive(false);
     }
-    // If editing has been limited we should not do anything
-    // Else we can reenable movement and selection
-    else if (!mpParentContainerObject->mpModelWidget->isEditingLimited())
+    // Else we can re-enable movement and selection
+    else
     {
         setFlag(QGraphicsItem::ItemIsMovable, true);    // Make the component movable if not (it is not movable during creation of connector)
         setFlag(QGraphicsItem::ItemIsSelectable, true); // Make the component selectable if not (it is not selectable during creation of connector)
@@ -320,13 +319,16 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 void WorkspaceObject::rotate(double angle, UndoStatusEnumT undoSettings)
 {
     Q_UNUSED(undoSettings)
-    setTransformOriginPoint(boundingRect().center());
-    if(mIsFlipped)
+    if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
     {
-        angle *= -1.0;
+        setTransformOriginPoint(boundingRect().center());
+        if(mIsFlipped)
+        {
+            angle *= -1.0;
+        }
+        setRotation(normDeg360(rotation()+angle));
+        emit objectMoved();
     }
-    setRotation(normDeg360(rotation()+angle));
-    emit objectMoved();
 }
 
 //! @brief Rotates a component 90 degrees clockwise
@@ -353,8 +355,11 @@ void WorkspaceObject::rotate90ccw(UndoStatusEnumT undoSettings)
 //! @see moveRight()
 void WorkspaceObject::moveUp()
 {
-    setPos(pos().x(), mapFromScene(mapToScene(pos())).y()-1);
-    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
+    if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
+    {
+        setPos(pos().x(), mapFromScene(mapToScene(pos())).y()-1);
+        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
+    }
 }
 
 
@@ -364,8 +369,11 @@ void WorkspaceObject::moveUp()
 //! @see moveRight()
 void WorkspaceObject::moveDown()
 {
-    setPos(pos().x(), mapFromScene(mapToScene(pos())).y()+1);
-    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+    if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
+    {
+        setPos(pos().x(), mapFromScene(mapToScene(pos())).y()+1);
+        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+    }
 }
 
 
@@ -375,8 +383,11 @@ void WorkspaceObject::moveDown()
 //! @see moveRight()
 void WorkspaceObject::moveLeft()
 {
-    setPos(mapFromScene(mapToScene(pos())).x()-1, pos().y());
-    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+    if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
+    {
+        setPos(mapFromScene(mapToScene(pos())).x()-1, pos().y());
+        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+    }
 }
 
 
@@ -386,8 +397,11 @@ void WorkspaceObject::moveLeft()
 //! @see moveLeft()
 void WorkspaceObject::moveRight()
 {
-    setPos(mapFromScene(mapToScene(pos())).x()+1, pos().y());
-    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+    if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
+    {
+        setPos(mapFromScene(mapToScene(pos())).x()+1, pos().y());
+        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+    }
 }
 
 
@@ -402,13 +416,28 @@ bool WorkspaceObject::isFlipped()
     return mIsFlipped;
 }
 
+bool WorkspaceObject::isLocallyLocked() const
+{
+    return mIsLocked;
+}
+
+
+LocklevelEnumT WorkspaceObject::getModelLockLevel() const
+{
+    if (mpParentContainerObject && mpParentContainerObject->mpModelWidget)
+    {
+        return mpParentContainerObject->mpModelWidget->getCurrentLockLevel();
+    }
+    return NotLocked;
+}
+
 
 
 //! @brief Constructor for GUI object selection box
 //! @param x1 Initial X-coordinate of the top left corner of the parent component
-//! @param y1 InitialY-coordinate of the top left corner of the parent component
-//! @param x2 InitialX-coordinate of the bottom right corner of the parent component
-//! @param y2 InitialY-coordinate of the bottom right corner of the parent component
+//! @param y1 Initial Y-coordinate of the top left corner of the parent component
+//! @param x2 Initial X-coordinate of the bottom right corner of the parent component
+//! @param y2 Initial Y-coordinate of the bottom right corner of the parent component
 //! @param activePen Width and color of the box when the parent component is selected.
 //! @param hoverPen Width and color of the box when the parent component is hovered by the mouse cursor.
 //! @param *parent Pointer to the parent object.

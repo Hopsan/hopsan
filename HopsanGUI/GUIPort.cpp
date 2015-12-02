@@ -257,7 +257,8 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (mpPortAppearance->mEnabled)
     {
-        if(mpParentModelObject->getParentContainerObject()->mpModelWidget->isEditingLimited())
+        // If model fully or limited locked then abort, but allow even if model object is locally locked (connections should then be allowed)
+        if(mpParentModelObject->getModelLockLevel() > NotLocked)
             return;
 
         //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
@@ -304,6 +305,8 @@ void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void Port::openRightClickMenu(QPoint screenPos)
 {
+    bool allowEditing = ( !mpParentModelObject->isLocallyLocked() && (mpParentModelObject->getModelLockLevel() == NotLocked) );
+
     QMenu menu;
 
     // First build alias menu
@@ -331,6 +334,7 @@ void Port::openRightClickMenu(QPoint screenPos)
         }
     }
     menu.addMenu(pAliasMenu);
+    pAliasMenu->setEnabled(allowEditing);
     menu.addSeparator();
 
     // Now build plot menu

@@ -1000,7 +1000,10 @@ void Connector::setUnHovered()
 //! @brief Asks the parent system to delete the connector
 void Connector::deleteMe(UndoStatusEnumT undo)
 {
-    mpParentContainerObject->removeSubConnector(this, undo);
+    if (mpParentContainerObject->getModelLockLevel()==NotLocked)
+    {
+        mpParentContainerObject->removeSubConnector(this, undo);
+    }
 }
 
 

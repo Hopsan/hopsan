@@ -114,11 +114,6 @@ bool Component::hasPowerPorts()
 //! @brief Event when double clicking on component icon.
 void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    // Allow even if editingLimited but we dont want to
-    // change parameters in external subsystems for example (fully disabled)
-    if(mpParentContainerObject->mpModelWidget->isEditingFullyDisabled())
-        return;
-
     QGraphicsWidget::mouseDoubleClickEvent(event);
     openPropertiesDialog();
 }
@@ -282,8 +277,9 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 
 //! @brief Set a start value to be mapped to a System parameter
 //! @deprecated
-bool Component::setStartValue(QString portName, QString /*variable*/, QString sysParName)
+bool Component::setStartValue(QString portName, QString variable, QString sysParName)
 {
+    Q_UNUSED(variable)
     QString dataName;
     dataName = portName + QString("::Value");
     return mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), dataName, sysParName);
@@ -293,7 +289,7 @@ bool Component::setStartValue(QString portName, QString /*variable*/, QString sy
 //! @brief Slot that opens the parameter dialog for the component
 void Component::openPropertiesDialog()
 {
-    // If properties dialog already exist, tehn show it (usefull if you forgot to close it)
+    // If properties dialog already exist, then show it (useful if you forgot to close it)
     if (mpPropertiesDialog)
     {
         mpPropertiesDialog->show();
@@ -302,7 +298,7 @@ void Component::openPropertiesDialog()
     // Else create a new one
     else
     {
-        // Note! this is a smart pointer, it will automatically become NULL when dilog is deleted
+        // Note! this is a smart pointer, it will automatically become NULL when dialog is deleted
         mpPropertiesDialog = new ComponentPropertiesDialog3(this, mpDialogParentWidget);
 
         if(getTypeName() != QString(MODELICATYPENAME)+" NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
@@ -455,9 +451,6 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(mpParentContainerObject->mpModelWidget->isEditingFullyDisabled())
-        return;
-
     QGraphicsWidget::mouseDoubleClickEvent(event);
 
     // If this is a sink component that has plot data, plot it instead of showing the dialog

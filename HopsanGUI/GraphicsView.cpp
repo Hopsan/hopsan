@@ -95,9 +95,6 @@ GraphicsView::GraphicsView(ModelWidget *parent)
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if (mpParentModelWidget->isEditingLimited())
-        return;
-
     qDebug() << "GraphicsView::contextMenuEvent(), reason = " << event->reason();
     if(!mpContainerObject->isCreatingConnector() && !mIgnoreNextContextMenuEvent)
     {
@@ -110,6 +107,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             QGraphicsView::contextMenuEvent(event);
             QMenu menu(this);
             QAction *addTextBoxAction = menu.addAction("Add Text Box Widget");
+            addTextBoxAction->setDisabled(mpParentModelWidget->isEditingLimited());
 
             QCursor cursor;
             QAction *selectedAction = menu.exec(cursor.pos());
@@ -382,8 +380,11 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         bool allLocked=true;
         for(ModelObject* pObj : mpContainerObject->getSelectedModelObjectPtrs())
         {
-            if(!pObj->isLocked())
+            if(!pObj->isLocallyLocked())
+            {
                 allLocked=false;
+                break;
+            }
         }
         if((mpContainerObject->isSubObjectSelected() && !allLocked) || mpContainerObject->isConnectorSelected())
         {
@@ -620,35 +621,35 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     emit unHighlightAll();
 
-    if(mpParentModelWidget->isEditingLimited())
-        return;
+    if(!mpParentModelWidget->isEditingLimited())
+    {
+        mLeftMouseButtonPressed = (event->button() == Qt::LeftButton);
 
-    mLeftMouseButtonPressed = true;
+        qDebug() << "GraphicsView::mousePressEvent(), pos: " << this->mapToScene(this->mapFromGlobal(QCursor::pos()));
 
-    qDebug() << "GraphicsView::mousePressEvent(), pos: " << this->mapToScene(this->mapFromGlobal(QCursor::pos()));
+        // No rubber band during connecting:
+        if (mpContainerObject->isCreatingConnector())
+        {
+            this->setDragMode(NoDrag);
+        }
+        else if(mCtrlKeyPressed)
+        {
+            this->setDragMode(ScrollHandDrag);
+        }
+        else
+        {
+            this->setDragMode(RubberBandDrag);
+        }
 
-    // No rubber band during connecting:
-    if (mpContainerObject->isCreatingConnector())
-    {
-        this->setDragMode(NoDrag);
-    }
-    else if(mCtrlKeyPressed)
-    {
-        this->setDragMode(ScrollHandDrag);
-    }
-    else
-    {
-        this->setDragMode(RubberBandDrag);
-    }
-
-    // Remove one connector line if right clicking while creating a connector
-    if ((event->button() == Qt::RightButton) && mpContainerObject->isCreatingConnector())
-    {
-        mpContainerObject->removeOneConnectorLine(mapToScene(event->pos()));
-    }
-    else if ((event->button() == Qt::LeftButton) && mpContainerObject->isCreatingConnector())
-    {
-        mpContainerObject->addOneConnectorLine(this->mapToScene(event->pos()));
+        // Remove one connector line if right clicking while creating a connector
+        if ((event->button() == Qt::RightButton) && mpContainerObject->isCreatingConnector())
+        {
+            mpContainerObject->removeOneConnectorLine(mapToScene(event->pos()));
+        }
+        else if ((event->button() == Qt::LeftButton) && mpContainerObject->isCreatingConnector())
+        {
+            mpContainerObject->addOneConnectorLine(this->mapToScene(event->pos()));
+        }
     }
 
     QGraphicsView::mousePressEvent(event);

@@ -144,8 +144,6 @@ public:
     void getLosses(double &total, QMap<QString, double> domainSpecificLosses);
     bool isLossesDisplayVisible();
 
-    bool isLocked() const;
-
 public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();
@@ -224,8 +222,6 @@ protected:
     QWidget *mpDialogParentWidget;
 
     QTimer mDragCopyTimer;
-
-    bool mIsLocked;
 
 protected slots:
     void snapNameTextPosition(QPointF pos);

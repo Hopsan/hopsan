@@ -123,6 +123,7 @@ private:
     QLineEdit *mpNameEdit;
     VariableTableWidget *mpVariableTableWidget;
     SystemProperties *mpSystemProperties=nullptr;
+    bool mAllowEditing=false;
 
     QTextEdit *mpSourceCodeTextEdit;
     QComboBox *mpSolverComboBox;

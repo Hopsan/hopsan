@@ -84,8 +84,9 @@ public:
     void setSaved(bool value);
     void hasChanged();
 
-    bool isEditingFullyDisabled();
-    bool isEditingLimited();
+    bool isEditingFullyDisabled() const;
+    bool isEditingLimited() const;
+    LocklevelEnumT getCurrentLockLevel() const;
 
     bool defineVariableAlias(const QString &rFullName, const QString &rAlias="");
     bool undefineVariableAlias(const QString &rFullName);

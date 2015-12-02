@@ -612,15 +612,10 @@ bool ModelObject::isLossesDisplayVisible()
     return mpLossesDisplay->isVisible();
 }
 
-bool ModelObject::isLocked() const
-{
-    return mIsLocked;
-}
-
 
 //! @brief Get a pointer to the port with the specified name
 //! @param [in] rName The port name
-//! @returns A ptr to the port or 0 if no port was found
+//! @returns A pointer to the port or 0 if no port was found
 Port *ModelObject::getPort(const QString &rName)
 {
     for (int i=0; i<mPortListPtrs.size(); ++i)
@@ -1065,9 +1060,6 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
         return;
 
-    if(mpParentContainerObject->mpModelWidget->isEditingLimited())
-        return;
-
     QMenu menu;
     this->buildBaseContextMenu(menu, event);
 }
@@ -1089,7 +1081,7 @@ void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     WorkspaceObject::hoverLeaveEvent(event);
     this->setZValue(ModelobjectZValue);
     this->showPorts(false);
-    // Ok now lets hide the name text if text should be hidden or if icon is hidden
+    // OK now lets hide the name text if text should be hidden or if icon is hidden
     // (if icon is hidden we are likely a hidden signal component)
     if ((!mNameTextVisible && !mNameTextAlwaysVisible) || !mpIcon->isVisible() )
     {
@@ -1109,12 +1101,12 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // Forward the mouse press event
     WorkspaceObject::mousePressEvent(event);
 
-    // If not editing lmited then check for drag copy
-    if (!mpParentContainerObject->mpModelWidget->isEditingLimited())
+    // If not locked then check for drag copy
+    if (!isLocallyLocked() && (getModelLockLevel() == NotLocked))
     {
         if(event->button() == Qt::RightButton)
         {
-            connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()));
+            connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()), Qt::UniqueConnection);
             mDragCopyTimer.setSingleShot(true);
             mDragCopyTimer.start(100);
         }
@@ -1217,6 +1209,8 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
 {
+    bool allowFullEditing = (!isLocallyLocked() && (getModelLockLevel() == NotLocked));
+    bool allowLimitedEditing = (!isLocallyLocked() && (getModelLockLevel() <= LimitedLock));
     rMenu.addSeparator();
 
     QAction *pShowNameAction = rMenu.addAction(tr("Always show name"));
@@ -1229,6 +1223,10 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         pRotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
         pFlipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+D)"));
         pFlipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+F)"));
+        pRotateRightAction->setEnabled(allowFullEditing);
+        pRotateLeftAction->setEnabled(allowFullEditing);
+        pFlipVerticalAction->setEnabled(allowFullEditing);
+        pFlipHorizontalAction->setEnabled(allowFullEditing);
     }
 
     //QStringList replacements = this->getAppearanceData()->getReplacementObjects();
@@ -1246,9 +1244,11 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
                 replaceActionList.append(replaceAction);
             }
         }
+        replaceMenu->setEnabled(allowFullEditing);
     }
     pShowNameAction->setCheckable(true);
     pShowNameAction->setChecked(mNameTextAlwaysVisible);
+    pShowNameAction->setEnabled(allowLimitedEditing);
 
     pLockedAction = rMenu.addAction("Locked");
     pLockedAction->setCheckable(true);
@@ -1370,7 +1370,8 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
     // Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        if(this->isLocked())
+        // Restore position if locked
+        if(isLocallyLocked() || (getModelLockLevel()!=NotLocked))
         {
             this->setPos(mPreviousPos);
             return value;
@@ -1460,33 +1461,36 @@ void ModelObject::showPorts(bool visible)
 //! @todo try to reuse the code in rotate guiobject,
 void ModelObject::rotate(double angle, UndoStatusEnumT undoSettings)
 {
-    mpParentContainerObject->mpModelWidget->hasChanged();
-
-    if(mIsFlipped)
+    if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
     {
-        angle *= -1;
-    }
-    this->setRotation(normDeg360(this->rotation()+angle));
+        mpParentContainerObject->mpModelWidget->hasChanged();
 
-    refreshIconPosition();
+        if(mIsFlipped)
+        {
+            angle *= -1;
+        }
+        this->setRotation(normDeg360(this->rotation()+angle));
 
-    int tempNameTextPos = mNameTextPos;
-    this->snapNameTextPosition(mpNameText->pos());
-    setNameTextPos(tempNameTextPos);
+        refreshIconPosition();
 
-    for (int i=0; i < mPortListPtrs.size(); ++i)
-    {
-        mPortListPtrs[i]->refreshPortOverlayPosition();
-    }
+        int tempNameTextPos = mNameTextPos;
+        this->snapNameTextPosition(mpNameText->pos());
+        setNameTextPos(tempNameTextPos);
 
-    if(undoSettings == Undo)
-    {
-        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
-    }
+        for (int i=0; i < mPortListPtrs.size(); ++i)
+        {
+            mPortListPtrs[i]->refreshPortOverlayPosition();
+        }
 
-    for(int i=0; i<mConnectorPtrs.size(); ++i)
-    {
-        mConnectorPtrs.at(i)->drawConnector(true);
+        if(undoSettings == Undo)
+        {
+            mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
+        }
+
+        for(int i=0; i<mConnectorPtrs.size(); ++i)
+        {
+            mConnectorPtrs.at(i)->drawConnector(true);
+        }
     }
 }
 
@@ -1497,11 +1501,14 @@ void ModelObject::rotate(double angle, UndoStatusEnumT undoSettings)
 //! @todo Fix name text position when flipping components
 void ModelObject::flipVertical(UndoStatusEnumT undoSettings)
 {
-    this->flipHorizontal(NoUndo);
-    this->rotate(180,NoUndo);
-    if(undoSettings == Undo)
+    if (!isLocallyLocked() && getModelLockLevel()==NotLocked)
     {
-        mpParentContainerObject->getUndoStackPtr()->registerVerticalFlip(this->getName());
+        this->flipHorizontal(NoUndo);
+        this->rotate(180,NoUndo);
+        if(undoSettings == Undo)
+        {
+            mpParentContainerObject->getUndoStackPtr()->registerVerticalFlip(this->getName());
+        }
     }
 }
 
@@ -1511,43 +1518,46 @@ void ModelObject::flipVertical(UndoStatusEnumT undoSettings)
 //! @see flipVertical()
 void ModelObject::flipHorizontal(UndoStatusEnumT undoSettings)
 {
-    if(mpParentContainerObject)
+    if (!isLocallyLocked() && getModelLockLevel()==NotLocked)
     {
-        mpParentContainerObject->mpModelWidget->hasChanged();
-    }
-    QTransform transf;
-    transf.scale(-1.0, 1.0);
+        if(mpParentContainerObject)
+        {
+            mpParentContainerObject->mpModelWidget->hasChanged();
+        }
+        QTransform transf;
+        transf.scale(-1.0, 1.0);
 
-    //Remember center pos
-    QPointF cpos = this->getCenterPos();
-    //Transform
-    this->setTransform(transf,true); // transformationorigin point seems to have no effect here for some reason
-    //Reset to center pos (as transform origin point was ignored)
-    this->setCenterPos(cpos);
+        //Remember center pos
+        QPointF cpos = this->getCenterPos();
+        //Transform
+        this->setTransform(transf,true); // transformationorigin point seems to have no effect here for some reason
+        //Reset to center pos (as transform origin point was ignored)
+        this->setCenterPos(cpos);
 
-    // If the icon is (not rotating) its position will be refreshed
-    refreshIconPosition();
+        // If the icon is (not rotating) its position will be refreshed
+        refreshIconPosition();
 
-    // Toggle isFlipped bool
-    if(mIsFlipped)
-    {
-        mIsFlipped = false;
-    }
-    else
-    {
-        mIsFlipped = true;
-    }
+        // Toggle isFlipped bool
+        if(mIsFlipped)
+        {
+            mIsFlipped = false;
+        }
+        else
+        {
+            mIsFlipped = true;
+        }
 
-    //Refresh port overlay and nametext
-    for (int i=0; i < mPortListPtrs.size(); ++i)
-    {
-        mPortListPtrs[i]->refreshPortOverlayPosition();
-    }
-    this->snapNameTextPosition(mpNameText->pos());
+        //Refresh port overlay and nametext
+        for (int i=0; i < mPortListPtrs.size(); ++i)
+        {
+            mPortListPtrs[i]->refreshPortOverlayPosition();
+        }
+        this->snapNameTextPosition(mpNameText->pos());
 
-    if(undoSettings == Undo)
-    {
-        mpParentContainerObject->getUndoStackPtr()->registerHorizontalFlip(this->getName());
+        if(undoSettings == Undo)
+        {
+            mpParentContainerObject->getUndoStackPtr()->registerHorizontalFlip(this->getName());
+        }
     }
 }
 
@@ -1645,7 +1655,8 @@ void ModelObject::setSubTypeName(const QString subTypeName)
 
 void ModelObject::deleteMe(UndoStatusEnumT undoSettings)
 {
-    if(mIsLocked) return;
+    if (isLocallyLocked() || (getModelLockLevel()!=NotLocked))
+        return;
 
     mpParentContainerObject->deleteModelObject(getName(), undoSettings);
 }

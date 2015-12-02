@@ -546,103 +546,106 @@ void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     WorkspaceObject::mouseMoveEvent(event);
 
-    if(mResizeLeft && mResizeTop)
+    if (getModelLockLevel()==NotLocked)
     {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
-        if (mReflowText)
+        if(mResizeLeft && mResizeTop)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            if(desiredRect.width() < mpTextItem->boundingRect().width())
+                this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
+            if(desiredRect.height() < mpTextItem->boundingRect().height())
+                this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        if(desiredRect.width() < mpTextItem->boundingRect().width())
-            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
-        if(desiredRect.height() < mpTextItem->boundingRect().height())
-            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
-    }
-    else if(mResizeTop && mResizeRight)
-    {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
-        if (mReflowText)
+        else if(mResizeTop && mResizeRight)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            this->setX(mPosBeforeResize.x());
+            if(desiredRect.height() < mpTextItem->boundingRect().height())
+                this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        this->setX(mPosBeforeResize.x());
-        if(desiredRect.height() < mpTextItem->boundingRect().height())
-            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
-    }
-    else if(mResizeRight && mResizeBottom)
-    {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
-        if (mReflowText)
+        else if(mResizeRight && mResizeBottom)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            this->setX(mPosBeforeResize.x());
+            this->setY(mPosBeforeResize.y());
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        this->setX(mPosBeforeResize.x());
-        this->setY(mPosBeforeResize.y());
-    }
-    else if(mResizeBottom && mResizeLeft)
-    {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
-        if (mReflowText)
+        else if(mResizeBottom && mResizeLeft)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            this->setY(mPosBeforeResize.y());
+            if(desiredRect.width() < mpTextItem->boundingRect().width())
+                this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        this->setY(mPosBeforeResize.y());
-        if(desiredRect.width() < mpTextItem->boundingRect().width())
-            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
-    }
-    else if(mResizeLeft)
-    {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), mpBorderItem->rect().height());
-        if (mReflowText)
+        else if(mResizeLeft)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x()), mpBorderItem->rect().height());
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            this->setY(mPosBeforeResize.y());
+            if(desiredRect.width() < mpTextItem->boundingRect().width())
+                this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        this->setY(mPosBeforeResize.y());
-        if(desiredRect.width() < mpTextItem->boundingRect().width())
-            this->setX(mPosBeforeResize.x()+mWidthBeforeResize-mpBorderItem->boundingRect().width()+mpBorderItem->pen().widthF());
-    }
-    else if(mResizeRight)
-    {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), mpBorderItem->rect().height());
-        if (mReflowText)
+        else if(mResizeRight)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), qMax(0.0, mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x()), mpBorderItem->rect().height());
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            this->setPos(mPosBeforeResize);
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        this->setPos(mPosBeforeResize);
-    }
-    else if(mResizeTop)
-    {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(),  mpBorderItem->rect().width(), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
-        if (mReflowText)
+        else if(mResizeTop)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(),  mpBorderItem->rect().width(), qMax(0.0, mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y()));
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            this->setX(mPosBeforeResize.x());
+            if(desiredRect.height() < mpTextItem->boundingRect().height())
+                this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        this->setX(mPosBeforeResize.x());
-        if(desiredRect.height() < mpTextItem->boundingRect().height())
-            this->setY(mPosBeforeResize.y()+mHeightBeforeResize-mpBorderItem->boundingRect().height()+mpBorderItem->pen().widthF());
-    }
-    else if(mResizeBottom)
-    {
-        QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), mpBorderItem->rect().width(), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
-        if (mReflowText)
+        else if(mResizeBottom)
         {
-            mpTextItem->setTextWidth(desiredRect.width());
+            QRectF desiredRect = QRectF(mpBorderItem->rect().x(), mpBorderItem->rect().y(), mpBorderItem->rect().width(), qMax(0.0, mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y()));
+            if (mReflowText)
+            {
+                mpTextItem->setTextWidth(desiredRect.width());
+            }
+            mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
+            this->setPos(mPosBeforeResize);
         }
-        mpBorderItem->setRect(desiredRect.united(mpTextItem->boundingRect()));
-        this->setPos(mPosBeforeResize);
-    }
 
-    mpBorderItem->setPos(mpBorderItem->pen().width()/2.0, mpBorderItem->pen().width()/2.0);
+        mpBorderItem->setPos(mpBorderItem->pen().width()/2.0, mpBorderItem->pen().width()/2.0);
 
-    refreshWidgetSize();
-    mpSelectionBox->setActive();
+        refreshWidgetSize();
+        mpSelectionBox->setActive();
+    }
 }
 
 
@@ -666,7 +669,10 @@ void TextBoxWidget::refreshSelectionBoxSize()
 
 void TextBoxWidget::deleteMe(UndoStatusEnumT undoSettings)
 {
-    mpParentContainerObject->deleteWidget(this, undoSettings);
+    if (!isLocallyLocked() && getModelLockLevel()==NotLocked)
+    {
+        mpParentContainerObject->deleteWidget(this, undoSettings);
+    }
 }
 
 void TextBoxWidget::flipVertical(UndoStatusEnumT undoSettings)

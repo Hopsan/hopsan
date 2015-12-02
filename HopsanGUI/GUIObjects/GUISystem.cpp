@@ -320,11 +320,15 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
         return;
 
+    bool allowFullEditing = (!isLocallyLocked() && (getModelLockLevel() == NotLocked));
+    //bool allowLimitedEditing = (!isLocallyLocked() && (getModelLockLevel() <= LimitedLock));
+
     QMenu menu;
     QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
     QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
     QAction *saveAsComponentAction = menu.addAction(tr("Save As Component"));
     QAction *enterAction = menu.addAction(tr("Enter Subsystem"));
+    loadAction->setEnabled(allowFullEditing);
     if(!mModelFileInfo.filePath().isEmpty())
     {
         loadAction->setDisabled(true);
@@ -549,19 +553,13 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //! @brief Defines the double click event for container objects (used to enter containers).
 void SystemContainer::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsWidget::mouseDoubleClickEvent(event);
     if (isExternal())
     {
-        // Allow even if editingLimited but we dont want to
-        // change parameters in external subsystems for example (fully disabled)
-        if(mpParentContainerObject->mpModelWidget->isEditingFullyDisabled())
-            return;
-
-        QGraphicsWidget::mouseDoubleClickEvent(event);
         openPropertiesDialog();
     }
     else
     {
-        QGraphicsWidget::mouseDoubleClickEvent(event);
         enterContainer();
     }
 }
