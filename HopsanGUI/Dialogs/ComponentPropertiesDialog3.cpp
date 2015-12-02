@@ -395,18 +395,19 @@ QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
 
 QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
 {
-    QPushButton *pEditPortPos = new QPushButton(tr("&Move ports"), this);
+    QPushButton *pEditPortsButton = new QPushButton(tr("&Move ports"), this);
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
     pOkButton->setDefault(true);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Vertical, this);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(pEditPortPos, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pEditPortsButton, QDialogButtonBox::ActionRole);
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
-    connect(pEditPortPos, SIGNAL(clicked()), this, SLOT(editPortPos()));
+    connect(pEditPortsButton, SIGNAL(clicked()), this, SLOT(editPortPos()));
     pOkButton->setEnabled(mAllowEditing);
+    pEditPortsButton->setEnabled(mAllowEditing);
     return pButtonBox;
 }
 
@@ -646,6 +647,7 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     QWidget *pTempWidget = new QWidget(this);
     QVBoxLayout *pLayout = new QVBoxLayout(pTempWidget);
     pLayout->addWidget(mpSourceCodeTextEdit);
+    mpSourceCodeTextEdit->setReadOnly(!mAllowEditing);
 
     QLabel *pSolverLabel = new QLabel("Solver: ", this);
     mpSolverComboBox = new QComboBox(this);
@@ -664,6 +666,9 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     pSolverLayout->addWidget(pRecompileButton);
     pSolverLayout->setStretch(2,1);
     pLayout->addLayout(pSolverLayout);
+
+    pRecompileButton->setEnabled(mAllowEditing);
+    mpSolverComboBox->setEnabled(mAllowEditing);
 
     return pTempWidget;//return pSourceCodeTextEdit;
 }
@@ -911,13 +916,13 @@ void ComponentPropertiesDialog3::createEditStuff()
     mpVariableTableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     pPropertiesLayout->addWidget(mpVariableTableWidget, row, 0, 1, 3);
     pPropertiesLayout->setRowStretch(row,1);
+    mpVariableTableWidget->setEnabled(mAllowEditing);
     qDebug() << "Table: " << mpVariableTableWidget->sizeHint() << "  " << mpVariableTableWidget->minimumWidth() << "  " << mpVariableTableWidget->minimumHeight();
     //------------------------------------------------------------------------------------------------------------------------------
 
     QWidget *pPropertiesWidget = new QWidget(this);
     pPropertiesWidget->setLayout(pPropertiesLayout);
     pPropertiesWidget->setPalette(gpConfig->getPalette());
-    pPropertiesWidget->setEnabled(mAllowEditing);
 
     // Add Code edit stuff, A new tab in a new widget will be created
     //------------------------------------------------------------------------------------------------------------------------------
@@ -932,7 +937,6 @@ void ComponentPropertiesDialog3::createEditStuff()
     {
         QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
         pTabWidget->addTab(pSourceBrowser, "Source Code");
-        pSourceBrowser->setEnabled(mAllowEditing);
     }
 
     // Add tabs for subsystems
