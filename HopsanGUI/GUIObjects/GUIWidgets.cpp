@@ -86,7 +86,18 @@ QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)
             mpParentContainerObject->forgetSelectedWidget(this);
         }
     }
+    else if (change == QGraphicsItem::ItemPositionHasChanged)
+    {
+        QVariant rvalue = WorkspaceObject::itemChange(change, value);
+        // Restore position if locked
+        if(isLocallyLocked() || (getModelLockLevel()!=NotLocked))
+        {
+            this->setPos(mPreviousPos);
+            rvalue = mPreviousPos;
+        }
 
+        return rvalue;
+    }
     return WorkspaceObject::itemChange(change, value);
 }
 
@@ -473,7 +484,7 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         mpEditDialog->show();
 
         this->setZValue(WidgetZValue);
-        this->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        this->setFlag(QGraphicsItem::ItemStacksBehindParent, true);
 
         connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineWidth,       SLOT(setEnabled(bool)));
         connect(mpDialogShowBorderCheckBox,    SIGNAL(toggled(bool)),  mpDialogLineColorButton, SLOT(setEnabled(bool)));
