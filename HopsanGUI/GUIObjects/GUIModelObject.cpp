@@ -76,6 +76,7 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
     mNameTextAlwaysVisible = false;
     mNameTextVisible = false;
     mpDialogParentWidget = new QWidget(gpMainWindowWidget);
+    mIsLocked = false;
 
     // Make a local copy of the appearance data (that can safely be modified if needed)
     if (pAppearanceData != 0)
@@ -600,10 +601,20 @@ void ModelObject::unHighlight()
     }
 }
 
+void ModelObject::setIsLocked(bool value)
+{
+    mIsLocked = value;
+}
+
 
 bool ModelObject::isLossesDisplayVisible()
 {
     return mpLossesDisplay->isVisible();
+}
+
+bool ModelObject::isLocked() const
+{
+    return mIsLocked;
 }
 
 
@@ -950,6 +961,7 @@ void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContent
     if(contents==FullModel)
     {
         rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
+        rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
     }
     rDomElement.setAttribute(HMF_NAMETAG, getName());
     rDomElement.setAttribute(HMF_CQSTYPE, getTypeCQS());
@@ -1210,6 +1222,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     QAction *pShowNameAction = rMenu.addAction(tr("Always show name"));
     QAction *pExportComponentParam = 0;//rMenu.addAction(tr("Export Component Parameters"));
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
+    QAction *pLockedAction=0;
     if (type() != ScopeComponentType)
     {
         pRotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
@@ -1236,6 +1249,11 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
     pShowNameAction->setCheckable(true);
     pShowNameAction->setChecked(mNameTextAlwaysVisible);
+
+    pLockedAction = rMenu.addAction("Locked");
+    pLockedAction->setCheckable(true);
+    pLockedAction->setChecked(mIsLocked);
+
     rMenu.addSeparator();
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
@@ -1294,6 +1312,10 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         mpParentContainerObject->getUndoStackPtr()->newPost();
         setNameTextAlwaysVisible(pShowNameAction->isChecked());
     }
+    else if(selectedAction == pLockedAction)
+    {
+        this->setIsLocked(pLockedAction->isChecked());
+    }
     else
     {
         for(int i=0; i<replaceActionList.size(); ++i)
@@ -1348,8 +1370,15 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
     // Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
+        if(this->isLocked())
+        {
+            this->setPos(mPreviousPos);
+            return value;
+        }
+
         //! @todo maybe this should be omitted from the workspace object itemChanged() function
         emit objectMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
+
 
         // Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if( mEnableSnap && gpConfig->getSnapping() && !mpParentContainerObject->isCreatingConnector() &&
@@ -1616,6 +1645,8 @@ void ModelObject::setSubTypeName(const QString subTypeName)
 
 void ModelObject::deleteMe(UndoStatusEnumT undoSettings)
 {
+    if(mIsLocked) return;
+
     mpParentContainerObject->deleteModelObject(getName(), undoSettings);
 }
 

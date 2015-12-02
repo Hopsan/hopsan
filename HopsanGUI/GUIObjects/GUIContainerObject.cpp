@@ -97,6 +97,7 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
     mIsCreatingConnector = false;
     mShowSubComponentPorts = gpMainWindow->mpTogglePortsAction->isChecked();
     mShowSubComponentNames = gpMainWindow->mpToggleNamesAction->isChecked();
+    mSignalsHidden = gpMainWindow->mpToggleSignalsAction->isChecked();
     mLossesVisible = false;
     mUndoDisabled = false;
     mGfxType = UserGraphics;
@@ -2797,6 +2798,10 @@ void ContainerObject::clearContents()
     while (mit!=mModelObjectMap.end())
     {
         //This may lead to a crash if undo stack is not disabled before calling this
+        if((*mit)->isLocked())
+        {
+            (*mit)->setIsLocked(false);     //Must unlock object in order to remove it
+        }
         (*mit)->deleteMe();
         mit=mModelObjectMap.begin();
     }

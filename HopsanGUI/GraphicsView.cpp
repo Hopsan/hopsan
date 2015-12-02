@@ -379,7 +379,13 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_Delete)
     {
-        if(mpContainerObject->isSubObjectSelected() || mpContainerObject->isConnectorSelected())
+        bool allLocked=true;
+        for(ModelObject* pObj : mpContainerObject->getSelectedModelObjectPtrs())
+        {
+            if(!pObj->isLocked())
+                allLocked=false;
+        }
+        if((mpContainerObject->isSubObjectSelected() && !allLocked) || mpContainerObject->isConnectorSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
             mpParentModelWidget->hasChanged();
