@@ -595,7 +595,8 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         const QStringList &links = mpModelObject->getHelpLinks();
         for (auto &link : links)
         {
-            QString linkstr = QString("External document: <a href=\"%1\">%2</a>").arg(mpModelObject->getAppearanceData()->getBasePath()+link).arg(link);
+            QString path = mpModelObject->getAppearanceData()->getBasePath()+link;
+            QString linkstr = QString("External document: <a href=\"file:///%1\">%2</a>").arg(path).arg(link);
             QLabel *pHelpLink = new QLabel(linkstr,this);
             pHelpLink->setOpenExternalLinks(true);
             pHelpLayout->addWidget(pHelpLink);
