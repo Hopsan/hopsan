@@ -35,103 +35,107 @@
 
 namespace hopsan {
 
-    //!
-    //! @brief
-    //! @ingroup MechanicalComponents
-    //!
-    class MechanicFreeLengthWall : public ComponentQ
+//!
+//! @brief
+//! @ingroup MechanicalComponents
+//!
+class MechanicFreeLengthWall : public ComponentQ
+{
+
+private:
+    double me, mStopPos;
+
+    //Node data pointers
+    double *mpB;
+    double *mpP1_f, *mpP1_x, *mpP1_v, *mpP1_me, *mpP1_c, *mpP1_Zx;
+
+    double mNumX[2], mNumV[2];
+    double mDenX[2], mDenV[2];
+    FirstOrderTransferFunction mFilterX;
+    FirstOrderTransferFunction mFilterV;
+    Port *mpP1;
+
+public:
+    static Component *Creator()
     {
+        return new MechanicFreeLengthWall();
+    }
 
-    private:
-        double me;
-        double *mpB;
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_me1, *mpND_c1, *mpND_Zx1;  //Node data pointers
-        double f1, x1, v1, c1, Zx1;                                                    //Node data variables
-        double mNumX[2], mNumV[2];
-        double mDenX[2], mDenV[2];
-        FirstOrderTransferFunction mFilterX;
-        FirstOrderTransferFunction mFilterV;
-        Port *mpP1;
+    void configure()
+    {
+        //Add ports to the component
+        mpP1 = addPowerPort("Pm1", "NodeMechanic");
+        addInputVariable("B", "Viscous Friction", "Ns/m", 0.001, &mpB); // B, Must not be zero - velocity will become very oscillatory
 
-    public:
-        static Component *Creator()
+        // Add constants
+        addConstant("m_e", "Equivalent Mass", "kg", 1, me); //!< @todo this constant is not needed since we have a start value
+        addConstant("stop_pos", "The position of the stop", "Position", 0, mStopPos);
+
+
+    }
+
+
+    void initialize()
+    {
+        //Assign node data pointers
+        mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+        mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+        mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+        mpP1_me = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
+        mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+        mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+
+        //Initialization
+        mNumX[0] = 1.0;
+        mNumX[1] = 0.0;
+        mDenX[0] = 0.0;
+        mDenX[1] = (*mpB);
+        mNumV[0] = 1.0;
+        mNumV[1] = 0.0;
+        mDenV[0] = (*mpB);
+        mDenV[1] = 0.0;
+
+        mFilterX.initialize(mTimestep, mNumX, mDenX, -(*mpP1_f), (*mpP1_x));
+        mFilterV.initialize(mTimestep, mNumV, mDenV, -(*mpP1_f), (*mpP1_v));
+
+        (*mpP1_me) = me;
+    }
+
+
+    void simulateOneTimestep()
+    {
+        double f1, x1, v1, c1, Zx1;
+
+        //Get variable values from nodes
+        c1 = (*mpP1_c);
+        Zx1 = (*mpP1_Zx);
+
+        //Mass equations
+        mDenX[1] = (*mpB)+Zx1;
+        mDenV[0] = (*mpB)+Zx1;
+        mFilterX.setDen(mDenX);
+        mFilterV.setDen(mDenV);
+
+        x1 = mFilterX.update(-c1);
+        v1 = mFilterV.update(-c1);
+
+        // Note! Negative x1 value means that we are moving into the port towards mStopPos
+        if(mStopPos+x1<0.0)
         {
-            return new MechanicFreeLengthWall();
+            x1=-mStopPos;
+            v1=0.0;
+            mFilterX.initializeValues(-c1, x1);
+            mFilterV.initializeValues(-c1, v1);
         }
 
-        void configure()
-        {
-            //Add ports to the component
-            mpP1 = addPowerPort("Pm1", "NodeMechanic");
-            addInputVariable("B", "Viscous Friction", "Ns/m", 0.001, &mpB); // B, Must not be zero - velocity will become very oscillatory
+        f1 = c1 + Zx1*v1;
 
-            // Add constants
-            addConstant("m_e", "Equivalent Mass", "kg", 1, me);
-        }
-
-
-        void initialize()
-        {
-            //Assign node data pointers
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
-            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
-
-            //Initialization
-            f1 = (*mpND_f1);
-            x1 = (*mpND_x1);
-            v1 = (*mpND_v1);
-
-            mNumX[0] = 1.0;
-            mNumX[1] = 0.0;
-            mDenX[0] = 0.0;
-            mDenX[1] = (*mpB);
-            mNumV[0] = 1.0;
-            mNumV[1] = 0.0;
-            mDenV[0] = (*mpB);
-            mDenV[1] = 0.0;
-
-            mFilterX.initialize(mTimestep, mNumX, mDenX, -f1, x1);
-            mFilterV.initialize(mTimestep, mNumV, mDenV, -f1, v1);
-
-            (*mpND_me1) = me;
-        }
-
-
-        void simulateOneTimestep()
-        {
-            //Get variable values from nodes
-            c1 = (*mpND_c1);
-            Zx1 = (*mpND_Zx1);
-
-            //Mass equations
-            mDenX[1] = (*mpB)+Zx1;
-            mDenV[0] = (*mpB)+Zx1;
-            mFilterX.setDen(mDenX);
-            mFilterV.setDen(mDenV);
-
-            x1 = mFilterX.update(-c1);
-            v1 = mFilterV.update(-c1);
-
-            if(x1<0.0)
-            {
-                x1=0.0;
-                v1=0.0;
-                mFilterX.initializeValues(-c1, x1);
-                mFilterV.initializeValues(-c1, v1);
-            }
-
-            f1 = c1 + Zx1*v1;
-
-            //Write new values to nodes
-            (*mpND_f1) = f1;
-            (*mpND_x1) = x1;
-            (*mpND_v1) = v1;
-        }
-    };
+        //Write new values to nodes
+        (*mpP1_f) = f1;
+        (*mpP1_x) = x1;
+        (*mpP1_v) = v1;
+    }
+};
 }
 
 #endif // MECHANICFREELENGTHWALL_HPP_INCLUDED
