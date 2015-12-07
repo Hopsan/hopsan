@@ -39,18 +39,43 @@
 namespace hopsan {
 
 //! @ingroup ComponentUtilityClasses
-class DLLIMPORTEXPORT Integrator
+class Integrator
 {
-    public:
-        void initialize(const double timestep, const double u0=0.0, const double y0=0.0);
-        void initializeValues(const double u0, const double y0);
-        double update(const double &u);
-        double value();
+public:
+    inline void initialize(const double timestep, const double u0=0.0, const double y0=0.0)
+    {
+        mDelayU = u0;
+        mDelayY = y0;
+        mTimeStep = timestep;
+    }
 
-    private:
-        double mDelayU, mDelayY;
-        double mTimeStep;
-    };
+    inline void initializeValues(const double u0, const double y0)
+    {
+        mDelayU = u0;
+        mDelayY = y0;
+    }
+
+    //! @brief Updates the integrator one timestep and returns the new value
+    inline double update(const double u)
+    {
+        //Bilinear transform is used
+        mDelayY = mDelayY + mTimeStep/2.0*(u + mDelayU);
+        mDelayU = u;
+        return mDelayY;
+    }
+
+    //! @brief Returns the integrator value
+    //! @return The integrated actual value.
+    //! @see update(double u)
+    inline double value() const
+    {
+        return mDelayY;
+    }
+
+private:
+    double mDelayU, mDelayY;
+    double mTimeStep;
+};
 
 }
 

@@ -122,7 +122,6 @@ SOURCES += \
     src/ComponentUtilities/matrix.cc \
     src/ComponentUtilities/ludcmp.cc \
     src/ComponentUtilities/IntegratorLimited.cc \
-    src/ComponentUtilities/Integrator.cc \
     src/ComponentUtilities/FirstOrderTransferFunction.cc \
     src/ComponentUtilities/CSVParser.cc \
     ../Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
