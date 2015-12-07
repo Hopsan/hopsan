@@ -163,7 +163,7 @@ private:
     void executeChangeParameterCommand(const QString cmd);
 
 
-    void executeHelpCommand(const QString cmd);
+    void executeHelpCommand(QString arg);
     void executeRunScriptCommand(const QString cmd);
     void executeWriteHistoryToFileCommand(const QString cmd);
     void executeWriteToFileCommand(const QString cmd);

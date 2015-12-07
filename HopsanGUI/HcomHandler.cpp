@@ -941,7 +941,8 @@ void HcomHandler::createCommands()
 
     HcomCommand absCmd;
     absCmd.cmd = "abs";
-    absCmd.description.append("Irreversibly turn all vector elements into aboslute values");
+    absCmd.description.append("Irreversibly turn all vector elements into aboslute values\n");
+    absCmd.description.append("You should use the abs() function instead!");
     absCmd.help.append(" Usage: abs [var]");
     absCmd.fnc = &HcomHandler::executeAbsCommand;
     absCmd.group = "Variable Commands";
@@ -1815,11 +1816,12 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
 
 
 //! @brief Execute function for "help" command
-void HcomHandler::executeHelpCommand(const QString cmd)
+void HcomHandler::executeHelpCommand(QString arg)
 {
-    QString temp=cmd;
-    temp.remove(" ");
-    if(temp.isEmpty())
+    bool isFunction=false;
+    int commandId=-1;
+    arg.remove(" ");
+    if(arg.isEmpty())
     {
         HCOMPRINT("-------------------------------------------------------------------------");
         HCOMPRINT(" Hopsan HCOM Terminal v0.1");
@@ -1880,16 +1882,40 @@ void HcomHandler::executeHelpCommand(const QString cmd)
         HCOMPRINT(commands);
         HCOMPRINT(" Type: \"help [command]\" for more information about a specific command.");
         HCOMPRINT("-------------------------------------------------------------------------");
+        return;
     }
-    else if(temp == "doxygen")
+    else if(arg == "doxygen")
     {
         generateCommandsHelpText();
         return;
     }
-    else if(temp.endsWith("()") && mLocalFunctionDescriptions.contains(temp.remove("()")))
+    else if(arg.endsWith("()") && mLocalFunctionDescriptions.contains(arg.remove("()")))
     {
-        QString description = mLocalFunctionDescriptions.find(temp).value().first;
-        QString help = mLocalFunctionDescriptions.find(temp).value().second;
+        isFunction = true;
+    }
+    else
+    {
+        for(int i=0; i<mCmdList.size(); ++i)
+        {
+            if(mCmdList[i].cmd == arg)
+            {
+                commandId = i;
+                break;
+            }
+        }
+
+        // If command was not found, search among functions
+        if (commandId<0 && mLocalFunctionDescriptions.contains(arg) )
+        {
+            //HCOMINFO("Command not found, but showing help for function with same name");
+            isFunction = true;
+        }
+    }
+
+    if (isFunction)
+    {
+        QString description = mLocalFunctionDescriptions.find(arg).value().first;
+        QString help = mLocalFunctionDescriptions.find(arg).value().second;
 
         QStringList helpLines = help.split("\n");
         int helpLength=0;
@@ -1911,40 +1937,31 @@ void HcomHandler::executeHelpCommand(const QString cmd)
         helpLine.replace("\n", "\n ");
         HCOMPRINT(delimiterLine+"\n"+descLine+"\n"+helpLine+"\n"+delimiterLine);
     }
+    else if (commandId>=0)
+    {
+        QStringList helpLines = mCmdList[commandId].help.split("\n");
+        int helpLength=0;
+        Q_FOREACH(const QString &line, helpLines)
+        {
+            if(line.size() > helpLength)
+                helpLength = line.size();
+        }
+        int length=qMax(mCmdList[commandId].description.size(), helpLength)+2;
+        QString delimiterLine;
+        for(int i=0; i<length; ++i)
+        {
+            delimiterLine.append("-");
+        }
+        QString descLine = mCmdList[commandId].description;
+        descLine.prepend(" ");
+        QString helpLine = mCmdList[commandId].help;
+        helpLine.prepend(" ");
+        helpLine.replace("\n", "\n ");
+        HCOMPRINT(delimiterLine+"\n"+descLine+"\n"+helpLine+"\n"+delimiterLine);
+    }
     else
     {
-        int idx = -1;
-        for(int i=0; i<mCmdList.size(); ++i)
-        {
-            if(mCmdList[i].cmd == temp) { idx = i; }
-        }
-
-        if(idx < 0)
-        {
-            HCOMERR("Command not found or no help available for this command.");
-        }
-        else
-        {
-            QStringList helpLines = mCmdList[idx].help.split("\n");
-            int helpLength=0;
-            Q_FOREACH(const QString &line, helpLines)
-            {
-                if(line.size() > helpLength)
-                    helpLength = line.size();
-            }
-            int length=qMax(mCmdList[idx].description.size(), helpLength)+2;
-            QString delimiterLine;
-            for(int i=0; i<length; ++i)
-            {
-                delimiterLine.append("-");
-            }
-            QString descLine = mCmdList[idx].description;
-            descLine.prepend(" ");
-            QString helpLine = mCmdList[idx].help;
-            helpLine.prepend(" ");
-            helpLine.replace("\n", "\n ");
-            HCOMPRINT(delimiterLine+"\n"+descLine+"\n"+helpLine+"\n"+delimiterLine);
-        }
+        HCOMERR("Command or function not found, or no help available for this command or function.");
     }
 }
 
