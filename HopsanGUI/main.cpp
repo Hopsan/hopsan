@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     qDebug() << "TBB is used!";
 #endif
 
-    // Forcing nummeric locale to C only using QLocale::setDefault() does not seem to help
+    // Forcing numeric locale to C only using QLocale::setDefault() does not seem to help
     std::setlocale(LC_NUMERIC, "C");
     std::lconv* lc = std::localeconv();
     qDebug() << "Decimal point: " << lc->decimal_point << " thousand separator: \"" << lc->thousands_sep << "\"";
@@ -116,21 +116,22 @@ int main(int argc, char *argv[])
     // Process any received messages
     gpMessageHandler->startPublish();
 
-    // Read command line arguments
-    QStringList args = a.arguments();
-    if (args.size() > 1)
-    {
-        //! @todo maybe use TCLAP here
-        // Assume argument is hcom script
-        QString hcomScript = args[1];
-        gpTerminalWidget->mpHandler->executeCommand("exec "+hcomScript);
-    }
-
     // Show license dialog
     if (gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP))
     {
         (new LicenseDialog(gpMainWindowWidget))->show();
         // Note! it will delete on close automatically
+    }
+
+    // Read command line arguments, search for hcom scripts, ignore everything else
+    //! @todo maybe use TCLAP here
+    QStringList args = a.arguments();
+    for(const QString &arg : args)
+    {
+        if(arg.endsWith(".hcom"))
+        {
+            gpTerminalWidget->mpHandler->executeCommand("exec "+arg);
+        }
     }
 
     // Execute application

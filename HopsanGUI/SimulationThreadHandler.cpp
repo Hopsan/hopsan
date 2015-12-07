@@ -181,7 +181,7 @@ ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const d
     mStopT = stopTime;
     mvSystems = rvSystems;
 
-    mpProgressDialogRefreshTimer = new QTimer(this); //Note! delete is handled autoamtically since this is parent
+    mpProgressDialogRefreshTimer = new QTimer(this); //Note! delete is handled automatically since this is parent
     connect(mpProgressDialogRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshProgressBar()));
 }
 
