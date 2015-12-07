@@ -436,7 +436,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
     callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
     callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
-    callSed(r'"s|componentLibraries||" -i HopsanNG.pro')
+    callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
 
 
 def buildRelease():

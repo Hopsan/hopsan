@@ -3,6 +3,7 @@
 # Project created by QtCreator 2014-03-20T08:36:37
 #
 #-------------------------------------------------
+include( ../Common.prf )
 
 QT       += core gui xml
 
@@ -10,10 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HoLC
 TEMPLATE = app
-DESTDIR = $${PWD}/bin
-
-#Make compile output clean
-CONFIG += silent warn_on
+DESTDIR = $${PWD}/../bin
 
 INCLUDEPATH *= $${PWD}/
 LIBS *= -L$${PWD}/../bin
