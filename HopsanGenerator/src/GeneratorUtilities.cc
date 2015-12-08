@@ -211,6 +211,7 @@ bool copyDir(const QString fromPath, QString toPath, QString &rErrorMessage)
             }
         }
     }
+    return true;
 }
 
 
