@@ -748,23 +748,23 @@ QMap<QString, QString> ModelObject::getVariableAliases(const QString &rPortName)
     return results;
 }
 
-void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions)
-{
-    rVarDataDescriptions.clear();
-    if (mpParentContainerObject)
-    {
-        QList<Port*>::iterator pit;
-        for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
-        {
-            QVector<CoreVariableData> varDescs;
-            mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(this->getName(), (*pit)->getName(), varDescs);
-            for (int i=0; i<varDescs.size(); ++i)
-            {
-                rVarDataDescriptions.push_back(varDescs[i]);
-            }
-        }
-    }
-}
+//void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions)
+//{
+//    rVarDataDescriptions.clear();
+//    if (mpParentContainerObject)
+//    {
+//        QList<Port*>::iterator pit;
+//        for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
+//        {
+//            QVector<CoreVariableData> varDescs;
+//            mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(this->getName(), (*pit)->getName(), varDescs);
+//            for (int i=0; i<varDescs.size(); ++i)
+//            {
+//                rVarDataDescriptions.push_back(varDescs[i]);
+//            }
+//        }
+//    }
+//}
 
 void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions) const
 {

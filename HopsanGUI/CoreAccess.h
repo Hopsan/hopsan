@@ -134,8 +134,8 @@ public:
     QString mAlias;
     QString mValue;
     QString mType;
-    QString mUnit;
     QString mQuantity;
+    QString mUnit;
     QString mDescription;
     QString mNodeDataVariableType;
 };
@@ -143,7 +143,6 @@ public:
 class CoreVariameterDescription
 {
 public:
-    CoreVariameterDescription() {}
     QString mName;
     QString mShortName;
     QString mPortName;

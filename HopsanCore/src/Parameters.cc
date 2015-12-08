@@ -134,25 +134,24 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
 bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation)
 {
     bool success=false;
- //   if(!(mParameterName==value))
+
+    HString oldValue = mParameterValue;
+    mParameterValue = rValue;
+    HString evalResult = rValue;
+    success = evaluate(evalResult, this);
+    if(!success)
     {
-        HString oldValue = mParameterValue;
-        mParameterValue = rValue;
-        HString evalResult = rValue;
-        success = evaluate(evalResult, this);
-        if(!success)
-        {
-            mParameterValue = oldValue;
-        }
-        if(rValue != evalResult)
-        {
-            *ppNeedEvaluation = this;
-        }
-        else
-        {
-            *ppNeedEvaluation = 0;
-        }
+        mParameterValue = oldValue;
     }
+    if(rValue != evalResult)
+    {
+        *ppNeedEvaluation = this;
+    }
+    else
+    {
+        *ppNeedEvaluation = 0;
+    }
+
     return success;
 }
 

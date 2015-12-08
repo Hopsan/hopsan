@@ -1269,7 +1269,7 @@ bool VariableTableWidget::focusNextPrevChild(bool next)
         setCurrentCell(row,col);
     }
 
-    while(!columnSpan(row,0)>2 && (col == Description || col == Unit || col == NumCols))
+    while(!(columnSpan(row,0)>2) && (col == Name || col == Description || col == Unit || col == NumCols))
     {
         retval = focusNextPrevChild(next);
         col = currentColumn();
