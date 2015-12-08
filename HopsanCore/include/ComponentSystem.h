@@ -109,17 +109,19 @@ namespace hopsan {
         // Convenience functions to enable and disable data logging
         void setAllNodesDoLogData(const bool logornot);
 
-        // Startvalue loading
+        // Start value loading
         bool doesKeepStartValues();
         void setLoadStartValues(bool load);
         void loadStartValues();
         void loadStartValuesFromSimulation();
+        void evaluateParametersRecursively();
 
         // Parameter loading
         void loadParameters(const HString &rFilePath);
         void loadParameters(const SetParametersMapT &rParameterMap);
 
         // NumHop script
+        bool evaluateNumHopScriptRecursively();
         bool runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput);
         void setNumHopScript(const HString &rScript);
 
@@ -157,7 +159,7 @@ namespace hopsan {
         size_t getNumLogSamples() const;
         size_t getNumActuallyLoggedSamples() const;
 
-        // Stop a running init or simulation
+        // Stop a running initialization or simulation
         void stopSimulation(const HString &rReason);
         void stopSimulation();
         bool wasSimulationAborted();
@@ -253,8 +255,6 @@ namespace hopsan {
         double mRequestedLogStartTime, mLogTimeDt;
         bool mEnableLogData;
         std::vector<double> mTimeStorage;
-
-        //Finns i Component        Parameters *mSystemParameters;
     };
 
 

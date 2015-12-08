@@ -249,7 +249,7 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
 {
     bool success;
     HString quantity, bu;
-    if(mpParameters->hasParameter(rName.c_str()))
+    if(mpParameters->hasParameter(rName))
     {
         checkIfQuantityOrUnit(rUnitOrQuantity, quantity, bu);
         success = mpParameters->setParameter(rName, rValue, rDescription, quantity, bu, rType, force);
@@ -819,7 +819,7 @@ void ComponentSystem::preAllocateLogSpace()
                 try
                 {
                     // If the node is in a read port and if that port is not connected (node only have one connected port)
-                    // Then we should disable logging for that node as logging the startvalue does not make sense
+                    // Then we should disable logging for that node as logging the start value does not make sense
                     if ( ((*it)->getNumConnectedPorts() < 2) && ((*it)->getNumberOfPortsByType(ReadPortType) == 1) )
                     {
                         (*it)->setLoggingEnabled(false);
@@ -834,7 +834,7 @@ void ComponentSystem::preAllocateLogSpace()
                 catch (exception &e)
                 {
                     //cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
-                    addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
+                    addErrorMessage("Failed to allocate log data memory, try reducing the amount of log data", "FailedMemoryAllocation");
                     (*it)->setLoggingEnabled(false);
                     success = false;
                 }
@@ -842,7 +842,7 @@ void ComponentSystem::preAllocateLogSpace()
         }
         catch (exception &e)
         {
-            addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
+            addErrorMessage("Failed to allocate log data memory, try reducing the amount of log data", "FailedMemoryAllocation");
             disableLog();
             success = false;
         }
@@ -932,7 +932,7 @@ std::list<HString> ComponentSystem::getModelAssets() const
 //! @brief Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(HString portName, const HString &rDescription)
 {
-    // Force default portname p, if nothing else specified
+    // Force default port name p, if nothing else specified
     if (portName.empty())
     {
         portName = "p";
@@ -1399,7 +1399,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
             HString msg;
             msg = "Disconnected: {"+msgName1+"} and {"+msgName2+"}";
-            addDebugMessage(msg, "succesfuldisconnect");
+            addDebugMessage(msg, "successful disconnect");
 
             return success;
         }
@@ -1415,7 +1415,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
 
 //! @brief Sets the desired time step in a component system.
-//! @brief param timestep New desired time step
+//! @param[in] timestep New desired time step
 void ComponentSystem::setDesiredTimestep(const double timestep)
 {
     mDesiredTimestep = timestep;
@@ -1601,7 +1601,6 @@ void ComponentSystem::setupLogSlotsAndTs(const double simStartT, const double si
         //        cout << "mNumSimulationSteps: " << size_t((stopT-logStartT)/Ts+0.5) << endl;
         //        cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
         //        cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
-
         //    for (int i=0; i<mTimeStepsToLog.size(); ++i)
         //    {
         //        cout << mTimeStepsToLog[i] << " ";
@@ -1648,14 +1647,14 @@ void ComponentSystem::setAllNodesDoLogData(const bool logornot)
 }
 
 
-//! @brief Returns if start values should be loaded before simulation. If not, old simulation results is used as startvalues.
+//! @brief Returns if start values should be loaded before simulation. If not, old simulation results is used as start values.
 bool ComponentSystem::doesKeepStartValues()
 {
     return mKeepStartValues;
 }
 
 
-//! @brief Set if or not start values should be loaded before simulation. If not, old simulation results is used as startvalues.
+//! @brief Set if or not start values should be loaded before simulation. If not, old simulation results is used as start values.
 void ComponentSystem::setLoadStartValues(bool load)
 {
     mKeepStartValues = load;
@@ -1663,12 +1662,12 @@ void ComponentSystem::setLoadStartValues(bool load)
 
 
 //! @brief Checks that everything is OK before simulation
+//! @returns true if everything is OK, else false (simulation not permitted)
 bool ComponentSystem::checkModelBeforeSimulation()
 {
     // Make sure that there are no components or systems with an undefined cqs_type present
     if (mComponentUndefinedptrs.size() > 0)
     {
-
         for (size_t i=0; i<mComponentUndefinedptrs.size(); ++i)
         {
             addErrorMessage("The Component:  "+mComponentUndefinedptrs[i]->getName()+"  has an invalid CQS-Type:  "+mComponentUndefinedptrs[i]->getTypeCQSString());
@@ -1676,7 +1675,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
         return false;
     }
 
-    // Check this systems own SystemPorts, are they connected (they must be)
+    // Check this systems own SystemPorts are connected (if required, they must be)
     vector<Port*> ports = getPortPtrVector();
     for (size_t i=0; i<ports.size(); ++i)
     {
@@ -1742,16 +1741,16 @@ bool ComponentSystem::checkModelBeforeSimulation()
                     return false;
                 }
             }
+        }
 
-            // Check parameters in subcomponents
-            HString errParName;
-            if(!(pComp->checkParameters(errParName)))
-            {
-                HString val;
-                pComp->getParameterValue(errParName, val);
-                addErrorMessage("The parameter:  "+errParName+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+" with value:  "+val+"  could not be evaluated!");
-                return false;
-            }
+        // Check parameters in subcomponents. Note! this will also evaluate the parameter strings, but that should be OK
+        HString errParName;
+        if(!pComp->checkParameters(errParName))
+        {
+            HString val;
+            pComp->getParameterValue(errParName, val);
+            addErrorMessage("The parameter:  "+errParName+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+" with value:  "+val+"  could not be evaluated!");
+            return false;
         }
 
         // Check if component uses a system parameter and remove it from the unused list (if not already removed)
@@ -1772,9 +1771,9 @@ bool ComponentSystem::checkModelBeforeSimulation()
             }
         }
 
-        // Check parameters in system
-        HString errParName;
-        if(!(checkParameters(errParName)))
+        // Check parameters in system. Note! this will also evaluate the parameter strings, but that should be OK
+        errParName.clear();
+        if(!checkParameters(errParName))
         {
             addErrorMessage("The system parameter:  "+errParName+"  in System:  "+getName()+"  can not be evaluated, it maybe depend on a deleted system parameter.");
             return false;
@@ -1790,8 +1789,6 @@ bool ComponentSystem::checkModelBeforeSimulation()
         }
 
         //! @todo check that all C-component required ports are connected to Q-component ports
-
-        //! @todo check more stuff
     }
 
     // Add warning message if at least one system parameter is unused
@@ -1841,7 +1838,7 @@ bool ComponentSystem::preInitialize()
 //! @brief Load start values by telling each component to load their start values
 void ComponentSystem::loadStartValues()
 {
-    // First load startvalues for all sub components
+    // First load start values for all sub components
     std::vector<Component*>::iterator compIt;
     for(compIt = mComponentSignalptrs.begin(); compIt != mComponentSignalptrs.end(); ++compIt)
     {
@@ -1856,7 +1853,7 @@ void ComponentSystem::loadStartValues()
         (*compIt)->loadStartValues();
     }
 
-    // Now load all startvalues for the interface ports, they should override internally set startvalues
+    // Now load all start values for the interface ports, they should override internally set start values
     PortPtrMapT::iterator pit;
     for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
     {
@@ -1900,6 +1897,49 @@ void ComponentSystem::loadStartValuesFromSimulation()
     }
 }
 
+//! @brief Recurse through the model system hierarchy and evaluate all parameters
+void ComponentSystem::evaluateParametersRecursively()
+{
+    // First evaluate our own system parameters
+    evaluateParameters();
+
+    // Now evaluate any sub component and subsystem parameters
+    std::vector<Component*>::iterator cit;
+    for(cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
+    {
+        if ((*cit)->isComponentSystem())
+        {
+            static_cast<ComponentSystem*>(*cit)->evaluateParametersRecursively();
+        }
+        else
+        {
+            (*cit)->evaluateParameters();
+        }
+    }
+    for(cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
+    {
+        if ((*cit)->isComponentSystem())
+        {
+            static_cast<ComponentSystem*>(*cit)->evaluateParametersRecursively();
+        }
+        else
+        {
+            (*cit)->evaluateParameters();
+        }
+    }
+    for(cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
+    {
+        if ((*cit)->isComponentSystem())
+        {
+            static_cast<ComponentSystem*>(*cit)->evaluateParametersRecursively();
+        }
+        else
+        {
+            (*cit)->evaluateParameters();
+        }
+    }
+}
+
 
 //! @brief Loads parameters from a file
 //! @param[in] rFilePath The file to load from
@@ -1930,6 +1970,55 @@ void ComponentSystem::loadParameters(const SetParametersMapT &rParameterMap)
     }
 }
 
+//! @brief Recurse through the model system hierarchy and evaluate all system-level numhop scripts
+//! @returns true if no errors occurred, false otherwise
+bool ComponentSystem::evaluateNumHopScriptRecursively()
+{
+    // First evaluate our own numhop script
+    // If we have a Numhop script, then now is the time to run it
+    if (!mNumHopScript.empty())
+    {
+        HString dummy;
+        bool evalOK = runNumHopScript(mNumHopScript, true, dummy);
+        if (!evalOK)
+        {
+            addErrorMessage("Numhop script evaluation failed: "+dummy);
+            return false;
+        }
+    }
+
+    // Now recurse down the subsystem hierarchy to evaluate subsystems numhop scripts
+    bool evalOK=true;
+    std::vector<Component*>::iterator cit;
+    for(cit=mComponentSignalptrs.begin(); cit!=mComponentSignalptrs.end(); ++cit)
+    {
+        if ((*cit)->isComponentSystem())
+        {
+            evalOK = evalOK && static_cast<ComponentSystem*>(*cit)->evaluateNumHopScriptRecursively();
+        }
+    }
+    for(cit=mComponentCptrs.begin(); cit!=mComponentCptrs.end(); ++cit)
+    {
+        if ((*cit)->isComponentSystem())
+        {
+            evalOK = evalOK && static_cast<ComponentSystem*>(*cit)->evaluateNumHopScriptRecursively();
+        }
+    }
+    for(cit=mComponentQptrs.begin(); cit!=mComponentQptrs.end(); ++cit)
+    {
+        if ((*cit)->isComponentSystem())
+        {
+            evalOK = evalOK && static_cast<ComponentSystem*>(*cit)->evaluateNumHopScriptRecursively();
+        }
+    }
+    return evalOK;
+}
+
+//! @brief Interprets and evaluates (runs) a numhop scripts
+//! @param[in] rScript The script string
+//! @param[in] printOutput Toggle whether to print output
+//! @param[out] The output string to print to, (if printing activated)
+//! @returns true if no errors occurred, false otherwise
 bool ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput)
 {
     // Create if helper does not already exist
@@ -1942,6 +2031,8 @@ bool ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, 
     return mpNumHopHelper->evalNumHopScript(rScript, dummy, printOutput, rOutput);
 }
 
+//! @brief Set the system-level numhop script
+//! @param[in] rScript The script string
 void ComponentSystem::setNumHopScript(const HString &rScript)
 {
     mNumHopScript = rScript;
@@ -1954,6 +2045,7 @@ void ComponentSystem::setNumHopScript(const HString &rScript)
 //! @param[in] stopT Stop time of simulation
 bool ComponentSystem::initialize(const double startT, const double stopT)
 {
+    //cout << "Initializing SubSystem: " << this->mName << endl;
     addLogMess("ComponentSystem::initialize() in "+getName());
 
     if (this->isTopLevelSystem())
@@ -1961,8 +2053,6 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         preInitialize();
     }
 
-
-    //cout << "Initializing SubSystem: " << this->mName << endl;
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     // Set initial time
@@ -1983,7 +2073,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     this->setupLogSlotsAndTs(startT, stopT, mTimestep);
     //! @todo make it possible to use other logtimestep methods then nLogSamples
 
-    // preAllocate local logspace based on necessary number of logslots
+    // Preallocate local log space based on necessary number of log slots
     this->preAllocateLogSpace();
 
     // If we failed allocation then abort
@@ -1996,37 +2086,41 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     adjustTimestep(mComponentCptrs);
     adjustTimestep(mComponentQptrs);
 
-    if(!this->sortComponentVector(mComponentSignalptrs))
+    // Sort signal components, if they can not be sorted (algebraic loop), return with failure
+    if(!sortComponentVector(mComponentSignalptrs))
     {
         return false;
     }
-    this->sortComponentVector(mComponentCptrs);
-    this->sortComponentVector(mComponentQptrs);
+    // Sort C and Q components
+    sortComponentVector(mComponentCptrs);
+    sortComponentVector(mComponentQptrs);
 
-    // If we have a numhop script, then now is the time to run it
-    if (!mNumHopScript.empty())
-    {
-        HString dummy;
-        bool evalOK = runNumHopScript(mNumHopScript, true, dummy);
-        if (!evalOK)
-        {
-            addErrorMessage("Num script evaluation failed: "+dummy);
-            return false;
-        }
-    }
-
-    // Only set startvalues from top-level system, else they will be set again in the subsystem initialize calls
+    // run top-level system initialization functions
     if (this->isTopLevelSystem())
     {
-        if(!mKeepStartValues)
+        // If we have a Numhop script, then now is the time to run it
+        if(!evaluateNumHopScriptRecursively())
+        {
+            return false;
+        }
+
+        // If the numhop scripts have changed the values, we need to make sure that the parameters are reevaluated
+        // This is also necessary because preInitialize may have done some changes
+        evaluateParametersRecursively();
+
+        // Now we set the actual node data variables to the values from the start nodes (copy node values)
+        // thereby initializing the system hierarchy with the start values
+        // Only set start values from top-level system, else they will be set again in the subsystem initialize calls
+        // It is important that all start values are set before initialization of the system hierarchy begins
+        // initial calculations may depend on the start values having been set already
+        if (!mKeepStartValues )
         {
             loadStartValues();
         }
     }
 
-    //Init
-    updateParameters(); //!< @todo I am not sure why this is needed here really, and maybe it should be called before the loadStartValue code above, but I am not sure /Peter 20151127
-    //Signal components
+    // Initialization of the system hierarchy
+    // Initialize Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
         if (mStopSimulation)
@@ -2035,7 +2129,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
 
         mComponentSignalptrs[s]->initializeAutoSignalNodeDataPtrs();
-        mComponentSignalptrs[s]->updateParameters();
+        //mComponentSignalptrs[s]->evaluateParameters();
 
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
@@ -2051,7 +2145,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
     }
 
-    //C components
+    // Initialize C components
     for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
         if (mStopSimulation)
@@ -2060,7 +2154,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
 
         mComponentCptrs[c]->initializeAutoSignalNodeDataPtrs();
-        mComponentCptrs[c]->updateParameters();
+        //mComponentCptrs[c]->evaluateParameters();
 
         if (mComponentCptrs[c]->isComponentSystem())
         {
@@ -2076,7 +2170,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
     }
 
-    //Q components
+    // Initialize Q components
     for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
         if (mStopSimulation)
@@ -2085,7 +2179,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
 
         mComponentQptrs[q]->initializeAutoSignalNodeDataPtrs();
-        mComponentQptrs[q]->updateParameters();
+        //mComponentQptrs[q]->evaluateParameters();
 
         if (mComponentQptrs[q]->isComponentSystem())
         {
@@ -2101,12 +2195,14 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
     }
 
+    // If flag is set, then return with failure
     if (mStopSimulation)
     {
         return false;
     }
 
-    logTimeAndNodes(mTotalTakenSimulationSteps); // Log the startvalues
+    // Log the start values
+    logTimeAndNodes(mTotalTakenSimulationSteps);
 
     // We seems to have initialized successfully
     return true;

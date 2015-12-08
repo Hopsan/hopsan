@@ -153,7 +153,7 @@ public:
     double evaluateDoubleParameter(const HString &rName, bool &rEvalOK);
     void* getParameterDataPtr(const HString &rName);
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
-    void updateParameters();
+    void evaluateParameters();
     bool checkParameters(HString &errParName);
 
     // Start values
@@ -170,7 +170,7 @@ public:
     Port *getPort(const HString &rPortname) const;
     std::vector<HString> getPortNames();
 
-    // Node Data ptrs
+    // Node Data pointers
     double *getSafeNodeDataPtr(Port* pPort, const int dataId);
     double *getSafeNodeDataPtr(const HString &rPortName, const int dataId);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId);

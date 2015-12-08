@@ -149,7 +149,7 @@ bool Component::setParameterValue(const HString &rName, const HString &rValue, b
 }
 
 
-void Component::updateParameters()
+void Component::evaluateParameters()
 {
     mpParameters->evaluateParameters();
 }
@@ -240,7 +240,7 @@ std::list<HString> Component::getModelAssets() const
 ///@{
 //! @brief Set the value of a constant parameter
 //! @note Don't use this function during simulation, it is slow
-//! @todo check returnvalue from setParameter check if Ok error message otherwise, also in the other functions
+//! @todo check return value from setParameter check if Ok error message otherwise, also in the other functions
 //! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(const HString &rName, const double value)
 {
