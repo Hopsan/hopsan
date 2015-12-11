@@ -44,7 +44,7 @@ namespace hopsan {
     private:
         double me;
         Port *mpPm1;
-        double *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_me;
+        double *mpPm1_f, *mpPm1_x, *mpPm1_v, *mpPm1_c, *mpPm1_me;
 
     public:
         static Component *Creator()
@@ -60,21 +60,21 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_f = getSafeNodeDataPtr(mpPm1, NodeMechanic::Force);
-            mpND_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::Position);
-            mpND_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::Velocity);
-            mpND_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WaveVariable);
-            mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EquivalentMass);
+            mpPm1_f = getSafeNodeDataPtr(mpPm1, NodeMechanic::Force);
+            mpPm1_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::Position);
+            mpPm1_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::Velocity);
+            mpPm1_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WaveVariable);
+            mpPm1_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EquivalentMass);
 
-            (*mpND_v) = 0;
-            (*mpND_me) = me;
+            (*mpPm1_v) = 0;
+            (*mpPm1_me) = me;
         }
 
 
         void simulateOneTimestep()
         {
             //Equations
-            (*mpND_f) = (*mpND_c);
+            (*mpPm1_f) = (*mpPm1_c);
         }
     };
 }

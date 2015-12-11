@@ -44,12 +44,12 @@ namespace hopsan {
     private:
         double me;
         Port *mpMP;
-        std::vector<double*> mND_f_vec;
-        std::vector<double*> mND_x_vec;
-        std::vector<double*> mND_v_vec;
-        std::vector<double*> mND_c_vec;
-        std::vector<double*> mND_Zc_vec;
-        std::vector<double*> mND_me_vec;
+        std::vector<double*> mvPm1_f;
+        std::vector<double*> mvPm1_x;
+        std::vector<double*> mvPm1_v;
+        std::vector<double*> mvPm1_c;
+        std::vector<double*> mvPm1_Zc;
+        std::vector<double*> mvPm1_me;
         size_t mNumPorts;
 
     public:
@@ -70,23 +70,23 @@ namespace hopsan {
             mNumPorts = mpMP->getNumPorts();
 
             //! @todo write help function to set the size and contents of a these vectors automatically
-            mND_f_vec.resize(mNumPorts);
-            mND_x_vec.resize(mNumPorts);
-            mND_v_vec.resize(mNumPorts);
-            mND_c_vec.resize(mNumPorts);
-            mND_Zc_vec.resize(mNumPorts);
-            mND_me_vec.resize(mNumPorts);
+            mvPm1_f.resize(mNumPorts);
+            mvPm1_x.resize(mNumPorts);
+            mvPm1_v.resize(mNumPorts);
+            mvPm1_c.resize(mNumPorts);
+            mvPm1_Zc.resize(mNumPorts);
+            mvPm1_me.resize(mNumPorts);
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mND_f_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::Force);
-                mND_x_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::Position);
-                mND_v_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::Velocity);
-                mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::WaveVariable);
-                mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::CharImpedance);
-                mND_me_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::EquivalentMass);
+                mvPm1_f[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::Force);
+                mvPm1_x[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::Position);
+                mvPm1_v[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::Velocity);
+                mvPm1_c[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::WaveVariable);
+                mvPm1_Zc[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::CharImpedance);
+                mvPm1_me[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::EquivalentMass);
 
-                *(mND_v_vec[i]) = 0;
-                *(mND_me_vec[i]) = me;
+                *(mvPm1_v[i]) = 0;
+                *(mvPm1_me[i]) = me;
             }
         }
 
@@ -96,7 +96,7 @@ namespace hopsan {
             //Equations
             for(size_t i=0; i<mNumPorts; ++i)
             {
-                *(mND_f_vec[i]) = *(mND_c_vec[i]);
+                *(mvPm1_f[i]) = *(mvPm1_c[i]);
             }
         }
     };
