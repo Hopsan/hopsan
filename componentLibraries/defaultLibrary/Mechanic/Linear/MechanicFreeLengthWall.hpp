@@ -70,8 +70,6 @@ public:
         // Add constants
         addConstant("m_e", "Equivalent Mass", "kg", 1, me); //!< @todo this constant is not needed since we have a start value
         addConstant("stop_pos", "The position of the stop", "Position", 0, mStopPos);
-
-
     }
 
 
@@ -120,9 +118,10 @@ public:
         v1 = mFilterV.update(-c1);
 
         // Note! Negative x1 value means that we are moving into the port towards mStopPos
-        if(mStopPos+x1<0.0)
+        //       mStopPos should have same coordinate system as port, (positive direction out of the component)
+        if(x1<mStopPos)
         {
-            x1=-mStopPos;
+            x1=mStopPos;
             v1=0.0;
             mFilterX.initializeValues(-c1, x1);
             mFilterV.initializeValues(-c1, v1);
