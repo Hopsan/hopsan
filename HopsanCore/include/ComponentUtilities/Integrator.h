@@ -35,6 +35,7 @@
 #define INTEGRATOR_H_INCLUDED
 
 #include "win32dll.h"
+#include "Delay.hpp"
 
 namespace hopsan {
 
@@ -72,9 +73,64 @@ public:
         return mDelayY;
     }
 
-private:
+protected:
     double mDelayU, mDelayY;
     double mTimeStep;
+};
+
+//! @ingroup ComponentUtilityClasses
+class IntegratorWithBackup : public Integrator
+{
+public:
+    inline void initialize(const double timestep, const double u0=0.0, const double y0=0.0)
+    {
+        Integrator::initialize(timestep, u0, y0);
+        setBackupLength(1);
+    }
+
+    //! @brief Setup the number of backup steps to remember (size of the backup buffer)
+    //! @param[in] nSteps The number of steps to remember
+    void setBackupLength(int nStep)
+    {
+        mBackupU.initialize(nStep, mDelayU);
+        mBackupY.initialize(nStep, mDelayY);
+    }
+
+    //! @brief Restore the backup at the given step
+    //! @param[in] nSteps The number of steps backwards in time to restore (1=last step) must be >=1
+    //! @note The function assumes that the backup buffer has been allocated
+    //! @see setBackupLength
+    inline void restoreBackup(size_t nSteps=1)
+    {
+        if (nSteps > 0)
+        {
+            nSteps -= 1;
+        }
+        mDelayU = mBackupU.getIdx(nSteps);
+        mDelayY = mBackupY.getIdx(nSteps);
+    }
+
+    //! @brief Pushes a backup of transfer function states into the backup buffer
+    //! @note Only the delayed states are backed up, not the current value or the coefficients
+    //! @todo Maybe we should backup more things like coefficients, saturated flag, current value, but that will take time at every timestep
+    inline void backup()
+    {
+        mBackupU.update(mDelayU);
+        mBackupY.update(mDelayY);
+    }
+
+    //! @brief Make a backup of states and then calls update
+    //! @param[in] u The new input value
+    //! @returns The current transfer function output value after update
+    inline double updateWithBackup(double u)
+    {
+        backup();
+        return update(u);
+    }
+
+protected:
+    Delay mBackupU, mBackupY;
+
 };
 
 }
