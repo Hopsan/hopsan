@@ -379,6 +379,7 @@ void LibraryWidget::update()
     if(pExternalItem)
     {
         mpTree->insertTopLevelItem(mpTree->topLevelItemCount(),pExternalItem);
+        pExternalItem->setExpanded(true);
     }
     pExternalItem = 0;
     for(int t=0; t<mpDualTree->topLevelItemCount(); ++t)
@@ -774,7 +775,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     LibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
                     if (le.pLibrary)
                     {
-                        // First uload the library
+                        // First unload the library
                         QString libPath = le.pLibrary->xmlFilePath;
                         bool rc = gpLibraryHandler->unloadLibraryByComponentType(typeNames.first());
                         // NOTE! Now le and le.pLibrary is useless the pointer is dangling
@@ -791,13 +792,13 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     LibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
                     if (le.pLibrary)
                     {
-                        // First uload teh library
+                        // First unload the library
                         QString libPath = le.pLibrary->xmlFilePath;
                         bool rc = gpLibraryHandler->unloadLibraryByComponentType(typeNames.first());
                         // NOTE! Now le and le.pLibrary is useless the pointer is dangling
                         if (rc)
                         {
-                            // We use the core generator directly to aviod calling the save state code in the library handler it does not seem to be working so well
+                            // We use the core generator directly to avoid calling the save state code in the library handler it does not seem to be working so well
                             // But since we only need to unload one particular library this should work
                             //! @todo fix the problem with save state
                             CoreGeneratorAccess coreGenerator;
