@@ -366,9 +366,9 @@ void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedV
         appendH5Attribute(root, "model", mpParentModel->getTopLevelSystemContainer()->getModelFileInfo().fileName().toStdString());
         appendH5Attribute(root, "tool", QString("HopsanGUI %1").arg(HOPSANGUIVERSION).toStdString());
 
-        // Build directoy/group hierarchy
+        // Build directory/group hierarchy
         // We need this to avoid massive exception casting when creating directories as
-        // group names will be repeted, also we need to create one group depth at a time
+        // group names will be repeated, also we need to create one group depth at a time
         // The map will sort the group names as unique values in the correct order
         QMap<QString, char> varhier;
         for (const SharedVectorVariableT &rVar : rVariables)
@@ -706,7 +706,7 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
                 pVarDesc->mDataQuantity = importedPLODataVector[i].mPlotScale;
                 pVarDesc->mDataUnit = gpConfig->getBaseUnit(pVarDesc->mDataQuantity);
             }
-            // Right now we ignore nummeric plotscale, as we removed plotscale from data variables, we look for quantities instead
+            // Right now we ignore numeric plotscale, as we removed plotscale from data variables, we look for quantities instead
 
             // Insert time domain variable
             if (pTimeVec)
@@ -1322,7 +1322,7 @@ void LogDataHandler2::collectLogDataFromRemoteModel(QVector<RemoteResultVariable
         SharedVectorVariableT pTime = systemHierarchy2TimeVariable.value(varDescs[v]->mpSystemHierarchy->join("$"));
         if (pTime)
         {
-            varDescs[v]->mpSystemHierarchy = pTime->mpVariableDescription->mpSystemHierarchy; // Replace systems hierarchy with shared version (to save some memmory)
+            varDescs[v]->mpSystemHierarchy = pTime->mpVariableDescription->mpSystemHierarchy; // Replace systems hierarchy with shared version (to save some memory)
         }
 
         // Insert time domain variable
@@ -1412,7 +1412,7 @@ SharedVectorVariableT LogDataHandler2::getVectorVariable(const QString &rName, i
 }
 
 
-//! @brief Returns multiple logdatavariables based on regular expression search. Excluding temp variables but including aliases
+//! @brief Returns multiple logdata variables based on regular expression search. Excluding temp variables but including aliases
 //! @param [in] rNameExp The regular expression for the names to match
 //! @param [in] generation The desired generation of the variable
 QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtGeneration(const QRegExp &rNameExp, int generation) const
@@ -1474,63 +1474,6 @@ QVector<double> LogDataHandler2::copyTimeVector(const int generation) const
     }
     return QVector<double>();
 }
-
-
-////! @brief Returns whether or not the specified component exists in specified plot generation
-////! @param[in] generation Generation
-////! @param[in] componentName Component name
-//bool LogDataHandler2::componentHasPlotGeneration(int generation, QString fullName)
-//{
-//    LogDataMapT::iterator it = mAllPlotData.find(fullName);
-//    if( it != mAllPlotData.end())
-//    {
-//        return it.value()->hasDataGeneration(generation);
-//    }
-//    else
-//    {
-//        return false;
-//    }
-//}
-
-
-
-
-////! @brief Returns plot variable for specified alias
-////! @param[in] rAlias Alias of variable
-////! @param[in] gen Generation to check, -1 = Current, -2 = Newest Available, >= 0 = Specific generation to check
-//QString LogDataHandler2::getFullNameFromAlias(const QString &rAlias, const int gen) const
-//{
-////    SharedVectorVariableContainerT pAliasContainer = getVariableContainer(rAlias);
-////    if (pAliasContainer && pAliasContainer->isStoringAlias())
-////    {
-////        bool isStoringAlias = false;
-////        int g = INT_MIN;
-////        // Check if current
-////        if (gen == -1)
-////        {
-////            g = mGenerationNumber;
-////        }
-////        // Check specific
-////        else if (gen >= 0)
-////        {
-////            g = gen;
-////        }
-////        // First match (newest availible)
-////        else if (gen == -2)
-////        {
-////            g = pAliasContainer->getHighestGeneration();
-////        }
-////        isStoringAlias = pAliasContainer->isGenerationAlias(g);
-
-////        // Note there could be multiple different names under the same alias, but generation is used to choose
-////        if (isStoringAlias && (pAliasContainer->getDataGeneration(g)->getAliasName() == rAlias) )
-////        {
-////            return pAliasContainer->getDataGeneration(g)->getFullVariableName();
-////        }
-////    }
-////    return QString();
-//}
-
 
 QList<int> LogDataHandler2::getGenerations() const
 {
@@ -1835,14 +1778,6 @@ SharedVectorVariableT LogDataHandler2::lowPassFilterVariable(const SharedVectorV
 }
 
 
-////! @brief Returns the number of log data variables registered in this log data handler
-////! @returns The number of registered log data variables
-//int LogDataHandler2::getNumVariables() const
-//{
-//    return -1;//mLogDataMap.size();
-//}
-
-
 SharedVectorVariableT LogDataHandler2::elementWiseGT(SharedVectorVariableT pData, const double thresh)
 {
     if (pData)
@@ -1941,7 +1876,7 @@ bool LogDataHandler2::removeVariable(const QString &rVarName, int generation)
     // If gen < -1 remove variable in all gens
     if ( generation == -2)
     {
-        // Need to work with a copy of values in case last variable is removed, then generation will be removed as well ( and iterator in map will becom invalid )
+        // Need to work with a copy of values in case last variable is removed, then generation will be removed as well ( and iterator in map will become invalid )
         QList<LogDataGeneration*> gens = mGenerationMap.values();
         for(auto pGen: gens)
         {
@@ -2124,6 +2059,25 @@ QList<int> LogDataHandler2::getImportedGenerations() const
 int LogDataHandler2::getCurrentGenerationNumber() const
 {
     return mCurrentGenerationNumber;
+}
+
+int LogDataHandler2::getHighestModelGeneration() const
+{
+    if (!mGenerationMap.isEmpty())
+    {
+        QMapIterator<int, LogDataGeneration*> it(mGenerationMap);
+        it.toBack();
+        while (it.hasPrevious())
+        {
+            it.previous();
+            if (!it.value()->isImported())
+            {
+                return it.key();
+            }
+        }
+    }
+    // Note! -1 May be treated as latest or current
+    return -1;
 }
 
 const LogDataGeneration *LogDataHandler2::getCurrentGeneration() const
@@ -2356,28 +2310,6 @@ bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &
     return registerQuantity(rFullName, rQuantity, -1);
 }
 
-//! @brief This slot should be signaled when a variable that might be registered as imported is removed
-void LogDataHandler2::forgetImportedVariable(SharedVectorVariableT pData)
-{
-//    if (pData)
-//    {
-//        // First find the correct file sub map
-//        ImportedLogDataMapT::iterator fit;
-//        fit = mImportedLogDataMap.find(pData->getImportedFileName());
-//        if (fit != mImportedLogDataMap.end())
-//        {
-//            // Now remove the sub map entry
-//            // Only remove if same variable (same key,value) (compare pointers)
-//            fit.value().remove(pData->getFullVariableName(),pData);
-//            // Now erase the file level map if it has become empty
-//            if (fit.value().isEmpty())
-//            {
-//                mImportedLogDataMap.erase(fit);
-//            }
-//        }
-//        //! @todo this code assumes that imported data can not have aliases (full name can be a short one like an alias but is technically not an alias)
-    //    }
-}
 
 SharedVectorVariableT LogDataHandler2::insertCustomVectorVariable(const QVector<double> &rVector, SharedVariableDescriptionT pVarDesc)
 {

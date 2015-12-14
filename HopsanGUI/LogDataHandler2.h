@@ -79,7 +79,6 @@ public:
 
     bool removeVariable(const QString &rVarName, int generation=-1);
 
-    //int getNumVariables() const;
     bool isEmpty();
     void clear();
 
@@ -109,6 +108,7 @@ public:
     int getLowestGenerationNumber() const;
     int getHighestGenerationNumber() const;
     int getCurrentGenerationNumber() const;
+    int getHighestModelGeneration() const;
     const LogDataGeneration* getCurrentGeneration() const;
     const LogDataGeneration* getGeneration(const int gen) const;
     bool hasGeneration(const int gen) const;
@@ -165,9 +165,6 @@ signals:
     void aliasChanged();
     void quantityChanged();
     void closePlotsWithOwnedData();
-
-private slots:
-    void forgetImportedVariable(SharedVectorVariableT pData);
 
 private:
     typedef QMap< int, LogDataGeneration* > GenerationMapT;

@@ -355,52 +355,11 @@ void Port::openRightClickMenu(QPoint screenPos)
     }
 
     // Get matching log variables
-    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeFullVariableNameRegexpSafe(mpParentModelObject->getParentSystemNameHieararchy(),comp,port,".*")));
+    int lastModelGen = pLogHandler->getHighestModelGeneration();
+    logVars = pLogHandler->getMatchingVariablesAtGeneration(QRegExp(makeFullVariableNameRegexpSafe(mpParentModelObject->getParentSystemNameHieararchy(),comp,port,".*")),lastModelGen);
     for(int i=0; i<logVars.size(); ++i)
     {
         QAction *pTempAction;
-//        //! @todo This is a ugly special hack for Signal Value but I cant thing of anything better, (maybe make it impossible to have custom plot scales for Values)
-//        //! @todo should have a help function for this as similar checks are done elsewhere
-//        const QString &dataName = logVars[i]->getDataName();
-//        const QString &dataUnit = logVars[i]->getDataUnit();
-
-//        QString displayUnit;
-//        UnitScale custUS;
-//        mpParentModelObject->getCustomPlotUnitOrScale(this->getName()+"#"+dataName, custUS);
-//        if (custUS.isEmpty())
-//        {
-//            if ( dataName == "Value" && dataUnit != "-")
-//            {
-//                QStringList pqs = gpConfig->getQuantitiesForUnit(dataUnit);
-//                //! @todo if same unit exist in multiple places we have a problem
-//                if (pqs.size() > 1)
-//                {
-//                    gpMessageHandler->addWarningMessage(QString("Unit %1 is associated to multiple physical quantities, default unit selection may be incorrect").arg(dataUnit));
-//                }
-//                QString defaultUnit;
-//                if (pqs.size() == 1)
-//                {
-//                    defaultUnit = gpConfig->getDefaultUnit(pqs.first());
-//                }
-
-//                if (!defaultUnit.isEmpty())
-//                {
-//                    displayUnit = defaultUnit;
-//                }
-//                else
-//                {
-//                    displayUnit = dataUnit;
-//                }
-//            }
-//            else
-//            {
-//                displayUnit = gpConfig->getDefaultUnit(dataName);
-//            }
-//        }
-//        else
-//        {
-//            displayUnit = custUS.mUnit;
-//        }
 
         const QString &dataName = logVars[i]->getDataName();
         QString displayUnit;
@@ -459,10 +418,10 @@ void Port::openRightClickMenu(QPoint screenPos)
                 QVector<Port*> ports = getConnectedPorts();
                 if (!ports.isEmpty())
                 {
-                    ports.first()->plot(logVars[it.value()]->getDataName(), "");
+                    ports.first()->plot(logVars[it.value()]->getDataName(), lastModelGen);
                 }
             }
-            plot(logVars[it.value()]->getDataName(), "");
+            plot(logVars[it.value()]->getDataName(), lastModelGen);
         }
     }
 }
@@ -774,13 +733,12 @@ const ModelObject *Port::getParentModelObject() const
 
 
 //! @brief Plots the variable with name 'dataName' in the node the port is connected to.
-//! @param dataName tells which variable to plot.
-//! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
-PlotWindow *Port::plot(QString dataName, QString /*dataUnit*/, QColor desiredCurveColor)
+//! @param[in] dataName tells which variable to plot.
+//! @param[in] gen The generation of the data to plot
+PlotWindow *Port::plot(QString dataName, int gen, QColor desiredCurveColor)
 {
     QString fullName = makeFullVariableName(mpParentModelObject->getParentSystemNameHieararchy(), mpParentModelObject->getName(),this->getName(),dataName);
-    //! @todo  why do we have unit here
-    return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
+    return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, gen, 0, desiredCurveColor);
 }
 
 //! @brief Wrapper for the Core getPortTypeString() function
@@ -922,13 +880,6 @@ bool Port::isAutoPlaced()
 const PortAppearance *Port::getPortAppearance() const
 {
     return mpPortAppearance;
-}
-
-
-//! @brief virtual function, only useful for group port, guiport will return it self (this)
-Port* Port::getRealPort()
-{
-    return this;
 }
 
 

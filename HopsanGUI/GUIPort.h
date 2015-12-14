@@ -96,7 +96,6 @@ public:
     virtual void forgetConnection(Connector *pConnector);
     QVector<Connector*> getAttachedConnectorPtrs() const; //!< @todo should this be virtual also
     virtual QVector<Port *> getConnectedPorts();
-    virtual Port* getRealPort();
 
     bool isConnected();
     bool isAutoPlaced();
@@ -106,7 +105,7 @@ public:
 public slots:
     void showIfNotConnected(bool doShow=true);
     void setVisible(bool value);
-    PlotWindow* plot(QString dataName, QString dataUnit=QString(), QColor desiredCurveColor=QColor());
+    PlotWindow* plot(QString dataName, int gen=-1, QColor desiredCurveColor=QColor());
     void refreshPortOverlayPosition();
     void refreshPortGraphics();
 
@@ -147,7 +146,6 @@ private:
     bool mIsMagnified;
 
     QGraphicsTextItem *mpPortLabel;
-    //QVector<QGraphicsSvgItem*> mvPortGraphicsOverlayPtrs;
     QGraphicsSvgItem *mpCQSIconOverlay;
     QGraphicsSvgItem *mpMultiPortIconOverlay;
     QGraphicsSvgItem *mpMainIcon;
