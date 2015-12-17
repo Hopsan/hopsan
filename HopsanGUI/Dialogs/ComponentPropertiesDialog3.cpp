@@ -393,21 +393,18 @@ QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
     return pNameTypeLayout;
 }
 
-QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
+QDialogButtonBox *ComponentPropertiesDialog3::createOKButtonBox()
 {
-    QPushButton *pEditPortsButton = new QPushButton(tr("&Move ports"), this);
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
     pOkButton->setDefault(true);
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Vertical, this);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal, this);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(pEditPortsButton, QDialogButtonBox::ActionRole);
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
-    connect(pEditPortsButton, SIGNAL(clicked()), this, SLOT(editPortPos()));
     pOkButton->setEnabled(mAllowEditing);
-    pEditPortsButton->setEnabled(mAllowEditing);
+    pOkButton->setDefault(true);
     return pButtonBox;
 }
 
@@ -892,22 +889,19 @@ void ComponentPropertiesDialog3::createEditStuff()
     pNameTypeLayout->setEnabled(mAllowEditing);
     //------------------------------------------------------------------------------------------------------------------------------
 
-    // Add button widget with description and copy to clipboard buttons
+    // Add button widget with description, move ports and copy to clipboard buttons
     //------------------------------------------------------------------------------------------------------------------------------
-    QWidget *pDCButtonWidget = new QWidget(this);
-    QVBoxLayout *pDCButtonsLayout = new QVBoxLayout(pDCButtonWidget);
+    QWidget *pDCEButtonWidget = new QWidget(this);
+    QVBoxLayout *pDCButtonsLayout = new QVBoxLayout(pDCEButtonWidget);
     QPushButton *pDescriptionButton = new QPushButton(tr("&Description"), this);
     pDescriptionButton->setToolTip("Open description in separate window");
+    QPushButton *pEditPortsButton = new QPushButton(tr("&Move ports"), this);
+    pEditPortsButton->setEnabled(mAllowEditing);
     connect(pDescriptionButton, SIGNAL(clicked()), this, SLOT(openDescription()));
+    connect(pEditPortsButton, SIGNAL(clicked()), this, SLOT(editPortPos()));
     pDCButtonsLayout->addWidget(pDescriptionButton);
-    pPropertiesLayout->addWidget(pDCButtonWidget, row, 1);
-    //------------------------------------------------------------------------------------------------------------------------------
-
-
-    // Add button box with buttons
-    //------------------------------------------------------------------------------------------------------------------------------
-    QDialogButtonBox *pButtonBox = createButtonBox();
-    pPropertiesLayout->addWidget(pButtonBox, row, 2);
+    pDCButtonsLayout->addWidget(pEditPortsButton);
+    pPropertiesLayout->addWidget(pDCEButtonWidget, row, 1);
     //------------------------------------------------------------------------------------------------------------------------------
     ++row;
 
@@ -954,13 +948,15 @@ void ComponentPropertiesDialog3::createEditStuff()
 
     pMainLayout->addWidget(pTabWidget);
 
+    QDialogButtonBox *pOKButtonBox = createOKButtonBox();
+    pMainLayout->addWidget(pOKButtonBox);
+
     //------------------------------------------------------------------------------------------------------------------------------
 
     setLayout(pMainLayout);
 
     // Avoid a dialog that is higher than the available space
-    //! @todo this prevents fullscreen mode ,maybe limit should be fullscreen height
-    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+    int maxHeight = qApp->desktop()->screenGeometry().height()-50;
     this->setMaximumHeight(maxHeight);
 }
 

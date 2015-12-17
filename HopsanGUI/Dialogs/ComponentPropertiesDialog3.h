@@ -114,7 +114,7 @@ protected:
 
 private:
     QGridLayout* createNameAndTypeEdit();
-    QDialogButtonBox* createButtonBox();
+    QDialogButtonBox* createOKButtonBox();
     QWidget* createHelpWidget();
     QWidget* createSourcodeBrowser(QString &rFilePath);
     void createEditStuff();
