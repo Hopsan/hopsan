@@ -314,7 +314,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     // Modify if debug
 #ifdef DEBUGCOMPILING
     libFile+=dbg_ext;
-    cflags.prepend("-g -Og -DDEBUGCOMPILING ");
+    cflags.prepend("-g -DDEBUGCOMPILING ");
 #else
     cflags.prepend("-DRELEASECOMPILING ");
 #endif
