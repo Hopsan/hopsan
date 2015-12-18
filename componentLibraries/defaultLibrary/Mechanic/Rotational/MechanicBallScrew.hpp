@@ -48,7 +48,7 @@ namespace hopsan {
     {
 
     private:
-        double *mpL, *mpNy, *mpJ, *mpB;
+        double *mpL, *mpNy, *mpNy2, *mpJ, *mpB;
         double k;
         double num[3];
         double den[3];
@@ -71,6 +71,7 @@ namespace hopsan {
 
             addInputVariable("L", "Screw Lead", "m", 0.001, &mpL);
             addInputVariable("ny", "Screw Efficiency", "-", 0.9, &mpNy);
+            addInputVariable("ny2", "Reverse Efficiency", "-", 0.8, &mpNy2);
 
             addInputVariable("J", "Moment of Inertia", "kgm^2", 1.0, &mpJ);
             addInputVariable("B", "Viscous Friction", "Nms/rad", 10, &mpB);
@@ -81,9 +82,10 @@ namespace hopsan {
 
         void initialize()
         {
-            double L, ny, gearRatio, J, B;
+            double L, ny, ny2, gearRatio, J, B;
             L = (*mpL);
             ny = (*mpNy);
+            ny2 = (*mpNy2);
             J = (*mpJ);
             B = (*mpB);
 
@@ -117,34 +119,48 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double f1, x1, v1, c1, Zx1;
+            double f1, x1, v1, c1, Zx1,t1;
             double t2, a2, w2, c2, Zx2;
-            double L, ny, gearRatio, J, B;
+            double L, ny, ny2, gearRatio, J, B;
             L = (*mpL);
             ny = (*mpNy);
+            ny2 = (*mpNy2);
             J = (*mpJ);
             B = (*mpB);
 
-            gearRatio = L/(2.0*pi*ny);
+            v1 = (*mpND_v1);
+            w2 = (*mpND_w2);
+
+            double gearRatioLossless = L/(2.0*pi);
+            gearRatio = gearRatioLossless/ny;
 
             //Get variable values from nodes
             c1  = (*mpND_c1)*gearRatio;
-            Zx1 = (*mpND_Zx1)*pow(gearRatio, 2.0);
+            Zx1 = (*mpND_Zx1)*gearRatio*gearRatio;
             c2  = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
+
+            if(c1 + v1/gearRatioLossless*Zx1 > c2 + w2*Zx2)
+            {
+                gearRatio = gearRatioLossless*ny2;
+                c1  = (*mpND_c1)*gearRatio;
+                Zx1 = (*mpND_Zx1)*gearRatio*gearRatio;
+            }
+
 
             //Mass equations
             den[1] = B+Zx1+Zx2;
 
             mFilter.setDen(den);
+
             w2 = mFilter.update(c1-c2);
             a2 = mInt.update(w2);
             t2 = c2 + Zx2*w2;
+            t1 = c1 - Zx1*w2;
 
-            v1 = -w2*gearRatio;
-            x1 = -a2*gearRatio;
+            v1 = -w2*gearRatioLossless;
+            x1 = -a2*gearRatioLossless;
             f1 = (c1 + Zx1*v1)/gearRatio;
-
 
             //Write new values to nodes
             (*mpND_f1) = f1;
