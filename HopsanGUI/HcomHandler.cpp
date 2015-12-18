@@ -5017,9 +5017,9 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
 
-        HCOMERR(QString("Failed to find variable/evaluate %1").arg(argStr));
-        mAnsType = Undefined;
-        return;
+//        HCOMERR(QString("Failed to find variable/evaluate %1").arg(argStr));
+//        mAnsType = Undefined;
+//        return;
     }
     else if(desiredType != Scalar && expr.startsWith("ddt(") && expr.endsWith(")"))
     {
