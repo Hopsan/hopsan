@@ -100,15 +100,13 @@
 #define CFG_WIDTH "width"
 #define CFG_CAPSTYLE "capstyle"
 
-#define CFG_UNITSCALES "unitscales07"
+#define CFG_UNITSETTINGS "unitsettings"
 #define CFG_QUANTITY "quantity"
 
-#define CFG_SIUNIT "siunit"
 #define CFG_BASEUNIT "baseunit"
-#define CFG_UNITSCALE "unitscale"
 #define CFG_UNIT "unit"
 #define CFG_UNITS "units"
-#define CFG_DEFAULTUNIT "defaultunit"
+#define CFG_DEFAULTDISPALYUNIT "defaultdisplayunit"
 #define CFG_NAME "name"
 #define CFG_UNIT "unit"
 #define CFG_CUSTOMUNIT "customunit"
@@ -204,7 +202,7 @@ public:
     QStringList getUnitQuantities() const;
     QString getDefaultUnit(const QString &rPhysicalQuantity) const;
     void setDefaultUnit(QString key, QString value);
-    void addCustomUnit(QString quantity, QString unitname, double scale);
+    void addCustomUnit(QString quantity, QString unitname, QString scale, QString offset);
     QMap<QString, double> getUnitScales(const QString &rPhysicalQuantity);
     void getUnitScales(const QString &rQuantity, QList<UnitConverter> &rUnitScales);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
@@ -217,7 +215,7 @@ public:
     bool haveQuantity(const QString &rQuantity) const;
 
 
-    // Termianal and scripts
+    // Terminal and scripts
     QString getLastPyScriptFile() const;
     void setLastPyScriptFile(QString file);
 
@@ -231,8 +229,7 @@ public:
 private:
     void loadUserSettings(QDomElement &rDomElement);
     void loadStyleSettings(QDomElement &rDomElement);
-    void loadUnitSettings(QDomElement &rDomElement);
-    void loadUnitScales(QDomElement &rDomElement);
+    void loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn);
     void loadLibrarySettings(QDomElement &rDomElement);
     void loadModelicaFilesSettings(QDomElement &rDomElement);
     void loadModelSettings(QDomElement &rDomElement);
@@ -244,7 +241,8 @@ private:
     public:
         QString baseunit;
         QString selectedDefaultUnit;
-        QMap<QString, UnitConverter> customScales;
+        QStringList builtInUnitconversions;
+        QMap<QString, UnitConverter> customUnits;
     };
 
     QColor mBackgroundColor;

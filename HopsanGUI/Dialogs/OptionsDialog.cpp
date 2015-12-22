@@ -131,25 +131,43 @@ private slots:
         QDialog *pDialog = new QDialog(this);
         pDialog->setWindowTitle("Add Custom "+mQuantity+" Unit");
 
-        QLineEdit *pUnitNameBox = new QLineEdit(this);
-        QLineEdit *pScaleBox = new QLineEdit(this);
-        pScaleBox->setValidator(new QDoubleValidator(this));
+        QLineEdit *pUnitName = new QLineEdit(this);
+        QLineEdit *pScale = new QLineEdit(this);
+        QLineEdit *pOffset = new QLineEdit(this);
+        pScale->setValidator(new QDoubleValidator(this));
+        pOffset->setValidator(new QDoubleValidator(this));
+        pScale->setText("1.0");
+        pOffset->setText("0.0");
 
         QDialogButtonBox *pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, pDialog);
         connect(pButtonBox, SIGNAL(accepted()), pDialog, SLOT(accept()));
         connect(pButtonBox, SIGNAL(rejected()), pDialog, SLOT(reject()));
 
         QGridLayout *pLayout = new QGridLayout(pDialog);
-        pLayout->addWidget(new QLabel("Unit Name: ", this),0,0);
-        pLayout->addWidget(pUnitNameBox,0,1);
-        pLayout->addWidget(new QLabel("Scaling from SI unit: ", this),1,0);
-        pLayout->addWidget(pScaleBox,1,1);
-        pLayout->addWidget(pButtonBox,2,0,1,2);
+        int r=0;
+        pLayout->addWidget(new QLabel("Quantity: ", this),r,0);
+        pLayout->addWidget(new QLabel(mQuantity, this),r,1);
+        r++;
+        pLayout->addWidget(new QLabel("base = scale * unit + offset", this),r,0);
+        r++;
+        pLayout->addWidget(new QLabel("Unit Name: ", this),r,0);
+        pLayout->addWidget(pUnitName,r,1);
+        r++;
+        pLayout->addWidget(new QLabel("Scaling: ", this),r,0);
+        pLayout->addWidget(pScale,r,1);
+        r++;
+        pLayout->addWidget(new QLabel("Offset: ", this),r,0);
+        pLayout->addWidget(pOffset,r,1);
+        r++;
+        pLayout->addWidget(pButtonBox,r,0,1,2);
 
         int rc = pDialog->exec();
         if (rc == QDialog::Accepted)
         {
-            gpConfig->addCustomUnit(mQuantity, pUnitNameBox->text(), pScaleBox->text().toDouble());
+            if (!pUnitName->text().isEmpty() && !pScale->text().isEmpty())
+            {
+                gpConfig->addCustomUnit(mQuantity, pUnitName->text(), pScale->text(), pOffset->text());
+            }
             updateUnitList();
         }
 

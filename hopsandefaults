@@ -196,7 +196,7 @@
             <unitscale unit="cm^3/rev">1e6</unitscale>
         </quantity>
     </unitscales>
-    <unitscales07>
+    <unitsettings>
         <!-- baseUnit = scale * unit + offset  -->
         <quantity name="Position" baseunit="m">
             <unit name="mm" scale="1e-3"/>
@@ -263,8 +263,9 @@
             <unit name="C" scale="1" offset="273.15"/>
             <unit name="F" scale="5/9" offset="459.67*5/9"/>
         </quantity>
-    </unitscales07>
+    </unitsettings>
     <units>
+    <!-- Note! The units tag is deprecated and should no longer be used   -->
         <defaultunit unit="V" name="Voltage"/>
         <defaultunit unit="A" name="Current"/>
         <defaultunit unit="rad" name="Angle"/>

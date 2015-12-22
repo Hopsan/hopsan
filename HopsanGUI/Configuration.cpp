@@ -230,7 +230,7 @@ void Configuration::saveToXml()
         }
 
 
-        QDomElement xmlUnitScales = appendDomElement(configRoot, CFG_UNITSCALES);
+        QDomElement xmlUnitScales = appendDomElement(configRoot, CFG_UNITSETTINGS);
         QMap<QString, QuantityUnitScale >::iterator qit;
         for(qit = mUnitScales.begin(); qit != mUnitScales.end(); ++qit)
         {
@@ -241,26 +241,29 @@ void Configuration::saveToXml()
             {
                 xmlQuantity.setAttribute(CFG_BASEUNIT, baseunit);
             }
-            QMap<QString, UnitConverter>::iterator cuit;
-            for(cuit = qit.value().customScales.begin(); cuit != qit.value().customScales.end(); ++cuit)
+
+            // Save the default selected display unit
+            QMap<QString, QString>::iterator itdu = mSelectedDefaultUnits.find(qit.key());
+            if (itdu!=mSelectedDefaultUnits.end())
             {
-                if (cuit.key() != baseunit)
+                xmlQuantity.setAttribute(CFG_DEFAULTDISPALYUNIT, itdu.value());
+            }
+
+            // Save all custom (non built in) unit conversions
+            QMap<QString, UnitConverter>::iterator cuit;
+            for(cuit = qit.value().customUnits.begin(); cuit != qit.value().customUnits.end(); ++cuit)
+            {
+                // Do not save custom units for the base unit (would be 1) and do not save those that are built-in
+                if ( (cuit.key() != baseunit) &&
+                     !qit.value().builtInUnitconversions.contains(cuit.key()) )
                 {
-                    QDomElement xmlUS = appendDomTextNode(xmlQuantity, CFG_UNITSCALE, cuit.value().mScale);
-                    xmlUS.setAttribute(CFG_UNIT, cuit.key());
+                    QDomElement xmlUS = appendDomElement(xmlQuantity, CFG_UNIT);
+                    xmlUS.setAttribute(CFG_NAME, cuit.key());
+                    xmlUS.setAttribute(CFG_SCALE, cuit.value().mScale);
+                    xmlUS.setAttribute(CFG_OFFSET, cuit.value().mOffset);
                 }
             }
         }
-
-        QDomElement units = appendDomElement(configRoot, CFG_UNITS);
-        QMap<QString, QString>::iterator itdu;
-        for(itdu = mSelectedDefaultUnits.begin(); itdu != mSelectedDefaultUnits.end(); ++itdu)
-        {
-            QDomElement xmlTemp = appendDomElement(units, CFG_DEFAULTUNIT);
-            xmlTemp.setAttribute(CFG_NAME, itdu.key());
-            xmlTemp.setAttribute(CFG_UNIT, itdu.value());
-        }
-
 
         //Save python session
 #ifdef USEPYTHONQT
@@ -353,10 +356,19 @@ void Configuration::loadFromXml()
             loadModelSettings(modelsElement);
 
             //Load unit settings
-            QDomElement unitscalesElement = configRoot.firstChildElement(CFG_UNITSCALES);
-            loadUnitScales(unitscalesElement);
+            QDomElement unitscalesElement = configRoot.firstChildElement(CFG_UNITSETTINGS);
+            loadUnitSettings(unitscalesElement, false);
+
+            // ---------------------------------------------- used for backwards compatibility can be removed after 0.7.x is complete
+            //! @todo deprecated
             QDomElement unitsElement = configRoot.firstChildElement(CFG_UNITS);
-            loadUnitSettings(unitsElement);
+            QDomElement xmlDefaultUnit = unitsElement.firstChildElement("defaultunit");
+            while (!xmlDefaultUnit.isNull())
+            {
+                mSelectedDefaultUnits.insert(xmlDefaultUnit.attribute(HMF_NAMETAG), xmlDefaultUnit.attribute(CFG_UNIT));
+                xmlDefaultUnit = xmlDefaultUnit.nextSiblingElement("defaultunit");
+            }
+            // ----------------------------------------------
 
             //Load settings to PyDockWidget in MainWindow
             QDomElement pythonElement = configRoot.firstChildElement(CFG_PYTHON);
@@ -408,19 +420,17 @@ void Configuration::loadDefaultsFromXml()
         {
             verifyConfigurationCompatibility(configRoot);
 
-                //Load default user settings
+            // Load default user settings
             QDomElement settingsElement = configRoot.firstChildElement(CFG_SETTINGS);
             loadUserSettings(settingsElement);
 
-                //Load default GUI style
+            // Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             loadStyleSettings(styleElement);
 
-                //Load default units
-            QDomElement unitscalesElement = configRoot.firstChildElement(CFG_UNITSCALES);
-            loadUnitScales(unitscalesElement);
-            QDomElement unitsElement = configRoot.firstChildElement(CFG_UNITS);
-            loadUnitSettings(unitsElement);
+            // Load default units
+            QDomElement unitscalesElement = configRoot.firstChildElement(CFG_UNITSETTINGS);
+            loadUnitSettings(unitscalesElement, true);
         }
     }
     file.close();
@@ -616,53 +626,61 @@ void Configuration::loadStyleSettings(QDomElement &rDomElement)
 }
 
 
-//! @brief Utility function that loads selected default units from xml
-void Configuration::loadUnitSettings(QDomElement &rDomElement)
-{
-    QDomElement xmlDefaultUnit = rDomElement.firstChildElement(CFG_DEFAULTUNIT);
-    while (!xmlDefaultUnit.isNull())
-    {
-        mSelectedDefaultUnits.insert(xmlDefaultUnit.attribute(HMF_NAMETAG), xmlDefaultUnit.attribute(CFG_UNIT));
-        xmlDefaultUnit = xmlDefaultUnit.nextSiblingElement(CFG_DEFAULTUNIT);
-    }
-}
-
 //! @brief Utility function that loads unit scales from xml
-void Configuration::loadUnitScales(QDomElement &rDomElement)
+void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn)
 {
     QDomElement xmlQuantity = rDomElement.firstChildElement(CFG_QUANTITY);
     while (!xmlQuantity.isNull())
     {
         QString quantity = xmlQuantity.attribute(HMF_NAMETAG);
         QString baseunit = xmlQuantity.attribute(CFG_BASEUNIT);
+        QString deafdisplayunit = xmlQuantity.attribute(CFG_DEFAULTDISPALYUNIT, baseunit);
+        if (!deafdisplayunit.isEmpty())
+        {
+            mSelectedDefaultUnits.insert(quantity, deafdisplayunit);
+        }
+
 
         QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(quantity);
         if (qit == mUnitScales.end())
         {
             qit = mUnitScales.insert(quantity, QuantityUnitScale());
         }
-        if (!baseunit.isEmpty())
+        // insert if it defines a new base unit, but do not overwrite built in definitions
+        if (!baseunit.isEmpty() && !qit.value().builtInUnitconversions.contains(baseunit))
         {
             qit.value().baseunit = baseunit;
-            qit.value().customScales.insert(baseunit, UnitConverter(quantity, baseunit, "1.0", ""));
+            qit.value().customUnits.insert(baseunit, UnitConverter(quantity, baseunit, "1.0", ""));
+            if (tagAsBuiltIn)
+            {
+                qit.value().builtInUnitconversions.append(baseunit);
+            }
         }
 
         QDomElement xmlUnitscale = xmlQuantity.firstChildElement(CFG_UNIT);
         while (!xmlUnitscale.isNull())
         {
             QString unitname = xmlUnitscale.attribute(CFG_NAME);
-            QString scale = xmlUnitscale.attribute(CFG_SCALE);
-            QString offset = xmlUnitscale.attribute(CFG_OFFSET);
-            // If scale or offset would be empty here, then result of evaluation would be "pi"
-            if (!scale.isEmpty())
+            // prevent overwriting existing built in unit conversions
+            if (!qit.value().builtInUnitconversions.contains(unitname))
             {
-                scale = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+scale),0,'g',10);
+                QString scale = xmlUnitscale.attribute(CFG_SCALE);
+                QString offset = xmlUnitscale.attribute(CFG_OFFSET);
+                // If scale or offset would be empty here, then result of evaluation would be "pi"
+                if (!scale.isEmpty())
+                {
+                    scale = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+scale),0,'g',10);
+                }
+                if (!offset.isEmpty())
+                {
+                    offset = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+offset),0,'g',10);
+                }
+                qit.value().customUnits.insert(unitname, UnitConverter(quantity, unitname, scale, offset));
+                if (tagAsBuiltIn)
+                {
+                    qit.value().builtInUnitconversions.append(unitname);
+                }
             }
-            if (!offset.isEmpty())
-            {
-                offset = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+offset),0,'g',10);
-            }
-            qit.value().customScales.insert(unitname, UnitConverter(quantity, unitname, scale, offset));
             xmlUnitscale = xmlUnitscale.nextSiblingElement(CFG_UNIT);
         }
 
@@ -900,7 +918,7 @@ QMap<QString, double> Configuration::getUnitScales(const QString &rPhysicalQuant
     QMap<QString, double> dummy;
     if(mUnitScales.contains(rPhysicalQuantity))
     {
-        QMap<QString, UnitConverter> &rMap = mUnitScales.find(rPhysicalQuantity).value().customScales;
+        QMap<QString, UnitConverter> &rMap = mUnitScales.find(rPhysicalQuantity).value().customUnits;
         QMap<QString, UnitConverter>::iterator it;
         for (it=rMap.begin(); it!=rMap.end(); ++it)
         {
@@ -915,7 +933,7 @@ void Configuration::getUnitScales(const QString &rQuantity, QList<UnitConverter>
     QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(rQuantity);
     if (qit != mUnitScales.end())
     {
-        rUnitScales = qit.value().customScales.values();
+        rUnitScales = qit.value().customUnits.values();
     }
 }
 
@@ -923,7 +941,7 @@ bool Configuration::hasUnitScale(const QString &rPhysicalQuantity, const QString
 {
     if (mUnitScales.contains(rPhysicalQuantity))
     {
-        return mUnitScales.find(rPhysicalQuantity).value().customScales.contains(rUnit);
+        return mUnitScales.find(rPhysicalQuantity).value().customUnits.contains(rUnit);
     }
     return false;
 }
@@ -934,7 +952,7 @@ double Configuration::getUnitScale(const QString &rPhysicalQuantity, const QStri
 {
     if (mUnitScales.contains(rPhysicalQuantity))
     {
-        return mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitConverter("",0)).scaleToDouble();
+        return mUnitScales.find(rPhysicalQuantity).value().customUnits.value(rUnit,UnitConverter("",0)).scaleToDouble();
     }
     return 0;
 }
@@ -944,7 +962,7 @@ void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString
     rUnitScale.clear();
     if (mUnitScales.contains(rPhysicalQuantity))
     {
-        rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitConverter("",0));
+        rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customUnits.value(rUnit,UnitConverter("",0));
     }
 }
 
@@ -956,7 +974,7 @@ QStringList Configuration::getQuantitiesForUnit(const QString &rUnit) const
     QMap< QString, QuantityUnitScale >::const_iterator it;
     for (it=mUnitScales.begin(); it!=mUnitScales.end(); ++it)
     {
-        if (it.value().customScales.contains(rUnit))
+        if (it.value().customUnits.contains(rUnit))
         {
             list.append(it.key());
         }
@@ -989,7 +1007,7 @@ void Configuration::removeUnitScale(const QString &rQuantity, const QString &rUn
     {
         if (rUnit != qit.value().baseunit)
         {
-            qit.value().customScales.remove(rUnit);
+            qit.value().customUnits.remove(rUnit);
         }
     }
 }
@@ -1223,13 +1241,14 @@ void Configuration::setDefaultUnit(QString key, QString value)
 //! @param quantity Name of the physical quantity (e.g. "Pressure" or "Velocity")
 //! @param unitname Name of the new unit
 //! @param scale Scale factor from SI unit to the new unit
-void Configuration::addCustomUnit(QString quantity, QString unitname, double scale)
+//! @param offset Scale factor from SI unit to the new unit
+void Configuration::addCustomUnit(QString quantity, QString unitname, QString scale, QString offset)
 {
-    //! @todo what if quantity does not exist, should we add it? what about SI unit then, think its better to ahve a separat functin for that
+    //! @todo what if quantity does not exist, should we add it? what about SI unit then, think its better to have a separate function for that
     QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(quantity);
     if (qit != mUnitScales.end())
     {
-        qit.value().customScales.insert(unitname, UnitConverter(unitname, scale));
+        qit.value().customUnits.insert(unitname, UnitConverter(quantity, unitname, scale, offset));
     }
     saveToXml();
 }
