@@ -1156,7 +1156,7 @@ bool VariableTableWidget::setStartValues()
         }
 
         // Check if we have new custom scaling
-        UnitScale newCustomUnitScale, previousUnitScale;
+        UnitConverter newCustomUnitScale, previousUnitScale;
         mpModelObject->getCustomParameterUnitScale(name, previousUnitScale);
         UnitSelectionWidget *pUnitWidget = pValueWideget->getUnitSelectionWidget();
         if (pUnitWidget)
@@ -1181,7 +1181,7 @@ bool VariableTableWidget::setStartValues()
         // If we have a custom unit scale then undo the scale and set a value expressed in the default unit
         if (!newCustomUnitScale.isEmpty())
         {
-            value = newCustomUnitScale.invRescale(value);
+            value = newCustomUnitScale.convertToBase(value);
         }
 
         // Get the old value to see if a change has occurred
@@ -1223,7 +1223,7 @@ bool VariableTableWidget::setStartValues()
             if (!setNewValueSucess)
             {
                 ParameterValueSelectionWidget *pWidget = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)));
-                pWidget->setValueAndScale_nosignals(previousUnitScale.rescale(previousValue), previousUnitScale);
+                pWidget->setValueAndScale_nosignals(previousUnitScale.convertFromBase(previousValue), previousUnitScale);
                 mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
                 allok = false;
                 break;
@@ -1500,7 +1500,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
     mpValueEdit = 0;
     mpConditionalValueComboBox = 0;
     mpUnitSelectionWidget = 0;
-    mDefaultUnitScale.setOnlyScale(1);
+    mDefaultUnitScale.setOnlyScaleAndOffset(1);
     mpModelObject = pModelObject;
     mVariameterType = type;
     mVariablePortName = rData.mPortName;
@@ -1553,11 +1553,11 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
         else
         {
             pLayout->addWidget(mpValueEdit);
-            UnitScale currentCustomUS;
+            UnitConverter currentCustomUS;
             if (mpModelObject->getCustomParameterUnitScale(mVariablePortDataName, currentCustomUS))
             {
                 mCustomScale = currentCustomUS;
-                mpValueEdit->setText(mCustomScale.rescale(value));
+                mpValueEdit->setText(mCustomScale.convertFromBase(value));
             }
             else
             {
@@ -1567,7 +1567,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             connect(mpValueEdit, SIGNAL(textChanged(QString)), this, SLOT(checkIfSysParEntered()));
             refreshValueTextStyle();
 
-            mDefaultUnitScale.setOnlyScale(1);
+            mDefaultUnitScale.setOnlyScaleAndOffset(1);
 
             // Set the unit selection field based on Quantity
             QString quantity = rData.mQuantity;
@@ -1588,7 +1588,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             // Get the default unit scale (should be one but also contains quantity and unit name)
             if (!quantity.isEmpty())
             {
-                UnitScale us;
+                UnitConverter us;
                 gpConfig->getUnitScale(quantity, rData.mUnit, us);
                 if (!us.isEmpty())
                 {
@@ -1601,7 +1601,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             {
                 mpUnitSelectionWidget = new UnitSelectionWidget(quantity, this);
                 mpUnitSelectionWidget->setUnitScaling(currentCustomUS);
-                connect(mpUnitSelectionWidget, SIGNAL(unitChanged(UnitScale)), this, SLOT(rescaleByUnitScale(UnitScale)));
+                connect(mpUnitSelectionWidget, SIGNAL(unitChanged(UnitConverter)), this, SLOT(rescaleByUnitScale(UnitConverter)));
                 pLayout->addWidget(mpUnitSelectionWidget);
 
             }
@@ -1682,7 +1682,7 @@ QLineEdit *ParameterValueSelectionWidget::getValueEditPtr() const
 }
 
 //! @brief Use this to reset values without triggering rescale signals and such things
-void ParameterValueSelectionWidget::setValueAndScale_nosignals(QString value, UnitScale &rCustomUS)
+void ParameterValueSelectionWidget::setValueAndScale_nosignals(QString value, UnitConverter &rCustomUS)
 {
     mpValueEdit->blockSignals(true);
 
@@ -1808,7 +1808,7 @@ void ParameterValueSelectionWidget::refreshValueTextStyle()
     }
 }
 
-void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitScale &rUnitScale)
+void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitConverter &rUnitScale)
 {
     if (mpValueEdit)
     {
@@ -1820,11 +1820,10 @@ void ParameterValueSelectionWidget::rescaleByUnitScale(const UnitScale &rUnitSca
             // If we already have a custom scale then convert back to base unit first
             if (!mCustomScale.isEmpty())
             {
-                //val = val / mCustomScale.toDouble();
-                valS = mDefaultUnitScale.rescale(mCustomScale.invRescale(valS));
+                valS = mDefaultUnitScale.convertFromBase(mCustomScale.convertToBase(valS));
             }
             // Now convert based on new scale values
-            valS = rUnitScale.rescale(mDefaultUnitScale.invRescale(valS));
+            valS = rUnitScale.convertFromBase(mDefaultUnitScale.convertToBase(valS));
 
             // Set new value and remember new custom scale
             mpValueEdit->setText(QString("%1").arg(valS));
@@ -1961,7 +1960,7 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rQuantity, QWidget *pPar
         mpUnitComboBox->installEventFilter(new MouseWheelEventEater(this));
         mpUnitComboBox->setMinimumWidth(60);
 
-        for( UnitScale &us : mUnitScales )
+        for( UnitConverter &us : mUnitScales )
         {
             mpUnitComboBox->addItem(us.mUnit);
             if (mBaseUnitIndex < 0)
@@ -1980,7 +1979,7 @@ UnitSelectionWidget::UnitSelectionWidget(const QString &rQuantity, QWidget *pPar
     }
 }
 
-void UnitSelectionWidget::setUnitScaling(const UnitScale &rUs)
+void UnitSelectionWidget::setUnitScaling(const UnitConverter &rUs)
 {
     if (mpUnitComboBox && !rUs.isEmpty())
     {
@@ -2002,19 +2001,19 @@ void UnitSelectionWidget::setUnitScaling(const UnitScale &rUs)
 
 QString UnitSelectionWidget::getSelectedUnit() const
 {
-    UnitScale us;
+    UnitConverter us;
     getSelectedUnitScale(us);
     return us.mUnit;
 }
 
 double UnitSelectionWidget::getSelectedUnitScale() const
 {
-    UnitScale us;
+    UnitConverter us;
     getSelectedUnitScale(us);
-    return us.toDouble();
+    return us.scaleToDouble();
 }
 
-void UnitSelectionWidget::getSelectedUnitScale(UnitScale &rUnitScale) const
+void UnitSelectionWidget::getSelectedUnitScale(UnitConverter &rUnitScale) const
 {
     if (mpUnitComboBox)
     {
@@ -2026,7 +2025,7 @@ void UnitSelectionWidget::getSelectedUnitScale(UnitScale &rUnitScale) const
     }
     else
     {
-        rUnitScale = UnitScale(mQuantity, mBaseUnit, "1.0");
+        rUnitScale = UnitConverter(mQuantity, mBaseUnit, "1.0", "");
     }
 }
 
@@ -2053,7 +2052,7 @@ void UnitSelectionWidget::resetDefault()
 void UnitSelectionWidget::selectionChanged(int idx)
 {
     Q_UNUSED(idx)
-    UnitScale us;
+    UnitConverter us;
     getSelectedUnitScale(us);
     emit unitChanged(us);
 }

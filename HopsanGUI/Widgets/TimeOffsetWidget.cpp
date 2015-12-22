@@ -53,7 +53,7 @@ TimeOffsetWidget::TimeOffsetWidget(SharedVectorVariableT pToFVector, QWidget *pP
         mpOffsetLineEdit->setValidator(new QDoubleValidator(this));
 
         //! @todo cant know we actually have default unit here
-        UnitScale us;
+        UnitConverter us;
         gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
         pHBoxLayout->addWidget(new QLabel(QString("%1 [%2]: ").arg(us.mQuantity).arg(us.mUnit), this));
         pHBoxLayout->addWidget(new QLabel("Offset: ", this));
@@ -63,7 +63,7 @@ TimeOffsetWidget::TimeOffsetWidget(SharedVectorVariableT pToFVector, QWidget *pP
         pHBoxLayout->addWidget(pResetButton);
 
         // Set the current offset value
-        mpOffsetLineEdit->setText(QString("%1").arg(us.rescale(mpToFVector->getPlotOffset())));
+        mpOffsetLineEdit->setText(QString("%1").arg(us.convertFromBase(mpToFVector->getPlotOffset())));
 
         // Connect signals to update time scale and offset when changing values
         connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setOffset(QString)));
@@ -77,9 +77,9 @@ void TimeOffsetWidget::setOffset(const QString &rOffset)
     double val = rOffset.toDouble(&parseOK);
     if (mpToFVector && parseOK)
     {
-        UnitScale us;
+        UnitConverter us;
         gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
-        mpToFVector->setPlotOffsetIfTime(us.invRescale(val));
+        mpToFVector->setPlotOffsetIfTime(us.convertToBase(val));
         emit valuesChanged();
     }
 }

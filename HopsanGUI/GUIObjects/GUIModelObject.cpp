@@ -900,7 +900,7 @@ bool ModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QStr
     return false;
 }
 
-bool ModelObject::registerCustomParameterUnitScale(QString name, UnitScale us)
+bool ModelObject::registerCustomParameterUnitScale(QString name, UnitConverter us)
 {
     if (us.isEmpty())
     {
@@ -918,9 +918,9 @@ bool ModelObject::unregisterCustomParameterUnitScale(QString name)
     return (mRegisteredCustomParameterUnitScales.remove(name) > 0);
 }
 
-bool ModelObject::getCustomParameterUnitScale(QString name, UnitScale &rUs)
+bool ModelObject::getCustomParameterUnitScale(QString name, UnitConverter &rUs)
 {
-    QMap<QString, UnitScale>::iterator it = mRegisteredCustomParameterUnitScales.find(name);
+    QMap<QString, UnitConverter>::iterator it = mRegisteredCustomParameterUnitScales.find(name);
     if (it != mRegisteredCustomParameterUnitScales.end())
     {
         rUs = it.value();
@@ -985,21 +985,22 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     if (!mRegisteredCustomParameterUnitScales.isEmpty())
     {
         QDomElement plotscales = appendDomElement(xmlGuiStuff, HMF_PARAMETERSCALES);
-        QMap<QString, UnitScale>::iterator psit;
+        QMap<QString, UnitConverter>::iterator psit;
         for (psit=mRegisteredCustomParameterUnitScales.begin(); psit!=mRegisteredCustomParameterUnitScales.end(); ++psit)
         {
-            UnitScale &us = psit.value();
+            UnitConverter &us = psit.value();
             QDomElement plotscale = appendDomElement(plotscales, HMF_PARAMETERSCALE);
             plotscale.setAttribute(HMF_PARAMETERSCALEPARAMNAME, psit.key());
             plotscale.setAttribute(HMF_PARAMETERSCALEUNIT, us.mUnit);
             plotscale.setAttribute(HMF_PARAMETERSCALESCALE, us.mScale);
+            plotscale.setAttribute(HMF_PARAMETERSCALEOFFSET, us.mOffset);
             if (!us.mQuantity.isEmpty())
             {
                 plotscale.setAttribute(HMF_PARAMETERSCALEQUANTITY, us.mQuantity);
             }
             CoreParameterData data;
             getParameter(psit.key(), data);
-            plotscale.setAttribute(HMF_PARAMETERSCALEVALUE, us.rescale(data.mValue));
+            plotscale.setAttribute(HMF_PARAMETERSCALEVALUE, us.convertFromBase(data.mValue));
         }
     }
 

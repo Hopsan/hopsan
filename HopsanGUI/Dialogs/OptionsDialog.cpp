@@ -170,22 +170,26 @@ private slots:
         QGridLayout *pLayout = new QGridLayout(pDialog);
 
         QString si = gpConfig->getBaseUnit(mQuantity);
-        QList<UnitScale> scales;
+        QList<UnitConverter> scales;
         gpConfig->getUnitScales(mQuantity, scales);
 
         int r=0;
-        foreach(const UnitScale& scale, scales)
+        foreach(const UnitConverter& scale, scales)
         {
             pLayout->addWidget(new QLabel("1 "+si, pDialog), r, 0);
             pLayout->addWidget(new QLabel(" = ", pDialog), r, 1);
             pLayout->addWidget(new QLabel(scale.mScale, pDialog), r, 2);
             pLayout->addWidget(new QLabel(scale.mUnit, pDialog), r, 3);
+            if (!scale.isOffsetEmpty())
+            {
+                pLayout->addWidget(new QLabel(" + "+scale.mOffset, pDialog), r, 4);
+            }
             ++r;
         }
 
         QDialogButtonBox *pButtonBox = new QDialogButtonBox(QDialogButtonBox::Close, Qt::Horizontal, pDialog);
         connect(pButtonBox, SIGNAL(rejected()), pDialog, SLOT(reject()));
-        pLayout->addWidget(pButtonBox,r,3);
+        pLayout->addWidget(pButtonBox,r,4);
 
         pDialog->exec();
         pDialog->deleteLater();
@@ -259,7 +263,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpZoomStepSpinBox->setMaximum(50);
     mpZoomStepSpinBox->setSingleStep(0.1);
 
-    mpAutoSetPwdToMwdCheckBox = new QCheckBox(tr("Automtaically set HCOM working directory to model diretory"));
+    mpAutoSetPwdToMwdCheckBox = new QCheckBox(tr("Automatically set HCOM working directory to model diretory"));
     mpAutoSetPwdToMwdCheckBox->setCheckable(true);
 
     mpInterfaceWidget = new QWidget(this);

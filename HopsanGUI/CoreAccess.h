@@ -109,6 +109,8 @@ public:
     bool haveQuantity(const QString &rQuantity);
 };
 
+double evalWithNumHop(const QString &rExpression);
+
 
 class CoreParameterData
 {

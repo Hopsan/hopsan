@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   PlutCurve.cpp
+//! @file   PlotCurve.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010
 //!
@@ -268,7 +268,7 @@ const QString &PlotCurve::getDataQuantity() const
 QString PlotCurve::getCurrentPlotUnit() const
 {
     QString localScale = QString::number(mCurveExtraDataScale);
-    UnitScale us = getCurveDataUnitScale();
+    UnitConverter us = getCurveDataUnitScale();
     if (!us.isEmpty())
     {
         if (localScale != "1")
@@ -286,7 +286,7 @@ QString PlotCurve::getCurrentPlotUnit() const
 QString PlotCurve::getCurrentXPlotUnit() const
 {
     //QString localScale = QString::number(mCurveExtraDataScale);
-    UnitScale us = getCurveXDataUnitScale();
+    UnitConverter us = getCurveXDataUnitScale();
     if (!us.isEmpty())
     {
 //        if (localScale != "1")
@@ -561,7 +561,7 @@ void PlotCurve::setCurveDataUnitScale(const QString &rUnit)
         {
             if (pqs.front() == pqsOrg.front())
             {
-                UnitScale us;
+                UnitConverter us;
                 gpConfig->getUnitScale(pqs.first(), rUnit, us);
                 setCurveDataUnitScale(us);
             }
@@ -573,14 +573,14 @@ void PlotCurve::setCurveDataUnitScale(const QString &rUnit)
         // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
         if (gpConfig->hasUnitScale(dataQuantity,rUnit))
         {
-            UnitScale us;
+            UnitConverter us;
             gpConfig->getUnitScale(dataQuantity, rUnit, us);
             setCurveDataUnitScale(us);
         }
     }
 }
 
-void PlotCurve::setCurveDataUnitScale(const UnitScale &rUS)
+void PlotCurve::setCurveDataUnitScale(const UnitConverter &rUS)
 {
     if (rUS.isEmpty())
     {
@@ -591,7 +591,7 @@ void PlotCurve::setCurveDataUnitScale(const UnitScale &rUS)
         mCurveDataUnitScale = rUS;
 
         // Clear the custom scale if it is one and we have a data unit
-        if (!getDataUnit().isEmpty() && mCurveDataUnitScale.isOne())
+        if (!getDataUnit().isEmpty() && mCurveDataUnitScale.isScaleOne())
         {
             resetCurveDataUnitScale();
         }
@@ -604,19 +604,19 @@ void PlotCurve::setCurveDataUnitScale(const UnitScale &rUS)
     }
 }
 
-const UnitScale PlotCurve::getCurveDataUnitScale() const
+const UnitConverter PlotCurve::getCurveDataUnitScale() const
 {
     if (mCurveDataUnitScale.isEmpty())
     {
         // If data have an original unit then return that as a unit scale with scaling 1.0
         if (!mData->getDataUnit().isEmpty())
         {
-            return UnitScale(mData->getDataName(), mData->getDataUnit(), "1.0");
+            return UnitConverter(mData->getDataName(), mData->getDataUnit(), "1.0", "0");
         }
         // If not then return empty
         else
         {
-            return UnitScale();
+            return UnitConverter();
         }
     }
     // Return the custom unitscale
@@ -655,7 +655,7 @@ void PlotCurve::setCurveXDataUnitScale(const QString &rUnit)
             {
                 if (pqs.front() == pqsOrg.front())
                 {
-                    UnitScale us;
+                    UnitConverter us;
                     gpConfig->getUnitScale(pqs.first(), rUnit, us);
                     setCurveXDataUnitScale(us);
                 }
@@ -667,7 +667,7 @@ void PlotCurve::setCurveXDataUnitScale(const QString &rUnit)
             // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
             if (gpConfig->hasUnitScale(xDataQuantity,rUnit))
             {
-                UnitScale us;
+                UnitConverter us;
                 gpConfig->getUnitScale(xDataQuantity, rUnit, us);
                 setCurveXDataUnitScale(us);
             }
@@ -675,7 +675,7 @@ void PlotCurve::setCurveXDataUnitScale(const QString &rUnit)
     }
 }
 
-void PlotCurve::setCurveXDataUnitScale(const UnitScale &rUS)
+void PlotCurve::setCurveXDataUnitScale(const UnitConverter &rUS)
 {
     if (rUS.isEmpty())
     {
@@ -686,7 +686,7 @@ void PlotCurve::setCurveXDataUnitScale(const UnitScale &rUS)
         mCurveXDataUnitScale = rUS;
 
         // Clear the custom scale if it is one and we have a data unit
-        if (!mCustomXdata->getDataUnit().isEmpty() && mCurveXDataUnitScale.isOne())
+        if (!mCustomXdata->getDataUnit().isEmpty() && mCurveXDataUnitScale.isScaleOne())
         {
             resetCurveXDataUnitScale();
         }
@@ -699,7 +699,7 @@ void PlotCurve::setCurveXDataUnitScale(const UnitScale &rUS)
     }
 }
 
-const UnitScale PlotCurve::getCurveXDataUnitScale() const
+const UnitConverter PlotCurve::getCurveXDataUnitScale() const
 {
     if (mCurveXDataUnitScale.isEmpty())
     {
@@ -708,11 +708,11 @@ const UnitScale PlotCurve::getCurveXDataUnitScale() const
             // If data have an original unit then return that as a unit scale with scaling 1.0
             if (!mCustomXdata->getDataUnit().isEmpty())
             {
-                return UnitScale(mData->getDataName(), mData->getDataUnit(), "1.0");
+                return UnitConverter(mData->getDataName(), mData->getDataUnit(), "1.0", "");
             }
             // If not then return empty below
         }
-        return UnitScale();
+        return UnitConverter();
     }
     // Return the custom unitscale
     else
@@ -730,24 +730,24 @@ void PlotCurve::resetCurveXDataUnitScale()
     mpParentPlotArea->replot();
 }
 
-void PlotCurve::setCurveTFUnitScale(UnitScale us)
+void PlotCurve::setCurveTFUnitScale(UnitConverter us)
 {
     mCurveTFUnitScale = us;
     updateCurve();
 }
 
-UnitScale PlotCurve::getCurveTFUnitScale() const
+UnitConverter PlotCurve::getCurveTFUnitScale() const
 {
     if (mCurveTFUnitScale.isEmpty())
     {
         SharedVectorVariableT tfVar = mData->getSharedTimeOrFrequencyVector();
         if (tfVar)
         {
-            return UnitScale(tfVar->getDataName(), tfVar->getDataUnit(), "1.0");
+            return UnitConverter(tfVar->getDataName(), tfVar->getDataUnit(), "1.0", "");
         }
         else
         {
-            return UnitScale();
+            return UnitConverter();
         }
     }
     else
@@ -1037,7 +1037,7 @@ void PlotCurve::openScaleDialog()
 
     QLabel *pOriginalDataUnit = new QLabel(pScaleDialog);
     QLabel *pCustomDataUnit = new QLabel(pScaleDialog);
-    UnitScale us = getCurveDataUnitScale();
+    UnitConverter us = getCurveDataUnitScale();
     if (mData && !us.isEmpty())
     {
         pOriginalDataUnit->setText(mData->getDataUnit());
@@ -1174,14 +1174,14 @@ void PlotCurve::updateCurve()
         //! @todo maybe be smart about doing this copy
         tempY = mData->getDataVectorCopy();
 
-        double direction = 1;
+        double direction = 1.0;
         if (mData->getVariableDescription()->mInvertData)
         {
-            direction = -1;
+            direction = -1.0;
         }
-        const double yScale = mCurveExtraDataScale*mCurveDataUnitScale.toDouble(1.0)*direction;
+        const double yScale = mCurveExtraDataScale*direction/mCurveDataUnitScale.scaleToDouble(1.0);
         const double yCurveLocalOffset = mCurveExtraDataOffset;
-        const double yBaseOffset = mData->getPlotOffset();
+        const double yBaseOffset = mData->getPlotOffset()-mCurveDataUnitScale.offsetToDouble(0.0);
 
         if (mCustomXdata && !mShowVsSamples)
         {
@@ -1193,8 +1193,8 @@ void PlotCurve::updateCurve()
             {
                 direction = -1;
             }
-            const double xScale = mCurveXDataUnitScale.toDouble(1.0)*direction;
-            const double xBaseOffset = mCustomXdata->getPlotOffset();
+            const double xScale = direction/mCurveXDataUnitScale.scaleToDouble(1.0);
+            const double xBaseOffset = mCustomXdata->getPlotOffset()-mCurveXDataUnitScale.offsetToDouble();
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = (tempX[i]+xBaseOffset)*xScale;
@@ -1205,8 +1205,8 @@ void PlotCurve::updateCurve()
         else if (mData->getSharedTimeOrFrequencyVector() && !mShowVsSamples)
         {
             tempX = mData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
-            const double timeScale = mCurveTFUnitScale.toDouble(1.0);
-            const double baseTimeOffset = mData->getSharedTimeOrFrequencyVector()->getPlotOffset();
+            const double timeScale = 1.0/mCurveTFUnitScale.scaleToDouble(1.0);
+            const double baseTimeOffset = mData->getSharedTimeOrFrequencyVector()->getPlotOffset()-mCurveTFUnitScale.offsetToDouble();
 
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {

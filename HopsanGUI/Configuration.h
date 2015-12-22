@@ -100,10 +100,11 @@
 #define CFG_WIDTH "width"
 #define CFG_CAPSTYLE "capstyle"
 
-#define CFG_UNITSCALES "unitscales"
+#define CFG_UNITSCALES "unitscales07"
 #define CFG_QUANTITY "quantity"
 
 #define CFG_SIUNIT "siunit"
+#define CFG_BASEUNIT "baseunit"
 #define CFG_UNITSCALE "unitscale"
 #define CFG_UNIT "unit"
 #define CFG_UNITS "units"
@@ -112,6 +113,7 @@
 #define CFG_UNIT "unit"
 #define CFG_CUSTOMUNIT "customunit"
 #define CFG_SCALE "scale"
+#define CFG_OFFSET "offset"
 
 #define CFG_PYTHON "python"
 #define CFG_HCOM "hcom"
@@ -204,10 +206,10 @@ public:
     void setDefaultUnit(QString key, QString value);
     void addCustomUnit(QString quantity, QString unitname, double scale);
     QMap<QString, double> getUnitScales(const QString &rPhysicalQuantity);
-    void getUnitScales(const QString &rQuantity, QList<UnitScale> &rUnitScales);
+    void getUnitScales(const QString &rQuantity, QList<UnitConverter> &rUnitScales);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
-    void getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitScale &rUnitScale) const;
+    void getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitConverter &rUnitScale) const;
     QStringList getQuantitiesForUnit(const QString &rUnit) const;
     QString getBaseUnit(const QString &rQuantity);
     bool isRegisteredBaseUnit(const QString &rUnitName) const;
@@ -240,9 +242,9 @@ private:
     class QuantityUnitScale
     {
     public:
-        QString siunit;
+        QString baseunit;
         QString selectedDefaultUnit;
-        QMap<QString, UnitScale> customScales;
+        QMap<QString, UnitConverter> customScales;
     };
 
     QColor mBackgroundColor;

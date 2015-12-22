@@ -1546,7 +1546,7 @@ void PlotArea::updateAxisLabels()
                     // handle time or frequency vector
                     else
                     {
-                        UnitScale tfUS = pPlotCurve->getCurveTFUnitScale();
+                        UnitConverter tfUS = pPlotCurve->getCurveTFUnitScale();
                         if (!tfUS.isEmpty())
                         {
                             bottomLabel.append(QString(" [%1]").arg(tfUS.mUnit));
@@ -2333,7 +2333,7 @@ void PlotArea::determineCurveDataUnitScale(PlotCurve *pCurve)
     // Use the default unit if it is not the same as the original unit
     if (!desiredDefaultUnit.isEmpty() && (desiredDefaultUnit != originalDataUnit) )
     {
-        UnitScale us;
+        UnitConverter us;
         gpConfig->getUnitScale(dataQuantity, desiredDefaultUnit, us);
         pCurve->setCurveDataUnitScale(us);
     }
@@ -2402,7 +2402,7 @@ void PlotArea::determineCurveXDataUnitScale(PlotCurve *pCurve)
         // Use the default unit if it is not the same as the original unit
         if (!desiredDefaultUnit.isEmpty() && (desiredDefaultUnit != originalXDataUnit) )
         {
-            UnitScale us;
+            UnitConverter us;
             gpConfig->getUnitScale(xDataQuantity, desiredDefaultUnit, us);
             pCurve->setCurveXDataUnitScale(us);
         }
@@ -2450,7 +2450,7 @@ void PlotArea::determineCurveTFUnitScale(PlotCurve *pCurve)
         // Use the default unit if it is not the same as the original unit
         if (!defaultTfUnit.isEmpty() && (defaultTfUnit != tfVar->getDataUnit()) )
         {
-            UnitScale us;
+            UnitConverter us;
             gpConfig->getUnitScale(tfVar->getDataName(), defaultTfUnit, us);
             pCurve->setCurveTFUnitScale(us);
         }
@@ -2481,7 +2481,7 @@ void PlotArea::determineCurveTFUnitScale(PlotCurve *pCurve)
             // If we have found a custom unit that is shared among the other curves, then set that custom scale
             if( !customUnit.isEmpty() )
             {
-                UnitScale us;
+                UnitConverter us;
                 gpConfig->getUnitScale(tfVar->getDataName(), customUnit, us);
                 pCurve->setCurveTFUnitScale(us);
             }

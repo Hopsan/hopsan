@@ -154,6 +154,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_PARAMETERSCALEPARAMNAME "parameter"
 #define HMF_PARAMETERSCALEUNIT "unit"
 #define HMF_PARAMETERSCALESCALE "scale"
+#define HMF_PARAMETERSCALEOFFSET "offset"
 #define HMF_PARAMETERSCALEVALUE "value"
 #define HMF_PARAMETERSCALEQUANTITY "quantity"
 

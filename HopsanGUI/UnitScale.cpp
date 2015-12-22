@@ -27,123 +27,143 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2013-12-03
 //!
-//! @brief Contains the UnitScale class
+//! @brief Contains the UnitConverter class
 //!
 //$Id$
 
 #include "UnitScale.h"
 
 //! @brief Constructor for a unit / scale (double) combination
-UnitScale::UnitScale(const QString &rUnit, const double scale) : mUnit(rUnit)
+UnitConverter::UnitConverter(const QString &rUnit, const double scale, const double offset) : mUnit(rUnit)
 {
-    setScale(scale);
+    setScaleAndOffset(scale, offset);
 }
 
 //! @brief Constructor for a quantity / unit / scale (QString) combination
-UnitScale::UnitScale(const QString &rQuantity, const QString &rUnit, const QString &rScale) :
-    mQuantity(rQuantity), mUnit(rUnit), mScale(rScale)
+UnitConverter::UnitConverter(const QString &rQuantity, const QString &rUnit, const QString &rScale, const QString &rOffset) :
+    mQuantity(rQuantity), mUnit(rUnit), mScale(rScale), mOffset(rOffset)
 {
     // Check if valid
-    bool isOK;
+    bool isOK=false, isOK2=true;
     mScale.toDouble(&isOK);
-    if (!isOK)
+    if (!mOffset.isEmpty())
+    {
+        mOffset.toDouble(&isOK2);
+    }
+    if (!(isOK && isOK2))
     {
         clear();
     }
 }
 
-//! @brief Constructor for a unit / scale (QString) combination
-UnitScale::UnitScale(const QString &rUnit, const QString &rScale) : mUnit(rUnit), mScale(rScale)
-{
-    // Check if valid
-    bool isOK;
-    mScale.toDouble(&isOK);
-    if (!isOK)
-    {
-        clear();
-    }
-}
 
-//! @brief Default constructor (empty unitscale)
-UnitScale::UnitScale()
+//! @brief Default constructor (empty UnitConverter)
+UnitConverter::UnitConverter()
 {
     // Default constructor
 }
 
-//! @brief Clear the UnitScale
-void UnitScale::clear()
+//! @brief Clear the UnitConverter
+void UnitConverter::clear()
 {
+    mQuantity.clear();
     mUnit.clear();
     mScale.clear();
+    mOffset.clear();
 }
 
-//! @brief Convert scale string to double
-//! @returns Scale as double
-double UnitScale::toDouble() const
-{
-    return mScale.toDouble();
-}
 
-//! @brief Convert scale string to double (return default value if this UnitScale is NULL)
-//! @param[in] def Default value to use if scale is NULL
+//! @brief Convert scale string to double (return default value if this UnitConverter is NULL)
+//! @param[in] defaultValue Default value to use if scale is NULL
 //! @returns Scale as double
-double UnitScale::toDouble(const double def) const
+double UnitConverter::scaleToDouble(const double defaultValue) const
 {
     if (mScale.isEmpty())
     {
-        return def;
+        return defaultValue;
     }
     else
     {
-        return toDouble();
+        return mScale.toDouble();
+    }
+}
+
+double UnitConverter::offsetToDouble(const double defaultValue) const
+{
+    if (mOffset.isEmpty())
+    {
+        return defaultValue;
+    }
+    else
+    {
+        return mOffset.toDouble();
     }
 }
 
 //! @brief Check if scale is empty
 //! @returns True if empty else false
-bool UnitScale::isEmpty() const
+bool UnitConverter::isEmpty() const
+{
+    return isScaleEmpty() && isOffsetEmpty();
+}
+
+bool UnitConverter::isScaleEmpty() const
 {
     return mScale.isEmpty();
 }
 
-bool UnitScale::isOne() const
+bool UnitConverter::isOffsetEmpty() const
 {
-    //! @todo this may not work if scale is very close to 1 due to truncation
-    return mScale == "1" || (mScale == "1.0");
+    return mOffset.isEmpty();
 }
 
-bool UnitScale::isMinusOne() const
+bool UnitConverter::isScaleOne() const
 {
-    return (mScale == "-1") || (mScale == "-1.0");
+    //! @todo this may not work if scale is very close to 1 due to truncation
+    return (mScale == "1" || (mScale == "1.0")) && mOffset.isEmpty();
+}
+
+bool UnitConverter::isScaleMinusOne() const
+{
+    return ((mScale == "-1") || (mScale == "-1.0")) && mOffset.isEmpty();
 }
 
 //! @brief Set the scale from a double
 //! @param [in] The scale value
-void UnitScale::setScale(const double scale)
+void UnitConverter::setScaleAndOffset(const double scale, const double offset)
 {
     mScale = QString("%1").arg(scale);
+    // Note! For simplicity (in some other functions) we clear offset if zero
+    if (offset != 0)
+    {
+        mOffset = QString("%1").arg(offset);
+    }
+    else
+    {
+        mOffset.clear();
+    }
 }
 
-//! @brief Set only scale, clearing the "unit"
+//! @brief Set only scale, clearing the "unit" and "quantity"
 //! @param [in] The scale value
-void UnitScale::setOnlyScale(const double scale)
+void UnitConverter::setOnlyScaleAndOffset(const double scale, const double offset)
 {
     mUnit.clear();
-    mScale = QString("%1").arg(scale);
+    setScaleAndOffset(scale, offset);
 }
 
 //! @brief Rescale a value with this unit scale
 //! @param[in] value The value to rescale
 //! @returns The rescaled value
-double UnitScale::rescale(const double value) const
+double UnitConverter::convertToBase(const double value) const
 {
-    if (isEmpty())
+    if (isScaleEmpty())
     {
-        return value;
+        return value+mOffset.toDouble();
     }
     else
     {
-        return mScale.toDouble()*value;
+        return mScale.toDouble()*value+mOffset.toDouble();
     }
 }
 
@@ -151,35 +171,42 @@ double UnitScale::rescale(const double value) const
 //! @param[in] value The value to rescale
 //! @returns The rescaled value
 //! @note String conversion may truncate value
-QString UnitScale::rescale(const QString value) const
+QString UnitConverter::convertToBase(const QString value) const
 {
-    return QString("%1").arg(rescale(value.toDouble()));
+    return QString("%1").arg(convertToBase(value.toDouble()));
 }
 
 //! @brief Inverted rescaling of a value with this unit scale
 //! @param[in] value The value to rescale
 //! @returns The rescaled value
-double UnitScale::invRescale(const double value) const
+double UnitConverter::convertFromBase(const double value) const
 {
-    return value / mScale.toDouble();
+    if (isScaleEmpty())
+    {
+        return (value - mOffset.toDouble());
+    }
+    else
+    {
+        return (value - mOffset.toDouble()) / mScale.toDouble();
+    }
 }
 
 //! @brief Inverted rescaling of a value expressed as string with this unit scale
 //! @param[in] value The value to rescale
 //! @returns The rescaled value
 //! @note String conversion may truncate value
-QString UnitScale::invRescale(const QString value) const
+QString UnitConverter::convertFromBase(const QString value) const
 {
-    return QString("%1").arg(invRescale(value.toDouble()));
+    return QString("%1").arg(convertFromBase(value.toDouble()));
 }
 
 
-bool UnitScale::operator== (const UnitScale &rOther)
+bool UnitConverter::operator== (const UnitConverter &rOther)
 {
     return  !(*this != rOther);
 }
 
-bool UnitScale::operator!= (const UnitScale &rOther)
+bool UnitConverter::operator!= (const UnitConverter &rOther)
 {
-    return (mQuantity != rOther.mQuantity) || (mScale != rOther.mScale) || (mUnit != rOther.mUnit);
+    return (mQuantity != rOther.mQuantity) || (mScale != rOther.mScale) || (mUnit != rOther.mUnit) || (mOffset != rOther.mOffset);
 }

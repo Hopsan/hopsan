@@ -2593,7 +2593,7 @@ void HcomHandler::executeDisplayDefaultPlotScaleCommand(const QString cmd)
                 continue;
             }
 
-            UnitScale unitScale;
+            UnitConverter unitScale;
             QString portAndVarName = fields[1]+"."+fields[2];
             toLongDataNames(portAndVarName);
 
@@ -3124,9 +3124,9 @@ void HcomHandler::executeChangeTimePlotOffsetCommand(const QString cmd)
         SharedVectorVariableT pVar = getLogVariable(var);
         if (pVar->getDataQuantity() == allowed_type)
         {
-            UnitScale us;
+            UnitConverter us;
             gpConfig->getUnitScale(pVar->getDataQuantity(), gpConfig->getDefaultUnit(pVar->getDataQuantity()), us);
-            pVar->setPlotOffsetIfTime(us.invRescale(offset));
+            pVar->setPlotOffsetIfTime(us.convertToBase(offset));
         }
         else
         {

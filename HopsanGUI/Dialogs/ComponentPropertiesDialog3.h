@@ -218,24 +218,24 @@ class UnitSelectionWidget : public QWidget
     Q_OBJECT
 public:
     UnitSelectionWidget(const QString &rQuantity, QWidget *pParent);
-    void setUnitScaling(const UnitScale &rUs);
+    void setUnitScaling(const UnitConverter &rUs);
     QString getSelectedUnit() const;
     double getSelectedUnitScale() const;
-    void getSelectedUnitScale(UnitScale &rUnitScale) const;
+    void getSelectedUnitScale(UnitConverter &rUnitScale) const;
     bool isDefaultSelected() const;
 
 public slots:
     void resetDefault();
 
 signals:
-    void unitChanged(const UnitScale &rUnitScale);
+    void unitChanged(const UnitConverter &rUnitScale);
 
 private slots:
     void selectionChanged(int idx);
 
 private:
     QComboBox *mpUnitComboBox;
-    QList<UnitScale> mUnitScales;
+    QList<UnitConverter> mUnitScales;
     QString mQuantity;
     QString mBaseUnit;
     int mBaseUnitIndex;
@@ -253,11 +253,11 @@ public:
     UnitSelectionWidget *getUnitSelectionWidget();
     bool isValueDisabled() const;
     QLineEdit *getValueEditPtr() const;
-    void setValueAndScale_nosignals(QString value, UnitScale &rCustomUS);
+    void setValueAndScale_nosignals(QString value, UnitConverter &rCustomUS);
 
 public slots:
     void refreshValueTextStyle();
-    void rescaleByUnitScale(const UnitScale &rUnitScale);
+    void rescaleByUnitScale(const UnitConverter &rUnitScale);
     bool checkIfSysParEntered();
 
 private slots:
@@ -272,8 +272,8 @@ private:
     UnitSelectionWidget *mpUnitSelectionWidget;
     VariableTableWidget::VariameterTypEnumT mVariameterType;
     ModelObject *mpModelObject;
-    UnitScale mCustomScale;
-    UnitScale mDefaultUnitScale;
+    UnitConverter mCustomScale;
+    UnitConverter mDefaultUnitScale;
     void setDefaultValueTextStyle();
     void decideBackgroundColor(QString &rStyleString);
 };

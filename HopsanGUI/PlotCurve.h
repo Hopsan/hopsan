@@ -117,14 +117,14 @@ public:
 
     bool hasCurveDataUnitScale() const;
     void setCurveDataUnitScale(const QString &rUnit);
-    void setCurveDataUnitScale(const UnitScale &rUS);
-    const UnitScale getCurveDataUnitScale() const;
+    void setCurveDataUnitScale(const UnitConverter &rUS);
+    const UnitConverter getCurveDataUnitScale() const;
     void resetCurveDataUnitScale();
 
     bool hasCurveXDataUnitScale() const;
     void setCurveXDataUnitScale(const QString &rUnit);
-    void setCurveXDataUnitScale(const UnitScale &rUS);
-    const UnitScale getCurveXDataUnitScale() const;
+    void setCurveXDataUnitScale(const UnitConverter &rUS);
+    const UnitConverter getCurveXDataUnitScale() const;
     void resetCurveXDataUnitScale();
 
     void setCurveExtraDataScaleAndOffset(const double scale, const double offset);
@@ -132,8 +132,8 @@ public:
     QString getCurrentPlotUnit() const;
     QString getCurrentXPlotUnit() const;
 
-    UnitScale getCurveTFUnitScale() const;
-    void setCurveTFUnitScale(UnitScale us);
+    UnitConverter getCurveTFUnitScale() const;
+    void setCurveTFUnitScale(UnitConverter us);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
@@ -201,9 +201,9 @@ private:
     bool mShowVsSamples;
 
     // Curve scale
-    UnitScale mCurveXDataUnitScale;
-    UnitScale mCurveDataUnitScale;
-    UnitScale mCurveTFUnitScale;
+    UnitConverter mCurveXDataUnitScale;
+    UnitConverter mCurveDataUnitScale;
+    UnitConverter mCurveTFUnitScale;
     double mCurveExtraDataScale;
     double mCurveExtraDataOffset;
 

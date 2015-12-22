@@ -134,6 +134,7 @@
             </stylesheet>
     </style>
     <unitscales>
+    <!-- Note! The unitscales tag is deprecated and should no longer be used   -->
         <quantity name="Position" siunit="m">
             <unitscale unit="km">1e-3</unitscale>
             <unitscale unit="dm">10</unitscale>
@@ -195,6 +196,74 @@
             <unitscale unit="cm^3/rev">1e6</unitscale>
         </quantity>
     </unitscales>
+    <unitscales07>
+        <!-- baseUnit = scale * unit + offset  -->
+        <quantity name="Position" baseunit="m">
+            <unit name="mm" scale="1e-3"/>
+            <unit name="cm" scale="1e-2"/>
+            <unit name="dm" scale="1e-1"/>
+            <unit name="km" scale="1e3"/>
+            <unit name="ft" scale="1/3.2808"/>
+            <unit name="inch" scale="1/39.370"/>
+        </quantity>
+        <quantity name="Velocity" baseunit="m/s">
+        </quantity>
+        <quantity name="Voltage" baseunit="V">
+        </quantity>
+        <quantity name="Current" baseunit="A">
+        </quantity>
+        <quantity name="Time" baseunit="s">
+            <unit name="ms" scale="1e-3"/>
+            <unit name="us" scale="1e-6"/>
+            <unit name="ns" scale="1e-9"/>
+            <unit name="min" scale="60"/>
+        </quantity>
+        <quantity name="Frequency" baseunit="rad/s">
+            <unit name="Hz" scale="2*pi"/>
+            <unit name="kHz" scale="2*pi*1e3"/>
+            <unit name="MHz" scale="2*pi*1e6"/>
+            <unit name="GHz" scale="2*pi*1e9"/>
+        </quantity>
+        <quantity name="Angle" baseunit="rad">
+            <unit name="deg" scale="pi/180"/>
+        </quantity>
+        <quantity name="AngularVelocity" baseunit="rad/s">
+            <unit name="deg/s" scale="pi/180"/>
+            <unit name="rev/s" scale="2*pi"/>
+            <unit name="rpm" scale="2*pi*60"/>
+        </quantity>
+        <quantity name="Flow" baseunit="m^3/s">
+            <unit name="l/min" scale="1/60*1e-3"/>
+        </quantity>
+        <quantity name="Force" baseunit="N">
+            <unit name="kN" scale="1e3"/>
+        </quantity>
+        <quantity name="Torque" baseunit="Nm">
+        </quantity>
+        <quantity name="Pressure" baseunit="Pa">
+            <unit name="bar" scale="1e5"/>
+            <unit name="MPa" scale="1e6"/>
+            <unit name="psi" scale="6894.76"/>
+        </quantity>
+        <quantity name="Area" baseunit="m^2">
+            <unit name="mm^2" scale="1e-6"/>
+            <unit name="cm^2" scale="1e-4"/>
+            <unit name="dm^2" scale="1e-2"/>
+            <unit name="ft^2" scale="1/3.2808^2"/>
+            <unit name="inch^2" scale="1/39.370^2"/>
+        </quantity>
+        <quantity name="Volume" baseunit="m^3">
+            <unit name="cm^3" scale="1e-6"/>
+            <unit name="l" scale="1e-3"/>
+        </quantity>
+        <quantity name="Displacement" baseunit="m^3/rev">
+            <unit name="cm^3/rev" scale="1e-6"/>
+        </quantity>
+        <quantity name="Temperature" baseunit="K">
+            <unit name="C" scale="1" offset="273.15"/>
+            <unit name="F" scale="5/9" offset="459.67*5/9"/>
+        </quantity>
+    </unitscales07>
     <units>
         <defaultunit unit="V" name="Voltage"/>
         <defaultunit unit="A" name="Current"/>
@@ -209,40 +278,6 @@
         <defaultunit unit="s" name="Time"/>
         <defaultunit unit="rad/s" name="Frequency"/>
         <defaultunit unit="m^2" name="Area"/>
-<!-- Note! these customunit tags are deprecated and should no longer be used   -->
-        <customunit unit="Hz" scale="1" name="Frequency"/>
-        <customunit unit="kHz" scale="1e-3" name="Frequency"/>
-        <customunit unit="MHz" scale="1e-6" name="Frequency"/>
-        <customunit unit="GHz" scale="1e-9" name="Frequency"/>
-        <customunit unit="rad/s" scale="0.159154943091895" name="Frequency"/>
-        <customunit unit="s" scale="1" name="Time"/>
-        <customunit unit="ms" scale="1e3" name="Time"/>
-        <customunit unit="us" scale="1e6" name="Time"/>
-        <customunit unit="ns" scale="1e9" name="Time"/>
-        <customunit unit="V" scale="1" name="Voltage"/>
-        <customunit unit="A" scale="1" name="Current"/>
-        <customunit unit="deg" scale="57.296" name="Angle"/>
-        <customunit unit="rad" scale="1" name="Angle"/>
-        <customunit unit="deg/s" scale="57.296" name="AngularVelocity"/>
-        <customunit unit="rad/s" scale="1" name="AngularVelocity"/>
-        <customunit unit="rev/s" scale="0.159155" name="AngularVelocity"/>
-        <customunit unit="rpm" scale="9.549296585" name="AngularVelocity"/>
-        <customunit unit="l/min" scale="60000" name="Flow"/>
-        <customunit unit="m^3/s" scale="1" name="Flow"/>
-        <customunit unit="N" scale="1" name="Force"/>
-        <customunit unit="kN" scale="0.001" name="Force"/>
-        <customunit unit="cm" scale="100" name="Position"/>
-        <customunit unit="ft" scale="3.2808" name="Position"/>
-        <customunit unit="inch" scale="39.3700787" name="Position"/>
-        <customunit unit="m" scale="1" name="Position"/>
-        <customunit unit="mm" scale="1000" name="Position"/>
-        <customunit unit="bar" scale="1e-005" name="Pressure"/>
-        <customunit unit="MPa" scale="1e-006" name="Pressure"/>
-        <customunit unit="Pa" scale="1" name="Pressure"/>
-        <customunit unit="psi" scale="0.0001450326" name="Pressure"/>
-        <customunit unit="Nm" scale="1" name="Torque"/>
-        <customunit unit="m/s" scale="1" name="Velocity"/>
-<!-- Note! these customunit tags are deprecated and should no longer be used   -->
     </units>
     <python/>
 </hopsandefaults>

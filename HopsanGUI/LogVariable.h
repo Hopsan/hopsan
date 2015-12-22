@@ -139,7 +139,7 @@ public:
     const QString &getDataUnit() const;
     const QString &getDataQuantity() const;
     const QString &getCustomLabel() const;
-    UnitScale getUnitScale() const;
+    UnitConverter getUnitScale() const;
     bool hasAliasName() const;
     bool hasCustomLabel() const;
     int getGeneration() const;

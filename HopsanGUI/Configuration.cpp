@@ -39,6 +39,7 @@
 #include "DesktopHandler.h"
 #include "Utilities/XMLUtilities.h"
 #include "MessageHandler.h"
+#include "CoreAccess.h"
 
 #include "Widgets/PyDockWidget.h"
 //! @todo this config object should not need to include PyDockWidget
@@ -62,7 +63,7 @@
 //! @brief Saves the current settings to hopsanconfig.xml
 Configuration::Configuration()
 {
-    // Resgister configuration options
+    // Register configuration options
 
     // String settings
     mStringSettings.insert(CFG_REMOTEHOPSANADDRESS, "");
@@ -235,15 +236,15 @@ void Configuration::saveToXml()
         {
             QDomElement xmlQuantity = appendDomElement(xmlUnitScales, CFG_QUANTITY);
             xmlQuantity.setAttribute(HMF_NAMETAG, qit.key());
-            QString siunit = qit.value().siunit;
-            if (!siunit.isEmpty())
+            QString baseunit = qit.value().baseunit;
+            if (!baseunit.isEmpty())
             {
-                xmlQuantity.setAttribute(CFG_SIUNIT, siunit);
+                xmlQuantity.setAttribute(CFG_BASEUNIT, baseunit);
             }
-            QMap<QString, UnitScale>::iterator cuit;
+            QMap<QString, UnitConverter>::iterator cuit;
             for(cuit = qit.value().customScales.begin(); cuit != qit.value().customScales.end(); ++cuit)
             {
-                if (cuit.key() != siunit)
+                if (cuit.key() != baseunit)
                 {
                     QDomElement xmlUS = appendDomTextNode(xmlQuantity, CFG_UNITSCALE, cuit.value().mScale);
                     xmlUS.setAttribute(CFG_UNIT, cuit.key());
@@ -284,7 +285,7 @@ void Configuration::saveToXml()
         QFile xmlsettings(gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
         if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
-            gpMessageHandler->addErrorMessage("Failed to open config file for writing: "+gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
+            gpMessageHandler->addErrorMessage("Failed to open configuration file for writing: "+gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
             return;
         }
         QTextStream out(&xmlsettings);
@@ -633,25 +634,36 @@ void Configuration::loadUnitScales(QDomElement &rDomElement)
     while (!xmlQuantity.isNull())
     {
         QString quantity = xmlQuantity.attribute(HMF_NAMETAG);
-        QString siunit = xmlQuantity.attribute(CFG_SIUNIT);
+        QString baseunit = xmlQuantity.attribute(CFG_BASEUNIT);
 
         QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(quantity);
         if (qit == mUnitScales.end())
         {
             qit = mUnitScales.insert(quantity, QuantityUnitScale());
         }
-        if (!siunit.isEmpty())
+        if (!baseunit.isEmpty())
         {
-            qit.value().siunit = siunit;
-            qit.value().customScales.insert(siunit, UnitScale(quantity, siunit, "1.0"));
+            qit.value().baseunit = baseunit;
+            qit.value().customScales.insert(baseunit, UnitConverter(quantity, baseunit, "1.0", ""));
         }
 
-        QDomElement xmlUnitscale = xmlQuantity.firstChildElement(CFG_UNITSCALE);
+        QDomElement xmlUnitscale = xmlQuantity.firstChildElement(CFG_UNIT);
         while (!xmlUnitscale.isNull())
         {
-            QString unit = xmlUnitscale.attribute(CFG_UNIT);
-            qit.value().customScales.insert(unit, UnitScale(quantity, unit, xmlUnitscale.text()));
-            xmlUnitscale = xmlUnitscale.nextSiblingElement(CFG_UNITSCALE);
+            QString unitname = xmlUnitscale.attribute(CFG_NAME);
+            QString scale = xmlUnitscale.attribute(CFG_SCALE);
+            QString offset = xmlUnitscale.attribute(CFG_OFFSET);
+            // If scale or offset would be empty here, then result of evaluation would be "pi"
+            if (!scale.isEmpty())
+            {
+                scale = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+scale),0,'g',10);
+            }
+            if (!offset.isEmpty())
+            {
+                offset = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+offset),0,'g',10);
+            }
+            qit.value().customScales.insert(unitname, UnitConverter(quantity, unitname, scale, offset));
+            xmlUnitscale = xmlUnitscale.nextSiblingElement(CFG_UNIT);
         }
 
         xmlQuantity = xmlQuantity.nextSiblingElement(CFG_QUANTITY);
@@ -888,17 +900,17 @@ QMap<QString, double> Configuration::getUnitScales(const QString &rPhysicalQuant
     QMap<QString, double> dummy;
     if(mUnitScales.contains(rPhysicalQuantity))
     {
-        QMap<QString, UnitScale> &rMap = mUnitScales.find(rPhysicalQuantity).value().customScales;
-        QMap<QString, UnitScale>::iterator it;
+        QMap<QString, UnitConverter> &rMap = mUnitScales.find(rPhysicalQuantity).value().customScales;
+        QMap<QString, UnitConverter>::iterator it;
         for (it=rMap.begin(); it!=rMap.end(); ++it)
         {
-            dummy.insert(it.value().mUnit, it.value().toDouble());
+            dummy.insert(it.value().mUnit, it.value().scaleToDouble());
         }
     }
     return dummy;
 }
 
-void Configuration::getUnitScales(const QString &rQuantity, QList<UnitScale> &rUnitScales)
+void Configuration::getUnitScales(const QString &rQuantity, QList<UnitConverter> &rUnitScales)
 {
     QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(rQuantity);
     if (qit != mUnitScales.end())
@@ -922,17 +934,17 @@ double Configuration::getUnitScale(const QString &rPhysicalQuantity, const QStri
 {
     if (mUnitScales.contains(rPhysicalQuantity))
     {
-        return mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitScale("",0)).toDouble();
+        return mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitConverter("",0)).scaleToDouble();
     }
     return 0;
 }
 
-void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitScale &rUnitScale) const
+void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitConverter &rUnitScale) const
 {
     rUnitScale.clear();
     if (mUnitScales.contains(rPhysicalQuantity))
     {
-        rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitScale("",0));
+        rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customScales.value(rUnit,UnitConverter("",0));
     }
 }
 
@@ -954,7 +966,7 @@ QStringList Configuration::getQuantitiesForUnit(const QString &rUnit) const
 
 QString Configuration::getBaseUnit(const QString &rQuantity)
 {
-    return  mUnitScales.value(rQuantity, QuantityUnitScale()).siunit;
+    return  mUnitScales.value(rQuantity, QuantityUnitScale()).baseunit;
 }
 
 bool Configuration::isRegisteredBaseUnit(const QString &rUnitName) const
@@ -962,7 +974,7 @@ bool Configuration::isRegisteredBaseUnit(const QString &rUnitName) const
     QMap< QString, QuantityUnitScale >::const_iterator it;
     for (it=mUnitScales.begin(); it!=mUnitScales.end(); ++it)
     {
-        if (it.value().siunit == rUnitName)
+        if (it.value().baseunit == rUnitName)
         {
             return true;
         }
@@ -975,7 +987,7 @@ void Configuration::removeUnitScale(const QString &rQuantity, const QString &rUn
     QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(rQuantity);
     if (qit != mUnitScales.end())
     {
-        if (rUnit != qit.value().siunit)
+        if (rUnit != qit.value().baseunit)
         {
             qit.value().customScales.remove(rUnit);
         }
@@ -989,7 +1001,7 @@ bool Configuration::haveQuantity(const QString &rQuantity) const
 
 //! @brief Returns connector pen for specified connector type
 //! @param style Style of connector (POWERCONNECTOR, SIGNALCONNECTOR or UNDEFINEDCONNECTOR)
-//! @param gfxType Graphics type (User or Iso)
+//! @param gfxType Graphics type (User or ISO)
 //! @param situation Defines when connector is used (Primary, Hovered, Active)
 QPen Configuration::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation) const
 {
@@ -1217,7 +1229,7 @@ void Configuration::addCustomUnit(QString quantity, QString unitname, double sca
     QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(quantity);
     if (qit != mUnitScales.end())
     {
-        qit.value().customScales.insert(unitname, UnitScale(unitname, scale));
+        qit.value().customScales.insert(unitname, UnitConverter(unitname, scale));
     }
     saveToXml();
 }

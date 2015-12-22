@@ -99,9 +99,9 @@ public:
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
 
-    virtual bool registerCustomParameterUnitScale(QString name, UnitScale us);
+    virtual bool registerCustomParameterUnitScale(QString name, UnitConverter us);
     virtual bool unregisterCustomParameterUnitScale(QString name);
-    virtual bool getCustomParameterUnitScale(QString name, UnitScale &rUs);
+    virtual bool getCustomParameterUnitScale(QString name, UnitConverter &rUs);
 
     // VariableAlias method
     //! @todo parameters and port variables should be more similar in the future, so that we do not need handle them separately
@@ -201,7 +201,7 @@ protected:
     double mLastIconScale;
 
     QMap<QString, QString> mDefaultParameterValues;
-    QMap<QString, UnitScale> mRegisteredCustomParameterUnitScales;
+    QMap<QString, UnitConverter> mRegisteredCustomParameterUnitScales;
     QMap<QString, bool> mRegisteredInvertPlotVariables;
     QMap<QString, QString> mRegisteredPlotLabels;
 

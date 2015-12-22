@@ -401,34 +401,17 @@ const QString &VectorVariable::getCustomLabel() const
     return mpVariableDescription->mCustomLabel;
 }
 
-UnitScale VectorVariable::getUnitScale() const
+UnitConverter VectorVariable::getUnitScale() const
 {
     if (mpVariableDescription->mDataUnit.isEmpty())
     {
-        return UnitScale();
+        return UnitConverter();
     }
     else
     {
-        return UnitScale(mpVariableDescription->mDataName, mpVariableDescription->mDataUnit, "1.0");
+        return UnitConverter(mpVariableDescription->mDataName, mpVariableDescription->mDataUnit, "1.0", "");
     }
 }
-
-//const QString &VectorVariable::getPlotScaleDataUnit() const
-//{
-//    return mCustomUnitScale.mUnit;
-//}
-
-//const QString &VectorVariable::getActualPlotDataUnit() const
-//{
-//    if (mCustomUnitScale.isEmpty())
-//    {
-//        return getDataUnit();
-//    }
-//    else
-//    {
-//        return mCustomUnitScale.mUnit;
-//    }
-//}
 
 bool VectorVariable::hasAliasName() const
 {

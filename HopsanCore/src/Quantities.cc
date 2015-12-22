@@ -52,6 +52,8 @@ hopsan::QuantityRegister::QuantityRegister()
     registerQuantity("Frequency", "rad/s");
     registerQuantity("Time", "s");
 
+    registerQuantity("Temperature", "K");
+
     // Register quantity aliases
     registerQuantityAlias("Position", "Length");
 }

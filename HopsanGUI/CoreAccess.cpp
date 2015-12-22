@@ -50,6 +50,7 @@
 #include "ComponentSystem.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include "ComponentUtilities/CSVParser.h"
+#include "CoreUtilities/NumHopHelper.h"
 #include "compiler_info.h"
 
 // Here the HopsanCore object is created
@@ -1513,4 +1514,13 @@ QString getHopsanCoreBuildTime()
 bool CoreQuantityAccess::haveQuantity(const QString &rQuantity)
 {
     return gHopsanCore.haveQuantity(rQuantity.toStdString().c_str());
+}
+
+double evalWithNumHop(const QString &rExpression)
+{
+    hopsan::HString dummy;
+    hopsan::NumHopHelper numhop;
+    double value;
+    numhop.evalNumHopScript(rExpression.toStdString().c_str(), value, false, dummy);
+    return value;
 }

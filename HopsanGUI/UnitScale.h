@@ -36,31 +36,37 @@
 
 #include <QString>
 
-class UnitScale
+class UnitConverter
 {
 public:
-    UnitScale();
-    UnitScale(const QString &rUnit, const QString &rScale);
-    UnitScale(const QString &rUnit, const double scale);
-    UnitScale(const QString &rQuantity, const QString &rUnit, const QString &rScale);
+    UnitConverter();
+    UnitConverter(const QString &rUnit, const double scale, const double offset=0);
+    UnitConverter(const QString &rQuantity, const QString &rUnit, const QString &rScale, const QString &rOffset/*=""*/);
     void clear();
-    double toDouble() const;
-    double toDouble(const double def) const;
-    bool isEmpty() const;
-    bool isOne() const;
-    bool isMinusOne() const;
-    void setScale(const double scale);
-    void setOnlyScale(const double scale);
-    double rescale(const double value) const;
-    QString rescale(const QString value) const;
-    double invRescale(const double value) const;
-    QString invRescale(const QString value) const;
 
-    bool operator== (const UnitScale &rOther);
-    bool operator!= (const UnitScale &rOther);
+    double scaleToDouble(const double defaultValue=1.0) const;
+    double offsetToDouble(const double defaultValue=0.0) const;
+
+    bool isEmpty() const;
+    bool isScaleEmpty() const;
+    bool isOffsetEmpty() const;
+    bool isScaleOne() const;
+    bool isScaleMinusOne() const;
+
+    void setScaleAndOffset(const double scale, const double offset=0.0);
+    void setOnlyScaleAndOffset(const double scale, const double offset=0.0);
+
+    double convertToBase(const double value) const;
+    QString convertToBase(const QString value) const;
+    double convertFromBase(const double value) const;
+    QString convertFromBase(const QString value) const;
+
+    bool operator== (const UnitConverter &rOther);
+    bool operator!= (const UnitConverter &rOther);
 
     QString mQuantity;
     QString mUnit;
     QString mScale;
+    QString mOffset;
 };
 #endif // UNITSCALE_H
