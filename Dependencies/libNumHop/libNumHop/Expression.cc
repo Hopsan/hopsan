@@ -78,6 +78,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
 
     size_t nOpenParanthesis=0, e=0;
     bool foundOperator=false;
+    char pc=' '; // previous char
     std::vector<size_t> breakpts;
     breakpts.push_back(e);
     for (e=0; e<exprString.size(); ++e)
@@ -107,7 +108,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                     return false;
                 }
             }
-            else if ( (c == '+') && contains(evalOperators, '+') )
+            else if ( (c == '+') && !((pc == 'e') || (pc == 'E')) && contains(evalOperators, '+') )
             {
                 foundOperator=true;
                 foundOperatorAtThisLocation=true;
@@ -116,7 +117,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                     breakpts.push_back(e);
                 }
             }
-            else if ( (c == '-') && contains(evalOperators, '-') )
+            else if ( (c == '-') && !((pc == 'e') || (pc == 'E')) && contains(evalOperators, '-') )
             {
                 foundOperator=true;
                 foundOperatorAtThisLocation=true;
@@ -150,6 +151,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                 return false;
             }
         }
+        pc = c;
     }
     breakpts.push_back(e);
 

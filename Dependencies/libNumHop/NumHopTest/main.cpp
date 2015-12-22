@@ -76,6 +76,7 @@ int main()
     expr.push_back("dog=4; 1-(-2-3-(-dog-5))");
     expr.push_back("-dog");
     expr.push_back("a=1;b=2;-(a-b)");
+    expr.push_back("2e-2-1E-2; 1e+2+3E+2; 1e2+1E2");
 
     expr.push_back("cat \n dog \r dog=5;cat=2;a=3;b=dog*cat*a;b");
     expr.push_back("-1-2-3*4-4-3");
@@ -84,7 +85,7 @@ int main()
 
     expr.push_back("2--3; 1+-3; 1-+3; 1++3; 1---3");
 
-    expr.push_back("#The following will not work!\n 2*-2; a += 5; 1+1-; = 5");
+    expr.push_back("#The following will not work!\n 2*-2; a += 5; 1+1-; = 5;");
 
     for (size_t i=0; i<expr.size(); ++i)
     {
