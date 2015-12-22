@@ -48,7 +48,7 @@ namespace hopsan {
 
     private:
         Integrator mIntegrator;
-        double *mpND_in, *mpND_out;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -58,15 +58,15 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in", "", "", 0.0, &mpND_in);
-            addOutputVariable("out", "", "", 0.0, &mpND_out);
+            addInputVariable("in", "", "", 0.0, &mpIn);
+            addOutputVariable("out", "", "", 0.0, &mpOut);
         }
 
 
         void initialize()
         {
-            double startY = (*mpND_out);
-            double startU = (*mpND_in);
+            double startY = (*mpOut);
+            double startU = (*mpIn);
             mIntegrator.initialize(mTimestep, startU, startY);
         }
 
@@ -74,7 +74,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Filter equation
-           (*mpND_out) = mIntegrator.update((*mpND_in));
+           (*mpOut) = mIntegrator.update((*mpIn));
         }
     };
 }

@@ -50,7 +50,7 @@ namespace hopsan {
         FirstOrderTransferFunction mTF;
         double mNum[2], mDen[2];
 
-        double *mpND_in, *mpND_out;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -60,20 +60,20 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in", "","",0.0,&mpND_in);
-            addOutputVariable("out","Filtered value","",0.0,&mpND_out);
+            addInputVariable("in", "","",0.0,&mpIn);
+            addOutputVariable("out","Filtered value","",0.0,&mpOut);
 
-            addConstant("a_1", "S^1 numerator coefficient", "-", 1, mNum[1]);
-            addConstant("a_0", "S^0 numerator coefficient", "-", 1, mNum[0]);
+            addConstant("a_1", "S^1 numerator coefficient", "", 1, mNum[1]);
+            addConstant("a_0", "S^0 numerator coefficient", "", 1, mNum[0]);
 
-            addConstant("b_1", "S^1 denominator coefficient", "-", 1, mDen[1]);
-            addConstant("b_0", "S^0 denominator coefficient", "-", 1, mDen[0]);
+            addConstant("b_1", "S^1 denominator coefficient", "", 1, mDen[1]);
+            addConstant("b_0", "S^0 denominator coefficient", "", 1, mDen[0]);
         }
 
 
         void initialize()
         {
-            mTF.initialize(mTimestep, mNum, mDen, *mpND_in, *mpND_out);
+            mTF.initialize(mTimestep, mNum, mDen, *mpIn, *mpOut);
 
             //Writes out the value for time "zero"
             //(*mpND_out) = (*mpND_in);
@@ -82,7 +82,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mTF.update(*mpND_in);
+            (*mpOut) = mTF.update(*mpIn);
         }
     };
 }

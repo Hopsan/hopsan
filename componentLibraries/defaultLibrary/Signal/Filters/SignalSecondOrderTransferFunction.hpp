@@ -50,7 +50,7 @@ namespace hopsan {
         SecondOrderTransferFunction mTF2;
         double a0, a1, a2, b0, b1, b2;
 
-        double *mpND_in, *mpND_out;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -60,8 +60,8 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in","","", 0.0, &mpND_in);
-            addOutputVariable("out", "","",0.0, &mpND_out);
+            addInputVariable("in","","", 0.0, &mpIn);
+            addOutputVariable("out", "","",0.0, &mpOut);
 
             addConstant("a_2", "S^2 numerator coefficient", "-", 1, a2);
             addConstant("a_1", "S^1 numerator coefficient", "-", 1, a1);
@@ -85,7 +85,7 @@ namespace hopsan {
             den[1] = b1;
             den[2] = b2;
 
-            mTF2.initialize(mTimestep, num, den, *mpND_in, *mpND_out);
+            mTF2.initialize(mTimestep, num, den, *mpIn, *mpOut);
 
             // Do not write initial value to out port, its startvalue is used to initialize the filter
         }
@@ -93,7 +93,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mTF2.update(*mpND_in);
+            (*mpOut) = mTF2.update(*mpIn);
         }
     };
 }

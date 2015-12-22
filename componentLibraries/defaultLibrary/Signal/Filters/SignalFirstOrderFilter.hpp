@@ -50,7 +50,7 @@ namespace hopsan {
         FirstOrderTransferFunction mTF;
         double wnum, wden, k;
         double min, max;
-        double *mpND_in, *mpND_out;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -60,14 +60,14 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in","","",0.0,&mpND_in);
-            addOutputVariable("out", "Filtered value", "", 0.0, &mpND_out);
+            addInputVariable("in","","",0.0,&mpIn);
+            addOutputVariable("out", "Filtered value", "", 0.0, &mpOut);
 
-            addConstant("k", "Gain", "-", 1, k);
-            addConstant("omega_num", "Numerator break frequency", "rad/s", 1E+10, wnum);
-            addConstant("omega_den", "Denominator break frequency", "rad/s", 1000.0, wden);
-            addConstant("y_min", "Lower output limit", "-", -1.5E+300, min);
-            addConstant("y_max", "Upper output limit", "-", 1.5E+300, max);
+            addConstant("k", "Gain", "", 1, k);
+            addConstant("omega_num", "Numerator break frequency", "Frequency", 1E+10, wnum);
+            addConstant("omega_den", "Denominator break frequency", "Frequency", 1000.0, wden);
+            addConstant("y_min", "Lower output limit", "", -1.5E+300, min);
+            addConstant("y_max", "Upper output limit", "", 1.5E+300, max);
         }
 
 
@@ -81,13 +81,13 @@ namespace hopsan {
             den[1] = 1.0/wden;
             den[0] = 1.0;
 
-            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), min, max);
+            mTF.initialize(mTimestep, num, den, (*mpIn), (*mpOut), min, max);
         }
 
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mTF.update((*mpND_in));
+            (*mpOut) = mTF.update((*mpIn));
         }
     };
 }

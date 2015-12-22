@@ -50,8 +50,7 @@ namespace hopsan {
         SecondOrderTransferFunction mTF2;
         double mWnum, mDnum, mWden, mDden, mK;
         double mMin, mMax;
-        double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -61,16 +60,16 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in","","", 0.0, &mpND_in);
-            addOutputVariable("out", "","",0.0, &mpND_out);
+            addInputVariable("in","","", 0.0, &mpIn);
+            addOutputVariable("out", "","",0.0, &mpOut);
 
             addConstant("k", "Gain", "-", 1.0, mK);
-            addConstant("omega_1", "Numerator break frequency", "rad/s", 1.0e10, mWnum);
-            addConstant("delta_1", "Numerator damp coefficient", "-", 1.0, mDnum);
-            addConstant("omega_2", "Denominator break frequency", "rad/s", 1000, mWden);
-            addConstant("delta_2", "Denominator damp coefficient", "-", 1.0, mDden);
-            addConstant("y_min", "Lower output limit", "-", -1.5E+300, mMin);
-            addConstant("y_max", "Upper output limit", "-", 1.5E+300, mMax);
+            addConstant("omega_1", "Numerator break frequency", "Frequency", 1.0e10, mWnum);
+            addConstant("delta_1", "Numerator damp coefficient", "", 1.0, mDnum);
+            addConstant("omega_2", "Denominator break frequency", "Frequency", 1000, mWden);
+            addConstant("delta_2", "Denominator damp coefficient", "", 1.0, mDden);
+            addConstant("y_min", "Lower output limit", "", -1.5E+300, mMin);
+            addConstant("y_max", "Upper output limit", "", 1.5E+300, mMax);
         }
 
 
@@ -86,7 +85,7 @@ namespace hopsan {
             den[1] = 2.0*mDden/mWden;
             den[0] = 1.0;
 
-            mTF2.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), mMin, mMax);
+            mTF2.initialize(mTimestep, num, den, (*mpIn), (*mpOut), mMin, mMax);
 
             // Do not write initial value to out port, its startvalue is used to initialize the filter
         }
@@ -94,7 +93,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mTF2.update(*mpND_in);
+            (*mpOut) = mTF2.update(*mpIn);
         }
     };
 }

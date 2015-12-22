@@ -49,7 +49,7 @@ namespace hopsan {
     private:
         FirstOrderTransferFunction mTF;
         double mW, mMin, mMax;
-        double *mpND_in, *mpND_out;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -59,12 +59,12 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in","","", 0.0, &mpND_in);
-            addOutputVariable("out", "","",0.0, &mpND_out);
+            addInputVariable("in","","", 0.0, &mpIn);
+            addOutputVariable("out", "","",0.0, &mpOut);
 
-            addConstant("omega", "Break frequency", "rad/s", 1000.0, mW);
-            addConstant("y_min", "Lower output limit", "-", -1.5E+300, mMin);
-            addConstant("y_max", "Upper output limit", "-", 1.5E+300, mMax);
+            addConstant("omega", "Break frequency", "Frequency", 1000.0, mW);
+            addConstant("y_min", "Lower output limit", "", -1.5E+300, mMin);
+            addConstant("y_max", "Upper output limit", "", 1.5E+300, mMax);
         }
 
 
@@ -78,7 +78,7 @@ namespace hopsan {
             den[1] = 1.0/mW;
             den[0] = 1.0;
 
-            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), mMin, mMax);
+            mTF.initialize(mTimestep, num, den, (*mpIn), (*mpOut), mMin, mMax);
 
             // Do not init output as the startvalue given in that port will initialize the filter output
         }
@@ -86,7 +86,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mTF.update((*mpND_in));
+            (*mpOut) = mTF.update((*mpIn));
         }
     };
 }
