@@ -1186,23 +1186,23 @@ void Component::setTimestep(const double timestep)
 //! @brief Add an inputVariable (Scalar signal ReadPort)
 //! @param [in] rName The name of the variable
 //! @param [in] rDescription The description of the variable
-//! @param [in] rUnit The unit of the variable value
+//! @param [in] rQuantityOrUnit The quantity or unit of the variable value
 //! @param [in] defaultValue The default variable value (if not connected)
 //! @param [in,out] ppNodeData Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
 //! @returns A pointer to the port created.
 //! @ingroup ComponentSetupFunctions
-Port *Component::addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
+Port *Component::addInputVariable(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double **ppNodeData)
 {
     //! @todo support more types
     Port *pPort = addReadPort(rName,"NodeSignal", rDescription, Port::NotRequired);
-    if (rUnit.empty())
+    if (rQuantityOrUnit.empty())
     {
         pPort->setSignalNodeQuantityModifyable(true);
     }
     else
     {
         pPort->setSignalNodeQuantityModifyable(true);
-        pPort->setSignalNodeQuantityOrUnit(rUnit);
+        pPort->setSignalNodeQuantityOrUnit(rQuantityOrUnit);
         pPort->setSignalNodeQuantityModifyable(false);
     }
     pPort->registerStartValueParameters(); // Reregister after unit has been changed
@@ -1219,21 +1219,21 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
 //! @brief Add an outputVariable (Scalar signal WritePort) without default value
 //! @param [in] rName The name of the variable
 //! @param [in] rDescription The description of the variable
-//! @param [in] rUnit The unit of the variable value
+//! @param [in] rQuantityOrUnit The quantity or unit of the variable value
 //! @param [in,out] ppNodeData Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
 //! @returns A pointer to the port created.
 //! @ingroup ComponentSetupFunctions
-Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData)
+Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, double **ppNodeData)
 {
     Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
-    if (rUnit.empty())
+    if (rQuantityOrUnit.empty())
     {
         pPort->setSignalNodeQuantityModifyable(true);
     }
     else
     {
         pPort->setSignalNodeQuantityModifyable(true);
-        pPort->setSignalNodeQuantityOrUnit(rUnit);
+        pPort->setSignalNodeQuantityOrUnit(rQuantityOrUnit);
         pPort->setSignalNodeQuantityModifyable(false);
     }
     pPort->registerStartValueParameters(); // Reregister after unit has been changed
@@ -1250,22 +1250,22 @@ Port *Component::addOutputVariable(const HString &rName, const HString &rDescrip
 //! @brief Add an outputVariable (Scalar signal WritePort) with default value
 //! @param [in] rName The name of the variable
 //! @param [in] rDescription The description of the variable
-//! @param [in] rUnit The unit of the variable value
+//! @param [in] rQuantityOrUnit The quantity or unit of the variable value
 //! @param [in] defaultValue The default variable value (if not connected)
 //! @param [in,out] ppNodeData Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
 //! @returns A pointer to the port created.
 //! @ingroup ComponentSetupFunctions
-Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
+Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double **ppNodeData)
 {
     Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
-    if (rUnit.empty())
+    if (rQuantityOrUnit.empty())
     {
         pPort->setSignalNodeQuantityModifyable(true);
     }
     else
     {
         pPort->setSignalNodeQuantityModifyable(true);
-        pPort->setSignalNodeQuantityOrUnit(rUnit);
+        pPort->setSignalNodeQuantityOrUnit(rQuantityOrUnit);
         pPort->setSignalNodeQuantityModifyable(false);
     }
     setDefaultStartValue(pPort, 0, defaultValue);

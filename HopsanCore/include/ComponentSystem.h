@@ -238,6 +238,7 @@ namespace hopsan {
 
         // This block of variables are only used with TBB but they must be included always else
         // components inheriting ComponentSystem will not know that they exist resulting in overwriting memory
+        //! @todo we could hide them in a private struct and put a forward declared pointer here instead
         tbb::mutex *mpStopMutex;
         std::vector<double *> mvTimePtrs;
         std::vector< std::vector<Component*> > mSplitCVector;

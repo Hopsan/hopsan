@@ -236,9 +236,9 @@ protected:
     }
 
     // Interface variable functions
-    Port *addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData=0);
-    Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData=0);
-    Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData=0);
+    Port *addInputVariable(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double **ppNodeData=0);
+    Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, double **ppNodeData=0);
+    Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double **ppNodeData=0);
 
     void initializeAutoSignalNodeDataPtrs();
 
