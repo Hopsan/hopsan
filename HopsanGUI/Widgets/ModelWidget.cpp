@@ -1408,6 +1408,7 @@ void ModelWidget::closeAnimation()
 
 void ModelWidget::unlockSimulateMutex()
 {
+    qDebug() << "unlock simulation mutex";
     mSimulateMutex.unlock();
 }
 

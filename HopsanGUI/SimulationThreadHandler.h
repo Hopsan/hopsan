@@ -47,6 +47,34 @@ class GUIMessageHandler;
 #include "RemoteCoreAccess.h"
 #endif
 
+#include <QDebug>
+class MyProgressDialog : public QProgressDialog
+{
+    Q_OBJECT
+public:
+    using QProgressDialog::QProgressDialog;
+    //MyProgressDialog(QWidget *pParent) : QProgressDialog(pParent) {}
+
+public slots:
+    void setValue(int progress)
+    {
+        qDebug() << "Setting my value " << progress;
+        QProgressDialog::setValue(progress);
+    }
+
+    void setRange(int minimum, int maximum)
+    {
+        qDebug() << "Setting range " <<  minimum << " " << maximum;
+        QProgressDialog::setRange(minimum, maximum);
+    }
+
+    void setLabelText(const QString & text)
+    {
+        qDebug() << "Setting label text " << text;
+        QProgressDialog::setLabelText(text);
+    }
+
+};
 
 enum SimulationWorkeObjectEnumT {LocalSWO, RemoteSWO};
 
