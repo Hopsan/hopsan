@@ -140,20 +140,19 @@ bool exportHVCData(const string modelpath, const string baseFilePath, const std:
             appendValueNode(pVariableNode, "tolerance", to_string(tol));
 
             // Write data line to csv
-            HShallowMatrixD logData = rPorts[p]->getLogData();
-            //std::vector< std::vector<double> > *pLogData = rPorts[p]->getLogDataVectorPtr();
-            if (!logData.empty())
+            std::vector< std::vector<double> > *pLogData = rPorts[p]->getLogDataVectorPtr();
+            if (pLogData &&  pLogData->size() > 0)
             {
-                size_t nRows = logData.rows();
-                size_t nCols = logData.columns();
+                size_t nRows = pLogData->size();
+                size_t nCols = pLogData->front().size();
                 const size_t c = rDataIds[p];
                 if (rDataIds[p] < nCols)
                 {
                     for (size_t r=0; r<nRows-1; ++r)
                     {
-                        csvFile << logData.at(r,c) << ", ";
+                        csvFile << (*pLogData)[r][c] << ", ";
                     }
-                    csvFile << logData.at(nRows-1,c) << std::endl;
+                    csvFile << (*pLogData)[nRows-1][c] << std::endl;
                     ++csvRow;
                 }
             }
@@ -215,7 +214,7 @@ bool runTheActualTest(ComponentSystem *pRootSystem, double startTime, double sto
 
 bool extractTestData(ComponentSystem *pRootSystem, string fullVarName, std::vector<double> &rvTime, std::vector<double> &rvSim)
 {
-    // Figure out system hierarchy and names (split name attribute)
+    // Figure out system hierarcy and names (split name attribute)
     std::vector<std::string> sysfields;
     std::vector<std::string> namefields;
     splitStringOnDelimiter(fullVarName, '$', sysfields);
@@ -225,7 +224,7 @@ bool extractTestData(ComponentSystem *pRootSystem, string fullVarName, std::vect
         return false;
     }
 
-    // Travel through the model to find the system to extract data from
+    // Travle through the model to find the system to extract data from
     ComponentSystem *pSystemToExtractFrom = pRootSystem;
     if (sysfields.size() > 1)
     {
@@ -302,14 +301,14 @@ bool extractTestData(ComponentSystem *pRootSystem, string fullVarName, std::vect
     int dataId = pPort->getNodeDataIdFromName(varName.c_str());
     if (dataId < 0)
     {
-        printErrorMessage("No such variable name: " + varName + " in: " + pPort->getNodeType().c_str());
+        printErrorMessage("No such varaiable name: " + varName + " in: " + pPort->getNodeType().c_str());
         return false;
     }
-    HShallowMatrixD logData = pPort->getLogData();
+    vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
     rvSim.reserve(rvTime.size());
-    for(size_t r=0; r<min(rvTime.size(), logData.rows()); ++r)
+    for(size_t i=0; i<rvTime.size(); ++i)
     {
-        rvSim.push_back(logData.at(r,dataId));
+        rvSim.push_back(pLogData->at(i).at(dataId));
     }
     return true;
 }
@@ -360,7 +359,7 @@ bool performModelTest(const std::string hvcFilePath)
             }
             else
             {
-                // Assumes that modelfile path was relative in xml
+                // Assumes that modelfile path was relaitve in xml
                 modelfile = basepath + modelfile;
             }
 
@@ -405,7 +404,7 @@ bool performModelTest(const std::string hvcFilePath)
                             }
                             else
                             {
-                                // Assumes that csvfile path was relative in xml
+                                // Assumes that csvfile path was relaitve in xml
                                 csvfile = basepath + csvfile;
                             }
 
@@ -416,7 +415,7 @@ bool performModelTest(const std::string hvcFilePath)
                             vector<double> vRef, vSim1, vSim2, vTime;
 
                             // Load reference data curve
-                            //! @todo should not reload if same as already loaded
+                            //! @todo should not reload if same as already laoded
                             bool success=false;
                             CSVParser refData(success, csvfile.c_str(), '\n', '"');
                             if(!success)
@@ -475,14 +474,13 @@ bool performModelTest(const std::string hvcFilePath)
                                 int dataId = pPort->getNodeDataIdFromName(varname.c_str());
                                 if (dataId < 0)
                                 {
-                                    printErrorMessage("No such variable name: " + varname + " in: " + pPort->getNodeType().c_str());
+                                    printErrorMessage("No such varaiable name: " + varname + " in: " + pPort->getNodeType().c_str());
                                     return false;
                                 }
 
-                                HShallowMatrixD logData = pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogData();
                                 for(size_t i=0; i<vTime.size(); ++i)
                                 {
-                                    vSim1.push_back(logData.at(i,dataId));
+                                    vSim1.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
                                 }
 
                                 //Second simulation
@@ -498,10 +496,9 @@ bool performModelTest(const std::string hvcFilePath)
                                 }
                                 pRootSystem->finalize();
 
-                                logData = pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogData();
                                 for(size_t i=0; i<vTime.size(); ++i)
                                 {
-                                    vSim2.push_back(logData.at(i,dataId));
+                                    vSim2.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
                                 }
 
                                 // Print the messages if there were any errors or warnings
@@ -557,7 +554,7 @@ bool performModelTest(const std::string hvcFilePath)
                 }
                 else
                 {
-                    // Assumes that csvfile path was relative in xml
+                    // Assumes that csvfile path was relaitve in xml
                     hvdfile = basepath + hvdfile;
                 }
                 // Load reference data curves
@@ -719,7 +716,7 @@ bool performModelTest(const std::string hvcFilePath)
         return false;
     }
 
-    // Test was apparently successful or else we would not have reached this point
+    // Test was apparently succesfull or else we would not have reached this point
     return true;
 }
 
@@ -781,7 +778,7 @@ bool createModelTestDataSet(const string modelPath, const string hvcFilePath)
         }
         else if (pComponent->isComponentSystem())
         {
-            printErrorMessage("Handling subsystems is not yet supported!");
+            printErrorMessage("Handeling subsystems is not yet supported!");
         }
     }
 

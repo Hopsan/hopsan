@@ -50,7 +50,6 @@
 #include "ComponentUtilities/num2string.hpp"
 #include "Quantities.h"
 #include "CoreUtilities/ConnectionAssistant.h"
-#include "CoreUtilities/LogdataHandler.h"
 
 #ifdef USETBB
 #include "tbb/parallel_for.h"
@@ -154,11 +153,6 @@ size_t ComponentSystem::getNumActuallyLoggedSamples() const
 {
     // This assumes that the logCtr has been incremented after each saved log step
     return mLogCtr;
-}
-
-LogdataHandler *ComponentSystem::getLogdataHandler()
-{
-    return mpHopsanEssentials->getLogdatahandler();
 }
 
 
@@ -787,7 +781,6 @@ void ComponentSystem::removeSubNode(Node* pNode)
     {
         if (*it == pNode)
         {
-            pNode->setLoggingEnabled(false); //Clear allocated logdata before node forgets the owner system
             pNode->mpOwnerSystem = 0;
             mSubNodePtrs.erase(it);
             break;
@@ -808,7 +801,7 @@ void ComponentSystem::preAllocateLogSpace()
     {
         try
         {
-            mTimeStorage.resize(mNumLogSlots, 0);
+            mTimeStorage.resize(mnLogSlots, 0);
 
             // Allocate log data memory for subnodes
             //! @todo we should have an other vector with those nodes that should be logged, if we make individual nodes possible to disable logging
@@ -834,7 +827,7 @@ void ComponentSystem::preAllocateLogSpace()
                     else
                     {
                         (*it)->setLoggingEnabled(true);
-                        (*it)->preAllocateLogSpace(mNumLogSlots);
+                        (*it)->preAllocateLogSpace(mnLogSlots);
                     }
                     success = true;
                 }
@@ -862,66 +855,13 @@ void ComponentSystem::preAllocateLogSpace()
     }
 }
 
-void ComponentSystem::initializeLogStuffRecursive(const double startT, const double stopT)
-{
-    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
-    //this->setLogSettingsNSamples(mRequestedNumLogSamples, startT, stopT, mTimestep);
-
-    // This will calculate the mnLogSlots and other log related variables
-    this->setupLogSlotsAndTs(startT, stopT, mTimestep);
-    //! @todo make it possible to use other logtimestep methods then nLogSamples
-    // Preallocate local log space based on necessary number of log slots
-    this->preAllocateLogSpace();
-
-    // Now "recurse" into submodels
-    std::vector<Component*>::iterator cit;
-    for(cit=mComponentSignalptrs.begin(); cit!=mComponentSignalptrs.end(); ++cit)
-    {
-        if ((*cit)->isComponentSystem())
-        {
-            //! @todo should we use our own nSamples or the subsystems own ?
-            static_cast<ComponentSystem*>(*cit)->setNumLogSamples(mRequestedNumLogSamples);
-            static_cast<ComponentSystem*>(*cit)->setLogStartTime(mRequestedLogStartTime);
-            static_cast<ComponentSystem*>(*cit)->initializeLogStuffRecursive(startT, stopT);
-        }
-    }
-    for(cit=mComponentCptrs.begin(); cit!=mComponentCptrs.end(); ++cit)
-    {
-        if ((*cit)->isComponentSystem())
-        {
-            //! @todo should we use our own nSamples or the subsystems own ?
-            static_cast<ComponentSystem*>(*cit)->setNumLogSamples(mRequestedNumLogSamples);
-            static_cast<ComponentSystem*>(*cit)->setLogStartTime(mRequestedLogStartTime);
-            static_cast<ComponentSystem*>(*cit)->initializeLogStuffRecursive(startT, stopT);
-        }
-    }
-    for(cit=mComponentQptrs.begin(); cit!=mComponentQptrs.end(); ++cit)
-    {
-        if ((*cit)->isComponentSystem())
-        {
-            //! @todo should we use our own nSamples or the subsystems own ?
-            static_cast<ComponentSystem*>(*cit)->setNumLogSamples(mRequestedNumLogSamples);
-            static_cast<ComponentSystem*>(*cit)->setLogStartTime(mRequestedLogStartTime);
-            static_cast<ComponentSystem*>(*cit)->initializeLogStuffRecursive(startT, stopT);
-        }
-    }
-}
-
 
 void ComponentSystem::logTimeAndNodes(const size_t simStep)
 {
     if (mEnableLogData)
     {
-        if (mNextSimstepToLog == simStep)
+        if (mLogTheseTimeSteps[mLogCtr] ==  simStep)
         {
-//            if (mNextSimstepToLog != mLogTheseTimeSteps[mLogCtr])
-//            {
-//                addErrorMessage("sim and log step mismatch: "+to_hstring(int(simStep)-int(mNextSimstepToLog)));
-//            }
-
-            const double nextLogT = mLogStartTime+mLogTimeDt*(mLogCtr+1);
-            mNextSimstepToLog += size_t((nextLogT-mTime)/mTimestep+0.5);
-
             mTimeStorage[mLogCtr] = mTime;   //We log the "real"  simulation time for the sample
 
             //! @todo we should have an other vector with those nodes that should be logged, if we make individual nodes possible to disable logging
@@ -1611,51 +1551,61 @@ size_t limitNumLogSlotsToLogOrSimTimeInterval(const double simStartT, const doub
 
 void ComponentSystem::setupLogSlotsAndTs(const double simStartT, const double simStopT, const double simTs)
 {
-    mNumLogSlots = limitNumLogSlotsToLogOrSimTimeInterval(simStartT, simStopT, simTs, mRequestedLogStartTime, mRequestedNumLogSamples);
-    if (mNumLogSlots != mRequestedNumLogSamples)
+    mnLogSlots = limitNumLogSlotsToLogOrSimTimeInterval(simStartT, simStopT, simTs, mRequestedLogStartTime, mRequestedNumLogSamples);
+    if (mnLogSlots != mRequestedNumLogSamples)
     {
-        addWarningMessage("Requested nLogSamples: "+to_hstring(mRequestedNumLogSamples)+" but this is more than the total number of simulation samples, limiting to: "+to_hstring(mNumLogSlots), "toofewsamples");
+        addWarningMessage("Requested nLogSamples: "+to_hstring(mRequestedNumLogSamples)+" but this is more than the total number of simulation samples, limiting to: "+to_hstring(mnLogSlots), "toofewsamples");
     }
 
-    if (mNumLogSlots > 0)
+    if (mnLogSlots > 0)
     {
         enableLog();
 
         // We do not want to log before simStartT
-        mLogStartTime = std::max(simStartT,mRequestedLogStartTime);
+        const double logStartT = max(simStartT,mRequestedLogStartTime);
 
         // Calc logDt and
-        mLogTimeDt = (simStopT-mLogStartTime)/double(mNumLogSlots-1);
+        mLogTimeDt = (simStopT-logStartT)/double(mnLogSlots-1);
 
         // Figure out at which samples logging should happen
-        double logT=mLogStartTime;
+        double logT=logStartT;
         double simT=simStartT;
 
-//        mLogTheseTimeSteps.clear();
-//        mLogTheseTimeSteps.reserve(mNumLogSlots);
+        mLogTheseTimeSteps.clear();
+        mLogTheseTimeSteps.reserve(mnLogSlots);
 
         // Figure out the first simulation step to log (the one where simT >= logT)
         size_t n = size_t((logT-simT)/simTs+0.5);
-        mNextSimstepToLog = n;
-//        mLogTheseTimeSteps.push_back(n);
-//        // Fast forward simT
-//        simT += double(n)*simTs;
+        mLogTheseTimeSteps.push_back(n);
+        // Fast forward simT
+        simT += double(n)*simTs;
 
-//        // Now Calculate which additional simulation steps should be logged
-//        while (mLogTheseTimeSteps.size() < mNumLogSlots)
-//        {
-//            //logT += mLogTimeDt;
-//            logT = mLogStartTime+mLogTimeDt*(mLogTheseTimeSteps.size());
-//            n = size_t((logT-simT)/simTs+0.5);
-//            //simT += double(n)*simTs;
-//            for (int i=0;i<n;++i)
-//            {
-//                simT+=simTs;
-//            }
-//            //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
-//            mLogTheseTimeSteps.push_back(mLogTheseTimeSteps.back() + n);
-//            //! @todo remove mLogTheseTimeSteps madness
-//        }
+        // Now Calculate which additional simulation steps should be logged
+        while (mLogTheseTimeSteps.size() < mnLogSlots)
+        {
+            logT += mLogTimeDt;
+            n = size_t((logT-simT)/simTs+0.5);
+            simT += double(n)*simTs;
+
+            //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
+            mLogTheseTimeSteps.push_back(mLogTheseTimeSteps.back() + n);
+        }
+
+        //! @todo sanity check on log slots
+        if (mnLogSlots != mLogTheseTimeSteps.size())
+        {
+            cout << "Error: mnLogSlots: " << mnLogSlots << " mLogTheseTimeSteps.size(): " << mLogTheseTimeSteps.size() << endl;
+        }
+
+        //        //cout << "n: " << n << endl;
+        //        cout << "mNumSimulationSteps: " << size_t((stopT-logStartT)/Ts+0.5) << endl;
+        //        cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
+        //        cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
+        //    for (int i=0; i<mTimeStepsToLog.size(); ++i)
+        //    {
+        //        cout << mTimeStepsToLog[i] << " ";
+        //    }
+        //    cout << endl;
     }
     else
     {
@@ -2116,40 +2066,17 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         return false;
     }
 
-    // run top-level log data functions
-    if (this->isTopLevelSystem())
-    {
-        initializeLogStuffRecursive(startT, stopT);
-//        //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
-//        //this->setLogSettingsNSamples(mRequestedNumLogSamples, startT, stopT, mTimestep);
+    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
+    //this->setLogSettingsNSamples(mRequestedNumLogSamples, startT, stopT, mTimestep);
 
-//        // This will calculate the mnLogSlots and other log related variables
-//        this->setupLogSlotsAndTs(startT, stopT, mTimestep);
-//        //! @todo make it possible to use other logtimestep methods then nLogSamples
+    // This will calculate the mnLogSlots and other log related variables
+    this->setupLogSlotsAndTs(startT, stopT, mTimestep);
+    //! @todo make it possible to use other logtimestep methods then nLogSamples
 
-//        // Preallocate local log space based on necessary number of log slots
-//        this->preAllocateLogSpace();
+    // Preallocate local log space based on necessary number of log slots
+    this->preAllocateLogSpace();
 
-//        // If we failed allocation then abort
-//        if (mStopSimulation)
-//        {
-//            return false;
-//        }
-
-        // Now try to actually allocate the log space
-        size_t memSize = getLogdataHandler()->totalRequestedSizeInBytes();
-        addInfoMessage("Needing: "+to_hstring(memSize)+ " bytes for log data!");
-        if (double(memSize)/(1024.0*1000) > 500)
-        {
-            stopSimulation("More then 500 MB requested, aborting!");
-        }
-        else
-        {
-            getLogdataHandler()->allocateRequestedMemory(0);
-            //! @todo need to get actual model id
-        }
-    }
-
+    // If we failed allocation then abort
     if (mStopSimulation)
     {
         return false;
@@ -2204,12 +2131,12 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         mComponentSignalptrs[s]->initializeAutoSignalNodeDataPtrs();
         //mComponentSignalptrs[s]->evaluateParameters();
 
-//        if (mComponentSignalptrs[s]->isComponentSystem())
-//        {
-//            //! @todo should we use our own nSamples or the subsystems own ?
-//            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mRequestedNumLogSamples);
-//            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setLogStartTime(mRequestedLogStartTime);
-//        }
+        if (mComponentSignalptrs[s]->isComponentSystem())
+        {
+            //! @todo should we use our own nSamples or the subsystems own ?
+            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mRequestedNumLogSamples);
+            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setLogStartTime(mRequestedLogStartTime);
+        }
 
         addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentSignalptrs[s]->getName());
         if(!mComponentSignalptrs[s]->initialize(startT, stopT))
@@ -2229,12 +2156,12 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         mComponentCptrs[c]->initializeAutoSignalNodeDataPtrs();
         //mComponentCptrs[c]->evaluateParameters();
 
-//        if (mComponentCptrs[c]->isComponentSystem())
-//        {
-//            //! @todo should we use our own nSamples ore the subsystems own ?
-//            static_cast<ComponentSystem*>(mComponentCptrs[c])->setNumLogSamples(mRequestedNumLogSamples);
-//            static_cast<ComponentSystem*>(mComponentCptrs[c])->setLogStartTime(mRequestedLogStartTime);
-//        }
+        if (mComponentCptrs[c]->isComponentSystem())
+        {
+            //! @todo should we use our own nSamples ore the subsystems own ?
+            static_cast<ComponentSystem*>(mComponentCptrs[c])->setNumLogSamples(mRequestedNumLogSamples);
+            static_cast<ComponentSystem*>(mComponentCptrs[c])->setLogStartTime(mRequestedLogStartTime);
+        }
 
         addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentCptrs[c]->getName());
         if(!mComponentCptrs[c]->initialize(startT, stopT))
@@ -2254,12 +2181,12 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         mComponentQptrs[q]->initializeAutoSignalNodeDataPtrs();
         //mComponentQptrs[q]->evaluateParameters();
 
-//        if (mComponentQptrs[q]->isComponentSystem())
-//        {
-//            //! @todo should we use our own nSamples ore the subsystems own ?
-//            static_cast<ComponentSystem*>(mComponentQptrs[q])->setNumLogSamples(mRequestedNumLogSamples);
-//            static_cast<ComponentSystem*>(mComponentQptrs[q])->setLogStartTime(mRequestedLogStartTime);
-//        }
+        if (mComponentQptrs[q]->isComponentSystem())
+        {
+            //! @todo should we use our own nSamples ore the subsystems own ?
+            static_cast<ComponentSystem*>(mComponentQptrs[q])->setNumLogSamples(mRequestedNumLogSamples);
+            static_cast<ComponentSystem*>(mComponentQptrs[q])->setLogStartTime(mRequestedLogStartTime);
+        }
 
         addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentQptrs[q]->getName());
         if(!mComponentQptrs[q]->initialize(startT, stopT))
@@ -3546,7 +3473,7 @@ void ComponentSystem::disableLog()
 
     mLogTimeDt = -1.0;
     //mLastLogTime = 0.0; //Initial value should not matter, will be overwritten when selecting log amount
-    mNumLogSlots = 0;
+    mnLogSlots = 0;
     mLogCtr = 0;
 }
 

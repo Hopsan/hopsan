@@ -44,7 +44,6 @@ namespace tbb {
 
 namespace hopsan {
     class NumHopHelper;
-    class LogdataHandler;
 
     class DLLIMPORTEXPORT ComponentSystem :public Component
     {
@@ -159,7 +158,6 @@ namespace hopsan {
         void setLogStartTime(const double logStartTime);
         size_t getNumLogSamples() const;
         size_t getNumActuallyLoggedSamples() const;
-        LogdataHandler* getLogdataHandler();
 
         // Stop a running initialization or simulation
         void stopSimulation(const HString &rReason);
@@ -187,9 +185,7 @@ namespace hopsan {
 
         // Log and timestep
         std::vector<size_t> mLogTheseTimeSteps;
-        std::vector<double> mDebugLogTheseTimes, mDebugLogTheseLogTimes;
         size_t mTotalTakenSimulationSteps;
-        size_t mNextSimstepToLog;
 
         typedef std::map<HString, Component*> SubComponentMapT;
         SubComponentMapT mSubComponentMap;
@@ -209,8 +205,6 @@ namespace hopsan {
 //        void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
         void setupLogSlotsAndTs(const double simStartT, const double simStopT, const double simTs);
         void preAllocateLogSpace();
-
-        void initializeLogStuffRecursive(const double simStartT, const double simStopT);
 
         // Add and Remove subcomponent ptrs from storage vectors
         void addSubComponentPtrToStorage(Component* pComponent);
@@ -258,8 +252,8 @@ namespace hopsan {
         AliasHandler mAliasHandler;
 
         // Log related variables
-        size_t mRequestedNumLogSamples, mNumLogSlots, mLogCtr;
-        double mRequestedLogStartTime, mLogStartTime, mLogTimeDt;
+        size_t mRequestedNumLogSamples, mnLogSlots, mLogCtr;
+        double mRequestedLogStartTime, mLogTimeDt;
         bool mEnableLogData;
         std::vector<double> mTimeStorage;
     };

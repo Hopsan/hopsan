@@ -75,7 +75,7 @@ class DLLIMPORTEXPORT Node
 
 public:
     Node(const size_t datalength);
-    virtual ~Node() {}
+    virtual ~Node();
     const HString &getNiceName() const;
     const HString &getNodeType() const;
 
@@ -105,7 +105,6 @@ public:
     virtual bool getSignalQuantityModifyable() const;
 
     void logData(const size_t logSlot);
-    bool haveLogData() const;
 
     int getNumberOfPortsByType(const int type) const;
     size_t getNumConnectedPorts() const;
@@ -149,8 +148,7 @@ private:
     ComponentSystem *mpOwnerSystem;
 
     // Log specific variables
-    HShallowVector<double> *mpLogDataStorage;
-    size_t mLogDataId;
+    std::vector<std::vector<double> > mDataStorage;
     bool mDoLog;
     bool mForceDisableLog;
 };

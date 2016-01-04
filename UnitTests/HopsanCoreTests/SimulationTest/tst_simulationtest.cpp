@@ -456,13 +456,13 @@ private Q_SLOTS:
         QVERIFY2(system->getLogTimeVector()->size() == 1024, "Failed to simulate system!");
         QVERIFY2(system->getNumActuallyLoggedSamples() == 1024, "Failed to simulate system!");
 
-        std::vector<double> multiResults1 = system->getSubComponent("TestStep")->getPort("out")->getLogData().getRow< std::vector<double> >(0);
-        std::vector<double> multiResults2 = system->getSubComponent("TestStep")->getPort("out")->getLogData().getRow< std::vector<double> >(511);
-        std::vector<double> multiResults3 = system->getSubComponent("TestStep")->getPort("out")->getLogData().getRow< std::vector<double> >(1023);
+        std::vector<double> multiResults1 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(0);
+        std::vector<double> multiResults2 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(511);
+        std::vector<double> multiResults3 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(1023);
         system->simulate(10.0);
-        std::vector<double> singleResults1 = system->getSubComponent("TestStep")->getPort("out")->getLogData().getRow< std::vector<double> >(0);
-        std::vector<double> singleResults2 = system->getSubComponent("TestStep")->getPort("out")->getLogData().getRow< std::vector<double> >(511);
-        std::vector<double> singleResults3 = system->getSubComponent("TestStep")->getPort("out")->getLogData().getRow< std::vector<double> >(1023);
+        std::vector<double> singleResults1 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(0);
+        std::vector<double> singleResults2 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(511);
+        std::vector<double> singleResults3 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(1023);
         QVERIFY2(multiResults1 == singleResults1, "Single-threaded and multi-threaded simulation gave different results!");
         QVERIFY2(multiResults2 == singleResults2, "Single-threaded and multi-threaded simulation gave different results!");
         QVERIFY2(multiResults3 == singleResults3, "Single-threaded and multi-threaded simulation gave different results!");

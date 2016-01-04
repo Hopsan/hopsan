@@ -31,19 +31,6 @@ CONFIG += silent warn_on plugin
 # The compiler should be pedantic to catch all errors (optional)
 QMAKE_CXXFLAGS += -pedantic -Wno-long-long -Wconversion
 
-#DEFINES += MULTIPORTNDPSTRUCT
-#DEFINES += MULTIPORTNDPSTRUCTMETHODS
-#DEFINES += MULTIPORTVALUESTRUCT
-#DEFINES += MULTIPORTREADWRITE
-
-#DEFINES += PORTNDPSTRUCT
-#DEFINES += PORTNDPSTRUCTMETHODS
-#DEFINES += PORTVALUESTRUCT
-#DEFINES += PORTVALUES
-#DEFINES += PORTREADWRITE
-
-
-
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------

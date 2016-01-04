@@ -302,7 +302,7 @@ ConnectionAssistant::ConnectionAssistant(ComponentSystem *pComponentSystem)
     mpComponentSystem = pComponentSystem;
 }
 
-//! @brief Help function that clears the nodetype in empty systemports, It will not clear the type if the port is not empty or if the port is not a systemport
+//! @brief Helpfunction that clears the nodetype in empty systemports, It will not clear the type if the port is not empty or if the port is not a systemport
 void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 {
     if ( pPort && (pPort->getPortType() == SystemPortType) && (!pPort->isConnected()) )

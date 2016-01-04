@@ -1080,8 +1080,7 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
         dataId = pPort->getNodeDataIdFromName(dataname.toStdString().c_str());
         if (dataId > -1)
         {
-            //std::vector< std::vector<double> > *pData = pPort->getLogDataVectorPtr();
-            hopsan::HShallowMatrixD data = pPort->getLogData();
+            std::vector< std::vector<double> > *pData = pPort->getLogDataVectorPtr();
             rpTimeVector = pPort->getLogTimeVectorPtr();
 
             // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
@@ -1089,25 +1088,22 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
             size_t nElements;
             if (pPort->getNodePtr())
             {
-                //nElements = qMin(pPort->getNodePtr()->getOwnerSystem()->getNumActuallyLoggedSamples(), pData->size());
-                nElements = qMin(pPort->getNodePtr()->getOwnerSystem()->getNumActuallyLoggedSamples(), data.rows());
+                nElements = qMin(pPort->getNodePtr()->getOwnerSystem()->getNumActuallyLoggedSamples(), pData->size());
             }
             else
             {
                 // this should never happen i think
-                //nElements = qMin(pData->size(), rpTimeVector->size());
-                nElements = qMin(rpTimeVector->size(), data.rows());
+                nElements = qMin(pData->size(), rpTimeVector->size());
             }
             //size_t nElements = min(pPort->getNodegetComponent()->getSystemParent()->getNumActuallyLoggedSamples(), pData->size());
             //qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
 
             //Ok lets copy all of the data to a Qt vector
-//            rData.resize(nElements); //Allocate memory for data
-//            for (size_t i=0; i<nElements; ++i)
-//            {
-//                rData[i] = pData->at(i).at(dataId);
-//            }
-            data.getColumn(dataId, rData, nElements);
+            rData.resize(nElements); //Allocate memory for data
+            for (size_t i=0; i<nElements; ++i)
+            {
+                rData[i] = pData->at(i).at(dataId);
+            }
         }
     }
 }
