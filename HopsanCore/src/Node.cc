@@ -37,10 +37,12 @@
 
 #include <fstream>
 #include <cassert>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include "Node.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/LogdataHandler.h"
 #include "Port.h"
 #include "ComponentSystem.h"
 #include "Quantities.h"
@@ -54,11 +56,13 @@ Node::Node(const size_t datalength)
 {
     // Make sure clear (should not really be needed)
     mDataValues.clear();
-    mDataStorage.clear();
     mConnectedPorts.clear();
 
     // Init pointer
     mpOwnerSystem = 0;
+    mpLogDataStorage = 0;
+
+    mLogDataId = 0;
 
     // Set initial node type
     mNodeType = "UndefinedNodeType";
@@ -72,12 +76,6 @@ Node::Node(const size_t datalength)
     // Default disabled logging
     setLoggingEnabled(false);
 }
-
-Node::~Node()
-{
-    // Nothing special, but needed to prevent warning about undefined behaviour
-}
-
 
 //!
 //! @brief returns the node type
@@ -225,13 +223,15 @@ void Node::copyNodeDataValuesTo(Node *pOtherNode) const
     }
 }
 
-void Node::copySignalQuantityAndUnitTo(Node* /*pOtherNode*/) const
+void Node::copySignalQuantityAndUnitTo(Node* pOtherNode) const
 {
+    HOPSAN_UNUSED(pOtherNode)
     // This is only possible in signal nodes
 }
 
-void Node::setTLMNodeDataValuesTo(Node* /*pOtherNode*/) const
+void Node::setTLMNodeDataValuesTo(Node* pOtherNode) const
 {
+    HOPSAN_UNUSED(pOtherNode)
     // This method should be implemented in child Nodes
 }
 
@@ -239,10 +239,12 @@ void Node::setTLMNodeDataValuesTo(Node* /*pOtherNode*/) const
 //! @brief Pre allocate memory for the needed amount of log data
 void Node::preAllocateLogSpace(const size_t nLogSlots)
 {
-    // Don't try to allocate if we are not going to log
-    if (mDoLog)
+    // Don't try to allocate if we are not going to log or if we do not have a parent system
+    if (mDoLog && mpOwnerSystem)
     {
-        mDataStorage.resize(nLogSlots, vector<double>(mDataValues.size()));
+        LogdataHandler *pLDH = mpOwnerSystem->getLogdataHandler();
+        mLogDataId = pLDH->registerLogRequest(0, nLogSlots, mDataValues.size(), &mpLogDataStorage, mLogDataId);
+        //! @todo need to get actual model id
     }
 }
 
@@ -251,10 +253,16 @@ void Node::preAllocateLogSpace(const size_t nLogSlots)
 //! @warning No bounds check is done
 void Node::logData(const size_t logSlot)
 {
-    if (mDoLog)
+    //if (mDoLog && mpLogDataStorage)
+    if (mpLogDataStorage)
     {
-        mDataStorage[logSlot] = mDataValues;
+        mpLogDataStorage->copyFrom(mDataValues.data(), mDataValues.size(), logSlot*mDataValues.size());
     }
+}
+
+bool Node::haveLogData() const
+{
+    return (mpLogDataStorage!=0);
 }
 
 
@@ -332,7 +340,7 @@ bool Node::isConnectedToPort(const Port *pPort) const
 }
 
 
-//! @brief Enable node data logging
+//! @brief Enable or disable node data logging
 void Node::setLoggingEnabled(bool enable)
 {
     if(!mForceDisableLog && enable)
@@ -342,7 +350,11 @@ void Node::setLoggingEnabled(bool enable)
     else
     {
         mDoLog = false;
-        mDataStorage.clear();
+        if (mLogDataId!=0 && mpOwnerSystem)
+        {
+            mpOwnerSystem->getLogdataHandler()->unregisterLogRequest(mLogDataId);
+            mLogDataId = 0;
+        }
     }
 }
 

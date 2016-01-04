@@ -51,6 +51,7 @@ namespace hopsan {
 //Forward Declaration
 class LoadExternal;
 class HopsanCoreMessageHandler;
+class LogdataHandler;
 
 //! @brief This class gives access to HopsanCore for model and externalLib loading as well as component creation and simulation.
 class DLLIMPORTEXPORT HopsanEssentials
@@ -61,6 +62,7 @@ private:
     HopsanCoreMessageHandler* mpMessageHandler;
     LoadExternal* mpExternalLoader;
     SimulationHandler mSimulationHandler;
+    LogdataHandler *mpLogdataHandler;
 
 public:
     HopsanEssentials();
@@ -89,6 +91,9 @@ public:
 
     // Quantities
     bool haveQuantity(const HString &rQuantity) const;
+
+    // Log data handling
+    LogdataHandler *getLogdatahandler();
 
     // Messages
     HopsanCoreMessageHandler* getCoreMessageHandler();

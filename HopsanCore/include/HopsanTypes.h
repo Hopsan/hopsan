@@ -30,6 +30,9 @@
 
 #include "win32dll.h"
 #include <cstddef>
+#include <climits>
+#include <cstring>
+#include <algorithm>
 
 namespace hopsan {
 
@@ -116,14 +119,107 @@ inline HString operator+(HString lhs, const char rhs)
   return lhs;
 }
 
-
 template<typename T>
-class HVector
+class HShallowVector
 {
-private:
+protected:
     T *mpDataArray;
     size_t mSize;
 
+public:
+    HShallowVector()
+    {
+        mpDataArray = 0;
+        mSize = 0;
+    }
+
+    HShallowVector(T* pArray, const size_t size)
+    {
+        mpDataArray = pArray;
+        mSize = size;
+    }
+
+    //! @brief copy constructor
+    HShallowVector(const HShallowVector<T> &rOther)
+    {
+        mpDataArray = rOther.mpDataArray;
+        mSize = rOther.mSize;
+    }
+
+    //! @brief Assignment operator
+    HShallowVector& operator=(const HShallowVector &rhs)
+    {
+        mpDataArray = rhs.mpDataArray;
+        mSize = rhs.mSize;
+        return *this;
+    }
+
+    ~HShallowVector()
+    {
+        clear();
+    }
+
+    //! @brief Clear the array
+    void clear()
+    {
+        mpDataArray = 0;
+        mSize = 0;
+    }
+
+    //! @brief Copy values into a section of the underlying array
+    //! @param[in] pSource A pointer to the array with source data
+    //! @param[in] num The number of elements to copy
+    //! @param[in] start The first element in the section to copy into
+    //! It is assumed that both the underlying array and source array are long enough, no bounds checking is done
+    inline
+    void copyFrom(const T *pSource, const size_t num, const size_t start=0)
+    {
+        memcpy(static_cast<void*>(&mpDataArray[start]), static_cast<const void*>(pSource), num*sizeof(T));
+    }
+
+    inline
+    const T& operator[] (const size_t i) const
+    {
+        return mpDataArray[i];
+    }
+
+    inline
+    T& operator[] (const size_t i)
+    {
+        return mpDataArray[i];
+    }
+
+    //! @brief Returns the number of elements in the array
+    //! @returns Number of elements in the array
+    inline
+    size_t size() const
+    {
+        return mSize;
+    }
+
+    //! @brief Check if the array is empty
+    //! @returns true if the array is empty
+    inline
+    bool empty() const
+    {
+        return (mSize==0);
+    }
+
+    //! @brief Returns a modifiable copy of the data pointer, use with care
+    inline
+    T* data()
+    {
+        return mpDataArray;
+    }
+};
+
+
+template<typename T>
+class HVector : public HShallowVector<T>
+{
+protected:
+    using HShallowVector<T>::mpDataArray;
+    using HShallowVector<T>::mSize;
 public:
     HVector()
     {
@@ -160,42 +256,56 @@ public:
 
     //! @brief Resize the array, keeping old data if any.
     //! @details If new size is smaller than old, old data will be truncated
-    //! If new size is larger than old, the additional elements will be uninitialized
+    //! If new size is larger than old, the additional elements will be default initialized
     //! @param [in] s New size
     void resize(const size_t s)
     {
-        // Create new dummy array
-        T* pNewArray = new T[s];
-
-        // Check how many elements to copy
-        size_t nCopy = s;
-        if (size() < s)
+        if (s != mSize)
         {
-            nCopy = size();
+            mpDataArray = static_cast<T*>(realloc(static_cast<void*>(mpDataArray), s*sizeof(T)));
+            //! @todo what if failure
+            if (mpDataArray)
+            {
+                mSize = s;
+            }
+            else
+            {
+                mSize = 0;
+            }
         }
+//        // Create new dummy array
+//        T* pNewArray = new T[s];
 
-        // Copy old data to new array
-        for (size_t i=0; i<nCopy; ++i)
-        {
-            pNewArray[i] = mpDataArray[i];
-        }
+//        // Check how many elements to copy
+//        size_t nCopy = s;
+//        if (mSize < s)
+//        {
+//            nCopy = mSize;
+//        }
 
-        // Clear old data
-        clear();
+//        // Copy old data to new array
+//        for (size_t i=0; i<nCopy; ++i)
+//        {
+//            pNewArray[i] = mpDataArray[i];
+//        }
 
-        // Set new data
-        mpDataArray = pNewArray;
-        mSize = s;
+//        // Clear old data
+//        clear();
+
+//        // Set new data
+//        mpDataArray = pNewArray;
+//        mSize = s;
     }
 
-    //! @brief Resize the array, initializing all values to defaultValue
+    //! @brief Resize the array, initializing ALL values to defaultValue
     //! @param [in] s New size
     //! @param [in] rDefaultValue initialize value for all elements
     void resize(const size_t s, const T &rDefaultValue)
     {
-        clear();
-        mpDataArray = new T[s];
-        mSize = s;
+//        clear();
+//        mpDataArray = new T[s];
+//        mSize = s;
+        resize(s);
         for (size_t i=0; i<mSize; ++i)
         {
             mpDataArray[i] = rDefaultValue;
@@ -204,37 +314,141 @@ public:
 
     //! @brief Append data
     //! @note This function is slow, it will reallocate all array memory every time
-    //! @param [in] rData Data to append
+    //! @param[in] rData Data to append
+    inline
     void append(const T &rData)
     {
-        resize(size()+1);
-        mpDataArray[size()-1] = rData;
-    }
-
-    const T& operator[] (const size_t i) const
-    {
-        return mpDataArray[i];
-    }
-
-    T& operator[] (const size_t i)
-    {
-        return mpDataArray[i];
-    }
-
-    //! @brief Returns the number of elements in the array
-    //! @returns Number of elements in the array
-    size_t size() const
-    {
-        return mSize;
-    }
-
-    //! @brief Check if the array is empty
-    //! @returns true if the array is empty
-    bool empty() const
-    {
-        return (mSize==0);
+        resize(mSize+1);
+        mpDataArray[mSize-1] = rData;
     }
 };
+
+//! @brief Shallow Hopsan matrix representing a plain data array of type T stored in row major order
+template<typename T>
+class HShallowMatrix
+{
+private:
+    T *mpDataArray;
+    size_t mRows, mCols;
+
+public:
+    HShallowMatrix()
+    {
+        mpDataArray = 0;
+        mRows = 0;
+        mCols = 0;
+    }
+
+    HShallowMatrix(T *pData, size_t rows, size_t cols)
+    {
+        mpDataArray = pData;
+        mRows = rows;
+        mCols = cols;
+    }
+
+    //! @brief Assignment operator
+    HShallowMatrix& operator=(const HShallowMatrix &rhs)
+    {
+        mpDataArray = rhs.mpDataArray;
+        mRows = rhs.mRows;
+        mCols = rhs.mCols;
+        return *this;
+    }
+
+    //! @brief Shallow copy constructor
+    HShallowMatrix(const HShallowMatrix<T> &rOther)
+    {
+        *this = rOther;
+    }
+
+    inline size_t rows() const
+    {
+        return mRows;
+    }
+
+    inline size_t columns() const
+    {
+        return mCols;
+    }
+
+    //! @brief Extract a row from the matrix
+    //! @param[in] row The row index
+    //! @param[out] rDest The destination (std::vector compatible container, resize() and [] needed)
+    //! @param[in] maxNumCols The maximum number of columns to include from the row
+    template <typename T2>
+    void getRow(const size_t row, T2 &rDest, size_t maxNumCols=INT_MAX) const
+    {
+        if (row < mRows)
+        {
+            maxNumCols = std::min(mCols, maxNumCols);
+            rDest.resize(maxNumCols);
+            size_t start = row*mCols;
+            for (size_t c=0; c<maxNumCols; ++c)
+            {
+                rDest[c] = mpDataArray[start+c];
+            }
+        }
+    }
+
+    //! @brief Extract a row from the matrix
+    //! @param[in] row The row index
+    //! @param[in] maxNumCols The maximum number of columns to include from the row
+    //! @returns The extracted row (std::vector compatible container, resize() and [] needed)
+    template <typename T2>
+    T2 getRow(const size_t row, size_t maxNumCols=INT_MAX) const
+    {
+        T2 vec;
+        getRow(row,vec,maxNumCols);
+        return vec;
+    }
+
+    //! @brief Extract a column from the matrix
+    //! @param[in] col The column index
+    //! @param[out] rDest The destination (std::vector compatible container, resize() and [] needed)
+    //! @param[in] maxNumRows The maximum number of rows to include from the column
+    template <typename T2>
+    void getColumn(const size_t col, T2 &rDest, size_t maxNumRows=INT_MAX) const
+    {
+        if (col < mCols)
+        {
+            maxNumRows = std::min(mRows, maxNumRows);
+            rDest.resize(maxNumRows);
+            size_t step = mCols;
+            for (size_t r=0; r<maxNumRows; ++r)
+            {
+                rDest[r] = mpDataArray[r*step+col];
+            }
+        }
+    }
+
+    //! @brief Extract a column from the matrix
+    //! @param[in] col The column index
+    //! @param[in] maxNumRows The maximum number of rows to include from the column
+    //! @returns The extracted column (std::vector compatible container, resize() and [] needed)
+    template <typename T2>
+    T2 getColumn(const size_t col, size_t maxNumRows=INT_MAX) const
+    {
+        T2 vec;
+        getColumn(col,vec,maxNumRows);
+        return vec;
+    }
+
+    //! @todo check bounds error
+    T at(size_t row, size_t column) const
+    {
+        return mpDataArray[row*mCols+column];
+    }
+
+    bool empty() const
+    {
+        return (mRows==0 || mCols==0);
+    }
+
+};
+
+typedef HShallowMatrix<double> HShallowMatrixD;
+typedef HShallowVector<double> HShallowVectorD;
+typedef HVector<double> HVectorD;
 
 }
 
