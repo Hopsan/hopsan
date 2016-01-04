@@ -123,6 +123,8 @@ state","",1.,&mpnotQstate);
 
         //Initialize delays
 
+        simulateOneTimestep();
+
      }
     void simulateOneTimestep()
      {

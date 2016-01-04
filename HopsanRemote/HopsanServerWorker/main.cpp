@@ -34,17 +34,18 @@ using namespace std;
 HopsanEssentials gHopsanCore;
 bool gHaveLoadedComponentLibraries=false;
 
-typedef struct
+class ModelVariableInfo_t
 {
+public:
     string fullName;
-    vector< vector<double> > *pData = 0;
+    HShallowMatrixD mData;
     vector< double > *pTimeData = 0;
     size_t dataLength = 0;
     size_t dataId = 0;
     string unit;
     string quantity;
     string alias;
-}ModelVariableInfo_t;
+};
 
 string gWorkerId;
 #define PRINTWORKER "Worker "+gWorkerId+"; "
@@ -193,8 +194,7 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
                 }
 
                 //! @todo what about time vector
-                vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
-
+                HShallowMatrixD logData = pPort->getLogData();
                 const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
                 if (pVars)
                 {
@@ -203,7 +203,7 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
                         // Only write something if data has been logged (skip ports that are not logged)
                         // We assume that the data vector has been cleared
                         //! @todo check if log on
-                        if (pLogData->size() > 0)
+                        if (!logData.empty())
                         {
                             const NodeDataDescription *pVarDesc = &(*pVars)[v];
                             ModelVariableInfo_t mvi;
@@ -211,7 +211,7 @@ void collectAllModelVariables(ComponentSystem *pSys, vector<ModelVariableInfo_t>
                             mvi.alias = pPort->getVariableAlias(pVarDesc->id).c_str();
                             mvi.quantity = pVarDesc->quantity.c_str();
                             mvi.unit = pVarDesc->unit.c_str();
-                            mvi.pData = pLogData;
+                            mvi.mData = logData;
                             mvi.dataId = pVarDesc->id;
                             mvi.dataLength = pSys->getNumActuallyLoggedSamples();
                             rvMVI.push_back(mvi);
@@ -882,12 +882,13 @@ int main(int argc, char* argv[])
                             vars.back().unit = rMvi.unit.c_str();
                             vars.back().data.reserve(rMvi.dataLength);
                             // Copy if a data variable
-                            if (rMvi.pData)
+                            if (!rMvi.mData.empty())
                             {
-                                for (size_t t=0; t<rMvi.dataLength; ++t)
-                                {
-                                    vars.back().data.push_back((*rMvi.pData)[t][rMvi.dataId]);
-                                }
+                                //for (size_t t=0; t<rMvi.dataLength; ++t)
+                                //{
+                                    //vars.back().data.push_back(rMvi.mData.at(t,rMvi.dataId));
+                                    rMvi.mData.getColumn(rMvi.dataId, vars.back().data, rMvi.dataLength);
+                                //}
                             }
                             // Copy if a time data variable
                             else if (rMvi.pTimeData)

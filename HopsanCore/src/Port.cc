@@ -421,7 +421,7 @@ bool Port::haveLogData(const size_t subPortIdx)
     if (mpNode)
     {
         // Here we assume that timevector DOES exist. If simulation code is correct it should exist
-        return !mpNode->mDataStorage.empty();
+        return mpNode->haveLogData();
     }
     return false;
 }
@@ -557,17 +557,30 @@ vector<double> *Port::getLogTimeVectorPtr(const size_t subPortIdx)
     return 0; //Nothing found return 0
 }
 
-//! @param [in] subPortIdx Ignored on non multi ports
-vector<vector<double> > *Port::getLogDataVectorPtr(const size_t subPortIdx)
+////! @param [in] subPortIdx Ignored on non multi ports
+//vector<vector<double> > *Port::getLogDataVectorPtr(const size_t subPortIdx)
+//{
+//    HOPSAN_UNUSED(subPortIdx)
+//    if (mpNode != 0)
+//    {
+//        return &(mpNode->mDataStorage);
+//    }
+//    else
+//    {
+//        return 0;
+//    }
+//}
+
+HShallowMatrixD Port::getLogData(const size_t subPortIdx)
 {
     HOPSAN_UNUSED(subPortIdx)
-    if (mpNode != 0)
+    if (mpNode && mpNode->mpLogDataStorage)
     {
-        return &(mpNode->mDataStorage);
+        return HShallowMatrixD(mpNode->mpLogDataStorage->data(), mpNode->mpLogDataStorage->size(), mpNode->mDataValues.size());
     }
     else
     {
-        return 0;
+        return HShallowMatrixD();
     }
 }
 
@@ -1045,13 +1058,22 @@ std::vector<double> *MultiPort::getLogTimeVectorPtr(const size_t subPortIdx)
     return 0;
 }
 
-std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t subPortIdx)
+//std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t subPortIdx)
+//{
+//    if (isConnected())
+//    {
+//        return mSubPortsVector[subPortIdx]->getLogDataVectorPtr();
+//    }
+//    return 0;
+//}
+
+HShallowMatrixD MultiPort::getLogData(const size_t subPortIdx)
 {
-    if (isConnected())
+    if (subPortIdx < mSubPortsVector.size())
     {
-        return mSubPortsVector[subPortIdx]->getLogDataVectorPtr();
+        return mSubPortsVector[subPortIdx]->getLogData();
     }
-    return 0;
+    return HShallowMatrixD();
 }
 
 std::vector<double> *MultiPort::getDataVectorPtr(const size_t subPortIdx)

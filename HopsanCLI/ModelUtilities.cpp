@@ -76,7 +76,7 @@ HString generateFullPortVariableName(const Port *pPort, const size_t dataId)
 }
 
 
-//! @brief Helpfunction to print timestep info for a system
+//! @brief Help function to print timestep info for a system
 //! @param[in] pSystem The system to print info for
 void printTsInfo(const ComponentSystem* pSystem)
 {
@@ -94,7 +94,7 @@ void printSystemParams(ComponentSystem* pSystem)
     }
 }
 
-//! @brief Print component hierarcy in a system
+//! @brief Print component hierarchy in a system
 //! @param[in] pSystem The system to print info for
 //! @param[in] prefix Text to add before printout
 //! @param[in] doPrintTsInfo Should timestep info be included
@@ -157,7 +157,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
     if (pSys)
     {
         // First save time vector for this system
-        //! @todo alias a for time ? is that even posible
+        //! @todo alias a for time ? is that even possible
         if (howMany == Final)
         {
             *pFile << prefix.c_str() << "Time,,s," << pSys->getTime() << endl;
@@ -170,7 +170,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 *pFile << prefix.c_str() << "Time,,s";
                 for (size_t t=0; t<pLogTimeVector->size(); ++t)
                 {
-                    *pFile << "," << (*pLogTimeVector)[t];//!< @todo what about precission
+                    *pFile << "," << (*pLogTimeVector)[t];//!< @todo what about precision
                 }
                 *pFile << endl;
             }
@@ -198,7 +198,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                         Port *pPort = ports[p];
                         if (pPort->isMultiPort())
                         {
-                            // Ignore multiports, not possible to determin what we want to log anyway
+                            // Ignore multiports, not possible to determine what we want to log anyway
                             continue;
                         }
                         const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
@@ -211,20 +211,20 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                                 if (howMany == Final)
                                 {
                                     *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
-                                    *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
+                                    *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precision
                                 }
                                 else if (howMany == Full)
                                 {
                                     // Only write something if data has been logged (skip ports that are not logged)
                                     // We assume that the data vector has been cleared
-                                    if (pPort->getLogDataVectorPtr()->size() > 0)
+                                    HShallowMatrixD logData = pPort->getLogData();
+                                    if (!logData.empty())
                                     {
                                         *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
                                         //! @todo what about time vector
-                                        vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
                                         for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
                                         {
-                                            *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
+                                            *pFile << "," << logData.at(t,v);//!< @todo what about precision
                                         }
                                         *pFile << endl;
                                     }
@@ -406,13 +406,13 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                             }
                             if (nameVec.size() == 3)
                             {
-                                // Set component name and reset the parameter (startvalue) name
+                                // Set component name and reset the parameter (start value) name
                                 componentName = nameVec[0];
                                 parameterName = nameVec[1]+"#"+nameVec[2];
                             }
 
 
-                            // Dig down subsystem hiearchy
+                            // Dig down subsystem hierarchy
                             ComponentSystem *pParentSys = pSystem;
                             for (size_t s=1; s<syshierarcy.size(); ++s)
                             {
@@ -485,7 +485,7 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
 }
 
 
-//! @brief Read data on which nodes to save after simualtion from text file
+//! @brief Read data on which nodes to save after simulation from text file
 //! @param[in] filePath The file to read from
 //! @param[out] rComps The component names
 //! @param[out] rPorts The port names

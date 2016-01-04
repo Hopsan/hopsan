@@ -41,6 +41,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/LogdataHandler.h"
 #include "Quantities.h"
 #include <string.h>
 #include <stdio.h>
@@ -64,6 +65,7 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory = new ComponentFactory;
     mpMessageHandler = new HopsanCoreMessageHandler;
     mpExternalLoader = new LoadExternal(mpComponentFactory, mpNodeFactory, mpMessageHandler);
+    mpLogdataHandler = new LogdataHandler();
 
     // Make sure that internal Nodes and Components register
     register_default_nodes(mpNodeFactory);
@@ -116,8 +118,7 @@ HopsanEssentials::~HopsanEssentials()
 
     delete mpNodeFactory;
     delete mpComponentFactory;
-
-    // Delete the message handler
+    delete mpLogdataHandler;
     delete mpMessageHandler;
 }
 
@@ -259,6 +260,11 @@ const std::vector<HString> HopsanEssentials::getRegisteredNodeTypes() const
 bool HopsanEssentials::haveQuantity(const HString &rQuantity) const
 {
     return gHopsanQuantities.haveQuantity(rQuantity);
+}
+
+LogdataHandler *HopsanEssentials::getLogdatahandler()
+{
+    return mpLogdataHandler;
 }
 
 //! @brief Returns a pointer to the core message handler, do NOT use this function to get messages

@@ -143,7 +143,9 @@ SOURCES += \
     src/CoreUtilities/NumHopHelper.cc \
     src/CoreUtilities/AliasHandler.cc \
     src/CoreUtilities/ConnectionAssistant.cc \
-    src/CoreUtilities/SimulationHandler.cc
+    src/CoreUtilities/SimulationHandler.cc \
+    src/CoreUtilities/LogdataHandler.cc \
+    src/Model.cc
 HEADERS += \
     include/win32dll.h \
     include/Port.h \
@@ -201,7 +203,9 @@ HEADERS += \
     include/CoreUtilities/NumHopHelper.h \
     include/CoreUtilities/ConnectionAssistant.h \
     include/CoreUtilities/AliasHandler.h \
-    include/CoreUtilities/SimulationHandler.h
+    include/CoreUtilities/SimulationHandler.h \
+    include/CoreUtilities/LogdataHandler.h \
+    include/Model.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
