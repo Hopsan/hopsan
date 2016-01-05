@@ -50,7 +50,8 @@ SOURCES += \
     src/OpsWorkerParticleSwarm.cpp \
     src/OpsWorkerComplexRFP.cpp \
     src/OpsWorkerParamterSweep.cpp \
-    src/OpsWorkerDifferentialEvolution.cpp
+    src/OpsWorkerDifferentialEvolution.cpp \
+    src/OpsWorkerControlledRandomSearch.cpp
 
 HEADERS += \
     include/win32dll.h \
@@ -62,7 +63,8 @@ HEADERS += \
     include/OpsWorkerParticleSwarm.h \
     include/OpsWorkerComplexRFP.h \
     include/OpsWorkerParameterSweep.h \
-    include/OpsWorkerDifferentialEvolution.h
+    include/OpsWorkerDifferentialEvolution.h \
+    include/OpsWorkerControlledRandomSearch.h
 
 
 
