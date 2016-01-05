@@ -42,6 +42,7 @@
 #include "OpsWorkerNelderMead.h"
 #include "OpsWorkerParticleSwarm.h"
 #include "OpsWorkerDifferentialEvolution.h"
+#include "OpsWorkerControlledRandomSearch.h"
 #include "MessageHandler.h"
 #include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
@@ -90,7 +91,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         mCurrentProgressBarPercent=0;
         mLoggedParameters.clear();
         connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
-        gpOptimizationDialog->setOutputDisabled(false);
+        gpOptimizationDialog->setOutputDisabled(true);
 
         connect(mpHcomHandler, SIGNAL(aborted()), mpWorker, SLOT(abort()));
 
@@ -381,6 +382,14 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
                 delete mpWorker;
             }
             mpWorker = new Ops::WorkerDifferentialEvolution(mpEvaluator);
+        }
+        else if(value == "controlledrandomsearch")
+        {
+            if(mpWorker)
+            {
+                delete mpWorker;
+            }
+            mpWorker = new Ops::WorkerControlledRandomSearch(mpEvaluator);
         }
         return;
     }
