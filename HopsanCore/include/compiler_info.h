@@ -41,13 +41,13 @@
 // Note2! __GNUC__ is also defined on MinGW (that is why we check for MinGW first)
 
 #if defined(__MINGW32__)
- #define HOPSANCOMPILEDWITH "MinGW GCC " TO_STR(__GNUC__) "." TO_STR(__GNUC_MINOR__)
+ #define HOPSANCOMPILEDWITH "MinGW GCC " TO_STR(__GNUC__) "." TO_STR(__GNUC_MINOR__) "." TO_STR(__GNUC_PATCHLEVEL__)
  #define HOPSANCOMPILEDWITHGCC
  #ifdef __x86_64__
   #define HOPSANCOMPILED64BIT
  #endif
 #elif defined(__GNUC__)
- #define HOPSANCOMPILEDWITH "GNU GCC " TO_STR(__GNUC__) "." TO_STR(__GNUC_MINOR__)
+ #define HOPSANCOMPILEDWITH "GNU GCC " TO_STR(__GNUC__) "." TO_STR(__GNUC_MINOR__) "." TO_STR(__GNUC_PATCHLEVEL__)
  #define HOPSANCOMPILEDWITHGCC
  #ifdef __x86_64__
   #define HOPSANCOMPILED64BIT
