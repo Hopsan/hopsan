@@ -58,7 +58,7 @@ namespace hopsan {
         double delayedY() const;
         bool isSaturated() const;
 
-    private:
+    protected:
         double mValue;
         double mDelayedU, mDelayedY;
         double mCoeffU[2];
@@ -67,6 +67,13 @@ namespace hopsan {
         double mTimeStep;
         bool mIsSaturated;
         Delay mBackupU, mBackupY;
+    };
+
+    class DLLIMPORTEXPORT FirstOrderLowPassFilter : public FirstOrderTransferFunction
+    {
+    public:
+        void initialize(double timestep, double wc, double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
+        double breakFrequency() const;
     };
 
 

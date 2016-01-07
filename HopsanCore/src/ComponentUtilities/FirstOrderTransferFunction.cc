@@ -331,9 +331,38 @@ double FirstOrderTransferFunctionVariable::update(double u)
 }
 
 
-//! Read current filter output value
+//! @brief Read current filter output value
 //! @return The filtered actual value.
 double FirstOrderTransferFunctionVariable::value()
 {
     return mValue;
+}
+
+
+//! @class hopsan::FirstOrderLowPassFilter
+//! @ingroup ComponentUtilityClasses
+//! @brief The FirstOrderLowpassFilter utility is derived from the FirstOrderTransferFunction and extends it with functions useful when creating low-pass filters of the first order
+
+
+//! @brief Initialize the filter utility
+//! @param [in] timestep The (fixed) simulation timestep used
+//! @param [in] wc The break frequency in rad/s
+//! @param [in] timestep The (fixed) simulation timestep used
+//! @param [in] u0 Initial input signal
+//! @param [in] y0 Initial output value
+//! @param [in] min Filter minimum value (saturation)
+//! @param [in] max Filter maximum value (saturation)
+void FirstOrderLowPassFilter::initialize(double timestep, double wc, double u0, double y0, double min, double max)
+{
+    // G = 1 / ( 1/wc + 1 )
+    double num[2], den[2];
+    num[1] = 0.0;    num[0] = 1.0;
+    den[1] = 1.0/wc; den[0] = 1.0;
+    FirstOrderTransferFunction::initialize(timestep, num, den, u0, y0, min, max);
+}
+
+//! @brief Return the break frequency for this filter
+double FirstOrderLowPassFilter::breakFrequency() const
+{
+    return 4.0/(mCoeffY[1]-mCoeffY[0]);
 }
