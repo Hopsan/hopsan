@@ -448,9 +448,12 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
         lhsOK=true;
         char* pEnd;
         value = strtod(mRightExpressionString.c_str(), &pEnd);
-        rhsOK = (pEnd != mRightExpressionString.c_str());
+        rhsOK = (pEnd != mRightExpressionString.c_str()) &&
+                (pEnd == mRightExpressionString.c_str()+mRightExpressionString.size());
         if (!rhsOK)
         {
+            // The "value" seems to be a variable name
+            // Lookup variable name in variable storage instead
             value = rVariableStorage.value(mRightExpressionString, rhsOK);
         }
         else

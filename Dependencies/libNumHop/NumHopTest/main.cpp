@@ -85,7 +85,7 @@ int main()
 
     expr.push_back("2--3; 1+-3; 1-+3; 1++3; 1---3");
 
-    expr.push_back("#The following will not work!\n 2*-2; a += 5; 1+1-; = 5;");
+    expr.push_back("#The following will (should) not work!\n 2*-2; a += 5; 1+1-; = 5; 0.5huj");
 
     for (size_t i=0; i<expr.size(); ++i)
     {
@@ -121,6 +121,7 @@ int main()
                 cout << "Interpreting FAILED: " << *it << endl;
             }
         }
+        cout << "----------------------------------------------------------------" << endl;
     }
 
     return 0;
