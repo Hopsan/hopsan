@@ -41,14 +41,15 @@ void WorkerControlledRandomSearch::run()
         //Calculate best and worst point
         calculateBestAndWorstId();
 
-        while(true)
+        for(int i=0; i<mNumCandidates; ++i)
         {
+
             QVector<size_t> chosenIdx;
             QVector< QVector<double> > chosenPoints;
             chosenIdx.append(mBestId);
             chosenIdx.append(mWorstId);
             chosenPoints.append(mPoints[mBestId]);
-            for(int i=0; i<mNumParameters-1; ++i)
+            for(int j=0; j<mNumParameters-1; ++j)
             {
                 int idx = opsRand();
                 while(chosenIdx.contains(idx))
@@ -63,34 +64,40 @@ void WorkerControlledRandomSearch::run()
             findCentroidPoint(chosenPoints);
 
             //Reflect worst point
-            mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, 1.0);
+            mCandidatePoints[i] = reflect(mPoints[mWorstId], mCentroidPoint, 1.0);
             emit candidateChanged(0);
 
-            //Check if constraints are evaluated, if so, do new reflection
-            bool constraintsViolated=false;
+            //Check if constraints are violated, if so, do new reflection
+            //bool constraintsViolated=false;
             for(int p=0; p<mNumParameters; ++p)
             {
-                if(mCandidatePoints[0][p] < mParameterMin[p] ||
-                   mCandidatePoints[0][p] > mParameterMax[p])
+                if(mCandidatePoints[i][p] < mParameterMin[p] ||
+                        mCandidatePoints[i][p] > mParameterMax[p])
                 {
-                    constraintsViolated = true;
+                    --i;
                 }
             }
-            if(!constraintsViolated)
-            {
-                //Evaluate new point
-                mpEvaluator->evaluateCandidate(0);
+        }
 
-                //Check if new point is better; if so, keep it
-                if(mCandidateObjectives[0] < mObjectives[mWorstId])
-                {
-                    mPoints[mWorstId] = mCandidatePoints[0];
-                    mObjectives[mWorstId] = mCandidateObjectives[0];
-                    emit pointChanged(mWorstId);
-                    emit objectiveChanged(mWorstId);
-                    break;
-                }
+        mpEvaluator->evaluateAllCandidates();
+        double bestObj = 1e100;
+        int bestId = -1;
+        for(int i=0; i<mNumCandidates; ++i)
+        {
+            if(mCandidateObjectives[i] < bestObj)
+            {
+                bestObj = mCandidateObjectives[i];
+                bestId = i;
             }
+        }
+
+        //Check if new point is better; if so, keep it
+        if(mCandidateObjectives[bestId] < mObjectives[mWorstId])
+        {
+            mPoints[mWorstId] = mCandidatePoints[bestId];
+            mObjectives[mWorstId] = mCandidateObjectives[bestId];
+            emit pointChanged(mWorstId);
+            emit objectiveChanged(mWorstId);
         }
 
         emit stepCompleted(mIterationCounter);
