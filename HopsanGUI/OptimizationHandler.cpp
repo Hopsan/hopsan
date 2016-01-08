@@ -91,7 +91,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         mCurrentProgressBarPercent=0;
         mLoggedParameters.clear();
         connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
-        gpOptimizationDialog->setOutputDisabled(true);
+        //gpOptimizationDialog->setOutputDisabled(true);
 
         connect(mpHcomHandler, SIGNAL(aborted()), mpWorker, SLOT(abort()));
 
@@ -140,7 +140,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         mpWorker->run();
 
         mpMessageHandler->addInfoMessage("Optimization finished!");
-        gpOptimizationDialog->updateTotalProgressBar(mpWorker->getMaxNumberOfIterations());
+        gpOptimizationDialog->updateTotalProgressBar(/*mpWorker->getMaxNumberOfIterations()*/100);
         this->setIsRunning(false);
         if(mDisconnectedFromModelHandler)
         {
