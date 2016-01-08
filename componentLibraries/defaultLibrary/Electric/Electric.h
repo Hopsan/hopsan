@@ -40,5 +40,5 @@
 #include "ElectricSwitch.hpp"
 #include "ElectricUsensor.hpp"
 #include "ElectricUsource.hpp"
-#include "ElectricVoltageSourceQ.hpp"
 #include "ElectricVarResistor.hpp"
+#include "ElectricVoltageSourceQ.hpp"

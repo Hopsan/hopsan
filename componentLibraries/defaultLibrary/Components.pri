@@ -33,8 +33,8 @@ HEADERS +=  \
  $${PWD}/Electric/ElectricSwitch.hpp \ 
  $${PWD}/Electric/ElectricUsensor.hpp \ 
  $${PWD}/Electric/ElectricUsource.hpp \ 
- $${PWD}/Electric/ElectricVoltageSourceQ.hpp \
  $${PWD}/Electric/ElectricVarResistor.hpp \ 
+ $${PWD}/Electric/ElectricVoltageSourceQ.hpp \ 
  $${PWD}/Experimental/Experimental.h \ 
  $${PWD}/Experimental/Signal1DLookupTable.hpp \ 
  $${PWD}/Experimental/Signal1DPLOLookupTable.hpp \ 
@@ -251,12 +251,15 @@ HEADERS +=  \
  $${PWD}/Signal/MathFunctions/SignalAsin.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalAtan.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalAtan2.hpp \ 
+ $${PWD}/Signal/MathFunctions/SignalCeil.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalCos.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalCosh.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalExp.hpp \ 
+ $${PWD}/Signal/MathFunctions/SignalFloor.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalLog.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalLog10.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalPower.hpp \ 
+ $${PWD}/Signal/MathFunctions/SignalRound.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalSin.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalSinh.hpp \ 
  $${PWD}/Signal/MathFunctions/SignalSqrt.hpp \ 
@@ -340,9 +343,6 @@ HEADERS +=  \
  $${PWD}/Special/Special.h \ 
  $${PWD}/Special/TMMS04/Forks.hpp \ 
  $${PWD}/Special/TMMS04/TMMS04.h \ 
- $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled22Valve.hpp \
- $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled22Valve2.hpp \
- $${PWD}/Electric/ElectricVoltageSourceQ.hpp \
  $${PWD}/Components.h
 
 SOURCES += 
