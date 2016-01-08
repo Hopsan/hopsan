@@ -25,7 +25,7 @@ doxygenDirList = [r'C:\Program Files\doxygen\bin', r'C:\Program Files (x86)\doxy
 gsDirList = [r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin']
 
 # Compilers and build tools
-qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1']
+qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1', r'C:\Qt\qtcreator-3.6.0']
 msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
 msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
