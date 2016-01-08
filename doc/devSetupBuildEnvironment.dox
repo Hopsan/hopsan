@@ -58,10 +58,10 @@ This is a short guide: you can find more instructions at http://msys2.github.io/
 
 1. Download the installer from http://msys2.github.io/
    Choose the x86_64 version on 64-bit Windows
-2. Install it to the default location (or change the path in the `setupHopsanPaths` script later on.
-3. Start msys2 (MSYS2 Shell) and run the command: `pacman --needed -Sy bash pacman pacman-mirrors msys2-runtime`
-4. Close msys (run `exit`) and then start it again
-5. Run the following command to upgrade the remaning packages: `pacman -Su`
+2. Install it to the default location (`c:\msys64\`) (or change the path in the `setupHopsanPaths` script later on.
+3. Start msys2 (MSYS2 Shell) and update the core components by running the command: `pacman --needed -Sy bash pacman pacman-mirrors msys2-runtime`
+4. __This step is VERY important!__ Close msys2 (run `exit`). If the window does not close after "exit" then kill the bash.exe process manually.
+5. Start msys2 again and run the following command to upgrade the remaning packages: `pacman -Su`
 6. To install the required build tools, run: `pacman -S make automake autoconf libtool pkgconfig patch`
 
 \section sec_setupbuildenvironment_ubuntu Development on GNU/Linux *Ubuntu or any Debian based system
