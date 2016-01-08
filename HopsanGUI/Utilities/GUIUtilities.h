@@ -81,7 +81,18 @@ void splitFilepath(const QString &rFilepath, QString &rDirPath, QString &rFilena
 bool isVersionGreaterThan(QString v1, QString v2);
 bool replacePattern(const QString &rPattern, const QString &rReplacement, QString &rText);
 
-// Inline utility functions
+// In-line utility functions
+
+//! @brief Convenient function to check if a string is numeric
+//! @param [in] str The string to check
+//! @return true if string can be converted into a double (it  is a number) else returns false
+inline bool isNumber(const QString &str)
+{
+    bool isok;
+    str.toDouble(&isok);
+    return isok;
+}
+
 //! @brief Compare two doubles with given tolerance
 //! @return True if qAbs(first-last) < eps
 inline bool fuzzyEqual(const double first, const double second, const double eps)

@@ -1223,8 +1223,15 @@ bool VariableTableWidget::setStartValues()
             if (!setNewValueSucess)
             {
                 ParameterValueSelectionWidget *pWidget = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)));
-                pWidget->setValueAndScale_nosignals(previousUnitScale.convertFromBase(previousValue), previousUnitScale);
-                mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
+                if (isNumber(previousValue))
+                {
+                    pWidget->setValueAndScale_nosignals(previousUnitScale.convertFromBase(previousValue), previousUnitScale);
+                    mpModelObject->registerCustomParameterUnitScale(name, previousUnitScale);
+                }
+                else
+                {
+                    pWidget->setValueAndScale_nosignals(previousValue, previousUnitScale);
+                }
                 allok = false;
                 break;
             }

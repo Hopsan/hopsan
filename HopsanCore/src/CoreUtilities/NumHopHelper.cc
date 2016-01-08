@@ -85,6 +85,11 @@ public:
                     if (parts.size() == 2)
                     {
                         value = pC->evaluateDoubleParameter(parts[1], rFound);
+                        // If not found, then try to add "Value", in case user is lazy and have not specified it for input or output start values
+                        if (!rFound)
+                        {
+                            value = pC->evaluateDoubleParameter(parts[1]+"#Value", rFound);
+                        }
                     }
                     else if (parts.size() == 3)
                     {
@@ -129,7 +134,13 @@ public:
                 {
                     if (parts.size() == 2)
                     {
-                        return pC->setParameterValue(parts[1], to_hstring(value));
+                        bool rc = pC->setParameterValue(parts[1], to_hstring(value));
+                        // If not found, then try to add "Value", in case user is lazy and have not specified it for input or output start values
+                        if (!rc)
+                        {
+                            rc = pC->setParameterValue(parts[1]+"#Value", to_hstring(value));
+                        }
+                        return rc;
                     }
                     else if (parts.size() == 3)
                     {
@@ -174,7 +185,7 @@ public:
         if (parts.size() == 1)
         {
             mpComponent->getParameterValue(parts[0], valstring);
-            // The value==parts[0] is a hack to avoid infinite recursion when the name of the system parameter (value) is the same as the parameter name
+            // The value!=parts[0] is a hack to avoid infinite recursion when the name of the system parameter (value) is the same as the parameter name
             if (!valstring.empty() && valstring!=parts[0])
             {
                 value = mpComponent->evaluateDoubleParameter(parts[0], evalOK);
