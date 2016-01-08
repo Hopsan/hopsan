@@ -263,6 +263,13 @@
             <unit name="C" scale="1" offset="273.15"/>
             <unit name="F" scale="5/9" offset="459.67*5/9"/>
         </quantity>
+        <quantity name="Density" baseunit="kg/m^3">
+        </quantity>
+        <quantity name="Mass" baseunit="kg">
+          <unit name="g" scale="0.001"/>
+          <unit name="hg" scale="0.01"/>
+          <unit name="t" scale="1000"/>
+        </quantity>
     </unitsettings>
     <units>
     <!-- Note! The units tag is deprecated and should no longer be used   -->
