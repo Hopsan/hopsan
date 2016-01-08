@@ -4347,6 +4347,17 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mpOptHandler->setParameterLimits(optParIdx, min, max);
             return;
         }
+        else if(split.size() == 3 && split[1] == "output")
+        {
+            if(split[2] == "on" || split[2] == "off")
+            {
+                gpOptimizationDialog->setOutputDisabled(split[2] == "off");
+            }
+            else
+            {
+                HCOMERR("Unknown argument: "+split[2]);
+            }
+        }
         else if(split.size() == 3)
         {
             bool ok=true;
