@@ -32,10 +32,10 @@ msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Pro
 # Runtime binaries to copy to bin directory (Note! Path to qt/bin and mingw/bin and plugin dirs is set by external script)
 qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
                  'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
-                 'icuin54.dll', 'icuuc54.dll', 'icudt54.dll', 'Qt5PrintSupport.dll']
+                 'icuin56.dll', 'icuuc56.dll', 'icudt56.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
 qtPluginBins  = [r'iconengines/qsvgicon.dll', r'imageformats/qjpeg.dll', r'imageformats/qsvg.dll', r'platforms/qwindows.dll']
 mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
-mingwOptBins  = ['libeay32.dll', 'ssleay32.dll']
+mingwOptBins  = []
 
 # -------------------- Setup End --------------------
 
@@ -173,7 +173,7 @@ def callMkdir(dst):
 
 def callRd(tgt):
     #print "rd "+quotePath(tgt)
-    os.system("rd "+quotePath(tgt)+" /s /q")
+    os.system("if exist "+quotePath(tgt)+" rd "+quotePath(tgt)+" /s /q")
 
 
 def callEXE(cmd, args):
@@ -555,14 +555,12 @@ def copyFiles():
     # Export needed dependencies SVN directories to "include" in the release
     svnExport(r'Dependencies\katex',                gTemporaryBuildDir+r'\Dependencies\katex')
     svnExport(r'Dependencies\IndexingCSVParser',    gTemporaryBuildDir+r'\Dependencies\IndexingCSVParser')
+    svnExport(r'Dependencies\libNumHop',            gTemporaryBuildDir+r'\Dependencies\libNumHop')
     svnExport(r'Dependencies\rapidxml-1.13',        gTemporaryBuildDir+r'\Dependencies\rapidxml-1.13')
     svnExport(r'Dependencies\libcsv_parser++-1.0.0', gTemporaryBuildDir+r'\Dependencies\libcsv_parser++-1.0.0')
 
     # Copy the FMILibrary include files
-    if do64BitRelease:
-        FMILibraryDir = r'./Dependencies/FMILibrary-2.0.1_x64'
-    else:
-        FMILibraryDir = r'./Dependencies/FMILibrary-2.0.1'
+    FMILibraryDir = r'./Dependencies/FMILibrary-2.0.1'
     if not copyDirTo(FMILibraryDir+r'/install', gTemporaryBuildDir+FMILibraryDir):
         return False
 
