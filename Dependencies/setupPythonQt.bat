@@ -13,8 +13,7 @@ REM first unpack
 echo ====================
 echo Unpacking sourcecode
 echo ====================
-rd /s/q %pythonqtVersion%
-rd /s/q %pythonqtVersion%_x64
+if exist %pythonqtVersion% rd /s/q %pythonqtVersion%
 ..\ThirdParty\7z\7z.exe x %pythonqtVersion%.zip -y
 
 REM Now apply patch
@@ -25,9 +24,6 @@ echo =====================
 cd %pythonqtVersion%
 ..\..\ThirdParty\patch\doit.exe -i ..\\%pythonqtVersion%_winMinGW44.patch -p1
 cd ..
-
-REM Copy to _x64 dir
-robocopy /e /NFL /NDL /NJH /NJS /nc /ns /np %pythonqtVersion% %pythonqtVersion%_x64
 
 REM Now build
 echo.

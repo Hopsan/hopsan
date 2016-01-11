@@ -10,25 +10,15 @@ set dirname=tbb41_20130613oss
 
 REM Automatic code begins here
 
-set dirname64=%dirname%_x64
-
 REM Unpack or checkout
 echo.
 echo ======================
 echo Unpack TBB
 echo ======================
-rd /s/q %dirname%
-rd /s/q %dirname64%
+if exist %dirname% rd /s/q %dirname%
 mkdir %dirname%
-REM Unpack using tar
+REM Unpack
 ..\ThirdParty\7z\7z.exe x %filename% -y > nul
-
-REM Copy to 64-bit dir
-echo.
-echo ======================
-echo Copying to %dirname64%
-echo ======================
-robocopy /e /NFL /NDL /NJH /NJS /nc /ns /np  %dirname% %dirname64%
 
 REM Build
 echo.
@@ -36,7 +26,7 @@ echo ======================
 echo Building 64-bit TBB
 echo ======================
 call setHopsanBuildPaths.bat 0.7.x x64
-cd %dirname64%
+cd %dirname%
 mingw32-make compiler=gcc tbb_build_prefix=output info
 mingw32-make compiler=gcc tbb_build_prefix=output -j4
 

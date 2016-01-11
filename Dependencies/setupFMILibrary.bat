@@ -9,22 +9,13 @@ set filename=FMILibrary-2.0.1-src.zip
 set dirname=FMILibrary-2.0.1
 
 REM Automatic code starts here
-set dirname64=%dirname%_x64
 
 REM Unpack
 echo.
 echo Clearing old directory (if it exists)
-rd /s/q %dirname%
-rd /s/q %dirname64%
+if exist %dirname% rd /s/q %dirname%
 echo Unpacking %filename%
 ..\ThirdParty\7z\7z.exe x %filename% -y > nul
-
-REM Copy to 64-bit dir
-echo.
-echo ======================
-echo Copying to %dirname64%
-echo ======================
-robocopy /e /NFL /NDL /NJH /NJS /nc /ns /np  %dirname% %dirname64%
 
 REM Build
 echo.
@@ -35,7 +26,7 @@ set OLDPATH=%PATH%
 call setHopsanBuildPaths.bat 0.7.x x64
 REM We don want msys in the path so we have to build it manually
 set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
-cd %dirname64%
+cd %dirname%
 mkdir build-fmilib
 cd build-fmilib
 cmake -Wno-dev -G "MinGW Makefiles" -DFMILIB_FMI_PLATFORM="win64" ../

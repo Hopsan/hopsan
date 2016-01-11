@@ -7,12 +7,10 @@ defineReplace(setTBBWindowsPathInfo){
     dstDir = $$2
 
     #Set default tbb path alternatives, higher up is preferred
+    TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss
     contains(QMAKE_HOST.arch, x86_64){
-        #64 bit paths
+        # Fallback old OBSOLETE 64 bit paths
         TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss_x64
-    } else {
-        #32 bit paths
-        TBB_PATHS *= $${PWD}/../Dependencies/tbb41_20130613oss
     }
     #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
     TBB_PATH = $$selectPath($$externalSrc, $$TBB_PATHS, "tbb")

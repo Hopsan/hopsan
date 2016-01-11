@@ -170,11 +170,7 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
     QFileInfo fmuImportRoot(QString("%1/%2").arg(targetPath.c_str()).arg(fmuFileName));
     QFileInfo hppFileInfo(QDir(fmuImportRoot.absoluteFilePath()).relativeFilePath(hppFile));
 
-#ifdef _WIN64
-    QString fmiLibDir="/Dependencies/FMILibrary-2.0.1_x64/";
-#else
     QString fmiLibDir="/Dependencies/FMILibrary-2.0.1/";
-#endif
 
     QStringList cflags, lflags;
     cflags << QString("-I\"%1\"").arg(pGenerator->getHopsanRootPath()+fmiLibDir+"install/include/");

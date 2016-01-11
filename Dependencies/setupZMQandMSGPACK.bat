@@ -14,7 +14,6 @@ set zmqfilename=zeromq4-1-4.1.3.zip
 set zmqdirname=zeromq4-1-4.1.3
 
 REM Automatic code begins here
-set zmqdirname64=%zmqdirname%_x64
 
 REM Unpack or checkout
 echo.
@@ -22,14 +21,13 @@ echo ======================
 echo Unpack ZeroMQ
 echo ======================
 echo Removing old directories (if they exist)
-rd /s/q %msgpackdir%
-rd /s/q %cppzmqdir%
-rd /s/q %zmqdirname%
-rd /s/q %zmqdirname64%
+if exist %msgpackdir% rd /s/q %msgpackdir%
+if exist %cppzmqdir% rd /s/q %cppzmqdir%
+if exist %zmqdirname% rd /s/q %zmqdirname%
 mkdir %zmqdirname%
 mkdir %msgpackdir%
 mkdir %cppzmqdir%
-REM Unpack using tar
+REM Unpack 
 ..\ThirdParty\7z\7z.exe x %zmqfilename% -y > nul
 ..\ThirdParty\7z\7z.exe x %msgpackfile% -y > nul
 ..\ThirdParty\7z\7z.exe x %cppzmqfile% -y > nul
@@ -40,13 +38,6 @@ REM echo Patch libQWT
 REM echo ======================
 REM ..\ThirdParty\patch\doit.exe -p0 < %zmqfilename%.patch
 
-REM Copy to 64-bit dir
-echo.
-echo ======================
-echo Copying to %zmqdirname64%
-echo ======================
-robocopy /e /NFL /NDL /NJH /NJS /nc /ns /np  %zmqdirname% %zmqdirname64%
-
 REM Build
 echo.
 echo ======================
@@ -54,7 +45,7 @@ echo Building 64-bit ZeroMQ
 echo ======================
 call setHopsanBuildPaths.bat 0.7.x x64
 
-cd %zmqdirname64%
+cd %zmqdirname%
 bash.exe -c "./autogen.sh; ./configure --without-libsodium --host=x86_64-w64-mingw32; mingw32-make -j4"
 
 echo.
