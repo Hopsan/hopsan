@@ -68,7 +68,7 @@ Source: "{#MyFilesSource}\Scripts\*";  Excludes: "---*---";  DestDir: "{userdocs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"
-Name: "{group}\{cm:UserGuide,{#MyAppName}}"; Filename: "{app}\doc\user\html\index.html"
+Name: "{group}\{cm:UserGuide,{#MyAppName}}"; Filename: "{app}\doc\html\index.html"
 Name: "{group}\{cm:ProjectHomepage,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tasks: desktopicon
