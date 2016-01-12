@@ -1,24 +1,28 @@
 /*!
 \page page_setuplibrarydevelopmentenvironment How to setup the component library development environment
 
-To create your own Hopsan components (writing them as C++ code) you can either install the development environment including a compiler, or install the compiler manually and use whatever text/code editor that you like.
+To create your own Hopsan components (writing them as C++ code) you need to install the necessary compiler but you can use whatever code (text) editor that you want.
+An alternative is to use the full Hopsan development environment, including compiler and IDE.
+This guide describes the first simpler option. 
 
-If all that you want to do is (re)compile component libraries that are already written then use the second approach.
-The second approach is also recommended if you want to use some external automatic code generation tool or the HoLC program.
-It is also recommended if you only want to use features in Hopsan that require require a compiler to be installed
+You only need to install the compiler if:
+- You want to (re)compile component libraries that are already written.
+- You want to write a small library with only a few simple components.
+- You are not interested in debugging the code during simulation.
+- You want to use some external automatic code generation tool or the HoLC (Hopsan Library Creator) program.
+- You only want to use import/export features in Hopsan that require require a compiler (FMI requires this).
 
-The first approach is recommended if you want to write a lot of new/advanced code yourself.
+If you want to write a lot of new/advanced code yourself and use the debugger, then it is recommended that you install the full development environment.
 If you choose this approach, then follow the instructions on the \ref page_setupbuildenvironment page.
-__You only need to install the Qt Creator editor and libraries however.__
+__You only need to install the Qt Creator IDE and the Qt libraries.__ The external build tools may only be necessary if you want to recompile Hopsan itself.
 
 \section sec_installcompileronly_windows Installing the compiler only, on Microsoft Windows
-If you choose the second approach then follow this guide.
-<b>Installation Compiler Only for Hopsan 0.7.*:</b>
-1. Download "x86_64-4.9.2-release-posix-seh-rt_v3-rev1.7z" from http://downloads.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/4.9.2/threads-posix/seh/x86_64-4.9.2-release-posix-seh-rt_v3-rev1.7z
-2. Unzip the file (with 7-Zip) and copy the mingw64 directory to your desired location.
-3. In the HopsanGUI options choose your compiler path
+<b>Installing the compiler for 64-bit Hopsan 0.7.*:</b>
+-# You may need to install the 7-Zip program from http://www.7-zip.org to unpack the needed files.
+-# Download "x86_64-4.9.3-release-posix-seh-rt_v4-rev1.7z" from http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/4.9.3/threads-posix/seh/x86_64-4.9.3-release-posix-seh-rt_v4-rev1.7z
+-# Unpack to a directory of your choice, _Example:_ `C:\Qt\x86_64-4.9.3-release-posix-seh-rt_v4-rev1`
+-# In the HopsanGUI options, choose the path to the compiler, _Example:_ `C:\Qt\x86_64-4.9.3-release-posix-seh-rt_v4-rev1\mingw64\bin`
 
 \section sec_installcompileronly_linux Installing the compiler only, on GNU/Linux (*Ubuntu or Debian based systems)
-Install the compiler (gcc) from you package repository
-
+Install the compiler (GCC) and other tools from you package repository using: `sudo apt-get install build-essential`
 */
