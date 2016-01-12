@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="exampleComponentLib">
+  <!-- The "lib" element defines the name of the (.dll / .so / .dynlib) file, (without file extension) -->
+  <!-- Use the "debug_ext" attribute to define the optional debug extension, used in debug mode -->
+  <lib debug_ext="_d">exampleComponentLib</lib>
+  <!-- Use one or more "source" elements to define the files that should be compiled and linked into the library -->
+  <source>exampleComponentLib.cc</source>
+  <!-- The "buildflags" element can be used to specify optional compiler and linker flags necessary when compiling the library -->
+  <buildflags>
+    <!-- One or multiple "cflags" elements defines the compiler flags -->
+    <!-- One or multiple "lflags" elements defines the linker flags -->
+    <!-- use the "os" attribute to restrict the flag to a certain platform -->
+    <!-- Example:  
+    <cflags>-I./someLib/include</cflags>
+    <lflags>-L./someLib/bin -lsomeLib</lflags>
+    <lflags os="win64">-lWs2_32</lflags> -->
+  </buildflags> 
+  <!-- Use one "hopsanobjectappearance" element for every component description xml file -->
+  <!-- Note! If you write this file manually you do not need to add these, they are only used by the HoLC program -->
+  <hopsanobjectappearance>SignalComponents/MyExampleSignalSum.xml</hopsanobjectappearance>
+  <hopsanobjectappearance>HydraulicComponents/MyExampleConstantOrifice.xml</hopsanobjectappearance>
+  <hopsanobjectappearance>HydraulicComponents/MyExampleOrifice.xml</hopsanobjectappearance>
+  <hopsanobjectappearance>HydraulicComponents/MyExampleVolume.xml</hopsanobjectappearance>
+  <hopsanobjectappearance>HydraulicComponents/MyExampleVolume2.xml</hopsanobjectappearance>
+</hopsancomponentlibrary>
