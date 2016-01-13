@@ -146,6 +146,11 @@ namespace hopsan {
             // If data still remains (due to not reloading) then delete it
             deleteDataCurve();
         }
+
+        bool isObsolete() const
+        {
+            return true;
+        }
     };
 }
 
