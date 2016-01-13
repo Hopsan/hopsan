@@ -35,11 +35,6 @@ HEADERS +=  \
  $${PWD}/Electric/ElectricUsource.hpp \ 
  $${PWD}/Electric/ElectricVarResistor.hpp \ 
  $${PWD}/Electric/ElectricVoltageSourceQ.hpp \ 
- $${PWD}/Experimental/Experimental.h \ 
- $${PWD}/Experimental/Signal1DLookupTable.hpp \ 
- $${PWD}/Experimental/Signal1DPLOLookupTable.hpp \ 
- $${PWD}/Experimental/Signal2DLookupTable.hpp \ 
- $${PWD}/Experimental/Signal3DLookupTable.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydraulicCentrifugalPump.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydraulicCentrifugalPumpJ.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydroDynamicComponents.h \ 
@@ -191,6 +186,8 @@ HEADERS +=  \
  $${PWD}/Mechanic/Rotational/MechanicTorqueTransformer.hpp \ 
  $${PWD}/Mechanic/Rotational/MechanicTorsionalSpring.hpp \ 
  $${PWD}/Mechanic/Rotational/Rotational.h \ 
+ $${PWD}/Obsolete/Obsolete.h \ 
+ $${PWD}/Obsolete/SignalLookUpTable2D.hpp \ 
  $${PWD}/Pneumatic/Pneumatic.h \ 
  $${PWD}/Pneumatic/PneumaticMachine.hpp \ 
  $${PWD}/Pneumatic/PneumaticOrifice.hpp \ 
@@ -273,11 +270,14 @@ HEADERS +=  \
  $${PWD}/Signal/Navigation/SignalTimeAccelerator.hpp \ 
  $${PWD}/Signal/Navigation/SignalWaypoint.hpp \ 
  $${PWD}/Signal/Non-Linearities/Non-Linearities.h \ 
+ $${PWD}/Signal/Non-Linearities/Signal1DLookupTable.hpp \ 
+ $${PWD}/Signal/Non-Linearities/Signal1DPLOLookupTable.hpp \ 
+ $${PWD}/Signal/Non-Linearities/Signal2DLookupTable.hpp \ 
+ $${PWD}/Signal/Non-Linearities/Signal3DLookupTable.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalAdditiveNoise.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalDeadZone.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalDxSegare.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalHysteresis.hpp \ 
- $${PWD}/Signal/Non-Linearities/SignalLookUpTable2D.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalRateLimiter.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalSampleAndHold.hpp \ 
  $${PWD}/Signal/Non-Linearities/SignalSaturation.hpp \ 
@@ -350,7 +350,6 @@ SOURCES +=
 OTHER_FILES +=  \ 
  $${PWD}/Connectivity/Connectivity.cci \ 
  $${PWD}/Electric/Electric.cci \ 
- $${PWD}/Experimental/Experimental.cci \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydroDynamicComponents.cci \ 
  $${PWD}/Hydraulic/LinearActuators/LinearActuators.cci \ 
  $${PWD}/Hydraulic/MachineParts/MachineParts.cci \ 
@@ -368,6 +367,7 @@ OTHER_FILES +=  \
  $${PWD}/Hydraulic/Volumes&Lines/Volumes&Lines.cci \ 
  $${PWD}/Mechanic/Linear/Linear.cci \ 
  $${PWD}/Mechanic/Rotational/Rotational.cci \ 
+ $${PWD}/Obsolete/Obsolete.cci \ 
  $${PWD}/Pneumatic/Pneumatic.cci \ 
  $${PWD}/Signal/Animation/Animation.cci \ 
  $${PWD}/Signal/Arithmetics/Arithmetics.cci \ 
