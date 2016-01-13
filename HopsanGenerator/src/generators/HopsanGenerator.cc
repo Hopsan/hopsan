@@ -1100,11 +1100,12 @@ bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(QString tgtPath) const
     }
 
     printMessage("Copying HopsanCore dependency files...");
+    QDir root(mHopsanRootPath);
     QStringList src, include;
-    getHopsanCoreDependecyFiles(src, include);
+    getHopsanCoreDependecyFiles(mHopsanRootPath, src, include);
     Q_FOREACH(const QString &file, src+include)
     {
-        if(!copyFile(mHopsanRootPath+file, tgtPath+file))
+        if(!copyFile(file, tgtPath+root.relativeFilePath(file)))
         {
             return false;
         }

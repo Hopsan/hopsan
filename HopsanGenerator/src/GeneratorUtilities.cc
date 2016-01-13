@@ -558,8 +558,11 @@ bool verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVa
 
 
 
-
-void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files)
+//! @brief Find all files with given file extension recursively
+//! @param [in] path The root directory path for the search
+//! @param [in] ext The file extension to look for
+//! @param [in,out] rFiles A list of filenames to which the found results will be appended
+void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &rFiles)
 {
     QDir dir(path);
     QDirIterator iterator(dir.absolutePath(), QDirIterator::Subdirectories);
@@ -570,7 +573,7 @@ void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &f
         {
             QString fileName = iterator.filePath();
             if (fileName.endsWith("."+ext))
-                files.append(fileName);
+                rFiles.append(fileName);
         }
     }
 }
@@ -583,7 +586,8 @@ QStringList getHopsanCoreIncludePaths()
                     "componentLibraries/defaultLibrary";
     includePaths << "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/" <<
                     "Dependencies/rapidxml-1.13/" <<
-                    "Dependencies/IndexingCSVParser/";
+                    "Dependencies/IndexingCSVParser/" <<
+                    "Dependencies/libNumHop/libNumHop";
     return includePaths;
 }
 
@@ -949,21 +953,20 @@ bool copyFile(const QString &source, const QString &target, QString &rErrorMessa
     return true;
 }
 
-void getHopsanCoreDependecyFiles(QStringList &rSrcFiles, QStringList &rIncludeFiles)
+void getHopsanCoreDependecyFiles(const QString &hopsanRoot, QStringList &rSrcFiles, QStringList &rIncludeFiles)
 {
     rSrcFiles.clear();
     rIncludeFiles.clear();
-    rIncludeFiles << "Dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
-                     "Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp" <<
-                     "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp" <<
-                     "Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp" <<
-                     "Dependencies/rapidxml-1.13/rapidxml.hpp" <<
-                     "Dependencies/rapidxml-1.13/rapidxml_iterators.hpp" <<
-                     "Dependencies/rapidxml-1.13/rapidxml_print.hpp" <<
-                     "Dependencies/rapidxml-1.13/rapidxml_utils.hpp";
 
-    rSrcFiles << "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
-                 "Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/rapidxml-1.13", "hpp", rIncludeFiles);
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/libNumHop/libNumHop", "h", rIncludeFiles);
+    rIncludeFiles << hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
+                     hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp" <<
+                     hopsanRoot+"/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp";
+
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/libNumHop/libNumHop", "cc", rSrcFiles);
+    rSrcFiles << hopsanRoot+"/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
+                 hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 }
 
 QStringList listHopsanCoreSourceFiles(const QString rootPath)
