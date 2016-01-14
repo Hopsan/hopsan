@@ -53,6 +53,7 @@ You may need to install the 7-Zip program from http://www.7-zip.org to unpack th
 5. Configure a "Kit" (Combination of Qt version, Compiler and Debugger) under the Kits tab. \n
    Again! Choose a clever name. \n
    Choose Compiler, Debugger and Qt version in the drop down boxes. Make sure that the Qt mkspec: field is empty
+6. If you plan to use the debugger, you may need to go to Tools->Options->Debugger->GDB and add `handle SIGTRAP nostop print` under "Additional Startup Commands". This will prevent the debugger from stopping to often.
 
 \subsection sec_setupbuildenvironment_tools External Build Tools
 To build some of the dependencies some additional external build tools are required.
