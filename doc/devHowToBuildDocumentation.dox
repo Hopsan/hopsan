@@ -16,8 +16,8 @@ Open `doc/html/index.html` in a web browser after building.
 -# The latest stable version of graphviz (for cool graphs) can be downloaded here: http://www.graphviz.org/Download_windows.php
 -# A LaTeX package including dvipng (to generate png for latex equations), 
    We recommend: http://miktex.org/
--# You will also need Ghostscript \b 9.18 for formulas, install to default directory. `C:/ProgramFiles/gs/gs9.18` __or__ `C:/ProgramFiles (x86)/gs/gs9.18` \n
-   You must use 9.18 because paths are hard-coded in the buildDocumentation scripts, (you can set your global path as an alternative if you like some other version).
+-# You will also need Ghostscript __32-bit__ version __9.18__ for formulas, install to default directory. `C:/ProgramFiles/gs/gs9.18` __or__ `C:/ProgramFiles (x86)/gs/gs9.18` \n
+   You must use 9.18 because paths are hard-coded in the buildDocumentation scripts, (you can change the expected path in the script if you want to use some other version).
    You can find it here:  http://ghostscript.com/download/gsdnld.html
 
 To build or later rebuild the documentation, double click the buildDocumentation.bat or buildFullDocumentation.bat file.\n
