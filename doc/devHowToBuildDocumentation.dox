@@ -12,15 +12,16 @@ Open `doc/html/index.html` in a web browser after building.
 
 \section sec_howtobuilddocumentation_windows Install and build the documentation in Windows
 
--# The latest version of Doxygen can be downloaded here: http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
--# The latest stable version of graphviz (for cool graphs) can be downloaded here: http://www.graphviz.org/Download_windows.php
--# A LaTeX package including dvipng (to generate png for latex equations), 
+-# (Required) The latest version of Doxygen can be downloaded here: http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
+-# (Optional) A LaTeX package including dvipng (to generate png for latex equations), 
    We recommend: http://miktex.org/
--# You will also need Ghostscript __32-bit__ version __9.18__ for formulas, install to default directory. `C:/ProgramFiles/gs/gs9.18` __or__ `C:/ProgramFiles (x86)/gs/gs9.18` \n
-   You must use 9.18 because paths are hard-coded in the buildDocumentation scripts, (you can change the expected path in the script if you want to use some other version).
+-# (Optional) You will also need Ghostscript __32-bit__ version __9.18__ for formulas, install to default directory. `C:/ProgramFiles/gs/gs9.18` __or__ `C:/ProgramFiles (x86)/gs/gs9.18` \n
+   You must use 9.18 because paths are hard-coded in the buildDocumentation.bat script, (you can add new path settings in the script if you want to use a newer version).
    You can find it here:  http://ghostscript.com/download/gsdnld.html
+-# (Optional) The latest stable version of Graphviz (for cool graphs) can be downloaded here: http://www.graphviz.org/Download_windows.php \n
+   You must use 2.38 because paths are hard-coded in the buildDocumentation.bat script, (you can add new path settings in the script if you want to use a newer version).
 
-To build or later rebuild the documentation, double click the buildDocumentation.bat or buildFullDocumentation.bat file.\n
+To build or later rebuild the documentation, double click the __buildDocumentation.bat__ or __buildFullDocumentation.bat__ file.\n
 Open `doc/html/index.html` in a web browser after building.
 
 */
