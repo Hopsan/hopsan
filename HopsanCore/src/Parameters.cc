@@ -57,6 +57,7 @@ using namespace std;
 //! @param [in] rName The desired parameter name, e.g. m
 //! @param [in] rValue The value of the parameter, always a string
 //! @param [in] rDescription The description of the parameter e.g. Mass
+//! @param [in] rQuantity The physical quantity of the parameter e.g. Mass
 //! @param [in] rUnit The physical unit of the parameter e.g. kg
 //! @param [in] rType The type of the parameter e.g. double
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
@@ -234,7 +235,7 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         mDepthCounter = 0;
         return false;
     }
-    HOPSAN_UNUSED(ignoreMe);
+    //HOPSAN_UNUSED(ignoreMe);
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="conditional")))
     {
@@ -502,9 +503,10 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 //! @brief Add a new parameter
 //! @param [in] rName The desired parameter name, e.g. m
 //! @param [in] rValue The value of the parameter, always a string
-//! @param [in] rDescription The description of the parameter e.g. Mass, default: ""
-//! @param [in] rUnit The physical unit of the parameter e.g. kg, default: "0"
-//! @param [in] rType The type of the parameter e.g. double, default: ""
+//! @param [in] rDescription The description of the parameter e.g. Mass
+//! @param [in] rQuantity The physical quantity of the parameter e.g. mass
+//! @param [in] rUnit The physical unit of the parameter e.g. kg
+//! @param [in] rType The type of the parameter e.g. double
 //! @param [in] pData Only used by Components, system parameters don't use this, default: 0
 //! @param [in] force Should we force to add parameter even if it fails to evaluate
 //! @param [in] conditions Conditions for a conditional constant parameter

@@ -479,11 +479,10 @@ void Component::addConditionalConstant(const HString &rName, const HString &rDes
     registerConditionalParameter(rName, rDescription, rConditions, rData);
 }
 
-///@{
 //! @brief Add (register) a constant parameter with a default value to the component
 //! @param [in] rName The name of the constant
 //! @param [in] rDescription The description of the constant
-//! @param [in] rUnit The unit of the constant value
+//! @param [in] rQuantityOrUnit The Quantity or Unit of the constant value
 //! @param [in] defaultValue Default constant value
 //! @param [in] rData A reference to the data variable
 //! @todo Using a reference is not that clear, we should use a ptr instead
@@ -496,6 +495,16 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
     rData = defaultValue;
     registerParameter(rName, rDescription, quantity, baseunit, rData);
 }
+
+///@{
+//! @brief Add (register) a constant parameter with a default value to the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] defaultValue Default constant value
+//! @param [in] rData A reference to the data variable
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData)
 {

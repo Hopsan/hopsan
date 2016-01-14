@@ -128,10 +128,10 @@ void FirstOrderTransferFunction::initializeValues(double u0, double y0)
 
 //! @brief Setup the number of backup steps to remember (size of the backup buffer)
 //! @param[in] nSteps The number of steps to remember
-void FirstOrderTransferFunction::setBackupLength(size_t nStep)
+void FirstOrderTransferFunction::setBackupLength(size_t nSteps)
 {
-    mBackupU.initialize(nStep, mDelayedU);
-    mBackupY.initialize(nStep, mDelayedY);
+    mBackupU.initialize(nSteps, mDelayedU);
+    mBackupY.initialize(nSteps, mDelayedY);
 }
 
 

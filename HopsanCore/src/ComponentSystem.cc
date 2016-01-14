@@ -2017,7 +2017,7 @@ bool ComponentSystem::evaluateNumHopScriptRecursively()
 //! @brief Interprets and evaluates (runs) a numhop scripts
 //! @param[in] rScript The script string
 //! @param[in] printOutput Toggle whether to print output
-//! @param[out] The output string to print to, (if printing activated)
+//! @param[out] rOutput The output string to print to, (if printing activated)
 //! @returns true if no errors occurred, false otherwise
 bool ComponentSystem::runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput)
 {

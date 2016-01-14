@@ -327,8 +327,8 @@ void LoadExternal::getLoadedLibNames(std::vector<HString> &rLibNames)
 
 
 //! @brief Returns library path (to dll or so file) for a component type
-//! @param typeName Type name to look for
-//! @param libPath Reference to string where lib path is stored
+//! @param [in] rTypeName Type name to look for
+//! @param [out] rLibPath Reference to string where lib path is stored
 void LoadExternal::getLibPathByTypeName(const HString &rTypeName, HString &rLibPath)
 {
     LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.begin();

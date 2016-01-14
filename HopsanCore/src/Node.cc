@@ -116,7 +116,7 @@ const HString &Node::getNiceName() const
 //! @param [in] id This is the ENUM data id
 //! @param [in] rName The variable name
 //! @param [in] rShortname The short variable name
-//! @param [in] rUnit The variable unit
+//! @param [in] rQuantityOrUnit The quantity or unit of the variable
 //! @param [in] vartype The type of the variable
 void Node::setDataCharacteristics(const size_t id, const HString &rName, const HString &rShortname, const HString &rQuantityOrUnit, const NodeDataVariableTypeEnumT vartype)
 {
@@ -178,8 +178,8 @@ bool Node::getSignalQuantityModifyable() const
 }
 
 
-//! @brief This function gives you the data Id for a names data variable
-//! @param [in] rQuantity The data quantity
+//! @brief This function gives you the data Id for a named data variable
+//! @param [in] rName The data name
 //! @return The Id, -1 if requested data name is not found
 int Node::getDataIdFromName(const HString &rName) const
 {

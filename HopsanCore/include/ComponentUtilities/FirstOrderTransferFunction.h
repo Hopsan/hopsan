@@ -44,7 +44,7 @@ namespace hopsan {
     public:
         void initialize(double timestep, double num[2], double den[2], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
         void initializeValues(double u0, double y0);
-        void setBackupLength(size_t nStep);
+        void setBackupLength(size_t nSteps);
         void setMinMax(double min, double max);
         void setNum(double num[2]);
         void setDen(double den[2]);

@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   NodeRWHelpfuncs.h
+//! @file   NodeRWHelpfuncs.hpp
 //! @author peter.nordin@liu.se
 //! @date   2015-06-25
 //! @brief Contains help functions for more convenient read and write access to nodes

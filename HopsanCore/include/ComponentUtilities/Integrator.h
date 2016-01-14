@@ -57,6 +57,7 @@ public:
     }
 
     //! @brief Updates the integrator one timestep and returns the new value
+    //! @param[in] u New input value
     inline double update(const double u)
     {
         //Bilinear transform is used
@@ -90,10 +91,10 @@ public:
 
     //! @brief Setup the number of backup steps to remember (size of the backup buffer)
     //! @param[in] nSteps The number of steps to remember
-    void setBackupLength(int nStep)
+    void setBackupLength(int nSteps)
     {
-        mBackupU.initialize(nStep, mDelayU);
-        mBackupY.initialize(nStep, mDelayY);
+        mBackupU.initialize(nSteps, mDelayU);
+        mBackupY.initialize(nSteps, mDelayY);
     }
 
     //! @brief Restore the backup at the given step
