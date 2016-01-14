@@ -1255,10 +1255,22 @@ bool VariableTableWidget::setAliasNames()
 
 bool VariableTableWidget::focusNextPrevChild(bool next)
 {
-    bool retval = QTableWidget::focusNextPrevChild(next);
+    int col_prev = currentColumn();
+    int row_prev = currentRow();
+
+    bool retval = TableWidgetTotalSize::focusNextPrevChild(next);
 
     int col = currentColumn();
     int row = currentRow();
+
+    // Make shure we actually changed cell or code below will get stuck in infinate loop
+    //! @todo this is a strange bug, whne one of the buttons have been cliked and kaybord focus not changed to one of the other cell widgets, the current index will not advance here, so we treat it as a failure to advance
+    //! @todo If retval above is true we would expect current column or row to be higher then previous
+    retval = retval && ( (col_prev != col) || (row_prev != row) );
+    if (row_prev == row && col_prev == col)
+    {
+        qDebug() << "row: " << row_prev << " " << row << "  col: " << col_prev << " " << col << "  retval: " << retval;
+    }
 
     //Skip non-editable columns and separator rows
     if(columnSpan(row,0)>2 && next && row != rowCount()-1)
@@ -1272,7 +1284,7 @@ bool VariableTableWidget::focusNextPrevChild(bool next)
         setCurrentCell(row,col);
     }
 
-    while(!(columnSpan(row,0)>2) && (col == Name || col == Description || col == Unit || col == NumCols))
+    while(!(columnSpan(row,0)>2) && retval && (col == Name || col == Description || col == Unit || col == NumCols))
     {
         retval = focusNextPrevChild(next);
         col = currentColumn();
@@ -1289,7 +1301,7 @@ bool VariableTableWidget::focusNextPrevChild(bool next)
     else if(currentColumn() == Value)
     {
         ParameterValueSelectionWidget *pParWidget = qobject_cast<ParameterValueSelectionWidget*>(pIndexWidget);
-        if(pParWidget)
+        if(pParWidget && pParWidget->getValueEditPtr())
         {
             pParWidget->getValueEditPtr()->setFocus();
         }
@@ -1303,7 +1315,10 @@ bool VariableTableWidget::focusNextPrevChild(bool next)
     else if(currentColumn() == ShowPort)
     {
         HideShowPortWidget *pPortWidget = qobject_cast<HideShowPortWidget*>(pIndexWidget);
-        pPortWidget->getCheckBoxPtr()->setFocus();
+        if(pPortWidget && pPortWidget->getCheckBoxPtr())
+        {
+            pPortWidget->getCheckBoxPtr()->setFocus();
+        }
     }
     else
     {
