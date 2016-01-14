@@ -139,7 +139,7 @@ bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvalu
     HString oldValue = mParameterValue;
     mParameterValue = rValue;
     HString evalResult = rValue;
-    success = evaluate(evalResult, this);
+    success = evaluate(evalResult);
     if(!success)
     {
         mParameterValue = oldValue;
@@ -226,7 +226,7 @@ bool ParameterEvaluator::refreshParameterValueText()
 //!
 //! This function is used by Parameters
 //! @see evaluate()
-bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe)
+bool ParameterEvaluator::evaluate(HString &rResult)
 {
     ++mDepthCounter;
     if (mDepthCounter > 1000)
@@ -235,7 +235,6 @@ bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe
         mDepthCounter = 0;
         return false;
     }
-    //HOPSAN_UNUSED(ignoreMe);
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="conditional")))
     {
@@ -694,26 +693,21 @@ bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HS
 //! @param [out] rEvaluatedParameterValue The result of the evaluation
 //! @param [in] rType The type of how the parameter should be interpreted
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, ParameterEvaluator *ignoreMe)
+bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
     bool success = false;
     // Try our own parameters
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
-        if ( (mParameters[i]->getName() == rName) &&
-             (mParameters[i]->getType() == rType) &&
-             (mParameters[i] != ignoreMe) )
+        if ( (mParameters[i]->getName() == rName) && (mParameters[i]->getType() == rType) )
         {
-            success = mParameters[i]->evaluate(rEvaluatedParameterValue, ignoreMe);
+            success = mParameters[i]->evaluate(rEvaluatedParameterValue);
         }
     }
     if(!success)
     {
         // Try one of our system parent component parameters
-        if(mParentComponent && mParentComponent->getSystemParent())
-        {
-            success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(rName, rEvaluatedParameterValue , rType);
-        }
+        success = evaluateInSystemParent(rName, rEvaluatedParameterValue, rType);
     }
     return success;
 }

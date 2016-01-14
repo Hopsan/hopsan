@@ -54,7 +54,7 @@ public:
     bool setParameter(const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
                       const HString &rType, ParameterEvaluator **pNeedEvaluation=0, bool force=false);
 
-    bool evaluate(HString &rResult, ParameterEvaluator *ignoreMe=0);
+    bool evaluate(HString &rResult);
     bool evaluate();
     bool refreshParameterValueText();
 
@@ -107,7 +107,7 @@ public:
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
     void* getParameterDataPtr(const HString &rName);
 
-    bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, ParameterEvaluator *ignoreMe=0);
+    bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
     bool evaluateParameters();
     bool refreshParameterValueText(const HString &rParameterName);
 
