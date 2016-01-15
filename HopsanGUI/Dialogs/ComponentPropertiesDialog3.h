@@ -180,16 +180,18 @@ private slots:
     void clearLogData();
 };
 
-class PlotRelatedWidget : public QWidget
+class PlotSettingsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PlotRelatedWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+    PlotSettingsWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+    QLineEdit* plotLabel();
 private slots:
     void invertPlot(bool tf);
     void setPlotLabel(QString label);
 private:
     ModelObject *mpModelObject;
+    QLineEdit *mpPlotLabel;
     QString mVariablePortDataName, mOriginalPlotLabel;
     bool mOrigInverted;
 

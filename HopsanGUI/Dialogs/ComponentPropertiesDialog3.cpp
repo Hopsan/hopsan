@@ -1255,22 +1255,37 @@ bool VariableTableWidget::setAliasNames()
 
 bool VariableTableWidget::focusNextPrevChild(bool next)
 {
-    int col_prev = currentColumn();
-    int row_prev = currentRow();
+    QWidget* pPrevWidget = indexWidget(currentIndex());
+    QTableWidgetItem* pPrevItem=currentItem();
+    if (focusWidget() == this)
+    {
+        if (pPrevWidget)
+        {
+            pPrevWidget->setFocus();
+        }
+    }
 
-    bool retval = TableWidgetTotalSize::focusNextPrevChild(next);
+    bool retval = true;
+    QWidget* pCurrentWidget = pPrevWidget;
+    QTableWidgetItem* pNewItem=pPrevItem;
+    int ctr=0;
+    while (retval && (pPrevWidget==pCurrentWidget) && (pPrevItem==pNewItem) )
+    {
+        retval = TableWidgetTotalSize::focusNextPrevChild(next);
+        pCurrentWidget = indexWidget(currentIndex());
+        pNewItem = currentItem();
+        ctr++;
+        // Sometimes the focusNextPrevChild returns true but our table index has not changed
+        // if that happens 10 times in a row we abort with failure, else we would get stuck in endless loops/recursion in this function
+        if (ctr > 10)
+        {
+            retval = false;
+            break;
+        }
+    }
 
     int col = currentColumn();
     int row = currentRow();
-
-    // Make shure we actually changed cell or code below will get stuck in infinate loop
-    //! @todo this is a strange bug, whne one of the buttons have been cliked and kaybord focus not changed to one of the other cell widgets, the current index will not advance here, so we treat it as a failure to advance
-    //! @todo If retval above is true we would expect current column or row to be higher then previous
-    retval = retval && ( (col_prev != col) || (row_prev != row) );
-    if (row_prev == row && col_prev == col)
-    {
-        qDebug() << "row: " << row_prev << " " << row << "  col: " << col_prev << " " << col << "  retval: " << retval;
-    }
 
     //Skip non-editable columns and separator rows
     if(columnSpan(row,0)>2 && next && row != rowCount()-1)
@@ -1284,42 +1299,56 @@ bool VariableTableWidget::focusNextPrevChild(bool next)
         setCurrentCell(row,col);
     }
 
-    while(!(columnSpan(row,0)>2) && retval && (col == Name || col == Description || col == Unit || col == NumCols))
-    {
-        retval = focusNextPrevChild(next);
-        col = currentColumn();
-        row = currentRow();
-    }
-
-    QModelIndex idx = currentIndex();
-    QWidget *pIndexWidget = this->indexWidget(idx);
+    // Refresh if we changed rows
+    col = currentColumn();
+    row = currentRow();
+    pCurrentWidget = indexWidget(currentIndex());
 
     if(row == 0)
     {
-        return retval;
+        return false;
     }
-    else if(currentColumn() == Value)
+    else if(col == Value)
     {
-        ParameterValueSelectionWidget *pParWidget = qobject_cast<ParameterValueSelectionWidget*>(pIndexWidget);
+        ParameterValueSelectionWidget *pParWidget = qobject_cast<ParameterValueSelectionWidget*>(pCurrentWidget);
         if(pParWidget && pParWidget->getValueEditPtr())
         {
             pParWidget->getValueEditPtr()->setFocus();
         }
     }
-    else if(currentColumn() == Quantity)
-    {
-        //! @todo quantitys?
+    //! @todo quantity input?
+//    else if(currentColumn() == Quantity)
+//    {
 //        PlotScaleSelectionWidget *pScaleWidget = qobject_cast<PlotScaleSelectionWidget*>(pIndexWidget);
 //        pScaleWidget->getPlotScaleEditPtr()->setFocus();
-    }
-    else if(currentColumn() == ShowPort)
+//    }
+    else if(col == PlotSettings)
     {
-        HideShowPortWidget *pPortWidget = qobject_cast<HideShowPortWidget*>(pIndexWidget);
+        PlotSettingsWidget *pPlotSettingsWidget = qobject_cast<PlotSettingsWidget*>(pCurrentWidget);
+        if(pPlotSettingsWidget && pPlotSettingsWidget->plotLabel())
+        {
+            pPlotSettingsWidget->plotLabel()->setFocus();
+        }
+    }
+    else if(col == ShowPort)
+    {
+        HideShowPortWidget *pPortWidget = qobject_cast<HideShowPortWidget*>(pCurrentWidget);
         if(pPortWidget && pPortWidget->getCheckBoxPtr())
         {
             pPortWidget->getCheckBoxPtr()->setFocus();
         }
     }
+    // If we are at any of these columns we should skip ahead (focusNext or focusPrev), since they do not support input
+    else if (col == Name || col == Description || col == Unit || col == Quantity || col == NumCols)
+    {
+        while(retval && (col == Name || col == Description || col == Unit || col == Quantity || col == NumCols))
+        {
+            retval = focusNextPrevChild(next);
+            col = currentColumn();
+            row = currentRow();
+        }
+    }
+    // This will trigger for all other colums (ordinary table items)
     else
     {
         this->setFocus();
@@ -1413,7 +1442,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     // Set invert plot check box
     if (variametertype != Constant)
     {
-        QWidget *pPlotWidget = new PlotRelatedWidget(rData, mpModelObject, this);
+        QWidget *pPlotWidget = new PlotSettingsWidget(rData, mpModelObject, this);
         setIndexWidget(model()->index(row,PlotSettings), pPlotWidget);
     }
     else
@@ -2166,7 +2195,7 @@ void QuantitySelectionWidget::createQuantitySelectionMenu()
     }
 }
 
-PlotRelatedWidget::PlotRelatedWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent)
+PlotSettingsWidget::PlotSettingsWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent)
     : QWidget(pParent)
 {
     mpModelObject = pModelObject;
@@ -2180,22 +2209,27 @@ PlotRelatedWidget::PlotRelatedWidget(const CoreVariameterDescription &rData, Mod
     QCheckBox *pInverCheckbox = new QCheckBox(this);
     pInverCheckbox->setToolTip("Invert plot");
     pInverCheckbox->setChecked(mOrigInverted);
-    QLineEdit *pLabelEdit = new QLineEdit(mOriginalPlotLabel,this);
-    pLabelEdit->setFrame(false);
-    pLabelEdit->setToolTip("Custom label");
+    mpPlotLabel = new QLineEdit(mOriginalPlotLabel,this);
+    mpPlotLabel->setFrame(false);
+    mpPlotLabel->setToolTip("Custom label");
     pLayout->addWidget(pInverCheckbox);
-    pLayout->addWidget(pLabelEdit);
+    pLayout->addWidget(mpPlotLabel);
 
     connect(pInverCheckbox, SIGNAL(toggled(bool)), this, SLOT(invertPlot(bool)));
-    connect(pLabelEdit, SIGNAL(textChanged(QString)), this, SLOT(setPlotLabel(QString)));
+    connect(mpPlotLabel, SIGNAL(textChanged(QString)), this, SLOT(setPlotLabel(QString)));
 }
 
-void PlotRelatedWidget::invertPlot(bool tf)
+QLineEdit *PlotSettingsWidget::plotLabel()
+{
+    return mpPlotLabel;
+}
+
+void PlotSettingsWidget::invertPlot(bool tf)
 {
     mpModelObject->setInvertPlotVariable(mVariablePortDataName, tf);
 }
 
-void PlotRelatedWidget::setPlotLabel(QString label)
+void PlotSettingsWidget::setPlotLabel(QString label)
 {
     mpModelObject->setVariablePlotLabel(mVariablePortDataName, label);
 }
