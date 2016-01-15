@@ -121,13 +121,14 @@ class taskSimSlave
 {
 public:
     //! @brief Constructor for simulation thread class.
+    //! @param pSystem Pointer to top level component system
     //! @param sVector Vector with signal components executed from this thread
     //! @param cVector Vector with C-type components executed from this thread
     //! @param qVector Vector with Q-type components executed from this thread
     //! @param nVector Vector with nodes which is logged from this thread
     //! @param startTime Start time of simulation
     //! @param timeStep Step time of simulation
-    //! @param stopTime Stop Time of simulation
+    //! @param numSimSteps Number of simulation steps to run
     //! @param nThreads Number of threads used in simulation
     //! @param threadID Number of this thread
     //! @param *pBarrier_S Pointer to barrier before signal components
@@ -238,23 +239,25 @@ class taskSimMaster
 public:
 
     //! @brief Constructor for master simulation thread class.
+    //! @param pSystem Pointer to the top level component system
     //! @param sVector Vector with signal components executed from this thread
     //! @param cVector Vector with C-type components executed from this thread
     //! @param qVector Vector with Q-type components executed from this thread
     //! @param nVector Vector with nodes which is logged from this thread
-    //! @param *pSimtime Pointer to the simulation time in the component system
+    //! @param *pSimTimes Pointer to the simulation time variables in the component systems
     //! @param startTime Start time of simulation
     //! @param timeStep Step time of simulation
-    //! @param stopTime Stop Time of simulation
+    //! @param numSimSteps Number of steps to simulate
     //! @param nThreads Number of threads used in simulation
     //! @param threadID Number of this thread
     //! @param *pBarrier_S Pointer to barrier before signal components
     //! @param *pBarrier_C Pointer to barrier before C-type components
     //! @param *pBarrier_Q Pointer to barrier before Q-type components
     //! @param *pBarrier_N Pointer to barrier before node logging
-    taskSimMaster(ComponentSystem *pSystem, vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector, vector<double *> pSimTimes,
-                  double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
-                  BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
+    taskSimMaster(ComponentSystem *pSystem, vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector,
+                  vector<Node*> nVector, vector<double *> pSimTimes, double startTime, double timeStep, size_t numSimSteps,
+                  size_t nThreads, size_t threadID, BarrierLock *pBarrier_S, BarrierLock *pBarrier_C,
+                  BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
         mpSystem = pSystem;
         mVectorS = sVector;
@@ -424,7 +427,8 @@ class taskSimWholeSystems
 public:
 
     //! @brief Constructor for master simulation thread class.
-    //! @param pSystem Pointer to the system to simulate
+    //! @param systemPtrs Vector with pointers to the systems to simulate
+    //! @param stopTime Stop time of simulation
     taskSimWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime)
     {
         mSystemPtrs = systemPtrs;

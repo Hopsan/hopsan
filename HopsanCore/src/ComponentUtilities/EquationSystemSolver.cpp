@@ -56,6 +56,7 @@ using namespace hopsan;
 
 //! @brief Constructor for equation system solver utility
 //! @param pParentComponent Pointer to parent component
+//! @param n Number of states
 EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n)
 {
     mpParentComponent = pParentComponent;
@@ -73,6 +74,12 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n)
 }
 
 
+//! @brief Constructor for equation system solver utility with additional arguments
+//! @param pParentComponent Pointer to parent component
+//! @param n Number of states
+//! @param pJacobian Pointer to Jacobian matrix
+//! @param pEquations Pointer to vector with equations (RHS)
+//! @param pVariables Pointer to vector with state variables
 EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n, Matrix *pJacobian, Vec *pEquations, Vec *pVariables)
 {
     mpParentComponent = pParentComponent;
@@ -146,11 +153,7 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
 
 
 
-//! @brief Solves a system of equations
-//! @param jacobian Jacobian matrix
-//! @param equations Vector of system equations
-//! @param variables Vector of state variables
-//! @param iteration How many times the solver has been executed before in the same time step
+//! @brief Solves a system of equations. Requires pre-defined pointers to jacobian, equations and state variables.
 void EquationSystemSolver::solve()
 {
     //Stop simulation if LU decomposition failed due to singularity
@@ -172,7 +175,11 @@ void EquationSystemSolver::solve()
 
 
 
-
+//! @brief Constructor for solver utility using numerical integration methods
+//! @param pParentComponent Pointer to parent component
+//! @param pStateVars Pointer to vector with state variables
+//! @param tolerance Tolerance (for Newton-Rhapson with implicit methods)
+//! @param maxIter Maximum number of iterations with Newton-Rhapson
 NumericalIntegrationSolver::NumericalIntegrationSolver(Component *pParentComponent, std::vector<double> *pStateVars, double tolerance, size_t maxIter)
 {
     mpParentComponent = pParentComponent;
@@ -184,6 +191,7 @@ NumericalIntegrationSolver::NumericalIntegrationSolver(Component *pParentCompone
 }
 
 
+//! @brief Returns a list of available integration methods
 const std::vector<HString> NumericalIntegrationSolver::getAvailableSolverTypes()
 {
     std::vector<HString> availableSolvers;
@@ -197,6 +205,8 @@ const std::vector<HString> NumericalIntegrationSolver::getAvailableSolverTypes()
 }
 
 
+//! @brief Solves a system using numerical integration
+//! @param solverType Integration method to use
 void NumericalIntegrationSolver::solve(const int solverType)
 {
     //DEBUG
@@ -231,6 +241,7 @@ void NumericalIntegrationSolver::solve(const int solverType)
 }
 
 
+//! @brief Solves a system using forward Euler method
 void NumericalIntegrationSolver::solveForwardEuler()
 {
     for(int i=0; i<mnStateVars; ++i)
@@ -242,6 +253,7 @@ void NumericalIntegrationSolver::solveForwardEuler()
 }
 
 
+//! @brief Solves a system using midpoint method
 void NumericalIntegrationSolver::solveMidpointMethod()
 {
     std::vector<double> k1, k2;
@@ -276,6 +288,7 @@ void NumericalIntegrationSolver::solveMidpointMethod()
 }
 
 
+//! @brief Solves a system using implicit Euler
 void NumericalIntegrationSolver::solveBackwardEuler()
 {
     std::vector<double> yorg;
@@ -331,9 +344,7 @@ void NumericalIntegrationSolver::solveBackwardEuler()
 }
 
 
-
-
-
+//! @brief Solves a system using trapezoid rule of integration
 void NumericalIntegrationSolver::solveTrapezoidRule()
 {
     //Store original state variables = y(t)
@@ -398,6 +409,7 @@ void NumericalIntegrationSolver::solveTrapezoidRule()
 }
 
 
+//! @brief Solves a system using Runge-Kutta (RK4)
 void NumericalIntegrationSolver::solveRungeKutta()
 {
     std::vector<double> k1, k2, k3, k4;
@@ -456,6 +468,7 @@ void NumericalIntegrationSolver::solveRungeKutta()
 }
 
 
+//! @brief Solves a system using Dormand-Prince
 void NumericalIntegrationSolver::solveDormandPrince()
 {
     std::vector<double> k1, k2, k3, k4, k5, k6;
@@ -545,7 +558,7 @@ void NumericalIntegrationSolver::solveDormandPrince()
 }
 
 
-
+//! @brief Solves a system using trapezoid rule with variable step size (experimental, do not use)
 void NumericalIntegrationSolver::solvevariableTimeStep()
 {
     //Store original state variables = y(t)
