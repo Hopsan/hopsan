@@ -1432,15 +1432,17 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
 void ContainerObject::copySelected(CopyStack *xmlStack)
 {
     // Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
-    //if(gpMainWindow->mpMessageWidget->textEditHasFocus() || gpTerminalWidget->mpConsole->hasFocus())
-    //    return;
-    //! @todo FIXA /Peter hmm kanske redan fixat av nedanstående
-    // Do not copy if we do not have focus
     if (!getContainedScenePtr()->hasFocus())
     {
         return;
     }
 
+    // Check if we have any selected object, prevent clearing copy stack if nothing selected
+    bool haveSelected = !mSelectedModelObjectsList.empty() || !mSelectedSubConnectorsList.empty() || !mSelectedWidgetsList.empty();
+    if (!haveSelected)
+    {
+        return;
+    }
 
     QDomElement *copyRoot;
     if(xmlStack == 0)
