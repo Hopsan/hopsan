@@ -112,6 +112,9 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     mpExternalSystemWarningWidget->setLayout(pExternalSystemLayout);
     mpExternalSystemWarningWidget->hide();
 
+    mpLockedSystemWarningWidget = new QLabel("<font color='darkred'>Locked Subsystem (editing disabled)</font>", this);
+    mpLockedSystemWarningWidget->hide();
+
     createOrDestroyToplevelSystem(true);
 
     mpGraphicsView  = new GraphicsView(this);
@@ -153,6 +156,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
 //    tabLayout->addWidget(pBalls, 1,1);
 //#endif
     tabLayout->addWidget(mpExternalSystemWarningWidget,3,0);
+    tabLayout->addWidget(mpLockedSystemWarningWidget,3,0);
     //this->setLayout(tabLayout);
 
     mpGraphicsView->centerView();
@@ -743,20 +747,21 @@ void ModelWidget::exportModelParameters()
 }
 
 //! @todo this should not be in the model widget, it should be in the container
-void ModelWidget::setExternalSystem(bool isExternal)
+void ModelWidget::handleSystemLock(bool isExternal, bool hasLocalLock)
 {
     // If this is an external system and we have not already fully locked editing, then lock it
-    if (isExternal && !isEditingFullyDisabled())
+    if ((isExternal || hasLocalLock) && !isEditingFullyDisabled())
     {
         lockModelEditingFull(true);
     }
     // Else if this is not an external system but we have already locked it, then unlock
-    else if (!isExternal && isEditingFullyDisabled())
+    else if (!(isExternal && hasLocalLock) && isEditingFullyDisabled())
     {
         lockModelEditingFull(false);
     }
 
     mpExternalSystemWarningWidget->setVisible(isExternal);
+    mpLockedSystemWarningWidget->setVisible(!isExternal && hasLocalLock);
 }
 
 

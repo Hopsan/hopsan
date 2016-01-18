@@ -122,7 +122,7 @@ public slots:
     void save();
     void saveAs();
     void exportModelParameters();
-    void setExternalSystem(bool isExternal);
+    void handleSystemLock(bool isExternal, bool hasLocalLock);
     void lockModelEditingFull(bool lock);
     void lockModelEditingLimited(bool lock);
     void openAnimation();
@@ -158,6 +158,7 @@ private:
 
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWarningWidget;
+    QWidget *mpLockedSystemWarningWidget;
 
     SystemContainer *mpToplevelSystem=nullptr;
     LogDataHandler2 *mpLogDataHandler;

@@ -109,7 +109,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             QGraphicsView::contextMenuEvent(event);
             QMenu menu(this);
             QAction *addTextBoxAction = menu.addAction("Add Text Box Widget");
-            addTextBoxAction->setDisabled(mpParentModelWidget->isEditingLimited());
+            addTextBoxAction->setDisabled(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked());
 
             QCursor cursor;
             QAction *selectedAction = menu.exec(cursor.pos());
@@ -149,7 +149,7 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
-    if(mpParentModelWidget->isEditingLimited())
+    if(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked())
         return;
 
     //A HMF file was dropped in the graphics view, so try to open the model
@@ -623,7 +623,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     emit unHighlightAll();
 
-    if(!mpParentModelWidget->isEditingLimited())
+    if(!(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked()))
     {
         mLeftMouseButtonPressed = (event->button() == Qt::LeftButton);
 

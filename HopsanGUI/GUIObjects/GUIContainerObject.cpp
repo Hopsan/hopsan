@@ -1419,6 +1419,15 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
 //! @see paste()
 void ContainerObject::cutSelected(CopyStack *xmlStack)
 {
+    // Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
+    // Also Check if we have any selected object, prevent clearing copy stack if nothing selected
+    // Also Check if this system is locked then copy should not be allowed
+    bool haveSelected = !mSelectedModelObjectsList.empty() || !mSelectedSubConnectorsList.empty() || !mSelectedWidgetsList.empty();
+    if (!getContainedScenePtr()->hasFocus() || !haveSelected || isLocallyLocked() || getModelLockLevel()>NotLocked)
+    {
+        return;
+    }
+
     this->copySelected(xmlStack);
     this->mpUndoStack->newPost(UNDO_CUT);
     emit deleteSelected();
@@ -1432,14 +1441,10 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
 void ContainerObject::copySelected(CopyStack *xmlStack)
 {
     // Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
-    if (!getContainedScenePtr()->hasFocus())
-    {
-        return;
-    }
-
-    // Check if we have any selected object, prevent clearing copy stack if nothing selected
+    // Also Check if we have any selected object, prevent clearing copy stack if nothing selected
+    // Also Check if this system is locked then copy should not be allowed
     bool haveSelected = !mSelectedModelObjectsList.empty() || !mSelectedSubConnectorsList.empty() || !mSelectedWidgetsList.empty();
-    if (!haveSelected)
+    if (!getContainedScenePtr()->hasFocus() || !haveSelected || isLocallyLocked() || getModelLockLevel()>NotLocked)
     {
         return;
     }
@@ -1523,6 +1528,13 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
 //! @see copySelected()
 void ContainerObject::paste(CopyStack *xmlStack)
 {
+    // Do not allow past if model or container is locked
+    // Do not paste if some other widget has focus (eg. terminal)
+    if (!getContainedScenePtr()->hasFocus() || isLocallyLocked() || getModelLockLevel()>NotLocked)
+    {
+        return;
+    }
+
     mpUndoStack->newPost(UNDO_PASTE);
     mpModelWidget->hasChanged();
 
@@ -2847,8 +2859,8 @@ void ContainerObject::enterContainer()
 
     refreshInternalContainerPortGraphics();
 
-    mpModelWidget->setExternalSystem((this->isExternal() && this != mpModelWidget->getTopLevelSystemContainer()) ||
-                                     this->isAncestorOfExternalSubsystem());
+    mpModelWidget->handleSystemLock((this->isExternal() && this != mpModelWidget->getTopLevelSystemContainer()) || this->isAncestorOfExternalSubsystem(),
+                                    isLocallyLocked());
 }
 
 //! @brief Exit a container object and make its the view represent its parents contents.
@@ -2863,8 +2875,8 @@ void ContainerObject::exitContainer()
     mpModelWidget->getGraphicsView()->setContainerPtr(mpParentContainerObject);
     mpModelWidget->getGraphicsView()->setViewPort(mpParentContainerObject->getGraphicsViewport());
 
-    mpModelWidget->setExternalSystem((mpParentContainerObject->isExternal() && mpParentContainerObject != mpModelWidget->getTopLevelSystemContainer()) ||
-                                     mpParentContainerObject->isAncestorOfExternalSubsystem());
+    mpModelWidget->handleSystemLock((mpParentContainerObject->isExternal() && mpParentContainerObject != mpModelWidget->getTopLevelSystemContainer()) || mpParentContainerObject->isAncestorOfExternalSubsystem(),
+                                    mpParentContainerObject->isLocallyLocked());
 
     // Disconnect this system and connect parent system with undo and redo actions
     this->unmakeMainWindowConnectionsAndRefresh();
