@@ -59,6 +59,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "SymHop.h"
+#include "CoreUtilities/SimulationHandler.h"
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -743,15 +744,35 @@ void HcomHandler::createCommands()
     setCmd.description.append("Sets Hopsan preferences");
     setCmd.help.append(" Usage: set [preference] [value]\n");
     setCmd.help.append("  Available preferences:\n");
-    setCmd.help.append("   multicore       [on/off]\n");
-    setCmd.help.append("   threads         [number]\n");
-    setCmd.help.append("   cachetodisk     [on/off]\n");
-    setCmd.help.append("   generationlimit [number]\n");
-    setCmd.help.append("   samples         [number]");
-    setCmd.help.append("   undo            [on/off]");
-    setCmd.help.append("   backup          [on/off]");
+    setCmd.help.append("   multicore        [on/off]\n");
+    setCmd.help.append("   threads          [number]\n");
+    setCmd.help.append("   cachetodisk      [on/off]\n");
+    setCmd.help.append("   generationlimit  [number]\n");
+    setCmd.help.append("   samples          [number]\n");
+    setCmd.help.append("   undo             [on/off]\n");
+    setCmd.help.append("   backup           [on/off]\n");
+    setCmd.help.append("   progressbar      [on/off]\n");
+    setCmd.help.append("   progressbarstep  [number]");
     setCmd.fnc = &HcomHandler::executeSetCommand;
     mCmdList << setCmd;
+
+    HcomCommand getCmd;
+    getCmd.cmd = "get";
+    getCmd.description.append("Shows current Hopsan preferences");
+    getCmd.help.append(" Usage: get [preference]\n");
+    getCmd.help.append("  No argument prints all preferences.\n");
+    getCmd.help.append("  Available preferences:\n");
+    getCmd.help.append("   multicore      \n");
+    getCmd.help.append("   threads        \n");
+    getCmd.help.append("   cachetodisk    \n");
+    getCmd.help.append("   generationlimit\n");
+    getCmd.help.append("   samples        \n");
+    getCmd.help.append("   undo           \n");
+    getCmd.help.append("   backup         \n");
+    getCmd.help.append("   progressbar    \n");
+    getCmd.help.append("   progressbarstep\n");
+    getCmd.fnc = &HcomHandler::executeGetCommand;
+    mCmdList << getCmd;
 
     HcomCommand saplCmd;
     saplCmd.cmd = "sapl";
@@ -3429,6 +3450,139 @@ void HcomHandler::executeSetCommand(const QString cmd)
     else
     {
         HCOMERR("Unknown command.");
+    }
+}
+
+void HcomHandler::executeGetCommand(const QString cmd)
+{
+    QStringList splitCmd = cmd.split(" ");
+    if(splitCmd.size() != 1 && splitCmd.size() != 0)
+    {
+        HCOMERR("Wrong number of arguments");
+        return;
+    }
+    QString pref = "";
+    bool all=false;
+    if(splitCmd[0] != "")
+    {
+        pref = splitCmd[0];
+    }
+    else
+    {
+        all=true;
+    }
+
+    if(all || pref == "multicore")
+    {
+        QString output = "Multi-threaded simulation: ";
+        if(getConfigPtr()->getBoolSetting(CFG_MULTICORE))
+            output.append("ON");
+        else
+            output.append("OFF");
+        HCOMPRINT(output);
+    }
+    if(all || pref == "threads")
+    {
+        QString output = "Simulation threads:        ";
+        output.append(QString::number(getConfigPtr()->getIntegerSetting(CFG_NUMBEROFTHREADS))+"");
+        HCOMPRINT(output);
+    }
+    if(all || pref == "algorithm")
+    {
+        QString output = "Parallel algorithm:        ";
+
+        switch (getConfigPtr()->getParallelAlgorithm())
+        {
+        case hopsan::OfflineSchedulingAlgorithm :
+            output.append("pre-simulation scheduling");
+            break;
+        case hopsan::TaskPoolAlgorithm :
+            output.append("task pool scheduling");
+            break;
+        case hopsan::TaskStealingAlgorithm :
+            output.append("task-stealing");
+            break;
+        case hopsan::ParallelForAlgorithm :
+            output.append("fork-join scheduling");
+            break;
+        case hopsan::ParallelForTbbAlgorithm :
+            output.append("fork-join scheduling (TBB)");
+            break;
+        default :
+            output.append("unknown ("+QString::number(getConfigPtr()->getParallelAlgorithm())+")");
+            break;
+        }
+        HCOMPRINT(output);
+    }
+    if(all || pref == "cachetodisk")
+    {
+        QString output = "Cache log data to disk:    ";
+        if(getConfigPtr()->getBoolSetting(CFG_CACHELOGDATA))
+            output.append("ON");
+        else
+            output.append("OFF");
+        HCOMPRINT(output);
+    }
+    if(all || pref == "generationlimit")
+    {
+        QString output = "Generation limit:          ";
+        output.append(QString::number(getConfigPtr()->getIntegerSetting(CFG_GENERATIONLIMIT))+"");
+        HCOMPRINT(output);
+    }
+    if(all || pref == "samples")
+    {
+        if(!mpModel && !all)
+        {
+            HCOMERR("Setting is model-specific, but no model is open");
+            return;
+        }
+        if(mpModel)
+        {
+            QString output = "Number of log samples:     ";
+            output.append(QString::number(mpModel->getViewContainerObject()->getNumberOfLogSamples())+"");
+            HCOMPRINT(output);
+        }
+    }
+    if(all || pref == "undo")
+    {
+        if(!mpModel && !all)
+        {
+            HCOMERR("Setting is model-specific, but no model is open");
+            return;
+        }
+        if(mpModel)
+        {
+            QString output = "Undo history:              ";
+            if(mpModel->getViewContainerObject()->isUndoEnabled())
+                output.append("ON");
+            else
+                output.append("OFF");
+            HCOMPRINT(output);
+        }
+    }
+    if(all || pref == "backup")
+    {
+        QString output = "Auto-backup:               ";
+        if(getConfigPtr()->getBoolSetting(CFG_AUTOBACKUP))
+            output.append("ON");
+        else
+            output.append("OFF");
+        HCOMPRINT(output);
+    }
+    if(all || pref == "progressbar")
+    {
+        QString output = "Progres bar:               ";
+        if(getConfigPtr()->getBoolSetting(CFG_PROGRESSBAR))
+            output.append("ON");
+        else
+            output.append("OFF");
+        HCOMPRINT(output);
+    }
+    if(all || pref == "progressbarstep")
+    {
+        QString output = "Progress bar step size:    ";
+        output.append(QString::number(getConfigPtr()->getIntegerSetting(CFG_PROGRESSBARSTEP))+"");
+        HCOMPRINT(output);
     }
 }
 

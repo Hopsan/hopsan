@@ -176,6 +176,7 @@ private:
     void executeDisableLoggingCommand(const QString cmd);
     void executeEnableLoggingCommand(const QString cmd);
     void executeSetCommand(const QString cmd);
+    void executeGetCommand(const QString cmd);
     void executeSaveToPloCommand(const QString cmd);
     void executeLoadVariableCommand(const QString cmd);
     void executeSaveParametersCommand(const QString cmd);
