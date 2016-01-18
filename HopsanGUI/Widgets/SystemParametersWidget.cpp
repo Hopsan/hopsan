@@ -22,18 +22,8 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
-/*
- * HopsanGUI
- * Fluid and Mechatronic Systems, Department of Management and Engineering, Linköping University
- * Main Authors 2009-2010:  Robert Braun, Björn Eriksson, Peter Nordin
- * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
- */
-
 //!
 //! @file   SystemParametersWidget.cpp
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-10-04
-//!
 //! @brief Contains a System parameter widget class
 //!
 //$Id$
@@ -219,17 +209,23 @@ QVariant SysParamTableModel::headerData(int section, Qt::Orientation orientation
     return QVariant();
 }
 
-bool SysParamTableModel::removeRows(int row, int count, const QModelIndex &/*parent*/)
+bool SysParamTableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
-    beginRemoveRows(QModelIndex(), row, row+count-1);
-
-    for (int i=row; i<row+count; ++i)
+    Q_UNUSED(parent);
+    // Prevent removal if model is locked
+    if ( mpContainerObject && (mpContainerObject->getModelLockLevel()==NotLocked) && !mpContainerObject->isLocallyLocked() )
     {
-        removeParameter(row);
-    }
+        beginRemoveRows(QModelIndex(), row, row+count-1);
 
-    endRemoveRows();
-    return true;
+        for (int i=row; i<row+count; ++i)
+        {
+            removeParameter(row);
+        }
+
+        endRemoveRows();
+        return true;
+    }
+    return false;
 }
 
 bool SysParamTableModel::insertRows(int row, int count, const QModelIndex &/*parent*/)
@@ -242,6 +238,12 @@ bool SysParamTableModel::insertRows(int row, int count, const QModelIndex &/*par
 
 bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
 {
+    // Prevent setting or adding parameter if system is locked
+    if (mpContainerObject && ((mpContainerObject->getModelLockLevel()>NotLocked) || mpContainerObject->isLocallyLocked()) )
+    {
+        return false;
+    }
+
     bool isOk;
     QString errorString;
     QStringList stringList;
@@ -281,7 +283,7 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
         isOk = false;
     }
 
-    //! @todo if Ok then we should update or emit data changed or something
+    //! @todo if OK then we should update or emit data changed or something
     return isOk;
 }
 
@@ -330,7 +332,8 @@ void SysParamTableModel::setContainer(ContainerObject *pContainerObject)
 
 void SysParamTableModel::removeParameter(const int row)
 {
-    if (mpContainerObject)
+    // Prevent removal if model or system is locked
+    if ( mpContainerObject && (mpContainerObject->getModelLockLevel()==NotLocked) && !mpContainerObject->isLocallyLocked() )
     {
         mpContainerObject->getCoreSystemAccessPtr()->removeSystemParameter(mParameterData[row].mName);
         mParameterData.remove(row);
@@ -605,7 +608,11 @@ void SystemParametersWidget::removeSelected()
     QModelIndexList idxList = mpSysParamTableView->selectionModel()->selectedRows();
     while (idxList.size() > 0)
     {
-        mpSysParamTableView->model()->removeRows(idxList[0].row(), 1);
+        bool rc = mpSysParamTableView->model()->removeRows(idxList[0].row(), 1);
+        if (!rc)
+        {
+            break;
+        }
         idxList = mpSysParamTableView->selectionModel()->selectedRows();
     }
 }
