@@ -146,15 +146,16 @@ public:
     void registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rValue);
     virtual void unRegisterParameter(const HString &rName);
     bool hasParameter(const HString &rName) const;
-    const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
     void getParameterNames(std::vector<HString> &rParameterNames);
+    const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
     const ParameterEvaluator *getParameter(const HString &rName);
     void getParameterValue(const HString &rName, HString &rValue);
-    double evaluateDoubleParameter(const HString &rName, bool &rEvalOK);
     void* getParameterDataPtr(const HString &rName);
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
-    void evaluateParameters();
     bool checkParameters(HString &errParName);
+    void evaluateParameters();
+    bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
+    double evaluateDoubleParameter(const HString &rName, bool &rEvalOK);
 
     // Start values
     void setDefaultStartValue(Port* pPort, const size_t idx, const double value);

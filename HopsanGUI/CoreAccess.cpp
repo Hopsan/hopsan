@@ -1272,14 +1272,28 @@ hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString po
 }
 
 
-bool CoreSystemAccess::setSystemParameter(const CoreParameterData &rParameter, bool force)
+bool CoreSystemAccess::setSystemParameter(const CoreParameterData &rParameter, bool doAdd, bool force)
 {
-    return mpCoreComponentSystem->setSystemParameter(rParameter.mName.toStdString().c_str(),
-                                                     rParameter.mValue.toStdString().c_str(),
-                                                     rParameter.mType.toStdString().c_str(),
-                                                     rParameter.mDescription.toStdString().c_str(),
-                                                     rParameter.mQuantity.toStdString().c_str(),
-                                                     force);
+    if (doAdd)
+    {
+        return mpCoreComponentSystem->setOrAddSystemParameter(
+                    rParameter.mName.toStdString().c_str(),
+                    rParameter.mValue.toStdString().c_str(),
+                    rParameter.mType.toStdString().c_str(),
+                    rParameter.mDescription.toStdString().c_str(),
+                    rParameter.mQuantity.toStdString().c_str(),
+                    force);
+    }
+    else
+    {
+        return mpCoreComponentSystem->setSystemParameter(
+                    rParameter.mName.toStdString().c_str(),
+                    rParameter.mValue.toStdString().c_str(),
+                    rParameter.mType.toStdString().c_str(),
+                    rParameter.mDescription.toStdString().c_str(),
+                    rParameter.mQuantity.toStdString().c_str(),
+                    force);
+    }
 }
 
 

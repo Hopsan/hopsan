@@ -212,7 +212,6 @@ bool ComponentSystem::wasSimulationAborted()
     return mStopSimulation;
 }
 
-
 //! @brief Adds a search path that can be used by its components to look for external files, e.g. area curves
 //! @param [in] rSearchPath The search path to be added
 void ComponentSystem::addSearchPath(const HString &rSearchPath)
@@ -238,14 +237,8 @@ void ComponentSystem::addSearchPath(const HString &rSearchPath)
 }
 
 
-//! @todo this one (if it should even exist) should be in component as parameter map is there, best is if we can code around having one
-ParameterEvaluatorHandler &ComponentSystem::getSystemParameters()
-{
-    return *mpParameters;
-}
-
-//!
-bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool force)
+//! @brief Set, add or change a system parameter including all meta data
+bool ComponentSystem::setOrAddSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool force)
 {
     bool success;
     HString quantity, bu;
@@ -273,6 +266,18 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
     }
 
     return success;
+}
+
+
+//! @brief Set or change a system parameter including all meta data
+bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool force)
+{
+    if(mpParameters->hasParameter(rName))
+    {
+        return setOrAddSystemParameter(rName, rValue, rType, rDescription, rUnitOrQuantity, force);
+    }
+    addErrorMessage("No such system parameter: "+rName);
+    return false;
 }
 
 void ComponentSystem::unRegisterParameter(const HString &rName)

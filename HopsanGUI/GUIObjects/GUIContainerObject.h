@@ -114,6 +114,7 @@ public:
 
     // Parameter Methods
     virtual bool setParameterValue(QString name, QString value, bool force=false);
+    virtual bool setParameter(const CoreParameterData &rParameter, bool force=false);
     virtual bool setOrAddParameter(const CoreParameterData &rParameter, bool force=false);
     virtual bool renameParameter(const QString oldName, const QString newName);
 

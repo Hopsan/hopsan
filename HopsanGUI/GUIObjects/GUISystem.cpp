@@ -1163,7 +1163,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
         while (!xmlSubObject.isNull())
         {
-            loadSystemParameter(xmlSubObject, hmfFormatVersion, this);
+            loadSystemParameter(xmlSubObject, true, hmfFormatVersion, this);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
         }
 
@@ -1278,7 +1278,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
         while (!xmlSubObject.isNull())
         {
-            loadSystemParameter(xmlSubObject, hmfFormatVersion, this);
+            loadSystemParameter(xmlSubObject, false, hmfFormatVersion, this);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
         }
 

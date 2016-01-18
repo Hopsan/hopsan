@@ -742,7 +742,7 @@ bool ParameterEvaluatorHandler::evaluateInSystemParent(const HString &rName, HSt
     // Try one of our system parent component parameters
     if(mParentComponent && mParentComponent->getSystemParent())
     {
-        return mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(rName, rEvaluatedParameterValue , rType);
+        return mParentComponent->getSystemParent()->evaluateParameter(rName, rEvaluatedParameterValue , rType);
     }
     return false;
 }

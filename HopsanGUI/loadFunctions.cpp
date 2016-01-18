@@ -164,9 +164,8 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
 
 
 
-//! @brief xml version
+//! @brief Loads a component Parameter Value (no metadata is loaded/expected, for ordinary components)
 //! @todo Make undo settings work or remove it
-//! @todo Make loadParameterValue and loadSystemParameter same function
 void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT undoSettings)
 {
     Q_UNUSED(undoSettings)
@@ -382,7 +381,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                     while (!xmlParameter.isNull())
                     {
                         ContainerObject* pCont = dynamic_cast<ContainerObject*>(pObj);
-                        loadSystemParameter(xmlParameter, "1000", pCont);
+                        loadSystemParameter(xmlParameter, false, "1000", pCont);
                         xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
                     }
                 }
@@ -500,8 +499,10 @@ ModelObject* loadContainerPortObject(QDomElement &rDomElement, ContainerObject* 
 
 //! @brief Loads a SystemParameter from the supplied load data
 //! @param[in] rDomElement The SystemParameter DOM element to load from
+//! @param[in] doAdd Should loading add the system parameter
+//! @param[in] hmfVersion The HopsanModelFile version used during loading
 //! @param[in] pContainer The Container Object to load into
-void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, ContainerObject* pContainer)
+void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmfVersion, ContainerObject* pContainer)
 {
     QString name = rDomElement.attribute(HMF_NAMETAG);
     QString value = rDomElement.attribute(HMF_VALUETAG);
@@ -517,21 +518,16 @@ void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, Con
 
     // Core will take care of deciding about quantity or unit, leave unit empty
     CoreParameterData paramData(name, value, type, quantityORunit, "", description);
-    pContainer->setOrAddParameter(paramData, true);
+    if (doAdd)
+    {
+        pContainer->setOrAddParameter(paramData, true);
+    }
+    else
+    {
+        pContainer->setParameter(paramData, true);
+    }
 }
 
-////! @brief Loads a FavouriteParameter from the supplied load data
-////! @param[in] rDomElement The FavoriteVariableLoadData DOM element to load from
-////! @param[in] pContainer The Container Object to load into (Must be a system)
-//void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
-//{
-//    QString componentName = rDomElement.attribute("componentname");
-//    QString portName = rDomElement.attribute("portname");
-//    QString dataName = rDomElement.attribute("dataname");
-//    QString dataUnit = rDomElement.attribute("dataunit");
-
-//    dynamic_cast<SystemContainer *>(pContainer)->getLogDataHandler()->setFavoriteVariable(componentName, portName, dataName, dataUnit);
-//}
 
 //! @todo We should remove Plot from the name as this is supposed to be usable for more then plotting only
 void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)

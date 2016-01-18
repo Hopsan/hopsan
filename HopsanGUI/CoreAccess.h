@@ -271,7 +271,7 @@ public:
     void getSystemParameters(QVector<CoreParameterData> &rParameterDataVec);
     void getSystemParameter(const QString name, CoreParameterData &rParameterData);
     QString getSystemParameterValue(const QString name);
-    bool setSystemParameter(const CoreParameterData &rParameter, bool force=false);
+    bool setSystemParameter(const CoreParameterData &rParameter, bool doAdd, bool force=false);
     bool setSystemParameterValue(QString name, QString value, bool force=false);
     bool hasSystemParameter(const QString name);
     bool renameSystemParameter(const QString oldName, const QString newName);

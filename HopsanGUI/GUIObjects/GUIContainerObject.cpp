@@ -974,7 +974,6 @@ QList<Widget *> ContainerObject::getSelectedGUIWidgetPtrs()
 
 
 //! @brief Set a system parameter value
-//! @todo how will this work in groups
 bool ContainerObject::setParameterValue(QString name, QString value, bool force)
 {
     const bool rc =  this->getCoreSystemAccessPtr()->setSystemParameterValue(name, value, force);
@@ -986,9 +985,21 @@ bool ContainerObject::setParameterValue(QString name, QString value, bool force)
     return rc;
 }
 
+bool ContainerObject::setParameter(const CoreParameterData &rParameter, bool force)
+{
+    const bool rc = this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, false, force);
+    emit checkMessages();
+    if (rc)
+    {
+        hasChanged();
+        emit systemParametersChanged();
+    }
+    return rc;
+}
+
 bool ContainerObject::setOrAddParameter(const CoreParameterData &rParameter, bool force)
 {
-    const bool rc = this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, force);
+    const bool rc = this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, true, force);
     emit checkMessages();
     if (rc)
     {

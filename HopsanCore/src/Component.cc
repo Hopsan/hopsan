@@ -154,6 +154,11 @@ void Component::evaluateParameters()
     mpParameters->evaluateParameters();
 }
 
+bool Component::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
+{
+    return mpParameters->evaluateParameter(rName, rEvaluatedParameterValue, rType);
+}
+
 
 bool Component::checkParameters(HString &errParName)
 {
