@@ -567,7 +567,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             }
             else
             {
-                pHtmlView->load(QUrl::fromLocalFile(mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath()));
+                pHtmlView->load(QUrl::fromLocalFile(path));
             }
             pHelpLayout->addWidget(pHtmlView);
         }
@@ -593,7 +593,21 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         for (auto &link : links)
         {
             QString path = mpModelObject->getAppearanceData()->getBasePath()+link;
-            QString linkstr = QString("External document: <a href=\"file:///%1\">%2</a>").arg(path).arg(link);
+            QString linkstr;
+            QFileInfo fi(path);
+            if (fi.isFile())
+            {
+                linkstr = QString("External document: <a href=\"file:///%1\">%2</a>").arg(path).arg(link);
+            }
+            else
+            {
+                QString link2 = link;
+                if (!(link2.startsWith("http://") || link2.startsWith("https://")))
+                {
+                    link2.prepend("http://");
+                }
+                linkstr = QString("External document: <a href=\"%1\">%2</a>").arg(link2).arg(link2);
+            }
             QLabel *pHelpLink = new QLabel(linkstr,this);
             pHelpLink->setOpenExternalLinks(true);
             pHelpLayout->addWidget(pHelpLink);

@@ -71,6 +71,7 @@
 #define CAF_HELPPICTURE "picture"
 #define CAF_HELPLINK "link"
 #define CAF_HELPHTML "html"
+#define CAF_HELPMARKDOWN "md"
 
 
 #define CAF_PARAMETERS "defaultparameters"
@@ -813,6 +814,12 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         if (!xmlHelpHtml.isNull())
         {
             mHelpHtmlPath = xmlHelpHtml.text();
+        }
+
+        QDomElement xmlHelpMD = xmlHelp.firstChildElement(CAF_HELPMARKDOWN);
+        if (!xmlHelpMD.isNull())
+        {
+            mHelpHtmlPath = xmlHelpMD.text();
         }
     }
 

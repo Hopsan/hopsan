@@ -254,7 +254,10 @@ Information about the component for the graphical interface, such as icon, port 
       <text>Help Text</text>
       <picture>helpPicture.svg</picture>
       <link>externalHelpDocumentation.pdf</link>
+      <!-- Note! You can have multiple links (can point local files or web) -->
       <html>./HydraulicLaminarOrifice.html</html>
+      <md>./HydraulicLaminarOrifice.md</md>
+      <!-- Note! You can have either html or markdown (will generate html on-the-fly -->
     </help>
     <ports>
       <port name="P1" x="1.0" y="0.5" a="0" visible="true"/>
