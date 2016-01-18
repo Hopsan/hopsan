@@ -3326,25 +3326,28 @@ void HcomHandler::executeSetCommand(const QString cmd)
     }
     else if(pref == "threads")
     {
-        bool ok;
-        int nThreads = value.toInt(&ok);
-        if(!ok)
+        evaluateExpression(value, Scalar);
+        if(mAnsType != Scalar)
         {
             HCOMERR("Unknown value.");
             return;
         }
-        getConfigPtr()->setIntegerSetting(CFG_NUMBEROFTHREADS, nThreads);
+        else if(mAnsScalar < 0)
+        {
+            HCOMERR("Number of simulation threads must be a positive integer.");
+            return;
+        }
+        getConfigPtr()->setIntegerSetting(CFG_NUMBEROFTHREADS, mAnsScalar);
     }
     else if(pref == "algorithm")
     {
-        bool ok;
-        int algorithm = value.toInt(&ok);
-        if(!ok)
+        evaluateExpression(value, Scalar);
+        if(mAnsType != Scalar)
         {
             HCOMERR("Unknown value.");
             return;
         }
-        getConfigPtr()->setParallelAlgorithm(algorithm);
+        getConfigPtr()->setParallelAlgorithm(mAnsScalar);
     }
     else if(pref == "cachetodisk")
     {
@@ -3356,25 +3359,33 @@ void HcomHandler::executeSetCommand(const QString cmd)
     }
     else if(pref == "generationlimit")
     {
-        bool ok;
-        int limit = value.toInt(&ok);
-        if(!ok)
+        evaluateExpression(value, Scalar);
+        if(mAnsType != Scalar)
         {
             HCOMERR("Unknown value.");
             return;
         }
-        getConfigPtr()->setIntegerSetting(CFG_GENERATIONLIMIT, limit);
+        else if(mAnsScalar < 0)
+        {
+            HCOMERR("Generation limit must be a positive integer.");
+            return;
+        }
+        getConfigPtr()->setIntegerSetting(CFG_GENERATIONLIMIT, mAnsScalar);
     }
     else if(pref == "samples")
     {
-        bool ok;
-        int samples = value.toInt(&ok);
-        if(!ok)
+        evaluateExpression(value, Scalar);
+        if(mAnsType != Scalar)
         {
             HCOMERR("Unknown value.");
             return;
         }
-        mpModel->getViewContainerObject()->setNumberOfLogSamples(samples);
+        else if(mAnsScalar < 0)
+        {
+            HCOMERR("Number of log samples must be a positive integer.");
+            return;
+        }
+        mpModel->getViewContainerObject()->setNumberOfLogSamples(mAnsScalar);
     }
     else if(pref == "undo")
     {
@@ -3391,6 +3402,29 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
         }
         getConfigPtr()->setBoolSetting(CFG_AUTOBACKUP, value=="on");
+    }
+    else if(pref == "progressbar")
+    {
+        if(value != "on" && value != "off")
+        {
+            HCOMERR("Unknown value.");
+        }
+        getConfigPtr()->setBoolSetting(CFG_PROGRESSBAR, value=="on");
+    }
+    else if(pref == "progressbarstep")
+    {
+        evaluateExpression(value, Scalar);
+        if(mAnsType != Scalar)
+        {
+            HCOMERR("Unknown value.");
+            return;
+        }
+        else if(mAnsScalar < 0)
+        {
+            HCOMERR("Progress bar step size must be a positive integer.");
+            return;
+        }
+        getConfigPtr()->setIntegerSetting(CFG_PROGRESSBARSTEP, mAnsScalar);
     }
     else
     {
