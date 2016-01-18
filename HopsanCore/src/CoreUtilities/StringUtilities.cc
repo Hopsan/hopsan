@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   StringUtilities.cpp
+//! @file   StringUtilities.cc
 //! @author <peter.nordin@liu.se>
 //! @date   2013-03-12
 //!
