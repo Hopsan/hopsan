@@ -324,17 +324,17 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
             str.replace("^+", "^");
             str.replace("&&", "{");
             str.replace("||", "}");
-            str.replace("!=", "$"); //! @todo Ugly solutions to rename like this
+            str.replace("!=", "~"); //! @todo Ugly solutions to rename like this
             str.replace("==", "!"); //! @todo Ugly solutions to rename like this
             str.replace(">=", "?");
-            str.replace("<=", "|");
+            str.replace("<=", "¤");
         }
         while(str.contains("++")) { str.replace("++", "+"); }
         while(str.contains("+-+-")) { str.replace("+-+-","+-"); }
         //while(str.contains("-(")) { str.replace("-(", "(-"); }
         while(str.startsWith("+")) { str = str.right(str.size()-1); }
         while(str.contains("=+")) { str.replace("=+", "="); }
-        while(str.contains("$+")) { str.replace("$+", "$"); }
+        while(str.contains("~+")) { str.replace("~+", "~"); }
         while(str.contains("!+")) { str.replace("!+", "!"); }
         while(str.contains("{+")) { str.replace("{+", "{"); }
         while(str.contains("}+")) { str.replace("}+", "}"); }
@@ -382,7 +382,7 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
                     symbols.append(str.mid(start, i-start+1));
                 }
             }
-            else if(var && !(str.at(i).isLetterOrNumber() || str.at(i) == '_' || str.at(i) == '.' || str.at(i) == ':'  || str.at(i) == '@' ||
+            else if(var && !(str.at(i).isLetterOrNumber() || str.at(i) == '|' || str.at(i) == '_' || str.at(i) == '.' || str.at(i) == ':'  || str.at(i) == '@' ||
                              (i>1 && str.size() > i+2 && str.at(i) == '+' && str.at(i+1) == '-' && str.at(i-1) == 'e' && str.at(i+2).isNumber()) ||
                              (i>0 && str.size() > i+1 && str.at(i) == '-' && str.at(i-1) == '+' && str.at(i-2) == 'e' && str.at(i+1).isNumber()) ||
                              (i>0 && str.size() > i+1 && str.at(i) == '+' && str.at(i-1) == 'e' && str.at(i+1).isNumber())))     //End of variable, append it to symbols (last two checks makes sure that Xe+Y and Xe-Y are treated as one symbol)
@@ -412,13 +412,13 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
     //Find top level symbol, set correct string and type, generate children
     if(splitAtSeparator("=", symbols, simplifications)) {}                        //Assignment
     else if(splitAtSeparator("!", symbols, simplifications)) {}                  //Logical equality (replace with function)
-    else if(splitAtSeparator("$", symbols, simplifications)) {}                  //Logical inequality (replace with function)
+    else if(splitAtSeparator("~", symbols, simplifications)) {}                  //Logical inequality (replace with function)
     else if(splitAtSeparator("{", symbols, simplifications)) {}                  //Logical and (replace with function)
     else if(splitAtSeparator("}", symbols, simplifications)) {}                  //Logical or (replace with function)
     else if(splitAtSeparator(">", symbols, simplifications)) {}                  //Logical greater than (replace with function)
     else if(splitAtSeparator("?", symbols, simplifications)) {}                  //Logical greater than or equal (replace with function)
     else if(splitAtSeparator("<", symbols, simplifications)) {}                  //Logical smaller than (replace with function)
-    else if(splitAtSeparator("|", symbols, simplifications)) {}                  //Logical smaller than or equal (replace with function)
+    else if(splitAtSeparator("¤", symbols, simplifications)) {}                  //Logical smaller than or equal (replace with function)
     else if(splitAtSeparator("+", symbols, simplifications)) {}                  //Addition
     else if(splitAtSeparator("*", symbols, simplifications)) {}                  //Multiplication/division
     else if(splitAtSeparator("^", symbols, simplifications)) {}                  //Power
@@ -2974,13 +2974,13 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             mArguments.append(Expression(left));
             mArguments.append(Expression(right));
         }
-        else if(sep == "$")
+        else if(sep == "~")
         {
             QStringList left, right;
             bool onRight=false;
             for(int i=0; i<subSymbols.size(); ++i)
             {
-                if(subSymbols[i] == "$")
+                if(subSymbols[i] == "~")
                 {
                     onRight = true;
                 }
@@ -3136,13 +3136,13 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             mArguments.append(Expression(left));
             mArguments.append(Expression(right));
         }
-        else if(sep == "|")
+        else if(sep == "¤")
         {
             QStringList left, right;
             bool onRight=false;
             for(int i=0; i<subSymbols.size(); ++i)
             {
-                if(subSymbols[i] == "|")
+                if(subSymbols[i] == "¤")
                 {
                     onRight = true;
                 }
