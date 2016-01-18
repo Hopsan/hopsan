@@ -35,7 +35,9 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QFileDialog>
-#include <QInputDialog>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QDoubleSpinBox>
 
 #include "global.h"
 #include "common.h"
@@ -787,33 +789,62 @@ void GraphicsView::exportToPDF()
 //! Exports the graphics view to PNG
 void GraphicsView::exportToPNG()
 {
-    //Ask user for resolution scaling
-    bool ok;
-    double res = QInputDialog::getDouble(gpMainWindowWidget, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1, &ok);
+    QGraphicsScene *pScene = this->getContainerPtr()->getContainedScenePtr();
+    pScene->clearSelection();
 
-    //Abort if user pressed cancel
-    if(!ok)
+    //Ask user for resolution scaling
+    QDialog ed(gpMainWindowWidget);
+    ed.setWindowTitle(tr("Export to PNG"));
+    QGridLayout *pLayout = new QGridLayout();
+    ed.setLayout(pLayout);
+    pLayout->addWidget(new QLabel(QString("Original size:  %1 x %2")
+                                  .arg(pScene->itemsBoundingRect().width())
+                                  .arg(pScene->itemsBoundingRect().height())), 0, 0, 1, 2);
+    pLayout->addWidget(new QLabel("Resolution scale:", &ed), 1, 0, 1, 1);
+    QDoubleSpinBox *pScaleEdit = new QDoubleSpinBox(&ed);
+    pScaleEdit->setRange(0.1, 10.0);
+    pScaleEdit->setDecimals(3);
+    pScaleEdit->setValue(1.0);
+    pLayout->addWidget(pScaleEdit, 1, 1, 1, 1);
+    pLayout->addWidget(new QLabel("Use white background:", &ed), 2, 0, 1, 1);
+    QCheckBox *pWhiteBG = new QCheckBox(&ed);
+    pLayout->addWidget(pWhiteBG, 2, 1, 1, 1);
+    auto *pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &ed);
+    pLayout->addWidget(pButtonBox, 3, 0, 1, 2);
+    connect(pButtonBox, SIGNAL(accepted()), &ed, SLOT(accept()));
+    connect(pButtonBox, SIGNAL(rejected()), &ed, SLOT(reject()));
+
+    //! @todo we really need a help class to build this kind of simple grid based dialog boxes
+
+    // Wait for input, Abort if user pressed cancel
+    if (ed.exec() != QDialog::Accepted)
         return;
 
-    //Open save dialog to get the file name
-    QString fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", gpConfig->getStringSetting(CFG_MODELGFXDIR),
-        "Portable Network Graphics (*.png)");
+    double res = pScaleEdit->text().toDouble();
 
-    //Attempt to save if user did select a filename
+    // Open save dialog to get the file name
+    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gpConfig->getStringSetting(CFG_MODELGFXDIR), "Portable Network Graphics (*.png)");
+
+    // Attempt to save if user did select a filename
     if(!fileName.isEmpty())
     {
         QFileInfo file(fileName);
         gpConfig->setStringSetting(CFG_MODELGFXDIR, file.absolutePath());
 
-        QGraphicsScene *pScene = this->getContainerPtr()->getContainedScenePtr();
-        pScene->clearSelection();
         pScene->setSceneRect(pScene->itemsBoundingRect());
         qDebug() << "itemsBoundingRect(): " << pScene->itemsBoundingRect().width() << "*" << pScene->itemsBoundingRect().height();
         qDebug() << "Desired size: " << pScene->sceneRect().width()*res << "*" << pScene->sceneRect().height()*res;
         QImage image(pScene->sceneRect().width()*res, pScene->sceneRect().height()*res, QImage::Format_ARGB32);
         qDebug() << "Image size: " << image.width() << "*" << image.height();
-        image.fill(Qt::transparent);
+        if (pWhiteBG->isChecked())
+        {
+            image.fill(Qt::white);
+        }
+        else
+        {
+            image.fill(Qt::transparent);
+        }
+
         QPainter painter(&image);
         painter.setRenderHint(QPainter::HighQualityAntialiasing);
         painter.setWorldTransform(QTransform::fromScale(1,1));
