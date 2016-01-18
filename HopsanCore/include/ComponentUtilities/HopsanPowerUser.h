@@ -37,10 +37,11 @@ bool DLLIMPORTEXPORT smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *
 bool DLLIMPORTEXPORT smartDisconnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2);
 
 
-//! @brief Helpfunction to safely get the internal parameter data ptr from a subcomponent, the type needs to be known
+//! @brief Help function to safely get the internal parameter data pointer from a subcomponent, the type needs to be known
 //! If parameter or component NULL, then error message instead of crash
 //! @note circumvents the ordinary parameter system, use only if you know what you are doing
-//! @note It will only work for Constants not input/output variables (then you will get ptr to startvalue instead)
+//! @note It will only work for Constants not input/output variables (then you will get pointer to start value instead)
+//! @ingroup ComponentPowerAuthorFunctions
 //! @returns A pointer to the parameter or a dummy parameter (to avoid crash on further use)
 template<typename T>
 T* getSafeConstantDataPtr(ComponentSystem *pSystem, Component *pComp, const HString &rConstantName)
@@ -48,7 +49,7 @@ T* getSafeConstantDataPtr(ComponentSystem *pSystem, Component *pComp, const HStr
     T* pTmp = 0;
     HString compType = "NULL";
 
-    // First handle if component ptr is null
+    // First handle if component pointer is null
     if (pComp != 0)
     {
         pTmp = static_cast<T*>(pComp->getParameterDataPtr(rConstantName));
@@ -59,7 +60,7 @@ T* getSafeConstantDataPtr(ComponentSystem *pSystem, Component *pComp, const HStr
     if (pTmp == 0)
     {
         pSystem->addErrorMessage("Could not get constant data ptr from subcomponent: " + compType);
-        pTmp = new T; //Ok! there is a small memory leak here, but it only happens when you make a mistake, ant then you restart and recompile anyway
+        pTmp = new T; //OK! there is a small memory leak here, but it only happens when you make a mistake, ant then you restart and recompile anyway
         pSystem->stopSimulation();
     }
     return pTmp;

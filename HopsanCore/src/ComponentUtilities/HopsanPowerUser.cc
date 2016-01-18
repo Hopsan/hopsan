@@ -29,9 +29,10 @@
 
 using namespace hopsan;
 
-//! @brief Helpfunction to create components and abort safely if that fails
+//! @brief Help function to create components and abort safely if that fails
 //! @param [in] pSystem A pointer to the system in which to create the component
-//! @param [in] rType A string with the unique typename of the component to create
+//! @param [in] rType A string with the unique type name of the component to create
+//! @ingroup ComponentPowerAuthorFunctions
 //! @returns Pointer to created component or dummy
 Component* hopsan::createSafeComponent(ComponentSystem *pSystem, const HString &rType)
 {
@@ -45,11 +46,12 @@ Component* hopsan::createSafeComponent(ComponentSystem *pSystem, const HString &
     return pComp;
 }
 
-//! @brief Helpfunction that only call connect if the ports are not already connected
+//! @brief Help function that only call connect if the ports are not already connected
 //! @param [in] pSystem The system to handle the connection
 //! @param [in] pPort1 The first port to connect
 //! @param [in] pPort2 The other port to connect
-//! @returns true if connection was Ok, else false
+//! @ingroup ComponentPowerAuthorFunctions
+//! @returns true if connection was OK, else false
 bool hopsan::smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2)
 {
     if (!pPort1->isConnectedTo(pPort2))
@@ -59,11 +61,12 @@ bool hopsan::smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2)
     return true;
 }
 
-//! @brief Helpfunction that only call disconnect if the ports are connected
+//! @brief Help function that only call disconnect if the ports are connected
 //! @param [in] pSystem The system to handle the disconnection
 //! @param [in] pPort1 The first port to disconnect
 //! @param [in] pPort2 The other port to disconnect
-//! @returns true if disconnection was Ok, else false
+//! @ingroup ComponentPowerAuthorFunctions
+//! @returns true if disconnection was OK, else false
 bool hopsan::smartDisconnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2)
 {
     if (pPort1->isConnectedTo(pPort2))
