@@ -130,10 +130,6 @@ SOURCES += \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
     src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc \
     src/ComponentUtilities/EquationSystemSolver.cpp \
-    src/CoreUtilities/GeneratorHandler.cpp \
-    src/CoreUtilities/MultiThreadingUtilities.cpp \
-    src/CoreUtilities/CoSimulationUtilities.cpp \
-    src/CoreUtilities/StringUtilities.cpp \
     src/HopsanTypes.cc \
     src/ComponentUtilities/HopsanPowerUser.cc \
     src/ComponentUtilities/LookupTable.cc \
@@ -143,7 +139,11 @@ SOURCES += \
     src/CoreUtilities/NumHopHelper.cc \
     src/CoreUtilities/AliasHandler.cc \
     src/CoreUtilities/ConnectionAssistant.cc \
-    src/CoreUtilities/SimulationHandler.cc
+    src/CoreUtilities/SimulationHandler.cc \
+    src/CoreUtilities/CoSimulationUtilities.cc \
+    src/CoreUtilities/GeneratorHandler.cc \
+    src/CoreUtilities/MultiThreadingUtilities.cc \
+    src/CoreUtilities/StringUtilities.cc
 HEADERS += \
     include/win32dll.h \
     include/Port.h \
