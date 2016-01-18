@@ -378,7 +378,7 @@ bool NumHopHelper::interpretNumHopScript(const HString &script, bool doPrintOutp
 bool NumHopHelper::eval(double &rValue, bool doPrintOutput, HString &rOutput)
 {
 #ifdef USENUMHOP
-    bool allOK=true;
+    bool allOK=!mpPrivate->mExpressions.empty();
     double value;
     for (list<numhop::Expression>::iterator it = mpPrivate->mExpressions.begin(); it!=mpPrivate->mExpressions.end(); ++it)
     {
