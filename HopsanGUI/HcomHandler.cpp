@@ -6626,6 +6626,11 @@ QString HcomHandler::getParameterValue(QString parameterName) const
             pContainer = qobject_cast<ContainerObject*>(pContainer->getModelObject(subsystem));
         }
 
+        if(!pContainer)
+        {
+            return "NaN";
+        }
+
         ModelObject *pMO = nullptr;
         // Handle ordinary component
         if (!compName.isEmpty())
