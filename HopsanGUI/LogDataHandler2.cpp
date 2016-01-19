@@ -1197,7 +1197,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
                     {
                         foundData=true;
                         SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-                        pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().filePath();
+                        pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFilePath();
                         pVarDesc->mpSystemHierarchy = sharedSystemHierarchy;
                         pVarDesc->mComponentName = pModelObject->getName();
                         pVarDesc->mPortName = pPort->getName();
