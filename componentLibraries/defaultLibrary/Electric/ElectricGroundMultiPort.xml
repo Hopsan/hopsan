@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="VoltageSource.hpp" typename="ElectricVoltageSourceMultiPortC" subtypename="Ground" displayname="C-type Ground (multi-port)">
+        <icons>
+            <icon scale="1" path="ElectricGround.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port y="0.0" x="0.5" a="270" name="P1"/>
+        </ports>
+        <defaultparameters>
+            <parameter name="U#Value" hidden="true">0</parameter>
+        </defaultparameters>
+    </modelobject>
+</hopsanobjectappearance>

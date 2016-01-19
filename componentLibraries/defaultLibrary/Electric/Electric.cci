@@ -42,3 +42,4 @@ pComponentFactory->registerCreatorFunction("ElectricUsensor",ElectricUsensor::Cr
 pComponentFactory->registerCreatorFunction("ElectricUsource",ElectricUsource::Creator);
 pComponentFactory->registerCreatorFunction("ElectricVarResistor",ElectricVarResistor::Creator);
 pComponentFactory->registerCreatorFunction("ElectricVoltageSourceQ",ElectricVoltageSourceQ::Creator);
+pComponentFactory->registerCreatorFunction("ElectricVoltageSourceMultiPortC",ElectricVoltageSourceMultiPortC::Creator);
