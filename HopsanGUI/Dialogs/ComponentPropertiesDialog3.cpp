@@ -235,6 +235,14 @@ void ComponentPropertiesDialog3::okPressed()
     }
 }
 
+void ComponentPropertiesDialog3::applyPressed()
+{
+    setName();
+    setAliasNames();
+    setSystemProperties();
+    setVariableValues();
+}
+
 
 void ComponentPropertiesDialog3::editPortPos()
 {
@@ -397,12 +405,15 @@ QDialogButtonBox *ComponentPropertiesDialog3::createOKButtonBox()
 {
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
-    pOkButton->setDefault(true);
+    QPushButton *pApplyButton = new QPushButton(tr("&Apply"), this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal, this);
+    pButtonBox->addButton(pApplyButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
+    connect(pApplyButton, SIGNAL(clicked()), this, SLOT(applyPressed()));
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
+    pApplyButton->setEnabled(mAllowEditing);
     pOkButton->setEnabled(mAllowEditing);
     pOkButton->setDefault(true);
     return pButtonBox;

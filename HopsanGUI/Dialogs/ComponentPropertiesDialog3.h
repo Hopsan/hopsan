@@ -99,6 +99,7 @@ signals:
 
 protected slots:
     void okPressed();
+    void applyPressed();
     void editPortPos();
     void copyToNewComponent();
     void recompile();
