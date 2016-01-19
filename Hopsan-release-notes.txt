@@ -25,6 +25,11 @@
 ******************************
     Version History
 ******************************
+0.7.0  (2016-01-22)
+- Note: The abs HCOM command has been removed, use the abs() function instead.
+
+
+------------------------------
 0.6.12  (2015-09-03)
 - Note! We strongly suggest that you reset your configuration file ("Reset defaults" button in options dialog) after updating to this version, due to the erroneous handling of frequency unit scaling
 

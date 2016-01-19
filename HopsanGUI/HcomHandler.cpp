@@ -996,15 +996,6 @@ void HcomHandler::createCommands()
     bodeCmd.group = "Plot Commands";
     mCmdList << bodeCmd;
 
-    HcomCommand absCmd;
-    absCmd.cmd = "abs";
-    absCmd.description.append("Irreversibly turn all vector elements into aboslute values\n");
-    absCmd.description.append("You should use the abs() function instead!");
-    absCmd.help.append(" Usage: abs [var]");
-    absCmd.fnc = &HcomHandler::executeAbsCommand;
-    absCmd.group = "Variable Commands";
-    mCmdList << absCmd;
-
     HcomCommand optCmd;
     optCmd.cmd = "opt";
     optCmd.description.append("Initialize an optimization");
@@ -4453,44 +4444,6 @@ void HcomHandler::executeBodeCommand(const QString cmd)
     PlotWindow *pWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot");
     pWindow->closeAllTabs();
     pWindow->createBodePlot(pData1, pData2, fMax);
-}
-
-
-//! @brief Execute function for "abs" command
-void HcomHandler::executeAbsCommand(const QString cmd)
-{
-    QStringList args = splitCommandArguments(cmd);
-    if(args.size() != 1)
-    {
-        HCOMERR("Wrong number of arguments.");
-        return;
-    }
-    const QString &varName = args[0];
-
-    SharedVectorVariableT var = getLogVariable(varName);
-    if(var)
-    {
-        var.data()->absData();
-        mpConsole->printWarningMessage("This 'abs' command will irreversibly turn your vector elements into absolute values, you should use the abs() function instead!","absIrreverisble",false);
-    }
-    else
-    {
-        bool ok;
-        double retval = fabs(getNumber(varName, &ok));
-        if(ok)
-        {
-            HCOMPRINT(QString::number(retval));
-            mAnsType = Scalar;
-            mAnsScalar = retval;
-            return;
-        }
-        else
-        {
-            HCOMERR("Variable not found.");
-            mAnsType = Undefined;
-            return;
-        }
-    }
 }
 
 

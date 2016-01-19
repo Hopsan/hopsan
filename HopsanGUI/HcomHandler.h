@@ -199,7 +199,6 @@ private:
     void executeChangeTimestepCommand(const QString cmd);
     void executeInheritTimestepCommand(const QString cmd);
     void executeBodeCommand(const QString cmd);
-    void executeAbsCommand(const QString cmd);
     void executeOptimizationCommand(const QString cmd);
     void executeCallFunctionCommand(const QString cmd);
     void executeEchoCommand(const QString cmd);
