@@ -126,10 +126,15 @@ int main(int argc, char *argv[])
     // Read command line arguments, search for hcom scripts, ignore everything else
     //! @todo maybe use TCLAP here
     QStringList args = a.arguments();
-    for(const QString &arg : args)
+    for(QString &arg : args)
     {
         if(arg.endsWith(".hcom"))
         {
+            QFileInfo fi(arg);
+            if (fi.isRelative())
+            {
+                arg = gpDesktopHandler->getExecPath()+"/"+arg;
+            }
             gpTerminalWidget->mpHandler->executeCommand("exec "+arg);
         }
     }
