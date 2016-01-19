@@ -154,7 +154,7 @@ namespace hopsan {
             }
             else
             {
-                mSpoolPosTF.update(-xvmax);
+                mSpoolPosTF.update(0);
             }
             xv = mSpoolPosTF.value();
 

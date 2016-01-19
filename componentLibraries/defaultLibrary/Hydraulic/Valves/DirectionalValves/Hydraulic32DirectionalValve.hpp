@@ -112,7 +112,7 @@ namespace hopsan {
             den[2] = 1.0/(mOmegah*mOmegah);
 
             double initialXv = limit(*mpXv, -(*mpXvmax), (*mpXvmax));
-            mSpoolPosTF.initialize(mTimestep, num, den, initialXv, initialXv, -(*mpXvmax), (*mpXvmax));
+            mSpoolPosTF.initialize(mTimestep, num, den, initialXv, initialXv, 0, (*mpXvmax));
         }
 
 
@@ -145,7 +145,7 @@ namespace hopsan {
             }
             else
             {
-                mSpoolPosTF.update(-xvmax);
+                mSpoolPosTF.update(0);
             }
 
             xv = mSpoolPosTF.value();
