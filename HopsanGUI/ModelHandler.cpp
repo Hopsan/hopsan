@@ -136,7 +136,7 @@ ModelWidget *ModelHandler::getModel(const QString &rModelFilePath)
 {
     for (int i=0; i<mModelPtrs.size(); ++i)
     {
-        if (mModelPtrs[i]->getTopLevelSystemContainer()->getModelFileInfo().filePath() == rModelFilePath)
+        if (mModelPtrs[i]->getTopLevelSystemContainer()->getModelFilePath() == rModelFilePath)
         {
             return mModelPtrs[i];
         }

@@ -61,7 +61,7 @@ protected:
     GenerationSelector *mpGenerationSelector;
     VariableTree *mpVariableTree;
     bool mHasPendingUpdate;
-    QMap<QPointer<LogDataHandler2>, QPair<QStringList, QStringList>> mExpandedItems;
+    QMap<QString, QPair<QStringList, QStringList>> mExpandedItems;
 };
 
 

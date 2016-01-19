@@ -66,6 +66,7 @@
 #include "Widgets/FindWidget.h"
 #include "LogDataHandler2.h"
 #include "Widgets/TimeOffsetWidget.h"
+#include "ModelHandler.h"
 
 // Plot Widget help classes declarations
 // ----------------------------------------------------------------------------
@@ -1025,15 +1026,13 @@ void PlotWidget2::setLogDataHandler(QPointer<LogDataHandler2> pLogDataHandler)
         disconnect(getLogDataHandler(), 0, this, 0);
     }
 
-    QStringList expandedFullVars, expandedImportedFiles;
-    mpVariableTree->getExpandedFullVariables(expandedFullVars);
-    mpVariableTree->getExpandedImportFiles(expandedImportedFiles);
     // Remember expanded items
     if (getLogDataHandler())
     {
-        // Note! In general it is not smart to use a QPointer as key, the QPointer will become NULL when the object is deleted
-        // but since that will only happen when the handler is deleted, it works here, also refreshing will take care of clearing obsolete entries in the bottom of this function
-        mExpandedItems.insert(getLogDataHandler(), QPair<QStringList, QStringList>(expandedFullVars, expandedImportedFiles));
+        QStringList expandedFullVars, expandedImportedFiles;
+        mpVariableTree->getExpandedFullVariables(expandedFullVars);
+        mpVariableTree->getExpandedImportFiles(expandedImportedFiles);
+        mExpandedItems.insert(getLogDataHandler()->getParentModel()->getTopLevelSystemContainer()->getModelFilePath(), QPair<QStringList, QStringList>(expandedFullVars, expandedImportedFiles));
     }
 
     mpGenerationSelector->setLogDataHandler(pLogDataHandler);
@@ -1050,16 +1049,16 @@ void PlotWidget2::setLogDataHandler(QPointer<LogDataHandler2> pLogDataHandler)
     updateList();
 
     // Restore expanded items, also clear any obsolete log data handlers
-    if (mExpandedItems.contains(pLogDataHandler))
+    if (pLogDataHandler && mExpandedItems.contains(pLogDataHandler->getParentModel()->getTopLevelSystemContainer()->getModelFilePath()))
     {
-        QPair<QStringList, QStringList> lists = mExpandedItems.value(pLogDataHandler);
+        QPair<QStringList, QStringList> lists = mExpandedItems.value(pLogDataHandler->getParentModel()->getTopLevelSystemContainer()->getModelFilePath());
         mpVariableTree->expandFullVariableItems(lists.first);
         mpVariableTree->expandImportFileItems(lists.second);
 
         // Clear obsolete
         for (auto it=mExpandedItems.begin(); it!=mExpandedItems.end(); ++it)
         {
-            if (it.key().isNull())
+            if (!gpModelHandler->getModel(it.key()))
             {
                 mExpandedItems.erase(it);
                 it=mExpandedItems.begin();
