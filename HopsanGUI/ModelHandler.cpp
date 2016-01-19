@@ -658,6 +658,16 @@ void ModelHandler::restoreState()
     }
 }
 
+void ModelHandler::revertCurrentModel()
+{
+    ModelWidget *pModel = gpModelHandler->getCurrentModel();
+    if (pModel)
+    {
+        pModel->revertModel();
+        refreshMainWindowConnections();
+    }
+}
+
 void ModelHandler::createLabviewWrapperFromCurrentModel()
 {
     qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToLabView();

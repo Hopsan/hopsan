@@ -85,6 +85,8 @@ public slots:
     void saveState();
     void restoreState();
 
+    void revertCurrentModel();
+
     void createLabviewWrapperFromCurrentModel();
     void exportCurrentModelToFMU1_32();
     void exportCurrentModelToFMU1_64();

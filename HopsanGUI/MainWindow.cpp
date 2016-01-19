@@ -1550,11 +1550,7 @@ void MainWindow::openFindWidget()
 
 void MainWindow::revertModel()
 {
-    ModelWidget *pModel = gpModelHandler->getCurrentModel();
-    if (pModel)
-    {
-        pModel->revertModel();
-    }
+    gpModelHandler->revertCurrentModel();
 }
 
 void MainWindow::openNumHopDialog()
