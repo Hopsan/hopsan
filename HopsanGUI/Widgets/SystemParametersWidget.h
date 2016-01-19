@@ -115,11 +115,14 @@ public slots:
 
 protected slots:
     bool addParameter();
+    void editParameterAndCloseDialog();
     void addParameterAndCloseDialog();
     void removeSelected();
     void closeDialog();
 
 private:
+    bool addOrEditParameter(bool editing);
+
     QPointer<ContainerObject> mpContainerObject;
     QTableView *mpSysParamTableView;
     QSortFilterProxyModel *mpProxyModel;
@@ -131,6 +134,7 @@ private:
     QLineEdit *mpNewParamDescriptionEdit;
     QLineEdit *mpNewParamUnitQuantityEdit;
     QComboBox *mpNewParamTypeBox;
+    QString mPreviousName;
 
     QPushButton *mpAddButton;
     QPushButton *mpEditButton;

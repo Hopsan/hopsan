@@ -521,6 +521,7 @@ void SystemParametersWidget::openEditParameterDialog()
         mpAddParameterDialog = new QDialog(this);
         mpAddParameterDialog->setWindowTitle("Edit System Parameter");
 
+        mPreviousName = data.mName;
         mpNewParamNameEdit = new QLineEdit(data.mName, mpAddParameterDialog);
         mpNewParamValueEdit = new QLineEdit(data.mValue, mpAddParameterDialog);
         mpNewParamDescriptionEdit = new QLineEdit(data.mDescription, mpAddParameterDialog);
@@ -557,7 +558,7 @@ void SystemParametersWidget::openEditParameterDialog()
         mpAddParameterDialog->show();
 
         connect(pCancelInDialogButton,      SIGNAL(clicked()), this,   SLOT(closeDialog()));
-        connect(pOkInDialogButton,          SIGNAL(clicked()), this,   SLOT(addParameterAndCloseDialog()));
+        connect(pOkInDialogButton,          SIGNAL(clicked()), this,   SLOT(editParameterAndCloseDialog()));
     }
 }
 
@@ -575,23 +576,15 @@ void SystemParametersWidget::highlightComponents(QModelIndex index)
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 bool SystemParametersWidget::addParameter()
 {
-    if (mpModel->hasParameter(mpNewParamNameEdit->text()))
+    return addOrEditParameter(false);
+}
+
+void SystemParametersWidget::editParameterAndCloseDialog()
+{
+    if (addOrEditParameter(true))
     {
-        //! @todo maybe we should warn about overwriting instead
-        QMessageBox::critical(0, "Hopsan GUI",
-                              QString("'%1' already exists, will not add!")
-                              .arg(mpNewParamNameEdit->text()));
+        closeDialog();
     }
-    else
-    {
-        // The unit field should be "" here, quantityOrunit in core will deal with deciding if quantity or unit should be used
-        CoreParameterData data(mpNewParamNameEdit->text(), mpNewParamValueEdit->text(), mpNewParamTypeBox->currentText(), mpNewParamUnitQuantityEdit->text(), "", mpNewParamDescriptionEdit->text());
-        if (mpModel->addOrSetParameter(data))
-        {
-            return true;
-        }
-    }
-    return false;
 }
 
 
@@ -622,4 +615,35 @@ void SystemParametersWidget::closeDialog()
     mpAddParameterDialog->close();
     mpAddParameterDialog->deleteLater();
     mpAddParameterDialog = nullptr;
+}
+
+bool SystemParametersWidget::addOrEditParameter(bool editing)
+{
+    if (editing && (mPreviousName != mpNewParamNameEdit->text()) )
+    {
+        // Try to add new parameter settings
+        bool rc = addOrEditParameter(false);
+        // If added OK, then delete old parameter
+        if (rc)
+        {
+            removeSelected();
+            //! @todo need to find row
+            //! @todo remove old
+        }
+        return rc;
+    }
+    else if (!editing && mpModel->hasParameter(mpNewParamNameEdit->text()))
+    {
+        //! @todo maybe we should warn about overwriting instead
+        QMessageBox::critical(0, "Hopsan GUI",
+                              QString("'%1' already exists, will not add!")
+                              .arg(mpNewParamNameEdit->text()));
+        return false;
+    }
+    else
+    {
+        // The unit field should be "" here, QuantityOrUnit in core will deal with deciding if quantity or unit should be used
+        CoreParameterData data(mpNewParamNameEdit->text(), mpNewParamValueEdit->text(), mpNewParamTypeBox->currentText(), mpNewParamUnitQuantityEdit->text(), "", mpNewParamDescriptionEdit->text());
+        return mpModel->addOrSetParameter(data);
+    }
 }
