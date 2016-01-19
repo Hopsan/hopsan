@@ -481,7 +481,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     }
     else
     {
-        gpMessageHandler->addDebugMessage(QString("In loadModelObject Some error happend, pAppearanceData == 0, for type: %1 subtype: %2").arg(type).arg(subtype));
+        gpMessageHandler->addErrorMessage(QString("In loadModelObject Some error happend, pAppearanceData == 0, for type: %1 subtype: %2").arg(type).arg(subtype));
         return 0;
     }
 }
