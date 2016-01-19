@@ -516,7 +516,8 @@ void SystemParametersWidget::openEditParameterDialog()
     if (!idxList.isEmpty())
     {
         CoreParameterData data;
-        mpModel->getFullParameterData(idxList.first(), data);
+        QModelIndex sourceIndex = mpProxyModel->mapToSource(idxList.front());
+        mpModel->getFullParameterData(sourceIndex, data);
 
         mpAddParameterDialog = new QDialog(this);
         mpAddParameterDialog->setWindowTitle("Edit System Parameter");
