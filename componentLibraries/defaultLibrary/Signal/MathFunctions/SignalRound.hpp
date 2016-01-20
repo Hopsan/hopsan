@@ -68,7 +68,11 @@ public:
 
     void simulateOneTimestep()
     {
+#ifdef _MSC_VER
+        (*mpOut) =  (*mpIn) < 0.0 ? ceil((*mpIn) - 0.5) : floor((*mpIn) + 0.5);
+#else
         (*mpOut) = round(*mpIn);
+#endif
     }
 };
 }
