@@ -27,7 +27,7 @@
 //! @author FluMeS
 //! @date   2011-03-28
 //!
-//! @brief Contains helpfunctions for CLI
+//! @brief The HopsanCLI main file
 //!
 //$Id$
 
@@ -43,6 +43,7 @@
 #include "HopsanCoreMacros.h"
 #include "TicToc.hpp"
 #include "version_cli.h"
+#include "CoreUtilities/SaveRestoreSimulationPoint.h"
 
 #include "CliUtilities.h"
 #include "ModelValidation.h"
@@ -78,6 +79,8 @@ int main(int argc, char *argv[])
 
         TCLAP::ValueArg<std::string> buildCompLibOption("", "buildComponentLibrary", "Build the specified component library (point to the library xml)", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> destinationOption("d","destination","Destination for resulting files",false,"","Path to directory", cmd);
+        TCLAP::ValueArg<std::string> saveSimulationStateOption("", "saveSimState", "Export the simulation state to this file", false, "Path to file", "string", cmd);
+        TCLAP::ValueArg<std::string> loadSimulationStateOption("", "loadSimState", "Load the simulation state to this file", false, "Path to file", "string", cmd);
         TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultsFinalCSVOption("", "resultsFinalCSV", "Export the results (only final values)", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> resultsFullCSVOption("", "resultsFullCSV", "Export the results (all logged data)", false, "", "Path to file", cmd);
@@ -152,7 +155,7 @@ int main(int argc, char *argv[])
 
         if (testInstanciateComponentsOption.isSet())
         {
-            cout <<  "Testing to instanciate each registered component. Any Error or Warning messages will be shown below:" << endl;
+            cout <<  "Testing to instantiate each registered component. Any Error or Warning messages will be shown below:" << endl;
             //! @todo write as function
             vector<HString> types =  gHopsanCore.getRegisteredComponentTypes();
             size_t nErrors=0;
@@ -214,7 +217,7 @@ int main(int argc, char *argv[])
                     exportParameterValuesToCSV(destinationPath+parameterExportOption.getValue(), pRootSystem, prefix);
                 }
 
-                cout << endl << "Model Hieararcy:" << endl;
+                cout << endl << "Model Hierarchy:" << endl;
                 printComponentHierarchy(pRootSystem, "", true, true);
                 cout << endl;
 
@@ -258,6 +261,13 @@ int main(int argc, char *argv[])
                         size_t nSamp = atoi(nLogSamplesOption.getValue().c_str());
                         cout << "Setting nLogSamples to: " << nSamp << endl;
                         pRootSystem->setNumLogSamples(nSamp);
+                    }
+
+                    // Apply loaded simulation states
+                    if (loadSimulationStateOption.isSet())
+                    {
+                        restoreSimulationPoint(loadSimulationStateOption.getValue().c_str(), pRootSystem);
+                        pRootSystem->setLoadStartValues(false);
                     }
 
                     //! @todo maybe use simulation handler object instead
@@ -338,6 +348,12 @@ int main(int argc, char *argv[])
                     {
                         printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
                     }
+                }
+
+                // Save simulation state
+                if (saveSimulationStateOption.isSet())
+                {
+                    saveSimulationPoint(saveSimulationStateOption.getValue().c_str(), pRootSystem);
                 }
 
                 // Now remove the rootsystem

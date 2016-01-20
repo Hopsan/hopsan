@@ -143,7 +143,8 @@ SOURCES += \
     src/CoreUtilities/CoSimulationUtilities.cc \
     src/CoreUtilities/GeneratorHandler.cc \
     src/CoreUtilities/MultiThreadingUtilities.cc \
-    src/CoreUtilities/StringUtilities.cc
+    src/CoreUtilities/StringUtilities.cc \
+    src/CoreUtilities/SaveRestoreSimulationPoint.cc
 HEADERS += \
     include/win32dll.h \
     include/Port.h \
@@ -201,7 +202,8 @@ HEADERS += \
     include/CoreUtilities/NumHopHelper.h \
     include/CoreUtilities/ConnectionAssistant.h \
     include/CoreUtilities/AliasHandler.h \
-    include/CoreUtilities/SimulationHandler.h
+    include/CoreUtilities/SimulationHandler.h \
+    include/CoreUtilities/SaveRestoreSimulationPoint.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
