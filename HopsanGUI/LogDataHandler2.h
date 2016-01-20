@@ -149,6 +149,8 @@ public:
     SharedVectorVariableT elementWiseGT(SharedVectorVariableT pData, const double thresh);
     SharedVectorVariableT elementWiseLT(SharedVectorVariableT pData, const double thresh);
 
+    void setGenerationTimePlotOffset(int generation, double offset);
+
     void takeOwnershipOfData(LogDataHandler2 *pOtherHandler, const int otherGeneration=-2);
 
 public slots:

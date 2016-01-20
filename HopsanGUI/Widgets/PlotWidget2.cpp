@@ -739,7 +739,7 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         QAction *pDeleteVariableAllGenAction = 0;
         QAction *pSetQuantityAction = 0;
         QAction *pInvertAction = 0;
-        QAction *pSetToFPlotOffsetAction = 0;
+        QAction *pSetTimePlotOffsetAction = 0;
 
         // Add actions
         if (!isImportVariabel)
@@ -778,9 +778,9 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
         pSetQuantityAction = menu.addAction("Set plot quantity");
         pInvertAction = menu.addAction("Invert plot");
 
-        if (pItem->getDataQuantity() == TIMEVARIABLENAME)
+        if (pItem->getDataName() == TIMEVARIABLENAME && pItem->getComponentName().isEmpty())
         {
-            pSetToFPlotOffsetAction = menu.addAction("Set Time Offset");
+            pSetTimePlotOffsetAction = menu.addAction("Set Time Offset");
         }
 
         // Execute menu and wait for selected action
@@ -845,19 +845,15 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
                     pVar->togglePlotInverted();
                 }
             }
-            else if (pSelectedAction == pSetToFPlotOffsetAction)
+            else if (pSelectedAction == pSetTimePlotOffsetAction)
             {
-                SharedVectorVariableT pVar = mpLogDataHandler->getVectorVariable(pItem->getFullName(), pItem->getGeneration());
-                if (pVar)
-                {
-                    QDialog dialog;
-                    QVBoxLayout *pLayout = new QVBoxLayout(&dialog);
-                    pLayout->addWidget(new TimeOffsetWidget(pVar, &dialog));
-                    QPushButton *pCloseButton = new QPushButton("Close", &dialog);
-                    pLayout->addWidget(pCloseButton,0,Qt::AlignRight);
-                    connect(pCloseButton, SIGNAL(clicked(bool)), &dialog, SLOT(close()));
-                    dialog.exec();
-                }
+                QDialog dialog;
+                QVBoxLayout *pLayout = new QVBoxLayout(&dialog);
+                pLayout->addWidget(new TimeOffsetWidget(pItem->getGeneration(), mpLogDataHandler, &dialog));
+                QPushButton *pCloseButton = new QPushButton("Close", &dialog);
+                pLayout->addWidget(pCloseButton,0,Qt::AlignRight);
+                connect(pCloseButton, SIGNAL(clicked(bool)), &dialog, SLOT(close()));
+                dialog.exec();
             }
         }
     }

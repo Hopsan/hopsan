@@ -1641,40 +1641,28 @@ void PlotArea::openTimeOffsetDialog()
     QDialog offsetDialog(this);
     offsetDialog.setWindowTitle("Change Time Offset");
 
-    // Multi maps for time and frequency vectors in each generation
-    QMultiMap<int, SharedVectorVariableT> tofVectors;
+    // Maps for all generations and log data handlers in plot
+    // Normally if all variables come from the same model, its the same log data handler
+    //! @todo But if you mix variables from different models the "last" at a specific generation will overwrite here
+    QMap<int, LogDataHandler2*> generations;
 
-    // Go through every curve and collect time or frequency vectors in each generation
-    //! @todo what if massive amount of generations
+    // Go through every curve and collect each generation
     for (PlotCurve* pCurve : mPlotCurves)
     {
-        SharedVectorVariableT pToFVar = pCurve->getSharedTimeOrFrequencyVariable();
-        if (pToFVar && pToFVar->getDataName() == TIMEVARIABLENAME)
-        {
-            tofVectors.insertMulti(pCurve->getDataGeneration(), pToFVar);
-        }
+        generations.insert(pCurve->getDataGeneration(), pCurve->getSharedVectorVariable()->getLogDataHandler());
     }
 
     QGridLayout *pGridLayout = new QGridLayout(&offsetDialog);
     pGridLayout->addWidget(new QLabel("Changing generation time offset will affect all curves in all plots",&offsetDialog), 0, 0, 1, 2, Qt::AlignLeft);
     int row = 1;
-    for (int gen : tofVectors.uniqueKeys())
+    for (int gen : generations.uniqueKeys())
     {
-        // Retrieve a list for each generation
-        QList<SharedVectorVariableT> list = tofVectors.values(gen);
-
-        // Extract unique time or frequency vectors from the list
-        QSet<SharedVectorVariableT> set = list.toSet();
-
-        // Now create an editor widget for each unique time or frequency vector at this generation
-        for (auto it=set.begin(); it!=set.end(); ++it)
-        {
-            TimeOffsetWidget *pTimeScaleW = new TimeOffsetWidget(*it, &offsetDialog);
-            connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
-            pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(gen+1), &offsetDialog), row, 0);
-            pGridLayout->addWidget(pTimeScaleW, row, 1);
-            ++row;
-        }
+        // Now create an editor widget for each unique generation
+        TimeOffsetWidget *pTimeScaleW = new TimeOffsetWidget(gen, generations.value(gen), &offsetDialog);
+        connect(pTimeScaleW, SIGNAL(valuesChanged()), this, SLOT(updateAxisLabels()));
+        pGridLayout->addWidget(new QLabel(QString("Gen: %1").arg(gen+1), &offsetDialog), row, 0);
+        pGridLayout->addWidget(pTimeScaleW, row, 1);
+        ++row;
     }
 
     // Add button box
@@ -2702,7 +2690,7 @@ void PlotArea::updateWindowtitleModelName()
 
 void PlotArea::getLowestHighestGeneration(int &rLowest, int &rHighest)
 {
-    // We assume ehre that all curves come from teh same log data handler
+    // We assume here that all curves come from the same log data handler
     SharedVectorVariableT pData;
     if (mPlotCurves.empty())
     {

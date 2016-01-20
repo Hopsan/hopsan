@@ -60,6 +60,7 @@
 #include "Widgets/ModelWidget.h"
 #include "SymHop.h"
 #include "CoreUtilities/SimulationHandler.h"
+#include "LogDataGeneration.h"
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -702,11 +703,12 @@ void HcomHandler::createCommands()
 
     HcomCommand chtoCmd;
     chtoCmd.cmd = "chto";
-    chtoCmd.description.append("Change default plot offset of specified time variable\n");
-    chtoCmd.description.append("offset should be given in default plotscale units");
-    chtoCmd.help.append(" Usage: chto [variable] [offset]");
+    chtoCmd.description.append("Change time plot offset for the current or specified generation\n");
+    chtoCmd.description.append("Time offset should be given in seconds\n");
+    chtoCmd.description.append("The generation specifier is optional, you can use c,a,*,h,l specifiers");
+    chtoCmd.help.append(" Usage: chto [offset] [generation]");
     chtoCmd.fnc = &HcomHandler::executeChangeTimePlotOffsetCommand;
-    chtoCmd.group = "Variable Commands";
+    chtoCmd.group = "Plot Commands";
     mCmdList << chtoCmd;
 
     HcomCommand sequCmd;
@@ -743,13 +745,13 @@ void HcomHandler::createCommands()
 //    discCmd.group = "Variable Commands";
 //    mCmdList << discCmd;
 
-    HcomCommand diosCmd;
-    diosCmd.cmd = "dios";
-    diosCmd.description.append("Display plot offset of specified variable");
-    diosCmd.help.append(" Usage: disc [variable]");
-    diosCmd.fnc = &HcomHandler::executeDisplayPlotOffsetCommand;
-    diosCmd.group = "Variable Commands";
-    mCmdList << diosCmd;
+    HcomCommand ditoCmd;
+    ditoCmd.cmd = "dito";
+    ditoCmd.description.append("Display time plot offset of specified generation");
+    ditoCmd.help.append(" Usage: dito [generation]");
+    ditoCmd.fnc = &HcomHandler::executeDisplayTimePlotOffsetCommand;
+    ditoCmd.group = "Plot Commands";
+    mCmdList << ditoCmd;
 
     HcomCommand dlogCmd;
     dlogCmd.cmd = "dlog";
@@ -3098,83 +3100,96 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
 //}
 
 
-//! @brief Execute function for "dios" command
-void HcomHandler::executeDisplayPlotOffsetCommand(const QString cmd)
+//! @brief Execute function for "ditos" command
+void HcomHandler::executeDisplayTimePlotOffsetCommand(const QString cmd)
 {
-    if(getNumberOfCommandArguments(cmd) != 1)
+    QStringList arglist = splitCommandArguments(cmd);
+    if(arglist.size() > 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QStringList vars;
-    getMatchingLogVariableNames(cmd,vars);
-    if(vars.isEmpty())
+    int generation=-1;
+    bool genOK=true;
+    if (arglist.size() == 1)
     {
-        HCOMERR("Unknown variable: "+cmd);
-        return;
+        QString genstring = "@"+arglist[0];
+        generation = parseAndChopGenerationSpecifier(genstring, genOK);
     }
-    for(const QString &var : vars)
+
+    if (mpModel && mpModel->getLogDataHandler())
     {
-        SharedVectorVariableT pVar = getLogVariable(var);
-        if(pVar)
+        if (generation == -1)
         {
-            double offset = pVar->getPlotOffset();
-            HCOMPRINT(QString("%1: %2").arg(var).arg(offset));
-            mAnsScalar = offset;
-            mAnsType = Scalar;
+            generation = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
+        }
+        else if (generation < -1)
+        {
+            HCOMERR("Incorrect generation value, or could not parse generation");
+            return;
+        }
+
+        const LogDataGeneration *pGen = mpModel->getLogDataHandler()->getGeneration(generation);
+        if (pGen)
+        {
+            mAnsScalar = pGen->getTimeOffset();
+            HCOMPRINT(QString("%1").arg(pGen->getTimeOffset()));
+        }
+        else
+        {
+            HCOMERR("Specified generation not found");
         }
     }
-    return;
 }
 
 
 void HcomHandler::executeChangeTimePlotOffsetCommand(const QString cmd)
 {
-    const QString allowed_type=TIMEVARIABLENAME;
-
     QStringList arglist = splitCommandArguments(cmd);
-    if(arglist.size() != 2)
+    if(arglist.size() < 1 || arglist.size() > 2)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    const QString &varName = arglist[0];
-    evaluateExpression(arglist[1]);
+    evaluateExpression(arglist[0]);
     if(mAnsType != Scalar)
     {
-        HCOMERR("Second argument must be a scalar variable.");
+        HCOMERR("First argument must be a scalar variable.");
         return;
     }
     double offset = mAnsScalar;
 
-    QStringList vars;
-    getMatchingLogVariableNames(varName,vars);
-    if(vars.isEmpty())
+    int generation=-1;
+    bool genOK=true;
+    if (arglist.size() == 2)
     {
-        HCOMERR("Unknown variable: "+varName);
-        return;
+        QString genstring = "@"+arglist[1];
+        generation = parseAndChopGenerationSpecifier(genstring, genOK);
     }
 
-    int ctr=0;
-    for(const QString &var : vars)
+    if (mpModel && mpModel->getLogDataHandler())
     {
-        SharedVectorVariableT pVar = getLogVariable(var);
-        if (pVar->getDataQuantity() == allowed_type)
+        if (generation == -1)
         {
-            UnitConverter us;
-            gpConfig->getUnitScale(pVar->getDataQuantity(), gpConfig->getDefaultUnit(pVar->getDataQuantity()), us);
-            pVar->setPlotOffsetIfTime(us.convertToBase(offset));
+            generation = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
+        }
+        else if (generation < -1)
+        {
+            HCOMERR("Incorrect generation value, or could not parse generation");
+            return;
+        }
+
+        if (mpModel->getLogDataHandler()->hasGeneration(generation))
+        {
+            mpModel->getLogDataHandler()->setGenerationTimePlotOffset(generation, offset);
         }
         else
         {
-            ++ctr;
+            HCOMERR("Specified generation not found");
+            return;
         }
-    }
-    if (ctr > 0)
-    {
-        HCOMERR(QString("Ingored %1 variables that were not of %2 type").arg(ctr).arg(allowed_type));
     }
 }
 

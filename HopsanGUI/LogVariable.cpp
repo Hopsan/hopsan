@@ -36,6 +36,7 @@
 #include "LogVariable.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
+#include "LogDataGeneration.h"
 #include "MessageHandler.h"
 
 #include <limits>
@@ -449,21 +450,30 @@ void VectorVariable::togglePlotInverted()
     emit dataChanged();
 }
 
-//! @brief Set the plot offset if this is a Time vector otherwise do nothing
-//! @param[in] offset The desired time offset in Time base unit [seconds]
-void VectorVariable::setPlotOffsetIfTime(const double offset)
-{
-    if (getDataQuantity() == TIMEVARIABLENAME)
-    {
-        mDataPlotOffset = offset;
-        emit dataChanged();
-    }
-}
+////! @brief Set the plot offset if this is a Time vector otherwise do nothing
+////! @param[in] offset The desired time offset in Time base unit [seconds]
+//void VectorVariable::setPlotOffsetIfTime(const double offset)
+//{
+//    if (getDataQuantity() == TIMEVARIABLENAME)
+//    {
+//        mDataPlotOffset = offset;
+//        emit dataChanged();
+//    }
+//}
 
 //! @brief Returns the plot offset
+//! @note Only time variables can have an offset (same for all time variables in whole generation)
 double VectorVariable::getPlotOffset() const
 {
-    return mDataPlotOffset;
+    if ( (getDataName() == TIMEVARIABLENAME) && getComponentName().isEmpty() && mpParentLogDataHandler )
+    {
+        const LogDataGeneration *pGen = mpParentLogDataHandler->getGeneration(mGeneration);
+        if (pGen)
+        {
+            return pGen->getTimeOffset();
+        }
+    }
+    return 0.0;
 }
 
 const SharedVectorVariableT VectorVariable::getSharedTimeOrFrequencyVector() const

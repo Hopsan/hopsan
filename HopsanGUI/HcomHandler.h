@@ -143,7 +143,7 @@ private:
 //    void executeChangePlotScaleCommand(const QString cmd);
 //    void executeDisplayPlotScaleCommand(const QString cmd);
     void executeChangeTimePlotOffsetCommand(const QString cmd);
-    void executeDisplayPlotOffsetCommand(const QString cmd);
+    void executeDisplayTimePlotOffsetCommand(const QString cmd);
     void executeSavePlotWindowCommand(const QString cmd);
     void executeInvertPlotVariableCommand(const QString cmd);
 

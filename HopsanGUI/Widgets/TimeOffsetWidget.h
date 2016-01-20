@@ -38,13 +38,13 @@
 #include <QWidget>
 #include <QLineEdit>
 
-#include "LogVariable.h"
+class LogDataHandler2;
 
 class TimeOffsetWidget : public QWidget
 {
     Q_OBJECT
 public:
-    TimeOffsetWidget(SharedVectorVariableT pToFVector, QWidget *pParent=0);
+    TimeOffsetWidget(int generation, LogDataHandler2 *pLogDataHandler, QWidget *pParent=0);
 
 signals:
     void valuesChanged();
@@ -54,7 +54,8 @@ private slots:
     void zeroOffset();
 
 private:
-    SharedVectorVariableT mpToFVector;
+    LogDataHandler2 *mpLogDataHandler;
+    int mGeneration;
     QLineEdit *mpOffsetLineEdit=0;
 };
 

@@ -1804,6 +1804,23 @@ SharedVectorVariableT LogDataHandler2::elementWiseLT(SharedVectorVariableT pData
     return SharedVectorVariableT();
 }
 
+void LogDataHandler2::setGenerationTimePlotOffset(int generation, double offset)
+{
+    // Should we take current
+    if (generation < 0)
+    {
+        generation = mCurrentGenerationNumber;
+    }
+
+    // Find the generation
+    auto *pGen = mGenerationMap.value(generation, 0);
+    if(pGen)
+    {
+        // Now set the offset
+        return pGen->setTimeOffset(offset);
+    }
+}
+
 //QString LogDataHandler2::saveVariable(const QString &currName, const QString &newName)
 //{
 //    SharedVectorVariableT pCurrData = getVectorVariable(currName, -1);

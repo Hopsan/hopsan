@@ -83,7 +83,13 @@ public:
     bool unregisterAliasForFullName(const QString &rFullName);
     QString getFullNameFromAlias(const QString &rAlias);
 
+    void setTimeOffset(double timeOffset);
+    double getTimeOffset() const;
+
     void switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache);
+
+signals:
+    void timeOffsetChanged();
 
 private slots:
     void variableAutoRemovalChanged(bool allowRemoval);
@@ -95,8 +101,8 @@ private:
 
     VariableMapT mVariables;
     VariableMapT mAliasVariables;
-    QList<SharedVectorVariableT> mTimeVectors; //!< @todo use this
     int mNumKeepVariables = 0;
+    double mTimeOffset = 0.0;
 
     QString mImportedFromFile;
 };

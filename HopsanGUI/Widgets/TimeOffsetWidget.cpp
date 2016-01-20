@@ -39,23 +39,23 @@
 #include <QLabel>
 #include <QPushButton>
 
-#include "Configuration.h"
-#include "global.h"
+//#include "Configuration.h"
+//#include "global.h"
+#include "LogDataHandler2.h"
+#include "LogDataGeneration.h"
 
-TimeOffsetWidget::TimeOffsetWidget(SharedVectorVariableT pToFVector, QWidget *pParent)
+TimeOffsetWidget::TimeOffsetWidget(int generation, LogDataHandler2 *pLogDataHandler, QWidget *pParent)
     : QWidget(pParent)
 {
-    mpToFVector = pToFVector;
-    if (mpToFVector)
+    mpLogDataHandler = pLogDataHandler;
+    mGeneration = generation;
+    if (mpLogDataHandler)
     {
         QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
         mpOffsetLineEdit = new QLineEdit(this);
         mpOffsetLineEdit->setValidator(new QDoubleValidator(this));
 
-        //! @todo cant know we actually have default unit here
-        UnitConverter us;
-        gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
-        pHBoxLayout->addWidget(new QLabel(QString("%1 [%2]: ").arg(us.mQuantity).arg(us.mUnit), this));
+        pHBoxLayout->addWidget(new QLabel(QString("%1 [%2]: ").arg("Time").arg("s"), this));
         pHBoxLayout->addWidget(new QLabel("Offset: ", this));
         pHBoxLayout->addWidget(mpOffsetLineEdit);
         QPushButton *pResetButton = new QPushButton("0", this);
@@ -63,7 +63,7 @@ TimeOffsetWidget::TimeOffsetWidget(SharedVectorVariableT pToFVector, QWidget *pP
         pHBoxLayout->addWidget(pResetButton);
 
         // Set the current offset value
-        mpOffsetLineEdit->setText(QString("%1").arg(us.convertFromBase(mpToFVector->getPlotOffset())));
+        mpOffsetLineEdit->setText(QString("%1").arg(mpLogDataHandler->getGeneration(mGeneration)->getTimeOffset()));
 
         // Connect signals to update time scale and offset when changing values
         connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setOffset(QString)));
@@ -75,11 +75,9 @@ void TimeOffsetWidget::setOffset(const QString &rOffset)
 {
     bool parseOK;
     double val = rOffset.toDouble(&parseOK);
-    if (mpToFVector && parseOK)
+    if (mpLogDataHandler && parseOK)
     {
-        UnitConverter us;
-        gpConfig->getUnitScale(mpToFVector->getDataQuantity(), gpConfig->getDefaultUnit(mpToFVector->getDataQuantity()), us);
-        mpToFVector->setPlotOffsetIfTime(us.convertToBase(val));
+        mpLogDataHandler->setGenerationTimePlotOffset(mGeneration, val);
         emit valuesChanged();
     }
 }

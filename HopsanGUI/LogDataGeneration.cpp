@@ -181,6 +181,12 @@ void LogDataGeneration::addVariable(const QString &rFullName, SharedVectorVariab
         }
 
         connect(variable.data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+
+        // If this is a Time variable, connect the time offset signal to relay change
+        if (variable->getDataName() == TIMEVARIABLENAME && variable->getComponentName().isEmpty())
+        {
+            connect(this, SIGNAL(timeOffsetChanged()), variable.data(), SIGNAL(dataChanged()));
+        }
     }
 }
 
@@ -320,6 +326,17 @@ QString LogDataGeneration::getFullNameFromAlias(const QString &rAlias)
         return pAliasVar->getFullVariableName();
     }
     return QString();
+}
+
+void LogDataGeneration::setTimeOffset(double timeOffset)
+{
+    mTimeOffset = timeOffset;
+    emit timeOffsetChanged();
+}
+
+double LogDataGeneration::getTimeOffset() const
+{
+    return mTimeOffset;
 }
 
 void LogDataGeneration::switchGenerationDataCache(SharedMultiDataVectorCacheT pDataCache)
