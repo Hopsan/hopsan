@@ -10,7 +10,7 @@ All available commands are listed below.
 \subsection sim sim
 Simulates current model (or all open models)<br>
  Usage: sim<br>
- Usage: sim all
+ Usage: sim all Usage: sim -loadstate file
 
 \subsection chss chss
 Change simulation settings<br>
@@ -29,23 +29,55 @@ Inherit time step of sub-component from system time step<br>
 
 \subsection chpv chpv
 Change plot variables in current plot<br>
- Usage: chpv [leftvar1 leftvar2 ...] -r [rightvar1 rightvar2 ... ]<br>
- Usage: chpv [leftvar1 leftvar2 ...]<br>
- Usage: chpv -r [rightvar1 rightvar2 ... ]
+ Usage: chpv [leftvar1{s,c,t} leftvar2{s,c,t} ...] -r [rightvar1{s,c,t} rightvar2{s,c,t} ... ]<br>
+ Usage: chpv [leftvar1{s,c,t} leftvar2{s,c,t} ...]<br>
+ Usage: chpv -r [rightvar1{s,c,t} rightvar2{s,c,t} ... ]<br>
+<br>
+ Line appearance (optional):<br>
+  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
+  Color (c): red, darkblue, lightgreen...<br>
+  Thickness (t): Thickness of line (integer value)<br>
+<br>
+ Example:<br>
+  \>\> chpv Pump.P1.p -r Pump.P1.q{2,blue,2}
 
 \subsection adpv adpv
 Add plot variables in current plot<br>
- Usage: adpv [leftvar1 leftvar2 ...] -r [rightvar1 rightvar2 ... ]<br>
- Usage: adpv [leftvar1 leftvar2 ...]<br>
- Usage: adpv -r [rightvar1 rightvar2 ... ]
+ Usage: adpv [leftvar1{s,c,t} leftvar2{s,c,t} ...] -r [rightvar1{s,c,t} rightvar2{s,c,t} ... ]<br>
+ Usage: adpv [leftvar1{s,c,t} leftvar2{s,c,t} ...]<br>
+ Usage: adpv -r [rightvar1{s,c,t} rightvar2{s,c,t} ... ]<br>
+<br>
+ Line appearance (optional):<br>
+  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
+  Color (c): red, darkblue, lightgreen...<br>
+  Thickness (t): Thickness of line (integer value)<br>
+<br>
+ Example:<br>
+  \>\> adpv Pump.P1.p -r Pump.P1.q{2,blue,2}
 
 \subsection adpvl adpvl
 Adds plot variables on left axis in current plot<br>
- Usage: adpvl [var1 var2 ... ]
+ Usage: adpvl [var1{s,c,t} var2{s,c,t} ... ]<br>
+<br>
+ Line appearance (optional):<br>
+  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
+  Color (c): red, darkblue, lightgreen...<br>
+  Thickness (t): Thickness of line (integer value)<br>
+<br>
+ Example:<br>
+  \>\> adpvl Pump.P1.p Pump.P1.q{2,blue,2}
 
 \subsection adpvr adpvr
 Adds plot variables on right axis in current plot<br>
- Usage: adpvr [var1 var2 ... ]
+ Usage: adpvr [var1{s,c,t} var2{s,c,t} ... ]<br>
+<br>
+ Line appearance (optional):<br>
+  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
+  Color (c): red, darkblue, lightgreen...<br>
+  Thickness (t): Thickness of line (integer value)<br>
+<br>
+ Example:<br>
+  \>\> adpvl Pump.P1.p Pump.P1.q{2,blue,2}
 
 \subsection chdl chdl
 Change (and lock) diagram limits in the current plot<br>
@@ -83,7 +115,7 @@ Turn on and off logarithmic right y-axis scale<br>
  Usage: logyr off
 
 \subsection sapw sapw
-Save the current plot window as an image<br>
+Save the current plotwinow as an image<br>
  Usage: sapw [fileName.ext] [width] [height] [dimUnit] [dpi] <br>
  Usage: sapw [fileName.ext] [width] [height] [dimUnit]       <br>
  Usage: sapw [fileName.ext] [width] [height]                 Pixels size<br>
@@ -102,21 +134,45 @@ Displays current terminal plot window<br>
 
 \subsection chpvl chpvl
 Changes plot variables on left axis in current plot<br>
- Usage: chpvl [var1 var2 ... ]
+ Usage: chpvl [var1{s,c,t} var2{s,c,t} ... ]<br>
+<br>
+ Line appearance (optional):<br>
+  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
+  Color (c): red, darkblue, lightgreen...<br>
+  Thickness (t): Thickness of line (integer value)<br>
+<br>
+ Example:<br>
+  \>\> chpvl Pump.P1.p Pump.P1.q{2,blue,2}
 
 \subsection chpvr chpvr
 Changes plot variables on right axis in current plot<br>
- Usage: chpvr [var1 var2 ... ]
+ Usage: chpvr [var1{s,c,t} var2{s,c,t} ... ] Line appearance (optional):<br>
+  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
+  Color (c): red, darkblue, lightgreen...<br>
+  Thickness (t): Thickness of line (integer value)<br>
+<br>
+ Example:<br>
+  \>\> chpvr Pump.P1.p Pump.P1.q{2,blue,2}
 
 \subsection chpvx chpvx
 Changes xdata plot variable in current plot<br>
  Usage: chpvx [varname]<br>
  Usage: chpvx -c      Clear Custom x-data
 
+\subsection chto chto
+Change time plot offset for the current or specified generation
+Time offset should be given in seconds
+The generation specifier is optional, you can use c,a,*,h,l specifiers<br>
+ Usage: chto [offset] [generation]
+
+\subsection dito dito
+Display time plot offset of specified generation<br>
+ Usage: dito [generation]
+
 \subsection sapl sapl
-Save log variables to file<br>
+Save log variables to file. Filename suffix determins format<br>
  Usage: sapl [filepath] [-flags] [variables]<br>
-  Flags (optional):   -csv    Use CSV format (default is PLO format)
+  Flags (optional):   -csv    Force CSV format   -plo    Force PLO format   -h5     Force H5 (HDF5) format
 
 \subsection repl repl
 Loads plot files from .CSV or .PLO<br>
@@ -125,6 +181,26 @@ Loads plot files from .CSV or .PLO<br>
 \subsection bode bode
 Creates a bode plot from specified curves<br>
  Usage: bode [invar] [outvar] [maxfreq]
+
+\subsection lock lock
+Locks or unlocks all axes in current plot window<br>
+ Usage: lock [flag] [on/off]<br>
+ See also: lockyl, lockyr, lockr
+
+\subsection lockyl lockyl
+Locks or unlocks left y-axis in current plot window<br>
+ Usage: lockyl [on/off]<br>
+ See also: lock, lockyr, lockr
+
+\subsection lockyr lockyr
+Locks or unlocks right y-axis in current plot window<br>
+ Usage: lockyr [on/off]<br>
+ See also: lock, lockyl, lockr
+
+\subsection lockx lockx
+Locks or unlocks x-axis in current plot window<br>
+ Usage: lockx [on/off]<br>
+ See also: lock, lockyl, lockyr
 
 \section parametercommands Parameter Commands
 
@@ -200,23 +276,20 @@ Defines an alias for a variable<br>
 
 \subsection rmvar rmvar
 Removes specified variable<br>
- Usage: rmvar [variable]
+ Usage: rmvar [variables]<br>
+ Usage: rmvar [variables] -n [variables]<br>
+  Flags (optional):<br>
+   -n Exclude specified variables   -noalias Exclude all alias variables
 
-\subsection chdfsc chdfsc
-Change default plot scale of specified variable<br>
- Usage: chdfsc [variable] [scale]
+\subsection sequ sequ
+Set quantity on specified variable(s)<br>
+ Usage: sequ [variable] [quantityname]<br>
+ Usage: sequ [variable] -<br>
+  The second example clears the quantity
 
-\subsection didfsc didfsc
-Display default plot scale of specified variable<br>
- Usage: didfsc [variable]
-
-\subsection chsc chsc
-Change plot scale of specified variable<br>
- Usage: chsc [variable] [scale]
-
-\subsection disc disc
-Display plot scale of specified variable<br>
- Usage: disc [variable]
+\subsection ivpv ivpv
+Toggle invert plot of specified variable<br>
+ Usage: ivpv [variable]
 
 \subsection dlog dlog
 Disables logging in specified ports<br>
@@ -225,10 +298,6 @@ Disables logging in specified ports<br>
 \subsection elog elog
 Enables logging in specified ports<br>
  Usage: elog [ports]
-
-\subsection abs abs
-Irreversibly turn all vector elements into absolute values<br>
- Usage: abs [var]
 
 \section modelcommands Model Commands
 
@@ -239,6 +308,12 @@ Loads a model file<br>
 \subsection loadr loadr
 Loads most recent model file<br>
  Usage: loadr [no arguments]
+
+\subsection save save
+Saves current model<br>
+ Usage: save<br>
+ Usage: save [filepath]<br>
+  If no file path is specified, current model file is overwritten.
 
 \subsection reco reco
 Renames a component<br>
@@ -275,12 +350,23 @@ Shows help information<br>
  Usage: help [command]
 
 \subsection info info
-Show info about a variable<br>
+Show information about specified variable<br>
 Usage: info [variable]
 
 \subsection exit exit
 Exits the program<br>
  Usage: exit [no arguments]
+
+\subsection wrtf wrtf
+Writes text string to file<br>
+ Usage: wrtf [-flag] [filepath] ["string"]<br>
+  Flags (optional):<br>
+   -a Append at end of file<br>
+   -e Erase existing contents before writing<br>
+  Variables can be written by putting them in dollar signs.<br>
+  Example:<br>
+   \>\> wrtf -a output.txt "x=$x$"<br>
+
 
 \subsection print print
 Prints arguments on the screen<br>
@@ -298,11 +384,31 @@ Prints arguments on the screen<br>
 Sets Hopsan preferences<br>
  Usage: set [preference] [value]<br>
   Available preferences:<br>
-   multicore       [on/off]<br>
-   threads         [number]<br>
-   cachetodisk     [on/off]<br>
-   generationlimit [number]<br>
-   samples         [number]
+   multicore        [on/off]<br>
+   threads          [number]<br>
+   cachetodisk      [on/off]<br>
+   generationlimit  [number]<br>
+   samples          [number]<br>
+   undo             [on/off]<br>
+   backup           [on/off]<br>
+   progressbar      [on/off]<br>
+   progressbarstep  [number]
+
+\subsection get get
+Shows current Hopsan preferences<br>
+ Usage: get [preference]<br>
+  No argument prints all preferences.<br>
+  Available preferences:<br>
+   multicore      <br>
+   threads        <br>
+   cachetodisk    <br>
+   generationlimit<br>
+   samples        <br>
+   undo           <br>
+   backup         <br>
+   progressbar    <br>
+   progressbarstep<br>
+
 
 \subsection close close
 Closes current model<br>
@@ -327,9 +433,14 @@ Sets terminal output on or off<br>
  Usage: echo [on/off]
 
 \subsection semt semt
-Change mutli-threading settings<br>
+Change mutli-trheading settings<br>
  Usage: semt [on/off] [numThreads] [algorithm]<br>
  Usage: semt [on/off] [numThreads]
+
+\subsection sleep sleep
+Pause execution for a number of seconds<br>
+ Usage: sleep [seconds]<br>
+ The sleep argument has millisecond accuracy
 
 \section functions Local Functions
 
@@ -351,9 +462,17 @@ Index-wise fuzzy equal check between vectors and/or scalars  (equivalent to "=="
 Usage: eq(varName, threshold, eps)<br>
 Usage: eq(var1, var2, eps)
 
+\subsection exists exists()
+Returns whether or not specified component exists in model<br>
+Usage: exists(name)
+
 \subsection fc fc()
 Fuzzy compare, returns 1 if the values of the arguments are almost the same<br>
 Usage: fc(expr, expr, tolerance)
+
+\subsection fd fd()
+Converts variable to frequency domain.Usage: y = fd(x)<br>
+
 
 \subsection fft fft()
 Generates frequency spectrum plot from vector<br>
@@ -442,9 +561,17 @@ Usage: rand()
 Calculate the size of a vector<br>
 Usage: size(vector)
 
+\subsection td td()
+Converts variable to time domain.Usage: y = td(x)<br>
+
+
 \subsection time time()
 Returns last simulation time<br>
 Usage: time()
+
+\subsection x x()
+Returns the X-vector of the specified variable.<br>
+Usage: x(vector)
 
 \subsection zeros zeros()
 Create a vector of zeros<br>

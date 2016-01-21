@@ -12,27 +12,32 @@ The HopsanCLI is located in the `\bin` folder of your Hopsan installation.
 By calling `HopsanCLI --help` you will get help output showing you all the options.
 The help text is also given here for your convenience, but be sure to check the actual help since this manual page may not always be up-to-date.
 \verbatim
-USAGE:
 
-   ./HopsanCLI_d  [-m <Path to file>] [-e <Path to file>] ...
-                  [--externalLibsFile <Path to file>] [-s <Comma separated
-                  string>] [-l <integer>] [-t <Path to .hvc file>]
-                  [--parameterImport <Path to file>] [--parameterExport
-                  <Path to file>] [--resultsFullCSV <Path to file>]
-                  [--resultsFinalCSV <Path to file>] [--resultsCSVSort
-                  <string>] [-d <Path to directory>]
-                  [--createValidationData] [--printDebug] [--endPause]
-                  [--testInstanciateComponents] [--] [--version] [-h]
+USAGE: 
+
+   ./HopsanCLI  [-m <Path to file>] [-e <Path to file>] ... 
+                [--externalLibsFile <Path to file>] [-s <Comma separated
+                string>] [-l <integer>] [-t <Path to .hvc file>]
+                [--parameterImport <Path to file>] [--parameterExport
+                <Path to file>] [--resultsFullCSV <Path to file>]
+                [--resultsFinalCSV <Path to file>] [--resultsCSVSort
+                <string>] [--loadSimState <string>] [--saveSimState
+                <string>] [-d <Path to directory>]
+                [--buildComponentLibrary <string>]
+                [--prefixRootSystemName] [--createValidationData]
+                [--printDebug] [--endPause] [--testInstanciateComponents]
+                [--] [--version] [-h]
 
 
-Where:
+Where: 
 
    -m <Path to file>,  --hmf <Path to file>
      The Hopsan model file to load
 
    -e <Path to file>,  --externalLib <Path to file>  (accepted multiple
       times)
-     Path to a .dll/.so externalComponentLib. Can be given multiple times
+     Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple
+     times
 
    --externalLibsFile <Path to file>
      A text file containing the external libs to load
@@ -63,8 +68,20 @@ Where:
    --resultsCSVSort <string>
      Export results in columns or in rows: [rows, cols]
 
+   --loadSimState <string>
+     Load the simulation state to this file
+
+   --saveSimState <string>
+     Export the simulation state to this file
+
    -d <Path to directory>,  --destination <Path to directory>
      Destination for resulting files
+
+   --buildComponentLibrary <string>
+     Build the specified component library (point to the library xml)
+
+   --prefixRootSystemName
+     Prefix the root-level system name to exported results and parameters
 
    --createValidationData
      Create a model validation data set based on the variables connected to
@@ -87,6 +104,7 @@ Where:
 
    -h,  --help
      Displays usage information and exits.
+
 \endverbatim
 
 <b>Some run command examples:</b>\n
