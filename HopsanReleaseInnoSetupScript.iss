@@ -68,6 +68,7 @@ Source: "{#MyFilesSource}\Scripts\*";  Excludes: "---*---";  DestDir: "{userdocs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"
+Name: "{group}\HoLC"; Filename: "{app}\bin\HoLC.exe"
 Name: "{group}\{cm:UserGuide,{#MyAppName}}"; Filename: "{app}\doc\html\index.html"
 Name: "{group}\{cm:ProjectHomepage,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
