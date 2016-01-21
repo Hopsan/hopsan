@@ -1,17 +1,7 @@
 /*!
 \page userAutomaticCodeGenerationPage Automatically generating Component Code
 \section component-generator Component Generator Dialog
-Hopsan has a built-in component generator dialog, from where new components can be written without deeper knowledge of the Hopsan simulation core interface. It accessed from the "Generate New Component" icon at the bottom of the library widget.
-
-\htmlonly
-<table border="0">
-<tr>
-<td>&nbsp;&nbsp;&nbsp;<img src="../graphics/generatenewcomponent_icon.png" border=0>
-</td>
-<td><b>Generate New Component</b></td>
-</tr>
-</table>
-\endhtmlonly
+Hopsan has a component skeleton generator functionality, from where new components can be written without deeper knowledge of the Hopsan simulation core interface. __Note!__ This functionality has moved into the HoLC program (included with each Hopsan release). It was previously a part of Hopsan GUI.
 
 In this dialog it is possible to specify component name (used by simulation core, must not contain spaces), display name (shown in graphical interface) and component type (C,Q or S - see the \ref userTransmissionLineModelingMethodPage "transmission line element method"). It is also possible to add ports, parameters, utility functions and static variables. Finally, the code for the component can be written in two ways, either directly from C++ code, or from algebraic equations using a subset of the Modelica language.
 

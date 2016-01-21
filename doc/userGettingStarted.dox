@@ -91,10 +91,6 @@ Subsystems offers several interesting features. They can for example have smalle
 
 Because subsystems works as a component, the C, Q or S type is important. It is not possible to connect two container ports to both C- and Q-type components in the same subsystem. This will result in an invalid type, and the model cannot be simulated.
 
-
-\section groups Groups
-Groups is a feature that makes it possible to hide components graphically, similar to subsystems, but without affecting the actual simulation. This feature is not implemented in this version of Hopsan, but will be available in future releases.
-
 \section widgets Widgets
 To make models more nice looking and understandable, it is possible to add text box widgets. These are purely cosmetic and do not modify the behavior of the system in any way. To add a widget, simply right click on the workspace and select "Add Text Box Widget" from the pop-up menu. 
 

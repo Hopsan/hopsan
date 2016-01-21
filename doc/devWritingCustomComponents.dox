@@ -6,6 +6,7 @@ namespace hopsan::Component {
 -# \subpage devWritingCppComponentsPageTheComponentPage
 -# \subpage devWritingCppComponentsPageCompilationPage
 -# \subpage devWritingCppComponentsPageCreateModifyComponentAppearancePage
+-# \subpage devWritingCppComponentsPageMarkdownHelp
 */
 
 /*!
@@ -254,10 +255,8 @@ Information about the component for the graphical interface, such as icon, port 
       <text>Help Text</text>
       <picture>helpPicture.svg</picture>
       <link>externalHelpDocumentation.pdf</link>
-      <!-- Note! You can have multiple links (can point local files or web) -->
       <html>./HydraulicLaminarOrifice.html</html>
       <md>./HydraulicLaminarOrifice.md</md>
-      <!-- Note! You can have either html or markdown (will generate html on-the-fly -->
     </help>
     <ports>
       <port name="P1" x="1.0" y="0.5" a="0" visible="true"/>
@@ -284,12 +283,24 @@ The first line contains basic information about the XML code, and should always 
 - \b help Allows you to specify help information explaining the function of the component. (Optional)
   - \b text The help text. (Optional)
   - \b picture The path to the .svg help picture. (Optional)
-  - \b link Link to external document (relative this xml file) or URL
+  - \b link Link to external document (relative this xml file) or URL, you can have multiple links
+  - \b html External html help document      
+  - \b md External markdown file (will generate html on-the-fly, including LaTeX equation support) Note! You can have either html or markdown, not both!
 - \b ports Defines the positions and orientations for each port (Required for each port)
   - \b name Name of the port as defined in the code
   - \b x X-position fraction of component icon width (0 = left, 1 = right)
   - \b y Y-position fraction of component icon height (0 = top, 1 = bottom)
   - \b a Angle of port, 0 = right, 90 = down, 180 = left, 270 = up, ports shall normally point outwards from the component
   - \b visible If the port is visible by default, \e true or \e false. (If omitted defaults to true)
+  
+ \page devWritingCppComponentsPageMarkdownHelp Markdown help with LaTeX equation support
+ New from version 0.7 is the ability to write component help documentation in markdown with additional support for LaTeX equations.
+ As of 0.7 release there is only one component using the feature, the HydraulicLaminarOrifice, and it is demonstrated here as an example.
+ When you write new components or update old ones, please consider using this feature.
+ For help on typical markdown syntax see the Internet!\n
+ 
+ __MyExampleOrifice.md:__
+ \verbinclude MyExampleOrifice.md
+  
 */
 }

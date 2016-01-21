@@ -1,0 +1,61 @@
+/*!
+\page userScriptingPageNumHopPage NumHop Scripting
+
+You can find the NumHop script dialog under Tools->Num Hop Script or press (Ctrl+Shift+N). There is one NumHop script for every system (subsystem) in your model. The following is supported:
+\verbatim
+# The hash sign mean that the rest of the line is a comment
+
+# Assign a script local variable
+a = 1
+
+# Multiple expressions on same line with ;
+b=2; c=3
+
+# Example on valid expression, supported operators are: = + - * / ^ (...)
+a = (a + b)*c/a^c
+
+# Access a component parameter
+a = ComponentName.ParameterName
+
+# Assign the same way (a can be an expression)
+ComponentName.ParameterName = a
+
+\endverbatim
+
+__Below is an example:__ \n
+
+Consider a model with two metal rods where _length_, _diameter_ and _density_ is known.
+You can set the known parameters and then automatically calculate start values and parameters such as _area_ and _mass_
+
+\verbatim
+
+# Global parameters 
+pi = 3.14159265358979
+
+Rod1Length=0.6
+Rod2Length=0.8
+Rod1Diameter=0.070
+Rod2Diameter=0.080
+density = 7850
+
+StartPos = 0.1
+
+# Set and calculate default start values 
+
+Rod1.Length = Rod1Length
+Rod1.Area = (pi*Rod1Diameter^2)/4
+Rod1.P1.Position = StartPos
+Rod1.P2.Position = -(Rod1.P1.Position+Rod1.Length)
+
+Rod2.Length = Rod2Length
+Rod2.Area = (pi*Rod2Diameter^2)/4
+Rod2.P1.Position = -Rod1.P2.Position
+Rod1.P2.Position = -(Rod2.P1.Position+Rod2.Length)
+
+Mass1.m = Rod1.Area*Rod1.Length
+Mass2.m = Rod2.Area*Rod2.Length
+
+
+\endverbatim
+
+*/
