@@ -3276,16 +3276,6 @@ double ComponentSystem::getTotalMeasuredTime()
 }
 
 
-void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
-{
-    if(rSystemVector.size() > 0)
-    {
-        rSystemVector[0]->addErrorMessage("Sorting systems by measured time is not possible without the TBB library.");
-    }
-    return;
-}
-
-
 void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &/*rSplitCVector*/, size_t /*nThreads*/)
 {
     addWarningMessage("Called distributeCcomponents(), but TBB is not avaialble.");
