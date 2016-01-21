@@ -29,7 +29,7 @@
 //!
 //! @brief Contains the optimization worker base class
 //!
-//$Id: SymHop.cc 8138 2015-06-17 12:27:23Z petno25 $
+//$Id$
 
 #ifndef OPSWORKER_H
 #define OPSWORKER_H

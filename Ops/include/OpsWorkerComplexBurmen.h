@@ -29,7 +29,7 @@
 //!
 //! @brief Contains the optimization worker class for the Complex-RF algorithm by Bürmen
 //!
-//$Id: SymHop.cc 8138 2015-06-17 12:27:23Z petno25 $
+//$Id$
 
 #ifndef WORKERCOMPLEXBURMEN_H
 #define WORKERCOMPLEXBURMEN_H

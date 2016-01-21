@@ -29,7 +29,7 @@
 //!
 //! @brief Contains the optimization worker class for the controlled random search algorithm
 //!
-//$Id: SymHop.cc 8138 2015-06-17 12:27:23Z petno25 $
+//$Id$
 
 #ifndef OPSWORKERCONTROLLEDRANDOMSEARCH_H
 #define OPSWORKERCONTROLLEDRANDOMSEARCH_H

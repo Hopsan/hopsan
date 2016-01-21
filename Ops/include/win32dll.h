@@ -29,7 +29,7 @@
 //!
 //! @brief Handles DLLIMPORT, DLLEXPORT and DLLIMPORTEXPORT for win32 dll support
 //!
-//$Id: win32dll.h 8138 2015-06-17 12:27:23Z petno25 $
+//$Id$
 
 #ifndef WIN32DLL_H_INCLUDED
 #define WIN32DLL_H_INCLUDED
