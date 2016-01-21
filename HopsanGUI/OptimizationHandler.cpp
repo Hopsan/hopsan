@@ -43,6 +43,7 @@
 #include "OpsWorkerParticleSwarm.h"
 #include "OpsWorkerDifferentialEvolution.h"
 #include "OpsWorkerControlledRandomSearch.h"
+#include "OpsWorkerComplexBurmen.h"
 #include "MessageHandler.h"
 #include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
@@ -391,6 +392,14 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             }
             mpWorker = new Ops::WorkerControlledRandomSearch(mpEvaluator);
         }
+        else if(value == "complexburmen")
+        {
+            if(mpWorker)
+            {
+                delete mpWorker;
+            }
+            mpWorker = new Ops::WorkerComplexBurmen(mpEvaluator);
+        }
         return;
     }
     else if(var == "evalid")
@@ -461,7 +470,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         return;
     }
 
-    if(mpWorker->getAlgorithm() == Ops::ComplexRF || mpWorker->getAlgorithm() == Ops::ComplexRFP)
+    if(mpWorker->getAlgorithm() == Ops::ComplexRF || mpWorker->getAlgorithm() == Ops::ComplexRFP || mpWorker->getAlgorithm() == Ops::ComplexBurmen)
     {
         Ops::WorkerComplexRF *pWorker = qobject_cast<Ops::WorkerComplexRF*>(mpWorker);
         if(var == "alpha")
