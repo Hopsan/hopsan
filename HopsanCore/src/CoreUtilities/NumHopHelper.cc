@@ -6,7 +6,6 @@
 using namespace std;
 using namespace hopsan;
 
-#ifdef USENUMHOP
 #include "numhop.h"
 
 class HopsanParameterAccess :  public numhop::ExternalVariableStorage
@@ -259,33 +258,27 @@ public:
 
 }
 
-#endif
+
 
 NumHopHelper::NumHopHelper()
 {
     mpSystem = 0;
     mpComponent = 0;
     mpPrivate = 0;
-#ifdef USENUMHOP
     mpPrivate = new NumHopHelperPrivate();
-#endif
-
 }
 
 NumHopHelper::~NumHopHelper()
 {
-#ifdef USENUMHOP
     if (mpPrivate->mpHopsanAccess)
     {
         delete mpPrivate->mpHopsanAccess;
     }
     delete mpPrivate;
-#endif
 }
 
 void NumHopHelper::setSystem(ComponentSystem *pSystem)
 {
-#ifdef USENUMHOP
     mpSystem = pSystem;
 
     if (mpPrivate->mpHopsanAccess)
@@ -295,12 +288,10 @@ void NumHopHelper::setSystem(ComponentSystem *pSystem)
     mpPrivate->mpHopsanAccess = new HopsanSystemAccess(pSystem);
     mpPrivate->mVarStorage.setExternalStorage(mpPrivate->mpHopsanAccess);
     mpPrivate->mVarStorage.setDisallowedInternalNameCharacters(".");
-#endif
 }
 
 void NumHopHelper::setComponent(Component *pComponent)
 {
-#ifdef USENUMHOP
     mpComponent = pComponent;
 
     if (mpPrivate->mpHopsanAccess)
@@ -310,7 +301,6 @@ void NumHopHelper::setComponent(Component *pComponent)
     mpPrivate->mpHopsanAccess = new HopsanComponentAccess(pComponent);
     mpPrivate->mVarStorage.setExternalStorage(mpPrivate->mpHopsanAccess);
     mpPrivate->mVarStorage.setDisallowedInternalNameCharacters(".");
-#endif
 }
 
 void NumHopHelper::registerDataPtr(const HString &name, double *pData)
@@ -323,7 +313,6 @@ void NumHopHelper::registerDataPtr(const HString &name, double *pData)
 
 bool NumHopHelper::evalNumHopScript(const HString &script, double &rValue, bool doPrintOutput, HString &rOutput)
 {
-#ifdef USENUMHOP
     if (interpretNumHopScript(script, doPrintOutput, rOutput))
     {
         if (doPrintOutput && !rOutput.empty())
@@ -332,16 +321,12 @@ bool NumHopHelper::evalNumHopScript(const HString &script, double &rValue, bool 
         }
         return eval(rValue, doPrintOutput, rOutput);
     }
-#else
-    rOutput = "Error: NumHop is not pressent!";
-#endif
     mpPrivate->mExpressions.clear();
     return false;
 }
 
 bool NumHopHelper::interpretNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput)
 {
-#ifdef USENUMHOP
     list<string> expressions;
     numhop::extractExpressionRows(script.c_str(), '#', expressions);
 
@@ -369,15 +354,10 @@ bool NumHopHelper::interpretNumHopScript(const HString &script, bool doPrintOutp
         rOutput.erase(rOutput.size()-1);
     }
     return allOK;
-#else
-    rOutput = "Error: NumHop is not pressent!";
-    return false;
-#endif
 }
 
 bool NumHopHelper::eval(double &rValue, bool doPrintOutput, HString &rOutput)
 {
-#ifdef USENUMHOP
     bool allOK=!mpPrivate->mExpressions.empty();
     double value;
     for (list<numhop::Expression>::iterator it = mpPrivate->mExpressions.begin(); it!=mpPrivate->mExpressions.end(); ++it)
@@ -413,9 +393,5 @@ bool NumHopHelper::eval(double &rValue, bool doPrintOutput, HString &rOutput)
     }
     rValue = value;
     return allOK;
-#else
-    rOutput = "Error: NumHop is not pressent!";
-    return false;
-#endif
 }
 

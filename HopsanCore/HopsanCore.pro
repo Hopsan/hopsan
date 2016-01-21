@@ -33,15 +33,12 @@ INCLUDEPATH *= $${PWD}/../Dependencies/IndexingCSVParser
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set numHop paths, (static linking)
-exists($${PWD}/../Dependencies/libNumHop/libNumHop/numhop.h) {
-  DEFINES *= USENUMHOP
-  INCLUDEPATH *= $${PWD}/../Dependencies/libNumHop/libNumHop
-
-  SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Expression.cc
-  SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Helpfunctions.cc
-  SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/VariableStorage.cc
-  HEADERS += $${PWD}/../Dependencies/libNumHop/libNumHop/numhop.h
+# Set numHop paths, (compile in)
+INCLUDEPATH *= $${PWD}/../Dependencies/libNumHop/libNumHop
+SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Expression.cc
+SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Helpfunctions.cc
+SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/VariableStorage.cc
+HEADERS += $${PWD}/../Dependencies/libNumHop/libNumHop/numhop.h
 }
 #--------------------------------------------------------
 
