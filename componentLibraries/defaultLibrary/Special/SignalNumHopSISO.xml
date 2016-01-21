@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalNumHopSISO.hpp" typename="SignalNumHopSISO" displayname="SignalNumHopSISO">
         <icons>
-<!--             <icon scale="1" path="MechanicVehicle1D.svg" iconrotation="ON" type="user"/> -->
+<!--             <icon scale="1" path="NumHop.svg" iconrotation="ON" type="user"/> -->
         </icons>
         <help>
             <text>A single input single output numhop script evaluation component. In your script use "in" as the input variable name and "out" as the output variable name (without quotes). </text>

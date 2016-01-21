@@ -9,11 +9,7 @@
 
 namespace hopsan {
 
-//!
-//! @brief The data csv file should be  on , separated form or ; separated form
-//!
 //! @ingroup SignalComponents
-//!
 class SignalNumHopSISO : public ComponentSignal
 {
 
