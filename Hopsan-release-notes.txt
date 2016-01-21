@@ -28,6 +28,15 @@
 0.7.0  (2016-01-22)
 - Note: The abs HCOM command has been removed, use the abs() function instead.
 
+- Enhancement: HCOM set command can now take variables as arguments
+- Enhancement: HCOM get command, which displays current settings
+
+- Feature: Components in a model can now be locked, which prevents editing
+
+- Bug fixed: Messages from optimizations no longer appears in main window terminal
+- Bug fixed: Memory leak when re-using models for subsequent optimizations
+
+- Fixed component: Some directional valve components had different speeds in positive and negative direction
 
 ------------------------------
 0.6.12  (2015-09-03)
