@@ -8,35 +8,78 @@
   In Windows it is usually located in: c:\Users\XXXXX\AppData\Local\Temp\Hopsan
   In Ubuntu it is usually located in: /home/XXXXX/.local/share/data/Hopsan
 
-- On WindowsXP fonts may look strange, ex: decimal point not visible. You need to activate ClearType font smoothing in Windows:
-  Desktop->Properties->Appearance->Effects
-
 - There is no guarantee that the default components are working under all conditions, you have decide for yourself if you trust the simulation results.
   From version 0.6.0, the source code for all default components is included in the release.
 
-- There have been substantial "under the hood" changes between the 0.5.* and 0.6.* versions of Hopsan.
-  Loading old models in 0.6.0 should work without issues in most cases, HOWEVER, to be sure that you do not loose any information:
+- There have been substantial "under the hood" changes between the 0.6.* and 0.7.* versions of Hopsan.
+  Loading old models in 0.7.0 should work without issues in most cases, HOWEVER, to be sure that you do not loose any information:
   * Deactivate "Group Similar Messages" in the message widget at the bottom before loading a model.
   * Pay attention to any Warnings or Errors you may receive when loading your old model. If parameters fail to load they will be discarded.
   * Parameters and ports may have changed name, in such cases you have to manually set the parameter value that could not be loaded (according to messages).
   
-- Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We do not yet know why. If this is a problem take a screen-shot instead. 
+- Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We have not had time to fix this problem.
+  If this is a problem take a screen-shot instead. 
 
 ******************************
     Version History
 ******************************
 0.7.0  (2016-01-22)
 - Note: The abs HCOM command has been removed, use the abs() function instead.
+- Note: The HCOM plot scale and plot offset commands have been removed. (The features have been removed as well)
+        Use quantities or generation specific time plot offset
+
+- Feature: It is possible to set plot label in the component properties dialog, this label will be used in plot legend (overwriting full name and alias)
+- Feature: Components (including subsystems) in a model can now be locked, which prevents editing
 
 - Enhancement: HCOM set command can now take variables as arguments
 - Enhancement: HCOM get command, which displays current settings
+- Enhancement: HCOM help command will auto try functions if no matching command was found
 
-- Feature: Components in a model can now be locked, which prevents editing
+- Enhancement: It is now possible to have multiple help links in the component help
+- Enhancement: Help links can point to either local files, relative to the xml description, or to on-line web pages.
+- Enhancement: Unit scaling with offset as well as scale are now supported (such as temperature)
+               The scale and offset values follows the same convention as in the FMI standard
+- Enhancement: Built in unit scales will no longer be saved in user configuration file, the default built-in values will always be used.
+               This reduces the risk of using incorrect values.
+- Enhancement: System parameters now support quantities/units and description
+- Enhancement: It is now possible to edit system parameters after they have been added
+- Enhancement: It is now possible to plot and check parameters (but not edit) inside fully locket external systems and locked local systems
+- Enhancement: When the component properties dialog is opened the model is locked to prevent editing, however, now it is possible to open additional properties dialogs
+               or start a simulation. The dialogs have been given an apply button. You can now iterate the following: open a dialog, change a parameter, simulate, look at the results. All without ever closing any windows or dialogs.
+- Enhancement: The component properties dialog for subsystems now look and behave the same as for ordinary components.
+               But it still contain additional system specific settings.
+- Enhancement: The expended items in the plot widget will now be remembered when you switch between two different models
+- Enhancement: When exporting a model as .png, it is possible to choose if the background should be transparent or white. The original resolution is also shown.
+- Enhancement: When a data variable is removed it will signal any plot using it to remove the curve or a curve custom x-data as appropriate.
+               This reduces confusion when analyzing the results.
+- Enhancement: When a generation is missing from a data variable, that data curve will be hidden if the curve is set to that generation.
+               (Rather then showing the wrong generation).
+- Enhancement: When offsetting time for a specific generation, now all "Time" vectors in that generation will be affected at the same time.
+               Time offset can be applied and checked from time offset dialog, right-click menu in plot widget or HCOM commands "chto" and "dito".
+- Enhancement: Systems and components now save their CQS-type as an attribute in the HMF file
+
+- New components: Round, Ceil and Floor signal components
+- New component: NumHop SingleInput SingleOutput interpreting component, write NumHop script that is evaluated without compilation. 
+                 Code can be extended to support more inputs and outputs.
+
+- Fixed component: Some directional valve components had different speeds in positive and negative direction
 
 - Bug fixed: Messages from optimizations no longer appears in main window terminal
 - Bug fixed: Memory leak when re-using models for subsequent optimizations
+- Bug fixed: It is possible to copy/paste in locked external systems, it should not be possible
+- Bug fixed: When a model is locked (external system) it is still possible to change or remove system parameters through the system parameter widget
+- Bug fixed: When sorting the system parameters in the system parameter widget, the row indexes are messed up, making operations affect the wrong parameter
+- Bug fixed: If you remove a system parameter from a system used as an external system, then the old parameter will be re-added once the master model is loaded
+- Bug fixed: Hopsan crash after simulation due to progress bar deletion if something got in the way between finilaizeDone signal and finish slot.
+             (actually this was a problem with non blocking signals and slots)
+- Bug fixed: Pressing Ctr+C (copy) without something selected will clear the current copy/cut stack.
+             Not fun if you made something fancy, cut and then accidentally press copy instead of paste.
+- Bug fixed: It is not possible to plot from a scope connected directly to a container port
+- Bug fixed: Variables in subsystems do not know from which model they come
+- Bug fixed: When setting a non string parameter to empty no error is shown and resulting evaluation will be zero
+- Bug fixed: 
+- Bug fixed: 
 
-- Fixed component: Some directional valve components had different speeds in positive and negative direction
 
 ------------------------------
 0.6.12  (2015-09-03)
