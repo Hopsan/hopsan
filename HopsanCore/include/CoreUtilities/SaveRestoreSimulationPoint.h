@@ -8,7 +8,7 @@ namespace hopsan {
 class ComponentSystem;
 
 void saveSimulationPoint(HString fileName, ComponentSystem* pRootSystem);
-void restoreSimulationPoint(HString fileName, ComponentSystem* pRootSystem);
+void restoreSimulationPoint(HString fileName, ComponentSystem* pRootSystem, double &rTimeOffset);
 
 }
 

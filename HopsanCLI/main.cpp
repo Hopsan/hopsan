@@ -266,7 +266,10 @@ int main(int argc, char *argv[])
                     // Apply loaded simulation states
                     if (loadSimulationStateOption.isSet())
                     {
-                        restoreSimulationPoint(loadSimulationStateOption.getValue().c_str(), pRootSystem);
+                        double timeOffset;
+                        restoreSimulationPoint(loadSimulationStateOption.getValue().c_str(), pRootSystem, timeOffset);
+                        startTime+=timeOffset;
+                        stopTime+=timeOffset;
                         pRootSystem->setLoadStartValues(false);
                     }
 
@@ -362,7 +365,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                printErrorMessage("There were errors while loading the modell");
+                printErrorMessage("There were errors while loading the model");
             }
         }
 
