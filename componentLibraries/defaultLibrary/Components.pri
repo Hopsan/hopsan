@@ -34,6 +34,7 @@ HEADERS +=  \
  $${PWD}/Electric/ElectricUsensor.hpp \ 
  $${PWD}/Electric/ElectricUsource.hpp \ 
  $${PWD}/Electric/ElectricVarResistor.hpp \ 
+ $${PWD}/Electric/ElectricVoltageSourceMultiPortC.hpp \ 
  $${PWD}/Electric/ElectricVoltageSourceQ.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydraulicCentrifugalPump.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydraulicCentrifugalPumpJ.hpp \ 
@@ -343,8 +344,7 @@ HEADERS +=  \
  $${PWD}/Special/Special.h \ 
  $${PWD}/Special/TMMS04/Forks.hpp \ 
  $${PWD}/Special/TMMS04/TMMS04.h \ 
- $${PWD}/Components.h \
-    Electric/ElectricVoltageSourceMultiPortC.hpp
+ $${PWD}/Components.h
 
 SOURCES += 
 

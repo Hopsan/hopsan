@@ -41,5 +41,5 @@
 #include "ElectricUsensor.hpp"
 #include "ElectricUsource.hpp"
 #include "ElectricVarResistor.hpp"
-#include "ElectricVoltageSourceQ.hpp"
 #include "ElectricVoltageSourceMultiPortC.hpp"
+#include "ElectricVoltageSourceQ.hpp"

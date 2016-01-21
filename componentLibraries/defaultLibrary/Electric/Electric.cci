@@ -41,5 +41,5 @@ pComponentFactory->registerCreatorFunction("ElectricSwitch",ElectricSwitch::Crea
 pComponentFactory->registerCreatorFunction("ElectricUsensor",ElectricUsensor::Creator);
 pComponentFactory->registerCreatorFunction("ElectricUsource",ElectricUsource::Creator);
 pComponentFactory->registerCreatorFunction("ElectricVarResistor",ElectricVarResistor::Creator);
-pComponentFactory->registerCreatorFunction("ElectricVoltageSourceQ",ElectricVoltageSourceQ::Creator);
 pComponentFactory->registerCreatorFunction("ElectricVoltageSourceMultiPortC",ElectricVoltageSourceMultiPortC::Creator);
+pComponentFactory->registerCreatorFunction("ElectricVoltageSourceQ",ElectricVoltageSourceQ::Creator);
