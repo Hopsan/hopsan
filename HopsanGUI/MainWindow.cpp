@@ -618,7 +618,7 @@ void MainWindow::createActions()
     connect(mpSimulateAction, SIGNAL(triggered()), this, SLOT(simulateKeyWasPressed()));
     mHelpPopupTextMap.insert(mpSimulateAction, "Starts a new simulation of current model.");
 
-    mpToggleRemoteCoreSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Toggle Remote HopsanCore Connection"), this);
+    mpToggleRemoteCoreSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SimulateRemote.png"), tr("Toggle Remote HopsanCore Connection"), this);
     mpToggleRemoteCoreSimAction->setCheckable(true);
     mpToggleRemoteCoreSimAction->setChecked(false);
     mHelpPopupTextMap.insert(mpToggleRemoteCoreSimAction, "Connect or disconnect to a remote HopsanCore, this will determine if local or remote simulation is run, when calling simulate");
@@ -1440,6 +1440,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpFlipVerticalAction->setEnabled(modelTab);
     mpSimulationTimeEdit->setEnabled(modelTab);
     mpSimulateAction->setEnabled(modelTab);
+    mpToggleRemoteCoreSimAction->setEnabled(modelTab);
     mpOpenDebuggerAction->setEnabled(modelTab);
     mpCoSimulationAction->setEnabled(modelTab);
     mpOptimizeAction->setEnabled(modelTab);
