@@ -51,6 +51,7 @@
 #include "CoreUtilities/GeneratorHandler.h"
 #include "ComponentUtilities/CSVParser.h"
 #include "CoreUtilities/NumHopHelper.h"
+#include "CoreUtilities/SaveRestoreSimulationPoint.h"
 #include "compiler_info.h"
 
 // Here the HopsanCore object is created
@@ -840,13 +841,13 @@ std::vector<double> CoreSystemAccess::getTimeVector(QString componentName, QStri
 
 bool CoreSystemAccess::doesKeepStartValues()
 {
-    return mpCoreComponentSystem->doesKeepStartValues();
+    return mpCoreComponentSystem->keepsValuesAsStartValues();
 }
 
 
-void CoreSystemAccess::setLoadStartValues(bool load)
+void CoreSystemAccess::setKeepValuesAsStartValues(bool load)
 {
-    mpCoreComponentSystem->setLoadStartValues(load);
+    mpCoreComponentSystem->setKeepValuesAsStartValues(load);
 }
 
 //! @deprecated maybe
@@ -1398,6 +1399,16 @@ QStringList CoreSystemAccess::getSearchPaths() const
         ret << path.c_str();
     }
     return ret;
+}
+
+void CoreSystemAccess::saveSimulationState(const QString &filePath)
+{
+    hopsan::saveSimulationPoint(filePath.toStdString().c_str(), mpCoreComponentSystem);
+}
+
+void CoreSystemAccess::loadSimulationState(const QString &filePath, double &rTimeOffset)
+{
+    hopsan::restoreSimulationPoint(filePath.toStdString().c_str(), mpCoreComponentSystem, rTimeOffset);
 }
 
 

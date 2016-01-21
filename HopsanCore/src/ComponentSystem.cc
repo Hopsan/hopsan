@@ -86,7 +86,7 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mWarnIfUnusedSystemParameters = true;
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
-    mKeepStartValues = false;
+    mKeepValuesAsStartValues = false;
     mRequestedNumLogSamples = 0; //This has to be 0 since we want logging to be disabled by default
     mRequestedLogStartTime = 0;
 #ifdef USETBB
@@ -1652,17 +1652,19 @@ void ComponentSystem::setAllNodesDoLogData(const bool logornot)
 }
 
 
-//! @brief Returns if start values should be loaded before simulation. If not, old simulation results is used as start values.
-bool ComponentSystem::doesKeepStartValues()
+//! @brief Returns whether or not to keep node values instead of over writing with defaultStartValues
+bool ComponentSystem::keepsValuesAsStartValues()
 {
-    return mKeepStartValues;
+    return mKeepValuesAsStartValues;
 }
 
 
-//! @brief Set if or not start values should be loaded before simulation. If not, old simulation results is used as start values.
-void ComponentSystem::setLoadStartValues(bool load)
+//! @brief Set if node data values should be used as start values instead of the default start values or expressions
+//! @details If this is true, start values will not be loaded, if it is false default start values will be loaded
+//! @param[in] tf true or false, whether to keep node values instead of over writing with defaultStartValues
+void ComponentSystem::setKeepValuesAsStartValues(bool tf)
 {
-    mKeepStartValues = load;
+    mKeepValuesAsStartValues = tf;
 }
 
 
@@ -2118,7 +2120,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         // Only set start values from top-level system, else they will be set again in the subsystem initialize calls
         // It is important that all start values are set before initialization of the system hierarchy begins
         // initial calculations may depend on the start values having been set already
-        if (!mKeepStartValues )
+        if (!mKeepValuesAsStartValues )
         {
             loadStartValues();
         }

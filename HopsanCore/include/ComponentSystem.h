@@ -110,8 +110,8 @@ namespace hopsan {
         void setAllNodesDoLogData(const bool logornot);
 
         // Start value loading
-        bool doesKeepStartValues();
-        void setLoadStartValues(bool load);
+        bool keepsValuesAsStartValues();
+        void setKeepValuesAsStartValues(bool load);
         void loadStartValues();
         void loadStartValuesFromSimulation();
         void evaluateParametersRecursively();
@@ -247,7 +247,7 @@ namespace hopsan {
         std::vector< std::vector<Node*> > mSplitNodeVector;
         //------------------------------------------------------------------
 
-        bool mKeepStartValues;
+        bool mKeepValuesAsStartValues;
 
         AliasHandler mAliasHandler;
 

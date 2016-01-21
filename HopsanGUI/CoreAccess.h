@@ -248,7 +248,7 @@ public:
 
     // System settings
     bool doesKeepStartValues();
-    void setLoadStartValues(bool load);
+    void setKeepValuesAsStartValues(bool load);
 
     void setDesiredTimeStep(double timestep);
     void setDesiredTimeStep(QString compname, double timestep);
@@ -293,6 +293,10 @@ public:
     // Search path
     void addSearchPath(QString searchPath);
     QStringList getSearchPaths() const;
+
+    // Save and loaf state
+    void saveSimulationState(const QString &filePath);
+    void loadSimulationState(const QString &filePath, double &rTimeOffset);
 
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();

@@ -39,7 +39,6 @@ SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Expression.cc
 SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Helpfunctions.cc
 SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/VariableStorage.cc
 HEADERS += $${PWD}/../Dependencies/libNumHop/libNumHop/numhop.h
-}
 #--------------------------------------------------------
 
 # -------------------------------------------------

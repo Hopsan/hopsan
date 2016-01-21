@@ -746,6 +746,12 @@ void ModelWidget::exportModelParameters()
     saveModel(NewFile, ParametersOnly);
 }
 
+void ModelWidget::exportSimulationStates()
+{
+    QString fileName = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Simulation State to File"), "", tr("Binary file (*.dat)"));
+    mpToplevelSystem->getCoreSystemAccessPtr()->saveSimulationState(fileName.toStdString().c_str());
+}
+
 //! @todo this should not be in the model widget, it should be in the container
 void ModelWidget::handleSystemLock(bool isExternal, bool hasLocalLock)
 {

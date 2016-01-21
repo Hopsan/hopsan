@@ -701,9 +701,9 @@ QWidget *SystemProperties::createSystemSettings()
     QWidget *pSettingsWidget = new QWidget();
 
     // Load start values or not
-    mpUseStartValues = new QCheckBox("Keep start values from previous simulation", pSettingsWidget);
-    mpUseStartValues->setCheckable(true);
-    mpUseStartValues->setChecked(mpSystemObject->getCoreSystemAccessPtr()->doesKeepStartValues());
+    mpKeepValuesAsStartValues = new QCheckBox("Keep values from previous simulation as start values", pSettingsWidget);
+    mpKeepValuesAsStartValues->setCheckable(true);
+    mpKeepValuesAsStartValues->setChecked(mpSystemObject->getCoreSystemAccessPtr()->doesKeepStartValues());
 
     // Disable undo check box
     mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), pSettingsWidget);
@@ -725,12 +725,12 @@ QWidget *SystemProperties::createSystemSettings()
     connect(pPyScriptBrowseButton, SIGNAL(clicked(bool)), this, SLOT(browseScript()));
 
     QGridLayout *pSettingsLayout = new QGridLayout(pSettingsWidget);
-    pSettingsLayout->addWidget(pPyScriptLabel,         0, 0);
-    pSettingsLayout->addWidget(mpPyScriptPath,         0, 1);
-    pSettingsLayout->addWidget(pPyScriptBrowseButton,  0, 2);
-    pSettingsLayout->addWidget(mpUseStartValues,       1, 0, 1, 2);
-    pSettingsLayout->addWidget(mpDisableUndoCheckBox,  2, 0, 1, 2);
-    pSettingsLayout->addWidget(mpSaveUndoCheckBox,     3, 0, 1, 2);
+    pSettingsLayout->addWidget(pPyScriptLabel,               0, 0);
+    pSettingsLayout->addWidget(mpPyScriptPath,               0, 1);
+    pSettingsLayout->addWidget(pPyScriptBrowseButton,        0, 2);
+    pSettingsLayout->addWidget(mpKeepValuesAsStartValues,    1, 0, 1, 2);
+    pSettingsLayout->addWidget(mpDisableUndoCheckBox,        2, 0, 1, 2);
+    pSettingsLayout->addWidget(mpSaveUndoCheckBox,           3, 0, 1, 2);
     pSettingsLayout->addWidget(new QWidget(pSettingsWidget), 4, 0, 1, 2);
     pSettingsLayout->setRowStretch(4, 1);
 
@@ -2293,7 +2293,7 @@ void SystemProperties::setValues()
         gpLibraryWidget->setGfxType(UserGraphics);
     }
 
-    mpSystemObject->getCoreSystemAccessPtr()->setLoadStartValues(mpUseStartValues->isChecked());
+    mpSystemObject->getCoreSystemAccessPtr()->setKeepValuesAsStartValues(mpKeepValuesAsStartValues->isChecked());
 
     if(mpSystemObject->isUndoEnabled() == mpDisableUndoCheckBox->isChecked())
     {

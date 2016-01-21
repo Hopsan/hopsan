@@ -342,6 +342,7 @@ void HcomHandler::createCommands()
     simCmd.description.append("Simulates current model (or all open models)");
     simCmd.help.append(" Usage: sim\n");
     simCmd.help.append(" Usage: sim all");
+    simCmd.help.append(" Usage: sim -loadstate file");
     simCmd.fnc = &HcomHandler::executeSimulateCommand;
     simCmd.group = "Simulation Commands";
     mCmdList << simCmd;
@@ -1219,7 +1220,7 @@ void HcomHandler::executeCommand(QString cmd)
 void HcomHandler::executeExitCommand(const QString cmd)
 {
     Q_UNUSED(cmd);
-    // Using a single shot timer seems to prevent freeze/crash if a script ending in exit is executed emediately when hopsan starts (called from commandline)
+    // Using a single shot timer seems to prevent freeze/crash if a script ending in exit is executed immediately when Hopsan starts (called from command line)
     QTimer::singleShot(0, gpMainWindowWidget, SLOT(close()));
     //gpMainWindowWidget->close();
 }
@@ -1228,32 +1229,60 @@ void HcomHandler::executeExitCommand(const QString cmd)
 //! @brief Execute function for "sim" command
 void HcomHandler::executeSimulateCommand(const QString cmd)
 {
-    QStringList splitCmd;
-    splitWithRespectToQuotations(cmd, ' ', splitCmd);
-    if(splitCmd.size() > 1)
+    QStringList arguments = splitCommandArguments(cmd);
+    if (arguments.contains("-loadstate"))
     {
-        HCOMERR("Wrong number of arguments.");
-        return;
-    }
-    else if(splitCmd.size() == 1 && splitCmd[0] == "all")
-    {
-        gpModelHandler->simulateAllOpenModels_blocking(false);
-        return;
-    }
-    else if(cmd == "")
-    {
-        //TicToc timer;
-        //timer.tic("!!!! Beginning blocking simulation");
-        if(mpModel)
+        if (arguments.size() != 2)
         {
-            mpModel->simulate_blocking();
+            HCOMERR("Wrong number of arguments.");
+            return;
         }
-        //timer.toc("!!!! Blocking simulation");
+
+        if (mpModel && mpModel->getTopLevelSystemContainer())
+        {
+            double timeOffset;
+            QString prevStartT = mpModel->getStartTime();
+            QString prevStopT = mpModel->getStopTime();
+            mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->loadSimulationState(arguments.last(),timeOffset);
+            mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->setKeepValuesAsStartValues(true);
+            HCOMPRINT(QString("Offsetting simulation time: %1 seconds").arg(timeOffset));
+            mpModel->setTopLevelSimulationTime(QString("%1").arg(prevStartT.toDouble()+timeOffset),
+                                               mpModel->getTimeStep(),
+                                               QString("%1").arg(prevStopT.toDouble()+timeOffset));
+            mpModel->simulate_blocking();
+            // Restore settings
+            mpModel->setTopLevelSimulationTime(prevStartT,
+                                               mpModel->getTimeStep(),
+                                               prevStopT);
+            mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->setKeepValuesAsStartValues(false);
+
+        }
     }
     else
     {
-        HCOMERR("Unknown argument.");
-        return;
+        if(arguments.size() > 1)
+        {
+            HCOMERR("Wrong number of arguments.");
+            return;
+        }
+        else if(arguments.size() == 1 && arguments[0] == "all")
+        {
+            gpModelHandler->simulateAllOpenModels_blocking(false);
+        }
+        else if(arguments.isEmpty())
+        {
+            //TicToc timer;
+            //timer.tic("!!!! Beginning blocking simulation");
+            if(mpModel)
+            {
+                mpModel->simulate_blocking();
+            }
+            //timer.toc("!!!! Blocking simulation");
+        }
+        else
+        {
+            HCOMERR("Unknown argument.");
+        }
     }
 }
 

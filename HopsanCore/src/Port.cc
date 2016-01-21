@@ -605,7 +605,7 @@ size_t Port::getNumDataVariables() const
 double Port::getStartValue(const size_t idx, const size_t subPortIdx)
 {
     HOPSAN_UNUSED(subPortIdx)
-    if(mpStartNode && getComponent()->getSystemParent()->doesKeepStartValues())
+    if(mpStartNode && getComponent()->getSystemParent()->keepsValuesAsStartValues())
     {
         return mpNode->getDataValue(idx);
     }
@@ -1070,7 +1070,7 @@ std::vector<double> *MultiPort::getDataVectorPtr(const size_t subPortIdx)
 //! @returns the start value
 double MultiPort::getStartValue(const size_t idx, const size_t subPortIdx)
 {
-    if(mpStartNode && mpComponent->getSystemParent()->doesKeepStartValues())
+    if(mpStartNode && mpComponent->getSystemParent()->keepsValuesAsStartValues())
     {
         return mSubPortsVector[subPortIdx]->mpNode->getDataValue(idx);
     }

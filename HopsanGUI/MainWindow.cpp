@@ -523,6 +523,9 @@ void MainWindow::createActions()
     connect(mpSaveAsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpSaveAsAction, "Save current model as new file.");
 
+    mpExportSimulationStateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportParameters.png"), tr("&Export Simulation State"), this);
+    mpExportSimulationStateAction->setToolTip(tr("Export simulation state"));
+
     mpExportModelParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportParameters.png"), tr("&Export Model Parameters"), this);
     mpExportModelParametersAction->setShortcut(QKeySequence("Ctrl+Alt+E"));
     mpExportModelParametersAction->setToolTip(tr("Export Model Parameters (Ctrl+Alt+P)"));
@@ -1032,6 +1035,7 @@ void MainWindow::createMenus()
     mpImportMenu->addSeparator();
     mpImportMenu->addAction(mpImportFMUAction);
 
+    mpExportMenu->addAction(mpExportSimulationStateAction);
     mpExportMenu->addAction(mpExportModelParametersAction);
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportToSimulinkAction);
@@ -1408,6 +1412,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpSaveAction->setEnabled(modelTab);
     mpExportToFMUMenuButton->setEnabled(modelTab);
     mpSaveAsAction->setEnabled(modelTab);
+    mpExportSimulationStateAction->setEnabled(modelTab);
     mpExportModelParametersAction->setEnabled(modelTab);
     mpCutAction->setEnabled(modelTab);
     mpCopyAction->setEnabled(modelTab);

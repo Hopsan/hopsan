@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
                         restoreSimulationPoint(loadSimulationStateOption.getValue().c_str(), pRootSystem, timeOffset);
                         startTime+=timeOffset;
                         stopTime+=timeOffset;
-                        pRootSystem->setLoadStartValues(false);
+                        pRootSystem->setKeepValuesAsStartValues(true);
                     }
 
                     //! @todo maybe use simulation handler object instead

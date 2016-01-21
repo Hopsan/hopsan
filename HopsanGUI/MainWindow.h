@@ -148,6 +148,7 @@ public:
     QAction *mpOpenAction;
     QAction *mpSaveAction;
     QAction *mpSaveAsAction;
+    QAction *mpExportSimulationStateAction;
     QAction *mpExportModelParametersAction;
     QAction *mpImportFMUAction;
     QAction *mpImportDataFileAction;

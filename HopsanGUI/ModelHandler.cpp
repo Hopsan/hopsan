@@ -541,6 +541,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
     disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
+    disconnect(gpMainWindow->mpExportSimulationStateAction, SIGNAL(triggered()),            pModel,  SLOT(exportSimulationStates()));
 
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }
@@ -565,6 +566,7 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
     connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
     connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            pModel,    SLOT(exportModelParameters()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpExportSimulationStateAction,    SIGNAL(triggered()),            pModel,    SLOT(exportSimulationStates()), Qt::UniqueConnection);
 
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }
