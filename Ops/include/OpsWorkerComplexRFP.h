@@ -38,7 +38,7 @@
 
 namespace Ops {
 
-enum ParallelMethodT {MultiDistance, TaskPrediction, MultiDirection};
+enum ParallelMethodT {MultiDistance, TaskPrediction, MultiDirection, MultiDirectionBurmen};
 
 class Candidate
 {

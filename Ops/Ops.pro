@@ -51,7 +51,8 @@ SOURCES += \
     src/OpsWorkerComplexRFP.cpp \
     src/OpsWorkerParamterSweep.cpp \
     src/OpsWorkerDifferentialEvolution.cpp \
-    src/OpsWorkerControlledRandomSearch.cpp
+    src/OpsWorkerControlledRandomSearch.cpp \
+    src/OpsWorkerComplexBurmen.cpp
 
 HEADERS += \
     include/win32dll.h \
@@ -64,7 +65,8 @@ HEADERS += \
     include/OpsWorkerComplexRFP.h \
     include/OpsWorkerParameterSweep.h \
     include/OpsWorkerDifferentialEvolution.h \
-    include/OpsWorkerControlledRandomSearch.h
+    include/OpsWorkerControlledRandomSearch.h \
+    include/OpsWorkerComplexBurmen.h
 
 
 
