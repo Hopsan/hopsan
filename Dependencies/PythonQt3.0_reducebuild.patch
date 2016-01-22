@@ -1,12 +1,77 @@
+diff -r -u PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp
+--- PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	2014-10-08 08:59:42.000000000 +0200
++++ PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	2016-01-22 15:59:38.170477745 +0100
+@@ -34,37 +34,37 @@
+ 
+ #include "PythonQt.h"
+ 
+-void PythonQt_init_QtGui(PyObject*);
+-void PythonQt_init_QtSvg(PyObject*);
+-void PythonQt_init_QtSql(PyObject*);
+-void PythonQt_init_QtNetwork(PyObject*);
++//void PythonQt_init_QtGui(PyObject*);
++//void PythonQt_init_QtSvg(PyObject*);
++//void PythonQt_init_QtSql(PyObject*);
++//void PythonQt_init_QtNetwork(PyObject*);
+ void PythonQt_init_QtCore(PyObject*);
+-void PythonQt_init_QtWebKit(PyObject*);
+-void PythonQt_init_QtOpenGL(PyObject*);
+-void PythonQt_init_QtXml(PyObject*);
+-void PythonQt_init_QtUiTools(PyObject*);
++//void PythonQt_init_QtWebKit(PyObject*);
++//void PythonQt_init_QtOpenGL(PyObject*);
++//void PythonQt_init_QtXml(PyObject*);
++//void PythonQt_init_QtUiTools(PyObject*);
+ 
+-#if QT_VERSION >= 0x050000
+-void PythonQt_init_QtXmlPatterns(PyObject*);
+-void PythonQt_init_QtMultimedia(PyObject*);
+-#endif
++//#if QT_VERSION >= 0x050000
++//void PythonQt_init_QtXmlPatterns(PyObject*);
++//void PythonQt_init_QtMultimedia(PyObject*);
++//#endif
+ 
+ namespace PythonQt_QtAll
+ {
+   PYTHONQT_QTALL_EXPORT void init() {
+     PythonQt_init_QtCore(0);
+-    PythonQt_init_QtNetwork(0);
+-    PythonQt_init_QtGui(0);
+-    PythonQt_init_QtXml(0);
+-    PythonQt_init_QtSvg(0);
+-    PythonQt_init_QtSql(0);
+-    PythonQt_init_QtWebKit(0);
+-    PythonQt_init_QtOpenGL(0);
+-    PythonQt_init_QtUiTools(0);
+-#if QT_VERSION >= 0x050000
+-    PythonQt_init_QtXmlPatterns(0);
+-    PythonQt_init_QtMultimedia(0);
+-#endif
++//    PythonQt_init_QtNetwork(0);
++//    PythonQt_init_QtGui(0);
++//    PythonQt_init_QtXml(0);
++//    PythonQt_init_QtSvg(0);
++//    PythonQt_init_QtSql(0);
++//    PythonQt_init_QtWebKit(0);
++//    PythonQt_init_QtOpenGL(0);
++//    PythonQt_init_QtUiTools(0);
++//#if QT_VERSION >= 0x050000
++//    PythonQt_init_QtXmlPatterns(0);
++//    PythonQt_init_QtMultimedia(0);
++//#endif
+   };
+ };
+ 
 diff -r -u PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.pro
 --- PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2014-10-08 08:59:42.000000000 +0200
-+++ PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2016-01-22 13:40:55.062183397 +0100
++++ PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2016-01-22 15:58:52.162476118 +0100
 @@ -17,26 +17,26 @@
  SOURCES +=                \
    PythonQt_QtAll.cpp
  
 -QT += webkit gui svg sql network xml xmlpatterns opengl
-+QT += gui #webkit svg sql network xml xmlpatterns opengl
++#QT += gui webkit svg sql network xml xmlpatterns opengl
  
  contains(QT_MAJOR_VERSION, 4) {
 - CONFIG += uitools
@@ -15,11 +80,11 @@ diff -r -u PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro PythonQt
  
  contains(QT_MAJOR_VERSION, 5) {
 -  QT += widgets webkitwidgets printsupport multimedia multimediawidgets uitools
-+  QT += widgets #webkitwidgets printsupport multimedia multimediawidgets uitools
++  #QT += widgets webkitwidgets printsupport multimedia multimediawidgets uitools
  }
  
  include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_core/com_trolltech_qt_core.pri)
- include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_gui/com_trolltech_qt_gui.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_gui/com_trolltech_qt_gui.pri)
 -include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_svg/com_trolltech_qt_svg.pri)
 -include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_sql/com_trolltech_qt_sql.pri)
 -include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_network/com_trolltech_qt_network.pri)
@@ -27,6 +92,7 @@ diff -r -u PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro PythonQt
 -include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_webkit/com_trolltech_qt_webkit.pri)
 -include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_xml/com_trolltech_qt_xml.pri)
 -include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_uitools/com_trolltech_qt_uitools.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_gui/com_trolltech_qt_gui.pri)
 +#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_svg/com_trolltech_qt_svg.pri)
 +#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_sql/com_trolltech_qt_sql.pri)
 +#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_network/com_trolltech_qt_network.pri)
@@ -44,7 +110,7 @@ diff -r -u PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro PythonQt
 +}
 diff -r -u PythonQt3.0_org/PythonQt.pro PythonQt3.0/PythonQt.pro
 --- PythonQt3.0_org/PythonQt.pro	2009-04-09 10:32:54.000000000 +0200
-+++ PythonQt3.0/PythonQt.pro	2016-01-22 13:46:47.158195849 +0100
++++ PythonQt3.0/PythonQt.pro	2016-01-22 15:58:52.162476118 +0100
 @@ -1,4 +1,4 @@
  TEMPLATE = subdirs
  
