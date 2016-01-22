@@ -27,8 +27,8 @@ pythonqtname="PythonQt3.0"
 
 # Abort if dir already exist. When running release build script we dont want to build twice
 if [ -d $pythonqtname ]; then
-echo "Directory $pythonqtname already exist. Remove it if you want (re)build using this script."
-exit 0
+  echo "Directory $pythonqtname already exist. Remove it if you want (re)build using this script."
+  exit 0
 fi
 
 rm -rf $pythonqtname
@@ -37,24 +37,14 @@ unzip -q $pythonqtname.zip
 cd $pythonqtname
 echo "Applying Hopsan fixes to code"
 
-# Apply patch to remove qt all extensions and other things
-if [ -f ../$pythonqtname\_ubuntu.patch ]; then
-patch -p0 < ../$pythonqtname\_ubuntu.patch
+# Apply patch to remove some qt extensions that are not needed
+if [ "$1" = "release" ]; then
+  patch -p1 < ../$pythonqtname\_reducebuild.patch
 fi
-
-# Remove tests and examples, always (test would not build at all for r209)
-#sed "s|tests examples||" -i PythonQt.pro
-cd ..
-
-
-cd $pythonqtname
 
 # Set build mode
 if [ "$1" != "release" ]; then
   sed "s|#CONFIG += debug_and_release build_all|CONFIG += debug_and_release build_all|" -i build/common.prf
-else
-  #Remove tests and examples in release build
-  sed "s|tests examples||" -i PythonQt.pro
 fi
 
 # Set python version

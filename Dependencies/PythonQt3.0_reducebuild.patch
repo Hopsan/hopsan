@@ -1,0 +1,53 @@
+diff -r -u PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.pro
+--- PythonQt3.0_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2014-10-08 08:59:42.000000000 +0200
++++ PythonQt3.0/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2016-01-22 13:40:55.062183397 +0100
+@@ -17,26 +17,26 @@
+ SOURCES +=                \
+   PythonQt_QtAll.cpp
+ 
+-QT += webkit gui svg sql network xml xmlpatterns opengl
++QT += gui #webkit svg sql network xml xmlpatterns opengl
+ 
+ contains(QT_MAJOR_VERSION, 4) {
+- CONFIG += uitools
++ #CONFIG += uitools
+ }
+ 
+ contains(QT_MAJOR_VERSION, 5) {
+-  QT += widgets webkitwidgets printsupport multimedia multimediawidgets uitools
++  QT += widgets #webkitwidgets printsupport multimedia multimediawidgets uitools
+ }
+ 
+ include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_core/com_trolltech_qt_core.pri)
+ include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_gui/com_trolltech_qt_gui.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_svg/com_trolltech_qt_svg.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_sql/com_trolltech_qt_sql.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_network/com_trolltech_qt_network.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_opengl/com_trolltech_qt_opengl.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_webkit/com_trolltech_qt_webkit.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_xml/com_trolltech_qt_xml.pri)
+-include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_uitools/com_trolltech_qt_uitools.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_svg/com_trolltech_qt_svg.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_sql/com_trolltech_qt_sql.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_network/com_trolltech_qt_network.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_opengl/com_trolltech_qt_opengl.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_webkit/com_trolltech_qt_webkit.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_xml/com_trolltech_qt_xml.pri)
++#include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_uitools/com_trolltech_qt_uitools.pri)
+ contains(QT_MAJOR_VERSION, 5) {
+-  include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_xmlpatterns/com_trolltech_qt_xmlpatterns.pri)
+-  include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_multimedia/com_trolltech_qt_multimedia.pri)
+-}
+\ No newline at end of file
++  #include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_xmlpatterns/com_trolltech_qt_xmlpatterns.pri)
++  #include ($$PYTHONQT_GENERATED_PATH/com_trolltech_qt_multimedia/com_trolltech_qt_multimedia.pri)
++}
+diff -r -u PythonQt3.0_org/PythonQt.pro PythonQt3.0/PythonQt.pro
+--- PythonQt3.0_org/PythonQt.pro	2009-04-09 10:32:54.000000000 +0200
++++ PythonQt3.0/PythonQt.pro	2016-01-22 13:46:47.158195849 +0100
+@@ -1,4 +1,4 @@
+ TEMPLATE = subdirs
+ 
+ CONFIG += ordered
+-SUBDIRS = generator src extensions tests examples
++SUBDIRS = generator src extensions #tests examples
