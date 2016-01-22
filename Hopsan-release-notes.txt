@@ -94,7 +94,8 @@
 - Enhancement: It is now possible to edit system parameters after they have been added
 - Enhancement: It is now possible to plot and check parameters (but not edit) inside fully locket external systems and locked local systems
 - Enhancement: When the component properties dialog is opened the model is locked to prevent editing, however, now it is possible to open additional properties dialogs
-               or start a simulation. The dialogs have been given an apply button. You can now iterate the following: open a dialog, change a parameter, simulate, look at the results. All without ever closing any windows or dialogs.
+               or start a simulation. The dialogs have been given an apply button. You can now iterate the following: open a dialog, change a parameter, simulate, look 
+               at the results. All without ever closing any windows or dialogs.
 - Enhancement: The component properties dialog for subsystems now look and behave the same as for ordinary components.
                But it still contain additional system specific settings.
 - Enhancement: The expended items in the plot widget will now be remembered when you switch between two different models
