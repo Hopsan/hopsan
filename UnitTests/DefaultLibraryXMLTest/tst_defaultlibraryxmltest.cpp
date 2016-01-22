@@ -240,7 +240,7 @@ void DefaultLibraryXMLTest::testSourceCodeLink()
                 QFileInfo sourceFile(mAllXMLFiles[i].absolutePath()+"/"+sourceCode);
                 if(!sourceFile.exists())
                 {
-                    QWARN(QString("SourceCode file: %1 for component %2 is missing!").arg(sourceFile.absoluteFilePath()).arg(typeName).toStdString().c_str());
+                    QWARN(QString("SourceCode file: %1 for component %2 in file %3 is missing!").arg(sourceFile.absoluteFilePath()).arg(typeName).arg(mAllXMLFiles[i].canonicalFilePath()).toStdString().c_str());
                     isOK = false;
                 }
             }
