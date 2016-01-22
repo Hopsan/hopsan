@@ -971,8 +971,7 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
         rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
     }
 
-
-    rDomElement.setAttribute(HMF_LOCKEDTAG, mIsLocked);
+    rDomElement.setAttribute(HMF_LOCKEDTAG, bool2str(mIsLocked));
 
     // Save GUI related stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
@@ -980,6 +979,11 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     // Save center pos in parent coordinates (same as scene coordinates for model objects)
     QPointF cpos = this->getCenterPos();
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
+
+    // Save the text displaying the component name
+    QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
+    nametext.setAttribute("position", getNameTextPos());
+    nametext.setAttribute("visible", mNameTextAlwaysVisible);
 
     // Save any custom selected parameter scales
     if (!mRegisteredCustomParameterUnitScales.isEmpty())
@@ -1807,4 +1811,5 @@ void ModelObjectDisplayName::deselect()
 {
     this->setSelected(false);
 }
+
 
