@@ -156,7 +156,7 @@ void DefaultLibraryXMLTest::testIconPaths()
             {
                 QString relPath = it.value();
                 QFileInfo iconFile(mAllXMLFiles[i].absolutePath()+"/"+relPath);
-                if (!iconFile.exists())
+                if (!iconFile.exists() && !relPath.startsWith(":graphics/"))
                 {
                     QWARN(QString("The icon file %1 could not be found, linked from xml file: %2").arg(iconFile.absoluteFilePath()).arg(mAllXMLFiles[i].absoluteFilePath()).toStdString().c_str());
                     isOK = false;
