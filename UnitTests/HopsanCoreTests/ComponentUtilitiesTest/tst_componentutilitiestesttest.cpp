@@ -95,7 +95,7 @@ private Q_SLOTS:
         QFETCH(double, x);
         QFETCH(double, x0);
 
-        QVERIFY2(fuzzyEqual(fabs(x)*pow(1.0/(pow(x0,4.0) + pow(fabs(x),2.0)),0.25)*sign(x), signedSquareL(x,x0)), "signedSquareL() returned wrong value!");
+        QVERIFY2(fuzzyEqual(fabs(x)*pow(1.0/(pow(x0,2.0) + pow(fabs(x),2.0)),0.25)*sign(x), signedSquareL(x,x0)), "signedSquareL() returned wrong value!");
     }
 
     void Signed_Square_L_data()
@@ -115,7 +115,7 @@ private Q_SLOTS:
         QFETCH(double, x);
         QFETCH(double, x0);
 
-        QVERIFY2(fuzzyEqual((pow(1.0/(pow(x0,4.0) + pow(fabs(x),2.0)),1.25)*(2.0*pow(x0,4.0) + pow(fabs(x),2.0))*
+        QVERIFY2(fuzzyEqual((pow(1.0/(pow(x0,2.0) + pow(fabs(x),2.0)),1.25)*(2.0*pow(x0,2.0) + pow(fabs(x),2.0))*
                   dxAbs(x)*sign(x))/2.0, dxSignedSquareL(x,x0)), "dxSignedSquareL() returned wrong value!");
     }
 
