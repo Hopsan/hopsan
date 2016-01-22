@@ -351,13 +351,14 @@ void LookupTableTest::lookup2D_data()
     QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(4.9,5.0) << 23.5;
     QTest::newRow("test2") << rowIndexVec << colIndexVec << valueVec << true << 1e-9 << QPointF(4.9,6.0) << 23.5;
 
-    // ========== Read testdata from file ==========
+    // ========== Read test data from file ==========
     QStringList files;
     files << "2DTestData0_UT.dat" << "2DTestData1_UT.dat";
     foreach (QString filename, files)
     {
         QFile file(relpath+filename);
         file.open(QIODevice::ReadOnly);
+        QVERIFY2(file.isOpen(), QString("File could not be opened: %1").arg(relpath+filename).toStdString().c_str());
         QTextStream testData(&file);
         rowIndexVec.clear(); colIndexVec.clear(); valueVec.clear();
         QStringList rows = testData.readLine().split(' ', QString::SkipEmptyParts);
@@ -430,13 +431,14 @@ void LookupTableTest::lookup3D_data()
     QTest::newRow("test2") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(1,4,3) << -1.0;
     QTest::newRow("test2") << rowIndexVec << colIndexVec << planeIndexVec << valueVec << true << 1e-9 << Point3DF(3,4,3) << 15.0;
 
-    // ========== Read testdata from file ==========
+    // ========== Read test data from file ==========
     QStringList files;
     files << "3DTestData0_UT.dat" << "3DTestData1_UT.dat";
     foreach (QString filename, files)
     {
         QFile file(relpath+filename);
         file.open(QIODevice::ReadOnly);
+        QVERIFY2(file.isOpen(), QString("File could not be opened: %1").arg(relpath+filename).toStdString().c_str());
         QTextStream testData(&file);
         rowIndexVec.clear(); colIndexVec.clear(); planeIndexVec.clear(); valueVec.clear();
         QStringList rows = testData.readLine().split(' ', QString::SkipEmptyParts);
