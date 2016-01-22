@@ -160,10 +160,10 @@ Changes xdata plot variable in current plot<br>
  Usage: chpvx -c      Clear Custom x-data
 
 \subsection chto chto
-Change time plot offset for the current or specified generation
-Time offset should be given in seconds
-The generation specifier is optional, you can use c,a,*,h,l specifiers<br>
- Usage: chto [offset] [generation]
+Change time plot offset for the current or specified generation<br>
+ Usage: chto [offset] [generation]<br>
+ Time offset should be given in seconds<br>
+ The generation specifier is optional, you can use c,a,*,h,l specifiers
 
 \subsection dito dito
 Display time plot offset of specified generation<br>
@@ -576,4 +576,5 @@ Usage: x(vector)
 \subsection zeros zeros()
 Create a vector of zeros<br>
 Usage: zeros(size)
+
 */

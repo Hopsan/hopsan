@@ -704,10 +704,10 @@ void HcomHandler::createCommands()
 
     HcomCommand chtoCmd;
     chtoCmd.cmd = "chto";
-    chtoCmd.description.append("Change time plot offset for the current or specified generation\n");
-    chtoCmd.description.append("Time offset should be given in seconds\n");
-    chtoCmd.description.append("The generation specifier is optional, you can use c,a,*,h,l specifiers");
-    chtoCmd.help.append(" Usage: chto [offset] [generation]");
+    chtoCmd.description.append("Change time plot offset for the current or specified generation");
+    chtoCmd.help.append(" Usage: chto [offset] [generation]\n");
+    chtoCmd.help.append(" Time offset should be given in seconds\n");
+    chtoCmd.help.append(" The generation specifier is optional, you can use c,a,*,h,l specifiers");
     chtoCmd.fnc = &HcomHandler::executeChangeTimePlotOffsetCommand;
     chtoCmd.group = "Plot Commands";
     mCmdList << chtoCmd;
