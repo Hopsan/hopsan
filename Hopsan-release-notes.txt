@@ -27,16 +27,45 @@
 - Note: The abs HCOM command has been removed, use the abs() function instead.
 - Note: The HCOM plot scale and plot offset commands have been removed. (The features have been removed as well)
         Use quantities or generation specific time plot offset
+- Note: Now one logdata handler is shared for the entire model instead of for each individual subsystem, this greatly simplifies working with Generations of data.
+        The full system hierarchy of data is now available in the same tree.
+- Note: We have finally chosen a real license, and made sure that third-party dependencies are compatible.
+        This version of Hopsan is released under the GNU GPL version 3 license.
+        If you would like to use a different license, please contact Fluid and Mechatronic Systems, Linköping University,
+        and consider sponsoring the development of Hopsan.
 
 - Feature: It is now possible to set plot label in the component properties dialog, this label will be used in plot legend (overwriting full name and alias)
 - Feature: Components (including subsystems) in a model can now be locked, which prevents editing
 - Feature: Ii is now possible to revert model to the last saved state without loosing plot windows and log data generations (Tools menu)
 - Feature: It is now possible to invert specific plot variables from HCOM "ivpv" and component properties
            Inverting may be useful for analysis purposes, but only the plot curves will be affected. The data will keep the correct value.
+- Feature: HopsanGUI can no automatically compile (and recompile) External component libraries when they are loaded. 
+           This means that you no longer need an external build environment for component library development. 
+           (You can still use that for advanced development)
 - Feature: It is now possible to recompile or reload external component libraries from the library widget right-click menu.
            Provided, that the correct compiler version is installed and selected in Options. (See documentation for details)
 - Feature: It is now possible to start HopsanGUI from the command line, and pass a HCOM script as the first argument. The script will be executed on startup.
            Note! the script file name used as the argument must end in .hcom, otherwise it will be treated as an hmf file to load.
+- Feature: Quantities definitions have been moved to the simulation core, so you can now assign quantities directly in the component code
+- Feature: It is now possible to set Quantity on signals (that have no quantity set in code) so that the desired description and units are used in plots.
+           Instead of showing "Value". Note! No check will be done that units match, you have to take care of that yourself.
+- Feature: HopsanGUI now supports data export in the standardized HDF5 http://en.wikipedia.org/wiki/Hierarchical_Data_Format format. 
+           This format has import support in many popular softwares. The format stores data without truncation and includes variable meta data.
+           A helper scripts for convenient import in Matlab is included in the Hopsan release (Check the Scripts directory)
+- Feature: Help description for components can now be written in Markdown (a simple text format) that is automatically converted to HTML in HopsanGUI.
+           Additionally LaTeX equations are supported and will automatically be rendered into the HTML document.
+- Feature: A model embedded script language NumHop is now part of each system component. Using NumHop you can write an initialization script
+           that will be run for each system to set defaultStartValue parameter. This is useful if you need to calculate start values based on other parameters
+           in your model. See the NumHop script section in the documentation.
+- Feature: Symbolic expressions can now be used as parameter values, this make it possible to base one parameter on another in the same component or 
+           use a system parameter directly or included in a mathematical expression. See the NumHop script section in the documentation.
+- Feature: It is now possible to set star values in system ports.
+- Feature: It is now possible to save the state of a simulation and to later load that state to continue the simulation from a certain point.
+           Note! Internal states of the components are not saved, only the interface (node) values. You make the save/restore at steady-state.
+           This functionality is available in th HopsanCLI (see CLI documentation)
+           And in the HopsanGUI see the Export menu, and the -loadstate argument to the HCOM sim command.
+- Feature: It is now possible to get node data ptr objects from ports, this makes it easier to write cleaner component code.
+           Especially if you have many ports or even multi ports. Currently this is experimental and only available for Hydraulic and Mechanic nodes.
 
 - Enhancement: HCOM set command can now take variables as arguments
 - Enhancement: HCOM get command, which displays current settings
@@ -65,11 +94,19 @@
                Time offset can be applied and checked from time offset dialog, right-click menu in plot widget or HCOM commands "chto" and "dito".
 - Enhancement: Systems and components now save their CQS-type as an attribute in the HMF file
 
+- Documentation: The documentation has been reorganized and updated with new information about, how to setup the build environment to build Hopsan as a developer.
+                 how to install the compiler for automatic compilation of External component libraries. Some new features are also covered, but sadly the documentaion 
+                 is still lagging behind in some areas.
+
 - New components: Round, Ceil and Floor signal components
-- New component: NumHop SingleInput SingleOutput interpreting component, write NumHop script that is evaluated without compilation. 
-                 Code can be extended to support more inputs and outputs.
+- New components: NumHop SingleInput SingleOutput interpreting component, write NumHop script that is evaluated without compilation. 
+                  Code can be extended to support more inputs and outputs.
+- New components: Hydraulic and Mechanic NodeSensor as well as Mechanic C and Q TLM input components make it possible to "graphically" program
+                  the Transmission Line equations in a subsystem block. Note! this is still an experimental feature and perfomance will be lower
+                  then if you write the code manually. 
 
 - Fixed component: Some directional valve components had different speeds in positive and negative direction
+- Fixed component: HydraulicCylinderC now has built in end-stops, so you should no longer rely on the connected Q-component (usually mass) to limit the stroke.
 
 - Bug fixed: Messages from optimizations no longer appears in main window terminal
 - Bug fixed: Memory leak when re-using models for subsequent optimizations
@@ -88,7 +125,10 @@
 - Bug fixed: External subsystem connectors are lost on copy paste
 - Bug fixed: If you load a model containing a subsystem saved as a component and that component is not available in the library,
              nothing is created and no messages are shown. (There was a debug message but it has now been changed into an error message)
-
+- Bug fixed: The default unit scale value for converting between Hz and rad/sec is inverted. (This was previously fixed in 0.6.12) but now 
+             with quantity support in the code and a new unit scale system in the GUI, this is no longer an issue.
+             Either you have frequency in rad/s (then use the Frequency quantity) or write unit Hz directly (then unit scaling will not work). 
+- Bug fixed: Deactivated ports are not saved, so they reappear once a model is reloaded.
 
 ------------------------------
 0.6.12  (2015-09-03)
