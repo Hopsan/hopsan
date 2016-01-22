@@ -28,8 +28,15 @@
 - Note: The HCOM plot scale and plot offset commands have been removed. (The features have been removed as well)
         Use quantities or generation specific time plot offset
 
-- Feature: It is possible to set plot label in the component properties dialog, this label will be used in plot legend (overwriting full name and alias)
+- Feature: It is now possible to set plot label in the component properties dialog, this label will be used in plot legend (overwriting full name and alias)
 - Feature: Components (including subsystems) in a model can now be locked, which prevents editing
+- Feature: Ii is now possible to revert model to the last saved state without loosing plot windows and log data generations (Tools menu)
+- Feature: It is now possible to invert specific plot variables from HCOM "ivpv" and component properties
+           Inverting may be useful for analysis purposes, but only the plot curves will be affected. The data will keep the correct value.
+- Feature: It is now possible to recompile or reload external component libraries from the library widget right-click menu.
+           Provided, that the correct compiler version is installed and selected in Options. (See documentation for details)
+- Feature: It is now possible to start HopsanGUI from the command line, and pass a HCOM script as the first argument. The script will be executed on startup.
+           Note! the script file name used as the argument must end in .hcom, otherwise it will be treated as an hmf file to load.
 
 - Enhancement: HCOM set command can now take variables as arguments
 - Enhancement: HCOM get command, which displays current settings
@@ -77,8 +84,10 @@
 - Bug fixed: It is not possible to plot from a scope connected directly to a container port
 - Bug fixed: Variables in subsystems do not know from which model they come
 - Bug fixed: When setting a non string parameter to empty no error is shown and resulting evaluation will be zero
-- Bug fixed: 
-- Bug fixed: 
+- Bug fixed: Can not reset string constants to default value if default value is empty string
+- Bug fixed: External subsystem connectors are lost on copy paste
+- Bug fixed: If you load a model containing a subsystem saved as a component and that component is not available in the library,
+             nothing is created and no messages are shown. (There was a debug message but it has now been changed into an error message)
 
 
 ------------------------------
