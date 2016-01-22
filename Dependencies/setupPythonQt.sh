@@ -38,9 +38,12 @@ cd $pythonqtname
 echo "Applying Hopsan fixes to code"
 
 # Apply patch to remove some qt extensions that are not needed
-if [ "$1" = "release" ]; then
-  patch -p1 < ../$pythonqtname\_reducebuild.patch
-fi
+#if [ "$1" = "release" ]; then
+#  patch -p1 < ../$pythonqtname\_reducebuild.patch
+#fi
+
+# Remove extensions tests and examples in release build
+sed "s|extensions tests examples||" -i PythonQt.pro
 
 # Set build mode
 if [ "$1" != "release" ]; then

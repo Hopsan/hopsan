@@ -231,12 +231,12 @@ defineReplace(setPythonQtPathInfo){
         exists($${libDir}){
             files =
 
-            magic_hopsan_libpath = -L$${libDir} -lPythonQt$${DEBUG_EXT} -lPythonQt_QtAll$${DEBUG_EXT}
-            magic_hopsan_includepath = $${PYTHONQT_PATH}/src $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
+            magic_hopsan_libpath = -L$${libDir} -lPythonQt$${DEBUG_EXT} #-lPythonQt_QtAll$${DEBUG_EXT}
+            magic_hopsan_includepath = $${PYTHONQT_PATH}/src #$${PYTHONQT_PATH}/extensions/PythonQt_QtAll
 
             #Set files to copy
-            win32:files = PythonQt$${DEBUG_EXT}$${DLL_EXT} PythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}
-            unix:files = libPythonQt$${DEBUG_EXT}$${DLL_EXT}* libPythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}*
+            win32:files = PythonQt$${DEBUG_EXT}$${DLL_EXT} #PythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}
+            unix:files = libPythonQt$${DEBUG_EXT}$${DLL_EXT}* #libPythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}*
 
             #Generate the copy command
             magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)

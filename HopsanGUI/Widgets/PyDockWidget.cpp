@@ -40,7 +40,7 @@
 
 #include "global.h"
 #include "PythonQt.h"
-#include "PythonQt_QtAll.h"
+//#include "PythonQt_QtAll.h"
 #include "gui/PythonQtScriptingConsole.h"
 #include "PythonQtConversion.h"
 #include "DesktopHandler.h"
@@ -185,7 +185,7 @@ PythonTerminalWidget::PythonTerminalWidget(QWidget *parent)
     : QWidget(parent)
 {
     PythonQt::init(PythonQt::RedirectStdOut);
-    PythonQt_QtAll::init();
+    //PythonQt_QtAll::init();
 
     PythonQt::self()->registerClass(&ModelObject::staticMetaObject, NULL, PythonQtCreateObject<PyModelObjectClassWrapper>);
     PythonQt::self()->registerClass(&Port::staticMetaObject, NULL, PythonQtCreateObject<PyPortClassWrapper>);

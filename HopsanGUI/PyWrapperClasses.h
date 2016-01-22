@@ -88,7 +88,7 @@ public slots:
     void closeAllModels();
 
     // Model navigation
-    void gotoTab(int tab); //!< @todo should take modelwrapper as input
+    void gotoTab(int tab); //!< @todo should take model wrapper as input
     void enterSystem(const QString& rSysName);
     void exitSystem();
 
@@ -102,7 +102,7 @@ public slots:
     void setParameter(const QString &rCompName, const QString &rParName, const QString &value);
     void setSystemParameter(const QString &rSysParName, const double value);
 
-    // Modell manipulation
+    // Model manipulation
     ModelObject* addComponent(const QString& rName, const QString& rTypeName, const int x, const int y, const int rot=0);
     ModelObject* addComponent(const QString& rName, const QString& rTypeName, const QString& rSubTypeName, const int x, const int y, const int rot=0);
     bool connect(const QString& rComp1, const QString& rPort1, const QString& rComp2, const QString& rPort2);
