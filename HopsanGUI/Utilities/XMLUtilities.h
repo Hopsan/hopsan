@@ -36,6 +36,8 @@
 
 #include <QtXml>
 
+QString bool2str(const bool in);
+
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
@@ -174,6 +176,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_NAMETEXTTAG "nametext"
 #define HMF_NAMETEXTPOSTAG "nametextpos"
 #define HMF_VISIBLETAG "nametextvisible"
+#define HMF_LOCKEDTAG "locked"
 
 #define HMF_CONNECTORSTARTCOMPONENTTAG "startcomponent"
 #define HMF_CONNECTORSTARTPORTTAG "startport"

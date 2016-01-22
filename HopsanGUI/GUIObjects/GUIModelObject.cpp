@@ -53,6 +53,7 @@
 #include "UndoStack.h"
 #include "Configuration.h"
 #include "global.h"
+#include "Utilities/XMLUtilities.h"
 
 #include <cassert>
 
@@ -603,6 +604,7 @@ void ModelObject::unHighlight()
 
 void ModelObject::setIsLocked(bool value)
 {
+    mpParentContainerObject->hasChanged();
     mIsLocked = value;
 }
 
@@ -969,17 +971,15 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
         rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
     }
 
+
+    rDomElement.setAttribute(HMF_LOCKEDTAG, mIsLocked);
+
     // Save GUI related stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
 
     // Save center pos in parent coordinates (same as scene coordinates for model objects)
     QPointF cpos = this->getCenterPos();
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
-
-    // Save the text displaying the component name
-    QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
-    nametext.setAttribute("position", getNameTextPos());
-    nametext.setAttribute("visible", mNameTextAlwaysVisible);
 
     // Save any custom selected parameter scales
     if (!mRegisteredCustomParameterUnitScales.isEmpty())

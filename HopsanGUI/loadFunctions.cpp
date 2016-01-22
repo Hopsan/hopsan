@@ -270,6 +270,9 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     QString type = rDomElement.attribute(HMF_TYPENAME);
     QString subtype = rDomElement.attribute(HMF_SUBTYPENAME);
     QString name = rDomElement.attribute(HMF_NAMETAG);
+    bool locked = parseAttributeBool(rDomElement, HMF_LOCKEDTAG, false);
+
+
 
     //Read gui specific data
     double posX, posY, target_rotation;
@@ -476,6 +479,9 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 plotsetting = plotsetting.nextSiblingElement(HMF_VARIABLEPLOTSETTING);
             }
         }
+
+        //Set lock state (must be done last, or other settings may not be applied)
+        pObj->setIsLocked(locked);
 
         return pObj;
     }
