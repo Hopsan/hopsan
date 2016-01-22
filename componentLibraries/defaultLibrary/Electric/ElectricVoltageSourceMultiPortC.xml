@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject displayname="C-Type Voltage Source (multi-port)" typename="ElectricVoltageSourceMultiPortC">
+    <modelobject sourcecode="ElectricVoltageSourceMultiPortC.hpp" displayname="C-Type Voltage Source (multi-port)" typename="ElectricVoltageSourceMultiPortC">
         <icons>
             <icon scale="1" path="ElectricUsource.svg" iconrotation="ON" type="user"/>
         </icons>

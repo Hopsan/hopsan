@@ -8,7 +8,7 @@ namespace hopsan {
 
     //!
     //! @brief
-    //! @ingroup HydraulicComponents
+    //! @ingroup ElectricComponents
     //!
     class ElectricVoltageSourceMultiPortC : public ComponentC
     {
