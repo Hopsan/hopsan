@@ -24,6 +24,9 @@
     Version History
 ******************************
 0.7.0  (2016-01-22)
+
+- Note: This version has been in development for approximately one year.
+        There are many changes that are not mentioned in these release notes.
 - Note: The abs HCOM command has been removed, use the abs() function instead.
 - Note: The HCOM plot scale and plot offset commands have been removed. (The features have been removed as well)
         Use quantities or generation specific time plot offset
@@ -33,7 +36,15 @@
         This version of Hopsan is released under the GNU GPL version 3 license.
         If you would like to use a different license, please contact Fluid and Mechatronic Systems, Linköping University,
         and consider sponsoring the development of Hopsan.
+- Note: This release has updated to MinGW-W64 4.9.3 and a custom compiled version of the Qt Libraries 5.4.2 (for this 64-bit compiler)
+        See the documentation for details.
 
+- Feature: A remote Hopsan simulation framework has been developed and is included in this release.
+           Unfortunately there is no documentation about how to use it but if you are clever, you can probably figure it out.
+           Run the following programs with the "--help" flag for mor information:
+           HopsanAddressServer.exe, HopsanServer.exe, HopsanServerClient.exe, ServerMonitor.exe
+           HopsanGUI can connect to the server(s) and run remote simulation, and some optimization algorithms can run in parallel if many server computers are set up.
+           Note! This is VERY experimental.
 - Feature: It is now possible to set plot label in the component properties dialog, this label will be used in plot legend (overwriting full name and alias)
 - Feature: Components (including subsystems) in a model can now be locked, which prevents editing
 - Feature: Ii is now possible to revert model to the last saved state without loosing plot windows and log data generations (Tools menu)
@@ -66,6 +77,8 @@
            And in the HopsanGUI see the Export menu, and the -loadstate argument to the HCOM sim command.
 - Feature: It is now possible to get node data ptr objects from ports, this makes it easier to write cleaner component code.
            Especially if you have many ports or even multi ports. Currently this is experimental and only available for Hydraulic and Mechanic nodes.
+- Feature: The HoLC (HopsanLibraryCreator) program is included in this release, you can us it to generate the component library files and component code skeletons.
+           It also offers limited code editor functionality.
 
 - Enhancement: HCOM set command can now take variables as arguments
 - Enhancement: HCOM get command, which displays current settings
@@ -102,7 +115,7 @@
 - New components: NumHop SingleInput SingleOutput interpreting component, write NumHop script that is evaluated without compilation. 
                   Code can be extended to support more inputs and outputs.
 - New components: Hydraulic and Mechanic NodeSensor as well as Mechanic C and Q TLM input components make it possible to "graphically" program
-                  the Transmission Line equations in a subsystem block. Note! this is still an experimental feature and perfomance will be lower
+                  the Transmission Line equations in a subsystem block. Note! this is still an experimental feature and performance will be lower
                   then if you write the code manually. 
 
 - Fixed component: Some directional valve components had different speeds in positive and negative direction
