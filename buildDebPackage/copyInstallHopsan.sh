@@ -28,6 +28,7 @@ cp -a    $srcDir/Dependencies/IndexingCSVParser            $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/libcsv_parser++-1.0.0        $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/rapidxml-1.13                $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/katex                        $dstDir/Dependencies
+cp -a    $srcDir/Dependencies/libNumHop                    $dstDir/Dependencies
 mkdir -p                                                   $dstDir/Dependencies/FMILibrary-2.0.1
 cp -a    $srcDir/Dependencies/FMILibrary-2.0.1/install     $dstDir/Dependencies/FMILibrary-2.0.1
 
@@ -47,9 +48,7 @@ cp -a    $srcDir/Scripts                                   $dstDir
 
 # Copy compiled libs and exec files
 # =================================
-mkdir -p                                                   $dstDir/bin
-cp -a    $srcDir/bin/*.so*                                 $dstDir/bin
-cp -a    $srcDir/bin/Hopsan*                               $dstDir/bin
+cp -a    $srcDir/bin                                       $dstDir
 
 # Copy additional files
 # =====================

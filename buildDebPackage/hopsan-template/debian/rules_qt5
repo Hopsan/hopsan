@@ -21,7 +21,7 @@ build:
 
 	#Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
-	cd hopsanShadowBuild; qmake -qt5 ../HopsanNG.pro -r -spec linux-g++ -config release
+	cd hopsanShadowBuild; qmake -qt5 ../HopsanNG_remote.pro -r -spec linux-g++ -config release
 	make -j4 -C hopsanShadowBuild
 
 clean:

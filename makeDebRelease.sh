@@ -120,7 +120,7 @@ boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" "n"
 doBuildInComponents="$boolYNQuestionAnswer"
 
 echo
-boolAskYNQuestion "Do you want to build with PythonQt and python support?" "n"
+boolAskYNQuestion "Do you want to build with PythonQt and python support?" "y"
 doUsePythonQt="$boolYNQuestionAnswer"
 
 echo
@@ -271,6 +271,13 @@ for i in "${distArchArrayDo[@]}"; do
     # Update or create pbuild environments
     debootstrapOk="true"
     if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
+    
+      # Remove corrupt files
+      gunzip -t $basetgzFile
+      if [ $? != 0 ]; then
+        rm $basetgzFile
+      fi
+    
       if [ -f $basetgzFile ]; then
         echo
         echo "Updating existing TGZ: $basetgzFile"
@@ -284,9 +291,9 @@ for i in "${distArchArrayDo[@]}"; do
       fi
       # Check for success
       if [ $? -ne 0 ]; then
-      debootstrapOk="false"
-      buildStatusArray+=("$dist""_""$arch"":DebootstrapFailed")
-      echo "pubulider create or update FAILED! for $dist $arch, aborting!"
+        debootstrapOk="false"
+        buildStatusArray+=("$dist""_""$arch"":DebootstrapFailed")
+        echo "pubulider create or update FAILED! for $dist $arch, aborting!"
       fi
     fi
 
