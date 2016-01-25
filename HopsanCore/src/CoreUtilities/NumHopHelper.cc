@@ -120,6 +120,11 @@ public:
                     {
                         value = pC->evaluateDoubleParameter(parts[1]+"#"+parts[2], rFound);
                     }
+                    else
+                    {
+                        value = -1;
+                        rFound = false;
+                    }
                     return value;
                 }
             }
@@ -200,7 +205,7 @@ public:
             return vr;
         }
 
-        double value;
+        double value=-1;
         HString valstring;
         vector<HString> parts;
         splitString(hname, '.', parts);
@@ -385,7 +390,7 @@ bool NumHopHelper::interpretNumHopScript(const HString &script, bool doPrintOutp
 bool NumHopHelper::eval(double &rValue, bool doPrintOutput, HString &rOutput)
 {
     bool allOK=!mpPrivate->mExpressions.empty();
-    double value;
+    double value=-1;
     for (list<numhop::Expression>::iterator it = mpPrivate->mExpressions.begin(); it!=mpPrivate->mExpressions.end(); ++it)
     {
         numhop::Expression &e = *it;
