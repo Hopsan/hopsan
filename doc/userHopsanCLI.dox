@@ -68,8 +68,11 @@ Where:
    --resultsCSVSort <string>
      Export results in columns or in rows: [rows, cols]
 
+   --loadSimStartValues <string>
+     Load the start values (simulation state without time offset) from this file
+
    --loadSimState <string>
-     Load the simulation state to this file
+     Load the simulation state (with time offset) from this file
 
    --saveSimState <string>
      Export the simulation state to this file

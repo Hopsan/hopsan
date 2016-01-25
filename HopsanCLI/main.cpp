@@ -80,7 +80,8 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> buildCompLibOption("", "buildComponentLibrary", "Build the specified component library (point to the library xml)", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> destinationOption("d","destination","Destination for resulting files",false,"","Path to directory", cmd);
         TCLAP::ValueArg<std::string> saveSimulationStateOption("", "saveSimState", "Export the simulation state to this file", false, "Path to file", "string", cmd);
-        TCLAP::ValueArg<std::string> loadSimulationStateOption("", "loadSimState", "Load the simulation state to this file", false, "Path to file", "string", cmd);
+        TCLAP::ValueArg<std::string> loadSimulationStateOption("", "loadSimState", "Load the simulation state (with time offset) from this file", false, "Path to file", "string", cmd);
+        TCLAP::ValueArg<std::string> loadSimulationSVOption("", "loadSimStartValues", "Load the start values (simulation state without time offset) from this file", false, "Path to file", "string", cmd);
         TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultsFinalCSVOption("", "resultsFinalCSV", "Export the results (only final values)", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> resultsFullCSVOption("", "resultsFullCSV", "Export the results (all logged data)", false, "", "Path to file", cmd);
@@ -263,13 +264,19 @@ int main(int argc, char *argv[])
                         pRootSystem->setNumLogSamples(nSamp);
                     }
 
-                    // Apply loaded simulation states
+                    // Apply loaded simulation states or only load start values
                     if (loadSimulationStateOption.isSet())
                     {
                         double timeOffset;
                         restoreSimulationPoint(loadSimulationStateOption.getValue().c_str(), pRootSystem, timeOffset);
                         startTime+=timeOffset;
                         stopTime+=timeOffset;
+                        pRootSystem->setKeepValuesAsStartValues(true);
+                    }
+                    else if (loadSimulationSVOption.isSet())
+                    {
+                        double dummy;
+                        restoreSimulationPoint(loadSimulationSVOption.getValue().c_str(), pRootSystem, dummy);
                         pRootSystem->setKeepValuesAsStartValues(true);
                     }
 

@@ -139,6 +139,26 @@ QStringList extractFunctionCallExpressionArguments(QString call)
     return args;
 }
 
+//! @brief Get value of flag:value argument, from a previously split argument string
+//! @details Example: Retrieve filepath from arguments: -loadstates c:\myFile, It is assumed that the value comes after the flag
+//! @param [in] arguments A QStringList representing the arguments
+//! @param [in] flag The flag to search for (including - prefix)
+//! @returns The value or empty if nothing found
+QString getFlagArgValue(const QStringList &arguments, const QString &flag)
+{
+    QString flagvalue;
+    int idx = arguments.indexOf(flag);
+    if (idx >= 0)
+    {
+        ++idx;
+        if ( idx < arguments.size() )
+        {
+            flagvalue = arguments[idx];
+        }
+    }
+    return flagvalue;
+}
+
 //----------------------------------------------------------------------------------
 
 class LongShortNameConverter
@@ -341,8 +361,11 @@ void HcomHandler::createCommands()
     simCmd.cmd = "sim";
     simCmd.description.append("Simulates current model (or all open models)");
     simCmd.help.append(" Usage: sim\n");
-    simCmd.help.append(" Usage: sim all");
-    simCmd.help.append(" Usage: sim -loadstate file");
+    simCmd.help.append(" Usage: sim all\n");
+    simCmd.help.append(" Usage: sim -loadstate file\n");
+    simCmd.help.append(" Usage: sim -loadsv file\n");
+    simCmd.help.append("  -loadsv will load start values from a saved simulation state file\n");
+    simCmd.help.append("  -loadstate will do the same but also offset the simulation time");
     simCmd.fnc = &HcomHandler::executeSimulateCommand;
     simCmd.group = "Simulation Commands";
     mCmdList << simCmd;
@@ -1230,9 +1253,9 @@ void HcomHandler::executeExitCommand(const QString cmd)
 void HcomHandler::executeSimulateCommand(const QString cmd)
 {
     QStringList arguments = splitCommandArguments(cmd);
-    if (arguments.contains("-loadstate"))
+    if (arguments.contains("-loadstate") || arguments.contains("-loadsv"))
     {
-        if (arguments.size() != 2)
+        if (arguments.size() < 2)
         {
             HCOMERR("Wrong number of arguments.");
             return;
@@ -1240,15 +1263,33 @@ void HcomHandler::executeSimulateCommand(const QString cmd)
 
         if (mpModel && mpModel->getTopLevelSystemContainer())
         {
+            bool doOffsetTime;
+            QString statefile = getFlagArgValue(arguments, "-loadstate");
+            if (statefile.isEmpty())
+            {
+                doOffsetTime=false;
+                statefile = getFlagArgValue(arguments, "-loadsv");
+                HCOMPRINT(QString("Loading start values from file: %1").arg(statefile));
+            }
+            else
+            {
+                doOffsetTime=true;
+                HCOMPRINT(QString("Loading states (start values and time) from file: %1").arg(statefile));
+            }
+
             double timeOffset;
             QString prevStartT = mpModel->getStartTime();
             QString prevStopT = mpModel->getStopTime();
-            mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->loadSimulationState(arguments.last(),timeOffset);
+            mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->loadSimulationState(statefile,timeOffset);
             mpModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->setKeepValuesAsStartValues(true);
-            HCOMPRINT(QString("Offsetting simulation time: %1 seconds").arg(timeOffset));
-            mpModel->setTopLevelSimulationTime(QString("%1").arg(prevStartT.toDouble()+timeOffset),
-                                               mpModel->getTimeStep(),
-                                               QString("%1").arg(prevStopT.toDouble()+timeOffset));
+            if (doOffsetTime)
+            {
+                HCOMPRINT(QString("Offsetting simulation time: %1 seconds").arg(timeOffset));
+                mpModel->setTopLevelSimulationTime(QString("%1").arg(prevStartT.toDouble()+timeOffset),
+                                                   mpModel->getTimeStep(),
+                                                   QString("%1").arg(prevStopT.toDouble()+timeOffset));
+            }
+
             mpModel->simulate_blocking();
             // Restore settings
             mpModel->setTopLevelSimulationTime(prevStartT,

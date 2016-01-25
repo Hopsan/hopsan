@@ -8,9 +8,13 @@ All available commands are listed below.
 \section simulationcommands Simulation Commands
 
 \subsection sim sim
-Simulates current model (or all open models)<br>
- Usage: sim<br>
- Usage: sim all Usage: sim -loadstate file
+ Simulates current model (or all open models)
+  Usage: sim
+  Usage: sim all
+  Usage: sim -loadstate file
+  Usage: sim -loadsv file
+   -loadsv will load start values from a saved simulation state file
+   -loadstate will do the same but also offset the simulation time
 
 \subsection chss chss
 Change simulation settings<br>
