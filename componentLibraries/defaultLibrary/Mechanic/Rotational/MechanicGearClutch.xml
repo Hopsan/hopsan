@@ -10,8 +10,8 @@
             <link>MechanicGearClutch.nb</link>
         </help>               
 		<ports>
-            <port x="0.62" y="0" a="270" name="PgearRatio"/>
-            <port x="0.24" y="0" a="270" name="Ptmax"/>
+            <port x="0.62" y="0" a="270" name="gearRatio"/>
+            <port x="0.24" y="0" a="270" name="tmax"/>
             <port x="0" y="0.5" a="180" name="Pmr1"/>
             <port x="1" y="0.5" a="0" name="Pmr2"/>
         </ports>
