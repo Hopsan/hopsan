@@ -1050,17 +1050,17 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
 //! @ingroup ComponentSimulationFunctions
 //! @param [in] rPortName The port to write data to
 //! @param [in] rDataName The data variable name for the data to be written
+//! @param [in] subPortIdx The index of a multiport subport
 //! @returns The value from the requested PortName#DataName or -1 if failure, Note! an error message will also be shown
-double Component::readNodeSafe(const HString &rPortName, const HString &rDataName)
+double Component::readNodeSafe(const HString &rPortName, const HString &rDataName, const size_t subPortIdx)
 {
     Port *pPort = getPort(rPortName);
     if (pPort)
     {
-        //! @todo what about multiports
         int id = pPort->getNodeDataIdFromName(rDataName);
         if (id > 0)
         {
-            return pPort->readNodeSafe(id);
+            return pPort->readNodeSafe(id, subPortIdx);
         }
         addErrorMessage("You are trying to get a dataName: "+rDataName+" that does not exist in port: "+rPortName);
         return -1;
@@ -1076,14 +1076,14 @@ double Component::readNodeSafe(const HString &rPortName, const HString &rDataNam
 //! @ingroup ComponentSimulationFunctions
 //! @param [in] rPortName The port to write data to
 //! @param [in] dataId The data variable id for the data to be written
+//! @param [in] subPortIdx The index of a multiport subport
 //! @returns The value from the requested PortName#DataId or -1 if failure, Note! an error message will also be shown
-double Component::readNodeSafe(const HString &rPortName, const size_t dataId)
+double Component::readNodeSafe(const HString &rPortName, const size_t dataId, const size_t subPortIdx)
 {
     Port *pPort = getPort(rPortName);
     if (pPort)
     {
-        //! @todo what about multiports
-        return pPort->readNodeSafe(dataId);
+        return pPort->readNodeSafe(dataId, subPortIdx);
     }
     addErrorMessage("You are trying to access port: "+rPortName+" that does not exist");
     return -1;
@@ -1098,18 +1098,26 @@ double Component::readNodeSafe(const HString &rPortName, const size_t dataId)
 //! @param [in] rPortName The port to write data to
 //! @param [in] rDataName The data variable name for the data to be written
 //! @param [in] value The value to write
-void Component::writeNodeSafe(const HString &rPortName, const HString &rDataName, const double value)
+//! @param [in] subPortIdx The index of a multiport subport
+void Component::writeNodeSafe(const HString &rPortName, const HString &rDataName, const double value, const size_t subPortIdx)
 {
     Port *pPort = getPort(rPortName);
     if (pPort)
     {
-        //! @todo what about multiports
         int id = pPort->getNodeDataIdFromName(rDataName);
         if (id >= 0)
         {
-            // We want to make sure we use the base class Port::writeNodeSafe function to force writing the value even if this is a ReadPort
-            pPort->Port::writeNodeSafe(id, value);
-            return;
+            if (pPort->isMultiPort())
+            {
+                //! @todo We wont be able to overwrite read sub ports here, we "solved" that for some reason before in the code below
+                pPort->writeNodeSafe(id, value, subPortIdx);
+            }
+            else
+            {
+                // We want to make sure we use the base class Port::writeNodeSafe function to force writing the value even if this is a ReadPort
+                pPort->Port::writeNodeSafe(id, value, subPortIdx);
+                return;
+            }
         }
         addErrorMessage("You are trying to set value for dataName: "+rDataName+" that does not exist in port: "+rPortName);
         return;
@@ -1126,16 +1134,23 @@ void Component::writeNodeSafe(const HString &rPortName, const HString &rDataName
 //! @param [in] rPortName The port to write data to
 //! @param [in] dataId The data variable id for the data to be written
 //! @param [in] value The value to write
-void Component::writeNodeSafe(const HString &rPortName, const size_t dataId, const double value)
+//! @param [in] subPortIdx The index of a multiport subport
+void Component::writeNodeSafe(const HString &rPortName, const size_t dataId, const double value, const size_t subPortIdx)
 {
     Port *pPort = getPort(rPortName);
     if (pPort)
     {
-        //! @todo what about multiports
-        // We want to make sure we use the base class Port::writeNodeSafe function to force writing the value even if this is a ReadPort
-        pPort->Port::writeNodeSafe(dataId, value);
-        return;
-
+        if (pPort->isMultiPort())
+        {
+            //! @todo We wont be able to overwrite read sub ports here, we "solved" that for some reason before in the code below
+            pPort->writeNodeSafe(dataId, value, subPortIdx);
+        }
+        else
+        {
+            // We want to make sure we use the base class Port::writeNodeSafe function to force writing the value even if this is a ReadPort
+            pPort->Port::writeNodeSafe(dataId, value, subPortIdx);
+            return;
+        }
     }
     addErrorMessage("You are trying to access port: "+rPortName+" that does not exist");
     return;

@@ -180,10 +180,10 @@ public:
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue);
 
     // Node data access
-    double readNodeSafe(const HString &rPortName, const HString &rDataName);
-    double readNodeSafe(const HString &rPortName, const size_t dataId);
-    void writeNodeSafe(const HString &rPortName, const HString &rDataName, const double value);
-    void writeNodeSafe(const HString &rPortName, const size_t dataId, const double value);
+    double readNodeSafe(const HString &rPortName, const HString &rDataName, const size_t subPortIdx=0);
+    double readNodeSafe(const HString &rPortName, const size_t dataId, const size_t subPortIdx=0);
+    void writeNodeSafe(const HString &rPortName, const HString &rDataName, const double value, const size_t subPortIdx=0);
+    void writeNodeSafe(const HString &rPortName, const size_t dataId, const double value, const size_t subPortIdx=0);
 
     // System parent
     ComponentSystem *getSystemParent() const;
