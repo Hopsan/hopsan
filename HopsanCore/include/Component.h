@@ -163,6 +163,8 @@ public:
     double getDefaultStartValue(Port *pPort, const size_t idx, const size_t portIdx=0);
     double getDefaultStartValue(const HString &rPortName, const HString &rDataName, const size_t portIdx=0);
     void disableStartValue(Port* pPort, const size_t idx);
+    void disableStartValue(const HString &rPortName, const size_t idx);
+    void disableStartValue(const HString &rPortName, const HString &rDataName);
     virtual void loadStartValues();
     virtual void loadStartValuesFromSimulation();
 
@@ -178,10 +180,10 @@ public:
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue);
 
     // Node data access
-    double readNodeSafeSlow(const HString &rPortName, const HString &rDataName);
-    double getInitialValue(const HString &rPortName, const HString &rDataName);
-    void writeNodeSafeSlow(const HString &rPortName, const HString &rDataName, const double value);
-    void setInitialValue(const HString &rPortName, const HString &rDataName, const double value);
+    double readNodeSafe(const HString &rPortName, const HString &rDataName);
+    double readNodeSafe(const HString &rPortName, const size_t dataId);
+    void writeNodeSafe(const HString &rPortName, const HString &rDataName, const double value);
+    void writeNodeSafe(const HString &rPortName, const size_t dataId, const double value);
 
     // System parent
     ComponentSystem *getSystemParent() const;

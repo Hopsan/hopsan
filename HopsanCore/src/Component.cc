@@ -1042,15 +1042,16 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
     return pData;
 }
 
-//! @brief Read node data based on port and data name, also checks so that correct data is returned
-//! @note This functions is slow, do not use it during simulation
-//! @details It searches for data based on strings, this make it unsuitable for use during simulation but its excellent for use in initialize when port pointers are not desired/available
-//! This function will also check so that the desired data actually exist in the requested node
+
+//! @brief Read value based on the port and node data name
+//! @note This functions is slow but safe, do not use it during simulation
+//! @details It searches for data based on strings, this make it unsuitable for use during simulation but it is suitable during initialize when port pointers are not desired/available
+//! This function will also check so that the desired data actually exist in the requested node, error message will be sent if it does not
 //! @ingroup ComponentSimulationFunctions
-//! @param [in] rPortName The port to get data from
-//! @param [in] rDataName The data variable name for the data to retrieve
-//! @returns The node data value or -1 if failed. (And error message will also be sent)
-double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDataName)
+//! @param [in] rPortName The port to write data to
+//! @param [in] rDataName The data variable name for the data to be written
+//! @returns The value from the requested PortName#DataName or -1 if failure, Note! an error message will also be shown
+double Component::readNodeSafe(const HString &rPortName, const HString &rDataName)
 {
     Port *pPort = getPort(rPortName);
     if (pPort)
@@ -1059,7 +1060,7 @@ double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDat
         int id = pPort->getNodeDataIdFromName(rDataName);
         if (id > 0)
         {
-            return pPort->readNode(id);
+            return pPort->readNodeSafe(id);
         }
         addErrorMessage("You are trying to get a dataName: "+rDataName+" that does not exist in port: "+rPortName);
         return -1;
@@ -1068,29 +1069,36 @@ double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDat
     return -1;
 }
 
+//! @brief Read value based on the port name and node data id
+//! @note This functions is slow but safe, do not use it during simulation
+//! @details It searches for data based on strings, this make it unsuitable for use during simulation but it is suitable during initialize when port pointers are not desired/available
+//! This function will only check if node data id is within range in the node, not if the data actually exist
+//! @ingroup ComponentSimulationFunctions
+//! @param [in] rPortName The port to write data to
+//! @param [in] dataId The data variable id for the data to be written
+//! @returns The value from the requested PortName#DataId or -1 if failure, Note! an error message will also be shown
+double Component::readNodeSafe(const HString &rPortName, const size_t dataId)
+{
+    Port *pPort = getPort(rPortName);
+    if (pPort)
+    {
+        //! @todo what about multiports
+        return pPort->readNodeSafe(dataId);
+    }
+    addErrorMessage("You are trying to access port: "+rPortName+" that does not exist");
+    return -1;
+}
 
-//! @brief This function is an alias function for readNodeSafeSlow, to make component code more readable
-//! @note This functions is slow, do not use it during simulation
-//! @details It just calls readNodeSafeSlow but is meant to be used if you want to get an initial value during initialize, as getDefaultStartValues returns the default value set prior to initialization
-//! @see readNodeSafeSlow getDefaultStartValue
+
+//! @brief Write node data based on port and data name
+//! @note This functions is slow but safe, do not use it during simulation
+//! @details It searches for data based on strings, this make it unsuitable for use during simulation but it is suitable during initialize when port pointers are not desired/available
+//! This function will also check so that the desired data actually exist in the requested node, error message will be sent if it does not
 //! @ingroup ComponentSimulationFunctions
 //! @param [in] rPortName The port to write data to
 //! @param [in] rDataName The data variable name for the data to be written
-//! @returns The value from the requested PortName#DataName or -1 if failure, Note! an error message will also be shown
-double Component::getInitialValue(const HString &rPortName, const HString &rDataName)
-{
-    return readNodeSafeSlow(rPortName, rDataName);
-}
-
-//! @brief Write node data based on port and data name, also checks so that correct data is written
-//! @note This functions is slow, do not use it during simulation
-//! @details It searches for data based on strings, this make it unsuitable for use during simulation but its excellent for use in initialize when port pointers are not desired/available
-//! This function will also check so that the desired data actually exist in the requested node, error message will be sent if it does not
-//! @ingroup ComponentSimulationFunctions
-//! @param[in] rPortName The port to write data to
-//! @param[in] rDataName The data variable name for the data to be written
-//! @param[in] value The value to write
-void Component::writeNodeSafeSlow(const HString &rPortName, const HString &rDataName, const double value)
+//! @param [in] value The value to write
+void Component::writeNodeSafe(const HString &rPortName, const HString &rDataName, const double value)
 {
     Port *pPort = getPort(rPortName);
     if (pPort)
@@ -1110,17 +1118,27 @@ void Component::writeNodeSafeSlow(const HString &rPortName, const HString &rData
     return;
 }
 
-//! @brief This function is an alias function for writeNodeSafeSlow, to make component code more readable
-//! @note This functions is slow, do not use it during simulation
-//! @details It just calls writeNodeSafeSlow but is meant to be used if you want to set an initial value during initialize, as setdefaultStartValues changes the default value for the next simulation
-//! @see writeNodeSafeSlow setDefaultStartValue
+//! @brief Write node data based on port and data id
+//! @note This functions is slow but safe, do not use it during simulation
+//! @details It searches for data based on strings, this make it unsuitable for use during simulation but it is suitable during initialize when port pointers are not desired/available
+//! This function will only check if node data id is within range in the node, not if the data actually exist
 //! @ingroup ComponentSimulationFunctions
 //! @param [in] rPortName The port to write data to
-//! @param [in] rDataName The data variable name for the data to be written
+//! @param [in] dataId The data variable id for the data to be written
 //! @param [in] value The value to write
-void Component::setInitialValue(const HString &rPortName, const HString &rDataName, const double value)
+void Component::writeNodeSafe(const HString &rPortName, const size_t dataId, const double value)
 {
-    writeNodeSafeSlow(rPortName, rDataName, value);
+    Port *pPort = getPort(rPortName);
+    if (pPort)
+    {
+        //! @todo what about multiports
+        // We want to make sure we use the base class Port::writeNodeSafe function to force writing the value even if this is a ReadPort
+        pPort->Port::writeNodeSafe(dataId, value);
+        return;
+
+    }
+    addErrorMessage("You are trying to access port: "+rPortName+" that does not exist");
+    return;
 }
 
 
@@ -1488,9 +1506,54 @@ void Component::setDefaultStartValue(const HString &rPortName, const HString &rD
 }
 
 
+//! @brief Disable a start value to prevent the user from setting it, this is usefully if you calculate the value internally
+//! @param [in] pPort Pointer to the port to disable start value on
+//! @param [in] idx The node data index to disable start value for
 void Component::disableStartValue(Port *pPort, const size_t idx)
 {
     pPort->disableStartValue(idx);
+}
+
+//! @brief Disable a start value to prevent the user from setting it, this is usefully if you calculate the value internally
+//! @param [in] rPortName The name of the port to disable start value on
+//! @param [in] idx The node data index to disable start value for
+//! @details If the given port name is incorrect the an error message will be added
+void Component::disableStartValue(const HString &rPortName, const size_t idx)
+{
+    Port *pPort = getPort(rPortName);
+    if (pPort)
+    {
+        disableStartValue(pPort, idx);
+    }
+    else
+    {
+        addErrorMessage("disableStartValue(): Port '"+rPortName+"' not found!");
+    }
+}
+
+//! @brief Disable a start value to prevent the user from setting it, this is usefully if you calculate the value internally
+//! @param [in] rPortName The name of the port to disable start value on
+//! @param [in] rDataName The name of the node data to disable start value for
+//! @details If the given port or node data name is incorrect the an error message will be added
+void Component::disableStartValue(const HString &rPortName, const HString &rDataName)
+{
+    Port *pPort = getPort(rPortName);
+    if (pPort && pPort->getNodePtr())
+    {
+        int id = pPort->getNodePtr()->getDataIdFromName(rDataName);
+        if (id >= 0)
+        {
+            disableStartValue(pPort, id);
+        }
+        else
+        {
+            addErrorMessage("disableStartValue(): Data named '"+rDataName+"' was not found in Port '"+rPortName+"'!");
+        }
+    }
+    else
+    {
+        addErrorMessage("disableStartValue(): Port '"+rPortName+"' not found!");
+    }
 }
 
 

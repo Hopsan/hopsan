@@ -30,6 +30,7 @@
 - Note: The abs HCOM command has been removed, use the abs() function instead.
 - Note: The HCOM plot scale and plot offset commands have been removed. (The features have been removed as well)
         Use quantities or generation specific time plot offset
+- Note: The core Component functions setInitialValue() and readNodeSafeSlow() and writeNodeSafeSlow() have been removed. Use writeNodeSafe() or readNodeSafe() instead.
 - Note: Now one logdata handler is shared for the entire model instead of for each individual subsystem, this greatly simplifies working with Generations of data.
         The full system hierarchy of data is now available in the same tree.
 - Note: We have finally chosen a real license, and made sure that third-party dependencies are compatible.
