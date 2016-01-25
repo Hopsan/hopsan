@@ -23,7 +23,7 @@
 ******************************
     Version History
 ******************************
-0.7.0  (2016-01-22)
+0.7.0  (2016-01-26)
 
 - Note: This version has been in development for approximately one year.
         There are many changes that are not mentioned in these release notes.
@@ -75,7 +75,7 @@
 - Feature: It is now possible to save the state of a simulation and to later load that state to continue the simulation from a certain point.
            Note! Internal states of the components are not saved, only the interface (node) values. You make the save/restore at steady-state.
            This functionality is available in the HopsanCLI (see CLI documentation)
-           And in the HopsanGUI see the Export menu, and the -loadstate argument to the HCOM "sim" command.
+           And in the HopsanGUI see the Export menu, and the -loadstate and -loadsv argument to the HCOM "sim" command.
 - Feature: It is now possible to get node data pointer structures from ports, this makes it easier to write cleaner component code.
            Especially if you have many ports or even multi ports. Currently this is experimental and only available for Hydraulic and Mechanic nodes.
 - Feature: The HoLC (HopsanLibraryCreator) program is included in this release, you can us it to generate the component library files and component code skeletons.
