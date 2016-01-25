@@ -1068,6 +1068,20 @@ double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDat
     return -1;
 }
 
+
+//! @brief This function is an alias function for readNodeSafeSlow, to make component code more readable
+//! @note This functions is slow, do not use it during simulation
+//! @details It just calls readNodeSafeSlow but is meant to be used if you want to get an initial value during initialize, as getDefaultStartValues returns the default value set prior to initialization
+//! @see readNodeSafeSlow getDefaultStartValue
+//! @ingroup ComponentSimulationFunctions
+//! @param [in] rPortName The port to write data to
+//! @param [in] rDataName The data variable name for the data to be written
+//! @returns The value from the requested PortName#DataName or -1 if failure, Note! an error message will also be shown
+double Component::getInitialValue(const HString &rPortName, const HString &rDataName)
+{
+    return readNodeSafeSlow(rPortName, rDataName);
+}
+
 //! @brief Write node data based on port and data name, also checks so that correct data is written
 //! @note This functions is slow, do not use it during simulation
 //! @details It searches for data based on strings, this make it unsuitable for use during simulation but its excellent for use in initialize when port pointers are not desired/available
