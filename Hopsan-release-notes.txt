@@ -42,11 +42,11 @@
 
 - Feature: A remote Hopsan simulation framework has been developed and is included in this release.
            Unfortunately there is no documentation about how to use it but if you are clever, you can probably figure it out.
-           Run the following programs with the "--help" flag for mor information:
+           Run the following programs with the "--help" flag for more information:
            HopsanAddressServer.exe, HopsanServer.exe, HopsanServerClient.exe, ServerMonitor.exe
            HopsanGUI can connect to the server(s) and run remote simulation, and some optimization algorithms can run in parallel if many server computers are set up.
            Note! This is VERY experimental.
-- Feature: It is now possible to set plot label in the component properties dialog, this label will be used in plot legend (overwriting full name and alias)
+- Feature: It is now possible to set plot label in the component properties dialogue, this label will be used in plot legend (overwriting full name and alias)
 - Feature: Components (including subsystems) in a model can now be locked, which prevents editing
 - Feature: Ii is now possible to revert model to the last saved state without loosing plot windows and log data generations (Tools menu)
 - Feature: It is now possible to invert specific plot variables from HCOM "ivpv" and component properties
@@ -56,7 +56,7 @@
            (You can still use that for advanced development)
 - Feature: It is now possible to recompile or reload external component libraries from the library widget right-click menu.
            Provided, that the correct compiler version is installed and selected in Options. (See documentation for details)
-- Feature: It is now possible to start HopsanGUI from the command line, and pass a HCOM script as the first argument. The script will be executed on startup.
+- Feature: It is now possible to start HopsanGUI from the command line, and pass a HCOM script as the first argument. The script will be executed on start-up.
            Note! the script file name used as the argument must end in .hcom, otherwise it will be treated as an hmf file to load.
 - Feature: Quantities definitions have been moved to the simulation core, so you can now assign quantities directly in the component code
 - Feature: It is now possible to set Quantity on signals (that have no quantity set in code) so that the desired description and units are used in plots.
@@ -74,9 +74,9 @@
 - Feature: It is now possible to set star values in system ports.
 - Feature: It is now possible to save the state of a simulation and to later load that state to continue the simulation from a certain point.
            Note! Internal states of the components are not saved, only the interface (node) values. You make the save/restore at steady-state.
-           This functionality is available in th HopsanCLI (see CLI documentation)
-           And in the HopsanGUI see the Export menu, and the -loadstate argument to the HCOM sim command.
-- Feature: It is now possible to get node data ptr objects from ports, this makes it easier to write cleaner component code.
+           This functionality is available in the HopsanCLI (see CLI documentation)
+           And in the HopsanGUI see the Export menu, and the -loadstate argument to the HCOM "sim" command.
+- Feature: It is now possible to get node data pointer structures from ports, this makes it easier to write cleaner component code.
            Especially if you have many ports or even multi ports. Currently this is experimental and only available for Hydraulic and Mechanic nodes.
 - Feature: The HoLC (HopsanLibraryCreator) program is included in this release, you can us it to generate the component library files and component code skeletons.
            It also offers limited code editor functionality.
@@ -94,23 +94,23 @@
 - Enhancement: System parameters now support quantities/units and description
 - Enhancement: It is now possible to edit system parameters after they have been added
 - Enhancement: It is now possible to plot and check parameters (but not edit) inside fully locket external systems and locked local systems
-- Enhancement: When the component properties dialog is opened the model is locked to prevent editing, however, now it is possible to open additional properties dialogs
-               or start a simulation. The dialogs have been given an apply button. You can now iterate the following: open a dialog, change a parameter, simulate, look 
-               at the results. All without ever closing any windows or dialogs.
-- Enhancement: The component properties dialog for subsystems now look and behave the same as for ordinary components.
+- Enhancement: When the component properties dialogue is opened the model is locked to prevent editing, however, now it is possible to open additional properties dialogues
+               or start a simulation. The dialogues have been given an apply button. You can now iterate the following: open a dialogue, change a parameter, simulate, look
+               at the results. All without ever closing any windows or dialogues.
+- Enhancement: The component properties dialogue for subsystems now look and behave the same as for ordinary components.
                But it still contain additional system specific settings.
 - Enhancement: The expended items in the plot widget will now be remembered when you switch between two different models
 - Enhancement: When exporting a model as .png, it is possible to choose if the background should be transparent or white. The original resolution is also shown.
 - Enhancement: When a data variable is removed it will signal any plot using it to remove the curve or a curve custom x-data as appropriate.
-               This reduces confusion when analyzing the results.
+               This reduces confusion when analysing the results.
 - Enhancement: When a generation is missing from a data variable, that data curve will be hidden if the curve is set to that generation.
                (Rather then showing the wrong generation).
 - Enhancement: When offsetting time for a specific generation, now all "Time" vectors in that generation will be affected at the same time.
-               Time offset can be applied and checked from time offset dialog, right-click menu in plot widget or HCOM commands "chto" and "dito".
+               Time offset can be applied and checked from time offset dialogue, right-click menu in plot widget or HCOM commands "chto" and "dito".
 - Enhancement: Systems and components now save their CQS-type as an attribute in the HMF file
 
 - Documentation: The documentation has been reorganized and updated with new information about, how to setup the build environment to build Hopsan as a developer.
-                 how to install the compiler for automatic compilation of External component libraries. Some new features are also covered, but sadly the documentaion 
+                 how to install the compiler for automatic compilation of External component libraries. Some new features are also covered, but sadly the documentation
                  is still lagging behind in some areas.
 
 - New components: Round, Ceil and Floor signal components
@@ -129,7 +129,7 @@
 - Bug fixed: When a model is locked (external system) it is still possible to change or remove system parameters through the system parameter widget
 - Bug fixed: When sorting the system parameters in the system parameter widget, the row indexes are messed up, making operations affect the wrong parameter
 - Bug fixed: If you remove a system parameter from a system used as an external system, then the old parameter will be re-added once the master model is loaded
-- Bug fixed: Hopsan crash after simulation due to progress bar deletion if something got in the way between finilaizeDone signal and finish slot.
+- Bug fixed: Hopsan crash after simulation due to progress bar deletion if something got in the way between finalizeDone signal and finish slot.
              (actually this was a problem with non blocking signals and slots)
 - Bug fixed: Pressing Ctr+C (copy) without something selected will clear the current copy/cut stack.
              Not fun if you made something fancy, cut and then accidentally press copy instead of paste.
