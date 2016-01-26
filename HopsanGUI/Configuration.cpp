@@ -64,62 +64,7 @@
 Configuration::Configuration()
 {
     // Register configuration options
-
-    // String settings
-    mStringSettings.insert(CFG_REMOTEHOPSANADDRESS, "");
-    mStringSettings.insert(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, "");
-    mStringSettings.insert(CFG_LOADMODELDIR, gpDesktopHandler->getModelsPath());
-    mStringSettings.insert(CFG_MODELGFXDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_PLOTDATADIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_PLOTGFXDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_SIMULINKEXPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_SUBSYSTEMDIR, gpDesktopHandler->getModelsPath());
-    mStringSettings.insert(CFG_MODELICAMODELSDIR, gpDesktopHandler->getModelsPath());
-    mStringSettings.insert(CFG_EXTERNALLIBDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_SCRIPTDIR, gpDesktopHandler->getScriptsPath());
-    mStringSettings.insert(CFG_PLOTWINDOWDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_FMUIMPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_FMUEXPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_LABVIEWEXPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_GCC32DIR, "");
-    mStringSettings.insert(CFG_GCC64DIR, "");
-    mStringSettings.insert(CFG_PLOTGFXIMAGEFORMAT, "png");
-    mStringSettings.insert(CFG_PLOTGFXDIMENSIONSUNIT, "px");
-
-    // Bool settings
-    mBoolSettings.insert(CFG_USEREMOTEADDRESSSERVER, false);
-    mBoolSettings.insert(CFG_USEREMOTEOPTIMIZATION, false);
-    mBoolSettings.insert(CFG_PLOTWINDOWSONTOP, true);
-    mBoolSettings.insert(CFG_PLOTGFXUSESCREENSIZE, false);
-    mBoolSettings.insert(CFG_PLOTGFXKEEPASPECT, true);
-    mBoolSettings.insert(CFG_AUTOLIMITGENERATIONS, false);
-    mBoolSettings.insert(CFG_CACHELOGDATA, true);
-    mBoolSettings.insert(CFG_SHOWHIDDENNODEDATAVARIABLES, false);
-    mBoolSettings.insert(CFG_AUTOBACKUP, true);
-    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
-    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
-    mBoolSettings.insert(CFG_TOGGLENAMESBUTTONCHECKED, true);
-    mBoolSettings.insert(CFG_TOGGLEPORTSBUTTONCHECKED, true);
-    mBoolSettings.insert(CFG_SNAPPING, true);
-    mBoolSettings.insert(CFG_INVERTWHEEL, false);
-    mBoolSettings.insert(CFG_ANTIALIASING, true);
-    mBoolSettings.insert(CFG_NATIVESTYLESHEET, false);
-    mBoolSettings.insert(CFG_SHOWPOPUPHELP, true);
-    mBoolSettings.insert(CFG_MULTICORE, false);
-    mBoolSettings.insert(CFG_PROGRESSBAR, true);
-    mBoolSettings.insert(CFG_SETPWDTOMWD, false);
-    mBoolSettings.insert(CFG_SHOWLICENSEONSTARTUP, true);
-
-    // Integer settings
-    mIntegerSettings.insert(CFG_LIBRARYSTYLE, 0);
-    mIntegerSettings.insert(CFG_PROGRESSBARSTEP, 100);
-    mIntegerSettings.insert(CFG_NUMBEROFTHREADS, 0);
-    mIntegerSettings.insert(CFG_GENERATIONLIMIT, 100);
-    mIntegerSettings.insert(CFG_PLOEXPORTVERSION, 1);
-
-    // Double settings
-    mDoubleSettings.insert(CFG_PLOTGFXDPI, 96.0);
-    mDoubleSettings.insert(CFG_ZOOMSTEP, 15.0);
+    registerSettings();
 }
 
 void Configuration::saveToXml()
@@ -439,6 +384,20 @@ void Configuration::loadDefaultsFromXml()
     mParallelAlgorighm = 0;
 
     return;
+}
+
+//! @brief Clear some settings
+void Configuration::reset()
+{
+    mStringSettings.clear();
+    mBoolSettings.clear();
+    mIntegerSettings.clear();
+    mDoubleSettings.clear();
+    mUnitScales.clear();
+    mSelectedDefaultUnits.clear();
+    registerSettings();
+    loadDefaultsFromXml();
+    saveToXml();
 }
 
 void Configuration::beginMultiSet()
@@ -1276,6 +1235,73 @@ void Configuration::storeTerminalHistory(QStringList value)
 void Configuration::setHcomWorkingDirectory(QString value)
 {
     mHcomWorkingDirectory = value;
+}
+
+void Configuration::registerSettings()
+{
+    // String settings
+    mStringSettings.insert(CFG_REMOTEHOPSANADDRESS, "");
+    mStringSettings.insert(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, "");
+    mStringSettings.insert(CFG_LOADMODELDIR, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(CFG_MODELGFXDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_PLOTDATADIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_PLOTGFXDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_SIMULINKEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_SUBSYSTEMDIR, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(CFG_MODELICAMODELSDIR, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(CFG_EXTERNALLIBDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_SCRIPTDIR, gpDesktopHandler->getScriptsPath());
+    mStringSettings.insert(CFG_PLOTWINDOWDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_FMUIMPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_FMUEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_LABVIEWEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_GCC64DIR, "");
+    mStringSettings.insert(CFG_GCC32DIR, "");
+#ifndef _WIN32
+#ifdef HOPSANCOMPILED64BIT
+    mStringSettings.insert(CFG_GCC64DIR, "/usr/bin");
+#else
+    mStringSettings.insert(CFG_GCC32DIR, "/usr/bin");
+#endif
+    //! @todo OSX ?
+#endif
+    mStringSettings.insert(CFG_PLOTGFXIMAGEFORMAT, "png");
+    mStringSettings.insert(CFG_PLOTGFXDIMENSIONSUNIT, "px");
+
+    // Bool settings
+    mBoolSettings.insert(CFG_USEREMOTEADDRESSSERVER, false);
+    mBoolSettings.insert(CFG_USEREMOTEOPTIMIZATION, false);
+    mBoolSettings.insert(CFG_PLOTWINDOWSONTOP, true);
+    mBoolSettings.insert(CFG_PLOTGFXUSESCREENSIZE, false);
+    mBoolSettings.insert(CFG_PLOTGFXKEEPASPECT, true);
+    mBoolSettings.insert(CFG_AUTOLIMITGENERATIONS, false);
+    mBoolSettings.insert(CFG_CACHELOGDATA, true);
+    mBoolSettings.insert(CFG_SHOWHIDDENNODEDATAVARIABLES, false);
+    mBoolSettings.insert(CFG_AUTOBACKUP, true);
+    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
+    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
+    mBoolSettings.insert(CFG_TOGGLENAMESBUTTONCHECKED, true);
+    mBoolSettings.insert(CFG_TOGGLEPORTSBUTTONCHECKED, true);
+    mBoolSettings.insert(CFG_SNAPPING, true);
+    mBoolSettings.insert(CFG_INVERTWHEEL, false);
+    mBoolSettings.insert(CFG_ANTIALIASING, true);
+    mBoolSettings.insert(CFG_NATIVESTYLESHEET, false);
+    mBoolSettings.insert(CFG_SHOWPOPUPHELP, true);
+    mBoolSettings.insert(CFG_MULTICORE, false);
+    mBoolSettings.insert(CFG_PROGRESSBAR, true);
+    mBoolSettings.insert(CFG_SETPWDTOMWD, false);
+    mBoolSettings.insert(CFG_SHOWLICENSEONSTARTUP, true);
+
+    // Integer settings
+    mIntegerSettings.insert(CFG_LIBRARYSTYLE, 0);
+    mIntegerSettings.insert(CFG_PROGRESSBARSTEP, 100);
+    mIntegerSettings.insert(CFG_NUMBEROFTHREADS, 0);
+    mIntegerSettings.insert(CFG_GENERATIONLIMIT, 100);
+    mIntegerSettings.insert(CFG_PLOEXPORTVERSION, 1);
+
+    // Double settings
+    mDoubleSettings.insert(CFG_PLOTGFXDPI, 96.0);
+    mDoubleSettings.insert(CFG_ZOOMSTEP, 15.0);
 }
 
 void Configuration::setParallelAlgorithm(int value)

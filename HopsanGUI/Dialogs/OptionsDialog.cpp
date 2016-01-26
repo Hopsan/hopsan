@@ -392,12 +392,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 3);
     pPlottingLayout->setRowStretch(10, 1);
 
-
     QLabel *pCompiler32Label = new QLabel("32-bit GCC Compiler Path:");
     mpCompiler32LineEdit = new QLineEdit(this);
     QToolButton *pCompiler32Button = new QToolButton(this);
     pCompiler32Button->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
-
     mpCompiler32WarningLabel = new QLabel(this);
     mpCompiler32WarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
 
@@ -405,10 +403,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpCompiler64LineEdit = new QLineEdit(this);
     QToolButton *pCompiler64Button = new QToolButton(this);
     pCompiler64Button->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
-
     mpCompiler64WarningLabel = new QLabel(this);
     mpCompiler64WarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
-
 
     QWidget *pCompilersWidget = new QWidget(this);
     QGridLayout *pCompilersLayout = new QGridLayout(pCompilersWidget);
@@ -425,8 +421,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pCompilersLayout->addWidget(new QWidget(this),                     ++row,0,1,3);
     pCompilersLayout->setRowStretch(row,1);
 
-    setCompilerPath(gpConfig->getStringSetting(CFG_GCC32DIR), false);
-    setCompilerPath(gpConfig->getStringSetting(CFG_GCC64DIR), true);
+    setCompiler32Path(gpConfig->getStringSetting(CFG_GCC32DIR));
+    setCompiler64Path(gpConfig->getStringSetting(CFG_GCC64DIR));
 
     connect(pCompiler32Button, SIGNAL(clicked()), this, SLOT(setCompiler32Path()));
     connect(mpCompiler32LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler32Path(QString)));
@@ -510,8 +506,7 @@ void OptionsDialog::resetConfigDefaults()
     int rc = resetWarningBox.exec();
     if(rc == QMessageBox::Yes)
     {
-        gpConfig->loadDefaultsFromXml();
-        gpConfig->saveToXml();
+        gpConfig->reset();
         show();
     }
 }
@@ -681,6 +676,9 @@ void OptionsDialog::show()
     mpRemoteHopsanAddressServerAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
     mpUseRemoteHopsanAddressServer->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
     mpUseRemoteOptimization->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION));
+
+    setCompiler32Path(gpConfig->getStringSetting(CFG_GCC32DIR));
+    setCompiler64Path(gpConfig->getStringSetting(CFG_GCC64DIR));
 
     // Update units scale lists
     QObjectList unitselectors =  mpUnitScaleWidget->children();

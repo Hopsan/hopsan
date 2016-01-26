@@ -140,6 +140,7 @@ public:
     void saveToXml();
     void loadFromXml();
     void loadDefaultsFromXml();
+    void reset();
 
     void beginMultiSet();
     void endMultiSet();
@@ -227,6 +228,7 @@ public:
 
 
 private:
+    void registerSettings();
     void loadUserSettings(QDomElement &rDomElement);
     void loadStyleSettings(QDomElement &rDomElement);
     void loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn);
