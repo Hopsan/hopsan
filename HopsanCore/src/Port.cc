@@ -958,7 +958,7 @@ void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t
     }
     else
     {
-        getComponent()->addErrorMessage("portIdx out of range in MultiPort::readNodeSafe()");
+        getComponent()->addErrorMessage("portIdx out of range in MultiPort::writeNodeSafe()");
     }
 }
 
