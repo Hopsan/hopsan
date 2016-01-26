@@ -51,10 +51,11 @@ public:
     virtual QString getHmfTagName() const;
     bool isSystemPort() const;
 
+    void openPropertiesDialog();
+
 protected:
     void createPorts();
     void saveCoreDataToDomElement(QDomElement &rDomElement);
-    void openPropertiesDialog();
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:

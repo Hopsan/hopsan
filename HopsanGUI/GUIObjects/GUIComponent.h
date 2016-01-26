@@ -45,7 +45,6 @@ class Connector;
 class Port;
 class ContainerObject;
 class PlotWindow;
-class ComponentPropertiesDialog3;
 
 class Component : public ModelObject
 {
@@ -68,8 +67,6 @@ public:
     int type() const;
     virtual QString getHmfTagName() const;
 
-    void openPropertiesDialog();
-
 private slots:
     virtual void setVisible(bool visible);
 
@@ -78,8 +75,6 @@ protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void createPorts();
-
-    QPointer<ComponentPropertiesDialog3> mpPropertiesDialog;
 };
 
 class ScopeComponent : public Component

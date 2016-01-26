@@ -189,8 +189,6 @@ protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-    void openPropertiesDialog();
-
     void loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rDomElement);
     void saveSensitivityAnalysisSettingsToDomElement(QDomElement &rDomElement);
     void loadOptimizationSettingsFromDomElement(QDomElement &rDomElement);

@@ -54,6 +54,7 @@
 #include "Configuration.h"
 #include "global.h"
 #include "Utilities/XMLUtilities.h"
+#include "Dialogs/ComponentPropertiesDialog3.h"
 
 #include <cassert>
 
@@ -606,6 +607,30 @@ void ModelObject::setIsLocked(bool value)
 {
     mpParentContainerObject->hasChanged();
     mIsLocked = value;
+}
+
+//! @brief Slot that opens the parameter dialog for the component
+void ModelObject::openPropertiesDialog()
+{
+    // If properties dialog already exist, then show it (useful if you forgot to close it)
+    if (mpPropertiesDialog)
+    {
+        mpPropertiesDialog->show();
+        mpPropertiesDialog->setWindowState(Qt::WindowActive);
+    }
+    // Else create a new one
+    else
+    {
+        // Note! this is a smart pointer, it will automatically become NULL when dialog is deleted
+        mpPropertiesDialog = new ComponentPropertiesDialog3(this, mpDialogParentWidget);
+
+        if(getTypeName() != QString(MODELICATYPENAME)+" NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
+        {
+            connect(this, SIGNAL(objectDeleted()), mpPropertiesDialog, SLOT(reject()));
+            mpPropertiesDialog->setAttribute(Qt::WA_DeleteOnClose);
+            mpPropertiesDialog->show();
+        }
+    }
 }
 
 

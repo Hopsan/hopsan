@@ -237,15 +237,6 @@ QString SystemContainer::getHmfTagName() const
 }
 
 
-//! @brief Opens the system properties dialog
-void SystemContainer::openPropertiesDialog()
-{
-    ComponentPropertiesDialog3 dialog(this, gpMainWindowWidget);
-    dialog.setAttribute(Qt::WA_DeleteOnClose, false);
-    dialog.exec();
-}
-
-
 //! @brief Saves the System specific core data to XML DOM Element
 //! @param[in] rDomElement The DOM Element to save to
 void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)

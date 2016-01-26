@@ -44,6 +44,7 @@ class Connector;
 class ModelObjectDisplayName;
 class Port;
 class SystemContainer;
+class ComponentPropertiesDialog3;
 
 class ModelObject : public WorkspaceObject
 {
@@ -102,6 +103,8 @@ public:
     virtual bool registerCustomParameterUnitScale(QString name, UnitConverter us);
     virtual bool unregisterCustomParameterUnitScale(QString name);
     virtual bool getCustomParameterUnitScale(QString name, UnitConverter &rUs);
+
+    virtual void openPropertiesDialog();
 
     // VariableAlias method
     //! @todo parameters and port variables should be more similar in the future, so that we do not need handle them separately
@@ -167,7 +170,6 @@ signals:
 
 protected:
     // Protected methods
-    virtual void openPropertiesDialog(){}
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QGraphicsSceneContextMenuEvent* pEvent);
 
     // Reimplemented Qt methods
@@ -220,6 +222,7 @@ protected:
 
     bool mDragCopying;
     QWidget *mpDialogParentWidget;
+    QPointer<ComponentPropertiesDialog3> mpPropertiesDialog;
 
     QTimer mDragCopyTimer;
 
