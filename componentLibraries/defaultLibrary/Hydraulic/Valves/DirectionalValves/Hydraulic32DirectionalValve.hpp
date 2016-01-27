@@ -111,7 +111,7 @@ namespace hopsan {
             den[1] = 2.0*mDeltah/mOmegah;
             den[2] = 1.0/(mOmegah*mOmegah);
 
-            double initialXv = limit(*mpXv, -(*mpXvmax), (*mpXvmax));
+            double initialXv = limit(*mpXv, 0, (*mpXvmax));
             mSpoolPosTF.initialize(mTimestep, num, den, initialXv, initialXv, 0, (*mpXvmax));
         }
 
@@ -151,7 +151,7 @@ namespace hopsan {
             xv = mSpoolPosTF.value();
 
             xpanom = std::max(xv,0.0);
-            xatnom = std::max(-xv,0.0);
+            xatnom = std::max(xvmax-xv,0.0);
 
             Kcpa = Cq*f*pi*d*xpanom*sqrt(2.0/rho);
             Kcat = Cq*f*pi*d*xatnom*sqrt(2.0/rho);
@@ -163,18 +163,9 @@ namespace hopsan {
             qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
             qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
 
-            if (xv >= 0.0)
-            {
-                qp = -qpa;
-                qa = qpa;
-                qt = 0;
-            }
-            else
-            {
-                qp = 0;
-                qa = -qat;
-                qt = qat;
-            }
+            qp = -qpa;
+            qa = qpa-qat;
+            qt = qat;
 
             pp = cp + qp*Zcp;
             pa = ca + qa*Zca;
@@ -205,18 +196,9 @@ namespace hopsan {
                 qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
                 qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
 
-                if (xv >= 0.0)
-                {
-                    qp = -qpa;
-                    qa = qpa;
-                    qt = 0;
-                }
-                else
-                {
-                    qp = 0;
-                    qa = -qat;
-                    qt = qat;
-                }
+                qp = -qpa;
+                qa = qpa-qat;
+                qt = qat;
 
                 pp = cp + qp*Zcp;
                 pa = ca + qa*Zca;
