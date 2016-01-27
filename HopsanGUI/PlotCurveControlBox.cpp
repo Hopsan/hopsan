@@ -83,8 +83,13 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     mpSourceLable->setText("U");
     mpSourceLable->setToolTip(variableSourceTypeAsShortString(UndefinedVariableSourceType));
 
-    mpAutoUpdateCheckBox = new QCheckBox("Auto Update");
+    mpAutoUpdateCheckBox = new QCheckBox("AU");
+    mpAutoUpdateCheckBox->setToolTip("Auto Update");
     mpAutoUpdateCheckBox->setChecked(mpPlotCurve->isAutoUpdating());
+
+    mpInvertCurveCheckBox = new QCheckBox("IV");
+    mpInvertCurveCheckBox->setToolTip("Invert Plot Curve");
+    mpInvertCurveCheckBox->setChecked(mpPlotCurve->isInverted());
 
     QToolButton *pColorButton = new QToolButton(this);
     pColorButton->setToolTip("Select Line Color");
@@ -144,6 +149,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     QHBoxLayout *pInfoBoxLayout = new QHBoxLayout(this);
     pInfoBoxLayout->setContentsMargins(0,0,0,0);
+    pInfoBoxLayout->addWidget(pCloseButton);
     pInfoBoxLayout->addWidget(mpColorBlob);
     pInfoBoxLayout->addWidget(mpTitle);
     pInfoBoxLayout->addWidget(mpCustomXDataDrop);
@@ -151,13 +157,13 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     pInfoBoxLayout->addWidget(mpGenerationLabel);
     pInfoBoxLayout->addWidget(mpSourceLable);
     pInfoBoxLayout->addWidget(mpAutoUpdateCheckBox);
+    pInfoBoxLayout->addWidget(mpInvertCurveCheckBox);
     pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
     pInfoBoxLayout->addWidget(pScaleButton);
     pInfoBoxLayout->addWidget(pSizeSpinBox);
     pInfoBoxLayout->addWidget(pColorButton);
     pInfoBoxLayout->addWidget(pLineStyleCombo);
     pInfoBoxLayout->addWidget(pLineSymbol);
-    pInfoBoxLayout->addWidget(pCloseButton);
     pInfoBoxLayout->addWidget(pDummy); // This one must be here to prevent colorblob from having a very small clickable area, (really strange)
 
     setLayout(pInfoBoxLayout);
@@ -168,6 +174,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
     connect(pCloseButton,              SIGNAL(clicked()),           this,               SLOT(removeTheCurve()));
     connect(mpAutoUpdateCheckBox,      SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setAutoUpdate(bool)));
+    connect(mpInvertCurveCheckBox,     SIGNAL(toggled(bool)),       mpPlotCurve,  SLOT(setInvertPlot(bool)));
     connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpPlotCurve,  SLOT(openFrequencyAnalysisDialog())); //!< @todo this should probably be in the plot area, and signaled directly with curve
     connect(pColorButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(setLineColor()));
     connect(pScaleButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(openScaleDialog()));
@@ -282,6 +289,11 @@ void PlotCurveControlBox::updateInfo()
     mpAutoUpdateCheckBox->blockSignals(true);
     mpAutoUpdateCheckBox->setChecked(mpPlotCurve->isAutoUpdating());
     mpAutoUpdateCheckBox->blockSignals(false);
+
+    // Update inverted
+    mpInvertCurveCheckBox->blockSignals(true);
+    mpInvertCurveCheckBox->setChecked(mpPlotCurve->isInverted());
+    mpInvertCurveCheckBox->blockSignals(false);
 }
 
 void PlotCurveControlBox::refreshTitle()

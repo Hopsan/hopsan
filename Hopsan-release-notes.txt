@@ -27,6 +27,8 @@
 - Fixed component: CylinderC now have the possibility to disable internal end stop simulation
 - Fixed component: Lookup table components are no longer tagged as Experimental (they seem to be working)
 
+- Enhancement: It is now possible to trigger the "invert plot" function for a data variable through the plot curve controls
+
 - Bug fixed: When opening component properties dialog for a subsystem the model is locked, the dialog seems to be modal (it now behaves as ordinary components)
 
 0.7.0  (2016-01-26)

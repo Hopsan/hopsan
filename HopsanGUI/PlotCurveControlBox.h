@@ -98,6 +98,7 @@ private:
     PlotArea *mpPlotArea;
     QLabel *mpTitle, *mpGenerationLabel, *mpSourceLable;
     QCheckBox *mpAutoUpdateCheckBox;
+    QCheckBox *mpInvertCurveCheckBox;
     QToolButton *mpColorBlob;
     QSpinBox *mpGenerationSpinBox;
     CustomXDataControl *mpCustomXDataDrop;

@@ -144,6 +144,7 @@ public:
     void setShowVsSamples(bool tf);
 
     bool isAutoUpdating() const;
+    bool isInverted() const;
     QColor getLineColor() const;
     void resetLegendSize();
 
@@ -176,6 +177,7 @@ public slots:
 
     void refreshCurveTitle();
     void setAutoUpdate(bool value);
+    void setInvertPlot(bool tf);
     void openFrequencyAnalysisDialog();
     void markActive(bool value);
 

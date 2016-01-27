@@ -842,6 +842,18 @@ bool PlotCurve::isAutoUpdating() const
     return mAutoUpdate;
 }
 
+bool PlotCurve::isInverted() const
+{
+    if (mData)
+    {
+        return mData->isPlotInverted();
+    }
+    else
+    {
+        return false;
+    }
+}
+
 QColor PlotCurve::getLineColor() const
 {
     return mLineColor;
@@ -1300,6 +1312,18 @@ void PlotCurve::setAutoUpdate(bool value)
 {
     mAutoUpdate = value;
     emit curveInfoUpdated();
+}
+
+void PlotCurve::setInvertPlot(bool tf)
+{
+    if (mData)
+    {
+        if ( (mData->isPlotInverted() && !tf) ||
+             (!mData->isPlotInverted() && tf) )
+        {
+            mData->togglePlotInverted();
+        }
+    }
 }
 
 
