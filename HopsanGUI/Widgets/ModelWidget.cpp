@@ -505,7 +505,7 @@ void ModelWidget::setUseRemoteSimulation(bool useRemoteCore, bool useAddressServ
         }
         else
         {
-            mpMessageHandler->addErrorMessage(QString("Could not find an availible server mathing your requirements; nThreads: %1").arg(nThreads));
+            mpMessageHandler->addErrorMessage(QString("Could not find an availible server matching your requirements; nThreads: %1").arg(nThreads));
             useRemoteCoreFailed = true;
         }
     }

@@ -39,8 +39,8 @@
 #include <QLabel>
 #include <QPushButton>
 
-//#include "Configuration.h"
-//#include "global.h"
+#include "Configuration.h"
+#include "global.h"
 #include "LogDataHandler2.h"
 #include "LogDataGeneration.h"
 
@@ -51,11 +51,15 @@ TimeOffsetWidget::TimeOffsetWidget(int generation, LogDataHandler2 *pLogDataHand
     mGeneration = generation;
     if (mpLogDataHandler)
     {
+        mTimeUnit = gpConfig->getDefaultUnit("Time");
+        UnitConverter uc;
+        gpConfig->getUnitScale("Time", mTimeUnit, uc);
+
         QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
         mpOffsetLineEdit = new QLineEdit(this);
         mpOffsetLineEdit->setValidator(new QDoubleValidator(this));
 
-        pHBoxLayout->addWidget(new QLabel(QString("%1 [%2]: ").arg("Time").arg("s"), this));
+        pHBoxLayout->addWidget(new QLabel(QString("%1 [%2]: ").arg("Time").arg(mTimeUnit), this));
         pHBoxLayout->addWidget(new QLabel("Offset: ", this));
         pHBoxLayout->addWidget(mpOffsetLineEdit);
         QPushButton *pResetButton = new QPushButton("0", this);
@@ -63,7 +67,7 @@ TimeOffsetWidget::TimeOffsetWidget(int generation, LogDataHandler2 *pLogDataHand
         pHBoxLayout->addWidget(pResetButton);
 
         // Set the current offset value
-        mpOffsetLineEdit->setText(QString("%1").arg(mpLogDataHandler->getGeneration(mGeneration)->getTimeOffset()));
+        mpOffsetLineEdit->setText(QString("%1").arg(uc.convertFromBase(mpLogDataHandler->getGeneration(mGeneration)->getTimeOffset())));
 
         // Connect signals to update time scale and offset when changing values
         connect(mpOffsetLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setOffset(QString)));
@@ -77,7 +81,9 @@ void TimeOffsetWidget::setOffset(const QString &rOffset)
     double val = rOffset.toDouble(&parseOK);
     if (mpLogDataHandler && parseOK)
     {
-        mpLogDataHandler->setGenerationTimePlotOffset(mGeneration, val);
+        UnitConverter uc;
+        gpConfig->getUnitScale("Time", mTimeUnit, uc);
+        mpLogDataHandler->setGenerationTimePlotOffset(mGeneration, uc.convertToBase(val));
         emit valuesChanged();
     }
 }

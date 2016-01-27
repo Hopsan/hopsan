@@ -57,6 +57,7 @@ private:
     LogDataHandler2 *mpLogDataHandler;
     int mGeneration;
     QLineEdit *mpOffsetLineEdit=0;
+    QString mTimeUnit;
 };
 
 #endif // TIMEOFFSETWIDGET_H

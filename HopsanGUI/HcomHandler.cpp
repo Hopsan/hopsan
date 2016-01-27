@@ -729,7 +729,7 @@ void HcomHandler::createCommands()
     chtoCmd.cmd = "chto";
     chtoCmd.description.append("Change time plot offset for the current or specified generation");
     chtoCmd.help.append(" Usage: chto [offset] [generation]\n");
-    chtoCmd.help.append(" Time offset should be given in seconds\n");
+    chtoCmd.help.append(" Time offset should be given in the unit selected as the default time unit\n");
     chtoCmd.help.append(" The generation specifier is optional, you can use c,a,*,h,l specifiers");
     chtoCmd.fnc = &HcomHandler::executeChangeTimePlotOffsetCommand;
     chtoCmd.group = "Plot Commands";
@@ -772,7 +772,9 @@ void HcomHandler::createCommands()
     HcomCommand ditoCmd;
     ditoCmd.cmd = "dito";
     ditoCmd.description.append("Display time plot offset of specified generation");
-    ditoCmd.help.append(" Usage: dito [generation]");
+    ditoCmd.help.append(" Usage: dito [generation]\n");
+    ditoCmd.help.append(" Time offset will be shown in the chose default time unit\n");
+    ditoCmd.help.append(" The \"ans\" variable will be offset in seconds (the base unit)");
     ditoCmd.fnc = &HcomHandler::executeDisplayTimePlotOffsetCommand;
     ditoCmd.group = "Plot Commands";
     mCmdList << ditoCmd;
@@ -3170,7 +3172,7 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
 //}
 
 
-//! @brief Execute function for "ditos" command
+//! @brief Execute function for "dito" command
 void HcomHandler::executeDisplayTimePlotOffsetCommand(const QString cmd)
 {
     QStringList arglist = splitCommandArguments(cmd);
@@ -3204,7 +3206,9 @@ void HcomHandler::executeDisplayTimePlotOffsetCommand(const QString cmd)
         if (pGen)
         {
             mAnsScalar = pGen->getTimeOffset();
-            HCOMPRINT(QString("%1").arg(pGen->getTimeOffset()));
+            UnitConverter uc;
+            gpConfig->getUnitScale("Time", gpConfig->getDefaultUnit("Time"), uc);
+            HCOMPRINT(QString("%1 %2").arg(uc.convertFromBase(pGen->getTimeOffset())).arg(gpConfig->getDefaultUnit("Time")));
         }
         else
         {
@@ -3253,7 +3257,9 @@ void HcomHandler::executeChangeTimePlotOffsetCommand(const QString cmd)
 
         if (mpModel->getLogDataHandler()->hasGeneration(generation))
         {
-            mpModel->getLogDataHandler()->setGenerationTimePlotOffset(generation, offset);
+            UnitConverter uc;
+            gpConfig->getUnitScale("Time", gpConfig->getDefaultUnit("Time"), uc);
+            mpModel->getLogDataHandler()->setGenerationTimePlotOffset(generation, uc.convertToBase(offset));
         }
         else
         {
