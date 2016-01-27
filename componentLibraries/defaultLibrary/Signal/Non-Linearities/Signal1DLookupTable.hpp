@@ -161,11 +161,6 @@ namespace hopsan {
         {
             (*mpOut) = mLookupTable.interpolate(*mpIn);
         }
-
-        bool isExperimental() const
-        {
-            return true;
-        }
     };
 }
 
