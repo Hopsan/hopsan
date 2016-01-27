@@ -5,7 +5,7 @@ These DEB packages are meant for installation on Debian or *Ubuntu (GNU Linux ba
 
 Hopsan will be installed to /opt/hopsan
 A "shortcut" to HopsanGUI should end up under the Development category in your menu.
-HopsanCLI and libHopsanCore.so can be found in /opt/hopsan/bin
+HopsanCLI, HoLC, server executables and libHopsanCore.so can be found in /opt/hopsan/bin
 
 For questions about these .deb packages, contact:
 peter.nordin@liu.se
