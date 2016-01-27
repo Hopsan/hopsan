@@ -108,6 +108,8 @@
 - Enhancement: When offsetting time for a specific generation, now all "Time" vectors in that generation will be affected at the same time.
                Time offset can be applied and checked from time offset dialogue, right-click menu in plot widget or HCOM commands "chto" and "dito".
 - Enhancement: Systems and components now save their CQS-type as an attribute in the HMF file
+- Feature: External subsystems (.hmf) can now be used as components in the component library
+- Feature: External component libraries can now be compiled directly from within HopsanGUI
 
 - Documentation: The documentation has been reorganized and updated with new information about, how to setup the build environment to build Hopsan as a developer.
                  how to install the compiler for automatic compilation of External component libraries. Some new features are also covered, but sadly the documentation
@@ -144,6 +146,8 @@
              with quantity support in the code and a new unit scale system in the GUI, this is no longer an issue.
              Either you have frequency in rad/s (then use the Frequency quantity) or write unit Hz directly (then unit scaling will not work). 
 - Bug fixed: Deactivated ports are not saved, so they reappear once a model is reloaded.
+
+- Documentation: Added HCOM documentation on how to change curve styles from plot commands
 
 ------------------------------
 0.6.12  (2015-09-03)
