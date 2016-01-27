@@ -51,7 +51,7 @@
 - Feature: Ii is now possible to revert model to the last saved state without loosing plot windows and log data generations (Tools menu)
 - Feature: It is now possible to invert specific plot variables from HCOM "ivpv" and component properties
            Inverting may be useful for analysis purposes, but only the plot curves will be affected. The data will keep the correct value.
-- Feature: HopsanGUI can no automatically compile (and recompile) External component libraries when they are loaded. 
+- Feature: HopsanGUI can now automatically compile (and recompile) External component libraries when they are loaded.
            This means that you no longer need an external build environment for component library development. 
            (You can still use that for advanced development)
 - Feature: It is now possible to recompile or reload external component libraries from the library widget right-click menu.
@@ -80,6 +80,7 @@
            Especially if you have many ports or even multi ports. Currently this is experimental and only available for Hydraulic and Mechanic nodes.
 - Feature: The HoLC (HopsanLibraryCreator) program is included in this release, you can us it to generate the component library files and component code skeletons.
            It also offers limited code editor functionality.
+- Feature: External subsystems (.hmf) can now be used as components in the component library
 
 - Enhancement: HCOM set command can now take variables as arguments
 - Enhancement: HCOM get command, which displays current settings
@@ -108,12 +109,11 @@
 - Enhancement: When offsetting time for a specific generation, now all "Time" vectors in that generation will be affected at the same time.
                Time offset can be applied and checked from time offset dialogue, right-click menu in plot widget or HCOM commands "chto" and "dito".
 - Enhancement: Systems and components now save their CQS-type as an attribute in the HMF file
-- Feature: External subsystems (.hmf) can now be used as components in the component library
-- Feature: External component libraries can now be compiled directly from within HopsanGUI
 
 - Documentation: The documentation has been reorganized and updated with new information about, how to setup the build environment to build Hopsan as a developer.
                  how to install the compiler for automatic compilation of External component libraries. Some new features are also covered, but sadly the documentation
                  is still lagging behind in some areas.
+- Documentation: Added HCOM documentation on how to change curve styles from plot commands
 
 - New components: Round, Ceil and Floor signal components
 - New components: NumHop SingleInput SingleOutput interpreting component, write NumHop script that is evaluated without compilation. 
@@ -146,8 +146,6 @@
              with quantity support in the code and a new unit scale system in the GUI, this is no longer an issue.
              Either you have frequency in rad/s (then use the Frequency quantity) or write unit Hz directly (then unit scaling will not work). 
 - Bug fixed: Deactivated ports are not saved, so they reappear once a model is reloaded.
-
-- Documentation: Added HCOM documentation on how to change curve styles from plot commands
 
 ------------------------------
 0.6.12  (2015-09-03)
