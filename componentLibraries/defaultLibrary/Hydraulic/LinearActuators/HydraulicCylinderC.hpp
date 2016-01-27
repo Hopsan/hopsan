@@ -51,7 +51,8 @@ class HydraulicCylinderC : public ComponentC
 {
 
     private:
-        double CxLim, ZxLim, wfak, alpha;
+        double mWfak, mAlpha;
+        bool mUseEndStops;
 
         double ci1, cl1, ci2, cl2;  //Members because old value need to be remembered (c1 and c2 are remembered through nodes)
         double mNum[2];
@@ -79,18 +80,19 @@ class HydraulicCylinderC : public ComponentC
 
         void configure()
         {
-            //Set member attributes
-            wfak = 0.1;
-            alpha = 0.1;
+            // Set member variables
+            mWfak = 0.1;
+            mAlpha = 0.1;
 
-            //Add ports to the component
+            // Add constant parameters
+            addConstant("use_sl", "Use end stops (stroke limitation)", "", true, mUseEndStops);
+
+            // Add ports to the component
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
             mpP2 = addPowerMultiPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
-
-
-            //Register changeable parameters to the HOPSAN++ core
+            // Add input variables
             addInputVariable("A_1", "Piston Area 1", "m^2", 0.001, &mpA1);
             addInputVariable("A_2", "Piston Area 2", "m^2", 0.001, &mpA2);
             addInputVariable("s_l", "Stroke", "m", 1.0, &mpSl);
@@ -171,13 +173,13 @@ class HydraulicCylinderC : public ComponentC
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V02+A2*(sl+x3);
-            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*1.0); //me is not written to node yet.
-            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*1.0);
+            V1min = betae*mTimestep*mTimestep*A1*A1/(mWfak*1.0); //me is not written to node yet.
+            V2min = betae*mTimestep*mTimestep*A2*A2/(mWfak*1.0);
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
-            Zc1 = (double(mNumPorts1)+2.0) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
-            Zc2 = (double(mNumPorts2)+2.0) / 2.0 * betae/V2*mTimestep/(1.0-alpha);
+            Zc1 = (double(mNumPorts1)+2.0) / 2.0 * betae/V1*mTimestep/(1.0-mAlpha);    //Number of ports in volume is 2 internal plus the external ones
+            Zc2 = (double(mNumPorts2)+2.0) / 2.0 * betae/V2*mTimestep/(1.0-mAlpha);
             Zx3 = A1*A1*Zc1 +A2*A2*Zc2 + bp;
 
             //Internal flows
@@ -213,7 +215,7 @@ class HydraulicCylinderC : public ComponentC
         void simulateOneTimestep()
         {
             //Declare local variables;
-            double V1, V2, qLeak, qi1, qi2, c1mean, c2mean, V1min, V2min;
+            double V1, V2, qLeak, qi1, qi2, c1mean, c2mean, V1min, V2min, CxLim, ZxLim;
             bool p1cav=false, p2cav=false;
 
             //Read variables from nodes
@@ -259,8 +261,8 @@ class HydraulicCylinderC : public ComponentC
                 }
             }
 
-            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
-            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
+            V1min = betae*mTimestep*mTimestep*A1*A1/(mWfak*me);
+            V2min = betae*mTimestep*mTimestep*A2*A2/(mWfak*me);
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
@@ -270,7 +272,7 @@ class HydraulicCylinderC : public ComponentC
             //   cl1 = Wave variable for leakage port
 
             //Volume 1
-            Zc1 = double(mNumPorts1+2) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
+            Zc1 = double(mNumPorts1+2) / 2.0 * betae/V1*mTimestep/(1.0-mAlpha);    //Number of ports in volume is 2 internal plus the external ones
             c1mean = (ci1 + Zc1*2.0*qi1) + (cl1 + Zc1*2.0*(-qLeak));
             for(size_t i=0; i<mNumPorts1; ++i)
             {
@@ -278,12 +280,12 @@ class HydraulicCylinderC : public ComponentC
                 p1cav = p1cav || ((*mvpP1_p[i] == 0) );
             }
             c1mean = c1mean/double(mNumPorts1+2);
-            ci1 = alpha * ci1 + (1.0 - alpha)*(c1mean*2.0 - ci1 - 2.0*Zc1*qi1);
-            cl1 = alpha * cl1 + (1.0 - alpha)*(c1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak));
+            ci1 = mAlpha * ci1 + (1.0 - mAlpha)*(c1mean*2.0 - ci1 - 2.0*Zc1*qi1);
+            cl1 = mAlpha * cl1 + (1.0 - mAlpha)*(c1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak));
 
 
             //Volume 2
-            Zc2 = double(mNumPorts2+2) / 2.0 * betae/V2*mTimestep/(1.0-alpha);
+            Zc2 = double(mNumPorts2+2) / 2.0 * betae/V2*mTimestep/(1.0-mAlpha);
             c2mean = (ci2 + Zc2*2.0*qi2) + (cl2 + Zc2*2.0*qLeak);
             for(size_t i=0; i<mNumPorts2; ++i)
             {
@@ -291,14 +293,21 @@ class HydraulicCylinderC : public ComponentC
                 p2cav = p2cav || ((*mvpP2_p[i] == 0) );
             }
             c2mean = c2mean/double(mNumPorts2+2);
-            ci2 = alpha * ci2 + (1.0 - alpha)*(c2mean*2.0 - ci2 - 2.0*Zc2*qi2);
-            cl2 = alpha * cl2 + (1.0 - alpha)*(c2mean*2.0 - cl2 - 2.0*Zc2*qLeak);
+            ci2 = mAlpha * ci2 + (1.0 - mAlpha)*(c2mean*2.0 - ci2 - 2.0*Zc2*qi2);
+            cl2 = mAlpha * cl2 + (1.0 - mAlpha)*(c2mean*2.0 - cl2 - 2.0*Zc2*qLeak);
 
 
             // Add extra force and Zc in end positions to simulate stop.
             // Stops could also be implemented in the mass component (connected Q-component)
-            limitStroke(CxLim, ZxLim, x3, v3, me, sl);
-
+            if (mUseEndStops)
+            {
+                limitStroke(CxLim, ZxLim, x3, v3, me, sl);
+            }
+            else
+            {
+                CxLim = 0;
+                ZxLim = 0;
+            }
 
             // If there is cavitation in the hydraulic nodes, then the hydraulic wave and impedance acting on the mechanics should be set to c>=0 and zc=0
             // The pressure is one time-step old, this introduces a small modelling error, but since cavitation is not modelled accurately anyway,
@@ -323,12 +332,12 @@ class HydraulicCylinderC : public ComponentC
             //Write to nodes
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                *(mvpP1_c[i]) = alpha * (*mvpP1_c[i]) + (1.0 - alpha)*(c1mean*2 - (*mvpP1_c[i]) - 2*Zc1*(*mvpP1_q[i]));
+                *(mvpP1_c[i]) = mAlpha * (*mvpP1_c[i]) + (1.0 - mAlpha)*(c1mean*2 - (*mvpP1_c[i]) - 2*Zc1*(*mvpP1_q[i]));
                 *(mvpP1_Zc[i]) = Zc1;
             }
             for(size_t i=0; i<mNumPorts2; ++i)
             {
-                *(mvpP2_c[i]) = alpha * (*mvpP2_c[i]) + (1.0 - alpha)*(c2mean*2 - (*mvpP2_c[i]) - 2*Zc2*(*mvpP2_q[i]));
+                *(mvpP2_c[i]) = mAlpha * (*mvpP2_c[i]) + (1.0 - mAlpha)*(c2mean*2 - (*mvpP2_c[i]) - 2*Zc2*(*mvpP2_q[i]));
                 *(mvpP2_Zc[i]) = Zc2;
             }
             (*mpP3_c) = c3;
@@ -354,14 +363,14 @@ class HydraulicCylinderC : public ComponentC
             //Equations
             if (-x3 > sl)
             {
-                ZxLim0 = wfak*me/mTimestep;
+                ZxLim0 = mWfak*me/mTimestep;
                 ZxLim = ZxLim0/(1.0 - alfa);
                 FxLim = ZxLim0 * (x3 + sl) / mTimestep;
                 NewCxLim = FxLim + ZxLim*v3;
             }
             else if (-x3 < 0.0)
             {
-                ZxLim0 = wfak*me/mTimestep;
+                ZxLim0 = mWfak*me/mTimestep;
                 ZxLim = ZxLim0/(1.0 - alfa);
                 FxLim = ZxLim0*x3/mTimestep;
                 NewCxLim = FxLim + ZxLim*v3;
