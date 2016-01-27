@@ -73,20 +73,25 @@ void WorkerDifferentialEvolution::run()
     {
         for(int p=0; p<mNumPoints; ++p)
         {
-            int a,b,c,R;
-            getRandomIds(p,a,b,c,R);
-
-            mCandidatePoints[p] = mPoints[p];
-            for(int i=0; i<mNumParameters; ++i)
+            bool feasible=false;
+            while(!feasible)
             {
-                double r = opsRand();
-                if(r < mCR || i == R)
+                int a,b,c,R;
+                getRandomIds(p,a,b,c,R);
+
+                mCandidatePoints[p] = mPoints[p];
+                for(int i=0; i<mNumParameters; ++i)
                 {
-                    double A = mPoints[a][i];
-                    double B = mPoints[b][i];
-                    double C = mPoints[c][i];
-                    mCandidatePoints[p][i] = A + mF * (B - C);
+                    double r = opsRand();
+                    if(r < mCR || i == R)
+                    {
+                        double A = mPoints[a][i];
+                        double B = mPoints[b][i];
+                        double C = mPoints[c][i];
+                        mCandidatePoints[p][i] = A + mF * (B - C);
+                    }
                 }
+                feasible = isCandidateFeasible(p);
             }
         }
 
@@ -160,4 +165,14 @@ void WorkerDifferentialEvolution::getRandomIds(int notId, int &id1, int &id2, in
         id3 = mNumPoints * opsRand();
     }
     id4 = mNumParameters * opsRand();
+}
+
+bool WorkerDifferentialEvolution::isCandidateFeasible(int id)
+{
+    for(int p=0; p<mNumParameters; ++p)
+    {
+        if(mCandidatePoints[id][p] > mParameterMax[p] || mCandidatePoints[id][p] < mParameterMin[p])
+            return false;
+    }
+    return true;
 }

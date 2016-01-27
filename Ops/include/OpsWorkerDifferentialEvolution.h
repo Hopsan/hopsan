@@ -55,6 +55,7 @@ private:
 protected:
     double mCR, mF;
     void getRandomIds(int notId, int &id1, int &id2, int &id3, int &id4);
+    bool isCandidateFeasible(int id);
 };
 
 }
