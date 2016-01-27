@@ -15,6 +15,7 @@ public:
     NumHopScriptDialog(ContainerObject *pSystem, QWidget *pParent);
 
 protected slots:
+    void applyPressed();
     void okPressed();
     void revert();
     void run();

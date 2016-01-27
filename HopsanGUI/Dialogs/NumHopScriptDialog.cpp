@@ -27,13 +27,16 @@ NumHopScriptDialog::NumHopScriptDialog(ContainerObject *pSystem, QWidget *pParen
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pRevertButton = new QPushButton(tr("&Revert"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
+    QPushButton *pApplyButton = new QPushButton(tr("&Apply"), this);
     QPushButton *pRunButton = new QPushButton(tr("&Run"), this);
     pOkButton->setDefault(true);
     pButtonBox->addButton(pRunButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pApplyButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pRevertButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
 
+    connect(pApplyButton, SIGNAL(clicked()), this, SLOT(applyPressed()));
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pRevertButton, SIGNAL(clicked()), this, SLOT(revert()));
@@ -45,6 +48,11 @@ NumHopScriptDialog::NumHopScriptDialog(ContainerObject *pSystem, QWidget *pParen
     // Set text contents
     revert();
 
+}
+
+void NumHopScriptDialog::applyPressed()
+{
+    mpSystem->setNumHopScript(mpTextEdit->toPlainText());
 }
 
 void NumHopScriptDialog::okPressed()
