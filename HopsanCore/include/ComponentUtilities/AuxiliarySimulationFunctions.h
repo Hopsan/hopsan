@@ -208,6 +208,26 @@ inline double limit2(const double x, const double /*sx*/, const double xmin, con
     return hopsan::limit(x, xmin, xmax);
 }
 
+//! @brief Apply a lower limit to a value
+//! @ingroup AuxiliarySimulationFunctions
+//! @param [in] value The value to limit
+//! @param [in] limit The lower limit
+//! @returns limit if value < limit else value
+inline double lowerLimit(const double value, const double limit)
+{
+    if (value < limit) return limit; return value;
+}
+
+//! @brief Apply a upper limit to a value
+//! @ingroup AuxiliarySimulationFunctions
+//! @param [in] value The value to limit
+//! @param [in] limit The upper limit
+//! @returns limit if value > limit else value
+inline double upperLimit(const double value, const double limit)
+{
+    if (value > limit) return limit; return value;
+}
+
 //! @brief Converts an angle in degrees to radians
 //! @ingroup AuxiliarySimulationFunctions
 //! @param[in] deg The angle in degrees
