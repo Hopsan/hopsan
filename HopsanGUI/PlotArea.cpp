@@ -1666,12 +1666,11 @@ void PlotArea::openTimeOffsetDialog()
     }
 
     // Add button box
-    QPushButton *pDoneButton = new QPushButton("Close", &offsetDialog);
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal,&offsetDialog);
+    pButtonBox->addButton(QDialogButtonBox::Ok);
     pGridLayout->addWidget(pButtonBox, row, 1);
-    connect(pDoneButton,SIGNAL(clicked()),&offsetDialog,SLOT(close()));
-    connect(pDoneButton,SIGNAL(clicked()),this,SLOT(updateAxisLabels()));
+    connect(pButtonBox,SIGNAL(accepted()),&offsetDialog,SLOT(close()));
+    connect(pButtonBox,SIGNAL(accepted()),this,SLOT(updateAxisLabels()));
 
     offsetDialog.exec();
 }

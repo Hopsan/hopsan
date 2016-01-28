@@ -44,6 +44,7 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QInputDialog>
+#include <QDialogButtonBox>
 
 //Hopsan includes
 #include "PlotWidget2.h"
@@ -850,9 +851,10 @@ void VariableTree::contextMenuEvent(QContextMenuEvent *event)
                 QDialog dialog;
                 QVBoxLayout *pLayout = new QVBoxLayout(&dialog);
                 pLayout->addWidget(new TimeOffsetWidget(pItem->getGeneration(), mpLogDataHandler, &dialog));
-                QPushButton *pCloseButton = new QPushButton("Close", &dialog);
-                pLayout->addWidget(pCloseButton,0,Qt::AlignRight);
-                connect(pCloseButton, SIGNAL(clicked(bool)), &dialog, SLOT(close()));
+                QDialogButtonBox *pButtonbox = new QDialogButtonBox(Qt::Horizontal, &dialog);
+                pButtonbox->addButton(QDialogButtonBox::Ok);
+                pLayout->addWidget(pButtonbox,0,Qt::AlignRight);
+                connect(pButtonbox, SIGNAL(accepted()), &dialog, SLOT(close()));
                 dialog.exec();
             }
         }
