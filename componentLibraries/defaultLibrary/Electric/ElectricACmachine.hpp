@@ -177,7 +177,7 @@ public:
             addInputVariable("wc", "Friction speed", "rad/s", 1.,&mpwc);
             addInputVariable("Np", "Number of poles", "", 6,&mpNp);
             addInputVariable("gmax", "max slip factor", "", 0.05,&mpgmax);
-            addInputVariable("Bm", "Visc. fric. coeff., motor", "Ns/m", \
+            addInputVariable("Bm", "Visc. fric. coeff., motor", "Nms/rad", \
 0.0012,&mpBm);
             addInputVariable("Jm", "Moment of inertia, motor", "kg m^2", \
 1,&mpJm);

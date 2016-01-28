@@ -178,11 +178,11 @@ public:
 0.,&mpTm0);
             addInputVariable("wc", "Friction speed (for numerics)", "rad/s", \
 1.,&mpwc);
-            addInputVariable("Bm", "Visc. fric. coeff., motor", "Ns/m", \
+            addInputVariable("Bm", "Visc. fric. coeff., motor", "Nms/rad", \
 0.0012,&mpBm);
             addInputVariable("Jm", "Moment of inertia, motor", "kg m^2", \
 0.1,&mpJm);
-            addInputVariable("BL", "Visc. fric. coeff., motor", "Ns/m", \
+            addInputVariable("BL", "Visc. fric. coeff., load", "Nms/rad", \
 0.,&mpBL);
             addInputVariable("JL", "Moment of inertia, motor", "kg m^2", \
 1,&mpJL);
