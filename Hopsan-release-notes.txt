@@ -23,14 +23,21 @@
 ******************************
     Version History
 ******************************
-0.7.1  (2016-02-??)
+0.7.1  (2016-02-28)
+- Enhancement: It is now possible to trigger the "invert plot" function for a data variable through the plot curve controls.
+- Enhancement: The time offset dialog and hcom commands now use the selected default time unit for input and output
+- Enhancement: NumHop dialog now has an apply button so that you can edit and apply changes without closing the dialog
+
 - Fixed component: CylinderC now have the possibility to disable internal end stop simulation
 - Fixed component: Lookup table components are no longer tagged as Experimental (they seem to be working)
-
-- Enhancement: It is now possible to trigger the "invert plot" function for a data variable through the plot curve controls
+- Fixed component: Hydraulic32DirectionalOnOffValve does not allow flow from load port to tank after bug fix to 0.7.0.
+                   Also added validation tests to prevent this from happening again
+- Fixed component: Electric motor components had wrong unit for Viscous friction coefficient (only fixed in generated C++ code)
 
 - Bug fixed: When opening component properties dialog for a subsystem the model is locked, the dialog seems to be modal (it now behaves as ordinary components)
+- Bug fixed: Added missing check for feasible region in differential evolution optimization algorithm
 
+------------------------------
 0.7.0  (2016-01-26)
 
 - Note: This version has been in development for approximately one year.
