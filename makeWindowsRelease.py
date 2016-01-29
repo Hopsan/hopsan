@@ -12,11 +12,13 @@ from time import sleep
 gBaseVersion = '0.7.x'
 gReleaseRevision = ''
 gFullVersionName = gBaseVersion
-gDoDevRelease = False
 
-# Build directories and scripts
+# Global parameters
+gDoDevRelease = False
+gIncludeCompiler = False
+
+# Build directory
 gTemporaryBuildDir = r'C:\temp_release'
-scriptFile = "HopsanReleaseInnoSetupScript.iss"
 
 # External programs
 inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
@@ -236,6 +238,8 @@ def copyFileToDir(srcDir, srcFile, dstDir):
 
 #  Copy srcDir into dstDir, creating dstDir if necessary
 def copyDirTo(srcDir, dstDir):
+    srcDir = os.path.normpath(srcDir)
+    dstDir = os.path.normpath(dstDir)
     if os.path.exists(srcDir):
         # Create destination if it does not exist
         if not os.path.exists(dstDir):
@@ -244,6 +248,7 @@ def copyDirTo(srcDir, dstDir):
         if os.path.exists(tgtDir):
             print('Error: tgtDir '+tgtDir+' already exists')
             return False
+        print('Copying: '+srcDir+' to: '+tgtDir)
         shutil.copytree(srcDir, tgtDir)
         return True
     else:
@@ -265,21 +270,9 @@ def verifyPaths():
     global msvc2010Path
     global jomDir
     global qmakeDir
-    #global mingwDir
-    #global dependecyBinFile
 
     isOk = True
    
-    
-    #if do64BitRelease:
-        #qtlibsdirs=qmakeDir
-        #mingwdirs=mingwDir
-        #dependecyBinFile=dependecyBinFile64
-    #else:
-        #qtlibsdirs=qmakeDir
-        #mingwdirs=mingwDir
-        #dependecyBinFile=dependecyBinFile32
-
     #Check if Qt path exists
     qtDir = selectPathFromList(qmakeDir, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
     if qtDir == "":
@@ -294,10 +287,6 @@ def verifyPaths():
     jomDir = creatorDir+r'\bin'
     qmakeDir = qmakeDir
 
-    #mingwDir=selectPathFromList(mingwdirs, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
-    #if mingwDir == "":
-    #    isOk = False
-
     #Make sure Visual Studio 2008 is installed in correct location
     msvc2008Path = selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
     #if msvc2008Path == "":
@@ -308,10 +297,6 @@ def verifyPaths():
     #if msvc2010Path == "":
     #    isOk = False
     
-    #Make sure the 3d party dependency file exists
-    #if not pathExists(dependecyBinFile, "The "+ dependecyBinFile + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
-    #    isOk = False
-        
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
     innoDir = selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
     if innoDir == "":
@@ -608,6 +593,29 @@ def copyFiles():
     setReadOnlyForAllFilesInDir(gTemporaryBuildDir)
 
     return True
+
+def createZipInstaller(zipFile, outputDir):
+    print('Creating zip package: '+zipFile+'...')
+    call7z(r'a '+zipFile+r' '+gTemporaryBuildDir)
+    callMove(zipFile, outputDir)
+    if not fileExists(outputDir+'/'+zipFile):
+        printError('Failed to create zip package: '+zipFile)
+        return False
+    printSuccess('Created zip package: '+zipFile+' successfully!')
+    return True
+
+def createInnoInstaller(exeFileName, innoArch, outputDir):
+    exeFile=exeFileName+'.exe'
+    print 'Generating install executable: '+exeFile+'...'
+    innocmd=r' /o"'+outputDir+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+gFullVersionName+r'" /dMyArchitecture="'+innoArch+r'" /dMyFilesSource="'+gTemporaryBuildDir+r'" HopsanReleaseInnoSetupScript.iss'
+    #print innocmd
+    callEXE(innoDir+r'\iscc.exe', innocmd)
+    if not fileExists(outputDir+'/'+exeFile):
+        printError('Failed to create installer executable: '+exeFile)
+        return False
+    printSuccess('Generated install executable: '+exeFile)
+    return True
+
     
     
 def createInstallFiles():
@@ -617,33 +625,37 @@ def createInstallFiles():
 
     if do64BitRelease:
         zipFile=r'Hopsan-'+gFullVersionName+r'-win64-zip.zip'
+        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win64-compiler-zip.7z'
         exeFileName=r'Hopsan-'+gFullVersionName+r'-win64-installer'
+        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win64-compiler-installer'
         innoArch=r'x64'
     else:
         zipFile=r'Hopsan-'+gFullVersionName+r'-win32-zip.zip'
+        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win32-compiler-zip.7z'
         exeFileName=r'Hopsan-'+gFullVersionName+r'-win32-installer'
+        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win32-compiler-installer'
         innoArch=r'' #Should be empty for 32-bit
 
-    exeFile=exeFileName+r'.exe'
-    
     # Create zip package
-    print "Creating zip package..."
-    call7z(r'a -tzip '+zipFile+r' '+gTemporaryBuildDir)
-    callMove(zipFile, hopsanDirOutput)
-    if not fileExists(hopsanDirOutput+r'/'+zipFile):
-        printError("Failed to create zip package.")
+    if not createZipInstaller(zipFile, hopsanDirOutput):
         return False
-    printSuccess("Created zip package!")
         
     # Execute Inno compile script
-    print "Generating install executable..."
-    innocmd=r' /o"'+hopsanDirOutput+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+gFullVersionName+r'" /dMyArchitecture="'+innoArch+r'" /dMyFilesSource="'+gTemporaryBuildDir+r'" '+scriptFile
-    #print innocmd
-    callEXE(innoDir+r'\iscc.exe', innocmd)
-    if not fileExists(hopsanDirOutput+r'/'+exeFile):
-        printError("Failed to create installer executable.")
+    if not createInnoInstaller(exeFileName, innoArch, hopsanDirOutput):
         return False
-    printSuccess("Generated install executable!")
+
+
+    # Copy the compiler
+    if gIncludeCompiler:
+        print('Copying compiler...')
+        copyDirTo(mingwDir+r'/../', gTemporaryBuildDir)
+        #print('Removing /opt')
+        #callRd(gTemporaryBuildDir+r'\mingw64\opt')
+        # Now build zip and installer with compiler included
+        if not createZipInstaller(zipWithCompilerFile, hopsanDirOutput):
+            return False
+        if not createInnoInstaller(exeWithCompilerFileName, innoArch, hopsanDirOutput):
+            return False
 
     # Copy release notes to output directory
     callCopyFile('Hopsan-release-notes.txt', hopsanDirOutput)
@@ -759,6 +771,7 @@ if success:
 
     pauseOnFailValidation = False
     buildVCpp = askYesNoQuestion("Do you want to build VC++ HopsanCore? (y/n): ")
+    gIncludeCompiler = askYesNoQuestion("Do you want to include the compiler? (y/n): ")
 
     print "---------------------------------------"
     print "This is a DEV release: " + str(gDoDevRelease)
@@ -766,6 +779,7 @@ if success:
     print "Release version name: " + str(gFullVersionName)
     print "Release revision number: " + str(gReleaseRevision)
     print "Build VC++ HopsanCore: " + str(buildVCpp)
+    print "Include compiler: " + str(gIncludeCompiler)
     print "Pause on failed validation: " + str(pauseOnFailValidation)
     print "---------------------------------------"
     if not askYesNoQuestion("Is this OK? (y/n): "):
@@ -791,8 +805,7 @@ if success:
         printError("Compilation script failed in compilation error.")
     
 if success:
-    #Unpack depedency bin files to bin folder without asking stupid questions, we do this in the build step to have a run-able compiled version before running tests
-    #call7z(r'x '+quotePath(hopsanDir+"\\"+dependecyBinFile)+r' -o'+quotePath(hopsanDir+r'\bin')+r' -y')
+    #Copy depedency bin files to bin diirectory
     for f in qtRuntimeBins:
         copyFileToDir(qmakeDir, f, hopsanDir+'/bin')
     for f in qtPluginBins:
