@@ -15,7 +15,7 @@ echo.
 echo ======================
 echo Unpack libQWT
 echo ======================
-rd /s/q %dirname%
+if exist %dirname% rd /s/q %dirname%
 mkdir %dirname%
 REM Unpack using tar
 ..\ThirdParty\7z\7z.exe x %filename%.zip -y > nul
