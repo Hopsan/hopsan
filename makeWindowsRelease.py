@@ -625,15 +625,15 @@ def createInstallFiles():
 
     if do64BitRelease:
         zipFile=r'Hopsan-'+gFullVersionName+r'-win64-zip.zip'
-        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win64-compiler-zip.7z'
+        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-7z.7z'
         exeFileName=r'Hopsan-'+gFullVersionName+r'-win64-installer'
-        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win64-compiler-installer'
+        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-installer'
         innoArch=r'x64'
     else:
         zipFile=r'Hopsan-'+gFullVersionName+r'-win32-zip.zip'
-        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win32-compiler-zip.7z'
+        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win32-with_compiler-7z.7z'
         exeFileName=r'Hopsan-'+gFullVersionName+r'-win32-installer'
-        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win32-compiler-installer'
+        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win32-with_compiler-installer'
         innoArch=r'' #Should be empty for 32-bit
 
     # Create zip package

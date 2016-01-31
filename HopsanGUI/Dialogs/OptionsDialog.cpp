@@ -406,10 +406,15 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpCompiler64WarningLabel = new QLabel(this);
     mpCompiler64WarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
 
+    mpPrefereIncludedCompiler = new QCheckBox("Prefer included compiler", this);
+    mpIncludedCompilerLabel = new QLabel(this);
+
     QWidget *pCompilersWidget = new QWidget(this);
     QGridLayout *pCompilersLayout = new QGridLayout(pCompilersWidget);
 
     int row=-1;
+    pCompilersLayout->addWidget(mpPrefereIncludedCompiler,             ++row,0,1,1);
+    pCompilersLayout->addWidget(mpIncludedCompilerLabel,                 row,1,1,1);
     pCompilersLayout->addWidget(pCompiler32Label,                      ++row,0,1,1);
     pCompilersLayout->addWidget(mpCompiler32LineEdit,                    row,1,1,1);
     pCompilersLayout->addWidget(pCompiler32Button,                       row,2,1,1);
@@ -585,6 +590,7 @@ void OptionsDialog::setValues()
 
     gpConfig->setStringSetting(CFG_GCC32DIR, mpCompiler32LineEdit->text());
     gpConfig->setStringSetting(CFG_GCC64DIR, mpCompiler64LineEdit->text());
+    gpConfig->setBoolSetting(CFG_PREFERINCLUDEDCOMPILER, mpPrefereIncludedCompiler->isChecked());
 
     gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESS, mpRemoteHopsanAddress->text());
     gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, mpRemoteHopsanAddressServerAddress->text());
@@ -679,6 +685,18 @@ void OptionsDialog::show()
 
     setCompiler32Path(gpConfig->getStringSetting(CFG_GCC32DIR));
     setCompiler64Path(gpConfig->getStringSetting(CFG_GCC64DIR));
+
+    QString compilerpath = gpDesktopHandler->getIncludedCompilerPath();
+    mpPrefereIncludedCompiler->setChecked(gpConfig->getBoolSetting(CFG_PREFERINCLUDEDCOMPILER));
+    if (compilerpath.isEmpty())
+    {
+        mpIncludedCompilerLabel->setText("Not present!");
+        mpPrefereIncludedCompiler->setDisabled(true);
+    }
+    else
+    {
+        mpIncludedCompilerLabel->setText("Found in: "+compilerpath);
+    }
 
     // Update units scale lists
     QObjectList unitselectors =  mpUnitScaleWidget->children();

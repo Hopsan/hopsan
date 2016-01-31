@@ -66,6 +66,8 @@ public:
     const QString &getFMUPath() const;
     const QString &getLogDataPath() const;
     const QString &getResourcesPath() const;
+    QString getIncludedCompilerPath(int expectedArch=-1) const;
+
 private:
     QString mExecPath;
 

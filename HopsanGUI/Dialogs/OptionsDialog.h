@@ -64,7 +64,6 @@ private slots:
     void setCompiler32Path(QString path);
     void setCompiler64Path(QString path);
 
-
 signals:
     void paletteChanged();
 
@@ -95,6 +94,8 @@ private:
     QLineEdit *mpCompiler64LineEdit;
     QLabel *mpCompiler32WarningLabel;
     QLabel *mpCompiler64WarningLabel;
+    QCheckBox *mpPrefereIncludedCompiler;
+    QLabel *mpIncludedCompilerLabel;
 
     QLineEdit *mpRemoteHopsanAddress;
     QLineEdit *mpRemoteHopsanAddressServerAddress;

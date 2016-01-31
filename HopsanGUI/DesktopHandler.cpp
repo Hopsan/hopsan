@@ -33,6 +33,7 @@
 
 #include "DesktopHandler.h"
 #include "common.h"
+#include "compiler_info.h"
 
 #include <QDesktopServices>
 #include <QString>
@@ -375,4 +376,44 @@ const QString &DesktopHandler::getLogDataPath() const
 const QString &DesktopHandler::getResourcesPath() const
 {
     return mResourcesPath;
+}
+
+QString DesktopHandler::getIncludedCompilerPath(int expectedArch) const
+{
+    // Note! The compiler is only included on Windows (for now)
+    // we look for a mingw or mingw64 directory in the Hopsan root
+
+    if (expectedArch == -1)
+    {
+#ifdef HOPSANCOMPILED64BIT
+        expectedArch = 64;
+#else
+        expectedArch = 32;
+#endif
+    }
+
+    QDir compilerpath;
+    // Try 32-bit mingw
+    if (expectedArch == 32)
+    {
+        compilerpath.setPath(getMainPath()+"/mingw/bin");
+    }
+    // Try 64-bit mingw
+    else if (expectedArch == 64)
+    {
+        compilerpath.setPath(getMainPath()+"/mingw64/bin");
+    }
+    // Fail
+    else
+    {
+        return "";
+    }
+
+    // Note! IncludedCompiler only available on Windows so we only check for gcc.exe
+    //! @todo might need clang support on OSX
+    if (compilerpath.exists("gcc.exe"))
+    {
+        return compilerpath.canonicalPath();
+    }
+    return "";
 }

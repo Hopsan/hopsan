@@ -81,11 +81,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
 
     if(pHandler->isLoadedSuccessfully())
     {
-#ifdef HOPSANCOMPILED64BIT
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC64DIR).toStdString().c_str();
-#else
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC32DIR).toStdString().c_str();
-#endif
+        hopsan::HString hGccPath = gpConfig->getGCCPath().toStdString().c_str();
         hopsan::HString hPath = path.toStdString().c_str();
         hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
         hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
@@ -103,11 +99,7 @@ bool CoreGeneratorAccess::generateFromCpp(QString hppFile, bool compile)
     QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
-#ifdef HOPSANCOMPILED64BIT
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC64DIR).toStdString().c_str();
-#else
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC32DIR).toStdString().c_str();
-#endif
+        hopsan::HString hGccPath = gpConfig->getGCCPath().toStdString().c_str();
         hopsan::HString hHppFile = hppFile.toStdString().c_str();
         hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
         hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
@@ -147,11 +139,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
-#ifdef HOPSANCOMPILED64BIT
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC64DIR).toStdString().c_str();
-#else
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC32DIR).toStdString().c_str();
-#endif
+        hopsan::HString hGccPath = gpConfig->getGCCPath().toStdString().c_str();
         hopsan::HString hFmuPath = gpDesktopHandler->getFMUPath().toStdString().c_str();
         hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
         hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
@@ -191,12 +179,27 @@ bool CoreGeneratorAccess::generateToFmu(QString path, int version, TargetArchite
         hopsan::HString hGccPath;
         if(architecture == x86)
         {
-            hGccPath = gpConfig->getStringSetting(CFG_GCC32DIR).toStdString().c_str();
+            if (gpConfig->getBoolSetting(CFG_PREFERINCLUDEDCOMPILER))
+            {
+                hGccPath = gpDesktopHandler->getIncludedCompilerPath(32).toStdString().c_str();
+            }
+            if (hGccPath.empty())
+            {
+                hGccPath = gpConfig->getStringSetting(CFG_GCC32DIR).toStdString().c_str();
+            }
         }
         else
         {
-            hGccPath = gpConfig->getStringSetting(CFG_GCC64DIR).toStdString().c_str();
+            if (gpConfig->getBoolSetting(CFG_PREFERINCLUDEDCOMPILER))
+            {
+                hGccPath = gpDesktopHandler->getIncludedCompilerPath(64).toStdString().c_str();
+            }
+            if (hGccPath.empty())
+            {
+                hGccPath = gpConfig->getStringSetting(CFG_GCC64DIR).toStdString().c_str();
+            }
         }
+
         hopsan::HString hPath = path.toStdString().c_str();
         hopsan::ComponentSystem *pCoreSystem = pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr();
         hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
@@ -280,11 +283,7 @@ bool CoreGeneratorAccess::compileComponentLibrary(QString libPath, QString extra
     QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
-#ifdef HOPSANCOMPILED64BIT
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC64DIR).toStdString().c_str();
-#else
-        hopsan::HString hGccPath = gpConfig->getStringSetting(CFG_GCC32DIR).toStdString().c_str();
-#endif
+        hopsan::HString hGccPath = gpConfig->getGCCPath().toStdString().c_str();
         hopsan::HString hLibPath = libPath.toStdString().c_str();
         hopsan::HString hExtraCFlags = extraCFlags.toStdString().c_str();
         hopsan::HString hExtraLFlags = extraLFlags.toStdString().c_str();

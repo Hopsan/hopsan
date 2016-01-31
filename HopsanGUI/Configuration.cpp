@@ -1291,6 +1291,11 @@ void Configuration::registerSettings()
     mBoolSettings.insert(CFG_PROGRESSBAR, true);
     mBoolSettings.insert(CFG_SETPWDTOMWD, false);
     mBoolSettings.insert(CFG_SHOWLICENSEONSTARTUP, true);
+#ifdef _WIN32
+    mBoolSettings.insert(CFG_PREFERINCLUDEDCOMPILER, true);
+#else
+    mBoolSettings.insert(CFG_PREFEREINCLUDEDCOMPILER, false);
+#endif
 
     // Integer settings
     mIntegerSettings.insert(CFG_LIBRARYSTYLE, 0);
@@ -1311,6 +1316,15 @@ void Configuration::setParallelAlgorithm(int value)
 
 QString Configuration::getGCCPath() const
 {
+    if (getBoolSetting(CFG_PREFERINCLUDEDCOMPILER))
+    {
+        QString compilerpath = gpDesktopHandler->getIncludedCompilerPath();
+        if (!compilerpath.isEmpty())
+        {
+            return compilerpath;
+        }
+    }
+
 #ifdef HOPSANCOMPILED64BIT
     return getStringSetting(CFG_GCC64DIR);
 #else
