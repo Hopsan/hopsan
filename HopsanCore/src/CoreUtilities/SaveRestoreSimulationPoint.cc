@@ -157,7 +157,7 @@ double readTimeData(std::ifstream &rFile)
 }
 
 
-void saveSimulationPointInternal(hopsan::ComponentSystem *pRootSystem, const HString &namePrefix, std::ofstream &rFile)
+void saveSimulationPointInternal(ComponentSystem *pRootSystem, const HString &namePrefix, std::ofstream &rFile)
 {
     //! @todo not sure if we should actually save/load the simulation time
     writeTimeData(pRootSystem->getTime(), rFile);
@@ -180,7 +180,7 @@ void saveSimulationPointInternal(hopsan::ComponentSystem *pRootSystem, const HSt
 }
 
 
-void hopsan::saveSimulationPoint(hopsan::HString fileName, hopsan::ComponentSystem *pRootSystem)
+void hopsan::saveSimulationPoint(HString fileName, ComponentSystem *pRootSystem)
 {
     std::ofstream file;
     file.open(fileName.c_str());
@@ -191,7 +191,7 @@ void hopsan::saveSimulationPoint(hopsan::HString fileName, hopsan::ComponentSyst
     file.close();
 }
 
-void hopsan::restoreSimulationPoint(hopsan::HString fileName, hopsan::ComponentSystem *pRootSystem, double &rTimeOffset)
+void hopsan::restoreSimulationPoint(HString fileName, ComponentSystem *pRootSystem, double &rTimeOffset)
 {
     std::ifstream file;
     file.open(fileName.c_str());
