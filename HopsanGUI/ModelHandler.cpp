@@ -790,7 +790,7 @@ bool ModelHandler::simulateMultipleModels_nonblocking(QVector<ModelWidget*> mode
         double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
 
         QVector<SystemContainer*> systemsVector;
-        bool lockOK;
+        bool lockOK=false;
         int i;
         for(i=0; i<models.size(); ++i)
         {
@@ -837,7 +837,7 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
         double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
 
         QVector<SystemContainer*> systemsVector;
-        bool lockOK;
+        bool lockOK=false;
         int i;
         for(i=0; i<models.size(); ++i)
         {
