@@ -126,9 +126,8 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     setMessageHandler(gpMessageHandler);
 
     connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
-    connect(gpModelHandler->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
-    connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
+    connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
     connect(this, SIGNAL(modelChanged(ModelWidget*)), mpParentModelHandler, SIGNAL(modelChanged(ModelWidget*)));
 
     emit checkMessages();
@@ -1419,6 +1418,17 @@ void ModelWidget::closeAnimation()
 
 void ModelWidget::unlockSimulateMutex()
 {
+//    Debug code
+//    bool didLock = mSimulateMutex.tryLock();
+//    qDebug() << "Simulation mutex locked: " << !didLock;
+//    if (didLock)
+//    {
+//        mSimulateMutex.unlock();
+//    }
+
+    // In case we had a relay connection from our parent handlers simulation thread handler, the make sure that we remove it here
+    // It must be re-established EVERY time. so that we do not have lingering connections that may trigger this slot accidentally (very bad)
+    disconnect(mpParentModelHandler->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     qDebug() << "unlock simulation mutex";
     mSimulateMutex.unlock();
 }

@@ -799,7 +799,12 @@ bool ModelHandler::simulateMultipleModels_nonblocking(QVector<ModelWidget*> mode
 
             // Lock simulation mutex
             lockOK = models[i]->mSimulateMutex.tryLock();
-            if (!lockOK)
+            if (lockOK)
+            {
+                // Create relay connection, since we are using the external simulation thread handler
+                connect(mpSimulationThreadHandler, SIGNAL(done(bool)), models[i], SIGNAL(simulationFinished()));
+            }
+            else
             {
                 break;
             }
@@ -809,7 +814,9 @@ bool ModelHandler::simulateMultipleModels_nonblocking(QVector<ModelWidget*> mode
             // Unlock again
             for (int j=0; j<i; ++j)
             {
-                models[i]->mSimulateMutex.unlock();
+                // Remove and previously made relay connections
+                disconnect(mpSimulationThreadHandler, SIGNAL(done(bool)), models[j], SIGNAL(simulationFinished()));
+                models[j]->mSimulateMutex.unlock();
             }
             // Return with failure
             return false;
@@ -846,7 +853,12 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
 
             // Lock simulation mutex
             lockOK = models[i]->mSimulateMutex.tryLock();
-            if (!lockOK)
+            if (lockOK)
+            {
+                // Create relay connection, since we are using the external simulation thread handler
+                connect(mpSimulationThreadHandler, SIGNAL(done(bool)), models[i], SIGNAL(simulationFinished()));
+            }
+            else
             {
                 break;
             }
@@ -856,7 +868,9 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
             // Unlock again
             for (int j=0; j<i; ++j)
             {
-                models[i]->mSimulateMutex.unlock();
+                // Remove and previously made relay connections
+                disconnect(mpSimulationThreadHandler, SIGNAL(done(bool)), models[j], SIGNAL(simulationFinished()));
+                models[j]->mSimulateMutex.unlock();
             }
             // Return with failure
             return false;
