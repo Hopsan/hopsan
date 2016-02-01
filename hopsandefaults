@@ -230,7 +230,7 @@
         <quantity name="AngularVelocity" baseunit="rad/s">
             <unit name="deg/s" scale="pi/180"/>
             <unit name="rev/s" scale="2*pi"/>
-            <unit name="rpm" scale="2*pi*60"/>
+            <unit name="rpm" scale="2*pi/60"/>
         </quantity>
         <quantity name="Flow" baseunit="m^3/s">
             <unit name="l/min" scale="1/60*1e-3"/>
