@@ -1294,7 +1294,7 @@ void Configuration::registerSettings()
 #ifdef _WIN32
     mBoolSettings.insert(CFG_PREFERINCLUDEDCOMPILER, true);
 #else
-    mBoolSettings.insert(CFG_PREFEREINCLUDEDCOMPILER, false);
+    mBoolSettings.insert(CFG_PREFERINCLUDEDCOMPILER, false);
 #endif
 
     // Integer settings
