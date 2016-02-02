@@ -118,9 +118,9 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
     {
         QFileInfo fmuFileInfo = QFileInfo(path);
         fmuFileInfo.setFile(path);
-        QString fmuName = fmuFileInfo.fileName();
-        fmuName.chop(4);
-        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuName))
+        QString fmuFileName = fmuFileInfo.fileName();
+        fmuFileName.chop(4);
+        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuFileName))
         {
             QMessageBox existWarningBox(QMessageBox::Warning, "Warning","Another FMU with same name exist. Do you want unload this library and then overwrite it?", 0, 0);
             existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
@@ -130,8 +130,8 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 
             if(doIt)
             {
-                gpLibraryHandler->unloadLibraryFMU(fmuName);
-                removeDir(QDir::cleanPath(gpDesktopHandler->getFMUPath()+fmuName));
+                gpLibraryHandler->unloadLibraryFMU(fmuFileName);
+                removeDir(QDir::cleanPath(gpDesktopHandler->getFMUPath()+fmuFileName));
             }
             else
             {
@@ -146,19 +146,19 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 
         pHandler->callFmuImportGenerator(path.toStdString().c_str(), hFmuPath, hIncludePath, hBinPath, hGccPath, true);
 
-        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuName))
+        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuFileName))
         {
             //Copy component icon
             QFile fmuIcon;
             fmuIcon.setFileName(QString(GRAPHICSPATH)+"/objecticons/fmucomponent.svg");
-            fmuIcon.copy(gpDesktopHandler->getFMUPath()+fmuName+"/"+fmuName+"/fmucomponent.svg");
+            fmuIcon.copy(gpDesktopHandler->getFMUPath()+fmuFileName+"/"+fmuFileName+"/fmucomponent.svg");
             fmuIcon.close();
-            fmuIcon.setFileName(gpDesktopHandler->getFMUPath()+fmuName+"/"+fmuName+"/fmucomponent.svg");
+            fmuIcon.setFileName(gpDesktopHandler->getFMUPath()+fmuFileName+"/"+fmuFileName+"/fmucomponent.svg");
             fmuIcon.setPermissions(QFile::WriteUser | QFile::ReadUser);
             fmuIcon.close();
 
             //Load library
-            gpLibraryHandler->loadLibrary(gpDesktopHandler->getFMUPath()+fmuName+"/"+fmuName+"_lib.xml", FmuLib);
+            gpLibraryHandler->loadLibrary(gpDesktopHandler->getFMUPath()+fmuFileName+"/"+fmuFileName+"_lib.xml", FmuLib);
             return true;
         }
     }

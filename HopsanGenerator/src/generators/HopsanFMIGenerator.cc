@@ -1660,7 +1660,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     printMessage("Compiling C files");
     printMessage("------------------------------------------------------------------------");
 
-    QString fmiLibDir="Dependencies/FMILibrary-2.0.1/";
+    QString fmiLibDir="Dependencies/FMILibrary-2.0.1";
 
 #ifdef _WIN32
     QFile compileCBatchFile;
@@ -1676,7 +1676,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileBatchCStream << "PATH=" << mGccPath << ";%PATH%\n";
     compileBatchCStream << "@echo on\n";
     compileBatchCStream << "gcc.exe -c fmu"+vStr+"_model_cs.c " <<
-                           QString("-I\"%1install/include\"").arg(mHopsanRootPath+fmiLibDir) << "\n";
+                           QString("-I\"%1/install/include\"").arg(mHopsanRootPath+fmiLibDir) << "\n";
     compileCBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
@@ -1691,7 +1691,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
     compileBatchCStream << "gcc -fPIC -c fmu"+vStr+"_model_cs.c "+
-                           "-I"+mHopsanRootPath+fmiLibDir+"install/include\n";
+                           "-I"+mHopsanRootPath+fmiLibDir+"/install/include\n";
     compileCBatchFile.close();
 
     callProcess("/bin/sh", QStringList() << "compileC.sh", savePath);

@@ -291,11 +291,16 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
         xmlFile.close();
         libRootDir = QFileInfo(path).canonicalPath();
     }
-    else
+    else if (QFileInfo(path).isDir())
     {
         libFile = QString(LIBPREFIX)+QDir(path).dirName();
         ccFiles = QDir(path).entryList(QStringList() << "*.cc");
         libRootDir = path;
+    }
+    else
+    {
+        pGenerator->printErrorMessage(path+" does not exist, is not component library file or is not a directory");
+        return false;
     }
 
     QString c;
