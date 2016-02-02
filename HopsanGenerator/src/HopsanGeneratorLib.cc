@@ -152,21 +152,22 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(hopsan::HString hppPath, hopsan
 
 
 //! @brief Calls the functional mockup interface (FMU) import generator
-//! @param path Path to the .fmu file
+//! @param fmuFilePath Path to the .fmu file
+//! @param targetPath Destination of generated fmu import wrapper
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hopsan::HString targetPath, hopsan::HString coreIncludePath, hopsan::HString binPath, hopsan::HString gccPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString fmuFilePath, hopsan::HString targetPath, hopsan::HString coreIncludePath, hopsan::HString binPath, hopsan::HString gccPath, bool showDialog=false)
 {
-    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), QString(gccPath.c_str()), showDialog);
+    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(coreIncludePath.c_str(), binPath.c_str(), gccPath.c_str(), showDialog);
     QString typeName, hppFile;
-    if(!pGenerator->generateFromFmu(path.c_str(), targetPath.c_str(), typeName, hppFile))
+    if(!pGenerator->generateFromFmu(fmuFilePath.c_str(), targetPath.c_str(), typeName, hppFile))
     {
         pGenerator->printErrorMessage("Import of FMU failed.");
         return;
     }
 
-    QString fmuFileName = QFileInfo(path.c_str()).baseName();
+    QString fmuFileName = QFileInfo(fmuFilePath.c_str()).baseName();
     QFileInfo fmuImportRoot(QString("%1/%2").arg(targetPath.c_str()).arg(fmuFileName));
     QFileInfo hppFileInfo(QDir(fmuImportRoot.absoluteFilePath()).relativeFilePath(hppFile));
 
@@ -183,10 +184,10 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(hopsan::HString path, hop
 #endif
 
     // Generate the component library files
-    pGenerator->generateNewLibrary(fmuImportRoot.absoluteFilePath(), QStringList() << hppFileInfo.filePath(), cflags, lflags);
+    pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), QStringList() << hppFileInfo.filePath(), cflags, lflags);
 
     // Compile the generated component library
-    compileComponentLibrary(fmuImportRoot.absoluteFilePath()+"/"+typeName+"_lib.xml", pGenerator);
+    compileComponentLibrary(fmuImportRoot.canonicalFilePath()+"/"+fmuFileName+"_lib.xml", pGenerator);
 
     delete(pGenerator);
 }

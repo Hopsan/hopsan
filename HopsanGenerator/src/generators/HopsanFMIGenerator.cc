@@ -156,6 +156,10 @@ bool HopsanFMIGenerator::generateFromFmu(const QString &rFmuPath, QString target
 
     QByteArray pathArray = rFmuPath.toLocal8Bit();
     const char* FMUPath = pathArray.data();
+    if (!targetPath.endsWith('/'))
+    {
+        targetPath.append('/');
+    }
     targetPath = targetPath+QFileInfo(rFmuPath).baseName();
     if(!QFileInfo(targetPath).exists())
     {
@@ -298,13 +302,12 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     //--------------------------------------------//
 
     //Create <fmuname>.hpp
-    QString hppPath = rTargetPath + "/" + fmuName;
-    if(!QFileInfo(hppPath).exists())
+    if(!QFileInfo(rTargetPath).exists())
     {
-        QDir().mkpath(hppPath);
+        QDir().mkpath(rTargetPath);
     }
     QFile fmuComponentHppFile;
-    fmuComponentHppFile.setFileName(hppPath+"/"+fmuName+".hpp");
+    fmuComponentHppFile.setFileName(rTargetPath+"/"+fmuName+".hpp");
     if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
@@ -472,7 +475,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
         cafSpec.addPort(outputNames.at(i), 1.0, outputPos, 0.0);
     }
 
-    QString cafPath = rTargetPath + "/" + fmuName + "/" + fmuName + ".xml";
+    QString cafPath = rTargetPath+"/"+fmuName+".xml";
     if(!generateCafFile(cafPath, cafSpec))
     {
         printErrorMessage("Generation of component appearance file (XML) failed.");
@@ -590,14 +593,20 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     fmuName = toValidVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
     QList<hopsan_fmi_import_tlm_port_t> tlmPorts;
-    QString tlmFileName = fmuName+"_TLM.xml";
-    QFile file(rTargetPath+"/"+tlmFileName);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    QString tlmFileName = fmuName+"_HopsanTLM.xml";
+    QFile tlmFile(rTargetPath+"/"+tlmFileName);
+    // Try old obsolete name
+    if (!tlmFile.exists())
+    {
+        tlmFileName = fmuName+"_TLM.xml";
+        tlmFile.setFileName(rTargetPath+"/"+tlmFileName);
+    }
+    if (tlmFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QDomDocument domDocument;
         QString errorStr;
         int errorLine, errorColumn;
-        if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+        if (!domDocument.setContent(&tlmFile, false, &errorStr, &errorLine, &errorColumn))
         {
             QString lineStr = QString::number(errorLine);
             QString colStr = QString::number(errorColumn);
@@ -670,7 +679,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
                                                             fmiInputVariables, inputs, inputDataIds,
                                                             tlmPort.name, portElement))
                         {
-                            printErrorMessage("In: "+ file.fileName());
+                            printErrorMessage("In: "+ tlmFile.fileName());
                             return false;
                         }
 
@@ -683,7 +692,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
                                                             fmiOutputVariables, outputs, outputDataIds,
                                                             tlmPort.name, portElement))
                         {
-                            printErrorMessage("In: "+ file.fileName());
+                            printErrorMessage("In: "+ tlmFile.fileName());
                             return false;
                         }
 
@@ -694,21 +703,20 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
                 }
             }
         }
-        file.close();
+        tlmFile.close();
     }
 
     //--------------------------------------------//
-    printMessage("Creating " + fmuName + ".hpp...");
+    printMessage("Creating " + fmuName + ".hpp ...");
     //--------------------------------------------//
 
     //Create <fmuname>.hpp
-    QString hppPath = rTargetPath + "/" + fmuName;
-    if(!QFileInfo(hppPath).exists())
+    if(!QFileInfo(rTargetPath).exists())
     {
-        QDir().mkpath(hppPath);
+        QDir().mkpath(rTargetPath);
     }
     QFile fmuComponentHppFile;
-    fmuComponentHppFile.setFileName(hppPath+"/"+fmuName+".hpp");
+    fmuComponentHppFile.setFileName(rTargetPath+"/"+fmuName+".hpp");
     if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
@@ -717,7 +725,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     //-------------------------------------------//
-    printMessage("Writing " + fmuName + ".hpp...");
+    printMessage("Writing " + fmuName + ".hpp ...");
     //-------------------------------------------//
 
     //Generate HPP file
@@ -1064,7 +1072,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
 
     //-------------------------------------------//
-    printMessage("Writing " + fmuName + ".xml...");
+    printMessage("Writing " + fmuName + ".xml ...");
     //-------------------------------------------//
 
 
@@ -1098,7 +1106,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         cafSpec.addPort(tlmPort.name, portPos, 0.0, 270.0);
     }
 
-    QString cafPath = rTargetPath + "/" + fmuName + "/" + fmuName + ".xml";
+    QString cafPath = rTargetPath+"/"+fmuName+".xml";
     if(!generateCafFile(cafPath, cafSpec))
     {
         printErrorMessage("Generation of component appearance file (XML) failed.");
@@ -1107,7 +1115,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     rTypeName = fmuName;
-    rHppPath = QFileInfo(fmuComponentHppFile).absoluteFilePath();
+    rHppPath = QFileInfo(fmuComponentHppFile).canonicalFilePath();
 
     return true;
 }

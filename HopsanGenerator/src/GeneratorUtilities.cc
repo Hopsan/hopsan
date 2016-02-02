@@ -458,14 +458,14 @@ QString toValidVarName(const QString &rOrg)
         ret.reserve(rOrg.size());
         // First discard any non letter char in the begining
         int c=0;
-        while ( (c<rOrg.size()) && !rOrg[c].isLetter() )
+        while ( (c<rOrg.size()) && !(rOrg[c].isLetterOrNumber() || rOrg[c] == '_') )
         {
             ++c;
         }
-        // Now remove any non letter or nummber
+        // Now remove any non letter or nummber or underscore
         while ( c < rOrg.size() )
         {
-            if ( rOrg[c].isLetterOrNumber() /*|| rOrg[c] == '_' */)
+            if ( rOrg[c].isLetterOrNumber() || rOrg[c] == '_')
             {
                 ret.append(rOrg[c]);
             }

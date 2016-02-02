@@ -111,27 +111,26 @@ bool CoreGeneratorAccess::generateFromCpp(QString hppFile, bool compile)
 }
 
 
-bool CoreGeneratorAccess::generateFromFmu(QString path)
+bool CoreGeneratorAccess::generateFromFmu(QString fmuFilePath)
 {
     QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
     {
-        QFileInfo fmuFileInfo = QFileInfo(path);
-        fmuFileInfo.setFile(path);
+        QFileInfo fmuFileInfo(fmuFilePath);
         QString fmuFileName = fmuFileInfo.fileName();
         fmuFileName.chop(4);
-        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuFileName))
+        QString fmuImportDestination = gpDesktopHandler->getFMUPath() + fmuFileName;
+        if(QDir().exists(fmuImportDestination))
         {
-            QMessageBox existWarningBox(QMessageBox::Warning, "Warning","Another FMU with same name exist. Do you want unload this library and then overwrite it?", 0, 0);
+            QMessageBox existWarningBox(QMessageBox::Warning, "Warning","Another FMU with same name exist. Do you want unload this library (if loaded) and then overwrite the generated import files?", 0, 0);
             existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
             existWarningBox.addButton("No", QMessageBox::RejectRole);
             existWarningBox.setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
             bool doIt = (existWarningBox.exec() == QMessageBox::AcceptRole);
-
             if(doIt)
             {
                 gpLibraryHandler->unloadLibraryFMU(fmuFileName);
-                removeDir(QDir::cleanPath(gpDesktopHandler->getFMUPath()+fmuFileName));
+                removeDir(QDir::cleanPath(fmuImportDestination));
             }
             else
             {
@@ -139,26 +138,27 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
+        hopsan::HString hFmuFilePath = fmuFilePath.toStdString().c_str();
         hopsan::HString hGccPath = gpConfig->getGCCPath().toStdString().c_str();
-        hopsan::HString hFmuPath = gpDesktopHandler->getFMUPath().toStdString().c_str();
+        hopsan::HString hTargetPath = gpDesktopHandler->getFMUPath().toStdString().c_str();
         hopsan::HString hIncludePath = gpDesktopHandler->getCoreIncludePath().toStdString().c_str();
         hopsan::HString hBinPath = gpDesktopHandler->getExecPath().toStdString().c_str();
 
-        pHandler->callFmuImportGenerator(path.toStdString().c_str(), hFmuPath, hIncludePath, hBinPath, hGccPath, true);
+        pHandler->callFmuImportGenerator(hFmuFilePath, hTargetPath, hIncludePath, hBinPath, hGccPath, true);
 
-        if(QDir().exists(gpDesktopHandler->getFMUPath() + fmuFileName))
+        if(QDir().exists(fmuImportDestination))
         {
             //Copy component icon
             QFile fmuIcon;
             fmuIcon.setFileName(QString(GRAPHICSPATH)+"/objecticons/fmucomponent.svg");
-            fmuIcon.copy(gpDesktopHandler->getFMUPath()+fmuFileName+"/"+fmuFileName+"/fmucomponent.svg");
+            fmuIcon.copy(fmuImportDestination+"/fmucomponent.svg");
             fmuIcon.close();
-            fmuIcon.setFileName(gpDesktopHandler->getFMUPath()+fmuFileName+"/"+fmuFileName+"/fmucomponent.svg");
+            fmuIcon.setFileName(fmuImportDestination+"/fmucomponent.svg");
             fmuIcon.setPermissions(QFile::WriteUser | QFile::ReadUser);
             fmuIcon.close();
 
             //Load library
-            gpLibraryHandler->loadLibrary(gpDesktopHandler->getFMUPath()+fmuFileName+"/"+fmuFileName+"_lib.xml", FmuLib);
+            gpLibraryHandler->loadLibrary(fmuImportDestination+"/"+fmuFileName+"_lib.xml", FmuLib);
             return true;
         }
     }

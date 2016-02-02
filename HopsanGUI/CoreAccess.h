@@ -74,7 +74,7 @@ public:
     enum TargetArchitectureT {x86, x64};
     bool generateFromModelica(QString path, bool showDialog=true, int solver=0, bool compile=false);
     bool generateFromCpp(QString hppFile, bool compile=false);
-    bool generateFromFmu(QString path);
+    bool generateFromFmu(QString fmuFilePath);
     bool generateToFmu(QString path, int version, TargetArchitectureT architecture, SystemContainer *pSystem);
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false);
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
