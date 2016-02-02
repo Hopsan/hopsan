@@ -1622,8 +1622,8 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
     int random = rand() % 1000000000;
     QString randomString = QString::number(random);
     QString nameSpace = "HopsanFMU"+randomString;
-    QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::" << "namespace hopsan{";
-    QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{";
+    QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::" << "namespace hopsan{" << "(hopsan::";
+    QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{" << "("+nameSpace+"::";
 
     QStringList srcFiles = listHopsanCoreSourceFiles(savePath)+listDefaultLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &file, srcFiles)
@@ -1743,7 +1743,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
     compileCppBatchStream << mGccPath+"g++ -fPIC -c -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB " << "fmu_hopsan.c";
-    QStringList srcFiles = listHopsanCoreSourceFiles(savePath);
+    QStringList srcFiles = listHopsanCoreSourceFiles(savePath) + listDefaultLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
         compileCppBatchStream << " " << srcFile;
