@@ -18,12 +18,30 @@
   * Parameters and ports may have changed name, in such cases you have to manually set the parameter value that could not be loaded (according to messages).
   
 - Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We have not had time to fix this problem.
-  If this is a problem take a screen-shot instead. 
+  If this is a problem take a screen-shot instead. You can quickly hide all of the side widgets with a button on the left pane.
 
+- Hopsan internally relies on using the U.S English locale ( decimal separator '.' ). 
+  Hopsan should internally switch to this mode but if you are using an other locale and ARE HAVING PROBLEMS, try switching to U.S English numeric locale.
+  
 ******************************
     Version History
 ******************************
-0.7.1  (2016-02-28)
+0.7.2  (2016-02-05)
+
+- Feature: The Windows  installer and zip releases are now available with the compiler included and defaults to this compiler (see options to set other compiler paths).
+           Note! For compression reasons (keep the file small) the portable "zip" release including compiler uses the "7z" format and requires the free "7-Zip" program
+                 from http://www.7-zip.org/ to unpack.
+
+- Bug fixed: Exported FMU wont compile due to failed namespace replacement in new code
+- Bug fixed: The simulate multiple models or all open models code in the ModelHandler sometimes causes crash after simulation
+- Bug fixed: When importing FMU the FMILibrary path does not work if Hopsan is installed in for example "Program Files" (space in path)
+- Bug fixed: Highlighting components using system parameters does not work if system parameter is used in expression
+- Bug fixed: Importing FMU with _ in name causes problems (due to to strict toValidVariableName function)
+- Bug fixed: Crash if trying to use remote parallel optimization using an algorithm or method that has not been implemented in the scheduler
+             It will now fall back to parallel queuer without load balancing
+- Bug fixed: Fixed incorrect rad/s -> rpm unit scale
+
+0.7.1  (2016-01-28)
 - Enhancement: It is now possible to trigger the "invert plot" function for a data variable through the plot curve controls.
 - Enhancement: The time offset dialog and hcom commands now use the selected default time unit for input and output
 - Enhancement: NumHop dialog now has an apply button so that you can edit and apply changes without closing the dialog
