@@ -1223,6 +1223,13 @@ void OptimizationHandler::rescheduleForBestSpeedup(int &pm, int &pa, double &su,
             removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
             mpRemoteSimulationQueueHandler = createRemoteSimulationQueueHandler(Crfp1_Homo_Reschedule);
         }
+        // Fall-back
+        else
+        {
+            removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
+            mpRemoteSimulationQueueHandler = createRemoteSimulationQueueHandler(Basic);
+            mNeedsRescheduling = false;
+        }
 
         if (doBenchmark)
         {
@@ -1242,6 +1249,13 @@ void OptimizationHandler::rescheduleForBestSpeedup(int &pm, int &pa, double &su,
         }
         mpRemoteSimulationQueueHandler->determineBestSpeedup(-1, mModelPtrs.size(), pm, pa, su);
         mNeedsRescheduling = false; //! @todo maybe returnode
+    }
+    else
+    {
+        removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
+        mpRemoteSimulationQueueHandler = createRemoteSimulationQueueHandler(Basic);
+        mpRemoteSimulationQueueHandler->determineBestSpeedup(-1, mModelPtrs.size(), pm, pa, su);
+        mNeedsRescheduling = false;
     }
 #endif
 }
