@@ -29,8 +29,8 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "ModelWidget.h"
-
 #include "GraphicsView.h"
+#include "Utilities/GUIUtilities.h"
 
 #include <QLineEdit>
 #include <QLabel>
@@ -186,6 +186,7 @@ void FindWidget::findSystemParameter(const QString &rName, const bool centerView
     {
         clearHighlights();
 
+        QRegExp re(rName, Qt::CaseInsensitive);
         QPointF mean;
         int nFound=0;
         const QList<ModelObject*> mops = mpContainer->getModelObjects();
@@ -196,12 +197,18 @@ void FindWidget::findSystemParameter(const QString &rName, const bool centerView
             pMO->getParameters(pars);
             foreach(CoreParameterData par, pars)
             {
-                QRegExp re(rName, Qt::CaseInsensitive, QRegExp::Wildcard);
-                QRegExp reNeg("-"+rName, Qt::CaseInsensitive, QRegExp::Wildcard);
-                //if(par.mValue == rName)
-                if (re.exactMatch(par.mValue) || reNeg.exactMatch(par.mValue))
+                QString expression = removeAllSpaces(par.mValue);
+
+                // OK, I cant figure out how to write the regexp to solve this, so I am splitting the string instead
+                QStringList parts;
+                splitOnAny(expression,{"+","-","*","/","(",")","^"}, parts);
+                for (QString &part : parts)
                 {
-                    hasPar = true;
+                    if (re.exactMatch(part))
+                    {
+                        hasPar = true;
+                        break;
+                    }
                 }
             }
             if(hasPar)

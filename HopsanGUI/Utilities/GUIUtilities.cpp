@@ -990,3 +990,44 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
     }
     return didReplace;
 }
+
+//! @brief Remove all spaces from a string
+QString removeAllSpaces(const QString &org)
+{
+    QString res;
+    res.reserve(org.size());
+    for (int i=0; i<org.size(); ++i)
+    {
+        if (!org[i].isSpace())
+        {
+            res.append(org[i]);
+        }
+    }
+    return res;
+}
+
+//! @brief Split a string into parts based on any of the delimiters in delims
+//! @param[in] str The string to split
+//! @param[in] delims A list of delimiters (single character strings)
+//! @param[out] rSplitList A list of the split string, delimiters are not included
+void splitOnAny(const QString &str, const QStringList &delims, QStringList &rSplitList)
+{
+    int b=0; int i;
+    for (i=0; i<str.size(); ++i)
+    {
+        if (delims.contains(str[i]))
+        {
+            int len = i-b;
+            if (len > 0)
+            {
+                rSplitList.append(QStringRef(&str,b,len).toString());
+            }
+            b=i+1;
+        }
+    }
+    int len = i-b;
+    if (len > 0)
+    {
+        rSplitList.append(QStringRef(&str,b,len).toString());
+    }
+}
