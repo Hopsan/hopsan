@@ -100,7 +100,7 @@ bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPo
 {
     for(int i=0; i<rTags.size(); ++i)
     {
-        QString name = toValidVarName(portElement.firstChildElement(rTags[i]).text());
+        QString name = toValidHopsanVarName(portElement.firstChildElement(rTags[i]).text());
         int idx=-1, j=-1;
         foreach(const hopsan_fmi_import_variable_t &rVar, rActualVariables)
         {
@@ -271,7 +271,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
         fmi1_variability_enu_t variability = fmi1_import_get_variability(pVar);
         fmi1_base_type_enu_t type = fmi1_import_get_variable_base_type(pVar);
         fmi1_value_reference_t vr = fmi1_import_get_variable_vr(pVar);
-        name = toValidVarName(name);
+        name = toValidHopsanVarName(name);
         if(causality == fmi1_causality_enu_input && variability == fmi1_variability_enu_parameter)
         {
             parNames.append(name);
@@ -295,7 +295,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     //Get name of FMU
     QString fmuName = fmi1_import_get_model_name(fmu);
-    fmuName = toValidVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+    fmuName = toValidHopsanVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
     //--------------------------------------------//
     printMessage("Creating " + fmuName + ".hpp...");
@@ -555,7 +555,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
         varORpar.pFmiVariable = pVar;
         QString name = fmi2_import_get_variable_name(pVar);
-        name = toValidVarName(name);
+        name = toValidHopsanVarName(name);
         varORpar.name = name;
         varORpar.description = fmi2_import_get_variable_description(pVar);
         varORpar.dataType = fmi2_import_get_variable_base_type(pVar);
@@ -588,9 +588,8 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         }
     }
 
-    //Get name of FMU
+    // Get name of FMU
     QString fmuName = fmi2_import_get_model_name(fmu);
-    fmuName = toValidVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
     QList<hopsan_fmi_import_tlm_port_t> tlmPorts;
     QString tlmFileName = fmuName+"_HopsanTLM.xml";
@@ -705,6 +704,9 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         }
         tlmFile.close();
     }
+
+    // Switch to a more hopsan friendly name
+    fmuName = toValidHopsanVarName(fmuName);//.remove(QRegExp(QString::fromUtf8("[-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
     //--------------------------------------------//
     printMessage("Creating " + fmuName + ".hpp ...");
@@ -913,7 +915,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         }
         else
         {
-            printErrorMessage(QString("Input varibale: %1 must be of type Real").arg(var.name));
+            printErrorMessage(QString("Input variable: %1 must be of type Real").arg(var.name));
             return false;
         }
     }
@@ -930,7 +932,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         }
         else
         {
-            printErrorMessage(QString("Output varibale: %1 must be of type Real").arg(var.name));
+            printErrorMessage(QString("Output variable: %1 must be of type Real").arg(var.name));
             return false;
         }
     }

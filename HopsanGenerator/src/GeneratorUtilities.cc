@@ -449,44 +449,59 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
 //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
 //! @param org Original string
 //! @returns String without illegal characters
-QString toValidVarName(const QString &rOrg)
+QString toValidHopsanVarName(const QString &org)
 {
     QString ret;
-    if (!rOrg.isEmpty())
+    if (!org.isEmpty())
     {
         // Reserve memory for entire string (we will only append as many chars as we decide to keep)
-        ret.reserve(rOrg.size());
-        // First discard any non letter char in the begining
+        ret.reserve(org.size());
+        // First ignore any non letter or number or underscore char in the beginning
         int c=0;
-        while ( (c<rOrg.size()) && !(rOrg[c].isLetterOrNumber() || rOrg[c] == '_') )
+        while ( (c<org.size()) && !(org[c].isLetterOrNumber() || org[c]=='_') )
         {
             ++c;
         }
-        // Now remove any non letter or nummber or underscore
-        while ( c < rOrg.size() )
+        // Now ignore any non letter or number or underscore
+        while ( c < org.size() )
         {
-            if ( rOrg[c].isLetterOrNumber() || rOrg[c] == '_')
+            if  ( org[c].isLetterOrNumber() || org[c]=='_' )
             {
-                ret.append(rOrg[c]);
+                ret.append(org[c]);
             }
             ++c;
         }
     }
     return ret;
-//    QString ret = org;
-//    while(!ret.isEmpty() && !ret[0].isLetter())
-//    {
-//        ret = ret.right(ret.size()-1);
-//    }
-//    for(int i=1; i<ret.size(); ++i)
-//    {
-//        if(!ret[i].isLetterOrNumber())
-//        {
-//            ret.remove(i,1);
-//            i--;
-//        }
-//    }
-//    return ret;
+}
+
+//! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
+//! @param org Original string
+//! @returns String without illegal characters
+QString toValidLabViewVarName(const QString &org)
+{
+    QString ret;
+    if (!org.isEmpty())
+    {
+        // Reserve memory for entire string (we will only append as many chars as we decide to keep)
+        ret.reserve(org.size());
+        // First ignore any non letter char in the beginning
+        int c=0;
+        while ( (c<org.size()) && !org[c].isLetter() )
+        {
+            ++c;
+        }
+        // Now ignore any non letter or number
+        while ( c < org.size() )
+        {
+            if ( org[c].isLetterOrNumber() )
+            {
+                ret.append(org[c]);
+            }
+            ++c;
+        }
+    }
+    return ret;
 }
 
 

@@ -175,7 +175,8 @@ bool copyFile(const QString &source, const QString &target, QString &rErrorMessa
 bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraCFlags="", QString extraLFlags="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);
 void callProcess(const QString &name, const QStringList &args, const QString workingDirectory, QString &rStdOut, QString &rStdErr);
-QString toValidVarName(const QString &rOrg);
+QString toValidHopsanVarName(const QString &org);
+QString toValidLabViewVarName(const QString &org);
 QString extractTaggedSection(QString str, QString tag);
 void replaceTaggedSection(QString &str, QString tag, QString replacement);
 QString replaceTag(QString str, QString tag, QString replacement);
