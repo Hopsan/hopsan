@@ -336,6 +336,8 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     QString headerGuard = fmuName.toUpper()+"_HPP_INCLUDED";
     QString className = "FMU_"+fmuName;
+    // Lets default FMUs to signal components unless a HopsanTLM port specification xml is present
+    QString classParent = "ComponentSignal";
 
     QString localVars;
     if(!parVars.isEmpty())
@@ -431,6 +433,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     fmuComponentCode.replace("<<<headerguard>>>", headerGuard);
     fmuComponentCode.replace("<<<className>>>", className);
+    fmuComponentCode.replace("<<<classParent>>>", classParent);
     fmuComponentCode.replace("<<<localvars>>>", localVars);
     fmuComponentCode.replace("<<<addconstants>>>", addConstants);
     fmuComponentCode.replace("<<<addinputs>>>", addInputs);
@@ -756,6 +759,13 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
     QString headerGuard = fmuName.toUpper()+"_HPP_INCLUDED";
     QString className = "FMU_"+fmuName;
+    // Lets default FMUs to signal components unless a HopsanTLM port specification xml is present
+    QString classParent = "ComponentSignal";
+    if (!tlmPorts.empty())
+    {
+        //! @todo it would be better to read from the _HopsanTLM.xml file what type to use C or Q, I do not think it is possible to automatically decide that
+        classParent = "ComponentQ";
+    }
 
     // Define member variables
 
@@ -1055,6 +1065,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
     replacePattern("<<<headerguard>>>" , headerGuard , fmuComponentCode);
     replacePattern("<<<className>>>"   , className   , fmuComponentCode);
+    replacePattern("<<<classParent>>>" , classParent , fmuComponentCode);
     replacePattern("<<<localvars>>>"   , localVars   , fmuComponentCode);
     replacePattern("<<<addconstants>>>", addConstants, fmuComponentCode);
     replacePattern("<<<addinputs>>>"   , addInputs   , fmuComponentCode);

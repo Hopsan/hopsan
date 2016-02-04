@@ -49,7 +49,7 @@ namespace hopsan {
 //! @brief
 //! @ingroup HydraulicComponents
 //!
-class <<<className>>> : public ComponentQ
+class <<<className>>> : public <<<classParent>>>
 {
 
 private:

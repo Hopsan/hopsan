@@ -45,7 +45,7 @@ void localLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level
 
 namespace hopsan {
 
-class <<<className>>> : public ComponentQ
+class <<<className>>> : public <<<classParent>>>
 {
 
 private:
