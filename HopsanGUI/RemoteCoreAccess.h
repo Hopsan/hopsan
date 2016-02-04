@@ -84,6 +84,8 @@ public:
 
     bool isConnected();
 
+    int numKnownServers() const;
+
     bool connect();
     void disconnect();
 

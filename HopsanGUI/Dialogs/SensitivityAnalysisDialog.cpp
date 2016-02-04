@@ -61,12 +61,12 @@
 #include <unistd.h> //Needed for sysctl
 #endif
 
+#ifdef USEZMQ
+#include "RemoteSimulationUtils.h"
+#endif
+
 
 //! @brief Constructor
-
-
-
-//! @brief Reimplementation of open() slot, used to initialize the dialog
 SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     : QDialog(parent)
 {
@@ -143,10 +143,22 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     pStepsLayout->addWidget(pStepsLabel);
     pStepsLayout->addWidget(mpStepsSpinBox);
 
+    mpUseRemoteSimulatorsCheckBox = new QCheckBox("Use remote simulators");
+    mpNumRemoteParallelModelsSpinBox = new QSpinBox(this);
+    mpNumRemoteParallelModelsSpinBox->setRange(1, 2048);
+    mpNumRemoteParallelModelsSpinBox->setSingleStep(1);
+    mpNumRemoteParallelModelsSpinBox->setValue(2);
+    QHBoxLayout *pNumRemoteLayout = new QHBoxLayout();
+    pNumRemoteLayout->addWidget(new QLabel("Number of remote parallel models: ", this));
+    pNumRemoteLayout->addWidget(mpNumRemoteParallelModelsSpinBox);
+
     QGroupBox *pSettingsGroupBox = new QGroupBox();
     QVBoxLayout *pSettingsLayout = new QVBoxLayout();
     pSettingsLayout->addLayout(pDistributionLayout);
     pSettingsLayout->addLayout(pStepsLayout);
+    pSettingsLayout->addWidget(mpUseRemoteSimulatorsCheckBox);
+    pSettingsLayout->addLayout(pNumRemoteLayout);
+
     pSettingsGroupBox->setLayout(pSettingsLayout);
 
     //Buttons
@@ -195,6 +207,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     connect(this, SIGNAL(rejected()), SLOT(saveSettings()));
 }
 
+//! @brief Reimplementation of open() slot, used to initialize the dialog
 void SensitivityAnalysisDialog::open()
 {
     if(gpModelHandler->count() == 0)
@@ -759,13 +772,20 @@ void SensitivityAnalysisDialog::run()
         parLimits.append(minMax);
     }
 
-    mpEvaluator = new SensitivityAnalysisEvaluator(this, mpModel, parLimits, mSelectedComponents, mSelectedParameters, mOutputVariables, nThreads);
+    int nParallelModels = nThreads;
+    mpEvaluator = new SensitivityAnalysisEvaluator(this, mpModel, parLimits, mSelectedComponents, mSelectedParameters, mOutputVariables, nParallelModels);
+    if (mpUseRemoteSimulatorsCheckBox->isChecked())
+    {
+        mpEvaluator->mUseRemoteSimulators = true;
+        mpEvaluator->mNumParallelModels = mpNumRemoteParallelModelsSpinBox->value();
+        nParallelModels = mpNumRemoteParallelModelsSpinBox->value();
+    }
     mpWorker = new Ops::WorkerParameterSweep(mpEvaluator);
 
-    mpWorker->setNumberOfCandidates(nThreads);
-    mpWorker->setNumberOfPoints(nThreads);
+    mpWorker->setNumberOfCandidates(nParallelModels);
+    mpWorker->setNumberOfPoints(nParallelModels);
     mpWorker->setNumberOfParameters(nParameters);
-    mpWorker->setMaxNumberOfIterations(nSteps/nThreads);
+    mpWorker->setMaxNumberOfIterations(nSteps/nParallelModels);
     for(int p=0; p<parLimits.size(); ++p)
     {
         mpWorker->setParameterLimits(p, parLimits[p].first, parLimits[p].second);
@@ -773,10 +793,12 @@ void SensitivityAnalysisDialog::run()
 
     connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
 
-    mpEvaluator->init();
-    mpWorker->initialize();
-    mpWorker->run();
-
+    bool rc = mpEvaluator->init();
+    if (rc)
+    {
+        mpWorker->initialize();
+        mpWorker->run();
+    }
     mpEvaluator->finalize();
 }
 
@@ -793,80 +815,90 @@ void SensitivityAnalysisDialog::updateProgressBar(int i)
 void SensitivityAnalysisEvaluator::plot()
 {
     mpDialog->updateProgressBar(mpWorker->getMaxNumberOfIterations());   //Just to make it look better
-//    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+    //    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
 
-    for(int v=0; v<mOutputVars.size(); ++v)
+    if (!mModelPtrs.empty())
     {
-        int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGenerationNumber()+1;
-        //int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
-        int nSamples = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorVariable(nGenerations-1)->getDataSize();
-
-        QVector<double> vMin(nSamples, 100000000000.0);
-        QVector<double> vMax(nSamples, -100000000000.0);
-        double totalMin=100000000000.0;
-        double totalMax=-100000000000.0;
-
-        QString component = mOutputVars.at(v).at(0);
-        QString port = mOutputVars.at(v).at(1);
-        QString variable = mOutputVars.at(v).at(2);
-
-        //! @todo there is no subsystem support here right now
-        QString fullName = makeFullVariableName(QStringList(), component,port,variable);
-
-        //PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
-
-        int nThreads = mModelPtrs.size();
-        for(int m=0; m<mModelPtrs.size(); ++m)
+        for(int v=0; v<mOutputVars.size(); ++v)
         {
-            for(int g=nGenerations-mpWorker->getMaxNumberOfIterations(); g<nGenerations; ++g)
+            int nGenerations = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getCurrentGenerationNumber()+1;
+            SharedVectorVariableT pCurrentGenTimeData = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorVariable(nGenerations-1);
+            int nSamples = 0;
+            if (pCurrentGenTimeData)
             {
-                SharedVectorVariableT pVector = mModelPtrs[m]->getTopLevelSystemContainer()->getLogDataHandler()->getVectorVariable(fullName, g);
-                if(!pVector.isNull())
+                nSamples = pCurrentGenTimeData->getDataSize();
+            }
+            else
+            {
+                continue;
+            }
+
+            QVector<double> vMin(nSamples, 100000000000.0);
+            QVector<double> vMax(nSamples, -100000000000.0);
+            double totalMin=100000000000.0;
+            double totalMax=-100000000000.0;
+
+            QString component = mOutputVars.at(v).at(0);
+            QString port = mOutputVars.at(v).at(1);
+            QString variable = mOutputVars.at(v).at(2);
+
+            //! @todo there is no subsystem support here right now
+            QString fullName = makeFullVariableName(QStringList(), component,port,variable);
+
+            //PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
+
+            //int nThreads = mModelPtrs.size();
+            for(int m=0; m<mModelPtrs.size(); ++m)
+            {
+                for(int g=nGenerations-mpWorker->getMaxNumberOfIterations(); g<nGenerations; ++g)
                 {
-                    QVector<double> temp = pVector->getDataVectorCopy();
-                    for(int i=0; i<temp.size(); ++i)
+                    SharedVectorVariableT pVector = mModelPtrs[m]->getTopLevelSystemContainer()->getLogDataHandler()->getVectorVariable(fullName, g);
+                    if(!pVector.isNull())
                     {
-                        if(temp[i] > vMax[i]) vMax[i] = temp[i];
-                        if(temp[i] < vMin[i]) vMin[i] = temp[i];
-                        if(temp[i] > totalMax) totalMax = temp[i];
-                        if(temp[i] < totalMin) totalMin = temp[i];
+                        QVector<double> temp = pVector->getDataVectorCopy();
+                        for(int i=0; i<temp.size(); ++i)
+                        {
+                            if(temp[i] > vMax[i]) vMax[i] = temp[i];
+                            if(temp[i] < vMin[i]) vMin[i] = temp[i];
+                            if(temp[i] > totalMax) totalMax = temp[i];
+                            if(temp[i] < totalMin) totalMin = temp[i];
+                        }
                     }
                 }
             }
+
+            //Commented out code = add curve for max and min
+            SharedVariableDescriptionT minDesc(new VariableDescription);
+            minDesc.data()->mAliasName = "min("+fullName+")";
+            SharedVectorVariableT pMinData(new TimeDomainVariable(pCurrentGenTimeData, vMin, -1, minDesc, SharedMultiDataVectorCacheT(0)));
+            SharedVariableDescriptionT maxDesc = SharedVariableDescriptionT(new VariableDescription);
+            maxDesc.data()->mAliasName = "max("+fullName+")";
+            SharedVectorVariableT pMaxData(new TimeDomainVariable(pCurrentGenTimeData, vMax, -1, maxDesc, SharedMultiDataVectorCacheT(0)));
+
+            PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
+            gpPlotHandler->plotDataToWindow(pPlotWindow, pMaxData, QwtPlot::yLeft);
+            pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
+            gpPlotHandler->plotDataToWindow(pPlotWindow, pMinData, QwtPlot::yLeft);
+            pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
+            pPlotWindow->hidePlotCurveControls();
+            pPlotWindow->setLegendsVisible(false);
+
+            //! @todo Implement interval curve type support in plot window instead!
+            //! @note This is not compatible with most plot functions
+            QwtPlotIntervalCurve *pCurve = new QwtPlotIntervalCurve();
+            pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+            QVector<QwtIntervalSample> data;
+            QVector<double> time = pCurrentGenTimeData->getDataVectorCopy();
+            for(int i=0; i<vMin.size(); ++i)
+            {
+                data.append(QwtIntervalSample(time[i], vMin[i], vMax[i]));
+            }
+            pCurve->setSamples(data);
+            pCurve->setPen(QColor(0,0,255,150), 1.0);
+            pCurve->setBrush(QColor(0,0,255,150));
+
+            pCurve->attach(static_cast<QwtPlot*>(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getQwtPlot()));
         }
-
-        //Commented out code = add curve for max and min
-        SharedVectorVariableT pTime = mModelPtrs.first()->getTopLevelSystemContainer()->getLogDataHandler()->getTimeVectorVariable(nGenerations-1);
-        SharedVariableDescriptionT minDesc(new VariableDescription);
-        minDesc.data()->mAliasName = "min("+fullName+")";
-        SharedVectorVariableT pMinData(new TimeDomainVariable(pTime, vMin, -1, minDesc, SharedMultiDataVectorCacheT(0)));
-        SharedVariableDescriptionT maxDesc = SharedVariableDescriptionT(new VariableDescription);
-        maxDesc.data()->mAliasName = "max("+fullName+")";
-        SharedVectorVariableT pMaxData(new TimeDomainVariable(pTime, vMax, -1, maxDesc, SharedMultiDataVectorCacheT(0)));
-
-        PlotWindow *pPlotWindow = gpPlotHandler->createNewUniquePlotWindow("Sensitivity Analysis");
-        gpPlotHandler->plotDataToWindow(pPlotWindow, pMaxData, QwtPlot::yLeft);
-        pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
-        gpPlotHandler->plotDataToWindow(pPlotWindow, pMinData, QwtPlot::yLeft);
-        pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(0,0,255,200));
-        pPlotWindow->hidePlotCurveControls();
-        pPlotWindow->setLegendsVisible(false);
-
-        //! @todo Implement interval curve type support in plot window instead!
-        //! @note This is not compatible with most plot functions
-        QwtPlotIntervalCurve *pCurve = new QwtPlotIntervalCurve();
-        pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-        QVector<QwtIntervalSample> data;
-        QVector<double> time = pTime->getDataVectorCopy();
-        for(int i=0; i<vMin.size(); ++i)
-        {
-            data.append(QwtIntervalSample(time[i], vMin[i], vMax[i]));
-        }
-        pCurve->setSamples(data);
-        pCurve->setPen(QColor(0,0,255,150), 1.0);
-        pCurve->setBrush(QColor(0,0,255,150));
-
-        pCurve->attach(static_cast<QwtPlot*>(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getQwtPlot()));
     }
 }
 
@@ -881,14 +913,14 @@ SensitivityAnalysisEvaluator::SensitivityAnalysisEvaluator(SensitivityAnalysisDi
     mPars = pars;
     mParComps = parComps;
     mOutputVars = outputVars;
-    mnThreads = nThreads;
+    mNumParallelModels = nThreads;
 }
 
 
 
-void SensitivityAnalysisEvaluator::init()
+bool SensitivityAnalysisEvaluator::init()
 {
-    //Save hidden copy of model to load multiple copies of and run sensitivity analysis against
+    // Save hidden copy of model to load multiple copies of and run sensitivity analysis against
     QString name = mpModel->getTopLevelSystemContainer()->getName();
     QString appearanceDataBasePath = mpModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
     QDir().mkpath(gpDesktopHandler->getDataPath()+"sensitivity/");
@@ -896,35 +928,55 @@ void SensitivityAnalysisEvaluator::init()
     mpModel->saveTo(savePath);
     mpModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(appearanceDataBasePath);
 
-    //Load correct number of models depending on number of cores
+    // Load correct number of models depending on number of cores
     mModelPtrs.clear();
-    if(gpConfig->getUseMulticore())
-    {
-        for(int i=0; i<mnThreads; ++i)
-        {
-            mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
-        }
-    }
-    else
+    for(int i=0; i<mNumParallelModels; ++i)
     {
         mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
     }
 
-    //Add base path from original model as search path, for components that load files with relative paths
+    // Add base path from original model as search path, for components that load files with relative paths
     for(int m=0; m<mModelPtrs.size(); ++m)
     {
         mModelPtrs.at(m)->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
     }
+
+#ifdef USEZMQ
+    removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
+    if (mUseRemoteSimulators)
+    {
+        mpRemoteSimulationQueueHandler = createRemoteSimulationQueueHandler(Basic);
+
+        // We assume that we never get more then 2:1 speedup from threads, so it is best to run single core simulation
+        // and as many parallel models as possible
+        mpRemoteSimulationQueueHandler->setupModelQueues(mModelPtrs, 1);
+        if (!mpRemoteSimulationQueueHandler->hasQueues())
+        {
+            gpMessageHandler->addErrorMessage("Could not setup remote queues");
+            return false;
+        }
+    }
+#endif
+    return true;
 }
 
 void SensitivityAnalysisEvaluator::finalize()
 {
+#ifdef USEZMQ
+    // Clear and disconnect from parallel server queues
+    if (mUseRemoteSimulators)
+    {
+        mpRemoteSimulationQueueHandler->clear();
+    }
+    removeRemoteSimulationQueueHandler(mpRemoteSimulationQueueHandler);
+#endif
+
     plot();
 
-    //Clear all models
+    // Clear all models
     for(int m=0; m<mModelPtrs.size(); ++m)
     {
-        delete mModelPtrs[m];
+        gpModelHandler->closeModel(mModelPtrs[m], true);
     }
     mModelPtrs.clear();
 }
@@ -954,12 +1006,47 @@ void SensitivityAnalysisEvaluator::setParameters(QVector<QVector<double> > *pPoi
 void SensitivityAnalysisEvaluator::evaluateAllPoints()
 {
     setParameters(&mpWorker->getPoints());
-    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs.mid(0,mpWorker->getNumberOfPoints()));
+
+#ifdef USEZMQ
+    if (mUseRemoteSimulators)
+    {
+        if (mpRemoteSimulationQueueHandler && mpRemoteSimulationQueueHandler->hasServers())
+        {
+            //! @todo this simulation does not care about numpoint vs numcandidates
+            mpRemoteSimulationQueueHandler->simulateModels();
+        }
+        //! @todo need error message here if something goes wrong
+    }
+    else
+    {
+#endif
+        // Note! The "mid()" function are used to make sure that the number of models simulated equals number of candidates (in case more models are opened)
+        gpModelHandler->simulateMultipleModels_blocking(mModelPtrs.mid(0,mpWorker->getNumberOfPoints()));
+#ifdef USEZMQ
+    }
+#endif
 }
 
 void SensitivityAnalysisEvaluator::evaluateAllCandidates()
 {
     setParameters(&mpWorker->getCandidatePoints());
 
-    gpModelHandler->simulateMultipleModels_blocking(mModelPtrs.mid(0,mpWorker->getNumberOfCandidates()));
+#ifdef USEZMQ
+    if (mUseRemoteSimulators)
+    {
+        if (mpRemoteSimulationQueueHandler && mpRemoteSimulationQueueHandler->hasServers())
+        {
+            //! @todo this simulation does not care about numpoint vs numcandidates
+            mpRemoteSimulationQueueHandler->simulateModels();
+        }
+        //! @todo need error message here if something goes wrong
+    }
+    else
+    {
+#endif
+        // Note! The "mid()" function are used to make sure that the number of models simulated equals number of candidates (in case more models are opened)
+        gpModelHandler->simulateMultipleModels_blocking(mModelPtrs.mid(0,mpWorker->getNumberOfCandidates()));
+#ifdef USEZMQ
+    }
+#endif
 }

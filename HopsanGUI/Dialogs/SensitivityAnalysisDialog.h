@@ -48,19 +48,21 @@ class QRadioButton;
 class QProgressBar;
 class QLabel;
 class QLineEdit;
+class QCheckBox;
 
 // Hopsan forward declaration
 class ModelWidget;
 class SensitivityAnalysisSettings;
 class SystemContainer;
 class SensitivityAnalysisDialog;
+class RemoteSimulationQueueHandler;
 
 class SensitivityAnalysisEvaluator : public Ops::Evaluator
 {
     friend class SensitivityAnalysisDialog;
 public:
     SensitivityAnalysisEvaluator(SensitivityAnalysisDialog *pDialog, ModelWidget *pModel, QVector<QPair<double, double> > parLimits, QStringList &parComps, QStringList &par, QList<QStringList> &outputVars, int nThreads);
-    void init();
+    bool init();
     void finalize();
     void evaluateAllPoints();
     void evaluateAllCandidates();
@@ -73,8 +75,10 @@ private:
     QVector<ModelWidget *> mModelPtrs;
     QStringList mParComps, mPars;
     QList<QStringList> mOutputVars;
+    RemoteSimulationQueueHandler *mpRemoteSimulationQueueHandler=0;
 
-    int mnThreads;
+    int mNumParallelModels=1;
+    bool mUseRemoteSimulators=false;
 };
 
 
@@ -116,6 +120,8 @@ private:
     //QGroupBox *mpOutputGroupBox;
 
     //Member widgets
+    QCheckBox *mpUseRemoteSimulatorsCheckBox;
+    QSpinBox *mpNumRemoteParallelModelsSpinBox;
     QSpinBox *mpStepsSpinBox;
     QRadioButton *mpUniformDistributionRadioButton;
     QRadioButton *mpNormalDistributionRadioButton;

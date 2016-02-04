@@ -31,6 +31,10 @@
 - Feature: The Windows  installer and zip releases are now available with the compiler included and defaults to this compiler (see options to set other compiler paths).
            Note! For compression reasons (keep the file small) the portable "zip" release including compiler uses the "7z" format and requires the free "7-Zip" program
                  from http://www.7-zip.org/ to unpack.
+- Feature: Hopsan can now utilise remote simulation services in sensitivity analysis.
+           Note! This is only beneficial for large models that take a long time to simulate. Overhead from remote loading of models and especially transferring data back
+           to the HopsanGUI will add to the total simulation time.
+
 
 - Bug fixed: Exported FMU wont compile due to failed namespace replacement in new code
 - Bug fixed: The simulate multiple models or all open models code in the ModelHandler sometimes causes crash after simulation

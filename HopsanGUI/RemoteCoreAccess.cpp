@@ -446,6 +446,11 @@ bool RemoteCoreAddressHandler::isConnected()
     return mpRemoteHopsanClient->addressServerConnected();
 }
 
+int RemoteCoreAddressHandler::numKnownServers() const
+{
+    return mAvailableServers.size();
+}
+
 bool RemoteCoreAddressHandler::connect()
 {
     if (!mHopsanAddressServerIP.isEmpty() && !mHopsanAddressServerPort.isEmpty())

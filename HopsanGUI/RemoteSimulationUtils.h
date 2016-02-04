@@ -54,6 +54,7 @@ public:
     virtual bool simulateModels();
 
     bool hasServers() const;
+    bool hasQueues() const;
 
     int mNumThreadsPerModel = -1;
 
@@ -88,7 +89,6 @@ public:
     virtual bool simulateModels();
 };
 
-
 class RemoteSimulationQueueHandler_Homo_Re_PSO : public RemoteSimulationQueueHandlerLB
 {
 public:
@@ -99,6 +99,16 @@ public:
     }
 protected:
     virtual double SUa(int numParallellEvaluators, int numParticles);
+};
+
+class RemoteSimulationQueueHandlerSA : public RemoteSimulationQueueHandler_Homo_Re_PSO
+{
+public:
+    RemoteSimulationQueueHandlerSA()
+    {
+        mReschedulingMethod=InternalLoadBalance;
+        mAlgorithmMaxPa = 2048;
+    }
 };
 
 class RemoteSimulationQueueHandler_Homo_Re_CRFP0 : public RemoteSimulationQueueHandlerCRFP
@@ -128,7 +138,7 @@ protected:
 
 
 
-enum RemoteSimulationQueueHandlerType {Basic, Pso_Homo_Reschedule, Crfp0_Homo_Reschedule, Crfp1_Homo_Reschedule};
+enum RemoteSimulationQueueHandlerType {Basic, SensitivityAnalysis, Pso_Homo_Reschedule, Crfp0_Homo_Reschedule, Crfp1_Homo_Reschedule};
 RemoteSimulationQueueHandler* createRemoteSimulationQueueHandler(RemoteSimulationQueueHandlerType type);
 void removeRemoteSimulationQueueHandler(RemoteSimulationQueueHandler* pHandler);
 

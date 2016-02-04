@@ -203,6 +203,11 @@ void RemoteSimulationQueueHandler::setupModelQueues(QVector<ModelWidget *> model
     bool addrserver_connected = connectToAddressServer();
     if (addrserver_connected)
     {
+            if (mpRemoteCoreAddressHandler->numKnownServers() < 1)
+            {
+                mpRemoteCoreAddressHandler->requestAvailableServers();
+            }
+
             // Now queue particles / models for remote evaluation
             mNumThreadsPerModel = numThreads;
 
@@ -418,6 +423,11 @@ void RemoteSimulationQueueHandler::determineBestSpeedup(int maxNumThreads, int m
 bool RemoteSimulationQueueHandler::hasServers() const
 {
     return !mRemoteCoreSimulationHandlers.isEmpty();
+}
+
+bool RemoteSimulationQueueHandler::hasQueues() const
+{
+    return !mModelQueues.isEmpty();
 }
 
 bool RemoteSimulationQueueHandler::connectToAddressServer()
@@ -989,6 +999,10 @@ RemoteSimulationQueueHandler* createRemoteSimulationQueueHandler(RemoteSimulatio
     {
         return new RemoteSimulationQueueHandler();
     }
+    else if (type == SensitivityAnalysis)
+    {
+        return new RemoteSimulationQueueHandlerSA();
+    }
     else if (type == Pso_Homo_Reschedule)
     {
         return new RemoteSimulationQueueHandler_Homo_Re_PSO();
@@ -1003,7 +1017,7 @@ RemoteSimulationQueueHandler* createRemoteSimulationQueueHandler(RemoteSimulatio
     }
     else
     {
-        return 0;
+        return nullptr;
     }
 }
 
