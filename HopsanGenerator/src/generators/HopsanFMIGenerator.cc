@@ -595,6 +595,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QString fmuName = fmi2_import_get_model_name(fmu);
 
     QList<hopsan_fmi_import_tlm_port_t> tlmPorts;
+    QString tlmcqtype;
     QString tlmFileName = fmuName+"_HopsanTLM.xml";
     QFile tlmFile(rTargetPath+"/"+tlmFileName);
     // Try old obsolete name
@@ -625,6 +626,34 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
             }
             else
             {
+                bool isQType = true;
+                QDomElement cqtypeElement = rootElement.firstChildElement("tlmcqtype");
+                if (!cqtypeElement.isNull())
+                {
+                    tlmcqtype = cqtypeElement.text().toLower();
+                    if (tlmcqtype != "c" && tlmcqtype != "q")
+                    {
+                        printErrorMessage("Wrong CQ-Type specifed: "+tlmcqtype+" only C or Q supported!");
+                        return false;
+                    }
+                    isQType = (tlmcqtype=="q");
+                }
+                if (isQType)
+                {
+                    printMessage("Generating Q-type component as specified by "+ tlmFile.fileName());
+                }
+                else
+                {
+                    printMessage("Generating C-type component as specified by "+ tlmFile.fileName());
+                }
+
+                // Conversion map from strange tlm description type names
+                QMap<QString, QString> typeconvertermap;
+                typeconvertermap.insert("mechanicq",  "NodeMechanic");
+                typeconvertermap.insert("hydraulicq", "NodeHydraulic");
+                //! @todo fill out this table or even better stop using strange type names in TLM description
+
+
                 QDomElement portElement = rootElement.firstChildElement("tlmport");
                 int idx = 1;
                 while(!portElement.isNull())
@@ -633,6 +662,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
                     hopsan_fmi_import_tlm_port_t tlmPort;
                     tlmPort.type = portElement.attribute("type");
+                    tlmPort.type = typeconvertermap.value(tlmPort.type, tlmPort.type); // Replace type value if possible
                     tlmPort.name = portElement.attribute("name");
                     tlmPort.description = portElement.attribute("description");
 
@@ -649,27 +679,28 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
                     QStringList outputs, inputs;
                     QList<size_t> outputDataIds, inputDataIds;
-                    if(tlmPort.type == "mechanicq")
-                    {
-                        GeneratorNodeInfo gni("NodeMechanic");
-                        outputs << gni.qVariables;
-                        outputDataIds << gni.qVariableIds;
-                        inputs << gni.cVariables;
-                        inputDataIds << gni.cVariableIds;
-                    }
-                    else if(tlmPort.type == "hydraulicq")
-                    {
 
-                        GeneratorNodeInfo gni("NodeHydraulic");
-                        outputs << gni.qVariables;
-                        outputDataIds << gni.qVariableIds;
-                        inputs << gni.cVariables;
-                        inputDataIds << gni.cVariableIds;
+                    GeneratorNodeInfo gni(tlmPort.type);
+                    if (gni.isValidNode)
+                    {
+                        if (isQType)
+                        {
+                            outputs << gni.qVariables;
+                            outputDataIds << gni.qVariableIds;
+                            inputs << gni.cVariables;
+                            inputDataIds << gni.cVariableIds;
+                        }
+                        else
+                        {
+                            inputs << gni.qVariables;
+                            inputDataIds << gni.qVariableIds;
+                            outputs << gni.cVariables;
+                            outputDataIds << gni.cVariableIds;
+                        }
                     }
-                    //! @todo support the other nodetypes
                     else
                     {
-                        printErrorMessage("Unknown port type: "+tlmPort.type+", ignored.");
+                        printErrorMessage("Can not handle port type: "+tlmPort.type+", ignored.");
                         typeOK=false;
                     }
 
@@ -681,7 +712,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
                                                             fmiInputVariables, inputs, inputDataIds,
                                                             tlmPort.name, portElement))
                         {
-                            printErrorMessage("In: "+ tlmFile.fileName());
+                            printErrorMessage("In: "+ tlmFile.fileName()+ " Failed to find one of the specified variables among the FMI input variables");
                             return false;
                         }
 
@@ -694,7 +725,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
                                                             fmiOutputVariables, outputs, outputDataIds,
                                                             tlmPort.name, portElement))
                         {
-                            printErrorMessage("In: "+ tlmFile.fileName());
+                            printErrorMessage("In: "+ tlmFile.fileName()+ " Failed to find one of the specified variables among the FMI output variables");
                             return false;
                         }
 
@@ -763,8 +794,16 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QString classParent = "ComponentSignal";
     if (!tlmPorts.empty())
     {
-        //! @todo it would be better to read from the _HopsanTLM.xml file what type to use C or Q, I do not think it is possible to automatically decide that
         classParent = "ComponentQ";
+        // If C-type was specified then overwrite
+        if (tlmcqtype == "c")
+        {
+            classParent = "ComponentC";
+        }
+    }
+    else
+    {
+        printMessage("Generating Signal-type component");
     }
 
     // Define member variables
@@ -950,20 +989,8 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QString addPorts;
     foreach(const hopsan_fmi_import_tlm_port_t &tlmPort, tlmPorts)
     {
-        QString nodeType;
-        //! @todo should have a lookup map for nodetype conversion
-        if(tlmPort.type == "mechanicq")
-        {
-            nodeType = "NodeMechanic";
-        }
-        else if(tlmPort.type == "hydraulicq")
-        {
-            nodeType = "NodeHydraulic";
-        }
-        //addPorts.append(portVars.at(i)+"= addPowerPort(\""+portNames.at(i)+"\",\""+nodeType+"\");\n");
         addPorts += QString("%1 = addPowerPort(\"%2\", \"%3\", \"%4\");\n").arg(tlmPort.codeVarName)
-                            .arg(tlmPort.name).arg(nodeType).arg(tlmPort.description);
-        //! @todo support all NODE TYPES
+                            .arg(tlmPort.name).arg(tlmPort.type).arg(tlmPort.description);
     }
 
     QString setNodeDataPointers;

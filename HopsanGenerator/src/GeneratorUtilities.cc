@@ -615,16 +615,19 @@ QStringList getHopsanCoreIncludePaths()
 
 GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
 {
+    //! @todo this will only be able to create the default included nodes (which may be a problem in the future)
     hopsan::HopsanEssentials hopsanCore;
     Node *pNode = hopsanCore.createNode(nodeType.toStdString().c_str());
+    isValidNode = false;
     if (pNode)
     {
+        isValidNode = true;
         niceName = pNode->getNiceName().c_str();
         for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
         {
             const hopsan::NodeDataDescription *pVarDesc = pNode->getDataDescription(i);
             NodeDataVariableTypeEnumT varType = pVarDesc->varType;
-            // Ceck if  "Q-type variable"
+            // Check if  "Q-type variable"
             if(varType == DefaultType || varType == FlowType || varType == IntensityType)
             {
                 qVariables << pVarDesc->shortname.c_str();
@@ -648,7 +651,13 @@ GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
 
 void GeneratorNodeInfo::getNodeTypes(QStringList &nodeTypes)
 {
-    nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
+    //! @todo this will only be able to list the default included nodes (which may be a problem in the future)
+    hopsan::HopsanEssentials hopsanCore;
+    std::vector<hopsan::HString> types = hopsanCore.getRegisteredNodeTypes();
+    Q_FOREACH(const hopsan::HString &type, types)
+    {
+        nodeTypes << type.c_str();
+    }
 }
 
 

@@ -200,6 +200,7 @@ class GeneratorNodeInfo
         GeneratorNodeInfo(QString nodeType);
         static void getNodeTypes(QStringList &nodeTypes);
 
+        bool isValidNode;
         QString niceName;
         QStringList qVariables;
         QStringList cVariables;

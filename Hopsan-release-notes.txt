@@ -35,6 +35,10 @@
            Note! This is only beneficial for large models that take a long time to simulate. Overhead from remote loading of models and especially transferring data back
            to the HopsanGUI will add to the total simulation time.
 
+- Enhancement: Imported FMUs will now inherit ComponentSignal by default, (instead of Q-type). When a HopsanTLM port specification is present in the FMU the C or Q
+               type can be decided in that file (using the "tlmcqtype" tag). If not specified, Q-type will be assumed.
+- Enhancement: FMU import HopsanTLM specification now works with all built in node types in Hopsan. (Before, only Hydraulic and Mechanic ports were supported)
+               The Hopsan node type name must be used in the "type" attribute of the "tlmport" tag. Example "NodeElectric" not "electriccq"
 
 - Bug fixed: Exported FMU wont compile due to failed namespace replacement in new code
 - Bug fixed: The simulate multiple models or all open models code in the ModelHandler sometimes causes crash after simulation
