@@ -1013,34 +1013,35 @@ void Expression::replaceBy(const Expression &expr)
 {
     mString = expr.mString;
     mFunction = expr.mFunction;
-    mFactors.clear();
+
+    QList<Expression> tempFactors;
     for(int f=0; f<expr.mFactors.size(); ++f)
     {
-        Expression temp;
-        temp.replaceBy(expr.mFactors[f]);
-        mFactors.append(temp);
+        tempFactors.append(expr.mFactors[f]);
     }
-    mArguments.clear();
+    mFactors.swap(tempFactors);
+
+    QList<Expression> tempArguments;
     for(int a=0; a<expr.mArguments.size(); ++a)
     {
-        Expression temp;
-        temp.replaceBy(expr.mArguments[a]);
-        mArguments.append(temp);
+        tempArguments.append(expr.mArguments[a]);
     }
-    mDivisors.clear();
+    mArguments.swap(tempArguments);
+
+    QList<Expression> tempDivisors;
     for(int d=0; d<expr.mDivisors.size(); ++d)
     {
-        Expression temp;
-        temp.replaceBy(expr.mDivisors[d]);
-        mDivisors.append(temp);
+        tempDivisors.append(expr.mDivisors[d]);
     }
-    mTerms.clear();
+    mDivisors.swap(tempDivisors);
+
+    QList<Expression> tempTerms;
     for(int t=0; t<expr.mTerms.size(); ++t)
     {
-        Expression temp;
-        temp.replaceBy(expr.mTerms[t]);
-        mTerms.append(temp);
+        tempTerms.append(expr.mTerms[t]);
     }
+    mTerms.swap(tempTerms);
+
     mpBase = 0;
     mpPower = 0;
     mpLeft = 0;
@@ -1048,28 +1049,30 @@ void Expression::replaceBy(const Expression &expr)
     mpDividend = 0;
     if(expr.getBase())
     {
+        //! @todo here (and below) we might have two problems,  first a potential memory leak, we just zero the pointers above
+        //!       but if we delete the expressions here, what would happen when the "expr" argument happens to come from ourselves (crash)
         mpBase = new Expression();
-        (*mpBase).replaceBy(*(expr.getBase()));
+        mpBase->replaceBy(*(expr.getBase()));
     }
     if(expr.getPower())
     {
         mpPower = new Expression();
-        (*mpPower).replaceBy(*expr.getPower());
+        mpPower->replaceBy(*expr.getPower());
     }
     if(expr.getLeft())
     {
         mpLeft = new Expression();
-        (*mpLeft).replaceBy(*expr.getLeft());
+        mpLeft->replaceBy(*expr.getLeft());
     }
     if(expr.getRight())
     {
         mpRight = new Expression();
-        (*mpRight).replaceBy(*expr.getRight());
+        mpRight->replaceBy(*expr.getRight());
     }
     if(expr.getDividends())
     {
         mpDividend = new Expression();
-        (*mpDividend).replaceBy(*expr.getDividends());
+        mpDividend->replaceBy(*expr.getDividends());
     }
 }
 

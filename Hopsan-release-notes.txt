@@ -49,6 +49,7 @@
 - Bug fixed: Crash if trying to use remote parallel optimization using an algorithm or method that has not been implemented in the scheduler
              It will now fall back to parallel queuer without load balancing
 - Bug fixed: Fixed incorrect rad/s -> rpm unit scale
+- Bug fixed: Fixed rare crash bug in SymHop library 
 
 0.7.1  (2016-01-28)
 - Enhancement: It is now possible to trigger the "invert plot" function for a data variable through the plot curve controls.
