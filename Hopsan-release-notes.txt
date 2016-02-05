@@ -28,17 +28,18 @@
 ******************************
 0.7.2  (2016-02-05)
 
-- Feature: The Windows  installer and zip releases are now available with the compiler included and defaults to this compiler (see options to set other compiler paths).
-           Note! For compression reasons (keep the file small) the portable "zip" release including compiler uses the "7z" format and requires the free "7-Zip" program
-                 from http://www.7-zip.org/ to unpack.
-- Feature: Hopsan can now utilise remote simulation services in sensitivity analysis.
+- Feature: Additional versions of the Windows installer and zip release are now available with the compiler included.
+           This version will default to the internal compiler (see options to set other compiler paths).
+           Note! For compression reasons (to keep the file small) the portable "zip" release including compiler uses the "7z" format
+                 and requires the free "7-Zip" program from http://www.7-zip.org/ to unpack.
+- Feature: Hopsan can now utilize remote simulation services for parallel simulation during sensitivity analysis.
            Note! This is only beneficial for large models that take a long time to simulate. Overhead from remote loading of models and especially transferring data back
-           to the HopsanGUI will add to the total simulation time.
+           to the HopsanGUI will add to the total simulation time for each model.
 
 - Enhancement: Imported FMUs will now inherit ComponentSignal by default, (instead of Q-type). When a HopsanTLM port specification is present in the FMU the C or Q
                type can be decided in that file (using the "tlmcqtype" tag). If not specified, Q-type will be assumed.
 - Enhancement: FMU import HopsanTLM specification now works with all built in node types in Hopsan. (Before, only Hydraulic and Mechanic ports were supported)
-               The Hopsan node type name must be used in the "type" attribute of the "tlmport" tag. Example "NodeElectric" not "electriccq"
+               The Hopsan node type name must be used in the "type" attribute of the "tlmport" tag. Example: "NodeElectric" not "electriccq".
 
 - Bug fixed: Exported FMU wont compile due to failed namespace replacement in new code
 - Bug fixed: The simulate multiple models or all open models code in the ModelHandler sometimes causes crash after simulation
