@@ -225,7 +225,7 @@ private:
     bool mCoreProgressBarsRecreated;
     QVector<int> mParameterOutputIndexes;
 
-    bool mOutputDisabled;
+    bool mOutputDisabled=false;
 };
 
 #endif // OPTIMIZATIONDIALOG_H

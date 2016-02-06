@@ -475,7 +475,18 @@ void OptimizationDialog::updateParameterOutputs(const QVector<double> &objective
         int i = mParameterOutputIndexes[x];
 
         QString output = "obj: ";
-        QString objStr = QString::number(objectives[i], 'g', 8);
+        QString objStr;
+        //! @todo This is an error in the code, this must be solved, previous code assumed that i is in range of objects -> ASSERT failed in QVector
+        qDebug() << "objectives size: " << objectives.size() << " " << i;
+        if (i < objectives.size())
+        {
+            objStr = QString::number(objectives[i], 'g', 8);
+        }
+        else
+        {
+            mpMessageHandler->addErrorMessage("In code: updateParameterOutputs objectives.size() < i");
+            return;
+        }
         while(objStr.size() < 12)
         {
             objStr.append(" ");
