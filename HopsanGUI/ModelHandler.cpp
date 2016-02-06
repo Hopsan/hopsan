@@ -420,9 +420,9 @@ bool ModelHandler::closeModel(int idx, bool force)
         }
 
         // Remove and delete the model
-        delete pModelToClose;
+        delete pModelToClose; //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgets before it has been deleted because of this. This behavior is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
         mModelPtrs.removeAt(idx);
-        //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgets before it has been deleted because of this. This behavior is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
+
         // When a model widget is removed all previous indexes for later models will become incorrect,
         // lets set the new current to the latest in that case
         if (mCurrentIdx >= idx)

@@ -944,8 +944,9 @@ void OptimizationHandler::clearModels()
     mpHcomHandler->setModelPtr(gpModelHandler->getCurrentModel());
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
-        mModelPtrs[i]->mpParentModelHandler->closeModel(mModelPtrs[i], true);
-        delete(mModelPtrs[i]);
+        //mModelPtrs[i]->mpParentModelHandler->closeModel(mModelPtrs[i], true);
+        delete mModelPtrs[i];
+        //! @todo we delete her since the models are detached, but it would be better if we could use the closeModel function and let the handler close and delete the models
     }
     mModelPtrs.clear();
 }

@@ -166,10 +166,12 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
 
 ModelWidget::~ModelWidget()
 {
+    // This is a workaround hack to avoid notfying change on unlock caused by removal when tabwidget is destoryed
+    // it would report back to the tab in the widget (which is being destoryed) this would cause crash
+    mDoNotifyChangeToTabWidget=false;
+
     setUseRemoteSimulation(false, false);
-
     delete mpAnimationWidget;
-
     createOrDestroyToplevelSystem(false);
     mpSimulationThreadHandler->deleteLater();
     mpLogDataHandler->deleteLater();
@@ -240,7 +242,7 @@ QString ModelWidget::getStopTime()
 //! e.g. a component added or a connection has changed.
 void ModelWidget::hasChanged()
 {
-    if (mIsSaved)
+    if (mIsSaved && mDoNotifyChangeToTabWidget)
     {
         QString tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(this));
 

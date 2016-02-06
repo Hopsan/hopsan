@@ -154,6 +154,7 @@ private:
     int mLastSimulationTime;
 
     bool mIsSaved;
+    bool mDoNotifyChangeToTabWidget=true;
     int mLimitedLockModelEditingCounter=0;
     int mFullLockModelEditingCounter=0;
 

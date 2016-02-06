@@ -976,7 +976,9 @@ void SensitivityAnalysisEvaluator::finalize()
     // Clear all models
     for(int m=0; m<mModelPtrs.size(); ++m)
     {
-        gpModelHandler->closeModel(mModelPtrs[m], true);
+        //gpModelHandler->closeModel(mModelPtrs[m], true);
+        delete mModelPtrs[m];
+        //! @todo we delete her since the models are detached, but it would be better if we could use the closeModel function and let the handler close and delete the models
     }
     mModelPtrs.clear();
 }

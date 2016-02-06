@@ -26,7 +26,7 @@
 ******************************
     Version History
 ******************************
-0.7.2  (2016-02-05)
+0.7.2  (2016-02-06)
 
 - Feature: Additional versions of the Windows installer and zip release are now available with the compiler included.
            This version will default to the internal compiler (see options to set other compiler paths).
@@ -50,6 +50,7 @@
              It will now fall back to parallel queuer without load balancing
 - Bug fixed: Fixed incorrect rad/s -> rpm unit scale
 - Bug fixed: Fixed rare crash bug in SymHop library 
+- Bug fixed: Fixed crash bugs related to optimization "hidden models"
 
 0.7.1  (2016-01-28)
 - Enhancement: It is now possible to trigger the "invert plot" function for a data variable through the plot curve controls.
