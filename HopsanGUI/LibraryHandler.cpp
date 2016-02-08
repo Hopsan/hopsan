@@ -488,19 +488,19 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                                 if(!coreAccess.loadComponentLib(pLibrary->libFilePath))
                                 {
                                     // Still no success, recompilation failed. Ignore and go on.
-                                    gpMessageHandler->addErrorMessage("Recompilation failed.");
+                                    gpMessageHandler->addErrorMessage("Failed to load recompiled library.");
                                     mLoadedLibraries.pop_back(); //Discard library
                                 }
                                 else
                                 {
                                     // Successful loading after recompilation
-                                    gpMessageHandler->addInfoMessage("Recompilation successful!");
+                                    gpMessageHandler->addInfoMessage("Success loading recompiled library!");
                                     loadedSomething = true;
                                 }
                             }
                             else
                             {
-                                gpMessageHandler->addWarningMessage("No compiler path set, cant recompile");
+                                gpMessageHandler->addWarningMessage("No compiler path set, can not recompile");
                                 mLoadedLibraries.pop_back(); //Discard library
                             }
                         }
