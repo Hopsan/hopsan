@@ -49,6 +49,11 @@
 #include "ModelValidation.h"
 #include "BuildUtilities.h"
 
+#ifdef USEOPS
+#include "OpsWorker.h"
+#include "OpsEvaluator.h"
+#endif
+
 // If debug extension has not already been defined then define it to prevent compilation error
 #ifndef DEBUG_EXT
  #define DEBUG_EXT
@@ -62,6 +67,25 @@ using namespace std;
 using namespace hopsan;
 
 HopsanEssentials gHopsanCore;
+
+#ifdef USEOPS
+class OptimizationEvaluator : public Ops::Evaluator
+{
+public:
+    OptimizationEvaluator(OptimizationHandler *pHandler);
+    //void evaluateAllPoints();
+    void evaluateCandidate(int idx)
+    {
+            mpSystem->initialize(0,10);
+            mpSystem->simulate(0.001);
+    }
+
+    //void evaluateAllCandidates();
+private:
+    vector< vector<double> > *mPoints;
+    ComponentSystem *mpSystem;
+};
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -93,6 +117,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
         TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
+        TCLAP::ValueArg<std::string> optimizationOption("o","txt","Optimization script",false,"","Path to file", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -184,6 +209,69 @@ int main(int argc, char *argv[])
             returnSuccess =  createModelTestDataSet(model, dst+baseName);
         }
 
+#ifdef USEOPS
+        if(optimizationOption.isSet() && hmfPathOption.isSet())
+        {
+            string script = optimizationOption.getValue();
+
+            cout << "SCRIPT: " << script << endl;
+
+            string algorithm;
+            vector<string> parNames;
+            vector<string> objVars;
+            vector<double> objWeights;
+            vector<double> parMin;
+            vector<double> parMax;
+
+            string line;
+            ifstream file;
+            file.open(script.c_str());
+            if ( file.is_open() )
+            {
+                while ( file.good() )
+                {
+                    std::vector<string> words;
+                    getline(file, line);
+                    //cout << "LINE: " << line << endl;
+                    string word;
+                    stringstream linestream(line);
+                    while(getline(linestream, word, ' '))
+                    {
+                        words.push_back(word);
+                        //cout << "WORD: " << word << endl;
+                    }
+                    if(words.size() == 2 && words[0] == "algorithm")
+                    {
+                        algorithm = words[1];
+                        cout << "ALGORITHM: " << algorithm << endl;
+                    }
+                    else if(words.size() == 3 && words[0] == "objective")
+                    {
+                        objVars.push_back(words[1]);
+                        objWeights.push_back(words[2]);
+                    }
+                    else if(words.size() == 4 && words[0] == "parameter")
+                    {
+                        parNames.push_back(words[1]);
+                        parMin.push_back(words[2]);
+                        parMax.push_back(words[3]);
+                    }
+                }
+            }
+            //! @todo Make sure vectors are correct size!
+
+            cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
+            double startTime=0, stopTime=2;
+            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModelFile(hmfPathOption.getValue().c_str(), startTime, stopTime);
+            size_t nErrors = gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();
+            printWaitingMessages(printDebugOption.getValue());
+            if (nErrors < 1)
+            {
+
+            }
+        }
+#endif
+
         if(hmfPathOption.isSet() && !createHvcTestOption.getValue())
         {
             returnSuccess=false;
@@ -221,6 +309,7 @@ int main(int argc, char *argv[])
                 cout << endl << "Model Hierarchy:" << endl;
                 printComponentHierarchy(pRootSystem, "", true, true);
                 cout << endl;
+
 
                 if (pRootSystem && simulateOption.isSet())
                 {

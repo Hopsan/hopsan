@@ -30,6 +30,12 @@ INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
 INCLUDEPATH *= $${PWD}/../Utilities
 #--------------------------------------------------------
 
+#DEFINES *= USEOPS
+contains(DEFINES, USEOPS) {
+INCLUDEPATH *= $${PWD}/../Ops/include
+LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
+}
+
 #--------------------------------------------------------
 # Set hopsan core paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include
