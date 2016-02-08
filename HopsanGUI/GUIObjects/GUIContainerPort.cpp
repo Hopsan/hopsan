@@ -119,7 +119,7 @@ void ContainerPort::openPropertiesDialog()
 {
     ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this, gpMainWindowWidget);
     pDialog->exec();
-    delete pDialog;
+    pDialog->deleteLater();
 }
 
 
