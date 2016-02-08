@@ -271,10 +271,22 @@ bool MultiDataVectorCache::returnVector(QVector<double> *&rpData)
     return rc;
 }
 
+bool MultiDataVectorCache::hasError() const
+{
+    return !mError.isEmpty();
+}
+
 
 QString MultiDataVectorCache::getError() const
 {
     return mError;
+}
+
+QString MultiDataVectorCache::getAndClearError()
+{
+    QString error = mError;
+    mError.clear();
+    return error;
 }
 
 QFileInfo MultiDataVectorCache::getCacheFileInfo() const
@@ -332,7 +344,8 @@ CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, Share
         }
         else
         {
-            mError = mpMultiCache->getError();
+            mError = "MultiCache Error: "+mpMultiCache->getError()+", falling back to RAM storage";
+            mDataVector = rDataVector;
         }
     }
     else
@@ -573,9 +586,21 @@ bool CachableDataVector::endFullVectorOperation(QVector<double> *&rpData)
     return rc;
 }
 
+bool CachableDataVector::hasError() const
+{
+    return !mError.isEmpty();
+}
+
 QString CachableDataVector::getError() const
 {
     return mError;
+}
+
+QString CachableDataVector::getAndClearError()
+{
+    QString error = mError;
+    mError.clear();
+    return error;
 }
 
 bool CachableDataVector::moveToCache()

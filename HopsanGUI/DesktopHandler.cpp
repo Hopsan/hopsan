@@ -246,15 +246,16 @@ void DesktopHandler::setupPaths()
      // Make sure backup folder exists, create it if not
     mkpath(getBackupPath());
 
-    // Make sure model folder exists, create it if not, if create not sucessful use dev dir
+    // Make sure model folder exists, create it if not, if create not successful use dev dir
     mkpath(getModelsPath());
 
-    // Select which scripts path to use, create it if not, if create not sucessful use dev dir
+    // Select which scripts path to use, create it if not, if create not successful use dev dir
     //! @todo problem in linux if scripts must be changed, as they  are not installed to user home
     mkpath(getScriptsPath());
 
     // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
     qDebug() << "LogdataCache: " << getLogDataPath();
+    //! @todo this is not very smart, what if we start a second instance of Hospan, then the previous ones LogData will be cleared
     removeDir(getLogDataPath());
 }
 

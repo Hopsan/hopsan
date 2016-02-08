@@ -60,7 +60,9 @@ public:
     bool checkoutVector(const quint64 startByte, const quint64 nBytes, QVector<double> *&rpData);
     bool returnVector(QVector<double> *&rpData);
 
+    bool hasError() const;
     QString getError() const;
+    QString getAndClearError();
     QFileInfo getCacheFileInfo() const;
 
     void incrementSubscribers();
@@ -114,7 +116,9 @@ public:
     QVector<double> *beginFullVectorOperation();
     bool endFullVectorOperation(QVector<double> *&rpData);
 
+    bool hasError() const;
     QString getError() const;
+    QString getAndClearError();
 
 private:
     bool moveToCache();
