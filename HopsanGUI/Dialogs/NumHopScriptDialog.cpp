@@ -41,6 +41,7 @@ NumHopScriptDialog::NumHopScriptDialog(ContainerObject *pSystem, QWidget *pParen
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pRevertButton, SIGNAL(clicked()), this, SLOT(revert()));
     connect(pRunButton, SIGNAL(clicked()), this, SLOT(run()));
+    connect(pSystem, SIGNAL(objectDeleted()), this, SLOT(close()));
 
     pLayout->addWidget(mpTextEdit);
     pLayout->addWidget(pButtonBox);
@@ -52,25 +53,45 @@ NumHopScriptDialog::NumHopScriptDialog(ContainerObject *pSystem, QWidget *pParen
 
 void NumHopScriptDialog::applyPressed()
 {
-    mpSystem->setNumHopScript(mpTextEdit->toPlainText());
+    if (mpSystem)
+    {
+        mpSystem->setNumHopScript(mpTextEdit->toPlainText());
+    }
 }
 
 void NumHopScriptDialog::okPressed()
 {
-    mpSystem->setNumHopScript(mpTextEdit->toPlainText());
+    if (mpSystem)
+    {
+        mpSystem->setNumHopScript(mpTextEdit->toPlainText());
+    }
     close();
 }
 
 void NumHopScriptDialog::revert()
 {
-    mpTextEdit->setText(mpSystem->getNumHopScript());
+    if (mpSystem)
+    {
+        mpTextEdit->setText(mpSystem->getNumHopScript());
+    }
+    else
+    {
+        mpTextEdit->setText("Error: System is no longer present!");
+    }
 }
 
 void NumHopScriptDialog::run()
 {
     QString output;
-    mpSystem->runNumHopScript(mpTextEdit->toPlainText(), true, output);
-    output.prepend("Running NumHop\n");
-    gpMessageHandler->addInfoMessage(output);
+    if (mpSystem)
+    {
+        mpSystem->runNumHopScript(mpTextEdit->toPlainText(), true, output);
+        output.prepend("Running NumHop\n");
+        gpMessageHandler->addInfoMessage(output);
+    }
+    else
+    {
+        gpMessageHandler->addErrorMessage("NumHopScriptDialog::run() System is no longer present!");
+    }
 }
 
