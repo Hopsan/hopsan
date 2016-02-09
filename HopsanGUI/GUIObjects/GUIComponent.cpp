@@ -365,7 +365,7 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
         //Implementation of Feature #698 - Save nodetype in HMF
         QDomElement xmlPorts = appendDomElement(rDomElement, HMF_PORTSTAG);
 
-        // Note! we can loop local ports since non-enabled ports will not exist at all in the GUI
+        // Note! we cant loop local ports since non-enabled ports will not exist at all in the GUI
         //       Instead we ask Core for all "variameters" and extract port info from there
         QVector<CoreVariameterDescription> descs;
         getVariameterDescriptions(descs);
@@ -379,6 +379,11 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
                 QDomElement xmlPort = appendDomElement(xmlPorts, "port");
                 xmlPort.setAttribute(HMF_NAMETAG, desc.mPortName);
                 xmlPort.setAttribute("nodetype", desc.mNodeType);
+                Port *pPort = this->getPort(desc.mPortName);
+                if (pPort)
+                {
+                    xmlPort.setAttribute("porttype", pPort->getPortType());
+                }
                 if (desc.mNodeType == "NodeSignal")
                 {
                     QString q = this->getModifyableSignalQuantity(desc.mPortName+"#Value");
