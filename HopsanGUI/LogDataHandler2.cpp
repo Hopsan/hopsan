@@ -1168,6 +1168,12 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
     QList<ModelObject*> currentLevelModelObjects = pCurrentSystem->getModelObjects();
     foreach(ModelObject* pModelObject, currentLevelModelObjects)
     {
+        // Ignore "system port model objects" they are not actually a component and will be listed anyway
+        if (pModelObject->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+        {
+            continue;
+        }
+
         // First treat as an ordinary component (even if it is a subsystem), to get variables in the current system
         auto ports = pModelObject->getPortListPtrs();
         for(auto &pPort : ports)
