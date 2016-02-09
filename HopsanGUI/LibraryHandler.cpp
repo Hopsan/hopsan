@@ -403,10 +403,10 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     if ( isLibraryLoaded(libraryMainFileInfo.canonicalFilePath(), libraryDLLFileInfo.canonicalFilePath()) )
     {
         gpMessageHandler->addWarningMessage("Library: "+libraryMainFileInfo.canonicalFilePath()+" is already loaded");
-        return true; // We return true anywawy, since the library is actually loaded
+        return true; // We return true anyway, since the library is actually loaded
     }
 
-    // Load the xml libarry file
+    // Load the xml library file
     if (isXmlLib)
     {
         QFile file(libraryMainFileInfo.canonicalFilePath());
