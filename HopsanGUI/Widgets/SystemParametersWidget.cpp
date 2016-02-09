@@ -238,8 +238,8 @@ bool SysParamTableModel::insertRows(int row, int count, const QModelIndex &/*par
 
 bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
 {
-    // Prevent setting or adding parameter if system is locked
-    if (mpContainerObject && ((mpContainerObject->getModelLockLevel()>NotLocked) || mpContainerObject->isLocallyLocked()) )
+    // Prevent setting or adding parameter if system is fully locked
+    if (mpContainerObject && ((mpContainerObject->getModelLockLevel()>LimitedLock) || mpContainerObject->isLocallyLocked()) )
     {
         return false;
     }
