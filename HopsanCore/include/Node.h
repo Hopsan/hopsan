@@ -76,6 +76,9 @@ class DLLIMPORTEXPORT Node
 public:
     Node(const size_t datalength);
     virtual ~Node();
+
+    virtual void setSignalNumDimensions(size_t numDims);
+
     const HString &getNiceName() const;
     const HString &getNodeType() const;
 
@@ -99,10 +102,10 @@ public:
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
 
-    virtual void setSignalQuantity(const HString &rQuantity, const HString &rUnit);
-    virtual void setSignalQuantityModifyable(bool tf);
-    virtual HString getSignalQuantity() const;
-    virtual bool getSignalQuantityModifyable() const;
+    virtual void setSignalQuantity(const HString &rQuantity, const HString &rUnit, const size_t dataId=0);
+    virtual void setSignalQuantityModifyable(bool tf, const size_t dataId=0);
+    virtual HString getSignalQuantity(const size_t dataId=0) const;
+    virtual bool getSignalQuantityModifyable(const size_t dataId=0) const;
 
     void logData(const size_t logSlot);
 

@@ -49,7 +49,7 @@ namespace hopsan {
 
     //! @brief This enum type specifies all porttypes
     // It is VERY important that the MultiPort enums comes LAST, MULTIPORT is never instantiated but enum MUST be present
-    enum PortTypesEnumT {UndefinedPortType, PowerPortType, ReadPortType, WritePortType, SystemPortType, MultiportType, PowerMultiportType, ReadMultiportType};
+    enum PortTypesEnumT {UndefinedPortType, PowerPortType, BiDirectionalSignalPortType, ReadPortType, WritePortType, SystemPortType, MultiportType, PowerMultiportType, ReadMultiportType};
 
     class DLLIMPORTEXPORT Port
     {
@@ -335,6 +335,17 @@ namespace hopsan {
     public:
         PowerPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         PortTypesEnumT getPortType() const {return PowerPortType;}
+    };
+
+    class BiDirectionalSignalPort :public Port
+    {
+        friend class Component;
+        friend class ComponentSystem;
+        friend class ConnectionAssistant;
+
+    public:
+        BiDirectionalSignalPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
+        PortTypesEnumT getPortType() const {return BiDirectionalSignalPortType;}
     };
 
 

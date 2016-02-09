@@ -51,8 +51,9 @@ public:
     enum DataIndexEnumOldT {VALUE};
     static Node* CreatorFunction() {return new NodeSignal;}
 
-    void setSignalQuantity(const HString &rQuantity, const HString &rUnit)
+    virtual void setSignalQuantity(const HString &rQuantity, const HString &rUnit, const size_t dataId=Value)
     {
+        HOPSAN_UNUSED(dataId)
         if (mDataDescriptions[Value].userModifiableQuantity)
         {
             mDataDescriptions[Value].quantity = rQuantity;
@@ -60,18 +61,21 @@ public:
         }
     }
 
-    void setSignalQuantityModifyable(bool tf)
+    virtual void setSignalQuantityModifyable(bool tf, const size_t dataId=Value)
     {
+        HOPSAN_UNUSED(dataId)
         mDataDescriptions[Value].userModifiableQuantity = tf;
     }
 
-    HString getSignalQuantity() const
+    virtual HString getSignalQuantity(const size_t dataId=Value) const
     {
+        HOPSAN_UNUSED(dataId)
         return mDataDescriptions[Value].quantity;
     }
 
-    bool getSignalQuantityModifyable() const
+    virtual bool getSignalQuantityModifyable(const size_t dataId=Value) const
     {
+        HOPSAN_UNUSED(dataId)
         return mDataDescriptions[Value].userModifiableQuantity;
     }
 
@@ -93,6 +97,81 @@ private:
     {
         setNiceName("signal");
         setDataCharacteristics(Value, "Value", "y", "");
+    }
+};
+
+//! @brief The base class for n-dimensional signal nodes, (that can be dynamically sized, but size should be kept constant during use)
+//! @ingroup NodeSignal
+class NodeSignalND :public Node
+{
+public:
+    //! @brief The data variable indexes, DataLength is used internally
+    //! @ingroup NodeSignal
+    enum DataIndexEnumT {Value};
+    static Node* CreatorFunction() {return new NodeSignalND;}
+
+    virtual void setSignalNumDimensions(size_t numDims);
+
+    virtual void setSignalQuantity(const HString &rQuantity, const HString &rUnit, const size_t dataId=Value)
+    {
+        if (mDataDescriptions[dataId].userModifiableQuantity)
+        {
+            mDataDescriptions[dataId].quantity = rQuantity;
+            mDataDescriptions[dataId].unit = rUnit;
+        }
+    }
+
+    virtual void setSignalQuantityModifyable(bool tf, const size_t dataId=Value)
+    {
+        mDataDescriptions[dataId].userModifiableQuantity = tf;
+    }
+
+    virtual HString getSignalQuantity(const size_t dataId=Value) const
+    {
+        return mDataDescriptions[dataId].quantity;
+    }
+
+    virtual bool getSignalQuantityModifyable(const size_t dataId=Value) const
+    {
+        return mDataDescriptions[dataId].userModifiableQuantity;
+    }
+
+protected:
+    NodeSignalND() : Node(1)
+    {
+        // This is the default setup, dynamic reconfiguration is possible
+        setNiceName("signal1d");
+        setDataCharacteristics(0, "v1", "y1", "");
+    }
+};
+
+//! @brief The 2d signal node
+//! @ingroup NodeSignal
+class NodeSignal2D :public NodeSignalND
+{
+public:
+    //! @ingroup NodeSignal
+    static Node* CreatorFunction() {return new NodeSignal2D;}
+
+private:
+    NodeSignal2D() : NodeSignalND()
+    {
+        setSignalNumDimensions(2);
+    }
+};
+
+//! @brief The 3d signal node
+//! @ingroup NodeSignal
+class NodeSignal3D :public NodeSignalND
+{
+public:
+    //! @ingroup NodeSignal
+    static Node* CreatorFunction() {return new NodeSignal3D;}
+
+private:
+    NodeSignal3D() : NodeSignalND()
+    {
+        setSignalNumDimensions(3);
     }
 };
 

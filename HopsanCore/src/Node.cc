@@ -78,6 +78,12 @@ Node::~Node()
     // Nothing special, but needed to prevent warning about undefined behaviour
 }
 
+void Node::setSignalNumDimensions(const size_t numDims)
+{
+    HOPSAN_UNUSED(numDims)
+            // Do nothing by default
+}
+
 
 //!
 //! @brief returns the node type
@@ -154,26 +160,30 @@ const NodeDataDescription* Node::getDataDescription(const size_t id) const
 }
 
 //! @brief This function can be used to set unit string and displayName for signal nodes ONLY
-void Node::setSignalQuantity(const HString &rQuantity, const HString &rUnit)
+void Node::setSignalQuantity(const HString &rQuantity, const HString &rUnit, const size_t dataId)
 {
     HOPSAN_UNUSED(rQuantity);
     HOPSAN_UNUSED(rUnit);
+    HOPSAN_UNUSED(dataId);
     // Do nothing by default
 }
 
-void Node::setSignalQuantityModifyable(bool tf)
+void Node::setSignalQuantityModifyable(bool tf, const size_t dataId)
 {
     HOPSAN_UNUSED(tf);
+    HOPSAN_UNUSED(dataId);
     // Do nothing by default
 }
 
-HString Node::getSignalQuantity() const
+HString Node::getSignalQuantity(const size_t dataId) const
 {
+    HOPSAN_UNUSED(dataId);
     return "";
 }
 
-bool Node::getSignalQuantityModifyable() const
+bool Node::getSignalQuantityModifyable(const size_t dataId) const
 {
+    HOPSAN_UNUSED(dataId);
     return false;
 }
 

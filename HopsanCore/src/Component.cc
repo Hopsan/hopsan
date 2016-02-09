@@ -763,26 +763,32 @@ Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType
     //! @todo for ordinary components give an error message, users rarely check debug messages
 
     Port* pNewPort = createPort(portType, rNodeType, newname, this);
-
-    //Set whether the port must be connected before simulation
-    if (reqConnection == Port::NotRequired)
+    if (pNewPort)
     {
-        //! @todo maybe use a string for OPTIONAL instead, to reduce the number of compile time dependencies, will need to think about that a bit more
-        pNewPort->mConnectionRequired = false;
+        //Set whether the port must be connected before simulation
+        if (reqConnection == Port::NotRequired)
+        {
+            //! @todo maybe use a string for OPTIONAL instead, to reduce the number of compile time dependencies, will need to think about that a bit more
+            pNewPort->mConnectionRequired = false;
+        }
+
+        // Store the port in the port map, for faster port by name lookup
+        mPortPtrMap.insert(PortPtrPairT(newname, pNewPort));
+        // Store the port in the vector, to remember the order of added ports (useful when retrieving variameters)
+        mPortPtrVector.push_back(pNewPort);
+
+        //Signal automatic name change
+        if (newname != rPortName)
+        {
+            addDebugMessage("Automatically changed name of added port from: {" + rPortName + "} to {" + newname + "}");
+        }
+
+        pNewPort->setDescription(rDescription);
     }
-
-    // Store the port in the port map, for faster port by name lookup
-    mPortPtrMap.insert(PortPtrPairT(newname, pNewPort));
-    // Store the port in the vector, to remember the order of added ports (useful when retrieving variameters)
-    mPortPtrVector.push_back(pNewPort);
-
-    //Signal automatic name change
-    if (newname != rPortName)
+    else
     {
-        addDebugMessage("Automatically changed name of added port from: {" + rPortName + "} to {" + newname + "}");
+        addErrorMessage("Could not create port of type: "+portTypeToString(portType));
     }
-
-    pNewPort->setDescription(rDescription);
     return pNewPort;
 }
 

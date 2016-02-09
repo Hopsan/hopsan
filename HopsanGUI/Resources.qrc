@@ -156,5 +156,6 @@
         <file>graphics/uiicons/Hopsan-FolderModelica.png</file>
         <file>graphics/uiicons/Hopsan-StopSimulation.png</file>
         <file>graphics/uiicons/Hopsan-SimulateRemote.png</file>
+        <file>graphics/porticons/SignalPortBiDirectional.svg</file>
     </qresource>
 </RCC>

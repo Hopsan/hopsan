@@ -31,6 +31,7 @@
 //$Id$
 #include "Nodes.h"
 #include "Port.h"
+#include "ComponentUtilities/num2string.hpp"
 
 //! @defgroup Nodes Nodes
 
@@ -70,6 +71,9 @@ using namespace hopsan;
 void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
 {
     pNodeFactory->registerCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeSignalND", NodeSignalND::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeSignal2D", NodeSignal2D::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeSignal3D", NodeSignal3D::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeHydraulicTemperature", NodeHydraulicTemperature::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodePneumatic", NodePneumatic::CreatorFunction);
@@ -79,4 +83,23 @@ void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
     pNodeFactory->registerCreatorFunction("NodeMechanic2D", NodeMechanic2D::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeModelica", NodeModelica::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeEmpty", NodeEmpty::CreatorFunction);
+}
+
+void NodeSignalND::setSignalNumDimensions(size_t numDims)
+{
+    // Resize
+    mDataDescriptions.resize(numDims);
+    mDataValues.resize(numDims,0.0);
+
+    // Set name
+    HString nicename = "signal"+to_hstring(numDims)+"d";
+    setNiceName(nicename);
+
+    // Re-register data variables
+    for (size_t i=0; i<numDims; ++i)
+    {
+        HString longname = "v"+to_hstring(i);
+        HString shortname = "y"+to_hstring(i);
+        setDataCharacteristics(i, longname, shortname, "");
+    }
 }

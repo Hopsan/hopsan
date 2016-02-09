@@ -52,7 +52,12 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
     mMainIconPath.clear();
 
     mMainIconPath = QString(PORTICONPATH);
-    if (nodetype == "NodeSignal")
+    if (porttype == "BiDirectionalSignalPortType")
+    {
+        mMainIconPath.append("SignalPortBiDirectional");
+        mCQSOverlayPath.clear();
+    }
+    else if (nodetype == "NodeSignal")
     {
         mMainIconPath.append("SignalPort");
         if ( porttype == "ReadPortType" || porttype == "ReadMultiportType")

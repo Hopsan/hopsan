@@ -247,6 +247,7 @@ protected:
     void initializeAutoSignalNodeDataPtrs();
 
     // Port functions
+    Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection);
     Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
@@ -278,7 +279,6 @@ private:
     void setSystemParent(ComponentSystem *pComponentSystem);
     void setTypeName(const HString &rTypeName);
     double *getNodeDataPtr(Port* pPort, const int dataId);
-    Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection);
 
     // Parameter registration
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, double &rValue);

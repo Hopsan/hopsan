@@ -846,6 +846,12 @@ PowerPort::PowerPort(const HString &rNodeType, const HString &rPortName, Compone
     }
 }
 
+BiDirectionalSignalPort::BiDirectionalSignalPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
+    Port(rNodeType, rPortName, pParentComponent, pParentPort)
+{
+    //createStartNode(rNodeType);
+}
+
 
 ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
@@ -1236,6 +1242,9 @@ Port* hopsan::createPort(const PortTypesEnumT portType, const HString &rNodeType
     case WritePortType :
         return new WritePort(rNodeType, rName, pParentComponent, pParentPort);
         break;
+    case BiDirectionalSignalPortType :
+        return new BiDirectionalSignalPort(rNodeType, rName, pParentComponent, pParentPort);
+        break;
     case ReadPortType :
         return new ReadPort(rNodeType, rName, pParentComponent, pParentPort);
         break;
@@ -1262,6 +1271,9 @@ HString hopsan::portTypeToString(const PortTypesEnumT type)
     {
     case PowerPortType :
         return "PowerPortType";
+        break;
+    case BiDirectionalSignalPortType :
+        return "BiDirectionalSignalPortType";
         break;
     case ReadPortType :
         return "ReadPortType";
