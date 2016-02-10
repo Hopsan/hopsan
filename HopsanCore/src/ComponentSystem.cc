@@ -556,13 +556,14 @@ void ComponentSystem::clear()
     }
 }
 
-
+#define USENEWSORTCODE
 //! @brief Sorts a component vector
 //! Components are sorted so that they are always simulated after the components they receive signals from. Algebraic loops can be detected, in that case this function does nothing.
 bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVector)
 {
     std::vector<Component*> newComponentVector;
 
+#ifndef USENEWSORTCODE
     bool didSomething = true;
     while(didSomething)
     {
@@ -649,6 +650,105 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
         addInfoMessage("Initialize: Hint: Use unit delay components to resolve loops.");
         return false;
     }
+#else
+    bool didSomething = true;
+    while(didSomething)
+    {
+        didSomething = false;
+
+        // Loop through the unsorted component vector
+        for(size_t c=0; c<rComponentVector.size(); ++c)
+        {
+            // A pointer to an unsorted component
+            Component* pUnsrtComp = rComponentVector[c];
+            //Ignore components that are already added to the new vector
+            if(!vectorContains<Component*>(newComponentVector, pUnsrtComp))
+            {
+                bool readyToAdd=true;
+                std::vector<Port*> portVector = pUnsrtComp->getPortPtrVector();
+                // Ask each read port for its node, then ask the node for its write port component
+                for(size_t p=0; p<portVector.size(); ++p)
+                {
+                    // Take the port pointer (To make code easier to read)
+                    Port *pPort = portVector[p];
+                    Component* pRequiredComponent=0;
+
+                    SortHintEnumT sortHint = pPort->getSortHint();
+                    if ((pUnsrtComp->getTypeName() == SUBSYSTEMTYPENAME) || (pUnsrtComp->getTypeName() == CONDITIONALTYPENAME))
+                    {
+                        sortHint = pPort->getInternalSortHint();
+                    }
+                    if (sortHint == UndefinedSortHint)
+                    {
+                        addWarningMessage("Undefined sort hint in component#port: "+pUnsrtComp->getName()+" "+pPort->getName());
+                        sortHint = Destination;
+                    }
+
+                    bool isDestination = (sortHint == Destination);
+
+                    if ( isDestination && pPort->isConnected() )
+                    {
+                        Port *pSourcePort = pPort->getNodePtr()->getSortOrderSourcePort();
+                        if (pSourcePort && pSourcePort->getComponent())
+                        {
+                            pRequiredComponent = pSourcePort->getComponent();
+                        }
+                    }
+                    if(pRequiredComponent && (pRequiredComponent->getTypeName() != "SignalUnitDelay"))
+                    {
+                        if(pRequiredComponent->mpSystemParent == this)
+                        {
+                            if(!vectorContains<Component*>(newComponentVector, pRequiredComponent) &&
+                               vectorContains<Component*>(rComponentVector, pRequiredComponent))
+                            {
+                                readyToAdd = false;     //Depending on normal component which has not yet been added
+                            }
+                        }
+                        else
+                        {
+                            if(!vectorContains<Component*>(newComponentVector, pRequiredComponent->mpSystemParent) &&
+                               (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
+                               vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent))
+                            {
+                                readyToAdd = false;     //Depending on subsystem component which has not yet been added
+                            }
+                        }
+                    }
+                }
+                // Add the component if all required write port components was already added
+                if(readyToAdd)
+                {
+                    newComponentVector.push_back(pUnsrtComp);
+                    didSomething = true;
+                }
+            }
+        }
+    }
+
+    if(newComponentVector.size() == rComponentVector.size())   //All components moved to new vector = success!
+    {
+        if(newComponentVector.size() > 0 && newComponentVector[0]->getTypeCQS() == SType)
+        {
+            HString names;
+            for(size_t c=0; c<newComponentVector.size(); ++c)
+            {
+                names += newComponentVector[c]->getName()+"\n";
+            }
+            addDebugMessage("Sorted components successfully!\nSignal components will be simulated in the following order:\n" + names);
+        }
+        rComponentVector.swap(newComponentVector);
+    }
+    else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
+    {
+        addErrorMessage("Initialize: Algebraic loops was found, signal components could not be sorted.");
+        if(!newComponentVector.empty())
+        {
+            addInfoMessage("Last component that was successfully sorted: " + newComponentVector.back()->getName());
+        }
+        addInfoMessage("Initialize: Hint: Use unit delay components to resolve loops.");
+        return false;
+    }
+#endif
 
     return true;
 }

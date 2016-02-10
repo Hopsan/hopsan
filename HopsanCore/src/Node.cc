@@ -341,6 +341,18 @@ bool Node::isConnectedToPort(const Port *pPort) const
     return false;
 }
 
+Port *Node::getSortOrderSourcePort() const
+{
+    for(size_t i=0; i<mConnectedPorts.size(); ++i)
+    {
+        if(mConnectedPorts[i]->getSortHint() == Source)
+        {
+            return mConnectedPorts[i];
+        }
+    }
+    return 0;   //Return null pointer if no source port was found
+}
+
 
 //! @brief Enable node data logging
 void Node::setLoggingEnabled(bool enable)

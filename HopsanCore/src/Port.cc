@@ -57,6 +57,7 @@ Port::Port(const HString &rNodeType, const HString &rPortName, Component *pParen
     mpParentPort = pParentPort; //Only used by subports in multiports
     mConnectionRequired = true;
     mConnectedPorts.clear();
+    mSortHint = UndefinedSortHint;
     mpNode = 0;
     mpStartNode = 0;
 
@@ -735,6 +736,21 @@ PortTypesEnumT Port::getInternalPortType()
     return getPortType();
 }
 
+SortHintEnumT Port::getSortHint() const
+{
+    return mSortHint;
+}
+
+void Port::setSortHint(SortHintEnumT hint)
+{
+    mSortHint = hint;
+}
+
+SortHintEnumT Port::getInternalSortHint()
+{
+    return getSortHint();
+}
+
 
 //! @brief Get the port name
 const HString &Port::getName() const
@@ -832,6 +848,43 @@ PortTypesEnumT SystemPort::getInternalPortType()
     else
     {
         return getPortType();
+    }
+}
+
+SortHintEnumT SystemPort::getInternalSortHint()
+{
+    size_t nSources=0, nDest=0, nUndef=0;
+    std::vector<Port*>::iterator pit;
+    for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
+    {
+        Port* pPort = *pit;
+        if (pPort->getSortHint() != UndefinedSortHint)
+        {
+            if (pPort->getSortHint() == Source)
+            {
+                nSources++;
+            }
+            else if (pPort->getSortHint() == Destination)
+            {
+                nDest++;
+            }
+            else
+            {
+                nUndef++;
+            }
+        }
+    }
+    if (nSources>0)
+    {
+        return Source;
+    }
+    else if (nDest>0)
+    {
+        return Destination;
+    }
+    else
+    {
+        return UndefinedSortHint;
     }
 }
 

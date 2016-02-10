@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="Signal2DWriteRead.hpp" typename="Signal2DWriteRead" displayname="Signal2DWriteRead">
+        <icons>
+            <icon scale="1" path="Signal2DSplit.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>This block will split a 2D signal node into two 1D signal ports.</text>
+        </help>
+       <ports>
+            <port x="0" y="0.25" a="180" name="write"/>
+            <port x="0" y="0.75" a="180" name="read"/>
+            <port x="1" y="0.5" a="0" name="P2d"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

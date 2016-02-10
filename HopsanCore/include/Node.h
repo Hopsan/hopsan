@@ -113,6 +113,7 @@ public:
     size_t getNumConnectedPorts() const;
     bool isConnectedToPort(const Port *pPort) const;
 
+    Port *getSortOrderSourcePort() const;
     Component *getWritePortComponentPtr() const;
     ComponentSystem *getOwnerSystem() const;
 

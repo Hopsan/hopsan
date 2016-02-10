@@ -50,6 +50,7 @@ namespace hopsan {
     //! @brief This enum type specifies all porttypes
     // It is VERY important that the MultiPort enums comes LAST, MULTIPORT is never instantiated but enum MUST be present
     enum PortTypesEnumT {UndefinedPortType, PowerPortType, BiDirectionalSignalPortType, ReadPortType, WritePortType, SystemPortType, MultiportType, PowerMultiportType, ReadMultiportType};
+    enum SortHintEnumT {UndefinedSortHint, Source, Destination};
 
     class DLLIMPORTEXPORT Port
     {
@@ -177,6 +178,10 @@ namespace hopsan {
         virtual PortTypesEnumT getExternalPortType();
         virtual PortTypesEnumT getInternalPortType();
 
+        virtual SortHintEnumT getSortHint() const;
+        virtual void setSortHint(SortHintEnumT hint);
+        virtual SortHintEnumT getInternalSortHint();
+
         Port *getParentPort() const;
         Component* getComponent() const;
 
@@ -223,6 +228,7 @@ namespace hopsan {
         Node *mpStartNode;
         std::map<HString, size_t> mVariableAliasMap;
         bool mConnectionRequired;
+        SortHintEnumT mSortHint;
 
         const HString mEmptyString;
     };
@@ -240,6 +246,7 @@ namespace hopsan {
         PortTypesEnumT getPortType() const {return SystemPortType;}
         PortTypesEnumT getExternalPortType();
         PortTypesEnumT getInternalPortType();
+        virtual SortHintEnumT getInternalSortHint();
     };
 
 
@@ -362,6 +369,9 @@ namespace hopsan {
         void writeNodeSafe(const size_t idx, const double value, const size_t subPortIdx=0);
 //        void writeNode(const size_t idx, const double value, const size_t subPortIdx);
 
+        virtual SortHintEnumT getSortHint() const {return Destination;}
+        virtual void setSortHint(SortHintEnumT hint){HOPSAN_UNUSED(hint);}
+
         virtual void loadStartValues();
         //virtual bool hasConnectedExternalSystemWritePort();
         virtual bool isConnectedToWriteOrPowerPort();
@@ -392,6 +402,9 @@ namespace hopsan {
         ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         PortTypesEnumT getPortType() const {return ReadMultiportType;}
 
+        virtual SortHintEnumT getSortHint() const {return Source;}
+        virtual void setSortHint(SortHintEnumT hint){HOPSAN_UNUSED(hint);}
+
     protected:
         Port* addSubPort();
     };
@@ -406,6 +419,9 @@ namespace hopsan {
     public:
         WritePort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         PortTypesEnumT getPortType() const {return WritePortType;}
+
+        virtual SortHintEnumT getSortHint() const {return Source;}
+        virtual void setSortHint(SortHintEnumT hint){HOPSAN_UNUSED(hint);}
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);
