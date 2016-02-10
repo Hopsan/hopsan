@@ -67,18 +67,18 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, co
         DragPort *pDragPort;
         if (pLibraryComponentAppearance)
         {
-            pDragPort = new DragPort(it.key(), *it, pLibraryComponentAppearance->getPortAppearance(it.key()), mpSVGComponent);
+            pDragPort = new DragPort(it.key(), *(it.value()), pLibraryComponentAppearance->getPortAppearance(it.key()), mpSVGComponent);
         }
         else
         {
-            pDragPort = new DragPort(it.key(), *it, 0, mpSVGComponent);
+            pDragPort = new DragPort(it.key(), *(it.value()), SharedPortAppearanceT(0), mpSVGComponent);
         }
 
-        pDragPort->setPosOnComponent(it->x, it->y, it->rot);
+        pDragPort->setPosOnComponent(it.value()->x, it.value()->y, it.value()->rot);
         mpView->scene()->addItem(pDragPort);
         mDragPortMap.insert(it.key(), pDragPort);
 
-        bool enable =it->mEnabled;
+        bool enable = it.value()->mEnabled;
         pDragPort->setVisible(enable);
         QCheckBox *pEnabledCb = new QCheckBox(it.key(), this);
         pEnabledCb->setChecked(enable);
@@ -257,12 +257,12 @@ bool MovePortsDialog::okButtonPressed()
         PortAppearanceMapT::iterator it = mpActualPortAppearanceMap->find(ports[i]->getName());
         if (it != mpActualPortAppearanceMap->end())
         {
-            it.value().x = ports[i]->getPortAppearance().x;
-            it.value().y = ports[i]->getPortAppearance().y;
-            it.value().rot = ports[i]->getPortAppearance().rot;
-            it.value().mAutoPlaced = ports[i]->getPortAppearance().mAutoPlaced;
-            it.value().mEnabled = ports[i]->getPortAppearance().mEnabled;
-            it.value().mPoseModified = ports[i]->getPortAppearance().mPoseModified;
+            it.value()->x = ports[i]->getPortAppearance().x;
+            it.value()->y = ports[i]->getPortAppearance().y;
+            it.value()->rot = ports[i]->getPortAppearance().rot;
+            it.value()->mAutoPlaced = ports[i]->getPortAppearance().mAutoPlaced;
+            it.value()->mEnabled = ports[i]->getPortAppearance().mEnabled;
+            it.value()->mPoseModified = ports[i]->getPortAppearance().mPoseModified;
         }
         //! @todo enabled and autoplaced are set immediately so even if you select cancel they will be set
     }
@@ -283,10 +283,9 @@ bool MovePortsDialog::cancelButtonPressed()
 //! @param[in] appearance Pointer to the port appearance data of the port that should be used
 //! @param[in] name Name of the port
 //! @param[in] parentComponent Pointer to the parent component on which the port is placed on
-DragPort::DragPort(QString name, const PortAppearance &rAppearance, const PortAppearance *pOriginalAppearance, QGraphicsItem *parentComponent)
-    : QGraphicsWidget(parentComponent)
+DragPort::DragPort(QString name, const PortAppearance &rAppearance, const SharedPortAppearanceT pOriginalAppearance, QGraphicsItem *parentComponent)
+    : QGraphicsWidget(parentComponent), mpOriginalPortAppearance(pOriginalAppearance)
 {
-    mpOriginalPortAppearance = pOriginalAppearance;
     mPortAppearance = rAppearance;
     mpParentComponent = parentComponent;
     mpSvg = new QGraphicsSvgItem(mPortAppearance.mMainIconPath, this);
@@ -375,7 +374,7 @@ const PortAppearance &DragPort::getPortAppearance() const
     return mPortAppearance;
 }
 
-const PortAppearance *DragPort::getOriginalPortAppearance() const
+const SharedPortAppearanceT DragPort::getOriginalPortAppearance() const
 {
     return mpOriginalPortAppearance;
 }

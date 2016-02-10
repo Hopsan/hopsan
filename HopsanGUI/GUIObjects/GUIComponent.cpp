@@ -196,7 +196,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             mModelObjectAppearance.setIconPath(icon, UserGraphics, Absolute);
             for(int i=0; i<portPosNames.size(); ++i)
             {
-                PortAppearance *pPortAppearance = &mModelObjectAppearance.getPortAppearanceMap().find(portPosNames[i]).value();
+                SharedPortAppearanceT pPortAppearance = mModelObjectAppearance.getPortAppearanceMap().value(portPosNames[i]);
                 pPortAppearance->x = portPos[i][0];
                 pPortAppearance->y = portPos[i][1];
                 pPortAppearance->rot = portPos[i][2];
@@ -260,10 +260,10 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             {
                 PortAppearance *pPortAppearance = new PortAppearance();
                 pPortAppearance->selectPortIcon("Q", "PowerPort", "NodeModelica");
-                mModelObjectAppearance.addPortAppearance(portName, pPortAppearance);
-                mModelObjectAppearance.getPortAppearance(portName)->x = (double)rand() / (double)RAND_MAX;
-                mModelObjectAppearance.getPortAppearance(portName)->y = (double)rand() / (double)RAND_MAX;
-                mModelObjectAppearance.getPortAppearance(portName)->rot = 0;
+                pPortAppearance->x = (double)rand() / (double)RAND_MAX;
+                pPortAppearance->y = (double)rand() / (double)RAND_MAX;
+                pPortAppearance->rot = 0;
+                mModelObjectAppearance.addPortAppearance(portName, SharedPortAppearanceT(pPortAppearance));
                 this->createRefreshExternalPort(portName);
             }
 
@@ -410,11 +410,11 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
     for (Port *pPort : mPortListPtrs)
     {
         bool differentPortEnabled=false;
-        const PortAppearance *pPortAppearance = pPort->getPortAppearance();
+        const SharedPortAppearanceT pPortAppearance = pPort->getPortAppearance();
         // Check if "port enabled" different from default state in library
         if (pLibraryAppearance)
         {
-            PortAppearance *pLibraryPortAppearance = pLibraryAppearance->getPortAppearance(pPort->getName());
+            SharedPortAppearanceT pLibraryPortAppearance = pLibraryAppearance->getPortAppearance(pPort->getName());
             if (pLibraryPortAppearance && pPortAppearance)
             {
                 differentPortEnabled = pLibraryPortAppearance->mEnabled != pPortAppearance->mEnabled;

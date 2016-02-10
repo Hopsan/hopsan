@@ -75,16 +75,16 @@ void ContainerPort::createPorts()
         desiredportname = mModelObjectAppearance.getDisplayName();
     }
 
-    double x = i.value().x;
-    double y = i.value().y;
+    double x = i.value()->x;
+    double y = i.value()->y;
 
     //! @todo should make this function select a systemport icon not undefined
-    i.value().selectPortIcon("", "", "NodeEmpty");
+    i.value()->selectPortIcon("", "", "NodeEmpty");
 
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
     mName = mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname);
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mModelObjectAppearance.getDisplayName();
-    mpPort = new Port(mName, x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
+    mpPort = new Port(mName, x*boundingRect().width(), y*boundingRect().height(), i.value(), this);
 
     mPortListPtrs.append(mpPort);
     refreshDisplayName(); //Must run this after append port cause portname will also be refreshed

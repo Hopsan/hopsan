@@ -666,7 +666,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
     // Create new external port if it does not already exist (this is the usual case for components)
     if ( pPort == 0 )
     {
-        PortAppearance *pPortApp = mModelObjectAppearance.getPortAppearance(portName);
+        SharedPortAppearanceT pPortApp = mModelObjectAppearance.getPortAppearance(portName);
         // If port appearance is not already existing then we create it
         if ( !pPortApp )
         {
@@ -1719,12 +1719,12 @@ void ModelObject::refreshExternalPortsAppearanceAndPosition()
     PortAppearanceMapT::Iterator it;
     for(it=mModelObjectAppearance.getPortAppearanceMap().begin(); it != mModelObjectAppearance.getPortAppearanceMap().end(); ++it)
     {
-        Port *port = getPort(it.key());
-        if(port != 0)
+        Port *pPort = getPort(it.key());
+        if(pPort)
         {
-            port->setCenterPosByFraction(it.value().x, it.value().y);
-            port->setRotation(it.value().rot);
-            port->setEnable(it.value().mEnabled);
+            pPort->setCenterPosByFraction(it.value()->x, it.value()->y);
+            pPort->setRotation(it.value()->rot);
+            pPort->setEnable(it.value()->mEnabled);
         }
     }
     redrawConnectors();

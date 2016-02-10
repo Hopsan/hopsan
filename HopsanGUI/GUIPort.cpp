@@ -80,7 +80,7 @@ QPointF getOffsetPointfromPort(Port *pStartPort, Port *pEndPort)
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-Port::Port(QString portName, double xpos, double ypos, PortAppearance* pPortAppearance, ModelObject *pParentGUIModelObject)
+Port::Port(QString portName, double xpos, double ypos, SharedPortAppearanceT pPortAppearance, ModelObject *pParentGUIModelObject)
     : QGraphicsWidget(pParentGUIModelObject)
 {
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
@@ -138,7 +138,7 @@ Port::Port(QString portName, double xpos, double ypos, PortAppearance* pPortAppe
 Port::~Port()
 {
     //! @todo Hack, we need to mark this as 0 to avoid graphics refresh triggered from connector deleteMe in case of subsystemport (bellow), The interaction between ports and connectors should be rewritten in a smarter way
-    mpPortAppearance = 0; //
+    mpPortAppearance.clear(); //
 
     //If any connectors are present they need to be deleted also
     // We need to use while and access first element every time as Vector will be modified when connector removes itself
@@ -877,7 +877,7 @@ bool Port::isAutoPlaced()
     return mpPortAppearance->mAutoPlaced;
 }
 
-const PortAppearance *Port::getPortAppearance() const
+const SharedPortAppearanceT Port::getPortAppearance() const
 {
     return mpPortAppearance;
 }

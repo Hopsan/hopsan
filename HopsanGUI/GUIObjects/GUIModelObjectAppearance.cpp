@@ -702,24 +702,24 @@ PortAppearanceMapT &ModelObjectAppearance::getPortAppearanceMap()
     return mPortAppearanceMap;
 }
 
-const PortAppearance *ModelObjectAppearance::getPortAppearance(const QString &rPortName) const
+const SharedPortAppearanceT ModelObjectAppearance::getPortAppearance(const QString &rPortName) const
 {
     PortAppearanceMapT::const_iterator it = mPortAppearanceMap.find(rPortName);
     if (it != mPortAppearanceMap.end())
     {
-        return &it.value();
+        return it.value();
     }
-    return 0;
+    return SharedPortAppearanceT();
 }
 
-PortAppearance *ModelObjectAppearance::getPortAppearance(const QString &rPortName)
+SharedPortAppearanceT ModelObjectAppearance::getPortAppearance(const QString &rPortName)
 {
     PortAppearanceMapT::iterator it = mPortAppearanceMap.find(rPortName);
     if (it != mPortAppearanceMap.end())
     {
-        return &it.value();
+        return it.value();
     }
-    return 0;
+    return SharedPortAppearanceT();
 }
 
 
@@ -742,15 +742,15 @@ void ModelObjectAppearance::erasePortAppearance(const QString portName)
 //! @brief Adds or updates a port appearance post for a specified portname
 //! @param[in] portName The port name for the port Appearance to be added
 //! @param[in] pPortAppearance A pointer to the port Appearance to add, if 0 then a new undefined appearance will be created
-void ModelObjectAppearance::addPortAppearance(const QString portName, PortAppearance *pPortAppearance)
+void ModelObjectAppearance::addPortAppearance(const QString portName, SharedPortAppearanceT pPortAppearance)
 {
-    if (pPortAppearance == 0)
+    if (pPortAppearance)
     {
-        mPortAppearanceMap.insert(portName, PortAppearance());
+        mPortAppearanceMap.insert(portName, pPortAppearance);
     }
     else
     {
-        mPortAppearanceMap.insert(portName, *pPortAppearance);
+        mPortAppearanceMap.insert(portName, SharedPortAppearanceT(new PortAppearance()));
     }
 }
 
@@ -879,12 +879,12 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             parsePortDomElement(xmlPort, portname, portApp);
             if (mPortAppearanceMap.contains(portname))
             {
-                // We need to copy data, not replace as there may be pointers to data (which is kind of unsafe)
-                mPortAppearanceMap[portname] = portApp;
+                // We need to copy data, not replace as there may be shared pointers to existing data
+                *mPortAppearanceMap[portname].data() = portApp;
             }
             else
             {
-                mPortAppearanceMap.insert(portname, portApp);
+                mPortAppearanceMap.insert(portname, SharedPortAppearanceT(new PortAppearance(portApp)));
             }
             xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
         }
@@ -932,7 +932,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         {
             PortAppearance portApp;
             parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
-            mPortAppearanceMap.insert(portname, portApp);
+            mPortAppearanceMap.insert(portname, SharedPortAppearanceT(new PortAppearance(portApp)));
             xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
         }
         // There should only be one <ports>, but lets check for more just in case
@@ -963,7 +963,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     {
         PortAppearance portApp;
         parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
-        mPortAppearanceMap.insert(portname, portApp);
+        mPortAppearanceMap.insert(portname, SharedPortAppearanceT(new PortAppearance(portApp)));
         xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
     }
 
@@ -1058,7 +1058,7 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
-        appendPortDomElement(xmlPorts, pit.key(), pit.value());
+        appendPortDomElement(xmlPorts, pit.key(), *pit.value().data());
     }
 
     QDomElement xmlAnimation;
@@ -1083,7 +1083,11 @@ void ModelObjectAppearance::saveSpecificPortsToDomElement(QDomElement &rDomEleme
     QDomElement xmlPorts = getOrAppendNewDomElement(xmlModelObject, CAF_PORTS);
     for (const QString &portName : rPortNames)
     {
-        appendPortDomElement(xmlPorts, portName, mPortAppearanceMap.value(portName));
+        const SharedPortAppearanceT pData = mPortAppearanceMap.value(portName);
+        if (pData)
+        {
+            appendPortDomElement(xmlPorts, portName, *pData.data());
+        }
     }
 }
 

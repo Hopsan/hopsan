@@ -321,9 +321,12 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             else
             {
                 //! @todo it would be nice if a port pos could be set directly from appearance data with help function
-                PortAppearanceMapT::iterator pamit = mModelObjectAppearance.getPortAppearanceMap().find(pPort->getName());
-                pPort->setCenterPosByFraction(pamit.value().x, pamit.value().y);
-                pPort->setRotation(pamit.value().rot);
+                SharedPortAppearanceT pPA = mModelObjectAppearance.getPortAppearanceMap().value(pPort->getName());
+                if (pPA)
+                {
+                    pPort->setCenterPosByFraction(pPA->x, pPA->y);
+                    pPort->setRotation(pPA->rot);
+                }
                 this->createRefreshExternalPort(moit.value()->getName()); //Refresh for ports that are not autoplaced
             }
         }
@@ -461,52 +464,55 @@ GraphicsViewPort ContainerObject::getGraphicsViewport() const
 //! @todo massive duplicate implementation with the one in modelobject
 Port *ContainerObject::createRefreshExternalPort(QString portName)
 {
-    //If port appearance is not already existing then we create it
-    if ( mModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
+    // If port appearance is not already existing then we create it
+    if ( !mModelObjectAppearance.getPortAppearanceMap().contains(portName) )
     {
         mModelObjectAppearance.addPortAppearance(portName);
     }
 
-    //Fetch appearance data
-    PortAppearanceMapT::iterator it = mModelObjectAppearance.getPortAppearanceMap().find(portName);
-
-    //Create new external port if it does not already exist (this is the usual case for individual components)
-    Port *pPort = this->getPort(it.key());
-    if ( pPort == 0 )
+    // Fetch appearance data
+    Port *pPort=0;
+    SharedPortAppearanceT pPA = mModelObjectAppearance.getPortAppearanceMap().value(portName);
+    if (pPA)
     {
-        qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
-
-        //! @todo to minimize search time make a get porttype  and nodetype function, we need to search twice now
-        QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
-        QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
-        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
-
-        double x = it.value().x;
-        double y = it.value().y;
-        //qDebug() << "x,y: " << x << " " << y;
-
-        pPort = new Port(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
-
-        mPortListPtrs.append(pPort);
-
-        pPort->refreshPortGraphics();
-    }
-    else
-    {
-
-        // The external port already seems to exist, lets update it in case something has changed
-        //! @todo Maybe need to have a refresh port appearance function, don't really know if this will ever be used though, will fix when it becomes necessary
-        pPort->refreshPortGraphics();
-
-        // In this case of container object, also refresh any attached connectors, if types have changed
-        //! @todo we always update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
-        QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
-        for (int i=0; i<connectors.size(); ++i)
+        // Create new external port if it does not already exist (this is the usual case for individual components)
+        pPort = this->getPort(portName);
+        if ( pPort == 0 )
         {
-            connectors[i]->refreshConnectorAppearance();
-        }
+            qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
 
-        qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
+            //! @todo to minimize search time make a get porttype  and nodetype function, we need to search twice now
+            QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(portName, portName);
+            QString portType = this->getCoreSystemAccessPtr()->getPortType(portName, portName);
+            pPA->selectPortIcon(getTypeCQS(), portType, nodeType);
+
+            double x = pPA->x;
+            double y = pPA->y;
+            //qDebug() << "x,y: " << x << " " << y;
+
+            pPort = new Port(portName, x*boundingRect().width(), y*boundingRect().height(), pPA, this);
+
+            mPortListPtrs.append(pPort);
+
+            pPort->refreshPortGraphics();
+        }
+        else
+        {
+
+            // The external port already seems to exist, lets update it in case something has changed
+            //! @todo Maybe need to have a refresh port appearance function, don't really know if this will ever be used though, will fix when it becomes necessary
+            pPort->refreshPortGraphics();
+
+            // In this case of container object, also refresh any attached connectors, if types have changed
+            //! @todo we always update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
+            QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
+            for (int i=0; i<connectors.size(); ++i)
+            {
+                connectors[i]->refreshConnectorAppearance();
+            }
+
+            qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << portName << " in: " << this->getName();
+        }
     }
 
     return pPort;
@@ -527,9 +533,9 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
         if ((*plit)->getName() == oldName )
         {
             //Rename the port appearance data by remove and re-add
-            PortAppearance tmp = mModelObjectAppearance.getPortAppearanceMap().value(oldName);
+            SharedPortAppearanceT tmp = mModelObjectAppearance.getPortAppearanceMap().value(oldName);
             mModelObjectAppearance.erasePortAppearance(oldName);
-            mModelObjectAppearance.addPortAppearance(newName, &tmp);
+            mModelObjectAppearance.addPortAppearance(newName, tmp);
 
             //Rename port
             (*plit)->setDisplayName(newName);

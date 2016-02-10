@@ -36,6 +36,7 @@
 
 #include <QString>
 #include <QHash>
+#include <QSharedPointer>
 
 class PortAppearance
 {
@@ -52,6 +53,8 @@ public:
     bool mPoseModified;
 };
 
-typedef QHash<QString, PortAppearance> PortAppearanceMapT;
+typedef QSharedPointer<PortAppearance> SharedPortAppearanceT;
+typedef QHash<QString, SharedPortAppearanceT> PortAppearanceMapT;
+
 
 #endif // GUIPORTAPPEARANCE_H

@@ -57,7 +57,7 @@ class Port :public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    Port(QString name, double xpos, double ypos, PortAppearance* pPortAppearance, ModelObject *pParent = 0);
+    Port(QString name, double xpos, double ypos, SharedPortAppearanceT pPortAppearance, ModelObject *pParent = 0);
     ~Port();
 
     ContainerObject *getParentContainerObject();
@@ -100,7 +100,7 @@ public:
     bool isConnected();
     bool isAutoPlaced();
 
-    const PortAppearance* getPortAppearance() const;
+    const SharedPortAppearanceT getPortAppearance() const;
 
 public slots:
     void showIfNotConnected(bool doShow=true);
@@ -137,7 +137,7 @@ private:
 
     ModelObject *mpParentModelObject;
 
-    PortAppearance *mpPortAppearance;
+    SharedPortAppearanceT mpPortAppearance;
     PortAppearance mPortAppearanceAfterLastRefresh;
     QString mPortDisplayName;
 

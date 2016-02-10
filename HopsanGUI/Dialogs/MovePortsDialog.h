@@ -107,14 +107,14 @@ class DragPort : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    DragPort(QString name, const PortAppearance &rAppearance, const PortAppearance *pOriginalAppearance, QGraphicsItem *parentComponent);
+    DragPort(QString name, const PortAppearance &rAppearance, const SharedPortAppearanceT pOriginalAppearance, QGraphicsItem *parentComponent);
 
     void setPosOnComponent(double x, double y, double rot);
     QPointF getPosOnComponent();
     double getPortRotation();
     QString getName();
     const PortAppearance &getPortAppearance() const;
-    const PortAppearance *getOriginalPortAppearance() const;
+    const SharedPortAppearanceT getOriginalPortAppearance() const;
 
 public slots:
     void reset();
@@ -137,7 +137,7 @@ private:
     void refreshLocalAppearanceData();
 
     PortAppearance mPortAppearance;
-    const PortAppearance *mpOriginalPortAppearance;
+    const SharedPortAppearanceT mpOriginalPortAppearance;
     QGraphicsItem *mpParentComponent;
     QGraphicsSvgItem *mpSvg;
     QGraphicsTextItem *mpName;

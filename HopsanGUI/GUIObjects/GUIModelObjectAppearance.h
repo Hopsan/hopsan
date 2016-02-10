@@ -256,10 +256,10 @@ public:
 
     
     PortAppearanceMapT &getPortAppearanceMap();
-    const PortAppearance *getPortAppearance(const QString &rPortName) const;
-    PortAppearance *getPortAppearance(const QString &rPortName);
+    const SharedPortAppearanceT getPortAppearance(const QString &rPortName) const;
+    SharedPortAppearanceT getPortAppearance(const QString &rPortName);
     void erasePortAppearance(const QString portName);
-    void addPortAppearance(const QString portName, PortAppearance *pPortAppearance=0);
+    void addPortAppearance(const QString portName, SharedPortAppearanceT pPortAppearance=SharedPortAppearanceT());
 
     bool hasIcon(const GraphicsTypeEnumT gfxType);
     bool iconValid(const GraphicsTypeEnumT gfxType) const;
