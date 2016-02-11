@@ -6,11 +6,16 @@
 
 namespace numhop {
 
-const std::string allOperators="=+-*/^";
-const std::string operatorsNotAllowedAfterEqualSign="=*/^";
-const std::string operatorsNotPME="*/^";
+const std::string allOperators="=+-*/^<>&|";
+const std::string operatorsNotAllowedAfterEqualSign="=*/^<>&|";
+const std::string operatorsNotPME="*/^<>&|";
 
 // Internal help functions
+inline double boolify(const double v)
+{
+    if (v>0.5) {return 1.;} return 0.;
+}
+
 inline bool checkOperatorsNexttoEqualSign(size_t e, const std::string &expr)
 {
     if ( (int(e) < int(expr.size())-1) && contains(operatorsNotAllowedAfterEqualSign, expr[e+1]) )
@@ -126,6 +131,15 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                     breakpts.push_back(e);
                 }
             }
+            else if ( (c == '|') && contains(evalOperators, '|') )
+            {
+                foundOperator=true;
+                foundOperatorAtThisLocation=true;
+                if (e!=0)
+                {
+                    breakpts.push_back(e);
+                }
+            }
             else if ( (c == '*') && contains(evalOperators, '*') )
             {
                 foundOperator=true;
@@ -138,7 +152,25 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                 foundOperatorAtThisLocation=true;
                 breakpts.push_back(e);
             }
+            else if ( (c == '&') && contains(evalOperators, '&') )
+            {
+                foundOperator=true;
+                foundOperatorAtThisLocation=true;
+                breakpts.push_back(e);
+            }
             else if ( (c == '^') && contains(evalOperators, '^') )
+            {
+                foundOperator=true;
+                foundOperatorAtThisLocation=true;
+                breakpts.push_back(e);
+            }
+            else if ( (c == '<') && contains(evalOperators, '<') )
+            {
+                foundOperator=true;
+                foundOperatorAtThisLocation=true;
+                breakpts.push_back(e);
+            }
+            else if ( (c == '>') && contains(evalOperators, '>') )
             {
                 foundOperator=true;
                 foundOperatorAtThisLocation=true;
@@ -158,23 +190,32 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
     // Add expression
     if (foundOperator)
     {
-        if (contains(evalOperators, "+-"))
+        if (contains(evalOperators, "+-|"))
         {
             for (size_t bp=0; bp<breakpts.size()-1; ++bp)
             {
                 std::string left = exprString.substr(breakpts[bp], breakpts[bp+1]-breakpts[bp]);
-                char sign = stripInitialSign(left);
-                if (sign == '-')
+                //char op = stripInitialSign(left);
+                char op = left[0];
+                if (op == '-')
                 {
-                    rExprList.push_back(Expression(left, SubtractionT));
+                    rExprList.push_back(Expression(left.substr(1), SubtractionT));
                 }
-                else if (sign == '+')
+                else if (op == '+')
+                {
+                    rExprList.push_back(Expression(left.substr(1), AdditionT));
+                }
+                else if (op == '|')
+                {
+                    rExprList.push_back(Expression(left.substr(1), OrT));
+                }
+                else
                 {
                     rExprList.push_back(Expression(left, AdditionT));
                 }
             }
         }
-        else if (contains(evalOperators, "*/"))
+        else if (contains(evalOperators, "*/&"))
         {
             for (size_t bp=0; bp<breakpts.size()-1; ++bp)
             {
@@ -188,13 +229,17 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                 {
                     rExprList.push_back(Expression(left.substr(1), MultiplicationT));
                 }
+                else if (op == '&')
+                {
+                    rExprList.push_back(Expression(left.substr(1), AndT));
+                }
                 else
                 {
                     rExprList.push_back(Expression(left, AdditionT));
                 }
             }
         }
-        else if (contains(evalOperators, "=^"))
+        else if (contains(evalOperators, "=^<>"))
         {
             if (breakpts.size() == 3)
             {
@@ -205,9 +250,17 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                 {
                     rExprList.push_back(Expression(left, right.substr(1), AssignmentT));
                 }
-                else
+                else if (op == '^')
                 {
                     rExprList.push_back(Expression(left, right.substr(1), PowerT));
+                }
+                else if (op == '<')
+                {
+                    rExprList.push_back(Expression(left, right.substr(1), LessThenT));
+                }
+                else
+                {
+                    rExprList.push_back(Expression(left, right.substr(1), GreaterThenT));
                 }
             }
             else
@@ -231,13 +284,13 @@ bool interpretExpressionStringRecursive(std::string exprString, std::list<Expres
     branchOK = branchExpressionOnOperator(exprString, "=", rExprList);
     if (branchOK && rExprList.empty())
     {
-        branchOK = branchExpressionOnOperator(exprString, "+-", rExprList);
+        branchOK = branchExpressionOnOperator(exprString, "+-|", rExprList);
         if (branchOK && rExprList.empty())
         {
-            branchOK = branchExpressionOnOperator(exprString, "*/", rExprList);
+            branchOK = branchExpressionOnOperator(exprString, "*/&", rExprList);
             if (branchOK && rExprList.empty())
             {
-                branchOK = branchExpressionOnOperator(exprString, "^", rExprList);
+                branchOK = branchExpressionOnOperator(exprString, "^<>", rExprList);
                 if (branchOK && rExprList.empty())
                 {
                     // This must be a value
@@ -481,6 +534,20 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
         double exp = mRightChildExpressions.front().evaluate(rVariableStorage, rhsOK);
         value = pow(base,exp);
     }
+    else if (mOperator == LessThenT)
+    {
+        // Evaluate both sides
+        double l = mLeftChildExpressions.front().evaluate(rVariableStorage, lhsOK);
+        double r = mRightChildExpressions.front().evaluate(rVariableStorage, rhsOK);
+        value = double(l<r);
+    }
+    else if (mOperator == GreaterThenT)
+    {
+        // Evaluate both sides
+        double l = mLeftChildExpressions.front().evaluate(rVariableStorage, lhsOK);
+        double r = mRightChildExpressions.front().evaluate(rVariableStorage, rhsOK);
+        value = double(l>r);
+    }
     else
     {
         lhsOK=true;
@@ -505,9 +572,22 @@ double Expression::evaluate(VariableStorage &rVariableStorage, bool &rEvalOK)
             {
                 value /= newValue;
             }
-            else if (optype == ValueT || optype == AssignmentT || optype == PowerT)
+            else if (optype == OrT)
+            {
+                value = boolify(boolify(value)+boolify(newValue));
+            }
+            else if (optype == AndT)
+            {
+                value = boolify(value)*boolify(newValue);
+            }
+            else if (optype != UndefinedT)
             {
                 value = newValue;
+            }
+            else
+            {
+                rEvalOK=false;
+                return value;
             }
             // If evaluation error in child expression, abort and return false
             if (!rhsOK)
@@ -550,6 +630,34 @@ std::string Expression::print()
         }
         fullexp = l+"^"+r;
     }
+    else if (mOperator == LessThenT)
+    {
+        std::string l = mLeftChildExpressions.front().print();
+        std::string r = mRightChildExpressions.front().print();
+        if (mHadLeftOuterParanthesis)
+        {
+            l="("+l+")";
+        }
+        if (mHadRightOuterParanthesis)
+        {
+            r="("+r+")";
+        }
+        fullexp = l+"<"+r;
+    }
+    else if (mOperator == GreaterThenT)
+    {
+        std::string l = mLeftChildExpressions.front().print();
+        std::string r = mRightChildExpressions.front().print();
+        if (mHadLeftOuterParanthesis)
+        {
+            l="("+l+")";
+        }
+        if (mHadRightOuterParanthesis)
+        {
+            r="("+r+")";
+        }
+        fullexp = l+">"+r;
+    }
     else if (mHasValue)
     {
         fullexp = mRightExpressionString;
@@ -579,6 +687,14 @@ std::string Expression::print()
             else if (optype == DivisionT)
             {
                 fullexp += "/";
+            }
+            else if (optype == OrT)
+            {
+                fullexp += "|";
+            }
+            else if (optype == AndT)
+            {
+                fullexp += "&";
             }
             fullexp += it->print();
         }

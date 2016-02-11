@@ -85,6 +85,11 @@ int main()
 
     expr.push_back("2--3; 1+-3; 1-+3; 1++3; 1---3");
 
+    expr.push_back("2<3; 2<2; 4.2>2.5; (-4.2)>3; -4.2>3");
+    expr.push_back("1|0; 0|0; 0|0|0|1; 1|1|1|1|1; 2|3|0; (-2)|3; (-1)|(-2) ");
+    expr.push_back("1&0; 0&0; (-1)&1.5; 1&1; 1&1&1&0.4; 1&0&1");
+    expr.push_back("2<3|4<2; 2<3&4<2; 2<3&4>2; x=2.5; (x>2&x<3)*1+(x>3&x<4)*2; x=3.6; (x>2&x<3)*1+(x>3&x<4)*2; ");
+
     expr.push_back("#The following will (should) not work!\n 2*-2; a += 5; 1+1-; = 5; 0.5huj");
 
     for (size_t i=0; i<expr.size(); ++i)

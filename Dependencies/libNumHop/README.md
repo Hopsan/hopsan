@@ -5,7 +5,9 @@ It interprets strings with mathematical expressions and allows creation and read
 
 Internal variables are local within the library, external variables are such variables that may be present in some other code using this library.
 
-The library supports the following operators: = + - * / ^ and expressions within ()
+The library supports the following mathematical operators: = + - * / ^ and expressions within ()
+Boolean operators: < > | & (less then, greater then, or, and) are also supported.
+Note! For an expression like -4 < -3 you need to place the values in parenthesis like this: (-4) < (-3) or use variables
 Scripts can have LF, CRLF or CR line endings
 
 

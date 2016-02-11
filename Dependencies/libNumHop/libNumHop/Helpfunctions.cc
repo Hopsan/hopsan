@@ -132,7 +132,7 @@ bool stripLeadingTrailingParanthesis(string &rString, bool &rDidStrip)
 
 //! @brief Strip the initial sign character (if it exists)
 //! @param[in,out] rString The string to process
-//! @returns + or - char, representing the sign of string (+ if no sign found)
+//! @returns + or - char, representing the sign of string (first character if no sign found)
 char stripInitialSign(string &rString)
 {
     if (!rString.empty())
@@ -146,8 +146,9 @@ char stripInitialSign(string &rString)
         {
             rString.erase(0,1);
         }
+        return rString[0];
     }
-    return '+';
+    return ' ';
 }
 
 //! @brief Strip the initial + sign character (if it exists)

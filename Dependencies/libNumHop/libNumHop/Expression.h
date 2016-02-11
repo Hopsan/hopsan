@@ -7,7 +7,9 @@
 
 namespace numhop {
 
-enum ExpressionOperatorT {AssignmentT, AdditionT, SubtractionT, MultiplicationT, DivisionT, PowerT, ValueT, UndefinedT};
+enum ExpressionOperatorT {AssignmentT, AdditionT, SubtractionT, MultiplicationT,
+                          DivisionT, PowerT, LessThenT, GreaterThenT, OrT, AndT,
+                          ValueT, UndefinedT};
 
 class Expression
 {
