@@ -9,7 +9,7 @@ from time import sleep
 
 # -------------------- Setup Start --------------------
 # Version numbers
-gBaseVersion = '0.7.x'
+gBaseVersion = '0.8.x'
 gReleaseRevision = ''
 gFullVersionName = gBaseVersion
 
