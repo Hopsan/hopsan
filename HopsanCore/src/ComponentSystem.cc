@@ -678,15 +678,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                     {
                         sortHint = pPort->getInternalSortHint();
                     }
-                    if (sortHint == UndefinedSortHint)
-                    {
-                        addWarningMessage("Undefined sort hint in component#port: "+pUnsrtComp->getName()+" "+pPort->getName());
-                        sortHint = Destination;
-                    }
 
-                    bool isDestination = (sortHint == Destination);
-
-                    if ( isDestination && pPort->isConnected() )
+                    if ( (sortHint == Destination) && pPort->isConnected() )
                     {
                         Port *pSourcePort = pPort->getNodePtr()->getSortOrderSourcePort();
                         if (pSourcePort && pSourcePort->getComponent())

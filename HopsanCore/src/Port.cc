@@ -57,7 +57,7 @@ Port::Port(const HString &rNodeType, const HString &rPortName, Component *pParen
     mpParentPort = pParentPort; //Only used by subports in multiports
     mConnectionRequired = true;
     mConnectedPorts.clear();
-    mSortHint = UndefinedSortHint;
+    mSortHint = NoSortHint;
     mpNode = 0;
     mpStartNode = 0;
 
@@ -858,7 +858,7 @@ SortHintEnumT SystemPort::getInternalSortHint()
     for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
     {
         Port* pPort = *pit;
-        if (pPort->getSortHint() != UndefinedSortHint)
+        if (pPort->getSortHint() != NoSortHint)
         {
             if (pPort->getSortHint() == Source)
             {
@@ -884,7 +884,7 @@ SortHintEnumT SystemPort::getInternalSortHint()
     }
     else
     {
-        return UndefinedSortHint;
+        return NoSortHint;
     }
 }
 
