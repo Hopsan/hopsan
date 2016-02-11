@@ -52,6 +52,16 @@ HString::HString(const char *str)
     setString(str);
 }
 
+//! @brief This constructor is used to catch mistakes made by Hospan component developers
+HString::HString(const int value)
+{
+    (void)value;
+    mpDataBuffer=0;
+    mSize=0;
+    setString("Error: Creating HString from int (value)");
+    //! @todo maybe support constructing HString directly from int, long int / double and such types
+}
+
 //! @brief Copy constructor
 HString::HString(const HString &rOther)
 {

@@ -45,6 +45,7 @@ public:
     HString();
     ~HString();
     HString(const char* str);
+    HString(const int value);
     HString(const HString &rOther);
     HString(const HString &rOther, size_t pos, size_t len=npos);
     void setString(const char* str);
