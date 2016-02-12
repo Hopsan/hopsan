@@ -41,7 +41,7 @@ namespace Ops {
 class WorkerComplexBurmen : public WorkerComplexRF
 {
 public:
-    WorkerComplexBurmen(Evaluator *pEvaluator);
+    WorkerComplexBurmen(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
     AlgorithmT getAlgorithm();
 
     virtual void initialize();

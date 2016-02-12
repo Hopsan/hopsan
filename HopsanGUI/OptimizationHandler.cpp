@@ -76,6 +76,7 @@ OptimizationHandler::OptimizationHandler(HcomHandler *pHandler)
     mPlotPoints = false;
 
     mpEvaluator = new OptimizationEvaluator(this);
+    mpOpsMessageHandler = new OptimizationMessageHandler(this);
 
     mPrintLogFile = false;
     mPrintResultFile = true;
@@ -91,30 +92,30 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         mEvaluations = 0;
         mCurrentProgressBarPercent=0;
         mLoggedParameters.clear();
-        connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
+//        connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
         //gpOptimizationDialog->setOutputDisabled(true);
 
-        connect(mpHcomHandler, SIGNAL(aborted()), mpWorker, SLOT(abort()));
+        connect(mpHcomHandler, SIGNAL(aborted()), mpOpsMessageHandler, SLOT(abort()));
 
-        connect(mpWorker, SIGNAL(objectiveChanged(int)),    this,               SLOT(updateOutputs()));
-        connect(mpWorker, SIGNAL(objectivesChanged()),      this,               SLOT(updateOutputs()));
-        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(updateOutputs()));
-        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(updateOutputs()));
-        connect(mpWorker, SIGNAL(message(QString)),         mpMessageHandler,   SLOT(addInfoMessage(QString)));
-        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotPoints()));
-        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotParameters()));
-        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotEntropy()));
-        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotPoints()));
-        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotParameters()));
-        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotEntropy()));
-        connect(mpWorker, SIGNAL(candidateChanged(int)),    this,               SLOT(plotPoints()));
-        connect(mpWorker, SIGNAL(candidatesChanged()),      this,               SLOT(plotPoints()));
-        connect(mpWorker, SIGNAL(objectivesChanged()),      this,               SLOT(plotObjectiveValues()));
-        connect(mpWorker, SIGNAL(objectiveChanged(int)),    this,               SLOT(plotObjectiveValues()));
-        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
-        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(logAllPoints()));
-        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
-        connect(mpWorker, SIGNAL(stepCompleted(int)),       this,               SLOT(checkIfRescheduleIsNeeded()));
+//        connect(mpWorker, SIGNAL(objectiveChanged(int)),    this,               SLOT(updateOutputs()));
+//        connect(mpWorker, SIGNAL(objectivesChanged()),      this,               SLOT(updateOutputs()));
+//        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(updateOutputs()));
+//        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(updateOutputs()));
+//        connect(mpWorker, SIGNAL(message(QString)),         mpMessageHandler,   SLOT(addInfoMessage(QString)));
+//        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotPoints()));
+//        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotParameters()));
+//        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(plotEntropy()));
+//        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotPoints()));
+//        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotParameters()));
+//        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(plotEntropy()));
+//        connect(mpWorker, SIGNAL(candidateChanged(int)),    this,               SLOT(plotPoints()));
+//        connect(mpWorker, SIGNAL(candidatesChanged()),      this,               SLOT(plotPoints()));
+//        connect(mpWorker, SIGNAL(objectivesChanged()),      this,               SLOT(plotObjectiveValues()));
+//        connect(mpWorker, SIGNAL(objectiveChanged(int)),    this,               SLOT(plotObjectiveValues()));
+//        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
+//        connect(mpWorker, SIGNAL(pointsChanged()),          this,               SLOT(logAllPoints()));
+//        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
+//        connect(mpWorker, SIGNAL(stepCompleted(int)),       this,               SLOT(checkIfRescheduleIsNeeded()));
 
         mOrgSetPwdToMwdSetting = gpConfig->getBoolSetting(CFG_SETPWDTOMWD);
         mOrgProgressBarSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
@@ -340,7 +341,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerNelderMead(mpEvaluator);
+            mpWorker = new Ops::WorkerNelderMead(mpEvaluator, mpOpsMessageHandler);
         }
         else if(value == "complexrf" || value == "complex") //Use both for backwards compatibility
         {
@@ -349,7 +350,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerComplexRF(mpEvaluator);
+            mpWorker = new Ops::WorkerComplexRF(mpEvaluator, mpOpsMessageHandler);
         }
         else if(value == "complexrfp")
         {
@@ -357,7 +358,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerComplexRFP(mpEvaluator);
+            mpWorker = new Ops::WorkerComplexRFP(mpEvaluator, mpOpsMessageHandler);
         }
         else if(value == "pso" || value == "particleswarm") //Use both for backwards compatibility
         {
@@ -366,7 +367,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerParticleSwarm(mpEvaluator);
+            mpWorker = new Ops::WorkerParticleSwarm(mpEvaluator, mpOpsMessageHandler);
         }
         else if(value == "parametersweep")
         {
@@ -374,7 +375,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerParameterSweep(mpEvaluator);
+            mpWorker = new Ops::WorkerParameterSweep(mpEvaluator, mpOpsMessageHandler);
         }
         else if(value == "differentialevolution")
         {
@@ -382,7 +383,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerDifferentialEvolution(mpEvaluator);
+            mpWorker = new Ops::WorkerDifferentialEvolution(mpEvaluator, mpOpsMessageHandler);
         }
         else if(value == "controlledrandomsearch")
         {
@@ -390,7 +391,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerControlledRandomSearch(mpEvaluator);
+            mpWorker = new Ops::WorkerControlledRandomSearch(mpEvaluator, mpOpsMessageHandler);
         }
         else if(value == "complexburmen")
         {
@@ -398,7 +399,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             {
                 delete mpWorker;
             }
-            mpWorker = new Ops::WorkerComplexBurmen(mpEvaluator);
+            mpWorker = new Ops::WorkerComplexBurmen(mpEvaluator, mpOpsMessageHandler);
         }
         return;
     }
@@ -441,7 +442,13 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
     }
     else if(var == "parnames")
     {
-        mpWorker->setParameterNames(value.split(","));
+        std::vector<const char*> cNames;
+        QStringList names = value.split(",");
+        foreach (QString name, names)
+        {
+            cNames.push_back(name.toUtf8());
+        }
+        mpWorker->setParameterNames(cNames);
     }
     else if(var == "partol")
     {
@@ -472,7 +479,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
 
     if(mpWorker->getAlgorithm() == Ops::ComplexRF || mpWorker->getAlgorithm() == Ops::ComplexRFP || mpWorker->getAlgorithm() == Ops::ComplexBurmen)
     {
-        Ops::WorkerComplexRF *pWorker = qobject_cast<Ops::WorkerComplexRF*>(mpWorker);
+        Ops::WorkerComplexRF *pWorker = dynamic_cast<Ops::WorkerComplexRF*>(mpWorker);
         if(var == "alpha")
         {
             pWorker->setReflectionFactor(value.toDouble());
@@ -489,7 +496,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
     }
     if(mpWorker->getAlgorithm() == Ops::ComplexRFP)
     {
-        Ops::WorkerComplexRFP *pWorker = qobject_cast<Ops::WorkerComplexRFP*>(mpWorker);
+        Ops::WorkerComplexRFP *pWorker = dynamic_cast<Ops::WorkerComplexRFP*>(mpWorker);
         if(var == "parallelmethod")
         {
             if(value == "taskprediction")
@@ -524,7 +531,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
     }
     else if(mpWorker->getAlgorithm() == Ops::NelderMead)
     {
-        Ops::WorkerNelderMead *pWorker = qobject_cast<Ops::WorkerNelderMead*>(mpWorker);
+        Ops::WorkerNelderMead *pWorker = dynamic_cast<Ops::WorkerNelderMead*>(mpWorker);
         if(var == "alpha")
         {
             pWorker->setReflectionFactor(value.toDouble());
@@ -544,7 +551,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
     }
     else if(mpWorker->getAlgorithm() == Ops::ParticleSwarm)
     {
-        Ops::WorkerParticleSwarm *pWorker = qobject_cast<Ops::WorkerParticleSwarm*>(mpWorker);
+        Ops::WorkerParticleSwarm *pWorker = dynamic_cast<Ops::WorkerParticleSwarm*>(mpWorker);
         if(var == "omega1")
         {
             pWorker->setOmega1(value.toDouble());
@@ -579,7 +586,7 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
     }
     else if(mpWorker->getAlgorithm() == Ops::DifferentialEvolution)
     {
-        Ops::WorkerDifferentialEvolution *pWorker = qobject_cast<Ops::WorkerDifferentialEvolution*>(mpWorker);
+        Ops::WorkerDifferentialEvolution *pWorker = dynamic_cast<Ops::WorkerDifferentialEvolution*>(mpWorker);
         if(var == "F")
         {
             pWorker->setDifferentialWeight(value.toDouble());
@@ -626,9 +633,15 @@ bool OptimizationHandler::isRunning()
     return mIsRunning;
 }
 
-QStringList *OptimizationHandler::getOptParNamesPtr()
+QStringList OptimizationHandler::getOptParNamesPtr()
 {
-    return mpWorker->getParameterNamesPtr();
+    QStringList ret;
+    std::vector<const char*> cNames;
+    for(const char* &name : cNames)
+    {
+        ret.append(QString(name));
+    }
+    return ret;
 }
 
 bool OptimizationHandler::evaluateCandidate(int idx)
@@ -990,7 +1003,7 @@ OptimizationEvaluator::OptimizationEvaluator(OptimizationHandler *pHandler)
     mpHandler = pHandler;
 }
 
-void OptimizationEvaluator::evaluateCandidate(int idx)
+void OptimizationEvaluator::evaluateCandidate(size_t idx)
 {
     mpHandler->evaluateCandidate(idx);
 }
@@ -1211,7 +1224,7 @@ void OptimizationHandler::rescheduleForBestSpeedup(int &pm, int &pa, double &su,
     Ops::AlgorithmT algo = mpWorker->getAlgorithm();
     if (algo == Ops::ComplexRFP)
     {
-        Ops::WorkerComplexRFP *pCRFPWorker = qobject_cast<Ops::WorkerComplexRFP*>(mpWorker);
+        Ops::WorkerComplexRFP *pCRFPWorker = dynamic_cast<Ops::WorkerComplexRFP*>(mpWorker);
         if (pCRFPWorker && pCRFPWorker->getParallelMethod() == Ops::TaskPrediction)
         {
             //! @todo this Crfp0... method needs replacing with new data
@@ -1259,4 +1272,59 @@ void OptimizationHandler::rescheduleForBestSpeedup(int &pm, int &pa, double &su,
         mNeedsRescheduling = false;
     }
 #endif
+}
+
+OptimizationMessageHandler::OptimizationMessageHandler(OptimizationHandler *pHandler)
+{
+    mpHandler = pHandler;
+}
+
+void OptimizationMessageHandler::printMessage(char* str)
+{
+    mpHandler->getMessageHandler()->addInfoMessage(str);
+}
+
+void OptimizationMessageHandler::pointsChanged()
+{
+    mpHandler->updateOutputs();
+    mpHandler->plotPoints();
+    mpHandler->plotParameters();
+    mpHandler->plotEntropy();
+    mpHandler->logAllPoints();
+}
+
+void OptimizationMessageHandler::pointChanged(size_t idx)
+{
+    mpHandler->updateOutputs();
+    mpHandler->plotPoints();
+    mpHandler->plotParameters();
+    mpHandler->plotEntropy();
+    mpHandler->logPoint(idx);
+}
+
+void OptimizationMessageHandler::objectivesChanged()
+{
+    mpHandler->plotObjectiveValues();
+    mpHandler->updateOutputs();
+}
+
+void OptimizationMessageHandler::objectiveChanged(size_t idx)
+{
+    mpHandler->plotObjectiveValues();
+    mpHandler->updateOutputs();
+}
+
+void OptimizationMessageHandler::candidatesChanged()
+{
+    mpHandler->plotPoints();
+}
+
+void OptimizationMessageHandler::candidateChanged(size_t idx)
+{
+    mpHandler->plotPoints();
+}
+
+void OptimizationMessageHandler::abort()
+{
+    mIsAborted = true;
 }

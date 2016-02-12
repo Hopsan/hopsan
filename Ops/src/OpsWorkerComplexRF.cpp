@@ -33,12 +33,14 @@
 
 #include "OpsWorkerComplexRF.h"
 #include "OpsEvaluator.h"
+#include "OpsMessageHandler.h"
 #include <math.h>
+#include <sstream>
 
 using namespace Ops;
 
-WorkerComplexRF::WorkerComplexRF(Evaluator *pEvaluator)
-    : WorkerSimplex(pEvaluator)
+WorkerComplexRF::WorkerComplexRF(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : WorkerSimplex(pEvaluator, pMessageHandler)
 {
     mRetractionCounter = 0;
 }
@@ -57,18 +59,19 @@ void WorkerComplexRF::initialize()
 
 void WorkerComplexRF::run()
 {
-    emit message("Running optimization with Complex-RF algorithm.");
+    mpMessageHandler->printMessage("Running optimization with Complex-RF algorithm.");
 
     distributePoints();
 
     mpEvaluator->evaluateAllPoints();
-    emit objectivesChanged();
+
+    mpMessageHandler->objectivesChanged();
 
     calculateBestAndWorstId();
 
     //Run optimization loop
     mIterationCounter=0;
-    for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
+    for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
         //Check convergence
         if(checkForConvergence()) break;
@@ -84,25 +87,28 @@ void WorkerComplexRF::run()
 
         //Reflect worst point
         mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mAlpha);
-        emit candidateChanged(0);
-        QVector<double> newPoint = mCandidatePoints[0]; //Remember the new point, in case we need to iterate below
+        mpMessageHandler->candidateChanged(0);
+        //std::vector<double> newPoint = mCandidatePoints[0]; //Remember the new point, in case we need to iterate below
 
         //Evaluate new point
         mpEvaluator->evaluateCandidate(0);
         mPoints[mWorstId] = mCandidatePoints[0];
         mObjectives[mWorstId] = mCandidateObjectives[0];
-        emit pointChanged(mWorstId);
-        emit objectiveChanged(mWorstId);
+
+        mpMessageHandler->pointChanged(mWorstId);
+        mpMessageHandler->objectiveChanged(mWorstId);
 
         calculateBestAndWorstId();
 
         //Retract until worst point is no longer the same
         mRetractionCounter = 0;
         bool doBreak = false;
-        while(mLastWorstId == mWorstId && !mIsAborted)
+        while(mLastWorstId == mWorstId && !mpMessageHandler->aborted())
         {
             ++mIterationCounter;
-            emit stepCompleted(mIterationCounter);
+
+            mpMessageHandler->stepCompleted(mIterationCounter);
+
             if(mIterationCounter>=mnMaxIterations)
             {
                 --mIterationCounter;    //Needed because for-loop will increase it by one anyway
@@ -121,21 +127,21 @@ void WorkerComplexRF::run()
             break;
         }
 
-        emit stepCompleted(mIterationCounter);
+        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
 
-    if(mIsAborted)
+    if(mpMessageHandler->aborted())
     {
-        emit message("Optimization was aborted after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization was aborted after "+std::to_string(mIterationCounter)+" iterations.");
     }
     else if(mIterationCounter == mnMaxIterations)
     {
-        emit message("Optimization failed to converge after "+QString::number(mIterationCounter)+" iterations");
+        mpMessageHandler->printMessage(std::string("Optimization failed to converge after "+std::to_string(mIterationCounter)+" iterations"));
     }
     else
     {
-        emit message("Optimization converged in parameter values after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization converged in parameter values after "+std::to_string(mIterationCounter)+" iterations.");
     }
 
     // Clean up
@@ -156,21 +162,21 @@ void WorkerComplexRF::setForgettingFactor(double value)
 
 bool WorkerComplexRF::retract()
 {
-    QVector<double> newPoint = mPoints[mWorstId];
+    std::vector<double> newPoint = mPoints[mWorstId];
 
         //Move first reflected point
     double a1 = 1.0-exp(-double(mRetractionCounter)/5.0);
-    for(int j=0; j<mNumParameters; ++j)
+    for(size_t j=0; j<mNumParameters; ++j)
     {
         double best = mPoints[mBestId][j];
         double maxDiff = getMaxPercentalParameterDiff()*10/(9.0+mRetractionCounter);
         double r = opsRand();
         mCandidatePoints[0][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0;
         mCandidatePoints[0][j] += mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
-        mCandidatePoints[0][j] = qMin(mCandidatePoints[0][j], mParameterMax[j]);
-        mCandidatePoints[0][j] = qMax(mCandidatePoints[0][j], mParameterMin[j]);
+        mCandidatePoints[0][j] = std::min(mCandidatePoints[0][j], mParameterMax[j]);
+        mCandidatePoints[0][j] = std::max(mCandidatePoints[0][j], mParameterMin[j]);
     }
-    emit candidateChanged(0);
+    mpMessageHandler->candidateChanged(0);
 
     ++mRetractionCounter;
 
@@ -178,13 +184,14 @@ bool WorkerComplexRF::retract()
     mpEvaluator->evaluateCandidate(0);
     mPoints[mWorstId] = mCandidatePoints[0];
     mObjectives[mWorstId] = mCandidateObjectives[0];
-    emit pointChanged(mWorstId);
-    emit objectiveChanged(mWorstId);
+
+    mpMessageHandler->pointChanged(mWorstId);
+    mpMessageHandler->objectiveChanged(mWorstId);
 
     calculateBestAndWorstId();
 
-    emit objectiveChanged(mWorstId);
-    emit pointChanged(mWorstId);
+    mpMessageHandler->pointChanged(mWorstId);
+    mpMessageHandler->objectiveChanged(mWorstId);
 
     return checkForConvergence();
 }
@@ -194,17 +201,16 @@ void WorkerComplexRF::applyForgettingFactor()
 {
     double maxObj = mObjectives[0];
     double minObj = mObjectives[0];
-    for(int i=0; i<mNumPoints; ++i)
+    for(size_t i=0; i<mNumPoints; ++i)
     {
         double obj = mObjectives[i];
         if(obj > maxObj) maxObj = obj;
         if(obj < minObj) minObj = obj;
     }
-    for(int i=0; i<mNumPoints; ++i)
+    for(size_t i=0; i<mNumPoints; ++i)
     {
         mObjectives[i] = mObjectives[i]+(maxObj-minObj)*mKf;
     }
-
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 }
 

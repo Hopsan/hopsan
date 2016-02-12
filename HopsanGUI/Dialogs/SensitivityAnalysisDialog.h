@@ -36,6 +36,7 @@
 
 #include "OpsEvaluator.h"
 #include "OpsWorkerParameterSweep.h"
+#include "OpsMessageHandler.h"
 
 #include <QDialog>
 
@@ -68,7 +69,7 @@ public:
     void evaluateAllCandidates();
 private:
     void plot();
-    void setParameters(QVector<QVector<double> > *pPoints);
+    void setParameters(std::vector<std::vector<double> > *pPoints);
     SensitivityAnalysisDialog *mpDialog;
     QVector<QPair<double, double> > mLimits;
     ModelWidget *mpModel;
@@ -82,10 +83,28 @@ private:
 };
 
 
+
+
+class SensitivityAnalysisMessageHandler : public QObject, public Ops::MessageHandler
+{
+    Q_OBJECT
+public:
+    SensitivityAnalysisMessageHandler(SensitivityAnalysisDialog *pDialog);
+    void stepCompleted(size_t);
+
+public slots:
+    void abort();
+
+private:
+    SensitivityAnalysisDialog *mpDialog;
+};
+
+
 class SensitivityAnalysisDialog : public QDialog
 {
     Q_OBJECT
 
+    friend class SensitivityAnalysisMessageHandler;
 public:
     SensitivityAnalysisDialog(QWidget *parent = 0);
     enum DistributionEnumT {UniformDistribution, NormalDistribution};
@@ -126,6 +145,7 @@ private:
     QRadioButton *mpUniformDistributionRadioButton;
     QRadioButton *mpNormalDistributionRadioButton;
     QProgressBar *mpProgressBar;
+    QPushButton *mpAbortButton;
 
     //Member variables
     ModelWidget *mpModel;
@@ -145,6 +165,8 @@ private:
 
     SensitivityAnalysisEvaluator *mpEvaluator;
     Ops::WorkerParameterSweep *mpWorker;
+
+    size_t mNumIterations;
 };
 
 #endif // SENSITIVITYANALYSISDIALOG_H

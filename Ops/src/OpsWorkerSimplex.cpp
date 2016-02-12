@@ -32,11 +32,11 @@
 //$Id$
 
 #include "OpsWorkerSimplex.h"
-
+#include "OpsMessageHandler.h"
 using namespace Ops;
 
-WorkerSimplex::WorkerSimplex(Evaluator *pEvaluator)
-    : Worker(pEvaluator)
+WorkerSimplex::WorkerSimplex(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : Worker(pEvaluator, pMessageHandler)
 {
 }
 
@@ -53,12 +53,12 @@ void WorkerSimplex::initialize()
 //! @param point Point to reflect
 //! @param center Point to reflect through
 //! @param alpha Reflection factor
-QVector<double> WorkerSimplex::reflect(QVector<double> point, QVector<double> center, double alpha)
+std::vector<double> WorkerSimplex::reflect(std::vector<double> point, std::vector<double> center, double alpha)
 {
-    QVector<double> newPoint;
+    std::vector<double> newPoint;
     newPoint.resize(mNumParameters);
 
-    for(int j=0; j<mNumParameters; ++j)
+    for(size_t j=0; j<mNumParameters; ++j)
     {
         //Reflect
         newPoint[j] = center[j] + (center[j]-point[j])*alpha;
@@ -67,8 +67,8 @@ QVector<double> WorkerSimplex::reflect(QVector<double> point, QVector<double> ce
         double maxDiff = getMaxPercentalParameterDiff();
         double r = (double)rand() / (double)RAND_MAX;
         newPoint[j] = newPoint[j] + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
-        newPoint[j] = qMin(newPoint[j], mParameterMax[j]);
-        newPoint[j] = qMax(newPoint[j], mParameterMin[j]);
+        newPoint[j] = std::min(newPoint[j], mParameterMax[j]);
+        newPoint[j] = std::max(newPoint[j], mParameterMin[j]);
     }
 
     return newPoint;
@@ -84,25 +84,25 @@ void WorkerSimplex::setRandomFactor(double value)
 
 void WorkerSimplex::findCentroidPoint()
 {
-    QVector< QVector<double> > points = mPoints;
-    points.remove(mWorstId);
+    std::vector< std::vector<double> > points = mPoints;
+    removeFromVector(points,mWorstId);
     WorkerSimplex::findCentroidPoint(points);
 }
 
-void WorkerSimplex::findCentroidPoint(QVector<QVector<double> > &points)
+void WorkerSimplex::findCentroidPoint(std::vector<std::vector<double> > &points)
 {
-    for(int i=0; i<mNumParameters; ++i)
+    for(size_t i=0; i<mNumParameters; ++i)
     {
         mCentroidPoint[i] = 0;
     }
-    for(int p=0; p<points.size(); ++p)
+    for(size_t p=0; p<points.size(); ++p)
     {
-        for(int i=0; i<mNumParameters; ++i)
+        for(size_t i=0; i<mNumParameters; ++i)
         {
             mCentroidPoint[i] = mCentroidPoint[i]+points[p][i];
         }
     }
-    for(int i=0; i<mNumParameters; ++i)
+    for(size_t i=0; i<mNumParameters; ++i)
     {
         mCentroidPoint[i] = mCentroidPoint[i]/double(points.size());
     }

@@ -33,12 +33,13 @@
 
 #include "OpsWorkerComplexBurmen.h"
 #include "OpsEvaluator.h"
+#include "OpsMessageHandler.h"
 #include <math.h>
 
 using namespace Ops;
 
-WorkerComplexBurmen::WorkerComplexBurmen(Evaluator *pEvaluator)
-    : WorkerComplexRF(pEvaluator)
+WorkerComplexBurmen::WorkerComplexBurmen(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : WorkerComplexRF(pEvaluator, pMessageHandler)
 {
     mRetractionCounter = 0;
 }
@@ -55,18 +56,18 @@ void WorkerComplexBurmen::initialize()
 
 void WorkerComplexBurmen::run()
 {
-    emit message("Running optimization with Complex-RF algorithm by Bürmen.");
+    mpMessageHandler->printMessage("Running optimization with Complex-RF algorithm by Bürmen.");
 
     distributePoints();
 
     mpEvaluator->evaluateAllPoints();
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 
     calculateBestAndWorstId();
 
     //Run optimization loop
     mIterationCounter=0;
-    for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
+    for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
         //Check convergence
         if(checkForConvergence()) break;
@@ -78,73 +79,72 @@ void WorkerComplexBurmen::run()
         calculateBestAndWorstId();
 
         //Find geometrical center
-        QVector<int> ids = getIdsSortedFromWorstToBest();
+        std::vector<size_t> ids = getIdsSortedFromWorstToBest();
 
-        QVector< QVector<double> > nonReflectedPoints;
-        for(int i=mNumPoints-1; i>mNumCandidates-1; --i)
+        std::vector< std::vector<double> > nonReflectedPoints;
+        for(size_t i=mNumPoints-1; i>mNumCandidates-1; --i)
         {
-            nonReflectedPoints.append(mPoints[ids[i]]);
+            nonReflectedPoints.push_back(mPoints[ids[i]]);
         }
         findCentroidPoint(nonReflectedPoints);
 
         //Reflect n worst point
-        QVector< QVector<double> > newPoints;
-        for(int i=0; i<mNumCandidates; ++i)
+        std::vector< std::vector<double> > newPoints;
+        for(size_t i=0; i<mNumCandidates; ++i)
         {
             //Reflect first point
             mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha);
-            newPoints.append(mCandidatePoints[i]);
+            newPoints.push_back(mCandidatePoints[i]);
         }
-        emit candidatesChanged();
+        mpMessageHandler->candidatesChanged();
 
         //Evaluate new points
         mpEvaluator->evaluateAllCandidates();
 
-        QVector<int> finishedCandidates;
-        for(int i=0; i<mNumCandidates; ++i)
+        std::vector<size_t> finishedCandidates;
+        for(size_t i=0; i<mNumCandidates; ++i)
         {
-            if(finishedCandidates.contains(i)) continue;
+            if(inVector(finishedCandidates,i)) continue;
             if(mCandidateObjectives[i] < mObjectives[ids[mNumCandidates]]/*mObjectives[ids[i]]*/)
             {
                 mPoints[ids[i]] = mCandidatePoints[i];
                 mObjectives[ids[i]] = mCandidateObjectives[i];
-                finishedCandidates.append(i);
+                finishedCandidates.push_back(i);
             }
         }
 
         mRetractionCounter = 0;
         bool doBreak = false;
-        while(finishedCandidates.size() != mNumCandidates && !mIsAborted)
+        while(finishedCandidates.size() != mNumCandidates && !mpMessageHandler->aborted())
         {
             ++mIterationCounter;
 
-            for(int i=0; i<mNumCandidates; ++i)
+            for(size_t i=0; i<mNumCandidates; ++i)
             {
-                if(finishedCandidates.contains(i)) continue;
+                if(inVector(finishedCandidates,i)) continue;
                 double a1 = 1.0-exp(-double(mRetractionCounter)/5.0);
-                for(int j=0; j<mNumParameters; ++j)
+                for(size_t j=0; j<mNumParameters; ++j)
                 {
                     double best = mPoints[mBestId][j];
                     double maxDiff = getMaxPercentalParameterDiff()*10/(9.0+mRetractionCounter);
                     double r = opsRand();
                     mCandidatePoints[i][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoints[i][j])/2.0;
                     mCandidatePoints[i][j] += mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
-                    mCandidatePoints[i][j] = qMin(mCandidatePoints[i][j], mParameterMax[j]);
-                    mCandidatePoints[i][j] = qMax(mCandidatePoints[i][j], mParameterMin[j]);
+                    mCandidatePoints[i][j] = std::min(mCandidatePoints[i][j], mParameterMax[j]);
+                    mCandidatePoints[i][j] = std::max(mCandidatePoints[i][j], mParameterMin[j]);
                 }
             }
-            emit candidatesChanged();
-
+            mpMessageHandler->candidatesChanged();
             mpEvaluator->evaluateAllCandidates();
 
-            for(int i=0; i<mNumCandidates; ++i)
+            for(size_t i=0; i<mNumCandidates; ++i)
             {
-                if(finishedCandidates.contains(i)) continue;
+                if(inVector(finishedCandidates,i)) continue;
                 if(mCandidateObjectives[i] < mObjectives[ids[mNumCandidates]])
                 {
                     mPoints[ids[i]] = mCandidatePoints[i];
                     mObjectives[ids[i]] = mCandidateObjectives[i];
-                    finishedCandidates.append(i);
+                    finishedCandidates.push_back(i);
                 }
                 else
                 {
@@ -165,22 +165,21 @@ void WorkerComplexBurmen::run()
         {
             break;
         }
-
-        emit stepCompleted(mIterationCounter);
+        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
 
-    if(mIsAborted)
+    if(mpMessageHandler->aborted())
     {
-        emit message("Optimization was aborted after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization was aborted after %1"+std::to_string(mIterationCounter)+" iterations.");
     }
     else if(mIterationCounter == mnMaxIterations)
     {
-        emit message("Optimization failed to converge after "+QString::number(mIterationCounter)+" iterations");
+        mpMessageHandler->printMessage("Optimization failed to converge after "+std::to_string(mIterationCounter)+" iterations");
     }
     else
     {
-        emit message("Optimization converged in parameter values after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization converged in parameter values after "+std::to_string(mIterationCounter)+" iterations.");
     }
 
     // Clean up

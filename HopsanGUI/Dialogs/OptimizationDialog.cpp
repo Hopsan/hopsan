@@ -416,7 +416,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
 
 //! @brief Updates output boxes displaying the parameters
-void OptimizationDialog::updateParameterOutputs(const QVector<double> &objectives, const QVector<QVector<double> > &values, const int bestId, const int worstId)
+void OptimizationDialog::updateParameterOutputs(const std::vector<double> &objectives, const std::vector<std::vector<double> > &values, const int bestId, const int worstId)
 {
     if(mOutputDisabled || !this->isVisible()) return;
 
@@ -1109,7 +1109,9 @@ void OptimizationDialog::generateParameterSweepScript()
     generateParameterCode(templateCode);
     generateCommonOptions(templateCode);
 
-    templateCode.replace("<<<length>>>", QString::number(mpLengthSpinBox->value()));
+    int nThreads = gpConfig->getDoubleSetting(CFG_NUMBEROFTHREADS);
+    templateCode.replace("<<<evals>>>", QString::number(mpLengthSpinBox->value()/double(nThreads)));
+    templateCode.replace("<<<nmodels>>>", QString::number(nThreads));
 
 
     mScript = templateCode;

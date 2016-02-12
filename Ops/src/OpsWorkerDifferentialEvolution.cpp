@@ -34,14 +34,14 @@
 
 #include "OpsWorkerDifferentialEvolution.h"
 #include "OpsEvaluator.h"
-
+#include "OpsMessageHandler.h"
 #include <math.h>
 
 using namespace Ops;
 
 //! @brief Initializes a particle swarm optimization
-WorkerDifferentialEvolution::WorkerDifferentialEvolution(Evaluator *pEvaluator)
-    : Worker(pEvaluator)
+WorkerDifferentialEvolution::WorkerDifferentialEvolution(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : Worker(pEvaluator, pMessageHandler)
 {
 }
 
@@ -57,30 +57,30 @@ void WorkerDifferentialEvolution::run()
 {
     if(mNumCandidates != mNumPoints)
     {
-        emit message("Error: Differential evolution algorithm requires same number of candidates and points.");
+        mpMessageHandler->printMessage("Error: Differential evolution algorithm requires same number of candidates and points.");
         return;
     }
-    emit message("Running optimization with differential evolution algorithm.");
+    mpMessageHandler->printMessage("Running optimization with differential evolution algorithm.");
 
     distributePoints();
 
     //Evaluate initial objective values
     mpEvaluator->evaluateAllPoints();
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 
     mIterationCounter=0;
-    for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
+    for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
-        for(int p=0; p<mNumPoints; ++p)
+        for(size_t p=0; p<mNumPoints; ++p)
         {
             bool feasible=false;
             while(!feasible)
             {
-                int a,b,c,R;
+                size_t a,b,c,R;
                 getRandomIds(p,a,b,c,R);
 
                 mCandidatePoints[p] = mPoints[p];
-                for(int i=0; i<mNumParameters; ++i)
+                for(size_t i=0; i<mNumParameters; ++i)
                 {
                     double r = opsRand();
                     if(r < mCR || i == R)
@@ -96,9 +96,9 @@ void WorkerDifferentialEvolution::run()
         }
 
         mpEvaluator->evaluateAllCandidates();
-        emit candidatesChanged();
+        mpMessageHandler->candidatesChanged();
 
-        for(int p=0; p<mNumPoints; ++p)
+        for(size_t p=0; p<mNumPoints; ++p)
         {
             if(mCandidateObjectives[p] < mObjectives[p])
             {
@@ -106,26 +106,26 @@ void WorkerDifferentialEvolution::run()
                 mObjectives[p] = mCandidateObjectives[p];
             }
         }
-        emit pointsChanged();
-        emit objectivesChanged();
+        mpMessageHandler->pointsChanged();
+        mpMessageHandler->objectivesChanged();
 
         //Check convergence
         if(checkForConvergence()) break;      //Use complex method, it's the same principle
 
-        emit stepCompleted(mIterationCounter);
+        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
-    if(mIsAborted)
+    if(mpMessageHandler->aborted())
     {
-        emit message("Optimization was aborted after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization was aborted after "+std::to_string(mIterationCounter)+" iterations.");
     }
     else if(mIterationCounter == mnMaxIterations)
     {
-        emit message("Optimization failed to converge after "+QString::number(mIterationCounter)+" iterations");
+        mpMessageHandler->printMessage("Optimization failed to converge after "+std::to_string(mIterationCounter)+" iterations");
     }
     else
     {
-        emit message("Optimization converged in parameter values after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization converged in parameter values after "+std::to_string(mIterationCounter)+" iterations.");
     }
 
     // Clean up
@@ -147,7 +147,7 @@ void WorkerDifferentialEvolution::setDifferentialWeight(double value)
 }
 
 
-void WorkerDifferentialEvolution::getRandomIds(int notId, int &id1, int &id2, int &id3, int &id4)
+void WorkerDifferentialEvolution::getRandomIds(size_t notId, size_t &id1, size_t &id2, size_t &id3, size_t &id4)
 {
     id1 = mNumPoints * opsRand();
     while(id1 == notId)
@@ -169,7 +169,7 @@ void WorkerDifferentialEvolution::getRandomIds(int notId, int &id1, int &id2, in
 
 bool WorkerDifferentialEvolution::isCandidateFeasible(int id)
 {
-    for(int p=0; p<mNumParameters; ++p)
+    for(size_t p=0; p<mNumParameters; ++p)
     {
         if(mCandidatePoints[id][p] > mParameterMax[p] || mCandidatePoints[id][p] < mParameterMin[p])
             return false;

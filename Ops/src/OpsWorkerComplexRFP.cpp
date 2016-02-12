@@ -33,12 +33,13 @@
 
 #include "OpsWorkerComplexRFP.h"
 #include "OpsEvaluator.h"
+#include "OpsMessageHandler.h"
 #include <math.h>
 
 using namespace Ops;
 
-WorkerComplexRFP::WorkerComplexRFP(Evaluator *pEvaluator)
-    : WorkerComplexRF(pEvaluator)
+WorkerComplexRFP::WorkerComplexRFP(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : WorkerComplexRF(pEvaluator, pMessageHandler)
 {
     mRetractionCounter = 0;
     mMethod = TaskPrediction;
@@ -63,35 +64,35 @@ void WorkerComplexRFP::run()
         mvAlpha.clear();
         if(mNumCandidates == 1)
         {
-            mvAlpha.append(mAlpha);
+            mvAlpha.push_back(mAlpha);
         }
         else if(mNumCandidates == 2)
         {
-            mvAlpha.append(mAlphaMin);
-            mvAlpha.append(mAlphaMax);
+            mvAlpha.push_back(mAlphaMin);
+            mvAlpha.push_back(mAlphaMax);
         }
         else
         {
-            for(int i=0; i<mNumCandidates; ++i)
+            for(size_t i=0; i<mNumCandidates; ++i)
             {
-                mvAlpha.append(mAlphaMin + double(i+1.0)/(double(mNumCandidates)+1.0)*(mAlphaMax-mAlphaMin));
+                mvAlpha.push_back(mAlphaMin + double(i+1.0)/(double(mNumCandidates)+1.0)*(mAlphaMax-mAlphaMin));
             }
         }
     }
 
-    emit message("Running optimization with Complex-RFP algorithm.");
+    mpMessageHandler->printMessage("Running optimization with Complex-RFP algorithm.");
 
     distributePoints();
-    emit pointsChanged();
+    mpMessageHandler->pointsChanged();
 
     mpEvaluator->evaluateAllPoints();
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 
     calculateBestAndWorstId();
 
     //Run optimization loop
     mIterationCounter=0;
-    for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
+    for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
         //Check convergence
         if(checkForConvergence()) break;
@@ -112,9 +113,10 @@ void WorkerComplexRFP::run()
         calculateBestAndWorstId();
 
         bool doBreak = false;
-        while(mLastWorstId == mWorstId && mIterationCounter<mnMaxIterations && !mIsAborted)
+        while(mLastWorstId == mWorstId && mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted())
         {
-            emit stepCompleted(mIterationCounter);
+            mpMessageHandler->stepCompleted(mIterationCounter);
+
             ++mIterationCounter;
         //! @note Always iterate multiple steps (iterateSingle() is used only for statistics)
 //            if(mMethod == TaskPrediction)
@@ -135,22 +137,22 @@ void WorkerComplexRFP::run()
         {
             break;
         }
-
-        emit stepCompleted(mIterationCounter);
+        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
 
-    if(mIsAborted)
+    if(mpMessageHandler->aborted())
     {
-        emit message("Optimization was aborted after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization was aborted after "+std::to_string(mIterationCounter)+" iterations.");
     }
     else if(mIterationCounter == mnMaxIterations)
     {
-        emit message("Optimization failed to converge after "+QString::number(mIterationCounter)+" iterations");
+
+        mpMessageHandler->printMessage("Optimization failed to converge after "+std::to_string(mIterationCounter)+" iterations.");
     }
     else
     {
-        emit message("Optimization converged in parameter values after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization converged in parameter values after "+std::to_string(mIterationCounter)+" iterations.");
     }
 
     // Clean up
@@ -193,7 +195,7 @@ void WorkerComplexRFP::setMaximumReflectionFactor(double value)
 void WorkerComplexRFP::pickCandidateParticles()
 {
 
-    for(int i=0; i<mTopLevelCandidates.size(); ++i)
+    for(size_t i=0; i<mTopLevelCandidates.size(); ++i)
     {
         delete(mTopLevelCandidates[i]);
     }
@@ -202,9 +204,9 @@ void WorkerComplexRFP::pickCandidateParticles()
 
    if(mMethod == MultiDirection)
     {
-        QVector<int> ids = getIdsSortedFromWorstToBest();
+        std::vector<size_t> ids = getIdsSortedFromWorstToBest();
 
-        for(int i=0; i<qMin(mNumPoints, mNumCandidates); ++i)
+        for(size_t i=0; i<std::min(mNumPoints, mNumCandidates); ++i)
         {
             mWorstId = ids[i];
             findCentroidPoint();
@@ -216,16 +218,16 @@ void WorkerComplexRFP::pickCandidateParticles()
             pCandidate->mpPoint = &mCandidatePoints[i];
             pCandidate->mpObjective = &mCandidateObjectives[i];
             pCandidate->idx = ids[0];
-            mTopLevelCandidates.append(pCandidate);
+            mTopLevelCandidates.push_back(pCandidate);
         }
-        emit candidatesChanged();
+        mpMessageHandler->candidatesChanged();
     }
     else if(mMethod == MultiDistance)     //Multi-distance
     {
         calculateBestAndWorstId();
         findCentroidPoint();
 
-        for(int i=0; i<mNumCandidates; ++i)
+        for(size_t i=0; i<mNumCandidates; ++i)
         {
             mCandidatePoints[i] = reflect(mPoints[mWorstId], mCentroidPoint, mvAlpha[i]);
 
@@ -233,33 +235,33 @@ void WorkerComplexRFP::pickCandidateParticles()
             pCandidate->mpPoint = &mCandidatePoints[i];
             pCandidate->mpObjective = &mCandidateObjectives[i];
             pCandidate->idx = mWorstId;
-            mTopLevelCandidates.append(pCandidate);
+            mTopLevelCandidates.push_back(pCandidate);
         }
-        emit candidatesChanged();
+        mpMessageHandler->candidatesChanged();
     }
     else if(mMethod == TaskPrediction)     //TaskPrediction
     {
         //Sort ids by objective value (worst to best)
-        QVector<int> ids = getIdsSortedFromWorstToBest();
+        std::vector<size_t> ids = getIdsSortedFromWorstToBest();
 
         Candidate *pCandidate = new Candidate();
-        mTopLevelCandidates.append(pCandidate);
+        mTopLevelCandidates.push_back(pCandidate);
 
-        QVector< QVector<double> > otherPoints = mPoints;
-        QVector< QVector<double> > centerPoints;
-        for(int i=0; i<qMin(mnPredictions, mNumCandidates); ++i)
+        std::vector< std::vector<double> > otherPoints = mPoints;
+        std::vector< std::vector<double> > centerPoints;
+        for(size_t i=0; i<std::min(mnPredictions, mNumCandidates); ++i)
         {
             if(i!=0)
             {
-                pCandidate->subCandidates.append(new Candidate());
-                pCandidate = pCandidate->subCandidates.first();
+                pCandidate->subCandidates.push_back(new Candidate());
+                pCandidate = pCandidate->subCandidates[0];
             }
 
             if(i<mNumPoints)
             {
-                otherPoints.remove(ids[i]);
+                removeFromVector(otherPoints,ids[i]);
                 findCentroidPoint(otherPoints);
-                centerPoints.append(mCentroidPoint);
+                centerPoints.push_back(mCentroidPoint);
 
                 mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha);
 
@@ -267,14 +269,14 @@ void WorkerComplexRFP::pickCandidateParticles()
                 pCandidate->mpObjective = &mCandidateObjectives[i];
                 pCandidate->idx = ids[i];
 
-                otherPoints.insert(ids[i], mCandidatePoints[i]);
+                otherPoints.insert(otherPoints.begin()+ids[i], mCandidatePoints[i]);
             }
             else
             {
-                QVector<double> worstPoint = otherPoints.at(ids[i%mNumPoints]);
-                otherPoints.remove(ids[i%mNumPoints]);
+                std::vector<double> worstPoint = otherPoints.at(ids[i%mNumPoints]);
+                removeFromVector(otherPoints,ids[i%mNumPoints]);
                 findCentroidPoint(otherPoints);
-                centerPoints.append(mCentroidPoint);
+                centerPoints.push_back(mCentroidPoint);
 
                 mCandidatePoints[i] = reflect(worstPoint, mCentroidPoint, mAlpha);
 
@@ -282,35 +284,35 @@ void WorkerComplexRFP::pickCandidateParticles()
                 pCandidate->mpObjective = &mCandidateObjectives[i];
                 pCandidate->idx = ids[i%mNumPoints];
 
-                otherPoints.insert(ids[i%mNumPoints], mCandidatePoints[i]);
+                otherPoints.insert(otherPoints.begin()+ids[i%mNumPoints], mCandidatePoints[i]);
             }
         }
 
         //Use additional threads to compute a few retraction steps from first candidate
-        int worstCounter=0;
-        int extraSteps = mNumCandidates-mnPredictions-mnRetractions;
+        size_t worstCounter=0;
+        size_t extraSteps = mNumCandidates-mnPredictions-mnRetractions;
 
-        QVector<double> newPoint = (*mTopLevelCandidates[0]->mpPoint);
-        for(int t=mnPredictions; t<qMin(mNumCandidates-extraSteps, mNumCandidates-mnPredictions); ++t)
+        std::vector<double> newPoint = (*mTopLevelCandidates[0]->mpPoint);
+        for(size_t t=mnPredictions; t<std::min(mNumCandidates-extraSteps, mNumCandidates-mnPredictions); ++t)
         {
             double a1 = 1.0-exp(-double(worstCounter)/5.0);
             findCentroidPoint();
-            for(int j=0; j<mNumParameters; ++j)
+            for(size_t j=0; j<mNumParameters; ++j)
             {
                 double best = mPoints[mBestId][j];
-                QVector<QVector<double> > points = mPoints;
+                std::vector<std::vector<double> > points = mPoints;
                 points[mWorstId] = newPoint;
                 double maxDiff = getMaxPercentalParameterDiff(points);
                 double r = opsRand();
                 mCandidatePoints[t][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
-                mCandidatePoints[t][j] = qMin(mCandidatePoints[t][j], mParameterMax[j]);
-                mCandidatePoints[t][j] = qMax(mCandidatePoints[t][j], mParameterMin[j]);
+                mCandidatePoints[t][j] = std::min(mCandidatePoints[t][j], mParameterMax[j]);
+                mCandidatePoints[t][j] = std::max(mCandidatePoints[t][j], mParameterMin[j]);
             }
 
             Candidate *pRetractionCandidate = new Candidate();
             pRetractionCandidate->mpPoint = &mCandidatePoints[t];
             pRetractionCandidate->mpObjective = &mCandidateObjectives[t];
-            mTopLevelCandidates[0]->retractions.append(pRetractionCandidate);
+            mTopLevelCandidates[0]->retractions.push_back(pRetractionCandidate);
 
             newPoint = mCandidatePoints[t];
             ++worstCounter;
@@ -318,32 +320,32 @@ void WorkerComplexRFP::pickCandidateParticles()
 
 
         //Also calculate first retraction for next extraSteps candidates
-        int centerCounter = 0;
-        if(!mTopLevelCandidates[0]->subCandidates.isEmpty())
+        size_t centerCounter = 0;
+        if(!mTopLevelCandidates[0]->subCandidates.size() == 0)
         {
             Candidate *pCandidate = mTopLevelCandidates[0]->subCandidates[0];
-            for(int i=0; i<extraSteps; ++i)
+            for(size_t i=0; i<extraSteps; ++i)
             {
                 newPoint = (*pCandidate->mpPoint);
                 int t=mNumCandidates-extraSteps+i;
                 ++centerCounter;
                 mCentroidPoint = centerPoints[centerCounter];
-                for(int j=0; j<mNumParameters; ++j)
+                for(size_t j=0; j<mNumParameters; ++j)
                 {
-                    QVector<QVector<double> > points = mPoints;
+                    std::vector<std::vector<double> > points = mPoints;
                     points[mWorstId] = newPoint;
                     double maxDiff = getMaxPercentalParameterDiff(points);
                     double r = opsRand();
                     mCandidatePoints[t][j] = (mCentroidPoint[j] + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
-                    mCandidatePoints[t][j] = qMin(mCandidatePoints[t][j], mParameterMax[j]);
-                    mCandidatePoints[t][j] = qMax(mCandidatePoints[t][j], mParameterMin[j]);
+                    mCandidatePoints[t][j] = std::min(mCandidatePoints[t][j], mParameterMax[j]);
+                    mCandidatePoints[t][j] = std::max(mCandidatePoints[t][j], mParameterMin[j]);
                 }
                 Candidate *pRetractionCandidate = new Candidate();
                 pRetractionCandidate->mpPoint = &mCandidatePoints[t];
                 pRetractionCandidate->mpObjective = &mCandidateObjectives[t];
-                pCandidate->retractions.append(pRetractionCandidate);
+                pCandidate->retractions.push_back(pRetractionCandidate);
 
-                if(!pCandidate->subCandidates.isEmpty())
+                if(!pCandidate->subCandidates.size() == 0)
                 {
                     pCandidate = pCandidate->subCandidates[0];
                 }
@@ -354,14 +356,14 @@ void WorkerComplexRFP::pickCandidateParticles()
             }
         }
 
-        emit candidatesChanged();
+        mpMessageHandler->candidatesChanged();
     }
 }
 
 void WorkerComplexRFP::examineCandidateParticles()
 {
     Candidate *pCandidate = mTopLevelCandidates[0];
-    for(int i=1; i<mTopLevelCandidates.size(); ++i)
+    for(size_t i=1; i<mTopLevelCandidates.size(); ++i)
     {
         if((*mTopLevelCandidates[i]->mpObjective) < (*pCandidate->mpObjective))
         {
@@ -374,7 +376,7 @@ void WorkerComplexRFP::examineCandidateParticles()
         applyForgettingFactor();
 
         int nWorsePoints=0;
-        for(int ptId=0; ptId<mNumPoints; ++ptId)
+        for(size_t ptId=0; ptId<mNumPoints; ++ptId)
         {
             if(mObjectives[ptId] > (*pCandidate->mpObjective))
             {
@@ -384,8 +386,8 @@ void WorkerComplexRFP::examineCandidateParticles()
 
         mPoints[pCandidate->idx] = (*pCandidate->mpPoint);
         mObjectives[pCandidate->idx] = (*pCandidate->mpObjective);
-        emit pointChanged(pCandidate->idx);
-        emit objectiveChanged(pCandidate->idx);
+        mpMessageHandler->pointChanged(pCandidate->idx);
+        mpMessageHandler->objectiveChanged(pCandidate->idx);
 
         mLastWorstId = mWorstId;
         calculateBestAndWorstId();
@@ -395,10 +397,10 @@ void WorkerComplexRFP::examineCandidateParticles()
             break;
         }
 
-        if(!pCandidate->subCandidates.isEmpty())
+        if(!pCandidate->subCandidates.size() == 0)
         {
             pCandidate = pCandidate->subCandidates[0];
-            for(int i=1; i<pCandidate->subCandidates.size(); ++i)
+            for(size_t i=1; i<pCandidate->subCandidates.size(); ++i)
             {
                 if((*pCandidate->subCandidates[i]->mpObjective) < (*pCandidate->mpObjective))
                 {
@@ -417,55 +419,55 @@ void WorkerComplexRFP::examineCandidateParticles()
 bool WorkerComplexRFP::multiRetract()
 {
     //Check the already evaluated iteration points (if any)
-    if(!mpFailedCandidate->retractions.isEmpty())
+    if(!mpFailedCandidate->retractions.size() == 0)
     {
-        Candidate *pCandidate = mpFailedCandidate->retractions.first();
+        Candidate *pCandidate = mpFailedCandidate->retractions[0];
 
         mPoints[mWorstId] = (*pCandidate->mpPoint);
         mObjectives[mWorstId] = (*pCandidate->mpObjective);
-        emit objectiveChanged(mWorstId);
-        emit pointChanged(mWorstId);
+        mpMessageHandler->objectiveChanged(mWorstId);
+        mpMessageHandler->pointChanged(mWorstId);
 
-        mpFailedCandidate->retractions.remove(0);
+        removeFromVector(mpFailedCandidate->retractions,0);
 
         ++mRetractionCounter;
 
         return checkForConvergence();
     }
 
-    QVector<double> newPoint = mPoints[mWorstId];
+    std::vector<double> newPoint = mPoints[mWorstId];
 
     //Move first reflected point
-    for(int t=0; t<mNumCandidates; ++t)
+    for(size_t t=0; t<mNumCandidates; ++t)
     {
         double a1 = 1.0-exp(-double(mRetractionCounter)/5.0);
-        for(int j=0; j<mNumParameters; ++j)
+        for(size_t j=0; j<mNumParameters; ++j)
         {
             double best = mPoints[mBestId][j];
             double maxDiff = getMaxPercentalParameterDiff();
             double r = opsRand();
             mCandidatePoints[t][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
-            mCandidatePoints[t][j] = qMin(mCandidatePoints[t][j], mParameterMax[j]);
-            mCandidatePoints[t][j] = qMax(mCandidatePoints[t][j], mParameterMin[j]);
+            mCandidatePoints[t][j] = std::min(mCandidatePoints[t][j], mParameterMax[j]);
+            mCandidatePoints[t][j] = std::max(mCandidatePoints[t][j], mParameterMin[j]);
         }
 
         newPoint = mCandidatePoints[t];
         ++mRetractionCounter;
     }
-    emit candidatesChanged();
+    mpMessageHandler->candidatesChanged();
 
     mpEvaluator->evaluateAllCandidates();
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 
     //Replace worst point with first candidate point that is better, if any
-    for(int o=0; o<mNumCandidates; ++o)
+    for(size_t o=0; o<mNumCandidates; ++o)
     {
         mPoints[mWorstId] = mCandidatePoints[o];
         mObjectives[mWorstId] = mCandidateObjectives[o];
-        emit pointChanged(mWorstId);
-        emit objectiveChanged(mWorstId);
+        mpMessageHandler->pointChanged(mWorstId);
+        mpMessageHandler->objectiveChanged(mWorstId);
 
-        int prevWorst = mWorstId;
+        size_t prevWorst = mWorstId;
         calculateBestAndWorstId();
         if(prevWorst != mWorstId)
         {
@@ -494,13 +496,13 @@ Candidate::Candidate()
 
 Candidate::~Candidate()
 {
-    for(int i=0; i<subCandidates.size(); ++i)
+    for(size_t i=0; i<subCandidates.size(); ++i)
     {
         delete(subCandidates[i]);
     }
     subCandidates.clear();
 
-    for(int i=0; i<retractions.size(); ++i)
+    for(size_t i=0; i<retractions.size(); ++i)
     {
         delete(retractions[i]);
     }

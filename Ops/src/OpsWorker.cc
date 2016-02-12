@@ -32,18 +32,26 @@
 //$Id$
 
 #include <assert.h>
+#include <stdlib.h>
 #include <math.h>
-#include <QDebug>
+#include <iostream>
+
+//#include <QDebug>
 #include "OpsWorker.h"
 #include "OpsEvaluator.h"
+#include "OpsMessageHandler.h"
+
 
 using namespace Ops;
 
+
 //! @brief Checks for convergence (in either of the algorithms)
-Worker::Worker(Evaluator *pEvaluator)
+Worker::Worker(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
 {
     mpEvaluator = pEvaluator;
     mpEvaluator->setWorker(this);
+
+    mpMessageHandler = pMessageHandler;
 
     mNumCandidates = 1;
     mNumPoints = 1;
@@ -58,7 +66,9 @@ Worker::Worker(Evaluator *pEvaluator)
 
 Worker::~Worker()
 {
+    //Nothing to do
 }
+
 
 AlgorithmT Worker::getAlgorithm()
 {
@@ -71,7 +81,8 @@ void Worker::initialize()
 {
     mBestId = 0;
     mWorstId = 1;
-    mIsAborted = false;
+
+    mpMessageHandler->setAborted(false);
 }
 
 
@@ -98,15 +109,15 @@ void Worker::distributePoints()
 }
 
 
-void Worker::distributePoints(QVector<QVector<double> > *pVector)
+void Worker::distributePoints(std::vector<std::vector<double> > *pVector)
 {
-    int nPoints = pVector->size();
+    size_t nPoints = pVector->size();
 
     if(mDistribution == SamplingRandom)
     {
-        for(int p=0; p<nPoints; ++p)
+        for(size_t p=0; p<nPoints; ++p)
         {
-            for(int i=0; i<mNumParameters; ++i)
+            for(size_t i=0; i<mNumParameters; ++i)
             {
                 double r = opsRand();
                 (*pVector)[p][i] = mParameterMin[i] + r*(mParameterMax[i]-mParameterMin[i]);
@@ -115,38 +126,39 @@ void Worker::distributePoints(QVector<QVector<double> > *pVector)
     }
     else if(mDistribution == SamplingLatinHypercube)
     {
-        int m=nPoints;
-        int n=mNumParameters;
+        size_t m=nPoints;
+        size_t n=mNumParameters;
 
-        QList<QVector<int> > usedIntervals;
-        QList<QVector<double> > points;
-        for(int i=0; i<m; ++i)
+        std::vector<std::vector<int> > usedIntervals;
+        std::vector<std::vector<double> > points;
+        for(size_t i=0; i<m; ++i)
         {
-            QVector<double> newPoint;
-            QVector<int> interval;
-            for(int j=0; j<n; ++j)
+            std::vector<double> newPoint;
+            std::vector<int> interval;
+            for(size_t j=0; j<n; ++j)
             {
                 double min = mParameterMin[j];
                 double max = mParameterMax[j];
                 double x = min+opsRand()*(max-min);
-                newPoint.append(x);
-                //interval.append((max-min)/m),fmod(newPoint.last());
-                interval.append(int(floor(x/(max-min)*m)));
+                newPoint.push_back(x);
+                //interval.push_back((max-min)/m),fmod(newPoint.last());
+                interval.push_back(int(floor(x/(max-min)*m)));
             }
-            if(usedIntervals.contains(interval))
+
+            if(inVector(usedIntervals,interval))
             {
                 --i;
                 continue;
             }
             else
             {
-                usedIntervals.append(interval);
+                usedIntervals.push_back(interval);
                 (*pVector)[i] = newPoint;
             }
         }
     }
 
-    emit pointsChanged();
+    mpMessageHandler->pointsChanged();
 }
 
 
@@ -167,7 +179,7 @@ void Worker::calculateBestAndWorstId()
     double minObj = mObjectives[0];
     mWorstId=0;
     mBestId=0;
-    for(int i=1; i<mNumPoints; ++i)
+    for(size_t i=1; i<mNumPoints; ++i)
     {
         double obj = mObjectives[i];
         if(obj > maxObj)
@@ -188,17 +200,17 @@ void Worker::calculateBestAndWorstId()
     }
 }
 
-QVector<int> Worker::getIdsSortedFromWorstToBest()
+std::vector<size_t> Worker::getIdsSortedFromWorstToBest()
 {
     //Sort ids by objective value (worst to best)
-    QVector<int> ids;
+    std::vector<size_t> ids;
     while(ids.size() != mNumPoints)
     {
         int worstId = 0;
         double worstObjective = -1000000000;
-        for(int i=0; i<mNumPoints; ++i)
+        for(size_t i=0; i<mNumPoints; ++i)
         {
-            if(ids.contains(i)) continue;  //Ignore already added indexes
+            if(inVector(ids, i)) continue;  //Ignore already added indexes
 
             if(mObjectives[i] > worstObjective)
             {
@@ -206,75 +218,78 @@ QVector<int> Worker::getIdsSortedFromWorstToBest()
                 worstId = i;
             }
         }
-        ids.append(worstId);
+        ids.push_back(worstId);
     }
 
     return ids;
 }
 
 
-int Worker::getBestId()
+size_t Worker::getBestId()
 {
     return mBestId;
 }
 
-int Worker::getWorstId()
+size_t Worker::getWorstId()
 {
     return mWorstId;
 }
 
-int Worker::getLastWorstId()
+size_t Worker::getLastWorstId()
 {
     return mLastWorstId;
 }
 
 
 
-void Worker::setNumberOfPoints(int value)
+void Worker::setNumberOfPoints(size_t value)
 {
     mNumPoints = value;
 
     mPoints.resize(mNumPoints);
     mObjectives.resize(mNumPoints);
-    for(int p=0; p<mNumPoints; ++p)
+    for(size_t p=0; p<mNumPoints; ++p)
     {
         mPoints[p].resize(mNumParameters);
     }
 }
 
 
-void Worker::setNumberOfParameters(int value)
+void Worker::setNumberOfParameters(size_t value)
 {
     mNumParameters = value;
     mParameterMin.resize(mNumParameters);
     mParameterMax.resize(mNumParameters);
-    for(int p=0; p<mNumPoints; ++p)
+    for(size_t p=0; p<mNumPoints; ++p)
     {
         mPoints[p].resize(mNumParameters);
     }
-    for(int p=0; p<mNumCandidates; ++p)
+    for(size_t p=0; p<mNumCandidates; ++p)
     {
         mCandidatePoints[p].resize(mNumParameters);
     }
 }
 
 
-void Worker::setNumberOfCandidates(int value)
+void Worker::setNumberOfCandidates(size_t value)
 {
     mNumCandidates = value;
 
     mCandidatePoints.resize(mNumCandidates);
     mCandidateObjectives.resize(mNumCandidates);
-    for(int p=0; p<mNumCandidates; ++p)
+    for(size_t p=0; p<mNumCandidates; ++p)
     {
         mCandidatePoints[p].resize(mNumParameters);
     }
 }
 
 
-void Worker::setParameterNames(QStringList names)
+void Worker::setParameterNames(std::vector<const char*> names)
 {
-    mParameterNames = names;
+    for (const char* &name : names)
+    {
+        mParameterNames.push_back(name);
+    }
 }
 
 
@@ -284,7 +299,7 @@ void Worker::setConvergenceTolerance(double value)
 }
 
 
-void Worker::setMaxNumberOfIterations(int value)
+void Worker::setMaxNumberOfIterations(size_t value)
 {
     mnMaxIterations = value;
 }
@@ -299,27 +314,27 @@ void Worker::setSamplingMethod(SamplingT dist)
     mDistribution = dist;
 }
 
-int Worker::getNumberOfCandidates()
+size_t Worker::getNumberOfCandidates()
 {
     return mNumCandidates;
 }
 
-int Worker::getNumberOfPoints()
+size_t Worker::getNumberOfPoints()
 {
     return mNumPoints;
 }
 
-int Worker::getNumberOfParameters()
+size_t Worker::getNumberOfParameters()
 {
     return mNumParameters;
 }
 
-int Worker::getMaxNumberOfIterations()
+size_t Worker::getMaxNumberOfIterations()
 {
     return mnMaxIterations;
 }
 
-int Worker::getCurrentNumberOfIterations()
+size_t Worker::getCurrentNumberOfIterations()
 {
     return mIterationCounter;
 }
@@ -329,28 +344,22 @@ double Worker::opsRand()
     return double(rand())/double(RAND_MAX);
 }
 
-void Worker::abort()
-{
-    mIsAborted = true;
-}
-
-
-void Worker::setParameterLimits(int idx, double min, double max)
+void Worker::setParameterLimits(size_t idx, double min, double max)
 {
     mParameterMin[idx] = min;
     mParameterMax[idx] = max;
 }
 
-void Worker::getParameterLimits(int idx, double &min, double &max)
+void Worker::getParameterLimits(size_t idx, double &min, double &max)
 {
     min = mParameterMin[idx];
     max = mParameterMax[idx];
 }
 
 
-void Worker::setCandidateObjectiveValue(int idx, double value)
+void Worker::setCandidateObjectiveValue(size_t idx, double value)
 {
-    if(idx<0 || idx > mCandidateObjectives.size()-1)
+    if(idx > mCandidateObjectives.size()-1)
     {
         return;
     }
@@ -358,32 +367,32 @@ void Worker::setCandidateObjectiveValue(int idx, double value)
 }
 
 
-double Worker::getObjectiveValue(int idx)
+double Worker::getObjectiveValue(size_t idx)
 {
-    if(idx<0 || idx > mObjectives.size()-1)
+    if(idx > mObjectives.size()-1)
     {
         return 0;
     }
     return mObjectives[idx];
 }
 
-QVector<double> &Worker::getObjectiveValues()
+std::vector<double> &Worker::getObjectiveValues()
 {
     return mObjectives;
 }
 
-QVector<QVector<double> > &Worker::getPoints()
+std::vector<std::vector<double> > &Worker::getPoints()
 {
     return mPoints;
 }
 
-QVector<QVector<double> > &Worker::getCandidatePoints()
+std::vector<std::vector<double> > &Worker::getCandidatePoints()
 {
     return mCandidatePoints;
 }
 
 
-double Worker::getCandidateParameter(const int pointIdx, const int parIdx) const
+double Worker::getCandidateParameter(const size_t pointIdx, const size_t parIdx) const
 {
     if(mCandidatePoints.size() < pointIdx+1)
     {
@@ -396,7 +405,7 @@ double Worker::getCandidateParameter(const int pointIdx, const int parIdx) const
     return mCandidatePoints[pointIdx][parIdx];
 }
 
-double Worker::getParameter(const int pointIdx, const int parIdx) const
+double Worker::getParameter(const size_t pointIdx, const size_t parIdx) const
 {
     if(mPoints.size() < pointIdx+1)
     {
@@ -416,14 +425,14 @@ double Worker::getMaxPercentalParameterDiff()
     return getMaxPercentalParameterDiff(mPoints);
 }
 
-double Worker::getMaxPercentalParameterDiff(QVector<QVector<double> > &points)
+double Worker::getMaxPercentalParameterDiff(std::vector<std::vector<double> > &points)
 {
     double maxDiff = -1e100;
-    for(int i=0; i<mNumParameters; ++i)
+    for(size_t i=0; i<mNumParameters; ++i)
     {
         double maxPar = -1e100;
         double minPar = 1e100;
-        for(int p=0; p<points.size(); ++p)
+        for(size_t p=0; p<points.size(); ++p)
         {
             if(points[p][i] > maxPar) maxPar = points[p][i];
             if(points[p][i] < minPar) minPar = points[p][i];
@@ -436,7 +445,15 @@ double Worker::getMaxPercentalParameterDiff(QVector<QVector<double> > &points)
     return maxDiff;
 }
 
-QStringList *Worker::getParameterNamesPtr()
+std::vector<const char*> Worker::getParameterNamesPtr()
 {
-    return &mParameterNames;
+    std::vector<const char*> ret;
+    for(std::string name : mParameterNames)
+    {
+        ret.push_back(name.c_str());
+    }
+    return ret;
 }
+
+
+

@@ -45,18 +45,17 @@ class Candidate
 public:
     Candidate();
     ~Candidate();
-    QVector<double> *mpPoint;
+    std::vector<double> *mpPoint;
     double *mpObjective;
-    QVector<Candidate*> subCandidates;
-    QVector<Candidate*> retractions;
-    int idx;
+    std::vector<Candidate*> subCandidates;
+    std::vector<Candidate*> retractions;
+    size_t idx;
 };
 
 class WorkerComplexRFP : public WorkerComplexRF
 {
-    Q_OBJECT
 public:
-    WorkerComplexRFP(Evaluator *pEvaluator);
+    WorkerComplexRFP(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     AlgorithmT getAlgorithm();
 
@@ -80,13 +79,13 @@ private:
     Candidate *mpFailedCandidate;
 
     double mAlphaMin, mAlphaMax;
-    QVector<double> mvAlpha;
+    std::vector<double> mvAlpha;
     ParallelMethodT mMethod;
-    QVector<Candidate*> mTopLevelCandidates;
+    std::vector<Candidate*> mTopLevelCandidates;
 
     //Method 3 members
-    int mnPredictions, mnRetractions;
-    int mDistCount, mDirCount, mIterCount;
+    size_t mnPredictions, mnRetractions;
+    size_t mDistCount, mDirCount, mIterCount;
 };
 
 }

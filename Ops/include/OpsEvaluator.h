@@ -34,6 +34,8 @@
 #ifndef OPSEVALUATOR_H
 #define OPSEVALUATOR_H
 
+#include <stdlib.h>
+
 namespace Ops {
 
 class Worker;
@@ -46,7 +48,7 @@ public:
     void setWorker(Worker *pWorker);
 
     virtual void evaluateAllPoints();               //Can be re-implemented
-    virtual void evaluateCandidate(int idx);        //Must be re-implemented
+    virtual void evaluateCandidate(size_t idx);        //Must be re-implemented
     virtual void evaluateAllCandidates();           //Can be re-implemented
 
 protected:

@@ -61,7 +61,7 @@ class OptimizationDialog : public QWizard
 public:
     OptimizationDialog(QWidget *parent = 0);
 
-    void updateParameterOutputs(const QVector<double> &objectives, const QVector<QVector<double> > &values, int bestId, int worstId);
+    void updateParameterOutputs(const std::vector<double> &objectives, const std::vector<std::vector<double> > &values, int bestId, int worstId);
     void updateTotalProgressBar(double progress);
     void setOptimizationFinished();
     void setCode(const QString &code);

@@ -6750,6 +6750,21 @@ void HcomHandler::getPorts(const QString &rStr, QList<Port*> &rPorts) const
                 rPorts.append(pCurrentSystem->getModelObject(compName)->getPort(portName));
             }
         }
+
+        QStringList compNames = pCurrentSystem->getModelObjectNames();
+        Q_FOREACH(const QString &compName, compNames)
+        {
+            ModelObject *pModel = pCurrentSystem->getModelObject(compName);
+            QMapIterator<QString,QString> it(pModel->getVariableAliases());
+            while(it.hasNext())
+            {
+                it.next();
+                if(it.value() == rStr)
+                {
+                    rPorts.append(pModel->getPort(it.key().section("#",0,0)));
+                }
+            }
+        }
     }
 }
 

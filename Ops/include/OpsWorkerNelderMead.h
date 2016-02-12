@@ -40,9 +40,8 @@ namespace Ops {
 
 class WorkerNelderMead : public WorkerSimplex
 {
-    Q_OBJECT
 public:
-    WorkerNelderMead(Evaluator *pEvaluator);
+    WorkerNelderMead(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     AlgorithmT getAlgorithm();
 

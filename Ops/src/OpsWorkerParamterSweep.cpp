@@ -33,14 +33,14 @@
 
 #include "OpsWorkerParameterSweep.h"
 #include "OpsEvaluator.h"
-
+#include "OpsMessageHandler.h"
 #include <math.h>
 
 using namespace Ops;
 
 //! @brief Initializes a particle swarm optimization
-WorkerParameterSweep::WorkerParameterSweep(Evaluator *pEvaluator)
-    : Worker(pEvaluator) {}
+WorkerParameterSweep::WorkerParameterSweep(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : Worker(pEvaluator, pMessageHandler) {}
 
 AlgorithmT WorkerParameterSweep::getAlgorithm()
 {
@@ -52,34 +52,34 @@ AlgorithmT WorkerParameterSweep::getAlgorithm()
 //! @brief Executes a particle swarm algorithm. optParticleInit() must be called before this one.
 void WorkerParameterSweep::run()
 {
-    emit message("Running optimization with parameter sweep algorithm.");
+    mpMessageHandler->printMessage("Running optimization with parameter sweep algorithm.");
 
     distributePoints();
 
     //Evaluate initial objective values
     mpEvaluator->evaluateAllPoints();
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 
     //Calculate best known global position
     calculateBestAndWorstId();
-    emit pointsChanged();
+    mpMessageHandler->pointsChanged();
 
     mIterationCounter=0;
-    for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
+    for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
         //Move particles
         distrubteCandidatePoints();
 
         //Evaluate objective values
         mpEvaluator->evaluateAllCandidates();
-        emit objectivesChanged();
+        mpMessageHandler->objectivesChanged();
 
-        QVector<int> ids = getIdsSortedFromWorstToBest();
+        std::vector<size_t> ids = getIdsSortedFromWorstToBest();
 
-        for(int i=0; i<mCandidateObjectives.size(); ++i)
+        for(size_t i=0; i<mCandidateObjectives.size(); ++i)
         {
             ids = getIdsSortedFromWorstToBest();
-            for(int j=0; j<mObjectives.size(); ++j)
+            for(size_t j=0; j<mObjectives.size(); ++j)
             {
                 if(mCandidateObjectives[i] < mObjectives[ids[j]])
                 {
@@ -90,18 +90,18 @@ void WorkerParameterSweep::run()
             }
         }
 
-        emit pointsChanged();
+        mpMessageHandler->pointsChanged();
 
-        emit stepCompleted(mIterationCounter);
+        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
-    if(mIsAborted)
+    if(mpMessageHandler->aborted())
     {
-        emit message("Optimization was aborted after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization was aborted after "+std::to_string(mIterationCounter)+" iterations.");
     }
     else
     {
-        emit message("Optimization finished after "+QString::number(mIterationCounter)+" iterations");
+        mpMessageHandler->printMessage("Optimization finished after "+std::to_string(mIterationCounter)+" iterations");
     }
 
     // Clean up

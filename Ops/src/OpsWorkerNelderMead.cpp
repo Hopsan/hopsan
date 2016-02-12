@@ -33,12 +33,13 @@
 
 #include "OpsWorkerNelderMead.h"
 #include "OpsEvaluator.h"
+#include "OpsMessageHandler.h"
 #include <math.h>
 
 using namespace Ops;
 
-WorkerNelderMead::WorkerNelderMead(Evaluator *pEvaluator)
-    : WorkerSimplex(pEvaluator)
+WorkerNelderMead::WorkerNelderMead(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : WorkerSimplex(pEvaluator, pMessageHandler)
 {
 }
 
@@ -51,7 +52,7 @@ AlgorithmT WorkerNelderMead::getAlgorithm()
 
 void WorkerNelderMead::run()
 {
-    emit message("Running optimization with Nelder-Mead algorithm.");
+    mpMessageHandler->printMessage("Running optimization with Nelder-Mead algorithm.");
 
     distributePoints();
 
@@ -59,12 +60,12 @@ void WorkerNelderMead::run()
 
     //Evaluate initial objective values
     mpEvaluator->evaluateAllPoints();
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 
 
     //Run optimization loop
     mIterationCounter=0;
-    for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
+    for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
         //Check convergence
         if(checkForConvergence()) break;
@@ -74,82 +75,86 @@ void WorkerNelderMead::run()
         findCentroidPoint();
 
         mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mAlpha);   //Reflect
-        emit candidateChanged(0);
+        mpMessageHandler->candidateChanged(0);
+
         mpEvaluator->evaluateCandidate(0);
 
-        QVector<double> reflectedPoint = mCandidatePoints[0];
+        std::vector<double> reflectedPoint = mCandidatePoints[0];
         double reflectedObj = mCandidateObjectives[0];
-        QVector<int> ids = getIdsSortedFromWorstToBest();
+        std::vector<size_t> ids = getIdsSortedFromWorstToBest();
 
-        int bestId = ids.last();
-        int worstId = ids.first();
-        int secondWorstId = ids.at(ids.size()-2);
+        size_t bestId = ids[ids.size()-1];
+        size_t worstId = ids[0];
+        size_t secondWorstId = ids.at(ids.size()-2);
 
         if(mCandidateObjectives[0] < mObjectives.at(secondWorstId) && mCandidateObjectives[0] > mObjectives.at(bestId))
         {
             mPoints[worstId] = mCandidatePoints[0];
             mObjectives[worstId] = mCandidateObjectives[0];
-            emit pointChanged(worstId);
-            emit objectiveChanged(worstId);
+
+            mpMessageHandler->pointChanged(worstId);
+            mpMessageHandler->objectiveChanged(worstId);
         }
-        else if(mCandidateObjectives[0] < mObjectives.at(bestId) && !mIsAborted)
+        else if(mCandidateObjectives[0] < mObjectives.at(bestId) && !mpMessageHandler->aborted())
         {
             mCandidatePoints[0] = reflect(mPoints[worstId], mCentroidPoint, mGamma);   //Expand
-            emit candidateChanged(0);
+            mpMessageHandler->candidateChanged(0);
             mpEvaluator->evaluateCandidate(0);
+            ++mIterationCounter;
 
             if(mCandidateObjectives[0] < reflectedObj)
             {
                 mPoints[worstId] = mCandidatePoints[0];
                 mObjectives[worstId] = mCandidateObjectives[0];
-                emit pointChanged(worstId);
-                emit objectiveChanged(worstId);
+                mpMessageHandler->pointChanged(worstId);
+                mpMessageHandler->objectiveChanged(worstId);
             }
             else
             {
                 mPoints[worstId] = reflectedPoint;
                 mObjectives[worstId] = reflectedObj;
-                emit pointChanged(worstId);
-                emit objectiveChanged(worstId);
+                mpMessageHandler->pointChanged(worstId);
+                mpMessageHandler->objectiveChanged(worstId);
             }
         }
-        else if(!mIsAborted)
+        else if(!mpMessageHandler->aborted())
         {
             mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mRho);   //Contract
-            emit candidateChanged(0);
+            mpMessageHandler->candidateChanged(0);
             mpEvaluator->evaluateCandidate(0);
+            ++mIterationCounter;
 
             if(mCandidateObjectives[0] < mObjectives[mWorstId])
             {
                 mPoints[mWorstId] = mCandidatePoints[0];
                 mObjectives[mWorstId] = mCandidateObjectives[0];
-                emit pointChanged(mWorstId);
-                emit objectiveChanged(mWorstId);
+                mpMessageHandler->pointChanged(mWorstId);
+                mpMessageHandler->objectiveChanged(mWorstId);
             }
-            else if(!mIsAborted)
+            else if(!mpMessageHandler->aborted())
             {
                 reduce();   //Reduce
-                emit pointsChanged();
+                mpMessageHandler->pointsChanged();
                 mpEvaluator->evaluateAllPoints();
-                emit objectivesChanged();
+                mpMessageHandler->objectivesChanged();
             }
         }
 
-        emit stepCompleted(mIterationCounter);
+        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
 
-    if(mIsAborted)
+    if(mpMessageHandler->aborted())
     {
-        emit message("Optimization was aborted after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization was aborted after "+std::to_string(mIterationCounter)+" iterations.");
     }
     else if(mIterationCounter == mnMaxIterations)
     {
-        emit message("Optimization failed to converge after "+QString::number(mIterationCounter)+" iterations");
+        mpMessageHandler->printMessage("Optimization failed to converge after "+std::to_string(mIterationCounter)+" iterations");
     }
     else
     {
-        emit message("Optimization converged in parameter values after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization converged in parameter values after "+std::to_string(mIterationCounter)+" iterations.");
     }
 
     // Clean up
@@ -181,11 +186,11 @@ void WorkerNelderMead::setReductionFactor(double value)
 
 void WorkerNelderMead::reduce()
 {
-    for(int i=0; i<mNumPoints; ++i)
+    for(size_t i=0; i<mNumPoints; ++i)
     {
         if(i==mBestId) continue;
 
-        for(int j=0; j<mNumParameters; ++j)
+        for(size_t j=0; j<mNumParameters; ++j)
         {
             //Reflect
             double best = mPoints[mBestId][j];

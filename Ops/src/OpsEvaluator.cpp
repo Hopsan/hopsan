@@ -60,7 +60,7 @@ void Evaluator::evaluateAllPoints()
     }
     else
     {
-        for(int i=0; i<mpWorker->mNumPoints; ++i)
+        for(size_t i=0; i<mpWorker->mNumPoints; ++i)
         {
             mpWorker->mCandidatePoints[0] = mpWorker->mPoints[i];
             evaluateCandidate(0);
@@ -70,16 +70,16 @@ void Evaluator::evaluateAllPoints()
 }
 
 
-void Evaluator::evaluateCandidate(int idx)
+void Evaluator::evaluateCandidate(size_t idx)
 {
-    Q_UNUSED(idx);
+    (void)idx;
     assert("You should implement your own evaluate() function." == 0);
 }
 
 
 void Evaluator::evaluateAllCandidates()
 {
-    for(int i=0; i<mpWorker->mNumCandidates; ++i)
+    for(size_t i=0; i<mpWorker->mNumCandidates; ++i)
     {
         evaluateCandidate(i);
     }

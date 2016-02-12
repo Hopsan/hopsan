@@ -33,14 +33,14 @@
 
 #include "OpsWorkerParticleSwarm.h"
 #include "OpsEvaluator.h"
-
+#include "OpsMessageHandler.h"
 #include <math.h>
 
 using namespace Ops;
 
 //! @brief Initializes a particle swarm optimization
-WorkerParticleSwarm::WorkerParticleSwarm(Evaluator *pEvaluator)
-    : Worker(pEvaluator)
+WorkerParticleSwarm::WorkerParticleSwarm(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
+    : Worker(pEvaluator, pMessageHandler)
 {
     mInertiaStrategy = InertiaLinearDecreasing;
 }
@@ -56,9 +56,9 @@ void WorkerParticleSwarm::initialize()
 {
     Worker::initialize();
 
-    for(int p=0; p<mNumPoints; ++p)
+    for(size_t p=0; p<mNumPoints; ++p)
     {
-        for(int i=0; i<mNumParameters; ++i)
+        for(size_t i=0; i<mNumParameters; ++i)
         {
             //Initialize velocities
             double minVel = -fabs(mParameterMax[i]-mParameterMin[i]);
@@ -75,20 +75,20 @@ void WorkerParticleSwarm::run()
 {
     if(mNumCandidates != mNumPoints)
     {
-        emit message("Error: Differential evolution algorithm requires same number of candidates and points.");
+        mpMessageHandler->printMessage("Error: Differential evolution algorithm requires same number of candidates and points.");
         return;
     }
 
-    emit message("Running optimization with particle swarm algorithm.");
+    mpMessageHandler->printMessage("Running optimization with particle swarm algorithm.");
 
     distributePoints();
 
     //Evaluate initial objective values
     mpEvaluator->evaluateAllPoints();
-    emit objectivesChanged();
+    mpMessageHandler->objectivesChanged();
 
     //Initialize best known point for each point
-    for(int i=0; i<mNumPoints; ++i)
+    for(size_t i=0; i<mNumPoints; ++i)
     {
         mLocalBestPoints[i] = mPoints[i];
         mLocalBestObjectives[i] = mObjectives[i];
@@ -101,7 +101,7 @@ void WorkerParticleSwarm::run()
 
 
     mIterationCounter=0;
-    for(; mIterationCounter<mnMaxIterations && !mIsAborted; ++mIterationCounter)
+    for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
         //Update weight (linearly decreasing)
         if(mInertiaStrategy == InertiaConstant)
@@ -114,20 +114,20 @@ void WorkerParticleSwarm::run()
         }
         else
         {
-            emit message("Unknown inertia strategy, aborting.");
+            mpMessageHandler->printMessage("Unknown inertia strategy, aborting.");
             return;
         }
 
         //Move particles
         moveParticles();
-        emit pointsChanged();
+        mpMessageHandler->pointsChanged();
 
         //Evaluate objective values
         mpEvaluator->evaluateAllCandidates();
-        emit objectivesChanged();
+        mpMessageHandler->objectivesChanged();
 
         //Calculate best known positions
-        for(int p=0; p<mNumPoints; ++p)
+        for(size_t p=0; p<mNumPoints; ++p)
         {
             if(mCandidateObjectives[p] < mObjectives[p])
             {
@@ -147,20 +147,20 @@ void WorkerParticleSwarm::run()
         //Check convergence
         if(checkForConvergence()) break;      //Use complex method, it's the same principle
 
-        emit stepCompleted(mIterationCounter);
+        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
-    if(mIsAborted)
+    if(mpMessageHandler->aborted())
     {
-        emit message("Optimization was aborted after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization was aborted after "+std::to_string(mIterationCounter)+" iterations.");
     }
     else if(mIterationCounter == mnMaxIterations)
     {
-        emit message("Optimization failed to converge after "+QString::number(mIterationCounter)+" iterations");
+        mpMessageHandler->printMessage("Optimization failed to converge after "+std::to_string(mIterationCounter)+" iterations");
     }
     else
     {
-        emit message("Optimization converged in parameter values after "+QString::number(mIterationCounter)+" iterations.");
+        mpMessageHandler->printMessage("Optimization converged in parameter values after "+std::to_string(mIterationCounter)+" iterations.");
     }
 
     // Clean up
@@ -170,14 +170,14 @@ void WorkerParticleSwarm::run()
 }
 
 
-void WorkerParticleSwarm::setNumberOfPoints(int value)
+void WorkerParticleSwarm::setNumberOfPoints(size_t value)
 {
     Worker::setNumberOfPoints(value);
 
     mVelocities.resize(value);
     mLocalBestPoints.resize(value);
     mLocalBestObjectives.resize(value);
-    for(int i=0; i<value; ++i)
+    for(size_t i=0; i<value; ++i)
     {
         mVelocities[i].resize(mNumPoints);
         mLocalBestPoints[i].resize(mNumPoints);
@@ -185,12 +185,12 @@ void WorkerParticleSwarm::setNumberOfPoints(int value)
 }
 
 
-void WorkerParticleSwarm::setNumberOfParameters(int value)
+void WorkerParticleSwarm::setNumberOfParameters(size_t value)
 {
     Worker::setNumberOfParameters(value);
 
     mBestPoint.resize(value);
-    for(int i=0; i<mNumPoints; ++i)
+    for(size_t i=0; i<mNumPoints; ++i)
     {
         mVelocities[i].resize(mNumPoints);
         mLocalBestPoints[i].resize(mNumPoints);
@@ -202,7 +202,7 @@ void WorkerParticleSwarm::setNumberOfParameters(int value)
 //! @brief Moves the particles (for particle swarm optimization)
 void WorkerParticleSwarm::moveParticles()
 {
-    for (int p=0; p<mNumPoints; ++p)
+    for (size_t p=0; p<mNumPoints; ++p)
     {
         moveParticle(p);
     }
@@ -214,10 +214,10 @@ void WorkerParticleSwarm::moveParticle(int p)
 {
     double r1 = opsRand();
     double r2 = opsRand();
-    for(int j=0; j<mNumParameters; ++j)
+    for(size_t j=0; j<mNumParameters; ++j)
     {
         mVelocities[p][j] = mOmega*mVelocities[p][j] + mC1*r1*(mPoints[p][j]-mCandidatePoints[p][j]) + mC2*r2*(mBestPoint[j]-mCandidatePoints[p][j]);
-        mVelocities[p][j] = qMin(mVelocities[p][j], mVmax);
+        mVelocities[p][j] = std::min(mVelocities[p][j], mVmax);
         mCandidatePoints[p][j] = mCandidatePoints[p][j]+mVelocities[p][j];
         if(mCandidatePoints[p][j] <= mParameterMin[j])
         {

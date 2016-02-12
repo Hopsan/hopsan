@@ -35,28 +35,26 @@
 #define OPSWORKERSIMPLEX_H
 
 #include <OpsWorker.h>
-#include <QVector>
 
 namespace Ops {
 
 class WorkerSimplex : public Worker
 {
-    Q_OBJECT
 public:
-    WorkerSimplex(Evaluator *pEvaluator);
+    WorkerSimplex(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     virtual void initialize();
 
-    QVector<double> reflect(QVector<double> point, QVector<double> center, double alpha);
+    std::vector<double> reflect(std::vector<double> point, std::vector<double> center, double alpha);
 
     void setRandomFactor(double value);
 
     void findCentroidPoint();
-    void findCentroidPoint(QVector<QVector<double> > &points);
+    void findCentroidPoint(std::vector<std::vector<double> > &points);
 protected:
     double mRandomFactor;
 
-    QVector<double> mCentroidPoint;
+    std::vector<double> mCentroidPoint;
 };
 
 }

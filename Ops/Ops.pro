@@ -8,7 +8,9 @@ TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
 
-QT += core
+QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__ -Wno-c++0x-compat
+
+QT -= core
 QT -= gui
 
 TARGET = $${TARGET}$${DEBUG_EXT}
@@ -66,7 +68,8 @@ HEADERS += \
     include/OpsWorkerParameterSweep.h \
     include/OpsWorkerDifferentialEvolution.h \
     include/OpsWorkerControlledRandomSearch.h \
-    include/OpsWorkerComplexBurmen.h
+    include/OpsWorkerComplexBurmen.h \
+    include/OpsMessageHandler.h
 
 
 

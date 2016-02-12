@@ -56,6 +56,7 @@
 #include "MessageHandler.h"
 #include "SimulationThreadHandler.h"
 #include "OpsWorkerParameterSweep.h"
+#include "OptimizationHandler.h"
 
 #ifndef _WIN32
 #include <unistd.h> //Needed for sysctl
@@ -64,7 +65,6 @@
 #ifdef USEZMQ
 #include "RemoteSimulationUtils.h"
 #endif
-
 
 //! @brief Constructor
 SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
@@ -164,12 +164,12 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
     //Buttons
     QPushButton *pCancelButton = new QPushButton(tr("&Close"), this);
     pCancelButton->setAutoDefault(false);
-    QPushButton *pAbortButton = new QPushButton(tr("&Abort"), this);
+    mpAbortButton = new QPushButton(tr("&Abort"), this);
     QPushButton *pRunButton = new QPushButton(tr("&Start Analysis"), this);
     pRunButton->setDefault(true);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(pAbortButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(mpAbortButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pRunButton, QDialogButtonBox::ActionRole);
 
     //Toolbar
@@ -196,7 +196,6 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
 
     //Connections
     connect(pCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
-    connect(pAbortButton,                   SIGNAL(clicked()),      this,                   SLOT(abort()));
     connect(pRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
     connect(pHelpAction,                   SIGNAL(triggered()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
     connect(mpNormalDistributionRadioButton, SIGNAL(toggled(bool)), pParameterAverageLabel, SLOT(setVisible(bool)));
@@ -780,18 +779,21 @@ void SensitivityAnalysisDialog::run()
         mpEvaluator->mNumParallelModels = mpNumRemoteParallelModelsSpinBox->value();
         nParallelModels = mpNumRemoteParallelModelsSpinBox->value();
     }
-    mpWorker = new Ops::WorkerParameterSweep(mpEvaluator);
+    SensitivityAnalysisMessageHandler *pOptMessageHandler = new SensitivityAnalysisMessageHandler(this);
+    connect(mpAbortButton, SIGNAL(clicked(bool)), pOptMessageHandler, SLOT(abort()));
+    mpWorker = new Ops::WorkerParameterSweep(mpEvaluator, pOptMessageHandler);
 
     mpWorker->setNumberOfCandidates(nParallelModels);
     mpWorker->setNumberOfPoints(nParallelModels);
     mpWorker->setNumberOfParameters(nParameters);
     mpWorker->setMaxNumberOfIterations(nSteps/nParallelModels);
+    mNumIterations = nSteps/nThreads;   //Used by progress bar
     for(int p=0; p<parLimits.size(); ++p)
     {
         mpWorker->setParameterLimits(p, parLimits[p].first, parLimits[p].second);
     }
 
-    connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
+    //connect(mpWorker, SIGNAL(stepCompleted(int)), this, SLOT(updateProgressBar(int)));
 
     bool rc = mpEvaluator->init();
     if (rc)
@@ -847,7 +849,6 @@ void SensitivityAnalysisEvaluator::plot()
 
             //PlotWindow *pPlotWindow = mModelPtrs.first()->getViewContainerObject()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
 
-            //int nThreads = mModelPtrs.size();
             for(int m=0; m<mModelPtrs.size(); ++m)
             {
                 for(int g=nGenerations-mpWorker->getMaxNumberOfIterations(); g<nGenerations; ++g)
@@ -984,7 +985,7 @@ void SensitivityAnalysisEvaluator::finalize()
 }
 
 
-void SensitivityAnalysisEvaluator::setParameters(QVector<QVector<double> > *pPoints)
+void SensitivityAnalysisEvaluator::setParameters(std::vector<std::vector<double> > *pPoints)
 {
     int nParameters = mLimits.size();
 
@@ -1051,4 +1052,19 @@ void SensitivityAnalysisEvaluator::evaluateAllCandidates()
 #ifdef USEZMQ
     }
 #endif
+}
+
+SensitivityAnalysisMessageHandler::SensitivityAnalysisMessageHandler(SensitivityAnalysisDialog *pDialog)
+{
+    mpDialog = pDialog;
+}
+
+void SensitivityAnalysisMessageHandler::stepCompleted(size_t step)
+{
+    mpDialog->updateProgressBar(step);
+}
+
+void SensitivityAnalysisMessageHandler::abort()
+{
+    mIsAborted = true;
 }

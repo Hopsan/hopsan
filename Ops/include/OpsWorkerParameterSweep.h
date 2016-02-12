@@ -39,9 +39,8 @@ namespace Ops {
 
 class WorkerParameterSweep : public Worker
 {
-    Q_OBJECT
 public:
-    WorkerParameterSweep(Evaluator *pEvaluator);
+    WorkerParameterSweep(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     AlgorithmT getAlgorithm();
 

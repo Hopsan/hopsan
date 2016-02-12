@@ -34,10 +34,8 @@
 #ifndef OPSWORKER_H
 #define OPSWORKER_H
 
-#include <QVector>
-#include <QString>
-#include <QObject>
-#include <QStringList>
+#include <vector>
+#include <string>
 
 namespace Ops {
 
@@ -45,15 +43,32 @@ enum AlgorithmT {Undefined, NelderMead, ComplexRF, ComplexRFP,  ParticleSwarm, D
 enum SamplingT {SamplingRandom, SamplingLatinHypercube};
 
 class Evaluator;
+class MessageHandler;
 
-class Worker : public QObject
+template<typename T>
+bool inVector(const std::vector<T> &rVector, const T &value)
 {
-    Q_OBJECT
+    typename std::vector<T>::const_iterator it = rVector.begin();
+    for(; it!=rVector.end(); ++it)
+    {
+        if((*it) == value)
+            return true;
+    }
+    return false;
+}
 
+template<typename T>
+void removeFromVector(std::vector<T> &rVector, const size_t idx)
+{
+    rVector.erase(rVector.begin() + idx);
+}
+
+class Worker
+{
     friend class Evaluator;
 public:
-    Worker(Evaluator *pEvaluator);
-    ~Worker();
+    Worker(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
+    virtual ~Worker();
 
     virtual AlgorithmT getAlgorithm();
 
@@ -63,81 +78,66 @@ public:
 
     void distrubteCandidatePoints();
     void distributePoints();
-    virtual void distributePoints(QVector<QVector<double> > *pVector);
+    virtual void distributePoints(std::vector<std::vector<double> > *pVector);
 
     virtual bool checkForConvergence();
     void calculateBestAndWorstId();
-    QVector<int> getIdsSortedFromWorstToBest();
-    int getBestId();
-    int getWorstId();
-    int getLastWorstId();
+    std::vector<size_t> getIdsSortedFromWorstToBest();
+    size_t getBestId();
+    size_t getWorstId();
+    size_t getLastWorstId();
 
 
 
-    void setParameterLimits(int idx, double min, double max);
-    void getParameterLimits(int idx, double &min, double &max);
+    void setParameterLimits(size_t idx, double min, double max);
+    void getParameterLimits(size_t idx, double &min, double &max);
 
-    void setCandidateObjectiveValue(int idx, double value);
-    double getObjectiveValue(int idx);
-    QVector<double> &getObjectiveValues();
-    QVector<QVector<double> > &getPoints();
-    QVector<QVector<double> > &getCandidatePoints();
-    double getCandidateParameter(const int pointIdx, const int parIdx) const;
-    double getParameter(const int pointIdx, const int parIdx) const;
+    void setCandidateObjectiveValue(size_t idx, double value);
+    double getObjectiveValue(size_t idx);
+    std::vector<double> &getObjectiveValues();
+    std::vector<std::vector<double> > &getPoints();
+    std::vector<std::vector<double> > &getCandidatePoints();
+    double getCandidateParameter(const size_t pointIdx, const size_t parIdx) const;
+    double getParameter(const size_t pointIdx, const size_t parIdx) const;
     double getMaxPercentalParameterDiff();
-    double getMaxPercentalParameterDiff(QVector<QVector<double> > &points);
+    double getMaxPercentalParameterDiff(std::vector<std::vector<double> > &points);
 
-    QStringList *getParameterNamesPtr();
+    std::vector<const char *> getParameterNamesPtr();
 
-    virtual void setNumberOfPoints(int value);
-    void setNumberOfCandidates(int value);
-    virtual void setNumberOfParameters(int value);
-    void setParameterNames(QStringList names);
+    virtual void setNumberOfPoints(size_t value);
+    void setNumberOfCandidates(size_t value);
+    virtual void setNumberOfParameters(size_t value);
+    void setParameterNames(std::vector<const char *> names);
     void setConvergenceTolerance(double value);
-    void setMaxNumberOfIterations(int value);
+    void setMaxNumberOfIterations(size_t value);
     void setTolerance(double value);
     void setSamplingMethod(SamplingT dist);
 
-    int getNumberOfCandidates();
-    int getNumberOfPoints();
-    int getNumberOfParameters();
-    int getMaxNumberOfIterations();
-    int getCurrentNumberOfIterations();
+    size_t getNumberOfCandidates();
+    size_t getNumberOfPoints();
+    size_t getNumberOfParameters();
+    size_t getMaxNumberOfIterations();
+    size_t getCurrentNumberOfIterations();
 
     double opsRand();
 
-public slots:
-    void abort();
-
 protected:
-    int mIterationCounter;
-    int mNumCandidates;
-    int mNumPoints;
-    int mNumParameters;
-    QStringList mParameterNames;
-    QVector<double> mParameterMin, mParameterMax;
-    QVector< QVector<double> > mPoints;
-    QVector< QVector<double> > mCandidatePoints;
-    QVector<double> mCandidateObjectives;
-    QVector<double> mObjectives;
+    size_t mIterationCounter;
+    size_t mNumCandidates;
+    size_t mNumPoints;
+    size_t mNumParameters;
+    std::vector< std::string > mParameterNames;
+    std::vector<double> mParameterMin, mParameterMax;
+    std::vector< std::vector<double> > mPoints;
+    std::vector< std::vector<double> > mCandidatePoints;
+    std::vector<double> mCandidateObjectives;
+    std::vector<double> mObjectives;
     double mnMaxIterations;
-    int mWorstId, mBestId, mLastWorstId, mSecondBestId;
+    size_t mWorstId, mBestId, mLastWorstId, mSecondBestId;
     double mTolerance;
     SamplingT mDistribution;
-    bool mIsAborted;
     Evaluator *mpEvaluator;
-
-signals:
-    void pointsChanged();
-    void pointChanged(int idx);
-    void candidatesChanged();
-    void candidateChanged(int idx);
-    void objectivesChanged();
-    void objectiveChanged(int idx);
-    void message(QString msg);
-    void errorReceived(QString msg);
-    void stepCompleted(int);
-
+    MessageHandler *mpMessageHandler;
 };
 
 }

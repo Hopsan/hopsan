@@ -40,9 +40,8 @@ namespace Ops {
 
 class WorkerComplexRF : public WorkerSimplex
 {
-    Q_OBJECT
 public:
-    WorkerComplexRF(Evaluator *pEvaluator);
+    WorkerComplexRF(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     AlgorithmT getAlgorithm();
 

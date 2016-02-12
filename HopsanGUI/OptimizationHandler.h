@@ -41,6 +41,7 @@
 #include "LogVariable.h"
 #include "OpsWorker.h"
 #include "OpsEvaluator.h"
+#include "OpsMessageHandler.h"
 
 //Forward declarations
 class ModelWidget;
@@ -57,8 +58,29 @@ class OptimizationEvaluator : public Ops::Evaluator
 public:
     OptimizationEvaluator(OptimizationHandler *pHandler);
     //void evaluateAllPoints();
-    void evaluateCandidate(int idx);
+    void evaluateCandidate(size_t idx);
     void evaluateAllCandidates();
+private:
+    OptimizationHandler *mpHandler;
+};
+
+
+class OptimizationMessageHandler : public QObject, public Ops::MessageHandler
+{
+    Q_OBJECT
+public:
+    OptimizationMessageHandler(OptimizationHandler *pHandler);
+    void printMessage(char *str);
+    void pointsChanged();
+    void pointChanged(size_t idx);
+    void objectivesChanged();
+    void objectiveChanged(size_t idx);
+    void candidatesChanged();
+    void candidateChanged(size_t idx);
+
+public slots:
+    void abort();
+
 private:
     OptimizationHandler *mpHandler;
 };
@@ -70,8 +92,9 @@ class OptimizationHandler : public QObject
 {
     Q_OBJECT
 
-    friend class HcomHandler;
-    friend class OptimizationDialog;
+    friend class HcomHandler;           //! @todo Should probably not be friends
+    friend class OptimizationDialog;    //! @todo Should probably not be friends
+    friend class OptimizationMessageHandler;    //! @note Ok to be friends due to inherited class from Ops
 public:
     //Enums
     enum DataT{Integer, Double};
@@ -93,7 +116,7 @@ public:
     double getParameter(const int pointIdx, const int parIdx) const;
     void setIsRunning(bool value);
     bool isRunning();
-    QStringList *getOptParNamesPtr();
+    QStringList getOptParNamesPtr();
 
     bool evaluateCandidate(int idx);
     bool evaluateAllCandidates();
@@ -114,18 +137,22 @@ public:
     int mEvaluations;
 
 protected slots:
-    void plotPoints();
-    void plotParameters();
-    void plotObjectiveValues();
-    void plotEntropy();
+
     void updateProgressBar(int i);
-    void updateOutputs();
     void printResultFile();
-    void logPoint(int idx);
-    void logAllPoints();
     void printLogFile();
     void printDebugFile();
     void checkIfRescheduleIsNeeded();
+
+public slots:
+    //! @note These are public because they are used in optimization message handler
+    void plotPoints();
+    void updateOutputs();
+    void plotParameters();
+    void logAllPoints();
+    void plotEntropy();
+    void logPoint(int idx);
+    void plotObjectiveValues();
 
 private:
     void reInitialize(int nModels);
@@ -134,6 +161,7 @@ private:
     QString mModelPath;
     GUIMessageHandler *mpMessageHandler;
     OptimizationEvaluator *mpEvaluator;
+    OptimizationMessageHandler *mpOpsMessageHandler;
     Ops::Worker *mpWorker;
     AlgorithmT mAlgorithm;
     bool mIsRunning;

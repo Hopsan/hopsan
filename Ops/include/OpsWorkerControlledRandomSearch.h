@@ -41,7 +41,7 @@ namespace Ops {
 class WorkerControlledRandomSearch : public WorkerSimplex
 {
 public:
-    WorkerControlledRandomSearch(Evaluator *pEvaluator);
+    WorkerControlledRandomSearch(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     AlgorithmT getAlgorithm();
 

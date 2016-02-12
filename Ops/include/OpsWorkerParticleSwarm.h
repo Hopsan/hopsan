@@ -41,21 +41,20 @@ enum OpsInertiaStrategy {InertiaConstant, InertiaLinearDecreasing};
 
 class WorkerParticleSwarm : public Worker
 {
-    Q_OBJECT
 public:
-    WorkerParticleSwarm(Evaluator *pEvaluator);
+    WorkerParticleSwarm(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     AlgorithmT getAlgorithm();
 
     void initialize();
     void run();
 
-    void setNumberOfPoints(int value);
+    void setNumberOfPoints(size_t value);
 
     void moveParticles();
 
-    void setOptVar(const QString &var, const QString &value);
-    double getOptVar(const QString &var, bool &ok);
+    void setOptVar(const std::string &var, const std::string &value);
+    double getOptVar(const std::string &var, bool &ok);
 
     void setOmega1(double value);
     void setOmega2(double value);
@@ -63,15 +62,15 @@ public:
     void setC2(double value);
     void setVmax(double value);
     void setInertiaStrategy(OpsInertiaStrategy strategy);
-    void setNumberOfParameters(int value);
+    void setNumberOfParameters(size_t value);
 protected:
 
     OpsInertiaStrategy mInertiaStrategy;
     double mOmega, mOmega1, mOmega2, mC1, mC2;
     bool mPrintLogOutput;
-    QStringList mLogOutput;
-    QVector< QVector<double> > mVelocities, mLocalBestPoints;
-    QVector<double> mLocalBestObjectives, mBestPoint;
+    std::vector<std::string> mLogOutput;
+    std::vector< std::vector<double> > mVelocities, mLocalBestPoints;
+    std::vector<double> mLocalBestObjectives, mBestPoint;
     double mBestObjective;
     double mVmax;
 
@@ -80,7 +79,7 @@ private:
 protected:
     double mRandomFactor;
 
-    QVector<double> mCentroidPoint;
+    std::vector<double> mCentroidPoint;
 };
 
 }

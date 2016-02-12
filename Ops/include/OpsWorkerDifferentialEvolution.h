@@ -39,9 +39,8 @@ namespace Ops {
 
 class WorkerDifferentialEvolution : public Worker
 {
-    Q_OBJECT
 public:
-    WorkerDifferentialEvolution(Evaluator *pEvaluator);
+    WorkerDifferentialEvolution(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
 
     AlgorithmT getAlgorithm();
 
@@ -54,7 +53,7 @@ private:
     void moveParticle(int p);
 protected:
     double mCR, mF;
-    void getRandomIds(int notId, int &id1, int &id2, int &id3, int &id4);
+    void getRandomIds(size_t notId, size_t &id1, size_t &id2, size_t &id3, size_t &id4);
     bool isCandidateFeasible(int id);
 };
 
