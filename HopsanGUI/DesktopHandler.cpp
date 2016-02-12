@@ -255,8 +255,8 @@ void DesktopHandler::setupPaths()
 
     // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
     qDebug() << "LogdataCache: " << getLogDataPath();
-    //! @todo this is not very smart, what if we start a second instance of Hospan, then the previous ones LogData will be cleared
-    removeDir(getLogDataPath());
+    //! @todo If directory is older then 3 days, then delete it, else keep it, this is not very smart if you have multiple hopsangui instances running for several days
+    removeDir(getLogDataPath(), 3600*24*3);
 }
 
 

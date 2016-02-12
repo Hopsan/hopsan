@@ -460,15 +460,23 @@ void reduceVectorSize(QVector<double> &vector, int newSize)
 }
 
 
-void removeDir(QString path)
+void removeDir(QString path, qint64 age_seconds)
 {
-    QDir dir;
-    dir.setPath(path);
-    Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+
+    // Abort if dir is not old enough
+    QFileInfo dirInfo(path);
+    qint64 age = dirInfo.created().secsTo(QDateTime::currentDateTime());
+    if (dirInfo.isDir() && (age < age_seconds))
     {
-        if (info.isDir())
+        return;
+    }
+
+    QDir dir(path);
+    Q_FOREACH(QFileInfo entryInfo, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+    {
+        if (entryInfo.isDir())
         {
-            removeDir(info.absoluteFilePath());
+            removeDir(entryInfo.absoluteFilePath(), age_seconds);
         }
         else
         {
@@ -478,7 +486,7 @@ void removeDir(QString path)
 //            QProcess browser;
 //            browser.start("cmd", s);
 //#else
-            QFile::remove(info.absoluteFilePath());
+            QFile::remove(entryInfo.absoluteFilePath());
 //#endif
         }
     }

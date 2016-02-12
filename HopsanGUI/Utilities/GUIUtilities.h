@@ -64,7 +64,7 @@ QString parseVariableUnit(QString input);
 QVector< std::complex<double> > realToComplex(const QVector<double> &rRealVector);
 void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
-void removeDir(QString path);
+void removeDir(QString path, qint64 age_seconds=-1);
 void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
