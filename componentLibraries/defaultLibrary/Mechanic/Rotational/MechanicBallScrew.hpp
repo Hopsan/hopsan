@@ -82,10 +82,10 @@ namespace hopsan {
 
         void initialize()
         {
-            double L, ny, ny2, gearRatio, J, B;
+            double L, ny, /*ny2,*/ gearRatio, J, B;
             L = (*mpL);
             ny = (*mpNy);
-            ny2 = (*mpNy2);
+            //ny2 = (*mpNy2);
             J = (*mpJ);
             B = (*mpB);
 
@@ -119,7 +119,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double f1, x1, v1, c1, Zx1,t1;
+            double f1, x1, v1, c1, Zx1/*,t1*/;
             double t2, a2, w2, c2, Zx2;
             double L, ny, ny2, gearRatio, J, B;
             L = (*mpL);
@@ -156,7 +156,7 @@ namespace hopsan {
             w2 = mFilter.update(c1-c2);
             a2 = mInt.update(w2);
             t2 = c2 + Zx2*w2;
-            t1 = c1 - Zx1*w2;
+            //t1 = c1 - Zx1*w2;
 
             v1 = -w2*gearRatioLossless;
             x1 = -a2*gearRatioLossless;
