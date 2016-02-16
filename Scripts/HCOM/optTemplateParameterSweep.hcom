@@ -15,7 +15,9 @@ enddefine
 opt set algorithm parametersweep
 opt set datatype double
 opt set nparams <<<nparams>>>
-opt set length <<<length>>>
+opt set maxevals <<<evals>>>
+opt set nmodels <<<nmodels>>>
+opt set npoints <<<nmodels>>>
 
 <<<setminmax>>>
 

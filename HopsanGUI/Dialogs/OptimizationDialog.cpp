@@ -473,6 +473,7 @@ void OptimizationDialog::updateParameterOutputs(const std::vector<double> &objec
     for(int x=0; x<mParameterOutputIndexes.size(); ++x)
     {
         int i = mParameterOutputIndexes[x];
+        if(i >= objectives.size()) continue;
 
         QString output = "obj: ";
         QString objStr;
@@ -1109,7 +1110,7 @@ void OptimizationDialog::generateParameterSweepScript()
     generateParameterCode(templateCode);
     generateCommonOptions(templateCode);
 
-    int nThreads = gpConfig->getDoubleSetting(CFG_NUMBEROFTHREADS);
+    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
     templateCode.replace("<<<evals>>>", QString::number(mpLengthSpinBox->value()/double(nThreads)));
     templateCode.replace("<<<nmodels>>>", QString::number(nThreads));
 
