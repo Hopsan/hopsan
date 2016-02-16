@@ -698,17 +698,17 @@ void ModelicaLibrary::loadModelicaFile()
 
     gpConfig->setStringSetting(CFG_MODELICAMODELSDIR, QFileInfo(filePath).absoluteFilePath());
 
-    if(!mModelicaFiles.contains(filePath))
-    {
-        mModelicaFiles.append(filePath);
-        gpConfig->addModelicaFile(filePath);
-        reload();
-    }
+    loadModelicaFile(filePath);
 }
 
 void ModelicaLibrary::loadModelicaFile(const QString &fileName)
 {
-
+    if(!mModelicaFiles.contains(fileName))
+    {
+        mModelicaFiles.append(fileName);
+        gpConfig->addModelicaFile(fileName);
+        reload();
+    }
 }
 
 void ModelicaLibrary::unloadModelicaFile(const QString &fileName)
