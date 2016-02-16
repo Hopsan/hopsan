@@ -180,13 +180,18 @@ void FindWidget::findAlias(const QString &rName, const bool centerView)
     }
 }
 
-void FindWidget::findSystemParameter(const QString &rName, const bool centerView)
+void FindWidget::findSystemParameter(const QStringList &rNames, const bool centerView)
 {
     if (mpContainer)
     {
         clearHighlights();
 
-        QRegExp re(rName, Qt::CaseInsensitive);
+        QList<QRegExp> res;
+        for (auto &name : rNames)
+        {
+            res.append(QRegExp(name, Qt::CaseInsensitive));
+        }
+
         QPointF mean;
         int nFound=0;
         const QList<ModelObject*> mops = mpContainer->getModelObjects();
@@ -204,9 +209,16 @@ void FindWidget::findSystemParameter(const QString &rName, const bool centerView
                 splitOnAny(expression,{"+","-","*","/","(",")","^"}, parts);
                 for (QString &part : parts)
                 {
-                    if (re.exactMatch(part))
+                    for (auto &re : res)
                     {
-                        hasPar = true;
+                        if (re.exactMatch(part))
+                        {
+                            hasPar = true;
+                            break;
+                        }
+                    }
+                    if (hasPar)
+                    {
                         break;
                     }
                 }

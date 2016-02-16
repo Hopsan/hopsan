@@ -569,8 +569,16 @@ void SystemParametersWidget::highlightComponents(QModelIndex index)
     {
         return;
     }
-    QString parName = index.model()->data(index, Qt::EditRole).toString();
-    gpFindWidget->findSystemParameter(parName, false);
+    QModelIndexList idxList = mpSysParamTableView->selectionModel()->selectedRows();
+    QStringList names;
+    for (auto &idx : idxList )
+    {
+        names.append(idx.model()->data(idx, Qt::EditRole).toString());
+    }
+    if (!names.isEmpty())
+    {
+        gpFindWidget->findSystemParameter(names, false);
+    }
 }
 
 
