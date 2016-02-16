@@ -350,7 +350,7 @@ void Worker::setParameterLimits(size_t idx, double min, double max)
     mParameterMax[idx] = max;
 }
 
-void Worker::getParameterLimits(size_t idx, double &min, double &max)
+void Worker::getParameterLimits(size_t idx, double &min, double &max) const
 {
     min = mParameterMin[idx];
     max = mParameterMax[idx];
@@ -367,7 +367,7 @@ void Worker::setCandidateObjectiveValue(size_t idx, double value)
 }
 
 
-double Worker::getObjectiveValue(size_t idx)
+double Worker::getObjectiveValue(size_t idx) const
 {
     if(idx > mObjectives.size()-1)
     {

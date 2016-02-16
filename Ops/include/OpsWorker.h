@@ -90,10 +90,10 @@ public:
 
 
     void setParameterLimits(size_t idx, double min, double max);
-    void getParameterLimits(size_t idx, double &min, double &max);
+    void getParameterLimits(size_t idx, double &min, double &max) const;
 
     void setCandidateObjectiveValue(size_t idx, double value);
-    double getObjectiveValue(size_t idx);
+    double getObjectiveValue(size_t idx) const;
     std::vector<double> &getObjectiveValues();
     std::vector<std::vector<double> > &getPoints();
     std::vector<std::vector<double> > &getCandidatePoints();

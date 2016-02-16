@@ -29,7 +29,7 @@ public:
 
     bool aborted() { return mIsAborted; }
 
-    bool setAborted(const bool value) { mIsAborted = value; }
+    void setAborted(const bool value) { mIsAborted = value; }
 
 protected:
     bool mIsAborted;
