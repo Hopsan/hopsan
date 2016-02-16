@@ -123,11 +123,11 @@ namespace hopsan {
             mpP3_Zc = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
 
             //Declare local variables
-            double P1_a, P1_w, P1_T, P1_Je, P1_c, P1_Zc;
+            //double P1_a, P1_w, P1_T, P1_Je, P1_c, P1_Zc;
 
             //Read variable values from nodes
-            const double a1 = (*mpP1_a);
-            const double w1 = (*mpP1_a);
+            //const double a1 = (*mpP1_a);
+            //const double w1 = (*mpP1_a);
             const double t1 = (*mpP1_a);
             const double r = mR;
             
