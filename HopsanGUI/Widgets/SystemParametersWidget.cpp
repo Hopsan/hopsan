@@ -533,7 +533,12 @@ void SystemParametersWidget::openEditParameterDialog()
         }
         mpNewParamUnitQuantityEdit = new QLineEdit(qu, mpAddParameterDialog);
         mpNewParamTypeBox = new ParameterTypeComboBox();
-        //mpNewParamTypeBox->setCurrentText(data.mType);
+        int typeidx = mpNewParamTypeBox->findText(data.mType);
+        if (typeidx >= 0)
+        {
+            mpNewParamTypeBox->setCurrentIndex(typeidx);
+        }
+
 
         QDialogButtonBox *pButtonBox            = new QDialogButtonBox(Qt::Horizontal);
         QPushButton *pCancelInDialogButton      = new QPushButton(tr("Cancel"), mpAddParameterDialog);
