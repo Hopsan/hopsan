@@ -402,7 +402,7 @@ namespace hopsan {
         ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         PortTypesEnumT getPortType() const {return ReadMultiportType;}
 
-        virtual SortHintEnumT getSortHint() const {return Source;}
+        virtual SortHintEnumT getSortHint() const {return Destination;}
         virtual void setSortHint(SortHintEnumT hint){HOPSAN_UNUSED(hint);}
 
     protected:

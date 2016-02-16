@@ -858,19 +858,23 @@ SortHintEnumT SystemPort::getInternalSortHint()
     for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
     {
         Port* pPort = *pit;
-        if (pPort->getSortHint() != NoSortHint)
+        // Only check internal component ports
+        if (pPort->getComponent()->getSystemParent() == this->getComponent())
         {
-            if (pPort->getSortHint() == Source)
+            if (pPort->getSortHint() != NoSortHint)
             {
-                nSources++;
-            }
-            else if (pPort->getSortHint() == Destination)
-            {
-                nDest++;
-            }
-            else
-            {
-                nUndef++;
+                if (pPort->getSortHint() == Source)
+                {
+                    nSources++;
+                }
+                else if (pPort->getSortHint() == Destination)
+                {
+                    nDest++;
+                }
+                else
+                {
+                    nUndef++;
+                }
             }
         }
     }
