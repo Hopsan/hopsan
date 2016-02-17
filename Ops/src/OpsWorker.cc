@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+#include <time.h>
 
 //#include <QDebug>
 #include "OpsWorker.h"
@@ -111,6 +112,8 @@ void Worker::distributePoints()
 
 void Worker::distributePoints(std::vector<std::vector<double> > *pVector)
 {
+    srand ( time(NULL) );
+
     size_t nPoints = pVector->size();
 
     if(mDistribution == SamplingRandom)

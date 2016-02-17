@@ -64,8 +64,8 @@ public:
 
     void setParallelMethod(ParallelMethodT method);
     ParallelMethodT getParallelMethod() const;
-    void setNumberOfPredictions(int value);
-    void setNumberOfRetractions(int value);
+    void setNumberOfPredictions(size_t value);
+    void setNumberOfRetractions(size_t value);
     void setMinimumReflectionFactor(double value);
     void setMaximumReflectionFactor(double value);
 

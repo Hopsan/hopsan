@@ -171,12 +171,12 @@ ParallelMethodT WorkerComplexRFP::getParallelMethod() const
     return mMethod;
 }
 
-void WorkerComplexRFP::setNumberOfPredictions(int value)
+void WorkerComplexRFP::setNumberOfPredictions(size_t value)
 {
     mnPredictions = value;
 }
 
-void WorkerComplexRFP::setNumberOfRetractions(int value)
+void WorkerComplexRFP::setNumberOfRetractions(size_t value)
 {
     mnRetractions = value;
 }
