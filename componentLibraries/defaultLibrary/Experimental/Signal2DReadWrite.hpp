@@ -58,12 +58,19 @@ public:
 
     void configure()
     {
+        // Here we create the BiDirectional 2D port and set the sort hint as "Destination",
+        // it should be paired with a Signal2DWriteRead component that is a "Source"
         mpP2d = addPort("P2d", BiDirectionalSignalPortType, "NodeSignal2D", "The two dimensional signal port", Port::NotRequired);
         mpP2d->setSortHint(Destination);
+
+        // Note! I have inverted the names here, the "write" port is of type ReadPort (input variable) and
+        //       "read" is of type WritePort (output variable)
         addOutputVariable("read","","",0,&mpV1);
-        addInputVariable("write","","",0,&mpV2);
-        //mpPv1 = addPort("v1", BiDirectionalSignalPortType, "NodeSignal", "The first dimension", Port::NotRequired);
-        //mpPv2 = addPort("v2", BiDirectionalSignalPortType, "NodeSignal", "The second dimension", Port::NotRequired);
+        Port * pIVPort = addInputVariable("write","","",0,&mpV2);
+
+        // Here the sort hint is set to independent destination, since the input will not directly affect the output in this time step.
+        // This port will thereby be allowed to break an algebraic loop
+        pIVPort->setSortHint(IndependentDestination);
     }
 
 

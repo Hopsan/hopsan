@@ -687,7 +687,7 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                             pRequiredComponent = pSourcePort->getComponent();
                         }
                     }
-                    if(pRequiredComponent && (pRequiredComponent->getTypeName() != "SignalUnitDelay"))
+                    if(pRequiredComponent /*&& (pRequiredComponent->getTypeName() != "SignalUnitDelay")*/)
                     {
                         if(pRequiredComponent->mpSystemParent == this)
                         {

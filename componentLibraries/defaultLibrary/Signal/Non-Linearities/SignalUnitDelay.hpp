@@ -57,7 +57,8 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("in", "", "", 0.0, &mpND_in);
+            Port *pIVPort = addInputVariable("in", "", "", 0.0, &mpND_in);
+            pIVPort->setSortHint(IndependentDestination);
             addOutputVariable("out", "", "", 0.0, &mpND_out);
         }
 

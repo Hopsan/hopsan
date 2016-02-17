@@ -58,12 +58,15 @@ public:
 
     void configure()
     {
+        // Here we create the BiDirectional 2D port and set the sort hint as "Source",
+        // it should be paired with a Signal2DReadWrite component that is a "Destination"
         mpP2d = addPort("P2d", BiDirectionalSignalPortType, "NodeSignal2D", "The two dimensional signal port", Port::NotRequired);
         mpP2d->setSortHint(Source);
+
+        // Note! I have inverted the names here, the "write" port is of type ReadPort (input variable) and
+        //       "read" is of type WritePort (output variable)
         addInputVariable("write","","",0,&mpV1);
         addOutputVariable("read","","",0,&mpV2);
-        //mpPv1 = addPort("v1", BiDirectionalSignalPortType, "NodeSignal", "The first dimension", Port::NotRequired);
-        //mpPv2 = addPort("v2", BiDirectionalSignalPortType, "NodeSignal", "The second dimension", Port::NotRequired);
     }
 
 

@@ -913,6 +913,7 @@ BiDirectionalSignalPort::BiDirectionalSignalPort(const HString &rNodeType, const
 ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
+    setSortHint(Destination);
     createStartNode(rNodeType);
 }
 
@@ -922,7 +923,15 @@ void ReadPort::writeNodeSafe(const size_t idx, const double value, const size_t 
     HOPSAN_UNUSED(idx)
     HOPSAN_UNUSED(value)
     HOPSAN_UNUSED(subPortIdx)
-    mpComponent->addErrorMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
+            mpComponent->addErrorMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
+}
+
+void ReadPort::setSortHint(SortHintEnumT hint)
+{
+    if (hint == Destination || hint == IndependentDestination)
+    {
+        mSortHint = hint;
+    }
 }
 
 
@@ -1271,7 +1280,15 @@ Port* PowerMultiPort::addSubPort()
 ReadMultiPort::ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     MultiPort(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    // Do nothing special
+    setSortHint(Destination);
+}
+
+void ReadMultiPort::setSortHint(SortHintEnumT hint)
+{
+    if (hint == Destination || hint == IndependentDestination)
+    {
+        mSortHint = hint;
+    }
 }
 
 
