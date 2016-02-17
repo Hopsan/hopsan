@@ -45,14 +45,6 @@ void splitStringOnDelimiter(const std::string &rString, const char delim, std::v
 std::string relativePath(std::string basePath, std::string fullPath);
 std::string getCurrentExecPath();
 
-template <typename T>
-std::string to_string(T val)
-{
-    std::stringstream ss;
-    ss << val;
-    return ss.str();
-}
-
 // ===== Print functions =====
 enum ColorsEnumT {Red, Green, Blue, Yellow, White, Reset};
 void printErrorMessage(const std::string &rError);

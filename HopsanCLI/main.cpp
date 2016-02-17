@@ -52,6 +52,15 @@
 #ifdef USEOPS
 #include "OpsWorker.h"
 #include "OpsEvaluator.h"
+#include "OpsMessageHandler.h"
+#include "OpsWorkerNelderMead.h"
+#include "OpsWorkerComplexRF.h"
+#include "OpsWorkerComplexRFP.h"
+#include "OpsWorkerComplexBurmen.h"
+#include "OpsWorkerControlledRandomSearch.h"
+#include "OpsWorkerDifferentialEvolution.h"
+#include "OpsWorkerParticleSwarm.h"
+#include "OpsWorkerParameterSweep.h"
 #endif
 
 // If debug extension has not already been defined then define it to prevent compilation error
@@ -69,21 +78,99 @@ using namespace hopsan;
 HopsanEssentials gHopsanCore;
 
 #ifdef USEOPS
+class OptimizationMessageHandler : public Ops::MessageHandler
+{
+public:
+    OptimizationMessageHandler(size_t maxEvals)
+    {
+        mMaxEvals = maxEvals;
+    }
+
+    void setWorker(Ops::Worker *pWorker)
+    {
+        mpWorker = pWorker;
+    }
+    void printMessage(const char *msg) { cout << msg << endl; }
+    void objectiveChanged(size_t idx)
+    {
+        (void)idx;
+       // cout << "Objective " << idx << " changed: " << mpWorker->getObjectiveValue(idx) << endl;
+    }
+    void stepCompleted(size_t step)
+    {
+        double best = mpWorker->getObjectiveValue(mpWorker->getBestId());
+        double worst = mpWorker->getObjectiveValue(mpWorker->getWorstId());
+        cout << "Step: " << step << "/" << mMaxEvals << " Best: " << best << " Worst: " << worst << endl;
+    }
+
+private:
+    Ops::Worker *mpWorker;
+    size_t mMaxEvals;
+};
+
 class OptimizationEvaluator : public Ops::Evaluator
 {
 public:
-    OptimizationEvaluator(OptimizationHandler *pHandler);
-    //void evaluateAllPoints();
-    void evaluateCandidate(int idx)
+    OptimizationEvaluator(ComponentSystem *pSystem,
+                          vector<string> parNames,
+                          vector<string> objComps,
+                          vector<string> objPorts,
+                          vector<double> objWeights,
+                          vector<double> parMin,
+                          vector<double> parMax)
     {
-            mpSystem->initialize(0,10);
-            mpSystem->simulate(0.001);
+        mpSystem = pSystem;
+        mParNames = parNames;
+        mObjComps = objComps;
+        mObjPorts = objPorts;
+        mObjWeights = objWeights;
+        mParMin = parMin;
+        mParMax = parMax;
+        mEvaulationCounter = 0;
     }
+
+    //! @todo Make evaluateAll... work in parallel
+
+    //void evaluateAllPoints();
+    void evaluateCandidate(size_t idx)
+    {
+        for(size_t i=0; i<mpWorker->getNumberOfParameters(); ++i)
+        {
+            double par = mpWorker->getCandidateParameter(idx, i);
+            if(!mpSystem->setParameterValue(HString(mParNames[i].c_str()), HString(std::to_string(par).c_str())))
+            {
+                cout << "Error: Parameter " << mParNames[i] << " not found in model." << endl;
+            }
+        }
+        mpSystem->initialize(0,10);
+        mpSystem->simulate(10);
+
+        double obj = 0.0;
+        for(size_t i=0; i<mObjComps.size(); ++i)
+        {
+            int portId = 0;
+            Component *pComp = mpSystem->getSubComponent(mObjComps[i].c_str());
+            Port *pPort = pComp->getPort(mObjPorts[i].c_str());
+            double data = *pPort->getNodeDataPtr(portId);
+            obj += mObjWeights[i]*data;
+        }
+        mpWorker->setCandidateObjectiveValue(idx, obj);
+
+        ++mEvaulationCounter;
+    }
+
+    size_t getNumberOfEvaluations() { return mEvaulationCounter; }
 
     //void evaluateAllCandidates();
 private:
-    vector< vector<double> > *mPoints;
     ComponentSystem *mpSystem;
+    vector<string> mParNames;
+    vector<string> mObjComps;
+    vector<string> mObjPorts;
+    vector<double> mObjWeights;
+    vector<double> mParMin;
+    vector<double> mParMax;
+    size_t mEvaulationCounter;
 };
 #endif
 
@@ -217,11 +304,37 @@ int main(int argc, char *argv[])
             cout << "SCRIPT: " << script << endl;
 
             string algorithm;
+            vector<vector<double> > points;
+            vector<double> objectives;
             vector<string> parNames;
-            vector<string> objVars;
+            vector<string> objComps;
+            vector<string> objPorts;
             vector<double> objWeights;
             vector<double> parMin;
             vector<double> parMax;
+            size_t nPoints = 0;
+            size_t nParams = 0;
+            size_t maxEvals = 0;
+            size_t nThreads = 1;
+            double tolerance = 1e-3;
+            double alpha = 1.3;
+            double beta = 0.3;
+            double gamma = 2.0;
+            double rho = 0.5;
+            double sigma = -0.5;
+            double omega1 = 1.0;
+            double omega2 = 0.5;
+            double C1 = 2;
+            double C2 = 2;
+            double vmax = 2;
+            std::string parallelMethod = "multidistance";
+            double alphaMin = 0.0;
+            double alphaMax = 2.0;
+            size_t nPredictions = 1;
+            size_t nRetractions = 1;
+            double F = 1.0;
+            double CR = 0.5;
+            bool printDebugFile = false;
 
             string line;
             ifstream file;
@@ -240,22 +353,121 @@ int main(int argc, char *argv[])
                         words.push_back(word);
                         //cout << "WORD: " << word << endl;
                     }
+                    if(words.size() > 0 && words[0][0] == '#')
+                    {
+                        continue;
+                    }
                     if(words.size() == 2 && words[0] == "algorithm")
                     {
                         algorithm = words[1];
-                        cout << "ALGORITHM: " << algorithm << endl;
                     }
-                    else if(words.size() == 3 && words[0] == "objective")
+                    else if(words.size() == 2 && words[0] == "maxevals")
                     {
-                        objVars.push_back(words[1]);
-                        objWeights.push_back(words[2]);
+                        maxEvals = std::stoi(words[1]);
+                    }
+                    else if(words.size() == 1 && words[0] == "printdebugfile")
+                    {
+                        printDebugFile = true;
+                    }
+                    else if(words.size() == 2 && words[0] == "npoints")
+                    {
+                        nPoints = std::stoi(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "tolerance")
+                    {
+                        tolerance = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "nthreads")
+                    {
+                        nThreads = std::stoi(words[1]);
+                    }
+                    else if(words.size() == 4 && words[0] == "objective")
+                    {
+                        objComps.push_back(words[1]);
+                        objPorts.push_back(words[2]);
+                        objWeights.push_back(stod(words[3]));
                     }
                     else if(words.size() == 4 && words[0] == "parameter")
                     {
                         parNames.push_back(words[1]);
-                        parMin.push_back(words[2]);
-                        parMax.push_back(words[3]);
+                        parMin.push_back(stod(words[2]));
+                        parMax.push_back(stod(words[3]));
+                        ++nParams;
                     }
+                    else if(words.size() == 2 && words[0] == "alpha")
+                    {
+                        alpha = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "beta")
+                    {
+                        beta = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "gamma")
+                    {
+                        gamma = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "rho")
+                    {
+                        rho = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "omega1")
+                    {
+                        omega1 = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "omega2")
+                    {
+                        omega2 = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "C1")
+                    {
+                        C1 = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "C2")
+                    {
+                        C2 = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "vmax")
+                    {
+                        vmax = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "sigma")
+                    {
+                        sigma = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "parallelmethod")
+                    {
+                        parallelMethod = words[1];
+                    }
+                    else if(words.size() == 2 && words[0] == "alphamin")
+                    {
+                        alphaMin = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "alphamax")
+                    {
+                        alphaMax = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "npredictions")
+                    {
+                        nPredictions = std::stoi(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "nretractions")
+                    {
+                        nRetractions = std::stoi(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "F")
+                    {
+                        F = std::stod(words[1]);
+                    }
+                    else if(words.size() == 2 && words[0] == "CR")
+                    {
+                        CR = std::stod(words[1]);
+                    }
+                }
+                objectives.resize(nPoints);
+                points.resize(nPoints);
+                for(vector<double> &point : points)
+                {
+                    point.resize(nParams);
                 }
             }
             //! @todo Make sure vectors are correct size!
@@ -267,12 +479,138 @@ int main(int argc, char *argv[])
             printWaitingMessages(printDebugOption.getValue());
             if (nErrors < 1)
             {
+                OptimizationEvaluator *pEvaluator = new OptimizationEvaluator(pRootSystem, parNames, objComps, objPorts,
+                                                                              objWeights, parMin, parMax);
 
+                //Initialize base worker
+                Ops::Worker *pBaseWorker;
+                OptimizationMessageHandler *pOpsMessages = new OptimizationMessageHandler(maxEvals);
+                if(algorithm == "neldermead")
+                    pBaseWorker = new Ops::WorkerNelderMead(pEvaluator, pOpsMessages);
+                else if(algorithm == "complexrf")
+                    pBaseWorker = new Ops::WorkerComplexRF(pEvaluator, pOpsMessages);
+                else if(algorithm == "complexrfp")
+                    pBaseWorker = new Ops::WorkerComplexRFP(pEvaluator, pOpsMessages);
+                else if(algorithm == "complexburmen")
+                    pBaseWorker = new Ops::WorkerComplexBurmen(pEvaluator, pOpsMessages);
+                else if(algorithm == "crs")
+                    pBaseWorker = new Ops::WorkerControlledRandomSearch(pEvaluator, pOpsMessages);
+                else if(algorithm == "de")
+                    pBaseWorker = new Ops::WorkerDifferentialEvolution(pEvaluator, pOpsMessages);
+                else if(algorithm == "pso")
+                    pBaseWorker = new Ops::WorkerParticleSwarm(pEvaluator, pOpsMessages);
+                else if(algorithm == "parametersweep")
+                    pBaseWorker = new Ops::WorkerParameterSweep(pEvaluator, pOpsMessages);
+
+                //Set common parameters
+                pEvaluator->setWorker(pBaseWorker);
+                pOpsMessages->setWorker(pBaseWorker);
+                pBaseWorker->setMaxNumberOfIterations(maxEvals);
+                pBaseWorker->setNumberOfCandidates(nThreads);
+                pBaseWorker->setNumberOfParameters(nParams);
+                pBaseWorker->setNumberOfPoints(nPoints);
+                for(size_t p=0; p<parNames.size(); ++p)
+                {
+                    pBaseWorker->setParameterLimits(p,parMin[p],parMax[p]);
+                }
+                pBaseWorker->setTolerance(tolerance);
+                pBaseWorker->setSamplingMethod(Ops::SamplingLatinHypercube);
+
+                //Set algorithm-specific parameters
+                if(algorithm == "neldermead")
+                {
+                    Ops::WorkerNelderMead *pWorker = dynamic_cast<Ops::WorkerNelderMead*>(pBaseWorker);
+                    pWorker->setReflectionFactor(alpha);
+                    pWorker->setContractionFactor(rho);
+                    pWorker->setReductionFactor(sigma);
+                }
+                else if(algorithm == "complexrf")
+                {
+                    Ops::WorkerComplexRF *pWorker = dynamic_cast<Ops::WorkerComplexRF*>(pBaseWorker);
+                    pWorker->setReflectionFactor(alpha);
+                    pWorker->setForgettingFactor(gamma);
+                    pWorker->setRandomFactor(beta);
+                }
+                else if(algorithm == "complexrfp")
+                {
+                    Ops::WorkerComplexRFP *pWorker = dynamic_cast<Ops::WorkerComplexRFP*>(pBaseWorker);
+                    pWorker->setReflectionFactor(alpha);
+                    pWorker->setForgettingFactor(gamma);
+                    pWorker->setRandomFactor(beta);
+                    if(parallelMethod == "taskprediction")
+                    {
+                        pWorker->setParallelMethod(Ops::TaskPrediction);
+                    }
+                    else if(parallelMethod == "multidirection")
+                    {
+                        pWorker->setParallelMethod(Ops::MultiDirection);
+                    }
+                    else if(parallelMethod == "multidistance")
+                    {
+                        pWorker->setParallelMethod(Ops::MultiDistance);
+                    }
+                    pWorker->setMinimumReflectionFactor(alphaMin);
+                    pWorker->setMaximumReflectionFactor(alphaMax);
+                    pWorker->setNumberOfPredictions(nPredictions);
+                    pWorker->setNumberOfRetractions(nRetractions);
+                }
+                else if(algorithm == "complexrburmen")
+                {
+                    Ops::WorkerComplexBurmen *pWorker = dynamic_cast<Ops::WorkerComplexBurmen*>(pBaseWorker);
+                    pWorker->setReflectionFactor(alpha);
+                    pWorker->setRandomFactor(beta);
+                    pWorker->setForgettingFactor(gamma);
+                }
+                else if(algorithm == "de")
+                {
+                    Ops::WorkerDifferentialEvolution *pWorker = dynamic_cast<Ops::WorkerDifferentialEvolution*>(pBaseWorker);
+                    pWorker->setDifferentialWeight(F);
+                    pWorker->setCrossoverProbability(CR);
+                }
+                else if(algorithm == "pso")
+                {
+                    Ops::WorkerParticleSwarm *pWorker = dynamic_cast<Ops::WorkerParticleSwarm*>(pBaseWorker);
+                    pWorker->setOmega1(omega1);
+                    pWorker->setOmega2(omega2);
+                    pWorker->setC1(C1);
+                    pWorker->setC2(C2);
+                    pWorker->setVmax(vmax);
+                }
+
+                //Execute optimization
+                pBaseWorker->initialize();
+                pBaseWorker->run();
+
+                //Print results
+                if(printDebugFile)
+                {
+                    std::ofstream file;
+                    file.open("HopsanCLI_debug.csv", std::ios_base::app);
+                    if (!file.good())
+                    {
+                        printErrorMessage("Could not open HopsanCLI_debug.csv for writing!");
+                    }
+                    else
+                    {
+                        file << pBaseWorker->getAlgorithm() << ",";
+                        file << pBaseWorker->getNumberOfCandidates() << ",";
+                        file << pBaseWorker->getCurrentNumberOfIterations() << ",";
+                        file << pEvaluator->getNumberOfEvaluations() << ",";
+                        file << "0,"; //Surrogate models, no longer used
+                        file << pBaseWorker->getObjectiveValue(pBaseWorker->getBestId());
+                        for(size_t i=0; i<pBaseWorker->getNumberOfParameters(); ++i)
+                        {
+                            file << "," << pBaseWorker->getParameter(pBaseWorker->getBestId(),i);
+                        }
+                        file << endl;
+                        file.close();
+                    }
+                }
             }
         }
 #endif
 
-        if(hmfPathOption.isSet() && !createHvcTestOption.getValue())
+        if(hmfPathOption.isSet() && !createHvcTestOption.getValue() && !optimizationOption.isSet())
         {
             returnSuccess=false;
             printWaitingMessages(printDebugOption.getValue());

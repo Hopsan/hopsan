@@ -19,6 +19,9 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 CONFIG   += console
 CONFIG   -= app_bundle
 
+
+QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__ -Wno-c++0x-compat
+
 #--------------------------------------------------------
 # Set the tclap and rapidxml include path
 INCLUDEPATH *= $${PWD}/../Dependencies/tclap-1.2.1/include
@@ -30,7 +33,7 @@ INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
 INCLUDEPATH *= $${PWD}/../Utilities
 #--------------------------------------------------------
 
-#DEFINES *= USEOPS
+DEFINES *= USEOPS
 contains(DEFINES, USEOPS) {
 INCLUDEPATH *= $${PWD}/../Ops/include
 LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
