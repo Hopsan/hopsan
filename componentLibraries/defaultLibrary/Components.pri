@@ -344,7 +344,9 @@ HEADERS +=  \
  $${PWD}/Special/Special.h \ 
  $${PWD}/Special/TMMS04/Forks.hpp \ 
  $${PWD}/Special/TMMS04/TMMS04.h \ 
- $${PWD}/Components.h
+ $${PWD}/Components.h \
+ $${PWD}/Mechanic/Rotational/MechanicWormDrive.hpp \
+    $$PWD/Mechanic/Rotational/MechanicWormDrive.hpp
 
 SOURCES += 
 

@@ -40,6 +40,7 @@
 #include "MechanicRotationalInertiaWithCoulombFriction.hpp"
 #include "MechanicRotationalInertiaWithGearRatio.hpp"
 #include "MechanicRotationalInertiaWithSingleGear.hpp"
+#include "MechanicWormGear.hpp"
 #include "MechanicThetaSource.hpp"
 #include "MechanicTorqueSensor.hpp"
 #include "MechanicTorqueTransformer.hpp"

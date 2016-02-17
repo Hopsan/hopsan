@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="MechanicWormDrive.hpp" typename="MechanicWormDrive" displayname="Worm Drive with Inertia">
+        <icons>
+            <icon scale="1" path="MechanicWormDrive.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.2087" a="0" name="P1"/>
+            <port x="0.34787997" y="0.656943542" a="90" name="P2"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
