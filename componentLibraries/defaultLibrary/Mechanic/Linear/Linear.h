@@ -42,6 +42,7 @@
 #include "MechanicTranslationalMassWithCoulombFriction.hpp"
 #include "MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp"
 #include "MechanicTranslationalMassWithLever.hpp"
+#include "MechanicTranslationalQSource.hpp"
 #include "MechanicTranslationalSpring.hpp"
 #include "MechanicTranslationalSpringWithSlack.hpp"
 #include "MechanicVelocityTransformer.hpp"

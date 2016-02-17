@@ -42,6 +42,7 @@ pComponentFactory->registerCreatorFunction("MechanicTranslationalMass",MechanicT
 pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulombFriction",MechanicTranslationalMassWithCoulombFriction::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulombFrictionAndMultiPorts",MechanicTranslationalMassWithCoulombFrictionAndMultiPorts::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithLever",MechanicTranslationalMassWithLever::Creator);
+pComponentFactory->registerCreatorFunction("MechanicTranslationalQSource",MechanicTranslationalQSource::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTranslationalSpring",MechanicTranslationalSpring::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTranslationalSpringWithSlack",MechanicTranslationalSpringWithSlack::Creator);
 pComponentFactory->registerCreatorFunction("MechanicVelocityTransformer",MechanicVelocityTransformer::Creator);

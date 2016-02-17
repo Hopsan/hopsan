@@ -36,6 +36,10 @@ HEADERS +=  \
  $${PWD}/Electric/ElectricVarResistor.hpp \ 
  $${PWD}/Electric/ElectricVoltageSourceMultiPortC.hpp \ 
  $${PWD}/Electric/ElectricVoltageSourceQ.hpp \ 
+ $${PWD}/Experimental/Experimental.h \ 
+ $${PWD}/Experimental/Signal2DReadWrite.hpp \ 
+ $${PWD}/Experimental/Signal2DSplit.hpp \ 
+ $${PWD}/Experimental/Signal2DWriteRead.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydraulicCentrifugalPump.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydraulicCentrifugalPumpJ.hpp \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydroDynamicComponents.h \ 
@@ -162,6 +166,7 @@ HEADERS +=  \
  $${PWD}/Mechanic/Linear/MechanicTranslationalMassWithCoulombFriction.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicTranslationalMassWithCoulombFrictionAndMultiPorts.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicTranslationalMassWithLever.hpp \ 
+ $${PWD}/Mechanic/Linear/MechanicTranslationalQSource.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicTranslationalSpring.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicTranslationalSpringWithSlack.hpp \ 
  $${PWD}/Mechanic/Linear/MechanicVelocityTransformer.hpp \ 
@@ -186,6 +191,7 @@ HEADERS +=  \
  $${PWD}/Mechanic/Rotational/MechanicTorqueSensor.hpp \ 
  $${PWD}/Mechanic/Rotational/MechanicTorqueTransformer.hpp \ 
  $${PWD}/Mechanic/Rotational/MechanicTorsionalSpring.hpp \ 
+ $${PWD}/Mechanic/Rotational/MechanicWormDrive.hpp \ 
  $${PWD}/Mechanic/Rotational/Rotational.h \ 
  $${PWD}/Obsolete/Obsolete.h \ 
  $${PWD}/Obsolete/SignalLookUpTable2D.hpp \ 
@@ -344,15 +350,14 @@ HEADERS +=  \
  $${PWD}/Special/Special.h \ 
  $${PWD}/Special/TMMS04/Forks.hpp \ 
  $${PWD}/Special/TMMS04/TMMS04.h \ 
- $${PWD}/Components.h \
- $${PWD}/Mechanic/Rotational/MechanicWormDrive.hpp \
-    $$PWD/Mechanic/Rotational/MechanicWormDrive.hpp
+ $${PWD}/Components.h
 
 SOURCES += 
 
 OTHER_FILES +=  \ 
  $${PWD}/Connectivity/Connectivity.cci \ 
  $${PWD}/Electric/Electric.cci \ 
+ $${PWD}/Experimental/Experimental.cci \ 
  $${PWD}/Hydraulic/HydroDynamicComponents/HydroDynamicComponents.cci \ 
  $${PWD}/Hydraulic/LinearActuators/LinearActuators.cci \ 
  $${PWD}/Hydraulic/MachineParts/MachineParts.cci \ 
