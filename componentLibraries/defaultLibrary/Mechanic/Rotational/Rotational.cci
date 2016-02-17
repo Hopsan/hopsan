@@ -40,7 +40,7 @@ pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaMultiPort",
 pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithCoulombFriction",MechanicRotationalInertiaWithCoulombFriction::Creator);
 pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithGearRatio",MechanicRotationalInertiaWithGearRatio::Creator);
 pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithSingleGear",MechanicRotationalInertiaWithSingleGear::Creator);
-pComponentFactory->registerCreatorFunction("MechanicWormGear",MechanicWormGear::Creator);
+pComponentFactory->registerCreatorFunction("MechanicWormDrive",MechanicWormDrive::Creator);
 pComponentFactory->registerCreatorFunction("MechanicThetaSource",MechanicThetaSource::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTorqueSensor",MechanicTorqueSensor::Creator);
 pComponentFactory->registerCreatorFunction("MechanicTorqueTransformer",MechanicTorqueTransformer::Creator);
