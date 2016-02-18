@@ -48,6 +48,8 @@ class Signal2DReadWrite : public ComponentSignal
 private:
     Port *mpP2d;
     double *mpV1, *mpV2;
+    int m2DPortSortHint;
+
 
 
 public:
@@ -63,6 +65,13 @@ public:
         mpP2d = addPort("P2d", BiDirectionalSignalPortType, "NodeSignal2D", "The two dimensional signal port", Port::NotRequired);
         mpP2d->setSortHint(Destination);
 
+        std::vector<HString> hints;
+        hints.push_back("Destination");
+        hints.push_back("IndependentDestination");
+        addConditionalConstant("sh2d", "2D Port sort hint", hints, 0, m2DPortSortHint);
+
+
+
         // Note! I have inverted the names here, the "write" port is of type ReadPort (input variable) and
         //       "read" is of type WritePort (output variable)
         addOutputVariable("read","","",0,&mpV1);
@@ -71,6 +80,14 @@ public:
         // Here the sort hint is set to independent destination, since the input will not directly affect the output in this time step.
         // This port will thereby be allowed to break an algebraic loop
         pIVPort->setSortHint(IndependentDestination);
+    }
+
+    bool preInitialize()
+    {
+        // Note! This may not work, since the parameter may not have been evaluated
+        // if set from numhop or systemparameter, but it needs to be done here before sorting
+        mpP2d->setSortHint(SortHintEnumT(Destination+m2DPortSortHint));
+        return true;
     }
 
 
