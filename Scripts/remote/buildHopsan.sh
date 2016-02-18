@@ -17,6 +17,10 @@ cd SymHop
 qmake -qt=5
 make -j4 -B
 cd ..
+cd Ops
+qmake -qt=5
+make -j4 -B
+cd ..
 cd HopsanRemote
 qmake -qt=5
 make -j4 -B
