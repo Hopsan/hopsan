@@ -131,6 +131,7 @@ public:
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const double defaultValue, double &rData);
     void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rData);
+    void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, const int defaultValue, int &rData);
 
     void setConstantValue(const HString &rName, const double value);
     void setConstantValue(const HString &rName, const int value);

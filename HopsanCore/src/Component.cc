@@ -484,6 +484,28 @@ void Component::addConditionalConstant(const HString &rName, const HString &rDes
     registerConditionalParameter(rName, rDescription, rConditions, rData);
 }
 
+//! @brief Add (register) a conditional constant parameter to the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rConditions The condition descriptions as a vector of text
+//! @param [in] defaultValue The default value
+//! @param [in] rData A reference to the condition data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
+void Component::addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, const int defaultValue, int &rData)
+{
+    if (defaultValue < int(rConditions.size()))
+    {
+        rData=defaultValue;
+    }
+    else
+    {
+        addWarningMessage("Conditional parameter: "+rName+" defaultValue is out of bounds");
+        rData=0;
+    }
+    registerConditionalParameter(rName, rDescription, rConditions, rData);
+}
+
 //! @brief Add (register) a constant parameter with a default value to the component
 //! @param [in] rName The name of the constant
 //! @param [in] rDescription The description of the constant
