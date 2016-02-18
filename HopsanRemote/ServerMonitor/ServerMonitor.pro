@@ -42,7 +42,8 @@ unix {
 }
 
 SOURCES += main.cpp \
-    ../HopsanServerClient/RemoteHopsanClient.cpp
+    ../HopsanServerClient/RemoteHopsanClient.cpp \
+    ../include/FileAccess.cpp
 
 HEADERS += \
     ../HopsanServerClient/RemoteHopsanClient.h

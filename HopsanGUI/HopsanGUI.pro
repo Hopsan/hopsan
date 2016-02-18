@@ -307,7 +307,8 @@ SOURCES += main.cpp \
     RemoteSimulationUtils.cpp \
     Dialogs/LicenseDialog.cpp \
     Widgets/TimeOffsetWidget.cpp \
-    Dialogs/NumHopScriptDialog.cpp
+    Dialogs/NumHopScriptDialog.cpp \
+    ../HopsanRemote/include/FileAccess.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \

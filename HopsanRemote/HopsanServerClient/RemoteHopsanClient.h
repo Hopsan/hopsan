@@ -51,6 +51,7 @@ public:
                              const int simSteptime, const int simStoptime);
     bool executeShellCommand(const std::string &rCommand);
 
+    bool blockingRequestFile(const std::string &rRequestName, const std::string &rDestinationFilePath, double *pProgress);
     bool blockingSendFile(const std::string &rAbsFilePath, const std::string &rRelFilePath, double *pProgress);
     bool sendFilePart(const std::string &rRelFilePath, const std::string &rData, bool isLastPart);
 

@@ -48,7 +48,8 @@ unix {
 SOURCES += main.cpp \
     $${PWD}/../HopsanServerClient/RemoteHopsanClient.cpp \
     ServerHandler.cpp \
-    RelayHandler.cpp
+    RelayHandler.cpp \
+    ../include/FileAccess.cpp
 
 HEADERS += \
     $${PWD}/../HopsanServerClient/RemoteHopsanClient.h \

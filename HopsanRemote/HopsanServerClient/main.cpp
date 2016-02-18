@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
         TCLAP::MultiArg<std::string> assetsOptions("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
         TCLAP::MultiArg<std::string> shellOptions("", "shellexec", "Command to execute in shell", false, "string", cmd);
+        TCLAP::MultiArg<std::string> requestOptions("", "request", "Request file (only from WD)", false, "string", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -47,13 +48,6 @@ int main(int argc, char* argv[])
             {
                 cout << PRINTCLIENT << "Got server worker slot at port: " << workerPort << endl;
                 rhopsan.connectToWorker(workerPort);
-
-                // Read model
-                ifstream hmf_file(hmfPathOption.getValue());
-                if (!hmf_file.is_open())
-                {
-                    cout << PRINTCLIENT << "Error: Could not open model file " << hmfPathOption.getValue() << endl;
-                }
 
                 // Send model assets
                 const std::vector<std::string> &rAssets = assetsOptions.getValue();
@@ -81,6 +75,44 @@ int main(int argc, char* argv[])
                     cout << "Done!" << endl;
                 }
 
+                // If model is set then try to open it and simulate it remotely
+                if (hmfPathOption.isSet())
+                {
+                    ifstream hmf_file(hmfPathOption.getValue());
+                    if (!hmf_file.is_open())
+                    {
+                        cout << PRINTCLIENT << "Error: Could not open model file " << hmfPathOption.getValue() << endl;
+                    }
+
+
+                    std::stringstream filebuffer;
+                    filebuffer << hmf_file.rdbuf();
+                    rc = rhopsan.sendModelMessage(filebuffer.str());
+                    rhopsan.requestMessages();
+
+                    hmf_file.close();
+
+                    if (rc)
+                    {
+                        rc = rhopsan.sendSimulateMessage(-1, -1, -1, -1, -1);
+                        rhopsan.requestMessages();
+                        if (rc)
+                        {
+                            vector<ResultVariableT> vars;
+                            rc = rhopsan.requestSimulationResults(vars);
+                            cout << PRINTCLIENT << "Results: " << rc << endl;
+                        }
+                        else
+                        {
+                            cout << PRINTCLIENT << "Server could not start the simulation" << endl;
+                        }
+                    }
+                    else
+                    {
+                        cout << PRINTCLIENT << "Server could not load model" << endl;
+                    }
+                }
+
                 // Execute shell commands
                 const std::vector<std::string> &rShellcommands =  shellOptions.getValue();
                 for (const string &rCommand: rShellcommands)
@@ -97,33 +129,14 @@ int main(int argc, char* argv[])
                     }
                 }
 
-
-
-                std::stringstream filebuffer;
-                filebuffer << hmf_file.rdbuf();
-                rc = rhopsan.sendModelMessage(filebuffer.str());
-                rhopsan.requestMessages();
-
-                hmf_file.close();
-
-                if (rc)
+                // Request results (files)
+                const std::vector<std::string> &rRequests = requestOptions.getValue();
+                for (const string &rRequest : rRequests)
                 {
-                    rc = rhopsan.sendSimulateMessage(-1, -1, -1, -1, -1);
-                    rhopsan.requestMessages();
-                    if (rc)
-                    {
-                        vector<ResultVariableT> vars;
-                        rc = rhopsan.requestSimulationResults(vars);
-                        cout << PRINTCLIENT << "Results: " << rc << endl;
-                    }
-                    else
-                    {
-                        cout << PRINTCLIENT << "Server could not start the simulation" << endl;
-                    }
-                }
-                else
-                {
-                    cout << PRINTCLIENT << "Server could not load model" << endl;
+                    cout << PRINTCLIENT << "Requesting: " << rRequest <<  " ... ";
+                    double progress;
+                    rhopsan.blockingRequestFile(rRequest, rRequest, &progress);
+                    cout << "Done!" << endl;
                 }
 
                 cout << PRINTCLIENT << "Sending goodby message!" << endl;

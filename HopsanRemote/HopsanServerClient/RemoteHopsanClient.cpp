@@ -5,6 +5,7 @@
 #include "msgpack.hpp"
 #include "../include/Messages.h"
 #include "../include/MessageUtilities.h"
+#include "../include/FileReceiver.hpp"
 
 #include <iostream>
 #include <thread>
@@ -223,9 +224,78 @@ bool RemoteHopsanClient::executeShellCommand(const string &rCommand)
     return rc;
 }
 
+bool RemoteHopsanClient::blockingRequestFile(const string &rRequestName, const string &rDestinationFilePath, double *pProgress)
+{
+    *pProgress=0;
+    bool isOK = true;
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+    FileReceiver fr;
+
+    bool isDone=false;
+    int fileoffset = 0;
+
+    while (!isDone)
+    {
+        CmdmsgRequestFile requestmsg {rRequestName, fileoffset};
+        sendClientMessage(mpWorkerSocket, RequestFile, requestmsg);
+
+        zmq::message_t reply;
+        string err;
+
+        bool unpackOK;
+        size_t zmqoffset=0;
+        bool rc = receiveWithTimeout(*mpWorkerSocket, reply, mLongReceiveTimeout);
+        if (rc)
+        {
+            int msgid = getMessageId(reply, zmqoffset, unpackOK);
+            if (msgid==SendFile && unpackOK)
+            {
+                CmdmsgSendFile replymsg = unpackMessage<CmdmsgSendFile>(reply, zmqoffset, unpackOK);
+                if (unpackOK)
+                {
+                    bool addOK = fr.addFilePart(replymsg, err);
+                    if (!addOK)
+                    {
+                        cout << "Failed to write file part: " << rRequestName << " to: " << rDestinationFilePath << endl;
+                        isOK = false;
+                    }
+                    fileoffset+=replymsg.data.size();
+                    if (replymsg.islastpart)
+                    {
+                        isDone=true;
+                    }
+                }
+                else
+                {
+                    cout << "Failed to unpack file part: " << rRequestName << endl;
+                    isOK = false;
+                }
+            }
+            else if (msgid == NotAck && unpackOK)
+            {
+                string err = unpackMessage<std::string>(reply, zmqoffset, unpackOK);
+                cout << "Failed in file request: " << err << endl;
+                isOK=false;
+            }
+        }
+        else
+        {
+            cout << "Failed to receive file (request timeout): " << rRequestName << endl;
+            isOK = false;
+        }
+
+        if (!isOK)
+        {
+            break;
+        }
+    }
+
+    return true;
+}
+
 //! @brief Send a file (blocking until the entire file is transferred)
-//! @param[in] rAbsFilePath The absolute filepath, (what file to read from on the local machine)
-//! @param[in] rRelFilePath The filepath "relative to the model", (the file path entered in the model parameter value), this is also the file identifier
+//! @param[in] rAbsFilePath The absolute file path, (what file to read from on the local machine)
+//! @param[in] rRelFilePath The file path "relative to the model", (the file path entered in the model parameter value), this is also the file identifier
 //! @param[out] pProgress The transfer progress 0..1
 bool RemoteHopsanClient::blockingSendFile(const string &rAbsFilePath, const string &rRelFilePath, double *pProgress)
 {

@@ -24,6 +24,7 @@ enum MessageIdsEnumT {
     SetParameter,
     SetModel,
     SendFile,
+    RequestFile,
     ReleaseRelaySlot,
     ExecuteInShell,
 
@@ -127,6 +128,14 @@ public:
     bool islastpart;
 
     MSGPACK_DEFINE(filename, data, islastpart)
+};
+
+class CmdmsgRequestFile
+{
+public:
+    std::string filename;
+    int offset;
+    MSGPACK_DEFINE(filename, offset)
 };
 
 

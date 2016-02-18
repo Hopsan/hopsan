@@ -42,8 +42,12 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES += main.cpp \
+    ../include/FileAccess.cpp \
     RemoteHopsanClient.cpp
 
+
 HEADERS += \
-    RemoteHopsanClient.h
+    RemoteHopsanClient.h \
+    ../include/FileReceiver.hpp \
+    ../include/FileAccess.h
 

@@ -45,8 +45,8 @@ unix {
 # -------------------------------------------------
 
 SOURCES += main.cpp \
-    FileAccess.cpp
+    ../include/FileAccess.cpp
 
 HEADERS += \
-    FileAccess.h
-
+    ../include/FileAccess.h \
+    ../include/FileReceiver.hpp

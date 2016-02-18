@@ -15,6 +15,7 @@
 #include "Messages.h"
 #include "MessageUtilities.h"
 #include "FileAccess.h"
+#include "FileReceiver.hpp"
 
 #include "HopsanEssentials.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -56,102 +57,6 @@ std::string nowDateTime()
     std::strftime(buff, sizeof(buff), "%b %d %H:%M:%S", std::localtime(&now_time));
     return std::string(&buff[0]);
 }
-
-class ModelAssetHandler
-{
-public:
-    void setFileDestination(const std::string &rDestination)
-    {
-        // We do not allow empty destinations as that would cause writing of files relative root directory if absolute path files are added
-        if (!rDestination.empty())
-        {
-            mFileDestination = rDestination;
-        }
-    }
-
-    std::string fileDestination() const
-    {
-        return mFileDestination;
-    }
-
-    bool hasFile(const std::string &rName)
-    {
-        return mFileMap.find(rName) != mFileMap.end();
-    }
-
-    bool isFileComplete(const std::string &rName)
-    {
-        auto it = mFileMap.find(rName);
-        if (it != mFileMap.end())
-        {
-            return it->second;
-        }
-        return false;
-    }
-
-    bool addFilePart(const CmdmsgSendFile &rFilePart)
-    {
-        // As a safety this must be set to avoid accidentally overwriting stuff on the local disc
-        // well you can do that anyway if you set this to something stupid
-        if (mFileDestination.empty())
-        {
-            return false;
-        }
-
-        string dirPath, fileName;
-        splitFilePath(rFilePart.filename, dirPath, fileName);
-
-        FileAccess fa;
-        if(fa.enterDir(mFileDestination))
-        {
-            fa.createDir(dirPath);
-        }
-        string fullFilePath=mFileDestination+rFilePart.filename;
-
-        std::ofstream file;
-        //! @todo what if we have file and send it again, should we truncate or just abort somehow, here it would be nice to know checksum of entire file and tell client we already have it
-        //! @todo maybe better to have a "have file request instead"
-        if (hasFile(fullFilePath))
-        {
-            // Open to append
-            file.open(fullFilePath, ios::out | ios::app | ios::binary);
-        }
-        else
-        {
-            // Open to replace
-            file.open(fullFilePath, ios::out | ios::trunc | ios::binary);
-        }
-
-        if (file.is_open())
-        {
-            // Write data to file
-            file.write(rFilePart.data.data(), rFilePart.data.size());
-
-            // Remember file
-            mFileMap.insert(std::pair<std::string, bool>(fullFilePath, rFilePart.islastpart));
-
-            // Return success
-            //! @todo should check for errors in writing
-            file.close();
-            return true;
-        }
-        cout << PRINTWORKER << " Could not open "<< fullFilePath << " for writing!" << endl;
-        return false;
-    }
-
-    void clear()
-    {
-        // If we forget all files they will be replaced the next time they are received
-        mFileMap.clear();
-        mFileDestination = "./";
-    }
-
-private:
-    //! @todo some file meta data struct instead of iscomplete bool
-    std::map<std::string, bool> mFileMap;
-    std::string mFileDestination = "./";
-
-};
 
 // ------------------------------
 // Model utilities BEGIN
@@ -339,7 +244,7 @@ ComponentSystem *gpRootSystem=nullptr;
 double gSimStartTime, gSimStopTime;
 size_t gNumThreads = 1;
 SimulationHandler gSimulator;
-ModelAssetHandler gModelAssets;
+FileReceiver gModelAssets;
 std::atomic_bool gIsSimulating(false);
 bool gIsModelLoaded = false;
 bool gWasSimulationOK = false;
@@ -664,13 +569,15 @@ int main(int argc, char* argv[])
                     cout << PRINTWORKER << nowDateTime() << " Got file chunk: " << msg.filename << " size: " << msg.data.size() << " finalPart: " << msg.islastpart << endl;
                     if(parseOK)
                     {
-                        bool isok = gModelAssets.addFilePart(msg);
+                        std::string err;
+                        bool isok = gModelAssets.addFilePart(msg, err);
                         if (isok)
                         {
                             sendShortMessage(socket, Ack);
                         }
                         else
                         {
+                            cout << PRINTWORKER << err << endl;
                             sendMessage(socket, NotAck, "Could not save file chunk");
                         }
                     }
@@ -678,6 +585,53 @@ int main(int argc, char* argv[])
                     {
                         cout << PRINTWORKER << nowDateTime() << " Error: Could not parse file chunk" << endl;
                         sendMessage(socket, NotAck, "Could not parse file chunk");
+                    }
+                }
+                else if (msg_id == RequestFile)
+                {
+                    bool parseOK;
+                    CmdmsgRequestFile msg = unpackMessage<CmdmsgRequestFile>(request, offset, parseOK);
+                    cout << PRINTWORKER << nowDateTime() << " Got file request: " << msg.filename << " offset: " << msg.offset << endl;
+                    if(parseOK)
+                    {
+                        //! @todo this is almost a duplicate of the code in the client send function, could use common function
+                        std::ifstream in(msg.filename, std::ifstream::ate | std::ifstream::binary);
+                        if (in.is_open())
+                        {
+                            std::ifstream::pos_type filesize = in.tellg();
+                            in.seekg(0); //Rewind file ptr
+                            in.seekg(msg.offset); // Point to offset
+                            #define MAXFILECHUNKSIZE 2500000 //(2.5 MB)
+                            std::vector<char>  buffer(MAXFILECHUNKSIZE);
+
+                            std::ifstream::pos_type readBytesNow, remaningBytes=(filesize-msg.offset);
+                            while( !in.eof() && (remaningBytes != 0) )
+                            {
+
+                                readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
+                                in.read(buffer.data(), readBytesNow);
+                                std::string data(buffer.data(), readBytesNow);
+
+                                CmdmsgSendFile sendmsg {msg.filename, data, (readBytesNow < MAXFILECHUNKSIZE)};
+                                remaningBytes -= readBytesNow;
+                                cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " data: " << sendmsg.filename << " " <<  sendmsg.data.size() << " " << sendmsg.islastpart << endl;
+                                sendMessage(socket, SendFile, sendmsg);
+                                break;
+                                //cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " Progress: " << *pProgress << endl;
+                            }
+                        }
+                        else
+                        {
+                            cout << PRINTWORKER << nowDateTime() << " Error: Could not open file: " << msg.filename  << endl;
+                            sendMessage(socket, NotAck, "Could not open file: "+msg.filename);
+
+                        }
+                        in.close();
+                    }
+                    else
+                    {
+                        cout << PRINTWORKER << nowDateTime() << " Error: Could not parse file request" << endl;
+                        sendMessage(socket, NotAck, "Could not parse file request");
                     }
                 }
                 else if (msg_id == Simulate)
