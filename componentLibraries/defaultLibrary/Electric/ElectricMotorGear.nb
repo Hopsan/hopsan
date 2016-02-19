@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     32655,        708]
-NotebookOptionsPosition[     31330,        666]
-NotebookOutlinePosition[     31675,        681]
-CellTagsIndexPosition[     31632,        678]
+NotebookDataLength[     32686,        709]
+NotebookOptionsPosition[     31361,        667]
+NotebookOutlinePosition[     31706,        682]
+CellTagsIndexPosition[     31663,        679]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -120,7 +120,7 @@ Cell[BoxData[
      "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Bm", ",", "0.0012", ",", "double", ",", "\"\<Ns/m\>\"", ",", 
+      "Bm", ",", "0.0012", ",", "double", ",", "\"\<Nms/rad\>\"", ",", 
        "\"\<Visc. fric. coeff., motor\>\""}], "}"}], ",", 
      "\[IndentingNewLine]", 
      RowBox[{"{", 
@@ -155,7 +155,8 @@ Cell[BoxData[
    3.5191921193125*^9}, {3.5375240011945553`*^9, 3.53752410979698*^9}, {
    3.537524303775069*^9, 3.537524310884262*^9}, {3.575774247806856*^9, 
    3.5757742483996572`*^9}, {3.5757743357692604`*^9, 
-   3.5757743368612623`*^9}, {3.5757744285638833`*^9, 3.575774442635108*^9}}],
+   3.5757743368612623`*^9}, {3.5757744285638833`*^9, 3.575774442635108*^9}, 
+   3.6648565533374557`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -665,8 +666,8 @@ ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
 }, Open  ]]
 },
 WindowSize->{707, 817},
-WindowMargins->{{Automatic, 284}, {-90, Automatic}},
-FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+WindowMargins->{{124, Automatic}, {47, Automatic}},
+FrontEndVersion->"10.3 for Microsoft Windows (64-bit) (October 9, 2015)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -681,33 +682,33 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[579, 22, 314, 9, 92, "Section",
+Cell[579, 22, 314, 9, 88, "Section",
  Evaluatable->False],
-Cell[896, 33, 1957, 39, 192, "Input"],
+Cell[896, 33, 1957, 39, 212, "Input"],
 Cell[2856, 74, 1055, 21, 112, "Input"],
-Cell[3914, 97, 2711, 60, 232, "Input"],
-Cell[6628, 159, 512, 11, 72, "Input"],
-Cell[7143, 172, 1138, 26, 132, "Input"],
-Cell[8284, 200, 1014, 25, 92, "Input"],
-Cell[9301, 227, 777, 17, 31, "Input"],
-Cell[10081, 246, 2097, 43, 118, "Input"],
-Cell[12181, 291, 1000, 21, 112, "Input"],
-Cell[13184, 314, 696, 13, 31, "Input"],
-Cell[13883, 329, 199, 5, 52, "Input"],
-Cell[14085, 336, 1094, 23, 152, "Input"],
+Cell[3914, 97, 2742, 61, 232, "Input"],
+Cell[6659, 160, 512, 11, 72, "Input"],
+Cell[7174, 173, 1138, 26, 132, "Input"],
+Cell[8315, 201, 1014, 25, 92, "Input"],
+Cell[9332, 228, 777, 17, 31, "Input"],
+Cell[10112, 247, 2097, 43, 118, "Input"],
+Cell[12212, 292, 1000, 21, 112, "Input"],
+Cell[13215, 315, 696, 13, 31, "Input"],
+Cell[13914, 330, 199, 5, 52, "Input"],
+Cell[14116, 337, 1094, 23, 152, "Input"],
 Cell[CellGroupData[{
-Cell[15204, 363, 63, 1, 31, "Input"],
-Cell[15270, 366, 1300, 23, 21, "Message"],
-Cell[16573, 391, 1298, 23, 21, "Message"],
-Cell[17874, 416, 3116, 49, 192, "Message"],
-Cell[20993, 467, 1226, 22, 21, "Message"],
-Cell[22222, 491, 1341, 23, 39, "Message"],
-Cell[23566, 516, 1222, 22, 21, "Message"],
-Cell[24791, 540, 1337, 23, 39, "Message"],
-Cell[26131, 565, 1222, 22, 21, "Message"],
-Cell[27356, 589, 1298, 23, 21, "Message"],
-Cell[28657, 614, 1341, 23, 39, "Message"],
-Cell[30001, 639, 1301, 23, 21, "Message"]
+Cell[15235, 364, 63, 1, 31, "Input"],
+Cell[15301, 367, 1300, 23, 21, "Message"],
+Cell[16604, 392, 1298, 23, 21, "Message"],
+Cell[17905, 417, 3116, 49, 192, "Message"],
+Cell[21024, 468, 1226, 22, 21, "Message"],
+Cell[22253, 492, 1341, 23, 39, "Message"],
+Cell[23597, 517, 1222, 22, 21, "Message"],
+Cell[24822, 541, 1337, 23, 39, "Message"],
+Cell[26162, 566, 1222, 22, 21, "Message"],
+Cell[27387, 590, 1298, 23, 21, "Message"],
+Cell[28688, 615, 1341, 23, 39, "Message"],
+Cell[30032, 640, 1301, 23, 21, "Message"]
 }, Open  ]]
 }, Open  ]]
 }
@@ -715,4 +716,3 @@ Cell[30001, 639, 1301, 23, 21, "Message"]
 *)
 
 (* End of internal cache information *)
-

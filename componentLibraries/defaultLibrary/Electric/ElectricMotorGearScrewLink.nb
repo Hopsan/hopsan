@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     22999,        572]
-NotebookOptionsPosition[     21627,        528]
-NotebookOutlinePosition[     21972,        543]
-CellTagsIndexPosition[     21929,        540]
+NotebookDataLength[     23024,        572]
+NotebookOptionsPosition[     21651,        528]
+NotebookOutlinePosition[     21997,        543]
+CellTagsIndexPosition[     21954,        540]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -130,7 +130,7 @@ Cell[BoxData[
      "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "Bm", ",", "0.0012", ",", "double", ",", "\"\<Ns/m\>\"", ",", 
+      "Bm", ",", "0.0012", ",", "double", ",", "\"\<Nms/rad\>\"", ",", 
        "\"\<Visc. fric. coeff., motor\>\""}], "}"}], ",", 
      "\[IndentingNewLine]", 
      RowBox[{"{", 
@@ -187,7 +187,7 @@ Cell[BoxData[
    3.537524323352693*^9, 3.5375243361023664`*^9}, {3.55074595865625*^9, 
    3.55074596603125*^9}, {3.5934147590676246`*^9, 3.593414760651783*^9}, {
    3.6054549730964985`*^9, 3.6054549784698057`*^9}, {3.605455048858832*^9, 
-   3.605455100500786*^9}}],
+   3.605455100500786*^9}, 3.66485658507437*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -528,7 +528,7 @@ Cell[BoxData[
 },
 WindowSize->{707, 817},
 WindowMargins->{{Automatic, 210}, {-27, Automatic}},
-FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+FrontEndVersion->"10.3 for Microsoft Windows (64-bit) (October 9, 2015)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -543,36 +543,36 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[579, 22, 318, 6, 71, "Section",
+Cell[579, 22, 318, 6, 63, "Section",
  Evaluatable->False],
-Cell[900, 30, 201, 4, 29, "Text"],
-Cell[1104, 36, 2252, 45, 192, "Input"],
+Cell[900, 30, 201, 4, 30, "Text"],
+Cell[1104, 36, 2252, 45, 212, "Input"],
 Cell[3359, 83, 1129, 22, 112, "Input"],
-Cell[4491, 107, 3649, 82, 332, "Input"],
-Cell[8143, 191, 374, 9, 52, "Input"],
-Cell[8520, 202, 1088, 25, 132, "Input"],
-Cell[9611, 229, 1014, 25, 92, "Input"],
-Cell[10628, 256, 771, 17, 31, "Input"],
-Cell[11402, 275, 464, 12, 31, "Input"],
-Cell[11869, 289, 460, 14, 89, "Input"],
-Cell[12332, 305, 2168, 45, 112, "Input"],
+Cell[4491, 107, 3673, 82, 332, "Input"],
+Cell[8167, 191, 374, 9, 52, "Input"],
+Cell[8544, 202, 1088, 25, 132, "Input"],
+Cell[9635, 229, 1014, 25, 92, "Input"],
+Cell[10652, 256, 771, 17, 31, "Input"],
+Cell[11426, 275, 464, 12, 31, "Input"],
+Cell[11893, 289, 460, 14, 89, "Input"],
+Cell[12356, 305, 2168, 45, 132, "Input"],
 Cell[CellGroupData[{
-Cell[14525, 354, 593, 13, 87, "Input",
+Cell[14549, 354, 593, 13, 87, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[15121, 369, 243, 6, 31, "Input",
+Cell[15145, 369, 243, 6, 31, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Closed]],
-Cell[15379, 378, 2681, 56, 126, "Input"],
-Cell[18063, 436, 274, 7, 31, "Input"],
-Cell[18340, 445, 891, 17, 112, "Input"],
+Cell[15403, 378, 2681, 56, 146, "Input"],
+Cell[18087, 436, 274, 7, 31, "Input"],
+Cell[18364, 445, 891, 17, 112, "Input"],
 Cell[CellGroupData[{
-Cell[19256, 466, 823, 15, 31, "Input",
+Cell[19280, 466, 823, 15, 31, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[20082, 483, 280, 7, 52, "Input",
+Cell[20106, 483, 280, 7, 52, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Closed]],
-Cell[20377, 493, 1168, 29, 126, "Input"],
-Cell[21548, 524, 63, 1, 31, "Input"]
+Cell[20401, 493, 1168, 29, 126, "Input"],
+Cell[21572, 524, 63, 1, 31, "Input"]
 }, Open  ]]
 }
 ]
