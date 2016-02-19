@@ -72,16 +72,19 @@ int main(int argc, char *argv[])
 #endif
 
     // Forcing numeric locale to C only using QLocale::setDefault() does not seem to help
-    std::setlocale(LC_NUMERIC, "C");
+    std::setlocale(LC_NUMERIC, "C");                // Set default C locale
+    std::locale::global(std::locale::classic());    // Set default C++ locale (should also set default C locale)
     std::lconv* lc = std::localeconv();
     qDebug() << "Decimal point: " << lc->decimal_point << " thousand separator: \"" << lc->thousands_sep << "\"";
     //  Force QLocale to English/USA
     qDebug() << "QLocale: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
-    QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
+    QLocale::setDefault(QLocale("C"));
     qDebug() << "Changing QLocale to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
     //! @todo this did not help before, DomElement.setAttribute still used comma decimal point on Swedish Ubuntu, now after adding std::setLocale above it might actually work.
     lc = std::localeconv();
-    qDebug() << "Decimal point: " << lc->decimal_point << " thousand separator: \"" << lc->thousands_sep << "\"";
+    qDebug() << "C Decimal point: " << lc->decimal_point << " thousand separator: \"" << lc->thousands_sep << "\"";
+    qDebug() << "C++ locale name: " << std::locale().name().c_str();
+    qDebug() << "QLocale is: " << QLocale().name() << " " << " Decimal point: " << QLocale().decimalPoint();
 
     // Create the mainwindow
     MainWindow mainwindow;
