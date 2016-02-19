@@ -61,6 +61,7 @@ signals:
 public slots:
     void findComponent(const QString &rName, const bool centerView=true);
     void findAlias(const QString &rName, const bool centerView=true);
+    void findSystemParameter(const QString &rName, const bool centerView=true);
     void findSystemParameter(const QStringList &rNames, const bool centerView=true);
     void findAny(const QString &rName);
 

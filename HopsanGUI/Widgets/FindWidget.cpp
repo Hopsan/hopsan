@@ -180,6 +180,12 @@ void FindWidget::findAlias(const QString &rName, const bool centerView)
     }
 }
 
+void FindWidget::findSystemParameter(const QString &rName, const bool centerView)
+{
+    QStringList sl {rName};
+    findSystemParameter(sl, centerView);
+}
+
 void FindWidget::findSystemParameter(const QStringList &rNames, const bool centerView)
 {
     if (mpContainer)
