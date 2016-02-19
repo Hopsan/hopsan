@@ -22,12 +22,25 @@
 
 - Hopsan internally relies on using the U.S English locale ( decimal separator '.' ). 
   Hopsan should internally switch to this mode but if you are using an other locale and ARE HAVING PROBLEMS, try switching to U.S English numeric locale.
+  This problem has been observed on Ubuntu
   
 ******************************
     Version History
 ******************************
-0.7.2  (2016-02-06)
+0.7.3  (2016-02-??)
+- Enhancement: If you select multiple system parameters then all components with selected parameters will be highlight
+- Enhancement: No longer listing system port variables twice in the plot widget
+- Enhancement: PortType is now saved in port tag in model xml (for external tools)
 
+- Bug fixed: If you close a model the numhop script dialog is not closed with it
+- Bug fixed: Sometimes no data is saved in the log variables collected from the core (if you start a second Hopsan instance the cache files were deleted)
+- Bug fixed: It is no longer possible to add or change system parameters in "limitedlocked" systems
+- Bug fixed: When editing a system parameter of other type then double, the type selector still defaults to double
+- Bug fixed: Crash on Windows 8 and 10 after renaming a system port and later saving (or in some other way triggering refresh port appearance)
+- Bug fixed: Parameter sweep optimization is not working, sometime dialog is crashed as well
+
+------------------------------
+0.7.2  (2016-02-06)
 - Feature: Additional versions of the Windows installer and zip release are now available with the compiler included.
            This version will default to the internal compiler (see options to set other compiler paths).
            Note! For compression reasons (to keep the file small) the portable "zip" release including compiler uses the "7z" format
@@ -52,6 +65,7 @@
 - Bug fixed: Fixed rare crash bug in SymHop library 
 - Bug fixed: Fixed crash bugs related to optimization "hidden models"
 
+------------------------------
 0.7.1  (2016-01-28)
 - Enhancement: It is now possible to trigger the "invert plot" function for a data variable through the plot curve controls.
 - Enhancement: The time offset dialog and hcom commands now use the selected default time unit for input and output
@@ -68,7 +82,6 @@
 
 ------------------------------
 0.7.0  (2016-01-26)
-
 - Note: This version has been in development for approximately one year.
         There are many changes that are not mentioned in these release notes.
 - Note: The abs HCOM command has been removed, use the abs() function instead.
