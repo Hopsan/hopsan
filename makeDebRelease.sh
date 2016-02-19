@@ -324,7 +324,7 @@ for i in "${distArchArrayDo[@]}"; do
 done
   
 # Move the package directory
-mv $packagedir $outputDir
+mvrDir $packagedir $outputDir
 # Move the package related files
 mv $outputbasename* $outputDir
 
