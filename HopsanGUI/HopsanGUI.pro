@@ -67,6 +67,7 @@ d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
     INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServerClient
     SOURCES += $${PWD}/../HopsanRemote/HopsanServerClient/RemoteHopsanClient.cpp
     HEADERS += $${PWD}/../HopsanRemote/HopsanServerClient/RemoteHopsanClient.h
+    SOURCES += $${PWD}/../HopsanRemote/include/FileAccess.cpp
 
 } else {
     !build_pass:message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
@@ -307,8 +308,7 @@ SOURCES += main.cpp \
     RemoteSimulationUtils.cpp \
     Dialogs/LicenseDialog.cpp \
     Widgets/TimeOffsetWidget.cpp \
-    Dialogs/NumHopScriptDialog.cpp \
-    ../HopsanRemote/include/FileAccess.cpp
+    Dialogs/NumHopScriptDialog.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
