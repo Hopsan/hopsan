@@ -24,6 +24,8 @@ public:
     double current_simulation_time=-1;
     double simulation_progress=-1;
     double estimated_simulation_time_remaining=-1;
+    bool shell_inprogress=false;
+    bool shell_exitok=false;
 };
 
 class ServerMachineInfoT

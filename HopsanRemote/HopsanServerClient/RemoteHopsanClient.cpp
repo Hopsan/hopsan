@@ -211,7 +211,7 @@ bool RemoteHopsanClient::sendSimulateMessage(const int nLogsamples, const int lo
     return rc;
 }
 
-bool RemoteHopsanClient::executeShellCommand(const string &rCommand)
+bool RemoteHopsanClient::executeShellCommand(const string &rCommand, std::string output)
 {
     std::lock_guard<std::mutex> lock(mWorkerMutex);
     sendClientMessage(mpWorkerSocket, ExecuteInShell, rCommand);
@@ -219,7 +219,7 @@ bool RemoteHopsanClient::executeShellCommand(const string &rCommand)
     bool rc = receiveAckNackMessage(mpWorkerSocket, mShortReceiveTimeout, err);
     if (!rc)
     {
-        cout << err << endl;
+        output = err;
     }
     return rc;
 }

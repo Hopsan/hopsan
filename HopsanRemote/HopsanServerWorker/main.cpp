@@ -246,9 +246,11 @@ size_t gNumThreads = 1;
 SimulationHandler gSimulator;
 FileReceiver gModelAssets;
 std::atomic_bool gIsSimulating(false);
+std::atomic_bool gShellIsExecuting(false);
 bool gIsModelLoaded = false;
 bool gWasSimulationOK = false;
 bool gSimulationFinnished = false;
+bool gShellExecExitOK = false;
 double gInitTime;
 double gSimulationTime;
 double gFinilizeTime;
@@ -308,6 +310,27 @@ void startSimulation(bool *pSimOK)
 
     // Now launch the simulation thread
     std::thread ( simulationThread, pSimOK ).detach();
+}
+
+void waitShellExecThread(pid_t *pPid, std::string *pShellOutput, bool *pExitstatusOK)
+{
+    gShellIsExecuting = true;
+#ifdef _WIN32
+
+#else
+    // Wait for process to prevent zombies from taking over the world
+    int status=1;
+    pid_t waitrc=-1;
+    while (waitrc==-1)
+    {
+        waitrc = waitpid(*pPid, &status, 0);
+    }
+    *pExitstatusOK = (WIFEXITED(status)!=0) && (WEXITSTATUS(status)==0);
+
+    std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< *pPid << " rc: " << waitrc << " status: " << status <<  endl;
+    *pShellOutput = "No ouput availible!";
+#endif
+    gShellIsExecuting = false;
 }
 
 
@@ -472,6 +495,8 @@ int main(int argc, char* argv[])
                         msg.simulation_progress = -1;
                         msg.estimated_simulation_time_remaining = -1;
                     }
+                    msg.shell_inprogress = gShellIsExecuting;
+                    msg.shell_exitok = gShellExecExitOK;
 
                     sendMessage(socket, ReplyWorkerStatus, msg);
                 }
@@ -675,9 +700,15 @@ int main(int argc, char* argv[])
                 {
                     bool parseOK;
                     string command = unpackMessage<string>(request, offset, parseOK);
-                    if (parseOK)
+                    if (gShellIsExecuting)
+                    {
+                        std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command Shell execution is already in progress! " << command << endl;
+                        sendMessage(socket, NotAck, "Failed to execute command, execution is already in progress!");
+                    }
+                    else if (parseOK)
                     {
                         gExecuteInShellOutput.clear();
+                        gShellExecExitOK = false;
 #ifdef _WIN32
                         gExecuteInShellOutput = "ExecuteInShell not supported on Windows Yet";
                         sendMessage(socket, NotAck, gExecuteInShellOutput);
@@ -744,10 +775,11 @@ int main(int argc, char* argv[])
                         delete[] argv;
 
                         // Wait for process to prevent zombies from taking over the world
-                        int stat_loc;
-                        pid_t waitstatus = waitpid(pid, &stat_loc, 0);
-                        std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< pid << " status: " << waitstatus <<  endl;
-                        gExecuteInShellOutput = "No ouput availible yet!";
+                        std::thread(waitShellExecThread, &pid, &gExecuteInShellOutput, &gShellExecExitOK).detach();
+//                        int stat_loc;
+//                        pid_t waitstatus = waitpid(pid, &stat_loc, 0);
+//                        std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< pid << " status: " << waitstatus <<  endl;
+//                        gExecuteInShellOutput = "No ouput availible yet!";
 #endif
                     }
 

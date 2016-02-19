@@ -49,7 +49,7 @@ public:
     bool sendModelMessage(const std::string &rModel);
     bool sendSimulateMessage(const int nLogsamples, const int logStartTime, const int simStarttime,
                              const int simSteptime, const int simStoptime);
-    bool executeShellCommand(const std::string &rCommand);
+    bool executeShellCommand(const std::string &rCommand, std::string output);
 
     bool blockingRequestFile(const std::string &rRequestName, const std::string &rDestinationFilePath, double *pProgress);
     bool blockingSendFile(const std::string &rAbsFilePath, const std::string &rRelFilePath, double *pProgress);

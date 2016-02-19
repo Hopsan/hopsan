@@ -54,7 +54,7 @@ public:
 };
 
 ServerConfig gServerConfig;
-size_t nTakenSlots=0;
+int nTakenSlots=0;
 #ifdef _WIN32
 zmq::context_t gContext(1, 63);
 #else
@@ -411,26 +411,19 @@ int main(int argc, char* argv[])
                 // Handle timeout / exception
             }
 
-            duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
-            if (time_span.count() > 180)
+            if (argAddressServerIP.isSet())
             {
-                cout << PRINTSERVER << nowDateTime() << " Too long since status check: " << time_span.count() << endl;
-
-                // If no one has requested status for this long (and we have a master server) we assume that the master server
-                // has gone down, lets reconnect to it to make sure it knows that we still exist
-                //! @todo maybe this should be handled in the server by saving known servers to file instead
-                if (argAddressServerIP.isSet())
+                duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
+                if (time_span.count() > 180)
                 {
+                    cout << PRINTSERVER << nowDateTime() << " Too long since status check: " << time_span.count() << endl;
+
+                    // If no one has requested status for this long (and we have a master server) we assume that the master server
+                    // has gone down, lets reconnect to it to make sure it knows that we still exist
+                    //! @todo maybe this should be handled in the server by saving known servers to file instead
                     reportToAddressServer(gServerConfig, true);
                 }
             }
-
-            // Do some 'work'
-#ifndef _WIN32
-            //sleep(1);
-#else
-            //Sleep (1);
-#endif
 
             if (s_interrupted)
             {

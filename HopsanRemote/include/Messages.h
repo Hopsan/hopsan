@@ -211,7 +211,8 @@ class ReplymsgReplyWorkerStatus : public WorkerStatusT
 {
 public:
     MSGPACK_DEFINE(model_loaded, simulation_inprogress, simualtion_success, simulation_finished,
-                   current_simulation_time, simulation_progress, estimated_simulation_time_remaining)
+                   current_simulation_time, simulation_progress, estimated_simulation_time_remaining,
+                   shell_inprogress, shell_exitok)
 };
 
 // Message structs typically used be the Adress server

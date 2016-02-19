@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <thread>
 using namespace std;
 
 #define PRINTCLIENT "Client; "
@@ -117,15 +118,43 @@ int main(int argc, char* argv[])
                 const std::vector<std::string> &rShellcommands =  shellOptions.getValue();
                 for (const string &rCommand: rShellcommands)
                 {
-                    cout << PRINTCLIENT << "Remote executing shell command: " << rCommand <<  " ... ";
-                    bool rc = rhopsan.executeShellCommand(rCommand);
+                    cout << PRINTCLIENT << "Remote executing shell command: " << rCommand <<  " ...";
+                    std::string output;
+                    bool rc = rhopsan.executeShellCommand(rCommand, output);
                     if (rc)
                     {
-                        cout << "Success!" << endl;
+                        bool printnewline=true;
+                        auto startT = std::chrono::steady_clock::now();
+                        WorkerStatusT status;
+                        do
+                        {
+                            rhopsan.requestWorkerStatus(status);
+                            if(status.shell_inprogress)
+                            {
+                                if (printnewline)
+                                {
+                                    cout << endl;
+                                    printnewline = false;
+                                }
+                                else
+                                {
+                                    cout << "\r" << "Still running after: " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-startT).count() << " seconds" << flush;
+                                }
+                                std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1000));
+                            }
+                        }while(status.shell_inprogress);
+                        if (status.shell_exitok)
+                        {
+                            cout << " Success!" << endl;
+                        }
+                        else
+                        {
+                            cout << " Failed!   Did not exit OK" << endl;
+                        }
                     }
                     else
                     {
-                        cout << "Failed!" << endl;
+                        cout << " Failed!   " << output << endl;
                     }
                 }
 
