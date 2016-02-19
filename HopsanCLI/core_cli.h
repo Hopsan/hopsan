@@ -44,6 +44,6 @@ class HString;
 
 extern hopsan::HopsanEssentials gHopsanCore;
 
-void printWaitingMessages(const bool printDebug=true);
+void printWaitingMessages(const bool printDebug=true, bool silent=false);
 
 #endif // CORE_CLI_H

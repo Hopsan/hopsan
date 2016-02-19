@@ -81,9 +81,10 @@ HopsanEssentials gHopsanCore;
 class OptimizationMessageHandler : public Ops::MessageHandler
 {
 public:
-    OptimizationMessageHandler(size_t maxEvals)
+    OptimizationMessageHandler(size_t maxEvals, bool silent=false)
     {
         mMaxEvals = maxEvals;
+        mSilent = silent;
     }
 
     void setWorker(Ops::Worker *pWorker)
@@ -98,6 +99,7 @@ public:
     }
     void stepCompleted(size_t step)
     {
+        if(mSilent) return;
         double best = mpWorker->getObjectiveValue(mpWorker->getBestId());
         double worst = mpWorker->getObjectiveValue(mpWorker->getWorstId());
         cout << "Step: " << step << "/" << mMaxEvals << " Best: " << best << " Worst: " << worst << endl;
@@ -106,12 +108,13 @@ public:
 private:
     Ops::Worker *mpWorker;
     size_t mMaxEvals;
+    bool mSilent;
 };
 
 class OptimizationEvaluator : public Ops::Evaluator
 {
 public:
-    OptimizationEvaluator(ComponentSystem *pSystem,
+    OptimizationEvaluator(vector<ComponentSystem *> rootSystemPtrs,
                           vector<string> parNames,
                           vector<string> objComps,
                           vector<string> objPorts,
@@ -119,7 +122,7 @@ public:
                           vector<double> parMin,
                           vector<double> parMax)
     {
-        mpSystem = pSystem;
+        mRootSystemPtrs = rootSystemPtrs;
         mParNames = parNames;
         mObjComps = objComps;
         mObjPorts = objPorts;
@@ -137,19 +140,19 @@ public:
         for(size_t i=0; i<mpWorker->getNumberOfParameters(); ++i)
         {
             double par = mpWorker->getCandidateParameter(idx, i);
-            if(!mpSystem->setParameterValue(HString(mParNames[i].c_str()), HString(std::to_string(par).c_str())))
+            if(!mRootSystemPtrs.at(0)->setParameterValue(HString(mParNames[i].c_str()), HString(std::to_string(par).c_str())))
             {
                 cout << "Error: Parameter " << mParNames[i] << " not found in model." << endl;
             }
         }
-        mpSystem->initialize(0,10);
-        mpSystem->simulate(10);
+        mRootSystemPtrs.at(0)->initialize(0,10);
+        mRootSystemPtrs.at(0)->simulate(10);
 
         double obj = 0.0;
         for(size_t i=0; i<mObjComps.size(); ++i)
         {
             int portId = 0;
-            Component *pComp = mpSystem->getSubComponent(mObjComps[i].c_str());
+            Component *pComp = mRootSystemPtrs.at(0)->getSubComponent(mObjComps[i].c_str());
             Port *pPort = pComp->getPort(mObjPorts[i].c_str());
             double data = *pPort->getNodeDataPtr(portId);
             obj += mObjWeights[i]*data;
@@ -159,11 +162,44 @@ public:
         ++mEvaulationCounter;
     }
 
+    void evaluateAllCandidates()
+    {
+        for(size_t c=0; c<mpWorker->getNumberOfCandidates(); ++c)
+        {
+            for(size_t i=0; i<mpWorker->getNumberOfParameters(); ++i)
+            {
+                double par = mpWorker->getCandidateParameter(c, i);
+                if(!mRootSystemPtrs.at(c)->setParameterValue(HString(mParNames[i].c_str()), HString(std::to_string(par).c_str())))
+                {
+                    cout << "Error: Parameter " << mParNames[i] << " not found in model." << endl;
+                }
+            }
+        }
+
+        gHopsanCore.getSimulationHandler()->initializeSystem(0,10,mRootSystemPtrs);
+        gHopsanCore.getSimulationHandler()->simulateSystem(0,10,mpWorker->getNumberOfCandidates(),mRootSystemPtrs);
+
+        for(size_t c=0; c<mpWorker->getNumberOfCandidates(); ++c)
+        {
+            double obj = 0.0;
+            for(size_t i=0; i<mObjComps.size(); ++i)
+            {
+                int portId = 0;
+                Component *pComp = mRootSystemPtrs.at(c)->getSubComponent(mObjComps[i].c_str());
+                Port *pPort = pComp->getPort(mObjPorts[i].c_str());
+                double data = *pPort->getNodeDataPtr(portId);
+                obj += mObjWeights[i]*data;
+            }
+            mpWorker->setCandidateObjectiveValue(c, obj);
+            ++mEvaulationCounter;
+        }
+    }
+
     size_t getNumberOfEvaluations() { return mEvaulationCounter; }
 
     //void evaluateAllCandidates();
 private:
-    ComponentSystem *mpSystem;
+    vector<ComponentSystem *> mRootSystemPtrs;
     vector<string> mParNames;
     vector<string> mObjComps;
     vector<string> mObjPorts;
@@ -185,6 +221,7 @@ int main(int argc, char *argv[])
         TCLAP::SwitchArg testInstanciateComponentsOption("", "testInstanciateComponents", "Create an instance of each registered component to look for errors.", cmd);
         TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at the end to let you see its output", cmd);
         TCLAP::SwitchArg printDebugOption("", "printDebug", "Show debug messages in the output", cmd);
+        TCLAP::SwitchArg silentOption("", "silent", "Disable all output messages", cmd);
         TCLAP::SwitchArg createHvcTestOption("", "createValidationData","Create a model validation data set based on the variables connected to scopes in the model given by option -m", cmd);
         TCLAP::SwitchArg prefixRootLevelName("", "prefixRootSystemName", "Prefix the root-level system name to exported results and parameters", cmd);
 
@@ -225,7 +262,7 @@ int main(int argc, char *argv[])
             bool rc = buildComponentLibrary(buildCompLibOption.getValue(), output);
             if (!rc)
             {
-                printErrorMessage("Failed to build component library: "+buildCompLibOption.getValue());
+                printErrorMessage("Failed to build component library: "+buildCompLibOption.getValue(), silentOption.getValue());
             }
         }
 
@@ -235,7 +272,7 @@ int main(int argc, char *argv[])
         gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
         // Print initial core messages
-        printWaitingMessages(printDebugOption.getValue());
+        printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
 
         // Load external libs
         vector<string> externalComponentLibraries;
@@ -255,14 +292,14 @@ int main(int argc, char *argv[])
         for (size_t i=0; i<externalComponentLibraries.size(); ++i)
         {
             bool rc = gHopsanCore.loadExternalComponentLib(externalComponentLibraries[i].c_str());
-            printWaitingMessages(printDebugOption.getValue()); // Print after loading
+            printWaitingMessages(printDebugOption.getValue(), silentOption.getValue()); // Print after loading
             if (rc)
             {
-                printColorMessage(Green, "Success loading External library: " + externalComponentLibraries[i]);
+                printColorMessage(Green, "Success loading External library: " + externalComponentLibraries[i], silentOption.getValue());
             }
             else
             {
-                printErrorMessage("Failed to load External library: " + externalComponentLibraries[i]);
+                printErrorMessage("Failed to load External library: " + externalComponentLibraries[i], silentOption.getValue());
             }
         }
 
@@ -276,7 +313,7 @@ int main(int argc, char *argv[])
             {
                 Component *pComp = gHopsanCore.createComponent(types[i].c_str());
                 nErrors += gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages(); + gHopsanCore.getNumWarningMessages();
-                printWaitingMessages(printDebugOption.getValue());
+                printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
                 gHopsanCore.removeComponent(pComp);
             }
             if (nErrors==0)
@@ -315,7 +352,7 @@ int main(int argc, char *argv[])
             size_t nPoints = 0;
             size_t nParams = 0;
             size_t maxEvals = 0;
-            size_t nThreads = 1;
+            size_t nModels = 1;
             double tolerance = 1e-3;
             double alpha = 1.3;
             double beta = 0.3;
@@ -335,12 +372,15 @@ int main(int argc, char *argv[])
             double F = 1.0;
             double CR = 0.5;
             bool printDebugFile = false;
+            bool silent = false;
 
             string line;
             ifstream file;
             file.open(script.c_str());
+            bool scriptFileOk = false;
             if ( file.is_open() )
             {
+                scriptFileOk = true;
                 while ( file.good() )
                 {
                     std::vector<string> words;
@@ -369,6 +409,10 @@ int main(int argc, char *argv[])
                     {
                         printDebugFile = true;
                     }
+                    else if(words.size() == 1 && words[0] == "silent")
+                    {
+                        silent = true;
+                    }
                     else if(words.size() == 2 && words[0] == "npoints")
                     {
                         nPoints = std::stoi(words[1]);
@@ -377,9 +421,9 @@ int main(int argc, char *argv[])
                     {
                         tolerance = std::stod(words[1]);
                     }
-                    else if(words.size() == 2 && words[0] == "nthreads")
+                    else if(words.size() == 2 && words[0] == "nmodels")
                     {
-                        nThreads = std::stoi(words[1]);
+                        nModels = std::stoi(words[1]);
                     }
                     else if(words.size() == 4 && words[0] == "objective")
                     {
@@ -470,141 +514,176 @@ int main(int argc, char *argv[])
                     point.resize(nParams);
                 }
             }
+            else
+            {
+                printErrorMessage("Could not open file: "+script);
+                returnSuccess=false;
+            }
             //! @todo Make sure vectors are correct size!
 
-            cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
-            double startTime=0, stopTime=2;
-            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModelFile(hmfPathOption.getValue().c_str(), startTime, stopTime);
-            size_t nErrors = gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();
-            printWaitingMessages(printDebugOption.getValue());
-            if (nErrors < 1)
+            if(scriptFileOk)
             {
-                OptimizationEvaluator *pEvaluator = new OptimizationEvaluator(pRootSystem, parNames, objComps, objPorts,
-                                                                              objWeights, parMin, parMax);
-
-                //Initialize base worker
-                Ops::Worker *pBaseWorker;
-                OptimizationMessageHandler *pOpsMessages = new OptimizationMessageHandler(maxEvals);
-                if(algorithm == "neldermead")
-                    pBaseWorker = new Ops::WorkerNelderMead(pEvaluator, pOpsMessages);
-                else if(algorithm == "complexrf")
-                    pBaseWorker = new Ops::WorkerComplexRF(pEvaluator, pOpsMessages);
-                else if(algorithm == "complexrfp")
-                    pBaseWorker = new Ops::WorkerComplexRFP(pEvaluator, pOpsMessages);
-                else if(algorithm == "complexburmen")
-                    pBaseWorker = new Ops::WorkerComplexBurmen(pEvaluator, pOpsMessages);
-                else if(algorithm == "crs")
-                    pBaseWorker = new Ops::WorkerControlledRandomSearch(pEvaluator, pOpsMessages);
-                else if(algorithm == "de")
-                    pBaseWorker = new Ops::WorkerDifferentialEvolution(pEvaluator, pOpsMessages);
-                else if(algorithm == "pso")
-                    pBaseWorker = new Ops::WorkerParticleSwarm(pEvaluator, pOpsMessages);
-                else if(algorithm == "parametersweep")
-                    pBaseWorker = new Ops::WorkerParameterSweep(pEvaluator, pOpsMessages);
-
-                //Set common parameters
-                pEvaluator->setWorker(pBaseWorker);
-                pOpsMessages->setWorker(pBaseWorker);
-                pBaseWorker->setMaxNumberOfIterations(maxEvals);
-                pBaseWorker->setNumberOfCandidates(nThreads);
-                pBaseWorker->setNumberOfParameters(nParams);
-                pBaseWorker->setNumberOfPoints(nPoints);
-                for(size_t p=0; p<parNames.size(); ++p)
+                cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
+                double startTime=0, stopTime=2;
+                bool modelFileOk=true;
+                std::vector<ComponentSystem*> rootSystemPtrs;
+                for(size_t m=0; m<nModels; ++m)
                 {
-                    pBaseWorker->setParameterLimits(p,parMin[p],parMax[p]);
-                }
-                pBaseWorker->setTolerance(tolerance);
-                pBaseWorker->setSamplingMethod(Ops::SamplingLatinHypercube);
-
-                //Set algorithm-specific parameters
-                if(algorithm == "neldermead")
-                {
-                    Ops::WorkerNelderMead *pWorker = dynamic_cast<Ops::WorkerNelderMead*>(pBaseWorker);
-                    pWorker->setReflectionFactor(alpha);
-                    pWorker->setContractionFactor(rho);
-                    pWorker->setReductionFactor(sigma);
-                }
-                else if(algorithm == "complexrf")
-                {
-                    Ops::WorkerComplexRF *pWorker = dynamic_cast<Ops::WorkerComplexRF*>(pBaseWorker);
-                    pWorker->setReflectionFactor(alpha);
-                    pWorker->setForgettingFactor(gamma);
-                    pWorker->setRandomFactor(beta);
-                }
-                else if(algorithm == "complexrfp")
-                {
-                    Ops::WorkerComplexRFP *pWorker = dynamic_cast<Ops::WorkerComplexRFP*>(pBaseWorker);
-                    pWorker->setReflectionFactor(alpha);
-                    pWorker->setForgettingFactor(gamma);
-                    pWorker->setRandomFactor(beta);
-                    if(parallelMethod == "taskprediction")
+                    rootSystemPtrs.push_back(gHopsanCore.loadHMFModelFile(hmfPathOption.getValue().c_str(), startTime, stopTime));
+                    if(!rootSystemPtrs.at(m))
                     {
-                        pWorker->setParallelMethod(Ops::TaskPrediction);
+                        printErrorMessage("Could not load model file: " + hmfPathOption.getValue());
+                        modelFileOk=false;
+                        returnSuccess=false;
                     }
-                    else if(parallelMethod == "multidirection")
-                    {
-                        pWorker->setParallelMethod(Ops::MultiDirection);
-                    }
-                    else if(parallelMethod == "multidistance")
-                    {
-                        pWorker->setParallelMethod(Ops::MultiDistance);
-                    }
-                    pWorker->setMinimumReflectionFactor(alphaMin);
-                    pWorker->setMaximumReflectionFactor(alphaMax);
-                    pWorker->setNumberOfPredictions(nPredictions);
-                    pWorker->setNumberOfRetractions(nRetractions);
+                    rootSystemPtrs.at(m)->disableLog();
                 }
-                else if(algorithm == "complexrburmen")
+                size_t nErrors = gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();
+                printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
+                if (nErrors < 1 && modelFileOk)
                 {
-                    Ops::WorkerComplexBurmen *pWorker = dynamic_cast<Ops::WorkerComplexBurmen*>(pBaseWorker);
-                    pWorker->setReflectionFactor(alpha);
-                    pWorker->setRandomFactor(beta);
-                    pWorker->setForgettingFactor(gamma);
-                }
-                else if(algorithm == "de")
-                {
-                    Ops::WorkerDifferentialEvolution *pWorker = dynamic_cast<Ops::WorkerDifferentialEvolution*>(pBaseWorker);
-                    pWorker->setDifferentialWeight(F);
-                    pWorker->setCrossoverProbability(CR);
-                }
-                else if(algorithm == "pso")
-                {
-                    Ops::WorkerParticleSwarm *pWorker = dynamic_cast<Ops::WorkerParticleSwarm*>(pBaseWorker);
-                    pWorker->setOmega1(omega1);
-                    pWorker->setOmega2(omega2);
-                    pWorker->setC1(C1);
-                    pWorker->setC2(C2);
-                    pWorker->setVmax(vmax);
-                }
+                    OptimizationEvaluator *pEvaluator = new OptimizationEvaluator(rootSystemPtrs, parNames, objComps, objPorts,
+                                                                                  objWeights, parMin, parMax);
 
-                //Execute optimization
-                pBaseWorker->initialize();
-                pBaseWorker->run();
-
-                //Print results
-                if(printDebugFile)
-                {
-                    std::ofstream file;
-                    file.open("HopsanCLI_debug.csv", std::ios_base::app);
-                    if (!file.good())
+                    //Initialize base worker
+                    Ops::Worker *pBaseWorker;
+                    Ops::MessageHandler *pOpsMessages;
+                    if(silent)
                     {
-                        printErrorMessage("Could not open HopsanCLI_debug.csv for writing!");
+                        pOpsMessages = new Ops::MessageHandler();
                     }
                     else
                     {
-                        file << pBaseWorker->getAlgorithm() << ",";
-                        file << pBaseWorker->getNumberOfCandidates() << ",";
-                        file << pBaseWorker->getCurrentNumberOfIterations() << ",";
-                        file << pEvaluator->getNumberOfEvaluations() << ",";
-                        file << "0,"; //Surrogate models, no longer used
-                        file << pBaseWorker->getObjectiveValue(pBaseWorker->getBestId());
-                        for(size_t i=0; i<pBaseWorker->getNumberOfParameters(); ++i)
-                        {
-                            file << "," << pBaseWorker->getParameter(pBaseWorker->getBestId(),i);
-                        }
-                        file << endl;
-                        file.close();
+                        pOpsMessages = new OptimizationMessageHandler(maxEvals, silentOption.getValue());
                     }
+                    if(algorithm == "neldermead")
+                        pBaseWorker = new Ops::WorkerNelderMead(pEvaluator, pOpsMessages);
+                    else if(algorithm == "complexrf")
+                        pBaseWorker = new Ops::WorkerComplexRF(pEvaluator, pOpsMessages);
+                    else if(algorithm == "complexrfp")
+                        pBaseWorker = new Ops::WorkerComplexRFP(pEvaluator, pOpsMessages);
+                    else if(algorithm == "complexburmen")
+                        pBaseWorker = new Ops::WorkerComplexBurmen(pEvaluator, pOpsMessages);
+                    else if(algorithm == "crs")
+                        pBaseWorker = new Ops::WorkerControlledRandomSearch(pEvaluator, pOpsMessages);
+                    else if(algorithm == "de")
+                        pBaseWorker = new Ops::WorkerDifferentialEvolution(pEvaluator, pOpsMessages);
+                    else if(algorithm == "pso")
+                        pBaseWorker = new Ops::WorkerParticleSwarm(pEvaluator, pOpsMessages);
+                    else if(algorithm == "parametersweep")
+                        pBaseWorker = new Ops::WorkerParameterSweep(pEvaluator, pOpsMessages);
+                    else
+                        pBaseWorker = new Ops::Worker(pEvaluator, pOpsMessages);
+
+                    //Set common parameters
+                    pEvaluator->setWorker(pBaseWorker);
+                    if(!silent)
+                    {
+                        dynamic_cast<OptimizationMessageHandler*>(pOpsMessages)->setWorker(pBaseWorker);
+                    }
+                    pBaseWorker->setMaxNumberOfIterations(maxEvals);
+                    pBaseWorker->setNumberOfCandidates(nModels);
+                    pBaseWorker->setNumberOfPoints(nPoints);
+                    pBaseWorker->setNumberOfParameters(nParams);
+                    for(size_t p=0; p<parNames.size(); ++p)
+                    {
+                        pBaseWorker->setParameterLimits(p,parMin[p],parMax[p]);
+                    }
+                    pBaseWorker->setTolerance(tolerance);
+                    pBaseWorker->setSamplingMethod(Ops::SamplingLatinHypercube);
+
+                    //Set algorithm-specific parameters
+                    if(algorithm == "neldermead")
+                    {
+                        Ops::WorkerNelderMead *pWorker = dynamic_cast<Ops::WorkerNelderMead*>(pBaseWorker);
+                        pWorker->setReflectionFactor(alpha);
+                        pWorker->setContractionFactor(rho);
+                        pWorker->setReductionFactor(sigma);
+                    }
+                    else if(algorithm == "complexrf")
+                    {
+                        Ops::WorkerComplexRF *pWorker = dynamic_cast<Ops::WorkerComplexRF*>(pBaseWorker);
+                        pWorker->setReflectionFactor(alpha);
+                        pWorker->setForgettingFactor(gamma);
+                        pWorker->setRandomFactor(beta);
+                    }
+                    else if(algorithm == "complexrfp")
+                    {
+                        Ops::WorkerComplexRFP *pWorker = dynamic_cast<Ops::WorkerComplexRFP*>(pBaseWorker);
+                        pWorker->setReflectionFactor(alpha);
+                        pWorker->setForgettingFactor(gamma);
+                        pWorker->setRandomFactor(beta);
+                        if(parallelMethod == "taskprediction")
+                        {
+                            pWorker->setParallelMethod(Ops::TaskPrediction);
+                        }
+                        else if(parallelMethod == "multidirection")
+                        {
+                            pWorker->setParallelMethod(Ops::MultiDirection);
+                        }
+                        else if(parallelMethod == "multidistance")
+                        {
+                            pWorker->setParallelMethod(Ops::MultiDistance);
+                        }
+                        pWorker->setMinimumReflectionFactor(alphaMin);
+                        pWorker->setMaximumReflectionFactor(alphaMax);
+                        pWorker->setNumberOfPredictions(nPredictions);
+                        pWorker->setNumberOfRetractions(nRetractions);
+                    }
+                    else if(algorithm == "complexrburmen")
+                    {
+                        Ops::WorkerComplexBurmen *pWorker = dynamic_cast<Ops::WorkerComplexBurmen*>(pBaseWorker);
+                        pWorker->setReflectionFactor(alpha);
+                        pWorker->setRandomFactor(beta);
+                        pWorker->setForgettingFactor(gamma);
+                    }
+                    else if(algorithm == "de")
+                    {
+                        Ops::WorkerDifferentialEvolution *pWorker = dynamic_cast<Ops::WorkerDifferentialEvolution*>(pBaseWorker);
+                        pWorker->setDifferentialWeight(F);
+                        pWorker->setCrossoverProbability(CR);
+                    }
+                    else if(algorithm == "pso")
+                    {
+                        Ops::WorkerParticleSwarm *pWorker = dynamic_cast<Ops::WorkerParticleSwarm*>(pBaseWorker);
+                        pWorker->setOmega1(omega1);
+                        pWorker->setOmega2(omega2);
+                        pWorker->setC1(C1);
+                        pWorker->setC2(C2);
+                        pWorker->setVmax(vmax);
+                    }
+
+                    //Execute optimization
+                    pBaseWorker->initialize();
+                    pBaseWorker->run();
+
+                    //Print results
+                    if(printDebugFile)
+                    {
+                        std::ofstream file;
+                        file.open("HopsanCLI_debug.csv", std::ios_base::app);
+                        if (!file.good())
+                        {
+                            printErrorMessage("Could not open HopsanCLI_debug.csv for writing!", silentOption.getValue());
+                        }
+                        else
+                        {
+                            file << pBaseWorker->getAlgorithm() << ",";
+                            file << pBaseWorker->getNumberOfCandidates() << ",";
+                            file << pBaseWorker->getCurrentNumberOfIterations() << ",";
+                            file << pEvaluator->getNumberOfEvaluations() << ",";
+                            file << "0,"; //Surrogate models, no longer used
+                            file << pBaseWorker->getObjectiveValue(pBaseWorker->getBestId());
+                            for(size_t i=0; i<pBaseWorker->getNumberOfParameters(); ++i)
+                            {
+                                file << "," << pBaseWorker->getParameter(pBaseWorker->getBestId(),i);
+                            }
+                            file << endl;
+                            file.close();
+                        }
+                    }
+
+                    returnSuccess=true;
                 }
             }
         }
@@ -613,18 +692,18 @@ int main(int argc, char *argv[])
         if(hmfPathOption.isSet() && !createHvcTestOption.getValue() && !optimizationOption.isSet())
         {
             returnSuccess=false;
-            printWaitingMessages(printDebugOption.getValue());
+            printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
 
             if (hvcTestOption.isSet())
             {
-                printWarningMessage("Do not specify a hmf file in combination with the -t (--validate) option. Model should be loaded from the .hvc file");
+                printWarningMessage("Do not specify a hmf file in combination with the -t (--validate) option. Model should be loaded from the .hvc file", silentOption.getValue());
             }
 
             cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
             double startTime=0, stopTime=2;
             ComponentSystem* pRootSystem = gHopsanCore.loadHMFModelFile(hmfPathOption.getValue().c_str(), startTime, stopTime);
             size_t nErrors = gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();
-            printWaitingMessages(printDebugOption.getValue());
+            printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
             if (nErrors < 1)
             {
                 if (parameterImportOption.isSet())
@@ -656,7 +735,7 @@ int main(int argc, char *argv[])
                     // Abort if root model is empty (probably load hmf failed somehow)
                     if (pRootSystem->isEmpty())
                     {
-                        printErrorMessage("The root system seems to be empty, aborting!");
+                        printErrorMessage("The root system seems to be empty, aborting!", silentOption.getValue());
                         doSimulate = false;
                     }
 
@@ -719,8 +798,8 @@ int main(int argc, char *argv[])
                     }
                     else
                     {
-                        printWaitingMessages(printDebugOption.getValue());
-                        printErrorMessage("Initialize failed, Simulation aborted!");
+                        printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
+                        printErrorMessage("Initialize failed, Simulation aborted!", silentOption.getValue());
                     }
 
                     if (doSimulate)
@@ -732,7 +811,7 @@ int main(int argc, char *argv[])
                     }
                     if (pRootSystem->wasSimulationAborted())
                     {
-                        printErrorMessage("Simulation was aborted!");
+                        printErrorMessage("Simulation was aborted!", silentOption.getValue());
                     }
                     else
                     {
@@ -742,7 +821,7 @@ int main(int argc, char *argv[])
                     pRootSystem->finalize();
                 }
 
-                printWaitingMessages(printDebugOption.getValue());
+                printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
 
                 // Check in what formats to export
                 if (resultsFinalCSVOption.isSet())
@@ -762,7 +841,7 @@ int main(int argc, char *argv[])
                     }
                     else if (resultsCSVSortOption.getValue() != "rows")
                     {
-                        printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
+                        printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue(), silentOption.getValue());
                     }
                 }
 
@@ -783,7 +862,7 @@ int main(int argc, char *argv[])
                     }
                     else if (resultsCSVSortOption.getValue() != "rows")
                     {
-                        printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
+                        printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue(), silentOption.getValue());
                     }
                 }
 
@@ -799,7 +878,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                printErrorMessage("There were errors while loading the model");
+                printErrorMessage("There were errors while loading the model", silentOption.getValue());
             }
         }
 
@@ -810,7 +889,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printWaitingMessages(printDebugOption.getValue());
+            printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
             cout << endl << "HopsanCLI Done!" << endl;
         }
 

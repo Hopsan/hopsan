@@ -40,8 +40,10 @@ using namespace std;
 
 //! @brief Prints all waiting messages
 //! @param[in] printDebug Should debug messages also be printed
-void printWaitingMessages(const bool printDebug)
+void printWaitingMessages(const bool printDebug, bool silent)
 {
+    if(silent) return;
+
     hopsan::HString msg, type, tag;
     while (gHopsanCore.checkMessage() > 0)
     {

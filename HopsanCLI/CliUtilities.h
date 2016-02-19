@@ -47,9 +47,9 @@ std::string getCurrentExecPath();
 
 // ===== Print functions =====
 enum ColorsEnumT {Red, Green, Blue, Yellow, White, Reset};
-void printErrorMessage(const std::string &rError);
-void printWarningMessage(const std::string &rWarning);
-void printColorMessage(const ColorsEnumT color, const std::string &rMessage);
+void printErrorMessage(const std::string &rError, bool silent=false);
+void printWarningMessage(const std::string &rWarning, bool silent=false);
+void printColorMessage(const ColorsEnumT color, const std::string &rMessage, bool silent=false);
 void setTerminalColor(const ColorsEnumT color);
 
 // ===== Sys Functions =====

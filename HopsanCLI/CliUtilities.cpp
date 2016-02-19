@@ -49,8 +49,10 @@ using namespace std;
 
 //! @brief Prints a message with red color (resets color to defaul after)
 //! @param[in] rError The error message
-void printErrorMessage(const std::string &rError)
+void printErrorMessage(const std::string &rError, bool silent)
 {
+    if(silent) return;
+
     setTerminalColor(Red);
     cout << "Error: " << rError << endl;
     setTerminalColor(Reset);
@@ -58,8 +60,10 @@ void printErrorMessage(const std::string &rError)
 
 //! @brief Prints a message with yellow color (resets color to defaul after)
 //! @param[in] rWarning The warning message
-void printWarningMessage(const std::string &rWarning)
+void printWarningMessage(const std::string &rWarning, bool silent)
 {
+    if(silent) return;
+
     setTerminalColor(Yellow);
     cout << "Warning: " << rWarning << endl;
     setTerminalColor(Reset);
@@ -68,8 +72,10 @@ void printWarningMessage(const std::string &rWarning)
 //! @brief Prints a message with green color (resets color to defaul after)
 //! @param[in] color The text color for the message
 //! @param[in] rMessage The message
-void printColorMessage(const ColorsEnumT color, const std::string &rMessage)
+void printColorMessage(const ColorsEnumT color, const std::string &rMessage, bool silent)
 {
+    if(silent) return;
+
     setTerminalColor(color);
     cout << rMessage << endl;
     setTerminalColor(Reset);
