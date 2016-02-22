@@ -698,6 +698,20 @@ void RemoteHopsanClient::disconnect()
     disconnectAddressServer();
 }
 
+bool RemoteHopsanClient::sendUserIdentification(const string &rUserName, const string &rPassword)
+{
+    std::lock_guard<std::mutex> lock(mWorkerMutex);
+    CmdmsgIdentifyUser msg = {rUserName, rPassword};
+    sendClientMessage(mpWorkerSocket, IdentifyUser, msg);
+    std::string nackmsg;
+    bool rc = receiveAckNackMessage(mpWorkerSocket, mShortReceiveTimeout, nackmsg);
+    if (!rc)
+    {
+        setLastError(nackmsg);
+    }
+    return rc;
+}
+
 bool RemoteHopsanClient::blockingSimulation(const int nLogsamples, const int logStartTime, const int simStarttime,
                                             const int simSteptime, const int simStoptime, double *pProgress)
 {
@@ -707,9 +721,9 @@ bool RemoteHopsanClient::blockingSimulation(const int nLogsamples, const int log
         bool isAlive;
         std::thread t(&RemoteHopsanClient::requestWorkerStatusThread, this, pProgress, &isAlive);
         t.join();
-	WorkerStatusT status;
-	requestWorkerStatus(status);
-	return (status.model_loaded && status.simualtion_success);
+        WorkerStatusT status;
+        requestWorkerStatus(status);
+        return (status.model_loaded && status.simualtion_success);
     }
     return initOK;
 }

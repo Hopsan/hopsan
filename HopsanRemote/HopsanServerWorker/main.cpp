@@ -47,7 +47,7 @@ typedef struct
     string alias;
 }ModelVariableInfo_t;
 
-string gWorkerId;
+string gWorkerId, gUserName;
 #define PRINTWORKER "Worker "+gWorkerId+"; "
 
 std::string nowDateTime()
@@ -174,7 +174,7 @@ bool setParameter(ComponentSystem *pSystem, HString &fullname, const HString &rV
                     }
                     else if (cpv.size() == 3)
                     {
-                        // Set component name and restor the (startvalue) name
+                        // Set component name and restore the (start value) name
                         parameter = cpv[1]+"#"+cpv[2];
                     }
 
@@ -619,8 +619,14 @@ int main(int argc, char* argv[])
                     cout << PRINTWORKER << nowDateTime() << " Got file request: " << msg.filename << " offset: " << msg.offset << endl;
                     if(parseOK)
                     {
+                        string filepath="./";
+                        if (!gUserName.empty())
+                        {
+                            filepath+=gUserName+"/";
+                        }
+                        filepath += msg.filename;
                         //! @todo this is almost a duplicate of the code in the client send function, could use common function
-                        std::ifstream in(msg.filename, std::ifstream::ate | std::ifstream::binary);
+                        std::ifstream in(filepath, std::ifstream::ate | std::ifstream::binary);
                         if (in.is_open())
                         {
                             std::ifstream::pos_type filesize = in.tellg();
@@ -637,7 +643,7 @@ int main(int argc, char* argv[])
                                 in.read(buffer.data(), readBytesNow);
                                 std::string data(buffer.data(), readBytesNow);
 
-                                CmdmsgSendFile sendmsg {msg.filename, data, (readBytesNow < MAXFILECHUNKSIZE)};
+                                CmdmsgSendFile sendmsg {filepath, data, (readBytesNow < MAXFILECHUNKSIZE)};
                                 remaningBytes -= readBytesNow;
                                 cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " data: " << sendmsg.filename << " " <<  sendmsg.data.size() << " " << sendmsg.islastpart << endl;
                                 sendMessage(socket, SendFile, sendmsg);
@@ -647,8 +653,8 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            cout << PRINTWORKER << nowDateTime() << " Error: Could not open file: " << msg.filename  << endl;
-                            sendMessage(socket, NotAck, "Could not open file: "+msg.filename);
+                            cout << PRINTWORKER << nowDateTime() << " Error: Could not open file: " << filepath << endl;
+                            sendMessage(socket, NotAck, "Could not open file: "+filepath);
 
                         }
                         in.close();
@@ -759,6 +765,7 @@ int main(int argc, char* argv[])
                         }
                         cout << endl;
 
+                        //! @todo need to be able to switch working directory here (to user name)
                         pid_t pid;
                         int status = posix_spawn(&pid,process.c_str(),nullptr,nullptr,argv,environ);
                         if(status == 0)
@@ -776,10 +783,6 @@ int main(int argc, char* argv[])
 
                         // Wait for process to prevent zombies from taking over the world
                         std::thread(waitShellExecThread, &pid, &gExecuteInShellOutput, &gShellExecExitOK).detach();
-//                        int stat_loc;
-//                        pid_t waitstatus = waitpid(pid, &stat_loc, 0);
-//                        std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< pid << " status: " << waitstatus <<  endl;
-//                        gExecuteInShellOutput = "No ouput availible yet!";
 #endif
                     }
 
@@ -922,6 +925,34 @@ int main(int argc, char* argv[])
                     else
                     {
                         sendMessage(socket, NotAck, "No simulation running");
+                    }
+                }
+                else if (msg_id == IdentifyUser)
+                {
+                    bool parseOK;
+                    CmdmsgIdentifyUser msg = unpackMessage<CmdmsgIdentifyUser>(request, offset, parseOK);
+                    if (parseOK)
+                    {
+                        cout << PRINTWORKER << nowDateTime() << " Client identifying user: " << msg.username << endl;
+                        //! @todo check password
+                        bool passwordOK=true;
+                        if (passwordOK)
+                        {
+                            gUserName = msg.username;
+                            FileAccess fa;
+                            fa.enterDir(".");
+                            fa.createDir(msg.username);
+                            gModelAssets.setFileDestination("./"+msg.username);
+                            sendShortMessage(socket, Ack);
+                        }
+                        else
+                        {
+                            sendMessage(socket, NotAck, "Wrong message");
+                        }
+                    }
+                    else
+                    {
+                        sendMessage(socket, NotAck, "Could not parse user identification");
                     }
                 }
                 else if (msg_id == ClientClosing)

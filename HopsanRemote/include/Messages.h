@@ -50,7 +50,11 @@ enum MessageIdsEnumT {
     ReplyResults,
     ReplyMessages,
     ReplyShellOutput,
-    ReplyRelaySlot};
+    ReplyRelaySlot,
+
+    /* Work in progress (last to avoid breaking compatibility */
+    IdentifyUser
+};
 
 MSGPACK_ADD_ENUM(MessageIdsEnumT)
 
@@ -138,6 +142,14 @@ public:
     MSGPACK_DEFINE(filename, offset)
 };
 
+class CmdmsgIdentifyUser
+{
+public:
+    std::string username;
+    std::string password;
+    MSGPACK_DEFINE(username, password)
+};
+
 
 // Message structures for messages typically used by Servers
 
@@ -180,7 +192,7 @@ public:
 };
 
 
-// Message structs typically used be the Workers
+// Message structs typically used by the Workers
 
 class ReplymsgReplyParameter
 {
@@ -215,7 +227,7 @@ public:
                    shell_inprogress, shell_exitok)
 };
 
-// Message structs typically used be the Adress server
+// Message structs typically used by the Adress server
 
 class ReplymsgReplyServerMachine : public ServerMachineInfoT
 {

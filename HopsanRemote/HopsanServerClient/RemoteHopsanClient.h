@@ -40,6 +40,8 @@ public:
     void disconnectServer();
     void disconnect();
 
+    bool sendUserIdentification(const std::string &rUserName, const std::string &rPassword);
+
     bool blockingSimulation(const int nLogsamples, const int logStartTime, const int simStarttime,
                             const int simSteptime, const int simStoptime, double *pProgress);
     bool blockingBenchmark(const std::string &rModel, const int nThreads, double &rSimTime);
