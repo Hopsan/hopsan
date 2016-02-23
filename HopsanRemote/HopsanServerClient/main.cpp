@@ -20,11 +20,12 @@ int main(int argc, char* argv[])
         TCLAP::CmdLine cmd("RemoteHopsanClient");
 
         // Define a value argument and add it to the command line.
-        TCLAP::ValueArg<std::string> serverAddrOption("s", "serverip", "Server IP address and port (default is localhost:45050)", false, "localhost:45050", "IP address", cmd);
-        TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
-        TCLAP::MultiArg<std::string> assetsOptions("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
         TCLAP::MultiArg<std::string> shellOptions("", "shellexec", "Command to execute in shell", false, "string", cmd);
         TCLAP::MultiArg<std::string> requestOptions("", "request", "Request file (only from WD)", false, "string", cmd);
+        TCLAP::MultiArg<std::string> assetsOptions("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
+        TCLAP::ValueArg<std::string> userOption("u","user","The user identification string",false,"","user:password or user", cmd);
+        TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
+        TCLAP::ValueArg<std::string> serverAddrOption("s", "serverip", "Server IP address and port (default is localhost:45050)", false, "localhost:45050", "IP address", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -49,6 +50,22 @@ int main(int argc, char* argv[])
             {
                 cout << PRINTCLIENT << "Got server worker slot at port: " << workerPort << endl;
                 rhopsan.connectToWorker(workerPort);
+
+                // Send user identification
+                if (userOption.isSet())
+                {
+                    string nameandpasswd = userOption.getValue();
+                    string username = nameandpasswd;
+                    string password;
+                    size_t e = nameandpasswd.find_last_of(':');
+                    if (e != string::npos)
+                    {
+                        username = nameandpasswd.substr(0, e);
+                        password = nameandpasswd.substr(e+1);
+                    }
+
+                    rhopsan.sendUserIdentification(username, password);
+                }
 
                 // Send model assets
                 const std::vector<std::string> &rAssets = assetsOptions.getValue();

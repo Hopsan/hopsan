@@ -60,7 +60,7 @@ public:
         {
             fa.createDir(dirPath);
         }
-        std::string fullFilePath=mFileDestination+rFilePart.filename;
+        std::string fullFilePath=mFileDestination+"/"+rFilePart.filename;
 
         std::ofstream file;
         //! @todo what if we have file and send it again, should we truncate or just abort somehow, here it would be nice to know checksum of entire file and tell client we already have it

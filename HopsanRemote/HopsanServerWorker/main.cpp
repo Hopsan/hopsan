@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <thread>
 #include <atomic>
+#include <array>
 
 #include "zmq.hpp"
 
@@ -636,19 +637,30 @@ int main(int argc, char* argv[])
                             std::vector<char>  buffer(MAXFILECHUNKSIZE);
 
                             std::ifstream::pos_type readBytesNow, remaningBytes=(filesize-msg.offset);
-                            while( !in.eof() && (remaningBytes != 0) )
+                            // Handle request of empty file
+                            if (remaningBytes == 0)
                             {
-
-                                readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
-                                in.read(buffer.data(), readBytesNow);
-                                std::string data(buffer.data(), readBytesNow);
-
-                                CmdmsgSendFile sendmsg {filepath, data, (readBytesNow < MAXFILECHUNKSIZE)};
-                                remaningBytes -= readBytesNow;
-                                cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " data: " << sendmsg.filename << " " <<  sendmsg.data.size() << " " << sendmsg.islastpart << endl;
+                                cout << "Sending empty file: " << filepath << endl;
+                                string data;
+                                CmdmsgSendFile sendmsg {msg.filename, data, true};
                                 sendMessage(socket, SendFile, sendmsg);
-                                break;
-                                //cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " Progress: " << *pProgress << endl;
+                            }
+                            // Handle non-empty file
+                            else
+                            {
+                                while( !in.eof() && (remaningBytes != 0) )
+                                {
+                                    readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
+                                    in.read(buffer.data(), readBytesNow);
+                                    std::string data(buffer.data(), readBytesNow);
+
+                                    CmdmsgSendFile sendmsg {msg.filename, data, (readBytesNow < MAXFILECHUNKSIZE)};
+                                    remaningBytes -= readBytesNow;
+                                    cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " data: " << sendmsg.filename << " " <<  sendmsg.data.size() << " " << sendmsg.islastpart << endl;
+                                    sendMessage(socket, SendFile, sendmsg);
+                                    break;
+                                    //cout << "fileSize: " << filesize << " bytesNow: "<< readBytesNow << " remaningBytes: " << remaningBytes << " isDone: " << (readBytesNow < MAXFILECHUNKSIZE) << " Progress: " << *pProgress << endl;
+                                }
                             }
                         }
                         else
@@ -723,54 +735,28 @@ int main(int argc, char* argv[])
                         //! @todo how to abort if child hangs
                         //!
 
-                        // Split command on first space
-                        string process;
-                        vector<string> args;
-
-                        size_t p = command.find_first_of(" ");
-                        if (p != string::npos)
+                        cout << "Command: " << command << endl;
+                        string process = "/bin/bash";
+                        string carg = "-c";
+                        string command2;
+                        if (!gUserName.empty())
                         {
-                            process = command.substr(0,p);
-                            do
-                            {
-                                size_t n = command.find_first_of(" ",p+1);
-                                string arg = command.substr(p+1, n-p-1);
-                                if (arg != " ")
-                                {
-                                    args.push_back(arg);
-                                }
-                                if (n==string::npos)
-                                {
-                                    break;
-                                }
-                                p = n;
-                                n = command.find_first_of(" ",p+1);
-                            }while(true);
+                            command2.append("PATH=`pwd`:$PATH$; cd "+gUserName+"; ");
                         }
-                        else
-                        {
-                            process = command;
-                        }
-                        cout << args.size() << endl;
-                        cout << "Process: " << process << " Args:";// << args << endl;
+                        command2.append(command);
 
-                        // Populate argv ptrs
-                        char** argv = new char*[args.size()+2];
-                        argv[0] = &process[0];
-                        argv[args.size()+1] = nullptr;
-                        for (size_t i=1; i<args.size()+1; ++i)
+                        std::array<char*, 4> argv = {&process[0], &carg[0], &command2[0], nullptr};
+                        for (size_t i=0; i<argv.size()-1; ++i)
                         {
-                            cout << args[i-1] << ",";
-                            argv[i] = &args[i-1][0];
+                            cout << argv[i] << " ";
                         }
                         cout << endl;
 
-                        //! @todo need to be able to switch working directory here (to user name)
                         pid_t pid;
-                        int status = posix_spawn(&pid,process.c_str(),nullptr,nullptr,argv,environ);
+                        int status = posix_spawn(&pid,argv.front(),nullptr,nullptr,argv.data(),environ);
                         if(status == 0)
                         {
-                            std::cout << PRINTWORKER << nowDateTime() << " Executed command: " << command << " with pid: "<< pid << endl;
+                            std::cout << PRINTWORKER << nowDateTime() << " Executed command: " << command2 << " with pid: "<< pid << endl;
                             sendShortMessage(socket, Ack);
                         }
                         else
@@ -778,8 +764,6 @@ int main(int argc, char* argv[])
                             std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command! " << command << endl;
                             sendMessage(socket, NotAck, "Failed to execute command!");
                         }
-
-                        delete[] argv;
 
                         // Wait for process to prevent zombies from taking over the world
                         std::thread(waitShellExecThread, &pid, &gExecuteInShellOutput, &gShellExecExitOK).detach();
