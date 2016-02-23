@@ -46,7 +46,7 @@ Component* hopsan::createSafeComponent(ComponentSystem *pSystem, const HString &
     return pComp;
 }
 
-//! @brief Help function that only call connect if the ports are not already connected
+//! @brief Help function that only call connect if the ports are not already connected to each other
 //! @param [in] pSystem The system to handle the connection
 //! @param [in] pPort1 The first port to connect
 //! @param [in] pPort2 The other port to connect
@@ -54,6 +54,17 @@ Component* hopsan::createSafeComponent(ComponentSystem *pSystem, const HString &
 //! @returns true if connection was OK, else false
 bool hopsan::smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2)
 {
+    // Fail if any pointer is nullptr
+    if (!pSystem)
+    {
+        return false;
+    }
+    if (!(pPort1 && pPort2))
+    {
+        pSystem->addErrorMessage("In smartConnect(): pPort1 or pPort2 is 0");
+        return false;
+    }
+
     if (!pPort1->isConnectedTo(pPort2))
     {
         return pSystem->connect(pPort1, pPort2);
@@ -61,7 +72,7 @@ bool hopsan::smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2)
     return true;
 }
 
-//! @brief Help function that only call disconnect if the ports are connected
+//! @brief Help function that only call disconnect if the ports are connected to each other
 //! @param [in] pSystem The system to handle the disconnection
 //! @param [in] pPort1 The first port to disconnect
 //! @param [in] pPort2 The other port to disconnect
@@ -69,6 +80,17 @@ bool hopsan::smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2)
 //! @returns true if disconnection was OK, else false
 bool hopsan::smartDisconnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2)
 {
+    // Fail if any pointer is nullptr
+    if (!pSystem)
+    {
+        return false;
+    }
+    if (!(pPort1 && pPort2))
+    {
+        pSystem->addErrorMessage("In smartConnect(): pPort1 or pPort2 is 0");
+        return false;
+    }
+
     if (pPort1->isConnectedTo(pPort2))
     {
         return pSystem->disconnect(pPort1, pPort2);
