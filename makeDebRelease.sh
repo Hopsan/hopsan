@@ -14,8 +14,8 @@ name=hopsan
 devversion=0.7.x
 
 # Pbuilder dists and archs
-debianDistArchArray=( stretch:amd64:qt5 stretch:i386:qt5 jessie:amd64:qt5 jessie:i386:qt5 wheezy:amd64:qt4 wheezy:i386:qt4 )
-ubuntuDistArchArray=( wily:amd64:qt5 wily:i386:qt5 vivid:amd64:qt5 vivid:i386:qt5 trusty:amd64:qt4 trusty:i386:qt4 )
+debianDistArchArray=( stretch:amd64:qt5 stretch:i386:qt5 jessie:amd64:qt5 jessie:i386:qt5 )
+ubuntuDistArchArray=( wily:amd64:qt5 wily:i386:qt5 trusty:amd64:qt4 trusty:i386:qt4 )
 
 # Pbuilder mirrors
 ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
