@@ -27,10 +27,14 @@
 ******************************
     Version History
 ******************************
-0.7.3  (2016-02-??)
+0.7.3  (2016-02-23)
+- Feature: Running optimizations from HopsanCLI
+
 - Enhancement: If you select multiple system parameters then all components with selected parameters will be highlight
 - Enhancement: No longer listing system port variables twice in the plot widget
 - Enhancement: PortType is now saved in port tag in model xml (for external tools)
+
+- New component: Mechanic worm drive
 
 - Bug fixed: If you close a model the numhop script dialog is not closed with it
 - Bug fixed: Sometimes no data is saved in the log variables collected from the core (if you start a second Hopsan instance the cache files were deleted)
