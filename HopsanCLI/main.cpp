@@ -268,8 +268,9 @@ int main(int argc, char *argv[])
 
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-        // Load default hopasn component lib
-        gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+        // Load default Hopsan component lib
+        string libpath = getCurrentExecPath()+"/" DEFAULTCOMPONENTLIB;
+        gHopsanCore.loadExternalComponentLib(libpath.c_str());
 #endif
         // Print initial core messages
         printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
