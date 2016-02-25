@@ -84,6 +84,11 @@ RemoteCoreSimulationHandler::~RemoteCoreSimulationHandler()
     }
 }
 
+void RemoteCoreSimulationHandler::setUserIdentification(QString useridstring)
+{
+    mRemoteUserIdentification = useridstring;
+}
+
 void RemoteCoreSimulationHandler::setAddressServer(QString fullAddress)
 {
     mRemoteAddressServerFullAddress = fullAddress;
@@ -167,6 +172,17 @@ bool RemoteCoreSimulationHandler::connectWorker()
             mpRemoteHopsanClient->connectToWorker(ctrlPort);
             if (mpRemoteHopsanClient->workerConnected())
             {
+                if (!mRemoteUserIdentification.isEmpty())
+                {
+                    QString name,password;
+                    QStringList parts = mRemoteUserIdentification.split(":");
+                    name = parts.first();
+                    if (parts.size() > 1)
+                    {
+                        password = parts.last();
+                    }
+                    mpRemoteHopsanClient->sendUserIdentification(name.toStdString(), password.toStdString());
+                }
                 return true;
             }
         }

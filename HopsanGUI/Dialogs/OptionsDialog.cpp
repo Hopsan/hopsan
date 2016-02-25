@@ -438,22 +438,26 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QGridLayout *pRemoteHopsanSettingsLayout = new QGridLayout(pRemoteHopsanSettingsWidget);
     QLabel *pRemoteHopsanAddressLabel = new QLabel("RemoteHopsanAddress: ");
     QLabel *pRemoteHopsanAddressAddressLabel = new QLabel("RemoteHopsanAddressServerAddress: ");
+    QLabel *pRemoteHopsanUserIdLabel = new QLabel("RemoteHopsanUserIdentification: ");
     QLabel *pUseRemoteHopsanAddressLabel = new QLabel("Use remote Hopsan address server: ");
     QLabel *pUseRemoteHopsanoptimizationLabel = new QLabel("Use remote Hopsan optimization: ");
     mpUseRemoteHopsanAddressServer = new QCheckBox();
     mpUseRemoteOptimization = new QCheckBox();
     mpRemoteHopsanAddress = new QLineEdit();
     mpRemoteHopsanAddressServerAddress = new QLineEdit();
+    mpRemoteHopsanUserId = new QLineEdit();
     pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanAddressLabel, 0, 0);
     pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanAddress, 0, 1);
     pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanAddressAddressLabel, 1, 0);
     pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanAddressServerAddress, 1, 1);
-    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanAddressLabel, 2, 0);
-    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanAddressServer, 2, 1);
-    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanoptimizationLabel, 3, 0);
-    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteOptimization, 3, 1);
-    pRemoteHopsanSettingsLayout->addWidget(new QWidget(this),         4, 0);
-    pRemoteHopsanSettingsLayout->setRowStretch(4,1);
+    pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanUserIdLabel, 2, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanUserId, 2, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanAddressLabel, 3, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanAddressServer, 3, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanoptimizationLabel, 4, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteOptimization, 4, 1);
+    pRemoteHopsanSettingsLayout->addWidget(new QWidget(this),         5, 0);
+    pRemoteHopsanSettingsLayout->setRowStretch(5,1);
 
     QPushButton *mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
     mpResetButton->setAutoDefault(false);
@@ -594,6 +598,7 @@ void OptionsDialog::setValues()
 
     gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESS, mpRemoteHopsanAddress->text());
     gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, mpRemoteHopsanAddressServerAddress->text());
+    gpConfig->setStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION, mpRemoteHopsanUserId->text());
     gpConfig->setBoolSetting(CFG_USEREMOTEADDRESSSERVER, mpUseRemoteHopsanAddressServer->isChecked());
     gpConfig->setBoolSetting(CFG_USEREMOTEOPTIMIZATION, mpUseRemoteOptimization->isChecked());
 
@@ -680,6 +685,7 @@ void OptionsDialog::show()
 
     mpRemoteHopsanAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS));
     mpRemoteHopsanAddressServerAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
+    mpRemoteHopsanUserId->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
     mpUseRemoteHopsanAddressServer->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
     mpUseRemoteOptimization->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION));
 

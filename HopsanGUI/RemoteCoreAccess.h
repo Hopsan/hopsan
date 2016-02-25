@@ -105,6 +105,7 @@ class RemoteCoreSimulationHandler
 private:
     QString mRemoteServerFullAddress;
     QString mRemoteAddressServerFullAddress;
+    QString mRemoteUserIdentification;
     RemoteHopsanClient *mpRemoteHopsanClient=0;
     int mNumThreads=1;
 
@@ -112,6 +113,7 @@ public:
     RemoteCoreSimulationHandler();
     ~RemoteCoreSimulationHandler();
 
+    void setUserIdentification(QString useridstring);
     void setAddressServer(QString fullAddress);
     void setHopsanServer(QString ip, QString port);
     void setHopsanServer(QString fullAddress );

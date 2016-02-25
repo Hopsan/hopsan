@@ -329,7 +329,7 @@ void waitShellExecThread(pid_t *pPid, std::string *pShellOutput, bool *pExitstat
     *pExitstatusOK = (WIFEXITED(status)!=0) && (WEXITSTATUS(status)==0);
 
     std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< *pPid << " rc: " << waitrc << " status: " << status <<  endl;
-    *pShellOutput = "No ouput availible!";
+    *pShellOutput = "No output available!";
 #endif
     gShellIsExecuting = false;
 }
@@ -359,8 +359,16 @@ bool loadModel(string &rModel)
     // Load component libraries if not already done
     if (!gHaveLoadedComponentLibraries)
     {
-        loadComponentLibraries("./componentLibraries", true);
+        // Load Hopsan default component library
         loadComponentLibraries("../componentLibraries/defaultLibrary", false);
+        // Load common shared libraries
+        loadComponentLibraries("./componentLibraries", true);
+        // Load user specific libraries
+        if (!gUserName.empty())
+        {
+            loadComponentLibraries("./"+gUserName, true);
+        }
+
         gHaveLoadedComponentLibraries=true;
     }
 
@@ -630,13 +638,13 @@ int main(int argc, char* argv[])
                         std::ifstream in(filepath, std::ifstream::ate | std::ifstream::binary);
                         if (in.is_open())
                         {
-                            std::ifstream::pos_type filesize = in.tellg();
+                            int filesize = in.tellg();
                             in.seekg(0); //Rewind file ptr
                             in.seekg(msg.offset); // Point to offset
                             #define MAXFILECHUNKSIZE 2500000 //(2.5 MB)
                             std::vector<char>  buffer(MAXFILECHUNKSIZE);
 
-                            std::ifstream::pos_type readBytesNow, remaningBytes=(filesize-msg.offset);
+                            int readBytesNow, remaningBytes=(filesize-msg.offset);
                             // Handle request of empty file
                             if (remaningBytes == 0)
                             {
@@ -650,7 +658,7 @@ int main(int argc, char* argv[])
                             {
                                 while( !in.eof() && (remaningBytes != 0) )
                                 {
-                                    readBytesNow = std::min(std::ifstream::pos_type(MAXFILECHUNKSIZE), remaningBytes);
+                                    readBytesNow = std::min(MAXFILECHUNKSIZE, remaningBytes);
                                     in.read(buffer.data(), readBytesNow);
                                     std::string data(buffer.data(), readBytesNow);
 
