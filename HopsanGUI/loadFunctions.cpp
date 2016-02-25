@@ -45,6 +45,7 @@
 #include "UndoStack.h"
 #include "MessageHandler.h"
 #include "Utilities/GUIUtilities.h"
+#include "Configuration.h"
 
 #include <QMap>
 
@@ -451,10 +452,26 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
             QDomElement paramscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PARAMETERSCALES).firstChildElement(HMF_PARAMETERSCALE);
             while (!paramscale.isNull())
             {
-                UnitConverter us = UnitConverter(paramscale.attribute(HMF_PARAMETERSCALEQUANTITY),
-                                                 paramscale.attribute(HMF_PARAMETERSCALEUNIT),
-                                                 paramscale.attribute(HMF_PARAMETERSCALESCALE),
-                                                 paramscale.attribute(HMF_PARAMETERSCALEOFFSET));
+                QString quantity = paramscale.attribute(HMF_PARAMETERSCALEQUANTITY);
+                QString unit = paramscale.attribute(HMF_PARAMETERSCALEUNIT);
+                QString scale = paramscale.attribute(HMF_PARAMETERSCALESCALE);
+
+                UnitConverter confus, us;
+                gpConfig->getUnitScale(quantity, unit, confus);
+
+                if (!confus.isEmpty() && (confus.mScale != scale))
+                {
+                    gpMessageHandler->addWarningMessage("Missmatch in custom unit scale "+quantity+":"+unit+" updating to new scale (likely model from older version of Hopsan)");
+                    us = confus;
+                }
+                else
+                {
+                    us = UnitConverter(quantity,
+                                       unit,
+                                       scale,
+                                       paramscale.attribute(HMF_PARAMETERSCALEOFFSET));
+                }
+
                 pObj->registerCustomParameterUnitScale(paramscale.attribute(HMF_PARAMETERSCALEPARAMNAME), us);
                 //! @todo The actual custom value is ignored here, since only scale can be registered, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
                 paramscale = paramscale.nextSiblingElement(HMF_PARAMETERSCALE);
