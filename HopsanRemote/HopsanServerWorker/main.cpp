@@ -48,7 +48,7 @@ typedef struct
     string alias;
 }ModelVariableInfo_t;
 
-string gWorkerId, gUserName;
+string gWorkerId, gUserName="anonymous";
 #define PRINTWORKER "Worker "+gWorkerId+"; "
 
 std::string nowDateTime()
