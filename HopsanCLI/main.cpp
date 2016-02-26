@@ -259,8 +259,8 @@ int main(int argc, char *argv[])
         {
             string output;
             cout << "Building component library: " << buildCompLibOption.getValue() << endl;
-            bool rc = buildComponentLibrary(buildCompLibOption.getValue(), output);
-            if (!rc)
+            returnSuccess = buildComponentLibrary(buildCompLibOption.getValue(), output);
+            if (!returnSuccess)
             {
                 printErrorMessage("Failed to build component library: "+buildCompLibOption.getValue(), silentOption.getValue());
             }
