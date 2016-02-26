@@ -27,6 +27,7 @@ enum MessageIdsEnumT {
     RequestFile,
     ReleaseRelaySlot,
     ExecuteInShell,
+    IdentifyUser,
 
     /* Request messages */
     RequestServerMachines,
@@ -53,7 +54,7 @@ enum MessageIdsEnumT {
     ReplyRelaySlot,
 
     /* Work in progress (last to avoid breaking compatibility */
-    IdentifyUser
+
 };
 
 MSGPACK_ADD_ENUM(MessageIdsEnumT)
