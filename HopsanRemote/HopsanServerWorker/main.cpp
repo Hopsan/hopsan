@@ -48,7 +48,7 @@ typedef struct
     string alias;
 }ModelVariableInfo_t;
 
-string gWorkerId, gUserName="anonymous";
+string gWorkerId, gUserName;
 #define PRINTWORKER "Worker "+gWorkerId+"; "
 
 std::string nowDateTime()
@@ -442,7 +442,13 @@ int main(int argc, char* argv[])
     cout << PRINTWORKER << nowDateTime() << " Listening on port: " << workerCtrlPort << " Using: " << gNumThreads << " threads" << endl;
     cout << PRINTWORKER << nowDateTime() << " Server control port is: " << serverCtrlPort << endl;
 
-    gModelAssets.setFileDestination("./");
+    gUserName="anonymous";
+    {
+        FileAccess fa;
+        fa.enterDir(".");
+        fa.createDir(gUserName);
+    }
+    gModelAssets.setFileDestination("./"+gUserName);
 
     // Prepare our context and sockets
     try
