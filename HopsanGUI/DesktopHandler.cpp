@@ -42,6 +42,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QApplication>
+#include <QTimer>
 #include "Utilities/GUIUtilities.h"
 
 #if QT_VERSION >= 0x050000
@@ -255,8 +256,32 @@ void DesktopHandler::setupPaths()
 
     // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
     qDebug() << "LogdataCache: " << getLogDataPath();
-    //! @todo If directory is older then 3 days, then delete it, else keep it, this is not very smart if you have multiple hopsangui instances running for several days
-    removeDir(getLogDataPath(), 3600*24*3);
+    QDir logcache(getLogDataPath());
+    if (logcache.exists())
+    {
+        QStringList enteries = logcache.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+        if (!enteries.isEmpty())
+        {
+            QMessageBox msgBox;
+            msgBox.setText("There are files present in the LogCache directory!\n\n"
+                           "They may be used by an other instance of Hopsan or be leftover\n"
+                           "from an abnormal program termination\n\n"
+                           "(This message will automatically close after 10 seconds!)");
+            msgBox.setInformativeText("Do you want to clear them?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+            QTimer t;
+            t.setSingleShot(true);
+            t.connect(&t, SIGNAL(timeout()), &msgBox, SLOT(reject()));
+            t.start(10000);
+            int ret = msgBox.exec();
+            if (ret == QMessageBox::Yes)
+            {
+                removeDir(getLogDataPath());
+            }
+            t.stop();
+        }
+    }
 }
 
 
