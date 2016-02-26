@@ -13,7 +13,7 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 QT -= gui
 QT += core xml
 
-# Keep these QtGui related options by tehm self so that external scrip may deactivate them when needed
+# Keep these QtGui related options by them self so that external scrip may deactivate them when needed
 useqtgui=True
 contains( useqtgui, True ) {
     DEFINES += USEQTGUI

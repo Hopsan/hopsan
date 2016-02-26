@@ -238,6 +238,7 @@ void RemoteSimulationQueueHandler::setupModelQueues(QVector<ModelWidget *> model
                     servers.pop_front();
 
                     SharedRemoteCoreSimulationHandlerT pSH(new RemoteCoreSimulationHandler());
+                    pSH->setUserIdentification(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
                     pSH->setAddressServer(mpRemoteCoreAddressHandler->getAddressAndPort());
                     pSH->setHopsanServer(server_addr);
                     pSH->setNumThreads(mNumThreadsPerModel);
@@ -518,6 +519,7 @@ void RemoteSimulationQueueHandler::benchmarkModel(ModelWidget *pModel)
             // Benchmark evalTime vs numThreads
             QString server_addr = mpRemoteCoreAddressHandler->getBestAvailableServer(maxNumSlots, mServerBlacklist);
             SharedRemoteCoreSimulationHandlerT pRCSH(new RemoteCoreSimulationHandler());
+            pRCSH->setUserIdentification(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
             pRCSH->setAddressServer(mpRemoteCoreAddressHandler->getAddressAndPort());
             pRCSH->setHopsanServer(server_addr);
             bool rc = pRCSH->connectServer();

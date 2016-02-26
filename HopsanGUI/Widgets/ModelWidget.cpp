@@ -480,6 +480,7 @@ void ModelWidget::setUseRemoteSimulation(bool useRemoteCore, bool useAddressServ
         {
             // If we have found the best available server, then create a local remote simulation handler and connect it to the server
             mpLocalRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
+            mpLocalRemoteCoreSimulationHandler->setUserIdentification(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
             mpLocalRemoteCoreSimulationHandler->setNumThreads(nThreads);
             if (useAddressServer)
             {

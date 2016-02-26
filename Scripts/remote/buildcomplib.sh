@@ -3,15 +3,9 @@
 # Read libname and determine zip file name
 name=$1
 file=$name.zip
-# Remember bin directory
-bindir=`pwd`
-# Create the storage location for libraries if it does not already exist
-comlibdir=componentLibraries
-mkdir -p $comlibdir
-# Move the library zip file into storage
-mv $file $comlibdir
-# Enter storage and unpack
-cd $comlibdir
+# Remember home directory
+homedir=`pwd`
+# Unpack
 echo Unpacking $file
 unzip -o $name.zip
 # Enter libdir and remember path
@@ -27,8 +21,6 @@ libdir=`pwd`
 
 # --------------------------------------
 
-# Now go back to bin dir and call build utility in CLI
-cd $bindir
-./HopsanCLI --buildComponentLibrary $libdir/$name.xml
-# Script finished
-echo buildcomplib.sh finished
+# Now go back to home dir and call build utility in CLI
+cd $homedir
+HopsanCLI --buildComponentLibrary $libdir/$name.xml
