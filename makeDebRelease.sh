@@ -11,7 +11,7 @@
 #--------------------------------------------------------------------------------------------------
 buildRoot="buildDebPackage/"
 name=hopsan
-devversion=0.7.x
+devversion=0.8.x
 
 # Pbuilder dists and archs
 debianDistArchArray=( stretch:amd64:qt5 stretch:i386:qt5 jessie:amd64:qt5 jessie:i386:qt5 )
