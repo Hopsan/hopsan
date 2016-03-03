@@ -180,6 +180,7 @@ private:
     void executeSaveParametersCommand(const QString cmd);
     void executeLoadParametersCommand(const QString cmd);
     void executeLoadModelCommand(const QString cmd);
+    void executeRevertModelCommand(const QString cmd);
     void executeLoadRecentCommand(const QString cmd);
     void executeSaveModelCommand(const QString cmd);
     void executeRenameComponentCommand(const QString cmd);

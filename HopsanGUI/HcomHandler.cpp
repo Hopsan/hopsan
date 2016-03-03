@@ -874,6 +874,14 @@ void HcomHandler::createCommands()
     loadCmd.group = "Model Commands";
     mCmdList << loadCmd;
 
+    HcomCommand revertCmd;
+    revertCmd.cmd = "revert";
+    revertCmd.description.append("Revert the current model");
+    revertCmd.help.append(" Usage: revert");
+    revertCmd.fnc = &HcomHandler::executeRevertModelCommand;
+    revertCmd.group = "Model Commands";
+    mCmdList << revertCmd;
+
     HcomCommand loadrCmd;
     loadrCmd.cmd = "loadr";
     loadrCmd.description.append("Loads most recent model file");
@@ -3961,10 +3969,21 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
     gpModelHandler->loadModel(path);
 }
 
+//! @brief Execute revert model command
+void HcomHandler::executeRevertModelCommand(const QString cmd)
+{
+    Q_UNUSED(cmd)
+    if (mpModel)
+    {
+        mpModel->revertModel();
+    }
+}
+
 
 //! @brief Execute function for "loadr" command
-void HcomHandler::executeLoadRecentCommand(const QString /*cmd*/)
+void HcomHandler::executeLoadRecentCommand(const QString cmd)
 {
+    Q_UNUSED(cmd)
     gpModelHandler->loadModel(getConfigPtr()->getRecentModels().first());
 }
 
