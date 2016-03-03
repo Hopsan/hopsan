@@ -50,6 +50,7 @@ QString readName(QString namestring);
 void stripLTSpaces(QString &rString);
 QString removeAllSpaces(const QString &org);
 QString addQuotes(QString str);
+QString removeQuotes(QString str);
 QString relativePath(QFileInfo pathtochange, QDir basedir);
 double normDeg180(const double deg);
 double normDeg360(const double deg);

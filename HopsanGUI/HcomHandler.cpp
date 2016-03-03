@@ -753,6 +753,14 @@ void HcomHandler::createCommands()
     ivpvCmd.group = "Variable Commands";
     mCmdList << ivpvCmd;
 
+    HcomCommand seplCmd;
+    seplCmd.cmd = "sepl";
+    seplCmd.description.append("Set plot label");
+    seplCmd.help.append(" Usage: sepl [variable] [label]");
+    seplCmd.fnc = &HcomHandler::executeSetlabelCommand;
+    seplCmd.group = "Variable Commands";
+    mCmdList << seplCmd;
+
 //    HcomCommand chscCmd;
 //    chscCmd.cmd = "chsc";
 //    chscCmd.description.append("Change plot scale of specified variable");
@@ -3371,6 +3379,30 @@ void HcomHandler::executeInvertPlotVariableCommand(const QString cmd)
     {
         SharedVectorVariableT pVar = getLogVariable(var);
         pVar->togglePlotInverted();
+    }
+}
+
+void HcomHandler::executeSetlabelCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 2)
+    {
+        HCOMERR("Wrong number of arguments. Must specify variable and label");
+        return;
+    }
+
+    QStringList variables;
+    getMatchingLogVariableNames(args.first(), variables);
+
+    if(variables.isEmpty())
+    {
+        HCOMERR("Could not find variable matching: "+cmd);
+        return;
+    }
+    for(const QString &var : variables)
+    {
+        SharedVectorVariableT pVar = getLogVariable(var);
+        pVar->setCustomLabel(removeQuotes(args.last()));
     }
 }
 

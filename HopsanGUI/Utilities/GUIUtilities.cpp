@@ -132,11 +132,21 @@ QString readName(QString namestring)
 }
 
 
-//! @brief This function may be used to add quotes around string, useful for saving names. Ex: "string"
+//! @brief This function may be used to add quotes around string, useful for saving names. Ex: string -> "string"
 QString addQuotes(QString str)
 {
     str.prepend("\"");
     str.append("\"");
+    return str;
+}
+
+//! @brief This function is used to remove quotes around string Ex: "string" -> string
+QString removeQuotes(QString str)
+{
+    if (str.startsWith("\"") && str.endsWith("\""))
+    {
+        return str.mid(1, str.size()-2);
+    }
     return str;
 }
 

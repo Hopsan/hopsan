@@ -142,6 +142,7 @@ public:
     UnitConverter getUnitScale() const;
     bool hasAliasName() const;
     bool hasCustomLabel() const;
+    void setCustomLabel(const QString &label);
     int getGeneration() const;
     virtual bool isImported() const;
     virtual QString getImportedFileName() const;

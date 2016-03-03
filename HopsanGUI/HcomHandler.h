@@ -146,6 +146,7 @@ private:
     void executeDisplayTimePlotOffsetCommand(const QString cmd);
     void executeSavePlotWindowCommand(const QString cmd);
     void executeInvertPlotVariableCommand(const QString cmd);
+    void executeSetlabelCommand(const QString cmd);
 
     void executeDisplayVariablesCommand(const QString cmd);
     void executeRemoveVariableCommand(const QString cmd);

@@ -428,6 +428,12 @@ bool VectorVariable::hasCustomLabel() const
     return !mpVariableDescription->mCustomLabel.isEmpty();
 }
 
+void VectorVariable::setCustomLabel(const QString &label)
+{
+    mpVariableDescription->mCustomLabel = label;
+    emit dataChanged();
+}
+
 int VectorVariable::getGeneration() const
 {
     return mGeneration;
