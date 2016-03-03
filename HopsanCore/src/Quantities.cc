@@ -44,6 +44,10 @@ hopsan::QuantityRegister::QuantityRegister()
     registerQuantity("Voltage", "V");
     registerQuantity("Current", "A");
 
+    registerQuantity("Momentum", "kg m/s");
+    registerQuantity("Energy", "J");
+    registerQuantity("Power", "J/s");
+
     registerQuantity("Mass", "kg");
     registerQuantity("Area", "m^2");
     registerQuantity("Volume", "m^3");

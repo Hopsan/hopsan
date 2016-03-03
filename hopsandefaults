@@ -160,6 +160,7 @@
             <unitscale unit="MHz">0.159154943091895e-6</unitscale>
             <unitscale unit="GHz">0.159154943091895e-9</unitscale>
         </quantity>
+    <!-- Note! The unitscales tag is deprecated and should no longer be used   -->
         <quantity name="Angle" siunit="rad">
             <unitscale unit="deg">57.296</unitscale>
         </quantity>
@@ -188,6 +189,7 @@
             <unitscale unit="ft^2">10.7639</unitscale>
             <unitscale unit="inch^2">1550</unitscale>
         </quantity>
+    <!-- Note! The unitscales tag is deprecated and should no longer be used   -->
         <quantity name="Volume" siunit="m^3">
             <unitscale unit="cm^3">1e6</unitscale>
             <unitscale unit="l">1000</unitscale>
@@ -264,6 +266,19 @@
             <unit name="F" scale="5/9" offset="459.67*5/9"/>
         </quantity>
         <quantity name="Density" baseunit="kg/m^3">
+        </quantity>
+        <quantity name="Momentum" baseunit="kg m/s">
+        </quantity>
+        <quantity name="Energy" baseunit="J">
+          <unit name="mJ" scale="1e-3"/>
+          <unit name="kJ" scale="1e3"/>
+          <unit name="MJ" scale="1e6"/>
+        </quantity>
+        <quantity name="Power" baseunit="J/s">
+          <unit name="mW" scale="1e-3"/>
+          <unit name="W" scale="1.0"/>
+          <unit name="kW" scale="1e3"/>
+          <unit name="MW" scale="1e6"/>
         </quantity>
         <quantity name="Mass" baseunit="kg">
           <unit name="g" scale="0.001"/>

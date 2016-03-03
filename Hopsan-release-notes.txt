@@ -27,6 +27,10 @@
 ******************************
     Version History
 ******************************
+0.7.4  (2016-03-??)
+- Enhancement: New quantities Momentum, Power, Energy
+
+------------------------------
 0.7.3  (2016-02-23)
 - Feature: Running optimizations from HopsanCLI
 
