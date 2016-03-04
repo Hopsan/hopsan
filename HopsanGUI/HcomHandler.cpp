@@ -85,27 +85,32 @@
 //! @brief Make a list from a space separated argument string, respecting (not splitting within) quotation marks
 QStringList splitCommandArguments(const QString &rArgs)
 {
-    //! @todo maybe use splitWithRespectToQuotations here instead
-    QStringList splitCmd;
-    bool withinQuotations = false;
-    int start=0;
-    for(int i=0; i<rArgs.size(); ++i)
-    {
-        if(rArgs[i] == '\"')
-        {
-            withinQuotations = !withinQuotations;
-        }
-        if(rArgs[i] == ' ' && !withinQuotations)
-        {
-            splitCmd.append(rArgs.mid(start, i-start));
-            start = i+1;
-        }
-    }
-    splitCmd.append(rArgs.right(rArgs.size()-start));
-    //splitCmd.removeFirst();
-    splitCmd.removeAll("");
+//    //! @todo maybe use splitWithRespectToQuotations here instead
+//    QStringList splitCmd;
+//    bool withinQuotations = false;
+//    int start=0;
+//    for(int i=0; i<rArgs.size(); ++i)
+//    {
+//        if(rArgs[i] == '\"')
+//        {
+//            withinQuotations = !withinQuotations;
+//        }
+//        if(rArgs[i] == ' ' && !withinQuotations)
+//        {
+//            splitCmd.append(rArgs.mid(start, i-start));
+//            start = i+1;
+//        }
+//    }
+//    splitCmd.append(rArgs.right(rArgs.size()-start));
+//    //splitCmd.removeFirst();
+//    splitCmd.removeAll("");
 
-    return splitCmd;
+//    return splitCmd;
+
+    QStringList splitArgs;
+    splitRespectingQuotationsAndParanthesis(rArgs, ' ', splitArgs);
+    splitArgs.removeAll("");
+    return splitArgs;
 }
 
 
