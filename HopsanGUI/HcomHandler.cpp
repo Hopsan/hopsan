@@ -589,11 +589,12 @@ void HcomHandler::createCommands()
     printCmd.cmd = "print";
     printCmd.description.append("Prints arguments on the screen");
     printCmd.help.append(" Usage: print [-flag] [\"string\"]\n");
+    printCmd.help.append(" Usage: print [-flag] [expression]\n");
     printCmd.help.append("  Flags (optional):\n");
     printCmd.help.append("   -i Info message\n");
     printCmd.help.append("   -w Warning message\n");
     printCmd.help.append("   -e Error message\n");
-    printCmd.help.append("  Variables can be printed by putting them in dollar signs.\n");
+    printCmd.help.append("  Variables can be included in strings by putting them in dollar signs.\n");
     printCmd.help.append("  Example:\n");
     printCmd.help.append("   >> print -w \"x=$x$\"\n");
     printCmd.help.append("   Warning: x=12");
@@ -2340,58 +2341,74 @@ void HcomHandler::executePrintCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
 
-    if(args.isEmpty())
+    if(args.size() == 0 || args.size() > 2)
     {
-        HCOMERR("Wrong number of arguments.");
+        HCOMERR("Expects one or two arguments! Enclose string in \" \".");
         return;
     }
 
-    QString str = cmd;
-
-    QString &arg = args[0];
-    if(arg == "-e" || arg == "-w" || arg == "-i")
+    QString flag;
+    QString str = args[0];
+    if(str == "-e" || str == "-w" || str == "-i")
     {
-        str.remove(0,3);
+        flag = str;
+        if (args.size()>1)
+        {
+            str = args[1];
+        }
     }
 
-    if(!str.startsWith("\"") || !str.endsWith("\""))
+    bool treatAsExpression = (!str.startsWith("\"") || !str.endsWith("\""));
+    if(treatAsExpression)
     {
-        HCOMERR("Expected a string enclosed in \" \".");
-        return;
-    }
-
-    int failed=0;
-    while(str.count("$") > 1+failed*2)
-    {
-        QString varName = str.section("$",1+failed,1+failed);
-        evaluateExpression(varName);
+        evaluateExpression(str);
         if(mAnsType == Scalar)
         {
-            str.replace("$"+varName+"$", QString::number(mAnsScalar));
+            str = QString::number(mAnsScalar);
         }
         else if (mAnsType == DataVector)
         {
             QString array;
             QTextStream ts(&array);
             mAnsVector->sendDataToStream(ts," ");
-            str.replace("$"+varName+"$", array);
-        }
-        else
-        {
-            ++failed;
+            str = array;
         }
     }
+    else
+    {
+        int failed=0;
+        while(str.count("$") > 1+failed*2)
+        {
+            QString varName = str.section("$",1+failed,1+failed);
+            evaluateExpression(varName);
+            if(mAnsType == Scalar)
+            {
+                str.replace("$"+varName+"$", QString::number(mAnsScalar));
+            }
+            else if (mAnsType == DataVector)
+            {
+                QString array;
+                QTextStream ts(&array);
+                mAnsVector->sendDataToStream(ts," ");
+                str.replace("$"+varName+"$", array);
+            }
+            else
+            {
+                ++failed;
+            }
+        }
+        str = str.mid(1,str.size()-2);
+    }
 
-    str = str.mid(1,str.size()-2);
-    if(arg == "-e")
+    if(flag == "-e")
     {
         mpConsole->printErrorMessage(str,"",false,true);
     }
-    else if(arg == "-w")
+    else if(flag == "-w")
     {
         mpConsole->printWarningMessage(str,"",false,true);
     }
-    else if(arg == "-i")
+    else if(flag == "-i")
     {
         mpConsole->printInfoMessage(str,"",false,true);
     }
