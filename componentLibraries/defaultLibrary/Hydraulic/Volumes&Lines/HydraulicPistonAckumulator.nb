@@ -3,17 +3,17 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Mathematica 8.0' *)
+(* CreatedBy='Mathematica 10.3' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
-NotebookDataPosition[       157,          7]
-NotebookDataLength[     14160,        400]
-NotebookOptionsPosition[     12314,        341]
-NotebookOutlinePosition[     12659,        356]
-CellTagsIndexPosition[     12616,        353]
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     14532,        409]
+NotebookOptionsPosition[     12530,        345]
+NotebookOutlinePosition[     13029,        365]
+CellTagsIndexPosition[     12986,        362]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -35,13 +35,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"docpath", "=", 
+  RowBox[{"path", "=", 
    RowBox[{"ToFileName", "[", 
     RowBox[{"{", 
      RowBox[{
      "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", 
       "\"\<ComponentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
-      "\"\<Hydraulic\>\""}], "}"}], "]"}]}], ";"}]], "Input"],
+      "\"\<Hydraulic\>\"", ",", "\"\<Volumes&Lines\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{
+  3.6661772405240245`*^9, {3.6661772812588387`*^9, 3.666177301299137*^9}}],
 
 Cell[CellGroupData[{
 
@@ -86,10 +89,11 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-  "2014", ",", "12", ",", "11", ",", "12", ",", "57", ",", 
-   "11.4162008`8.810096558153438"}], "}"}]], "Output",
+  "2016", ",", "3", ",", "5", ",", "15", ",", "35", ",", 
+   "7.3376442`8.618131619198408"}], "}"}]], "Output",
  CellChangeTimes->{3.6199270006986475`*^9, 3.6272837881233006`*^9, 
-  3.627287831426201*^9}]
+  3.627287831426201*^9, 3.666177068750699*^9, 3.6661771911336656`*^9, 
+  3.666177244957755*^9, 3.666177307337644*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -340,7 +344,12 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{1007, 690},
-WindowMargins->{{0, Automatic}, {-34, Automatic}},
+WindowMargins->{{111, Automatic}, {-104, Automatic}},
+PrintingCopies->1,
+PrintingPageRange->{32000, 32000},
+PrintingOptions->{"Magnification"->1.,
+"PaperOrientation"->"Portrait",
+"PaperSize"->{612, 792}},
 FrontEndVersion->"10.3 for Microsoft Windows (64-bit) (October 9, 2015)",
 StyleDefinitions->"Default.nb"
 ]
@@ -356,50 +365,50 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[579, 22, 259, 5, 63, "Section",
+Cell[580, 22, 259, 5, 63, "Section",
  Evaluatable->False],
-Cell[841, 29, 248, 4, 31, "Input"],
-Cell[1092, 35, 301, 8, 31, "Input"],
+Cell[842, 29, 248, 4, 31, "Input"],
+Cell[1093, 35, 426, 11, 31, "Input"],
 Cell[CellGroupData[{
-Cell[1418, 47, 1748, 36, 192, "Input"],
-Cell[3169, 85, 247, 6, 31, "Output"]
+Cell[1544, 50, 1748, 36, 192, "Input"],
+Cell[3295, 88, 337, 7, 31, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3453, 96, 43, 0, 49, "Subsection"],
-Cell[3499, 98, 135, 1, 30, "Text"],
-Cell[3637, 101, 138, 2, 49, "Subsection",
+Cell[3669, 100, 43, 0, 49, "Subsection"],
+Cell[3715, 102, 135, 1, 30, "Text"],
+Cell[3853, 105, 138, 2, 49, "Subsection",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
 Cell[CellGroupData[{
-Cell[3800, 107, 193, 2, 30, "Text",
+Cell[4016, 111, 193, 2, 30, "Text",
  CellGroupingRules->{GroupTogetherGrouping, 10001.}],
-Cell[3996, 111, 315, 7, 31, "Input",
+Cell[4212, 115, 315, 7, 31, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10001.}]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[4348, 123, 143, 2, 41, "Subsection",
+Cell[4564, 127, 143, 2, 41, "Subsection",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[4494, 127, 1663, 37, 178, "Input",
+Cell[4710, 131, 1663, 37, 178, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[6160, 166, 1235, 30, 140, "Input",
+Cell[6376, 170, 1235, 30, 140, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}],
-Cell[7398, 198, 476, 11, 52, "Input",
+Cell[7614, 202, 476, 11, 52, "Input",
  CellGroupingRules->{GroupTogetherGrouping, 10000.}]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7923, 215, 45, 0, 49, "Subsection"],
-Cell[7971, 217, 42, 0, 30, "Text"],
-Cell[8016, 219, 301, 7, 31, "Input"],
-Cell[8320, 228, 1856, 46, 136, "Input"],
-Cell[10179, 276, 92, 1, 30, "Text"],
-Cell[10274, 279, 330, 9, 31, "Input"],
-Cell[10607, 290, 372, 9, 31, "Input"],
-Cell[10982, 301, 238, 6, 31, "Input"],
-Cell[11223, 309, 29, 0, 30, "Text"],
-Cell[11255, 311, 545, 11, 72, "Input"],
-Cell[11803, 324, 132, 1, 30, "Text"],
-Cell[11938, 327, 282, 7, 31, "Input"],
-Cell[12223, 336, 63, 1, 31, "Input"]
+Cell[8139, 219, 45, 0, 49, "Subsection"],
+Cell[8187, 221, 42, 0, 30, "Text"],
+Cell[8232, 223, 301, 7, 31, "Input"],
+Cell[8536, 232, 1856, 46, 136, "Input"],
+Cell[10395, 280, 92, 1, 30, "Text"],
+Cell[10490, 283, 330, 9, 31, "Input"],
+Cell[10823, 294, 372, 9, 31, "Input"],
+Cell[11198, 305, 238, 6, 31, "Input"],
+Cell[11439, 313, 29, 0, 30, "Text"],
+Cell[11471, 315, 545, 11, 72, "Input"],
+Cell[12019, 328, 132, 1, 30, "Text"],
+Cell[12154, 331, 282, 7, 31, "Input"],
+Cell[12439, 340, 63, 1, 31, "Input"]
 }, Open  ]]
 }, Open  ]]
 }
@@ -407,3 +416,4 @@ Cell[12223, 336, 63, 1, 31, "Input"]
 *)
 
 (* End of internal cache information *)
+
