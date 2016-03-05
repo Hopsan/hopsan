@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
   <modelobject typename="HydraulicPistonAckumulator" displayname="HydraulicPistonAckumulator">
-    <icons/>
+        <icons>
+            <icon scale="1" path="HydraulicAckumulator.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ackumulator_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+		<help>
+		    <text>Adiabatic model of a hydraulic piston ackumulator.</text>
+			<link>HydraulicPistonAckumulator.pdf</link>
+			<link>HydraulicPistonAckumulator.nb</link>
+		</help>
     <ports>
-      <port x="0.4" y="1" enabled="true" a="90" name="pa" autoplaced="true"/>
-      <port x="0.8" y="1" enabled="true" a="90" name="vmp" autoplaced="true"/>
-      <port x="0" y="0.5" enabled="true" a="0" name="P1" autoplaced="true"/>
-      <port x="0.6" y="1" enabled="true" a="90" name="xmp" autoplaced="true"/>
-      <port x="0.2" y="1" enabled="true" a="90" name="Va" autoplaced="true"/>
+      <port y="0.2" enabled="true" a="0" x="1" name="vmp" autoplaced="true"/>
+      <port y="0.4" enabled="true" a="0" x="1" name="xmp" autoplaced="true"/>
+      <port y="0" enabled="true" a="270" x="0.5" name="Va" autoplaced="true"/>
+      <port y="0.6" enabled="true" a="0" x="1" name="pa" autoplaced="true"/>
+      <port y="1" enabled="true" a="0" x="0.5" name="P1" autoplaced="true"/>
     </ports>
-    <animation flowspeed="100"/>
+    <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
   </modelobject>
 </hopsanobjectappearance>
