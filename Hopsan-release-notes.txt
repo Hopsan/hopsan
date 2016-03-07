@@ -28,7 +28,22 @@
     Version History
 ******************************
 0.7.4  (2016-03-??)
+- Feature: HCOM sepl command to set plot label
+- Feature: HCOM revert command to revert model changes
+
+- Enhancement: HCOM print command is now able to print variables or expression results directly without embedding in string
 - Enhancement: New quantities Momentum, Power, Energy
+- Enhancement: Remote simulation server will now accept a user name so that files on the server will not collide when multiple people are using the service.
+               The user name can be set in HopsanGUI or supplied to the RemoteClient command line tool.
+
+- New component: Hydraulic Piston Ackumulator has been added  
+
+- Bug fixed: When loading a model from a 0.6 version of Hopsan using custom parameter scales, the scale factors are inverted in the properties dialog.
+             (Simulation is not affected)
+             When a scale missmatch is detected on loading a model, it will now be updated to the latest version.
+			 Note! Since old versions of Hopsan does not have this fix, the unit scales saved in a model from this version are not backwards compatible.
+- Bug fixed: It is not possible to use HCOM function calls as arguments to HCOM commands if spaces exist in the argument list to the function call
+- Bug fixed: HCOM crash if taking square of temporary vector expression
 
 ------------------------------
 0.7.3  (2016-02-23)
