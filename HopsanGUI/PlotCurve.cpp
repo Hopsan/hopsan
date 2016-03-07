@@ -701,20 +701,18 @@ void PlotCurve::setCurveXDataUnitScale(const UnitConverter &rUS)
 
 const UnitConverter PlotCurve::getCurveXDataUnitScale() const
 {
+    // If we do not have a custom unit scale
     if (mCurveXDataUnitScale.isEmpty())
     {
-        if (mCustomXdata)
+        // If custom x-data has an original unit then return that as a unit scale with scaling 1.0
+        if ( mCustomXdata && !mCustomXdata->getDataUnit().isEmpty() )
         {
-            // If data have an original unit then return that as a unit scale with scaling 1.0
-            if (!mCustomXdata->getDataUnit().isEmpty())
-            {
-                return UnitConverter(mData->getDataName(), mData->getDataUnit(), "1.0", "");
-            }
-            // If not then return empty below
+            return UnitConverter(mCustomXdata->getDataQuantity(), mCustomXdata->getDataUnit(), "1.0", "");
         }
+        // If not then return empty unit scale
         return UnitConverter();
     }
-    // Return the custom unitscale
+    // Return the custom unit scale
     else
     {
         return mCurveXDataUnitScale;
