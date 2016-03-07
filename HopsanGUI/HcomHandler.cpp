@@ -4029,7 +4029,14 @@ void HcomHandler::executeRevertModelCommand(const QString cmd)
     Q_UNUSED(cmd)
     if (mpModel)
     {
-        mpModel->revertModel();
+        if (mpModel == gpModelHandler->getCurrentModel())
+        {
+            mpModel->mpParentModelHandler->revertCurrentModel();
+        }
+        else
+        {
+            mpModel->revertModel();
+        }
     }
 }
 
