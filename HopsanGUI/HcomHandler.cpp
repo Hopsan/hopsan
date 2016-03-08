@@ -6365,7 +6365,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             else if(f_varType == Scalar && d_varType == DataVector)
             {
                 mAnsType = DataVector;
-                auto ones = pLogDataHandler->createOrphanVariable("ones", d_vec->getVariableType());
+                SharedVectorVariableT ones = pLogDataHandler->createOrphanVariable("ones", d_vec->getVariableType());
+                ones->assignFrom(QVector<double>(d_vec->getDataSize(), 1.0));
                 auto div = pLogDataHandler->divVariables(ones, d_vec);
                 mAnsVector = pLogDataHandler->mulVariableWithScalar(div, f_scalar);
                 return;
