@@ -41,9 +41,13 @@
 - Bug fixed: When loading a model from a 0.6 version of Hopsan using custom parameter scales, the scale factors are inverted in the properties dialog.
              (Simulation is not affected)
              When a scale missmatch is detected on loading a model, it will now be updated to the latest version.
-			 Note! Since old versions of Hopsan does not have this fix, the unit scales saved in a model from this version are not backwards compatible.
+             Note! Since old versions of Hopsan does not have this fix, the unit scales saved in a model from Hopsan 0.7 are not backwards compatible with Hopsan 0.6.
 - Bug fixed: It is not possible to use HCOM function calls as arguments to HCOM commands if spaces exist in the argument list to the function call
 - Bug fixed: HCOM crash if taking square of temporary vector expression
+- Bug fixed: Rare crash due to "double free" in SymHop Expression destructor 
+- Bug fixed: HCOM scalar/vector division falls back to startvalue for vector name instead of using the vector
+             It wll now be interpreted as (scalar * 1 ./ vector) (scalar * Element-wise inverted vector)
+- Bug fixed: In xy-plots the unit lable for custom x-axis was incorrect, it got the y-axis unit
 
 ------------------------------
 0.7.3  (2016-02-23)
