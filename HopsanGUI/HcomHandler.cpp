@@ -6324,41 +6324,62 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         SymHop::Expression f = symHopExpr.getFactors()[0];
         SymHop::Expression d = SymHop::Expression::fromFactorsDivisors(symHopExpr.getDivisors(), QList<SymHop::Expression>());
 
-        VariableType varType0, varType1;
-        double scalar1;
-        SharedVectorVariableT vec0, vec1;
-        evaluateExpression(f.toString(), DataVector);
-        if(mAnsType == DataVector)
+        VariableType f_varType, d_varType;
+        double f_scalar, d_scalar;
+        SharedVectorVariableT f_vec, d_vec;
+        evaluateExpression(f.toString());
+        if(mAnsType == DataVector || mAnsType == Scalar)
         {
-            varType0 = mAnsType;
-            vec0 = mAnsVector;
+            f_varType = mAnsType;
+            if(f_varType == Scalar)
+            {
+                f_scalar = mAnsScalar;
+            }
+            else
+            {
+                f_vec = mAnsVector;
+            }
+
             evaluateExpression(d.toString());
             if(mAnsType != DataVector && mAnsType != Scalar)
             {
                 mAnsType = Undefined;
                 return;
             }
-            varType1 = mAnsType;
-            if(varType1 == Scalar)
+            d_varType = mAnsType;
+            if(d_varType == Scalar)
             {
-                scalar1 = mAnsScalar;
+                d_scalar = mAnsScalar;
             }
             else
             {
-                vec1 = mAnsVector;
+                d_vec = mAnsVector;
             }
 
-
-            if(varType0 == DataVector && varType1 == Scalar)
+            if(f_varType == DataVector && d_varType == Scalar)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogDataHandler->divVariableWithScalar(vec0, scalar1);
+                mAnsVector = pLogDataHandler->divVariableWithScalar(f_vec, d_scalar);
                 return;
             }
-            else if(varType0 == DataVector && varType1 == DataVector)
+            else if(f_varType == Scalar && d_varType == DataVector)
             {
                 mAnsType = DataVector;
-                mAnsVector = pLogDataHandler->divVariables(vec0, vec1);
+                auto ones = pLogDataHandler->createOrphanVariable("ones", d_vec->getVariableType());
+                auto div = pLogDataHandler->divVariables(ones, d_vec);
+                mAnsVector = pLogDataHandler->mulVariableWithScalar(div, f_scalar);
+                return;
+            }
+            else if(f_varType == DataVector && d_varType == DataVector)
+            {
+                mAnsType = DataVector;
+                mAnsVector = pLogDataHandler->divVariables(f_vec, d_vec);
+                return;
+            }
+            else if(f_varType == Scalar && d_varType == Scalar)
+            {
+                mAnsType = Scalar;
+                mAnsScalar = f_scalar / d_scalar;
                 return;
             }
         }
