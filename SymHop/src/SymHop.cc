@@ -218,26 +218,31 @@ void Expression::cleanUp()
     {
         mpLeft->cleanUp();
         delete mpLeft;
+        mpLeft = 0;
     }
     if(mpRight)
     {
         mpRight->cleanUp();
         delete mpRight;
+        mpRight = 0;
     }
     if(mpBase)
     {
         mpBase->cleanUp();
         delete mpBase;
+        mpBase = 0;
     }
     if(mpPower)
     {
         mpPower->cleanUp();
         delete mpPower;
+        mpPower = 0;
     }
     if(mpDividend)
     {
         mpDividend->cleanUp();
         delete mpDividend;
+        mpDividend = 0;
     }
 }
 
