@@ -5534,8 +5534,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         else if(splitArgs.size() == 2)
         {
 
-            const QString var1 = splitArgs[0];
-            const QString var2 = splitArgs[1];
+            const QString var1 = splitArgs[0].trimmed();
+            const QString var2 = splitArgs[1].trimmed();
             evaluateExpression(var1, DataVector);
             SharedVectorVariableT pVar1 = mAnsVector;
             if(mAnsType != DataVector)
