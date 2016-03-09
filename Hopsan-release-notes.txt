@@ -31,6 +31,7 @@
 - Feature: HCOM sepl command to set plot label
 - Feature: HCOM revert command to revert model changes
 
+- Enhancement: HCOM can now evaluate multiple HCOM function calls on the same line. Example: ones(10)+ones(10)*2
 - Enhancement: HCOM print command is now able to print variables or expression results directly without embedding in string
 - Enhancement: New quantities Momentum, Power, Energy
 - Enhancement: Remote simulation server will now accept a user name so that files on the server will not collide when multiple people are using the service.

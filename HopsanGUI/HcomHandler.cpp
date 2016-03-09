@@ -82,6 +82,34 @@
 #define GENERATIONSPECIFIERCHAR '@'
 
 //----------------------------------------------------------------------------------
+
+//! @brief Check if an expression is a single function call
+bool isHcomFunctionCall(const QString &fname, const QString &expr)
+{
+    if (expr.startsWith(fname+"("))
+    {
+        int nOpen=0;
+        // Lets count parenthesis to figure out when function closes
+        for (int i=fname.size(); i<expr.size(); ++i)
+        {
+            if (expr[i]=='(')
+            {
+                nOpen++;
+            }
+            else if (expr[i]==')')
+            {
+                nOpen--;
+            }
+            // When nOpen == 0 we should have closed the function, and we should be at end of expr, else this is an expression and not a clean function call
+            if (nOpen==0)
+            {
+                return (i==(expr.size()-1));
+            }
+        }
+    }
+    return false;
+}
+
 //! @brief Make a list from a space separated argument string, respecting (not splitting within) quotation marks
 QStringList splitCommandArguments(const QString &rArgs)
 {
@@ -5340,7 +5368,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
     }
 
-    if(expr.startsWith("abs(") && expr.endsWith(")"))
+    //if(expr.startsWith("abs(") && expr.endsWith(")"))
+    if(isHcomFunctionCall("abs", expr))
     {
         QString argStr = expr.mid(4, expr.size()-5).trimmed();
         SharedVectorVariableT pData = getLogVariable(argStr);
@@ -5371,7 +5400,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 //        mAnsType = Undefined;
 //        return;
     }
-    else if(desiredType != Scalar && expr.startsWith("ddt(") && expr.endsWith(")"))
+    //else if(desiredType != Scalar && expr.startsWith("ddt(") && expr.endsWith(")"))
+    else if(desiredType != Scalar && isHcomFunctionCall("ddt", expr))
     {
         QStringList args = extractFunctionCallExpressionArguments(expr);
         if(args.size() == 1)
@@ -5428,7 +5458,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    else if(desiredType != Scalar && expr.startsWith("lp1(") && expr.endsWith(")"))
+    //else if(desiredType != Scalar && expr.startsWith("lp1(") && expr.endsWith(")"))
+    else if(desiredType != Scalar && isHcomFunctionCall("lp1", expr))
     {
         QString args = expr.mid(4, expr.size()-5);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
@@ -5511,7 +5542,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    else if(desiredType != Scalar && expr.startsWith("int(") && expr.endsWith(")"))
+    //else if(desiredType != Scalar && expr.startsWith("int(") && expr.endsWith(")"))
+    else if(desiredType != Scalar && isHcomFunctionCall("int", expr))
     {
         QString args = expr.mid(4, expr.size()-5);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
@@ -5566,7 +5598,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    else if(desiredType != Scalar && expr.startsWith("x(") && expr.endsWith(")"))
+    //else if(desiredType != Scalar && expr.startsWith("x(") && expr.endsWith(")"))
+    else if(desiredType != Scalar && isHcomFunctionCall("x", expr))
     {
         QString arg = expr.mid(2, expr.size()-3);
         evaluateExpression(arg, DataVector);
@@ -5582,7 +5615,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         mAnsType = Undefined;
     }
-    else if(desiredType != Scalar && expr.startsWith("fft(") && expr.endsWith(")"))
+    //else if(desiredType != Scalar && expr.startsWith("fft(") && expr.endsWith(")"))
+    else if(desiredType != Scalar && isHcomFunctionCall("fft", expr))
     {
         QString args = expr.mid(4, expr.size()-5);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
@@ -5686,22 +5720,26 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    else if(desiredType != Scalar && (expr.startsWith("greaterThan(") || expr.startsWith("gt(")) && expr.endsWith(")"))
+    //else if(desiredType != Scalar && (expr.startsWith("greaterThan(") || expr.startsWith("gt(")) && expr.endsWith(")"))
+    else if(desiredType != Scalar && (isHcomFunctionCall("greaterThan", expr) || isHcomFunctionCall("gt", expr)) )
     {
         executeGtBuiltInFunction(expr);
         return;
     }
-    else if(desiredType != Scalar && (expr.startsWith("smallerThan(") || expr.startsWith("lt(")) && expr.endsWith(")"))
+    //else if(desiredType != Scalar && (expr.startsWith("smallerThan(") || expr.startsWith("lt(")) && expr.endsWith(")"))
+    else if(desiredType != Scalar && (isHcomFunctionCall("smallerThan", expr) || isHcomFunctionCall("lt", expr)) )
     {
         executeLtBuiltInFunction(expr);
         return;
     }
-    else if(desiredType != Scalar && (expr.startsWith("eq(") && expr.endsWith(")")))
+    //else if(desiredType != Scalar && (expr.startsWith("eq(") && expr.endsWith(")")))
+    else if(desiredType != Scalar && isHcomFunctionCall("eq", expr))
     {
         executeEqBuiltInFunction(expr);
         return;
     }
-    else if(desiredType != Scalar && (expr.startsWith("linspace(") && expr.endsWith(")")))
+    //else if(desiredType != Scalar && (expr.startsWith("linspace(") && expr.endsWith(")")))
+    else if(desiredType != Scalar && isHcomFunctionCall("linspace", expr))
     {
         QString args = expr.mid(9, expr.size()-10);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
@@ -5750,7 +5788,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         mAnsType = Undefined;
         return;
     }
-    else if(desiredType != Scalar && (expr.startsWith("logspace(") && expr.endsWith(")")))
+    //else if(desiredType != Scalar && (expr.startsWith("logspace(") && expr.endsWith(")")))
+    else if(desiredType != Scalar && isHcomFunctionCall("logspace", expr))
     {
         QString args = expr.mid(9, expr.size()-10);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
@@ -5799,7 +5838,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         mAnsType = Undefined;
         return;
     }
-    else if(desiredType != Scalar && (expr.startsWith("ones(") && expr.endsWith(")")))
+    //else if(desiredType != Scalar && (expr.startsWith("ones(") && expr.endsWith(")")))
+    else if(desiredType != Scalar && isHcomFunctionCall("ones", expr))
     {
         QString argStr = expr.mid(5, expr.size()-6);
 
@@ -5845,7 +5885,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         mAnsType = Undefined;
         return;
     }
-    else if(desiredType != Scalar && (expr.startsWith("zeros(") && expr.endsWith(")")))
+    //else if(desiredType != Scalar && (expr.startsWith("zeros(") && expr.endsWith(")")))
+    else if(desiredType != Scalar && isHcomFunctionCall("zeros", expr))
     {
         QString argStr = expr.mid(6, expr.size()-7);
         bool parseOK;
@@ -5890,7 +5931,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         mAnsType = Undefined;
         return;
     }
-    else if(desiredType != Scalar && expr.startsWith("td(") && expr.endsWith(")"))      //Function for converting variable to time-domain variable
+    //else if(desiredType != Scalar && expr.startsWith("td(") && expr.endsWith(")"))      //Function for converting variable to time-domain variable
+    else if(desiredType != Scalar && isHcomFunctionCall("td", expr))
     {
         QString varName = expr.mid(3, expr.size()-4);
 
@@ -5911,7 +5953,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    else if(desiredType != Scalar && expr.startsWith("fd(") && expr.endsWith(")"))  //Function for converting variable to frequency domain variable
+    //else if(desiredType != Scalar && expr.startsWith("fd(") && expr.endsWith(")"))  //Function for converting variable to frequency domain variable
+    else if(desiredType != Scalar && isHcomFunctionCall("fd", expr))
     {
         QString varName = expr.mid(3, expr.size()-4);
 
@@ -5950,7 +5993,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
-    else if(desiredType != Scalar && expr.startsWith("maxof(") && expr.endsWith(")"))
+    //else if(desiredType != Scalar && expr.startsWith("maxof(") && expr.endsWith(")"))
+    else if(desiredType != Scalar && isHcomFunctionCall("maxof", expr))
     {
         QString args = expr.mid(6, expr.size()-7);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
@@ -6077,7 +6121,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         mAnsType = Undefined;
         return;
     }
-    else if(desiredType != Scalar && expr.startsWith("minof(") && expr.endsWith(")"))
+    //else if(desiredType != Scalar && expr.startsWith("minof(") && expr.endsWith(")"))
+    else if(desiredType != Scalar && isHcomFunctionCall("minof", expr))
     {
         QString args = expr.mid(6, expr.size()-7);
         QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
