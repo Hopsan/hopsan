@@ -99,22 +99,22 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     connect(pClearFilterButton, SIGNAL(clicked()), mpFilterEdit, SLOT(clear()));
     connect(pClearFilterButton, SIGNAL(clicked()), this, SLOT(update()));
 
-    QSize iconSize = QSize(24,24);  //Size of library icons
+//    QSize iconSize = QSize(24,24);  //Size of library icons
 
-    QToolButton *pTreeViewButton = new QToolButton();
-    pTreeViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryTreeView.png"));
-    pTreeViewButton->setIconSize(iconSize);
-    pTreeViewButton->setToolTip(tr("Single List View"));
+//    QToolButton *pTreeViewButton = new QToolButton();
+//    pTreeViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryTreeView.png"));
+//    pTreeViewButton->setIconSize(iconSize);
+//    pTreeViewButton->setToolTip(tr("Single List View"));
 
-    QToolButton *pDualViewButton = new QToolButton();
-    pDualViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryDualView.png"));
-    pDualViewButton->setIconSize(iconSize);
-    pDualViewButton->setToolTip(tr("Dual List View"));
+//    QToolButton *pDualViewButton = new QToolButton();
+//    pDualViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryDualView.png"));
+//    pDualViewButton->setIconSize(iconSize);
+//    pDualViewButton->setToolTip(tr("Dual List View"));
 
-    QToolButton *pHelpButton = new QToolButton();
-    pHelpButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
-    pHelpButton->setToolTip(tr("Open Context Help"));
-    pHelpButton->setIconSize(iconSize);
+//    QToolButton *pHelpButton = new QToolButton();
+//    pHelpButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
+//    pHelpButton->setToolTip(tr("Open Context Help"));
+//    pHelpButton->setIconSize(iconSize);
 
     connect(gpLibraryHandler, SIGNAL(contentsChanged()), this, SLOT(update()));
     connect(mpTree,     SIGNAL(itemPressed(QTreeWidgetItem*,int)),  this,                   SLOT(handleItemClick(QTreeWidgetItem*,int)));
@@ -122,16 +122,16 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     connect(mpDualTree, SIGNAL(itemPressed(QTreeWidgetItem*,int)),  this,                   SLOT(handleItemClick(QTreeWidgetItem*,int)));
     connect(mpList,     SIGNAL(itemPressed(QListWidgetItem*)),      this,                   SLOT(handleItemClick(QListWidgetItem*)));
     connect(mpList,     SIGNAL(itemEntered(QListWidgetItem*)),      this,                   SLOT(handleItemEntered(QListWidgetItem*)));
-    connect(pTreeViewButton, SIGNAL(clicked()),    mpTree,                 SLOT(show()));
-    connect(pTreeViewButton, SIGNAL(clicked()),    mpDualTree,             SLOT(hide()));
-    connect(pTreeViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(hide()));
-    connect(pTreeViewButton, SIGNAL(clicked()),    mpList,                 SLOT(hide()));
-    connect(pDualViewButton, SIGNAL(clicked()),    mpTree,                 SLOT(hide()));
-    connect(pDualViewButton, SIGNAL(clicked()),    mpDualTree,             SLOT(show()));
-    connect(pDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(show()));
-    connect(pDualViewButton, SIGNAL(clicked()),    mpList,                 SLOT(show()));
-    connect(pDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(clear()));
-    connect(pHelpButton,     SIGNAL(clicked()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
+//    connect(pTreeViewButton, SIGNAL(clicked()),    mpTree,                 SLOT(show()));
+//    connect(pTreeViewButton, SIGNAL(clicked()),    mpDualTree,             SLOT(hide()));
+//    connect(pTreeViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(hide()));
+//    connect(pTreeViewButton, SIGNAL(clicked()),    mpList,                 SLOT(hide()));
+//    connect(pDualViewButton, SIGNAL(clicked()),    mpTree,                 SLOT(hide()));
+//    connect(pDualViewButton, SIGNAL(clicked()),    mpDualTree,             SLOT(show()));
+//    connect(pDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(show()));
+//    connect(pDualViewButton, SIGNAL(clicked()),    mpList,                 SLOT(show()));
+//    connect(pDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(clear()));
+//    connect(pHelpButton,     SIGNAL(clicked()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
     connect(mpFilterEdit,   SIGNAL(textEdited(QString)), this, SLOT(update()));
 
     QGridLayout *pLayout = new QGridLayout(this);
@@ -140,10 +140,10 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     pLayout->addWidget(mpComponentNameLabel,    1,0,1,4);
     pLayout->addWidget(mpList,                  2,0,1,4);
     pLayout->addLayout(pFilterLayout,           3,0,1,4);
-    pLayout->addWidget(pTreeViewButton,        4,0);
-    pLayout->addWidget(pDualViewButton,        4,1);
-    pLayout->addWidget(new QWidget(this),       4,2);
-    pLayout->addWidget(pHelpButton,            4,3);
+//    pLayout->addWidget(pTreeViewButton,        4,0);
+//    pLayout->addWidget(pDualViewButton,        4,1);
+//    pLayout->addWidget(new QWidget(this),       4,2);
+//    pLayout->addWidget(pHelpButton,            4,3);
     pLayout->setColumnStretch(2,1);
     this->setLayout(pLayout);
 

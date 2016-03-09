@@ -37,11 +37,13 @@
                The user name can be set in HopsanGUI or supplied to the RemoteClient command line tool.
 - Enhancement: Disabled editing, solver selection and recompile button in the code viewer (in Component Properties) for C++ components since it is not possible to  
                actually change / recompile individual components from within HopsanGUI. This was causing confusion.
+- Enhancement: Disabled the "Dual View" in the library widget since it will fail to show all components in some cases. Fixing the problem will require to much work,
+               the code is still there if someone want to give it a try. This change also removes the "HelpButton" but the UsersGuide is still available through the help menu.
 
 - New component: Hydraulic Piston Accumulator has been added  
 
 - Bug fixed: When loading a model from a 0.6 version of Hopsan using custom parameter scales, the scale factors are inverted in the properties dialog.
-             (Simulation is not affected)
+             (Simulation is not affected!)
              When a scale mismatch is detected on loading a model, it will now be updated to the latest version.
              Note! Since old versions of Hopsan does not have this fix, the unit scales saved in a model from Hopsan 0.7 are not backwards compatible with Hopsan 0.6.
 - Bug fixed: It is not possible to use HCOM function calls as arguments to HCOM commands if spaces exist in the argument list to the function call
