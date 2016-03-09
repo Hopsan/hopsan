@@ -291,7 +291,7 @@ void ComponentPropertiesDialog3::copyToNewComponent()
         gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
         mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
     }
-    delete(pEditDialog);
+    pEditDialog->deleteLater();
 }
 
 void ComponentPropertiesDialog3::recompile()
@@ -655,14 +655,15 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     mpSourceCodeTextEdit = new QTextEdit();
     mpSourceCodeTextEdit->setReadOnly(false);
     mpSourceCodeTextEdit->setText(code);
+    bool ismo=false;
     if(rFilePath.endsWith(".hpp"))
     {
-        //! @todo who own and who deletes
         CppHighlighter *pHighLighter = new CppHighlighter(mpSourceCodeTextEdit->document());
         Q_UNUSED(pHighLighter);
     }
     else if(rFilePath.endsWith(".mo"))
     {
+        ismo=true;
         ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(mpSourceCodeTextEdit->document());
         Q_UNUSED(pHighLighter);
     }
@@ -670,7 +671,7 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     QWidget *pTempWidget = new QWidget(this);
     QVBoxLayout *pLayout = new QVBoxLayout(pTempWidget);
     pLayout->addWidget(mpSourceCodeTextEdit);
-    mpSourceCodeTextEdit->setReadOnly(!mAllowEditing);
+    mpSourceCodeTextEdit->setReadOnly(!(ismo && mAllowEditing));
 
     QLabel *pSolverLabel = new QLabel("Solver: ", this);
     mpSolverComboBox = new QComboBox(this);
@@ -679,7 +680,6 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     QPushButton *pNewComponentButton = new QPushButton(tr("&Copy to new component"), this);
     connect(pNewComponentButton, SIGNAL(clicked()), this, SLOT(copyToNewComponent()));
     QPushButton *pRecompileButton = new QPushButton(tr("&Recompile"), this);
-    pRecompileButton->setEnabled(true);
     connect(pRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
     QHBoxLayout *pSolverLayout = new QHBoxLayout();
     pSolverLayout->addWidget(pSolverLabel);
@@ -690,10 +690,10 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     pSolverLayout->setStretch(2,1);
     pLayout->addLayout(pSolverLayout);
 
-    pRecompileButton->setEnabled(mAllowEditing);
-    mpSolverComboBox->setEnabled(mAllowEditing);
+    pRecompileButton->setEnabled(ismo && mAllowEditing);
+    mpSolverComboBox->setEnabled(ismo && mAllowEditing);
 
-    return pTempWidget;//return pSourceCodeTextEdit;
+    return pTempWidget;
 }
 
 QWidget *SystemProperties::createSystemSettings()

@@ -85,6 +85,8 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language,
     pSolverLayout->addWidget(new QWidget(this));
     pSolverLayout->setStretch(2, 1);
 
+    mpSolverComboBox->setEnabled(language==Modelica);
+
     mpButtonBox = new QDialogButtonBox(this);
     mpButtonBox->setObjectName(QString::fromUtf8("mpButtonBox"));
     mpButtonBox->setOrientation(Qt::Horizontal);
