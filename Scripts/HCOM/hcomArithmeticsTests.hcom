@@ -22,7 +22,7 @@ define testOk
   echo off
   nOkTests = nOkTests+1
   echo on
-  print "Test $nTests$" was OK"
+  print "Test $nTests$ was OK"
 enddefine
 
 define testFailed
