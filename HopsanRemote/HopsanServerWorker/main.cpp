@@ -328,7 +328,7 @@ void waitShellExecThread(pid_t *pPid, std::string *pShellOutput, bool *pExitstat
     }
     *pExitstatusOK = (WIFEXITED(status)!=0) && (WEXITSTATUS(status)==0);
 
-    std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< *pPid << " rc: " << waitrc << " status: " << status <<  endl;
+    std::cout << PRINTWORKER << nowDateTime() << " Waitpid on pid: "<< *pPid << " rc: " << waitrc << " WIFEXITED(status): " << WIFEXITED(status) << " status: " << status << " WEXITSTATUS(status): " << WEXITSTATUS(status) <<  endl;
     *pShellOutput = "No output available!";
 #endif
     gShellIsExecuting = false;
@@ -775,8 +775,8 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command! " << command << " RC: "<< status << endl;
-                            sendMessage(socket, NotAck, "Failed to execute command! RC:"+to_string(status));
+                            std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command! " << command << endl;
+                            sendMessage(socket, NotAck, "Failed to execute command!");
                         }
 
                         // Wait for process to prevent zombies from taking over the world
