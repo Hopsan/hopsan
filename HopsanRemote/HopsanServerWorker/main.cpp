@@ -780,6 +780,7 @@ int main(int argc, char* argv[])
                         }
 
                         // Wait for process to prevent zombies from taking over the world
+                        gShellIsExecuting = true; // Hmm seems like we need to set this here, since it may take some time for the thread to actually start, and a request may come in between
                         std::thread(waitShellExecThread, &pid, &gExecuteInShellOutput, &gShellExecExitOK).detach();
 #endif
                     }
