@@ -345,6 +345,8 @@ void LogDataGeneration::switchGenerationDataCache(SharedMultiDataVectorCacheT pD
     {
         SharedVectorVariableT &data = it.value();
         data->mpCachedDataVector->switchCacheFile(pDataCache);
+        // This is safe even if it looks like we are switching the same (time) variable multiple time,
+        // the switch will no be performed if pDataCache is already set
         if (data->mpSharedTimeOrFrequencyVector)
         {
             data->mpSharedTimeOrFrequencyVector->mpCachedDataVector->switchCacheFile(pDataCache);

@@ -610,7 +610,14 @@ bool CachableDataVector::moveToCache()
         // If not cached then add to cache
         if (mCacheNumBytes == 0)
         {
-            if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
+            // If we do not have data, then just tag, that we want to sue cache
+            if (mDataVector.isEmpty())
+            {
+                mIsCached = true;
+                return true;
+            }
+            // If we have data, then try to add it to the cache
+            else if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
             {
                 mDataVector.clear();
                 mIsCached = true;

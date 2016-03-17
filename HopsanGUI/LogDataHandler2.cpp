@@ -510,6 +510,9 @@ SharedVectorVariableT LogDataHandler2::insertNewVectorVariable(const QString &rD
     if( ok )
     {
         SharedVectorVariableT pNewData = createOrphanVariable(rDesiredname, type);
+        // Assign generation cache file
+        pNewData->mpCachedDataVector->switchCacheFile(getGenerationMultiCache(mCurrentGenerationNumber));
+        pNewData->mpCachedDataVector->setCached(gpConfig->getCacheLogData());
         return insertVariable(pNewData, "", gen);
     }
     return SharedVectorVariableT();
