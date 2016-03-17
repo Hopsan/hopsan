@@ -775,8 +775,8 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command! " << command << endl;
-                            sendMessage(socket, NotAck, "Failed to execute command!");
+                            std::cout << PRINTWORKER << nowDateTime() << " Error: Failed to Executed command! " << command << " RC: "<< status << endl;
+                            sendMessage(socket, NotAck, "Failed to execute command! RC:"+to_string(status));
                         }
 
                         // Wait for process to prevent zombies from taking over the world
