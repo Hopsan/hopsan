@@ -30,6 +30,7 @@
 hopsan::QuantityRegister::QuantityRegister()
 {
     registerQuantity("Pressure", "Pa");
+    registerQuantityAlias("Pressure", "Stress");
     registerQuantity("Flow", "m^3/s");
 
     registerQuantity("Force", "N");
