@@ -27,6 +27,12 @@
 ******************************
     Version History
 ******************************
+
+0.7.5  (2016-??-??)
+- Bug fixed: FFT function would create frequency vector in Hz but the defaut unit for frequency in Hopsan is rad/s. 
+             Note! Default plot unit can be changed in the global program options dialog.
+
+------------------------------
 0.7.4  (2016-03-11)
 - Feature: HCOM sepl command to set plot label
 - Feature: HCOM revert command to revert model changes

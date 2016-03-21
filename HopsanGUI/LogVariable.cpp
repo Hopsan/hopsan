@@ -784,8 +784,8 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
                 mag.append(std::abs(vComplex[i])/double(n));
             }
 
-            // Build freq vector
-            freq.append(double(i)/maxt);
+            // Build freq vector, Hopsan uses rad/s as base unit for frequency
+            freq.append(2.0*M_PI*(double(i)/maxt));
         }
 
         SharedVariableDescriptionT pDesc(new VariableDescription());
