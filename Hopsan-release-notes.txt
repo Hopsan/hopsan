@@ -29,8 +29,9 @@
 ******************************
 
 0.7.5  (2016-??-??)
-- Bug fixed: FFT function would create frequency vector in Hz but the defaut unit for frequency in Hopsan is rad/s. 
+- Bug fixed: FFT function would create frequency vector in Hz but the default unit for frequency in Hopsan is rad/s. 
              Note! Default plot unit can be changed in the global program options dialog.
+- Bug fixed: Incorrect memory deallocation in Delay class (memory leak in components using delay buffers)
 
 ------------------------------
 0.7.4  (2016-03-11)

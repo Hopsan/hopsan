@@ -177,7 +177,7 @@ public:
     {
         if (mpArray != 0)
         {
-            delete mpArray;
+            delete[] mpArray;
             mpArray=0;
             mSize=0;
         }
