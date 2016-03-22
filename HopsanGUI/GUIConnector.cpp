@@ -67,6 +67,7 @@ Connector::Connector(ContainerObject *pParentContainer)
     mMakingDiagonal = false;
     mIsDashed = false;
     mIsBroken = false;
+    mIsActive = false;
 
     // Set parent
     this->setParentContainer(pParentContainer);

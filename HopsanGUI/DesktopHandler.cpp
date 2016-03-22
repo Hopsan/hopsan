@@ -175,7 +175,7 @@ void DesktopHandler::setupPaths()
         QDir customDir;
         do
         {
-            QMessageBox::information(0, "Choose data path", "Default data directory is not writable:\n\n"+mDefaultDataPath+"\n\nPlease choose a different path.", "Okay");
+            QMessageBox::information(0, "Choose data path", "Default data directory is not writeable:\n\n"+mDefaultDataPath+"\n\nPlease choose a different path.", "Okay");
             QWidget *pWidget = new QWidget();
             QFileDialog *pDialog = new QFileDialog(pWidget);
             mCustomDataPath = pDialog->getExistingDirectory(pWidget, "Choose Data Directory",
@@ -198,7 +198,7 @@ void DesktopHandler::setupPaths()
         QDir customDir;
         do
         {
-            QMessageBox::information(0, "Choose documents path", "Default documents directory is not writable:\n\n"+mDefaultDocumentsPath+"\n\nPlease choose a different path.", "Okay");
+            QMessageBox::information(0, "Choose documents path", "Default documents directory is not writeable:\n\n"+mDefaultDocumentsPath+"\n\nPlease choose a different path.", "Okay");
             QWidget *pWidget = new QWidget();
             QFileDialog *pDialog = new QFileDialog(pWidget);
             mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Documents Directory",
@@ -222,7 +222,7 @@ void DesktopHandler::setupPaths()
         QDir customDir;
         do
         {
-            QMessageBox::information(0, "Choose temp path", "Default temp directory is not writable:\n\n"+mDefaultTempPath+"\n\nPlease choose a different path.", "Okay");
+            QMessageBox::information(0, "Choose temp path", "Default temp directory is not writeable:\n\n"+mDefaultTempPath+"\n\nPlease choose a different path.", "Okay");
             QWidget *pWidget = new QWidget();
             QFileDialog *pDialog = new QFileDialog(pWidget);
             mCustomTempPath = pDialog->getExistingDirectory(pWidget, "Choose Temp Directory",
