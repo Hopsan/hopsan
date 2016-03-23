@@ -147,17 +147,46 @@ void IndexingCSVParser::indexFile()
         // Register Start of line position
         rLine.push_back(pos);
         // Now read line until and register each separator char position
-        while (c!='\n' && c!='\r' && c!=EOF)
+        // If separator char == "space" then use special case
+        if (mSeparatorChar == ' ')
         {
-            if (c==mSeparatorChar)
+            bool lastWasSpace = true;
+            while (c!='\n' && c!='\r' && c!=EOF)
             {
-                rLine.push_back(pos);
-            }
+                if (c==mSeparatorChar)
+                {
+                    if (!lastWasSpace)
+                    {
+                        rLine.push_back(pos);
+                    }
+                    lastWasSpace = true;
+                }
+                else
+                {
+                    lastWasSpace = false;
+                }
 
-            // Get next char
-            pos = ftell(mpFile);
-            c = fgetc(mpFile);
+                // Get next char
+                pos = ftell(mpFile);
+                c = fgetc(mpFile);
+            }
         }
+        // else use this case for all ordinary separators
+        else
+        {
+            while (c!='\n' && c!='\r' && c!=EOF)
+            {
+                if (c==mSeparatorChar)
+                {
+                    rLine.push_back(pos);
+                }
+
+                // Get next char
+                pos = ftell(mpFile);
+                c = fgetc(mpFile);
+            }
+        }
+
         // Register end of line position
         rLine.push_back(pos);
         // Read pos and first char on next line
