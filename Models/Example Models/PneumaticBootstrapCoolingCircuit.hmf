@@ -11,7 +11,7 @@
       <pose flipped="false" y="0" a="0" x="0"/>
       <nametext position="0" visible="0"/>
       <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
-      <viewport zoom="0.70922" y="2106.54" x="2860.18"/>
+      <viewport zoom="0.70922" y="2275.74" x="2860.18"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -426,7 +426,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose flipped="false" y="2198.18956" a="0" x="3080.849384"/>
+          <pose flipped="false" y="2188.319562" a="0" x="3080.849384"/>
           <nametext position="0" visible="0"/>
           <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
           <hopsanobjectappearance version="0.3">
@@ -1121,8 +1121,8 @@
         <hopsangui>
           <coordinates>
             <coordinate y="2281.65513700000019525760" x="2283.11954000000014275429"/>
-            <coordinate y="2198.18955999999980122084" x="2283.11954000000014275429"/>
-            <coordinate y="2198.18955999999980122084" x="3060.84938400000010005897"/>
+            <coordinate y="2188.31956197399858865538" x="2283.11954000000014275429"/>
+            <coordinate y="2188.31956197399858865538" x="3060.84938399999964531162"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1135,8 +1135,8 @@
         <hopsangui>
           <coordinates>
             <coordinate y="2281.70953999999983352609" x="2245.04954700000007505878"/>
-            <coordinate y="2198.18955999999980122084" x="2245.04954700000007505878"/>
-            <coordinate y="2198.18955999999980122084" x="3060.84938400000010005897"/>
+            <coordinate y="2188.31956197399858865538" x="2245.04954700000007505878"/>
+            <coordinate y="2188.31956197399858865538" x="3060.84938399999964531162"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
