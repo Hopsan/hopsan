@@ -50,20 +50,21 @@ namespace hopsan {
 class ComponentSystem;
 class Port;
 class SimulationHandler;
-class CSVParser;
+class CSVParserNG;
 }
 
 
 class CoreCSVParserAccess
 {
 public:
-    CoreCSVParserAccess(QString file);
+    CoreCSVParserAccess(QString file, QChar separator=',');
+    ~CoreCSVParserAccess();
     bool isOk();
     int getNumberOfRows();
     int getNumberOfColumns();
-    QVector<double> getColumn(int col);
+    bool getColumn(int col, QVector<double> &rVector);
 private:
-    hopsan::CSVParser *mpParser;
+    hopsan::CSVParserNG *mpParser;
 };
 
 

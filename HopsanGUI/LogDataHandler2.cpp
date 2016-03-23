@@ -885,7 +885,7 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
 }
 
 
-void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath)
+void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QChar separator, const int timecolumn)
 {
     if(importFilePath.isEmpty())
     {
@@ -903,31 +903,29 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath)
     QFileInfo fileInfo(file);
     gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
 
-    CoreCSVParserAccess *pParser = new CoreCSVParserAccess(importFilePath);
+    CoreCSVParserAccess csvparser(importFilePath,separator);
 
-    if(!pParser->isOk())
+    if(!csvparser.isOk())
     {
         gpMessageHandler->addErrorMessage("CSV file could not be parsed.");
         return;
     }
 
-    int cols = pParser->getNumberOfColumns();
+    int cols = csvparser.getNumberOfColumns();
     QList<QVector<double> > data;
     for(int c=0; c<cols; ++c)
     {
-        QVector<double> vec = pParser->getColumn(c);
+        QVector<double> vec;
+        csvparser.getColumn(c,vec);
         data.append(vec);
     }
 
-    delete(pParser);
-
-    if (!data.isEmpty())
+    if (!data.isEmpty() && timecolumn<data.size())
     {
         ++mCurrentGenerationNumber;
         SharedVectorVariableT pTimeVec(0);
 
-        // Ugly, assume that first vector is always time
-        pTimeVec = insertTimeVectorVariable(data[0], fileInfo.absoluteFilePath());
+        pTimeVec = insertTimeVectorVariable(data[timecolumn], fileInfo.absoluteFilePath());
 
         SharedVectorVariableT pNewData;
         for (int i=1; i<data.size(); ++i)

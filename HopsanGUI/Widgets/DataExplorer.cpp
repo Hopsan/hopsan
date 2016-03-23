@@ -128,19 +128,28 @@ void DataExplorer::refresh()
 
 void DataExplorer::openImportDataDialog()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Choose Hopsan Data File"),
-                                                    gpConfig->getStringSetting(CFG_PLOTDATADIR),
-                                                    tr("Data Files (*.plo *.PLO *.csv *.CSV)"));
-    QFileInfo fi(fileName);
-    if (mpLogDataHandler)
+    QFileDialog fd(this,tr("Choose Hopsan Data File"), gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                   tr("Data Files (*.plo *.PLO *.csv *.CSV);; Space-separated Column Data (*.*);; All (Treat as csv) (*.*)"));
+    fd.exec();
+    QStringList selectedFiles = fd.selectedFiles();
+    QString selectedNameFilter = fd.selectedNameFilter();
+    if (mpLogDataHandler && !selectedFiles.isEmpty())
     {
-        if (fi.suffix().toLower() == "plo")
+        for (QString &file : selectedFiles)
         {
-            mpLogDataHandler->importFromPlo(fileName);
-        }
-        else if (fi.suffix().toLower() == "csv")
-        {
-            mpLogDataHandler->importFromCSV_AutoFormat(fileName);
+            QFileInfo fi(file);
+            if (selectedNameFilter.contains("Space-separated"))
+            {
+                mpLogDataHandler->importFromPlainColumnCsv(file, ' ');
+            }
+            else if (fi.suffix().toLower() == "plo")
+            {
+                mpLogDataHandler->importFromPlo(file);
+            }
+            else
+            {
+                mpLogDataHandler->importFromCSV_AutoFormat(file);
+            }
         }
     }
 }

@@ -1469,13 +1469,26 @@ QString getHopsanCoreVersion()
 }
 
 
-CoreCSVParserAccess::CoreCSVParserAccess(QString file)
+CoreCSVParserAccess::CoreCSVParserAccess(QString file, QChar separator)
 {
-    bool success;
-    mpParser = new hopsan::CSVParser(success, hopsan::HString(file.toStdString().c_str()));
-    if(!success)
+    mpParser = new hopsan::CSVParserNG(separator.toLatin1());
+    bool openOK = mpParser->openFile(hopsan::HString(file.toStdString().c_str()));
+    if (openOK)
     {
+        mpParser->indexFile();
+    }
+    else
+    {
+        delete mpParser;
         mpParser = 0;
+    }
+}
+
+CoreCSVParserAccess::~CoreCSVParserAccess()
+{
+    if (mpParser)
+    {
+        delete mpParser;
     }
 }
 
@@ -1500,15 +1513,21 @@ int CoreCSVParserAccess::getNumberOfColumns()
         return 0;
 }
 
-QVector<double> CoreCSVParserAccess::getColumn(int col)
+bool CoreCSVParserAccess::getColumn(int col, QVector<double> &rVector)
 {
     if(mpParser)
-        return QVector<double>::fromStdVector(mpParser->getDataColumn(col));
+    {
+        std::vector<double> vec;
+        bool rc = mpParser->copyColumn(col, vec);
+        rVector = QVector<double>::fromStdVector(vec);
+        return rc;
+    }
     else
-        return QVector<double>();
+    {
+        rVector = QVector<double>();
+        return false;
+    }
 }
-
-
 
 QString getHopsanCoreCompiler()
 {

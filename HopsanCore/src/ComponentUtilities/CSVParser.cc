@@ -495,6 +495,7 @@ CSVParserNG::CSVParserNG(const char separator_char)
 
 CSVParserNG::~CSVParserNG()
 {
+    mpCsvParser->closeFile();
     delete mpCsvParser;
 }
 
