@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
 
     // Define a value argument and add it to the command line.
     TCLAP::SwitchArg argList("l", "list", "List the servers and exit", cmd);
+    TCLAP::SwitchArg argFreeList("f", "free", "List all free servers and exit", cmd);
     TCLAP::ValueArg<double> argRefreshtime("r","refreshtime","The number of seconds between each refresh attempt",false,gRefreshTime,"double", cmd);
     TCLAP::ValueArg<std::string> argAddressServerIP("a", "addresserver", "IP:port to address server", true, "127.0.0.1:50000", "IP:Port", cmd);
 
@@ -92,7 +93,7 @@ int main(int argc, char* argv[])
 
     cout << endl;
     cout << "Starting server monitor, connecting to: " << addressServerAddress << endl;
-    if (!argList.isSet())
+    if (!argList.isSet() && !argFreeList.isSet())
     {
         cout << "Enter  q  to quit or  uN  (where N is the refresh time in seconds)" << endl;
         inputThread = thread(inputThreadFunc);
@@ -110,14 +111,42 @@ int main(int argc, char* argv[])
         bool rc = rhc.connectToAddressServer(addressServerAddress);
         if (rc && rhc.addressServerConnected())
         {
-            if (argList.isSet())
+            if (argList.isSet() || argFreeList.isSet())
             {
                 std::vector<ServerMachineInfoT> machines;
                 if (rhc.requestServerMachines(-1, 1e150, machines))
                 {
+
                     for (ServerMachineInfoT &m : machines)
                     {
-                        cout << m.address << endl;
+                        if(argFreeList.isSet())
+                        {
+                            std::string addr = m.address;
+                            if (!m.relayaddress.empty())
+                            {
+                                addr = m.relayaddress;
+                            }
+                            if (!rhc.connectToServer(addr))
+                            {
+                                cout << "Failed!" << endl;
+                                cout << rhc.getLastErrorMessage() << endl;
+                            }
+                            if (rhc.serverConnected())
+                            {
+
+                                ServerStatusT status;
+                                bool gotStatus = rhc.requestServerStatus(status);
+                                if (gotStatus && status.numFreeSlots == status.numTotalSlots)
+                                {
+                                    cout << m.address << endl;
+                                }
+                            }
+                            rhc.disconnectServer();
+                        }
+                        else
+                        {
+                            cout << m.address << endl;
+                        }
                     }
                 }
                 else
