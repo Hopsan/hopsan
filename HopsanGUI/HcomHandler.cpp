@@ -876,9 +876,9 @@ void HcomHandler::createCommands()
     saplCmd.cmd = "sapl";
     saplCmd.description.append("Save log variables to file. Filename suffix determins format");
     saplCmd.help.append(" Usage: sapl [filepath] [-flags] [variables]\n");
-    saplCmd.help.append("  Flags (optional):");
-    saplCmd.help.append("   -csv    Force CSV format");
-    saplCmd.help.append("   -plo    Force PLO format");
+    saplCmd.help.append("  Flags (optional):\n");
+    saplCmd.help.append("   -csv    Force CSV format\n");
+    saplCmd.help.append("   -plo    Force PLO format\n");
     saplCmd.help.append("   -h5     Force H5 (HDF5) format");
     saplCmd.fnc = &HcomHandler::executeSaveToPloCommand;
     saplCmd.group = "Plot Commands";
@@ -886,8 +886,12 @@ void HcomHandler::createCommands()
 
     HcomCommand replCmd;
     replCmd.cmd = "repl";
-    replCmd.description.append("Loads plot files from .CSV or .PLO");
-    replCmd.help.append(" Usage: repl [filepath]");
+    replCmd.description.append("Loads plot files from .csv or .plo");
+    replCmd.help.append(" Usage: repl [-flags] [filepath]\n");
+    replCmd.help.append("  Flags (optional):\n");
+    replCmd.help.append("   -csv    Force CSV (, or ;) format\n");
+    replCmd.help.append("   -ssp    Force CSV (space separated) format\n");
+    replCmd.help.append("   -plo    Force PLO format");
     replCmd.fnc = &HcomHandler::executeLoadVariableCommand;
     replCmd.group = "Plot Commands";
     mCmdList << replCmd;
@@ -3934,13 +3938,23 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
 void HcomHandler::executeLoadVariableCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(getNumberOfCommandArguments(cmd) != 1)
+    if(args.size() < 1 || args.size() > 2)
     {
         HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString path = args[0];
+    QString flagarg,path;
+    if (args.size() > 1)
+    {
+        flagarg = args.first();
+        path = args.last();
+    }
+    else
+    {
+        path = args.first();
+    }
+
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -3958,28 +3972,40 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
         return;
     }
 
-    bool csv;
-    if(path.endsWith(".csv") || path.endsWith(".CSV"))
+    bool csv,ssv,plo;
+    csv=(flagarg=="-csv");
+    ssv=(flagarg=="-ssv");
+    plo=(flagarg=="-plo");
+
+    if( flagarg.isEmpty() && (path.endsWith(".csv") || path.endsWith(".CSV")) )
     {
         csv=true;
     }
-    else if(path.endsWith(".plo") || path.endsWith(".PLO"))
+    else if(flagarg.isEmpty() && (path.endsWith(".plo") || path.endsWith(".PLO")) )
     {
-        csv=false;
+        plo=true;
     }
-    else
+    else if (flagarg.isEmpty())
     {
         HCOMWARN("Unknown file extension, assuming that it is a PLO file.");
-        csv=false;
+        plo=true;
     }
 
     if(csv)
     {
         mpModel->getViewContainerObject()->getLogDataHandler()->importFromCSV_AutoFormat(path);
     }
-    else
+    else if (plo)
     {
         mpModel->getViewContainerObject()->getLogDataHandler()->importFromPlo(path);
+    }
+    else if (ssv)
+    {
+        mpModel->getLogDataHandler()->importFromPlainColumnCsv(path,' ');
+    }
+    else
+    {
+        HCOMERR("Incorrect format");
     }
 }
 
