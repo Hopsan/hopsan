@@ -28,6 +28,7 @@
 #include "AeroAircraft6DOFSS.hpp"
 #include "AeroAtmosphere.hpp"
 #include "AeroCombustionChamberMono.hpp"
+#include "AeroFlightRecorder.hpp"
 #include "AeroFuelTank.hpp"
 #include "AeroJetEngine.hpp"
 #include "AeroPropeller.hpp"
