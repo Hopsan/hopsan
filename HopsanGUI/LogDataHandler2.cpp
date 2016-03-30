@@ -1069,7 +1069,8 @@ void LogDataHandler2::clear()
     // Clear all data generations
     for (auto git = mGenerationMap.begin(); git!=mGenerationMap.end(); ++git)
     {
-        delete git.value();
+        git.value()->clear(true);
+        git.value()->deleteLater();
     }
     mGenerationMap.clear();
 
