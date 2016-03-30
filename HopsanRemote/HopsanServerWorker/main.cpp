@@ -980,13 +980,16 @@ int main(int argc, char* argv[])
             {
                 //Handle timeout / exception
                 nClientTimeouts++;
-                if (double(nClientTimeouts)*double(client_timeout)/60000.0 >= dead_client_timout_min)
+                if (!gShellIsExecuting)
                 {
-                    // Force quit after 5 minutes
-                    cout << PRINTWORKER << nowDateTime() << " Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
-                    //! @todo should handle long simulation time
-                    sendServerGoodby(serverSocket);
-                    keepRunning = false;
+                    if (double(nClientTimeouts)*double(client_timeout)/60000.0 >= dead_client_timout_min)
+                    {
+                        // Force quit after some time minutes
+                        cout << PRINTWORKER << nowDateTime() << " Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
+                        //! @todo should handle long simulation time
+                        sendServerGoodby(serverSocket);
+                        keepRunning = false;
+                    }
                 }
             }
 
