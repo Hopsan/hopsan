@@ -370,7 +370,7 @@ ModelObject *PythonHopsanInterface::addComponent(const QString &rName, const QSt
 
 ModelObject *PythonHopsanInterface::addComponent(const QString &rName, const QString &rTypeName, const QString &rSubTypeName, const int x, const int y, const int rot)
 {
-    ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(rTypeName, rSubTypeName);
+    ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(rTypeName, rSubTypeName).data();
     if(!pAppearance)
     {
         printError("Could not find component type");

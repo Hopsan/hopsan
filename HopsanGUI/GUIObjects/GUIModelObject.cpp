@@ -1707,7 +1707,7 @@ ModelObjectAppearance* ModelObject::getAppearanceData()
     return &mModelObjectAppearance;
 }
 
-const ModelObjectAppearance *ModelObject::getLibraryAppearanceData() const
+const SharedModelObjectAppearanceT ModelObject::getLibraryAppearanceData() const
 {
     return gpLibraryHandler->getModelObjectAppearancePtr(getTypeName());
 }

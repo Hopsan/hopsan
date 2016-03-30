@@ -44,12 +44,12 @@
 #include <QPushButton>
 
 //Hopsan includes
+#include "LibraryHandler.h"
 #include "global.h"
 #include "Configuration.h"
 #include "CoreAccess.h"
 #include "DesktopHandler.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
-#include "LibraryHandler.h"
 #include "ModelHandler.h"
 #include "version_gui.h"
 #include "MessageHandler.h"
@@ -558,7 +558,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 {
                     //Read appearance data from the caf xml file, begin with the first
                     QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file
-                    ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
+                    SharedModelObjectAppearanceT pAppearanceData = SharedModelObjectAppearanceT(new ModelObjectAppearance);
                     pAppearanceData->setBasePath(QFileInfo(cafFile).absolutePath()+"/");
                     pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
                     pAppearanceData->cacheIcons();
@@ -805,7 +805,7 @@ LibraryEntry LibraryHandler::getFMUEntry(const QString &rFmuName)
 }
 
 
-ModelObjectAppearance *LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName)
+SharedModelObjectAppearanceT LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName)
 {
     QMap<QString, LibraryEntry>::iterator it = mLibraryEntries.find((makeFullTypeString(typeName, subTypeName)));
     if(it != mLibraryEntries.end())
@@ -814,7 +814,7 @@ ModelObjectAppearance *LibraryHandler::getModelObjectAppearancePtr(const QString
     }
     else
     {
-        return 0;
+        return SharedModelObjectAppearanceT();
     }
 }
 

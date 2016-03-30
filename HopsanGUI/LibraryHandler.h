@@ -42,9 +42,9 @@
 
 //Hopsan includes
 #include "common.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
 
 //Forward declarations
-class ModelObjectAppearance;
 
 //! @brief Component Library metadata class
 class ComponentLibrary
@@ -72,7 +72,7 @@ class LibraryEntry
 public:
     bool isNull() const;
 
-    ModelObjectAppearance *pAppearance=nullptr;
+    SharedModelObjectAppearanceT pAppearance;
     SharedComponentLibraryPtrT pLibrary;
     HiddenVisibleEnumT visibility=Hidden;
     QStringList path;
@@ -94,7 +94,7 @@ public:
     QStringList getLoadedTypeNames();
     LibraryEntry getEntry(const QString &typeName, const QString &subTypeName="");
     LibraryEntry getFMUEntry(const QString &rFmuName);
-    ModelObjectAppearance *getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="");
+    SharedModelObjectAppearanceT getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="");
 
     void addReplacement(QString type1, QString type2);
     QStringList getReplacements(QString type);

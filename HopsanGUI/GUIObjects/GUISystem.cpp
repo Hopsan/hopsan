@@ -1080,7 +1080,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         // Now lets check if the icons were loaded successfully else we may want to ask the library widget for the graphics (components saved as subsystems)
         if (!mModelObjectAppearance.iconValid(UserGraphics) || !mModelObjectAppearance.iconValid(ISOGraphics))
         {
-            ModelObjectAppearance *pApp = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getSubTypeName());
+            SharedModelObjectAppearanceT pApp = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getSubTypeName());
             if (pApp)
             {
                 // If our user graphics is invalid but library has valid data then set from library

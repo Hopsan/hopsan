@@ -622,7 +622,7 @@ void AnimationWidget::resetAllAnimationDataToDefault()
 
         QString subTypeName = pComp->mpModelObject->getSubTypeName();
         QString typeName = pComp->mpModelObject->getTypeName();
-        ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(typeName, subTypeName);
+        SharedModelObjectAppearanceT pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(typeName, subTypeName);
         pAppearanceData->getAnimationDataPtr()->saveToDomElement(animationRoot);
         QString baseIconPath = gpLibraryHandler->getModelObjectAppearancePtr(pComp->mpModelObject->getTypeName())->getAnimationDataPtr()->baseIconPath;
 

@@ -548,7 +548,7 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
 ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
-    ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(fullTypeName);
+    ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(fullTypeName).data();
 
     if(!pAppearanceData)    //Not an existing component
     {

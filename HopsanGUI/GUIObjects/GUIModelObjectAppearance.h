@@ -37,6 +37,7 @@
 #include <QString>
 #include <QPointF>
 #include <QIcon>
+#include <QSharedPointer>
 #include "common.h"
 
 #include "Utilities/XMLUtilities.h"
@@ -303,6 +304,6 @@ private:
 
     ModelObjectAnimationData mAnimationData;
 };
-
+typedef QSharedPointer<ModelObjectAppearance> SharedModelObjectAppearanceT;
 
 #endif // APPEARANCEDATA_H

@@ -65,6 +65,7 @@ class GUIMessageHandler : public QObject
 
 public:
     GUIMessageHandler(QObject *pParent=0);
+    ~GUIMessageHandler();
     void clear();
     void startPublish();
     void stopPublish();

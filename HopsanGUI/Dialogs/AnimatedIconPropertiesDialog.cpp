@@ -614,7 +614,7 @@ void AnimatedIconPropertiesDialog::resetValues()
 
     QString subTypeName = mpAnimatedComponent->mpModelObject->getSubTypeName();
     QString typeName = mpAnimatedComponent->mpModelObject->getTypeName();
-    ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(typeName, subTypeName);
+    SharedModelObjectAppearanceT pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(typeName, subTypeName);
     pAppearanceData->getAnimationDataPtr()->saveToDomElement(animationRoot);
     QString baseIconPath = gpLibraryHandler->getModelObjectAppearancePtr(mpAnimatedComponent->mpModelObject->getTypeName())->getAnimationDataPtr()->baseIconPath;
 

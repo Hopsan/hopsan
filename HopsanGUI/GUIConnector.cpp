@@ -582,17 +582,20 @@ bool Connector::isVolunector() const
 void Connector::makeVolunector()
 {
     //Create the hidden volume component
-    ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr("HydraulicVolume");
-    mpVolunectorComponent = new Component(mpStartPort->pos(), 0, pAppearance, mpParentContainerObject);
+    ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr("HydraulicVolume").data();
+    if (pAppearance)
+    {
+        mpVolunectorComponent = new Component(mpStartPort->pos(), 0, pAppearance, mpParentContainerObject);
 
-    //Let parent container object take ownership of the hidden component
-//    QList<ModelObject*> modelObjectsList;
-//    QList<Widget*> widgetsList;
-//    modelObjectsList << mpVolunectorComponent;
-//    mpParentContainerObject->takeOwnershipOf(modelObjectsList, widgetsList);
+        //Let parent container object take ownership of the hidden component
+        //    QList<ModelObject*> modelObjectsList;
+        //    QList<Widget*> widgetsList;
+        //    modelObjectsList << mpVolunectorComponent;
+        //    mpParentContainerObject->takeOwnershipOf(modelObjectsList, widgetsList);
 
-    //Hide the hidden component
-    mpVolunectorComponent->hide();
+        //Hide the hidden component
+        mpVolunectorComponent->hide();
+    }
 }
 
 
@@ -1540,7 +1543,7 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         QString typeName = actionToTypeNameMap.find(selectedAction).value();
 
-        ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+        ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName).data();
         Component *pNewComponent = new Component(mpParentConnector->getStartPort()->pos(), 0, pAppearance, mpParentConnector->getParentContainer());
         Component *pOldComponent = mpParentConnector->getVolunectorComponent();
 

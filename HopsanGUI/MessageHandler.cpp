@@ -85,6 +85,11 @@ GUIMessageHandler::GUIMessageHandler(QObject *pParent) :
     mpCoreAccess = new CoreMessagesAccess;
 }
 
+GUIMessageHandler::~GUIMessageHandler()
+{
+    delete mpCoreAccess;
+}
+
 void GUIMessageHandler::clear()
 {
     mMutex.lock();

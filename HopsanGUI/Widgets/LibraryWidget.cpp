@@ -213,7 +213,7 @@ void LibraryWidget::update()
     Q_FOREACH(const QString typeName, gpLibraryHandler->getLoadedTypeNames())
     {
         LibraryEntry entry = gpLibraryHandler->getEntry(typeName);
-        if(entry.visibility == Hidden || !entry.pAppearance->getDisplayName().toLower().contains(filter.toLower()))
+        if(entry.visibility == Hidden || !(entry.pAppearance->getDisplayName().toLower().contains(filter.toLower())))
         {
             continue;
         }
@@ -345,7 +345,7 @@ void LibraryWidget::update()
 
         if(!filter.isEmpty())
         {
-            ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+            SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
             QListWidgetItem *tempItem = new QListWidgetItem();
             tempItem->setIcon(/*QIcon(pAppearance->getFullAvailableIconPath())*/pAppearance->getIcon(mGfxType));
             tempItem->setToolTip(pAppearance->getDisplayName());
@@ -540,7 +540,6 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
 
-        ModelObjectAppearance *pAppearance;
         QIcon icon;
         if(typeName.startsWith(QString(MODELICATYPENAME)+"_"))
         {
@@ -548,7 +547,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         }
         else
         {
-            pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+            SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
             QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
             icon.addFile(iconPath,QSize(55,55));
         }
@@ -586,7 +585,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         //Populate list widget with components
         for(int i=0; i<typeNames.size(); ++i)
         {
-            ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeNames[i]);
+            SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeNames[i]);
             QListWidgetItem *tempItem = new QListWidgetItem();
             tempItem->setIcon(QIcon(pAppearance->getFullAvailableIconPath()));
             tempItem->setToolTip(pAppearance->getDisplayName());
@@ -824,7 +823,7 @@ void LibraryWidget::handleItemClick(QListWidgetItem *item)
     if(mListItemToTypeNameMap.contains(item) && qApp->mouseButtons() == Qt::LeftButton)
     {
         QString typeName = mListItemToTypeNameMap.find(item).value();
-        ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+        SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
         QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
         QIcon icon;
         icon.addFile(iconPath,QSize(55,55));

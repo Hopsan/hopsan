@@ -286,7 +286,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
 
-    ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(type, subtype);
+    const SharedModelObjectAppearanceT pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(type, subtype);
 
     if (pAppearanceData != 0)
     {

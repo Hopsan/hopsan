@@ -76,7 +76,7 @@ public:
     // Appearance methods
     void setAppearanceDataBasePath(const QString basePath);
     virtual ModelObjectAppearance* getAppearanceData();
-    virtual const ModelObjectAppearance *getLibraryAppearanceData() const;
+    virtual const SharedModelObjectAppearanceT getLibraryAppearanceData() const;
     bool isVisible();
     QGraphicsSvgItem *getIcon();
     void setNameTextAlwaysVisible(const bool isVisible);

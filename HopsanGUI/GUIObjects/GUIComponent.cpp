@@ -403,7 +403,7 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
     QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
 
-    ModelObjectAppearance *pLibraryAppearance = gpLibraryHandler->getModelObjectAppearancePtr(getTypeName(), getSubTypeName());
+    SharedModelObjectAppearanceT pLibraryAppearance = gpLibraryHandler->getModelObjectAppearancePtr(getTypeName(), getSubTypeName());
 
     // Save those ports that have changed appearance (position)
     QStringList ports;
