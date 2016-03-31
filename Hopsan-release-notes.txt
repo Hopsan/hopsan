@@ -20,9 +20,12 @@
 - Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We have not had time to fix this problem.
   If this is a problem take a screen-shot instead. You can quickly hide all of the side widgets with a button on the left pane.
 
-- Hopsan internally relies on using the U.S English locale ( decimal separator '.' ). 
-  Hopsan should internally switch to this mode but if you are using an other locale and ARE HAVING PROBLEMS, try switching to U.S English numeric locale.
-  This problem has been observed on Ubuntu
+- Hopsan internally relies on using the U.S English locale ( decimal separator '.' ) and should internally switch to this mode.
+  Problems have been observed on some Ubuntu installations running with a different locale. Hopsan fails to interpret values with decimal separator '.'
+  If you do not want to change your system settings you can start Hopsan with the following command to locally ensure that U.S English numeric locale is used.
+  Example:
+    cd /opt/hopsan/bin
+    LC_NUMERIC=C; ./HopsanGUI
   
 ******************************
     Version History
