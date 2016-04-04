@@ -75,8 +75,9 @@ int main(int argc, char* argv[])
     TCLAP::CmdLine cmd("ServerMonitor", ' ', "0.1");
 
     // Define a value argument and add it to the command line.
-    TCLAP::SwitchArg argList("l", "list", "List the servers and exit", cmd);
-    TCLAP::SwitchArg argFreeList("f", "free", "List all free servers and exit", cmd);
+    TCLAP::ValueArg<int> shortTOOption("","timeout","The receive timeout for requests", false, 5,"Time in seconds (default 5)", cmd);
+    TCLAP::SwitchArg argList("l", "list", "List all servers and exit", cmd);
+    TCLAP::SwitchArg argFreeList("f", "free", "List free servers and exit", cmd);
     TCLAP::ValueArg<double> argRefreshtime("r","refreshtime","The number of seconds between each refresh attempt",false,gRefreshTime,"double", cmd);
     TCLAP::ValueArg<std::string> argAddressServerIP("a", "addresserver", "IP:port to address server", true, "127.0.0.1:50000", "IP:Port", cmd);
 
@@ -108,6 +109,11 @@ int main(int argc, char* argv[])
         zmq::context_t context(1);
 #endif
         RemoteHopsanClient rhc(context);
+        // Set timeout
+        if (shortTOOption.isSet())
+        {
+            rhc.setShortReceiveTimeout(shortTOOption.getValue()*1000);
+        }
         bool rc = rhc.connectToAddressServer(addressServerAddress);
         if (rc && rhc.addressServerConnected())
         {

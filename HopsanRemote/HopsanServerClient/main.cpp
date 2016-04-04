@@ -20,6 +20,8 @@ int main(int argc, char* argv[])
         TCLAP::CmdLine cmd("RemoteHopsanClient");
 
         // Define a value argument and add it to the command line.
+        TCLAP::ValueArg<int> longTOOption("","longtimeout","The receive timeout for time-consuming requests",false,30,"Time in seconds (default 30)", cmd);
+        TCLAP::ValueArg<int> shortTOOption("","shorttimeout","The receive timeout for small (fast) requests",false,5,"Time in seconds (default 5)", cmd);
         TCLAP::MultiArg<std::string> shellOptions("", "shellexec", "Command to execute in shell", false, "string", cmd);
         TCLAP::MultiArg<std::string> requestOptions("", "request", "Request file (only from WD)", false, "string", cmd);
         TCLAP::MultiArg<std::string> assetsOptions("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
@@ -30,8 +32,6 @@ int main(int argc, char* argv[])
         // Parse the argv array.
         cmd.parse( argc, argv );
 
-        cout << PRINTCLIENT << "Connecting to: " << serverAddrOption.getValue() << endl;
-
         // Prepare our context and socket
 #ifdef _WIN32
         zmq::context_t context(1, 63);
@@ -39,6 +39,17 @@ int main(int argc, char* argv[])
         zmq::context_t context(1);
 #endif
         RemoteHopsanClient rhopsan(context);
+        // Set timeouts
+        if (shortTOOption.isSet())
+        {
+            rhopsan.setShortReceiveTimeout(shortTOOption.getValue()*1000);
+        }
+        if (longTOOption.isSet())
+        {
+            rhopsan.setLongReceiveTimeout(longTOOption.getValue()*1000);
+        }
+
+        cout << PRINTCLIENT << "Connecting to: " << serverAddrOption.getValue() << endl;
         rhopsan.connectToServer(serverAddrOption.getValue());
         cout << PRINTCLIENT << "Connected: " << rhopsan.serverConnected() << endl;
 

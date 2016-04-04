@@ -39,6 +39,8 @@
 
 - Enhancement: Improved some aero components and example models
 - Enhancement: ServerMonitor can now list completely free servers (use the -f flag)
+- Enhancement: It is now possible to change the receive timeouts in the ServerMonitor and RemoteClient
+               (Useful if you are working with a lousy connections)
 
 ------------------------------
 0.7.4  (2016-03-11)
