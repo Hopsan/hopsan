@@ -14,6 +14,7 @@ using namespace std::chrono;
 typedef duration<double> fseconds;
 
 bool gKeepRunning = true;
+bool gRefreshNow = false;
 double gRefreshTime = 10;
 
 void inputThreadFunc()
@@ -29,6 +30,11 @@ void inputThreadFunc()
             stringstream ss;
             ss << input.substr(1);
             ss >> gRefreshTime;
+        }
+        // If refresh now
+        else if (input.front() == 'r')
+        {
+            gRefreshNow = true;
         }
         // Quit
         else if (input.front() == 'q')
@@ -93,10 +99,12 @@ int main(int argc, char* argv[])
     thread inputThread;
 
     cout << endl;
-    cout << "Starting server monitor, connecting to: " << addressServerAddress << endl;
     if (!argList.isSet() && !argFreeList.isSet())
     {
-        cout << "Enter  q  to quit or  uN  (where N is the refresh time in seconds)" << endl;
+        cout << "Starting server monitor, connecting to: " << addressServerAddress << endl;
+        cout << "Enter:  q  to quit!" << endl;
+        cout << "Enter:  uN  to change refresh timer! (where N is the refresh time in seconds)" << endl;
+        cout << "Enter:  r  to refresh NOW!" << endl;
         inputThread = thread(inputThreadFunc);
     }
 
@@ -166,7 +174,7 @@ int main(int argc, char* argv[])
             while (gKeepRunning)
             {
                 fseconds dur = duration_cast<fseconds>(steady_clock::now() - lastRefreshTime);
-                if (dur.count() > gRefreshTime)
+                if (gRefreshNow || (dur.count() > gRefreshTime) )
                 {
                     vector<int> nopenslots;
                     std::vector<ServerMachineInfoT> machines;
@@ -174,6 +182,7 @@ int main(int argc, char* argv[])
 
                     nopenslots.resize(machines.size(), -1);
 
+                    gRefreshNow = false;
                     lastRefreshTime = chrono::steady_clock::now();
                     if (rsm_rc)
                     {

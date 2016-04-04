@@ -51,6 +51,7 @@ public:
     string mDescription;
     string mExternalIP;
     string mAddressServerIPandPort;
+    double mAddressReportAge = 60*10;
 };
 
 ServerConfig gServerConfig;
@@ -190,6 +191,7 @@ int main(int argc, char* argv[])
     TCLAP::CmdLine cmd("HopsanServer", ' ', "0.1");
 
     // Define a value argument and add it to the command line.
+    TCLAP::ValueArg<double> argAddressReportAge("","addressreportage","Report to address server if no status request received for this time", false, 10, "minutes", cmd);
     TCLAP::ValueArg<int> argBasePort("p","port","The server listen base port",true,50100,"Port number (int)", cmd);
     TCLAP::ValueArg<int> argNumSlots("n","numslots","The number of slots (threads) to use",true,2,"int", cmd);
     TCLAP::ValueArg<std::string> argExternalIP("", "externalip", "The external IP address to report (for use behind NAT)", false, "127.0.0.1", "ip address", cmd);
@@ -206,6 +208,7 @@ int main(int argc, char* argv[])
     gServerConfig.mDescription = argDescription.getValue();
     gServerConfig.mExternalIP = argExternalIP.getValue();
     gServerConfig.mAddressServerIPandPort = argAddressServerIP.getValue();
+    gServerConfig.mAddressReportAge = argAddressReportAge.getValue()*60;
 
     steady_clock::time_point lastStatusRequestTime;
 
@@ -414,7 +417,7 @@ int main(int argc, char* argv[])
             if (argAddressServerIP.isSet())
             {
                 duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
-                if (time_span.count() > 180)
+                if (time_span.count() > gServerConfig.mAddressReportAge)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Too long since status check: " << time_span.count() << endl;
 

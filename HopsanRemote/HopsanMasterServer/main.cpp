@@ -45,6 +45,7 @@ zmq::context_t gContext(1);
 #endif
 
 ServerHandler gServerHandler;
+double gMaxAgeSeconds = 60*5;
 
 static int s_interrupted = 0;
 #ifdef _WIN32
@@ -75,7 +76,7 @@ static void s_catch_signals(void)
 //! @todo this thread should be a member of the server handler
 void refreshServerThread()
 {
-    const double maxAgeSeconds=60;
+    const double maxAgeSeconds=gMaxAgeSeconds;
     const int maxSleepSeconds=20;
     cout << PRINTSERVER << nowDateTime() << " Starting server refresh thread!" << endl;
 
@@ -276,6 +277,7 @@ int main(int argc, char* argv[])
     TCLAP::CmdLine cmd("HopsanAddressServer", ' ', "0.1");
 
     // Define a value argument and add it to the command line.
+    TCLAP::ValueArg<double> argRefreshTime("","refreshtime","The time between server status refresh",true,5,"minutes", cmd);
     TCLAP::ValueArg<std::string> argListenPort("p","port","The server listen port",true,"","Port number", cmd);
     TCLAP::ValueArg<std::string> argExternalIP("", "externalip", "The IP address to use for external connections if behind firewall", false, "", "ip address", cmd);
     TCLAP::ValueArg<std::string> argRelayPort("","relayport","The server relay port",false,"","Port number", cmd);
@@ -307,6 +309,12 @@ int main(int argc, char* argv[])
         cout << PRINTSERVER << nowDateTime() << " Relaying on port: " << myRelayPort  << endl;
         cout << PRINTSERVER << nowDateTime() << " Matching subnets: " << gSubnetMatch  << endl;
     }
+
+    if (argRefreshTime.isSet())
+    {
+        gMaxAgeSeconds = argRefreshTime.getValue() * 60.0;
+    }
+    cout << PRINTSERVER << nowDateTime() << " Server refresh time: " << gMaxAgeSeconds << " seconds" << endl;
 
     try
     {

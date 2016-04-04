@@ -832,7 +832,7 @@ bool RemoteHopsanClient::requestServerMachines(int nMachines, double maxBenchmar
         zmq::message_t response;
         if (receiveWithTimeout(*mpAddressServerSocket, response, mShortReceiveTimeout))
         {
-            cout << "Response size: " << response.size() << endl;
+            //cout << "Response size: " << response.size() << endl;
             size_t offset=0;
             bool parseOK;
             size_t id = getMessageId(response, offset, parseOK);
