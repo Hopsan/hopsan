@@ -441,23 +441,31 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QLabel *pRemoteHopsanUserIdLabel = new QLabel("RemoteHopsanUserIdentification: ");
     QLabel *pUseRemoteHopsanAddressLabel = new QLabel("Use remote Hopsan address server: ");
     QLabel *pUseRemoteHopsanoptimizationLabel = new QLabel("Use remote Hopsan optimization: ");
+    QLabel *pLongTimeoutLabel = new QLabel("Timeout for long (time-consuming) requests: ");
+    QLabel *pShortTimeoutLabel = new QLabel("Timeout for short (quick) requests: ");
     mpUseRemoteHopsanAddressServer = new QCheckBox();
     mpUseRemoteOptimization = new QCheckBox();
     mpRemoteHopsanAddress = new QLineEdit();
     mpRemoteHopsanAddressServerAddress = new QLineEdit();
     mpRemoteHopsanUserId = new QLineEdit();
+    mpRemoteShortTOSpinbox = new QSpinBox();
+    mpRemoteLongTOSpinbox = new QSpinBox();
     pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanAddressLabel, 0, 0);
     pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanAddress, 0, 1);
     pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanAddressAddressLabel, 1, 0);
     pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanAddressServerAddress, 1, 1);
     pRemoteHopsanSettingsLayout->addWidget(pRemoteHopsanUserIdLabel, 2, 0);
     pRemoteHopsanSettingsLayout->addWidget(mpRemoteHopsanUserId, 2, 1);
-    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanAddressLabel, 3, 0);
-    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanAddressServer, 3, 1);
-    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanoptimizationLabel, 4, 0);
-    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteOptimization, 4, 1);
-    pRemoteHopsanSettingsLayout->addWidget(new QWidget(this),         5, 0);
-    pRemoteHopsanSettingsLayout->setRowStretch(5,1);
+    pRemoteHopsanSettingsLayout->addWidget(pShortTimeoutLabel, 3, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpRemoteShortTOSpinbox, 3, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pLongTimeoutLabel, 4, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpRemoteLongTOSpinbox, 4, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanAddressLabel, 5, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteHopsanAddressServer, 5, 1);
+    pRemoteHopsanSettingsLayout->addWidget(pUseRemoteHopsanoptimizationLabel, 6, 0);
+    pRemoteHopsanSettingsLayout->addWidget(mpUseRemoteOptimization, 6, 1);
+    pRemoteHopsanSettingsLayout->addWidget(new QWidget(this),         7, 0);
+    pRemoteHopsanSettingsLayout->setRowStretch(7,1);
 
     QPushButton *mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
     mpResetButton->setAutoDefault(false);
@@ -529,7 +537,7 @@ void OptionsDialog::openConfigFile()
 }
 
 
-//! Slot that updates and saves the settings based on the choices made in the dialog box
+//! @brief Slot that updates and saves the settings based on the choices made in the dialog box
 void OptionsDialog::setValues()
 {
     // Toggle writing to disk off, since we would write many times fore each set below
@@ -601,6 +609,8 @@ void OptionsDialog::setValues()
     gpConfig->setStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION, mpRemoteHopsanUserId->text());
     gpConfig->setBoolSetting(CFG_USEREMOTEADDRESSSERVER, mpUseRemoteHopsanAddressServer->isChecked());
     gpConfig->setBoolSetting(CFG_USEREMOTEOPTIMIZATION, mpUseRemoteOptimization->isChecked());
+    gpConfig->setIntegerSetting(CFG_REMOTESHORTTIMEOUT, mpRemoteShortTOSpinbox->value());
+    gpConfig->setIntegerSetting(CFG_REMOTELONGTIMEOUT, mpRemoteLongTOSpinbox->value());
 
     // Toggle writing to disk back on before saving
     gpConfig->endMultiSet();
@@ -688,6 +698,8 @@ void OptionsDialog::show()
     mpRemoteHopsanUserId->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
     mpUseRemoteHopsanAddressServer->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
     mpUseRemoteOptimization->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION));
+    mpRemoteShortTOSpinbox->setValue(gpConfig->getIntegerSetting(CFG_REMOTESHORTTIMEOUT));
+    mpRemoteLongTOSpinbox->setValue(gpConfig->getIntegerSetting(CFG_REMOTELONGTIMEOUT));
 
     setCompiler32Path(gpConfig->getStringSetting(CFG_GCC32DIR));
     setCompiler64Path(gpConfig->getStringSetting(CFG_GCC64DIR));

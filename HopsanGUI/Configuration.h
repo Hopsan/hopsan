@@ -93,6 +93,8 @@
 #define CFG_USEREMOTEADDRESSSERVER "useremotehopsanaddressserver"
 #define CFG_USEREMOTEOPTIMIZATION "useremoteoptimization"
 #define CFG_REMOTEHOPSANUSERIDENTIFICATION "remotehopsanuserid"
+#define CFG_REMOTESHORTTIMEOUT "remoteshorttimeout"
+#define CFG_REMOTELONGTIMEOUT "remotelongtimeout"
 
 #define CFG_PENSTYLE "penstyle"
 #define CFG_TYPE "type"

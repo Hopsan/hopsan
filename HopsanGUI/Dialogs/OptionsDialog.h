@@ -100,6 +100,8 @@ private:
     QLineEdit *mpRemoteHopsanAddress;
     QLineEdit *mpRemoteHopsanAddressServerAddress;
     QLineEdit *mpRemoteHopsanUserId;
+    QSpinBox *mpRemoteShortTOSpinbox;
+    QSpinBox *mpRemoteLongTOSpinbox;
     QCheckBox *mpUseRemoteHopsanAddressServer;
     QCheckBox *mpUseRemoteOptimization;
 

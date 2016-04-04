@@ -1304,6 +1304,8 @@ void Configuration::registerSettings()
     mIntegerSettings.insert(CFG_NUMBEROFTHREADS, 0);
     mIntegerSettings.insert(CFG_GENERATIONLIMIT, 100);
     mIntegerSettings.insert(CFG_PLOEXPORTVERSION, 1);
+    mIntegerSettings.insert(CFG_REMOTESHORTTIMEOUT, 5);
+    mIntegerSettings.insert(CFG_REMOTELONGTIMEOUT, 30);
 
     // Double settings
     mDoubleSettings.insert(CFG_PLOTGFXDPI, 96.0);
