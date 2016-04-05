@@ -598,6 +598,7 @@ int main(int argc, char *argv[])
                     {
                         Ops::WorkerNelderMead *pWorker = dynamic_cast<Ops::WorkerNelderMead*>(pBaseWorker);
                         pWorker->setReflectionFactor(alpha);
+                        pWorker->setExpansionFactor(gamma);
                         pWorker->setContractionFactor(rho);
                         pWorker->setReductionFactor(sigma);
                     }
@@ -678,6 +679,11 @@ int main(int argc, char *argv[])
                             for(size_t i=0; i<pBaseWorker->getNumberOfParameters(); ++i)
                             {
                                 file << "," << pBaseWorker->getParameter(pBaseWorker->getBestId(),i);
+                            }
+                            file << pBaseWorker->getObjectiveValue(pBaseWorker->getWorstId());
+                            for(size_t i=0; i<pBaseWorker->getNumberOfParameters(); ++i)
+                            {
+                                file << "," << pBaseWorker->getParameter(pBaseWorker->getWorstId(),i);
                             }
                             file << endl;
                             file.close();
