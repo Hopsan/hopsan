@@ -32,7 +32,7 @@
 //!
 
 #include <QTime>
-#include <QSound>
+//#include <QSound>
 #include <QMessageBox>
 
 #include "common.h"
