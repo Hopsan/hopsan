@@ -15,7 +15,7 @@ QT += svg xml
 QT += core gui network
 
 isEqual(QT_MAJOR_VERSION, 5){
-    QT += widgets webkitwidgets multimedia printsupport
+    QT += widgets webkitwidgets printsupport
 } else {
     QT += webkit
 }
