@@ -413,6 +413,21 @@ public:
     double operator()(QString &str, bool &ok);
 };
 
+class HcomFunctionoidMaxPar : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidMaxPar(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double operator()(QString &str, bool &ok);
+};
+
+class HcomFunctionoidMinPar : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidMinPar(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double operator()(QString &str, bool &ok);
+};
+
+
 class HcomFunctionoidExists : public HcomFunctionoid
 {
 public:

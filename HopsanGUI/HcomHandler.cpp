@@ -333,6 +333,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunctionoid("optpar", new HcomFunctionoidOptPar(this), "Returns specified optimization parameter", "Usage: optpar(idx)");
     registerFunctionoid("fc", new HcomFunctionoidFC(this), "Fuzzy compare, returns 1 if the values of the arguments are almost the same", "Usage: fc(expr, expr, tolerance)");
     registerFunctionoid("exists", new HcomFunctionoidExists(this), "Returns whether or not specified component exists in model", "Usage: exists(name)");
+    registerFunctionoid("maxpar", new HcomFunctionoidMaxPar(this), "Returns the maximum value of specified parameter for specified component type", "Usage: maxpar(type,par)");
+    registerFunctionoid("minpar", new HcomFunctionoidMinPar(this), "Returns the minimum value of specified parameter for specified component type", "Usage: minpar(type,par)");
 
     createCommands();
 
@@ -8190,22 +8192,33 @@ double HcomFunctionoidObj::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "min" functionoid
 double HcomFunctionoidMin::operator()(QString &str, bool &ok)
 {
-    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
+  SharedVectorVariableT pData = mpHandler->getLogVariable(str);
     if(!pData)
     {
-        mpHandler->evaluateExpression(str, HcomHandler::DataVector);
-        if(mpHandler->mAnsType == HcomHandler::DataVector)
+        QStringList args;
+        splitRespectingQuotationsAndParanthesis(str, ',', args);
+        double min=1e100;
+        for(QString &arg : args)
         {
-            pData = mpHandler->mAnsVector;
+            mpHandler->evaluateExpression(arg, HcomHandler::Scalar);
+            if(mpHandler->mAnsType == HcomHandler::Scalar)
+            {
+                if(mpHandler->mAnsScalar < min)
+                {
+                    min = mpHandler->mAnsScalar;
+                }
+            }
+            else
+            {
+                mpHandler->mpConsole->printErrorMessage(QString("%1 could not be evaluated").arg(arg), "", false);
+                ok = false;
+                return 0;
+            }
         }
-        else if (mpHandler->mAnsType == HcomHandler::Scalar)
-        {
-            ok=true;
-            return mpHandler->mAnsScalar;
-        }
+        ok=true;
+        return min;
     }
-
-    if(pData)
+    else
     {
         ok=true;
         return(pData->minOfData());
@@ -8222,19 +8235,30 @@ double HcomFunctionoidMax::operator()(QString &str, bool &ok)
     SharedVectorVariableT pData = mpHandler->getLogVariable(str);
     if(!pData)
     {
-        mpHandler->evaluateExpression(str, HcomHandler::DataVector);
-        if(mpHandler->mAnsType == HcomHandler::DataVector)
+        QStringList args;
+        splitRespectingQuotationsAndParanthesis(str, ',', args);
+        double max=-1e100;
+        for(QString &arg : args)
         {
-            pData = mpHandler->mAnsVector;
+            mpHandler->evaluateExpression(arg, HcomHandler::Scalar);
+            if(mpHandler->mAnsType == HcomHandler::Scalar)
+            {
+                if(mpHandler->mAnsScalar > max)
+                {
+                    max = mpHandler->mAnsScalar;
+                }
+            }
+            else
+            {
+                mpHandler->mpConsole->printErrorMessage(QString("%1 could not be evaluated").arg(arg), "", false);
+                ok = false;
+                return 0;
+            }
         }
-        else if (mpHandler->mAnsType == HcomHandler::Scalar)
-        {
-            ok=true;
-            return mpHandler->mAnsScalar;
-        }
+        ok=true;
+        return max;
     }
-
-    if(pData)
+    else
     {
         ok=true;
         return(pData->maxOfData());
@@ -8458,3 +8482,85 @@ double HcomFunctionoidFC::operator()(QString &str, bool &ok)
 }
 
 
+
+double HcomFunctionoidMaxPar::operator()(QString &str, bool &ok)
+{
+    QStringList args = str.split(',');
+    if (args.size() != 2)
+    {
+        ok = false;
+        mpHandler->mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return 0;
+    }
+
+    double ans=-1e100;
+
+    QString typeName = args[0];
+    QString par = args[1];
+    mpHandler->toLongDataNames(par);
+
+    ok=true;
+    QList<ModelObject *> compPtrs = mpHandler->getModelPtr()->getViewContainerObject()->getModelObjects();
+    for(ModelObject *comp : compPtrs)
+    {
+        if(comp->getTypeName() == typeName || comp->getAppearanceData()->getFullTypeName("") == typeName)
+        {
+            ok=true;
+            QString strValue = comp->getParameterValue(par);
+            bool ok2;
+            double value = strValue.toDouble(&ok2);
+            if(!ok2)
+            {
+                strValue = mpHandler->getModelPtr()->getViewContainerObject()->getParameterValue(strValue);
+                value = strValue.toDouble();
+            }
+            if(value > ans)
+            {
+                ans = value;
+            }
+        }
+    }
+
+    return ans;
+}
+
+double HcomFunctionoidMinPar::operator()(QString &str, bool &ok)
+{
+    QStringList args = str.split(',');
+    if (args.size() != 2)
+    {
+        ok = false;
+        mpHandler->mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return 0;
+    }
+
+    double ans=1e100;
+
+    QString typeName = args[0];
+    QString par = args[1];
+    mpHandler->toLongDataNames(par);
+
+    ok=true;
+    QList<ModelObject *> compPtrs = mpHandler->getModelPtr()->getViewContainerObject()->getModelObjects();
+    for(ModelObject *comp : compPtrs)
+    {
+        if(comp->getTypeName() == typeName || comp->getAppearanceData()->getFullTypeName("") == typeName)
+        {
+            ok=true;
+            QString strValue = comp->getParameterValue(par);
+            bool ok2;
+            double value = strValue.toDouble(&ok2);
+            if(!ok2)
+            {
+                strValue = mpHandler->getModelPtr()->getViewContainerObject()->getParameterValue(strValue);
+                value = strValue.toDouble();
+            }
+            if(value < ans)
+            {
+                ans = value;
+            }
+        }
+    }
+
+    return ans;
+}
