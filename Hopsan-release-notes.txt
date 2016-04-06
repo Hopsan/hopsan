@@ -42,6 +42,8 @@
 - Enhancement: It is now possible to change the receive timeouts in the ServerMonitor and RemoteClient
                (Useful if you are working with a lousy connections)
 
+- Fixed component: Force was not set to zero in MechanicFreeLengthWall when C-component was not in contact
+
 ------------------------------
 0.7.4  (2016-03-11)
 - Feature: HCOM sepl command to set plot label

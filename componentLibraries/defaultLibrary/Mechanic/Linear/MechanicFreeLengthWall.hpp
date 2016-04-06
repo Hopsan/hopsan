@@ -119,15 +119,21 @@ public:
 
         // Note! Negative x1 value means that we are moving into the port towards mStopPos
         //       mStopPos should have same coordinate system as port, (positive direction out of the component)
-        if(x1<mStopPos)
+        if(x1<=mStopPos)
         {
+            // We have hit the wall, Enforce position and zero velocity
+            // this is kind of non-physical, to just stop instantly
             x1=mStopPos;
             v1=0.0;
             mFilterX.initializeValues(-c1, x1);
             mFilterV.initializeValues(-c1, v1);
+            f1 = c1 + Zx1*v1;
         }
-
-        f1 = c1 + Zx1*v1;
+        // If we are not in contact, then set f1 = 0 since that end should be in "free space"
+        else
+        {
+            f1 = 0;
+        }
 
         //Write new values to nodes
         (*mpP1_f) = f1;
