@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
         // Define a value argument and add it to the command line.
         TCLAP::ValueArg<int> longTOOption("","longtimeout","The receive timeout for time-consuming requests",false,30,"Time in seconds (default 30)", cmd);
         TCLAP::ValueArg<int> shortTOOption("","shorttimeout","The receive timeout for small (fast) requests",false,5,"Time in seconds (default 5)", cmd);
-        TCLAP::ValueArg<int> numSlotsOption("","numslots", "The number of slots to request",false,1,"Integer (default 1)");
+        TCLAP::ValueArg<int> numSlotsOption("","numslots", "The number of slots to request",false,1,"Integer (default 1)",cmd);
         TCLAP::MultiArg<std::string> shellOptions("", "shellexec", "Command to execute in shell", false, "string", cmd);
         TCLAP::MultiArg<std::string> requestOptions("", "request", "Request file (only from WD)", false, "string", cmd);
         TCLAP::MultiArg<std::string> assetsOptions("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
