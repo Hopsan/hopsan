@@ -828,6 +828,18 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
     //Should we try to append appearancedata stuff, we don't want this in external systems as they contain their own appearance
     if (mLoadType!="EXTERNAL")
     {
+        //Append system meta info
+        QString author, email, affiliation, description;
+        getModelInfo(author, email, affiliation, description);
+        if (!(author.isEmpty() && email.isEmpty() && affiliation.isEmpty() && description.isEmpty()))
+        {
+            QDomElement infoElement = appendDomElement(guiStuff, HMF_INFOTAG);
+            appendDomTextNode(infoElement, HMF_AUTHORTAG, author);
+            appendDomTextNode(infoElement, HMF_EMAILTAG, email);
+            appendDomTextNode(infoElement, HMF_AFFILIATIONTAG, affiliation);
+            appendDomTextNode(infoElement, HMF_DESCRIPTIONTAG, description);
+        }
+
         GraphicsViewPort vp = this->getGraphicsViewport();
         appendViewPortTag(guiStuff, vp.mCenter.x(), vp.mCenter.y(), vp.mZoom);
 
@@ -872,18 +884,6 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 //! @param[in] rDomElement The DOM Element to save to
 void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    if(this == mpModelWidget->getTopLevelSystemContainer() && contents==FullModel)
-    {
-        //Append model info
-        QString author, email, affiliation, description;
-        getModelInfo(author, email, affiliation, description);
-        QDomElement infoElement = appendDomElement(rDomElement, HMF_INFOTAG);
-        appendDomTextNode(infoElement, HMF_AUTHORTAG, author);
-        appendDomTextNode(infoElement, HMF_EMAILTAG, email);
-        appendDomTextNode(infoElement, HMF_AFFILIATIONTAG, affiliation);
-        appendDomTextNode(infoElement, HMF_DESCRIPTIONTAG, description);
-    }
-
     //qDebug() << "Saving to dom node in: " << this->mModelObjectAppearance.getName();
     QDomElement xmlSubsystem = appendDomElement(rDomElement, getHmfTagName());
 
@@ -904,10 +904,6 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
 
     // Save Core related stuff
     this->saveCoreDataToDomElement(xmlSubsystem, contents);
-//    if(contents==FullModel)
-//    {
-//        xmlSubsystem.setAttribute(HMF_LOGSAMPLES, mNumberOfLogSamples);
-//    }
 
     if(contents==FullModel)
     {
@@ -1030,43 +1026,14 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
     QString hmfFormatVersion = domElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_VERSIONTAG, "0");
     QString coreHmfVersion = domElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_HOPSANCOREVERSIONTAG, "0");
 
-    // Load model info
-    QDomElement infoElement = domElement.parentNode().firstChildElement(HMF_INFOTAG);
-    if(!infoElement.isNull())
-    {
-        QString author, email, affiliation, description;
-        QDomElement authorElement = infoElement.firstChildElement(HMF_AUTHORTAG);
-        if(!authorElement.isNull())
-        {
-            author = authorElement.text();
-        }
-        QDomElement emailElement = infoElement.firstChildElement(HMF_EMAILTAG);
-        if(!emailElement.isNull())
-        {
-            email = emailElement.text();
-        }
-        QDomElement affiliationElement = infoElement.firstChildElement(HMF_AFFILIATIONTAG);
-        if(!affiliationElement.isNull())
-        {
-            affiliation = affiliationElement.text();
-        }
-        QDomElement descriptionElement = infoElement.firstChildElement(HMF_DESCRIPTIONTAG);
-        if(!descriptionElement.isNull())
-        {
-            description = descriptionElement.text();
-        }
-
-        this->setModelInfo(author, email, affiliation, description);
-    }
-
-    //Check if the subsystem is external or internal, and load appropriately
+    // Check if the subsystem is external or internal, and load appropriately
     QString external_path = domElement.attribute(HMF_EXTERNALPATHTAG);
     if (external_path.isEmpty())
     {
-        //Load embedded subsystem
-        //0. Load core and gui stuff
+        // Load embedded subsystem
+        // 0. Load core and gui stuff
         //! @todo might need some error checking here in case some fields are missing
-        //Now load the core specific data, might need inherited function for this
+        // Now load the core specific data, might need inherited function for this
         this->setName(domElement.attribute(HMF_NAMETAG));
 
         // Load the NumHop script
@@ -1076,6 +1043,39 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
         mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
+
+        // Load system/model info
+        QDomElement infoElement = domElement.parentNode().firstChildElement(HMF_INFOTAG); //!< @deprecated info tag is in the system from 0.7.5 an onwards, this line loads from old models
+        if (infoElement.isNull())
+        {
+            infoElement = guiStuff.firstChildElement(HMF_INFOTAG);
+        }
+        if(!infoElement.isNull())
+        {
+            QString author, email, affiliation, description;
+            QDomElement authorElement = infoElement.firstChildElement(HMF_AUTHORTAG);
+            if(!authorElement.isNull())
+            {
+                author = authorElement.text();
+            }
+            QDomElement emailElement = infoElement.firstChildElement(HMF_EMAILTAG);
+            if(!emailElement.isNull())
+            {
+                email = emailElement.text();
+            }
+            QDomElement affiliationElement = infoElement.firstChildElement(HMF_AFFILIATIONTAG);
+            if(!affiliationElement.isNull())
+            {
+                affiliation = affiliationElement.text();
+            }
+            QDomElement descriptionElement = infoElement.firstChildElement(HMF_DESCRIPTIONTAG);
+            if(!descriptionElement.isNull())
+            {
+                description = descriptionElement.text();
+            }
+
+            this->setModelInfo(author, email, affiliation, description);
+        }
 
         // Now lets check if the icons were loaded successfully else we may want to ask the library widget for the graphics (components saved as subsystems)
         if (!mModelObjectAppearance.iconValid(UserGraphics) || !mModelObjectAppearance.iconValid(ISOGraphics))
