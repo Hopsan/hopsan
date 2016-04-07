@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
     TCLAP::CmdLine cmd("HopsanAddressServer", ' ', "0.1");
 
     // Define a value argument and add it to the command line.
-    TCLAP::ValueArg<double> argRefreshTime("","refreshtime","The time between server status refresh",true,5,"minutes", cmd);
+    TCLAP::ValueArg<double> argRefreshTime("","refreshtime","The time between server status refresh",false,5,"minutes", cmd);
     TCLAP::ValueArg<std::string> argListenPort("p","port","The server listen port",true,"","Port number", cmd);
     TCLAP::ValueArg<std::string> argExternalIP("", "externalip", "The IP address to use for external connections if behind firewall", false, "", "ip address", cmd);
     TCLAP::ValueArg<std::string> argRelayPort("","relayport","The server relay port",false,"","Port number", cmd);
