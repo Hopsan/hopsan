@@ -1805,9 +1805,8 @@ void HcomHandler::executeDisplayParameterCommand(const QString cmd)
 
 void HcomHandler::executeAddParameterCommand(const QString cmd)
 {
-    QStringList splitCmd;
-    splitWithRespectToQuotations(cmd, ' ', splitCmd);
-    if(splitCmd.size() != 2)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 2)
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -1816,7 +1815,13 @@ void HcomHandler::executeAddParameterCommand(const QString cmd)
     ContainerObject *pContainer = mpModel->getViewContainerObject();
     if(pContainer)
     {
-        CoreParameterData paramData(splitCmd[0], splitCmd[1], "double");
+        QString type = "double";
+        if (isString(args[1]))
+        {
+            type = "string";
+            args[1] = removeQuotes(args[1]);
+        }
+        CoreParameterData paramData(args[0], args[1], type);
         pContainer->setOrAddParameter(paramData);
     }
 }
@@ -2425,6 +2430,10 @@ void HcomHandler::executePrintCommand(const QString cmd)
         {
             str = QString::number(mAnsScalar);
         }
+        else if (mAnsType == String)
+        {
+            str = mAnsWildcard;
+        }
         else if (mAnsType == DataVector)
         {
             QString array;
@@ -2443,6 +2452,10 @@ void HcomHandler::executePrintCommand(const QString cmd)
             if(mAnsType == Scalar)
             {
                 str.replace("$"+varName+"$", QString::number(mAnsScalar));
+            }
+            else if (mAnsType == String)
+            {
+                str.replace("$"+varName+"$", mAnsWildcard);
             }
             else if (mAnsType == DataVector)
             {
@@ -2492,18 +2505,17 @@ void HcomHandler::executeEvalCommand(const QString cmd)
         QString inexpr = removeQuotes(args.front());
         QString outexpr;
         QStringList exprs;
+        QList<int> sectionIds;
         int nDollar = inexpr.count('$');
-        splitRespectingQuotationsAndParanthesis(inexpr, '$', exprs);
-        exprs.removeAll("");
+        extractSectionsRespectingQuotationsAndParanthesis(inexpr, '$', exprs, sectionIds);
         if (nDollar % 2 != 0)
         {
             HCOMWARN("Mismatch $ in expression");
         }
-        bool var=inexpr.startsWith('$');
 
         for (int i=0; i<exprs.size(); ++i)
         {
-            if (var)
+            if (sectionIds.contains(i))
             {
                 evaluateExpression(exprs[i]);
                 if(mAnsType == Scalar)
@@ -2531,7 +2543,6 @@ void HcomHandler::executeEvalCommand(const QString cmd)
             {
                 outexpr.append(exprs[i]);
             }
-            var = !var;
         }
         executeCommand(outexpr);
     }
@@ -4345,6 +4356,15 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
 
     HCOMPRINT(mPwd);
 }
+
+//void HcomHandler::executeMakeDirectoryCommand(const QString cmd)
+//{
+//    QFileInfo fi(cmd);
+//    if (!fi.exists())
+//    {
+//        HCOMINFO("Creating: "+fi.canonicalFilePath());
+//    }
+//}
 
 
 //! @brief Execute function for "ls" command

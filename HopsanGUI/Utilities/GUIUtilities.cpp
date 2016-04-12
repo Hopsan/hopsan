@@ -1049,3 +1049,48 @@ void splitOnAny(const QString &str, const QStringList &delims, QStringList &rSpl
         rSplitList.append(QStringRef(&str,b,len).toString());
     }
 }
+
+
+void extractSectionsRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit, QList<int> &rSectionIndexes)
+{
+    bool withinQuotations=false;
+    int withinNumParanthesis=0;
+    int start=0;
+    int len=0;
+    bool withinSection=false;
+    for(int i=0; i<str.size(); ++i)
+    {
+        if(str[i] == '"')
+        {
+            withinQuotations=!withinQuotations;
+        }
+        // This code assumes that parenthesis are correctly ordered (some other code should check that)
+        else if (str[i] == '(')
+        {
+            ++withinNumParanthesis;
+        }
+        else if (str[i] == ')')
+        {
+            --withinNumParanthesis;
+        }
+        else if(str[i] == c && !withinQuotations && (withinNumParanthesis==0))
+        {
+            rSplit.append(str.mid(start,len));
+            start=start+len+1;
+            len=-1;
+
+            if (withinSection)
+            {
+                rSectionIndexes.append(rSplit.size()-1);
+            }
+
+            // Toggle bool
+            withinSection = !withinSection;
+        }
+        ++len;
+    }
+    if (len > 0)
+    {
+        rSplit.append(str.mid(start,len));
+    }
+}

@@ -74,6 +74,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
 double findSmallestValueGreaterThanZero(QVector<double> data);
 void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split);
 void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit);
+void extractSectionsRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit, QList<int> &rSectionIndexes);
 void splitOnAny(const QString &str, const QStringList &delims, QStringList &rSplitList);
 void santizeName(QString &rString);
 bool isNameValid(const QString &rString);
