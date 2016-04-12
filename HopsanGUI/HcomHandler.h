@@ -190,6 +190,7 @@ private:
     void executePwdCommand(const QString cmd);
     void executeMwdCommand(const QString cmd);
     void executeChangeDirectoryCommand(const QString cmd);
+    void executeMakeDirectoryCommand(const QString cmd);
     void executeListFilesCommand(const QString cmd);
     void executeCloseModelCommand(const QString cmd);
     void executeChangeTabCommand(const QString cmd);

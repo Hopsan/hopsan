@@ -1007,6 +1007,15 @@ void HcomHandler::createCommands()
     cdCmd.group = "File Commands";
     mCmdList << cdCmd;
 
+    HcomCommand mkdirCmd;
+    mkdirCmd.cmd = "mkdir";
+    mkdirCmd.description.append("Creates directory and all parent directories");
+    mkdirCmd.help.append(" Path may be relative or absolute and must be contained withing quotes \" \" if it contains spaces\n");
+    mkdirCmd.help.append(" Usage: mkdir [path]");
+    mkdirCmd.fnc = &HcomHandler::executeMakeDirectoryCommand;
+    mkdirCmd.group = "File Commands";
+    mCmdList << mkdirCmd;
+
     HcomCommand lsCmd;
     lsCmd.cmd = "ls";
     lsCmd.description.append("List files in current directory");
@@ -4357,14 +4366,24 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
     HCOMPRINT(mPwd);
 }
 
-//void HcomHandler::executeMakeDirectoryCommand(const QString cmd)
-//{
-//    QFileInfo fi(cmd);
-//    if (!fi.exists())
-//    {
-//        HCOMINFO("Creating: "+fi.canonicalFilePath());
-//    }
-//}
+void HcomHandler::executeMakeDirectoryCommand(const QString cmd)
+{
+    QFileInfo fi(cmd);
+    if (!fi.isAbsolute())
+    {
+        fi.setFile(mPwd+"/"+fi.filePath());
+    }
+    if (!fi.exists())
+    {
+        HCOMINFO("Creating: "+fi.absoluteFilePath());
+        QDir d;
+        bool rc = d.mkpath(fi.absoluteFilePath());
+        if (!rc)
+        {
+            HCOMERR("Failed to create: "+fi.absoluteFilePath());
+        }
+    }
+}
 
 
 //! @brief Execute function for "ls" command
