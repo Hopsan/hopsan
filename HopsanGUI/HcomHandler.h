@@ -59,7 +59,7 @@ public:
     typedef QMap<QString, double> LocalVarsMapT;
 
     // Enums
-    enum VariableType{Scalar, DataVector, Wildcard, Undefined};
+    enum VariableType{Scalar, DataVector, String, Wildcard, Undefined};
 
     // Constructor
     HcomHandler(TerminalConsole *pConsole);
@@ -167,6 +167,7 @@ private:
     void executeWriteHistoryToFileCommand(const QString cmd);
     void executeWriteToFileCommand(const QString cmd);
     void executePrintCommand(const QString cmd);
+    void executeEvalCommand(const QString cmd);
 
     void executePeekCommand(const QString cmd);
     void executePokeCommand(const QString cmd);
@@ -236,6 +237,7 @@ private:
 
     void getParameters(QString str, QStringList &rParameters);
     void getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters);
+    QString getParameterValue(QString parameterName, QString &rParameterType) const;
     QString getParameterValue(QString parameterName) const;
 
     bool evaluateArithmeticExpression(QString cmd);

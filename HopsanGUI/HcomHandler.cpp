@@ -192,6 +192,11 @@ QString getFlagArgValue(const QStringList &arguments, const QString &flag)
     return flagvalue;
 }
 
+inline bool isString(const QString &expr)
+{
+    return (expr.startsWith('"') && expr.endsWith('"'));
+}
+
 //----------------------------------------------------------------------------------
 
 class LongShortNameConverter
@@ -613,6 +618,7 @@ void HcomHandler::createCommands()
     wrtfCmd.help.append("  Example:\n");
     wrtfCmd.help.append("   >> wrtf -a output.txt \"x=$x$\"\n");
     wrtfCmd.fnc = &HcomHandler::executeWriteToFileCommand;
+    wrtfCmd.group = "File Commands";
     mCmdList << wrtfCmd;
 
     HcomCommand printCmd;
@@ -630,6 +636,17 @@ void HcomHandler::createCommands()
     printCmd.help.append("   Warning: x=12");
     printCmd.fnc = &HcomHandler::executePrintCommand;
     mCmdList << printCmd;
+
+    HcomCommand evalCmd;
+    evalCmd.cmd = "eval";
+    evalCmd.description.append("Evaluate string expression");
+    evalCmd.help.append(" Usage: eval [\"expression\"]\n");
+    evalCmd.help.append("  Variable evaluation can be included by putting them within dollar signs\n");
+    evalCmd.help.append("  Example:\n");
+    evalCmd.help.append("   >> eval \"chpv Gain$i$.out.y\"");
+    evalCmd.fnc = &HcomHandler::executeEvalCommand;
+    mCmdList << evalCmd;
+
 
     HcomCommand chpwCmd;
     chpwCmd.cmd = "chpw";
@@ -1841,14 +1858,22 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
         }
         else
         {
-            evaluateExpression(splitCmd[1], Scalar);
-            if(mAnsType != Scalar)
+            //! @todo it would be better if expressions could result in strings
+            // Check if value is a string
+            if (isString(splitCmd[1]))
             {
-                HCOMERR("Could not evaluate new value for parameter.");
-                return;
+                newValueStr = removeQuotes(splitCmd[1]);
             }
-            double newValue = mAnsScalar;
-            newValueStr = QString::number(newValue);
+            else
+            {
+                evaluateExpression(splitCmd[1], Scalar);
+                if(mAnsType != Scalar)
+                {
+                    HCOMERR("Could not evaluate new value for parameter.");
+                    return;
+                }
+                newValueStr = QString::number(mAnsScalar);
+            }
         }
 
         if(parameterNames.isEmpty())
@@ -2449,6 +2474,70 @@ void HcomHandler::executePrintCommand(const QString cmd)
     else
     {
         mpConsole->print(str,true);
+    }
+}
+
+void HcomHandler::executeEvalCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+
+    if(args.size() != 1)
+    {
+        HCOMERR("Expects one argument!");
+        return;
+    }
+
+    if (isString(args.front()))
+    {
+        QString inexpr = removeQuotes(args.front());
+        QString outexpr;
+        QStringList exprs;
+        int nDollar = inexpr.count('$');
+        splitRespectingQuotationsAndParanthesis(inexpr, '$', exprs);
+        exprs.removeAll("");
+        if (nDollar % 2 != 0)
+        {
+            HCOMWARN("Mismatch $ in expression");
+        }
+        bool var=inexpr.startsWith('$');
+
+        for (int i=0; i<exprs.size(); ++i)
+        {
+            if (var)
+            {
+                evaluateExpression(exprs[i]);
+                if(mAnsType == Scalar)
+                {
+                    outexpr.append(QString("%1").arg(mAnsScalar));
+                }
+                else if (mAnsType == String)
+                {
+                    outexpr.append(mAnsWildcard);
+                }
+                else if (mAnsType == DataVector)
+                {
+                    QString array;
+                    QTextStream ts(&array);
+                    mAnsVector->sendDataToStream(ts," ");
+                    outexpr.append(array);
+                }
+                else
+                {
+                    HCOMERR("Failed to evaluate: "+exprs[i]);
+                    return;
+                }
+            }
+            else
+            {
+                outexpr.append(exprs[i]);
+            }
+            var = !var;
+        }
+        executeCommand(outexpr);
+    }
+    else
+    {
+        HCOMERR("Command expects a \"string\"");
     }
 }
 
@@ -5370,21 +5459,39 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
     if(desiredType != DataVector)
     {
-        //Parameter name, return its value
-        //timer.tic();
-        QString parVal = getParameterValue(expr);
-        //timer.tocDbg("getParameterValue");
+        // Parameter name, return its value
+        QString parType;
+        QString parVal = getParameterValue(expr, parType);
         if( parVal != "NaN")
         {
-            bool ok;
-            mAnsScalar = parVal.toDouble(&ok);
-            if(!ok)     //It is not a numerical, so assume it is a system parameter
+            if (parType == "string")
             {
-                parVal = getParameterValue(parVal);
-                mAnsScalar = parVal.toDouble();
+                mAnsType = String;
+                mAnsWildcard = parVal;
+                return;
             }
-            mAnsType = Scalar;
-            return;
+            else
+            {
+                bool ok;
+                mAnsScalar = parVal.toDouble(&ok);
+                mAnsType = Scalar;
+                //  It is not a numerical, so assume it is a parent system parameter, lets evaluate it
+                if(!ok)
+                {
+                    //! @todo this does not work, this function does not seek upwards in the hierarchy, it will start with the current view container
+                    parVal = getParameterValue(parVal, parType);
+                    if (parType == "string")
+                    {
+                        mAnsType = String;
+                        mAnsWildcard = parVal;
+                    }
+                    else
+                    {
+                        mAnsScalar = parVal.toDouble();
+                    }
+                }
+                return;
+            }
         }
     }
 
@@ -7059,8 +7166,9 @@ void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringLi
 
 //! @brief Returns the value of specified parameter
 //! @param[in] parameterName The full parameter name (relative to the current view container)
-QString HcomHandler::getParameterValue(QString parameterName) const
+QString HcomHandler::getParameterValue(QString parameterName, QString &rParameterType) const
 {
+    rParameterType.clear();
     if(mpModel)
     {
         // Convert to long name so that we can search in model
@@ -7070,8 +7178,8 @@ QString HcomHandler::getParameterValue(QString parameterName) const
         QString compName, parName;
         splitFullParameterName(parameterName, subsystems, compName, parName);
 
-        // Seak into the correct system
-        ContainerObject *pContainer = getModelPtr()->getViewContainerObject();
+        // Seek into the correct system
+        ContainerObject *pContainer = mpModel->getViewContainerObject();
         foreach(const QString &subsystem, subsystems)
         {
             pContainer = qobject_cast<ContainerObject*>(pContainer->getModelObject(subsystem));
@@ -7097,19 +7205,31 @@ QString HcomHandler::getParameterValue(QString parameterName) const
         // If we have component then try to find the actual parameter, by actual name
         if (pMO && pMO->hasParameter(parName))
         {
-            return pMO->getParameterValue(parName);
+            CoreParameterData par;
+            pMO->getParameter(parName, par);
+            rParameterType = par.mType;
+            return par.mValue;
         }
 
-        // If we get here we failed above, lets check if the paremter name was actually an alias
+        // If we get here we failed above, lets check if the parameter name was actually an alias
         QString fullNameFromAlias = pContainer->getFullNameFromAlias(parName);
         ModelObject *pCompFromAlias = pContainer->getModelObject(fullNameFromAlias.section("#",0,0));
         QString actualParName = fullNameFromAlias.section("#",1);
         if(pCompFromAlias && pCompFromAlias->hasParameter(actualParName))
         {
-            return pCompFromAlias->getParameterValue(actualParName);
+            CoreParameterData par;
+            pCompFromAlias->getParameter(actualParName, par);
+            rParameterType = par.mType;
+            return par.mValue;
         }
     }
     return "NaN";
+}
+
+QString HcomHandler::getParameterValue(QString parameterName) const
+{
+    QString dummy;
+    return getParameterValue(parameterName, dummy);
 }
 
 
@@ -7525,6 +7645,11 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         else if(mAnsType==DataVector)
         {
             HCOMPRINT(mAnsVector.data()->getFullVariableName());
+            return true;
+        }
+        else if(mAnsType==String)
+        {
+            HCOMPRINT(mAnsWildcard);
             return true;
         }
         else
