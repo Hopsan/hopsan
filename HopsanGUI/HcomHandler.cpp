@@ -2517,7 +2517,7 @@ void HcomHandler::executeEvalCommand(const QString cmd)
         QStringList exprs;
         QList<int> sectionIds;
         int nDollar = inexpr.count('$');
-        extractSectionsRespectingQuotationsAndParanthesis(inexpr, '$', exprs, sectionIds);
+        extractSections(inexpr, '$', exprs, sectionIds);
         if (nDollar % 2 != 0)
         {
             HCOMWARN("Mismatch $ in expression");

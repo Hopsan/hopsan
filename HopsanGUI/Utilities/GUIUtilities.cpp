@@ -1094,3 +1094,29 @@ void extractSectionsRespectingQuotationsAndParanthesis(const QString str, const 
         rSplit.append(str.mid(start,len));
     }
 }
+
+void extractSections(const QString str, const QChar c, QStringList &rSplit, QList<int> &rSectionIndexes)
+{
+    int start=0;
+    int len=0;
+    bool withinSection=false;
+    for(int i=0; i<str.size(); ++i)
+    {
+        if(str[i] == c)
+        {
+            rSplit.append(str.mid(start,len));
+            start=start+len+1;
+            len=-1;
+
+            if (withinSection)
+            {
+                rSectionIndexes.append(rSplit.size()-1);
+            }
+
+            // Toggle bool
+            withinSection = !withinSection;
+        }
+        ++len;
+    }
+    rSplit.append(str.mid(start,len));
+}
