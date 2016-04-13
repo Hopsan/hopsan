@@ -6789,9 +6789,6 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
 {
     mAborted = false; //Reset if pushed when script didn't run
 
-    QString funcName="";
-    QStringList funcCommands;
-
     for(int l=0; l<lines.size(); ++l)
     {
         qApp->processEvents();
@@ -6803,11 +6800,8 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             return "";
         }
 
-        // Remove indentation
-        while(lines[l].startsWith(" ") || lines[l].startsWith("\t"))
-        {
-            lines[l] = lines[l].right(lines[l].size()-1);
-        }
+        // Remove indentation and trailing spaces
+        lines[l] = lines[l].trimmed();
 
         // Check how each line starts call appropriate commands
         if(lines[l].isEmpty() || lines[l].startsWith("#") || lines[l].startsWith("&"))
@@ -6821,17 +6815,16 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
         }
         else if(lines[l].startsWith("define "))
         {
-            funcName = lines[l].section(" ",1).trimmed();
+            QString funcName = lines[l].section(" ",1).trimmed();
+            QStringList funcCommands;
             ++l;
-            while(!lines[l].startsWith("enddefine"))
+            while(!lines[l].trimmed().startsWith("enddefine"))
             {
                 funcCommands << lines[l];
                 ++l;
             }
             mFunctions.insert(funcName, funcCommands);
             HCOMPRINT("Defined function: "+funcName);
-            funcName.clear();
-            funcCommands.clear();
         }
         else if(lines[l].startsWith("goto"))
         {
@@ -6840,8 +6833,13 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
         }
         else if(lines[l].startsWith("while"))        //Handle while loops
         {
-            QString argument = lines[l].section("(",1);
-            argument.chop(1);
+            QStringList args = extractFunctionCallExpressionArguments(lines[l]);
+            if (args.size() != 1)
+            {
+                HCOMERR("While requires one condition expression");
+                return "";
+            }
+            QString condition = args.front();
             QStringList loop;
             int nLoops=1;
             while(nLoops > 0)
@@ -6861,9 +6859,8 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             }
             loop.removeLast();
 
-            //Evaluate expression using SymHop
-            SymHop::Expression symHopExpr = SymHop::Expression(argument);
-            //TicToc timer;
+            // Evaluate condition using SymHop
+            SymHop::Expression symHopExpr = SymHop::Expression(condition);
             QMap<QString, double> localVars = mLocalVars;
             QStringList localPars;
             getParameters("*", localPars);
@@ -6871,8 +6868,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             {
                 localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
             }
-            //timer.toc("runScriptCommand: pars to local vars");
-            //timer.tic();
+
             bool ok = true;
             while(symHopExpr.evaluate(localVars, &mLocalFunctionoidPtrs, &ok) > 0 && ok)
             {
@@ -6894,8 +6890,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     return gotoLabel;
                 }
 
-                //Update local variables for SymHop in case they have changed
-                //TicToc timer2;
+                // Update local variables for SymHop in case they have changed
                 localVars = mLocalVars;
                 QStringList localPars;
                 getParameters("*", localPars);
@@ -6903,27 +6898,29 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 {
                     localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
                 }
-                //timer2.toc("runScriptCommand: pars to local vars 2");
             }
-            //timer.toc("runScriptCommand: While loop");
         }
         else if(lines[l].startsWith("if"))        //Handle if statements
         {
-            QString argument = lines[l].section("(",1);
-            argument=argument.trimmed();
-            argument.chop(1);
+            QStringList args = extractFunctionCallExpressionArguments(lines[l]);
+            if (args.size() != 1)
+            {
+                HCOMERR("If requires one condition expression");
+                return "";
+            }
+            QString condition = args.front();
             QStringList ifCode;
             QStringList elseCode;
             bool inElse=false;
             while(true)
             {
                 ++l;
-                lines[l] = lines[l].trimmed();
-                if(l>lines.size()-1)
+                if(l>=lines.size())
                 {
-                    HCOMERR("Missing ENDIF in if-statement.");
+                    HCOMERR("Missing  endif  in if-statement.");
                     return QString();
                 }
+                lines[l] = lines[l].trimmed();
                 if(lines[l].startsWith("endif"))
                 {
                     break;
@@ -6942,7 +6939,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 }
             }
 
-            evaluateExpression(argument, Scalar);
+            evaluateExpression(condition, Scalar);
             if(mAnsType != Scalar)
             {
                 HCOMERR("Evaluation of if-statement argument failed.");
@@ -6980,13 +6977,18 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             QStringList vars;
             getMatchingLogVariableNames(filter, vars);
             QStringList loop;
-            while(!lines[l].startsWith("endforeach"))
+            while(!lines[l].trimmed().startsWith("endforeach"))
             {
                 ++l;
+                if(l>=lines.size())
+                {
+                    HCOMERR("Missing  endforeach  in foreach-statement.");
+                    return QString();
+                }
                 loop.append(lines[l]);
             }
             loop.removeLast();
-            //TicToc timer;
+
             for(int v=0; v<vars.size(); ++v)
             {
                 //Append quotations around spaces
@@ -7022,7 +7024,6 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     return gotoLabel;
                 }
             }
-            //timer.toc("runScriptCommand: foreach vars loop");
         }
         else
         {
