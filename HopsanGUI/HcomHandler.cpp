@@ -316,6 +316,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("logspace", "Logarithmicly spaced vector","Usage: logspace(min, max, numSamples)");
     registerInternalFunction("ones", "Create a vector of ones","Usage: ones(size)");
     registerInternalFunction("zeros", "Create a vector of zeros","Usage: zeros(size)");
+    registerInternalFunction("vector", "Create a vector with specified values","Usage: vector(1,2,3,4,5,6,...)");
     registerInternalFunction("maxof", "Returns the element-wise maximum values of x and y vectors","Usage: maxof(x,y)");
     registerInternalFunction("minof", "Returns the element-wise minimum values of x and y vectors","Usage: minof(x,y)");
     registerInternalFunction("abs", "The absolute value of each vector element", "Usage: abs(vector)");
@@ -6101,6 +6102,40 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         else
         {
             HCOMERR("Could not parse size argument");
+        }
+        mAnsType = Undefined;
+        return;
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("vector", expr))
+    {
+        QStringList args = extractFunctionCallExpressionArguments(expr);
+        if (args.size())
+        {
+            if (mpModel)
+            {
+                QVector<double> data(args.size(), 0.0);
+                for (int i=0; i<data.size(); ++i)
+                {
+                    bool isOK;
+                    data[i] = args[i].toDouble(&isOK);
+                    if (!isOK)
+                    {
+                        HCOMERR("Could not parse "+args[i]);
+                    }
+                }
+                mAnsVector = mpModel->getViewContainerObject()->getLogDataHandler()->createOrphanVariable("vector");
+                mAnsVector->assignFrom(data);
+                mAnsType = DataVector;
+                return;
+            }
+            else
+            {
+                HCOMERR("Could not create new vector, no model open");
+            }
+        }
+        else
+        {
+            HCOMERR("Can not create empty vector");
         }
         mAnsType = Undefined;
         return;
