@@ -6847,12 +6847,12 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
             while(nLoops > 0)
             {
                 ++l;
-                lines[l] = lines[l].trimmed();
-                if(l>lines.size()-1)
+                if(l>=lines.size())
                 {
-                    HCOMERR("Missing REPEAT in while loop.");
+                    HCOMERR("Missing  repeat  to end while loop.");
                     return QString();
                 }
+                lines[l] = lines[l].trimmed();
 
                 if(lines[l].startsWith("while")) { ++nLoops; }
                 if(lines[l].startsWith("repeat")) { --nLoops; }
