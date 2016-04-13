@@ -6817,12 +6817,17 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
         {
             QString funcName = lines[l].section(" ",1).trimmed();
             QStringList funcCommands;
-            ++l;
             while(!lines[l].trimmed().startsWith("enddefine"))
             {
-                funcCommands << lines[l];
                 ++l;
+                if(l>=lines.size())
+                {
+                    HCOMERR("Missing  enddefine  to end function definition.");
+                    return QString();
+                }
+                funcCommands << lines[l];
             }
+            funcCommands.removeLast();
             mFunctions.insert(funcName, funcCommands);
             HCOMPRINT("Defined function: "+funcName);
         }
