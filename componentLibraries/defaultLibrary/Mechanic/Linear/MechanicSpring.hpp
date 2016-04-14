@@ -1,27 +1,3 @@
-/*-----------------------------------------------------------------------------
- This source file is a part of Hopsan
-
- Copyright (c) 2009 to present year, Hopsan Group
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
- For license details and information about the Hopsan Group see the files
- GPLv3 and HOPSANGROUP in the Hopsan source code root directory
-
- For author and contributor information see the AUTHORS file
------------------------------------------------------------------------------*/
-
 #ifndef MECHANICSPRING_HPP_INCLUDED
 #define MECHANICSPRING_HPP_INCLUDED
 
@@ -34,7 +10,7 @@
 //! @file MechanicSpring.hpp
 //! @author Petter Krus <petter.krus@liu.se>
 //  co-author/auditor **Not yet audited by a second person**
-//! @date Mon 7 Sep 2015 14:40:08
+//! @date Thu 14 Apr 2016 17:11:09
 //! @brief Linear spring
 //! @ingroup MechanicComponents
 //!
@@ -183,7 +159,7 @@ NodeMechanic::EquivalentMass);
 
         //LocalExpressions
         fak = 1/(1 - alpha);
-        Zexpr = 2*fak*Ks*mTimestep;
+        Zexpr = fak*Ks*mTimestep;
         cm10 = cm2 + 2*vm2*Zexpr;
         cm20 = cm1 + 2*vm1*Zexpr;
 
@@ -215,15 +191,15 @@ NodeMechanic::EquivalentMass);
 
         //LocalExpressions
         fak = 1/(1 - alpha);
-        Zexpr = 2*fak*Ks*mTimestep;
+        Zexpr = fak*Ks*mTimestep;
         cm10 = cm2 + 2*vm2*Zexpr;
         cm20 = cm1 + 2*vm1*Zexpr;
 
           //Expressions
-          cm1 = cm1f;
-          cm2 = cm2f;
           cm1f = (1 - alpha)*cm10 + alpha*cm1f;
           cm2f = (1 - alpha)*cm20 + alpha*cm2f;
+          cm1 = cm1f;
+          cm2 = cm2f;
           Zcm1 = Zexpr;
           Zcm2 = Zexpr;
 
