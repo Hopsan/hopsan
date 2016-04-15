@@ -52,6 +52,7 @@
 #include "ComponentUtilities/CSVParser.h"
 #include "CoreUtilities/NumHopHelper.h"
 #include "CoreUtilities/SaveRestoreSimulationPoint.h"
+#include "CoreUtilities/DebugHelper.hpp"
 #include "compiler_info.h"
 
 // Here the HopsanCore object is created
@@ -1217,7 +1218,7 @@ bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 void CoreSystemAccess::setLoggingEnabled(const QString &componentName, const QString &portName, bool enable)
 {
     hopsan::Port* pPort = this->getCorePortPtr(componentName, portName);
-    if(pPort->getNodePtr())
+    if(pPort && pPort->getNodePtr())
     {
         pPort->getNodePtr()->setForceDisableLog(!enable);
     }
@@ -1226,7 +1227,7 @@ void CoreSystemAccess::setLoggingEnabled(const QString &componentName, const QSt
 bool CoreSystemAccess::isLoggingEnabled(const QString &componentName, const QString &portName)
 {
     hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
-    if(pPort->getNodePtr())
+    if(pPort && pPort->getNodePtr())
     {
         return !pPort->getNodePtr()->getForceDisableLog();
     }

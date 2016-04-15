@@ -88,6 +88,11 @@ Port::Port(QString portName, double xpos, double ypos, SharedPortAppearanceT pPo
     mpParentModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
     mPortDisplayName = portName;
+    if (mPortDisplayName.contains(' '))
+    {
+        //! @todo This is a debug hack
+        gpMessageHandler->addWarningMessage("Port display name contains space (this is a bug): "+mPortDisplayName, "bug");
+    }
 
     mpMultiPortIconOverlay = 0;
     mpCQSIconOverlay = 0;
@@ -950,6 +955,11 @@ QString Port::getParentModelObjectName() const
 void Port::setDisplayName(const QString name)
 {
     mPortDisplayName = name;
+    if (mPortDisplayName.contains(' '))
+    {
+        //! @todo This is a debug hack
+        gpMessageHandler->addWarningMessage("Port display name contains space (this is a bug): "+mPortDisplayName, "bug");
+    }
     refreshPortLabelText();
 }
 

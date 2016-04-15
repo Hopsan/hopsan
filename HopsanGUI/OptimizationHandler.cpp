@@ -182,12 +182,17 @@ void OptimizationHandler::initModels(ModelWidget *pModel, int nModels, QString &
         addModel(gpModelHandler->loadModel(modelPath, true, true));
 
         //Make sure logging is disabled/enabled for same ports as in original model
+        //! @todo This code only deals with top-level components and ports and ignores contents of subsystems /Peter
         CoreSystemAccess *pCore = pModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
         foreach(const QString &compName, pModel->getTopLevelSystemContainer()->getModelObjectNames())
         {
             foreach(const Port *port, pModel->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
             {
                 QString portName = port->getName();
+                if (portName.contains(' '))
+                {
+                    gpMessageHandler->addWarningMessage("portname has invalid space: "+portName, "bug");
+                }
                 bool enabled = pCore->isLoggingEnabled(compName, portName);
                 SystemContainer *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
                 CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
