@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     19559,        448]
-NotebookOptionsPosition[     18347,        407]
-NotebookOutlinePosition[     18724,        423]
-CellTagsIndexPosition[     18681,        420]
+NotebookDataLength[     41345,        999]
+NotebookOptionsPosition[     37872,        899]
+NotebookOutlinePosition[     38254,        915]
+CellTagsIndexPosition[     38211,        912]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -124,11 +124,11 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-  "2015", ",", "6", ",", "22", ",", "12", ",", "52", ",", 
-   "3.7425443`8.325741930708997"}], "}"}]], "Output",
+  "2016", ",", "4", ",", "16", ",", "15", ",", "52", ",", 
+   "4.8153659`8.435204271229262"}], "}"}]], "Output",
  CellChangeTimes->{3.627806244144229*^9, 3.62780656199576*^9, 
   3.638778950472694*^9, 3.638779129023547*^9, 3.638786039566551*^9, 
-  3.643953425588278*^9, 3.643959123754545*^9}]
+  3.643953425588278*^9, 3.643959123754545*^9, 3.669803524857397*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -142,14 +142,14 @@ Cell[BoxData[
        "\"\<Spring constant\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
-      "alpha", ",", "0.3", ",", "double", ",", "\"\<\>\"", ",", 
+      "alpha", ",", "0.1", ",", "double", ",", "\"\<\>\"", ",", 
        "\"\<numerical damping\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}],
    ";"}]], "Input",
  CellChangeTimes->{{3.519318796546875*^9, 3.519318804953125*^9}, {
    3.54978019078125*^9, 3.549780199734375*^9}, 3.54985607496875*^9, {
    3.549856275109375*^9, 3.549856289484375*^9}, {3.571932894868863*^9, 
    3.571932896694066*^9}, {3.638778935019149*^9, 3.6387789364622927`*^9}, {
-   3.638786017359331*^9, 3.6387860192285175`*^9}}],
+   3.638786017359331*^9, 3.6387860192285175`*^9}, 3.6698035392534933`*^9}],
 
 Cell[BoxData[{
  RowBox[{
@@ -158,10 +158,10 @@ Cell[BoxData[{
     RowBox[{"1", "-", "alpha"}]]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"Zexpr", "=", 
-   RowBox[{"2", " ", "Ks", " ", "fak", " ", "mTimestep"}]}], ";"}]}], "Input",
+   RowBox[{"Ks", " ", "fak", " ", "mTimestep"}]}], ";"}]}], "Input",
  CellChangeTimes->{
   3.519317664515625*^9, 3.549780434484375*^9, 3.549856941265625*^9, {
-   3.6439591215574193`*^9, 3.6439591217674313`*^9}}],
+   3.6439591215574193`*^9, 3.6439591217674313`*^9}, 3.6698035104774857`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -236,8 +236,6 @@ Cell[BoxData[
   RowBox[{"expressions", "=", 
    RowBox[{"{", "\[IndentingNewLine]", 
     RowBox[{
-     RowBox[{"cmr1", "==", "cmr1f"}], ",", "\[IndentingNewLine]", 
-     RowBox[{"cmr2", "==", "cmr2f"}], ",", "\[IndentingNewLine]", 
      RowBox[{"cmr1f", "==", 
       RowBox[{
        RowBox[{"alpha", " ", "cmr1f"}], " ", "+", 
@@ -252,6 +250,8 @@ Cell[BoxData[
         RowBox[{"(", 
          RowBox[{"1", "-", "alpha"}], ")"}], " ", "cmr20"}]}]}], ",", 
      "\[IndentingNewLine]", 
+     RowBox[{"cmr1", "==", "cmr1f"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"cmr2", "==", "cmr2f"}], ",", "\[IndentingNewLine]", 
      RowBox[{"Zcmr1", "==", "Zexpr"}], ",", "\[IndentingNewLine]", 
      RowBox[{"Zcmr2", "==", "Zexpr"}]}], "\[IndentingNewLine]", "}"}]}], 
   ";"}]], "Input",
@@ -267,52 +267,535 @@ Cell[BoxData[
    3.516818360484375*^9}, 3.516818397609375*^9, {3.519289677296875*^9, 
    3.519289711046875*^9}, {3.5193175181875*^9, 3.5193175199375*^9}, {
    3.519317920234375*^9, 3.519317921890625*^9}, {3.571932940186943*^9, 
-   3.57193295539697*^9}}],
+   3.57193295539697*^9}, {3.6698034887988625`*^9, 3.669803491799077*^9}}],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"Compgen", "[", "file", "]"}]], "Input"],
 
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Ks"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`Ks],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525193611*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "alpha"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`alpha],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035251946106`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr1"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`tormr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035251966114`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr1"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`thetamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035251996126`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr1"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`wmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252026167`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr1"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`cmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525203618*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr1"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`Zcmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525205619*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr1"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`eqInertiamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.66980352520762*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr2"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`tormr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252096214`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr2"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`thetamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525211623*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr2"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`wmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525213623*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr2"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`cmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525216626*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr2"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`Zcmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252196274`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr2"}],
+  SequenceForm["IE", $CellContext`cmr1, "DV", $CellContext`eqInertiamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525221629*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Ks"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`Ks],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525223632*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "alpha"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`alpha],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252256317`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr1"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`tormr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252276325`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr1"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`thetamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252306356`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr1"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`wmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525233638*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr1"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`cmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252356386`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr1"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`Zcmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252376585`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr1"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`eqInertiamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525239643*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr2"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`tormr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525241643*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr2"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`thetamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252436438`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr2"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`wmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252466464`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr2"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`cmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252486477`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr2"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`Zcmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252506495`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr2"}],
+  SequenceForm["IE", $CellContext`cmr2, "DV", $CellContext`eqInertiamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252526503`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Ks"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`Ks],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525254652*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "alpha"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`alpha],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252556543`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr1"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`tormr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525257654*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr1"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`thetamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525259656*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr1"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`wmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252616568`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr1"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`cmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252636585`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr1"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`Zcmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252656603`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr1"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`eqInertiamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525267663*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr2"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`tormr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252696815`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr2"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`thetamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525272665*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr2"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`wmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252746673`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr2"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`cmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252766676`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr2"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`Zcmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252786703`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr1f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr2"}],
+  SequenceForm["IE", $CellContext`cmr1f, "DV", $CellContext`eqInertiamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525280671*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Ks"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`Ks],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525283673*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "alpha"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`alpha],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525285674*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr1"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`tormr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525287676*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr1"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`thetamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252896776`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr1"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`wmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035252926793`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr1"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`cmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525294702*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr1"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`Zcmr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525296682*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr1"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`eqInertiamr1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525298685*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "tormr2"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`tormr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525300706*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "thetamr2"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`thetamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035253026876`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "wmr2"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`wmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6698035253046875`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr2"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`cmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525306689*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "Zcmr2"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`Zcmr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525308691*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "eqInertiamr2"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`eqInertiamr2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525311693*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"IE\"\>", "\[InvisibleSpace]", "cmr2f", 
+   "\[InvisibleSpace]", "\<\"DV\"\>", "\[InvisibleSpace]", "cmr1f"}],
+  SequenceForm["IE", $CellContext`cmr2f, "DV", $CellContext`cmr1f],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.669803525314695*^9}]
+}, Open  ]],
+
 Cell[BoxData[
  RowBox[{
   StyleBox[
    RowBox[{"XMLElement", "::", "cntsList"}], "MessageName"], 
   RowBox[{
-  ":", " "}], "\<\"\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"modelobject\\\", \
-\\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\), \
-\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
-\[Rule] \\\"MechanicRotShaft.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \
-\[Rule] \\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \
-\\\"MechanicRotShaft.svg\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
-\\(\\(XMLElement[\\(\\(\\\"portpositions\\\", \\(\\(\[LeftSkeleton] 1 \
-\[RightSkeleton]\\)\\), \\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \
-\\(\\({\\(\\(\\\"x\\\" \[Rule] \\\"0\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \
-0.3333333333333333`\\)\\), \\(\\(\\\"a\\\" \[Rule] \\\"0\\\"\\)\\), \
-\\(\\(\\\"name\\\" \[Rule] \\\"Pmr1\\\"\\)\\)}\\)\\), \
-\\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(\[LeftSkeleton] 1 \
-\[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\[NoBreak] in \
-\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"hopsanobjectappearance\\\", \\(\\(\
-\[LeftSkeleton] 1 \[RightSkeleton]\\)\\), \
-\\(\\(XMLElement[\\(\\(\\\"modelobject\\\", \\(\\({\\(\\(\\(\\(\\\"t\\\" \
-\[Ellipsis] \\\"me\\\"\\)\\) \[Rule] \\(\\(\\\"\\\" \[Ellipsis] \
-\\\"\\\"\\)\\)\\)\\), \\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)}\\)\\), \
-\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
-\[Rule] \\\"MechanicRotShaft.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \
-\[Rule] \\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \
-\\\"MechanicRotShaft.svg\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
-\\(\\(XMLElement[\\(\\(\\\"portpositions\\\", \\(\\({}\\)\\), \
-\\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\[LeftSkeleton] 1 \
-\[RightSkeleton]\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
-\\(\\(\[LeftSkeleton] 1 \
-\[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
-\[NoBreak] is not a list of contents. The third item in an XMLElement must be \
-a list of contents, even if it is an empty list. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+  ":", " "}], "\<\"\[NoBreak]\\!\\(\\*RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"modelobject\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"\
+\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"icon\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"\\\\\\\"isopath\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"MechanicRotShaft.svg\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\
+\"iconrotation\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"ON\\\\\\\"\\\"}], \\\
+\",\\\", RowBox[{\\\"\\\\\\\"userpath\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"MechanicRotShaft.svg\\\\\\\"\\\"}]}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}], \\\",\\\", \
+RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"portpositions\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"\
+\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"portpose\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"\\\\\\\"x\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"0\\\\\
+\\\"\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \\\
+\"0.3333333333333333`\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\"a\\\\\\\"\\\", \\\
+\"\[Rule]\\\", \\\"\\\\\\\"0\\\\\\\"\\\"}], \\\",\\\", \
+RowBox[{\\\"\\\\\\\"name\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"Pmr1\\\\\\\
+\"\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\
+\"}], \\\",\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \\\"\
+\[RightSkeleton]\\\"}]}], \\\"}\\\"}]}], \\\"]\\\"}]}], \\\"}\\\"}]}], \
+\\\"]\\\"}]\\)\[NoBreak] in \[NoBreak]\\!\\(\\*RowBox[{\\\"XMLElement\\\", \\\
+\"[\\\", RowBox[{\\\"\\\\\\\"hopsanobjectappearance\\\\\\\"\\\", \\\",\\\", \
+RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\"}], \\\",\
+\\\", RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"modelobject\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{RowBox[{\\\"\\\\\\\"t\\\\\\\"\\\", \\\"\[Ellipsis]\\\", \
+\\\"\\\\\\\"me\\\\\\\"\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"\\\\\\\"\\\\\\\"\\\
+\", \\\"\[Ellipsis]\\\", \\\"\\\\\\\"\\\\\\\"\\\"}]}], \\\",\\\", \
+RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\"}]}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", RowBox[{\\\"\\\\\\\"icon\\\\\\\
+\"\\\", \\\",\\\", RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"\\\\\\\"isopath\\\\\
+\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"MechanicRotShaft.svg\\\\\\\"\\\"}], \\\
+\",\\\", RowBox[{\\\"\\\\\\\"iconrotation\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"ON\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\"userpath\\\\\\\"\
+\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"MechanicRotShaft.svg\\\\\\\"\\\"}]}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}], \
+\\\",\\\", RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"portpositions\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", RowBox[{\\\"\\\\\\\"portpose\\\
+\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\
+\"1\\\", \\\"\[RightSkeleton]\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"\
+\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\"}]}], \\\"}\\\"}]}], \
+\\\"]\\\"}]}], \\\"}\\\"}]}], \\\"]\\\"}]}], \\\"]\\\"}]\\)\[NoBreak] is not \
+a list of contents. The third item in an XMLElement must be a list of \
+contents, even if it is an empty list. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
 \\\"XMLElement::cntsList\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6387789506297092`*^9, 3.6387791292055655`*^9, 
-  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9}],
+  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9, 
+  3.6698035253176975`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -325,22 +808,25 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
 \\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6387789506297092`*^9, 3.6387791292055655`*^9, 
-  3.638786040881683*^9, 3.6439534259272976`*^9, 3.6439591238995533`*^9}],
+  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9, 
+  3.669803525388749*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
    RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
   RowBox[{
-  ":", " "}], "\<\"\[NoBreak]\\!\\(0.3333333333333333`\\)\[NoBreak] in \
-\[NoBreak]\\!\\(\\\"y\\\" \[Rule] 0.3333333333333333`\\)\[NoBreak] is not a \
-valid value for an attribute in an XMLElement. The value of the attribute \
-must be a string. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+  ":", " "}], \
+"\<\"\[NoBreak]\\!\\(\\*RowBox[{\\\"0.3333333333333333`\\\"}]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"0.3333333333333333`\\\"}]\\)\[NoBreak] is not a valid value for an \
+attribute in an XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
 \\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6387789506297092`*^9, 3.6387791292055655`*^9, 
-  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123901553*^9}],
+  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9, 
+  3.669803525453796*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -353,22 +839,25 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
 \\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6387789506297092`*^9, 3.6387791292055655`*^9, 
-  3.638786040881683*^9, 3.6439534259272976`*^9, 3.6439591239025536`*^9}],
+  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9, 
+  3.6698035255208435`*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
    RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
   RowBox[{
-  ":", " "}], "\<\"\[NoBreak]\\!\\(0.6666666666666666`\\)\[NoBreak] in \
-\[NoBreak]\\!\\(\\\"y\\\" \[Rule] 0.6666666666666666`\\)\[NoBreak] is not a \
-valid value for an attribute in an XMLElement. The value of the attribute \
-must be a string. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+  ":", " "}], \
+"\<\"\[NoBreak]\\!\\(\\*RowBox[{\\\"0.6666666666666666`\\\"}]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"0.6666666666666666`\\\"}]\\)\[NoBreak] is not a valid value for an \
+attribute in an XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
 \\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6387789506297092`*^9, 3.6387791292055655`*^9, 
-  3.638786040881683*^9, 3.6439534259272976`*^9, 3.6439591239045534`*^9}],
+  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9, 
+  3.6698035255878916`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -381,21 +870,24 @@ ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
 \\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6387789506297092`*^9, 3.6387791292055655`*^9, 
-  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123905554*^9}],
+  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9, 
+  3.669803525655939*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
    RowBox[{"General", "::", "stop"}], "MessageName"], 
   RowBox[{
-  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Export :: \
-autofix\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+  ":", " "}], "\<\"Further output of \
+\[NoBreak]\\!\\(\\*StyleBox[RowBox[{\\\"Export\\\", \\\"::\\\", \\\"autofix\\\
+\"}], \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
 calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
 ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
 \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6387789506297092`*^9, 3.6387791292055655`*^9, 
-  3.638786040881683*^9, 3.6439534259272976`*^9, 3.6439591239065533`*^9}]
+  3.638786040881683*^9, 3.6439534259272976`*^9, 3.643959123895553*^9, 
+  3.6698035257041054`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -406,9 +898,9 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{750, 738},
-WindowMargins->{{196, Automatic}, {0, Automatic}},
+WindowMargins->{{Automatic, 458}, {Automatic, -1016}},
 Magnification->1.100000023841858,
-FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+FrontEndVersion->"10.3 for Microsoft Windows (64-bit) (October 9, 2015)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -423,32 +915,91 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[579, 22, 89, 1, 77, "Section"],
+Cell[579, 22, 89, 1, 78, "Section"],
 Cell[671, 25, 248, 4, 32, "Input"],
 Cell[922, 31, 848, 16, 53, "Input"],
-Cell[1773, 49, 2443, 34, 77, "Text"],
+Cell[1773, 49, 2443, 34, 82, "Text"],
 Cell[CellGroupData[{
 Cell[4241, 87, 1589, 34, 213, "Input"],
-Cell[5833, 123, 331, 7, 32, "Output"]
+Cell[5833, 123, 353, 7, 33, "Output"]
 }, Open  ]],
-Cell[6179, 133, 821, 18, 93, "Input"],
-Cell[7003, 153, 392, 10, 71, "Input"],
-Cell[7398, 165, 745, 16, 133, "Input"],
-Cell[8146, 183, 226, 7, 67, "Text"],
-Cell[8375, 192, 595, 13, 73, "Input"],
-Cell[8973, 207, 1227, 24, 93, "Input"],
-Cell[10203, 233, 1742, 36, 173, "Input"],
+Cell[6201, 133, 845, 18, 93, "Input"],
+Cell[7049, 153, 406, 10, 75, "Input"],
+Cell[7458, 165, 745, 16, 133, "Input"],
+Cell[8206, 183, 226, 7, 73, "Text"],
+Cell[8435, 192, 595, 13, 73, "Input"],
+Cell[9033, 207, 1227, 24, 93, "Input"],
+Cell[10263, 233, 1790, 36, 173, "Input"],
 Cell[CellGroupData[{
-Cell[11970, 273, 63, 1, 32, "Input"],
-Cell[12036, 276, 2391, 38, 195, "Message"],
-Cell[14430, 316, 557, 11, 23, "Message"],
-Cell[14990, 329, 702, 13, 43, "Message"],
-Cell[15695, 344, 557, 11, 23, "Message"],
-Cell[16255, 357, 704, 13, 43, "Message"],
-Cell[16962, 372, 555, 11, 23, "Message"],
-Cell[17520, 385, 631, 12, 23, "Message"]
+Cell[12078, 273, 63, 1, 32, "Input"],
+Cell[CellGroupData[{
+Cell[12166, 278, 290, 6, 24, "Print"],
+Cell[12459, 286, 298, 6, 24, "Print"],
+Cell[12760, 294, 300, 6, 24, "Print"],
+Cell[13063, 302, 304, 6, 24, "Print"],
+Cell[13370, 310, 296, 6, 24, "Print"],
+Cell[13669, 318, 294, 6, 24, "Print"],
+Cell[13966, 326, 296, 6, 24, "Print"],
+Cell[14265, 334, 309, 6, 24, "Print"],
+Cell[14577, 342, 300, 6, 24, "Print"],
+Cell[14880, 350, 302, 6, 24, "Print"],
+Cell[15185, 358, 294, 6, 24, "Print"],
+Cell[15482, 366, 294, 6, 24, "Print"],
+Cell[15779, 374, 298, 6, 24, "Print"],
+Cell[16080, 382, 310, 6, 24, "Print"],
+Cell[16393, 390, 290, 6, 24, "Print"],
+Cell[16686, 398, 298, 6, 24, "Print"],
+Cell[16987, 406, 300, 6, 24, "Print"],
+Cell[17290, 414, 304, 6, 24, "Print"],
+Cell[17597, 422, 294, 6, 24, "Print"],
+Cell[17894, 430, 296, 6, 24, "Print"],
+Cell[18193, 438, 298, 6, 24, "Print"],
+Cell[18494, 446, 310, 6, 24, "Print"],
+Cell[18807, 454, 298, 6, 24, "Print"],
+Cell[19108, 462, 304, 6, 24, "Print"],
+Cell[19415, 470, 296, 6, 24, "Print"],
+Cell[19714, 478, 296, 6, 24, "Print"],
+Cell[20013, 486, 298, 6, 24, "Print"],
+Cell[20314, 494, 312, 6, 24, "Print"],
+Cell[20629, 502, 292, 6, 24, "Print"],
+Cell[20924, 510, 300, 6, 24, "Print"],
+Cell[21227, 518, 300, 6, 24, "Print"],
+Cell[21530, 526, 304, 6, 24, "Print"],
+Cell[21837, 534, 298, 6, 24, "Print"],
+Cell[22138, 542, 298, 6, 24, "Print"],
+Cell[22439, 550, 300, 6, 24, "Print"],
+Cell[22742, 558, 312, 6, 24, "Print"],
+Cell[23057, 566, 302, 6, 24, "Print"],
+Cell[23362, 574, 304, 6, 24, "Print"],
+Cell[23669, 582, 298, 6, 24, "Print"],
+Cell[23970, 590, 298, 6, 24, "Print"],
+Cell[24271, 598, 300, 6, 24, "Print"],
+Cell[24574, 606, 312, 6, 24, "Print"],
+Cell[24889, 614, 292, 6, 24, "Print"],
+Cell[25184, 622, 298, 6, 24, "Print"],
+Cell[25485, 630, 300, 6, 24, "Print"],
+Cell[25788, 638, 306, 6, 24, "Print"],
+Cell[26097, 646, 298, 6, 24, "Print"],
+Cell[26398, 654, 296, 6, 24, "Print"],
+Cell[26697, 662, 298, 6, 24, "Print"],
+Cell[26998, 670, 312, 6, 24, "Print"],
+Cell[27313, 678, 300, 6, 24, "Print"],
+Cell[27616, 686, 306, 6, 24, "Print"],
+Cell[27925, 694, 298, 6, 24, "Print"],
+Cell[28226, 702, 296, 6, 24, "Print"],
+Cell[28525, 710, 298, 6, 24, "Print"],
+Cell[28826, 718, 312, 6, 24, "Print"],
+Cell[29141, 726, 298, 6, 24, "Print"]
 }, Open  ]],
-Cell[18166, 400, 165, 4, 32, "Input"]
+Cell[29454, 735, 4178, 62, 195, "Message"],
+Cell[33635, 799, 580, 12, 23, "Message"],
+Cell[34218, 813, 797, 15, 43, "Message"],
+Cell[35018, 830, 582, 12, 23, "Message"],
+Cell[35603, 844, 799, 15, 43, "Message"],
+Cell[36405, 861, 580, 12, 23, "Message"],
+Cell[36988, 875, 688, 14, 23, "Message"]
+}, Open  ]],
+Cell[37691, 892, 165, 4, 32, "Input"]
 }, Open  ]]
 }
 ]
