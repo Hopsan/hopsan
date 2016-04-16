@@ -52,7 +52,6 @@
 #include "ComponentUtilities/CSVParser.h"
 #include "CoreUtilities/NumHopHelper.h"
 #include "CoreUtilities/SaveRestoreSimulationPoint.h"
-#include "CoreUtilities/DebugHelper.hpp"
 #include "compiler_info.h"
 
 // Here the HopsanCore object is created
