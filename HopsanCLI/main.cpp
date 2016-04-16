@@ -240,8 +240,8 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
         TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
+        TCLAP::ValueArg<std::string> optimizationOption("o","optScript","Optimization script",false,"","Path to file", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
-        TCLAP::ValueArg<std::string> optimizationOption("o","txt","Optimization script",false,"","Path to file", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -386,6 +386,12 @@ int main(int argc, char *argv[])
                 {
                     std::vector<string> words;
                     getline(file, line);
+                    // If this is run on linux, and a windows EOL style file is read, then the CR will remain,
+                    // lets remove it in such a case
+                    if (!line.empty() && (line[line.size()-1] == '\r'))
+                    {
+                        line.erase(line.size()-1);
+                    }
                     //cout << "LINE: " << line << endl;
                     string word;
                     stringstream linestream(line);
@@ -394,7 +400,7 @@ int main(int argc, char *argv[])
                         words.push_back(word);
                         //cout << "WORD: " << word << endl;
                     }
-                    if(words.size() > 0 && words[0][0] == '#')
+                    if( line.empty() || (words.size() > 0 && words[0][0] == '#') )
                     {
                         continue;
                     }
@@ -506,6 +512,10 @@ int main(int argc, char *argv[])
                     else if(words.size() == 2 && words[0] == "CR")
                     {
                         CR = std::stod(words[1]);
+                    }
+                    else
+                    {
+                        printWarningMessage("Unhandled line in opt script: "+line);
                     }
                 }
                 objectives.resize(nPoints);
