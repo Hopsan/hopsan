@@ -41,6 +41,7 @@ namespace hopsan {
     private:
         double *mpK;
         double *mpP1_f, *mpP2_f, *mpP1_v, *mpP1_c, *mpP1_Zc, *mpP2_v, *mpP2_c, *mpP2_Zc;
+        double mAlpha;
         Port *mpP1, *mpP2;
 
     public:
@@ -57,6 +58,8 @@ namespace hopsan {
 
             // Add input variables
             addInputVariable("k", "Spring Coefficient", "N/m", 100.0,  &mpK);
+
+            addConstant("alpha", "Euler-fwd TLM filter, (0<=a<1)", "", 0, mAlpha);
         }
 
 
@@ -71,7 +74,7 @@ namespace hopsan {
             mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
             mpP2_Zc = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
-            const double Zc = (*mpK)*mTimestep;
+            const double Zc = (*mpK)*mTimestep/(1.0-mAlpha);
             (*mpP1_c) = (*mpP2_f)+Zc*(*mpP2_v);
             (*mpP2_c) = (*mpP1_f)+Zc*(*mpP1_v);
             (*mpP1_Zc) = Zc;
@@ -88,9 +91,9 @@ namespace hopsan {
             const double lastc2 = (*mpP2_c);
 
             //Spring equations
-            const double Zc = (*mpK)*mTimestep;
-            const double c1 = lastc2 + 2.0*Zc*v2;
-            const double c2 = lastc1 + 2.0*Zc*v1;
+            const double Zc = (*mpK)*mTimestep/(1.0-mAlpha);
+            const double c1 = (lastc2 + 2.0*Zc*v2)*(1.0-mAlpha)+lastc1*mAlpha ;
+            const double c2 = (lastc1 + 2.0*Zc*v1)*(1.0-mAlpha)+lastc2*mAlpha;
 
             //Write new values to nodes
             (*mpP1_c) = c1;
