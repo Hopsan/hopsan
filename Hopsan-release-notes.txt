@@ -31,16 +31,27 @@
     Version History
 ******************************
 
-0.7.5  (2016-??-??)
+0.7.5  (2016-05-??)
+- Feature: HCOM vector function that can create a vector from input arguments. Ex: "a = vector(1,2,3,4,5)"
+- Feature: It is now possible to import "Space separated value files" into HopsanGUI
+
 - Bug fixed: FFT function would create frequency vector in Hz but the default unit for frequency in Hopsan is rad/s. 
              Note! Default plot unit can be changed in the global program options dialog.
 - Bug fixed: Incorrect memory deallocation in Delay class (memory leak in components using delay buffers)
 - Bug fixed: Remote server worker would report failure instantly when launching worker thread sometimes (race condition)
+- Bug fixed: Prevent crash after removal of nested system parameters due to dangling pointer in "needs evaluation" list
+- Bug fixed: Prevent crash when incorrect port name is given to logging enable check/set
+- Bug fixed: Fixed HCOM crash if enddefine is missing
+- Bug fixed: Fixed crash bugs in HCOM flow control (if, while, foreach)
 
-- Enhancement: Improved some aero components and example models
+- Enhancement: Improved some "aero" components and example models
 - Enhancement: ServerMonitor can now list completely free servers (use the -f flag)
 - Enhancement: It is now possible to change the receive timeouts in the ServerMonitor and RemoteClient
-               (Useful if you are working with a lousy connections)
+               (Useful if you are working over a slow poor connections)
+- Enhancement: It is now possible to decide how many slots are required when starting jobs through the RemoteClient
+- Enhancement: Moved meta info into system tag in xml, so that subsystems in a model can be given author information
+- Enhancement: HCOM flow control condition can now be expression (that are evaluated)
+- Enhancement: It is now possible to specify import format to the "repl" HCOM command
 
 - Fixed component: Force was not set to zero in MechanicFreeLengthWall when C-component was not in contact
 
