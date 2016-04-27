@@ -52,6 +52,7 @@
 - Enhancement: Moved meta info into system tag in xml, so that subsystems in a model can be given author information
 - Enhancement: HCOM flow control condition can now be expression (that are evaluated)
 - Enhancement: It is now possible to specify import format to the "repl" HCOM command
+- Enhancement: Parameter values are now shown in a tool tip, to allow reading long expressions that do not fit in the parameter value edit box
 
 - Fixed component: Force was not set to zero in MechanicFreeLengthWall when C-component was not in contact
 

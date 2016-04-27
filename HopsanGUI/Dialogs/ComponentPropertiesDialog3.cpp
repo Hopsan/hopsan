@@ -92,6 +92,21 @@ inline bool isPathAbsolute(const QString &path)
     return fi.isAbsolute();
 }
 
+class ValueEdit : public QLineEdit
+{
+    Q_OBJECT
+public:
+    ValueEdit(QWidget * parent = 0) :
+        QLineEdit(parent)
+    { }
+
+public slots:
+    void updateToolTip(QString tt)
+    {
+        setToolTip(tt);
+    }
+};
+
 //! @brief Constructor for the parameter dialog for components
 //! @param pModelObject Pointer to the component
 //! @param parent Pointer to the parent widget
@@ -1609,7 +1624,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
     {
         QString value = mpModelObject->getParameterValue(mVariablePortDataName);
 
-        mpValueEdit = new QLineEdit(this);
+        mpValueEdit = new ValueEdit(this);
         mpValueEdit->setAlignment(Qt::AlignCenter);
         mpValueEdit->setFrame(false);
 
@@ -1639,8 +1654,10 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             {
                 mpValueEdit->setText(value);
             }
+            mpValueEdit->setToolTip(mpValueEdit->text());
             connect(mpValueEdit, SIGNAL(editingFinished()), this, SLOT(setValue()));
             connect(mpValueEdit, SIGNAL(textChanged(QString)), this, SLOT(checkIfSysParEntered()));
+            connect(mpValueEdit, SIGNAL(textChanged(QString)), mpValueEdit, SLOT(updateToolTip(QString)));
             refreshValueTextStyle();
 
             mDefaultUnitScale.setOnlyScaleAndOffset(1);
@@ -2389,3 +2406,5 @@ void SystemProperties::clearLogData()
         mpSystemObject->getLogDataHandler()->clear();
     }
 }
+
+#include "ComponentPropertiesDialog3.moc"
