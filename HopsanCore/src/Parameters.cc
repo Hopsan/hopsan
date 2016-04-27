@@ -543,15 +543,28 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
 //! @param[in] rName The name of the parameter to delete
 void ParameterEvaluatorHandler::deleteParameter(const HString &rName)
 {
-    std::vector<ParameterEvaluator*>::iterator parIt;
+    std::vector<ParameterEvaluator*>::iterator parIt, needevalIt;
     for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
     {
         if( rName == (*parIt)->getName() )
         {
+            // First remove pointer from needs evaluation list, if it exist there (to avoid dangling pointer)
+            for (needevalIt = mParametersNeedEvaluation.begin(); needevalIt != mParametersNeedEvaluation.end();)
+            {
+                if ((*needevalIt) == (*parIt))
+                {
+                    needevalIt = mParametersNeedEvaluation.erase(needevalIt);
+                }
+                else
+                {
+                    needevalIt++;
+                }
+            }
+
             delete *parIt;
             mParameters.erase(parIt);
 
-            //We can return now, since there should never be multiple parameters with same name
+            // We can return now, since there should never be multiple parameters with same name
             return;
         }
     }
