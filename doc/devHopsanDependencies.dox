@@ -146,18 +146,8 @@ IN THE SOFTWARE.
 \endverbatim
 
 
-\subsection sec_requiredhopsandependencies_csvparser CSV Parser
-The CSV parser utility ( deprecated since 0.7.* ) \n
-http://code.google.com/p/csv-parser-cplusplus/
-
-__License:__ \n
-\verbatim
-GNU GENERAL PUBLIC LICENSE Version 3
-http://www.gnu.org/licenses/gpl-3.0
-\endverbatim
-
 \subsection sec_requiredhopsandependencies_indexingcsvparser Indexing CSV Parser
-A better CSV parser utility available since 0.7.* \n
+The new improved CSV parser utility used since 0.7.0 \n
 https://github.com/peterNordin/IndexingCSVParser
 
 __License:__ \n

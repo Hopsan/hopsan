@@ -120,7 +120,6 @@ SOURCES += \
     src/ComponentUtilities/IntegratorLimited.cc \
     src/ComponentUtilities/FirstOrderTransferFunction.cc \
     src/ComponentUtilities/CSVParser.cc \
-    ../Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
     src/Parameters.cc \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
@@ -173,7 +172,6 @@ HEADERS += \
     include/ComponentUtilities/CSVParser.h \
     include/ComponentUtilities/AuxiliarySimulationFunctions.h \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
-    ../Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \

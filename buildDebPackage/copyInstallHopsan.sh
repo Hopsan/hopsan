@@ -25,7 +25,6 @@ cp -a    $srcDir/HopsanCore/src                            $dstDir/HopsanCore
 
 mkdir -p                                                   $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/IndexingCSVParser            $dstDir/Dependencies
-cp -a    $srcDir/Dependencies/libcsv_parser++-1.0.0        $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/rapidxml-1.13                $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/katex                        $dstDir/Dependencies
 cp -a    $srcDir/Dependencies/libNumHop                    $dstDir/Dependencies

@@ -990,8 +990,7 @@ void getHopsanCoreDependecyFiles(const QString &hopsanRoot, QStringList &rSrcFil
     findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/rapidxml-1.13", "hpp", rIncludeFiles);
     findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/libNumHop/libNumHop", "h", rIncludeFiles);
     rIncludeFiles << hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
-                     hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp" <<
-                     hopsanRoot+"/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp";
+                     hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
 
     findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/libNumHop/libNumHop", "cc", rSrcFiles);
     rSrcFiles << hopsanRoot+"/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<

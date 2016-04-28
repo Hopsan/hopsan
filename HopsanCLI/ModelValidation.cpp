@@ -40,6 +40,7 @@
 #include "HopsanEssentials.h"
 #include "hopsan_rapidxml.hpp"
 #include "ComponentUtilities/CSVParser.h"
+#include "ComponentUtilities/LookupTable.h"
 
 #include <cstring>
 #include <iomanip>
@@ -359,7 +360,7 @@ bool performModelTest(const std::string hvcFilePath)
             }
             else
             {
-                // Assumes that modelfile path was relaitve in xml
+                // Assumes that modelfile path was relative in xml
                 modelfile = basepath + modelfile;
             }
 
@@ -404,7 +405,7 @@ bool performModelTest(const std::string hvcFilePath)
                             }
                             else
                             {
-                                // Assumes that csvfile path was relaitve in xml
+                                // Assumes that csvfile path was relative in xml
                                 csvfile = basepath + csvfile;
                             }
 
@@ -415,12 +416,24 @@ bool performModelTest(const std::string hvcFilePath)
                             vector<double> vRef, vSim1, vSim2, vTime;
 
                             // Load reference data curve
-                            //! @todo should not reload if same as already laoded
+                            //! @todo should not reload if same as already loaded
                             bool success=false;
-                            CSVParser refData(success, csvfile.c_str(), '\n', '"');
+                            CSVParserNG refDataFile;
+                            LookupTable1D refDataTable;
+                            refDataFile.setFieldSeparator(',');
+                            success = refDataFile.openFile(csvfile.c_str());
                             if(!success)
                             {
-                                printErrorMessage("Unable to initialize CSV file: " + csvfile + " : " + refData.getErrorString().c_str());
+                                printErrorMessage("Unable to open CSV file: " + csvfile + " : " + refDataFile.getErrorString().c_str());
+                                return false;
+                            }
+                            refDataFile.indexFile();
+                            refDataFile.copyColumn(0, refDataTable.getIndexDataRef());
+                            refDataFile.copyColumn(column, refDataTable.getValueDataRef());
+                            refDataTable.sortIncreasing();
+                            if (!refDataTable.isDataOK())
+                            {
+                                printErrorMessage("Reference data is not OK in table: " + csvfile);
                                 return false;
                             }
 
@@ -517,7 +530,7 @@ bool performModelTest(const std::string hvcFilePath)
 
                             for(size_t i=0; i<vTime.size(); ++i)
                             {
-                                vRef.push_back(refData.interpolate(vTime[i], column));
+                                vRef.push_back(refDataTable.interpolate(vTime[i]));
                             }
 
                             //std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
@@ -545,6 +558,7 @@ bool performModelTest(const std::string hvcFilePath)
             }
             else if (hvcVersion == "0.2")
             {
+                // Load reference data curves
                 bool hvdsuccess=false;
                 string hvdfile = readStringNodeValue(pValidationNode->first_node("hvdfile"), "");
                 if (hvdfile.empty())
@@ -554,16 +568,20 @@ bool performModelTest(const std::string hvcFilePath)
                 }
                 else
                 {
-                    // Assumes that csvfile path was relaitve in xml
+                    // Assumes that csvfile path was relative in xml
                     hvdfile = basepath + hvdfile;
                 }
-                // Load reference data curves
-                CSVParser refData(hvdsuccess, hvdfile.c_str(), '\n', '"');
+                CSVParserNG refDataFile;
+                LookupTable1D refDataTable;
+                refDataFile.setFieldSeparator(',');
+                hvdsuccess = refDataFile.openFile(hvdfile.c_str());
                 if(!hvdsuccess)
                 {
-                    printErrorMessage("Unable to initialize HVD file: " + hvdfile + " : " + refData.getErrorString().c_str());
+                    printErrorMessage("Unable to initialize HVD file: " + hvdfile + " : " + refDataFile.getErrorString().c_str());
                     return false;
                 }
+                refDataFile.indexFile();
+
 
                 // Read all variable to test
                 vector<ValidatonVariable> validationVariables;
@@ -677,12 +695,23 @@ bool performModelTest(const std::string hvcFilePath)
                         vector<double> vReferenceData;
                         ValidatonVariable &rVar = validationVariables[v];
 
+                        //! @todo it would be better to have a large multi-column 1d lookup here, like it was with the old deprecated csv parser, now we are wasting time copying data for every variable
+                        refDataTable.clear();
+                        refDataFile.copyColumn(rVar.timecolumn, refDataTable.getIndexDataRef());
+                        refDataFile.copyColumn(rVar.column, refDataTable.getValueDataRef());
+                        refDataTable.sortIncreasing();
+                        if (!refDataTable.isDataOK())
+                        {
+                            printErrorMessage("Reference data is not OK in table for variable: " + rVar.fullVarName);
+                            return false;
+                        }
+
                         // Build the reference vector for each variable, by interpolating from reference data file
                         // Interpolation prevents failure if nLogSamples would change (provided sample frequency is not decreased to much)
                         vReferenceData.reserve(vTime.size());
                         for(size_t i=0; i<vTime.size(); ++i)
                         {
-                            vReferenceData.push_back(refData.interpolate(vTime[i], rVar.timecolumn, rVar.column));
+                            vReferenceData.push_back(refDataTable.interpolate(vTime[i]));
                         }
 
                         for (size_t c=0; c<vvvSimulationData1.size(); ++c)

@@ -39,7 +39,8 @@ private:
     double w1, T1, a1, c1, Zc1, in;
     double P_max;
     HString Characteristics;
-    CSVParser *mpDataCurve;
+    CSVParserNG mDataFile;
+    LookupTable1D mLookupTable;
     double *mpND_w1, *mpND_T1, *mpND_a1, *mpND_c1, *mpND_Zc1, *mpND_in;
     Port *mpin, *mpP1;
 
@@ -58,8 +59,6 @@ public:
 
         setDefaultStartValue(mpin, NodeSignal::Value, 0.00);
         mpP1 = addPowerPort("P1", "NodeMechanicRotational");
-
-        mpDataCurve = 0;
     }
 
     void initialize()
@@ -72,30 +71,33 @@ public:
         mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
 
         bool success=false;
-	    if (mpDataCurve!=0)
-	    {
-	        delete mpDataCurve;
-        	mpDataCurve=0;
-    	}
-
-	    mpDataCurve = new CSVParser(success, findFilePath(Characteristics));
+        mLookupTable.clear();
+        success = mDataFile.openFile(findFilePath(Characteristics));
     	if(!success)
     	{
-	        addErrorMessage("Unable to initialize CSV file: "+Characteristics+", "+mpDataCurve->getErrorString());
+            addErrorMessage("Unable to initialize CSV file: "+Characteristics+", "+mDataFile.getErrorString());
         	stopSimulation();
     	}
 	    else
 	    {
-	        if (mpDataCurve->getIncreasingOrDecresing(0) != 1)
-	        {
-	            mpDataCurve->sortIncreasing(0);
-	            mpDataCurve->calcIncreasingOrDecreasing();
-	        }
+            mDataFile.indexFile();
+            success = mDataFile.copyColumn(0, mLookupTable.getIndexDataRef());
+            success = success && mDataFile.copyColumn(1, mLookupTable.getValueDataRef());
+            // Now the data is in the lookuptable and we can close the csv file and clear the index
+            mDataFile.closeFile();
 
-	        success = (mpDataCurve->getIncreasingOrDecresing(0) == 1);
+            if(!success)
+            {
+                addErrorMessage("Unable to initialize lookup table from CSV file: "+Characteristics+", "+"Could not copy index / data columns");
+                stopSimulation();
+            }
+
+            // Make sure strictly increasing (no sorting will be done if that is already the case)
+            mLookupTable.sortIncreasing();
+            success = success && mLookupTable.isDataOK() && mLookupTable.allIndexStrictlyIncreasing();
 	        if(!success)
 	        {
-	            addErrorMessage("Unable to initialize CSV file: "+Characteristics+", "+"Even after sorting, index column is still not strictly increasing");
+                addErrorMessage("Unable to initialize lookup table from CSV file: "+Characteristics+", "+"Even after sorting, index column is still not strictly increasing");
 	            stopSimulation();
 	        }
 	    }
@@ -109,22 +111,16 @@ public:
         in = (*mpND_in);
         w1 = (*mpND_w1);
 
-        double T_max = mpDataCurve->interpolate(w1, 1);
+        double T_max = mLookupTable.interpolate(w1);
         c1=limit(-in*P_max/w1,0,T_max);
 
         (*mpND_c1) = c1;
         (*mpND_Zc1) = 0;
-
     }
 
     void finalize()
     {
-        //Cleanup data curve
-        if (mpDataCurve!=0)
-        {
-            delete mpDataCurve;
-            mpDataCurve=0;
-        }
+        mLookupTable.clear();
     }
 };
 }

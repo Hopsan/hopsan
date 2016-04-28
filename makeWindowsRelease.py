@@ -542,7 +542,6 @@ def copyFiles():
     svnExport(r'Dependencies\IndexingCSVParser',    gTemporaryBuildDir+r'\Dependencies\IndexingCSVParser')
     svnExport(r'Dependencies\libNumHop',            gTemporaryBuildDir+r'\Dependencies\libNumHop')
     svnExport(r'Dependencies\rapidxml-1.13',        gTemporaryBuildDir+r'\Dependencies\rapidxml-1.13')
-    svnExport(r'Dependencies\libcsv_parser++-1.0.0', gTemporaryBuildDir+r'\Dependencies\libcsv_parser++-1.0.0')
 
     # Copy the FMILibrary include files
     FMILibraryDir = r'./Dependencies/FMILibrary-2.0.1'
