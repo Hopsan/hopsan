@@ -120,7 +120,9 @@ public:
                           vector<string> objPorts,
                           vector<double> objWeights,
                           vector<double> parMin,
-                          vector<double> parMax)
+                          vector<double> parMax,
+                          double startTime,
+                          double stopTime)
     {
         mRootSystemPtrs = rootSystemPtrs;
         mParNames = parNames;
@@ -130,6 +132,8 @@ public:
         mParMin = parMin;
         mParMax = parMax;
         mEvaulationCounter = 0;
+        mStartTime = startTime;
+        mStopTime = stopTime;
     }
 
     //! @todo Make evaluateAll... work in parallel
@@ -145,8 +149,9 @@ public:
                 cout << "Error: Parameter " << mParNames[i] << " not found in model." << endl;
             }
         }
-        mRootSystemPtrs.at(0)->initialize(0,10);
-        mRootSystemPtrs.at(0)->simulate(10);
+
+        mRootSystemPtrs.at(0)->initialize(mStartTime,mStopTime);
+        mRootSystemPtrs.at(0)->simulate(mStopTime);
 
         double obj = 0.0;
         for(size_t i=0; i<mObjComps.size(); ++i)
@@ -176,8 +181,8 @@ public:
             }
         }
 
-        gHopsanCore.getSimulationHandler()->initializeSystem(0,10,mRootSystemPtrs);
-        gHopsanCore.getSimulationHandler()->simulateSystem(0,10,mpWorker->getNumberOfCandidates(),mRootSystemPtrs);
+        gHopsanCore.getSimulationHandler()->initializeSystem(mStartTime,mStopTime,mRootSystemPtrs);
+        gHopsanCore.getSimulationHandler()->simulateSystem(mStartTime,mStopTime,mpWorker->getNumberOfCandidates(),mRootSystemPtrs);
 
         for(size_t c=0; c<mpWorker->getNumberOfCandidates(); ++c)
         {
@@ -207,6 +212,8 @@ private:
     vector<double> mParMin;
     vector<double> mParMax;
     size_t mEvaulationCounter;
+    double mStartTime;
+    double mStopTime;
 };
 #endif
 
@@ -554,7 +561,7 @@ int main(int argc, char *argv[])
                 if (nErrors < 1 && modelFileOk)
                 {
                     OptimizationEvaluator *pEvaluator = new OptimizationEvaluator(rootSystemPtrs, parNames, objComps, objPorts,
-                                                                                  objWeights, parMin, parMax);
+                                                                                  objWeights, parMin, parMax, startTime, stopTime);
 
                     //Initialize base worker
                     Ops::Worker *pBaseWorker;
@@ -690,7 +697,7 @@ int main(int argc, char *argv[])
                             {
                                 file << "," << pBaseWorker->getParameter(pBaseWorker->getBestId(),i);
                             }
-                            file << pBaseWorker->getObjectiveValue(pBaseWorker->getWorstId());
+                            file << "," <<pBaseWorker->getObjectiveValue(pBaseWorker->getWorstId());
                             for(size_t i=0; i<pBaseWorker->getNumberOfParameters(); ++i)
                             {
                                 file << "," << pBaseWorker->getParameter(pBaseWorker->getWorstId(),i);
