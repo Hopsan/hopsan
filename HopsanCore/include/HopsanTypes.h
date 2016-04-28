@@ -45,10 +45,12 @@ public:
     HString();
     ~HString();
     HString(const char* str);
+    HString(const char* str, const size_t len);
     HString(const int value);
     HString(const HString &rOther);
     HString(const HString &rOther, size_t pos, size_t len=npos);
     void setString(const char* str);
+    void setString(const char* str, const size_t len);
     HString &append(const char* str);
     HString &append(const char chr);
     HString &append(const HString &str);

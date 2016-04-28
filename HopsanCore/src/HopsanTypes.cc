@@ -52,6 +52,13 @@ HString::HString(const char *str)
     setString(str);
 }
 
+HString::HString(const char *str, const size_t len)
+{
+    mpDataBuffer=0;
+    mSize=0;
+    setString(str, len);
+}
+
 //! @brief This constructor is used to catch mistakes made by Hospan component developers
 HString::HString(const int value)
 {
@@ -104,12 +111,19 @@ HString::HString(const HString &rOther, size_t pos, size_t len)
 //! @param [in] str The string data to copy
 void HString::setString(const char *str)
 {
-    const size_t s = strlen(str);
-    if (s>0)
+    setString(str, strlen(str));
+}
+
+//! @brief Set the string by copying a specific number of chars from const char*
+//! @param [in] str The string data to copy
+//! @param [in] len The number of bytes to copy
+void HString::setString(const char *str, const size_t len)
+{
+    if (len>0)
     {
-        mpDataBuffer = static_cast<char*>(realloc(mpDataBuffer,s+1));
+        mpDataBuffer = static_cast<char*>(realloc(mpDataBuffer,len+1));
         strcpy(mpDataBuffer, str);
-        mSize = s;
+        mSize = len;
     }
     else
     {
