@@ -27,7 +27,6 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
 INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
-INCLUDEPATH *= $${PWD}/../Dependencies/libcsv_parser++-1.0.0/include/csv_parser
 INCLUDEPATH *= $${PWD}/../Dependencies/IndexingCSVParser
 #INCLUDEPATH *= $${PWD}/Dependencies/boost
 #--------------------------------------------------------

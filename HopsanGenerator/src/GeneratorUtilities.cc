@@ -604,8 +604,7 @@ QStringList getHopsanCoreIncludePaths()
     QStringList includePaths;
     includePaths << "HopsanCore/include" <<
                     "componentLibraries/defaultLibrary";
-    includePaths << "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/" <<
-                    "Dependencies/rapidxml-1.13/" <<
+    includePaths << "Dependencies/rapidxml-1.13/" <<
                     "Dependencies/IndexingCSVParser/" <<
                     "Dependencies/libNumHop/libNumHop";
     return includePaths;
@@ -993,8 +992,7 @@ void getHopsanCoreDependecyFiles(const QString &hopsanRoot, QStringList &rSrcFil
                      hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
 
     findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/libNumHop/libNumHop", "cc", rSrcFiles);
-    rSrcFiles << hopsanRoot+"/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" <<
-                 hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
+    rSrcFiles << hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 }
 
 QStringList listHopsanCoreSourceFiles(const QString rootPath)
