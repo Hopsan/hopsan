@@ -68,13 +68,8 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     this->copyHopsanCoreSourceFilesToDir(savePath);
     this->copyDefaultComponentCodeToDir(savePath);
 
-    std::vector<HString> parameterNames;
-    pSystem->getParameterNames(parameterNames);
-    QStringList tunableParameters;
-    for(size_t i=0; i<parameterNames.size(); ++i)
-    {
-        tunableParameters.append(QString(parameterNames[i].c_str()));
-    }
+    const std::vector<ParameterEvaluator*> *pParameters = pSystem->getParametersVectorPtr();
+    int numParameters = pParameters->size();
 
     QList<InterfacePortSpec> interfacePortSpecs;
     QStringList path = QStringList();
@@ -90,11 +85,11 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         return;
     }
 
-    QFile portLabelsFile;
-    portLabelsFile.setFileName(savePath + "/"+name+"PortLabels.m");
-    if(!portLabelsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    QFile maskSetupFile;
+    maskSetupFile.setFileName(savePath + "/"+name+"MaskSetup.m");
+    if(!maskSetupFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open "+name+"PortLabels.m for writing.");
+        printErrorMessage("Failed to open "+name+"MaskSetup.m for writing.");
         return;
     }
 
@@ -135,13 +130,11 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     compileScriptFile.close();
 
 
-    printMessage("Writing "+name+"PortLabels.m...");
+    printMessage("Writing "+name+"MaskSetup.m...");
 
-    QTextStream portLabelsStream(&portLabelsFile);
-    portLabelsStream << "set_param(gcb,'Mask','on')\n";
-    portLabelsStream << "set_param(gcb,'MaskDisplay','";
-    int i=1;
-    int j=1;
+    QString portLabels, maskPrompts, maskVars, defaultVals;
+    QTextStream maskStream(&portLabels);
+    int i=1, o=1;
     foreach(const InterfacePortSpec &spec, interfacePortSpecs)
     {
         foreach(const InterfaceVarSpec &varSpec, spec.vars)
@@ -149,43 +142,65 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
             QString temp = "."+varSpec.dataName;
             if(varSpec.causality == InterfaceVarSpec::Input)
             {
-                portLabelsStream << "port_label(''input''," << i << ",''" << spec.component << temp+"''); ";
+                maskStream << "port_label(''input''," << i << ",''" << spec.component << temp+"''); ";
                 ++i;
             }
             else
             {
-                portLabelsStream << "port_label(''output''," << j << ",''" << spec.component << temp+"''); ";
-                ++j;
+                maskStream << "port_label(''output''," << o << ",''" << spec.component << temp+"''); ";
+                ++o;
             }
         }
     }
+    maskStream << "port_label(''output''," << o << ",''DEBUG'')";
 
-    portLabelsStream << "port_label(''output''," << j << ",''DEBUG'')'); \n";
-    portLabelsStream << "set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n";
-    portLabelsStream << "set_param(gcb,'Name','" << name << "')\n";
-    portLabelsStream << "set_param(gcb,'MaskPrompts',{";
-    for(int p=0; p<tunableParameters.size(); ++p)
+    maskStream.setString(&maskPrompts);
+    for(int p=0; p<numParameters; ++p)
     {
-        portLabelsStream << "'"+tunableParameters[p]+"'";
-        if(p<tunableParameters.size()-1)
-            portLabelsStream << ",";
+        maskStream << QString("'%1'").arg(pParameters->at(p)->getName().c_str());
+        if(p<numParameters-1)
+            maskStream << ",";
     }
-    portLabelsStream << "})\n";
-    portLabelsStream << "set_param(gcb,'MaskVariables','";
-    for(int p=0; p<tunableParameters.size(); ++p)
-    {
-        portLabelsStream << tunableParameters[p]+"=&"+QString::number(p+1)+";";
-    }
-    portLabelsStream << "')\n";
-    portLabelsFile.close();
 
+    maskStream.setString(&maskVars);
+    for(int p=0; p<numParameters; ++p)
+    {
+        maskStream << QString("%1=&%2;").arg(pParameters->at(p)->getName().c_str()).arg(p+1);
+    }
+
+    maskStream.setString(&defaultVals);
+    for(int p=0; p<numParameters; ++p)
+    {
+        maskStream << QString("'%1'").arg(pParameters->at(p)->getValue().c_str());
+        if(p<numParameters-1)
+            maskStream << ",";
+    }
+
+    QString maskSetup;
+    maskSetup.append("set_param(gcb,'Mask','on')\n");
+    maskSetup.append(QString("set_param(gcb,'Name','%1')\n").arg(name));
+    maskSetup.append("set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n");
+    maskSetup.append(QString("set_param(gcb,'MaskDisplay','%1');\n").arg(portLabels));
+    maskSetup.append(QString("set_param(gcb,'MaskPrompts',{%1})\n").arg(maskPrompts));
+    maskSetup.append(QString("set_param(gcb,'MaskVariables','%1')\n").arg(maskVars));
+    maskSetup.append(QString("defaultVals = {%1};\n").arg(defaultVals));
+    maskSetup.append(QString("vals = get_param(gcb,'MaskValues')';\n"));
+    maskSetup.append(QString("for i=1:length(vals)\n"));
+    maskSetup.append(QString("    if strcmp(vals{i}, '[]')\n"));
+    maskSetup.append(QString("        vals{i} = '';\n"));
+    maskSetup.append(QString("    end\n"));
+    maskSetup.append(QString("    if isempty(vals{i})\n"));
+    maskSetup.append(QString("        vals{i} = defaultVals{i};\n"));
+    maskSetup.append(QString("    end\n"));
+    maskSetup.append(QString("end\n"));
+    maskSetup.append(QString("set_param(gcb,'MaskValues', vals)\n"));
+
+    QTextStream maskFileStream(&maskSetupFile);
+    maskFileStream << maskSetup;
+    maskSetupFile.close();
 
 
     printMessage("Writing "+name+".cpp...");
-
-
-    //How to access dialog parameters:
-    //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
 
     QFile wrapperTemplateFile(":templates/simulinkWrapperTemplate.cpp");
     assert(wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
@@ -198,7 +213,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QString wrapperReplace1;
     QString wrapperReplace3;
     i=0;
-    j=0;
+    o=0;
 
     foreach(const InterfacePortSpec &spec, interfacePortSpecs)
     {
@@ -212,8 +227,8 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
             }
             else
             {
-                wrapperReplace3.append("    ssSetOutputPortWidth(S, " + QString::number(j) + ", DYNAMICALLY_SIZED);		//Output signal " + QString::number(j) + "\n");
-                ++j;
+                wrapperReplace3.append("    ssSetOutputPortWidth(S, " + QString::number(o) + ", DYNAMICALLY_SIZED);		//Output signal " + QString::number(o) + "\n");
+                ++o;
             }
         }
     }
@@ -221,29 +236,26 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QString wrapperReplace5;
     if(!disablePortLabels)
     {
-        wrapperReplace5 = "    mexCallMATLAB(0, 0, 0, 0, \""+name+"PortLabels\");                              //Run the port label script\n";
+        wrapperReplace5 = "    mexCallMATLAB(0, 0, 0, 0, \""+name+"MaskSetup\");                              //Run the port label script\n";
     }
 
     QString wrapperReplace6;
-    for(int p=0; p<tunableParameters.size(); ++p)
+    for(int p=0; p<numParameters; ++p)
     {
-        wrapperReplace6.append("    in = mexGetVariable(\"caller\",\"" + tunableParameters[p] + "\");\n");
-        wrapperReplace6.append("    if(in == NULL )\n");
-        wrapperReplace6.append("    {\n");
-        wrapperReplace6.append("        mexErrMsgTxt(\"Unable to read parameter \\\""+tunableParameters[p]+"\\\"!\");\n");
-        wrapperReplace6.append("    	return;\n");
-        wrapperReplace6.append("    }\n");
+        QString parname = pParameters->at(p)->getName().c_str();
+        //wrapperReplace6.append("in = ssGetSFcnParam(S, "+QString::number(p)+");\n");
+        wrapperReplace6.append("in = mexGetVariable(\"caller\", \""+parname+"\");\n");
+        wrapperReplace6.append("if(in == NULL )\n");
+        wrapperReplace6.append("{\n");
+        wrapperReplace6.append("    mexErrMsgTxt(\"Unable to read parameter \\\""+parname+"\\\"!\");\n");
+        wrapperReplace6.append("	return;\n");
+        wrapperReplace6.append("}\n");
+        wrapperReplace6.append("parsize = mxGetN(in);\n");
+        wrapperReplace6.append("pBuffer = realloc(pBuffer, parsize+1);\n");
+        wrapperReplace6.append("mxGetString(in, (char*)pBuffer, parsize+1);\n");
+        wrapperReplace6.append("valstr.setString((const char*)pBuffer);\n");
+        wrapperReplace6.append("pComponentSystem->setParameterValue(\""+parname+"\", valstr);\n");
         wrapperReplace6.append("\n");
-        wrapperReplace6.append("    c_str = (const char*)mxGetData(in);\n");
-        wrapperReplace6.append("\n");
-        wrapperReplace6.append("    str = \"\";\n");
-        wrapperReplace6.append("    for(int i=0; i<mxGetNumberOfElements(in); ++i)\n");
-        wrapperReplace6.append("    {\n");
-        wrapperReplace6.append("    	str.append(c_str);\n");
-        wrapperReplace6.append("    	c_str += 2*sizeof(char);\n");
-        wrapperReplace6.append("    }\n");
-        wrapperReplace6.append("\n");
-        wrapperReplace6.append("    pComponentSystem->setParameterValue(\""+tunableParameters[p]+"\", str);\n");
     }
 
     QString wrapperReplace7;
@@ -255,7 +267,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QString wrapperReplace15;
     QString wrapperReplace16;
     i=0;
-    j=0;
+    o=0;
     foreach(const InterfacePortSpec &portSpec, interfacePortSpecs)
     {
         QList<InterfaceVarSpec> varSpecs = portSpec.vars;
@@ -270,11 +282,11 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         {
             if(varSpec.causality == InterfaceVarSpec::Input)
             {
-                wrapperReplace8.append("    double input" + QString::number(j) + " = (*uPtrs1[" + QString::number(j) + "]);\n");
-                wrapperReplace11.append("        (*pInputNode"+QString::number(j)+") = input"+QString::number(j)+";\n");
-                wrapperReplace15.append("double *pInputNode"+QString::number(j)+";\n");
-                wrapperReplace16.append("    pInputNode"+QString::number(j)+" = pComponentSystem"+path+"->getSubComponent(\""+portSpec.component+"\")->getSafeNodeDataPtr(\""+portSpec.port+"\", "+QString::number(varSpec.dataId)+");\n");
-                ++j;
+                wrapperReplace8.append("    double input" + QString::number(o) + " = (*uPtrs1[" + QString::number(o) + "]);\n");
+                wrapperReplace11.append("        (*pInputNode"+QString::number(o)+") = input"+QString::number(o)+";\n");
+                wrapperReplace15.append("double *pInputNode"+QString::number(o)+";\n");
+                wrapperReplace16.append("    pInputNode"+QString::number(o)+" = pComponentSystem"+path+"->getSubComponent(\""+portSpec.component+"\")->getSafeNodeDataPtr(\""+portSpec.port+"\", "+QString::number(varSpec.dataId)+");\n");
+                ++o;
             }
             else
             {
@@ -295,7 +307,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     wrapperReplace13.append("    *y" + QString::number(i) + " = output" + QString::number(i) + ";\n");
     ++i;
 
-    int nTotalInputs = j;
+    int nTotalInputs = o;
     int nTotalOutputs = i;
     QString nTotalInputsString = QString::number(nTotalInputs);
     QString nTotalOutputsString = QString::number(nTotalOutputs);
@@ -309,7 +321,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     wrapperCode.replace("<<<14>>>", QString::number(nTotalOutputs-1));
     wrapperCode.replace("<<<4>>>", modelFile);
     wrapperCode.replace("<<<5>>>", wrapperReplace5);
-    wrapperCode.replace("<<<6>>>", wrapperReplace6);
+    replacePattern("<<<6>>>", wrapperReplace6, wrapperCode);
     wrapperCode.replace("<<<7>>>", wrapperReplace7);
     wrapperCode.replace("<<<8>>>", wrapperReplace8);
     wrapperCode.replace("<<<9>>>", wrapperReplace9);
@@ -321,13 +333,14 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     wrapperCode.replace("<<<16>>>", wrapperReplace16);
     wrapperCode.replace("<<<name>>>", name);
     wrapperCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
+    wrapperCode.replace("<<<numparams>>>", QString::number(numParameters));
 
     QTextStream wrapperStream(&wrapperFile);
     wrapperStream << wrapperCode;
     wrapperFile.close();
 
     if(!assertFilesExist(savePath, QStringList() << modelFile <<  name+".cpp" <<
-                     "HopsanSimulinkCompile.m" << name+"PortLabels.m"))
+                     "HopsanSimulinkCompile.m" << name+"MaskSetup.m"))
     {
         return;
     }
@@ -808,7 +821,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     //this->copyIncludeFilesToDir(savePath, true);
     this->copyBoostIncludeFilesToDir(savePath);
 
-    //! @todo should not overwrite this wile if it already exists
+    //! @todo should not overwrite this file if it already exists
     QFile externalLibsFile;
     externalLibsFile.setFileName(savePath + "/externalLibs.txt");
     if(!externalLibsFile.open(QIODevice::WriteOnly | QIODevice::Text))

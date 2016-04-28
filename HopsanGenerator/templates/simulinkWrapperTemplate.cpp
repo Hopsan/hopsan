@@ -34,44 +34,28 @@
 using namespace hopsan;
 
 
-////! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you don't want error message
-//void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)
-//{
-//    rExtLibFileNames.clear();
-//    std::string line;
-//    std::ifstream file;
-//    file.open(filePath.c_str());
-//    if ( file.is_open() )
-//    {
-//        while ( file.good() )
-//        {
-//            getline(file, line);
-//            if ((*line.begin() != '#') && !line.empty())
-//            {
-//                rExtLibFileNames.push_back(line);
-//            }
-//       }
-//        file.close();
-//    }
-//    else
-//    {
-//        std::cout << "error, could not open file: " << filePath << std::endl;
-//    }
-//}
-
-
 HopsanEssentials gHopsanCore;
 ComponentSystem* pComponentSystem;
 bool isOkToSimulate = false;
 
+#define NUMPARAMS 0//<<<numparams>>>
+
 <<<15>>>
 static void mdlInitializeSizes(SimStruct *S)
 {
-    ssSetNumSFcnParams(S, 0);
-    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))
-    {
-        return;
+    // If NUMPARAMS != 0 then the mask setup will not work, so we can not use S-function parameters, for the parameters
+    // instead we let the mask create local workspace variables corresponding to our system parameters
+    ssSetNumSFcnParams(S, NUMPARAMS);
+#if defined(MATLAB_MEX_FILE)
+    if (ssGetNumSFcnParams(S) == ssGetSFcnParamsCount(S)) {
+        //mdlCheckParameters(S);
+        //if (ssGetErrorStatus(S) != NULL) {
+        //    return;
+        //}
+    } else {
+        return; /* Parameter mismatch will be reported by Simulink. */
     }
+#endif
 
     //Define S-function input signals
     if (!ssSetNumInputPorts(S,<<<0>>>)) return;				//Number of input signals
@@ -123,10 +107,11 @@ static void mdlInitializeSampleTimes(SimStruct *S)
 
     //Update tunable parameters
     const mxArray* in;
-    const char* c_str;
-    HString str;
-<<<6>>>
+    mwSize parsize;
+    void* pBuffer=0;
+    HString valstr;
 
+    <<<6>>>
 
     isOkToSimulate = pComponentSystem->checkModelBeforeSimulation();
     if (isOkToSimulate)
@@ -147,7 +132,14 @@ static void mdlInitializeSampleTimes(SimStruct *S)
         return;
     }
 
-<<<16>>>}
+<<<16>>>
+
+    // Free parameter buffer memory
+    if (pBuffer)
+    {
+        free(pBuffer);
+    }
+}
 
 
 static void mdlOutputs(SimStruct *S, int_T tid)
