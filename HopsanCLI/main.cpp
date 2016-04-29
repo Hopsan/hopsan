@@ -672,6 +672,17 @@ int main(int argc, char *argv[])
                         pWorker->setVmax(vmax);
                     }
 
+                    //Error checking
+                    //! @todo Also check that optimization parameters and objective ports exist in model
+                    for(size_t i=0; i<objComps.size(); ++i) //Check that objective function components exists
+                    {
+                        if(!rootSystemPtrs[0]->haveSubComponent(objComps[i].c_str()))
+                        {
+                            printErrorMessage("Error: Objective function component not found. Aborting.", silentOption.getValue());
+                            return -1;
+                        }
+                    }
+
                     //Execute optimization
                     pBaseWorker->initialize();
                     pBaseWorker->run();
