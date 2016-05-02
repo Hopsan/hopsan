@@ -24,8 +24,8 @@
 
 //$Id$
 
-#ifndef MECHANICTRANSLATIONALQSOURCE_HPP
-#define MECHANICTRANSLATIONALQSOURCE_HPP
+#ifndef HydraulicCSOURCE_HPP
+#define HydraulicCSOURCE_HPP
 
 #include "ComponentEssentials.h"
 
@@ -35,44 +35,40 @@ namespace hopsan {
 //! @brief
 //! @ingroup MechanicalComponents
 //!
-class MechanicTranslationalQSource : public ComponentQ
+class HydraulicCSource : public ComponentC
 {
 
 private:
-    double *mpIn_f, *mpIn_v, *mpIn_x, *mpIn_em;
-    Port *mpP1;
-    MechanicNodeDataPointerStructT mP1;
+    double *mpIn_c, *mpIn_Zx;
+    double *mpP1_c, *mpP1_Zx;
 
 public:
     static Component *Creator()
     {
-        return new MechanicTranslationalQSource();
+        return new HydraulicCSource();
     }
 
     void configure()
     {
-        addInputVariable("in_f", "Force variable input", "Force", 0, &mpIn_f);
-        addInputVariable("in_v", "Velocity variable input", "Velocity", 0, &mpIn_v);
-        addInputVariable("in_x", "Position variable input", "Position", 0, &mpIn_x);
-        addInputVariable("in_em", "Equivalent mass variable input", "Mass", 1, &mpIn_em);
-        mpP1 = addPowerPort("P1", "NodeMechanic");
+        addInputVariable("in_c", "Wave variable input", "Force", 0, &mpIn_c);
+        addInputVariable("in_z", "Char. impedance variable input", "N s/m", 0, &mpIn_Zx);
+        addPowerPort("P1", "NodeHydraulic");
     }
 
     void initialize()
     {
-        getMechanicPortNodeDataPointers(mpP1, mP1);
+        mpP1_c = getSafeNodeDataPtr("P1", NodeHydraulic::WaveVariable);
+        mpP1_Zx = getSafeNodeDataPtr("P1", NodeHydraulic::CharImpedance);
         simulateOneTimestep();
     }
 
     void simulateOneTimestep()
     {
-        mP1.rf() = readSignal(mpIn_f);
-        mP1.rv() = readSignal(mpIn_v);
-        mP1.rx() = readSignal(mpIn_x);
-        mP1.rMe() = readSignal(mpIn_em);
+        (*mpP1_c) = (*mpIn_c);
+        (*mpP1_Zx) = (*mpIn_Zx);
     }
 };
 }
 
-#endif // MECHANICTRANSLATIONALQSOURCE_HPP
+#endif // HydraulicCSOURCE_HPP
 

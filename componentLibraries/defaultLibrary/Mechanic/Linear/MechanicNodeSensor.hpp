@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   MechanicSpeedSensor.hpp
+//! @file   MechanicNodeSensor.hpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2015-11-17
 

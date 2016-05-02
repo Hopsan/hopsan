@@ -5,11 +5,11 @@
             <icon scale="1" path="MechanicTranslationalQSource.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
-            <port x="1" y="0.5" a="0" name="P1"/>
-            <port x="0" y="0.001" a="0" name="in_f"/>
-            <port x="0" y="0.333" a="0" name="in_v"/>
-            <port x="0" y="0.666" a="0" name="in_x"/>
-            <port x="0" y="0.999" a="0" name="in_em"/>
+            <port x="0" y="0.5" a="0" name="P1"/>
+            <port x="1" y="0.001" a="0" name="in_f"/>
+            <port x="1" y="0.333" a="0" name="in_v"/>
+            <port x="1" y="0.666" a="0" name="in_x"/>
+            <port x="1" y="0.999" a="0" name="in_em"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>

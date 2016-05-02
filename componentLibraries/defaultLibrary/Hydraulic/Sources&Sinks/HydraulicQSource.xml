@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="HydraulicQSource.hpp" typename="HydraulicQSource" displayname="Hydraulic Q-type Source">
+        <icons>
+            <icon scale="1" path="HydraulicQSource.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+            <port x="1" y="0.25" a="0" name="in_p"/>
+            <port x="1" y="0.75" a="0" name="in_q"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

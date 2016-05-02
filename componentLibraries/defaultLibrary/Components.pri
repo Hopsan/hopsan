@@ -77,12 +77,14 @@ HEADERS +=  \
  $${PWD}/Hydraulic/Sensors/HydraulicPowerSensor.hpp \ 
  $${PWD}/Hydraulic/Sensors/HydraulicPressureSensor.hpp \ 
  $${PWD}/Hydraulic/Sensors/Sensors.h \ 
+ $${PWD}/Hydraulic/Sources&Sinks/HydraulicCSource.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/HydraulicFlowSourceQ.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/HydraulicMultiPressureSourceC.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/HydraulicMultiTankC.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/HydraulicPlugQ.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/HydraulicPressureSourceC.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/HydraulicPressureSourceQ.hpp \ 
+ $${PWD}/Hydraulic/Sources&Sinks/HydraulicQSource.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/HydraulicTankC.hpp \ 
  $${PWD}/Hydraulic/Sources&Sinks/Sources&Sinks.h \ 
  $${PWD}/Hydraulic/Special/FuelComponents/FuelComponents.h \ 
