@@ -92,6 +92,66 @@ inline void writeOutputVariable(double *pNodeData, const double y)
 //    return writeSignalPort(pPort);
 //}
 
+// ---------------------------------------------------------------------
+// Electric Node Access
+// ---------------------------------------------------------------------
+
+class ElectricNodeDataPointerStructT
+{
+public:
+    double *pI;
+    double *pU;
+    double *pC;
+    double *pZc;
+
+    inline double i() const
+    {
+        return *pI;
+    }
+
+    inline double u() const
+    {
+        return *pU;
+    }
+
+    inline double c() const
+    {
+        return *pC;
+    }
+
+    inline double Zc() const
+    {
+        return *pZc;
+    }
+
+    inline double &ri()
+    {
+        return *pI;
+    }
+
+    inline double &ru()
+    {
+        return *pU;
+    }
+
+    inline double &rc()
+    {
+        return *pC;
+    }
+
+    inline double &rZc()
+    {
+        return *pZc;
+    }
+};
+
+inline void getElectricPortNodeDataPointers(Port *pPort, ElectricNodeDataPointerStructT &rPointers)
+{
+    rPointers.pI  = pPort->getNodeDataPtr(NodeElectric::Current, 0);
+    rPointers.pU  = pPort->getNodeDataPtr(NodeElectric::Voltage, 0);
+    rPointers.pC  = pPort->getNodeDataPtr(NodeElectric::WaveVariable, 0);
+    rPointers.pZc = pPort->getNodeDataPtr(NodeElectric::CharImpedance, 0);
+}
 
 
 // ---------------------------------------------------------------------

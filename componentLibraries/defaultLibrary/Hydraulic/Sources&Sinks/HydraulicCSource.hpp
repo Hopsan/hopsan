@@ -33,7 +33,7 @@ namespace hopsan {
 
 //!
 //! @brief
-//! @ingroup MechanicalComponents
+//! @ingroup HydraulicComponents
 //!
 class HydraulicCSource : public ComponentC
 {
@@ -50,7 +50,7 @@ public:
 
     void configure()
     {
-        addInputVariable("in_c", "Wave variable input", "Force", 0, &mpIn_c);
+        addInputVariable("in_c", "Wave variable input", "Pressure", 0, &mpIn_c);
         addInputVariable("in_z", "Char. impedance variable input", "N s/m", 0, &mpIn_Zx);
         addPowerPort("P1", "NodeHydraulic");
     }

@@ -18,6 +18,7 @@ HEADERS +=  \
  $${PWD}/Electric/Electric.h \ 
  $${PWD}/Electric/ElectricACmachine.hpp \ 
  $${PWD}/Electric/ElectricBattery.hpp \ 
+ $${PWD}/Electric/ElectricCSource.hpp \ 
  $${PWD}/Electric/ElectricCapacitance2.hpp \ 
  $${PWD}/Electric/ElectricCapacitanceMultiPort.hpp \ 
  $${PWD}/Electric/ElectricGround.hpp \ 
@@ -28,7 +29,9 @@ HEADERS +=  \
  $${PWD}/Electric/ElectricMotor.hpp \ 
  $${PWD}/Electric/ElectricMotorGear.hpp \ 
  $${PWD}/Electric/ElectricMotorGearScrewLink.hpp \ 
+ $${PWD}/Electric/ElectricNodeSensor.hpp \ 
  $${PWD}/Electric/ElectricPWMdceq.hpp \ 
+ $${PWD}/Electric/ElectricQSource.hpp \ 
  $${PWD}/Electric/ElectricResistor.hpp \ 
  $${PWD}/Electric/ElectricSwitch.hpp \ 
  $${PWD}/Electric/ElectricUsensor.hpp \ 

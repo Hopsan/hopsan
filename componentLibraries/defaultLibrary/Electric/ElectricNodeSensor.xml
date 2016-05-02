@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="ElectricNodeSensor.hpp" typename="ElectricNodeSensor" displayname="Electric Node Sensor">
+        <icons>
+            <icon scale="1" path="ElectricNodeSensor.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="1" a="90" name="P1"/>
+            <port x="0.2" y="0.2" a="270" name="u"/>
+			<port x="0.4" y="0" a="270" name="i"/>
+			<port x="0.6" y="0" a="270" name="c"/>
+			<port x="0.8" y="0.2" a="270" name="Zc"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

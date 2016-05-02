@@ -33,7 +33,7 @@ namespace hopsan {
 
 //!
 //! @brief
-//! @ingroup MechanicalComponents
+//! @ingroup HydraulicComponents
 //!
 class HydraulicQSource : public ComponentQ
 {
@@ -51,8 +51,8 @@ public:
 
     void configure()
     {
-        addInputVariable("in_p", "Pressure variable input", "Force", 0, &mpIn_p);
-        addInputVariable("in_q", "Flow variable input", "Velocity", 0, &mpIn_q);
+        addInputVariable("in_p", "Pressure variable input", "Pressure", 0, &mpIn_p);
+        addInputVariable("in_q", "Flow variable input", "Flow", 0, &mpIn_q);
         mpP1 = addPowerPort("P1", "NodeHydraulic");
     }
 
