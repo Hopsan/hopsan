@@ -14,7 +14,7 @@
    height="15"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="losslessconnector_user.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -76,15 +76,6 @@
        y2="-7.334497"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(0,25)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3162"
-       id="linearGradient3782"
-       x1="233.18024"
-       y1="406.51334"
-       x2="232.99678"
-       y2="420.35342"
-       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -97,15 +88,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.76875"
-     inkscape:cx="-10.782735"
+     inkscape:cx="-41.713272"
      inkscape:cy="30.80434"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="982"
+     inkscape:window-width="1440"
+     inkscape:window-height="878"
      inkscape:window-x="-8"
-     inkscape:window-y="38"
+     inkscape:window-y="-8"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -153,7 +144,7 @@
            style="font-size:36px;fill:#ffffff;fill-opacity:1" /></text>
     </g>
     <rect
-       style="fill:url(#linearGradient3782);stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        id="rect2819"
        width="58"
        height="13"
