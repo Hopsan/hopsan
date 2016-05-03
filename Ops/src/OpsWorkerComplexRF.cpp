@@ -100,11 +100,15 @@ void WorkerComplexRF::run()
 
         calculateBestAndWorstId();
 
+        mpMessageHandler->stepCompleted(mIterationCounter);
+
         //Retract until worst point is no longer the same
         mRetractionCounter = 0;
         bool doBreak = false;
         while(mLastWorstId == mWorstId && !mpMessageHandler->aborted())
         {
+           // mpMessageHandler->stepCompleted(mIterationCounter);
+
             ++mIterationCounter;
 
             mpMessageHandler->stepCompleted(mIterationCounter);
@@ -126,8 +130,6 @@ void WorkerComplexRF::run()
         {
             break;
         }
-
-        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
 
