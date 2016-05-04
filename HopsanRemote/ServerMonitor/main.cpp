@@ -56,7 +56,7 @@ void printInfoFromAddressServer(vector<ServerMachineInfoT> &machines, vector<int
 {
     cout << endl << endl;
     cout << nowDateTime() << endl;
-    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "evalTime:" << std::setw(10) << "Description:" << std::setw(10) << "Users:" << endl;
+    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "evalTime:" << std::setw(15) << "Description:" << std::setw(20) << "Users:" << endl;
     cout << "--------------------------------------------------------------------------" << endl;
     for (size_t i=0; i<machines.size(); ++i)
     {
@@ -69,7 +69,7 @@ void printInfoFromAddressServer(vector<ServerMachineInfoT> &machines, vector<int
         stringstream ss;
         ss << nopenslots[i] << "/" << machines[i].numslots;
 
-        cout << std::setw(24) << addr << std::setw(10) << ss.str() << std::setw(10) << machines[i].evalTime << std::setw(10) << machines[i].description << std::setw(10) << usernames[i] << endl;
+        cout << std::setw(24) << addr << std::setw(10) << ss.str() << std::setw(10) << machines[i].evalTime << std::setw(15) << machines[i].description << std::setw(20) << usernames[i] << endl;
     }
 }
 

@@ -251,6 +251,10 @@ int main(int argc, char* argv[])
                     ReqmsgReqServerSlots msg = unpackMessage<ReqmsgReqServerSlots>(request, offset, parseOK);
                     int requestNumThreads = msg.numThreads;
                     string requestuserid = msg.userid;
+                    if (requestuserid.empty())
+                    {
+                        requestuserid = "anonymous";
+                    }
 
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting: " << requestNumThreads << " slots... " << endl;
                     if (nTakenSlots+requestNumThreads <= gServerConfig.mMaxNumSlots)
