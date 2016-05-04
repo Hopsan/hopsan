@@ -1028,7 +1028,7 @@ double *Component::getSafeNodeDataPtr(const HString &rPortName, const int dataId
 //! @returns A pointer to the specified NodeData or a null pointer
 double *Component::getNodeDataPtr(Port *pPort, const int dataId)
 {
-    addLogMess(getName()+"::getNodeDataPtr Id:"+to_hstring(dataId));
+    //addLogMess(getName()+"::getNodeDataPtr Id:"+to_hstring(dataId));
     //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a mistake
     if (pPort->getPortType() >= MultiportType)
     {
