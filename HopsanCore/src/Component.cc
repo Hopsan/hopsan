@@ -566,13 +566,13 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
     rData = defaultValue;
     if (rUnit.empty())
     {
-        HString bu = gHopsanQuantities.lookupBaseUnit(rQuantity);
+        HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantity);
         registerParameter(rName, rDescription, rQuantity, bu, rData);
     }
     else if (!rQuantity.empty())
     {
         // Make sure unit correct, since we do not yet support non base units in core
-        HString bu = gHopsanQuantities.lookupBaseUnit(rQuantity);
+        HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantity);
         if (bu != rUnit)
         {
             addErrorMessage(HString("Using non base units together with a quantity is not yet supported: "+bu+" != "+rUnit+" ("+rQuantity+")"));

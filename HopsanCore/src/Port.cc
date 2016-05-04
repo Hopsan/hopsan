@@ -491,7 +491,7 @@ void Port::setSignalNodeQuantityOrUnit(const HString &rQuantityOrUnit)
 {
     //! @todo multiport version needed
 
-    HString bu = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
+    HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantityOrUnit);
     // If this was not a quantity
     if (bu.empty())
     {

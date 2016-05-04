@@ -53,10 +53,10 @@ private:
     std::map<HString, HString> mQuantityAliases;
 };
 
-extern QuantityRegister gHopsanQuantities;
-
 bool checkIfQuantityOrUnit(const HString &rQuantityOrUnit, HString &rQuantity, HString &rUnitOrBaseUnit);
 
+//! @todo this global pointer is not safe, will code it away later (maybe) /Peter
+extern QuantityRegister *gpInternalCoreQuantityRegister; // Do not use this pointer outside of HopsanCore
 }
 #endif // QUANTITIES_H
 

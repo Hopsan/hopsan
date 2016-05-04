@@ -132,7 +132,7 @@ void Node::setDataCharacteristics(const size_t id, const HString &rName, const H
     mDataDescriptions[id].varType = vartype;
     mDataDescriptions[id].userModifiableQuantity = false;
 
-    HString bu = gHopsanQuantities.lookupBaseUnit(rQuantityOrUnit);
+    HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantityOrUnit);
     // If bu empty then, rUnit was not a quantity
     if (bu.empty())
     {

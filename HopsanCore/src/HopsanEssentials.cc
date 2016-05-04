@@ -56,6 +56,8 @@
 using namespace std;
 using namespace hopsan;
 
+QuantityRegister *hopsan::gpInternalCoreQuantityRegister=0; // Do not use this pointer outside of HopsanCore
+
 //! @brief HopsanEssentials Constructor
 HopsanEssentials::HopsanEssentials()
 { 
@@ -63,6 +65,8 @@ HopsanEssentials::HopsanEssentials()
     mpNodeFactory = new NodeFactory;
     mpComponentFactory = new ComponentFactory;
     mpMessageHandler = new HopsanCoreMessageHandler;
+    mpQuantityRegister = new QuantityRegister;
+    gpInternalCoreQuantityRegister = mpQuantityRegister;
     mpExternalLoader = new LoadExternal(mpComponentFactory, mpNodeFactory, mpMessageHandler);
 
     // Make sure that internal Nodes and Components register
@@ -119,6 +123,7 @@ HopsanEssentials::~HopsanEssentials()
 
     // Delete the message handler
     delete mpMessageHandler;
+    delete mpQuantityRegister;
 }
 
 //! @brief Returns the HopsanCore version as a string
@@ -253,12 +258,12 @@ const std::vector<HString> HopsanEssentials::getRegisteredNodeTypes() const
     return mpNodeFactory->getRegisteredKeys();
 }
 
-//! @brief Check if a qunatity name is registered
+//! @brief Check if a quantity name is registered
 //! @param[in] rQuantity The name of the quantity
-//! @returns true if the quantity is regisitered, else false
+//! @returns true if the quantity is registered, else false
 bool HopsanEssentials::haveQuantity(const HString &rQuantity) const
 {
-    return gHopsanQuantities.haveQuantity(rQuantity);
+    return mpQuantityRegister->haveQuantity(rQuantity);
 }
 
 //! @brief Returns a pointer to the core message handler, do NOT use this function to get messages
@@ -271,7 +276,7 @@ HopsanCoreMessageHandler *HopsanEssentials::getCoreMessageHandler()
 //! @param [in] filePath The name (path) of the HMF file
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
-//! @returns A pointer to the rootsystem of the loaded model
+//! @returns A pointer to the root system of the loaded model
 ComponentSystem* HopsanEssentials::loadHMFModelFile(const char *filePath, double &rStartTime, double &rStopTime)
 {
     return loadHopsanModelFile(filePath, this, rStartTime, rStopTime);
@@ -286,7 +291,7 @@ ComponentSystem* HopsanEssentials::loadHMFModel(const std::vector<unsigned char>
 //! @param [in] xmlString The model xml string
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
-//! @returns A pointer to the rootsystem of the loaded model
+//! @returns A pointer to the root system of the loaded model
 ComponentSystem* HopsanEssentials::loadHMFModel(const char *xmlString, double &rStartTime, double &rStopTime)
 {
     return loadHopsanModel(xmlString, this, rStartTime, rStopTime);
