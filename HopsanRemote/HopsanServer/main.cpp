@@ -394,8 +394,11 @@ int main(int argc, char* argv[])
                     {
                         status.users += it->second.user+", ";
                     }
-                    status.users.pop_back();
-                    status.users.pop_back();
+                    if (!workerMap.empty())
+                    {
+                        status.users.pop_back();
+                        status.users.pop_back();
+                    }
 
                     sendMessage(socket, ReplyServerStatus, status);
                     lastStatusRequestTime = chrono::steady_clock::now();
