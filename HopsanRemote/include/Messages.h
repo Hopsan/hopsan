@@ -112,8 +112,9 @@ class ReqmsgReqServerSlots
 {
 public:
     int numThreads;
+    std::string userid;
 
-    MSGPACK_DEFINE(numThreads)
+    MSGPACK_DEFINE(numThreads, userid)
 };
 
 class ReqmsgRelaySlot
@@ -178,7 +179,7 @@ public:
 class ReplymsgReplyServerStatus : public ServerStatusT
 {
 public:
-    MSGPACK_DEFINE(services, numFreeSlots, numTotalSlots, startTime, stopTime, isReady)
+    MSGPACK_DEFINE(services, users, numFreeSlots, numTotalSlots, startTime, stopTime, isReady)
 };
 
 class ReplymsgReplyBenchmarkResults

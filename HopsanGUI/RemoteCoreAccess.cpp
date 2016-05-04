@@ -166,21 +166,22 @@ bool RemoteCoreSimulationHandler::connectWorker()
 {
     if (mpRemoteHopsanClient->serverConnected())
     {
+        QString name,password;
+        QStringList parts = mRemoteUserIdentification.split(":");
+        name = parts.first();
+        if (parts.size() > 1)
+        {
+            password = parts.last();
+        }
+
         int ctrlPort;
-        if (mpRemoteHopsanClient->requestSlot(mNumThreads, ctrlPort))
+        if (mpRemoteHopsanClient->requestSlot(mNumThreads, ctrlPort, name.toStdString()))
         {
             mpRemoteHopsanClient->connectToWorker(ctrlPort);
             if (mpRemoteHopsanClient->workerConnected())
             {
                 if (!mRemoteUserIdentification.isEmpty())
                 {
-                    QString name,password;
-                    QStringList parts = mRemoteUserIdentification.split(":");
-                    name = parts.first();
-                    if (parts.size() > 1)
-                    {
-                        password = parts.last();
-                    }
                     mpRemoteHopsanClient->sendUserIdentification(name.toStdString(), password.toStdString());
                 }
                 return true;

@@ -54,10 +54,23 @@ int main(int argc, char* argv[])
         rhopsan.connectToServer(serverAddrOption.getValue());
         cout << PRINTCLIENT << "Connected: " << rhopsan.serverConnected() << endl;
 
+        string username, password;
+        if (userOption.isSet())
+        {
+            string nameandpasswd = userOption.getValue();
+            username = nameandpasswd;
+            size_t e = nameandpasswd.find_last_of(':');
+            if (e != string::npos)
+            {
+                username = nameandpasswd.substr(0, e);
+                password = nameandpasswd.substr(e+1);
+            }
+        }
+
         try
         {
             int workerPort;
-            bool rc = rhopsan.requestSlot(numSlotsOption.getValue(), workerPort);
+            bool rc = rhopsan.requestSlot(numSlotsOption.getValue(), workerPort, username);
             if (rc)
             {
                 cout << PRINTCLIENT << "Got server worker slot at port: " << workerPort << endl;
@@ -66,16 +79,6 @@ int main(int argc, char* argv[])
                 // Send user identification
                 if (userOption.isSet())
                 {
-                    string nameandpasswd = userOption.getValue();
-                    string username = nameandpasswd;
-                    string password;
-                    size_t e = nameandpasswd.find_last_of(':');
-                    if (e != string::npos)
-                    {
-                        username = nameandpasswd.substr(0, e);
-                        password = nameandpasswd.substr(e+1);
-                    }
-
                     rhopsan.sendUserIdentification(username, password);
                 }
 

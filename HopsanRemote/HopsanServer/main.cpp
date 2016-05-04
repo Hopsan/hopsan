@@ -34,6 +34,7 @@ class WorkerInfo
 {
 public:
     int numThreads;
+    string user;
 #ifdef _WIN32
     PROCESS_INFORMATION pi;
 #else
@@ -249,6 +250,7 @@ int main(int argc, char* argv[])
                     bool parseOK;
                     ReqmsgReqServerSlots msg = unpackMessage<ReqmsgReqServerSlots>(request, offset, parseOK);
                     int requestNumThreads = msg.numThreads;
+                    string requestuserid = msg.userid;
 
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting: " << requestNumThreads << " slots... " << endl;
                     if (nTakenSlots+requestNumThreads <= gServerConfig.mMaxNumSlots)
@@ -288,7 +290,7 @@ int main(int argc, char* argv[])
                         else
                         {
                             std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads  << endl;
-                            workerMap.insert({uid, {requestNumThreads, processInformation}});
+                            workerMap.insert({uid, {requestNumThreads, requestuserid, processInformation}});
 
                             ReplymsgReplyServerSlots msg = {workerPort};
                             sendMessage<ReplymsgReplyServerSlots>(socket, ReplyServerSlots, msg);
@@ -314,7 +316,7 @@ int main(int argc, char* argv[])
                         if(status == 0)
                         {
                             std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads << endl;
-                            workerMap.insert({uid,{requestNumThreads,pid}});
+                            workerMap.insert({uid,{requestNumThreads,requestuserid,pid}});
 
                             ReplymsgReplyServerSlots msg = {int(workerPort)};
                             sendMessage(socket, ReplyServerSlots, msg);
@@ -388,6 +390,12 @@ int main(int argc, char* argv[])
                     status.numTotalSlots = gServerConfig.mMaxNumSlots;
                     status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
                     status.isReady = true;
+                    for (auto it=workerMap.begin(); it!=workerMap.end(); ++it)
+                    {
+                        status.users += it->second.user+", ";
+                    }
+                    status.users.pop_back();
+                    status.users.pop_back();
 
                     sendMessage(socket, ReplyServerStatus, status);
                     lastStatusRequestTime = chrono::steady_clock::now();

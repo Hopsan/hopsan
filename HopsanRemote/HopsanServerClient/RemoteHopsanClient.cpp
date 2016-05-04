@@ -526,9 +526,9 @@ bool RemoteHopsanClient::requestSimulationResults(std::vector<ResultVariableT> &
     return false;
 }
 
-bool RemoteHopsanClient::requestSlot(int numThreads, int &rControlPort)
+bool RemoteHopsanClient::requestSlot(int numThreads, int &rControlPort, const std::string userid)
 {
-    ReqmsgReqServerSlots msg {numThreads};
+    ReqmsgReqServerSlots msg {numThreads, userid};
     sendClientMessage<ReqmsgReqServerSlots>(mpServerSocket, RequestServerSlots, msg);
 
     zmq::message_t response;

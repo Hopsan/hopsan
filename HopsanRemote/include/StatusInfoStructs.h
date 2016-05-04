@@ -7,6 +7,7 @@ class ServerStatusT
 {
 public:
     std::string services;
+    std::string users;
     int numFreeSlots;
     int numTotalSlots;
     std::string startTime;

@@ -30,7 +30,7 @@ public:
 
     bool connectToServer(std::string address);
     bool serverConnected() const;
-    bool requestSlot(int numThreads, int &rControlPort);
+    bool requestSlot(int numThreads, int &rControlPort, const std::string userid="");
 
     bool connectToWorker(int ctrlPort);
     bool workerConnected() const;

@@ -52,11 +52,11 @@ std::string nowDateTime()
     return std::string(&buff[0]);
 }
 
-void printInfoFromAddressServer(vector<ServerMachineInfoT> &machines, vector<int> &nopenslots)
+void printInfoFromAddressServer(vector<ServerMachineInfoT> &machines, vector<int> &nopenslots, vector<string> &usernames)
 {
     cout << endl << endl;
     cout << nowDateTime() << endl;
-    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "evalTime:" << std::setw(10) << "Description:" << endl;
+    cout << std::setiosflags(std::ios::left) << std::setw(24) << "Adddress:" << std::setw(10) << "Slots:" << std::setw(10) << "evalTime:" << std::setw(10) << "Description:" << std::setw(10) << "Users:" << endl;
     cout << "--------------------------------------------------------------------------" << endl;
     for (size_t i=0; i<machines.size(); ++i)
     {
@@ -69,7 +69,7 @@ void printInfoFromAddressServer(vector<ServerMachineInfoT> &machines, vector<int
         stringstream ss;
         ss << nopenslots[i] << "/" << machines[i].numslots;
 
-        cout << std::setw(24) << addr << std::setw(10) << ss.str() << std::setw(10) << machines[i].evalTime << std::setw(10) << machines[i].description << endl;
+        cout << std::setw(24) << addr << std::setw(10) << ss.str() << std::setw(10) << machines[i].evalTime << std::setw(10) << machines[i].description << std::setw(10) << usernames[i] << endl;
     }
 }
 
@@ -177,10 +177,12 @@ int main(int argc, char* argv[])
                 if (gRefreshNow || (dur.count() > gRefreshTime) )
                 {
                     vector<int> nopenslots;
+                    vector<std::string> usernames;
                     std::vector<ServerMachineInfoT> machines;
                     bool rsm_rc = rhc.requestServerMachines(-1, 1e150, machines);
 
                     nopenslots.resize(machines.size(), -1);
+                    usernames.resize(machines.size());
 
                     gRefreshNow = false;
                     lastRefreshTime = chrono::steady_clock::now();
@@ -211,6 +213,7 @@ int main(int argc, char* argv[])
                                 if (gotStatus)
                                 {
                                     nopenslots[i] = status.numFreeSlots;
+                                    usernames[i] = status.users;
                                 }
                                 else
                                 {
@@ -223,7 +226,7 @@ int main(int argc, char* argv[])
                             }
                             rhc.disconnectServer();
                         }
-                        printInfoFromAddressServer(machines, nopenslots);
+                        printInfoFromAddressServer(machines, nopenslots, usernames);
                     }
                     else
                     {
