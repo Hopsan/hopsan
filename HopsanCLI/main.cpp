@@ -649,7 +649,7 @@ int main(int argc, char *argv[])
                         pWorker->setNumberOfPredictions(nPredictions);
                         pWorker->setNumberOfRetractions(nRetractions);
                     }
-                    else if(algorithm == "complexrburmen")
+                    else if(algorithm == "complexburmen")
                     {
                         Ops::WorkerComplexBurmen *pWorker = dynamic_cast<Ops::WorkerComplexBurmen*>(pBaseWorker);
                         pWorker->setReflectionFactor(alpha);
