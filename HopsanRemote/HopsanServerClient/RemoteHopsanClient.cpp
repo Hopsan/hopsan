@@ -290,7 +290,7 @@ bool RemoteHopsanClient::blockingRequestFile(const string &rRequestName, const s
         }
     }
 
-    return true;
+    return isOK;
 }
 
 //! @brief Send a file (blocking until the entire file is transferred)

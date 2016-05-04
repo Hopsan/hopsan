@@ -67,6 +67,7 @@ int main(int argc, char* argv[])
             }
         }
 
+        bool didFail = false;
         try
         {
             int workerPort;
@@ -109,12 +110,14 @@ int main(int argc, char* argv[])
                 }
 
                 // If model is set then try to open it and simulate it remotely
+                bool simulationOK=true;
                 if (hmfPathOption.isSet())
                 {
                     ifstream hmf_file(hmfPathOption.getValue());
                     if (!hmf_file.is_open())
                     {
                         cout << PRINTCLIENT << "Error: Could not open model file " << hmfPathOption.getValue() << endl;
+                        simulationOK=false;
                     }
 
 
@@ -138,15 +141,18 @@ int main(int argc, char* argv[])
                         else
                         {
                             cout << PRINTCLIENT << "Server could not start the simulation" << endl;
+                            simulationOK=false;
                         }
                     }
                     else
                     {
                         cout << PRINTCLIENT << "Server could not load model" << endl;
+                        simulationOK=false;
                     }
                 }
 
                 // Execute shell commands
+                bool shellExecOK=true;
                 const std::vector<std::string> &rShellcommands =  shellOptions.getValue();
                 for (const string &rCommand: rShellcommands)
                 {
@@ -178,34 +184,47 @@ int main(int argc, char* argv[])
                         if (status.shell_exitok)
                         {
                             cout << " Success!" << endl;
+                            shellExecOK = true;
                         }
                         else
                         {
                             cout << " Failed!   Did not exit OK" << endl;
+                            shellExecOK = false;
                         }
                     }
                     else
                     {
                         cout << " Failed!   " << output << endl;
+                        shellExecOK = false;
+                    }
+
+                    if (!shellExecOK)
+                    {
+                        break;
                     }
                 }
 
                 // Request results (files)
+                bool fileRequestOK=true;
                 const std::vector<std::string> &rRequests = requestOptions.getValue();
                 for (const string &rRequest : rRequests)
                 {
                     cout << PRINTCLIENT << "Requesting: " << rRequest <<  " ... ";
                     double progress;
-                    rhopsan.blockingRequestFile(rRequest, rRequest, &progress);
+                    bool rc = rhopsan.blockingRequestFile(rRequest, rRequest, &progress);
+                    fileRequestOK = fileRequestOK && rc;
                     cout << "Done!" << endl;
                 }
 
                 cout << PRINTCLIENT << "Sending goodby message!" << endl;
                 rhopsan.disconnect();
+
+                didFail = !(simulationOK && shellExecOK && fileRequestOK);
             }
             else
             {
                 cout << PRINTCLIENT << "Could not get a server slot! Because: " << rhopsan.getLastErrorMessage() << endl;
+                didFail = true;
             }
         }
         catch (zmq::error_t e)
@@ -213,7 +232,14 @@ int main(int argc, char* argv[])
             cout << PRINTCLIENT << "Error: " << e.what() << endl;
         }
 
-        return 0;
+        if (didFail)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
 
     } catch (TCLAP::ArgException &e)  // catch any exceptions
     {
