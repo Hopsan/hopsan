@@ -262,11 +262,13 @@ bool SimulationHandler::simulateMultipleSystems(const double stopT, vector<Compo
 //! @param stopT Stop time for all systems
 //! @param nDesiredThreads Desired number of threads (may change due to hardware limitations)
 //! @param rSystemVector Vector of pointers to systems to simulate
-bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem*> &rSystemVector, bool noChanges)
+bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
     HOPSAN_UNUSED(startT)
     HOPSAN_UNUSED(nDesiredThreads)
     HOPSAN_UNUSED(noChanges)
+
+    vector<ComponentSystem*> tempSystemVector = rSystemVector;
 #ifdef USETBB
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
@@ -281,13 +283,13 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     if(!noChanges)
     {
         mSplitSystemVector.clear();
-        for(size_t i=0; i<rSystemVector.size(); ++i)                     //Loop through the systems, set start time, log nodes and measure simulation time
+        for(size_t i=0; i<tempSystemVector.size(); ++i)                     //Loop through the systems, set start time, log nodes and measure simulation time
         {
-            rSystemVector.at(i)->simulateAndMeasureTime(5);              //Measure time
-            rSystemVector.at(i)->initialize(startT, stopT);
+            tempSystemVector.at(i)->simulateAndMeasureTime(5);              //Measure time
+            tempSystemVector.at(i)->initialize(startT, stopT);
         }
-        sortSystemsByTotalMeasuredTime(rSystemVector);                   //Sort systems by total measured time
-        mSplitSystemVector = distributeSystems(rSystemVector, nThreads); //Distribute systems evenly over split vectors
+        sortSystemsByTotalMeasuredTime(tempSystemVector);                   //Sort systems by total measured time
+        mSplitSystemVector = distributeSystems(tempSystemVector, nThreads); //Distribute systems evenly over split vectors
     }
 
     tbb::task_group *simTasks;                                          //Initialize TBB routines for parallel simulation
@@ -300,9 +302,9 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     delete(simTasks);
 
     bool aborted=false;
-    for(size_t i=0; i<rSystemVector.size(); ++i)
+    for(size_t i=0; i<tempSystemVector.size(); ++i)
     {
-        aborted = aborted && rSystemVector[i]->wasSimulationAborted();
+        aborted = aborted && tempSystemVector[i]->wasSimulationAborted();
     }
     return !aborted;
 #else
@@ -311,8 +313,10 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
 #endif
 }
 
+
 //! @brief Sorts a vector of component system pointers by their required simulation time
 //! @param [in out]systemVector Vector with system pointers to sort
+#ifdef USETBB
 void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
 {
     size_t i, j;
@@ -337,3 +341,13 @@ void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSyst
         }
     }
 }
+#else
+void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
+{
+    if(rSystemVector.size() > 0)
+    {
+        rSystemVector[0]->addErrorMessage("Sorting systems by measured time is not possible without the TBB library.");
+    }
+    return;
+}
+#endif

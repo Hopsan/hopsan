@@ -65,7 +65,7 @@ public:
     void runCoSimulation(ComponentSystem *pSystem);
 
 private:
-    bool simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
+    bool simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
     bool simulateMultipleSystems(const double stopT, std::vector<ComponentSystem*> &rSystemVector);
 
     std::vector< std::vector<ComponentSystem*> > distributeSystems(const std::vector<ComponentSystem*> &rSystemVector, size_t nThreads);
