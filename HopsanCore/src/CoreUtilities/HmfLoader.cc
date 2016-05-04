@@ -50,16 +50,21 @@ using namespace hopsan;
 
 
 //! @brief Helpfunction to strip filename from path
-//! @note Assumes that dir separator is forward slash /
 HString stripFilenameFromPath(HString filePath)
 {
-    //cout << "Stripping from: " << filePath << endl;
     size_t pos = filePath.rfind('/');
+    // On windows, also check for backslash in path, if backslash is found use that
+#ifdef _WIN32
+    size_t pos_bs = filePath.rfind('\\');
+    if (pos_bs != HString::npos)
+    {
+        pos = pos_bs;
+    }
+#endif
     if (pos != HString::npos)
     {
         filePath.erase(pos+1);
     }
-    //cout << "Stripped: " << filePath << endl;
     return filePath;
 }
 
