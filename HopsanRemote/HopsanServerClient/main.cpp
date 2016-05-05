@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        bool didFail = false;
+        bool completedOK = true;
         try
         {
             int workerPort;
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
                                 {
                                     cout << "\r" << "Still running after: " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-startT).count() << " seconds" << flush;
                                 }
-                                std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1000));
+                                std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(5000));
                             }
                         }while(status.shell_inprogress);
                         if (status.shell_exitok)
@@ -219,12 +219,12 @@ int main(int argc, char* argv[])
                 cout << PRINTCLIENT << "Sending goodby message!" << endl;
                 rhopsan.disconnect();
 
-                didFail = !(simulationOK && shellExecOK && fileRequestOK);
+                completedOK = (simulationOK && shellExecOK && fileRequestOK);
             }
             else
             {
                 cout << PRINTCLIENT << "Could not get a server slot! Because: " << rhopsan.getLastErrorMessage() << endl;
-                didFail = true;
+                completedOK = false;
             }
         }
         catch (zmq::error_t e)
@@ -232,13 +232,13 @@ int main(int argc, char* argv[])
             cout << PRINTCLIENT << "Error: " << e.what() << endl;
         }
 
-        if (didFail)
+        if (completedOK)
         {
-            return 1;
+            return 0;
         }
         else
         {
-            return 0;
+            return 1;
         }
 
     } catch (TCLAP::ArgException &e)  // catch any exceptions
