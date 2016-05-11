@@ -363,7 +363,7 @@ int main(int argc, char* argv[])
 
                             ReplymsgReplyServerSlots msg = {workerPort};
                             sendMessage<ReplymsgReplyServerSlots>(socket, ReplyServerSlots, msg);
-                            nTakenSlots++;
+                            gNumTakenSlots++;
                         }
 
 #else
