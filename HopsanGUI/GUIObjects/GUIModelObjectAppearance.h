@@ -219,6 +219,8 @@ class ModelObjectAppearance
 {
 public:
     ModelObjectAppearance();
+    ModelObjectAppearance(const ModelObjectAppearance &other);
+    ModelObjectAppearance &operator=(const ModelObjectAppearance &other);
     void cacheIcons();
 
     void setTypeName(const QString type);
@@ -291,6 +293,7 @@ private:
     QStringList mReplacementObjects;
 
     PortAppearanceMapT mPortAppearanceMap;
+    ModelObjectAnimationData mAnimationData;
 
     //BaseDir for relative paths
     QString mBasePath;
@@ -301,8 +304,6 @@ private:
     void setAbsoultePathFromRelative();
     void refreshIconValid();
     GraphicsTypeEnumT selectAvailableGraphicsType(const GraphicsTypeEnumT type);
-
-    ModelObjectAnimationData mAnimationData;
 };
 typedef QSharedPointer<ModelObjectAppearance> SharedModelObjectAppearanceT;
 

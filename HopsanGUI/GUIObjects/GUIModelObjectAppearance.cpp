@@ -422,6 +422,55 @@ ModelObjectAppearance::ModelObjectAppearance()
     mAnimationData.hydraulicMaxPressure = 2e7;
 }
 
+ModelObjectAppearance::ModelObjectAppearance(const ModelObjectAppearance &other)
+{
+    *this = other;
+}
+
+ModelObjectAppearance &ModelObjectAppearance::operator=(const ModelObjectAppearance &other)
+{
+    // Handle self assignment
+    if (&other == this)
+    {
+        return *this;
+    }
+
+    mHmfFile = other.mHmfFile;
+    mTypeName = other.mTypeName;
+    mSubTypeName = other.mSubTypeName;
+    mDisplayName = other.mDisplayName;
+    mSourceCode = other.mSourceCode;
+    mLibPath = other.mLibPath;
+    mIsRecompilable = other.mIsRecompilable;
+    mHelpText = other.mHelpText;
+    mHelpPicture = other.mHelpPicture;
+    mHelpHtmlPath = other.mHelpHtmlPath;
+    mHelpLinks = other.mHelpLinks;
+    mOverridedDefaultParameters = other.mOverridedDefaultParameters;
+    mHiddenParameters = other.mHiddenParameters;
+    mIsoIconAppearance = other.mIsoIconAppearance;
+    mUserIconAppearance = other.mUserIconAppearance;
+    mIsoIcon = other.mIsoIcon;
+    mUserIcon = other.mUserIcon;
+    mDefaultMissingIconPath = other.mDefaultMissingIconPath;
+    mNameTextPos = other.mNameTextPos;
+    mReplacementObjects = other.mReplacementObjects;
+
+    // OK, this is a hack, the port appearance map is actually a map of shared pointers,
+    // but we want a "deep copy" so lets fix that
+    for (auto it = other.mPortAppearanceMap.begin(); it != other.mPortAppearanceMap.end(); ++it)
+    {
+        PortAppearance *pPA = new PortAppearance();
+        *pPA = *(it.value().data()); // Copy
+        addPortAppearance(it.key(), SharedPortAppearanceT(pPA));
+    }
+
+    mAnimationData = other.mAnimationData;
+    mBasePath = other.mBasePath;
+
+    return *this;
+}
+
 void ModelObjectAppearance::cacheIcons()
 {
     //Pre-cache icons for faster updating of library

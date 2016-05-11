@@ -805,7 +805,7 @@ LibraryEntry LibraryHandler::getFMUEntry(const QString &rFmuName)
 }
 
 
-SharedModelObjectAppearanceT LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName)
+const SharedModelObjectAppearanceT LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName)
 {
     QMap<QString, LibraryEntry>::iterator it = mLibraryEntries.find((makeFullTypeString(typeName, subTypeName)));
     if(it != mLibraryEntries.end())
