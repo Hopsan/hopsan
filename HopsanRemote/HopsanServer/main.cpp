@@ -33,12 +33,27 @@ extern char **environ;
 class WorkerInfo
 {
 public:
-    int numThreads;
-    string user;
 #ifdef _WIN32
-    PROCESS_INFORMATION pi;
+    WorkerInfo(int numSlots, size_t port, string userid, PROCESS_INFORMATION pid)
 #else
-    pid_t pid;
+    WorkerInfo(int numSlots, size_t port, string userid, pid_t pid)
+#endif
+    {
+        mNumSlots = numSlots;
+        mWorkerPort = port;
+        mUserid = userid;
+        mPid = pid;
+        mLastStatusCheck = steady_clock::now();
+    }
+
+    int mNumSlots=0, mNumDead=0;
+    size_t mWorkerPort;
+    string mUserid;
+    steady_clock::time_point mLastStatusCheck;
+#ifdef _WIN32
+    PROCESS_INFORMATION mPid;
+#else
+    pid_t mPid;
 #endif
 
 };
@@ -56,7 +71,7 @@ public:
 };
 
 ServerConfig gServerConfig;
-int nTakenSlots=0;
+int gNumTakenSlots=0;
 #ifdef _WIN32
 zmq::context_t gContext(1, 63);
 #else
@@ -160,6 +175,56 @@ void reportToAddressServer(const ServerConfig &rServerConfig, bool isOnline)
     }
 }
 
+
+bool checkIfWorkerIsAlive(WorkerInfo &rWI)
+{
+    bool isAlive = false;
+    try
+    {
+        zmq::socket_t workerSocket (gContext, ZMQ_REQ);
+        int linger_ms = 1000;
+        workerSocket.setsockopt(ZMQ_LINGER, &linger_ms, sizeof(int));
+        workerSocket.connect(makeZMQAddress("127.0.0.1", rWI.mWorkerPort).c_str());
+
+        sendShortMessage(workerSocket, RequestWorkerStatus);
+        zmq::message_t response;
+        if (receiveWithTimeout(workerSocket, 1000, response))
+        {
+            size_t offset=0; bool parseOK;
+            size_t id = getMessageId(response, offset, parseOK);
+            if (id == ReplyWorkerStatus)
+            {
+                ReplymsgReplyWorkerStatus status = unpackMessage<ReplymsgReplyWorkerStatus>(response, offset, parseOK);
+                if (parseOK)
+                {
+                    isAlive = true;
+                }
+            }
+        }
+        workerSocket.disconnect(makeZMQAddress("127.0.0.1", rWI.mWorkerPort).c_str());
+    }
+    catch(zmq::error_t e)
+    {
+        cout << PRINTSERVER << nowDateTime() << " Error: Contacting Worker: " << e.what() << endl;
+    }
+    rWI.mLastStatusCheck = steady_clock::now();
+    return isAlive;
+}
+
+void waitForWorkerProcess(WorkerInfo &rWI)
+{
+#ifdef _WIN32
+    PROCESS_INFORMATION pi = rWI.mPid;
+    WaitForSingleObject( pi.hProcess, INFINITE );
+    CloseHandle( pi.hProcess );
+    CloseHandle( pi.hThread );
+#else
+    pid_t pid = rWI.mPid;
+    int stat_loc;
+    pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
+#endif
+}
+
 static int s_interrupted = 0;
 #ifdef _WIN32
 BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
@@ -256,10 +321,10 @@ int main(int argc, char* argv[])
                         requestuserid = "anonymous";
                     }
 
-                    cout << PRINTSERVER << nowDateTime() << " Client is requesting: " << requestNumThreads << " slots... " << endl;
-                    if (nTakenSlots+requestNumThreads <= gServerConfig.mMaxNumSlots)
+                    cout << PRINTSERVER << nowDateTime() << " Client (" << requestuserid << ") is requesting: " << requestNumThreads << " slots... " << endl;
+                    if (gNumTakenSlots+requestNumThreads <= gServerConfig.mMaxNumSlots)
                     {
-                        size_t workerPort = gServerConfig.mControlPort+nTakenSlots+1;
+                        size_t workerPort = gServerConfig.mControlPort+gNumTakenSlots+1;
 
                         // Generate unique worker Id
                         int uid = rand();
@@ -294,7 +359,7 @@ int main(int argc, char* argv[])
                         else
                         {
                             std::cout << PRINTSERVER << "Launched Worker Process, pid: "<< processInformation.dwProcessId << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads  << endl;
-                            workerMap.insert({uid, {requestNumThreads, requestuserid, processInformation}});
+                            workerMap.insert({uid, WorkerInfo(requestNumThreads, workerPort, requestuserid, processInformation)});
 
                             ReplymsgReplyServerSlots msg = {workerPort};
                             sendMessage<ReplymsgReplyServerSlots>(socket, ReplyServerSlots, msg);
@@ -320,12 +385,12 @@ int main(int argc, char* argv[])
                         if(status == 0)
                         {
                             std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads << endl;
-                            workerMap.insert({uid,{requestNumThreads,requestuserid,pid}});
+                            workerMap.insert({uid, WorkerInfo(requestNumThreads, workerPort, requestuserid, pid)});
 
                             ReplymsgReplyServerSlots msg = {int(workerPort)};
                             sendMessage(socket, ReplyServerSlots, msg);
-                            nTakenSlots+=requestNumThreads;
-                            std::cout << PRINTSERVER << nowDateTime() << " Remaining slots: " << gServerConfig.mMaxNumSlots-nTakenSlots << endl;
+                            gNumTakenSlots+=requestNumThreads;
+                            std::cout << PRINTSERVER << nowDateTime() << " Remaining slots: " << gServerConfig.mMaxNumSlots-gNumTakenSlots << endl;
                         }
                         else
                         {
@@ -334,7 +399,7 @@ int main(int argc, char* argv[])
                         }
 #endif
                     }
-                    else if (nTakenSlots == gServerConfig.mMaxNumSlots)
+                    else if (gNumTakenSlots == gServerConfig.mMaxNumSlots)
                     {
                         sendMessage(socket, NotAck, "All slots taken");
                         cout << PRINTSERVER << nowDateTime() << " Denied! All slots taken." << endl;
@@ -360,22 +425,22 @@ int main(int argc, char* argv[])
                             sendShortMessage(socket, Ack);
 
                             // Wait for process to stop (to avoid zombies)
-#ifdef _WIN32
-                            PROCESS_INFORMATION pi = it->second.pi;
-                            WaitForSingleObject( pi.hProcess, INFINITE );
-                            CloseHandle( pi.hProcess );
-                            CloseHandle( pi.hThread );
-#else
-                            pid_t pid = it->second.pid;
-                            int stat_loc;
-                            pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
-#endif
-                            int nThreads = it->second.numThreads;
-
+                            waitForWorkerProcess(it->second);
+//#ifdef _WIN32
+//                            PROCESS_INFORMATION pi = it->second.pi;
+//                            WaitForSingleObject( pi.hProcess, INFINITE );
+//                            CloseHandle( pi.hProcess );
+//                            CloseHandle( pi.hThread );
+//#else
+//                            pid_t pid = it->second.pid;
+//                            int stat_loc;
+//                            pid_t status = waitpid(pid, &stat_loc, WUNTRACED);
+//#endif
                             //! @todo check return codes maybe
+                            int nslots = it->second.mNumSlots;
                             workerMap.erase(it);
-                            nTakenSlots -= nThreads;
-                            std::cout << PRINTSERVER << nowDateTime() << " Open slots: " << gServerConfig.mMaxNumSlots-nTakenSlots << endl;
+                            gNumTakenSlots -= nslots;
+                            std::cout << PRINTSERVER << nowDateTime() << " Open slots: " << gServerConfig.mMaxNumSlots-gNumTakenSlots << endl;
                         }
                         else
                         {
@@ -384,7 +449,7 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        cout << PRINTSERVER << nowDateTime() << " Error: Could not server id string" << endl;
+                        cout << PRINTSERVER << nowDateTime() << " Error: Could not parse server id string" << endl;
                     }
                 }
                 else if (msg_id == RequestServerStatus)
@@ -392,11 +457,11 @@ int main(int argc, char* argv[])
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
                     ReplymsgReplyServerStatus status;
                     status.numTotalSlots = gServerConfig.mMaxNumSlots;
-                    status.numFreeSlots = gServerConfig.mMaxNumSlots-nTakenSlots;
+                    status.numFreeSlots = gServerConfig.mMaxNumSlots-gNumTakenSlots;
                     status.isReady = true;
                     for (auto it=workerMap.begin(); it!=workerMap.end(); ++it)
                     {
-                        status.users += it->second.user+", ";
+                        status.users += it->second.mUserid+", ";
                     }
                     if (!workerMap.empty())
                     {
@@ -429,6 +494,7 @@ int main(int argc, char* argv[])
                 // Handle timeout / exception
             }
 
+            // Check if we should report back to address server, if no status requests have been made in some time
             if (argAddressServerIP.isSet())
             {
                 duration<double> time_span = duration_cast<duration<double>>(steady_clock::now() - lastStatusRequestTime);
@@ -440,6 +506,37 @@ int main(int argc, char* argv[])
                     // has gone down, lets reconnect to it to make sure it knows that we still exist
                     //! @todo maybe this should be handled in the server by saving known servers to file instead
                     reportToAddressServer(gServerConfig, true);
+                }
+            }
+
+            // Go through all running workers and check if we should try to request status from them, to see if they are still alive
+            //! @todo since we are not using the status data here, maybe we should use ping/pong messages instead
+            for (auto it = workerMap.begin(); it!=workerMap.end(); ++it)
+            {
+                WorkerInfo &wi = it->second;
+                if (duration_cast<duration<double>>(steady_clock::now() - wi.mLastStatusCheck).count() > 1*60)
+                {
+                    bool isAlive = checkIfWorkerIsAlive(wi);
+                    if (!isAlive)
+                    {
+                        cout << PRINTSERVER << nowDateTime() << "Worker: " << it->first << " is not responding!" << std::endl;
+                        wi.mNumDead++;
+                    }
+                    else
+                    {
+                        wi.mNumDead = 0;
+                    }
+
+                    // Bury dead workers
+                    if (wi.mNumDead >= 5)
+                    {
+                        std::cout << PRINTSERVER << nowDateTime() << "Burying dead worker: " << it->first << endl;
+                        waitForWorkerProcess(wi);
+                        int nslots = wi.mNumSlots;
+                        workerMap.erase(it);
+                        gNumTakenSlots -= nslots ;
+                        std::cout << PRINTSERVER << nowDateTime() << "Open slots: " << gServerConfig.mMaxNumSlots-gNumTakenSlots << endl;
+                    }
                 }
             }
 
