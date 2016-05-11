@@ -45,6 +45,7 @@
 - Bug fixed: Fixed crash bugs in HCOM flow control (if, while, foreach)
 - Bug fixed: Simulink S-function export from Hopsan now has working system parameters (including pre-set default values)
 - Bug fixed: Data file lookup when using relative paths did not work on Windows when paths contained \ during CLI simulation
+- Bug fixed: Editing port positions on a component would affect the entire class of the component (new components would get the changed ports)
 
 - Enhancement: ServerMonitor can now list completely free servers (use the -f flag)
 - Enhancement: It is now possible to change the receive timeouts in the ServerMonitor and RemoteClient
