@@ -66,11 +66,6 @@ void WorkerComplexRFP::run()
         {
             mvAlpha.push_back(mAlpha);
         }
-        else if(mNumCandidates == 2)
-        {
-            mvAlpha.push_back(mAlphaMin);
-            mvAlpha.push_back(mAlphaMax);
-        }
         else
         {
             for(size_t i=0; i<mNumCandidates; ++i)
@@ -97,40 +92,41 @@ void WorkerComplexRFP::run()
         //Check convergence
         if(checkForConvergence()) break;
 
-        applyForgettingFactor();
+        //Increase all objective values (forgetting principle)
+        //applyForgettingFactor();
 
+        //Identify best and worst point
         calculateBestAndWorstId();
 
+        //Find geometrical center
         findCentroidPoint();
 
+        //Pick candidates (depending on algorithm)
         pickCandidateParticles();
 
+        //Evaluate candidates
         mpEvaluator->evaluateAllCandidates();
 
+        //Examine outcome of evaluation (depending on algorithm)
         examineCandidateParticles();
 
-        mLastWorstId=mWorstId;
+        //Identify best and worst point
         calculateBestAndWorstId();
 
+        mpMessageHandler->stepCompleted(mIterationCounter);
+
+        //Retract towards centroid if last reflection failed
+        mRetractionCounter = 0;
         bool doBreak = false;
-        while(mLastWorstId == mWorstId && mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted())
+        while(mWorstId == mpFailedCandidate->idx && mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted())
         {
             mpMessageHandler->stepCompleted(mIterationCounter);
 
-            ++mIterationCounter;
-        //! @note Always iterate multiple steps (iterateSingle() is used only for statistics)
-//            if(mMethod == TaskPrediction)
-//            {
             if(multiRetract())
             {
                 doBreak = true;
                 break;
             }
-//            }
-//            else
-//            {
-//                abort = retract();
-//            }
         }
 
         if(doBreak)
@@ -247,6 +243,7 @@ void WorkerComplexRFP::pickCandidateParticles()
         Candidate *pCandidate = new Candidate();
         mTopLevelCandidates.push_back(pCandidate);
 
+
         std::vector< std::vector<double> > otherPoints = mPoints;
         std::vector< std::vector<double> > centerPoints;
         for(size_t i=0; i<std::min(mnPredictions, mNumCandidates); ++i)
@@ -293,7 +290,7 @@ void WorkerComplexRFP::pickCandidateParticles()
         size_t extraSteps = mNumCandidates-mnPredictions-mnRetractions;
 
         std::vector<double> newPoint = (*mTopLevelCandidates[0]->mpPoint);
-        for(size_t t=mnPredictions; t<std::min(mNumCandidates-extraSteps, mNumCandidates-mnPredictions); ++t)
+        for(size_t t=mnPredictions; t<mNumCandidates-extraSteps; ++t)
         {
             double a1 = 1.0-exp(-double(worstCounter)/5.0);
             findCentroidPoint();
@@ -302,7 +299,7 @@ void WorkerComplexRFP::pickCandidateParticles()
                 double best = mPoints[mBestId][j];
                 std::vector<std::vector<double> > points = mPoints;
                 points[mWorstId] = newPoint;
-                double maxDiff = getMaxPercentalParameterDiff(points);
+                double maxDiff = getMaxPercentalParameterDiff(points)*10/(9.0+worstCounter);
                 double r = opsRand();
                 mCandidatePoints[t][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
                 mCandidatePoints[t][j] = std::min(mCandidatePoints[t][j], mParameterMax[j]);
@@ -334,7 +331,7 @@ void WorkerComplexRFP::pickCandidateParticles()
                 {
                     std::vector<std::vector<double> > points = mPoints;
                     points[mWorstId] = newPoint;
-                    double maxDiff = getMaxPercentalParameterDiff(points);
+                    double maxDiff = getMaxPercentalParameterDiff(points)*10/(9.0+0);
                     double r = opsRand();
                     mCandidatePoints[t][j] = (mCentroidPoint[j] + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
                     mCandidatePoints[t][j] = std::min(mCandidatePoints[t][j], mParameterMax[j]);
@@ -389,9 +386,8 @@ void WorkerComplexRFP::examineCandidateParticles()
         mpMessageHandler->pointChanged(pCandidate->idx);
         mpMessageHandler->objectiveChanged(pCandidate->idx);
 
-        mLastWorstId = mWorstId;
         calculateBestAndWorstId();
-        if(mWorstId == mLastWorstId)
+        if(mWorstId == pCandidate->idx)
         {
             mpFailedCandidate = pCandidate;
             break;
@@ -405,6 +401,7 @@ void WorkerComplexRFP::examineCandidateParticles()
                 if((*pCandidate->subCandidates[i]->mpObjective) < (*pCandidate->mpObjective))
                 {
                     pCandidate = pCandidate->subCandidates[i];
+                    mWorstId = pCandidate->idx;
                 }
             }
         }
@@ -432,8 +429,12 @@ bool WorkerComplexRFP::multiRetract()
 
         ++mRetractionCounter;
 
+        calculateBestAndWorstId();
+
         return checkForConvergence();
     }
+
+    ++mIterationCounter;    //Only increase iteration counter for non-pre-evaluated retractions
 
     std::vector<double> newPoint = mPoints[mWorstId];
 
@@ -444,7 +445,7 @@ bool WorkerComplexRFP::multiRetract()
         for(size_t j=0; j<mNumParameters; ++j)
         {
             double best = mPoints[mBestId][j];
-            double maxDiff = getMaxPercentalParameterDiff();
+            double maxDiff = getMaxPercentalParameterDiff()*10/(9.0+mRetractionCounter);;
             double r = opsRand();
             mCandidatePoints[t][j] = (mCentroidPoint[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
             mCandidatePoints[t][j] = std::min(mCandidatePoints[t][j], mParameterMax[j]);
@@ -478,7 +479,6 @@ bool WorkerComplexRFP::multiRetract()
     }
 
     //Calculate best and worst points
-    mLastWorstId=mWorstId;
     calculateBestAndWorstId();
 
 

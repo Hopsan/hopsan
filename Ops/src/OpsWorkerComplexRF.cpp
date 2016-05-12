@@ -109,13 +109,11 @@ void WorkerComplexRF::run()
         {
            // mpMessageHandler->stepCompleted(mIterationCounter);
 
-            ++mIterationCounter;
-
             mpMessageHandler->stepCompleted(mIterationCounter);
 
             if(mIterationCounter>=mnMaxIterations)
             {
-                --mIterationCounter;    //Needed because for-loop will increase it by one anyway
+                //--mIterationCounter;    //Needed because for-loop will increase it by one anyway
                 break;
             }
 
@@ -181,6 +179,7 @@ bool WorkerComplexRF::retract()
     mpMessageHandler->candidateChanged(0);
 
     ++mRetractionCounter;
+    ++mIterationCounter;
 
     //Evaluate new point
     mpEvaluator->evaluateCandidate(0);

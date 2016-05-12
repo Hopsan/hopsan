@@ -117,6 +117,9 @@ void WorkerComplexBurmen::run()
         bool doBreak = false;
         while(finishedCandidates.size() != mNumCandidates && !mpMessageHandler->aborted())
         {
+            calculateBestAndWorstId();
+            mpMessageHandler->stepCompleted(mIterationCounter);
+
             ++mIterationCounter;
 
             for(size_t i=0; i<mNumCandidates; ++i)
@@ -140,7 +143,7 @@ void WorkerComplexBurmen::run()
             for(size_t i=0; i<mNumCandidates; ++i)
             {
                 if(inVector(finishedCandidates,i)) continue;
-                if(mCandidateObjectives[i] < mObjectives[ids[mNumCandidates]])
+                if(mCandidateObjectives[i] < mObjectives[ids[mNumCandidates]]/*mObjectives[ids[i]]*/)
                 {
                     mPoints[ids[i]] = mCandidatePoints[i];
                     mObjectives[ids[i]] = mCandidateObjectives[i];
@@ -165,6 +168,7 @@ void WorkerComplexBurmen::run()
         {
             break;
         }
+
         mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
