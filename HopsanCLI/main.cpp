@@ -181,8 +181,14 @@ public:
             }
         }
 
+        int  threads = mpWorker->getNumberOfCandidates();
+        if(threads == 1)
+        {
+            threads = -1;
+        }
+
         gHopsanCore.getSimulationHandler()->initializeSystem(mStartTime,mStopTime,mRootSystemPtrs);
-        gHopsanCore.getSimulationHandler()->simulateSystem(mStartTime,mStopTime,mpWorker->getNumberOfCandidates(),mRootSystemPtrs);
+        gHopsanCore.getSimulationHandler()->simulateSystem(mStartTime,mStopTime,threads,mRootSystemPtrs);
 
         for(size_t c=0; c<mpWorker->getNumberOfCandidates(); ++c)
         {
