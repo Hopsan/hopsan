@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
         TCLAP::ValueArg<int> longTOOption("","longtimeout","The receive timeout for time-consuming requests",false,30,"Time in seconds (default 30)", cmd);
         TCLAP::ValueArg<int> shortTOOption("","shorttimeout","The receive timeout for small (fast) requests",false,5,"Time in seconds (default 5)", cmd);
         TCLAP::ValueArg<int> numSlotsOption("","numslots", "The number of slots to request",false,1,"Integer (default 1)",cmd);
+        TCLAP::SwitchArg nonBlockingShell("", "nonblockingshell", "Don't wait for shell script to finish", cmd);
         TCLAP::MultiArg<std::string> shellOptions("", "shellexec", "Command to execute in shell", false, "string", cmd);
         TCLAP::MultiArg<std::string> requestOptions("", "request", "Request file (only from WD)", false, "string", cmd);
         TCLAP::MultiArg<std::string> assetsOptions("a", "asset", "Model assets (files)", false, "string (filepath)", cmd);
@@ -161,35 +162,38 @@ int main(int argc, char* argv[])
                     bool rc = rhopsan.executeShellCommand(rCommand, output);
                     if (rc)
                     {
-                        bool printnewline=true;
-                        auto startT = std::chrono::steady_clock::now();
-                        WorkerStatusT status;
-                        do
+                        if(!nonBlockingShell.getValue())
                         {
-                            rhopsan.requestWorkerStatus(status);
-                            if(status.shell_inprogress)
+                            bool printnewline=true;
+                            auto startT = std::chrono::steady_clock::now();
+                            WorkerStatusT status;
+                            do
                             {
-                                if (printnewline)
+                                rhopsan.requestWorkerStatus(status);
+                                if(status.shell_inprogress)
                                 {
-                                    cout << endl;
-                                    printnewline = false;
+                                    if (printnewline)
+                                    {
+                                        cout << endl;
+                                        printnewline = false;
+                                    }
+                                    else
+                                    {
+                                        cout << "\r" << "Still running after: " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-startT).count() << " seconds" << flush;
+                                    }
+                                    std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(5000));
                                 }
-                                else
-                                {
-                                    cout << "\r" << "Still running after: " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-startT).count() << " seconds" << flush;
-                                }
-                                std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(5000));
+                            }while(status.shell_inprogress);
+                            if (status.shell_exitok)
+                            {
+                                cout << " Success!" << endl;
+                                shellExecOK = true;
                             }
-                        }while(status.shell_inprogress);
-                        if (status.shell_exitok)
-                        {
-                            cout << " Success!" << endl;
-                            shellExecOK = true;
-                        }
-                        else
-                        {
-                            cout << " Failed!   Did not exit OK" << endl;
-                            shellExecOK = false;
+                            else
+                            {
+                                cout << " Failed!   Did not exit OK" << endl;
+                                shellExecOK = false;
+                            }
                         }
                     }
                     else
