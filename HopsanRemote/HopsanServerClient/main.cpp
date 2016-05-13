@@ -10,7 +10,33 @@
 #include <fstream>
 #include <sstream>
 #include <thread>
+#include <signal.h>
 using namespace std;
+
+static int s_interrupted = 0;
+#ifdef _WIN32
+BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
+{
+    // what to do here?
+    s_interrupted = 1;
+    return TRUE;
+}
+#else
+static void s_signal_handler(int signal_value)
+{
+    s_interrupted = 1;
+}
+
+static void s_catch_signals(void)
+{
+    struct sigaction action;
+    action.sa_handler = s_signal_handler;
+    action.sa_flags = 0;
+    sigemptyset (&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+    sigaction (SIGTERM, &action, NULL);
+}
+#endif
 
 #define PRINTCLIENT "Client; "
 
@@ -183,16 +209,19 @@ int main(int argc, char* argv[])
                                     }
                                     std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(5000));
                                 }
-                            }while(status.shell_inprogress);
-                            if (status.shell_exitok)
+                            }while(status.shell_inprogress && !s_interrupted);
+                            if (!s_interrupted)
                             {
-                                cout << " Success!" << endl;
-                                shellExecOK = true;
-                            }
-                            else
-                            {
-                                cout << " Failed!   Did not exit OK" << endl;
-                                shellExecOK = false;
+                                if (status.shell_exitok)
+                                {
+                                    cout << " Success!" << endl;
+                                    shellExecOK = true;
+                                }
+                                else
+                                {
+                                    cout << " Failed!   Did not exit OK" << endl;
+                                    shellExecOK = false;
+                                }
                             }
                         }
                     }
@@ -213,6 +242,11 @@ int main(int argc, char* argv[])
                 const std::vector<std::string> &rRequests = requestOptions.getValue();
                 for (const string &rRequest : rRequests)
                 {
+                    if (s_interrupted)
+                    {
+                        break;
+                    }
+
                     cout << PRINTCLIENT << "Requesting: " << rRequest <<  " ... ";
                     double progress;
                     bool rc = rhopsan.blockingRequestFile(rRequest, rRequest, &progress);

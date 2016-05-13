@@ -248,6 +248,7 @@ SimulationHandler gSimulator;
 FileReceiver gModelAssets;
 std::atomic_bool gIsSimulating(false);
 std::atomic_bool gShellIsExecuting(false);
+bool gClientConnected = true; //Need to start this as true, to avoid instant quit if client is slow to connect
 bool gIsModelLoaded = false;
 bool gWasSimulationOK = false;
 bool gSimulationFinnished = false;
@@ -957,12 +958,15 @@ int main(int argc, char* argv[])
                 else if (msg_id == ClientClosing)
                 {
                     cout << PRINTWORKER << nowDateTime() << " Client said godbye!" << endl;
-                    sendShortMessage(socket, Ack);
-                    keepRunning = false;
-
-                    sendServerGoodby(serverSocket);
-
-                    //! @todo what happen to simulation thread if it is running
+                    if (gIsSimulating || gShellIsExecuting)
+                    {
+                        sendMessage(socket, NotAck, "Job still running");
+                    }
+                    else
+                    {
+                        sendShortMessage(socket, Ack);
+                    }
+                    gClientConnected = false;
                 }
                 else if (!idParseOK)
                 {
@@ -978,7 +982,7 @@ int main(int argc, char* argv[])
             }
             else
             {
-                //Handle timeout / exception
+                // Handle timeout / exception
                 nClientTimeouts++;
                 if (!gShellIsExecuting)
                 {
@@ -986,25 +990,27 @@ int main(int argc, char* argv[])
                     {
                         // Force quit after some time minutes
                         cout << PRINTWORKER << nowDateTime() << " Client has not sent any message for "<< dead_client_timout_min << " minutes. Terminating worker process!"  << endl;
-                        //! @todo should handle long simulation time
-                        sendServerGoodby(serverSocket);
-                        keepRunning = false;
+                        //! @todo This means that you can block the server by starting an infinite job and then just disconnect
+                        gClientConnected = false;
                     }
                 }
             }
 
-            //! @todo do we need to sleep here?
-#ifndef _WIN32
-            //sleep(1);
-#else
-            //Sleep (1);
-#endif
+            // If client have said goodbye and we are no longer simulating or shell executing, then exit
+            if (!gClientConnected && !gIsSimulating && !gShellIsExecuting)
+            {
+                keepRunning = false;
+            }
+
             if (s_interrupted)
             {
                 cout << PRINTWORKER << nowDateTime() << " Interrupt signal received, killing worker" << std::endl;
                 keepRunning=false;
             }
         }
+
+        // Notify server about our exit
+        sendServerGoodby(serverSocket);
 
         // Delete the model if we have one
         if (gpRootSystem)
