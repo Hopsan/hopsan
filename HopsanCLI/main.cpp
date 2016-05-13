@@ -253,7 +253,8 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
         TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
-        TCLAP::ValueArg<std::string> optimizationOption("o","optScript","Optimization script",false,"","Path to file", cmd);
+        TCLAP::MultiArg<std::string> optimizationOption("o","optScript","Optimization scripts",false,"Path to files", cmd);
+        TCLAP::MultiArg<std::string> optimizationSettings("","optSettings","Optimization settings",false,"Settings", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
 
         // Parse the argv array.
@@ -350,7 +351,50 @@ int main(int argc, char *argv[])
 #ifdef USEOPS
         if(optimizationOption.isSet() && hmfPathOption.isSet())
         {
-            string script = optimizationOption.getValue();
+            string script;
+            bool scriptFilesOk = true;
+
+            vector<string> scripts = optimizationOption.getValue();
+            for(size_t i=0; i<scripts.size(); ++i)
+            {
+                string line;
+                ifstream file;
+                file.open(scripts[i].c_str());
+                if(!file.is_open())
+                {
+                    printErrorMessage("Unable to open file: "+scripts[i]);
+                    scriptFilesOk = false;
+                }
+                else
+                {
+                    while ( file.good() )
+                    {
+                        std::vector<string> words;
+                        getline(file, line);
+                        // If this is run on linux, and a windows EOL style file is read, then the CR will remain,
+                        // lets remove it in such a case
+                        if (!line.empty() && (line[line.size()-1] == '\r'))
+                        {
+                            line.erase(line.size()-1);
+                        }
+
+                        if(line != "")
+                        {
+                            script += line+"\n";
+                        }
+                    }
+                }
+            }
+
+            vector<string> settings = optimizationSettings.getValue();
+            for(size_t i=0; i<settings.size(); ++i)
+            {
+                script += settings[i];
+                if(i < settings.size()-1)
+                {
+                    script += "\n";
+                }
+            }
 
             cout << "SCRIPT: " << script << endl;
 
@@ -389,163 +433,153 @@ int main(int argc, char *argv[])
             bool silent = false;
 
             string line;
-            ifstream file;
-            file.open(script.c_str());
-            bool scriptFileOk = false;
-            if ( file.is_open() )
+            stringstream scriptStream(script);
+
+            while(getline(scriptStream,line,'\n'))
             {
-                scriptFileOk = true;
-                while ( file.good() )
+                vector<string> words;
+                // If this is run on linux, and a windows EOL style file is read, then the CR will remain,
+                // lets remove it in such a case
+                if (!line.empty() && (line[line.size()-1] == '\r'))
                 {
-                    std::vector<string> words;
-                    getline(file, line);
-                    // If this is run on linux, and a windows EOL style file is read, then the CR will remain,
-                    // lets remove it in such a case
-                    if (!line.empty() && (line[line.size()-1] == '\r'))
-                    {
-                        line.erase(line.size()-1);
-                    }
-                    //cout << "LINE: " << line << endl;
-                    string word;
-                    stringstream linestream(line);
-                    while(getline(linestream, word, ' '))
-                    {
-                        words.push_back(word);
-                        //cout << "WORD: " << word << endl;
-                    }
-                    if( line.empty() || (words.size() > 0 && words[0][0] == '#') )
-                    {
-                        continue;
-                    }
-                    if(words.size() == 2 && words[0] == "algorithm")
-                    {
-                        algorithm = words[1];
-                    }
-                    else if(words.size() == 2 && words[0] == "maxevals")
-                    {
-                        maxEvals = std::stoi(words[1]);
-                    }
-                    else if(words.size() == 1 && words[0] == "printdebugfile")
-                    {
-                        printDebugFile = true;
-                    }
-                    else if(words.size() == 1 && words[0] == "silent")
-                    {
-                        silent = true;
-                    }
-                    else if(words.size() == 2 && words[0] == "npoints")
-                    {
-                        nPoints = std::stoi(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "tolerance")
-                    {
-                        tolerance = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "nmodels")
-                    {
-                        nModels = std::stoi(words[1]);
-                    }
-                    else if(words.size() == 4 && words[0] == "objective")
-                    {
-                        objComps.push_back(words[1]);
-                        objPorts.push_back(words[2]);
-                        objWeights.push_back(stod(words[3]));
-                    }
-                    else if(words.size() == 4 && words[0] == "parameter")
-                    {
-                        parNames.push_back(words[1]);
-                        parMin.push_back(stod(words[2]));
-                        parMax.push_back(stod(words[3]));
-                        ++nParams;
-                    }
-                    else if(words.size() == 2 && words[0] == "alpha")
-                    {
-                        alpha = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "beta")
-                    {
-                        beta = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "gamma")
-                    {
-                        gamma = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "rho")
-                    {
-                        rho = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "omega1")
-                    {
-                        omega1 = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "omega2")
-                    {
-                        omega2 = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "C1")
-                    {
-                        C1 = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "C2")
-                    {
-                        C2 = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "vmax")
-                    {
-                        vmax = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "sigma")
-                    {
-                        sigma = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "parallelmethod")
-                    {
-                        parallelMethod = words[1];
-                    }
-                    else if(words.size() == 2 && words[0] == "alphamin")
-                    {
-                        alphaMin = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "alphamax")
-                    {
-                        alphaMax = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "npredictions")
-                    {
-                        nPredictions = std::stoi(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "nretractions")
-                    {
-                        nRetractions = std::stoi(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "F")
-                    {
-                        F = std::stod(words[1]);
-                    }
-                    else if(words.size() == 2 && words[0] == "CR")
-                    {
-                        CR = std::stod(words[1]);
-                    }
-                    else
-                    {
-                        printWarningMessage("Unhandled line in opt script: "+line);
-                    }
+                    line.erase(line.size()-1);
                 }
-                objectives.resize(nPoints);
-                points.resize(nPoints);
-                for(vector<double> &point : points)
+                //cout << "LINE: " << line << endl;
+                string word;
+                stringstream lineStream(line);
+                while(getline(lineStream, word, ' '))
                 {
-                    point.resize(nParams);
+                    words.push_back(word);
+                    //cout << "WORD: " << word << endl;
+                }
+                if( line.empty() || (words.size() > 0 && words[0][0] == '#') )
+                {
+                    continue;
+                }
+                if(words.size() == 2 && words[0] == "algorithm")
+                {
+                    algorithm = words[1];
+                }
+                else if(words.size() == 2 && words[0] == "maxevals")
+                {
+                    maxEvals = std::stoi(words[1]);
+                }
+                else if(words.size() == 1 && words[0] == "printdebugfile")
+                {
+                    printDebugFile = true;
+                }
+                else if(words.size() == 1 && words[0] == "silent")
+                {
+                    silent = true;
+                }
+                else if(words.size() == 2 && words[0] == "npoints")
+                {
+                    nPoints = std::stoi(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "tolerance")
+                {
+                    tolerance = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "nmodels")
+                {
+                    nModels = std::stoi(words[1]);
+                }
+                else if(words.size() == 4 && words[0] == "objective")
+                {
+                    objComps.push_back(words[1]);
+                    objPorts.push_back(words[2]);
+                    objWeights.push_back(stod(words[3]));
+                }
+                else if(words.size() == 4 && words[0] == "parameter")
+                {
+                    parNames.push_back(words[1]);
+                    parMin.push_back(stod(words[2]));
+                    parMax.push_back(stod(words[3]));
+                    ++nParams;
+                }
+                else if(words.size() == 2 && words[0] == "alpha")
+                {
+                    alpha = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "beta")
+                {
+                    beta = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "gamma")
+                {
+                    gamma = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "rho")
+                {
+                    rho = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "omega1")
+                {
+                    omega1 = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "omega2")
+                {
+                    omega2 = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "C1")
+                {
+                    C1 = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "C2")
+                {
+                    C2 = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "vmax")
+                {
+                    vmax = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "sigma")
+                {
+                    sigma = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "parallelmethod")
+                {
+                    parallelMethod = words[1];
+                }
+                else if(words.size() == 2 && words[0] == "alphamin")
+                {
+                    alphaMin = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "alphamax")
+                {
+                    alphaMax = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "npredictions")
+                {
+                    nPredictions = std::stoi(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "nretractions")
+                {
+                    nRetractions = std::stoi(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "F")
+                {
+                    F = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "CR")
+                {
+                    CR = std::stod(words[1]);
+                }
+                else
+                {
+                    printWarningMessage("Unhandled line in opt script: "+line);
                 }
             }
-            else
+            objectives.resize(nPoints);
+            points.resize(nPoints);
+            for(vector<double> &point : points)
             {
-                printErrorMessage("Could not open file: "+script);
-                returnSuccess=false;
+                point.resize(nParams);
             }
+
             //! @todo Make sure vectors are correct size!
 
-            if(scriptFileOk)
+            if(scriptFilesOk)
             {
                 cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
                 double startTime=0, stopTime=2;
