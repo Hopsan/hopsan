@@ -33,6 +33,8 @@ extern char **environ;
 using namespace hopsan;
 using namespace std;
 
+typedef chrono::duration<double> fseconds;
+
 HopsanEssentials gHopsanCore;
 bool gHaveLoadedComponentLibraries=false;
 
@@ -412,10 +414,17 @@ bool loadModel(string &rModel)
 }
 
 
-void sendServerGoodby(zmq::socket_t &rSocket)
+void sendGoodbyToServer(zmq::socket_t &rSocket)
 {
     zmq::message_t response;
     sendMessage(rSocket, WorkerFinished, gWorkerId);
+    receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
+}
+
+void sendAliveToServer(zmq::socket_t &rSocket)
+{
+    zmq::message_t response;
+    sendMessage(rSocket, WorkerAlive, gWorkerId);
     receiveWithTimeout(rSocket, 5000, response); // Wait for but ignore replay
 }
 
@@ -473,6 +482,7 @@ int main(int argc, char* argv[])
         const long client_timeout = 30000;
         const double dead_client_timout_min = 5;
         size_t nClientTimeouts = 0;
+        chrono::steady_clock::time_point lastServerReportTime = chrono::steady_clock::now();
 
 #ifdef _WIN32
         SetConsoleCtrlHandler( consoleCtrlHandler, TRUE );
@@ -996,6 +1006,14 @@ int main(int argc, char* argv[])
                 }
             }
 
+            // Periodically report that we are still alive to server
+            fseconds dur = chrono::duration_cast<fseconds>(chrono::steady_clock::now() - lastServerReportTime);
+            if (dur.count() > 5*60)
+            {
+                sendAliveToServer(serverSocket);
+                lastServerReportTime = chrono::steady_clock::now();
+            }
+
             // If client have said goodbye and we are no longer simulating or shell executing, then exit
             if (!gClientConnected && !gIsSimulating && !gShellIsExecuting)
             {
@@ -1010,7 +1028,7 @@ int main(int argc, char* argv[])
         }
 
         // Notify server about our exit
-        sendServerGoodby(serverSocket);
+        sendGoodbyToServer(serverSocket);
 
         // Delete the model if we have one
         if (gpRootSystem)

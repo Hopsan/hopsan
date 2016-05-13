@@ -43,13 +43,13 @@ public:
         mWorkerPort = port;
         mUserid = userid;
         mPid = pid;
-        mLastStatusCheck = steady_clock::now();
+        mLastAliveReport = steady_clock::now();
     }
 
-    int mNumSlots=0, mNumDead=0;
+    int mNumSlots=0;
     size_t mWorkerPort;
     string mUserid;
-    steady_clock::time_point mLastStatusCheck;
+    steady_clock::time_point mLastAliveReport;
 #ifdef _WIN32
     PROCESS_INFORMATION mPid;
 #else
@@ -140,7 +140,7 @@ void reportToAddressServer(const ServerConfig &rServerConfig, bool isOnline)
 
         if (isOnline)
         {
-            sendMessage(addressServerSocket, Available, message);
+            sendMessage(addressServerSocket, ServerAvailable, message);
             std::string nackreason;
             bool ack = receiveAckNackMessage(addressServerSocket, 5000, nackreason);
             if (ack)
@@ -207,7 +207,7 @@ bool checkIfWorkerIsAlive(WorkerInfo &rWI)
     {
         cout << PRINTSERVER << nowDateTime() << " Error: Contacting Worker: " << e.what() << endl;
     }
-    rWI.mLastStatusCheck = steady_clock::now();
+    rWI.mLastAliveReport = steady_clock::now();
     return isAlive;
 }
 
@@ -452,6 +452,30 @@ int main(int argc, char* argv[])
                         cout << PRINTSERVER << nowDateTime() << " Error: Could not parse server id string" << endl;
                     }
                 }
+                else if (msg_id == WorkerAlive)
+                {
+                    bool parseOK;
+                    string id_string = unpackMessage<std::string>(request,offset,parseOK);
+                    if (parseOK)
+                    {
+                        int id = atoi(id_string.c_str());
+                        cout << PRINTSERVER << nowDateTime() << " Worker " << id_string << " Alive!" << endl;
+                        auto it = workerMap.find(id);
+                        if (it != workerMap.end())
+                        {
+                            sendShortMessage(socket, Ack);
+                            it->second.mLastAliveReport = steady_clock::now();
+                        }
+                        else
+                        {
+                            sendMessage(socket, NotAck, "Wrong worker id specified");
+                        }
+                    }
+                    else
+                    {
+                        cout << PRINTSERVER << nowDateTime() << " Error: Could not parse server id string" << endl;
+                    }
+                }
                 else if (msg_id == RequestServerStatus)
                 {
                     cout << PRINTSERVER << nowDateTime() << " Client is requesting status" << endl;
@@ -514,22 +538,12 @@ int main(int argc, char* argv[])
             for (auto it = workerMap.begin(); it!=workerMap.end(); ++it)
             {
                 WorkerInfo &wi = it->second;
-                if (duration_cast<duration<double>>(steady_clock::now() - wi.mLastStatusCheck).count() > 1*60)
+                if (duration_cast<duration<double>>(steady_clock::now() - wi.mLastAliveReport).count() > 10*60)
                 {
                     bool isAlive = checkIfWorkerIsAlive(wi);
                     if (!isAlive)
                     {
                         cout << PRINTSERVER << nowDateTime() << "Worker: " << it->first << " is not responding!" << std::endl;
-                        wi.mNumDead++;
-                    }
-                    else
-                    {
-                        wi.mNumDead = 0;
-                    }
-
-                    // Bury dead workers
-                    if (wi.mNumDead >= 5)
-                    {
                         std::cout << PRINTSERVER << nowDateTime() << "Burying dead worker: " << it->first << endl;
                         waitForWorkerProcess(wi);
                         int nslots = wi.mNumSlots;

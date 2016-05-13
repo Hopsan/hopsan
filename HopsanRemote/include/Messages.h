@@ -12,7 +12,7 @@ enum MessageIdsEnumT {
     /* Information messages */
     Ack=1,
     NotAck,
-    Available,
+    ServerAvailable,
     WorkerFinished,
     ClientClosing,
     ServerClosing,
@@ -54,6 +54,7 @@ enum MessageIdsEnumT {
     ReplyRelaySlot,
 
     /* Work in progress (last to avoid breaking compatibility */
+    WorkerAlive,
 
 };
 

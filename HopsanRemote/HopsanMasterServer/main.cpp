@@ -356,7 +356,7 @@ int main(int argc, char* argv[])
                 size_t msg_id = getMessageId(message, offset, idParseOK);
                 //cout << "msg_id: " << msg_id << endl;
 
-                if (msg_id == Available)
+                if (msg_id == ServerAvailable)
                 {
                     bool parseOK;
                     InfomsgAvailable sm = unpackMessage<InfomsgAvailable>(message,offset,parseOK);
