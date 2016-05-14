@@ -31,6 +31,7 @@
 #include "ElectricGround.hpp"
 #include "ElectricIcontroller.hpp"
 #include "ElectricInductance.hpp"
+#include "ElectricInductanceC.hpp"
 #include "ElectricIsensor.hpp"
 #include "ElectricIsource.hpp"
 #include "ElectricMotor.hpp"

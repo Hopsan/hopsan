@@ -31,6 +31,7 @@ pComponentFactory->registerCreatorFunction("ElectricCapacitanceMultiPort",Electr
 pComponentFactory->registerCreatorFunction("ElectricGround",ElectricGround::Creator);
 pComponentFactory->registerCreatorFunction("ElectricIcontroller",ElectricIcontroller::Creator);
 pComponentFactory->registerCreatorFunction("ElectricInductance",ElectricInductance::Creator);
+pComponentFactory->registerCreatorFunction("ElectricInductanceC",ElectricInductanceC::Creator);
 pComponentFactory->registerCreatorFunction("ElectricIsensor",ElectricIsensor::Creator);
 pComponentFactory->registerCreatorFunction("ElectricIsource",ElectricIsource::Creator);
 pComponentFactory->registerCreatorFunction("ElectricMotor",ElectricMotor::Creator);

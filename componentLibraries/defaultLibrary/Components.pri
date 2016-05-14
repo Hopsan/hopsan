@@ -2,6 +2,7 @@
 
 
 HEADERS +=  \ 
+ $${PWD}/Components.h \ 
  $${PWD}/Connectivity/Connectivity.h \ 
  $${PWD}/Connectivity/ElectricInterfaceC.hpp \ 
  $${PWD}/Connectivity/ElectricInterfaceQ.hpp \ 
@@ -24,6 +25,7 @@ HEADERS +=  \
  $${PWD}/Electric/ElectricGround.hpp \ 
  $${PWD}/Electric/ElectricIcontroller.hpp \ 
  $${PWD}/Electric/ElectricInductance.hpp \ 
+ $${PWD}/Electric/ElectricInductanceC.hpp \ 
  $${PWD}/Electric/ElectricIsensor.hpp \ 
  $${PWD}/Electric/ElectricIsource.hpp \ 
  $${PWD}/Electric/ElectricMotor.hpp \ 
@@ -354,12 +356,12 @@ HEADERS +=  \
  $${PWD}/Special/SignalNumHopSISO.hpp \ 
  $${PWD}/Special/Special.h \ 
  $${PWD}/Special/TMMS04/Forks.hpp \ 
- $${PWD}/Special/TMMS04/TMMS04.h \ 
- $${PWD}/Components.h
+ $${PWD}/Special/TMMS04/TMMS04.h
 
 SOURCES += 
 
 OTHER_FILES +=  \ 
+ $${PWD}/Components.cci \ 
  $${PWD}/Connectivity/Connectivity.cci \ 
  $${PWD}/Electric/Electric.cci \ 
  $${PWD}/Experimental/Experimental.cci \ 
@@ -398,6 +400,5 @@ OTHER_FILES +=  \
  $${PWD}/Special/MechanicB/MechanicB.cci \ 
  $${PWD}/Special/OptimizationTestFunctions/OptimizationTestFunctions.cci \ 
  $${PWD}/Special/Special.cci \ 
- $${PWD}/Special/TMMS04/TMMS04.cci \ 
- $${PWD}/Components.cci
+ $${PWD}/Special/TMMS04/TMMS04.cci
 
