@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="MechanicalSeparator.hpp" typename="MechanicalSeparator" displayname="MechanicalSeparator">
+        <icons>
+            <icon scale="1" path="MechanicalSeparator.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+            <port x="1" y="0.5" a="0" name="P2"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

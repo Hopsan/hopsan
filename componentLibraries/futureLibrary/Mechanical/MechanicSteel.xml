@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="MechanicSteel.hpp" typename="MechanicSteel" displayname="MechanicSteel">
+        <icons>
+            <icon scale="1" path="MechanicSteel.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+            <port x="1" y="0.5" a="0" name="P2"/>
+            <port name="actual_length" y="1" x="0.6666666667" autoplaced="true" enabled="true" a="90"/>
+            <port name="stiffness" y="1" x="0.3333333333" autoplaced="true" enabled="true" a="90"/>
+            <port name="mean_vel" y="0" x="0.5" enabled="true" a="270"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
