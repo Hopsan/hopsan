@@ -107,7 +107,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     pAuthorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pAuthorsText = new QLabel();
-    pAuthorsText->setText(trUtf8("Björn Eriksson, Peter Nordin, Robert Braun\n"));
+    pAuthorsText->setText(trUtf8("Peter Nordin, Robert Braun (2009->)\nBjörn Eriksson (2009-2011)"));
     pAuthorsText->setWordWrap(true);
     pAuthorsText->setAlignment(Qt::AlignCenter);
 
@@ -117,7 +117,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     pContributorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContributorsText = new QLabel();
-    pContributorsText->setText(tr("Alessandro Dell'Amico, Ingo Staack, Isak Demir, Karl Pettersson, Mikael Axin, Paulo Teixeira, Petter Krus, Pratik Deshpande, Sheryar Khan, Viktor Larsson\n"));
+    pContributorsText->setText(tr("Alessandro Dell'Amico, Ingo Staack, Isak Demir, Karl Pettersson, Mikael Axin, Paulo Teixeira, Petter Krus, Pratik Deshpande, Sheryar Khan, Viktor Larsson, Jason Nicholson\n"));
     pContributorsText->setWordWrap(true);
     pContributorsText->setAlignment(Qt::AlignCenter);
 
