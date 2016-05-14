@@ -95,7 +95,7 @@ void readPortData(std::ifstream &rFile, ComponentSystem *pRootSystem)
     pNameBuffer[namelength] = '\0';
     HString fullName;
     fullName.append(pNameBuffer);
-    delete pNameBuffer;
+    delete[] pNameBuffer;
 
     // Read data
     double *pDataBuffer = new double[datalength];
