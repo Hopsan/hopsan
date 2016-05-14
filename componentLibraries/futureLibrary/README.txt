@@ -11,3 +11,6 @@ To add components:
    
 The library can now be exported and distributed.
 
+To use this library:
+Load this directory from within HopsanGUI, (make sure that you have Hopsan with a compiler). The library will then be automatically compiled and loaded.
+
