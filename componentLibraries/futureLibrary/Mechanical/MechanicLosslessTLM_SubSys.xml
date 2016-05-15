@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject hmffile="MechanicLosslessTLM_SubSys.hmf" displayname="MechanicLosslessTLM_SubSys" typename="Subsystem" subtypename="MechanicLosslessTLM_SubSys">
+        <icons>
+            <icon scale="1" path="MechanicSteel.svg" iconrotation="ON" type="user"/>
+        </icons>
+    </modelobject>
+</hopsanobjectappearance>
