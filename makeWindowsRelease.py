@@ -260,6 +260,9 @@ def copyDirTo(srcDir, dstDir):
         print('Error: Src directory '+srcDir+' does not exist!')
         return False
 
+def move(src, dst):
+    if src != dst:
+        shutil.move(src, dst)
 
 def makeMSVCOutDirName(version, arch):
     return "MSVC"+version+"_"+arch
@@ -648,11 +651,15 @@ def createInstallFiles():
     if not createInnoInstaller(exeFileName, innoArch, hopsanDirOutput):
         return False
 
-
     # Copy the compiler
     if gIncludeCompiler:
         print('Copying compiler...')
         copyDirTo(mingwDir+r'/../', gTemporaryBuildDir)
+        mingwDirName = os.path.basename(os.path.normpath(mingwDir+r'/../'))
+        if gDo64BitRelease:
+            move(os.path.join(gTemporaryBuildDir, mingwDirName), os.path.join(gTemporaryBuildDir, 'mingw64'))
+        else:
+            move(os.path.join(gTemporaryBuildDir, mingwDirName), os.path.join(gTemporaryBuildDir, 'mingw'))
         #print('Removing /opt')
         #callRd(gTemporaryBuildDir+r'\mingw64\opt')
         # Now build zip and installer with compiler included
