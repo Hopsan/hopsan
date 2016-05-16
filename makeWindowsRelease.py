@@ -622,7 +622,7 @@ def createInstallFiles():
     # Make sure we are in the hopsan root
     os.chdir(hopsanDir)
 
-    if do64BitRelease:
+    if gDo64BitRelease:
         zipFile=r'Hopsan-'+gFullVersionName+r'-win64-zip.zip'
         zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-7z.7z'
         exeFileName=r'Hopsan-'+gFullVersionName+r'-win64-installer'
@@ -665,7 +665,7 @@ def createInstallFiles():
 def createCleanOutputDirectory():
     global hopsanDirOutput
     """Try to remove and recreate the output directory"""
-    if do64BitRelease:
+    if gDo64BitRelease:
         hopsanDirOutput=hopsanDir+r'\output64'
     else:
         hopsanDirOutput=hopsanDir+r'\output'
@@ -745,12 +745,12 @@ print "\n"
 success = True
 pauseOnFailValidation = False
 
-#gARCH = 'x86'
-#do64BitRelease = askYesNoQuestion("Do you want to build a 64Bit release? (y/n): ")
-#if do64BitRelease:
-#    gARCH = 'x64'
-do64BitRelease = True
 gARCH = 'x64'
+gDo64BitRelease = True
+do32BitRelease = askYesNoQuestion("Do you want to build a 32Bit release? (y/n): ")
+if do32BitRelease:
+    gARCH = 'x86'
+    gDo64BitRelease = False
 
 mingwDir = extractHopsanBuildPath('0.7.x', gARCH, 'MinGW')
 qmakeDir = extractHopsanBuildPath('0.7.x', gARCH, 'QMake')
@@ -774,7 +774,7 @@ if success:
 
     print "---------------------------------------"
     print "This is a DEV release: " + str(gDoDevRelease)
-    print "This is a 64-bit release: " + str(do64BitRelease)
+    print "This is a 64-bit release: " + str(gDo64BitRelease)
     print "Release version name: " + str(gFullVersionName)
     print "Release revision number: " + str(gReleaseRevision)
     print "Build VC++ HopsanCore: " + str(buildVCpp)
@@ -790,7 +790,7 @@ if success:
         success = False
         cleanUp()
 
-if do64BitRelease:
+if gDo64BitRelease:
     gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win64'
 else:
     gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win32'
