@@ -25,7 +25,7 @@ echo.
 echo ======================
 echo Building 64-bit TBB
 echo ======================
-call setHopsanBuildPaths.bat 0.7.x x64
+call setHopsanBuildPaths.bat
 cd %dirname%
 mingw32-make compiler=gcc tbb_build_prefix=output info
 mingw32-make compiler=gcc tbb_build_prefix=output -j4

@@ -23,7 +23,7 @@ echo ======================
 echo Building 64-bit version of FMILibrary
 echo ======================
 set OLDPATH=%PATH%
-call setHopsanBuildPaths.bat 0.7.x x64
+call setHopsanBuildPaths.bat
 REM We don want msys in the path so we have to build it manually
 set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
 cd %dirname%

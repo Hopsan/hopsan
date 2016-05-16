@@ -26,7 +26,7 @@ echo.
 echo ======================
 echo Building 64-bit Discount
 echo ======================
-call setHopsanBuildPaths.bat 0.7.x x64
+call setHopsanBuildPaths.bat
 
 cd %dirname%
 

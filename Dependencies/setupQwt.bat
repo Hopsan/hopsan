@@ -31,7 +31,7 @@ echo.
 echo ======================
 echo Building 64-bit libQWT
 echo ======================
-call setHopsanBuildPaths.bat 0.7.x x64
+call setHopsanBuildPaths.bat
 rd /s/q %dirname%_shb
 mkdir %dirname%_shb
 cd %dirname%_shb

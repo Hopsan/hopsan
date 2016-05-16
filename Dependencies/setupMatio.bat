@@ -26,7 +26,7 @@ echo.
 echo ======================
 echo Building 64-bit Discount
 echo ======================
-call setHopsanBuildPaths.bat 0.7.x x64
+call setHopsanBuildPaths.bat
 
 cd %dirname%
 bash.exe -c "patch -p1 < ../%dirname%.patch; autoreconf -i --force; LT_LDFLAGS=-no-undefined ./configure --without-zlib; mingw32-make.exe -j4"
