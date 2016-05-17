@@ -63,6 +63,7 @@ private:
     LoadExternal* mpExternalLoader;
     SimulationHandler mSimulationHandler;
     QuantityRegister* mpQuantityRegister;
+    static size_t mQRctr;
 
 public:
     HopsanEssentials();

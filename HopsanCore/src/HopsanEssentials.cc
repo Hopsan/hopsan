@@ -57,6 +57,7 @@ using namespace std;
 using namespace hopsan;
 
 QuantityRegister *hopsan::gpInternalCoreQuantityRegister=0; // Do not use this pointer outside of HopsanCore
+size_t HopsanEssentials::mQRctr = 0;
 
 //! @brief HopsanEssentials Constructor
 HopsanEssentials::HopsanEssentials()
@@ -65,8 +66,18 @@ HopsanEssentials::HopsanEssentials()
     mpNodeFactory = new NodeFactory;
     mpComponentFactory = new ComponentFactory;
     mpMessageHandler = new HopsanCoreMessageHandler;
-    mpQuantityRegister = new QuantityRegister;
-    gpInternalCoreQuantityRegister = mpQuantityRegister;
+    if (mQRctr==0)
+    {
+        mpQuantityRegister = new QuantityRegister;
+        gpInternalCoreQuantityRegister = mpQuantityRegister;
+    }
+    else
+    {
+        mpQuantityRegister = gpInternalCoreQuantityRegister;
+
+    }
+    mQRctr++;
+
     mpExternalLoader = new LoadExternal(mpComponentFactory, mpNodeFactory, mpMessageHandler);
 
     // Make sure that internal Nodes and Components register
@@ -123,7 +134,13 @@ HopsanEssentials::~HopsanEssentials()
 
     // Delete the message handler
     delete mpMessageHandler;
-    delete mpQuantityRegister;
+
+    mQRctr--;
+    if (mQRctr==0)
+    {
+        delete mpQuantityRegister;
+        gpInternalCoreQuantityRegister = 0;
+    }
 }
 
 //! @brief Returns the HopsanCore version as a string
