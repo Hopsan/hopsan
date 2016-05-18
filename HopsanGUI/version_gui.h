@@ -39,7 +39,7 @@
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANGUISVNREVISION
- #define HOPSANGUISVNREVISION UNKNOWN
+#define HOPSANGUISVNREVISION UNKNOWN
 #endif
 
 #define HOPSANGUIVERSION "0.8.x_r" TO_STR(HOPSANGUISVNREVISION)

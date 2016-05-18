@@ -36,7 +36,7 @@
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANCORESVNREVISION
- #define HOPSANCORESVNREVISION UNKNOWN
+#define HOPSANCORESVNREVISION UNKNOWN
 #endif
 
 #define HOPSANCOREVERSION "0.8.x_r" TO_STR(HOPSANCORESVNREVISION)

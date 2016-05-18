@@ -34,12 +34,12 @@
 #ifndef VERSION_CLI_H
 #define VERSION_CLI_H
 
-// If we dont have the revision number then define UNKNOWN
-// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
+// If we don't have the revision number then define UNKNOWN
+// On real release  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANCLISVNREVISION
- #define HOPSANCLISVNREVISION UNKNOWN
+#define HOPSANCLISVNREVISION UNKNOWN
 #endif
 
-#define HOPSANCLIVERSION "0.7.x_r" TO_STR(HOPSANCLISVNREVISION)
+#define HOPSANCLIVERSION "0.8.x_r" TO_STR(HOPSANCLISVNREVISION)
 
 #endif // VERSION_CLI_H

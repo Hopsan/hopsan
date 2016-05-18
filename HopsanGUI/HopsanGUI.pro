@@ -198,10 +198,10 @@ win32 {
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 
-    # Activate console output of cout for debug builds (you aslo need to run in console but hopsan seems slow)
-    CONFIG(debug, debug|release) {
+    # Activate console output of cout for debug builds (you also need to run in console but hopsan seems slow)
+#    CONFIG(debug, debug|release) {
         CONFIG += console
-    }
+#    }
 
     # Get the svn revision in here if script succeed, we don't care about the external file generated,
     system($${PWD}/../getSvnRevision.bat){
