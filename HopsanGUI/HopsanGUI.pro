@@ -157,11 +157,12 @@ unix {
     !macx:QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
      macx:QMAKE_RPATHDIR *= $${PWD}/../bin
 
-    # Get the svn revision in here if script succeed, we don't care about the external file generated,
-    system($${PWD}/../getSvnRevision.sh) {
-        DEFINES *= "HOPSANGUISVNREVISION=$$system($${PWD}/../getSvnRevision.sh)"
+    # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
+    rev = $$system($${PWD}/../getSvnRevision.sh)
+    message(GUI revision: $${rev})
+    !equals(rev, "RevisionInformationNotFound") {
+        DEFINES *= "HOPSANGUISVNREVISION=$${rev}"
     }
-
 }
 win32 {
     #DEFINES += STATICCORE
@@ -203,9 +204,11 @@ win32 {
         CONFIG += console
 #    }
 
-    # Get the svn revision in here if script succeed, we don't care about the external file generated,
-    system($${PWD}/../getSvnRevision.bat){
-        DEFINES *= "HOPSANGUISVNREVISION=$$system($${PWD}/../getSvnRevision.bat)"
+    # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
+    rev = $$system($${PWD}/../getSvnRevision.bat)
+    message(GUI revision: $${rev})
+    !equals(rev, "RevisionInformationNotFound") {
+        DEFINES *= "HOPSANGUISVNREVISION=$${rev}"
     }
 }
 macx {

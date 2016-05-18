@@ -33,12 +33,6 @@
 // not the latest revision that you get when compiling the external component.
 #include "HopsanCoreSVNRevision.h"
 
-// If we don't have the revision number then define UNKNOWN
-// On real release  builds, UNKNOWN will be replaced by actual revnum by external script
-#ifndef HOPSANCORESVNREVISION
-#define HOPSANCORESVNREVISION UNKNOWN
-#endif
-
 #define HOPSANCOREVERSION "0.8.x_r" TO_STR(HOPSANCORESVNREVISION)
 #define HOPSANCOREMODELFILEVERSION "0.4"
 

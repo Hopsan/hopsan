@@ -31,10 +31,9 @@ writeFile()
 }
 
 # Get revision number from last change
+rev=""
 if [ -x /usr/bin/svn ]; then
   rev=`svn info | grep "Last Changed Rev:" | cut -d" " -f4`
-else
-  rev=""
 fi
 
 #Check if dir exist, if so write the file

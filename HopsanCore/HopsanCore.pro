@@ -75,16 +75,24 @@ win32 {
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
-    # Retreive the hopsan core source code revision number
-    system($${PWD}/../getSvnRevision.bat include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
+    # Retreive the hopsan core source code revision number, regenerate revnum file if we find revision
+    rev=$$system($${PWD}/../getSvnRevision.bat)
+    message(Core revision: $${rev})
+    !equals(rev, "RevisionInformationNotFound") {
+        system($${PWD}/../getSvnRevision.bat include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
+    }
 }
 unix { 
     DEFINES *= USETBB
     LIBS += -ltbb -ldl
     INCLUDEPATH += /usr/include/tbb/
 
-    # Retreive the hopsan core source code revision number
-    system($${PWD}/../getSvnRevision.sh include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
+    # Retreive the hopsan core source code revision number, regenerate revnum file if we find revision
+    rev=$$system($${PWD}/../getSvnRevision.sh)
+    message(Core revision: $${rev})
+    !equals(rev, "RevisionInformationNotFound") {
+        system($${PWD}/../getSvnRevision.sh include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
+    }
 }
 macx { 
     INCLUDEPATH += /opt/local/include/

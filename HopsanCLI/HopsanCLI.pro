@@ -60,9 +60,11 @@ unix {
     # Is the following really needed on Linux? /magse
     !macx:LIBS *= -lrt
 
-    # Get the svn revision in here if script succeed, we dont care about the external file generated,
-    system($${PWD}/../getSvnRevision.sh) {
-        DEFINES *= "HOPSANCLISVNREVISION=$$system($${PWD}/../getSvnRevision.sh)"
+    # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
+    rev = $$system($${PWD}/../getSvnRevision.sh)
+    message(CLI revision: $${rev})
+    !equals(rev, "RevisionInformationNotFound") {
+        DEFINES *= "HOPSANCLISVNREVISION=$${rev}"
     }
 }
 win32 {
@@ -72,9 +74,11 @@ win32 {
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 
-    # Get the svn revision in here if script succeed, we dont care about the external file generated,
-    system($${PWD}/../getSvnRevision.bat) {
-        DEFINES *= "HOPSANCLISVNREVISION=$$system($${PWD}/../getSvnRevision.bat)"
+    # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
+    rev = $$system($${PWD}/../getSvnRevision.bat)
+    message(CLI revision: $${rev})
+    !equals(rev, "RevisionInformationNotFound") {
+        DEFINES *= "HOPSANCLISVNREVISION=$${rev}"
     }
 }
 

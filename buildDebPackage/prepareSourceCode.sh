@@ -27,6 +27,7 @@ doBuildInComponents="$7"
 cd $srcDir/HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
+echo "CoreSVNrev: $coresvnrev, GUISVNrev: $guisvnrev, CLISVNrev: $clisvnrev"
 
 # -----------------------------------------------------------------------------
 # Export source dirs and files

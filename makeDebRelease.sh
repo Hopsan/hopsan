@@ -15,7 +15,7 @@ devversion=0.8.x
 
 # Pbuilder dists and archs
 debianDistArchArray=( stretch:amd64:qt5 stretch:i386:qt5 jessie:amd64:qt5 jessie:i386:qt5 )
-ubuntuDistArchArray=( wily:amd64:qt5 wily:i386:qt5 trusty:amd64:qt4 trusty:i386:qt4 )
+ubuntuDistArchArray=( xenial:amd64:qt5 wily:amd64:qt5 wily:i386:qt5 trusty:amd64:qt4 trusty:i386:qt4 )
 
 # Pbuilder mirrors
 ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
@@ -143,8 +143,8 @@ echo "Release revision number: $releaserevision"
 echo "Release version name: $fullversionname"
 echo "Built in components: $doBuildInComponents"
 echo "Using PythonQt: $doUsePythonQt"
-echo "Using pbuilder: $doPbuild"
-if [ "$doPbuild" = "true" ]; then
+echo "Using pbuilder: true"
+if [ "true" = "true" ]; then
   printf "%s\n" "${distArchArrayDo[@]}"
 fi
 echo ---------------------------------------
