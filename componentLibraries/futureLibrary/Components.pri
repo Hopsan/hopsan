@@ -2,7 +2,6 @@
 
 
 HEADERS +=  \ 
- $${PWD}/Components.h \ 
  $${PWD}/Electrical/ElectricInductanceC.hpp \ 
  $${PWD}/Electrical/Electrical.h \ 
  $${PWD}/Hydraulic/Hydraulic.h \ 
@@ -14,13 +13,14 @@ HEADERS +=  \
  $${PWD}/Mechanical/MechanicFreeFixWall.hpp \ 
  $${PWD}/Mechanical/MechanicSteel.hpp \ 
  $${PWD}/Mechanical/Mechanical.h \ 
- $${PWD}/Mechanical/MechanicalSeparator.hpp
+ $${PWD}/Mechanical/MechanicalSeparator.hpp \ 
+ $${PWD}/Components.h
 
 SOURCES += 
 
 OTHER_FILES +=  \ 
- $${PWD}/Components.cci \ 
  $${PWD}/Electrical/Electrical.cci \ 
  $${PWD}/Hydraulic/Hydraulic.cci \ 
- $${PWD}/Mechanical/Mechanical.cci
+ $${PWD}/Mechanical/Mechanical.cci \ 
+ $${PWD}/Components.cci
 
