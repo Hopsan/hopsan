@@ -22,7 +22,7 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
-//$Id: MechanicFreeFixWall.hpp 356 2016-04-06 08:51:45Z petno25 $
+//$Id$
 
 #ifndef MECHANICFREEFIXWALL_HPP_INCLUDED
 #define MECHANICFREEFIXWALL_HPP_INCLUDED

@@ -22,7 +22,7 @@
  For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
-//$Id: MechanicForceTransformerQ.hpp 371 2016-04-26 15:07:44Z petno25 $
+//$Id$
 
 #ifndef MECHANICFORCETRANSFORMERQ_HPP_INCLUDED
 #define MECHANICFORCETRANSFORMERQ_HPP_INCLUDED

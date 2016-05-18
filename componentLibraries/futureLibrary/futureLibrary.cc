@@ -25,7 +25,7 @@
 //!
 //! @file   futureLibrary.cc
 //!
-//$Id: futureLibrary.cc 8139 2015-06-17 12:30:13Z petno25 $
+//$Id$
 
 // Include automatically generated header code for all default library components
 #include "Components.h"
