@@ -95,8 +95,8 @@ public:
             mDenV[0] = (*mpB);
             mDenV[1] = 0.0;
 
-            mFilterX.initialize(mTimestep, mNumX, mDenX, -(mP1.f()), (mP1.x()));
-            mFilterV.initialize(mTimestep, mNumV, mDenV, -(mP1.f()), (mP1.v()));
+            mFilterX.initialize(mTimestep, mNumX, mDenX, -(mP1.c()), (mP1.x()));
+            mFilterV.initialize(mTimestep, mNumV, mDenV, -(mP1.c()), (mP1.v()));
         }
     }
 
@@ -131,7 +131,8 @@ public:
                 x1=mStopPos;
                 v1=0.0;
                 mFilterX.initializeValues(-c1, x1);
-                mFilterV.initializeValues(-c1, v1);
+                // I dont think that we should reinitialize the velocity filter, that would create or remove energy
+                //mFilterV.initializeValues(-c1, v1);
                 f1 = c1 + Zx1*v1;
             }
             // If we are not in contact, then set f1 = 0 since that end should be in "free space"
