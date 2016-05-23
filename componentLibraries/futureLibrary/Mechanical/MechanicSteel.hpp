@@ -61,11 +61,11 @@ public:
 
         addOutputVariable("stiffness", "", "", &mpStiffness);
         addOutputVariable("stiffness_per_step", "", "", &mpStiffnessPerStep);
-        addOutputVariable("actual_length", "", "", &mpActualLength);
+        addOutputVariable("actual_length", "", "Length", &mpActualLength);
         addOutputVariable("mean_vel", "", "Velocity", &mpMeanVel);
         addOutputVariable("mean_c12", "", "", &mpMeanC12);
         addOutputVariable("mean_c21", "", "", &mpMeanC21);
-        addOutputVariable("internalMeanKE", "", "", &mpInternalWaveKineticEnergy);
+        addOutputVariable("internalMeanKE", "", "Energy", &mpInternalWaveKineticEnergy);
     }
 
 
@@ -221,7 +221,7 @@ public:
         const double c21 = mDelay21.update(c1in);
 
         //! @todo n+1 ?
-        const double n = mDelay12.getSize();
+        const double n = mDelay12.getSize()+1;
         mMeanC12 = (mMeanC12*n - c12 + c2in)/n;
         mMeanC21 = (mMeanC21*n - c21 + c1in)/n;
 

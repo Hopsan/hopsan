@@ -55,7 +55,8 @@ public:
         // Calc volume
         double V = mWallArea * x + mDeadVolume;
 
-        double Zc = double(mNumPorts)*mBetae/(2.0*V)*mTimestep/(1.0-mAlpha);
+        double Zc = double(mNumPorts)*mBetae/(2.0*V)*mTimestep;
+        Zc *= 1.0/(1.0-mAlpha); // Compensation for steady-state filter (assuming 1 Ts delay)
 
         double cAvg=0;
         for (size_t i=0; i<mNumPorts; ++i)

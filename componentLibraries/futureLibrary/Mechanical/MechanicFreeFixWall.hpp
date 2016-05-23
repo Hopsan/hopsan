@@ -49,10 +49,10 @@ private:
     double *mpB;
     MechanicNodeDataPointerStructT mP1;
 
-    double mNumX[2], mNumV[2];
-    double mDenX[2], mDenV[2];
+    double mNumX[2];//, mNumV[2];
+    double mDenX[2];//, mDenV[2];
     FirstOrderTransferFunction mFilterX;
-    FirstOrderTransferFunction mFilterV;
+    //FirstOrderTransferFunction mFilterV;
     Port *mpP1;
     bool mIsFixed;
 
@@ -90,13 +90,13 @@ public:
             mNumX[1] = 0.0;
             mDenX[0] = 0.0;
             mDenX[1] = (*mpB);
-            mNumV[0] = 1.0;
-            mNumV[1] = 0.0;
-            mDenV[0] = (*mpB);
-            mDenV[1] = 0.0;
+//            mNumV[0] = 1.0;
+//            mNumV[1] = 0.0;
+//            mDenV[0] = (*mpB);
+//            mDenV[1] = 0.0;
 
             mFilterX.initialize(mTimestep, mNumX, mDenX, -(mP1.c()), (mP1.x()));
-            mFilterV.initialize(mTimestep, mNumV, mDenV, -(mP1.c()), (mP1.v()));
+//            mFilterV.initialize(mTimestep, mNumV, mDenV, -(mP1.c()), (mP1.v()));
         }
     }
 
@@ -115,12 +115,13 @@ public:
 
             //Mass equations
             mDenX[1] = (*mpB)+Zx1;
-            mDenV[0] = (*mpB)+Zx1;
+//            mDenV[0] = (*mpB)+Zx1;
             mFilterX.setDen(mDenX);
-            mFilterV.setDen(mDenV);
+//            mFilterV.setDen(mDenV);
 
             x1 = mFilterX.update(-c1);
-            v1 = mFilterV.update(-c1);
+//            v1 = mFilterV.update(-c1);
+            v1 = -c1/(*mpB+Zx1);
 
             // Note! Negative x1 value means that we are moving into the port towards mStopPos
             //       mStopPos should have same coordinate system as port, (positive direction out of the component)

@@ -3,6 +3,7 @@
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
+#include <iostream>
 
 namespace hopsan {
 
@@ -42,6 +43,7 @@ public:
         std::vector<HString> conditions;
         conditions.push_back("Standard");
         conditions.push_back("RecalcNC");
+        conditions.push_back("RecalcCNC");
         conditions.push_back("StepsizeRelax");
         addConditionalConstant("method", "", conditions, 2, mMethod);
         addConstant("dc_thresh", "Disconnect force threshold", "", 0, mDisconnectThresh);
@@ -97,13 +99,12 @@ public:
 
         if (mMethod == 0)
         {
+            bool prevContact = mIsContact;
+
             if (mIsContact)
             {
                 // OK we have contact
-                v2 = (mP1.c()-mP2.c())/std::max(mP1.Zc()+mP2.Zc(), 1e-12);
-                v1 = -v2;
-                f1 = mP1.c() + mP1.Zc()*v1;
-                f2 = mP2.c() + mP2.Zc()*v2;
+                calcContactVF(v1,v2,f1,f2);
 
                 x1 = mFreeIntegrator1.update(v1);
                 x2 = mFreeIntegrator2.update(v2);
@@ -115,16 +116,11 @@ public:
                 mIsContact = !(f1<mDisconnectThresh || f2<mDisconnectThresh);
                 f1 = lowerLimit(f1,0);
                 f2 = lowerLimit(f2,0);
-
-                writeOutputVariable(mpOutContact, 1);
             }
             else
             {
                 // First calculate the non-contact behavior
-                v1 = -mP1.c()/std::max(mP1.Zc(), 1e-12);
-                v2 = -mP2.c()/std::max(mP2.Zc(), 1e-12);
-                f1 = 0;
-                f2 = 0;
+                calcNonContactVF(v1,v2,f1,f2);
 
                 x1 = mFreeIntegrator1.update(v1);
                 x2 = mFreeIntegrator2.update(v2);
@@ -133,8 +129,11 @@ public:
                 // Note! Since we have discrete time steps, the actual contact may have been missed
                 // x_diff = x2-x1 but since positive directions are mirrored => x_diff = x2+x1
                 mIsContact = x2+x1<=0;
+            }
 
-                writeOutputVariable(mpOutContact, 0);
+            if (prevContact != mIsContact)
+            {
+                //std::cout << "Switch! " << std::endl;
             }
         }
         else if (mMethod == 1)
@@ -160,8 +159,44 @@ public:
 
                 x1 = mFreeIntegrator1.update(v1);
                 x2 = mFreeIntegrator2.update(v2);
+            }
+            else
+            {
+                // Calculate the non-contact behavior
+                calcNonContactVF(v1,v2,f1,f2);
 
-                writeOutputVariable(mpOutContact, boolToDouble(mIsContact));
+                x1 = mFreeIntegrator1.update(v1);
+                x2 = mFreeIntegrator2.update(v2);
+
+                // Contact if positions becomes the same or x2 >= x1
+                // Note! Since we have discrete time steps, the actual contact may have been missed
+                // x_diff = x2-x1 but since positive directions are mirrored => x_diff = x2+x1
+                mIsContact = x2+x1<=0;
+            }
+        }
+        else if (mMethod == 2)
+        {
+            if (mIsContact)
+            {
+                // OK we have contact
+                calcContactVF(v1,v2,f1,f2);
+
+                // Positive forces means that there are forces acting into the Q-ports
+                // If any of the forces are negative it means it is pulling away
+                // (not to be confused with the positive direction for velocity)
+                // If one of the forces becomes negative, that means that the contact is broken.
+                mIsContact = !(f1<mDisconnectThresh || f2<mDisconnectThresh);
+                // If not contact then use non-contact calculation instead
+                if (!mIsContact)
+                {
+//                    addWarningMessage("Recalc: "+to_hstring(f1)+" "+to_hstring(f2));
+                    calcNonContactVF(v1,v2,f1,f2);
+                }
+                f1 = lowerLimit(f1,0);
+                f2 = lowerLimit(f2,0);
+
+                x1 = mFreeIntegrator1.update(v1);
+                x2 = mFreeIntegrator2.update(v2);
             }
             else
             {
@@ -176,10 +211,22 @@ public:
                 // x_diff = x2-x1 but since positive directions are mirrored => x_diff = x2+x1
                 mIsContact = x2+x1<=0;
 
-                writeOutputVariable(mpOutContact, boolToDouble(mIsContact));
+                if (mIsContact)
+                {
+//                    addWarningMessage("Recalc: "+to_hstring(f1)+" "+to_hstring(f2));
+                    calcContactVF(v1,v2,f1,f2);
+                    mIsContact = !(f1<mDisconnectThresh || f2<mDisconnectThresh);
+                    // If contact calulation would result in non-contact, thenr estore non-contact calulation
+                    if (!mIsContact)
+                    {
+                        calcNonContactVF(v1,v2,f1,f2);
+                    }
+                }
+                f1 = lowerLimit(f1,0);
+                f2 = lowerLimit(f2,0);
             }
         }
-        else if (mMethod == 2)
+        else if (mMethod == 3)
         {
             if (mIsContact)
             {
@@ -204,8 +251,6 @@ public:
 
                 x1 = mFreeIntegrator1.update(v1);
                 x2 = mFreeIntegrator2.update(v2);
-
-                writeOutputVariable(mpOutContact, boolToDouble(mIsContact));
 
                 if (!mIsContact)
                 {
@@ -237,8 +282,6 @@ public:
                     mIsContact = x2+x1<=0;
                 }
 
-                writeOutputVariable(mpOutContact, boolToDouble(mIsContact));
-
                 if (mIsContact)
                 {
                     mCCounter = 0;
@@ -250,6 +293,8 @@ public:
                 }
             }
         }
+
+        writeOutputVariable(mpOutContact, boolToDouble(mIsContact));
 
         // Write to nodes
         mP1.rf() = f1;
