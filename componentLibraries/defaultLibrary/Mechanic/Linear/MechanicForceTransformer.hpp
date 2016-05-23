@@ -39,7 +39,7 @@ class MechanicForceTransformer : public ComponentC
 {
 
 private:
-    double *mpF_signal, *mpP1_f, *mpP1_c, *mpP1_Zx;
+    double *mpF_signal, *mpP1_f, *mpP1_c;
     Port *mpP1;
 
 public:
@@ -53,6 +53,8 @@ public:
         addInputVariable("F", "Generated force", "N", 0.0, &mpF_signal);
         mpP1 = addPowerPort("P1", "NodeMechanic");
         disableStartValue(mpP1, NodeMechanic::Force);
+        setDefaultStartValue(mpP1, NodeMechanic::CharImpedance, 0);
+        disableStartValue(mpP1, NodeMechanic::CharImpedance);
     }
 
 
@@ -60,17 +62,18 @@ public:
     {
         mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
         mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
-        mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
         (*mpP1_f) = (*mpF_signal);
-        (*mpP1_Zx) = 0.0;
+        if ((*mpP1_c) == 0)
+        {
+            (*mpP1_c) = (*mpF_signal);
+        }
     }
 
 
     void simulateOneTimestep()
     {
         (*mpP1_c) = (*mpF_signal);
-        (*mpP1_Zx) = 0.0;
     }
 };
 }
