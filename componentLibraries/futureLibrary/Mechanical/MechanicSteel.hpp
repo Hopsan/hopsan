@@ -6,6 +6,8 @@
 
 namespace hopsan {
 
+inline double square(const double val) {return val*val;}
+
 class MechanicSteel : public ComponentC
 {
 
@@ -44,7 +46,7 @@ public:
         addConstant("Length", "Length of part", "Length", 1, mLength);
         addConstant("Area", "Cross sectional area of part", "Area", "", 0.1, mArea);
 
-        addConstant("nsteps", "Force num delay steps (-1 = auto)", "", -1, mForceNumDelaySteps);
+        addConstant("nsteps", "Internal delaybuffer length (-1 = auto), actual delay will be nsteps+1", "", -1, mForceNumDelaySteps);
 
         std::vector<HString> conds;
         conds.push_back("Fwd-Euler");
@@ -203,7 +205,7 @@ public:
 //        mSumV21 = (c21i/Zx)*(c21i/Zx)*n*mMass/(2.0*n);
 
         const double pmass = mMass/(numSteps*2.0); // The mass of every "individual particle" in the delay line
-        mInternalWaveKineticEnergy = ((c12i/Zx)*(c12i/Zx)+(c21i/Zx)*(c21i/Zx))*pmass/2.0*numSteps;
+        mInternalWaveKineticEnergy = (square(c12i/Zx)+square(c21i/Zx))*pmass/2.0*numSteps;
         writeOutputVariable(mpInternalWaveKineticEnergy, mInternalWaveKineticEnergy);
 
         //simulateOneTimestep();
@@ -212,6 +214,9 @@ public:
 
     void simulateOneTimestep()
     {
+        const double c12prev = mP1.c();
+        const double c21prev = mP2.c();
+
         const double c2in = mP2.f()+mP2.v()*mP2.Zc();
         const double c1in = mP1.f()+mP1.v()*mP1.Zc();
 //        const double c2in = mP2.c()+2*mP2.v()*mP2.Zc();
@@ -220,10 +225,11 @@ public:
         const double c12 = mDelay12.update(c2in);
         const double c21 = mDelay21.update(c1in);
 
-        //! @todo n+1 ?
         const double n = mDelay12.getSize()+1;
-        mMeanC12 = (mMeanC12*n - c12 + c2in)/n;
-        mMeanC21 = (mMeanC21*n - c21 + c1in)/n;
+//        mMeanC12 = (mMeanC12*n - c12 + c2in)/n;
+//        mMeanC21 = (mMeanC21*n - c21 + c1in)/n;
+        mMeanC12 = (mMeanC12*n - c12prev + c2in)/n;
+        mMeanC21 = (mMeanC21*n - c21prev + c1in)/n;
 
 //        mSumV12 += (c2in/mP1.Zc())*(c2in/mP1.Zc()) - (c12/mP1.Zc())*(c12/mP1.Zc());
 //        mSumV21 += (c1in/mP1.Zc())*(c1in/mP1.Zc()) - (c21/mP1.Zc())*(c21/mP1.Zc());
@@ -238,7 +244,8 @@ public:
 
         double zc = mP1.Zc();
         const double pmass = mMass/(2.0*n); // The mass of every "individual particle" in the delay line
-        mInternalWaveKineticEnergy += ((c2in/zc)*(c2in/zc) + (c1in/zc)*(c1in/zc) - (c12/zc)*(c12/zc) - (c21/zc)*(c21/zc))*pmass/2.0;
+//        mInternalWaveKineticEnergy += ((c2in/zc)*(c2in/zc) + (c1in/zc)*(c1in/zc) - (c12/zc)*(c12/zc) - (c21/zc)*(c21/zc))*pmass/2.0;
+        mInternalWaveKineticEnergy += (square(c2in/zc) + square(c1in/zc) - square(c12prev/zc) - square(c21prev/zc))*pmass/2.0;
 
         if (mTlmFilterType == 0)
         {
