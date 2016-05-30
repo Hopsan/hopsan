@@ -2831,7 +2831,7 @@ void ContainerObject::clearContents()
     {
         //This may lead to a crash if undo stack is not disabled before calling this
         (*mit)->setIsLocked(false);     //Must unlock object in order to remove it
-        (*mit)->deleteMe();
+        deleteModelObject((*mit)->getName(), NoUndo);
         mit=mModelObjectMap.begin();
     }
 
@@ -2839,7 +2839,7 @@ void ContainerObject::clearContents()
     wit=mWidgetMap.begin();
     while (wit!=mWidgetMap.end())
     {
-        (*wit)->deleteMe();
+        deleteWidget(*wit, NoUndo);
         wit=mWidgetMap.begin();
     }
 }

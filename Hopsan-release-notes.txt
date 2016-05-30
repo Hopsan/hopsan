@@ -34,6 +34,7 @@
 0.7.6  (2016-??-??)
 - Bug fixed: Numhop +- expressions fail if left-hand variable name ends with e or E
 - Bug fixed: If you close the add-system-parameter widget with the "cross" in the top right corner, it is impossible to open it again
+- Bug fixed: HopsanGUI hangs forever when closing a model with one or more open properties dialogs
 
 - Enhancement: Limited boolean operator support in numhop, true = 1 and false = 0 
 ------------------------------
