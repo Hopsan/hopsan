@@ -31,6 +31,11 @@
     Version History
 ******************************
 
+0.7.6  (2016-??-??)
+- Bug fixed: Numhop +- expressions fail if left-hand variable name ends with e or E
+- Bug fixed: If you close the add-system-parameter widget with the "cross" in the top right corner, it is impossible to open it again
+
+------------------------------
 0.7.5  (2016-05-19)
 - Feature: HCOM vector function that can create a vector from input arguments. Ex: "a = vector(1,2,3,4,5)"
 - Feature: It is now possible to import "Space separated value" files into HopsanGUI
