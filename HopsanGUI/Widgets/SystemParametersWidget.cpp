@@ -500,6 +500,7 @@ void SystemParametersWidget::openAddParameterDialog()
     pAddInDialogButton->setDefault(true);
     mpAddParameterDialog->show();
 
+    connect(mpAddParameterDialog,       SIGNAL(rejected()),     this,   SLOT(closeDialog()));
     connect(pCancelInDialogButton,      SIGNAL(clicked()),      this,   SLOT(closeDialog()));
     connect(pAddAndCloseInDialogButton, SIGNAL(clicked()),      this,   SLOT(addParameterAndCloseDialog()));
     connect(pAddInDialogButton,         SIGNAL(clicked()),      this,   SLOT(addParameter()));
@@ -626,6 +627,7 @@ void SystemParametersWidget::removeSelected()
 
 void SystemParametersWidget::closeDialog()
 {
+    disconnect(mpAddParameterDialog, SIGNAL(rejected()), this,SLOT(closeDialog()));
     mpAddParameterDialog->close();
     mpAddParameterDialog->deleteLater();
     mpAddParameterDialog = nullptr;
