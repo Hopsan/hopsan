@@ -2,14 +2,14 @@
 
 A simple string parsing numerical calculation library written in C++.
 It interprets strings with mathematical expressions and allows creation and reading of internal or external variables.
-
 Internal variables are local within the library, external variables are such variables that may be present in some other code using this library.
 
-The library supports the following mathematical operators: = + - * / ^ and expressions within ()
-Boolean operators: < > | & (less then, greater then, or, and) are also supported.
-Note! For an expression like -4 < -3 you need to place the values in parenthesis like this: (-4) < (-3) or use variables
-Scripts can have LF, CRLF or CR line endings
+The library supports the following mathematical operators: `= + - * / ^` and expressions within `()`  
+Boolean operators: `<` `>` `|` `&` (less then, greater then, or, and) are also supported.  
+Note! For an expression like `-4 < -3` you need to place the values in parenthesis like this: `(-4) < (-3)` or use variables.  
+Scripts can have LF, CRLF or CR line endings.
 
+This library was developed for and is used inside Hopsan, https://www.iei.liu.se/flumes/system-simulation/hopsan?l=en
 
 ## Usage examples
 

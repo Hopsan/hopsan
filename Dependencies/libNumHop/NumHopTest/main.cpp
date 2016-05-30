@@ -77,6 +77,7 @@ int main()
     expr.push_back("-dog");
     expr.push_back("a=1;b=2;-(a-b)");
     expr.push_back("2e-2-1E-2; 1e+2+3E+2; 1e2+1E2");
+    expr.push_back("value=5; value+2; value-2; value*1e+2");
 
     expr.push_back("cat \n dog \r dog=5;cat=2;a=3;b=dog*cat*a;b");
     expr.push_back("-1-2-3*4-4-3");

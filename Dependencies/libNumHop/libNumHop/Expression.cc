@@ -70,6 +70,26 @@ bool fixMultiOperators(size_t e, std::string &expr)
     return true;
 }
 
+//! @brief Check if a char is fisrt part of an exponential notation
+//! @param[in] expr The expression string
+//! @param[in] i The index of the first char efter the e or E
+//! @returns True or False
+bool isExpNot(const std::string &expr, const size_t i)
+{
+    // For i to be first part of exponential notation,
+    // prev. char should be 'e' or 'E'
+    // prev.prev. char should be a digit
+    if (i>1)
+    {
+        //const char &c = expr[i];
+        //! @todo maybe should check that c is +, - or digit
+        const char &pc = expr[i-1];
+        const char &ppc = expr[i-2];
+        return ((pc == 'e') || (pc == 'E')) && isdigit(ppc);
+    }
+    return false;
+}
+
 //! @brief Find an operator and branch the expression tree at this point
 //! @param[in] exprString The expression string to process
 //! @param[in] evalOperators A string with the operators to search for
@@ -83,7 +103,6 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
 
     size_t nOpenParanthesis=0, e=0;
     bool foundOperator=false;
-    char pc=' '; // previous char
     std::vector<size_t> breakpts;
     breakpts.push_back(e);
     for (e=0; e<exprString.size(); ++e)
@@ -102,6 +121,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
 
         if (nOpenParanthesis == 0)
         {
+            //! @todo it might be a good idea to compare the char with a range of asci values, to quickly decide if a char is an operator, instead of comparing every char multiple times
             bool foundOperatorAtThisLocation=false;
             // Check for assignment, (can only have one assignment in expression)
             if ( (c == '=') && contains(evalOperators, '=') )
@@ -113,7 +133,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                     return false;
                 }
             }
-            else if ( (c == '+') && !((pc == 'e') || (pc == 'E')) && contains(evalOperators, '+') )
+            else if ( (c == '+') && !isExpNot(exprString, e) && contains(evalOperators, '+') )
             {
                 foundOperator=true;
                 foundOperatorAtThisLocation=true;
@@ -122,7 +142,7 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                     breakpts.push_back(e);
                 }
             }
-            else if ( (c == '-') && !((pc == 'e') || (pc == 'E')) && contains(evalOperators, '-') )
+            else if ( (c == '-') && !isExpNot(exprString, e) && contains(evalOperators, '-') )
             {
                 foundOperator=true;
                 foundOperatorAtThisLocation=true;
@@ -183,7 +203,6 @@ bool branchExpressionOnOperator(std::string exprString, const std::string &evalO
                 return false;
             }
         }
-        pc = c;
     }
     breakpts.push_back(e);
 
