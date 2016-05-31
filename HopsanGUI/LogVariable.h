@@ -203,6 +203,7 @@ public:
     void divData(const SharedVectorVariableT pOther);
     void divData(const double other);
     void absData();
+    void powerData(const double other);
     double pokeData(const int index, const double value, QString &rErr);
     void append(const double y);
     void chopAtBeginning();

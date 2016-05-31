@@ -6565,10 +6565,11 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         evaluateExpression(b.toString());
 
         //! @todo this toDouble == 2.0 comparison is not safe (but seems to work)
-        if(mAnsType == DataVector && p.toDouble() == 2.0)
+        if(mAnsType == DataVector && p.toDouble() >= 0.0/* && p.toDouble() == 2.0*/)
         {
             mAnsType = DataVector;
-            mAnsVector = pLogDataHandler->multVariables(mAnsVector, mAnsVector);
+            //mAnsVector = pLogDataHandler->multVariables(mAnsVector, mAnsVector);
+            mAnsVector = pLogDataHandler->elementWisePower(mAnsVector, p.toDouble());
             return;
         }
         //! @todo what if not square (power 2) Need elementWisePower function for that

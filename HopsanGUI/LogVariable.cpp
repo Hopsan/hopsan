@@ -587,6 +587,17 @@ void VectorVariable::absData()
     emit dataChanged();
 }
 
+void VectorVariable::powerData(const double other)
+{
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
+    for (int i=0; i<pData->size(); ++i)
+    {
+       (*pData)[i] = pow((*pData)[i], other);
+    }
+    mpCachedDataVector->endFullVectorOperation(pData);
+    emit dataChanged();
+}
+
 void VectorVariable::diffBy(SharedVectorVariableT pOther)
 {
     if(pOther)

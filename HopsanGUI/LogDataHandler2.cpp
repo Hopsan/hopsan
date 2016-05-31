@@ -1812,6 +1812,14 @@ SharedVectorVariableT LogDataHandler2::elementWiseLT(SharedVectorVariableT pData
     return SharedVectorVariableT();
 }
 
+SharedVectorVariableT LogDataHandler2::elementWisePower(SharedVectorVariableT a, const double x)
+{
+    SharedVectorVariableT pTempVar = createOrphanVariable(a->getSmartName()+"*"+QString::number(x), a->getVariableType());
+    pTempVar->assignFrom(a);
+    pTempVar->powerData(x);
+    return pTempVar;
+}
+
 void LogDataHandler2::setGenerationTimePlotOffset(int generation, double offset)
 {
     // Should we take current
