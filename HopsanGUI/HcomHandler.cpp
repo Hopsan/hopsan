@@ -5916,14 +5916,13 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     //else if(desiredType != Scalar && (expr.startsWith("linspace(") && expr.endsWith(")")))
     else if(desiredType != Scalar && isHcomFunctionCall("linspace", expr))
     {
-        QString args = expr.mid(9, expr.size()-10);
-        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
-        if (splitArgs.size() == 3)
+        QStringList args = extractFunctionCallExpressionArguments(expr);
+        if (args.size() == 3)
         {
             bool minOK, maxOK, nOK;
-            double min = splitArgs.first().toDouble(&minOK);
-            double max = splitArgs[1].toDouble(&maxOK);
-            int nSamp = int(splitArgs.last().toDouble(&nOK)+0.5);
+            double min = evaluateScalarExpression(args.first(), minOK);
+            double max = evaluateScalarExpression(args[1], maxOK);
+            int nSamp = int(evaluateScalarExpression(args.last(), nOK)+0.5);
 
             if (minOK && maxOK && nOK)
             {
@@ -5936,7 +5935,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                         {
                             data[i] = min+double(i)*(max-min)/double(nSamp-1);
                         }
-                        mAnsVector = mpModel->getViewContainerObject()->getLogDataHandler()->createOrphanVariable("linspace");
+                        mAnsVector = mpModel->getLogDataHandler()->createOrphanVariable("linspace");
                         mAnsVector->assignFrom(data);
                         mAnsType = DataVector;
                         return;
@@ -5953,7 +5952,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
             else
             {
-                HCOMERR("Could not parse arguments");
+                HCOMERR("Could not parse arguments, (scalars expected)");
             }
         }
         else
@@ -5966,14 +5965,13 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     //else if(desiredType != Scalar && (expr.startsWith("logspace(") && expr.endsWith(")")))
     else if(desiredType != Scalar && isHcomFunctionCall("logspace", expr))
     {
-        QString args = expr.mid(9, expr.size()-10);
-        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args,',');
-        if (splitArgs.size() == 3)
+        QStringList args = extractFunctionCallExpressionArguments(expr);
+        if (args.size() == 3)
         {
             bool minOK, maxOK, nOK;
-            double min = splitArgs.first().toDouble(&minOK);
-            double max = splitArgs[1].toDouble(&maxOK);
-            int nSamp = int(splitArgs.last().toDouble(&nOK)+0.5);
+            double min = evaluateScalarExpression(args.first(), minOK);
+            double max = evaluateScalarExpression(args[1], maxOK);
+            int nSamp = int(evaluateScalarExpression(args.last(), nOK)+0.5);
 
             if (minOK && maxOK && nOK)
             {
@@ -5986,7 +5984,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                         {
                             data[i] = pow(10, min+double(i)*(max-min)/double(nSamp-1));
                         }
-                        mAnsVector = mpModel->getViewContainerObject()->getLogDataHandler()->createOrphanVariable("linspace");
+                        mAnsVector = mpModel->getLogDataHandler()->createOrphanVariable("logspace");
                         mAnsVector->assignFrom(data);
                         mAnsType = DataVector;
                         return;
@@ -6003,7 +6001,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
             else
             {
-                HCOMERR("Could not parse arguments");
+                HCOMERR("Could not parse arguments, (scalars expected)");
             }
         }
         else
@@ -6109,7 +6107,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     else if(desiredType != Scalar && isHcomFunctionCall("vector", expr))
     {
         QStringList args = extractFunctionCallExpressionArguments(expr);
-        if (args.size())
+        if (args.size() > 0)
         {
             if (mpModel)
             {
@@ -6728,6 +6726,23 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     mAnsType = Wildcard;
     mAnsWildcard = expr;
     return;
+}
+
+//! @brief Evaluate an expressions when the expected result is a scalar, the expression may in turn contain expressions
+double HcomHandler::evaluateScalarExpression(QString expr, bool &rIsOK)
+{
+    // Note! we do not use 'Scalar' here since then the expression can not in it self be an expression
+    evaluateExpression(expr, Undefined);
+    if (mAnsType == Scalar)
+    {
+        rIsOK = true;
+        return mAnsScalar;
+    }
+    else
+    {
+        rIsOK = false;
+        return -1;
+    }
 }
 
 void HcomHandler::setAcceptsOptimizationCommands(const bool value)

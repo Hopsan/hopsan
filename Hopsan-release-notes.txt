@@ -38,6 +38,8 @@
 
 - Enhancement: Limited boolean operator support in numhop, true = 1 and false = 0 
 - Enhancement: HCOM's elementwise power function for vectors now support other (positive) powers than 2
+- Enhancement: HCOM's linspace and logspace functions will now evaluate arguments (so that variables can be passed)
+
 ------------------------------
 0.7.5  (2016-05-19)
 - Feature: HCOM vector function that can create a vector from input arguments. Ex: "a = vector(1,2,3,4,5)"

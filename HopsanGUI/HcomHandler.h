@@ -98,6 +98,7 @@ public:
     TerminalConsole *mpConsole;
 
     void evaluateExpression(QString expr, VariableType desiredType=Undefined);
+    double evaluateScalarExpression(QString expr, bool &rIsOK);
 
     void setAcceptsOptimizationCommands(const bool value);
     bool getAcceptsOptimizationCommands() const;
