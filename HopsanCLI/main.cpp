@@ -588,13 +588,22 @@ int main(int argc, char *argv[])
                 for(size_t m=0; m<nModels; ++m)
                 {
                     rootSystemPtrs.push_back(gHopsanCore.loadHMFModelFile(hmfPathOption.getValue().c_str(), startTime, stopTime));
-                    if(!rootSystemPtrs.at(m))
+                    if(rootSystemPtrs.at(m))
+                    {
+                        if (parameterImportOption.isSet())
+                        {
+                            cout << "Importing parameter values from file: " << parameterImportOption.getValue() << endl;
+                            importParameterValuesFromCSV(parameterImportOption.getValue(), rootSystemPtrs.at(m));
+                        }
+                        rootSystemPtrs.at(m)->disableLog();
+                    }
+                    else
                     {
                         printErrorMessage("Could not load model file: " + hmfPathOption.getValue());
                         modelFileOk=false;
                         returnSuccess=false;
+                        break;
                     }
-                    rootSystemPtrs.at(m)->disableLog();
                 }
                 size_t nErrors = gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();
                 printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
