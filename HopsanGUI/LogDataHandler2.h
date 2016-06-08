@@ -91,13 +91,14 @@ public:
     QVector<double> copyVariableDataVector(const QString &rName, const int generation=-1);
     SharedVectorVariableT getVectorVariable(const QString &rName, int generation=-1) const;
 
-    QList<SharedVectorVariableT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, int generation=-1) const;
-    QList<SharedVectorVariableT> getMatchingVariablesFromAllGeneration(const QRegExp &rNameExp) const;
+    QList<SharedVectorVariableT> getMatchingVariablesAtGeneration(const QRegExp &rNameExp, int generation=-1, const VariableNameTypeT nametype=AliasAndFull) const;
+    QList<SharedVectorVariableT> getMatchingVariablesFromAllGenerations(const QRegExp &rNameExp, const VariableNameTypeT nametype=AliasAndFull) const;
+    QList<SharedVectorVariableT> getMatchingVariablesAtRespectiveNewestGeneration(const QRegExp &rNameExp, const VariableNameTypeT nametype=AliasAndFull) const;
     QList<SharedVectorVariableT> getAllNonAliasVariablesAtGeneration(const int generation) const;
     QList<SharedVectorVariableT> getAllVariablesAtGeneration(const int gen);
     QList<SharedVectorVariableT> getAllVariablesAtCurrentGeneration();
     QList<SharedVectorVariableT> getAllVariablesAtRespectiveNewestGeneration();
-    QList<SharedVectorVariableT> getMatchingVariablesAtRespectiveNewestGeneration(const QRegExp &rNameExp) const;
+
 
     QList<int> getImportedGenerations() const;
     ImportedGenerationsMapT getImportFilesAndGenerations() const;

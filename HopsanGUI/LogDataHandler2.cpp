@@ -1423,7 +1423,7 @@ SharedVectorVariableT LogDataHandler2::getVectorVariable(const QString &rName, i
 //! @brief Returns multiple logdata variables based on regular expression search. Excluding temp variables but including aliases
 //! @param [in] rNameExp The regular expression for the names to match
 //! @param [in] generation The desired generation of the variable
-QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtGeneration(const QRegExp &rNameExp, int generation) const
+QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtGeneration(const QRegExp &rNameExp, int generation, const VariableNameTypeT nametype) const
 {
     // Should we take current
     if (generation < 0)
@@ -1436,17 +1436,17 @@ QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtGeneration(c
     if(pGen)
     {
         // Now find variable in generation
-        return pGen->getMatchingVariables(rNameExp);
+        return pGen->getMatchingVariables(rNameExp, nametype);
     }
     return QList<SharedVectorVariableT>();
 }
 
-QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesFromAllGeneration(const QRegExp &rNameExp) const
+QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesFromAllGenerations(const QRegExp &rNameExp, const VariableNameTypeT nametype) const
 {
     QList<SharedVectorVariableT> allData;
     for (auto pGen : mGenerationMap.values())
     {
-        QList<SharedVectorVariableT> data = pGen->getMatchingVariables(rNameExp);
+        QList<SharedVectorVariableT> data = pGen->getMatchingVariables(rNameExp, nametype);
         allData.append(data);
     }
     return allData;
@@ -2040,26 +2040,49 @@ QList<SharedVectorVariableT> LogDataHandler2::getAllVariablesAtRespectiveNewestG
     // For newer generations replace old data values
     for (auto git = mGenerationMap.begin(); git != mGenerationMap.end(); ++git)
     {
-        auto vars = git.value()->getAllVariables();
-        for (auto var : vars)
+        auto avars = git.value()->getAllAliasVariables();
+        for (auto &var : avars)
         {
-            data.insert(var->getSmartName(), var); //0 is dummy value
+            data.insert(var->getAliasName(), var);
+        }
+        auto vars = git.value()->getAllNonAliasVariables();
+        for (auto &var : vars)
+        {
+            data.insert(var->getFullVariableName(), var);
         }
     }
     return data.values();
 }
 
-QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtRespectiveNewestGeneration(const QRegExp &rNameExp) const
+QList<SharedVectorVariableT> LogDataHandler2::getMatchingVariablesAtRespectiveNewestGeneration(const QRegExp &rNameExp, const VariableNameTypeT nametype) const
 {
     QMap<QString, SharedVectorVariableT> data;
     // Iterated generations and collect variables in a map
     // For newer generations replace old data values
     for (auto git = mGenerationMap.begin(); git != mGenerationMap.end(); ++git)
     {
-        auto vars = git.value()->getMatchingVariables(rNameExp);
-        for (auto var : vars)
+        auto vars = git.value()->getMatchingVariables(rNameExp, nametype);
+        if (nametype == Alias)
         {
-            data.insert(var->getSmartName(), var); //0 is dummy value
+            for (auto &var : vars)
+            {
+                data.insert(var->getAliasName(), var);
+            }
+        }
+        else if (nametype == FullName)
+        {
+            for (auto &var : vars)
+            {
+                data.insert(var->getFullVariableName(), var);
+            }
+        }
+        else
+        {
+            for (auto &var : vars)
+            {
+                // This might cause duplicates of alias name
+                data.insert(var->getSmartName(), var);
+            }
         }
     }
     return data.values();

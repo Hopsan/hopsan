@@ -160,6 +160,11 @@ bool LogDataGeneration::haveVariable(const QString &rFullName) const
     return mVariables.contains(rFullName);
 }
 
+bool LogDataGeneration::haveAlias(const QString &rAliasName) const
+{
+    return mAliasVariables.contains(rAliasName);
+}
+
 
 void LogDataGeneration::addVariable(const QString &rFullName, SharedVectorVariableT variable, bool isAlias)
 {
@@ -190,31 +195,27 @@ void LogDataGeneration::addVariable(const QString &rFullName, SharedVectorVariab
     }
 }
 
-bool LogDataGeneration::removeVariable(const QString &rFullName)
+bool LogDataGeneration::removeVariable(const QString &rAliasOrFullName, const VariableNameTypeT nametype)
 {
-    bool didRemove = false;
-
-    // First try alias
-    auto alias_it = mAliasVariables.find(rFullName);
-    if (alias_it != mAliasVariables.end())
+    if (nametype == Alias)
     {
-        disconnect(alias_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-        mAliasVariables.erase(alias_it);
-        didRemove = true;
+        return unregisterAlias(rAliasOrFullName);
     }
-    // If not alias then remove actual variable
+    else if (nametype == FullName)
+    {
+        return removeVariablePrivate(rAliasOrFullName);
+    }
     else
     {
-        auto full_it = mVariables.find(rFullName);
-        if (full_it != mVariables.end())
+        if (haveAlias(rAliasOrFullName))
         {
-            disconnect(full_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
-            emit full_it.value()->beingRemoved();
-            mVariables.erase(full_it);
-            didRemove = true;
+            return unregisterAlias(rAliasOrFullName);
+        }
+        else
+        {
+            return removeVariablePrivate(rAliasOrFullName);
         }
     }
-    return didRemove;
 }
 
 SharedVectorVariableT LogDataGeneration::getVariable(const QString &rFullName) const
@@ -227,15 +228,25 @@ SharedVectorVariableT LogDataGeneration::getVariable(const QString &rFullName) c
     return tmp;
 }
 
-
 //! @brief Returns multiple logdata variables based on regular expression search. Excluding temp variables but including aliases
 //! @param [in] rNameExp The regular expression for the names to match
-QList<SharedVectorVariableT> LogDataGeneration::getMatchingVariables(const QRegExp &rNameExp)
+QList<SharedVectorVariableT> LogDataGeneration::getMatchingVariables(const QRegExp &rNameExp, const VariableNameTypeT nametype)
 {
     QList<SharedVectorVariableT> results;
-    results.append(getMatchingVariables(rNameExp, mAliasVariables));
-    results.append(getMatchingVariables(rNameExp, mVariables));
+    if ((nametype == Alias) || (nametype == AliasAndFull))
+    {
+        results.append(getMatchingVariables(rNameExp, mAliasVariables));
+    }
+    if ((nametype == FullName) || (nametype == AliasAndFull))
+    {
+        results.append(getMatchingVariables(rNameExp, mVariables));
+    }
     return results;
+}
+
+QList<SharedVectorVariableT> LogDataGeneration::getAllAliasVariables() const
+{
+    return mAliasVariables.values();
 }
 
 QList<SharedVectorVariableT> LogDataGeneration::getAllNonAliasVariables() const
@@ -309,7 +320,7 @@ bool LogDataGeneration::unregisterAliasForFullName(const QString &rFullName)
     {
         QString alias = pFullVar->getAliasName();
         pFullVar->mpVariableDescription->mAliasName = "";
-        removeVariable(alias);
+        removeVariablePrivate(alias);
         emit pFullVar->nameChanged();
         return true;
     }
@@ -379,5 +390,32 @@ QList<SharedVectorVariableT> LogDataGeneration::getMatchingVariables(const QRegE
         }
     }
     return results;
+}
+
+bool LogDataGeneration::removeVariablePrivate(const QString &rFullName)
+{
+    bool didRemove = false;
+
+    // First try alias
+    auto alias_it = mAliasVariables.find(rFullName);
+    if (alias_it != mAliasVariables.end())
+    {
+        disconnect(alias_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+        mAliasVariables.erase(alias_it);
+        didRemove = true;
+    }
+    // If not alias then remove actual variable
+    else
+    {
+        auto full_it = mVariables.find(rFullName);
+        if (full_it != mVariables.end())
+        {
+            disconnect(full_it.value().data(), SIGNAL(allowAutoRemovalChanged(bool)), this, SLOT(variableAutoRemovalChanged(bool)));
+            emit full_it.value()->beingRemoved();
+            mVariables.erase(full_it);
+            didRemove = true;
+        }
+    }
+    return didRemove;
 }
 

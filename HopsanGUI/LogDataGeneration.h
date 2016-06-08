@@ -65,14 +65,16 @@ public:
     QString getImportFileName() const;
 
     void addVariable(const QString &rFullName, SharedVectorVariableT variable, bool isAlias);
-    bool removeVariable(const QString &rFullName);
+    bool removeVariable(const QString &rAliasOrFullName, const VariableNameTypeT nametype=AliasAndFull);
 
     QStringList getVariableFullNames() const;
     bool haveVariable(const QString &rFullName) const;
+    bool haveAlias(const QString &rAliasName) const;
 
     SharedVectorVariableT getVariable(const QString &rFullName) const;
-    QList<SharedVectorVariableT> getMatchingVariables(const QRegExp &rNameExp);
+    QList<SharedVectorVariableT> getMatchingVariables(const QRegExp &rNameExp, const VariableNameTypeT nametype=AliasAndFull);
 
+    QList<SharedVectorVariableT> getAllAliasVariables() const;
     QList<SharedVectorVariableT> getAllNonAliasVariables() const;
     QList<SharedVectorVariableT> getAllVariables() const;
 
@@ -98,6 +100,7 @@ private:
     typedef QMap< QString, SharedVectorVariableT > VariableMapT;
 
     QList<SharedVectorVariableT>  getMatchingVariables(const QRegExp &rNameExp, VariableMapT &rMap);
+    bool removeVariablePrivate(const QString &rFullName);
 
     VariableMapT mVariables;
     VariableMapT mAliasVariables;

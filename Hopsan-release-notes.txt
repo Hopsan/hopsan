@@ -35,10 +35,13 @@
 - Bug fixed: Numhop +- expressions fail if left-hand variable name ends with e or E
 - Bug fixed: If you close the add-system-parameter widget with the "cross" in the top right corner, it is impossible to open it again
 - Bug fixed: HopsanGUI hangs forever when closing a model with one or more open properties dialogs
+- Bug fixed: Confusion in variable lookup when matching against alias names, causing incorrect behaviour of rmvar HCOM command (an likely others),
+             'rmvar aliasname', will now remove the alias variable itself and unregister the alias name from the actual real variable.
 
 - Enhancement: Limited boolean operator support in numhop, true = 1 and false = 0 
 - Enhancement: HCOM's elementwise power function for vectors now support other (positive) powers than 2
 - Enhancement: HCOM's linspace and logspace functions will now evaluate arguments (so that variables can be passed)
+- Enhancement: HCOM's rmvar command has changed behaviour, 'rmvar name' now removes name at ALL generations, equal to 'rmvar name@*'
 
 ------------------------------
 0.7.5  (2016-05-19)

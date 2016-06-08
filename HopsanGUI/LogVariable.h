@@ -59,6 +59,9 @@ QString makeFullParameterName(const QStringList &rSystemHierarchy, const QString
 bool splitFullVariableName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rPortName, QString &rVarName);
 bool splitFullParameterName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rParamName);
 
+//! @brief Enum describing the type of variable names available
+enum VariableNameTypeT {FullName, Alias, AliasAndFull};
+
 //! @brief This enum describes where a variable come from, the order signifies importance (ModelVariables most important)
 enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, UndefinedVariableSourceType};
 QString variableSourceTypeAsString(const VariableSourceTypeT type);

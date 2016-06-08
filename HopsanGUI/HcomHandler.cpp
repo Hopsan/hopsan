@@ -2742,31 +2742,54 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
     QStringList aliasNames;
     if(excludeAliases)
     {
+        args.removeAll("-noalias");
         aliasNames = mpModel->getViewContainerObject()->getAliasNames();
     }
 
     QStringList excludes;
-    if(args.contains("-n"))
+    while(args.contains("-n"))
     {
-        for(int i=args.indexOf("-n")+1; i<args.size(); ++i)
+        int i=args.indexOf("-n")+1;
+        if (i < args.size())
         {
-            QStringList temp;
-            getMatchingLogVariableNames(args[i], temp);
-            excludes.append(temp);
+            QString exclude_pattern = args[i];
+            bool parseGenOk;
+            int gen = parseAndChopGenerationSpecifier(exclude_pattern, parseGenOk);
+            // If generation is not specified, then assume all generations
+            if (parseGenOk && (gen < -2))
+            {
+                exclude_pattern.append(GENERATIONSPECIFIERCHAR).append("*");
+            }
+            QStringList excludeNames;
+            getMatchingLogVariableNames(exclude_pattern, excludeNames);
+            excludes.append(excludeNames);
+            args.removeAt(i);
         }
+        args.removeAt(i-1);
     }
 
     for(int s=0; s<args.size(); ++s)
     {
+        QString tmp = args[s];
+        bool parseGenOk;
+        int gen = parseAndChopGenerationSpecifier(tmp, parseGenOk);
+        // If generation is not specified, then assume all generations
+        if (parseGenOk && (gen < -2))
+        {
+            args[s].append(GENERATIONSPECIFIERCHAR).append("*");
+        }
+
         QStringList variables;
-        getMatchingLogVariableNames(args[s], variables);
+        getMatchingLogVariableNames(args[s], variables, true);
         for(int v=0; v<variables.size(); ++v)
         {
-            //! @todo it would be  nice if we could remove a variable directly if no generation information is specified
-            if(!excludes.contains(variables[v]))
+            if(excludes.contains(variables[v]) || (excludeAliases && aliasNames.contains(variables[v])) )
             {
-                if(!excludeAliases || !aliasNames.contains(variables[v]))
-                    removeLogVariable(variables[v]);
+                continue;
+            }
+            else
+            {
+                removeLogVariable(variables[v]);
             }
         }
     }
@@ -7409,10 +7432,22 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     // If we know generation then search for it directly
     if (desiredGen >= -1)
     {
-        QList<SharedVectorVariableT> vars = pLogDataHandler->getMatchingVariablesAtGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard), desiredGen);
-        for (auto &var : vars)
+        QRegExp regexp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard);
+        QList<SharedVectorVariableT> alias_variables = pLogDataHandler->getMatchingVariablesAtGeneration(regexp, desiredGen, Alias);
+        for (auto &var : alias_variables)
         {
-            QString name = var->getSmartName();
+            QString name = var->getAliasName();
+            toShortDataNames(name);
+            rVariables.append(name);
+            if (addGenerationSpecifier)
+            {
+                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+            }
+        }
+        QList<SharedVectorVariableT> full_variables = pLogDataHandler->getMatchingVariablesAtGeneration(regexp, desiredGen, FullName);
+        for (auto &var : full_variables)
+        {
+            QString name = var->getFullVariableName();
             toShortDataNames(name);
             rVariables.append(name);
             if (addGenerationSpecifier)
@@ -7424,26 +7459,49 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     // Do more costly name lookup, generate a list of all variables and all generations
     else if (desiredGen == -2)
     {
-        QList<SharedVectorVariableT> variables = pLogDataHandler->getMatchingVariablesFromAllGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
-        for (auto &var : variables)
+        QRegExp regexp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard);
+        QList<SharedVectorVariableT> alias_variables = pLogDataHandler->getMatchingVariablesFromAllGenerations(regexp, Alias);
+        for (auto &var : alias_variables)
         {
-            QString name = var->getSmartName();
+            QString name = var->getAliasName();
             toShortDataNames(name);
-            int gen = var->getGeneration();
             rVariables.append(name);
             if (addGenerationSpecifier)
             {
-                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(gen+1));
+                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+            }
+        }
+        QList<SharedVectorVariableT> full_variables = pLogDataHandler->getMatchingVariablesFromAllGenerations(regexp, FullName);
+        for (auto &var : full_variables)
+        {
+            QString name = var->getFullVariableName();
+            toShortDataNames(name);
+            rVariables.append(name);
+            if (addGenerationSpecifier)
+            {
+                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
             }
         }
     }
     // Else generation number was not specified, lookup names at all generations
     else if (desiredGen == -3)
     {
-        QList<SharedVectorVariableT> variables = pLogDataHandler->getMatchingVariablesAtRespectiveNewestGeneration(QRegExp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard));
-        for (auto &var : variables)
+        QRegExp regexp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard);
+        QList<SharedVectorVariableT> alias_variables = pLogDataHandler->getMatchingVariablesAtRespectiveNewestGeneration(regexp, Alias);
+        for (auto &var : alias_variables)
         {
-            QString name = var->getSmartName();
+            QString name = var->getAliasName();
+            toShortDataNames(name);
+            rVariables.append(name);
+            if (addGenerationSpecifier)
+            {
+                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+            }
+        }
+        QList<SharedVectorVariableT> full_variables = pLogDataHandler->getMatchingVariablesAtRespectiveNewestGeneration(regexp, FullName);
+        for (auto &var : full_variables)
+        {
+            QString name = var->getFullVariableName();
             toShortDataNames(name);
             rVariables.append(name);
             if (addGenerationSpecifier)
