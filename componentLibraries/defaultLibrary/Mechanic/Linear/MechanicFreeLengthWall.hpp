@@ -93,8 +93,8 @@ public:
         mDenV[0] = (*mpB);
         mDenV[1] = 0.0;
 
-        mFilterX.initialize(mTimestep, mNumX, mDenX, -(*mpP1_f), (*mpP1_x));
-        mFilterV.initialize(mTimestep, mNumV, mDenV, -(*mpP1_f), (*mpP1_v));
+        mFilterX.initialize(mTimestep, mNumX, mDenX, -(*mpP1_c), (*mpP1_x));
+        mFilterV.initialize(mTimestep, mNumV, mDenV, -(*mpP1_c), (*mpP1_v));
 
         (*mpP1_me) = me;
     }
