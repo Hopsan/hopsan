@@ -1896,6 +1896,10 @@ SharedVectorVariableT LogDataHandler2::createOrphanVariable(const QString &rName
     return pNewData;
 }
 
+//! @brief Remove a variable or unregister an alias variable
+//! @param[in] rVarName The name of the variable to remove (or alsi to unregister)
+//! @param[in] generation The generation to remove from (or -2 == All, -1 == Current)
+//! @returns true if something was removed
 bool LogDataHandler2::removeVariable(const QString &rVarName, int generation)
 {
     // If generation = -1 then use current generation
@@ -1932,8 +1936,6 @@ bool LogDataHandler2::removeVariable(const QString &rVarName, int generation)
         emit dataRemoved();
     }
     return didRemove;
-
-    //! @todo what about unregistering ALIAS, maybe handled inside generation
 }
 
 

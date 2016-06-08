@@ -392,6 +392,9 @@ QList<SharedVectorVariableT> LogDataGeneration::getMatchingVariables(const QRegE
     return results;
 }
 
+//! @brief Remove variable or alias, private version
+//! @details This will just disconect and erase from the relevant map, low-level remove!
+//! @param[in] rFullName The full name or alias name
 bool LogDataGeneration::removeVariablePrivate(const QString &rFullName)
 {
     bool didRemove = false;
