@@ -2755,10 +2755,10 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
             QString exclude_pattern = args[i];
             bool parseGenOk;
             int gen = parseAndChopGenerationSpecifier(exclude_pattern, parseGenOk);
-            // If generation is not specified, then assume all generations
+            // If generation is not specified, then assume current generation
             if (parseGenOk && (gen < -2))
             {
-                exclude_pattern.append(GENERATIONSPECIFIERCHAR).append("*");
+                exclude_pattern.append(GENERATIONSPECIFIERCHAR).append("c");
             }
             QStringList excludeNames;
             getMatchingLogVariableNames(exclude_pattern, excludeNames);
@@ -2773,10 +2773,10 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
         QString tmp = args[s];
         bool parseGenOk;
         int gen = parseAndChopGenerationSpecifier(tmp, parseGenOk);
-        // If generation is not specified, then assume all generations
+        // If generation is not specified, then assume current generation
         if (parseGenOk && (gen < -2))
         {
-            args[s].append(GENERATIONSPECIFIERCHAR).append("*");
+            args[s].append(GENERATIONSPECIFIERCHAR).append("c");
         }
 
         QStringList variables;

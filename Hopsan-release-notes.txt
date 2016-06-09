@@ -41,7 +41,7 @@
 - Enhancement: Limited boolean operator support in numhop, true = 1 and false = 0 
 - Enhancement: HCOM's elementwise power function for vectors now support other (positive) powers than 2
 - Enhancement: HCOM's linspace and logspace functions will now evaluate arguments (so that variables can be passed)
-- Enhancement: HCOM's rmvar command has changed behaviour, 'rmvar name' now removes name at ALL generations, equal to 'rmvar name@*'
+- Enhancement: HCOM's rmvar command has changed behaviour, 'rmvar name' now removes name at CURRENT generations, equal to 'rmvar name@c'
 
 ------------------------------
 0.7.5  (2016-05-19)
