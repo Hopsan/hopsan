@@ -38,9 +38,10 @@
 #include <HopsanTypes.h>
 
 template<typename T>
-inline hopsan::HString to_hstring(const T num)
+inline hopsan::HString to_hstring(const T num, std::streamsize precision=17)
 {
     std::stringstream ss;
+    ss.precision(precision);
     ss << num;
     return ss.str().c_str();
 }
