@@ -1573,7 +1573,7 @@ void PlotMarker::setMovable(bool movable)
 
 void PlotMarker::refreshLabel(const double x, const double y)
 {
-    refreshLabel(QString("( %1,  %2 )").arg(x).arg(y));
+    refreshLabel(QString("( %1,  %2 )").arg(x,0,'g',10).arg(y,0,'g',10));
 }
 
 void PlotMarker::refreshLabel(const QString &label)

@@ -1887,7 +1887,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                     HCOMERR("Could not evaluate new value for parameter.");
                     return;
                 }
-                newValueStr = QString::number(mAnsScalar);
+                newValueStr = QString::number(mAnsScalar, 'g', 17);
             }
         }
 
@@ -2352,7 +2352,7 @@ void HcomHandler::executeWriteToFileCommand(const QString cmd)
         evaluateExpression(varName);
         if(mAnsType == Scalar)
         {
-            str.replace("$"+varName+"$", QString::number(mAnsScalar));
+            str.replace("$"+varName+"$", QString::number(mAnsScalar, 'g', 17));
         }
         else if (mAnsType == DataVector)
         {
@@ -2438,7 +2438,7 @@ void HcomHandler::executePrintCommand(const QString cmd)
         evaluateExpression(str);
         if(mAnsType == Scalar)
         {
-            str = QString::number(mAnsScalar);
+            str = QString::number(mAnsScalar, 'g', 17);
         }
         else if (mAnsType == String)
         {
@@ -2461,7 +2461,7 @@ void HcomHandler::executePrintCommand(const QString cmd)
             evaluateExpression(varName);
             if(mAnsType == Scalar)
             {
-                str.replace("$"+varName+"$", QString::number(mAnsScalar));
+                str.replace("$"+varName+"$", QString::number(mAnsScalar, 'g', 17));
             }
             else if (mAnsType == String)
             {
@@ -2647,7 +2647,7 @@ void HcomHandler::executePeekCommand(const QString cmd)
         double r = pData->peekData(id, err);
         if (err.isEmpty())
         {
-            HCOMPRINT(QString::number(r));
+            HCOMPRINT(QString::number(r, 'g', 17));
             mAnsType = Scalar;
             mAnsScalar = r;
             return;
@@ -2692,7 +2692,7 @@ void HcomHandler::executePokeCommand(const QString cmd)
         double r = pData->pokeData(id, value, err);
         if (err.isEmpty())
         {
-            HCOMPRINT(QString::number(r));
+            HCOMPRINT(QString::number(r, 'g', 17));
         }
         else
         {
@@ -3121,7 +3121,7 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
         QString infotext("\n");
         infotext.append("       Name: ").append(cmd).append("\n");
         infotext.append("       Type: ").append(type).append("\n");
-        infotext.append("      Value: ").append(QString::number(mLocalVars.find(cmd).value()));
+        infotext.append("      Value: ").append(QString::number(mLocalVars.find(cmd).value(), 'g', 17));
 
         HCOMPRINT(infotext);
     }
@@ -7793,7 +7793,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         //timer.toc("Evaluate expression "+cmd);
         if(mAnsType == Scalar)
         {
-            HCOMPRINT(QString::number(mAnsScalar));
+            HCOMPRINT(QString::number(mAnsScalar, 'g', 17));
             return true;
         }
         else if(mAnsType==DataVector)

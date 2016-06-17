@@ -38,6 +38,7 @@
 - Bug fixed: Confusion in variable lookup when matching against alias names, causing incorrect behaviour of rmvar HCOM command (and likely others),
              'rmvar aliasname', will now remove the alias variable itself and unregister the alias name from the actual real variable.
 
+- Enhancement: Increased precision (double to string conversion) of some HCOM scalar outputs and the plot markers display text.
 - Enhancement: The 'to_hstring' utility function now takes an additional 'precision' argument, so that the precision of the resulting string
                can be chosen. The default value is 17, this resolves issues with evaluated numerical expressions in parameters getting truncated.
 - Enhancement: Limited boolean operator support in numhop, true = 1 and false = 0
