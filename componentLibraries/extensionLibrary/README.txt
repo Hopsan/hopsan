@@ -6,7 +6,7 @@ This assumes that the new component do no make use of functionality that is only
 ******************************
   Requirements:
 ******************************
-  Hopsan 0.7.5 or later
+  Hopsan 0.7.5 or newer
 
 ******************************
   To add components:
