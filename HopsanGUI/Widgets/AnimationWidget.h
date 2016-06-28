@@ -35,24 +35,10 @@
 #ifndef AnimationWidget_H
 #define AnimationWidget_H
 
-#include <QTimer>
-#include <QTextEdit>
-#include <QList>
-#include <QMap>
-#include <QGraphicsRotation>
-#include <QVector3D>
-#include <QGraphicsRectItem>
-#include <QTransform>
 #include <QWidget>
-#include <QObject>
-#include <QGroupBox>
-#include <QSlider>
-#include <QDialog>
-#include <QPushButton>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QDoubleSpinBox>
+#include <QMap>
 
+// Forward declarations
 class ContainerObject;
 class CentralTabWidget;
 class ModelWidget;
@@ -81,6 +67,10 @@ class QGraphicsScene;
 class QGridLayout;
 class QToolButton;
 class QLabel;
+class QGroupBox;
+class QDoubleSpinBox;
+class QLineEdit;
+class QSlider;
 
 class AnimationWidget : public QWidget
 {
@@ -102,9 +92,9 @@ public:
     AnimatedComponent *getAnimatedComponent(QString name);
 
     //Public member pointers
-    AnimatedGraphicsView *mpGraphicsView;
-    ContainerObject *mpContainer;
-    ModelObjectAnimationData *mpAnimationData;
+    AnimatedGraphicsView *mpGraphicsView=nullptr;
+    ContainerObject *mpContainer=nullptr;
+    ModelObjectAnimationData *mpAnimationData=nullptr;
 
     //Maps that stores maximum and minimum values for simulation variables ("Pressure", "Velocity" etc)
     //! @todo These are not used, shall we use them or remove them?
@@ -125,7 +115,7 @@ private slots:
     void pause();
     void play();
     void playRT();
-    void updateAnimationSpeed(double speed);
+    void updateAnimationSpeed(const double speedScale);
     void updateAnimation();
     void updateMovables();
     void resetAllAnimationDataToDefault();
@@ -145,10 +135,6 @@ private:
     QToolButton* mpPlayButton;
     QToolButton *mpPlayRealTimeButton;
     QToolButton* mpCloseButton;
-
-    //Labels
-    QLabel *mpTimeLabel;
-    QLabel *mpSpeedLabel;
 
     //The sliders
     QSlider* mpTimeSlider;

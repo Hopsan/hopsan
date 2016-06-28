@@ -210,6 +210,7 @@ public:
     double flowSpeed;
     double hydraulicMinPressure;
     double hydraulicMaxPressure;
+    double animationSpeed=1.0;
 };
 
 

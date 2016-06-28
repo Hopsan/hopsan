@@ -65,7 +65,6 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 {
     //Define public member pointer variables
     mpContainer = gpModelHandler->getCurrentViewContainerObject();
-
     mpAnimationData = mpContainer->getAppearanceData()->getAnimationDataPtr();
 
     //Set palette
@@ -77,7 +76,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 
     //Create graphics view
     GraphicsView *pOrgView = mpContainer->mpModelWidget->getGraphicsView();
-    mpGraphicsView = new AnimatedGraphicsView(mpGraphicsScene,0);
+    mpGraphicsView = new AnimatedGraphicsView(mpGraphicsScene,0); //!< @todo This graphics view is never deleted /Peter
     mpGraphicsView->setGeometry(0,0,500,500);
     mpGraphicsView->setInteractive(true);
     mpGraphicsView->setEnabled(true);
@@ -124,16 +123,21 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpCloseButton = new QToolButton(this);
     mpCloseButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
 
-    mpTimeLabel = new QLabel(" Time:", this);
-    mpSpeedLabel = new QLabel(" Speed:", this);
+    QLabel *pTimeLabel = new QLabel(" Time:", this);
+    QLabel *pSpeedLabel = new QLabel(" Speed:", this);
 
     mpTimeSlider = new QSlider(Qt::Horizontal);
 
     mpSpeedSpinBox = new QDoubleSpinBox(this);
-    mpSpeedSpinBox->setMinimum(-10.0);
-    mpSpeedSpinBox->setMaximum(10.0);
-    mpSpeedSpinBox->setDecimals(10);
+    mpSpeedSpinBox->setMinimum(-20.0);
+    mpSpeedSpinBox->setMaximum(20.0);
+    mpSpeedSpinBox->setDecimals(5);
     mpSpeedSpinBox->setSingleStep(0.01);
+    mpSpeedSpinBox->setValue(1.0);
+    if (mpAnimationData)
+    {
+        mpSpeedSpinBox->setValue(mpAnimationData->animationSpeed);
+    }
 
     //Create the layout and add widgets
     mpLayout= new QGridLayout(this);
@@ -143,10 +147,10 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpLayout->addWidget(mpPlayButton,           0,  3);
     mpLayout->addWidget(mpPlayRealTimeButton,   0,  4);
     mpLayout->addWidget(mpRewindButton,         0,  5);
-    mpLayout->addWidget(mpSpeedLabel,           0,  6);
+    mpLayout->addWidget(pSpeedLabel,            0,  6);
     //mpLayout->addWidget(mpSpeedSlider,          0,  7);
     mpLayout->addWidget(mpSpeedSpinBox,         0,  7);
-    mpLayout->addWidget(mpTimeLabel,            0,  8);
+    mpLayout->addWidget(pTimeLabel,             0,  8);
     mpLayout->addWidget(mpTimeSlider,           0,  9);
     mpLayout->addWidget(mpTimeDisplay,          0,  10);
     mpLayout->addWidget(mpCloseButton,          0,  11);
@@ -156,7 +160,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     this->setLayout(mpLayout);
 
     //Create the timer object
-    mpTimer = new QTimer(0);
+    mpTimer = new QTimer(this);
     mpTime = new QTime();
 
     //Set default values for animation variables
@@ -200,10 +204,6 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
         mpTimeSlider->setMinimum(0);
         mpTimeSlider->setMaximum(0);
     }
-
-    //Set initial values for speed slider
-    mpSpeedSpinBox->setValue(1.0);
-
 
     QStringList hiddenComponents;
     hiddenComponents << "SignalInputInterface" << "SignalOutputInterface";
@@ -284,7 +284,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 AnimationWidget::~AnimationWidget()
 {
     mpTimer->stop();
-    delete(mpTimer);
+    delete mpTime;
 
     //Make sure any changes made in zoom and position are transfered back to original graphics view
     GraphicsView *pOrgView = mpContainer->mpModelWidget->getGraphicsView();
@@ -392,10 +392,12 @@ void AnimationWidget::stop()
 
 
 //! @brief Slot that rewinds the animation (with full speed)
+//! @todo This function does not work very well, if you click rewind, after simulation is complete, then it will jsut set speed = -1 and it wont actually rewind
 void AnimationWidget::rewind()
 {
     mRealTime=false;
-    updateAnimationSpeed(-1);
+    // This should also trigger the actual update slot
+    mpSpeedSpinBox->setValue(-1);
 }
 
 
@@ -406,7 +408,7 @@ void AnimationWidget::pause()
 }
 
 
-//! @brief Slot that plays the animation (with full speed)
+//! @brief Slot that plays the animation
 void AnimationWidget::play()
 {
     mRealTime=false;
@@ -427,7 +429,6 @@ void AnimationWidget::play()
             //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
         }
     }
-    //updateAnimationSpeed(1);
 }
 
 
@@ -475,7 +476,7 @@ void AnimationWidget::playRT()
 //! @param [in] newSpeed New speed for animation
 void AnimationWidget::changeSpeed(double newSpeed)
 {
-    updateAnimationSpeed(newSpeed/*double(newSpeed)/double(mSpeedSliderSensitivity)*/);
+    updateAnimationSpeed(newSpeed);
 }
 
 
@@ -498,13 +499,12 @@ void AnimationWidget::changeIndex(int newIndex)
 
 
 //! @brief Updates animation speed
-void AnimationWidget::updateAnimationSpeed(double speed)
+void AnimationWidget::updateAnimationSpeed(const double speedScale)
 {
-    //Speed slider sensitivity must be multiplied, because of int->double resolution
-    mSimulationSpeed = speed;
+    mSimulationSpeed = speedScale;
     if(mSimulationSpeed == 0)
     {
-        //Stop animation timer if speed is zero (it shouldn't be running for no reason)
+        // Stop animation timer if speed is zero (it shouldn't be running for no reason)
         mpTimer->stop();
     }
 //    else
@@ -519,6 +519,12 @@ void AnimationWidget::updateAnimationSpeed(double speed)
 //            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
 //        }
 //    }
+
+    // We remember the animation speed set for this container, in case we reopen the animation widget again
+    if (mpAnimationData)
+    {
+        mpAnimationData->animationSpeed = mSimulationSpeed;
+    }
 }
 
 

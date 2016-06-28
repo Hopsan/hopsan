@@ -45,6 +45,7 @@
 - Enhancement: HCOM's elementwise power function for vectors now support other (positive) powers than 2
 - Enhancement: HCOM's linspace and logspace functions will now evaluate arguments (so that variables can be passed)
 - Enhancement: HCOM's rmvar command has changed behaviour, 'rmvar name' now removes name at CURRENT generations, equal to 'rmvar name@c'
+- Enhancement: The animation speed value is now remembered if the widget is closed and then reopened
 
 ------------------------------
 0.7.5  (2016-05-19)
