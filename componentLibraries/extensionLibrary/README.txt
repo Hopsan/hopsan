@@ -4,6 +4,11 @@ That is, you do not need to build a new release of Hopsan just to make your new 
 This assumes that the new component do no make use of functionality that is only available in newer versions of Hopsan.
 
 ******************************
+  Requirements:
+******************************
+  Hopsan 0.7.5 or later
+
+******************************
   To add components:
 ******************************
 1. Add the .hpp .xml .svg and other needed files directly under the correct type subdirectory, or create a new one if one a suitable one does not exist.
@@ -15,11 +20,12 @@ This assumes that the new component do no make use of functionality that is only
   To distribute this library:
 ******************************   
 1. Export the directory from subversion
-2. Run the generateLibraryFiles.py script (or .bat) to make sure tat the library files are refreshed
+2. Run the generateLibraryFiles.py script (or .bat) to make sure tat the library files are refreshed (Python interpreter required)
 3. The library can now be distributed
 
-Note! A post-commit hook will take care of automatically creating a distribution zip, and upload it to 
-http://flumes.iei.liu.se/hopsan/files/futureLibrary/ automatically.
+Note! After every commit to this library, a post-commit hook will take care of automatically creating a distribution zip, and upload it to 
+      http://flumes.iei.liu.se/hopsan/files/extensionLibrary/
+
 
 ******************************
   To use this library:
