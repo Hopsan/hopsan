@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Gerado pelo Microsoft Office Visio 11.0, SVG Export, v1.0 Selection_end3Steps.svg Página-1 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/" width="3.84405in"
+		height="0.635051in" viewBox="0 0 276.772 45.7237" xml:space="preserve" color-interpolation-filters="sRGB" class="st3">
+	<v:documentProperties v:langID="1033" v:metric="true" v:viewMarkup="false"/>
+
+	<style type="text/css">
+	<![CDATA[
+		.st1 {stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.24}
+		.st2 {stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.72}
+		.st3 {fill:none;fill-rule:evenodd;font-size:12;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+	]]>
+	</style>
+
+	<g v:mID="0" v:index="1" v:groupContext="foregroundPage">
+		<title>Página-1</title>
+		<v:pageProperties v:drawingScale="0.0393701" v:pageScale="0.0393701" v:drawingUnits="24" v:shadowOffsetX="9"
+				v:shadowOffsetY="-9"/>
+		<g id="shape124-1" v:mID="124" v:groupContext="shape" transform="translate(92.6621,0.24) rotate(-90) scale(-1,1)">
+			<title>Arco linha .124</title>
+			<path d="M0 45.72 L27.39 45.72" class="st1"/>
+		</g>
+		<g id="shape125-4" v:mID="125" v:groupContext="shape" transform="translate(132.717,-38.6209)">
+			<title>Transição.125</title>
+			<path d="M0 45.72 L11.34 45.72" class="st2"/>
+		</g>
+		<g id="shape126-7" v:mID="126" v:groupContext="shape" transform="translate(78.4889,28.5865) rotate(-90) scale(-1,1)">
+			<title>Arco linha .126</title>
+			<path d="M0 45.72 L14.27 45.72" class="st1"/>
+		</g>
+		<g id="shape127-10" v:mID="127" v:groupContext="shape" transform="translate(-20.7237,1.2009) rotate(-90) scale(-1,1)">
+			<title>Arco linha .127</title>
+			<path d="M0 45.72 L27.39 45.72" class="st1"/>
+		</g>
+		<g id="shape128-13" v:mID="128" v:groupContext="shape" transform="translate(19.3307,-38.1733)">
+			<title>Transição.128</title>
+			<path d="M0 45.72 L11.34 45.72" class="st2"/>
+		</g>
+		<g id="shape129-16" v:mID="129" v:groupContext="shape" transform="translate(206.048,1.2009) rotate(-90) scale(-1,1)">
+			<title>Arco linha .129</title>
+			<path d="M0 45.72 L27.39 45.72" class="st1"/>
+		</g>
+		<g id="shape130-19" v:mID="130" v:groupContext="shape" transform="translate(246.102,-38.1733)">
+			<title>Transição.130</title>
+			<path d="M0 45.72 L11.34 45.72" class="st2"/>
+		</g>
+		<g id="shape109-22" v:mID="109" v:groupContext="shape" transform="translate(25,-17.1372)">
+			<title>Planilha.109</title>
+			<path d="M0 45.72 L226.77 45.72" class="st1"/>
+		</g>
+	</g>
+</svg>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject hmffile="Regular_Step.hmf" displayname="Regular_Step" typename="Subsystem" subtypename="Regular_Step">
+        <icons>
+            <icon scale="1" path="Regular_Step.svg" iconrotation="ON" type="user"/>
+        </icons>
+
+    </modelobject>
+</hopsanobjectappearance>

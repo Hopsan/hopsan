@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject hmffile="StepSkip_begin.hmf" displayname="StepSkip_begin" typename="Subsystem" subtypename="StepSkip_begin">
+        <icons>
+            <icon scale="1" path="StepSkip_begin.svg" iconrotation="ON" type="user"/>
+        </icons>
+    </modelobject>
+</hopsanobjectappearance>

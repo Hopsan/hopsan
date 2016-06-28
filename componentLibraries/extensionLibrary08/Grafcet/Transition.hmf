@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hopsanguiversion="0.8.x_r8929" hopsancoreversion="0.8.x_r8892" hmfversion="0.4">
+  <requirements/>
+  <system locked="false" cqstype="S" subtypename="Transition" typename="Subsystem" name="Transition">
+    <simulationtime stop="10" start="0" timestep="0.001" inherit_timestep="true"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="1794" flipped="false" y="2008.5" a="0"/>
+      <nametext visible="0" position="0"/>
+      <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+      <info>
+        <author>Victor J. De negri</author>
+        <affiliation>UFSC-LASHIP (Brazil)</affiliation>
+      </info>
+      <viewport x="2376.94" y="2636.67" zoom="1.3225"/>
+      <ports hidden="0"/>
+      <names hidden="0"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject displayname="Transition" subtypename="Transition" typename="Subsystem">
+          <icons>
+            <icon iconrotation="ON" type="user" path="Transition.svg" scale="1"/>
+            <icon type="defaultmissing" path="subsystemDefault.svg"/>
+          </icons>
+          <ports>
+            <port x="0.5" y="1" enabled="true" autoplaced="true" a="90" name="Next_Step"/>
+            <port x="0.5" y="0" enabled="true" autoplaced="true" a="270" name="Prior_Step"/>
+            <port x="0.7" y="0.5" enabled="true" autoplaced="false" a="0" name="Condition"/>
+          </ports>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <optimization>
+        <settings>
+          <iterations>100</iterations>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <savecsv>true</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
+    </hopsangui>
+    <objects>
+      <component locked="false" cqstype="S" subtypename="" typename="SignalAnd" name="Logical_And_Operator">
+        <parameters>
+          <parameter unit="" value="0" type="double" name="in1#Value"/>
+          <parameter unit="" value="0" type="double" name="in2#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" porttype="ReadPortType" name="in1"/>
+          <port nodetype="NodeSignal" porttype="ReadPortType" name="in2"/>
+          <port nodetype="NodeSignal" porttype="WritePortType" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2343.421301" flipped="false" y="2677.843177" a="0"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Logical_And_Operator" typename="SignalAnd">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <systemport locked="false" cqstype="hasNoCqsType" subtypename="" typename="HopsanGUIContainerPort" name="Next_Step">
+        <hopsangui>
+          <pose x="2321.736991" flipped="false" y="2790.08089" a="0"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+        </hopsangui>
+      </systemport>
+      <component locked="false" cqstype="S" subtypename="" typename="Signal2DReadWrite" name="Signal2DReadWrite_2">
+        <parameters>
+          <parameter unit="" value="0" type="conditional" name="sh2d"/>
+          <parameter unit="" value="0" type="double" name="read#Value"/>
+          <parameter unit="" value="0" type="double" name="write#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal2D" porttype="BiDirectionalSignalPortType" name="P2d"/>
+          <port nodetype="NodeSignal" porttype="WritePortType" name="read"/>
+          <port nodetype="NodeSignal" porttype="ReadPortType" name="write"/>
+        </ports>
+        <hopsangui>
+          <pose x="2234.94304" flipped="true" y="2690.433442" a="0"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Signal2DReadWrite_2" typename="Signal2DReadWrite">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <systemport locked="false" cqstype="hasNoCqsType" subtypename="" typename="HopsanGUIContainerPort" name="Prior_Step">
+        <hopsangui>
+          <pose x="2314.421301" flipped="false" y="2577.723612" a="0"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+        </hopsangui>
+      </systemport>
+      <systemport locked="false" cqstype="hasNoCqsType" subtypename="" typename="HopsanGUIContainerPort" name="Condition">
+        <hopsangui>
+          <pose x="2498.921301" flipped="false" y="2620.843177" a="0"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+        </hopsangui>
+      </systemport>
+      <component locked="false" cqstype="S" subtypename="" typename="Signal2DWriteRead" name="Signal2DWriteRead_2">
+        <parameters>
+          <parameter unit="" value="0" type="double" name="write#Value"/>
+          <parameter unit="" value="0" type="double" name="read#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal2D" porttype="BiDirectionalSignalPortType" name="P2d"/>
+          <port nodetype="NodeSignal" porttype="ReadPortType" name="write"/>
+          <port nodetype="NodeSignal" porttype="WritePortType" name="read"/>
+        </ports>
+        <hopsangui>
+          <pose x="2445.421301" flipped="false" y="2684.093177" a="0"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Signal2DWriteRead_2" typename="Signal2DWriteRead">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+    </objects>
+    <connections>
+      <connect endport="Condition" startport="in1" endcomponent="Condition" startcomponent="Logical_And_Operator">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2330.92130099999985759496" y="2671.84317700000019613071"/>
+            <coordinate x="2274.42130066666641141637" y="2671.84317700000019613071"/>
+            <coordinate x="2274.42130066666641141637" y="2620.84317700000019613071"/>
+            <coordinate x="2498.92130099999985759496" y="2620.84317700000019613071"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Next_Step" startport="P2d" endcomponent="Next_Step" startcomponent="Signal2DWriteRead_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2450.42130099999985759496" y="2684.09317700000019613071"/>
+            <coordinate x="2469.00353129048517075717" y="2684.09317700000019613071"/>
+            <coordinate x="2469.00353129048517075717" y="2790.58089000000018131686"/>
+            <coordinate x="2322.23699100000021644519" y="2790.58089000000018131686"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Prior_Step" startport="P2d" endcomponent="Prior_Step" startcomponent="Signal2DReadWrite_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2229.94304000000011001248" y="2690.43344200000001364970"/>
+            <coordinate x="2169.39010974039047141559" y="2690.43344200000001364970"/>
+            <coordinate x="2169.39010974039047141559" y="2578.22361199999977543484"/>
+            <coordinate x="2314.92130099999985759496" y="2578.22361199999977543484"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="out" startport="write" endcomponent="Logical_And_Operator" startcomponent="Signal2DWriteRead_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2440.42130099999985759496" y="2677.84317700000019613071"/>
+            <coordinate x="2375.92130066666641141637" y="2677.84317700000019613071"/>
+            <coordinate x="2375.92130066666641141637" y="2677.84317700000019613071"/>
+            <coordinate x="2355.92130099999985759496" y="2677.84317700000019613071"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="read" startport="write" endcomponent="Signal2DWriteRead_2" startcomponent="Signal2DReadWrite_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2239.94304000000011001248" y="2696.68344200000001364970"/>
+            <coordinate x="2409.81260501449332878110" y="2696.68344200000001364970"/>
+            <coordinate x="2409.81260501449332878110" y="2690.34317700000019613071"/>
+            <coordinate x="2440.42130099999985759496" y="2690.34317700000019613071"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" startport="read" endcomponent="Logical_And_Operator" startcomponent="Signal2DReadWrite_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2239.94304000000011001248" y="2684.18344200000001364970"/>
+            <coordinate x="2310.92130066666641141637" y="2684.18344200000001364970"/>
+            <coordinate x="2310.92130066666641141637" y="2683.84317700000019613071"/>
+            <coordinate x="2330.92130099999985759496" y="2683.84317700000019613071"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>

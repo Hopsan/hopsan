@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject hmffile="Synchronization_end3Steps.hmf" displayname="Synchronization_end3Steps" typename="Subsystem" subtypename="Synchronization_end3Steps">
+        <icons>
+            <icon scale="1" path="Synchronization_end3Steps.svg" iconrotation="ON" type="user"/>
+        </icons>
+    </modelobject>
+</hopsanobjectappearance>

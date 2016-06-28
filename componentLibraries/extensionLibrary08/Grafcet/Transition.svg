@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Gerado pelo Microsoft Office Visio 11.0, SVG Export, v1.0 Transition.svg Página-1 -->
+
+<svg
+   xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16.203476"
+   height="18.72673"
+   viewBox="0 0 12.962789 14.981372"
+   xml:space="preserve"
+   class="st3"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48+devel r13149"
+   sodipodi:docname="Transition.svg"
+   style="font-size:12px;color-interpolation-filters:sRGB;fill:none;stroke-linecap:square;stroke-miterlimit:3;overflow:visible"><metadata
+   id="metadata24"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+   id="defs22" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1440"
+   inkscape:window-height="838"
+   id="namedview20"
+   showgrid="false"
+   inkscape:zoom="11.338628"
+   inkscape:cx="-0.62754181"
+   inkscape:cy="3.551743"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g6"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0" />
+	<v:documentProperties
+   v:langID="1033"
+   v:metric="true"
+   v:viewMarkup="false" />
+
+	<style
+   type="text/css"
+   id="style4">
+	<![CDATA[
+		.st1 {stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.24}
+		.st2 {stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.72}
+		.st3 {fill:none;fill-rule:evenodd;font-size:12;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+	]]>
+	</style>
+
+	<g
+   v:mID="0"
+   v:index="1"
+   v:groupContext="foregroundPage"
+   id="g6"
+   transform="translate(-18.519306,-2.5077034)">
+		<title
+   id="title8">Página-1</title>
+		<v:pageProperties
+   v:drawingScale="0.0393701"
+   v:pageScale="0.0393701"
+   v:drawingUnits="24"
+   v:shadowOffsetX="9"
+   v:shadowOffsetY="-9" />
+		<g
+   id="shape49-1"
+   v:mID="49"
+   v:groupContext="shape"
+   transform="matrix(0,1,1,0,5,2.91339)"
+   style="stroke-width:0.80000051;stroke-miterlimit:4;stroke-dasharray:none">
+			<title
+   id="title11">Arco linha .49</title>
+			<path
+   d="m 0,20 14.17,0"
+   class="st1"
+   id="path13"
+   style="stroke:#000000;stroke-width:0.80000051;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+   inkscape:connector-curvature="0" />
+		</g>
+		<g
+   id="shape50-4"
+   v:mID="50"
+   v:groupContext="shape"
+   transform="translate(19.3307,-10)">
+			<title
+   id="title16">Transição.50</title>
+			<path
+   d="m 0,20 11.34,0"
+   class="st2"
+   id="path18"
+   style="stroke:#000000;stroke-width:1.60000098;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;stroke-dasharray:none"
+   inkscape:connector-curvature="0" />
+		</g>
+	</g>
+</svg>
