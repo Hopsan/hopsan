@@ -23,14 +23,16 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   futureLibrary.cc
+//! @file   extensionLibrary08.cc
 //!
 //$Id$
 
 // Include automatically generated header code for all default library components
+#include "Component.h"
+#include "HopsanCoreVersion.h"
 #include "Components.h"
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
+extern "C" DLLEXPORT void register_contents(hopsan::ComponentFactory* pComponentFactory, hopsan::NodeFactory* pNodeFactory)
 {
     // Include automatically generated registration code for all default library components
     #include "Components.cci"
@@ -40,8 +42,8 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 }
 
 // When you load your model into Hopsan, the get_hopsan_info() function bellow will be called
-// This information is used to make sure that your component and the hopsan core have the same version
-extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
+// This information is used to make sure that your component and the Hopsan core have the same version
+extern "C" DLLEXPORT void get_hopsan_info(hopsan::HopsanExternalLibInfoT *pHopsanExternalLibInfo)
 {
     pHopsanExternalLibInfo->libName = (char*)"HopsanExtensionLibrary08";
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;

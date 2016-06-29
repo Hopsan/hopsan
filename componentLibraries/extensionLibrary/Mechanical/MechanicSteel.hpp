@@ -105,12 +105,12 @@ public:
         const double Mass_percived = Length_percived*mArea*mRho;
 
         const double Zc_org = sqrt(mass_desired*stiffness_desired);
-        const double Zc_para_ind = numSteps*mTimestep * mE*mArea/mLength;
-        const double Zc_para_cap = mass_desired / (numSteps*mTimestep);
+        const double Zc_preserve_capacitance = numSteps*mTimestep * mE*mArea/mLength;
+        const double Zc_preserve_inductance = mass_desired / (numSteps*mTimestep);
 
         addInfoMessage("Zc_org: "+to_hstring(Zc_org));
-        addInfoMessage("Zc_para_cap: "+to_hstring(Zc_para_cap));
-        addInfoMessage("Zc_para_ind: "+to_hstring(Zc_para_ind));
+        addInfoMessage("Zc_preserve_inductance: "+to_hstring(Zc_preserve_inductance));
+        addInfoMessage("Zc_preserve_capacitance: "+to_hstring(Zc_preserve_capacitance));
 
         double stiffness_percived = mE*mArea/Length_percived;
         double Zx;
@@ -129,13 +129,13 @@ public:
         else if (mPreserveType == 1) /* Preserve Inductance */
         {
             mMass = mass_desired;
-            Zx = Zc_para_cap;
+            Zx = Zc_preserve_inductance;
             Zx /= (numSteps+mAlpha-numSteps*mAlpha)/(numSteps-numSteps*mAlpha);
         }
         else /* Preserve Capacitance */
         {
             mMass = Mass_percived;
-            Zx = Zc_para_ind;
+            Zx = Zc_preserve_capacitance;
             stiffness_percived = Zx/(numSteps*mTimestep);
             Zx *= (numSteps+mAlpha-numSteps*mAlpha)/(numSteps-numSteps*mAlpha);
         }
