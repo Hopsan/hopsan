@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Gerado pelo Microsoft Office Visio 11.0, SVG Export, v1.0 Initial Step.svg Página-1 -->
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -10,107 +9,67 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="0.413701in"
-   height="0.413701in"
-   viewBox="0 0 29.7865 29.7865"
-   xml:space="preserve"
-   color-interpolation-filters="sRGB"
-   class="st2"
+   width="36.93309"
+   height="36.93309"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48+devel r13149"
-   sodipodi:docname="Initial_Step.svg"><metadata
-   id="metadata27"><rdf:RDF><cc:Work
-       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
-   id="defs25" /><sodipodi:namedview
-   pagecolor="#ffffff"
-   bordercolor="#666666"
-   borderopacity="1"
-   objecttolerance="10"
-   gridtolerance="10"
-   guidetolerance="10"
-   inkscape:pageopacity="0"
-   inkscape:pageshadow="2"
-   inkscape:window-width="1440"
-   inkscape:window-height="838"
-   id="namedview23"
-   showgrid="false"
-   inkscape:zoom="6.5360213"
-   inkscape:cx="3.4015595"
-   inkscape:cy="14.253409"
-   inkscape:window-x="-8"
-   inkscape:window-y="-8"
-   inkscape:window-maximized="1"
-   inkscape:current-layer="shape46-2" />
-	<v:documentProperties
-   v:langID="1033"
-   v:metric="true"
-   v:viewMarkup="false" />
-
-	<style
-   type="text/css"
-   id="style4">
-	<![CDATA[
-		.st1 {fill:#ffffff;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.72}
-		.st2 {fill:none;fill-rule:evenodd;font-size:12;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
-	]]>
-	</style>
-
-	<g
-   v:mID="0"
-   v:index="1"
-   v:groupContext="foregroundPage"
-   id="g6">
-		<title
-   id="title8">Página-1</title>
-		<v:pageProperties
-   v:drawingScale="0.0393701"
-   v:pageScale="0.0393701"
-   v:drawingUnits="24"
-   v:shadowOffsetX="9"
-   v:shadowOffsetY="-9" />
-		<g
-   id="group45-1"
-   transform="translate(0.72,-0.72)"
-   v:mID="45"
-   v:groupContext="group"
-   style="stroke-width:0.80000076;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title11">Passo Início.45</title>
-			<g
-   id="shape46-2"
-   v:mID="46"
-   v:groupContext="shape"
-   style="stroke-width:0.80000076;stroke-miterlimit:4;stroke-dasharray:none">
-				<title
-   id="title14">Square.6</title>
-				<rect
-   x="0"
-   y="1.44"
-   width="28.3465"
-   height="28.3465"
-   class="st1"
-   id="rect16"
-   style="stroke-width:0.80000076;stroke-miterlimit:4;stroke-dasharray:none" />
-			</g>
-			<g
-   id="shape47-4"
-   v:mID="47"
-   v:groupContext="shape"
-   transform="translate(2.55118,-2.55118)"
-   style="stroke-width:0.80000076;stroke-miterlimit:4;stroke-dasharray:none">
-				<title
-   id="title19">Square.5</title>
-				<rect
-   x="0"
-   y="6.54236"
-   width="23.2441"
-   height="23.2441"
-   class="st1"
-   id="rect21"
-   style="stroke-width:0.80000076;stroke-miterlimit:4;stroke-dasharray:none" />
-			</g>
-		</g>
-	</g>
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Initial_Step.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="21.70298"
+     inkscape:cy="17.369988"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1592"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-118.31917,-228.89563)">
+    <rect
+       x="119.06917"
+       y="229.64563"
+       width="35.43309"
+       height="35.43309"
+       class="st1"
+       id="rect13"
+       style="fill:none;stroke:#000000;stroke-width:1.2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3762"
+       width="27.219568"
+       height="28.02314"
+       x="122.9951"
+       y="233.48679" />
+  </g>
 </svg>

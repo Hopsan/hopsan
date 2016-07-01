@@ -28,7 +28,7 @@
           <ports>
             <port x="0.5" y="1" enabled="true" autoplaced="true" a="90" name="Next_Step"/>
             <port x="0.5" y="0" enabled="true" autoplaced="true" a="270" name="Prior_Step"/>
-            <port x="0.7" y="0.5" enabled="true" autoplaced="false" a="0" name="Condition"/>
+            <port x="1" y="0.5" enabled="true" autoplaced="false" a="0" name="Condition"/>
           </ports>
           <animation flowspeed="100" hydraulicminpressure="0" hydraulicmaxpressure="20000000"/>
         </modelobject>

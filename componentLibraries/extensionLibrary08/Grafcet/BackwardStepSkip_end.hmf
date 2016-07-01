@@ -26,11 +26,11 @@
             <icon type="defaultmissing" path="subsystemDefault.svg"/>
           </icons>
           <ports>
-            <port x="0.91" enabled="true" y="0.1" name="Condition_a" autoplaced="false" a="0"/>
-            <port x="0.22" enabled="true" y="0.7" name="Condition_b" autoplaced="false" a="0"/>
-            <port x="0.85" enabled="true" y="0" name="Prior_Step_a" autoplaced="false" a="270"/>
-            <port x="0.15" enabled="true" y="1" name="Prior_Step_b" autoplaced="false" a="90"/>
-            <port x="0.85" enabled="true" y="0.6" name="Next_Step" autoplaced="false" a="90"/>
+            <port x="1" enabled="true" y="0.110" name="Condition_a" autoplaced="false" a="0"/>
+            <port x="0.111" enabled="true" y="0.580" name="Condition_b" autoplaced="false" a="0"/>
+            <port x="0.945" enabled="true" y="0" name="Prior_Step_a" autoplaced="false" a="270"/>
+            <port x="0.055" enabled="true" y="1" name="Prior_Step_b" autoplaced="false" a="90"/>
+            <port x="0.945" enabled="true" y="0.610" name="Next_Step" autoplaced="false" a="90"/>
           </ports>
           <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
         </modelobject>

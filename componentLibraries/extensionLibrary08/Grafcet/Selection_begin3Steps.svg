@@ -10,14 +10,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="299.66718"
-   height="53.077156"
-   viewBox="0 0 239.73408 42.461769"
+   width="300.68143"
+   height="53.584278"
+   viewBox="0 0 240.54548 42.867467"
    xml:space="preserve"
    class="st3"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48+devel r13149"
+   inkscape:version="0.48+devel r13012"
    sodipodi:docname="Selection_begin3Steps.svg"
    style="font-size:12px;color-interpolation-filters:sRGB;fill:none;stroke-linecap:square;stroke-miterlimit:3;overflow:visible"><metadata
    id="metadata54"><rdf:RDF><cc:Work
@@ -32,7 +32,7 @@
    guidetolerance="10"
    inkscape:pageopacity="0"
    inkscape:pageshadow="2"
-   inkscape:window-width="1440"
+   inkscape:window-width="1600"
    inkscape:window-height="838"
    id="namedview50"
    showgrid="false"
@@ -41,8 +41,8 @@
    fit-margin-right="0"
    fit-margin-bottom="0"
    inkscape:zoom="3.2372424"
-   inkscape:cx="137.66749"
-   inkscape:cy="13.757598"
+   inkscape:cx="151.5963"
+   inkscape:cy="13.702253"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
@@ -67,7 +67,7 @@
    v:index="1"
    v:groupContext="foregroundPage"
    id="g6"
-   transform="translate(-18.519305,-2.5077014)">
+   transform="translate(-18.113607,-2.3048517)">
 		<title
    id="title8">Página-1</title>
 		<v:pageProperties
@@ -76,124 +76,53 @@
    v:drawingUnits="24"
    v:shadowOffsetX="9"
    v:shadowOffsetY="-9" />
-		<g
-   id="shape113-1"
-   v:mID="113"
-   v:groupContext="shape"
-   transform="matrix(0,1,1,0,92.7128,17.0866)"
-   style="stroke-width:0.80000114;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title11">Arco linha .113</title>
-			<path
-   d="m 0,45.67 27.39,0"
-   class="st1"
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.5999999;stroke-dasharray:none"
    id="path13"
-   style="stroke:#000000;stroke-width:0.80000114;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape114-4"
-   v:mID="114"
-   v:groupContext="shape"
-   transform="translate(132.717,-7.77419)">
-			<title
-   id="title16">Transição.114</title>
-			<path
-   d="m 0,45.67 11.34,0"
-   class="st2"
+   class="st1"
+   d="m 138.3828,17.0866 0,27.39" />
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.33333325;stroke-dasharray:none"
    id="path18"
-   style="stroke:#000000;stroke-width:1.60000229;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape115-7"
-   v:mID="115"
-   v:groupContext="shape"
-   transform="matrix(0,1,1,0,-20.6731,17.17378)"
-   style="stroke-width:0.80000114;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title21">Arco linha .115</title>
-			<path
-   d="m 0,45.67 27.39,0"
-   class="st1"
+   class="st2"
+   d="m 132.717,37.89581 11.34,0" />
+		<path
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.5999999;stroke-dasharray:none"
+   inkscape:connector-curvature="0"
    id="path23"
+   class="st1"
+   d="m 24.9969,17.17378 0,27.39" />
+		<path
    inkscape:connector-curvature="0"
-   style="stroke:#000000;stroke-width:0.80000114;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
-		</g>
-		<g
-   id="shape116-10"
-   v:mID="116"
-   v:groupContext="shape"
-   transform="translate(19.3307,-7.32661)"
-   style="stroke-width:1.60000229;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title26">Transição.116</title>
-			<path
-   d="m 0,45.67 11.34,0"
-   class="st2"
+   style="stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.33333325;stroke-dasharray:none"
    id="path28"
-   style="stroke:#000000;stroke-width:1.60000229;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape117-13"
-   v:mID="117"
-   v:groupContext="shape"
-   transform="matrix(0,1,1,0,206.099,17.120785)"
-   style="stroke-width:0.80000114;stroke-miterlimit:3;stroke-dasharray:none">
-			<title
-   id="title31">Arco linha .117</title>
-			<path
-   d="m 0,45.67 27.39,0"
-   class="st1"
-   id="path33"
-   inkscape:connector-curvature="0"
-   style="stroke:#000000;stroke-width:0.80000114;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;stroke-dasharray:none" />
-		</g>
-		<g
-   id="shape118-16"
-   v:mID="118"
-   v:groupContext="shape"
-   transform="translate(246.102,-7.32661)"
-   style="stroke-width:1.60000229;stroke-miterlimit:3;stroke-dasharray:none">
-			<title
-   id="title36">Transição.118</title>
-			<path
-   d="m 0,45.67 11.34,0"
    class="st2"
+   d="m 19.3307,38.34339 11.34,0" />
+		<path
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.5999999;stroke-dasharray:none"
+   inkscape:connector-curvature="0"
+   id="path33"
+   class="st1"
+   d="m 251.769,17.120785 0,27.39" />
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.33333325;stroke-dasharray:none"
    id="path38"
-   style="stroke:#000000;stroke-width:1.60000229;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape131-19"
-   v:mID="131"
-   v:groupContext="shape"
-   transform="matrix(0,1,1,0,78.5395,2.91339)"
-   style="stroke-width:0.80000114;stroke-miterlimit:3;stroke-dasharray:none">
-			<title
-   id="title41">Arco linha .131</title>
-			<path
-   d="m 0,45.67 14.17,0"
-   class="st1"
+   class="st2"
+   d="m 246.102,38.34339 11.34,0" />
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.5999999;stroke-dasharray:none"
    id="path43"
-   style="stroke:#000000;stroke-width:0.80000114;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape108-22"
-   v:mID="108"
-   v:groupContext="shape"
-   transform="translate(25,-28.5865)"
-   style="stroke-width:0.80000114;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title46">Planilha.108</title>
-			<path
-   d="m 0,45.67 226.77,0"
    class="st1"
+   d="m 124.2095,2.91339 0,14.17" />
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.5999999;stroke-dasharray:none"
    id="path48"
-   style="stroke:#000000;stroke-width:0.80000114;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
+   class="st1"
+   d="m 25,17.0835 226.77,0" />
 	</g>
 </svg>

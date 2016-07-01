@@ -21,7 +21,7 @@
       <hopsanobjectappearance version="0.3">
         <modelobject displayname="Initial_Step" subtypename="Initial_Step" typename="Subsystem">
           <icons>
-            <icon iconrotation="ON" type="user" path="Initial Step.svg" scale="1"/>
+            <icon iconrotation="ON" type="user" path="Initial_Step.svg" scale="1"/>
             <icon type="defaultmissing" path="subsystemDefault.svg"/>
           </icons>
           <ports>
@@ -30,17 +30,17 @@
             <port x="1" y="0.5" enabled="true" autoplaced="true" a="0" name="Action"/>
             <port x="0.5" y="1" enabled="true" autoplaced="true" a="90" name="Out"/>
           </ports>
-			<animation>
-				<icon userpath="Initial_Step.svg"/>
-				<movable>
-					<start x="0" y="0" a="0"/>
-					<transformorigin x="0" y="0"/>
-					<icon userpath="Step_active.svg"/>
-					<data port="Action" dataname="Value" idx="0"/>
-					<movement x="0" y="0" a="0" idx="0"/>
-					<indicator port="Action" dataname="Value"/>
-            </movable>
-		</animation>	
+				<animation>
+					<icon userpath="Regular_Step.svg"/>
+					<movable>
+						<start x="0" y="0" a="0"/>
+						<transformorigin x="0" y="0"/>
+						<icon userpath="Step_active.svg"/>
+						<data port="Action" dataname="Value" idx="0"/>
+						<movement x="0" y="0" a="0" idx="0"/>
+						<indicator port="Action" dataname="Value"/>
+					</movable>
+				</animation>
         </modelobject>
       </hopsanobjectappearance>
       <optimization>

@@ -21,7 +21,7 @@
       <hopsanobjectappearance version="0.3">
         <modelobject displayname="Regular_Step" typename="Subsystem" subtypename="Regular_Step">
           <icons>
-            <icon type="user" path="Regular Step.svg" scale="1" iconrotation="ON"/>
+            <icon type="user" path="Regular_Step.svg" scale="1" iconrotation="ON"/>
             <icon type="defaultmissing" path="subsystemDefault.svg"/>
           </icons>
           <ports>

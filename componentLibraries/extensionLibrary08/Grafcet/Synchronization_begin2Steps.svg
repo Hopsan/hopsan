@@ -10,14 +10,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="161.04588"
-   height="54.168945"
-   viewBox="0 0 128.83671 43.335194"
+   width="159.52138"
+   height="55.131969"
+   viewBox="0 0 127.61711 44.105613"
    xml:space="preserve"
    class="st5"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48+devel r13149"
+   inkscape:version="0.48+devel r13012"
    sodipodi:docname="Synchronization_begin2Steps.svg"
    style="font-size:12px;color-interpolation-filters:sRGB;fill:none;stroke-linecap:square;stroke-miterlimit:3;overflow:visible"><metadata
    id="metadata55"><rdf:RDF><cc:Work
@@ -32,21 +32,25 @@
    guidetolerance="10"
    inkscape:pageopacity="0"
    inkscape:pageshadow="2"
-   inkscape:window-width="1440"
+   inkscape:window-width="1600"
    inkscape:window-height="838"
    id="namedview51"
-   showgrid="false"
+   showgrid="true"
    fit-margin-top="0"
    fit-margin-left="0"
    fit-margin-right="0"
    fit-margin-bottom="0"
-   inkscape:zoom="5.4838039"
-   inkscape:cx="161.7831"
-   inkscape:cy="46.666623"
+   inkscape:zoom="10.967608"
+   inkscape:cx="24.417381"
+   inkscape:cy="18.949486"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
-   inkscape:current-layer="g6" />
+   inkscape:current-layer="g6"><inkscape:grid
+     type="xygrid"
+     id="grid4105"
+     originx="-0.23931092px"
+     originy="0.70946656px" /></sodipodi:namedview>
 	<v:documentProperties
    v:langID="1033"
    v:metric="true"
@@ -69,7 +73,7 @@
    v:index="1"
    v:groupContext="foregroundPage"
    id="g6"
-   transform="translate(-17.31161,0.16569736)">
+   transform="translate(-17.50306,0.368546)">
 		<title
    id="title8">Página-1</title>
 		<v:pageProperties
@@ -78,127 +82,38 @@
    v:drawingUnits="24"
    v:shadowOffsetX="9"
    v:shadowOffsetY="-9" />
-		<g
-   id="group85-1"
-   transform="translate(17.9134,-16.8344)"
-   v:mID="85"
-   v:groupContext="group"
-   style="stroke-width:0.80000073;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title11">Simulta- neidade.85</title>
-			<g
-   id="group86-2"
-   v:mID="86"
-   v:groupContext="group"
-   style="stroke-width:0.80000073;stroke-miterlimit:4;stroke-dasharray:none">
-				<title
-   id="title14">Planilha.86</title>
-				<g
-   id="shape87-3"
-   v:mID="87"
-   v:groupContext="shape"
-   style="stroke-width:0.80000073;stroke-miterlimit:4;stroke-dasharray:none">
-					<title
-   id="title17">Planilha.87</title>
-					<rect
-   x="0"
-   y="44.003502"
-   width="127.559"
-   height="2.83465"
-   class="st1"
-   id="rect19"
-   style="fill:#ffffff;stroke:#000000;stroke-width:0.80000073;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
-				</g>
-			</g>
-			<g
-   id="shape88-5"
-   v:mID="88"
-   v:groupContext="shape"
-   transform="matrix(0,1.2230275,-1,0,46.8382,43.752389)"
-   style="stroke-width:1.200001;stroke-miterlimit:3;stroke-dasharray:none">
-				<title
-   id="title22">Planilha.88</title>
-				<path
-   d="m 0,46.84 2.83,0"
-   class="st2"
-   id="path24"
-   style="stroke:#ffffff;stroke-width:1.200001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-			</g>
-			<g
-   id="shape89-8"
-   v:mID="89"
-   v:groupContext="shape"
-   transform="matrix(0,1,-1,0,174.397,44.0035)"
-   style="stroke-width:0.80000073;stroke-miterlimit:4;stroke-dasharray:none">
-				<title
-   id="title27">Planilha.89</title>
-				<path
-   d="m -0.24939751,46.84 3.61247331,0"
-   class="st2"
-   id="path29"
-   style="stroke:#ffffff;stroke-width:1.35578465;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-			</g>
-		</g>
-		<g
-   id="shape90-11"
-   v:mID="90"
-   v:groupContext="shape"
-   transform="matrix(0,1,1,0,91.5477,30.0038)"
-   style="stroke-width:0.80000073;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title32">Arco linha .90</title>
-			<path
-   d="m 0,46.84 12.76,0"
-   class="st3"
+		
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
    id="path34"
-   style="stroke:#000000;stroke-width:0.80000073;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape93-14"
-   v:mID="93"
-   v:groupContext="shape"
-   transform="matrix(0,1,1,0,-21.8382,30.9166)">
-			<title
-   id="title37">Arco linha .93</title>
-			<path
-   d="m -0.9026129,46.84 11.8399979,0"
    class="st3"
+   d="m 138.3877,30.368522 0,12.76" />
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.25;stroke-dasharray:none"
    id="path39"
-   style="stroke:#000000;stroke-width:0.80000073;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape94-17"
-   v:mID="94"
-   v:groupContext="shape"
-   transform="translate(33.5039,-39.5115)"
-   style="stroke-width:1.60000134;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title42">Transição.94</title>
-			<path
-   d="m 0,46.84 11.34,0"
-   class="st4"
-   id="path44"
-   style="stroke:#000000;stroke-width:1.60000134;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-		<g
-   id="shape92-20"
-   v:mID="92"
-   v:groupContext="shape"
-   transform="matrix(0,1,1,0,-7.66493,0.24)"
-   style="stroke-width:0.80000073;stroke-miterlimit:4;stroke-dasharray:none">
-			<title
-   id="title47">Arco linha .92</title>
-			<path
-   d="m 0,46.84 26.93,0"
    class="st3"
+   d="m 25.0018,30.418232 0,12.658475" />
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+   id="path44"
+   class="st4"
+   d="m 33.5039,7.3285 11.34,0" />
+		<path
+   inkscape:connector-curvature="0"
+   style="stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.25;stroke-dasharray:none"
    id="path49"
-   style="stroke:#000000;stroke-width:0.80000073;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
-   inkscape:connector-curvature="0" />
-		</g>
-	</g>
+   class="st3"
+   d="m 39.17507,0.24 0,26.93" />
+	<path
+   style="fill:none;stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.25;stroke-opacity:1;stroke-dasharray:none"
+   d="m 18.111556,27.169482 126.400114,0"
+   id="path4107"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.25;stroke-opacity:1;stroke-dasharray:none"
+   d="m 144.51167,30.369485 -126.400114,0"
+   id="path4109"
+   inkscape:connector-curvature="0" /></g>
 </svg>

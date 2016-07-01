@@ -26,13 +26,13 @@
             <icon type="defaultmissing" path="subsystemDefault.svg"/>
           </icons>
           <ports>
-            <port x="0.45" enabled="true" y="0" name="Prior_Step" autoplaced="false" a="270"/>
-			<port x="0.13" enabled="true" y="0.84" name="Condition_a" autoplaced="false" a="0"/>
-            <port x="0.54" enabled="true" y="0.84" name="Condition_b" autoplaced="false" a="0"/>
-            <port x="0.95" enabled="true" y="0.84" name="Condition_c" autoplaced="false" a="0"/>
-            <port x="0.09" enabled="true" y="1" name="Next_step_a" autoplaced="false" a="90"/>
-			<port x="0.5" enabled="true" y="1" name="Next_Step_b" autoplaced="true" a="90"/>
-			<port x="0.91" enabled="true" y="1" name="Next_Step_c" autoplaced="false" a="90"/>
+            <port x="0.440" enabled="true" y="0.000" name="Prior_Step" autoplaced="false" a="270"/>
+			<port x="0.060" enabled="true" y="0.840" name="Condition_a" autoplaced="false" a="0"/>
+            <port x="0.530" enabled="true" y="0.840" name="Condition_b" autoplaced="false" a="0"/>
+            <port x="1.000" enabled="true" y="0.840" name="Condition_c" autoplaced="false" a="0"/>
+            <port x="0.030" enabled="true" y="1.000" name="Next_step_a" autoplaced="false" a="90"/>
+			<port x="0.500" enabled="true" y="1.000" name="Next_Step_b" autoplaced="true" a="90"/>
+			<port x="0.972" enabled="true" y="1.000" name="Next_Step_c" autoplaced="false" a="90"/>
           </ports>
           <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
         </modelobject>
