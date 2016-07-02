@@ -167,7 +167,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mRealTime=true;
     mCurrentAnimationTime = 0;
     mLastAnimationTime = 0;
-    mSimulationSpeed = 1;
+    mSimulationSpeed = mpSpeedSpinBox->value();
     mTimeStep = gpModelHandler->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
     mFps=60;   //Frames per second
 
