@@ -5,6 +5,7 @@
 #include <chrono>
 #include <atomic>
 #include <queue>
+#include <cmath>
 
 #include "zmq.hpp"
 #include "Messages.h"
