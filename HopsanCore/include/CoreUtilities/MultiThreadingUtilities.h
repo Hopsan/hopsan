@@ -103,7 +103,7 @@ public:
         mTime = time;
     }
 
-    void operator() ()
+    void operator() () const
     {
         mpComponent->simulate(mTime);
     }
@@ -156,7 +156,7 @@ public:
     }
 
     //! @brief Executable code for slave simulation thread
-    void operator() ()
+    void operator() () const
     {
         for(size_t i=0; i<mNumSimSteps; ++i)
         {
@@ -218,7 +218,7 @@ private:
     vector<Node*> mVectorN;
     size_t mNumSimSteps;
     double mTimeStep;
-    double mTime;
+    mutable double mTime;
 #ifdef Q_OS_OSX
     /* double *mpSimTime; Never used on mac. /magse */
 #else
@@ -277,7 +277,7 @@ public:
     }
 
     //! @brief Executable code for master simulation thread
-    void operator() ()
+    void operator() () const
     {
         for(size_t s=0; s<mNumSimSteps; ++s)
         {
@@ -404,7 +404,7 @@ private:
     vector<Node*> mVectorN;
     size_t mNumSimSteps;
     double mTimeStep;
-    double mTime;
+    mutable double mTime;
     vector<double *> mpSimTimes;
 #ifdef Q_OS_OSX
     /* size_t mnSystems; Never used on mac. /magse */
@@ -436,7 +436,7 @@ public:
     }
 
     //! @brief Executable code for master simulation thread
-    void operator() ()
+    void operator() () const
     {
         for(size_t i=0; i<mSystemPtrs.size(); ++i)
         {
@@ -621,7 +621,7 @@ public:
         mpTime = pTime;
     }
 
-    void operator() ()
+    void operator() () const
     {
         Component *pComp;
         while(!(*mpStop))
@@ -748,7 +748,7 @@ public:
         mpTime = pTime;
     }
 
-    void operator() ()
+    void operator() () const
     {
         Component *pComp;
         while(!(*mpStop))
@@ -912,6 +912,7 @@ public:
         mVectorS = sVector;
         mpUnFinishedVectorsC = cVectors;
         mpUnFinishedVectorsQ = qVectors;
+        //! @todo memory leak, never deleted, however, dont delete in destructor, that will cause double free corruption since this object is copied when new tasks are created
         mpFinishedVectorC = new ThreadSafeVector(std::vector<Component*>(), maxSize);
         mpFinishedVectorQ = new ThreadSafeVector(std::vector<Component*>(), maxSize);
         mpSimTimes = pSimTimes;
@@ -927,7 +928,7 @@ public:
     }
 
     //! @brief Executable code for master simulation thread
-    void operator() ()
+    void operator() () const
     {
         ThreadSafeVector *pTemp;
         Component *pComp;
@@ -1070,14 +1071,14 @@ public:
 private:
     ComponentSystem *mpSystem;
     vector<Component*> mVectorS;
-    ThreadSafeVector *mpFinishedVectorC;
-    ThreadSafeVector *mpFinishedVectorQ;
+    mutable ThreadSafeVector *mpFinishedVectorC;
+    mutable ThreadSafeVector *mpFinishedVectorQ;
     std::vector<ThreadSafeVector*> *mpUnFinishedVectorsC;
     std::vector<ThreadSafeVector*> *mpUnFinishedVectorsQ;
     vector<Node*> mVectorN;
     size_t mNumSimSteps;
     double mTimeStep;
-    double mTime;
+    mutable double mTime;
     vector<double *> mpSimTimes;
     size_t mnThreads;
     size_t mThreadID;
@@ -1099,6 +1100,7 @@ public:
         mpSystem = pSystem;
         mpUnFinishedVectorsC = cVectors;
         mpUnFinishedVectorsQ = qVectors;
+        //! @todo memory leak, never deleted, however, dont delete in destructor, that will cause double free corruption since this object is copied when new tasks are created
         mpFinishedVectorC = new ThreadSafeVector(std::vector<Component*>(), maxSize);
         mpFinishedVectorQ = new ThreadSafeVector(std::vector<Component*>(), maxSize);
         mTime = startTime;
@@ -1112,7 +1114,7 @@ public:
         mpBarrier_N = pBarrier_N;
     }
 
-    void operator() ()
+    void operator() () const
     {
         ThreadSafeVector *pTemp;
         Component *pComp;
@@ -1210,13 +1212,13 @@ public:
     }
 private:
     ComponentSystem *mpSystem;
-    ThreadSafeVector *mpFinishedVectorC;
-    ThreadSafeVector *mpFinishedVectorQ;
+    mutable ThreadSafeVector *mpFinishedVectorC;
+    mutable ThreadSafeVector *mpFinishedVectorQ;
     std::vector<ThreadSafeVector*> *mpUnFinishedVectorsC;
     std::vector<ThreadSafeVector*> *mpUnFinishedVectorsQ;
     size_t mNumSimSteps;
     double mTimeStep;
-    double mTime;
+    mutable double mTime;
     size_t mThreadID;
     size_t mnThreads;
     BarrierLock *mpBarrier_S;
@@ -1239,7 +1241,7 @@ public:
         mStopTime = stopTime;
     }
 
-    void operator() ()
+    void operator() () const
     {
         mpComp->simulate(mStopTime);
     }
@@ -1264,7 +1266,7 @@ public:
         nComponents = mpComponentPtrs->size();
     }
 
-    void operator() ()
+    void operator() () const
     {
         for (size_t i=0; i<nComponents; ++i)
         {

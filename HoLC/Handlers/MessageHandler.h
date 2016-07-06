@@ -32,7 +32,6 @@ class MessageHandler
 public:
     MessageHandler(MessageWidget *pMessageWidget);
 
-public slots:
     void addInfoMessage(const QString &msg);
     void addWarningMessage(const QString &msg);
     void addErrorMessage(const QString &msg);
