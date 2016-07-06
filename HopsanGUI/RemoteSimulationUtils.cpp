@@ -40,6 +40,7 @@
 #include <QDebug>
 #include <QTime>
 #include <chrono>
+#include <cmath>
 
 using namespace std::chrono;
 
