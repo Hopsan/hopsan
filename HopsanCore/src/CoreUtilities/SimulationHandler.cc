@@ -246,7 +246,7 @@ vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(const s
 //! @param[in] stopT Stop time for all systems
 //! @param[in] rSystemVector Vector of pointers to component systems to simulate
 //! @returns true if successful else false if simulation was aborted for some reason
-bool SimulationHandler::simulateMultipleSystems(const double stopT, vector<ComponentSystem*> &rSystemVector)
+bool SimulationHandler::simulateMultipleSystems(const double stopT, const vector<ComponentSystem*> &rSystemVector)
 {
     bool aborted = false;
     for(size_t i=0; i<rSystemVector.size(); ++i)
