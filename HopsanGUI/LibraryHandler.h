@@ -102,8 +102,10 @@ public:
 public slots:
     void importFmu();
     void loadLibrary();
+#ifdef EXPERIMENTAL
     void createNewCppComponent();
     void createNewModelicaComponent();
+#endif //EXPERIMENTAL
 
 signals:
     void contentsChanged();

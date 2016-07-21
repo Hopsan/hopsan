@@ -74,7 +74,8 @@ void WorkerNelderMead::run()
 
         findCentroidPoint();
 
-        mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mAlpha);   //Reflect
+        bool feasible;
+        mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mAlpha, feasible);   //Reflect
         mpMessageHandler->candidateChanged(0);
 
         mpEvaluator->evaluateCandidate(0);
@@ -97,7 +98,8 @@ void WorkerNelderMead::run()
         }
         else if(mCandidateObjectives[0] < mObjectives.at(bestId) && !mpMessageHandler->aborted())
         {
-            mCandidatePoints[0] = reflect(mPoints[worstId], mCentroidPoint, mGamma);   //Expand
+            bool feasible;
+            mCandidatePoints[0] = reflect(mPoints[worstId], mCentroidPoint, mGamma, feasible);   //Expand
             mpMessageHandler->candidateChanged(0);
             mpEvaluator->evaluateCandidate(0);
             ++mIterationCounter;
@@ -119,7 +121,8 @@ void WorkerNelderMead::run()
         }
         else if(!mpMessageHandler->aborted())
         {
-            mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mRho);   //Contract
+            bool feasible;
+            mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mRho, feasible);   //Contract
             mpMessageHandler->candidateChanged(0);
             mpEvaluator->evaluateCandidate(0);
             ++mIterationCounter;

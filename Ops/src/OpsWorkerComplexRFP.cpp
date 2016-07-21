@@ -35,6 +35,7 @@
 #include "OpsEvaluator.h"
 #include "OpsMessageHandler.h"
 #include <math.h>
+#include <iostream>
 
 using namespace Ops;
 
@@ -120,6 +121,12 @@ void WorkerComplexRFP::run()
         bool doBreak = false;
         while(mWorstId == mpFailedCandidate->idx && mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted())
         {
+          if(mIterationCounter > 8000)
+          {
+              double apa=3;
+              double ko=apa*2;
+          }
+
             mpMessageHandler->stepCompleted(mIterationCounter);
 
             if(multiRetract())
@@ -150,6 +157,8 @@ void WorkerComplexRFP::run()
     {
         mpMessageHandler->printMessage("Optimization converged in parameter values after "+std::to_string(mIterationCounter)+" iterations.");
     }
+
+    std::cout << mIterationCounter << " iterations." << "\n";
 
     // Clean up
     finalize();
@@ -208,7 +217,8 @@ void WorkerComplexRFP::pickCandidateParticles()
             findCentroidPoint();
 
             //Reflect first point
-            mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha);
+            bool feasible;
+            mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha, feasible);
 
             Candidate *pCandidate = new Candidate();
             pCandidate->mpPoint = &mCandidatePoints[i];
@@ -225,7 +235,8 @@ void WorkerComplexRFP::pickCandidateParticles()
 
         for(size_t i=0; i<mNumCandidates; ++i)
         {
-            mCandidatePoints[i] = reflect(mPoints[mWorstId], mCentroidPoint, mvAlpha[i]);
+            bool feasible;
+            mCandidatePoints[i] = reflect(mPoints[mWorstId], mCentroidPoint, mvAlpha[i], feasible);
 
             Candidate *pCandidate = new Candidate();
             pCandidate->mpPoint = &mCandidatePoints[i];
@@ -260,7 +271,8 @@ void WorkerComplexRFP::pickCandidateParticles()
                 findCentroidPoint(otherPoints);
                 centerPoints.push_back(mCentroidPoint);
 
-                mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha);
+                bool feasible;
+                mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha, feasible);
 
                 pCandidate->mpPoint = &mCandidatePoints[i];
                 pCandidate->mpObjective = &mCandidateObjectives[i];
@@ -275,7 +287,8 @@ void WorkerComplexRFP::pickCandidateParticles()
                 findCentroidPoint(otherPoints);
                 centerPoints.push_back(mCentroidPoint);
 
-                mCandidatePoints[i] = reflect(worstPoint, mCentroidPoint, mAlpha);
+                bool feasible;
+                mCandidatePoints[i] = reflect(worstPoint, mCentroidPoint, mAlpha, feasible);
 
                 pCandidate->mpPoint = &mCandidatePoints[i];
                 pCandidate->mpObjective = &mCandidateObjectives[i];

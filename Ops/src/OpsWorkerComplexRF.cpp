@@ -86,7 +86,8 @@ void WorkerComplexRF::run()
         findCentroidPoint();
 
         //Reflect worst point
-        mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mAlpha);
+        bool feasible;
+        mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mAlpha, feasible);
         mpMessageHandler->candidateChanged(0);
         //std::vector<double> newPoint = mCandidatePoints[0]; //Remember the new point, in case we need to iterate below
 

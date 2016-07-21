@@ -35,6 +35,10 @@
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "ComponentSystem.h"
 
+#ifdef USETBB
+#include "tbb/parallel_for.h"
+#endif
+
 using namespace hopsan;
 using namespace std;
 
@@ -292,14 +296,16 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
         mSplitSystemVector = distributeSystems(tempSystemVector, nThreads); //Distribute systems evenly over split vectors
     }
 
-    tbb::task_group *simTasks;                                          //Initialize TBB routines for parallel simulation
-    simTasks = new tbb::task_group;
-    for(size_t t=0; t < min(nThreads,mSplitSystemVector.size()); ++t)                                  //Execute simulation
-    {
-        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], stopT));
-    }
-    simTasks->wait();                                                   //Wait for all tasks to finish
-    delete(simTasks);
+//    tbb::task_group *simTasks;                                          //Initialize TBB routines for parallel simulation
+//    simTasks = new tbb::task_group;
+//    for(size_t t=0; t < min(nThreads,mSplitSystemVector.size()); ++t)                                  //Execute simulation
+//    {
+//        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], stopT));
+//    }
+//    simTasks->wait();                                                   //Wait for all tasks to finish
+//    delete(simTasks);
+
+    tbb::parallel_for(tbb::blocked_range<int>(0, rSystemVector.size()), BodySimulateSystemVector( rSystemVector, stopT));
 
     bool aborted=false;
     for(size_t i=0; i<tempSystemVector.size(); ++i)

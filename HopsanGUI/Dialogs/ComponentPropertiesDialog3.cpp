@@ -119,6 +119,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
         mAllowEditing = (!mpModelObject->isLocallyLocked() && (mpModelObject->getModelLockLevel() < FullyLocked));
     }
 
+#ifdef EXPERIMENTAL
     if(mpModelObject->getTypeName() == MODELICATYPENAME && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
     {
         this->hide();
@@ -183,6 +184,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
         this->close();
         return;
     }
+#endif //EXPERIMENTAL
 
     this->setPalette(gpConfig->getPalette());
     setWindowTitle(tr("Component Properties"));
@@ -265,7 +267,7 @@ void ComponentPropertiesDialog3::editPortPos()
     MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getLibraryAppearanceData().data(), mpModelObject->getParentContainerObject()->getGfxType());
     connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
 }
-
+#ifdef EXPERIMENTAL
 void ComponentPropertiesDialog3::copyToNewComponent()
 {
     QString sourceCode = mpSourceCodeTextEdit->toPlainText();
@@ -343,6 +345,8 @@ void ComponentPropertiesDialog3::recompile()
 
     this->close();
 }
+#endif //EXPERIMENTAL
+
 
 bool ComponentPropertiesDialog3::setAliasNames()
 {
@@ -688,6 +692,7 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     pLayout->addWidget(mpSourceCodeTextEdit);
     mpSourceCodeTextEdit->setReadOnly(!(ismo && mAllowEditing));
 
+#ifdef EXPERIMENTAL
     QLabel *pSolverLabel = new QLabel("Solver: ", this);
     mpSolverComboBox = new QComboBox(this);
     mpSolverComboBox->addItem("Numerical Integration");
@@ -707,6 +712,7 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
 
     pRecompileButton->setEnabled(ismo && mAllowEditing);
     mpSolverComboBox->setEnabled(ismo && mAllowEditing);
+#endif //EXPERIMENTAL
 
     return pTempWidget;
 }

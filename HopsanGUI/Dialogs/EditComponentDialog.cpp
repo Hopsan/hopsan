@@ -31,6 +31,8 @@
 //!
 //$Id$
 
+#ifdef EXPERIMENTAL
+
 //C++ includes
 #include <cassert>
 
@@ -794,3 +796,5 @@ void CreateComponentWizard::generate()
     mpParent->mpCodeTextEdit->setPlainText(output);
     this->deleteLater();
 }
+
+#endif //EXPERIMENTAL

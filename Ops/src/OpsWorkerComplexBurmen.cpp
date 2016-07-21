@@ -93,7 +93,8 @@ void WorkerComplexBurmen::run()
         for(size_t i=0; i<mNumCandidates; ++i)
         {
             //Reflect first point
-            mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha);
+            bool feasible;
+            mCandidatePoints[i] = reflect(mPoints[ids[i]], mCentroidPoint, mAlpha, feasible);
             newPoints.push_back(mCandidatePoints[i]);
         }
         mpMessageHandler->candidatesChanged();

@@ -34,6 +34,8 @@
 #ifndef EDITCOMPONENTDIALOG_H_INCLUDED
 #define EDITCOMPONENTDIALOG_H_INCLUDED
 
+#ifdef EXPERIMENTAL
+
 #include <QDialog>
 #include <QWizard>
 
@@ -140,4 +142,7 @@ private:
 
 };
 
+#endif //EXPERIMENTAL
+
 #endif // EDITCOMPONENTDIALOG_H_INCLUDED
+

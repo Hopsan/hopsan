@@ -374,6 +374,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     clBatchStream << " -o " << o << " " << lflags <<"\n";
     compileScript.close();
 #elif __linux__
+    Q_UNUSED(gccPath);
     compileScript.setFileName(wdPath + "/compile.sh");
     if(!compileScript.open(QIODevice::WriteOnly | QIODevice::Text))
     {

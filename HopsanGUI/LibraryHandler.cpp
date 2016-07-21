@@ -108,6 +108,7 @@ void LibraryHandler::loadLibrary()
     }
 }
 
+#ifdef EXPERIMENTAL
 void LibraryHandler::createNewCppComponent()
 {
     EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp, gpMainWindowWidget);
@@ -157,7 +158,7 @@ void LibraryHandler::createNewModelicaComponent()
     delete(pEditDialog);
     return;
 }
-
+#endif //EXPERIMENTAL
 
 
 //! @brief Loads a component library from either XML or folder (deprecated, for backwards compatibility)

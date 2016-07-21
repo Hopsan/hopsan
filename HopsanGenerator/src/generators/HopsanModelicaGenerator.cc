@@ -73,7 +73,7 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     if(solver == BilinearTransform)
     {
         //Transform equation system using Bilinear Transform method
-        generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+        generateComponentObject(comp, typeName, displayName, cqsType, /*initAlgorithms,*/ preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
     else /*if(solver == NumericalIntegration)*/
     {
@@ -421,7 +421,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 {
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
-                        int idx = finalAlgorithms.last().indexOf(temp)+temp.size()-1;
+                    //    int idx = finalAlgorithms.last().indexOf(temp)+temp.size()-1;
 //                        if(portList.at(i).porttype == "WritePortType")
 //                        {
 //                            finalAlgorithms.last().remove(idx, 4);
@@ -462,7 +462,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
 
 //! @brief Generates XML and compiles the new component
-void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, /*QStringList &initAlgorithms,*/ QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     logStream << "Initializing Modelica generator for bilinear transform.\n";
     logStream << "Date and time: " << QDateTime::currentDateTime().toString() << "\n";

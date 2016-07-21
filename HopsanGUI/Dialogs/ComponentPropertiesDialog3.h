@@ -101,8 +101,10 @@ protected slots:
     void okPressed();
     void applyPressed();
     void editPortPos();
+#ifdef EXPERIMENTAL
     void copyToNewComponent();
     void recompile();
+#endif //EXPERIMENTAL
     virtual void reject();
     void openDescription();
 
