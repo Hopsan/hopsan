@@ -45,7 +45,7 @@ public:
 
     virtual void initialize();
 
-    std::vector<double> reflect(std::vector<double> point, std::vector<double> center, double alpha, bool &inFeasibleRegion);
+    std::vector<double> reflect(std::vector<double> point, std::vector<double> center, double alpha);
 
     void setRandomFactor(double value);
 

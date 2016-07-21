@@ -38,7 +38,6 @@ using namespace Ops;
 WorkerSimplex::WorkerSimplex(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
     : Worker(pEvaluator, pMessageHandler)
 {
-    mRandomFactor = 0;
 }
 
 void WorkerSimplex::initialize()
@@ -54,9 +53,8 @@ void WorkerSimplex::initialize()
 //! @param point Point to reflect
 //! @param center Point to reflect through
 //! @param alpha Reflection factor
-std::vector<double> WorkerSimplex::reflect(std::vector<double> point, std::vector<double> center, double alpha, bool &inFeasibleRegion)
+std::vector<double> WorkerSimplex::reflect(std::vector<double> point, std::vector<double> center, double alpha)
 {
-    inFeasibleRegion = true;
     std::vector<double> newPoint;
     newPoint.resize(mNumParameters);
 
@@ -69,10 +67,6 @@ std::vector<double> WorkerSimplex::reflect(std::vector<double> point, std::vecto
         double maxDiff = getMaxPercentalParameterDiff();
         double r = (double)rand() / (double)RAND_MAX;
         newPoint[j] = newPoint[j] + mRandomFactor*(mParameterMax[j]-mParameterMin[j])*maxDiff*(r-0.5);
-        if(newPoint[j] > mParameterMax[j] || newPoint[j] < mParameterMin[j])
-        {
-            inFeasibleRegion = false;
-        }
         newPoint[j] = std::min(newPoint[j], mParameterMax[j]);
         newPoint[j] = std::max(newPoint[j], mParameterMin[j]);
     }

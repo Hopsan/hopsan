@@ -1307,29 +1307,6 @@ private:
 };
 
 
-class BodySimulateSystemVector
-{
-public:
-    BodySimulateSystemVector(std::vector<ComponentSystem *> pSystemPtrs, double stopTime)
-    {
-        mSystemPtrs = pSystemPtrs;
-        mStopTime = stopTime;
-    }
-
-    void operator() ( const tbb::blocked_range<int>& r) const
-    {
-        for(int i=r.begin(); i!=r.end(); ++i)
-        {
-            mSystemPtrs[i]->simulate(mStopTime);
-        }
-    }
-
-private:
-    std::vector<ComponentSystem *> mSystemPtrs;
-    double mStopTime;
-};
-
-
 
 #endif // USETBB
 
