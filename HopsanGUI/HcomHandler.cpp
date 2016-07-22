@@ -5443,6 +5443,14 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 {
     //TicToc timer;
 
+    //Check that parentheses are ok, else give error message
+    if(!SymHop::Expression::verifyParantheses(expr))
+    {
+        HCOMERR("Syntax error in expression.");
+        return;
+    }
+
+
     //Remove parentheses around expression
     //Remove all excessive parentheses
     while(expr.startsWith("(") && expr.endsWith(")"))
