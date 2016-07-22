@@ -1271,6 +1271,10 @@ QMap<QString, SymHopFunctionoid*> HcomHandler::getLocalFunctionoidPointers() con
 //! @param cmd The command entered by user
 void HcomHandler::executeCommand(QString cmd)
 {
+    //Ignore everything after first comment symbol
+    cmd = cmd.section("#",0,0);
+    if(cmd.isEmpty()) return;
+
     //Allow several commands on one line, separated by semicolon
     if(cmd.contains(";"))
     {
