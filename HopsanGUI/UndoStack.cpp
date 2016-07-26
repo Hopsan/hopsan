@@ -380,6 +380,15 @@ void UndoStack::undoOneStep()
                 return;
             }
         }
+        else if(stuffElement.attribute("what") == UNDO_REMOVEDALIASES)
+        {
+            QDomElement xmlAlias = stuffElement.firstChildElement(HMF_ALIAS);
+            while (!xmlAlias.isNull())
+            {
+                loadPlotAlias(xmlAlias, mpParentContainerObject);
+                xmlAlias = xmlAlias.nextSiblingElement(HMF_ALIAS);
+            }
+        }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
 
@@ -1011,6 +1020,23 @@ void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
     stuffElement.setAttribute("objectname", objectName);
     stuffElement.setAttribute("isvisible", isVisible);
     gpUndoWidget->refreshList();
+}
+
+void UndoStack::registerRemovedAliases(QStringList &aliases)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", UNDO_REMOVEDALIASES);
+
+    //! @todo need one function that gets both alias and full maybe
+    for (int i=0; i<aliases.size(); ++i)
+    {
+        QDomElement alias = appendDomElement(stuffElement, HMF_ALIAS);
+        alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
+        alias.setAttribute(HMF_NAMETAG, aliases[i]);
+        QString fullName = mpParentContainerObject->getFullNameFromAlias(aliases[i]);
+        appendDomTextNode(alias, "fullname",fullName );
+    }
 }
 
 

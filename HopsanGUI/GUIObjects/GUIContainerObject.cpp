@@ -740,8 +740,27 @@ void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEn
 
         if (undoSettings == Undo && !mUndoDisabled)
         {
+            //First save aliases for component to remove (if any)
+            QStringList aliasesToSave;
+            QStringList aliases = this->getAliasNames();
+            foreach(const QString &alias, aliases)
+            {
+                QString fullName = getFullNameFromAlias(alias);
+                QString compName = fullName.section("#",0,0);
+                if(compName == pModelObject->getName())
+                {
+                    aliasesToSave.append(alias);
+                }
+            }
+
             // Register removal of model object in undo stack
             this->mpUndoStack->registerDeletedObject(pModelObject);
+
+            //Register the aliaes after the component, to make sure component is re-added before the aliases
+            if(!aliasesToSave.isEmpty())
+            {
+                this->mpUndoStack->registerRemovedAliases(aliasesToSave);
+            }
         }
 
         //! @todo maybe this should be handled somewhere else (not sure maybe this is the best place)
