@@ -498,7 +498,7 @@ QString PlotWindow::getName() const
 //! @param[in] pData Shared pointer to data that you want to plot
 //! @param[in] axisY  0=left 1=right
 //! @param[in] desiredColor The desired color
-PlotCurve* PlotWindow::addPlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
+PlotCurve* PlotWindow::addPlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, PlotCurveStyle style)
 {
     if (data)
     {
@@ -518,15 +518,15 @@ PlotCurve* PlotWindow::addPlotCurve(SharedVectorVariableT data, const QwtPlot::A
 
         // Create and add a curve
         PlotCurve *pTempCurve = new PlotCurve(data, axisY);
-        getCurrentPlotTab()->addCurve(pTempCurve, desiredColor, thickness, type);
+        getCurrentPlotTab()->addCurve(pTempCurve, style);
         return pTempCurve;
     }
     return 0;
 }
 
-PlotCurve *PlotWindow::addPlotCurve(SharedVectorVariableT xdata, SharedVectorVariableT ydata, const QwtPlot::Axis axisY, QColor desiredColor, int thickness, int type)
+PlotCurve *PlotWindow::addPlotCurve(SharedVectorVariableT xdata, SharedVectorVariableT ydata, const QwtPlot::Axis axisY, PlotCurveStyle style)
 {
-    PlotCurve *pCurve = addPlotCurve(ydata, axisY, desiredColor, thickness, type);
+    PlotCurve *pCurve = addPlotCurve(ydata, axisY, style);
     if (pCurve)
     {
         pCurve->setCustomXData(xdata);
@@ -969,8 +969,10 @@ void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariable
 
     // Nyquist plot
     PlotTab *pNyquistTab = addPlotTab("Nyquist Plot");
-    pNyquistTab->addCurve(new PlotCurve(pNyquist, QwtPlot::yLeft, NyquistType), "Blue");
-    pNyquistTab->addCurve(new PlotCurve(pNyquistInv, QwtPlot::yLeft, NyquistType), "Blue");
+    PlotCurveStyle blueStyle;
+    blueStyle.color = QColor("Blue");
+    pNyquistTab->addCurve(new PlotCurve(pNyquist, QwtPlot::yLeft, NyquistType), blueStyle);
+    pNyquistTab->addCurve(new PlotCurve(pNyquistInv, QwtPlot::yLeft, NyquistType), blueStyle);
 
     // Bode plot
     PlotTab *pBodeTab = addPlotTab("Bode Diagram", BodePlotType);

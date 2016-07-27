@@ -43,6 +43,7 @@
 #include <QMainWindow>
 
 #include "PlotTab.h"
+#include "PlotCurveStyle.h"
 #include "qwt_plot.h"
 #include "LogVariable.h"
 
@@ -84,8 +85,8 @@ public:
 
     void showHelpPopupMessage(const QString &rMessage);
 
-    PlotCurve* addPlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor(), int thickness=2, int type=1);
-    PlotCurve* addPlotCurve(SharedVectorVariableT xdata, SharedVectorVariableT ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, QColor desiredColor=QColor(), int thickness=2, int type=1);
+    PlotCurve* addPlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY=QwtPlot::yLeft, PlotCurveStyle style=PlotCurveStyle());
+    PlotCurve* addPlotCurve(SharedVectorVariableT xdata, SharedVectorVariableT ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, PlotCurveStyle style=PlotCurveStyle());
     void setXData(SharedVectorVariableT xdata, bool force=false);
 
 signals:

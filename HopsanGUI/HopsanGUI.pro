@@ -400,7 +400,8 @@ HEADERS += MainWindow.h \
     Dialogs/LicenseDialog.h \
     Utilities/EventFilters.h \
     Widgets/TimeOffsetWidget.h \
-    Dialogs/NumHopScriptDialog.h
+    Dialogs/NumHopScriptDialog.h \
+    PlotCurveStyle.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

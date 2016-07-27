@@ -57,6 +57,7 @@
 
 #include "common.h"
 #include "LogVariable.h"
+#include "PlotCurveStyle.h"
 
 // Forward Declaration
 class PlotCurve;
@@ -127,7 +128,7 @@ public:
     PlotArea(PlotTab *pParentPlotTab);
     ~PlotArea();
 
-    void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor(), int thickness=2, int type=1);
+    void addCurve(PlotCurve *pCurve, PlotCurveStyle style=PlotCurveStyle());
     void setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, bool force=false);
     void setCustomXVectorForAll(SharedVectorVariableT data, bool force=false);
     void removeAllCurvesOnAxis(const int axis);

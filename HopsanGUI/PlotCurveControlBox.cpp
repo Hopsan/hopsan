@@ -105,39 +105,39 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     QLabel *pSizeLabel = new QLabel(tr("Line Width: "));
     pSizeLabel->setAcceptDrops(false);
-    QSpinBox *pSizeSpinBox = new QSpinBox(this);
-    pSizeSpinBox->setAcceptDrops(false);
-    pSizeSpinBox->setRange(1,10);
-    pSizeSpinBox->setSingleStep(1);
-    pSizeSpinBox->setValue(2);
-    pSizeSpinBox->setSuffix(" pt");
+    mpSizeSpinBox = new QSpinBox(this);
+    mpSizeSpinBox->setAcceptDrops(false);
+    mpSizeSpinBox->setRange(1,10);
+    mpSizeSpinBox->setSingleStep(1);
+    mpSizeSpinBox->setValue(2);
+    mpSizeSpinBox->setSuffix(" pt");
 
     // New Combo Box for Line Style
-    QComboBox *pLineStyleCombo = new QComboBox;
-    pLineStyleCombo->addItem(tr("Solid Line"));
-    pLineStyleCombo->addItem(tr("Dash Line"));
-    pLineStyleCombo->addItem(tr("Dot Line"));
-    pLineStyleCombo->addItem(tr("Dash Dot Line"));
-    pLineStyleCombo->addItem(tr("Dash Dot Dot Line"));
-    pLineStyleCombo->addItem(tr("No Curve")); //CustomDashLine
+    mpLineStyleCombo = new QComboBox;
+    mpLineStyleCombo->addItem(tr("Solid Line"));
+    mpLineStyleCombo->addItem(tr("Dash Line"));
+    mpLineStyleCombo->addItem(tr("Dot Line"));
+    mpLineStyleCombo->addItem(tr("Dash Dot Line"));
+    mpLineStyleCombo->addItem(tr("Dash Dot Dot Line"));
+    mpLineStyleCombo->addItem(tr("No Curve")); //CustomDashLine
 
     // New Combo Box for Symbol Style
-    QComboBox *pLineSymbol = new QComboBox;
-    pLineSymbol->addItem(tr("None"));
-    pLineSymbol->addItem(tr("Cross"));
-    pLineSymbol->addItem(tr("Ellipse"));
-    pLineSymbol->addItem(tr("XCross"));
-    pLineSymbol->addItem(tr("Triangle"));
-    pLineSymbol->addItem(tr("Rectangle"));
-    pLineSymbol->addItem(tr("Diamond"));
-    pLineSymbol->addItem(tr("Down Triangle"));
-    pLineSymbol->addItem(tr("Up Triangle"));
-    pLineSymbol->addItem(tr("Right Triangle"));
-    pLineSymbol->addItem(tr("Hexagon"));
-    pLineSymbol->addItem(tr("Horizontal Line"));
-    pLineSymbol->addItem(tr("Vertical Line"));
-    pLineSymbol->addItem(tr("Star 1"));
-    pLineSymbol->addItem(tr("Star 2"));
+    mpLineSymbolCombo = new QComboBox;
+    mpLineSymbolCombo->addItem(tr("None"));
+    mpLineSymbolCombo->addItem(tr("Cross"));
+    mpLineSymbolCombo->addItem(tr("Ellipse"));
+    mpLineSymbolCombo->addItem(tr("XCross"));
+    mpLineSymbolCombo->addItem(tr("Triangle"));
+    mpLineSymbolCombo->addItem(tr("Rectangle"));
+    mpLineSymbolCombo->addItem(tr("Diamond"));
+    mpLineSymbolCombo->addItem(tr("Down Triangle"));
+    mpLineSymbolCombo->addItem(tr("Up Triangle"));
+    mpLineSymbolCombo->addItem(tr("Right Triangle"));
+    mpLineSymbolCombo->addItem(tr("Hexagon"));
+    mpLineSymbolCombo->addItem(tr("Horizontal Line"));
+    mpLineSymbolCombo->addItem(tr("Vertical Line"));
+    mpLineSymbolCombo->addItem(tr("Star 1"));
+    mpLineSymbolCombo->addItem(tr("Star 2"));
     //mpLineSymbol->addItem(tr("Dots"));
 
 
@@ -160,10 +160,10 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     pInfoBoxLayout->addWidget(mpInvertCurveCheckBox);
     pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
     pInfoBoxLayout->addWidget(pScaleButton);
-    pInfoBoxLayout->addWidget(pSizeSpinBox);
+    pInfoBoxLayout->addWidget(mpSizeSpinBox);
     pInfoBoxLayout->addWidget(pColorButton);
-    pInfoBoxLayout->addWidget(pLineStyleCombo);
-    pInfoBoxLayout->addWidget(pLineSymbol);
+    pInfoBoxLayout->addWidget(mpLineStyleCombo);
+    pInfoBoxLayout->addWidget(mpLineSymbolCombo);
     pInfoBoxLayout->addWidget(pDummy); // This one must be here to prevent colorblob from having a very small clickable area, (really strange)
 
     setLayout(pInfoBoxLayout);
@@ -178,9 +178,9 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpPlotCurve,  SLOT(openFrequencyAnalysisDialog())); //!< @todo this should probably be in the plot area, and signaled directly with curve
     connect(pColorButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(setLineColor()));
     connect(pScaleButton,              SIGNAL(clicked()),           mpPlotCurve,  SLOT(openScaleDialog()));
-    connect(pSizeSpinBox,    SIGNAL(valueChanged(int)),             mpPlotCurve,  SLOT(setLineWidth(int)));
-    connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineStyle(QString)));
-    connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineSymbol(QString)));
+    connect(mpSizeSpinBox,    SIGNAL(valueChanged(int)),             mpPlotCurve,  SLOT(setLineWidth(int)));
+    connect(mpLineStyleCombo, SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineStyle(QString)));
+    connect(mpLineSymbolCombo,     SIGNAL(currentIndexChanged(QString)),  mpPlotCurve,  SLOT(setLineSymbol(QString)));
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setPalette(gpConfig->getPalette());
@@ -197,6 +197,21 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 PlotCurve *PlotCurveControlBox::getCurve()
 {
     return mpPlotCurve;
+}
+
+void PlotCurveControlBox::setSizeValue(int value)
+{
+    mpSizeSpinBox->setValue(value);
+}
+
+void PlotCurveControlBox::setLineType(int value)
+{
+    mpLineStyleCombo->setCurrentIndex(value);
+}
+
+void PlotCurveControlBox::setSymbol(int value)
+{
+    mpLineSymbolCombo->setCurrentIndex(value);
 }
 
 void PlotCurveControlBox::updateColor(const QColor color)

@@ -136,19 +136,19 @@ PlotWindow *PlotHandler::getPlotWindow(const QString &rName)
     return 0;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, SharedVectorVariableT data, int axis, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, SharedVectorVariableT data, int axis, PlotCurveStyle style)
 {
     PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
-    plotDataToWindow(pWindow, data, axis, true, curveColor, type, thickness);
+    plotDataToWindow(pWindow, data, axis, true, style);
     return pWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(QString windowName, SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(QString windowName, SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, PlotCurveStyle style)
 {
     if (xdata && ydata)
     {
         PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
-        plotDataToWindow(pWindow, xdata, ydata, axis, true, curveColor,type, thickness);
+        plotDataToWindow(pWindow, xdata, ydata, axis, true, style);
         return pWindow;
     }
     return 0;
@@ -164,13 +164,13 @@ PlotWindow *PlotHandler::setPlotWindowXData(PlotWindow *pPlotWindow, SharedVecto
     return pPlotWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorVariableT data, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorVariableT data, int axis, bool autoRefresh, PlotCurveStyle style)
 {
     if(!pPlotWindow)
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    PlotCurve *pCurve = pPlotWindow->addPlotCurve(data, QwtPlot::Axis(axis), curveColor, thickness, type);
+    PlotCurve *pCurve = pPlotWindow->addPlotCurve(data, QwtPlot::Axis(axis), style);
     // We want to preserve the internal auto update setting from the curve if it is off, so we can actually only turn it off here
     if (pCurve)
     {
@@ -179,13 +179,13 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorV
     return pPlotWindow;
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, bool autoRefresh, QColor curveColor, int type, int thickness)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, bool autoRefresh, PlotCurveStyle style)
 {
     if(!pPlotWindow)
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    PlotCurve *pCurve = pPlotWindow->addPlotCurve(xdata, ydata, QwtPlot::Axis(axis), curveColor, thickness, type);
+    PlotCurve *pCurve = pPlotWindow->addPlotCurve(xdata, ydata, QwtPlot::Axis(axis), style);
     // We want to preserve the internal auto update setting from the curve if it is off, so we can actually only turn it off here
     if (pCurve)
     {

@@ -282,7 +282,7 @@ PlotArea::~PlotArea()
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
 //! @param desiredColor Desired color for curve (will override default colors)
-void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, int type)
+void PlotArea::addCurve(PlotCurve *pCurve, PlotCurveStyle style)
 {
     // Attach the curve to this plot area
     pCurve->attach(mpQwtPlot);
@@ -293,10 +293,15 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     pCurve->mIncludeGenInTitle = mpIncludeGenInCurveTitle->isChecked();
     pCurve->mIncludeSourceInTitle = mpIncludeSourceInCurveTitle->isChecked();
     pCurve->setZ(CurveZOrderType);
-    pCurve->setLineWidth(thickness);
+    pCurve->setLineWidth(style.thickness);
     QPen pen = pCurve->pen();
-    pen.setStyle(Qt::PenStyle(type));
+    pen.setStyle(Qt::PenStyle(style.type));
     pCurve->setPen(pen);
+    QStringList symbols = QStringList() << "None" << "Cross" << "Ellipse" << "XCross" << "Triangle"
+                                        << "Rectangle" << "Diamond" << "Down Triangle" << "Up Triangle"
+                                        << "Right Triangle" << "Hexagon" << "Horizontal Line"
+                                        << "Vertical Line" << "Star 1" << "Star 2";
+    pCurve->setLineSymbol(symbols[style.symbol]);
     pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     setLegendSymbol(mpLegendSymbolType->currentText(), pCurve);
 
@@ -325,10 +330,10 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     determineCurveXDataUnitScale(pCurve);
 
     // Determine plot curve color, if desired color is valid then use that color, else use the color selector the get the least common one
-    if (desiredColor.isValid())
+    if (style.color.isValid())
     {
-        pCurve->setLineColor(desiredColor);
-        mCurveColorSelector.incrementCurveColorCounter(desiredColor.name());
+        pCurve->setLineColor(style.color);
+        mCurveColorSelector.incrementCurveColorCounter(style.color.name());
     }
     else
     {
@@ -368,8 +373,12 @@ void PlotArea::addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness, i
     connect(pControlBox, SIGNAL(removeCurve(PlotCurve*)), this, SLOT(removeCurve(PlotCurve*)));
     connect(pControlBox, SIGNAL(hideCurve(PlotCurve*)), this, SLOT(hideCurve(PlotCurve*)));
     connect(pControlBox, SIGNAL(showCurve(PlotCurve*)), this, SLOT(showCurve(PlotCurve*)));
+    pControlBox->setSizeValue(style.thickness);
+    pControlBox->setSymbol(style.symbol);
+    pControlBox->setLineType(style.type);
     mPlotCurveControlBoxes.append(pControlBox);
     mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveControlBoxes.last());
+
     mPlotCurveControlBoxes.last()->show();
 
 

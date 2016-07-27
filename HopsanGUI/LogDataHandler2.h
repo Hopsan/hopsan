@@ -37,6 +37,7 @@
 
 #include "LogVariable.h"
 #include "Widgets/ModelWidget.h"
+#include "PlotCurveStyle.h"
 
 // Forward Declaration
 class PlotWindow;
@@ -129,9 +130,9 @@ public:
     bool hasOpenPlotCurves();
     void closePlotsWithCurvesBasedOnOwnedData();
 
-    PlotWindow *plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
-    PlotWindow *plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color=QColor());
-    PlotWindow *plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
+    PlotWindow *plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, PlotCurveStyle style=QColor());
+    PlotWindow *plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, PlotCurveStyle style=QColor());
+    PlotWindow *plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, PlotCurveStyle style=QColor());
 
     SharedVectorVariableT addVariableWithScalar(const SharedVectorVariableT a, const double x);
     SharedVectorVariableT subVariableWithScalar(const SharedVectorVariableT a, const double x);

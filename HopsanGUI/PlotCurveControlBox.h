@@ -41,6 +41,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QCheckBox>
+#include <QComboBox>
 
 // Forward declarations
 class PlotArea;
@@ -74,6 +75,9 @@ class PlotCurveControlBox : public QWidget
 public:
     PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParentArea);
     PlotCurve *getCurve();
+    void setSizeValue(int value);
+    void setLineType(int value);
+    void setSymbol(int value);
 
 signals:
     void removeCurve(PlotCurve* pCurve);
@@ -99,6 +103,9 @@ private:
     QLabel *mpTitle, *mpGenerationLabel, *mpSourceLable;
     QCheckBox *mpAutoUpdateCheckBox;
     QCheckBox *mpInvertCurveCheckBox;
+    QSpinBox *mpSizeSpinBox;
+    QComboBox *mpLineStyleCombo;
+    QComboBox *mpLineSymbolCombo;
     QToolButton *mpColorBlob;
     QSpinBox *mpGenerationSpinBox;
     CustomXDataControl *mpCustomXDataDrop;

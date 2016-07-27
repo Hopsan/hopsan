@@ -37,6 +37,7 @@
 
 #include "LogVariable.h"
 #include "SymHop.h"
+#include "PlotCurveStyle.h"
 
 class ContainerObject;
 class TerminalWidget;
@@ -221,10 +222,10 @@ private:
 
     void changePlotVariables(const QString cmd, const int axis, bool hold=false);
     void changePlotXVariable(const QString varExp);
-    void addPlotCurve(QString var, const int axis, int type=0, QColor color=QColor(), int thickness=2);
-    void addPlotCurve(SharedVectorVariableT data, const int axis, bool autoRefresh=true, int type=0, QColor color=QColor(), int thickness=2);
+    void addPlotCurve(QString var, const int axis, PlotCurveStyle style=PlotCurveStyle());
+    void addPlotCurve(SharedVectorVariableT data, const int axis, bool autoRefresh=true, PlotCurveStyle style=PlotCurveStyle());
     void removePlotCurves(const int axis) const;
-    void extractCurveStyle(QString &value, int &style, QColor &color, int &thickness);
+    void extractCurveStyle(QString &value, PlotCurveStyle &style);
 
     void removeLogVariable(QString fullShortVarNameWithGen) const;
 

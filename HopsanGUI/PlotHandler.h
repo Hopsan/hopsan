@@ -46,6 +46,7 @@ class ContainerObject;
 class PlotWindow;
 class VectorVariable;
 
+#include "PlotCurveStyle.h";
 #include "LogVariable.h"
 
 class PlotHandler : public QObject
@@ -61,13 +62,12 @@ public:
     PlotWindow *createNewOrReplacePlotwindow(const QString &rName="");
     PlotWindow *getPlotWindow(const QString &rName);
 
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   SharedVectorVariableT data,  int axis, bool autoRefresh=true, QColor curveColor=QColor(), int type=1, int thickness=2);
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, bool autoRefresh=true, QColor curveColor=QColor(), int type=1, int thickness=2);
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   SharedVectorVariableT data,  int axis, bool autoRefresh=true, PlotCurveStyle style=PlotCurveStyle());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow,   SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, bool autoRefresh=true, PlotCurveStyle style=PlotCurveStyle());
     PlotWindow *setPlotWindowXData(PlotWindow *pPlotWindow, SharedVectorVariableT xdata, bool force=false);
 
-    PlotWindow *plotDataToWindow(QString windowName,        SharedVectorVariableT data,  int axis, QColor curveColor=QColor(), int type=1, int thickness=2);
-    PlotWindow *plotDataToWindow(QString windowName,        SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, QColor curveColor=QColor(), int type=1, int thickness=2);
-
+    PlotWindow *plotDataToWindow(QString windowName,        SharedVectorVariableT data,  int axis, PlotCurveStyle style=PlotCurveStyle());
+    PlotWindow *plotDataToWindow(QString windowName,        SharedVectorVariableT xdata, SharedVectorVariableT ydata, int axis, PlotCurveStyle style=PlotCurveStyle());
 
     void closeWindow(const QString &rWindowName);
     void closeAllOpenWindows();

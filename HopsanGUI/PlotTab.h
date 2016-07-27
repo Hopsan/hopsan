@@ -49,6 +49,7 @@
 #include "common.h"
 
 #include "LogVariable.h"
+#include "PlotCurveStyle.h"
 
 // Forward Declarations
 class PlotWindow;
@@ -154,7 +155,7 @@ public:
     HopQwtPlot *getQwtPlot(const int subPlotId=0);
 
     void addCurve(PlotCurve *pCurve, const int subPlotId=0);
-    void addCurve(PlotCurve *pCurve, QColor desiredColor, int thickness=2, int type=1, const int subPlotId=0);
+    void addCurve(PlotCurve *pCurve, PlotCurveStyle style, const int subPlotId=0);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
     void removeAllCurves();

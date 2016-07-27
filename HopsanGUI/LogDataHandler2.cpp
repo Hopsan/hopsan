@@ -1977,33 +1977,33 @@ void LogDataHandler2::closePlotsWithCurvesBasedOnOwnedData()
 }
 
 
-PlotWindow *LogDataHandler2::plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color)
+PlotWindow *LogDataHandler2::plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, PlotCurveStyle style)
 {
     SharedVectorVariableT data = getVectorVariable(fullVarName, gen);
     if(data)
     {
-        return gpPlotHandler->plotDataToWindow(plotName, data, axis, color);
+        return gpPlotHandler->plotDataToWindow(plotName, data, axis, style);
     }
     return 0;
 }
 
-PlotWindow *LogDataHandler2::plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color)
+PlotWindow *LogDataHandler2::plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, PlotCurveStyle style)
 {
     SharedVectorVariableT xdata = getVectorVariable(rFullNameX, gen);
     SharedVectorVariableT ydata = getVectorVariable(rFullNameY, gen);
     if (xdata && ydata)
     {
-        return gpPlotHandler->plotDataToWindow(plotName, xdata, ydata, axis, color);
+        return gpPlotHandler->plotDataToWindow(plotName, xdata, ydata, axis, style);
     }
     return 0;
 }
 
-PlotWindow *LogDataHandler2::plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color)
+PlotWindow *LogDataHandler2::plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, PlotCurveStyle style)
 {
     SharedVectorVariableT data = getVectorVariable(fullVarName, gen);
     if(data)
     {
-        return gpPlotHandler->plotDataToWindow(pPlotWindow, data, axis, true, color);
+        return gpPlotHandler->plotDataToWindow(pPlotWindow, data, axis, true, style);
     }
     return 0;
 }

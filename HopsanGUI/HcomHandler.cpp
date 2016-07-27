@@ -47,6 +47,7 @@
 #include "HcomHandler.h"
 #include "OptimizationHandler.h"
 #include "PlotCurve.h"
+#include "PlotCurveStyle.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotArea.h"
@@ -420,7 +421,8 @@ void HcomHandler::createCommands()
     chpvCmd.help.append(" Line appearance (optional):\n");
     chpvCmd.help.append("  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted\n");
     chpvCmd.help.append("  Color (c): red, darkblue, lightgreen...\n");
-    chpvCmd.help.append("  Thickness (t): Thickness of line (integer value)\n\n");
+    chpvCmd.help.append("  Thickness (t): Thickness of line (integer value)\n");
+    chpvCmd.help.append("  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...\n\n");
     chpvCmd.help.append(" Example:\n");
     chpvCmd.help.append("  >> chpv Pump.P1.p -r Pump.P1.q{2,blue,2}");
     chpvCmd.fnc = &HcomHandler::executePlotCommand;
@@ -436,7 +438,8 @@ void HcomHandler::createCommands()
     adpvCmd.help.append(" Line appearance (optional):\n");
     adpvCmd.help.append("  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted\n");
     adpvCmd.help.append("  Color (c): red, darkblue, lightgreen...\n");
-    adpvCmd.help.append("  Thickness (t): Thickness of line (integer value)\n\n");
+    adpvCmd.help.append("  Thickness (t): Thickness of line (integer value)\n");
+    adpvCmd.help.append("  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...\n\n");
     adpvCmd.help.append(" Example:\n");
     adpvCmd.help.append("  >> adpv Pump.P1.p -r Pump.P1.q{2,blue,2}");
     adpvCmd.fnc = &HcomHandler::executeAddPlotCommand;
@@ -450,7 +453,8 @@ void HcomHandler::createCommands()
     adpvlCmd.help.append(" Line appearance (optional):\n");
     adpvlCmd.help.append("  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted\n");
     adpvlCmd.help.append("  Color (c): red, darkblue, lightgreen...\n");
-    adpvlCmd.help.append("  Thickness (t): Thickness of line (integer value)\n\n");
+    adpvlCmd.help.append("  Thickness (t): Thickness of line (integer value)\n");
+    adpvlCmd.help.append("  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...\n\n");
     adpvlCmd.help.append(" Example:\n");
     adpvlCmd.help.append("  >> adpvl Pump.P1.p Pump.P1.q{2,blue,2}");
     adpvlCmd.fnc = &HcomHandler::executeAddPlotLeftAxisCommand;
@@ -464,7 +468,8 @@ void HcomHandler::createCommands()
     adpvrCmd.help.append(" Line appearance (optional):\n");
     adpvrCmd.help.append("  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted\n");
     adpvrCmd.help.append("  Color (c): red, darkblue, lightgreen...\n");
-    adpvrCmd.help.append("  Thickness (t): Thickness of line (integer value)\n\n");
+    adpvrCmd.help.append("  Thickness (t): Thickness of line (integer value)\n");
+    adpvrCmd.help.append("  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...\n\n");
     adpvrCmd.help.append(" Example:\n");
     adpvrCmd.help.append("  >> adpvl Pump.P1.p Pump.P1.q{2,blue,2}");
     adpvrCmd.fnc = &HcomHandler::executeAddPlotRightAxisCommand;
@@ -672,7 +677,8 @@ void HcomHandler::createCommands()
     chpvlCmd.help.append(" Line appearance (optional):\n");
     chpvlCmd.help.append("  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted\n");
     chpvlCmd.help.append("  Color (c): red, darkblue, lightgreen...\n");
-    chpvlCmd.help.append("  Thickness (t): Thickness of line (integer value)\n\n");
+    chpvlCmd.help.append("  Thickness (t): Thickness of line (integer value)\n");
+    chpvlCmd.help.append("  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...\n\n");
     chpvlCmd.help.append(" Example:\n");
     chpvlCmd.help.append("  >> chpvl Pump.P1.p Pump.P1.q{2,blue,2}");
     chpvlCmd.fnc = &HcomHandler::executePlotLeftAxisCommand;
@@ -682,11 +688,12 @@ void HcomHandler::createCommands()
     HcomCommand chpvrCmd;
     chpvrCmd.cmd = "chpvr";
     chpvrCmd.description.append("Changes plot variables on right axis in current plot");
-    chpvrCmd.help.append(" Usage: chpvr [var1{s,c,t} var2{s,c,t} ... ]");
+    chpvrCmd.help.append(" Usage: chpvr [var1{s,c,t} var2{s,c,t,y} ... ]");
     chpvrCmd.help.append(" Line appearance (optional):\n");
     chpvrCmd.help.append("  Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted\n");
     chpvrCmd.help.append("  Color (c): red, darkblue, lightgreen...\n");
-    chpvrCmd.help.append("  Thickness (t): Thickness of line (integer value)\n\n");
+    chpvrCmd.help.append("  Thickness (t): Thickness of line (integer value)\n");
+    chpvrCmd.help.append("  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...\n\n");
     chpvrCmd.help.append(" Example:\n");
     chpvrCmd.help.append("  >> chpvr Pump.P1.p Pump.P1.q{2,blue,2}");
     chpvrCmd.fnc = &HcomHandler::executePlotRightAxisCommand;
@@ -5235,9 +5242,8 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
         {
             bool found=false;
             QStringList variables;
-            int type, thickness;
-            QColor color;
-            extractCurveStyle(varNames[s], type, color, thickness);
+            PlotCurveStyle style;
+            extractCurveStyle(varNames[s], style);
 
             // Check if no generation is given, then specify "current" to avoid costly lookup in all generations
             QString tempVarName = varNames[s];
@@ -5258,7 +5264,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
                 evaluateExpression(varNames[s], DataVector);
                 if(mAnsType == DataVector)
                 {
-                    addPlotCurve(mAnsVector, axisId, true, type, color, thickness);
+                    addPlotCurve(mAnsVector, axisId, true, style);
                     found = true;
                 }
             }
@@ -5267,7 +5273,7 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
                 found = true;
                 for(auto &varname : variables)
                 {
-                    addPlotCurve(varname, axisId, type, color, thickness);
+                    addPlotCurve(varname, axisId, style);
                 }
             }
 
@@ -5328,7 +5334,7 @@ void HcomHandler::changePlotXVariable(const QString varExp)
 //! @brief Adds a plot curve to specified axis in current plot
 //! @param cmd Name of variable
 //! @param axis Axis to add curve to
-void HcomHandler::addPlotCurve(QString var, const int axis, int type, QColor color, int thickness)
+void HcomHandler::addPlotCurve(QString var, const int axis, PlotCurveStyle style)
 {
     SharedVectorVariableT data = getLogVariable(var);
     if(!data)
@@ -5341,20 +5347,20 @@ void HcomHandler::addPlotCurve(QString var, const int axis, int type, QColor col
         // If plot curve contains gen specifier, then we want that generation to remain in the plot and not auto refresh
         if (var.contains(GENERATIONSPECIFIERCHAR))
         {
-            addPlotCurve(data, axis, false, type, color, thickness);
+            addPlotCurve(data, axis, false, style);
         }
         else
         {
-            addPlotCurve(data, axis, true, type, color, thickness);
+            addPlotCurve(data, axis, true, style);
         }
     }
 }
 
-void HcomHandler::addPlotCurve(SharedVectorVariableT data, const int axis, bool autoRefresh, int type, QColor color, int thickness)
+void HcomHandler::addPlotCurve(SharedVectorVariableT data, const int axis, bool autoRefresh, PlotCurveStyle style)
 {
     // If mpCurrentPlotWindow is 0, then we will set it to the window that is actually created
     // else we will just set to same
-    mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis, autoRefresh,color,type,thickness);
+    mpCurrentPlotWindow = gpPlotHandler->plotDataToWindow(mpCurrentPlotWindow, data, axis, autoRefresh,style);
     mpCurrentPlotWindow->raise();
 
     if(qApp->activeWindow() || qApp->focusWidget())
@@ -5408,35 +5414,72 @@ void HcomHandler::removePlotCurves(const int axis) const
     }
 }
 
-void HcomHandler::extractCurveStyle(QString &value, int &type, QColor &color, int &thickness)
+void HcomHandler::extractCurveStyle(QString &value, PlotCurveStyle &style)
 {
     if(!value.contains("{"))
     {
-        type = 1;
-        color = QColor();
-        thickness = 2;
+        style.type = 1;
+        style.symbol = 0;
+        style.color = QColor();
+        style.thickness = 2;
         return;
     }
 
-    QString style = value.section("{",1,1).section("}",0,0);
-    value.remove("{"+style+"}");
-    qDebug() << "Style: " << style;
+    QString styleStr = value.section("{",1,1).section("}",0,0);
+    value.remove("{"+styleStr+"}");
+    qDebug() << "Style: " << styleStr;
 
-    QString typeStr= style.section(",",0,0);
+    QString typeStr= styleStr.section(",",0,0);
     if(typeStr == "solid")
-        type = 1;
+        style.type = 1;
     else if(typeStr == "dashed")
-        type = 2;
+        style.type = 2;
     else if(typeStr == "dotted")
-        type = 3;
+        style.type = 3;
     else
-        type = typeStr.toInt();
+        style.type = typeStr.toInt();
 
-    QString colorStr = style.section(",",1,1);
-    color = QColor(colorStr);
+    QString colorStr = styleStr.section(",",1,1);
+    style.color = QColor(colorStr);
 
-    QString thicknessStr = style.section(",",2,2);
-    thickness = thicknessStr.toInt();
+    QString thicknessStr = styleStr.section(",",2,2);
+    style.thickness = thicknessStr.toInt();
+
+    style.symbol = 0;
+    if(styleStr.count(",") >= 3)
+    {
+        QString symbolStr = styleStr.section(",",3,3);
+        if(symbolStr == "cross")
+            style.symbol = 1;
+        else if(symbolStr == "ellipse")
+            style.symbol = 2;
+        else if(symbolStr == "xcross")
+            style.symbol = 3;
+        else if(symbolStr == "triangle")
+            style.symbol = 2;
+        else if(symbolStr == "rectangle")
+            style.symbol = 3;
+        else if(symbolStr == "diamond")
+            style.symbol = 2;
+        else if(symbolStr == "downtriangle")
+            style.symbol = 3;
+        else if(symbolStr == "uptriangle")
+            style.symbol = 2;
+        else if(symbolStr == "righttriangle")
+            style.symbol = 3;
+        else if(symbolStr == "hexagon")
+            style.symbol = 2;
+        else if(symbolStr == "horizontalline")
+            style.symbol = 3;
+        else if(symbolStr == "verticalline")
+            style.symbol = 2;
+        else if(symbolStr == "star1")
+            style.symbol = 3;
+        else if(symbolStr == "star2")
+            style.symbol = 2;
+        else
+            style.symbol = symbolStr.toInt();
+    }
 }
 
 void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
