@@ -1404,6 +1404,13 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         return;
     }
 
+    //Ignore if ctrl key is pressed
+    if(mpParentConnector->getParentContainer()->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+    {
+        event->ignore();
+        return;
+    }
+
     QMenu menu;
 
     QAction *pMakeDashedAction = 0;

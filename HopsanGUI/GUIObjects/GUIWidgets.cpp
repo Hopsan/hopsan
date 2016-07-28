@@ -48,6 +48,7 @@
 #include "Widgets/ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
+#include "GraphicsView.h"
 
 Widget::Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
     : WorkspaceObject(pos, rot, startSelected, pSystem, pParent)
@@ -405,7 +406,7 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event)
 
-    if (mpEditDialog.isNull())
+    if (mpEditDialog.isNull() && !mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
     {
         // Open a dialog where line width and color can be selected
         mpEditDialog = new QDialog(gpMainWindowWidget);

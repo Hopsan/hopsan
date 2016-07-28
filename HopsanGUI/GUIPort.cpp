@@ -267,7 +267,8 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
             return;
 
         //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
-        if (event->button() == Qt::LeftButton)
+        GraphicsView *pView = mpParentModelObject->getParentContainerObject()->mpModelWidget->getGraphicsView();
+        if (event->button() == Qt::LeftButton && !pView->isCtrlKeyPressed())
         {
             getParentContainerObject()->createConnector(this);
         }

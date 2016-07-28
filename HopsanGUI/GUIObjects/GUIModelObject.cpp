@@ -1093,6 +1093,10 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
         return;
 
+    //Ignore if ctrl key is pressed
+    if(mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+        return;
+
     QMenu menu;
     this->buildBaseContextMenu(menu, event);
 }
@@ -1137,7 +1141,7 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // If not locked then check for drag copy
     if (!isLocallyLocked() && (getModelLockLevel() == NotLocked))
     {
-        if(event->button() == Qt::RightButton)
+        if(event->button() == Qt::RightButton && !mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
         {
             connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()), Qt::UniqueConnection);
             mDragCopyTimer.setSingleShot(true);

@@ -115,7 +115,10 @@ bool Component::hasPowerPorts()
 void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsWidget::mouseDoubleClickEvent(event);
-    openPropertiesDialog();
+    if(!mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+    {
+        openPropertiesDialog();
+    }
 }
 
 
@@ -435,6 +438,9 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
 void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsWidget::mouseDoubleClickEvent(event);
+
+    if(mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+        return;
 
     // If this is a sink component that has plot data, plot it instead of showing the dialog
     // Not very nice code, but a nice feature...
