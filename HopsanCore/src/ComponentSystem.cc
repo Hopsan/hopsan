@@ -39,7 +39,9 @@
 #include <iostream>
 #include <algorithm>
 #if __cplusplus > 199711L
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include <thread>
 #include <functional>
 #include <atomic>
@@ -66,6 +68,7 @@ using namespace hopsan;
 
 
 #if __cplusplus > 199711L
+#ifdef _WIN32
 const long long g_Frequency = []() -> long long
 {
     LARGE_INTEGER frequency;
@@ -80,7 +83,8 @@ HighResClock::time_point HighResClock::now()
     QueryPerformanceCounter(&count);
     return time_point(duration(count.QuadPart * static_cast<rep>(period::den) / g_Frequency));
 }
-#endif
+#endif //_WIN32
+#endif //C++11
 
 
 //! @brief Figure out whether or not a vector contains a certain "object", exact comparison
@@ -2772,34 +2776,68 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
     {
         time = mTime; // Init time
+#ifdef _WIN32
         HighResClock::time_point t0 = HighResClock::now();
+#else
+        timespec t0;
+        clock_gettime(CLOCK_REALTIME, &t0);
+#endif
         time += mTimestep*nSteps;
         mComponentSignalptrs[s]->simulate(time);
+#ifdef _WIN32
         HighResClock::time_point t1 = HighResClock::now();
         HighResClock::duration dt = t1-t0;
         mComponentSignalptrs[s]->setMeasuredTime(dt.count()/1000000.0);
+#else
+        timespec t1;
+        clock_gettime(CLOCK_REALTIME, &t1);
+        mComponentSignalptrs[s]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
+#endif
     }
 
     for(size_t c=0; c<mComponentCptrs.size(); ++c)
     {
         time=mTime; // Reset time
+#ifdef _WIN32
         HighResClock::time_point t0 = HighResClock::now();
+#else
+        timespec t0;
+        clock_gettime(CLOCK_REALTIME, &t0);
+#endif
         time += mTimestep*nSteps;
         mComponentCptrs[c]->simulate(time);
+#ifdef _WIN32
         HighResClock::time_point t1 = HighResClock::now();
         HighResClock::duration dt = t1-t0;
         mComponentCptrs[c]->setMeasuredTime(dt.count()/1000000.0);
+#else
+        timespec t1;
+        clock_gettime(CLOCK_REALTIME, &t1);
+        mComponentCptrs[c]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
+#endif
     }
 
     for(size_t q=0; q<mComponentQptrs.size(); ++q)
     {
         time=mTime; // Reset time
+#ifdef _WIN32
         HighResClock::time_point t0 = HighResClock::now();
+#else
+        timespec t0;
+        clock_gettime(CLOCK_REALTIME, &t0);
+#endif
         time += mTimestep*nSteps;
         mComponentQptrs[q]->simulate(time);
+
+#ifdef _WIN32
         HighResClock::time_point t1 = HighResClock::now();
         HighResClock::duration dt = t1-t0;
         mComponentQptrs[q]->setMeasuredTime(dt.count()/1000000.0);
+#else
+        timespec t1;
+        clock_gettime(CLOCK_REALTIME, &t1);
+        mComponentQptrs[q]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
+#endif
     }
 
     return true;

@@ -279,7 +279,7 @@ namespace hopsan {
 
 
 #if __cplusplus > 199711L
-
+#ifdef _WIN32
 //! @todo Move to utilities?
 struct HighResClock
 {
@@ -291,7 +291,8 @@ struct HighResClock
 
     static time_point now();
 };
-#endif
+#endif //_WIN32
+#endif //C++11
 
 
 #endif // COMPONENTSYSTEM_H

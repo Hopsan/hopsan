@@ -3854,9 +3854,6 @@ void HcomHandler::executeGetCommand(const QString cmd)
         case hopsan::ParallelForAlgorithm :
             output.append("fork-join scheduling");
             break;
-        case hopsan::ParallelForTbbAlgorithm :
-            output.append("fork-join scheduling (TBB)");
-            break;
         default :
             output.append("unknown ("+QString::number(getConfigPtr()->getParallelAlgorithm())+")");
             break;

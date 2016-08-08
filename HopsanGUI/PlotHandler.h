@@ -46,7 +46,7 @@ class ContainerObject;
 class PlotWindow;
 class VectorVariable;
 
-#include "PlotCurveStyle.h";
+#include "PlotCurveStyle.h"
 #include "LogVariable.h"
 
 class PlotHandler : public QObject
