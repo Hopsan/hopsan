@@ -45,10 +45,6 @@
 #include "ComponentUtilities/num2string.hpp"
 #include "Quantities.h"
 
-#ifdef USETBB
-#include "tbb/mutex.h"
-#endif
-
 using namespace std;
 using namespace hopsan;
 

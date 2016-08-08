@@ -34,13 +34,15 @@
 #ifndef COMPONENTSYSTEM_H
 #define COMPONENTSYSTEM_H
 
+#if __cplusplus > 199711L
+#include <mutex>
+#include <chrono>
+#include <ctime>
+#endif
+
 #include "Component.h"
 #include "CoreUtilities/SimulationHandler.h"
 #include "CoreUtilities/AliasHandler.h"
-
-namespace tbb {
-    class mutex;
-}
 
 namespace hopsan {
     class NumHopHelper;
@@ -236,10 +238,12 @@ namespace hopsan {
 
         bool volatile mStopSimulation;
 
-        // This block of variables are only used with TBB but they must be included always else
+        // This block of variables are only used with multi-threading but they must be included always else
         // components inheriting ComponentSystem will not know that they exist resulting in overwriting memory
         //! @todo we could hide them in a private struct and put a forward declared pointer here instead
-        tbb::mutex *mpStopMutex;
+#if __cplusplus > 199711L
+        std::mutex *mpStopMutex;
+#endif
         std::vector<double *> mvTimePtrs;
         std::vector< std::vector<Component*> > mSplitCVector;
         std::vector< std::vector<Component*> > mSplitQVector;
@@ -271,6 +275,23 @@ namespace hopsan {
         bool mAsleep;
     };
 }
+
+
+
+#if __cplusplus > 199711L
+
+//! @todo Move to utilities?
+struct HighResClock
+{
+    typedef long long                               rep;
+    typedef std::nano                               period;
+    typedef std::chrono::duration<rep, period>      duration;
+    typedef std::chrono::time_point<HighResClock>   time_point;
+    static const bool is_steady = true;
+
+    static time_point now();
+};
+#endif
 
 
 #endif // COMPONENTSYSTEM_H

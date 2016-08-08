@@ -40,8 +40,11 @@
 
 namespace hopsan {
 
-enum ParallelAlgorithmT {OfflineSchedulingAlgorithm, TaskPoolAlgorithm, TaskStealingAlgorithm, ParallelForAlgorithm,
-                         ParallelForTbbAlgorithm, GroupedParallelForAlgorithm, RandomTaskPoolAlgorithm, OfflineReschedulingAlgorithm};
+enum ParallelAlgorithmT {OfflineSchedulingAlgorithm,
+                         TaskPoolAlgorithm,
+                         TaskStealingAlgorithm,
+                         ParallelForAlgorithm,
+                         GroupedParallelForAlgorithm};
 
 // Forward declaration
 class ComponentSystem;

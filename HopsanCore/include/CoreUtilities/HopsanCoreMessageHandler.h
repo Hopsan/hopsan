@@ -35,15 +35,11 @@
 #define HOPSANCOREMESSAGEHANDLER_H
 
 #include <deque>
+#if __cplusplus > 199711L
+#include <mutex>
+#endif
 #include "HopsanTypes.h"
 #include "win32dll.h"
-
-#ifdef USETBB
-// Forward declaration
-namespace tbb{
-class mutex;
-}
-#endif
 
 namespace hopsan {
 
@@ -78,8 +74,8 @@ private:
     void clear();
     size_t mMaxQueueSize, mNumInfoMessages, mNumWarningMessages, mNumErrorMessages, mNumFatalMessages, mNumDebugMessages;
 
-#ifdef USETBB
-    tbb::mutex *mpMutex;
+#if __cplusplus > 199711L
+    std::mutex *mpMutex;
 #endif
 
 public:

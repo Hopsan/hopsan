@@ -44,11 +44,15 @@ HEADERS += $${PWD}/../Dependencies/libNumHop/libNumHop/numhop.h
 # Non platform specific HopsanCore options
 # -------------------------------------------------
 CONFIG(debug, debug|release) {
-  QMAKE_CXXFLAGS += -pedantic -Wno-long-long
+  QMAKE_CXXFLAGS += -pedantic -Wno-long-long -std=c++11
 }
 
 # Turn on the Hopsan Core runtime log file
 DEFINES *= WRITEHOPSANCORELOG
+
+# Turn on multi-threading
+DEFINES *= MULTITHREADING
+
 
 # -------------------------------------------------
 # Platform specific additional project options

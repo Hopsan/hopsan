@@ -34,13 +34,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-
-#ifdef USETBB
-#include "tbb/atomic.h"
-#include "tbb/blocked_range.h"
-#include "tbb/mutex.h"
-#include "tbb/task_group.h"
-#include "tbb/tick_count.h"
+#if __cplusplus > 199711L
+#include <atomic>
+#include <mutex>
 #endif
 
 #include "Component.h"
@@ -50,6 +46,9 @@ using namespace std;
 using namespace hopsan;
 
 size_t DLLIMPORTEXPORT determineActualNumberOfThreads(const size_t nDesiredThreads);
+
+
+#if __cplusplus > 199711L
 
 //! @brief Class for barrier locks in multi-threaded simulations.
 class BarrierLock
@@ -82,470 +81,23 @@ public:
 
 private:
     int mnThreads;
-#ifdef USETBB
-    tbb::atomic<int> mCounter;
-    tbb::atomic<bool> mLock;
-#else
-    int mCounter;
-    bool mLock;
-#endif
+    std::atomic<int> mCounter;
+    std::atomic<bool> mLock;
 };
 
 
+void simMaster(ComponentSystem *pSystem, vector<Component *> &sVector, vector<Component *> &cVector,
+               vector<Component *> &qVector, vector<Node *> &nVector, vector<double *> &pSimTimes,
+               double startTime, double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
+               BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
 
-//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
-class taskSimOneComponent
-{
-public:
-    taskSimOneComponent(Component* pComponent, double time)
-    {
-        mpComponent = pComponent;
-        mTime = time;
-    }
+void simSlave(ComponentSystem *pSystem, vector<Component*> &sVector, vector<Component*> &cVector,
+              vector<Component*> &qVector, vector<Node*> &nVector, double startTime,
+              double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
+              BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
 
-    void operator() () const
-    {
-        mpComponent->simulate(mTime);
-    }
-private:
-    Component *mpComponent;
-    double mTime;
-};
+void simWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime);
 
-
-
-
-
-//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
-class taskSimSlave
-{
-public:
-    //! @brief Constructor for simulation thread class.
-    //! @param pSystem Pointer to top level component system
-    //! @param sVector Vector with signal components executed from this thread
-    //! @param cVector Vector with C-type components executed from this thread
-    //! @param qVector Vector with Q-type components executed from this thread
-    //! @param nVector Vector with nodes which is logged from this thread
-    //! @param startTime Start time of simulation
-    //! @param timeStep Step time of simulation
-    //! @param numSimSteps Number of simulation steps to run
-    //! @param nThreads Number of threads used in simulation
-    //! @param threadID Number of this thread
-    //! @param *pBarrier_S Pointer to barrier before signal components
-    //! @param *pBarrier_C Pointer to barrier before C-type components
-    //! @param *pBarrier_Q Pointer to barrier before Q-type components
-    //! @param *pBarrier_N Pointer to barrier before node logging
-    taskSimSlave(ComponentSystem *pSystem, vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector,
-                 double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
-                 BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
-    {
-        mpSystem = pSystem;
-        mVectorS = sVector;
-        mVectorC = cVector;
-        mVectorQ = qVector;
-        mVectorN = nVector;
-        mTime = startTime;
-        mNumSimSteps = numSimSteps;
-        mTimeStep = timeStep;
-        mnThreads = nThreads;
-        mThreadID = threadID;
-        mpBarrier_S = pBarrier_S;
-        mpBarrier_C = pBarrier_C;
-        mpBarrier_Q = pBarrier_Q;
-        mpBarrier_N = pBarrier_N;
-    }
-
-    //! @brief Executable code for slave simulation thread
-    void operator() () const
-    {
-        for(size_t i=0; i<mNumSimSteps; ++i)
-        {
-            mTime += mTimeStep;
-
-            //! Signal Components !//
-
-            mpBarrier_S->increment();
-            while(mpBarrier_S->isLocked()){}                         //Wait at S barrier
-            if(mpSystem->wasSimulationAborted()) break;
-
-            for(size_t i=0; i<mVectorS.size(); ++i)
-            {
-                mVectorS[i]->simulate(mTime);
-            }
-
-
-            //! C Components !//
-
-            mpBarrier_C->increment();
-            while(mpBarrier_C->isLocked()){}                         //Wait at C barrier
-            if(mpSystem->wasSimulationAborted()) break;
-
-            for(size_t i=0; i<mVectorC.size(); ++i)
-            {
-                mVectorC[i]->simulate(mTime);
-            }
-
-
-            //! Q Components !//
-
-            mpBarrier_Q->increment();
-            while(mpBarrier_Q->isLocked()){}                         //Wait at Q barrier
-            if(mpSystem->wasSimulationAborted()) break;
-
-            for(size_t i=0; i<mVectorQ.size(); ++i)
-            {
-                mVectorQ[i]->simulate(mTime);
-            }
-
-            //! Log Nodes !//
-
-            mpBarrier_N->increment();
-            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
-            if(mpSystem->wasSimulationAborted()) break;
-            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with something smart
-//            for(size_t i=0; i<mVectorN.size(); ++i)
-//            {
-//                mVectorN[i]->logData(mTime);
-//            }
-
-        }
-    }
-private:
-    ComponentSystem *mpSystem;
-    vector<Component*> mVectorS;
-    vector<Component*> mVectorC;
-    vector<Component*> mVectorQ;
-    vector<Node*> mVectorN;
-    size_t mNumSimSteps;
-    double mTimeStep;
-    mutable double mTime;
-#ifdef Q_OS_OSX
-    /* double *mpSimTime; Never used on mac. /magse */
-#else
-    double *mpSimTime;
-#endif
-    size_t mnThreads;
-    size_t mThreadID;
-    BarrierLock *mpBarrier_S;
-    BarrierLock *mpBarrier_C;
-    BarrierLock *mpBarrier_Q;
-    BarrierLock *mpBarrier_N;
-};
-
-
-//! @brief Class for master simulation thread, that is responsible for synchronizing the simulation
-class taskSimMaster
-{
-public:
-
-    //! @brief Constructor for master simulation thread class.
-    //! @param pSystem Pointer to the top level component system
-    //! @param sVector Vector with signal components executed from this thread
-    //! @param cVector Vector with C-type components executed from this thread
-    //! @param qVector Vector with Q-type components executed from this thread
-    //! @param nVector Vector with nodes which is logged from this thread
-    //! @param *pSimTimes Pointer to the simulation time variables in the component systems
-    //! @param startTime Start time of simulation
-    //! @param timeStep Step time of simulation
-    //! @param numSimSteps Number of steps to simulate
-    //! @param nThreads Number of threads used in simulation
-    //! @param threadID Number of this thread
-    //! @param *pBarrier_S Pointer to barrier before signal components
-    //! @param *pBarrier_C Pointer to barrier before C-type components
-    //! @param *pBarrier_Q Pointer to barrier before Q-type components
-    //! @param *pBarrier_N Pointer to barrier before node logging
-    taskSimMaster(ComponentSystem *pSystem, vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector,
-                  vector<Node*> nVector, vector<double *> pSimTimes, double startTime, double timeStep, size_t numSimSteps,
-                  size_t nThreads, size_t threadID, BarrierLock *pBarrier_S, BarrierLock *pBarrier_C,
-                  BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
-    {
-        mpSystem = pSystem;
-        mVectorS = sVector;
-        mVectorC = cVector;
-        mVectorQ = qVector;
-        mVectorN = nVector;
-        mpSimTimes = pSimTimes;
-        mTime = startTime;
-        mNumSimSteps = numSimSteps;
-        mTimeStep = timeStep;
-        mnThreads = nThreads;
-        mThreadID = threadID;
-        mpBarrier_S = pBarrier_S;
-        mpBarrier_C = pBarrier_C;
-        mpBarrier_Q = pBarrier_Q;
-        mpBarrier_N = pBarrier_N;
-    }
-
-    //! @brief Executable code for master simulation thread
-    void operator() () const
-    {
-        for(size_t s=0; s<mNumSimSteps; ++s)
-        {
-            mTime += mTimeStep;
-
-            //! Signal Components !//
-            bool stop=false;
-            while(!mpBarrier_S->allArrived())   //Wait for all other threads to arrive at signal barrier
-            {
-                if(mpSystem->wasSimulationAborted())
-                {
-                    stop=true;
-                    break;
-                }
-
-            }
-            if(stop)
-            {
-                mpBarrier_S->unlock();
-                mpBarrier_C->unlock();
-                mpBarrier_Q->unlock();
-                mpBarrier_N->unlock();
-                break;
-            }
-            mpBarrier_C->lock();                    //Lock next barrier (must be done before unlocking this one, to prevent deadlocks)
-            mpBarrier_S->unlock();                  //Unlock signal barrier
-
-            for(size_t i=0; i<mVectorS.size(); ++i)
-            {
-                mVectorS[i]->simulate(mTime);
-            }
-
-            //! C Components !//
-            stop=false;
-            while(!mpBarrier_C->allArrived())   //C barrier
-            {
-                if(mpSystem->wasSimulationAborted())
-                {
-                    stop=true;
-                    break;
-                }
-            }
-            if(stop)
-            {
-                mpBarrier_S->unlock();
-                mpBarrier_C->unlock();
-                mpBarrier_Q->unlock();
-                mpBarrier_N->unlock();
-                break;
-            }
-            mpBarrier_Q->lock();
-            mpBarrier_C->unlock();
-
-            for(size_t i=0; i<mVectorC.size(); ++i)
-            {
-                mVectorC[i]->simulate(mTime);
-            }
-
-            //! Q Components !//
-            stop=false;
-            while(!mpBarrier_Q->allArrived()) //Q barrier
-            {
-                if(mpSystem->wasSimulationAborted())
-                {
-                    stop=true;
-                    break;
-                }
-            }
-            if(stop)
-            {
-                mpBarrier_S->unlock();
-                mpBarrier_C->unlock();
-                mpBarrier_Q->unlock();
-                mpBarrier_N->unlock();
-                break;
-            }
-            mpBarrier_N->lock();
-            mpBarrier_Q->unlock();
-
-            for(size_t i=0; i<mVectorQ.size(); ++i)
-            {
-                mVectorQ[i]->simulate(mTime);
-            }
-
-            for(size_t i=0; i<mpSimTimes.size(); ++i)
-                *mpSimTimes[i] = mTime;     //Update time in component system, so that progress bar can use it
-
-            //! Log Nodes !//
-            stop=false;
-            while(!mpBarrier_N->allArrived()) //N barrier
-            {
-                if(mpSystem->wasSimulationAborted())
-                {
-                    stop=true;
-                    break;
-                }
-
-            }
-            if(stop)
-            {
-                mpBarrier_S->unlock();
-                mpBarrier_C->unlock();
-                mpBarrier_Q->unlock();
-                mpBarrier_N->unlock();
-                break;
-            }
-            mpBarrier_S->lock();
-            mpBarrier_N->unlock();
-
-            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with something smart
-//            for(size_t i=0; i<mVectorN.size(); ++i)
-//            {
-//                mVectorN[i]->logData(mTime);
-//            }
-            mpSystem->logTimeAndNodes(s+1); //s+1 since at s=0 one simulation has been performed /Björn
-
-        }
-    }
-private:
-    ComponentSystem *mpSystem;
-    vector<Component*> mVectorS;
-    vector<Component*> mVectorC;
-    vector<Component*> mVectorQ;
-    vector<Node*> mVectorN;
-    size_t mNumSimSteps;
-    double mTimeStep;
-    mutable double mTime;
-    vector<double *> mpSimTimes;
-#ifdef Q_OS_OSX
-    /* size_t mnSystems; Never used on mac. /magse */
-#else
-    size_t mnSystems;
-#endif
-    size_t mnThreads;
-    size_t mThreadID;
-    BarrierLock *mpBarrier_S;
-    BarrierLock *mpBarrier_C;
-    BarrierLock *mpBarrier_Q;
-    BarrierLock *mpBarrier_N;
-};
-
-
-
-//! @brief Class for simulating whole systems multi threaded
-class taskSimWholeSystems
-{
-public:
-
-    //! @brief Constructor for master simulation thread class.
-    //! @param systemPtrs Vector with pointers to the systems to simulate
-    //! @param stopTime Stop time of simulation
-    taskSimWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime)
-    {
-        mSystemPtrs = systemPtrs;
-        mStopTime = stopTime;
-    }
-
-    //! @brief Executable code for master simulation thread
-    void operator() () const
-    {
-        for(size_t i=0; i<mSystemPtrs.size(); ++i)
-        {
-            mSystemPtrs[i]->simulate(mStopTime);
-        }
-    }
-private:
-    vector<ComponentSystem *> mSystemPtrs;
-    double mStopTime;
-};
-
-
-
-
-
-
-
-
-////////////////////////////////////////
-//// Component-Threads Implementation //
-////////////////////////////////////////
-
-////! @brief Class for simulating whole systems multi threaded
-//class taskSimComponentC
-//{
-//public:
-
-//    //! @brief Constructor for master simulation thread class.
-//    //! @param pSystem Pointer to the system to simulate
-//    taskSimComponentC(Component* pComp, vector<taskSimComponent *> neighbourPtrs, size_t stopIteration, bool *pStart, double timeStep)
-//    {
-//        mpComp = pComp;
-//        mIsCtype = (pComp->getTypeCQSString() == "C");
-//        mNeighbourPtrs = neighbourPtrs;
-//        mStopIteration = stopIteration;
-//        mpStart = pStart;
-//        mTimeStep = timeStep;
-//        mnNeighbours = mNodePtrs.size();
-//    }
-
-//    //! @brief Executable code for master simulation thread
-//    void operator() ()
-//    {
-//        while(!pStart) {}
-
-//        double time=0;
-
-//        for(iteration=0; mIter<mStopIteration; ++mIter)
-//        {
-//            while(!checkNeighbours()) {}
-
-//            time += mTimeStep;
-//            mpComp->simulate(time);
-//        }
-//    }
-
-//    size_t mIter;
-
-//private:
-//    bool checkNeighbours()
-//    {
-//        for(size_t n=0; n<mnNeighbours; ++n)
-//        {
-//            if(mNeighbourPtrs[n]->mIter != this->mIter)
-//                return false;
-//        }
-//        return true;
-//    }
-
-//    Component *mpComp;
-//    vector<taskSimComponent *> mNeighbourPtrs;
-//    size_t mStopIteration;
-//    bool *mpStart;
-//    double mTimeStep;
-//    size_t mnNeighbours;
-//    bool mIsCtype;
-//    bool mIsStype;
-//};
-
-
-
-////! @brief Class for simulating whole systems multi threaded
-//class taskSimNode
-//{
-//public:
-
-//    //! @brief Constructor for master simulation thread class.
-//    //! @param pSystem Pointer to the system to simulate
-//    taskSimComponent(vector<ComponentSystem *> systemPtrs, double stopTime)
-//    {
-//        mSystemPtrs = systemPtrs;
-//        mStopTime = stopTime;
-//    }
-
-//    //! @brief Executable code for master simulation thread
-//    void operator() ()
-//    {
-//        for(size_t i=0; i<mSystemPtrs.size(); ++i)
-//        {
-//            mSystemPtrs[i]->simulate(mStopTime);
-//        }
-//    }
-//private:
-//    vector<ComponentSystem *> mSystemPtrs;
-//    double mStopTime;
-//};
-
-
-#ifdef USETBB
 
 //////////////////////////////
 // Task Pool Implementation //
@@ -566,7 +118,7 @@ public:
 
     Component *getComponent()
     {
-        size_t idx = mCurrentIdx.fetch_and_increment();
+        size_t idx = std::atomic_fetch_add(&mCurrentIdx,size_t(1));
         if(idx >= mSize)
             return 0;
         else
@@ -575,7 +127,7 @@ public:
 
     void reportDone()
     {
-        mnDone.fetch_and_increment();
+        atomic_fetch_add(&mnDone,size_t(1));
     }
 
     bool isReady()
@@ -592,7 +144,7 @@ public:
 
     void close()
     {
-        mOpen.fetch_and_store(false);
+        std::atomic_store(&mOpen,false);
     }
 
     bool isOpen()
@@ -603,191 +155,18 @@ public:
 private:
     std::vector<Component*> mComponentPtrs;
     size_t mSize;
-    tbb::atomic<size_t> mCurrentIdx;
-    tbb::atomic<size_t> mnDone;
-    tbb::atomic<bool> mOpen;
+    std::atomic<size_t> mCurrentIdx;
+    std::atomic<size_t> mnDone;
+    std::atomic<bool> mOpen;
 };
 
 
-//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
-class taskSimPoolSlave
-{
-public:
-    taskSimPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
-    {
-        mpTaskPoolC = pTaskPoolC;
-        mpTaskPoolQ = pTaskPoolQ;
-        mpStop = pStop;
-        mpTime = pTime;
-    }
-
-    void operator() () const
-    {
-        Component *pComp;
-        while(!(*mpStop))
-        //for(size_t i=0; i<mnSteps && !(*mpStop); ++i)
-        {
-            //C-pool
-            if(mpTaskPoolC->isOpen())
-            {
-                pComp = mpTaskPoolC->getComponent();
-                while(pComp)
-                {
-                    pComp->simulate(*mpTime);
-                    mpTaskPoolC->reportDone();
-                    pComp = mpTaskPoolC->getComponent();
-                }
-                while(mpTaskPoolC->isOpen()) {}
-            }
-
-            //Q-pool
-            if(mpTaskPoolQ->isOpen())
-            {
-                pComp = mpTaskPoolQ->getComponent();
-                while(pComp)
-                {
-                    pComp->simulate(*mpTime);
-                    mpTaskPoolQ->reportDone();
-                    pComp = mpTaskPoolQ->getComponent();
-                }
-                while(mpTaskPoolQ->isOpen()) {}
-            }
-        }
-    }
-
-private:
-    TaskPool *mpTaskPoolC;
-    TaskPool *mpTaskPoolQ;
-    tbb::atomic<bool> *mpStop;
-    tbb::atomic<double> *mpTime;
-};
 
 
-/////////////////////////////////////
-// Random Task Pool Implementation //
-/////////////////////////////////////
+
+void simPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, std::atomic<double> *pTime, std::atomic<bool> *pStop);
 
 
-class RandomTaskPool
-{
-public:
-    RandomTaskPool(std::vector<Component*> componentPtrs)
-    {
-        mFinishedComponentPtrs = componentPtrs;
-        mSize = componentPtrs.size();
-        mnDone = 0;
-        mOpen=false;
-        mpMutex = new tbb::mutex();
-    }
-
-    Component *getComponent()
-    {
-        Component *pRetVal;
-        mpMutex->lock();
-        size_t compSize = mComponentPtrs.size();
-        if(compSize == 0)
-            pRetVal=0;
-        else
-        {
-            size_t random = (size_t)rand() / (size_t)RAND_MAX * compSize;
-            pRetVal = mComponentPtrs[random];
-            mFinishedComponentPtrs.push_back(mComponentPtrs[random]);
-            mComponentPtrs.erase(mComponentPtrs.begin()+random);
-        }
-        mpMutex->unlock();
-        return pRetVal;
-    }
-
-    void reportDone()
-    {
-        ++mnDone;
-    }
-
-    bool isReady()
-    {
-        return mnDone >= mSize;
-    }
-
-    void open()
-    {
-        mComponentPtrs=mFinishedComponentPtrs;
-        mFinishedComponentPtrs.clear();
-        mnDone.store(0);
-        mOpen.store(true);
-    }
-
-    void close()
-    {
-        mOpen=false;
-    }
-
-    bool isOpen()
-    {
-        return mOpen;
-    }
-
-private:
-    std::vector<Component*> mComponentPtrs;
-    std::vector<Component*> mFinishedComponentPtrs;
-    size_t mSize;
-    tbb::atomic<size_t> mnDone;
-    tbb::atomic<bool> mOpen;
-   tbb::mutex *mpMutex;
-};
-
-
-//! @brief Class for slave simulation threads, which must be synchronized from a master simulation thread
-class taskSimRandomPoolSlave
-{
-public:
-    taskSimRandomPoolSlave(RandomTaskPool *pTaskPoolC, RandomTaskPool *pTaskPoolQ, tbb::atomic<double> *pTime, tbb::atomic<bool> *pStop)
-    {
-        mpTaskPoolC = pTaskPoolC;
-        mpTaskPoolQ = pTaskPoolQ;
-        mpStop = pStop;
-        mpTime = pTime;
-    }
-
-    void operator() () const
-    {
-        Component *pComp;
-        while(!(*mpStop))
-        //for(size_t i=0; i<mnSteps && !(*mpStop); ++i)
-        {
-            //C-pool
-            if(mpTaskPoolC->isOpen())
-            {
-                pComp = mpTaskPoolC->getComponent();
-                while(pComp)
-                {
-                    pComp->simulate(*mpTime);
-                    mpTaskPoolC->reportDone();
-                    pComp = mpTaskPoolC->getComponent();
-                }
-                while(mpTaskPoolC->isOpen()) {}
-            }
-
-            //Q-pool
-            if(mpTaskPoolQ->isOpen())
-            {
-                pComp = mpTaskPoolQ->getComponent();
-                while(pComp)
-                {
-                    pComp->simulate(*mpTime);
-                    mpTaskPoolQ->reportDone();
-                    pComp = mpTaskPoolQ->getComponent();
-                }
-                while(mpTaskPoolQ->isOpen()) {}
-            }
-        }
-    }
-
-private:
-    RandomTaskPool *mpTaskPoolC;
-    RandomTaskPool *mpTaskPoolQ;
-    tbb::atomic<bool> *mpStop;
-    tbb::atomic<double> *mpTime;
-};
 
 /////////////////////////////
 // Task-stealing algorithm //
@@ -807,7 +186,7 @@ public:
         }
         firstIdx=0;
         lastIdx=max(size_t(1), data.size())-1;
-        mpMutex = new tbb::mutex();
+        mpMutex = new std::mutex();
     }
 
 
@@ -895,419 +274,65 @@ private:
     int mSize;
     std::vector<Component*> mVector;
     int firstIdx, lastIdx;
-    tbb::mutex *mpMutex;
+    std::mutex *mpMutex;
 };
 
 
 
-//! @brief Class for master simulation thread, that is responsible for synchronizing the simulation
-class taskSimStealingMaster
-{
-public:
-    taskSimStealingMaster(ComponentSystem *pSystem, vector<Component*> sVector, std::vector<ThreadSafeVector*> *cVectors, std::vector<ThreadSafeVector*> *qVectors,
-                          vector<double *> pSimTimes, double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
-                          BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N, size_t maxSize)
-    {
-        mpSystem = pSystem;
-        mVectorS = sVector;
-        mpUnFinishedVectorsC = cVectors;
-        mpUnFinishedVectorsQ = qVectors;
-        //! @todo memory leak, never deleted, however, dont delete in destructor, that will cause double free corruption since this object is copied when new tasks are created
-        mpFinishedVectorC = new ThreadSafeVector(std::vector<Component*>(), maxSize);
-        mpFinishedVectorQ = new ThreadSafeVector(std::vector<Component*>(), maxSize);
-        mpSimTimes = pSimTimes;
-        mTime = startTime;
-        mNumSimSteps = numSimSteps;
-        mTimeStep = timeStep;
-        mnThreads = nThreads;
-        mThreadID = threadID;
-        mpBarrier_S = pBarrier_S;
-        mpBarrier_C = pBarrier_C;
-        mpBarrier_Q = pBarrier_Q;
-        mpBarrier_N = pBarrier_N;
-    }
-
-    //! @brief Executable code for master simulation thread
-    void operator() () const
-    {
-        ThreadSafeVector *pTemp;
-        Component *pComp;
-
-        for(size_t s=0; s<mNumSimSteps; ++s)
-        {
-            if(mpSystem->wasSimulationAborted()) break;
-
-            mTime += mTimeStep;
-
-            //! Signal Components !//
-
-            while(!mpBarrier_S->allArrived()) {}
-            mpBarrier_C->lock();
-            mpBarrier_S->unlock();
-
-            //Simulate signal components
-            for(size_t i=0; i<mVectorS.size(); ++i)
-            {
-                mVectorS[i]->simulate(mTime);
-            }
-
-            //! C Components !//
-
-            while(!mpBarrier_C->allArrived()) {}    //C barrier
-//            std::cout << "------------------------------------------------------------\n";
-//            std::cout << "Time: " << mTime << "\n";
-//            std::cout << "---------------------------------------\n";
-//            std::cout << "C-type components\n";
-//            for(size_t i=0; i<mnThreads; ++i)
-//            {
-//                std::cout << "Thread " << i << ": \n";
-//                for(size_t j=0; j<mpUnFinishedVectorsC->at(i)->size(); ++j)
-//                {
-//                    Component *pTempComponent = mpUnFinishedVectorsC->at(i)->at(j);
-//                    if(pTempComponent)
-//                        std::cout << "  " << pTempComponent->getName().c_str() << "\n";
-//                }
-//            }
-            mpBarrier_Q->lock();
-            mpBarrier_C->unlock();
-
-            //SIMULATE C
-
-            //Switch Q vectors
-            pTemp = mpUnFinishedVectorsQ->at(mThreadID);
-            mpUnFinishedVectorsQ->at(mThreadID) = mpFinishedVectorQ;
-            mpFinishedVectorQ = pTemp;
-
-            //Simulate own components
-            pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
-            while(pComp)
-            {
-                pComp->simulate(mTime);
-                mpFinishedVectorC->insertFirst(pComp);
-                pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
-            }
-
-            //Steal components
-            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
-            {
-                for(size_t i=0; i<mnThreads-1; ++i)
-                {
-                    int j = (mThreadID+1+i)%mnThreads;
-                    pComp = mpUnFinishedVectorsC->at(j)->tryAndTakeLast();
-                    if(pComp)
-                    {
-                        pComp->simulate(mTime);
-                        mpFinishedVectorC->insertLast(pComp);
-                        break;
-                    }
-                }
-            }
-
-            //! Q Components !//
-
-            while(!mpBarrier_Q->allArrived()) {}    //Q barrier
-//            std::cout << "------------------------------------------------------------\n";
-//            std::cout << "Time: " << mTime << "\n";
-//            std::cout << "---------------------------------------\n";
-//            std::cout << "Q-type components\n";
-//            for(size_t i=0; i<mnThreads; ++i)
-//            {
-//                std::cout << "Thread " << i << ": \n";
-//                for(size_t j=0; j<mpUnFinishedVectorsQ->at(i)->size(); ++j)
-//                {
-//                    Component *pTempComponent = mpUnFinishedVectorsQ->at(i)->at(j);
-//                    if(pTempComponent)
-//                        std::cout << "  " << pTempComponent->getName().c_str() << "\n";
-//                }
-//            }
-            mpBarrier_N->lock();
-            mpBarrier_Q->unlock();
-
-            //SIMULATE Q
-
-            //Switch C vectors
-            pTemp = mpUnFinishedVectorsC->at(mThreadID);
-            mpUnFinishedVectorsC->at(mThreadID) = mpFinishedVectorC;
-            mpFinishedVectorC = pTemp;
-
-            //Simulate own components
-            pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
-            while(pComp)
-            {
-                pComp->simulate(mTime);
-                mpFinishedVectorQ->insertFirst(pComp);
-                pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
-            }
-
-            //Steal components
-            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
-            {
-                for(size_t i=0; i<mnThreads-1; ++i)
-                {
-                    int j = (mThreadID+1+i)%mnThreads;
-                    pComp = mpUnFinishedVectorsQ->at(j)->tryAndTakeLast();
-                    if(pComp)
-                    {
-                        pComp->simulate(mTime);
-                        mpFinishedVectorQ->insertLast(pComp);
-                        break;
-                    }
-                }
-            }
-
-            for(size_t i=0; i<mpSimTimes.size(); ++i)
-            *mpSimTimes[i] = mTime;
-
-            //! Log Nodes !//
-
-            while(!mpBarrier_N->allArrived()) {}    //N barrier
-            mpBarrier_S->lock();
-            mpBarrier_N->unlock();
-
-            mpSystem->logTimeAndNodes(s+1);
-
-        }
-    }
-private:
-    ComponentSystem *mpSystem;
-    vector<Component*> mVectorS;
-    mutable ThreadSafeVector *mpFinishedVectorC;
-    mutable ThreadSafeVector *mpFinishedVectorQ;
-    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsC;
-    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsQ;
-    vector<Node*> mVectorN;
-    size_t mNumSimSteps;
-    double mTimeStep;
-    mutable double mTime;
-    vector<double *> mpSimTimes;
-    size_t mnThreads;
-    size_t mThreadID;
-    BarrierLock *mpBarrier_S;
-    BarrierLock *mpBarrier_C;
-    BarrierLock *mpBarrier_Q;
-    BarrierLock *mpBarrier_N;
-};
 
 
 
-class taskSimStealingSlave
-{
-public:
-    taskSimStealingSlave(ComponentSystem *pSystem, std::vector<ThreadSafeVector*> *cVectors, std::vector<ThreadSafeVector*> *qVectors,
-                         double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
-                         BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N, size_t maxSize)
-    {
-        mpSystem = pSystem;
-        mpUnFinishedVectorsC = cVectors;
-        mpUnFinishedVectorsQ = qVectors;
-        //! @todo memory leak, never deleted, however, dont delete in destructor, that will cause double free corruption since this object is copied when new tasks are created
-        mpFinishedVectorC = new ThreadSafeVector(std::vector<Component*>(), maxSize);
-        mpFinishedVectorQ = new ThreadSafeVector(std::vector<Component*>(), maxSize);
-        mTime = startTime;
-        mNumSimSteps = numSimSteps;
-        mTimeStep = timeStep;
-        mnThreads = nThreads;
-        mThreadID = threadID;
-        mpBarrier_S = pBarrier_S;
-        mpBarrier_C = pBarrier_C;
-        mpBarrier_Q = pBarrier_Q;
-        mpBarrier_N = pBarrier_N;
-    }
 
-    void operator() () const
-    {
-        ThreadSafeVector *pTemp;
-        Component *pComp;
 
-        for(size_t i=0; i<mNumSimSteps; ++i)
-        {
-            if(mpSystem->wasSimulationAborted()) break;
 
-            mTime += mTimeStep;
+void simStealingMaster(ComponentSystem *pSystem,
+                       vector<Component*> &sVector,
+                       std::vector<ThreadSafeVector*> *cVectors,
+                       std::vector<ThreadSafeVector*> *qVectors,
+                       vector<double *> &pSimTimes,
+                       double startTime,
+                       double timeStep,
+                       size_t numSimSteps,
+                       size_t nThreads,
+                       size_t threadID,
+                       BarrierLock *pBarrier_S,
+                       BarrierLock *pBarrier_C,
+                       BarrierLock *pBarrier_Q,
+                       BarrierLock *pBarrier_N,
+                       size_t maxSize);
 
-            //! Signal Components !//
 
-            mpBarrier_S->increment();
-            while(mpBarrier_S->isLocked()){}                         //Wait at S barrier
 
-            //! C Components !//
 
-            mpBarrier_C->increment();
-            while(mpBarrier_C->isLocked()){}                         //Wait at C barrier
-
-            //C-COMPONENTS
-
-            //Switch Q vectors
-            pTemp = mpUnFinishedVectorsQ->at(mThreadID);
-            mpUnFinishedVectorsQ->at(mThreadID) = mpFinishedVectorQ;
-            mpFinishedVectorQ = pTemp;
-
-            //Simulate own components
-            pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
-            while(pComp)
-            {
-                pComp->simulate(mTime);
-                mpFinishedVectorC->insertFirst(pComp);
-                pComp = mpUnFinishedVectorsC->at(mThreadID)->tryAndTakeFirst();
-            }
-
-            //Steal components
-            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
-            {
-                for(size_t i=0; i<mnThreads-1; ++i)
-                {
-                    int j = (mThreadID+1+i)%mnThreads;
-                    pComp = mpUnFinishedVectorsC->at(j)->tryAndTakeLast();
-                    if(pComp)
-                    {
-                        pComp->simulate(mTime);
-                        mpFinishedVectorC->insertLast(pComp);
-                        break;
-                    }
-                }
-            }
-
-            //! Q Components !//
-
-            mpBarrier_Q->increment();
-            while(mpBarrier_Q->isLocked()){}                         //Wait at Q barrier
-
-            //Q-COMPONENTS
-
-            //Switch C vectors
-            pTemp = mpUnFinishedVectorsC->at(mThreadID);
-            mpUnFinishedVectorsC->at(mThreadID) = mpFinishedVectorC;
-            mpFinishedVectorC = pTemp;
-
-            //Simulate own components
-            pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
-            while(pComp)
-            {
-                pComp->simulate(mTime);
-                mpFinishedVectorQ->insertFirst(pComp);
-                pComp = mpUnFinishedVectorsQ->at(mThreadID)->tryAndTakeFirst();
-            }
-
-            //Steal components
-            //if(int(mTime/mTimeStep/5+mThreadID)%mnThreads == 0)
-            {
-                for(size_t i=0; i<mnThreads-1; ++i)
-                {
-                    int j = (mThreadID+1+i)%mnThreads;
-                    pComp = mpUnFinishedVectorsQ->at(j)->tryAndTakeLast();
-                    if(pComp)
-                    {
-                        pComp->simulate(mTime);
-                        mpFinishedVectorQ->insertLast(pComp);
-                        break;
-                    }
-                }
-            }
-
-            //! Log Nodes !//
-
-            mpBarrier_N->increment();
-            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
-        }
-    }
-private:
-    ComponentSystem *mpSystem;
-    mutable ThreadSafeVector *mpFinishedVectorC;
-    mutable ThreadSafeVector *mpFinishedVectorQ;
-    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsC;
-    std::vector<ThreadSafeVector*> *mpUnFinishedVectorsQ;
-    size_t mNumSimSteps;
-    double mTimeStep;
-    mutable double mTime;
-    size_t mThreadID;
-    size_t mnThreads;
-    BarrierLock *mpBarrier_S;
-    BarrierLock *mpBarrier_C;
-    BarrierLock *mpBarrier_Q;
-    BarrierLock *mpBarrier_N;
-};
+void simStealingSlave(ComponentSystem *pSystem,
+                      std::vector<ThreadSafeVector*> *cVectors,
+                      std::vector<ThreadSafeVector*> *qVectors,
+                      double startTime,
+                      double timeStep,
+                      size_t numSimSteps,
+                      size_t nThreads,
+                      size_t threadID,
+                      BarrierLock *pBarrier_S,
+                      BarrierLock *pBarrier_C,
+                      BarrierLock *pBarrier_Q,
+                      BarrierLock *pBarrier_N,
+                      size_t maxSize);
 
 
 /////////////////////////////////////////////
 // Parallel for loop algorithm using tasks //
 /////////////////////////////////////////////
 
-class TaskSimOneComponentOneStep
-{
-public:
-    TaskSimOneComponentOneStep(Component * pComp, double stopTime)
-    {
-        mpComp = pComp;
-        mStopTime = stopTime;
-    }
-
-    void operator() () const
-    {
-        mpComp->simulate(mStopTime);
-    }
-
-private:
-    Component *mpComp;
-    double mStopTime;
-};
+void simOneComponentOneStep(Component * pComp, double stopTime);
 
 
 /////////////////////////////////////////////
 // Parallel for loop algorithm using tasks //
 /////////////////////////////////////////////
 
-class TaskSimOneStep
-{
-public:
-    TaskSimOneStep(std::vector<Component *> *pComponentPtrs, double stopTime)
-    {
-        mpComponentPtrs = pComponentPtrs;
-        mStopTime = stopTime;
-        nComponents = mpComponentPtrs->size();
-    }
-
-    void operator() () const
-    {
-        for (size_t i=0; i<nComponents; ++i)
-        {
-            mpComponentPtrs->at(i)->simulate(mStopTime);
-        }
-    }
-
-private:
-    std::vector<Component *> *mpComponentPtrs;
-    double mStopTime;
-    size_t nComponents;
-};
-
-////////////////////////////////////////////////
-// Parallel for algorithm using TBB templates //
-////////////////////////////////////////////////
-
-class BodySimulateComponentVector
-{
-public:
-    BodySimulateComponentVector(std::vector<Component *> *pComponentPtrs, double stopTime)
-    {
-        mpComponentPtrs = pComponentPtrs;
-        mStopTime = stopTime;
-    }
-
-    void operator() ( const tbb::blocked_range<int>& r ) const
-    {
-        for (int i=r.begin(); i!=r.end(); ++i)
-        {
-            mpComponentPtrs->at(i)->simulate(mStopTime);
-        }
-    }
-
-private:
-    std::vector<Component *> *mpComponentPtrs;
-    double mStopTime;
-};
+void simOneStep(std::vector<Component *> *pComponentPtrs, double stopTime);
 
 
-
-#endif // USETBB
+#endif //C++11
 
 #endif // MULTITHREADINGUTILITIES_H

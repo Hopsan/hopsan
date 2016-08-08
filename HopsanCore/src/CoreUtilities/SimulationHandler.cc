@@ -35,6 +35,10 @@
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "ComponentSystem.h"
 
+#if __cplusplus > 199711L
+#include <thread>
+#endif
+
 using namespace hopsan;
 using namespace std;
 
@@ -269,16 +273,8 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     HOPSAN_UNUSED(noChanges)
 
     vector<ComponentSystem*> tempSystemVector = rSystemVector;
-#ifdef USETBB
+#if __cplusplus > 199711L
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
-
-//    for(size_t i=0; i<rSystemVector.size(); ++i)                         //Loop through the systems, set start time, log nodes and measure simulation time
-//    {
-//        double *pTime = rSystemVector.at(i)->getTimePtr();
-//        *pTime = startT;
-////        rSystemVector.at(i)->logTimeAndNodes(*pTime);                        //Log the first time step
-//        rSystemVector.at(i)->logTimeAndNodes(0);                        //Log the first time step
-//    }
 
     if(!noChanges)
     {
@@ -292,14 +288,19 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
         mSplitSystemVector = distributeSystems(tempSystemVector, nThreads); //Distribute systems evenly over split vectors
     }
 
-    tbb::task_group *simTasks;                                          //Initialize TBB routines for parallel simulation
-    simTasks = new tbb::task_group;
-    for(size_t t=0; t < min(nThreads,mSplitSystemVector.size()); ++t)                                  //Execute simulation
+
+    std::thread *tt = new std::thread[nThreads];  //Create simulation threads
+    for (size_t t=0; t<nThreads; ++t)             //Execute simulation
     {
-        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], stopT));
+        tt[t] = std::thread(simWholeSystems,
+                            mSplitSystemVector[t],
+                            stopT);
     }
-    simTasks->wait();                                                   //Wait for all tasks to finish
-    delete(simTasks);
+    for(size_t c=0; c<nThreads; ++c)              //Wait for all tasks to finish
+    {
+        tt[c].join();
+    }
+    delete[] tt;                                                 //Clean up
 
     bool aborted=false;
     for(size_t i=0; i<tempSystemVector.size(); ++i)
@@ -308,15 +309,15 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     }
     return !aborted;
 #else
-    // Use single core simulation if no TBB support
+    // Use single core simulation if no multi-threading support
     return simulateMultipleSystems(stopT, rSystemVector);
-#endif
+#endif //C++11
 }
 
 
 //! @brief Sorts a vector of component system pointers by their required simulation time
 //! @param [in out]systemVector Vector with system pointers to sort
-#ifdef USETBB
+#if __cplusplus > 199711L
 void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
 {
     size_t i, j;
@@ -346,8 +347,8 @@ void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSyst
 {
     if(rSystemVector.size() > 0)
     {
-        rSystemVector[0]->addErrorMessage("Sorting systems by measured time is not possible without the TBB library.");
+        rSystemVector[0]->addErrorMessage("Sorting systems by measured time is not possible without the C++11 support.");
     }
     return;
 }
-#endif
+#endif //C++11

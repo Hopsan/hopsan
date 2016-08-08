@@ -38,6 +38,16 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#if __cplusplus > 199711L
+#include <windows.h>
+#include <thread>
+#include <functional>
+#include <atomic>
+#include <mutex>
+#include <chrono>
+#include <ctime>
+#endif
+#include <unistd.h>
 
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -51,12 +61,27 @@
 #include "Quantities.h"
 #include "CoreUtilities/ConnectionAssistant.h"
 
-#ifdef USETBB
-#include "tbb/parallel_for.h"
-#endif
-
 using namespace std;
 using namespace hopsan;
+
+
+#if __cplusplus > 199711L
+const long long g_Frequency = []() -> long long
+{
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    return frequency.QuadPart;
+}();
+
+
+HighResClock::time_point HighResClock::now()
+{
+    LARGE_INTEGER count;
+    QueryPerformanceCounter(&count);
+    return time_point(duration(count.QuadPart * static_cast<rep>(period::den) / g_Frequency));
+}
+#endif
+
 
 //! @brief Figure out whether or not a vector contains a certain "object", exact comparison
 //! @param[in] rVector Vector of objects
@@ -89,10 +114,8 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mKeepValuesAsStartValues = false;
     mRequestedNumLogSamples = 0; //This has to be 0 since we want logging to be disabled by default
     mRequestedLogStartTime = 0;
-#ifdef USETBB
-    mpStopMutex = new tbb::mutex();
-#else
-    mpStopMutex = 0;
+#if __cplusplus > 199711L
+    mpStopMutex = new std::mutex();
 #endif
     mpNumHopHelper = 0;
 
@@ -105,7 +128,7 @@ ComponentSystem::~ComponentSystem()
 {
     // Clear the contents of the system
     clear();
-#ifdef USETBB
+#if __cplusplus > 199711L
     delete mpStopMutex;
 #endif
 }
@@ -173,7 +196,7 @@ void ComponentSystem::stopSimulation(const HString &rReason)
     addInfoMessage(infoMsg);
     addLogMess(infoMsg);
 
-#ifdef USETBB
+#if __cplusplus > 199711L
     mpStopMutex->lock();
     mStopSimulation = true;
     mpStopMutex->unlock();
@@ -191,7 +214,7 @@ void ComponentSystem::stopSimulation(const HString &rReason)
 //! @todo maybe we should only have with messages version
 void ComponentSystem::stopSimulation()
 {
-#ifdef USETBB
+#if __cplusplus > 199711L
     mpStopMutex->lock();
     mStopSimulation = true;
     mpStopMutex->unlock();
@@ -389,7 +412,7 @@ void ComponentSystem::removeSubComponent(const HString &rName, bool doDelete)
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 {
-   HString compName = pComponent->getName();
+    HString compName = pComponent->getName();
 
     // Disconnect all ports before erase from system
     PortPtrMapT::iterator ports_it;
@@ -588,8 +611,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                     Component* pRequiredComponent=0;
 
                     bool isReadPort = pPort->getPortType() == ReadPortType || pPort->getPortType() == ReadMultiportType ||
-                                      ( (pUnsrtComp->getTypeName() == SUBSYSTEMTYPENAME) && (pPort->getInternalPortType() == ReadPortType)) ||
-                                      ( (pUnsrtComp->getTypeName() == CONDITIONALTYPENAME) && (pPort->getInternalPortType() == ReadPortType));
+                            ( (pUnsrtComp->getTypeName() == SUBSYSTEMTYPENAME) && (pPort->getInternalPortType() == ReadPortType)) ||
+                            ( (pUnsrtComp->getTypeName() == CONDITIONALTYPENAME) && (pPort->getInternalPortType() == ReadPortType));
                     if ( isReadPort && pPort->isConnected() )
                     {
                         pRequiredComponent = pPort->getNodePtr()->getWritePortComponentPtr();
@@ -599,8 +622,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                         if(pRequiredComponent->mpSystemParent == this)
                         {
                             if(!vectorContains<Component*>(newComponentVector, pRequiredComponent) &&
-                               vectorContains<Component*>(rComponentVector, pRequiredComponent)
-                               /*requiredComponent->getTypeCQS() == pPort->getComponent()->getTypeCQS()*//*Component::S*/)
+                                    vectorContains<Component*>(rComponentVector, pRequiredComponent)
+                                    /*requiredComponent->getTypeCQS() == pPort->getComponent()->getTypeCQS()*//*Component::S*/)
                             {
                                 readyToAdd = false;     //Depending on normal component which has not yet been added
                             }
@@ -608,8 +631,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                         else
                         {
                             if(!vectorContains<Component*>(newComponentVector, pRequiredComponent->mpSystemParent) &&
-                               (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
-                               vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent))
+                                    (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
+                                    vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent))
                             {
                                 readyToAdd = false;     //Depending on subsystem component which has not yet been added
                             }
@@ -692,7 +715,7 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                         if(pRequiredComponent->mpSystemParent == this)
                         {
                             if(!vectorContains<Component*>(newComponentVector, pRequiredComponent) &&
-                               vectorContains<Component*>(rComponentVector, pRequiredComponent))
+                                    vectorContains<Component*>(rComponentVector, pRequiredComponent))
                             {
                                 readyToAdd = false;     //Depending on normal component which has not yet been added
                             }
@@ -700,8 +723,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                         else
                         {
                             if(!vectorContains<Component*>(newComponentVector, pRequiredComponent->mpSystemParent) &&
-                               (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
-                               vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent))
+                                    (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
+                                    vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent))
                             {
                                 readyToAdd = false;     //Depending on subsystem component which has not yet been added
                             }
@@ -891,8 +914,8 @@ void ComponentSystem::removeSubNode(Node* pNode)
 void ComponentSystem::preAllocateLogSpace()
 {
     bool success = true;
-//    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
-//    this->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
+    //    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
+    //    this->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
     //! @todo Fix /Peter
     mLogCtr = 0;
     if (mEnableLogData)
@@ -2309,134 +2332,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
 }
 
 
-#ifdef USETBB
-
-
-
-
-
-
-//! @brief Simulate function for multi-threaded simulations.
-//! @param startT Start time of simulation
-//! @param stopT Stop time of simulation
-//! @param nDesiredThreads Desired amount of simulation threads
-//void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges)
-//{
-//    mTime = startT;
-//    double stopTsafe = stopT - mTimestep/2.0;                   //Calculate the "actual" stop time, minus half a timestep is here to ensure that no numerical issues occur
-
-//    logTimeAndNodes(mTime);                                         //Log the first time step
-
-//    size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
-
-//    if(!noChanges)
-//    {
-//        mSplitCVector.clear();
-//        mSplitQVector.clear();
-//        mSplitSignalVector.clear();
-//        mSplitNodeVector.clear();
-
-//        simulateAndMeasureTime(5);                                  //Measure time
-//        sortComponentVectorsByMeasuredTime();                       //Sort component vectors
-
-//        for(size_t q=0; q<mComponentQptrs.size(); ++q)
-//        {
-//            std::stringstream ss;
-//            ss << "Time for " << mComponentQptrs.at(q)->getName() << ": " << mComponentQptrs.at(q)->getMeasuredTime();
-//            addDebugMessage(ss.str());
-//        }
-//        for(size_t c=0; c<mComponentCptrs.size(); ++c)
-//        {
-//            std::stringstream ss;
-//            ss << "Time for " << mComponentCptrs.at(c)->getName() << ": " << mComponentCptrs.at(c)->getMeasuredTime();
-//            addDebugMessage(ss.str());
-//        }
-//        for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-//        {
-//            std::stringstream ss;
-//            ss << "Time for " << mComponentSignalptrs.at(s)->getName() << ": " << mComponentSignalptrs.at(s)->getMeasuredTime();
-//            addDebugMessage(ss.str());
-//        }
-
-//        distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
-//        distributeQcomponents(mSplitQVector, nThreads);
-//        distributeSignalcomponents(mSplitSignalVector, nThreads);
-//        distributeNodePointers(mSplitNodeVector, nThreads);
-
-//        //! @todo Reinit
-
-//    }
-
-//    tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
-//    simTasks = new tbb::task_group;
-
-//    //Execute simulation
-//#define BARRIER_SYNC
-//#ifdef BARRIER_SYNC
-//    mvTimePtrs.push_back(&mTime);
-//    BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
-//    BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
-//    BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
-//    BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
-
-//    simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-//                                mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, stopTsafe, nThreads, 0,
-//                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-
-//    for(size_t t=1; t < nThreads; ++t)
-//    {
-//        simTasks->run(taskSimSlave(mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-//                                   mSplitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t,
-//                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-//    }
-
-//    simTasks->wait();                                           //Wait for all tasks to finish
-
-//    delete(simTasks);                                           //Clean up
-//    delete(pBarrierLock_S);
-//    delete(pBarrierLock_C);
-//    delete(pBarrierLock_Q);
-//    delete(pBarrierLock_N);
-//#else
-//    vector<Component*> tempVector;
-//    for(int i=mComponentSignalptrs.size()-1; i>-1; --i)
-//    {
-//        tempVector.push_back(mComponentSignalptrs[i]);
-//    }
-//    mComponentSignalptrs = tempVector;
-//    tempVector.clear();
-//    for(int i=mComponentCptrs.size()-1; i>-1; --i)
-//    {
-//        tempVector.push_back(mComponentCptrs[i]);
-//    }
-//    mComponentCptrs = tempVector;
-//    tempVector.clear();
-//    for(int i=mComponentQptrs.size()-1; i>-1; --i)
-//    {
-//        tempVector.push_back(mComponentQptrs[i]);
-//    }
-//    mComponentQptrs = tempVector;
-
-//    cout << "Creating task pools!" << endl;
-
-//    TaskPool<Component> *sPool = new TaskPool<Component>(mComponentSignalptrs, nThreads);
-//    TaskPool<Component> *qPool = new TaskPool<Component>(mComponentQptrs, nThreads);
-//    TaskPool<Component> *cPool = new TaskPool<Component>(mComponentCptrs, nThreads);
-//    TaskPool<Node> *nPool = new TaskPool<Node>(mSubNodePtrs, nThreads);
-
-//    cout << "Starting task threads!";
-//   // assert("Starting task threads"==0);
-
-//    for(size_t t=0; t < nThreads; ++t)
-//    {
-//        simTasks->run(taskSimPool(sPool, qPool, cPool, nPool, mTime, mTimestep, stopTsafe, t, this));
-//    }
-//    simTasks->wait();                                           //Wait for all tasks to finish
-
-//    delete(simTasks);                                           //Clean up
-//#endif
-//}
-
+#if __cplusplus > 199711L
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges, const ParallelAlgorithmT algorithm)
 {
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
@@ -2512,14 +2408,11 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             }
 
             distributeSignalcomponents(mSplitSignalVector, nThreads);
-           // distributeNodePointers(mSplitNodeVector. nThreads);
         }
     }
 
 
     size_t nSteps = calcNumSimSteps(startT, stopT);
-    tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
-    simTasks = new tbb::task_group;
 
     //Execute simulation
     if(algorithm == OfflineSchedulingAlgorithm)
@@ -2532,65 +2425,46 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
         BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
 
-        simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-                                    mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, nSteps, nThreads, 0,
-                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+        std::thread *tt = new std::thread[nThreads];
 
-        for(size_t t=1; t < nThreads; ++t)
+        tt[0] = std::thread(simMaster,
+                            this,
+                            std::ref(mSplitSignalVector[0]),
+                            std::ref(mSplitCVector[0]),
+                            std::ref(mSplitQVector[0]),             //Create master thread
+                            std::ref(mSplitNodeVector[0]),
+                            std::ref(mvTimePtrs),
+                            mTime,
+                            mTimestep,
+                            nSteps,
+                            pBarrierLock_S,
+                            pBarrierLock_C,
+                            pBarrierLock_Q,
+                            pBarrierLock_N);
+
+        for (size_t t=1; t<nThreads; ++t)
         {
-            simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-                                       mSplitNodeVector[t], mTime, mTimestep, nSteps, nThreads, t,
-                                       pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+            tt[t] = std::thread(simSlave,
+                                this,
+                                std::ref(mSplitSignalVector[t]),
+                                std::ref(mSplitCVector[t]),
+                                std::ref(mSplitQVector[t]),          //Create slave threads
+                                std::ref(mSplitNodeVector[t]),
+                                mTime,
+                                mTimestep,
+                                nSteps,
+                                pBarrierLock_S,
+                                pBarrierLock_C,
+                                pBarrierLock_Q,
+                                pBarrierLock_N);
         }
 
-        simTasks->wait();                                           //Wait for all tasks to finish
-
-        delete(simTasks);                                           //Clean up
-        delete(pBarrierLock_S);
-        delete(pBarrierLock_C);
-        delete(pBarrierLock_Q);
-        delete(pBarrierLock_N);
-    }
-    else if(algorithm == OfflineReschedulingAlgorithm)
-    {
-        addInfoMessage("Using offline rescheduling algorithm with "+threadStr+" threads.");
-
-        mvTimePtrs.push_back(&mTime);
-        BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
-        BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
-        BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
-        BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
-
-        simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-                                    mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, 1100, nThreads, 0,
-                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-
-        for(size_t t=1; t < nThreads; ++t)
+        for (size_t i = 0; i<nThreads; ++i)                 //Wait for all tasks to finish
         {
-            simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-                                       mSplitNodeVector[t], mTime, mTimestep, 1100, nThreads, t,
-                                       pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+            tt[i].join();
         }
 
-        simTasks->wait();                                           //Wait for all tasks to finish
-
-        reschedule(nThreads);
-
-        simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-                                    mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, nSteps-1100, nThreads, 0,
-                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-
-        for(size_t t=1; t < nThreads; ++t)
-        {
-            simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-                                       mSplitNodeVector[t], mTime, mTimestep, nSteps-1100, nThreads, t,
-                                       pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-        }
-
-        simTasks->wait();
-
-
-        delete(simTasks);                                           //Clean up
+        delete[] tt;
         delete(pBarrierLock_S);
         delete(pBarrierLock_C);
         delete(pBarrierLock_Q);
@@ -2605,21 +2479,21 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         TaskPool *pTaskPoolC = new TaskPool(mComponentCptrs);
         TaskPool *pTaskPoolQ = new TaskPool(mComponentQptrs);
 
-        tbb::task_group *masterTasks;
-        tbb::task_group *slaveTasks;
-        masterTasks = new tbb::task_group;
-        slaveTasks = new tbb::task_group;
+        std::thread *tt = new std::thread[nThreads];
 
-        tbb::atomic<double> *pTime = new tbb::atomic<double>;
+        std::atomic<double> *pTime = new std::atomic<double>;
         *pTime = mTime;
-        tbb::atomic<bool> *pStop = new tbb::atomic<bool>;
+        std::atomic<bool> *pStop = new std::atomic<bool>;
         *pStop = false;
 
-        //masterTasks->run(taskSimPoolMaster(pTaskPoolS, pTaskPoolC, pTaskPoolQ, mTimestep, nSteps, this, &mTime, pTime, pStop));
 
-        for(size_t t=1; t < nThreads; ++t)
+        for (size_t t=0; t<nThreads-1; ++t)
         {
-            slaveTasks->run(taskSimPoolSlave(pTaskPoolC, pTaskPoolQ, pTime, pStop));
+            tt[t] = std::thread(simPoolSlave,
+                                pTaskPoolC,
+                                pTaskPoolQ,
+                                pTime,
+                                pStop);
         }
 
         Component *pComp;
@@ -2669,11 +2543,12 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         *pStop=true;
 
 
-        //masterTasks->wait();                                           //Wait for all tasks to finish
-        slaveTasks->wait();
+        for (size_t i = 0; i<nThreads-1; ++i)                 //Wait for all tasks to finish
+        {
+            tt[i].join();
+        }
 
-        delete(masterTasks);                                       //Clean up
-        delete(slaveTasks);
+        delete[] tt;
         delete(pTaskPoolS);
         delete(pTaskPoolC);
         delete(pTaskPoolQ);
@@ -2703,19 +2578,50 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             pVectorsQ->push_back(new ThreadSafeVector(mSplitQVector[i], maxSize));
         }
 
-        simTasks->run(taskSimStealingMaster(this, mComponentSignalptrs, pVectorsC, pVectorsQ,                          //Create master thread
-                                            mvTimePtrs, mTime, mTimestep, nSteps, nThreads, 0,
-                                            pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N, maxSize));
+        std::thread *tt = new std::thread[nThreads];
 
-        for(size_t t=1; t < nThreads; ++t)
+        tt[0] = std::thread(simStealingMaster,
+                            this,
+                            std::ref(mComponentSignalptrs),
+                            pVectorsC,
+                            pVectorsQ,             //Create master thread
+                            std::ref(mvTimePtrs),
+                            mTime,
+                            mTimestep,
+                            nSteps,
+                            nThreads,
+                            0,
+                            pBarrierLock_S,
+                            pBarrierLock_C,
+                            pBarrierLock_Q,
+                            pBarrierLock_N,
+                            maxSize);
+
+
+        for (size_t t=1; t<nThreads; ++t)
         {
-            simTasks->run(taskSimStealingSlave(this, pVectorsC, pVectorsQ, mTime, mTimestep, nSteps, nThreads, t,       //Create slave threads
-                                               pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N, maxSize));
+            tt[t] = std::thread(simStealingSlave,
+                                this,
+                                pVectorsC,
+                                pVectorsQ,
+                                mTime,
+                                mTimestep,
+                                nSteps,
+                                nThreads,
+                                t,
+                                pBarrierLock_S,
+                                pBarrierLock_C,
+                                pBarrierLock_Q,
+                                pBarrierLock_N,
+                                maxSize);
         }
 
-        simTasks->wait();                                           //Wait for all tasks to finish
+        for (size_t i = 0; i<nThreads; ++i)                 //Wait for all tasks to finish
+        {
+            tt[i].join();
+        }
 
-        delete(simTasks);                                           //Clean up
+        delete[] tt;                                           //Clean up
         delete(pBarrierLock_S);
         delete(pBarrierLock_C);
         delete(pBarrierLock_Q);
@@ -2730,6 +2636,8 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         // Round to nearest, we may not get exactly the stop time that we want
         size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
 
+        std::thread *tt;
+
         //Simulate
         for (size_t i=0; i<numSimulationSteps; ++i)
         {
@@ -2739,64 +2647,41 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             }
 
             mTime += mTimestep; //mTime is updated here before the simulation,
-                                //mTime is the current time during the simulateOneTimestep
+            //mTime is the current time during the simulateOneTimestep
 
             //Signal components
             for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
             {
                 mComponentSignalptrs[s]->simulate(mTime);
             }
-            simTasks->wait();
 
             //C components
+            tt = new std::thread[mComponentCptrs.size()];
             for (size_t c=0; c < mComponentCptrs.size(); ++c)
             {
-                simTasks->run(TaskSimOneComponentOneStep(mComponentCptrs[c], mTime));
+                tt[c] = std::thread(simOneComponentOneStep,
+                                    mComponentCptrs[c],
+                                    mTime);
             }
-            simTasks->wait();
+            for(size_t c=0; c<mComponentCptrs.size(); ++c)
+            {
+                tt[c].join();
+            }
+            delete[] tt;
 
             //Q components
+            tt = new std::thread[mComponentQptrs.size()];
             for (size_t q=0; q < mComponentQptrs.size(); ++q)
             {
-                simTasks->run(TaskSimOneComponentOneStep(mComponentQptrs[q], mTime));
+                tt[q] = std::thread(simOneComponentOneStep,
+                                    mComponentQptrs[q],
+                                    mTime);
             }
-            simTasks->wait();
-
-            ++mTotalTakenSimulationSteps;
-
-            logTimeAndNodes(mTotalTakenSimulationSteps);
-        }
-    }
-    else if(algorithm == ParallelForTbbAlgorithm)
-    {
-        addInfoMessage("Using parallel for loop algorithm 2 with unlimited number of threads.");
-
-        // Round to nearest, we may not get exactly the stop time that we want
-        size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
-
-        //Simulate
-        for (size_t i=0; i<numSimulationSteps; ++i)
-        {
-            if (mStopSimulation)
+            for(size_t q=0; q<mComponentQptrs.size(); ++q)
             {
-                break;
+                tt[q].join();
             }
-
-            mTime += mTimestep; //mTime is updated here before the simulation,
-                                //mTime is the current time during the simulateOneTimestep
-
-            //Signal components
-            //tbb::parallel_for(tbb::blocked_range<int>(0, mComponentSignalptrs.size()), BodySimulateComponentVector( mComponentSignalptrs, mTime));
-            for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
-            {
-                mComponentSignalptrs[s]->simulate(mTime);
-            }
-
-            //C components
-            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentCptrs.size()), BodySimulateComponentVector( &mComponentCptrs, mTime));
-
-            //Q components
-            tbb::parallel_for(tbb::blocked_range<int>(0, mComponentQptrs.size()), BodySimulateComponentVector( &mComponentQptrs, mTime));
+            delete[] tt;
 
             ++mTotalTakenSimulationSteps;
 
@@ -2810,6 +2695,8 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         // Round to nearest, we may not get exactly the stop time that we want
         size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
 
+        std::thread *tt;
+
         //Simulate
         for (size_t i=0; i<numSimulationSteps; ++i)
         {
@@ -2819,117 +2706,46 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             }
 
             mTime += mTimestep; //mTime is updated here before the simulation,
-                                //mTime is the current time during the simulateOneTimestep
+            //mTime is the current time during the simulateOneTimestep
 
             //Signal components
             for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
             {
                 mComponentSignalptrs[s]->simulate(mTime);
             }
-            simTasks->wait();
 
             //C components
-            for (size_t c=0; c < mSplitCVector.size(); ++c)
+            tt = new std::thread[mComponentCptrs.size()];
+            for (size_t c=0; c < mComponentCptrs.size(); ++c)
             {
-                simTasks->run(TaskSimOneStep(&mSplitCVector[c], mTime));
+                tt[c] = std::thread(simOneStep,
+                                    &mSplitCVector[c],
+                                    mTime);
             }
-            simTasks->wait();
+            for(size_t c=0; c<mComponentCptrs.size(); ++c)
+            {
+                tt[c].join();
+            }
+            delete[] tt;
 
             //Q components
-            for (size_t q=0; q < mSplitQVector.size(); ++q)
+            tt = new std::thread[mComponentQptrs.size()];
+            for (size_t q=0; q < mComponentQptrs.size(); ++q)
             {
-                simTasks->run(TaskSimOneStep(&mSplitQVector[q], mTime));
+                tt[q] = std::thread(simOneStep,
+                                    &mSplitQVector[q],
+                                    mTime);
             }
-            simTasks->wait();
+            for(size_t q=0; q<mComponentQptrs.size(); ++q)
+            {
+                tt[q].join();
+            }
+            delete[] tt;
 
             ++mTotalTakenSimulationSteps;
 
             logTimeAndNodes(mTotalTakenSimulationSteps);
         }
-
-    }
-    else if(algorithm == RandomTaskPoolAlgorithm)
-    {
-
-        addInfoMessage("Using random task pool algorithm with "+threadStr+" threads.");
-
-        RandomTaskPool *pTaskPoolS = new RandomTaskPool(mComponentSignalptrs);
-        RandomTaskPool *pTaskPoolC = new RandomTaskPool(mComponentCptrs);
-        RandomTaskPool *pTaskPoolQ = new RandomTaskPool(mComponentQptrs);
-
-        tbb::task_group *masterTasks;
-        tbb::task_group *slaveTasks;
-        masterTasks = new tbb::task_group;
-        slaveTasks = new tbb::task_group;
-
-        tbb::atomic<double> *pTime = new tbb::atomic<double>;
-        *pTime = mTime;
-        tbb::atomic<bool> *pStop = new tbb::atomic<bool>;
-        *pStop = false;
-
-        //masterTasks->run(taskSimPoolMaster(pTaskPoolS, pTaskPoolC, pTaskPoolQ, mTimestep, nSteps, this, &mTime, pTime, pStop));
-
-        for(size_t t=1; t < nThreads; ++t)
-        {
-            slaveTasks->run(taskSimRandomPoolSlave(pTaskPoolC, pTaskPoolQ, pTime, pStop));
-        }
-
-        Component *pComp;
-        for(size_t i=0; i<nSteps; ++i)
-        {
-            *pTime = *pTime+mTimestep;
-
-            //S-pool
-            pTaskPoolS->open();
-            pComp = pTaskPoolS->getComponent();
-            while(pComp)
-            {
-                pComp->simulate(*pTime);
-                pTaskPoolS->reportDone();
-                pComp = pTaskPoolS->getComponent();
-            }
-            while(!pTaskPoolS->isReady()) {}
-            pTaskPoolS->close();
-
-            //C-pool
-            pTaskPoolC->open();
-            pComp = pTaskPoolC->getComponent();
-            while(pComp)
-            {
-                pComp->simulate(*pTime);
-                pTaskPoolC->reportDone();
-                pComp = pTaskPoolC->getComponent();
-            }
-            while(!pTaskPoolC->isReady()) {}
-            pTaskPoolC->close();
-
-            //Q-pool
-            pTaskPoolQ->open();
-            pComp = pTaskPoolQ->getComponent();
-            while(pComp)
-            {
-                pComp->simulate(*pTime);
-                pTaskPoolQ->reportDone();
-                pComp = pTaskPoolQ->getComponent();
-            }
-            while(!pTaskPoolQ->isReady()) {}
-            pTaskPoolQ->close();
-
-            mTime =  *pTime;
-            logTimeAndNodes(i+1);            //Log all nodes
-        }
-        *pStop=true;
-
-
-        //masterTasks->wait();                                           //Wait for all tasks to finish
-        slaveTasks->wait();
-
-        delete(masterTasks);                                       //Clean up
-        delete(slaveTasks);
-        delete(pTaskPoolS);
-        delete(pTaskPoolC);
-        delete(pTaskPoolQ);
-        delete(pStop);
     }
 }
 
@@ -2938,9 +2754,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
 //! @brief Helper function that simulates all components and measure their average time requirements.
 //! @param steps How many steps to simulate
-//! @todo Could we use the other tictoc to avoid tbb dependency, then we could use it as a bottleneck finder even if tbb not present
 bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
 {
+#if __cplusplus > 199711L
     // Reset all measured times first
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         mComponentSignalptrs[s]->setMeasuredTime(0);
@@ -2950,39 +2766,46 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
         mComponentQptrs[q]->setMeasuredTime(0);
 
 
-    // Measure time for each component during specified amount of steps
+        // Measure time for each component during specified amount of steps
     double time;
+
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
     {
         time = mTime; // Init time
-        tbb::tick_count comp_start = tbb::tick_count::now();
+        HighResClock::time_point t0 = HighResClock::now();
         time += mTimestep*nSteps;
         mComponentSignalptrs[s]->simulate(time);
-        tbb::tick_count comp_end = tbb::tick_count::now();
-        mComponentSignalptrs[s]->setMeasuredTime((comp_end-comp_start).seconds());
+        HighResClock::time_point t1 = HighResClock::now();
+        HighResClock::duration dt = t1-t0;
+        mComponentSignalptrs[s]->setMeasuredTime(dt.count()/1000000.0);
     }
 
     for(size_t c=0; c<mComponentCptrs.size(); ++c)
     {
         time=mTime; // Reset time
-        tbb::tick_count comp_start = tbb::tick_count::now();
+        HighResClock::time_point t0 = HighResClock::now();
         time += mTimestep*nSteps;
         mComponentCptrs[c]->simulate(time);
-        tbb::tick_count comp_end = tbb::tick_count::now();
-        mComponentCptrs[c]->setMeasuredTime((comp_end-comp_start).seconds());
+        HighResClock::time_point t1 = HighResClock::now();
+        HighResClock::duration dt = t1-t0;
+        mComponentCptrs[c]->setMeasuredTime(dt.count()/1000000.0);
     }
 
     for(size_t q=0; q<mComponentQptrs.size(); ++q)
     {
         time=mTime; // Reset time
-        tbb::tick_count comp_start = tbb::tick_count::now();
+        HighResClock::time_point t0 = HighResClock::now();
         time += mTimestep*nSteps;
         mComponentQptrs[q]->simulate(time);
-        tbb::tick_count comp_end = tbb::tick_count::now();
-        mComponentQptrs[q]->setMeasuredTime((comp_end-comp_start).seconds());
+        HighResClock::time_point t1 = HighResClock::now();
+        HighResClock::duration dt = t1-t0;
+        mComponentQptrs[q]->setMeasuredTime(dt.count()/1000000.0);
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 
@@ -3011,7 +2834,7 @@ double ComponentSystem::getTotalMeasuredTime()
 //! @todo This function uses bubblesort. Maybe change to something faster.
 void ComponentSystem::sortComponentVectorsByMeasuredTime()
 {
-        //Sort the components from longest to shortest time requirement
+    //Sort the components from longest to shortest time requirement
     size_t i, j;
     bool flag = true;
     Component *tempC;
@@ -3125,8 +2948,8 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
         addDebugMessage("Creating C-type thread vector, measured time = " + to_hstring(timeVector[i]*1000) + " ms", "cvector");
     }
 
-        //Finally we sort each component vector, so that
-        //signal components are simulated in correct order:
+    //Finally we sort each component vector, so that
+    //signal components are simulated in correct order:
     for(size_t i=0; i<rSplitCVector.size(); ++i)
     {
         sortComponentVector(rSplitCVector[i]);
@@ -3178,8 +3001,8 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
         addDebugMessage("Creating Q-type thread vector, measured time = " + to_hstring(timeVector[i]*1000) + " ms", "qvector");
     }
 
-        //Finally we sort each component vector, so that
-        //signal components are simulated in correct order:
+    //Finally we sort each component vector, so that
+    //signal components are simulated in correct order:
     for(size_t i=0; i<rSplitQVector.size(); ++i)
     {
         sortComponentVector(rSplitQVector[i]);
@@ -3198,8 +3021,8 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
 void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &rSplitSignalVector, size_t nThreads)
 {
 
-        //First we want to divide the components into groups,
-        //depending on who they are connected to.
+    //First we want to divide the components into groups,
+    //depending on who they are connected to.
 
     std::map<Component *, size_t> groupMap;     //Maps each component to a group number
     size_t curMax = 0;                          //Highest used group number
@@ -3255,9 +3078,9 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
     }
 
 
-        //Now we assign each component to a simulation thread vector.
-        //We keep grouped components together, and always fill thread
-        //with least measured time first.
+    //Now we assign each component to a simulation thread vector.
+    //We keep grouped components together, and always fill thread
+    //with least measured time first.
 
     rSplitSignalVector.resize(nThreads);
     size_t i=0;                                             //Group number
@@ -3291,18 +3114,18 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
         ++i;
     }
 
-//    // DEBUG
-//    for(size_t i=0; i<vectorTime.size(); ++i)
-//    {
-//        std::stringstream ss;
-//        ss << 1000*vectorTime[i];
-//        addDebugMessage("Creating S-type thread vector, measured time = " + ss.str() + " ms", "svector");
-//    }
-//    // END DEBUG
+    //    // DEBUG
+    //    for(size_t i=0; i<vectorTime.size(); ++i)
+    //    {
+    //        std::stringstream ss;
+    //        ss << 1000*vectorTime[i];
+    //        addDebugMessage("Creating S-type thread vector, measured time = " + ss.str() + " ms", "svector");
+    //    }
+    //    // END DEBUG
 
 
-        //Finally we sort each component vector, so that
-        //signal components are simulated in correct order:
+    //Finally we sort each component vector, so that
+    //signal components are simulated in correct order:
     for(size_t i=0; i<rSplitSignalVector.size(); ++i)
     {
         sortComponentVector(rSplitSignalVector[i]);
@@ -3348,50 +3171,50 @@ void ComponentSystem::reschedule(size_t nThreads)
 
 #else
 
-        //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
+//This overrides the multi-threaded simulation call with a single-threaded simulation if multi-threading is not available.
 //! @brief Simulate function that overrides multi-threaded simulation call with a single-threaded call
 //! In case multi-threaded support is not available
 void ComponentSystem::simulateMultiThreaded(const double /*startT*/, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/, ParallelAlgorithmT /*algorithm*/)
 {
-    this->addErrorMessage("Multi-threaded simulation not available, TBB library is not present. Simulating single-threaded.");
+    this->addErrorMessage("Multi-threaded simulation not available (compiled without C++11 support). Simulating single-threaded.");
     this->simulate(stopT);
 }
 
 
 bool ComponentSystem::simulateAndMeasureTime(const size_t /*steps*/)
 {
-    this->addErrorMessage("Unable to measure simulation time without TBB library.");
+    this->addErrorMessage("Measuring simulation time requires C++11 support.");
     return false;
 }
 
 double ComponentSystem::getTotalMeasuredTime()
 {
-    this->addErrorMessage("Time measurement results not available without TBB library.");
+    this->addErrorMessage("Measuring simulation time requires C++11 support.");
     return 0;
 }
 
 
 void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &/*rSplitCVector*/, size_t /*nThreads*/)
 {
-    addWarningMessage("Called distributeCcomponents(), but TBB is not avaialble.");
+    addWarningMessage("Called distributeCcomponents(), but multi-threading is not avaialble.");
 }
 
 
 void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &/*rSplitQVector*/, size_t /*nThreads*/)
 {
-    addWarningMessage("Called distributeQcomponents(), but TBB is not avaialble.");
+    addWarningMessage("Called distributeQcomponents(), but multi-threading is not avaialble.");
 }
 
 
 void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &/*rSplitSignalVector*/, size_t /*nThreads*/)
 {
-    addWarningMessage("Called distributeSignalcomponents(), but TBB is not avaialble.");
+    addWarningMessage("Called distributeSignalcomponents(), but multi-threading is not avaialble.");
 }
 
 
 void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &/*rSplitNodeVector*/, size_t /*nThreads*/)
 {
-    addWarningMessage("Called distributeNodePointers(), but TBB is not avaialble.");
+    addWarningMessage("Called distributeNodePointers(), but multi-threading is not avaialble.");
 }
 
 #endif
@@ -3450,7 +3273,7 @@ void ComponentSystem::simulate(const double stopT)
         }
 
         mTime += mTimestep; //mTime is updated here before the simulation,
-                            //mTime is the current time during the simulateOneTimestep
+        //mTime is the current time during the simulateOneTimestep
 
         //! @todo maybe use iterators instead
         //Signal components
@@ -3603,7 +3426,7 @@ void ConditionalComponentSystem::simulate(const double stopT)
         for (size_t i=0; i<numSimulationSteps; ++i)
         {
             mTime += mTimestep; //mTime is updated here before the simulation,
-                                //mTime is the current time during the simulateOneTimestep
+            //mTime is the current time during the simulateOneTimestep
 
             ++mTotalTakenSimulationSteps;
 
