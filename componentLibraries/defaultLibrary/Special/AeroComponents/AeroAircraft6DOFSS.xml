@@ -5,7 +5,15 @@
       <icon path="AeroAircraft6DOFSS.svg" type="user" scale="1" iconrotation=""/>
       <icon path="AeroAircraft6DOFSS.svg" type="iso" scale="1" iconrotation=""/>
     </icons>
-    <ports>
+     <help>
+            <text>Six degree of freedom flight dynamic model of an aircraft with modelling of supersonic characteristics. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>AeroAircraft6DOFSS.nb</link>
+            <link>AeroAircraft6DOFSS.pdf</link>
+            <link>AeroAircraft6DOFSShelp.pdf</link>
+            <link>AeroAircraft6DOFSS/AeroAircraft6DOFSShelp.pdf</link>
+			<link>AeroAircraft6DOFSS/CLCDfunctions.pdf</link>
+     </help>       
+	  <ports>
       <port autoplaced="true" name="ycg" y="1" a="90" x="0.0666667" enabled="true"/>
       <port autoplaced="true" name="Thetao" y="1" a="90" x="0.266667" enabled="true"/>
       <port autoplaced="true" name="q1" y="1" a="90" x="0.566667" enabled="true"/>
@@ -36,8 +44,15 @@
       <port autoplaced="true" name="zcg" y="1" a="90" x="0.1" enabled="true"/>
       <port autoplaced="true" name="Mcargo" y="0" a="270" x="0.608696" enabled="true"/>
       <port autoplaced="true" name="wturbz" y="0" a="270" x="0.956522" enabled="true"/>
-      <port autoplaced="true" name="CL1" y="1" a="90" x="0.866667" enabled="true"/>
-      <port autoplaced="true" name="Cd1" y="1" a="90" x="0.9" enabled="true"/>
+      <port autoplaced="true" name="CL1" y=".1" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="Cd1" y=".2" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="CL2" y=".3" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="Cd2" y=".4" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="CLtot" y=".5" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="Cdtot" y=".6" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="Lift1" y=".7" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="Lift2" y=".8" a="0" x="1" enabled="true"/>
+      <port autoplaced="true" name="v" y=".9" a="0" x="1" enabled="true"/>
       <port autoplaced="true" name="Vb" y="1" a="90" x="0.366667" enabled="true"/>
       <port autoplaced="true" name="AlphaAttack" y="1" a="90" x="0.666667" enabled="true"/>
       <port autoplaced="true" name="vturby" y="0" a="270" x="0.782609" enabled="true"/>
