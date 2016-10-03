@@ -5576,35 +5576,58 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     {
         // Parameter name, return its value
         QString parType;
-        QString parVal = getParameterValue(expr, parType);
-        if( parVal != "NaN")
+
+        ContainerObject *pContainer = mpModel->getViewContainerObject();
+
+        QString fullName = expr;
+        while(!pContainer->isTopLevelContainer())
         {
-            if (parType == "string")
+            fullName.prepend("$");
+            fullName.prepend(pContainer->getName());
+            pContainer = pContainer->getParentContainerObject();
+        }
+
+        bool ok;
+        QString parVal;
+
+        while(true)
+        {
+            parVal = getParameterValue(fullName, parType, true);
+
+            if(parType == "string")
             {
                 mAnsType = String;
                 mAnsWildcard = parVal;
                 return;
             }
+
+            mAnsScalar = parVal.toDouble(&ok);
+
+            if(!ok)
+            {
+                if(fullName.count("$") < 1)
+                {
+                    evaluateExpression(parVal);
+                    return;
+                }
+                else
+                {
+                  //Find container where variable is located
+                  if(fullName.section("$",-1,-1).contains("."))
+                  {
+                      //Subcomponent parameter
+                      fullName = fullName.section("$",0,-2)+"$"+parVal;
+                  }
+                  else
+                  {
+                      //System parameter
+                      fullName = fullName.section("$",0,-3)+"$"+parVal;
+                  }
+                }
+            }
             else
             {
-                bool ok;
-                mAnsScalar = parVal.toDouble(&ok);
                 mAnsType = Scalar;
-                //  It is not a numerical, so assume it is a parent system parameter, lets evaluate it
-                if(!ok)
-                {
-                    //! @todo this does not work, this function does not seek upwards in the hierarchy, it will start with the current view container
-                    parVal = getParameterValue(parVal, parType);
-                    if (parType == "string")
-                    {
-                        mAnsType = String;
-                        mAnsWildcard = parVal;
-                    }
-                    else
-                    {
-                        mAnsScalar = parVal.toDouble();
-                    }
-                }
                 return;
             }
         }
@@ -7337,7 +7360,7 @@ void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringLi
 
 //! @brief Returns the value of specified parameter
 //! @param[in] parameterName The full parameter name (relative to the current view container)
-QString HcomHandler::getParameterValue(QString parameterName, QString &rParameterType) const
+QString HcomHandler::getParameterValue(QString parameterName, QString &rParameterType, bool searchFromTopLevel) const
 {
     rParameterType.clear();
     if(mpModel)
@@ -7350,7 +7373,15 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
         splitFullParameterName(parameterName, subsystems, compName, parName);
 
         // Seek into the correct system
-        ContainerObject *pContainer = mpModel->getViewContainerObject();
+        ContainerObject *pContainer;
+        if(searchFromTopLevel)
+        {
+            pContainer = mpModel->getTopLevelSystemContainer();
+        }
+        else
+        {
+            pContainer = mpModel->getViewContainerObject();
+        }
         foreach(const QString &subsystem, subsystems)
         {
             pContainer = qobject_cast<ContainerObject*>(pContainer->getModelObject(subsystem));

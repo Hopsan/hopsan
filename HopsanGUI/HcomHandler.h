@@ -240,7 +240,7 @@ private:
 
     void getParameters(QString str, QStringList &rParameters);
     void getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters);
-    QString getParameterValue(QString parameterName, QString &rParameterType) const;
+    QString getParameterValue(QString parameterName, QString &rParameterType, bool searchFromTopLevel=false) const;
     QString getParameterValue(QString parameterName) const;
 
     bool evaluateArithmeticExpression(QString cmd);
