@@ -406,7 +406,20 @@ void FileHandler::setFileNotSaved()
 {
     mpFilesWidget->addAsterisk();
     if(mpFilesWidget->mpTreeWidget->currentItem() && mTreeToFileMap.contains(mpFilesWidget->mpTreeWidget->currentItem()))
-        mTreeToFileMap.find(mpFilesWidget->mpTreeWidget->currentItem()).value()->mIsSaved = false;
+      mTreeToFileMap.find(mpFilesWidget->mpTreeWidget->currentItem()).value()->mIsSaved = false;
+}
+
+bool FileHandler::hasFile(QString filePath)
+{
+    for(size_t i=0; i<mFilePtrs.size(); ++i)
+    {
+        QFileInfo info(filePath);
+        if(info.fileName() == mFilePtrs[i]->mFileInfo.fileName())
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void FileHandler::saveToXml(const QString &filePath)

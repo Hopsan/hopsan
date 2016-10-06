@@ -29,6 +29,7 @@
 #include "Handlers/MessageHandler.h"
 #include "Utilities/StringUtilities.h"
 #include <QScrollArea>
+#include <QMessageBox>
 
 NodeInfo::NodeInfo(QString nodeType)
 {
@@ -379,6 +380,14 @@ void CreateComponentWizard::generate()
     {
         cqsTypeLong.append("ignal");
     }
+
+    //Abort if file already exists
+    if(mpFileHandler->hasFile(typeName+".hpp") || mpFileHandler->hasFile(typeName+".xml"))
+    {
+        QMessageBox::critical(mpParent, "Error", "Component with same type name \""+typeName+"\" already exists. Choose a different name.");
+        return;
+    }
+
 
     //Ports
     QMap<QString, QStringList> nodeToPortMap;

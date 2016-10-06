@@ -59,6 +59,7 @@ public slots:
     void saveToXml(const QString &path);
     void loadFromXml(const QString &path);
     void setFileNotSaved();
+    bool hasFile(QString filePath);
 
 private slots:
     void openFile(QTreeWidgetItem *pItem, int);
