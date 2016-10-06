@@ -209,6 +209,45 @@ void Configuration::loadDefaultsFromXml()
     }
     file.close();
 
+    if(mHopsanPath.isEmpty())
+    {
+        QString testPath = QDir(execPath+"../").absolutePath();
+
+        bool success = true;
+        QString lib, includeDir;
+    #ifdef WIN32
+        lib = testPath+"/bin/HopsanCore.dll";
+    #else
+        lib = testPath+"/bin/libHopsanCore.so";
+    #endif
+        if(!QFile::exists(lib))
+        {
+            success = false;
+        }
+        includeDir = testPath+"/HopsanCore/include";
+        if(!QFile::exists(includeDir+"/HopsanCore.h"))
+        {
+            success = false;
+        }
+
+        if(success)
+        {
+            setHopsanPath(testPath);
+            qDebug() << "Found Hopsan installation at: " << testPath << "\n";
+        }
+    }
+
+    if(mCompilerPath.isEmpty())
+    {
+        QString testDir = QDir(execPath+"../mingw64/bin").absolutePath();
+        if(QFile().exists(testDir+"/g++.exe"))
+        {
+            setCompilerPath(testDir);
+            qDebug() << "Found MinGW64 installation at: " << testDir << "\n";
+        }
+
+    }
+
     return;
 }
 
