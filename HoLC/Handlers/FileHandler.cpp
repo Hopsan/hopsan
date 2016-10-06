@@ -346,6 +346,13 @@ void FileHandler::loadFromXml(const QString &path)
     {
         QDomElement libRoot = domDocument.documentElement();
 
+        if(libRoot.tagName() != "hopsancomponentlibrary")
+        {
+            mpMessageHandler->addErrorMessage(tr("Not a Hopsan componente library! Root tag: %1 != hopsancomponentlibrary")
+                                              .arg(libRoot.tagName()));
+            return;
+        }
+
         mFilePtrs.clear();
         mpFilesWidget->clear();
 
