@@ -168,7 +168,7 @@ void Configuration::loadDefaultsFromXml()
     QString execPath = qApp->applicationDirPath().append('/');
 
     //Read from holcdefaults.xml
-    QFile file(execPath + "../holcdefaults");
+    QFile file(execPath + "../HoLC/holcdefaults");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(mpParent, mpParent->tr("Hopsan"),
