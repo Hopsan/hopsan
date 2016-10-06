@@ -220,6 +220,25 @@ void CreateComponentWizard::updatePage(int i)
 
     if(i == 1)      //Second page
     {
+        if(mpTypeNameLineEdit->text().isEmpty())
+        {
+            this->back();
+            QMessageBox::critical(mpParent, "Error", "Type name cannot be empty.");
+            return;
+        }
+        else if(!checkVariableOrClassName(mpTypeNameLineEdit->text()))
+        {
+            this->back();
+            QMessageBox::critical(mpParent, "Error", "Type name is illegal. Only letters, numbers and underscore is allowed. First character cannot be a number.");
+            return;
+        }
+        else if(mpDisplayNameLineEdit->text().isEmpty())
+        {
+            this->back();
+            QMessageBox::critical(mpParent, "Error", "Display name cannot be empty.");
+            return;
+        }
+
         //Constants
         while(mConstantsNameLineEditPtrs.size() > mpNumberOfConstantsSpinBox->value())
         {
@@ -387,6 +406,104 @@ void CreateComponentWizard::generate()
         QMessageBox::critical(mpParent, "Error", "Component with same type name \""+typeName+"\" already exists. Choose a different name.");
         return;
     }
+
+    //Verify that all names are non-empty and legal
+    QStringList portNamesList, constantNamesList, inputNamesList, outputNamesList;
+    for(int p=0; p<mPortIdPtrs.size(); ++p)
+    {
+        QString name = mPortNameLineEditPtrs[p]->text();
+        if(portNamesList.contains(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Two ports cannot have the same name.");
+            return;
+        }
+        portNamesList.append(name);
+        if(name.isEmpty())
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Port name \""+name+"\" cannot be empty.");
+            return;
+        }
+        else if(!checkVariableOrClassName(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Port name \""+name+"\" is illegal. Only letters, numbers and underscore is allowed. First character cannot be a number.");
+            return;
+        }
+    }
+    for(int p=0; p<mConstantsNameLineEditPtrs.size(); ++p)
+    {
+        QString name = mConstantsNameLineEditPtrs[p]->text();
+        if(constantNamesList.contains(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Two constants cannot have the same name.");
+            return;
+        }
+        constantNamesList.append(name);
+        if(name.isEmpty())
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Constant name \""+name+"\" cannot be empty.");
+            return;
+        }
+        else if(!checkVariableOrClassName(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Constant name \""+name+"\" is illegal. Only letters, numbers and underscore is allowed. First character cannot be a number.");
+            return;
+        }
+    }
+    for(int p=0; p<mInputsNameLineEditPtrs.size(); ++p)
+    {
+        QString name = mInputsNameLineEditPtrs[p]->text();
+        if(inputNamesList.contains(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Two input variables cannot have the same name.");
+            return;
+        }
+        inputNamesList.append(name);
+        if(name.isEmpty())
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Input variable name \""+name+"\" cannot be empty.");
+            return;
+        }
+        else if(!checkVariableOrClassName(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Input variable name \""+name+"\" is illegal. Only letters, numbers and underscore is allowed. First character cannot be a number.");
+            return;
+        }
+    }
+    for(int p=0; p<mOutputsNameLineEditPtrs.size(); ++p)
+    {
+        QString name = mOutputsNameLineEditPtrs[p]->text();
+        if(outputNamesList.contains(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Two output variables cannot have the same name.");
+            return;
+        }
+        outputNamesList.append(name);
+        if(name.isEmpty())
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Output variable name \""+name+"\" cannot be empty.");
+            return;
+        }
+        else if(!checkVariableOrClassName(name))
+        {
+            this->show();
+            QMessageBox::critical(mpParent, "Error", "Output variable name \""+name+"\" is illegal. Only letters, numbers and underscore is allowed. First character cannot be a number.");
+            return;
+        }
+    }
+
+
+
 
 
     //Ports

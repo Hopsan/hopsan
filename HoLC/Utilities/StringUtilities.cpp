@@ -59,3 +59,33 @@ QString firstCapital(QString str)
     }
     return str;
 }
+
+bool checkVariableOrClassName(QString str)
+{
+    QString ret;
+    if (!str.isEmpty())
+    {
+        // Reserve memory for entire string (we will only append as many chars as we decide to keep)
+        ret.reserve(str.size());
+        // First ignore any non letter or number or underscore char in the beginning
+        int c=0;
+        if(str.size() == 0)
+        {
+            return false;
+        }
+        else if (!str[c].isLetter())
+        {
+            return false;
+        }
+        ++c;
+        while ( c < str.size() )
+        {
+            if  ( !(str[c].isLetterOrNumber()) && !(str[c]=='_') )
+            {
+                return false;
+            }
+            ++c;
+        }
+    }
+    return true;
+}

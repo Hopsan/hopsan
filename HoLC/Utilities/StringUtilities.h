@@ -30,5 +30,6 @@
 QString spaces(const int n);
 void replacePatternLine(QString &rData, const QString &rPattern, const QString &rString);
 QString firstCapital(QString str);
+bool checkVariableOrClassName(QString str);
 
 #endif // STRINGUTILITIES_H
