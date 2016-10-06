@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QToolButton>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "NewProjectDialog.h"
 #include "Handlers/FileHandler.h"
@@ -90,6 +91,12 @@ void NewProjectDialog::accept()
 
     QString libName = mpProjectNameLineEdit->text();
     QString libPath = mpProjectDirLineEdit->text();
+
+    if(libName.contains(" ") || libPath.contains(" "))
+    {
+        QMessageBox::critical(parentWidget(),"Error","Path or file name must not contain spaces.");
+        return;
+    }
 
     //! @todo Check that everything is ok
 
