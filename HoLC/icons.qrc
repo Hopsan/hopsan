@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>graphics/uiicons/Holc-Icon.png</file>
-		<file>graphics/uiicons/Hopsan-Add.png</file>
+        <file>graphics/uiicons/Hopsan-Add.png</file>
         <file>graphics/uiicons/Hopsan-AddFromFile.png</file>
         <file>graphics/uiicons/Hopsan-Compile.png</file>
         <file>graphics/uiicons/Hopsan-New.png</file>
@@ -10,5 +10,6 @@
         <file>graphics/uiicons/Hopsan-Save.png</file>
         <file>graphics/splash.png</file>
         <file>graphics/uiicons/Hopsan-AddCafFile.png</file>
+        <file>graphics/uiicons/Hopsan-History.png</file>
     </qresource>
 </RCC>

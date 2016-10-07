@@ -90,6 +90,12 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "compilerpath", mCompilerPath);
     appendDomBooleanNode(settings, "usetextwrapping", mUseTextWrapping);
 
+    QDomElement recentLibs = appendDomElement(configRoot,"recentlibraries");
+    foreach(const QString &lib, mRecentLibraries)
+    {
+        appendDomTextNode(recentLibs, "recentlibrary", lib);
+    }
+
     appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
@@ -156,6 +162,10 @@ void Configuration::loadFromXml()
             //Load style settings
             QDomElement styleElement = configRoot.firstChildElement("style");
             loadStyleSettings(styleElement);
+
+            //Load recent libraries
+            QDomElement recentLibsElement = configRoot.firstChildElement("recentlibraries");
+            loadRecentLibraries(recentLibsElement);
         }
     }
     file.close();
@@ -232,7 +242,7 @@ void Configuration::loadDefaultsFromXml()
 
         if(success)
         {
-            setHopsanPath(testPath);
+            mHopsanPath = testPath;
             qDebug() << "Found Hopsan installation at: " << testPath << "\n";
         }
     }
@@ -319,6 +329,17 @@ void Configuration::loadStyleSettings(QDomElement &rDomElement)
     }
 }
 
+void Configuration::loadRecentLibraries(QDomElement &rDomElement)
+{
+    mRecentLibraries.clear();
+    QDomElement libElement = rDomElement.firstChildElement("recentlibrary");
+    while(!libElement.isNull())
+    {
+        mRecentLibraries.append(libElement.text());
+        libElement = libElement.nextSiblingElement("recentlibrary");
+    }
+}
+
 
 //! @brief Returns which library style to use
 QString Configuration::getProjectPath() const
@@ -379,6 +400,16 @@ void Configuration::setUseTextWrapping(const bool &value)
     emit configChanged();
 }
 
+void Configuration::addRecentLibrary(const QString &value)
+{
+    mRecentLibraries.append(value);
+    mRecentLibraries.removeDuplicates();
+    while(mRecentLibraries.size() > 10)
+    {
+        mRecentLibraries.removeFirst();
+    }
+}
+
 
 QPalette Configuration::getPalette()
 {
@@ -391,6 +422,13 @@ QString Configuration::getStyleSheet()
 {
     return mStyleSheet;
 }
+
+//! @brief Returns a list of recent libraries
+QStringList Configuration::getRecentLibraries()
+{
+    return mRecentLibraries;
+}
+
 
 void Configuration::setAlwaysSaveBeforeCompiling(const bool &value)
 {

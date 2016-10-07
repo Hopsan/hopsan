@@ -344,6 +344,8 @@ void FileHandler::loadFromXml(const QString &path)
     }
     else
     {
+        mpConfiguration->addRecentLibrary(path);
+
         QDomElement libRoot = domDocument.documentElement();
 
         if(libRoot.tagName() != "hopsancomponentlibrary")

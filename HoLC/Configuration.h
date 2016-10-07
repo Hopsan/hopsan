@@ -55,12 +55,14 @@ public slots:
     bool getUseTextWrapping() const;
     QPalette getPalette();
     QString getStyleSheet();
+    QStringList getRecentLibraries();
 
     void setAlwaysSaveBeforeCompiling(const bool &value);
     void setProjectPath(const QString &value);
     void setHopsanPath(const QString &value);
     void setCompilerPath(const QString &value);
     void setUseTextWrapping(const bool &value);
+    void addRecentLibrary(const QString &value);
 
 signals:
     void configChanged();
@@ -70,6 +72,7 @@ private:
 
     void loadUserSettings(QDomElement &rDomElement);
     void loadStyleSettings(QDomElement &rDomElement);
+    void loadRecentLibraries(QDomElement &rDomElement);
 
     bool mAlwaysSaveBeforeCompiling;
     QString mProjectPath;
@@ -78,6 +81,7 @@ private:
     bool mUseTextWrapping;
     QPalette mPalette;
     QString mStyleSheet;
+    QStringList mRecentLibraries;
 };
 
 #endif // CONFIGURATION_H

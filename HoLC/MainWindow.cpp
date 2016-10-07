@@ -95,6 +95,8 @@ MainWindow::MainWindow(QWidget *pParent)
     pNewAction->setIcon(QIcon(":graphics/uiicons/Hopsan-New.png"));
     QAction *pOpenAction = new QAction("Open Library", this);
     pOpenAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
+    QAction *pHistoryAction = new QAction("Open Recent Library", this);
+    pHistoryAction->setIcon(QIcon(":graphics/uiicons/Hopsan-History.png"));
     QAction *pSaveAction = new QAction("Save Current File", this);
     pSaveAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Save.png"));
     pSaveAction->setShortcut(QKeySequence("Ctrl+S"));
@@ -115,6 +117,7 @@ MainWindow::MainWindow(QWidget *pParent)
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pNewAction);
     pToolBar->addAction(pOpenAction);
+    pToolBar->addAction(pHistoryAction);
     pToolBar->addAction(pSaveAction);
     pToolBar->addAction(pAddComponentAction);
     pToolBar->addAction(pAddComponentFromFileAction);
@@ -137,6 +140,7 @@ MainWindow::MainWindow(QWidget *pParent)
     //Setup connections
     connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(updateText()));
     connect(pOpenAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(loadFromXml()));
+    connect(pHistoryAction,                 SIGNAL(triggered()),        this,                       SLOT(showHistory()));
     connect(pSaveAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(saveToXml()));
     connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(setFileNotSaved()));
     connect(pOptionsAction,                 SIGNAL(toggled(bool)),      mpOptionsWidget,            SLOT(setVisible(bool)));
@@ -159,5 +163,21 @@ MainWindow::MainWindow(QWidget *pParent)
 MainWindow::~MainWindow()
 {
     //! @todo Is it really needed to save config here? It is saved every time config is changed anyway...
-    mpConfiguration->saveToXml();
+  mpConfiguration->saveToXml();
+}
+
+void MainWindow::showHistory()
+{
+    QMenu menu;
+    QStringList libs = mpConfiguration->getRecentLibraries();
+    foreach(const QString &lib, libs)
+    {
+        menu.addAction(lib);
+    }
+    QAction *pLib = menu.exec(QCursor::pos());
+
+    if(pLib && !pLib->text().isEmpty())
+    {
+        mpFileHandler->loadFromXml(pLib->text());
+    }
 }
