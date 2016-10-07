@@ -44,7 +44,8 @@ protected:
     void resizeEvent(QResizeEvent *pEvent);
     void insertFromMimeData(const QMimeData *pData);
     void keyPressEvent(QKeyEvent *event);
-
+public slots:
+    void generateAutoCompleteList(QString filter, QStringList &variables, QStringList &dataTypes, QStringList &functions);
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();

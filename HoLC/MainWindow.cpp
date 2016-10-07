@@ -31,6 +31,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QKeySequence>
+#include <QDebug>
 
 #include "MainWindow.h"
 #include "Configuration.h"
@@ -46,6 +47,8 @@
 MainWindow::MainWindow(QWidget *pParent)
     : QMainWindow(pParent)
 {
+    qDebug() << "Testing debug!";
+
     //Create and load configuration
     mpConfiguration = new Configuration(this);
     mpConfiguration->loadFromXml();
@@ -106,6 +109,8 @@ MainWindow::MainWindow(QWidget *pParent)
     pOptionsAction->setCheckable(true);
     QAction *pCompileAction = new QAction("Compile Library", this);
     pCompileAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Compile.png"));
+    QAction *pDebugAction = new QAction("Debug", this);
+    pDebugAction->setShortcut(QKeySequence("Ctrl+D"));
 
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pNewAction);
@@ -116,6 +121,7 @@ MainWindow::MainWindow(QWidget *pParent)
     pToolBar->addAction(pAddCafFromFileAction);
     pToolBar->addAction(pOptionsAction);
     pToolBar->addAction(pCompileAction);
+    pToolBar->addAction(pDebugAction);
     this->addToolBar(pToolBar);
 
     //Create handlers
@@ -141,6 +147,7 @@ MainWindow::MainWindow(QWidget *pParent)
     connect(pAddComponentAction,            SIGNAL(triggered()),        mpCreateComponentWizard,    SLOT(open()));
     connect(pAddComponentFromFileAction,    SIGNAL(triggered()),        mpFileHandler,              SLOT(addComponent()));
     connect(pAddCafFromFileAction,          SIGNAL(triggered()),        mpFileHandler,              SLOT(addAppearanceFile()));
+    connect(pDebugAction,                   SIGNAL(triggered()),        mpEditorWidget,             SLOT(generateAutoCompleteList()));
 
     //Load last session project (if exists)
     if(!mpConfiguration->getProjectPath().isEmpty())

@@ -28,6 +28,9 @@
 #include <QTextDocumentFragment>
 #include <QDebug>
 #include <QMimeData>
+#include <QMenu>
+#include <QApplication>
+#include <QDesktopWidget>
 #include <math.h>
 
 #include "TextEditor.h"
@@ -265,6 +268,88 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
             QPlainTextEdit::keyPressEvent(pEvent);
         }
     }
+    else if(pEvent->key() == Qt::Key_Space && pEvent->modifiers().testFlag(Qt::ControlModifier))
+    {
+        QTextCursor tc = textCursor();
+        //tc.select(QTextCursor::WordUnderCursor);
+        QString block = tc.block().text();
+        int x = tc.positionInBlock();
+
+        QString nonLetters = " .,;+-*/";
+        QChar nextLetter = block[x];
+        if(block.size() != x && !nonLetters.contains(nextLetter)) return;
+
+        QString word = block;
+        for(int i=0; i<nonLetters.size(); ++i)
+        {
+          word.remove(nonLetters[i]);
+        }
+
+        QStringList variables,dataTypes,functions;
+        generateAutoCompleteList(word,variables,dataTypes,functions);
+
+        QMenu menu;
+        menu.setStyleSheet("QMenu { menu-scrollable: 1; }");
+        QMap<QAction*, QString> a2sMap;
+        for(int i=0; i<variables.size(); ++i)
+        {
+            if(variables[i] != word)
+            {
+                a2sMap.insert(menu.addAction(variables[i]),variables[i]);
+            }
+        }
+        if(!variables.isEmpty() && !dataTypes.isEmpty() && functions.isEmpty())
+        {
+            menu.addSeparator();
+        }
+        for(int i=0; i<dataTypes.size(); ++i)
+        {
+            if(dataTypes[i] != word)
+            {
+                a2sMap.insert(menu.addAction(dataTypes[i]),dataTypes[i]);
+            }
+        }
+        if(!functions.isEmpty() && !(variables.isEmpty() && dataTypes.isEmpty()))
+        {
+            menu.addSeparator();
+        }
+        for(int i=0; i<functions.size(); ++i)
+        {
+            if(functions[i] != word)
+            {
+                a2sMap.insert(menu.addAction(functions[i]),functions[i]);
+            }
+        }
+
+        if(menu.isEmpty()) return;
+
+        menu.addSeparator();
+
+
+        QPoint menuPos = viewport()->mapToGlobal(cursorRect().center());
+//        int screenH = qApp->desktop()->screenGeometry().height();
+//        int menuH = menu.height();
+//        int menuY = menuPos.y();
+//        if(menuH > (screenH-menuY))
+//        {
+//            menuPos.setY(menuY+(menuY+menuH-screenH));
+//        }
+        menu.setMaximumHeight(100);
+        menu.move(menuPos.x()+menu.width()/2, menuPos.y()+menu.height()/2);
+        QAction *pAns = menu.exec(menuPos);
+
+        QMapIterator<QAction*, QString> it(a2sMap);
+        while(it.hasNext())
+        {
+            it.next();
+            if(pAns == it.key())
+            {
+                QString newText = it.value();
+                newText.remove(0, word.size());
+                this->insertPlainText(newText);
+            }
+        }
+    }
     else
     {
         QPlainTextEdit::keyPressEvent(pEvent);
@@ -318,6 +403,86 @@ void TextEditor::lineNumberAreaPaintEvent(QPaintEvent *pEvent)
         top = bottom;
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
+    }
+}
+
+
+void TextEditor::generateAutoCompleteList(QString filter, QStringList &variables, QStringList &dataTypes, QStringList &functions)
+{
+    filter = filter.trimmed();
+
+    QStringList lines = toPlainText().split("\n");
+
+    dataTypes = QStringList() << "double" << "int" << "SecondOrderTransferFunction" << "FirstOrderTransferFunction" << "Port";
+    functions = QStringList() << "addInputVariable" << "addOutputVariable" << "addConstant" << "addPowerPort" << "getSafeNodeDataPtr";
+
+    int bracketCounter=-1;
+
+    foreach(const QString &line, lines)
+    {
+        if(line.simplified().startsWith("class "))
+            bracketCounter = 0;
+
+        bracketCounter += line.count("{");
+        bracketCounter -= line.count("}");
+        if(bracketCounter != 1)
+            continue;
+
+        if(line.contains("()")) //Ignore functions
+            continue;
+
+        if(dataTypes.contains(line.simplified().section(" ",0,0)))
+        {
+            variables.append(line.simplified().split(","));
+        }
+    }
+    for(int v=0; v<variables.size(); ++v)
+    {
+        variables[v].remove("*");
+        variables[v].remove(";");
+        for(int d=0; d<dataTypes.size(); ++d)
+        {
+            variables[v].remove(dataTypes[d]+" ");
+        }
+        variables[v].remove(" ");
+        while(variables[v].contains("["))
+        {
+            variables[v].remove("["+variables[v].section("[",1,1).section("]",0,0)+"]");
+        }
+    }
+
+    for(int i=0; i<variables.size();++i)
+    {
+        if(!variables[i].startsWith(filter))
+        {
+            variables.removeAt(i);
+            --i;
+        }
+    }
+
+    for(int i=0; i<dataTypes.size();++i)
+    {
+        if(!dataTypes[i].startsWith(filter))
+        {
+            dataTypes.removeAt(i);
+            --i;
+        }
+    }
+
+    for(int i=0; i<functions.size(); ++i)
+    {
+        if(!functions[i].startsWith(filter))
+        {
+            functions.removeAt(i);
+            --i;
+        }
+    }
+
+
+    qDebug() << "Found variables: ";
+    foreach(const QString &var, variables)
+    {
+        qDebug() << var;
     }
 }
 
