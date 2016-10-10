@@ -24,6 +24,7 @@ QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 }
 
+QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += \
     tst_utilitiestesttest.cpp

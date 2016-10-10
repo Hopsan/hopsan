@@ -11,8 +11,11 @@ DESTDIR = $${PWD}/../bin
 QT += core
 QT -= gui
 
+message(QT=$$QT_MAJOR_VERSION)
+
 TARGET = $${TARGET}$${DEBUG_EXT}
 
+QMAKE_CXXFLAGS *= -std=c++11
 
 #--------------------------------------------------
 # Add the include path to our self, (SymHop)

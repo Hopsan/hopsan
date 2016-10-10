@@ -1187,7 +1187,7 @@ void CoreSystemAccess::measureSimulationTime(QStringList &rComponentNames, QList
 
     if(!getCoreSystemPtr()->simulateAndMeasureTime(nSteps))
     {
-        return;     //! @todo Do something better, so the user understands why this won't work (TBB is not installed)
+        return;     //! @todo Do something better, so the user understands why this won't work (compiled without C++11 support)
     }
 
     getCoreSystemPtr()->finalize();
