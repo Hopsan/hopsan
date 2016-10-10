@@ -79,11 +79,11 @@ namespace hopsan {
         static double dot(const Vec &a, const Vec &b);
 
         // operator overloads
-        friend Vec operator+(const Vec &a, const Vec &b);  //!< returns a+b
-        friend Vec operator-(const Vec &a, const Vec &b); //!< returns a-b
-        friend Vec operator*(double c, const Vec &a);     //!< returns scalar multiplied by Vec
-        friend Vec operator*(const Vec &a, double c); //!< returns Vec multiplied by scalar
-        friend Vec operator/(const Vec &a, double c); //!< returns Vec divided by scalar
+        DLLIMPORTEXPORT friend Vec operator+(const Vec &a, const Vec &b);  //!< returns a+b
+        friend Vec DLLIMPORTEXPORT operator-(const Vec &a, const Vec &b); //!< returns a-b
+        DLLIMPORTEXPORT friend Vec operator*(double c, const Vec &a);     //!< returns scalar multiplied by Vec
+        DLLIMPORTEXPORT friend Vec operator*(const Vec &a, double c); //!< returns Vec multiplied by scalar
+        DLLIMPORTEXPORT friend Vec operator/(const Vec &a, double c); //!< returns Vec divided by scalar
 
     private:
         int n;	                    //!< number of elements in the vector

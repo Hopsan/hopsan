@@ -45,7 +45,8 @@
 using namespace std;
 #include "ComponentUtilities/matrix.h"
 
-using namespace hopsan;
+//using namespace hopsan;
+namespace hopsan {
 
 void Matrix::create(int rows, int cols)
 {
@@ -441,3 +442,5 @@ void copy_matrix(Matrix &dst, Matrix &src)
 		}
     }
 }
+}
+
