@@ -1352,7 +1352,7 @@ double Expression::toDouble(bool *ok) const
     else if(this->isMultiplyOrDivide() && mFactors.size() == 2 && mFactors.contains(Expression("-1")))
     {
         double retval = 1;
-        *ok = true;
+        if(ok) { *ok = true; }
         Q_FOREACH(const Expression &factor, mFactors)
         {
             bool ok2;
