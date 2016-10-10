@@ -3232,7 +3232,7 @@ void ContainerObject::measureSimulationTime()
     {
         //! @todo are these ever deleted, and others below
         QStandardItem *pNameItem = new QStandardItem(names.at(i));
-        QStandardItem *pTimeItem = new QStandardItem(QString::number(times.at(i)*1000, 'f')+" ms");
+        QStandardItem *pTimeItem = new QStandardItem(QString::number(times.at(i), 'f')+" ms");
         nameList.append(pNameItem);
         timeList.append(pTimeItem);
     }
@@ -3242,7 +3242,7 @@ void ContainerObject::measureSimulationTime()
     for(int i=0; i<typeNames.size(); ++i)
     {
         QStandardItem *pNameItem = new QStandardItem(typeNames.at(i));
-        QStandardItem *pTimeItem = new QStandardItem(QString::number(typeTimes.at(i)*1000, 'f')+" ms");
+        QStandardItem *pTimeItem = new QStandardItem(QString::number(typeTimes.at(i), 'f')+" ms");
         typeNameList.append(pNameItem);
         typeTimeList.append(pTimeItem);
     }
