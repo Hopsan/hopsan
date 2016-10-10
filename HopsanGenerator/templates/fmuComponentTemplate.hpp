@@ -141,13 +141,13 @@ public:
         }
 
         //Instantiate FMU
-        fmi1_string_t mimeType = "";
+        fmi1_string_t mimeType = "application/x-fmu-sharedlibrary";
         fmi1_string_t instanceName = "Test CS model instance";
         fmi1_string_t fmuLocation = "";
         fmi1_real_t timeout = 0.0;
         fmi1_boolean_t visible = fmi1_false;
         fmi1_boolean_t interactive = fmi1_false;
-        status = fmi1_import_instantiate_slave(fmu, instanceName, fmuLocation, mimeType, timeout, visible, interactive);
+        status = fmi1_import_instantiate_slave(fmu, instanceName, 0, mimeType, timeout, visible, interactive);
         if (status == jm_status_error)
         {
             addErrorMessage("fmi1_import_instantiate_slave() failed!");
