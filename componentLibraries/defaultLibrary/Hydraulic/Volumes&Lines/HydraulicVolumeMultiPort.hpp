@@ -35,7 +35,7 @@
 #define HYDRAULICVOLUMEMULTIPORT_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
-#include "ComponentSystem.h"
+//#include "ComponentSystem.h"
 #include <vector>
 
 namespace hopsan {
