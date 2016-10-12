@@ -5572,7 +5572,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
     }
 
-    if(desiredType != DataVector)
+    if(desiredType != DataVector && mpModel)
     {
         // Parameter name, return its value
         QString parType;
@@ -5605,12 +5605,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
             if(!ok)
             {
-                if(fullName.count("$") < 1)
+                if(fullName.count("$") < 1 && parVal != "NaN" && parVal != "nan")
                 {
                     evaluateExpression(parVal);
                     return;
                 }
-                else
+                else if(fullName.contains("$"))
                 {
                   //Find container where variable is located
                   if(fullName.section("$",-1,-1).contains("."))
@@ -5625,10 +5625,14 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                   }
                 }
             }
-            else
+            else if(parVal != "NaN" && parVal != "nan")
             {
                 mAnsType = Scalar;
                 return;
+            }
+            else
+            {
+                break;
             }
         }
     }
