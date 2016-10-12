@@ -177,11 +177,15 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 
 void OptimizationHandler::initModels(ModelWidget *pModel, int nModels, QString &modelPath)
 {
+    QString originalModelBasePath = pModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
     while(mModelPtrs.size() < nModels)
     {
-        addModel(gpModelHandler->loadModel(modelPath, true, true));
+        auto pNewModel = gpModelHandler->loadModel(modelPath, true, true);
+        // Add base path from original model as search path, for components that load files with relative paths
+        pNewModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(originalModelBasePath);
+        addModel(pNewModel);
 
-        //Make sure logging is disabled/enabled for same ports as in original model
+        // Make sure logging is disabled/enabled for same ports as in original model
         //! @todo This code only deals with top-level components and ports and ignores contents of subsystems /Peter
         CoreSystemAccess *pCore = pModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
         foreach(const QString &compName, pModel->getTopLevelSystemContainer()->getModelObjectNames())
