@@ -31,6 +31,24 @@
     Version History
 ******************************
 
+0.7.7 (2016-10-12)
+- Bug fixed: Undefined reference errors for some functions in Matrix library
+- Bug fixed: Imported FMUs now find their resource files as they should
+- Bug fixed: Relative refencing of system parameters in subsystems
+- Bug fixed: Compilation without TBB support now works properly
+- Bug fixed: Crash when starting optimization if subsystems with container ports are present	
+- Bug fixed: Some incorrect expressions no longer evaluates OK in HCOM
+- Bug fixed: Graphics export from plot window now remembers the path from last export
+- Bug fixed: CylinderQ icon now has a spring
+- Bug fixed: The combo boxes in plotwindow curve info are now set to the correct values if you choose style/color/thickness from a HCOM plot command
+- Bug fixed: Undo and redo removal of a component with an alias will make the component loose alias and crash the program at next simulation
+- Bug fixed: HCOM now ignores everything after comment characters
+
+- Fixed components: C-type pressure source components now handle start values correctly
+
+- Feature:	Plot symbols can now be specify from from plot commands in HCOM
+
+
 0.7.6  (2016-07-01)
 - Bug fixed: Numhop +- expressions fail if left-hand variable name ends with e or E
 - Bug fixed: If you close the add-system-parameter widget with the "cross" in the top right corner, it is impossible to open it again
