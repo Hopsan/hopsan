@@ -1989,6 +1989,8 @@ void PlotArea::constructLegendSettingsDialog()
 
     mpLegendLeftOffset = new QDoubleSpinBox(this);
     mpLegendLeftOffset->setRange(-DoubleMax, DoubleMax);
+    // Spinbox will be very wide on Windows (to allow dblmax as value) so we ignore its width size hint and let the combo boxes decide the column width
+    mpLegendLeftOffset->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     mpLegendLeftOffset->setDecimals(2);
     mpLegendLeftOffset->setSingleStep(0.1);
     mpLegendLeftOffset->setValue(0);
@@ -1996,6 +1998,7 @@ void PlotArea::constructLegendSettingsDialog()
 
     mpLegendRightOffset = new QDoubleSpinBox(this);
     mpLegendRightOffset->setRange(-DoubleMax, DoubleMax);
+    mpLegendRightOffset->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     mpLegendRightOffset->setDecimals(2);
     mpLegendRightOffset->setSingleStep(0.1);
     mpLegendRightOffset->setValue(0);
@@ -2056,7 +2059,7 @@ void PlotArea::constructLegendSettingsDialog()
 
     const int blankline = 12;
     int row = 0;
-    legendBoxLayout->addWidget( new QLabel( "Legends on/off: " ), row, 0 );
+    legendBoxLayout->addWidget( new QLabel( "Legends on/off: " ), row, 0, 1, 1, Qt::AlignRight );
     legendBoxLayout->addWidget( mpLegendsEnabledCheckBox, row, 1 );
 
     row++;
