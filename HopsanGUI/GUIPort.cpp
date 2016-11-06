@@ -56,19 +56,19 @@ QPointF getOffsetPointfromPort(Port *pStartPort, Port *pEndPort)
 
     if((pEndPort->getPortDirection() == LeftRightDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).x() > pEndPort->scenePos().x()))
     {
-        point.setX(-1 * std::min(20.0, abs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
+        point.setX(-1 * std::min(20.0, qAbs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
     }
     else if((pEndPort->getPortDirection() == LeftRightDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).x() < pEndPort->scenePos().x()))
     {
-        point.setX(std::min(20.0, abs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
+        point.setX(std::min(20.0, qAbs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
     }
     else if((pEndPort->getPortDirection() == TopBottomDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).y() > pEndPort->scenePos().y()))
     {
-        point.setY(-1 * std::min(20.0, abs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
+        point.setY(-1 * std::min(20.0, qAbs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
     }
     else if((pEndPort->getPortDirection() == TopBottomDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).y() < pEndPort->scenePos().y()))
     {
-        point.setY(std::min(20.0, abs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
+        point.setY(std::min(20.0, qAbs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
     }
     return point;
 }

@@ -219,7 +219,7 @@ void Connector::removePoint(bool deleteIfEmpty)
         if((mGeometries[mGeometries.size()-1] == Diagonal) || ((mGeometries[mGeometries.size()-2] == Diagonal)))
         {
             //if(mGeometries[mGeometries.size()-3] == HORIZONTAL)
-            if(abs(mPoints[mPoints.size()-3].x() - mPoints[mPoints.size()-4].x()) > abs(mPoints[mPoints.size()-3].y() - mPoints[mPoints.size()-4].y()))
+            if(qAbs(mPoints[mPoints.size()-3].x() - mPoints[mPoints.size()-4].x()) > qAbs(mPoints[mPoints.size()-3].y() - mPoints[mPoints.size()-4].y()))
             {
                 mGeometries[mGeometries.size()-2] = Horizontal;
                 mGeometries[mGeometries.size()-1] = Vertical;
@@ -826,7 +826,7 @@ void Connector::makeDiagonal(bool enable)
             }
             else if(mGeometries[mGeometries.size()-2] == Diagonal)
             {
-                if(abs(mPoints[mPoints.size()-2].x() - mPoints[mPoints.size()-3].x()) > abs(mPoints[mPoints.size()-2].y() - mPoints[mPoints.size()-3].y()))
+                if(qAbs(mPoints[mPoints.size()-2].x() - mPoints[mPoints.size()-3].x()) > qAbs(mPoints[mPoints.size()-2].y() - mPoints[mPoints.size()-3].y()))
                 {
                     mGeometries.back() = Horizontal;
                     mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());

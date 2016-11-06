@@ -3082,7 +3082,7 @@ void ContainerObject::showLossesFromDialog()
         double componentTotal;
         QMap<QString,double> componentDomainSpecific;
         moit.value()->getLosses(componentTotal, componentDomainSpecific);
-        if(abs(componentTotal) > abs(limit*totalLosses))     //Condition for plotting
+        if(qAbs(componentTotal) > qAbs(limit*totalLosses))     //Condition for plotting
         {
             ++nComponents;
             componentNames.append(moit.value()->getName());
@@ -3166,7 +3166,7 @@ void ContainerObject::showLossesFromDialog()
     //Add data to plot bars from each component
     for(int c=0; c<componentLosses.size(); ++c)
     {
-        if(abs(componentLosses.at(c)) > abs(limit*totalLosses))
+        if(qAbs(componentLosses.at(c)) > qAbs(limit*totalLosses))
         {
             if(componentLosses.at(c) > 0)
                 pItemModel->setData(pItemModel->index(0,c), componentLosses.at(c));
