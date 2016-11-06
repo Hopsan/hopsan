@@ -152,7 +152,7 @@ const char *HopsanEssentials::getCoreVersion() const
 //! @brief Returns the HopsanCore build date and time
 const char *HopsanEssentials::getCoreBuildTime() const
 {
-    return __DATE__" "__TIME__;
+    return __DATE__ " " __TIME__;
 }
 
 //! @brief Get compiler info from core

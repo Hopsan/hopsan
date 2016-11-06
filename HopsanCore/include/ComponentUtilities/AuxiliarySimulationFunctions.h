@@ -215,7 +215,7 @@ inline double limit2(const double x, const double /*sx*/, const double xmin, con
 //! @returns limit if value < limit else value
 inline double lowerLimit(const double value, const double limit)
 {
-    if (value < limit) return limit; return value;
+    if (value < limit) { return limit; } return value;
 }
 
 //! @brief Apply a upper limit to a value
@@ -225,7 +225,7 @@ inline double lowerLimit(const double value, const double limit)
 //! @returns limit if value > limit else value
 inline double upperLimit(const double value, const double limit)
 {
-    if (value > limit) return limit; return value;
+    if (value > limit) { return limit; } return value;
 }
 
 //! @brief Converts an angle in degrees to radians
