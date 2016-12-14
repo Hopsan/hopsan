@@ -356,7 +356,9 @@ HEADERS +=  \
  $${PWD}/Special/SignalNumHopSISO.hpp \ 
  $${PWD}/Special/Special.h \ 
  $${PWD}/Special/TMMS04/Forks.hpp \ 
- $${PWD}/Special/TMMS04/TMMS04.h
+ $${PWD}/Special/TMMS04/TMMS04.h \
+ $$PWD/Experimental/Signal2DWrite.hpp \
+ $$PWD/Experimental/Signal2DRead.hpp
 
 SOURCES += 
 
@@ -401,4 +403,8 @@ OTHER_FILES +=  \
  $${PWD}/Special/OptimizationTestFunctions/OptimizationTestFunctions.cci \ 
  $${PWD}/Special/Special.cci \ 
  $${PWD}/Special/TMMS04/TMMS04.cci
+
+DISTFILES += \
+    $$PWD/Experimental/Signal2DWrite.xml \
+    $$PWD/Experimental/Signal2DRead.xml
 

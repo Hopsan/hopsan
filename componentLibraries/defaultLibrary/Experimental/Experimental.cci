@@ -26,3 +26,5 @@
 pComponentFactory->registerCreatorFunction("Signal2DReadWrite",Signal2DReadWrite::Creator);
 pComponentFactory->registerCreatorFunction("Signal2DSplit",Signal2DSplit::Creator);
 pComponentFactory->registerCreatorFunction("Signal2DWriteRead",Signal2DWriteRead::Creator);
+pComponentFactory->registerCreatorFunction("Signal2DWrite",Signal2DWrite::Creator);
+pComponentFactory->registerCreatorFunction("Signal2DRead",Signal2DRead::Creator);

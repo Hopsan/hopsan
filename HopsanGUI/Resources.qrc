@@ -157,5 +157,7 @@
         <file>graphics/uiicons/Hopsan-StopSimulation.png</file>
         <file>graphics/uiicons/Hopsan-SimulateRemote.png</file>
         <file>graphics/porticons/SignalPortBiDirectional.svg</file>
+        <file>graphics/porticons/SignalPort2D_read.svg</file>
+        <file>graphics/porticons/SignalPort2D_write.svg</file>
     </qresource>
 </RCC>

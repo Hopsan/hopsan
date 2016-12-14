@@ -26,3 +26,5 @@
 #include "Signal2DReadWrite.hpp"
 #include "Signal2DSplit.hpp"
 #include "Signal2DWriteRead.hpp"
+#include "Signal2DWrite.hpp"
+#include "Signal2DRead.hpp"

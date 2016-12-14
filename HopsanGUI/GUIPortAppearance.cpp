@@ -70,6 +70,19 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
         }
         mCQSOverlayPath.clear();
     }
+    else if (nodetype == "NodeSignal2D")
+    {
+        mMainIconPath.append("SignalPort2D");
+        if ( porttype == "ReadPortType" || porttype == "ReadMultiportType")
+        {
+            mMainIconPath.append("_read");
+        }
+        else
+        {
+            mMainIconPath.append("_write");
+        }
+        mCQSOverlayPath.clear();
+    }
     else
     {
         QString niceName = NodeInfo(nodetype).niceName;
