@@ -48,7 +48,7 @@ namespace hopsan {
 
     private:
         double J;
-        double *mpB, *mpK;
+        double *mpB, *mpK, *mpAMin, *mpAMax;
         double mNumX[3], mNumV[2];
         double mDenX[3], mDenV[2];
         SecondOrderTransferFunction mFilterX;
@@ -69,6 +69,8 @@ namespace hopsan {
             addConstant("J", "Moment of Inertia", "kgm^2", 0.1, J);
             addInputVariable("B", "Viscous Friction", "Nms/rad", 10.0, &mpB);
             addInputVariable("k", "Spring Constant", "Nm/rad", 0.0, &mpK);
+            addInputVariable("a_min", "Minimum Angle of Port P2", "m", -1.0e+300, &mpAMin);
+            addInputVariable("a_max", "Maximum Angle of Port P2", "m", 1.0e+300, &mpAMax);
         }
 
 
@@ -131,6 +133,21 @@ namespace hopsan {
 
             a2 = mFilterX.update(c1-c2);
             w2 = mFilterV.update(c1-c2 - k*a2);
+
+            if(a2<(*mpAMin))
+            {
+                a2=(*mpAMin);
+                w2=0.0;
+                mFilterX.initializeValues(c1-c2, a2);
+                mFilterV.initializeValues(c1-c2, 0.0);
+            }
+            if(a2>(*mpAMax))
+            {
+                a2=(*mpAMax);
+                w2=0.0;
+                mFilterX.initializeValues(c1-c2, a2);
+                mFilterV.initializeValues(c1-c2, 0.0);
+            }
 
             w1 = -w2;
             a1 = -a2;

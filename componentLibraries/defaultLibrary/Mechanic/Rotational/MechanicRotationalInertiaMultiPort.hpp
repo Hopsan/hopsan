@@ -43,7 +43,7 @@ namespace hopsan {
     {
 
     private:
-        double *mpJ, *B, *k;
+        double *mpJ, *B, *k, *mpAMin, *mpAMax;
         double t1, w1, c1, Zx1, t2, w2, c2, Zx2;                                                    //Node data variables
         double mNum[3];
         double mDen[3];
@@ -69,6 +69,8 @@ namespace hopsan {
             addInputVariable("J", "Inertia", "kgm^2",                100.0, &mpJ);
             addInputVariable("B", "Viscous Friction", "Nms/rad",  10.0,  &B);
             //addInputVariable("k", "Spring Coefficient", "Nm/rad", 0.0,   &k);
+            addInputVariable("a_min", "Minimum Angle of Port P2", "m", -1.0e+300, &mpAMin);
+            addInputVariable("a_max", "Maximum Angle of Port P2", "m", 1.0e+300, &mpAMax);
             //! @todo what about k
         }
 
@@ -215,6 +217,20 @@ namespace hopsan {
             mIntegrator.integrateWithUndo((c1-c2)/J);
             w2 = mIntegrator.valueFirst();
             double a_nom = mIntegrator.valueSecond();
+
+            if(a_nom<(*mpAMin))
+            {
+                a_nom=(*mpAMin);
+                w2=0.0;
+                mIntegrator.initializeValues(0.0, a_nom, w2);
+            }
+            if(a_nom>(*mpAMax))
+            {
+                a_nom=(*mpAMax);
+                w2=0.0;
+                mIntegrator.initializeValues(0.0, a_nom, w2);
+            }
+
 
             w1 = -w2;
 
