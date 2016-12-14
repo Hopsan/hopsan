@@ -74,6 +74,7 @@ public slots:
     virtual void reject();
     virtual void okPressed();
     void setOutputDisabled(bool disabled);
+    void run();
 
 private slots:
     void setAlgorithm(int i);
@@ -83,7 +84,6 @@ private slots:
     void addFunction();
     void removeFunction();
     void update(int idx);
-    void run();
     void saveScriptFile();
     void saveScriptFile(const QString &filePath);
     void loadScriptFile();
