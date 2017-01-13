@@ -28,6 +28,6 @@ addit https://github.com/tbeu/matio.git Dependencies/matio v1.5.2
 addit https://github.com/osakared/qwt.git Dependencies/qwt tags/qwt-6.1.3
 addit https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git Dependencies/hdf5 hdf5-1_8_18
 addit https://github.com/Khan/KaTeX.git Dependencies/katex v0.7.0
-#addit Dependencies/
+addit http://git.code.sf.net/p/tclap/code Dependencies/tclap tclap-1-2-1-release-final
 #addit Dependencies/
 echo Done
