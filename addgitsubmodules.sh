@@ -10,7 +10,7 @@ rm -rf $dir
 git submodule add $giturl $dir
 cd $dir
 git checkout $co
-cd ..
+cd $OLDPWD
 
 }
 
@@ -27,7 +27,7 @@ addit https://github.com/modelon/FMILibrary.git Dependencies/FMILibrary 86929c1a
 addit https://github.com/tbeu/matio.git Dependencies/matio v1.5.2
 addit https://github.com/osakared/qwt.git Dependencies/qwt tags/qwt-6.1.3
 addit https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git Dependencies/hdf5 hdf5-1_8_18
-addit https://github.com/Khan/KaTeX.git Dependencies/KaTeX v0.7.0
+addit https://github.com/Khan/KaTeX.git Dependencies/katex v0.7.0
 #addit Dependencies/
 #addit Dependencies/
 echo Done
