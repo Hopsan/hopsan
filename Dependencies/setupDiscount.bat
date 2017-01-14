@@ -5,23 +5,10 @@ REM Bat script for building Discount automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Date:   2015-02-09
 
-set filename=discount-2.1.8.zip
-set dirname=discount-2.1.8
+set dirname=discount
 
 REM Automatic code begins here
 
-REM Unpack or checkout
-echo.
-echo ======================
-echo Unpack Discount
-echo ======================
-echo Removing old directories (if they exist)
-if exist %dirname% rd /s/q %dirname%
-mkdir %dirname%
-REM Unpack using tar
-..\ThirdParty\7z\7z.exe x %filename% -y > nul
-
-REM Build
 echo.
 echo ======================
 echo Building 64-bit Discount
