@@ -31,9 +31,9 @@
 
 // We need to use this include because external dependencies will need the revision of the core when it was compiled last time,
 // not the latest revision that you get when compiling the external component.
-#include "HopsanCoreSVNRevision.h"
+#include "HopsanCoreGitVersion.h"
 
-#define HOPSANCOREVERSION "0.8.x_r" TO_STR(HOPSANCORESVNREVISION)
+#define HOPSANCOREVERSION "2.8.0." TO_STR(HOPSANCORE_COMMIT_TIMESTAMP)
 #define HOPSANCOREMODELFILEVERSION "0.4"
 
 #ifdef DEBUGCOMPILING

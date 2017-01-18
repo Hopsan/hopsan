@@ -92,12 +92,13 @@ unix {
     LIBS += -ltbb -ldl
     INCLUDEPATH += /usr/include/tbb/
 
-    # Retreive the hopsan core source code revision number, regenerate revnum file if we find revision
-    rev=$$system($${PWD}/../getSvnRevision.sh)
-    message(Core revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        system($${PWD}/../getSvnRevision.sh include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
-    }
+    # Retreive the HopsanCore source code version info and regenerate version header
+    commitdatetime=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
+    commithash=$$system($${PWD}/../getGitInfo.sh shorthash $${PWD})
+    message(Core revision: $${commitdatetime})
+    message(Core hash: $${commithash})
+    system($${PWD}/../writeGitVersionHeader.sh $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
+ 
 }
 macx { 
     INCLUDEPATH += /opt/local/include/
