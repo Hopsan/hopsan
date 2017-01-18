@@ -36,10 +36,10 @@
 
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
-#ifndef HOPSANCLISVNREVISION
-#define HOPSANCLISVNREVISION UNKNOWN
+#ifndef HOPSANCLI_COMMIT_TIMESTAMP
+#define HOPSANCLI_COMMIT_TIMESTAMP UNKNOWN
 #endif
 
-#define HOPSANCLIVERSION "0.8.x_r" TO_STR(HOPSANCLISVNREVISION)
+#define HOPSANCLIVERSION "2.8.0." TO_STR(HOPSANCLI_COMMIT_TIMESTAMP)
 
 #endif // VERSION_CLI_H

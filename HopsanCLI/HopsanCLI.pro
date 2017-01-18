@@ -24,7 +24,7 @@ QMAKE_CXXFLAGS *= -std=c++11 -U__STRICT_ANSI__ -Wno-c++0x-compat
 
 #--------------------------------------------------------
 # Set the tclap and rapidxml include path
-INCLUDEPATH *= $${PWD}/../Dependencies/tclap-1.2.1/include
+INCLUDEPATH *= $${PWD}/../Dependencies/tclap/include
 INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
 #--------------------------------------------------------
 
@@ -61,11 +61,14 @@ unix {
     !macx:LIBS *= -lrt
 
     # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
-    rev = $$system($${PWD}/../getSvnRevision.sh)
-    message(CLI revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        DEFINES *= "HOPSANCLISVNREVISION=$${rev}"
-    }
+#    rev = $$system($${PWD}/../getSvnRevision.sh)
+#    message(CLI revision: $${rev})
+#    !equals(rev, "RevisionInformationNotFound") {
+#        DEFINES *= "HOPSANCLISVNREVISION=$${rev}"
+#    }
+     
+     timestamp=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
+     DEFINES *= "HOPSANCLI_COMMIT_TIMESTAMP=$${timestamp}"
 }
 win32 {
 
