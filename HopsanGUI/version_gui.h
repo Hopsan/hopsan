@@ -38,11 +38,11 @@
 
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
-#ifndef HOPSANGUISVNREVISION
-#define HOPSANGUISVNREVISION UNKNOWN
+#ifndef HOPSANGUI_COMMIT_TIMESTAMP
+#define HOPSANGUI_COMMIT_TIMESTAMP UNKNOWN
 #endif
 
-#define HOPSANGUIVERSION "0.8.x_r" TO_STR(HOPSANGUISVNREVISION)
+#define HOPSANGUIVERSION "2.8.0." TO_STR(HOPSANGUISVNREVISION)
 #define HMF_VERSIONNUM "0.4"
 #define HMF_REQUIREDVERSIONNUM "0.3"
 #define CAF_VERSIONNUM "0.3"
