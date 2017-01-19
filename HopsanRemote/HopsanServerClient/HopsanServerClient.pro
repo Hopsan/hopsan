@@ -13,7 +13,7 @@ DESTDIR = $${PWD}/../../bin
 
 #--------------------------------------------------------
 # Set the tclap include path
-INCLUDEPATH *= $${PWD}/../../Dependencies/tclap-1.2.1/include
+INCLUDEPATH *= $${PWD}/../../Dependencies/tclap/include
 #--------------------------------------------------------
 
 #--------------------------------------------------------

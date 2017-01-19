@@ -9,10 +9,10 @@ defineReplace(setZMQPathInfo){
     externalSrc = $$1
     dstDir = $$2
 
-    #Set QWT paths, Paths that are higher up in the list will have priority if found
-    ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq4-1
+    #Set paths, Paths that are higher up in the list will have priority if found
+    ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq
     ZMQ_PATH = $$selectPath($$externalSrc, $$ZMQ_PATHS, "zmq")
-
+ 
     #warning(ZMQ_PATH $${ZMQ_PATH})
 
     #Empty variables to fill in
