@@ -1,0 +1,32 @@
+* text=auto
+
+*.c text
+*.cc text
+*.cxx text
+*.cpp text
+*.c++ text
+*.hpp text
+*.h text
+*.h++ text
+*.hh text
+*.py text
+*.sh text eol=lf
+*.bat text eol=crlf
+*.m text
+*.hcom text
+*.dox text
+*.txt text
+*.hmf text
+*.xml text
+*.pro text
+*.pri text
+*.prf text
+
+
+*.pdf binary
+*.png binary
+*.jpg binary
+*.svg binary
+*.exe binary
+*.zip binary
+*.7z binary
