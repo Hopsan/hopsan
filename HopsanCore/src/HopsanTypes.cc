@@ -494,3 +494,20 @@ HString HString::substr(const size_t pos, const size_t len) const
     HString sub(*this, pos, len);
     return sub;
 }
+
+HVector<HString> HString::split(const char delim) const
+{
+  HVector<HString> parts;
+  size_t b = 0;
+  while (true)
+  {
+    size_t e = find(delim, b);
+    parts.append(substr(b,e-b));
+    if (e == npos)
+    {
+      break;
+    }
+    b=e+1;
+  }
+  return parts;
+}

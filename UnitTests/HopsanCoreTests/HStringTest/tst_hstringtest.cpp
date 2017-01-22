@@ -377,6 +377,36 @@ private Q_SLOTS:
         QTest::newRow("234634 64")  << HString("234634 64") << 234634 << false;
         QTest::newRow("2346346 ")   << HString("2346346 ") << 2346346 << false;
     }
+
+    void HString_split()
+    {
+        QFETCH(HString, str_with_delim);
+        QFETCH(HString, str_without_delim);
+
+	HVector<HString> parts = str_with_delim.split('.');
+	HString str;
+	for (size_t i=0; i<parts.size(); ++i)
+	{
+	  str.append(parts[i]);
+	}
+
+        QVERIFY2(str == str_without_delim, ("split did not produce the expected result: "+str).c_str());        
+    }
+    void HString_split_data()
+    {
+        QTest::addColumn<HString>("str_with_delim");
+        QTest::addColumn<HString>("str_without_delim");
+
+        QTest::newRow("0") << HString("2.8.0.12345.1234") << HString("280123451234");
+ 	QTest::newRow("1") << HString("2.8..") << HString("28");
+ 	QTest::newRow("2") << HString("...") << HString("");
+ 	QTest::newRow("3") << HString(".4.7.0") << HString("470");
+ 	QTest::newRow("4") << HString(".4.7.") << HString("47");
+ 	QTest::newRow("5") << HString("4..0") << HString("40");
+ 	QTest::newRow("6") << HString("") << HString("");
+ 	QTest::newRow("7") << HString("kaka") << HString("kaka");
+    }
+
 };
 
 QTEST_APPLESS_MAIN(HStringTests)
