@@ -46,6 +46,9 @@ class ComponentSystem;
 class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
+int getEpochVersion(const HString& version);
+int getMajorVersion(const HString& version);
+int getMinorVersion(const HString& version);
 bool isVersionGreaterThan(const HString& version1, const HString& version2);
 int compareHopsanVersions(const HString& version1, const HString& version2);
 

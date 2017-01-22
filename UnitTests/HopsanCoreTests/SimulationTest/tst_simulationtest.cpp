@@ -672,14 +672,14 @@ private Q_SLOTS:
     {
         QTest::addColumn<int>("retVal");
         QTest::addColumn<int>("ans");
-        QTest::newRow("0") << getGenerationVersion("0.6.7") << 0;
+        QTest::newRow("0") << getEpochVersion("0.6.7") << 0;
         QTest::newRow("1") << getMajorVersion("0.6.7") << 6;
         QTest::newRow("2") << getMinorVersion("0.6.7") << 7;
-        QTest::newRow("3") << getRevisionNumber("0.6.7") << -1;
-        QTest::newRow("4") << getGenerationVersion("0.6.x_r7236") << 0;
+        //QTest::newRow("3") << getRevisionNumber("0.6.7") << -1;
+        QTest::newRow("4") << getEpochVersion("0.6.x_r7236") << 0;
         QTest::newRow("5") << getMajorVersion("0.6.x_r7236") << 6;
         QTest::newRow("6") << getMinorVersion("0.6.x_r7236") << -1;
-        QTest::newRow("7") << getRevisionNumber("0.6.x_r7236") << 7236;
+        //QTest::newRow("7") << getRevisionNumber("0.6.x_r7236") << 7236;
     }
 };
 

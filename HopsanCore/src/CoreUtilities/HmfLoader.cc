@@ -136,10 +136,10 @@ bool isVersionGreaterThan(HString version1, HString version2)
 {
     int gen1 = getGenerationVersion(version1);
     int gen2 = getGenerationVersion(version2);
-    int maj1 = getMajorVersion(version1);
-    int maj2 = getMajorVersion(version2);
-    int min1 = getMinorVersion(version1);
-    int min2 = getMinorVersion(version2);
+    int maj1 = oldversionformat::getMajorVersion(version1);
+    int maj2 = oldversionformat::getMajorVersion(version2);
+    int min1 = oldversionformat::getMinorVersion(version1);
+    int min2 = oldversionformat::getMinorVersion(version2);
     char letter1 = getHotfixLetter(version1);
     char letter2 = getHotfixLetter(version2);
     int rev1 = getRevisionNumber(version1);
@@ -706,6 +706,41 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
 
 // vvvvvvvvvv The public function vvvvvvvvvv
 
+int hopsan::getEpochVersion(const HString& version)
+{
+  bool ok=false;
+  int epoch;
+  HVector<HString> parts = version.split('.');
+  if (!parts.empty())
+  {
+    epoch = parts[0].toLongInt(&ok);
+  }
+  return ok ? epoch : -1;
+}
+
+int hopsan::getMajorVersion(const HString& version)
+{
+  bool ok=false;
+  int major;
+  HVector<HString> parts = version.split('.');
+  if (parts.size() > 1)
+  {
+    major = parts[1].toLongInt(&ok);
+  }
+  return ok ? major : -1;
+}
+
+int hopsan::getMinorVersion(const HString& version)
+{
+  bool ok=false;
+  int minor;
+  HVector<HString> parts = version.split('.');
+  if (parts.size() > 2)
+  {
+    minor = parts[2].toLongInt(&ok);
+  }
+  return ok ? minor : -1;  
+}
 
 bool hopsan::isVersionGreaterThan(const HString& version1, const HString& version2)
 {
