@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------
  This source file is a part of Hopsan
 
@@ -45,9 +46,141 @@
 using namespace std;
 using namespace hopsan;
 
+
 // vvvvvvvvvv Help Functions vvvvvvvvvv
+namespace oldversionformat{
+
+int getGenerationVersion(const HString &version)
+{
+    HString tempStr;
+    for(size_t i=0; i<version.size() && version.at(i) != '.'; ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    return tempStr.toLongInt(&dummy);
+}
+
+int getMajorVersion(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != '.'; ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    return tempStr.toLongInt(&dummy);
+}
+
+int getMinorVersion(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != 'x'; ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    if(tempStr == "")
+        return -1;
+
+    return tempStr.toLongInt(&dummy);
+}
 
 
+char getHotfixLetter(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != '.'; ++i) {}
+    for(++i; i<version.size() && version.at(i) != 'x'; ++i)
+    {
+        if(!isdigit(version.at(i)))
+            tempStr.append(version.at(i));
+    }
+
+    if(tempStr.size() > 1)
+        return ' ';
+
+    return tempStr.at(0);
+}
+
+
+int getRevisionNumber(const HString &version)
+{
+    HString tempStr;
+    size_t i;
+    for(i=1; i<version.size() && version.at(i-1) != '_' && version.at(i) != 'r'; ++i) {}
+    for(++i; i<version.size(); ++i)
+    {
+        tempStr.append(version.at(i));
+    }
+
+    bool dummy;
+    if(tempStr == "")
+        return -1;
+
+    return tempStr.toLongInt(&dummy);
+}
+
+
+bool isVersionGreaterThan(HString version1, HString version2)
+{
+    int gen1 = getGenerationVersion(version1);
+    int gen2 = getGenerationVersion(version2);
+    int maj1 = getMajorVersion(version1);
+    int maj2 = getMajorVersion(version2);
+    int min1 = getMinorVersion(version1);
+    int min2 = getMinorVersion(version2);
+    char letter1 = getHotfixLetter(version1);
+    char letter2 = getHotfixLetter(version2);
+    int rev1 = getRevisionNumber(version1);
+    int rev2 = getRevisionNumber(version2);
+
+    if(gen1 > gen2)
+        return true;
+    if(gen1 < gen2)
+        return false;
+
+    if(maj1 > maj2)
+        return true;
+    if(maj1 < maj2)
+        return false;
+
+    if(min1 > -1 && min2 == -1)
+        return false;               //Assume that revision build is higher generation than release builds
+    if(min1 == -1 && min2 > -1)
+        return true;
+
+    if(min1 > min2)
+        return true;
+    if(min1 < min2)
+        return false;
+
+    if(letter1 > letter2)
+        return true;
+    if(letter1 < letter2)
+        return false;
+
+    if(rev1 > rev2)
+        return true;
+    if(rev1 < rev2)
+        return false;
+
+    return false;
+}
+
+}
+
+namespace {
 
 //! @brief Helpfunction to strip filename from path
 HString stripFilenameFromPath(HString filePath)
@@ -229,7 +362,7 @@ void updateRenamedParameter(rapidxml::xml_node<> *pNode, const string &rComponen
         }
     }
 }
-
+}
 
 
 //! @brief This help function loads a component
@@ -573,6 +706,72 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
 
 // vvvvvvvvvv The public function vvvvvvvvvv
 
+
+bool hopsan::isVersionGreaterThan(const HString& version1, const HString& version2)
+{
+  return compareHopsanVersions(version1, version2) > 0;
+}
+
+int hopsan::compareHopsanVersions(const HString& version1, const HString& version2)
+{
+  HVector<HString> parts1, parts2;
+  HString branch1, branch2;
+  //! @todo Maybe ~branchname should not really be part of the version number but only the release name
+  parts1 = version1.split('~');
+  parts2 = version2.split('~');
+  if (parts1.size() > 1)
+  {
+    branch1 = parts1[1];
+  }
+  if (parts2.size() > 1)
+  {
+    branch2 = parts2[1];
+  }
+  parts1 = parts1[0].split('.');
+  parts2 = parts2[0].split('.');
+
+  size_t minSize = std::min(parts1.size(), parts2.size());
+  for (size_t i=0; i<minSize; ++i)
+  {
+    bool dummy;
+    long int v1 = parts1[i].toLongInt(&dummy);
+    long int v2 = parts2[i].toLongInt(&dummy);
+    if (v1 > v2)
+    {
+      return 1;
+    }
+    else if (v1 < v2)
+    {
+      return -1;
+    }
+
+    // Handle comparison of the old version number format
+    if (i==0 && v1==0)
+    {
+      oldversionformat::isVersionGreaterThan(version1, version2);
+    }
+    
+
+
+  } 
+  // If we get here, then the numbers are the same up until minSize
+
+  // Treat the shortest one as "larger", it probalby indicates a "stable" release
+  if (parts1.size() < parts2.size())
+  {
+    return 1;
+  }
+  else if (parts1.size() > parts2.size())
+  {
+    return -1;
+  }
+
+  //! @todo Compare branchnames, but this will likely never be required
+  
+  return 0;
+}
+
+
 //! @brief This function is used to load a HMF file.
 //! @param [in] filePath The name (path) of the HMF file
 //! @param [out] rStartTime A reference to the starttime variable
@@ -736,3 +935,4 @@ void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials*
     // We failed, return 0 ptr
     return;
 }
+
