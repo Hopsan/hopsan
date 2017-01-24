@@ -5,7 +5,7 @@ REM Bat script building FMILibrary dependency automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Date:   2015-01-29
 
-set dirname=FMILibrary-2.0.1
+set dirname=FMILibrary
 
 REM Automatic code starts here
 

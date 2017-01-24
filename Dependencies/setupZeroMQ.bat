@@ -5,7 +5,7 @@ REM Bat script building ZeroMQ and unpacking messagepack automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Date:   2015-02-07
 
-set zmqdirname=zeromq4-1
+set zmqdirname=zeromq
 
 REM Automatic code begins here
 
