@@ -45,7 +45,7 @@ if not "%hopsan_arch%"=="x86" (
 
 REM Tools paths
 set cmake_path32=%ProgramFiles%\CMake\bin
-set cmake_path64=%ProgramFiles(x86)%\CMake\bin
+set cmake_path64=%ProgramFiles%\CMake\bin
 set doxygen_path32=%ProgramFiles%\doxygen\bin
 set doxygen_path64=%ProgramFiles%\doxygen\bin
 set msys_path=C:\msys64\usr\bin

@@ -22,7 +22,8 @@ defineReplace(setZMQPathInfo){
     libDir =
 
     exists($${ZMQ_PATH}){
-        libDir = $${ZMQ_PATH}/.libs
+        win32:libDir = $${ZMQ_PATH}/build_install/bin
+        unix:libDir = $${ZMQ_PATH}/build_install/lib
         #message(libDir: $${libDir})
 
         #Check libfolder path
