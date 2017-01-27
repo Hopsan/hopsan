@@ -38,6 +38,7 @@
 #include <vector>
 #include <ctype.h>
 #include "HopsanTypes.h"
+#include "win32dll.h"
 
 namespace hopsan {
 
@@ -46,11 +47,11 @@ class ComponentSystem;
 class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
-int getEpochVersion(const HString& version);
-int getMajorVersion(const HString& version);
-int getMinorVersion(const HString& version);
-bool isVersionGreaterThan(const HString& version1, const HString& version2);
-int compareHopsanVersions(const HString& version1, const HString& version2);
+int DLLIMPORTEXPORT getEpochVersion(const HString& version);
+int DLLIMPORTEXPORT getMajorVersion(const HString& version);
+int DLLIMPORTEXPORT getMinorVersion(const HString& version);
+bool DLLIMPORTEXPORT isVersionGreaterThan(const HString& version1, const HString& version2);
+int DLLIMPORTEXPORT compareHopsanVersions(const HString& version1, const HString& version2);
 
 ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModel(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
