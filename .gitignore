@@ -4,6 +4,7 @@ bin/
 *~
 *.o
 *.so
+*.so.*
 *.dll
 *.dylib
 *.a
