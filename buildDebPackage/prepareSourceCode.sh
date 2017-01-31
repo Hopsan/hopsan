@@ -6,6 +6,25 @@
 # Date:   2012-04-01
 # For use in Hopsan, requires "subversion command line" installed (apt-get install subversion)
 
+git_export_all()
+{
+  local src=$1
+  local dst=$2
+  local olddir=$(pwd)
+  local tarfile=hopsan_git_export.tar
+  echo "Exporting from git: ${src} to ${dst}"
+  mkdir -p ${dst}
+  cd ${src}
+  ${hopsanroot}/git_archive_all.py ${tarfile}
+  cd $olddir
+  mv ${src}/${tarfile} ${dst}
+  cd ${dst}
+  tar -xf ${tarfile} --strip-components=1
+  rm ${tarfile}
+  cd $olddir
+}
+
+
 E_BADARGS=65
 if [ $# -lt 5 ]; then
   echo "Error: To few input arguments!"
@@ -14,6 +33,7 @@ if [ $# -lt 5 ]; then
 fi
 
 srcDir="$1"
+hopsanroot="$1"
 dstDir="$2"
 baseversion="$3"
 releaserevision="$4"
@@ -24,17 +44,20 @@ doBuildInComponents="$7"
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI svn rev numbers for this release
 #
-cd $srcDir/HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd $OLDPWD
-cd $srcDir/HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
-cd $srcDir/HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
-echo "CoreSVNrev: $coresvnrev, GUISVNrev: $guisvnrev, CLISVNrev: $clisvnrev"
+
+cd $srcDir/HopsanCore; corecommitdt=`../getGitInfo.sh date.time .`; cd $OLDPWD
+cd $srcDir/HopsanCore; corecommithash=`../getGitInfo.sh shorthash .`; cd $OLDPWD
+cd $srcDir/HopsanGUI; guicommitdt=`../getGitInfo.sh date.time .`; cd $OLDPWD
+cd $srcDir/HopsanCLI; clicommitdt=`../getGitInfo.sh date.time .`; cd $OLDPWD
+echo "Core_CDT: ${corecommitdt}, GUI_CDT: ${guicommitdt}, CLI_CDT: ${clicommitdt}"
 
 # -----------------------------------------------------------------------------
 # Export source dirs and files
 #
 echo "Exporting $srcDir to $dstDir for preparation"
 rm -rf $dstDir
-svn export $srcDir $dstDir
+git_export_all $srcDir $dstDir 
+
 
 # -----------------------------------------------------------------------------
 # Prepare files
@@ -42,15 +65,16 @@ svn export $srcDir $dstDir
 cd $dstDir
 
 # Clean bin folder
-rm -rf ./bin/*
+#rm -rf ./bin/*
 
 # Generate default library files
 cd componentLibraries/defaultLibrary; ./generateLibraryFiles.py .; cd $OLDPWD
 
 # Set the Core Gui and CLI svn rev numbers for this release
-sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION $coresvnrev|g" -i HopsanCore/include/HopsanCoreSVNRevision.h
-sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION $guisvnrev|g" -i HopsanGUI/version_gui.h
-sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION $clisvnrev|g" -i HopsanCLI/version_cli.h
+sed "s|#define HOPSANCORE_COMMIT_HASH.*|#define HOPSANCORE_COMMIT_HASH ${corecommithash}|g" -i HopsanCore/include/HopsanCoreGitVersion.h
+sed "s|#define HOPSANCORE_COMMIT_TIMESTAMP.*|#define HOPSANCORE_COMMIT_TIMESTAMP ${corecommitdt}|g" -i HopsanCore/include/HopsanCoreGitVersion.h
+sed "s|#define HOPSANGUI_COMMIT_TIMESTAMP.*|#define HOPSANGUI_COMMIT_TIMESTAMP ${guicommitdt}|g" -i HopsanGUI/version_gui.h
+sed "s|#define HOPSANCLI_COMMIT_TIMESTAMP.*|#define HOPSANCLI_COMMIT_TIMESTAMP ${clicommitdt}|g" -i HopsanCLI/version_cli.h
 
 if [ $doDevRelease = "false" ]; then
   # Set version numbers (by changing .h files) BEFORE build
