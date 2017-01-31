@@ -15,9 +15,9 @@ source setHopsanBuildPaths.sh
 if [ "$OSTYPE" == "darwin14" ]; then
     find $qwtname -name '*.pr?' -exec dos2unix {} \;
 fi
-#Patch
-#patch --binary -p0 < $qwtpatch.patch
+
 cd $qwtname
+patch --binary --forward -p1 < ../qwt-build.patch
 # Generate makefiles on different platforms
 if [ "$OSTYPE" == "linux-gnu" ]; then
         $hopsan_qt_qmake qwt.pro -r -spec linux-g++
