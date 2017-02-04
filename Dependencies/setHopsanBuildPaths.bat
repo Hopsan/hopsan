@@ -44,23 +44,27 @@ if not "%hopsan_arch%"=="x86" (
 )
 
 REM Tools paths
-set cmake_path32=%ProgramFiles%\CMake\bin
-set cmake_path64=%ProgramFiles%\CMake\bin
-set doxygen_path32=%ProgramFiles%\doxygen\bin
-set doxygen_path64=%ProgramFiles%\doxygen\bin
 set msys_path=C:\msys64\usr\bin
 
 REM Set tools paths depending on current arch
 if defined ProgramFiles(x86) (
 	REM do stuff for 64bit here
-	echo 64bit Windows detected, expecting 64-bit tools
-	set "cmake_path=%cmake_path64%"
-	set "doxygen_path=%doxygen_path64%"
+	echo 64bit Windows detected, expecting 64-bit tools, but checking for 32-bit anyway
+	if exist "%ProgramFiles(x86)%\CMake\bin" (
+		set "cmake_path=%ProgramFiles(x86)%\CMake\bin" 
+	) else (
+		set "cmake_path=%ProgramFiles%\CMake\bin"
+	)
+	if exist "%ProgramFiles(x86)%\doxygen\bin" (
+		set "doxygen_path=%ProgramFiles(x86)%\doxygen\bin"
+	) else (
+		set "doxygen_path=%ProgramFiles%\doxygen\bin"
+	)
 ) else (
     REM do stuff for 32bit here
 	echo 32bit Windows detected, expecting 32-bit tools
-	set "cmake_path=%cmake_path32%"
-	set "doxygen_path=%doxygen_path32%"
+	set "cmake_path=%ProgramFiles%\CMake\bin"
+	set "doxygen_path=%ProgramFiles%\doxygen\bin"
 )
 
 REM Set compilers and libs depending on selection
