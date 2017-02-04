@@ -11,18 +11,20 @@ REM Automatic code starts here
 
 echo.
 echo ======================
-echo Building 64-bit version of FMILibrary
+echo Building the HDF5 library and tools
 echo ======================
 set OLDPATH=%PATH%
 call setHopsanBuildPaths.bat
 REM We don want msys in the path so we have to set it manually
 set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
 cd %dirname%
-mkdir build
-cd build
-cmake -Wno-dev -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=ON -DHDF5_BUILD_FORTRAN=OFF -DCMAKE_INSTALL_PREFIX="../install" ../
-mingw32-make.exe -j4
+mkdir hopsanbuild
+cd hopsanbuild
+cmake -Wno-dev -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=ON -DHDF5_BUILD_FORTRAN=OFF -DBUILD_TESTING=OFF -DHDF5_BUILD_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX="../install" ../
+REM DO NOT enable multi-core build (make -j4), we must build sequentially
+mingw32-make.exe
 mingw32-make.exe install
+cd ..
 echo.
 echo Done
 pause
