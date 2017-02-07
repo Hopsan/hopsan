@@ -80,11 +80,13 @@ win32 {
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
-    # Retreive the hopsan core source code revision number, regenerate revnum file if we find revision
-    rev=$$system($${PWD}/../getSvnRevision.bat)
-    message(Core revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        system($${PWD}/../getSvnRevision.bat include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
+    # Retreive the HopsanCore source code version info and regenerate version header
+    commitdatetime=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+    commithash=$$system($${PWD}/../getGitInfo.bat shorthash $${PWD})
+    message(Core revision: $${commitdatetime})
+    message(Core hash: $${commithash})
+    system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
+
     }
 }
 unix { 

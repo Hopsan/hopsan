@@ -78,11 +78,14 @@ win32 {
     }
 
     # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
-    rev = $$system($${PWD}/../getSvnRevision.bat)
-    message(CLI revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        DEFINES *= "HOPSANCLISVNREVISION=$${rev}"
-    }
+#    rev = $$system($${PWD}/../getSvnRevision.bat)
+#    message(CLI revision: $${rev})
+#    !equals(rev, "RevisionInformationNotFound") {
+#        DEFINES *= "HOPSANCLISVNREVISION=$${rev}"
+#    }
+     timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+     DEFINES *= "HOPSANCLI_COMMIT_TIMESTAMP=$${timestamp}"
+
 }
 
 #Debug output
