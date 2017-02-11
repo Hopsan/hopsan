@@ -5,11 +5,12 @@ import os
 import ctypes
 import stat
 import shutil
+import re
 from time import sleep
 
 # -------------------- Setup Start --------------------
 # Version numbers
-gBaseVersion = '0.8.x'
+gBaseVersion = '2.8.0'
 gReleaseRevision = ''
 gFullVersionName = gBaseVersion
 
@@ -158,6 +159,26 @@ def writeDoNotSafeFileHereFileToAllDirectories(rootDir):
         open(dirpath+"\---DO_NOT_SAVE_FILES_IN_THIS_DIRECTORY---", 'a+').close()
 
 
+def replace_pattern(filepath, re_pattern, replacement):
+    data = None
+    with open(filepath, 'r+') as f:
+        data = re.sub(re_pattern, replacement, f.read())
+    print(data)
+
+
+def replace_line_with_pattern(filepath, re_pattern, replacement):
+    data = str()
+    with open(filepath, 'r+') as f:
+        for line in f:
+            if re.search(re_pattern, line) is not None:
+                if replacement != '':
+                    data += replacement + '\n'
+            else:
+                data += line
+    print(data)
+
+
+
 def svnExport(src, dst):
     print "Exporting from "+quotePath(src)+" to "+quotePath(dst)
     os.system("svn export -q "+quotePath(src)+" "+quotePath(dst))
@@ -205,8 +226,8 @@ def call7z(args):
     callEXE(hopsanDir+r'\ThirdParty\7z\7z.exe', args)
 
 
-def callSed(sedcommand):
-    callEXE(hopsanDir+r'\ThirdParty\sed-4.2.1\sed.exe', sedcommand)
+#def callSed(sedcommand):
+#    callEXE(hopsanDir+r'\ThirdParty\sed-4.2.1\sed.exe', sedcommand)
 
 
 # Returns the last part of a path (split[1] or split[0] if only one part)
@@ -408,37 +429,50 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     if not dodevrelease:
         # Set version numbers (by changing .h files) BEFORE build
         fullversion = versionnumber+'_r'+revisionnumber
-        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+versionnumber+r'\"|g" -i HopsanCore\include\HopsanCoreVersion.h')
-        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+versionnumber+r'\"|g" -i HopsanGUI\version_gui.h')
-        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"'+versionnumber+r'\"|g" -i HopsanCLI\version_cli.h')
+#        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+versionnumber+r'\"|g" -i HopsanCore\include\HopsanCoreVersion.h')
+        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(versionnumber))
+#        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+versionnumber+r'\"|g" -i HopsanGUI\version_gui.h')
+        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(versionnumber)
+#        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"'+versionnumber+r'\"|g" -i HopsanCLI\version_cli.h')
+        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(versionnumber))
 
         # Hide splash screen development warning
-        callSed(r'"s|Development version||g" -i HopsanGUI\graphics\tempdummysplash.svg')
+#        callSed(r'"s|Development version||g" -i HopsanGUI\graphics\tempdummysplash.svg')
+        replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'Development version', '')
 
         # Make sure development flag is not defined
-        callSed(r'"s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro')
+#        callSed(r'"s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro')
+        replace_pattern(r'HopsanGUI/HopsanGUI.pro', r'.*?DEFINES \*= DEVELOPMENT', r'#DEFINES *= DEVELOPMENT')
 
     # Set splash screen version and revision number
-    callSed(r'"s|X\.X\.X|'+versionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
-    callSed(r'"s|R\.R\.R|r'+revisionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
+#    callSed(r'"s|X\.X\.X|'+versionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
+    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'X.X.X', versionnumber)
+#    callSed(r'"s|R\.R\.R|r'+revisionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
+    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'R.R.R', revisionnumber)
     # Regenerate splash screen
     callEXE(inkscapeDir+r'\inkscape.exe', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-png HopsanGUI/graphics/splash.png')
     callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
 
     # Make sure we compile defaultLibrary into core
-    callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
-    callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
-    callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
-    callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
+#    callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
+    replace_pattern('Common.prf', r'.*?DEFINES \*= BUILTINDEFAULTCOMPONENTLIB', r'DEFINES \*= BUILTINDEFAULTCOMPONENTLIB')
+    #callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
+    replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc')
+    #callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
+    replace_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '')
+    #callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
+    replace_pattern('HopsanNG_remote.pro', 'componentLibraries', '')
 
 
 def buildRelease():
 
     # Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
-    callSed(r'"s|.*DEFINES \*= MAINCORE|#DEFINES *= MAINCORE|g" -i HopsanCore\HopsanCore.pro')
+#    callSed(r'"s|.*DEFINES \*= MAINCORE|#DEFINES *= MAINCORE|g" -i HopsanCore\HopsanCore.pro')
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= MAINCORE', r'#DEFINES *= MAINCORE')
 
     # Disable TBB so it is not found when compiling with Visual Studio
-    callSed(r'"s|.*equals(foundTBB|    equals(NOTBB|g" -i HopsanCore\HopsanCore.pro')
+#    callSed(r'"s|.*equals(foundTBB|    equals(NOTBB|g" -i HopsanCore\HopsanCore.pro')
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals(foundTBB', '    equals(NOTBB')
 
     # ========================================================
     #  Build HOPSANCORE with MSVC, else remove those folders
@@ -462,10 +496,12 @@ def buildRelease():
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x64"))
     
     # Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
-    callSed(r'"s|.*DEFINES \*= MAINCORE|DEFINES *= MAINCORE|" -i HopsanCore\HopsanCore.pro')
+#    callSed(r'"s|.*DEFINES \*= MAINCORE|DEFINES *= MAINCORE|" -i HopsanCore\HopsanCore.pro')
+    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= MAINCORE', 'DEFINES *= MAINCORE')
      
     # Reactivate TBB
-    callSed(r'"s|.*equals(NOTBB|    equals(foundTBB|" -i HopsanCore\HopsanCore.pro')
+#    callSed(r'"s|.*equals(NOTBB|    equals(foundTBB|" -i HopsanCore\HopsanCore.pro')
+    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?equals(NOTBB', '    equals(foundTBB')
 
     # ========================================================
     #  BUILD WITH MINGW32
