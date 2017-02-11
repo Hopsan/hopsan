@@ -22,4 +22,5 @@ if defined ProgramFiles(x86) (
 	set "bash=%ProgramFiles%\Git\bin\bash.exe"
 )
 REM Execute the bash script to do the work
+cd %~dp0
 "%bash%" --login -i -c "exec ./writeGitVersionHeader.sh %filepath% %name% %rev% %shorthash%"

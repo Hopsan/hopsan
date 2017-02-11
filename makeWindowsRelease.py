@@ -163,7 +163,8 @@ def replace_pattern(filepath, re_pattern, replacement):
     data = None
     with open(filepath, 'r+') as f:
         data = re.sub(re_pattern, replacement, f.read())
-    print(data)
+    with open(filepath, 'w+') as f:
+        f.write(data)
 
 
 def replace_line_with_pattern(filepath, re_pattern, replacement):
@@ -175,8 +176,8 @@ def replace_line_with_pattern(filepath, re_pattern, replacement):
                     data += replacement + '\n'
             else:
                 data += line
-    print(data)
-
+    with open(filepath, 'w+') as f:
+        f.write(data)
 
 
 def svnExport(src, dst):
@@ -432,7 +433,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 #        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+versionnumber+r'\"|g" -i HopsanCore\include\HopsanCoreVersion.h')
         replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(versionnumber))
 #        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+versionnumber+r'\"|g" -i HopsanGUI\version_gui.h')
-        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(versionnumber)
+        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(versionnumber))
 #        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"'+versionnumber+r'\"|g" -i HopsanCLI\version_cli.h')
         replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(versionnumber))
 
@@ -455,9 +456,9 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 
     # Make sure we compile defaultLibrary into core
 #    callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
-    replace_pattern('Common.prf', r'.*?DEFINES \*= BUILTINDEFAULTCOMPONENTLIB', r'DEFINES \*= BUILTINDEFAULTCOMPONENTLIB')
+    replace_pattern('Common.prf', r'.*?DEFINES \*= BUILTINDEFAULTCOMPONENTLIB', r'DEFINES *= BUILTINDEFAULTCOMPONENTLIB')
     #callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
-    replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc')
+    replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\')
     #callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     replace_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '')
     #callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
@@ -472,7 +473,7 @@ def buildRelease():
 
     # Disable TBB so it is not found when compiling with Visual Studio
 #    callSed(r'"s|.*equals(foundTBB|    equals(NOTBB|g" -i HopsanCore\HopsanCore.pro')
-    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals(foundTBB', '    equals(NOTBB')
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals\(foundTBB', '    equals\(NOTBB')
 
     # ========================================================
     #  Build HOPSANCORE with MSVC, else remove those folders
@@ -501,7 +502,7 @@ def buildRelease():
      
     # Reactivate TBB
 #    callSed(r'"s|.*equals(NOTBB|    equals(foundTBB|" -i HopsanCore\HopsanCore.pro')
-    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?equals(NOTBB', '    equals(foundTBB')
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals\(NOTBB', '    equals\(foundTBB')
 
     # ========================================================
     #  BUILD WITH MINGW32
