@@ -473,7 +473,7 @@ def buildRelease():
 
     # Disable TBB so it is not found when compiling with Visual Studio
 #    callSed(r'"s|.*equals(foundTBB|    equals(NOTBB|g" -i HopsanCore\HopsanCore.pro')
-    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals\(foundTBB', '    equals\(NOTBB')
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals\(foundTBB', '    equals(NOTBB')
 
     # ========================================================
     #  Build HOPSANCORE with MSVC, else remove those folders
@@ -502,7 +502,7 @@ def buildRelease():
      
     # Reactivate TBB
 #    callSed(r'"s|.*equals(NOTBB|    equals(foundTBB|" -i HopsanCore\HopsanCore.pro')
-    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals\(NOTBB', '    equals\(foundTBB')
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?equals\(NOTBB', '    equals(foundTBB')
 
     # ========================================================
     #  BUILD WITH MINGW32
