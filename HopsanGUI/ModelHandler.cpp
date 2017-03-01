@@ -232,10 +232,10 @@ int ModelHandler::count() const
 void ModelHandler::loadModel()
 {
     QDir fileDialogOpenDir;
-    QString modelFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose Model File"),
+    QStringList modelFileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Model File"),
                                                          gpConfig->getStringSetting(CFG_LOADMODELDIR),
                                                          tr("Hopsan Model Files (*.hmf *.xml)"));
-    if(!modelFileName.isEmpty())
+    foreach(const QString &modelFileName, modelFileNames)
     {
         loadModel(modelFileName);
         QFileInfo fileInfo = QFileInfo(modelFileName);
