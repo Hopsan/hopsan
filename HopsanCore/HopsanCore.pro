@@ -86,8 +86,6 @@ win32 {
     message(Core revision: $${commitdatetime})
     message(Core hash: $${commithash})
     system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
-
-    }
 }
 unix { 
     DEFINES *= USETBB
