@@ -6,19 +6,34 @@ REM Date:   2017-02-04
 set what="%~1"
 set directory="%~2"
 
-REM Check where git bundled bash is installed and use it
+REM Check where Git for Windows and bundled bash is installed
 if defined ProgramFiles(x86) (
 	REM Check for 32-bit version, even though system is 64-bit
 	if exist "%ProgramFiles(x86)%\Git\bin" (
-		set "bash=%ProgramFiles(x86)%\Git\bin\bash.exe"
+		set "PATH=%ProgramFiles(x86)%\Git\bin;%PATH%"
 	) else (
-		REM Use 64-bit version
-		set "bash=%ProgramFiles%\Git\bin\bash.exe"
+		REM Assume 64-bit version installed
+		set "PATH=%ProgramFiles%\Git\bin;%PATH%"
 	)
 ) else (
-	REM Use 32-bit version
-	set "bash=%ProgramFiles%\Git\bin\bash.exe"
+	REM Assume 32-bit version installed
+	set "PATH=%ProgramFiles%\Git\bin;%PATH%"
 )
+
+REM If the default Git for Windows path is not available then assume that git and bash are in the system PATH
+
+REM Check if found else return GITNOTFOUND
+where /Q git.exe
+if ERRORLEVEL 1 goto NOTFOUND
+
+where /Q bash.exe
+if ERRORLEVEL 1 goto NOTFOUND
+
 REM Execute the bash script to do the work
 cd %~dp0
-"%bash%" --login -i -c "exec ./getGitInfo.sh %what% %directory%"
+bash.exe -i -c "exec ./getGitInfo.sh %what% %directory%"
+exit /B %ERRORLEVEL%
+
+:NOTFOUND
+	echo GITNOTFOUND
+	exit /B 1
