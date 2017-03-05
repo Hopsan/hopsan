@@ -205,7 +205,7 @@ HEADERS += \
     include/Quantities.h \
     include/NodeRWHelpfuncs.hpp \
     include/HopsanCoreVersion.h \
-    include/HopsanCoreSVNRevision.h \
+    include/HopsanCoreGitVersion.h \
     include/CoreUtilities/NumHopHelper.h \
     include/CoreUtilities/ConnectionAssistant.h \
     include/CoreUtilities/AliasHandler.h \
