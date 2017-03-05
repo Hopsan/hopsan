@@ -34,13 +34,14 @@ defineReplace(setHDF5PathInfo){
 
             # Standard way of finding lib&include
             magic_hopsan_libpath = -L$${libDir} -l$${libName}$${dbg_ext} -l$${libName}_cpp$${dbg_ext}
+            win32:magic_hopsan_libpath = -L$${libDir} -l$${libName}-shared$${dbg_ext} -l$${libName}_cpp-shared$${dbg_ext}
             magic_hopsan_includepath = $${incDir}
 
 
             #Set files to copy
-            win32:files = $${LIB_PREFIX}$${libName}$${dbg_ext}$${DLL_EXT}
+            win32:files = $${LIB_PREFIX}$${libName}-shared$${dbg_ext}$${DLL_EXT}
             unix:files = $${LIB_PREFIX}$${libName}$${dbg_ext}$${DLL_EXT}*
-            win32:files += $${LIB_PREFIX}$${libName}_cpp$${dbg_ext}$${DLL_EXT}
+            win32:files += $${LIB_PREFIX}$${libName}_cpp-shared$${dbg_ext}$${DLL_EXT}
             unix:files += $${LIB_PREFIX}$${libName}_cpp$${dbg_ext}$${DLL_EXT}*
             # On mac we need all of the framework
             #macx:files = $${libName}.framework
