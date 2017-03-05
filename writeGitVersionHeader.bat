@@ -33,7 +33,7 @@ if ERRORLEVEL 1 goto NOTFOUND
 
 REM Execute the bash script to do the work
 cd %~dp0
-bash.exe -i -c "exec ./writeGitVersionHeader.sh %filepath% %name% %rev% %shorthash%"
+bash.exe -c "exec ./writeGitVersionHeader.sh %filepath% %name% %rev% %shorthash%"
 exit /B %ERRORLEVEL%
 
 :NOTFOUND

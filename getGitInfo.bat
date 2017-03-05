@@ -31,7 +31,7 @@ if ERRORLEVEL 1 goto NOTFOUND
 
 REM Execute the bash script to do the work
 cd %~dp0
-bash.exe -i -c "exec ./getGitInfo.sh %what% %directory%"
+bash.exe -c "exec ./getGitInfo.sh %what% %directory%"
 exit /B %ERRORLEVEL%
 
 :NOTFOUND
