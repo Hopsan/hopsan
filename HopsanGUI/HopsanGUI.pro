@@ -5,7 +5,6 @@
 # Global project options
 # -------------------------------------------------
 include( HopsanGuiBuild.prf )
-include( $${PWD}/../HopsanRemote/HopsanRemoteBuild.pri )
 
 TARGET = HopsanGUI
 TEMPLATE = app
@@ -23,19 +22,10 @@ isEqual(QT_MAJOR_VERSION, 5){
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
-# Set the QWT paths and dll/so/dylib/framework post linking copy command
-d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
-!isEmpty(d){
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-
-    macx:QMAKE_LFLAGS *= -lqwt
-    macx:message(LIBS=$$LIBS)
-    macx:message(INCLUDEPATH=$$INCLUDEPATH)
-    macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
-} else {
-    !build_pass:error("Failed to locate QWT libs, have you compiled them and put them in the expected location")
+# Set the QWT paths
+include($${PWD}/../Dependencies/qwt.pri)
+!have_qwt(){
+    !build_pass:error("Could not find QWT libs, have you compiled them in the expected location")
 }
 #--------------------------------------------------------
 
@@ -49,19 +39,22 @@ d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
     INCLUDEPATH *= $$magic_hopsan_includepath
     QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 } else {
-    !build_pass:message(Compiling HopsanGUI WITHOUT PythonQt and Python support)
+    !build_pass:warning(Compiling HopsanGUI WITHOUT PythonQt and Python support)
 }
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set the ZMQ paths and dll/so post linking copy command
-d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
-!isEmpty(d){
+# Set the ZeroMQ paths
+include($${PWD}/../Dependencies/zeromq.pri)
+have_zeromq() {
     DEFINES *= USEZMQ       #If ZMQ was found then lets build GUI with ZMQ / msgpack support
     !build_pass:message(Compiling HopsanGUI with ZeroMQ and msgpack support)
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+    include($${PWD}/../Dependencies/msgpack.pri)
+
+    # Also require msgpack.c, setup msgpack path
+    !have_msgpack() {
+        !build_pass:error("Could not find msgpack-c, which is required for serialization")
+    }
 
     INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServer
     INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServerClient
@@ -70,7 +63,7 @@ d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
     SOURCES += $${PWD}/../HopsanRemote/include/FileAccess.cpp
 
 } else {
-    !build_pass:message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
+    !build_pass:warning("Could not find ZeroMQ, compiling HopsanGUI WITHOUT ZeroMQ support")
 }
 #--------------------------------------------------------
 
