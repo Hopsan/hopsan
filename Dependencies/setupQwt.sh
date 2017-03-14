@@ -38,7 +38,7 @@ fi
 make -j4 -w
 
 # Install
-
+make install
 
 cd $basedir
 echo "setupQwt.sh done!"
