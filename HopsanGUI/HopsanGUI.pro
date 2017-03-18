@@ -30,14 +30,11 @@ include($${PWD}/../Dependencies/qwt.pri)
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set the PythonQt paths and dll/so post linking copy command
-d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
-!isEmpty(d){
+# Set the PythonQt paths
+include($${PWD}/../Dependencies/pythonqt.pri)
+have_pythonqt(){
     DEFINES *= USEPYTHONQT       #If PythonQt was found then lets build GUI with PythonQt and Python support
     !build_pass:message(Compiling HopsanGUI with PythonQt support)
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 } else {
     !build_pass:warning(Compiling HopsanGUI WITHOUT PythonQt and Python support)
 }
