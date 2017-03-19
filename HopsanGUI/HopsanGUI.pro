@@ -84,13 +84,12 @@ LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set Discount Paths
-d = $$setDiscountPathInfo($$(DISCOUNT_PATH), $$DESTDIR)
-!isEmpty(d){
-    DEFINES *= USEDISCOUNT
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-    !build_pass:message(Compiling with Discount (libmarkdown) support)
+include($${PWD}/../Dependencies/discount.pri)
+have_discount(){
+  DEFINES *= USEDISCOUNT
+  !build_pass:message(Compiling with Discount (libmarkdown) support)
+} else {
+  !build_pass:warning(Compiling WITHOUT Discount (libmarkdown) support)
 }
 #--------------------------------------------------------
 
