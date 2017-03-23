@@ -1,5 +1,6 @@
 #include "VariableStorage.h"
 #include "Helpfunctions.h"
+#include <math.h>
 
 namespace numhop {
 
@@ -85,6 +86,12 @@ double VariableStorage::value(const std::string &name, bool &rFound) const
         {
             return value;
         }
+    }
+    //Else use hard-coded variables (pi etc)
+    if(name == "pi")
+    {
+        rFound=true;
+        return M_PI;
     }
     return 0;
 }
