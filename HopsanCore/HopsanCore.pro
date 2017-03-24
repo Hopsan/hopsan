@@ -47,6 +47,8 @@ CONFIG(debug, debug|release) {
   QMAKE_CXXFLAGS += -pedantic -Wno-long-long -std=c++11
 }
 
+DEFINES *= _USE_MATH_DEFINES
+
 # Turn on the Hopsan Core runtime log file
 DEFINES *= WRITEHOPSANCORELOG
 
