@@ -3,31 +3,28 @@ REM $Id$
 
 REM Bat script building HopsaGUI dependency QWT automatically
 REM Author: Peter Nordin peter.nordin@liu.se
-REM Date:   2012-12-18
 
-set filename="qwt"
+set basedir=%~dp0
+set codedir=%basedir%\qwt
+set builddir=%codedir%_build
+set installdir=%codedir%_install
 
-REM Automatic code begins here
-set dirname=%filename%
+REM Setup paths
+call setHopsanBuildPaths.bat
 
-echo.
-echo ======================
-echo Patch libQWT
-echo ======================
-REM ..\ThirdParty\patch\doit.exe -p0 < %filename%.patch
+REM Patch libQWT
+cd %codedir%
+patch.exe --forward -p1 < ..\qwt-build.patch
 
 REM Build
-echo.
-echo ======================
-echo Building 64-bit libQWT
-echo ======================
-call setHopsanBuildPaths.bat
-REM rd /s/q %dirname%_shb
-REM mkdir %dirname%_shb
-cd %dirname%
-qmake qwt.pro -r -spec win32-g++
-mingw32-make -j4
+mkdir %builddir%
+cd %builddir%
 
+qmake %codedir%\qwt.pro -r -spec win32-g++
+mingw32-make -j4
+mingw32-make install
+
+cd %basedir%
 echo.
-echo Done
+echo setupQwt.bat Done
 pause
