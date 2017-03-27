@@ -6,10 +6,12 @@ win32:CONFIG(debug, debug|release):dbg_ext =
 
 # Set libpath and libname
 zeromq_home = $${PWD}/zeromq_install
+zeromq_lib = $${zeromq_home}/lib
+zeromq_bin = $${zeromq_home}/bin
 libname = zmq
 
 defineTest(have_zeromq) {
-  exists($${zeromq_home}/lib) {
+  exists($${zeromq_lib}) {
     return(true)
   }
   return(false)
@@ -17,7 +19,9 @@ defineTest(have_zeromq) {
 
 have_zeromq() {
   INCLUDEPATH *= $${zeromq_home}/include
-  LIBS *= -L$${zeromq_home}/lib -l$${libname}$${dbg_ext}
+  win32:LIBS *= -L$${zeromq_bin} -l$${libname}$${dbg_ext}
+  unix:LIBS *= -L$${zeromq_lib} -l$${libname}$${dbg_ext}
   # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
-  QMAKE_RPATHDIR *= $${zeromq_home}/lib
+  unix:QMAKE_RPATHDIR *= $${zeromq_lib}
+  win32:QMAKE_RPATHDIR *= $${zeromq_bin}
 }

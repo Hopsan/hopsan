@@ -166,17 +166,13 @@ win32 {
     }
 
     # Set hdf5 paths
-    d = $$setHDF5PathInfo($$(HDF5_PATH), $$DESTDIR)
-    !isEmpty(d){
-        DEFINES *= USEHDF5
-        LIBS *= $$magic_hopsan_libpath
-        INCLUDEPATH *= $$magic_hopsan_includepath
-        QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-        !build_pass:message("Compiling with HDF5 support")
+    include($${PWD}/../Dependencies/hdf5.pri)
+    have_hdf5(){
+      DEFINES *= USEHDF5
+      !build_pass:message("Compiling with HDF5 support")
     } else {
-        !build_pass:message("Compiling without HDF5 support")
+      !build_pass:message("Compiling without HDF5 support")
     }
-
 
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
