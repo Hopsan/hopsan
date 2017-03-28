@@ -691,10 +691,12 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         else        //Tree view mode
         {
             QMenu contextMenu;
+            QAction *pUnloadAllAction = contextMenu.addAction("Unload All External Libraries");
             QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
             QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
             QAction *pRecompileAction = contextMenu.addAction("Recompile");
             QAction *pReloadAction = contextMenu.addAction("Reload");
+            pUnloadAllAction->setEnabled(false);
             pUnloadAction->setEnabled(false);
             pOpenFolderAction->setEnabled(false);
             pRecompileAction->setEnabled(false);
@@ -714,6 +716,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 }
             }
 
+            if(item->text(0) == EXTLIBSTR)
+            {
+                pUnloadAllAction->setEnabled(true);
+            }
             if(item->text(0) != EXTLIBSTR && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).path.startsWith(EXTLIBSTR))
             {
                 pUnloadAction->setEnabled(true);
@@ -737,7 +743,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
             QAction *pReply = contextMenu.exec(QCursor::pos());
 
-            if(pReply == pUnloadAction || pReply == pRecompileAction || pReply == pReloadAction)
+            if(pReply == pUnloadAllAction || pReply == pUnloadAction || pReply == pRecompileAction || pReply == pReloadAction)
             {
                 if(mItemToTypeNameMap.contains(item))
                 {
@@ -760,7 +766,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     }
                 }
                 // Handle unload
-                if (pReply == pUnloadAction)
+                if (pReply == pUnloadAllAction || pReply == pUnloadAction)
                 {
                     for(const QString &typeName : typeNames)
                     {
