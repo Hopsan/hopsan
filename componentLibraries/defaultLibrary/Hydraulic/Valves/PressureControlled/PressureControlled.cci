@@ -27,3 +27,4 @@ pComponentFactory->registerCreatorFunction("HydraulicPressureControlled22Valve",
 pComponentFactory->registerCreatorFunction("HydraulicPressureControlled22Valve2",HydraulicPressureControlled22Valve2::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve",HydraulicPressureControlled42Valve::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve2",HydraulicPressureControlled42Valve2::Creator);
+pComponentFactory->registerCreatorFunction("HydraulicPressureControlled42Valve3",HydraulicPressureControlled42Valve3::Creator);

@@ -143,6 +143,7 @@ HEADERS +=  \
  $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled22Valve2.hpp \ 
  $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve.hpp \ 
  $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve2.hpp \ 
+ $${PWD}/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve3.hpp \
  $${PWD}/Hydraulic/Valves/PressureControlled/PressureControlled.h \ 
  $${PWD}/Hydraulic/Valves/Valves.h \ 
  $${PWD}/Hydraulic/Volumes&Lines/HydraulicAckumulator.hpp \ 
@@ -358,7 +359,8 @@ HEADERS +=  \
  $${PWD}/Special/TMMS04/Forks.hpp \ 
  $${PWD}/Special/TMMS04/TMMS04.h \
  $$PWD/Experimental/Signal2DWrite.hpp \
- $$PWD/Experimental/Signal2DRead.hpp
+ $$PWD/Experimental/Signal2DRead.hpp \
+    $$PWD/Hydraulic/Valves/PressureControlled/HydraulicPressureControlled42Valve3.hpp
 
 SOURCES += 
 

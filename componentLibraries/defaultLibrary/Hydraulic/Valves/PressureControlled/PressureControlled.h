@@ -27,3 +27,4 @@
 #include "HydraulicPressureControlled22Valve2.hpp"
 #include "HydraulicPressureControlled42Valve.hpp"
 #include "HydraulicPressureControlled42Valve2.hpp"
+#include "HydraulicPressureControlled42Valve3.hpp"

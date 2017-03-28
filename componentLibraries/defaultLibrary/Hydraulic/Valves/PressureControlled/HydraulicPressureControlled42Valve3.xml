@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="HydraulicPressureControlled42Valve3.hpp" typename="HydraulicPressureControlled42Valve3" displayname="Pressure Controlled 4/2 Valve">
+        <icons>
+            <icon scale="1" path="HydraulicPressureControlled42Valve3.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicPressureControlled42Valve3_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port name="x_v" x="1.0" y="0.5" a="0" hidden="false"/>
+            <port name="PP" x="0.592105263157895" y="1.0" a="270"/>
+            <port name="PT" x="0.738721804511278" y="1.0" a="270"/>
+            <port name="PA" x="0.592105263157895" y="0.0" a="270"/>
+            <port name="PB" x="0.738721804511278" y="0.0" a="270"/>
+            <port name="PC" x="0" y="0.701" a="0"/>
+        </ports>
+        <animation>
+            <icon userpath="Hydraulic42DirectionalValve_base.svg"/>
+            <movable idx="0">
+                <icon userpath="HydraulicPressureControlled42Valve3.svg"/>
+                <data port="x_v" dataname="Value" idx="0"/>
+                <movement x="-4000" y="0" a="0" idx="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>
