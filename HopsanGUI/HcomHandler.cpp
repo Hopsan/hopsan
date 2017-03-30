@@ -1027,7 +1027,8 @@ void HcomHandler::createCommands()
     HcomCommand lsCmd;
     lsCmd.cmd = "ls";
     lsCmd.description.append("List files in current directory");
-    lsCmd.help.append(" Usage: ls [no arguments]");
+    lsCmd.help.append(" Usage: ls");
+    lsCmd.help.append(" Usage: ls [wildcard]");
     lsCmd.fnc = &HcomHandler::executeListFilesCommand;
     lsCmd.group = "File Commands";
     mCmdList << lsCmd;
@@ -1035,7 +1036,8 @@ void HcomHandler::createCommands()
     HcomCommand closeCmd;
     closeCmd.cmd = "close";
     closeCmd.description.append("Closes current model");
-    closeCmd.help.append(" Usage: close [no arguments]");
+    closeCmd.help.append(" Usage: close");
+    closeCmd.help.append(" Usage: close all");
     closeCmd.fnc = &HcomHandler::executeCloseModelCommand;
     mCmdList << closeCmd;
 
@@ -4461,10 +4463,24 @@ void HcomHandler::executeListFilesCommand(const QString cmd)
 //! @brief Execute function for "close" command
 void HcomHandler::executeCloseModelCommand(const QString cmd)
 {
-    if(getNumberOfCommandArguments(cmd) != 0)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() > 1)
     {
         HCOMERR("Wrong number of arguments");
         return;
+    }
+    if(args.size() > 0)
+    {
+        if(args[0] == "all")
+        {
+            gpModelHandler->closeAllModels();
+            return;
+        }
+        else
+        {
+            HCOMERR("Unknown argument: "+args[0]);
+            return;
+        }
     }
 
     if(gpModelHandler->count() > 0 && gpModelHandler->getCurrentModel() != 0)
