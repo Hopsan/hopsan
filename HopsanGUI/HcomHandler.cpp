@@ -4427,20 +4427,21 @@ void HcomHandler::executeMakeDirectoryCommand(const QString cmd)
 //! @brief Execute function for "ls" command
 void HcomHandler::executeListFilesCommand(const QString cmd)
 {
-    if(getNumberOfCommandArguments(cmd) != 0)
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() > 1)
     {
         HCOMERR("Wrong number of arguments");
         return;
     }
 
     QStringList contents;
-    if(cmd.isEmpty())
+    if(args.isEmpty())
     {
         contents = QDir(mPwd).entryList(QStringList() << "*");
     }
     else
     {
-        contents = QDir(mPwd).entryList(QStringList() << cmd);
+        contents = QDir(mPwd).entryList(QStringList() << args[0]);
     }
     for(int c=0; c<contents.size(); ++c)
     {
