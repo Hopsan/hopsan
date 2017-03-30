@@ -78,6 +78,13 @@ namespace hopsan {
             mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+
+            Zc1 = (*mpND_Zc1);
+            Zc2 = (*mpND_Zc2);
+            if(Zc1+Zc2 == 0)
+            {
+                stopSimulation("Characteristic impedance cannot be zero. Lossless connectors must be connected to at least one capacitive component (for example a volume).");
+            }
         }
 
 
