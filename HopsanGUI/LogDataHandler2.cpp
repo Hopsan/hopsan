@@ -2496,6 +2496,8 @@ SharedVectorVariableT LogDataHandler2::insertVariable(SharedVectorVariableT pVar
         pVariable->mpVariableDescription->mVariableSourceType = ImportedVariableType;
     }
 
+    emit dataAdded();
+
     return pVariable;
 }
 
