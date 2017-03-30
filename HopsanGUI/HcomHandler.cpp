@@ -4213,6 +4213,9 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
         return;
     }
 
+    QStringList contents = QDir(mPwd).entryList(QStringList() << cmd);
+
+
     QString path = args[0];
     path.remove("\"");
     if(!path.contains("/"))
@@ -4221,9 +4224,14 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
     }
     QString dir = path.left(path.lastIndexOf("/"));
     dir = getDirectory(dir);
-    path = dir+path.right(path.size()-path.lastIndexOf("/"));
+    QString wildcard = path.right(path.size()-path.lastIndexOf("/")-1);
+    QStringList files = QDir(dir).entryList(QStringList() << wildcard);
 
-    gpModelHandler->loadModel(path);
+    foreach(const QString &file, files)
+    {
+        path = dir+"/"+file;
+        gpModelHandler->loadModel(path);
+    }
 }
 
 //! @brief Execute revert model command
