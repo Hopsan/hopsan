@@ -315,14 +315,14 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
 }
 
 
-bool ModelHandler::closeModelByTabIndex(int tabIdx)
+bool ModelHandler::closeModelByTabIndex(int tabIdx, bool force)
 {
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
         // When found close and return, else return false when loop ends
         if(mModelPtrs[i] == gpCentralTabWidget->widget(tabIdx))
         {
-            return closeModel(i);
+            return closeModel(i,force);
         }
     }
 
@@ -338,7 +338,8 @@ bool ModelHandler::closeModel(ModelWidget *pModel, bool force)
 
 
 //! @brief Closes current project.
-//! @param index defines which project to close.
+//! @param idx defines which project to close.
+//! @param force Do not ask for saving model before closing
 //! @return true if closing went ok. false if the user canceled the operation.
 //! @see closeAllModels()
 bool ModelHandler::closeModel(int idx, bool force)
@@ -445,16 +446,17 @@ bool ModelHandler::closeModel(int idx, bool force)
 
 //! @brief Closes all opened projects.
 //! @return true if closing went ok. false if the user canceled the operation.
+//! @param force Do not ask for saving model before closing
 //! @see closeModel(int index)
 //! @see saveModel()
-bool ModelHandler::closeAllModels()
+bool ModelHandler::closeAllModels(bool force)
 {
     gpConfig->clearLastSessionModels();
 
     while(mModelPtrs.size() > 0)
     {
         gpConfig->addLastSessionModel(mModelPtrs.last()->getViewContainerObject()->getModelFileInfo().filePath());
-        if (!closeModel(mModelPtrs.size()-1))
+        if (!closeModel(mModelPtrs.size()-1,force))
         {
             return false;
         }

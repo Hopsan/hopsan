@@ -4227,7 +4227,7 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
     QString dir = path.left(path.lastIndexOf("/"));
     dir = getDirectory(dir);
     QString wildcard = path.right(path.size()-path.lastIndexOf("/")-1);
-    QStringList files = QDir(dir).entryList(QStringList() << wildcard);
+    QStringList files = QDir(dir).entryList(QStringList() << wildcard,QDir::Files);
 
     foreach(const QString &file, files)
     {
@@ -4464,17 +4464,22 @@ void HcomHandler::executeListFilesCommand(const QString cmd)
 void HcomHandler::executeCloseModelCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() > 1)
+    if(args.size() > 2)
     {
         HCOMERR("Wrong number of arguments");
         return;
     }
-    if(args.size() > 0)
+    bool force=false;
+    bool all=false;
+    foreach(const QString &arg, args)
     {
-        if(args[0] == "all")
+        if(arg == "all")
         {
-            gpModelHandler->closeAllModels();
-            return;
+            all = true;
+        }
+        else if(arg == "-f")
+        {
+            force = true;
         }
         else
         {
@@ -4483,9 +4488,16 @@ void HcomHandler::executeCloseModelCommand(const QString cmd)
         }
     }
 
-    if(gpModelHandler->count() > 0 && gpModelHandler->getCurrentModel() != 0)
+    if(all)
     {
-        gpModelHandler->closeModelByTabIndex(gpCentralTabWidget->currentIndex());
+        gpModelHandler->closeAllModels(force);
+    }
+    else
+    {
+        if(gpModelHandler->count() > 0 && gpModelHandler->getCurrentModel() != 0)
+        {
+            gpModelHandler->closeModelByTabIndex(gpCentralTabWidget->currentIndex(),force);
+        }
     }
 }
 

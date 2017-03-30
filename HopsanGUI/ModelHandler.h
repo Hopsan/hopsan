@@ -77,10 +77,10 @@ public slots:
     void loadModel();
     void loadModel(QAction *action);
     void loadModelParameters();
-    bool closeModelByTabIndex(int tabIdx);
+    bool closeModelByTabIndex(int tabIdx, bool force=false);
     bool closeModel(int idx, bool force=false);
     bool closeModel(ModelWidget *pModel, bool force=false);
-    bool closeAllModels();
+    bool closeAllModels(bool force=false);
     void selectModelByTabIndex(int tabIdx);
     void saveState();
     void restoreState();
