@@ -4467,7 +4467,7 @@ void HcomHandler::executeCloseModelCommand(const QString cmd)
         return;
     }
 
-    if(gpModelHandler->count() > 0)
+    if(gpModelHandler->count() > 0 && gpModelHandler->getCurrentModel() != 0)
     {
         gpModelHandler->closeModelByTabIndex(gpCentralTabWidget->currentIndex());
     }
