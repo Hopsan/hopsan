@@ -760,22 +760,21 @@ def cleanUp():
         callMove(hopsanDir+r'\bin_build_backup', hopsanDir+r'\bin')
 
 
-def extractHopsanBuildPath(version, arch, pathName):
+def extractHopsanBuildPath(arch, path_name):
     # Ok this wil run the script for every variable we call, but it is fast so who cares
     p = subprocess.Popen([r'Dependencies\setHopsanBuildPaths.bat', version, arch], shell=True, stdout=subprocess.PIPE)
     stdout, stderr = p.communicate()
     if p.returncode == 0:  # is 0 if success
         for line in stdout.splitlines():
-            if line.startswith(pathName):
-                substr = line.split(':', 1)
-                substr = line.split(':', 1)
-                if len(substr) == 2:
-                    #print(substr)
-                    #print(substr[1])
-                    return substr[1].strip()
+            if line.startswith(path_name):
+                substrs = line.split(':', 1)
+                if len(substrs) == 2:
+                    #print(substrs)
+                    #print(substrs[1])
+                    return substrs[1].strip()
     else:
         return 'Failed to run setHopsanBuildPaths.bat script'
-    return pathName+' path Not Found!'
+    return path_name+' path Not Found!'
     
 #################################
 # Execution of file begins here #
@@ -801,8 +800,8 @@ if do32BitRelease:
     gARCH = 'x86'
     gDo64BitRelease = False
 
-mingwDir = extractHopsanBuildPath('0.7.x', gARCH, 'MinGW')
-qmakeDir = extractHopsanBuildPath('0.7.x', gARCH, 'QMake')
+mingwDir = extractHopsanBuildPath(gARCH, 'mingw')
+qmakeDir = extractHopsanBuildPath(gARCH, 'qmake')
 print('MinGW path: '+mingwDir)
 print('Qmake path: '+qmakeDir)
 
