@@ -239,11 +239,14 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
     HString subTypeName = readStringAttribute(pComponentNode, "subtypename", "").c_str();
     HString displayName = readStringAttribute(pComponentNode, "name", typeName.c_str()).c_str();
 
+    bool disabled = readBoolAttribute(pComponentNode, "disabled", false);
+
     Component *pComp = pHopsanEssentials->createComponent(typeName.c_str());
     if (pComp != 0)
     {
         pComp->setName(displayName);
         pComp->setSubTypeName(subTypeName.c_str());
+        pComp->setDisabled(disabled);
         pSystem->addComponent(pComp);
 
         // Load parameters

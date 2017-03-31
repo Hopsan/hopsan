@@ -609,6 +609,33 @@ void ModelObject::setIsLocked(bool value)
     mIsLocked = value;
 }
 
+void ModelObject::setDisabled(bool value)
+{
+    mpParentContainerObject->getCoreSystemAccessPtr()->setSubComponentDisabled(this->getName(), value);
+
+    if(value) {
+        QGraphicsColorizeEffect *pGrayEffect = new QGraphicsColorizeEffect();
+        pGrayEffect->setColor(QColor("gray"));
+        this->setGraphicsEffect(pGrayEffect);
+    }
+    else
+    {
+        this->setGraphicsEffect(nullptr);
+    }
+}
+
+bool ModelObject::isDisabled()
+{
+    if(!mpParentContainerObject)
+    {
+        return false; //Top-level system cannot be disabled
+    }
+    else
+    {
+        return mpParentContainerObject->getCoreSystemAccessPtr()->isSubComponentDisabled(this->getName());
+    }
+}
+
 //! @brief Slot that opens the parameter dialog for the component
 void ModelObject::openPropertiesDialog()
 {
@@ -987,6 +1014,7 @@ void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContent
     }
     rDomElement.setAttribute(HMF_NAMETAG, getName());
     rDomElement.setAttribute(HMF_CQSTYPE, getTypeCQS());
+    rDomElement.setAttribute(HMF_DISABLEDTAG, bool2str(isDisabled()));
 }
 
 QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
@@ -1254,6 +1282,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     QAction *pExportComponentParam = 0;//rMenu.addAction(tr("Export Component Parameters"));
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
     QAction *pLockedAction=0;
+    QAction *pDisabledAction=0;
     if (type() != ScopeComponentType)
     {
         pRotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
@@ -1286,6 +1315,10 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     pShowNameAction->setCheckable(true);
     pShowNameAction->setChecked(mNameTextAlwaysVisible);
     pShowNameAction->setEnabled(allowLimitedEditing);
+
+    pDisabledAction = rMenu.addAction("Disabled");
+    pDisabledAction->setCheckable(true);
+    pDisabledAction->setChecked(this->isDisabled());
 
     pLockedAction = rMenu.addAction("Locked");
     pLockedAction->setCheckable(true);
@@ -1352,6 +1385,18 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     else if(selectedAction == pLockedAction)
     {
         this->setIsLocked(pLockedAction->isChecked());
+        foreach(ModelObject *pObj, mpParentContainerObject->getSelectedModelObjectPtrs())
+        {
+            pObj->setIsLocked(pLockedAction->isChecked());
+        }
+    }
+    else if(selectedAction == pDisabledAction)
+    {
+      this->setDisabled(pDisabledAction->isChecked());
+      foreach(ModelObject *pObj, mpParentContainerObject->getSelectedModelObjectPtrs())
+      {
+          pObj->setDisabled(pDisabledAction->isChecked());
+      }
     }
     else
     {

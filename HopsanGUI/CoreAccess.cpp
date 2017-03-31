@@ -588,6 +588,27 @@ QString CoreSystemAccess::renameSubComponent(QString componentName, QString name
     return pTempComponent->getName().c_str();
 }
 
+
+void CoreSystemAccess::setSubComponentDisabled(QString componentName, bool disabled)
+{
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
+    if (pComp)
+    {
+        pComp->setDisabled(disabled);
+    }
+}
+
+bool CoreSystemAccess::isSubComponentDisabled(QString componentName)
+{
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
+    if (pComp)
+    {
+        return pComp->isDisabled();
+    }
+    return false;
+}
+
+
 bool CoreSystemAccess::hasParameter(const QString &rComponentName, const QString &rParameterName)
 {
     hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(rComponentName.toStdString().c_str());

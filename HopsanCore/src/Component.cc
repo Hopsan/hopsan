@@ -292,6 +292,16 @@ void Component::simulate(const double stopT)
     //END DEBUG
 }
 
+void Component::setDisabled(bool value)
+{
+    mIsDisabled = value;
+}
+
+bool Component::isDisabled()
+{
+    return mIsDisabled;
+}
+
 //! @brief The initialize function must be overloaded in each component, it is used to initialize the component just before simulation begins
 //! @details In this function you should get node data ptrs and calculate initial values to write to the nodes
 //! You are not allowed to reconnect internal connections in this function, as other components may already have initialized and fetch data pointers to ports/nodes in this component

@@ -177,6 +177,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_NAMETEXTPOSTAG "nametextpos"
 #define HMF_VISIBLETAG "nametextvisible"
 #define HMF_LOCKEDTAG "locked"
+#define HMF_DISABLEDTAG "disabled"
 
 #define HMF_CONNECTORSTARTCOMPONENTTAG "startcomponent"
 #define HMF_CONNECTORSTARTPORTTAG "startport"

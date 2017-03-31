@@ -232,6 +232,10 @@ namespace hopsan {
         std::vector<Component*> mComponentUndefinedptrs;
         std::vector<Node*> mSubNodePtrs;
 
+        std::vector<Component*> mDisabledSptrs;
+        std::vector<Component*> mDisabledQptrs;
+        std::vector<Component*> mDisabledCptrs;
+
         typedef std::map<HString, UniqeNameEnumT> TakenNamesMapT;
         TakenNamesMapT mTakenNames;
 

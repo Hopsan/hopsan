@@ -98,6 +98,10 @@ public:
     virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double stopT);
 
+    //Enabled or disabled?
+    void setDisabled(bool value);
+    bool isDisabled();
+
     // Timestep functions
     void setDesiredTimestep(const double timestep);
     void setInheritTimestep(const bool inherit=true);
@@ -299,6 +303,7 @@ private:
     HopsanCoreMessageHandler *mpMessageHandler;
     std::vector<VariameterDescription> mVariameters;
     std::map<Port*, double**> mAutoSignalNodeDataPtrPorts;
+    bool mIsDisabled;
 };
 
 

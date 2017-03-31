@@ -1980,6 +1980,20 @@ void ComponentSystem::loadStartValues()
         (*compIt)->loadStartValues();
     }
 
+    //Also load start values for disabled components (otherwise final variables from previous simulation will remain in nodes)
+    for(compIt = mDisabledSptrs.begin(); compIt != mDisabledSptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValues();
+    }
+    for(compIt = mDisabledCptrs.begin(); compIt != mDisabledCptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValues();
+    }
+    for(compIt = mDisabledQptrs.begin(); compIt != mDisabledQptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValues();
+    }
+
     // Now load all start values for the interface ports, they should override internally set start values
     PortPtrMapT::iterator pit;
     for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
@@ -2174,6 +2188,44 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
 {
     //cout << "Initializing SubSystem: " << this->mName << endl;
     addLogMess("ComponentSystem::initialize() in "+getName());
+
+    //Move all disabled components to temporary vectors
+    for(size_t i=0; i<mComponentCptrs.size();)
+    {
+        if(mComponentCptrs.at(i)->isDisabled())
+        {
+            mDisabledCptrs.push_back(mComponentCptrs.at(i));
+            mComponentCptrs.erase(mComponentCptrs.begin() + i );
+        }
+        else
+        {
+            ++i;
+        }
+    }
+    for(size_t i=0; i<mComponentQptrs.size();)
+    {
+        if(mComponentQptrs.at(i)->isDisabled())
+        {
+            mDisabledQptrs.push_back(mComponentQptrs.at(i));
+            mComponentQptrs.erase(mComponentQptrs.begin() + i );
+        }
+        else
+        {
+            ++i;
+        }
+    }
+    for(size_t i=0; i<mComponentSignalptrs.size();)
+    {
+        if(mComponentSignalptrs.at(i)->isDisabled())
+        {
+            mDisabledSptrs.push_back(mComponentSignalptrs.at(i));
+            mComponentSignalptrs.erase(mComponentSignalptrs.begin() + i );
+        }
+        else
+        {
+            ++i;
+        }
+    }
 
     if (this->isTopLevelSystem())
     {
@@ -3362,6 +3414,23 @@ void ComponentSystem::finalize()
     }
 
     //loadStartValuesFromSimulation();
+
+    //Move disabled components back to their original vectors
+    for(size_t i=0; i<mDisabledCptrs.size(); ++i)
+    {
+        mComponentCptrs.push_back(mDisabledCptrs.at(i));
+    }
+    mDisabledCptrs.clear();
+    for(size_t i=0; i<mDisabledQptrs.size(); ++i)
+    {
+        mComponentQptrs.push_back(mDisabledQptrs.at(i));
+    }
+    mDisabledQptrs.clear();
+    for(size_t i=0; i<mDisabledSptrs.size(); ++i)
+    {
+        mComponentSignalptrs.push_back(mDisabledSptrs.at(i));
+    }
+    mDisabledSptrs.clear();
 }
 
 ////! @brief This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time

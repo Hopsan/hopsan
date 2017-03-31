@@ -837,7 +837,7 @@ void ModelWidget::lockModelEditingLimited(bool lock)
             //pObj->setFlag(QGraphicsItem::ItemIsMovable, true);
             //pObj->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-            if (pObj->graphicsEffect())
+            if (pObj->graphicsEffect() && !pObj->isDisabled())
             {
                 pObj->graphicsEffect()->setEnabled(false);
                 //pObj->graphicsEffect()->deleteLater();

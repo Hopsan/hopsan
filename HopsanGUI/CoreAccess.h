@@ -190,6 +190,10 @@ public:
     QString getSystemName();
     QString renameSubComponent(QString componentName, QString name);
 
+    //Disable components
+    void setSubComponentDisabled(QString componentName, bool disabled);
+    bool isSubComponentDisabled(QString componentName);
+
     // Parameters and start values
     bool hasParameter(const QString &rComponentName, const QString &rParameterName);
     QStringList getParameterNames(QString componentName);

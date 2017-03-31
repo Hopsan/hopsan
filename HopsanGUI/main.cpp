@@ -67,10 +67,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     qRegisterMetaType<GUIMessage>("GUIMessage");
 
-#ifdef USETBB
-    qDebug() << "TBB is used!";
-#endif
-
     // Forcing numeric locale to C only using QLocale::setDefault() does not seem to help
     std::setlocale(LC_NUMERIC, "C");                // Set default C locale
     std::locale::global(std::locale::classic());    // Set default C++ locale (should also set default C locale)

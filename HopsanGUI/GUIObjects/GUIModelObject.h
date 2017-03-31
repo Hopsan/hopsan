@@ -163,6 +163,8 @@ public slots:
     void highlight();
     void unHighlight();
     void setIsLocked(bool value);
+    void setDisabled(bool value);
+    bool isDisabled();
 
 signals:
     void nameChanged();

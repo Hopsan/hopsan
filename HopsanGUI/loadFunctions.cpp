@@ -272,7 +272,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     QString subtype = rDomElement.attribute(HMF_SUBTYPENAME);
     QString name = rDomElement.attribute(HMF_NAMETAG);
     bool locked = parseAttributeBool(rDomElement, HMF_LOCKEDTAG, false);
-
+    bool disabled = parseAttributeBool(rDomElement, HMF_DISABLEDTAG, false);
 
 
     //Read gui specific data
@@ -496,6 +496,9 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 plotsetting = plotsetting.nextSiblingElement(HMF_VARIABLEPLOTSETTING);
             }
         }
+
+        //Set disabled state
+        pObj->setDisabled(disabled);
 
         //Set lock state (must be done last, or other settings may not be applied)
         pObj->setIsLocked(locked);
