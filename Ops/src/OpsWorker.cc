@@ -36,6 +36,7 @@
 #include <math.h>
 #include <iostream>
 #include <time.h>
+#include <algorithm>
 
 //#include <QDebug>
 #include "OpsWorker.h"
@@ -122,6 +123,14 @@ void Worker::distributePoints(std::vector<std::vector<double> > *pVector)
         {
             for(size_t i=0; i<mNumParameters; ++i)
             {
+                auto temp = std::make_pair(p, i);
+                if (std::find(mIgnoredWhenSampling.begin(),
+                              mIgnoredWhenSampling.end(),
+                              temp) != mIgnoredWhenSampling.end())
+                {
+                    continue;
+                }
+
                 double r = opsRand();
                 (*pVector)[p][i] = mParameterMin[i] + r*(mParameterMax[i]-mParameterMin[i]);
             }
@@ -142,7 +151,18 @@ void Worker::distributePoints(std::vector<std::vector<double> > *pVector)
             {
                 double min = mParameterMin[j];
                 double max = mParameterMax[j];
-                double x = min+opsRand()*(max-min);
+                double x;
+                auto temp = std::make_pair(i, j);
+                if (std::find(mIgnoredWhenSampling.begin(),
+                              mIgnoredWhenSampling.end(),
+                              temp) != mIgnoredWhenSampling.end())
+                {
+                    x = (*pVector)[i][j];
+                }
+                else
+                {
+                    x = min+opsRand()*(max-min);
+                }
                 newPoint.push_back(x);
                 //interval.push_back((max-min)/m),fmod(newPoint.last());
                 interval.push_back(int(floor(x/(max-min)*m)));
@@ -419,6 +439,26 @@ double Worker::getParameter(const size_t pointIdx, const size_t parIdx) const
         return 0;
     }
     return mPoints[pointIdx][parIdx];
+}
+
+
+void Worker::setIgnoreParameterWhenSampling(const size_t pointIdx, const size_t parIdx)
+{
+    mIgnoredWhenSampling.push_back(std::pair<size_t,size_t>(pointIdx,parIdx));
+}
+
+
+void Worker::setParameter(const size_t pointIdx, const size_t parIdx, const double value)
+{
+    if(mPoints.size() < pointIdx+1)
+    {
+        return;
+    }
+    else if(mPoints[pointIdx].size() < parIdx)
+    {
+        return;
+    }
+    mPoints[pointIdx][parIdx] = value;
 }
 
 

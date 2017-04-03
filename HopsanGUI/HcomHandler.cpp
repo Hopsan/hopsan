@@ -4956,6 +4956,29 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
                 HCOMERR("Unknown argument: "+split[2]);
             }
         }
+        else if(split.size() == 5 && split[1] == "startvalue")
+        {
+            bool ok;
+            int pointId = getNumber(split[2], &ok);
+            if(!ok)
+            {
+                HCOMERR("Argument number 2 must be a number.");
+                return;
+            }
+            int parId = getNumber(split[3], &ok);
+            if(!ok)
+            {
+                HCOMERR("Argument number 3 must be a number.");
+                return;
+            }
+            double value = getNumber(split[4], &ok);
+            if(!ok)
+            {
+                HCOMERR("Argument number 4 must be a number.");
+                return;
+            }
+            mpOptHandler->setStartValue(pointId, parId, value);
+        }
         else if(split.size() == 3)
         {
             bool ok=true;

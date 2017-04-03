@@ -653,6 +653,12 @@ QStringList OptimizationHandler::getOptParNamesPtr()
     return ret;
 }
 
+void OptimizationHandler::setStartValue(const int pointIdx, const int parIdx, const double value)
+{
+    mpWorker->setParameter(pointIdx, parIdx, value);
+    mpWorker->setIgnoreParameterWhenSampling(pointIdx, parIdx);
+}
+
 bool OptimizationHandler::evaluateCandidate(int idx)
 {
     mEvalId = idx;

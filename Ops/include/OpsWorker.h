@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace Ops {
 
@@ -99,6 +100,8 @@ public:
     std::vector<std::vector<double> > &getCandidatePoints();
     double getCandidateParameter(const size_t pointIdx, const size_t parIdx) const;
     double getParameter(const size_t pointIdx, const size_t parIdx) const;
+    void setParameter(const size_t pointIdx, const size_t parIdx, const double value);
+    void setIgnoreParameterWhenSampling(const size_t pointIdx, const size_t parIdx);
     double getMaxPercentalParameterDiff();
     double getMaxPercentalParameterDiff(std::vector<std::vector<double> > &points);
 
@@ -138,6 +141,7 @@ protected:
     SamplingT mDistribution;
     Evaluator *mpEvaluator;
     MessageHandler *mpMessageHandler;
+    std::vector<std::pair<size_t,size_t>> mIgnoredWhenSampling;
 };
 
 }

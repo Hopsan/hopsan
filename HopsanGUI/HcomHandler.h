@@ -104,7 +104,6 @@ public:
     void setAcceptsOptimizationCommands(const bool value);
     bool getAcceptsOptimizationCommands() const;
 
-
     // Return values from evaluation
     double mAnsScalar;
     QString mAnsWildcard;

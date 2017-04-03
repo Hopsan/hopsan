@@ -117,6 +117,7 @@ public:
     void setIsRunning(bool value);
     bool isRunning();
     QStringList getOptParNamesPtr();
+    void setStartValue(const int pointIdx, const int parIdx, const double value);
 
     bool evaluateCandidate(int idx);
     bool evaluateAllCandidates();
