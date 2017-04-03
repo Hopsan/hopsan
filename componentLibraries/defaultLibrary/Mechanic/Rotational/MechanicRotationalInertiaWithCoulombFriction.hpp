@@ -47,7 +47,7 @@ namespace hopsan {
     {
 
     private:
-        double *mpJ, *mpB;
+        double *mpJ, *mpB, *mpAMin, *mpAMax;
         double ts, tk;
         double *mpP1_T, *mpP1_a, *mpP1_w, *mpP1_c, *mpP1_Zx, *mpP2_T, *mpP2_a, *mpP2_w, *mpP2_c, *mpP2_Zx;  //Node data pointers
         DoubleIntegratorWithDampingAndCoulombFriction mIntegrator;
@@ -67,6 +67,8 @@ namespace hopsan {
             addInputVariable("B", "Viscous Friction Coefficient", "Nms/rad", 10, &mpB);
             addConstant("t_s", "Static Friction Torque", "Nm", 50, ts);
             addConstant("t_k", "Kinetic Friction Torque", "Nm", 45, tk);
+            addInputVariable("a_min", "Minimum Angle of Port P2", "rad", -1.0e+300, &mpAMin);
+            addInputVariable("a_max", "Maximum Angle of Port P2", "rad", 1.0e+300, &mpAMax);
         }
 
 
@@ -118,6 +120,19 @@ namespace hopsan {
             mIntegrator.integrateWithUndo((c1-c2)/J);
             w2 = mIntegrator.valueFirst();
             a2 = mIntegrator.valueSecond();
+
+            if(a2<(*mpAMin))
+            {
+                a2=(*mpAMin);
+                w2=0.0;
+                mIntegrator.initializeValues((c1-c2)/J, a2, w2);
+            }
+            if(a2>(*mpAMax))
+            {
+                a2=(*mpAMax);
+                w2=0.0;
+                mIntegrator.initializeValues((c1-c2)/J, a2, w2);
+            }
 
             w1 = -w2;
             a1 = -a2;

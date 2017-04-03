@@ -69,8 +69,8 @@ namespace hopsan {
             addConstant("J", "Moment of Inertia", "kgm^2", 0.1, J);
             addInputVariable("B", "Viscous Friction", "Nms/rad", 10.0, &mpB);
             addInputVariable("k", "Spring Constant", "Nm/rad", 0.0, &mpK);
-            addInputVariable("a_min", "Minimum Angle of Port P2", "m", -1.0e+300, &mpAMin);
-            addInputVariable("a_max", "Maximum Angle of Port P2", "m", 1.0e+300, &mpAMax);
+            addInputVariable("a_min", "Minimum Angle of Port P2", "rad", -1.0e+300, &mpAMin);
+            addInputVariable("a_max", "Maximum Angle of Port P2", "rad", 1.0e+300, &mpAMax);
         }
 
 
