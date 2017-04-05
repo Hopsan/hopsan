@@ -4,7 +4,7 @@ dbg_ext = _d
 unix:CONFIG(debug, debug|release):dbg_ext =
 
 # Set hompath and libname
-pythonqt_home = $${PWD}/pythonqt_install
+pythonqt_home = $${PWD}/pythonqt
 pythonqt_lib = $${pythonqt_home}/lib
 libname = PythonQt
 

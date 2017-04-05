@@ -5,9 +5,10 @@ REM Bat script building libHDF5 dependency automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
 set basedir=%~dp0
-set codedir=%basedir%\hdf5
-set builddir=%codedir%_build
-set installdir=%codedir%_install
+set name=hdf5
+set codedir=%basedir%\%name%_code
+set builddir=%basedir%\%name%_build
+set installdir=%basedir%\%name%
 
 REM Setup path
 set OLDPATH=%PATH%

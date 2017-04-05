@@ -3,13 +3,13 @@
 
 # Shell script building HopsaGUI dependency Qwt automatically
 # Author: Peter Nordin peter.nordin@liu.se
-# Date:   2012-03-29
+
 
 basedir=`pwd`
-codedir=${basedir}/qwt
-builddir=${codedir}_build
-installdir=${codedir}_install
-
+name=qwt
+codedir=${basedir}/${name}_code
+builddir=${basedir}/${name}_build
+installdir=${basedir}/${name}
 
 # include general settings
 source setHopsanBuildPaths.sh

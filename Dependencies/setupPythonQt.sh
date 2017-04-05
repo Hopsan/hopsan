@@ -3,15 +3,15 @@
 
 # Shell script building HopsaGUI dependency PythonQt automatically
 # Author: Peter Nordin peter.nordin@liu.se
-# Date:   2012-03-29
 
 
 pyversion="2.7"
 basedir=`pwd`
 pythonqtname="PythonQt3.1"
-codedir=${basedir}/pythonqt
-builddir=${codedir}_build
-installdir=${codedir}_install
+name=pythonqt
+codedir=${basedir}/${name}_code
+builddir=${basedir}/${name}_build
+installdir=${basedir}/${name}
 E_BADARGS=65
 
 if [ $# -lt 1 ]; then
@@ -71,7 +71,7 @@ cd $builddir
 qmake ${codedir}/PythonQt.pro -r -spec linux-g++
 make -j4 -w
 
-# Install manually since PythonQt code does not have install target confgigured
+# Install manually since PythonQt code does not have install target configured
 mkdir -p $installdir/include
 cp -a lib $installdir
 cd $codedir/src

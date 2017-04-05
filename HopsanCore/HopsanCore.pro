@@ -26,18 +26,17 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
-INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
-INCLUDEPATH *= $${PWD}/../Dependencies/IndexingCSVParser
-#INCLUDEPATH *= $${PWD}/Dependencies/boost
+INCLUDEPATH *= $${PWD}/dependencies/rapidxml-1.13
+INCLUDEPATH *= $${PWD}/dependencies/IndexingCSVParser
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set numHop paths, (compile in)
-INCLUDEPATH *= $${PWD}/../Dependencies/libNumHop/libNumHop
-SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Expression.cc
-SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Helpfunctions.cc
-SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/VariableStorage.cc
-HEADERS += $${PWD}/../Dependencies/libNumHop/libNumHop/numhop.h
+INCLUDEPATH *= $${PWD}/dependencies/libNumHop/libNumHop
+SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/Expression.cc
+SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/Helpfunctions.cc
+SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/VariableStorage.cc
+HEADERS += $${PWD}/dependencies/libNumHop/libNumHop/numhop.h
 #--------------------------------------------------------
 
 # -------------------------------------------------

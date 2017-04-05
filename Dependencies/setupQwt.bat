@@ -5,9 +5,10 @@ REM Bat script building HopsaGUI dependency QWT automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
 set basedir=%~dp0
-set codedir=%basedir%\qwt
-set builddir=%codedir%_build
-set installdir=%codedir%_install
+set name=qwt
+set codedir=%basedir%\%name%_code
+set builddir=%basedir%\%name%_build
+set installdir=%basedir%\%name%
 
 REM Setup paths
 call setHopsanBuildPaths.bat

@@ -5,13 +5,14 @@ REM Bat script for building Discount automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
 set basedir=%~dp0
-set codedir=%basedir%\discount
-set builddir=%codedir%_build
-set installdir=%codedir%_install
+set name=discount
+set codedir=%basedir%\%name%_code
+set builddir=%basedir%\%name%_build
+set installdir=%basedir%\%name%
 
 REM This path is needed for bash / posix compatibility inside the bash shell
 REM TODO it would be nice if we could auto generate the bash path from the windows install dir path
-set installdir_bash=../discount_install
+set installdir_bash=../%name%
 
 call setHopsanBuildPaths.bat
 

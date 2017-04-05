@@ -5,9 +5,10 @@ REM Bat script building ZeroMQ and unpacking messagepack automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
 set basedir=%~dp0
-set codedir=%basedir%\zeromq
-set builddir=%codedir%_build
-set installdir=%codedir%_install
+set name=zeromq
+set codedir=%basedir%\%name%_code
+set builddir=%basedir%\%name%_build
+set installdir=%basedir%\%name%
 
 REM Setup paths
 set OLDPATH=%PATH%

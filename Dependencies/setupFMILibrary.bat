@@ -5,9 +5,11 @@ REM Bat script building FMILibrary dependency automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
 set basedir=%~dp0
-set codedir=%basedir%\FMILibrary
-set builddir=%codedir%_build
-set installdir=%codedir%_install
+set name=FMILibrary
+set codedir=%basedir%\%name%_code
+set builddir=%basedir%\%name%_build
+set installdir=%basedir%\%name%
+
 
 set OLDPATH=%PATH%
 call setHopsanBuildPaths.bat

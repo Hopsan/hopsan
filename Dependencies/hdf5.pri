@@ -3,7 +3,7 @@ win32:CONFIG(debug, debug|release):dbg_ext =
 unix:CONFIG(debug, debug|release):dbg_ext =
 
 # Set hompath and libname
-homedir = $${PWD}/hdf5_install
+homedir = $${PWD}/hdf5
 libdir = $${homedir}/lib
 bindir = $${homedir}/bin
 libname1 = hdf5-shared

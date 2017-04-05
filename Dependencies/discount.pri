@@ -4,7 +4,7 @@ win32:CONFIG(debug, debug|release):dbg_ext =
 unix:CONFIG(debug, debug|release):dbg_ext =
 
 # Set hompath and libname
-discount_home = $${PWD}/discount_install
+discount_home = $${PWD}/discount
 discount_libdir = $${discount_home}/lib
 libname = markdown
 

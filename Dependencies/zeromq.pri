@@ -5,7 +5,7 @@ win32:CONFIG(debug, debug|release):dbg_ext =
 #unix:CONFIG(debug, debug|release):dbg_ext = d
 
 # Set libpath and libname
-zeromq_home = $${PWD}/zeromq_install
+zeromq_home = $${PWD}/zeromq
 zeromq_lib = $${zeromq_home}/lib
 zeromq_bin = $${zeromq_home}/bin
 libname = zmq

@@ -4,7 +4,7 @@ win32:CONFIG(debug, debug|release):dbg_ext =
 #unix:CONFIG(debug, debug|release):dbg_ext = d
 
 # Set hompath and libname
-qwt_home = $${PWD}/qwt_install
+qwt_home = $${PWD}/qwt
 qwt_libdir = $${qwt_home}/lib
 libname = qwt
 

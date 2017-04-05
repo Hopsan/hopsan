@@ -605,9 +605,9 @@ QStringList getHopsanCoreIncludePaths()
     QStringList includePaths;
     includePaths << "HopsanCore/include" <<
                     "componentLibraries/defaultLibrary";
-    includePaths << "Dependencies/rapidxml-1.13/" <<
-                    "Dependencies/IndexingCSVParser/" <<
-                    "Dependencies/libNumHop/libNumHop";
+    includePaths << "HopsanCore/dependencies/rapidxml-1.13/" <<
+                    "HopsanCore/dependencies/IndexingCSVParser/" <<
+                    "HopsanCore/dependencies/libNumHop/libNumHop";
     return includePaths;
 }
 
@@ -987,13 +987,13 @@ void getHopsanCoreDependecyFiles(const QString &hopsanRoot, QStringList &rSrcFil
     rSrcFiles.clear();
     rIncludeFiles.clear();
 
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/rapidxml-1.13", "hpp", rIncludeFiles);
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/libNumHop/libNumHop", "h", rIncludeFiles);
-    rIncludeFiles << hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
-                     hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/rapidxml-1.13", "hpp", rIncludeFiles);
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/libNumHop", "h", rIncludeFiles);
+    rIncludeFiles << hopsanRoot+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
+                     hopsanRoot+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
 
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/Dependencies/libNumHop/libNumHop", "cc", rSrcFiles);
-    rSrcFiles << hopsanRoot+"/Dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/libNumHop", "cc", rSrcFiles);
+    rSrcFiles << hopsanRoot+"HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 }
 
 QStringList listHopsanCoreSourceFiles(const QString rootPath)

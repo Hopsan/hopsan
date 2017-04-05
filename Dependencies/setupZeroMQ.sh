@@ -5,9 +5,10 @@
 # Author: Peter Nordin peter.nordin@liu.se
 
 basedir=`pwd`
-codedir=${basedir}/zeromq
-builddir=${codedir}_build
-installdir=${codedir}_install
+name=zeromq
+codedir=${basedir}/${name}_code
+builddir=${basedir}/${name}_build
+installdir=${basedir}/${name}
 
 # Make and enter build dir
 mkdir -p $builddir
