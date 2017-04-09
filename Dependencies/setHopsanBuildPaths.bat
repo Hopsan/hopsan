@@ -11,7 +11,7 @@ set hopsan_arch=x64
 
 REM Overwrite with command line argument values if present
 if not "%~1"=="" (
-	set hopsan_arch=%~2
+	set hopsan_arch=%~1
 )
 if not "%~2"=="" (
 REM Do something maybe	
