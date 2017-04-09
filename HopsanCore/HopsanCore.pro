@@ -141,7 +141,7 @@ SOURCES += \
     src/ComponentUtilities/HopsanPowerUser.cc \
     src/ComponentUtilities/LookupTable.cc \
     src/ComponentUtilities/PLOParser.cc \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
+    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
     src/Quantities.cc \
     src/CoreUtilities/NumHopHelper.cc \
     src/CoreUtilities/AliasHandler.cc \
@@ -187,7 +187,7 @@ HEADERS += \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
-    ../Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
+    $${PWD}/dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
     include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
@@ -199,8 +199,8 @@ HEADERS += \
     include/Components/ModelicaComponent.hpp \
     include/ComponentUtilities/LookupTable.h \
     include/ComponentUtilities/PLOParser.h \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParser.h \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
+    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.h \
+    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
     include/Quantities.h \
     include/NodeRWHelpfuncs.hpp \
     include/HopsanCoreVersion.h \
