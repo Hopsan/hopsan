@@ -15,6 +15,8 @@ REM TODO it would be nice if we could auto generate the bash path from the windo
 set installdir_bash=../%name%
 
 call setHopsanBuildPaths.bat
+REM Make sure that the real msys is found first, TODO It would be better if we could tell the setupPaths script what msys environment to prefere
+set PATH=%msys_path%;%PATH%
 
 REM Copy code to build dir, not sure if out-of-source build is possible
 mkdir %builddir%
@@ -30,5 +32,5 @@ REM Note! We use msys make here as mingw32-make is to strict since 4.9.2
 
 cd %basedir%
 echo.
-echo setupDiscount.sh done
+echo setupDiscount.bat done
 pause
