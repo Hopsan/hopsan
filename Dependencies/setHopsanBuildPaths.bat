@@ -43,20 +43,20 @@ if defined ProgramFiles(x86) (
 	if exist "%ProgramFiles(x86)%\CMake\bin" (
 		set "cmake_path=%ProgramFiles(x86)%\CMake\bin" 
 	) else (
-		set "cmake_path=%ProgramFiles%\CMake\bin"
+		set "cmake_path=%ProgramW6432%\CMake\bin"
 	)
 	if exist "%ProgramFiles(x86)%\doxygen\bin" (
 		set "doxygen_path=%ProgramFiles(x86)%\doxygen\bin"
 	) else (
-		set "doxygen_path=%ProgramFiles%\doxygen\bin"
+		set "doxygen_path=%ProgramW6432%\doxygen\bin"
 	)
 	REM Assume official "Git for Windows" 
 	if exist "%ProgramFiles(x86)%\Git\bin" (
 		set "git_path=%ProgramFiles(x86)%\Git\bin"
 		set "gitmsys_path=%ProgramFiles(x86)%\Git\usr\bin"
 	) else (
-		set "git_path=%ProgramFiles%\Git\bin"
-		set "gitmsys_path=%ProgramFiles%\Git\usr\bin"
+		set "git_path=%ProgramW6432%\Git\bin"
+		set "gitmsys_path=%ProgramW6432%\Git\usr\bin"
 	)
 ) else (
     REM do stuff for 32bit here

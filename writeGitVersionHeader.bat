@@ -15,7 +15,7 @@ if defined ProgramFiles(x86) (
 		set "PATH=%ProgramFiles(x86)%\Git\bin;%PATH%"
 	) else (
 		REM Assume 64-bit version installed
-		set "PATH=%ProgramFiles%\Git\bin;%PATH%"
+		set "PATH=%ProgramW6432%\Git\bin;%PATH%"
 	)
 ) else (
 	REM Assume 32-bit version installed

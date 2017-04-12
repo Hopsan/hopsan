@@ -13,7 +13,7 @@ if defined ProgramFiles(x86) (
 		set "PATH=%ProgramFiles(x86)%\Git\bin;%PATH%"
 	) else (
 		REM Assume 64-bit version installed
-		set "PATH=%ProgramFiles%\Git\bin;%PATH%"
+		set "PATH=%ProgramW6432%\Git\bin;%PATH%"
 	)
 ) else (
 	REM Assume 32-bit version installed
@@ -24,16 +24,20 @@ REM If the default Git for Windows path is not available then assume that git an
 
 REM Check if found else return GITNOTFOUND
 where /Q git.exe
-if ERRORLEVEL 1 goto NOTFOUND
+if ERRORLEVEL 1 goto GITNOTFOUND
 
 where /Q bash.exe
-if ERRORLEVEL 1 goto NOTFOUND
+if ERRORLEVEL 1 goto BASHNOTFOUND
 
 REM Execute the bash script to do the work
 cd %~dp0
 bash.exe -c "exec ./getGitInfo.sh %what% %directory%"
 exit /B %ERRORLEVEL%
 
-:NOTFOUND
+:GITNOTFOUND
 	echo GITNOTFOUND
+	exit /B 1
+	
+:BASHNOTFOUND
+	echo BASHNOTFOUND
 	exit /B 1
