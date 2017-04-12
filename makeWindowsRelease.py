@@ -5,8 +5,13 @@ import os
 import ctypes
 import stat
 import shutil
+import shlex
+import tempfile
 import re
-from time import sleep
+import tarfile
+import zipfile
+import uuid
+import time
 
 # -------------------- Setup Start --------------------
 # Version numbers
@@ -25,7 +30,7 @@ gTemporaryBuildDir = r'C:\temp_release'
 inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
 innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 doxygenDirList = [r'C:\Program Files\doxygen\bin', r'C:\Program Files (x86)\doxygen\bin']
-gsDirList = [r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin']
+gsDirList = [r'C:\Program Files\gs\gs9.21\bin', r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin']
 
 # Compilers and build tools
 qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1', r'C:\Qt\qtcreator-3.6.0', r'C:\Qt\Tools\QtCreator']
@@ -47,11 +52,12 @@ mingwOptBins  = []
 
 # -------------------- Setup End --------------------
 
-
-# Remember current working dir
+# Internal global help variables
+hopsan_bin_backup_dir = ''
 hopsanDir = os.getcwd()
-STD_OUTPUT_HANDLE = -11
 
+
+STD_OUTPUT_HANDLE = -11
 
 def quotePath(path):
     """Appends quotes around string if quotes are not already present"""
@@ -59,6 +65,13 @@ def quotePath(path):
         path = r'"'+path
     if path[-1] != r'"':
         path = path+r'"'
+    return path
+
+def slashAtEnd(path):
+    """ Append / at the end of a string (for paths) if not alrady present"""
+    if len(path) > 0:
+        if path[-1] != '/':
+            return path+'/'
     return path
 
 
@@ -98,7 +111,7 @@ def printWarning(text):
 
 def printError(text):
     setColor(bcolors.RED)
-    print "Error: " + text
+    print('Error: '+text)
     setColor(bcolors.WHITE)
 
 
@@ -179,30 +192,65 @@ def replace_line_with_pattern(filepath, re_pattern, replacement):
     with open(filepath, 'w+') as f:
         f.write(data)
 
+def git_export(rel_src_dir, dst_dir):
+    print "Exporting "+quotePath(rel_src_dir)+" to "+quotePath(dst_dir)
+    src = rel_src_dir.rstrip('/')
+    dst = dst_dir
 
-def svnExport(src, dst):
-    print "Exporting from "+quotePath(src)+" to "+quotePath(dst)
-    os.system("svn export -q "+quotePath(src)+" "+quotePath(dst))
+    temp_dir = tempfile.mkdtemp()
+    time.sleep(1)
+    temp_file_path = os.path.join(temp_dir, str(uuid.uuid4())).replace(' ','_')+'.tar'
+    temp_file_path_bash = temp_file_path.replace('\\','/')
+    src_bash = src.replace('\\','/')
+    if os.path.isfile(src):
+        src_dir, src_file = os.path.split(src_bash)
+        if src_dir != '':
+            src_dir = ':'+src_dir
+        args = ['git', 'archive', '--format=tar', r'HEAD'+src_dir, src_file, '-o', temp_file_path_bash]    
+    else:
+        # Append dirname to destination path
+        dirname = lastpathelement(src_bash)
+        dst = os.path.join(dst_dir, dirname)
+        args = ['git', 'archive', '--format=tar', r'HEAD:'+src_bash, '-o', temp_file_path_bash]    
+    
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    was_export_ok = False
+    if p.returncode != 0:
+        print(args)
+        print('Failed with return code: '+str(p.returncode))
+        print(stdout)
+        print(stderr)
+    else:    
+        tf = tarfile.open(temp_file_path)
+        tf.extractall(path=dst)
+        tf.close()
+        was_export_ok = True
+    # Cleanup 
+    shutil.rmtree(temp_dir)
+    return was_export_ok
+
+def copy_file(src, dst):
+    if fileExists(src):
+        shutil.copy(src, dst)
+    else:
+        print('Could not copy file: '+src+' it does not exist')
 
 
-def callXcopy(src, dst):
-    #print "xcopy "+quotePath(src)+" "+quotePath(dst)
-    os.system("xcopy "+quotePath(src)+" "+quotePath(dst)+" /s /y")
+def mkdirs(path):
+    try: 
+        os.makedirs(path)
+    except OSError:
+        if not os.path.isdir(path):
+            printError('Could not create directory path: '+path)
 
-
-def callCopyFile(src, dst):
-    #print "copy "+quotePath(src)+" "+quotePath(dst)
-    os.system("copy "+quotePath(src)+" "+quotePath(dst)+" /y")
-
-
-def callMkdir(dst):
-    #print "mkdir "+quotePath(dst)
-    os.system("mkdir "+quotePath(dst))
-
+def del_rw(action, name, exc):
+    os.chmod(name, stat.S_IWRITE)
+    os.remove(name)
 
 def callRd(tgt):
-    #print "rd "+quotePath(tgt)
-    os.system("if exist "+quotePath(tgt)+" rd "+quotePath(tgt)+" /s /q")
+    if pathExists(tgt):
+        shutil.rmtree(tgt, onerror=del_rw)
 
 
 def callEXE(cmd, args):
@@ -213,22 +261,15 @@ def callEXE(cmd, args):
         printError(cmd+r' Does not exist!')
 
 
+
 def callDel(tgt):
-    #print "del "+quotePath(tgt)
-    os.system("del "+quotePath(tgt))
+    if fileExists(tgt):
+        os.remove(tgt)
 
 
-def callMove(src, dst):
-    print "move "+quotePath(src)+" "+quotePath(dst)
-    os.system("move "+quotePath(src)+" "+quotePath(dst))
-
-
-def call7z(args):
-    callEXE(hopsanDir+r'\ThirdParty\7z\7z.exe', args)
-
-
-#def callSed(sedcommand):
-#    callEXE(hopsanDir+r'\ThirdParty\sed-4.2.1\sed.exe', sedcommand)
+def zip_directory(dir_path, zip_file_path):
+    print('Compressing directory: '+dir_path+' into: '+zip_file_path)
+    shutil.make_archive(os.path.splitext(zip_file_path)[0], 'zip', dir_path)
 
 
 # Returns the last part of a path (split[1] or split[0] if only one part)
@@ -283,8 +324,14 @@ def copyDirTo(srcDir, dstDir):
         return False
 
 def move(src, dst):
+    print 'moving '+quotePath(src)+' to '+quotePath(dst)
     if src != dst:
         shutil.move(src, dst)
+
+def move_backup(src, dst):
+    dst_date=dst+time.strftime('%Y%m%d_%H%M%S')
+    move(src, dst_date)
+    return dst_date
 
 def makeMSVCOutDirName(version, arch):
     return "MSVC"+version+"_"+arch
@@ -352,7 +399,7 @@ def verifyPaths():
 def askForVersion():
     dodevrelease = False
     version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')
-    print runCmd("getSvnRevision.bat")[0]
+    print runCmd("getGitInfo.bat date.time .")[0]
     revnum = raw_input('Enter the revision number shown above: ')
     if version == "": 
         dodevrelease = True
@@ -372,7 +419,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     # Create clean build directory
     hopsanBuildDir = hopsanDir+r'\HopsanCore_bd'
     callRd(hopsanBuildDir)
-    callMkdir(hopsanBuildDir)
+    mkdirs(hopsanBuildDir)
       
     # Create compilation script and compile
     os.chdir(hopsanDir)
@@ -410,10 +457,10 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     #Move files to correct MSVC directory
     targetDir = hopsanDirBin+"\\"+makeMSVCOutDirName(msvcVersion, architecture)
     callRd(targetDir)
-    callMkdir(targetDir)
-    callMove(hopsanDirBin+r'\HopsanCore.dll', targetDir+r'\HopsanCore.dll')
-    callMove(hopsanDirBin+r'\HopsanCore.lib', targetDir+r'\HopsanCore.lib')
-    callMove(hopsanDirBin+r'\HopsanCore.exp', targetDir+r'\HopsanCore.exp')
+    mkdirs(targetDir)
+    move(hopsanDirBin+r'\HopsanCore.dll', targetDir)
+    move(hopsanDirBin+r'\HopsanCore.lib', targetDir)
+    move(hopsanDirBin+r'\HopsanCore.exp', targetDir)
     
     return True
 
@@ -425,11 +472,11 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     os.system(r'generateLibraryFiles.bat -nopause')
     os.chdir(hopsanDir)
 
-    callCopyFile(r'HopsanGUI\graphics\splash2.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
+    copy_file(r'HopsanGUI\graphics\splash2.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
 
     if not dodevrelease:
         # Set version numbers (by changing .h files) BEFORE build
-        fullversion = versionnumber+'_r'+revisionnumber
+        fullversion = versionnumber+'.'+revisionnumber
 #        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+versionnumber+r'\"|g" -i HopsanCore\include\HopsanCoreVersion.h')
         replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(versionnumber))
 #        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+versionnumber+r'\"|g" -i HopsanGUI\version_gui.h')
@@ -517,7 +564,7 @@ def buildRelease():
     # Create clean build directory
     hopsanBuildDir = hopsanDir+r'\HopsanNG_bd'
     callRd(hopsanBuildDir)
-    callMkdir(hopsanBuildDir)
+    mkdirs(hopsanBuildDir)
     
     # Generate compile script, setup compiler and compile
     mkspec = "win32-g++"
@@ -554,25 +601,20 @@ def copyFiles():
     os.chdir(hopsanDir)
     
     # Create a temporary release directory
-    callMkdir(gTemporaryBuildDir)
+    mkdirs(gTemporaryBuildDir)
     if not pathExists(gTemporaryBuildDir):
         printError("Failed to create temporary directory")
         return False
 
     # Create directories    
-    callMkdir(gTemporaryBuildDir+r'\Models')
-    callMkdir(gTemporaryBuildDir+r'\bin')
-    callMkdir(gTemporaryBuildDir+r'\componentLibraries')
-    callMkdir(gTemporaryBuildDir+r'\doc\html')
-    callMkdir(gTemporaryBuildDir+r'\doc\graphics')
-    callMkdir(gTemporaryBuildDir+r'\ThirdParty')
-    callMkdir(gTemporaryBuildDir+r'\Dependencies')
+    mkdirs(gTemporaryBuildDir+r'\Models')
+    mkdirs(gTemporaryBuildDir+r'\componentLibraries')
+    mkdirs(gTemporaryBuildDir+r'\doc')
+    mkdirs(gTemporaryBuildDir+r'\ThirdParty')
+    mkdirs(gTemporaryBuildDir+r'\Dependencies')
 
-    # Common export dirs
-    tempDirBin = gTemporaryBuildDir+r'\bin'
-    
     # Copy "bin" folder to temporary directory
-    callXcopy(r'bin\*.*', tempDirBin)
+    copyDirTo(r'bin', gTemporaryBuildDir)
 
     # Build user documentation
     os.system("buildUserDocumentation")
@@ -580,55 +622,54 @@ def copyFiles():
         printError("Failed to build user documentation")
 
     # Export "HopsanCore" SVN directory to "include" in temporary directory
-    svnExport("HopsanCore", gTemporaryBuildDir+r'\HopsanCore')
+    git_export('HopsanCore', gTemporaryBuildDir)
 
-    # Export needed dependencies SVN directories to "include" in the release
-    svnExport(r'Dependencies\katex',                gTemporaryBuildDir+r'\Dependencies\katex')
-    svnExport(r'Dependencies\IndexingCSVParser',    gTemporaryBuildDir+r'\Dependencies\IndexingCSVParser')
-    svnExport(r'Dependencies\libNumHop',            gTemporaryBuildDir+r'\Dependencies\libNumHop')
-    svnExport(r'Dependencies\rapidxml-1.13',        gTemporaryBuildDir+r'\Dependencies\rapidxml-1.13')
+    # Export needed core code dependencies
+    copyDirTo(r'Dependencies/katex',                gTemporaryBuildDir+r'/Dependencies')
+    #copyDirTo(r'Dependencies\IndexingCSVParser',    gTemporaryBuildDir+r'\Dependencies')
+    #copyDirTo(r'Dependencies\libNumHop',            gTemporaryBuildDir+r'\Dependencies')
+    #copyDirTo(r'Dependencies\rapidxml-1.13',        gTemporaryBuildDir+r'\Dependencies')
 
-    # Copy the FMILibrary include files
-    FMILibraryDir = r'./Dependencies/FMILibrary-2.0.1'
-    if not copyDirTo(FMILibraryDir+r'/install', gTemporaryBuildDir+FMILibraryDir):
+    # Copy 3pdependency installations
+    if not copyDirTo(r'Dependencies/FMILibrary', gTemporaryBuildDir+r'/Dependencies'):
         return False
 
     # Export "Example Models" SVN directory to temporary directory
-    svnExport(r'Models\Example Models', gTemporaryBuildDir+r'\Models\Example Models')
+    git_export(r'Models\Example Models', gTemporaryBuildDir+r'\Models')
     
     # Export "Test Models" SVN directory to temporary directory
-    svnExport(r'Models\Component Test', gTemporaryBuildDir+r'\Models\Component Test')
+    git_export(r'Models\Component Test', gTemporaryBuildDir+r'\Models')
 
     # Export "Benchmark Models" SVN directory to temporary directory
-    svnExport(r'Models\Benchmark Models', gTemporaryBuildDir+r'\Models\Benchmark Models')
+    git_export(r'Models\Benchmark Models', gTemporaryBuildDir+r'\Models')
 
     # Export defaultLibrary" SVN directory to temporary directory
-    svnExport(r'componentLibraries\defaultLibrary', gTemporaryBuildDir+r'\componentLibraries\defaultLibrary')
+    git_export(r'componentLibraries\defaultLibrary', gTemporaryBuildDir+r'\componentLibraries')
     
     # Export "exampleComponentLib" SVN directory to temporary directory
-    svnExport(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries\exampleComponentLib')
+    git_export(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries')
     
     # Export "autoLibs" SVN directory to temporary directory
-    svnExport(r'componentLibraries\autoLibs', gTemporaryBuildDir+r'\componentLibraries\autoLibs')
+    git_export(r'componentLibraries\autoLibs', gTemporaryBuildDir+r'\componentLibraries')
    
     # Export "Scripts" folder to temporary directory
-    svnExport(r'Scripts', gTemporaryBuildDir+r'\Scripts')
+    git_export(r'Scripts', gTemporaryBuildDir)
 
     # Copy "hopsandefaults" file to temporary directory
-    svnExport("hopsandefaults", gTemporaryBuildDir+r'\hopsandefaults')
+    git_export("hopsandefaults", gTemporaryBuildDir)
     
     # Copy "release notes" file to temporary directory
-    svnExport("Hopsan-release-notes.txt", gTemporaryBuildDir+r'\Hopsan-release-notes.txt')
+    git_export("Hopsan-release-notes.txt", gTemporaryBuildDir)
     
     # Copy 7zip to temporary directory
-    svnExport(r'ThirdParty\7z', gTemporaryBuildDir+r'\ThirdParty\7z')
+    #git_export(r'ThirdParty\7z', gTemporaryBuildDir+r'\ThirdParty\7z')
 
     # Copy fmi to temporary directory
-    svnExport(r'ThirdParty\fmi', gTemporaryBuildDir+r'\ThirdParty\fmi')
+    #git_export(r'ThirdParty\fmi', gTemporaryBuildDir+r'\ThirdParty\fmi')
 
     # Copy documentation to temporary directory
-    callXcopy(r'doc\html\*', gTemporaryBuildDir+r'\doc\html')
-    callXcopy(r'doc\graphics\*', gTemporaryBuildDir+r'\doc\graphics')
+    copyDirTo(r'doc\html', gTemporaryBuildDir+r'\doc')
+    copyDirTo(r'doc\graphics', gTemporaryBuildDir+r'\doc')
 
     # Write the do not save files here file
     writeDoNotSafeFileHereFileToAllDirectories(gTemporaryBuildDir)
@@ -640,9 +681,9 @@ def copyFiles():
 
 def createZipInstaller(zipFile, outputDir):
     print('Creating zip package: '+zipFile+'...')
-    call7z(r'a '+zipFile+r' '+gTemporaryBuildDir)
-    callMove(zipFile, outputDir)
-    if not fileExists(outputDir+'/'+zipFile):
+    zip_directory(gTemporaryBuildDir, zipFile)
+    move(zipFile, outputDir)
+    if not fileExists(os.path.join(outputDir, zipFile)):
         printError('Failed to create zip package: '+zipFile)
         return False
     printSuccess('Created zip package: '+zipFile+' successfully!')
@@ -669,13 +710,13 @@ def createInstallFiles():
 
     if gDo64BitRelease:
         zipFile=r'Hopsan-'+gFullVersionName+r'-win64-zip.zip'
-        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-7z.7z'
+        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-zip.zip'
         exeFileName=r'Hopsan-'+gFullVersionName+r'-win64-installer'
         exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-installer'
         innoArch=r'x64'
     else:
         zipFile=r'Hopsan-'+gFullVersionName+r'-win32-zip.zip'
-        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win32-with_compiler-7z.7z'
+        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win32-with_compiler-zip.zip'
         exeFileName=r'Hopsan-'+gFullVersionName+r'-win32-installer'
         exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win32-with_compiler-installer'
         innoArch=r'' #Should be empty for 32-bit
@@ -706,7 +747,7 @@ def createInstallFiles():
             return False
 
     # Copy release notes to output directory
-    callCopyFile('Hopsan-release-notes.txt', hopsanDirOutput)
+    copy_file('Hopsan-release-notes.txt', hopsanDirOutput)
     
     return True
 
@@ -727,7 +768,7 @@ def createCleanOutputDirectory():
             return False
 
     # Create new output folder
-    callMkdir(hopsanDirOutput)
+    mkdirs(hopsanDirOutput)
     if not pathExists(hopsanDirOutput):
         printError("Failed to create output folder.")
         return False
@@ -736,16 +777,19 @@ def createCleanOutputDirectory():
 
 
 def renameBinFolder():
+    global hopsan_bin_backup_dir
     # Move the bin folder to temp storage to avoid packagin dev junk into release
-    if pathExists(hopsanDir+r'\bin'):
-        callMove(hopsanDir+r'\bin', hopsanDir+r'\bin_build_backup')
-        sleep(1)
-    if pathExists(hopsanDir+r'\bin'):
+    hopsan_bindir = hopsanDir+r'/bin'
+    hopsan_bin_backup_dir = ''
+    if pathExists(hopsan_bindir):
+        hopsan_bin_backup_dir = move_backup(hopsan_bindir, hopsanDir+r'/bin_build_backup')
+        time.sleep(1)
+    if pathExists(hopsan_bindir):
         printError("Could not move the bin folder to temporary backup before build.")
         return False
         
     # Create clean bin directory
-    callMkdir(hopsanDir+r'\bin')
+    mkdirs(hopsan_bindir)
     return True
     
         
@@ -754,20 +798,23 @@ def cleanUp():
     #Remove temporary output directory
     callRd(gTemporaryBuildDir)
     #Rename backup bin folder, remove build files
-    if pathExists(hopsanDir+r'\bin_build_backup'):
+    hopsan_bindir = hopsanDir+r'\bin'
+    if pathExists(hopsan_bin_backup_dir):
         callRd(hopsanDir+r'\bin_last_build')
-        callMove(hopsanDir+r'\bin', hopsanDir+r'\bin_last_build')
-        callMove(hopsanDir+r'\bin_build_backup', hopsanDir+r'\bin')
+        move(hopsan_bindir, hopsanDir+r'\bin_last_build')
+        move(hopsan_bin_backup_dir, hopsan_bindir)
 
 
 def extractHopsanBuildPath(arch, path_name):
     # Ok this wil run the script for every variable we call, but it is fast so who cares
-    p = subprocess.Popen([r'Dependencies\setHopsanBuildPaths.bat', version, arch], shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen([r'Dependencies\setHopsanBuildPaths.bat', arch], shell=True, stdout=subprocess.PIPE)
     stdout, stderr = p.communicate()
     if p.returncode == 0:  # is 0 if success
         for line in stdout.splitlines():
+            #print(line)
             if line.startswith(path_name):
                 substrs = line.split(':', 1)
+                #print(substrs)
                 if len(substrs) == 2:
                     #print(substrs)
                     #print(substrs[1])
@@ -782,16 +829,14 @@ def extractHopsanBuildPath(arch, path_name):
 
 print "\n"
 print "/------------------------------------------------------------\\"
-print "| HOPSAN RELEASE COMPILATION SCRIPT                          |"
+print "| HOPSAN RELEASE BUILD AND PACKAGING SCRIPT                          |"
 print "|                                                            |"
-print "| Written by Robert Braun 2011-10-30                         |"
-print "| Revised by Robert Braun and Peter Nordin 2012-03-05        |"
-print "| Revised and converted to Python by Robert Braun 2012-06-09 |"
 print "\\------------------------------------------------------------/"
 print "\n"
 
 success = True
 pauseOnFailValidation = False
+doBuild = True
 
 gARCH = 'x64'
 gDo64BitRelease = True
@@ -814,7 +859,7 @@ if success:
     (baseversion, gReleaseRevision, gDoDevRelease) = askForVersion()
     if baseversion != '':
         gBaseVersion = baseversion
-    gFullVersionName = gBaseVersion+"_r"+gReleaseRevision
+    gFullVersionName = gBaseVersion+"."+gReleaseRevision
 
     pauseOnFailValidation = False
     buildVCpp = askYesNoQuestion("Do you want to build VC++ HopsanCore? (y/n): ")
@@ -834,8 +879,8 @@ if success:
         success = False
         cleanUp()
 
-    if not renameBinFolder():
-        success = False
+    success = renameBinFolder()
+    if not success:
         cleanUp()
 
 if gDo64BitRelease:
@@ -848,10 +893,11 @@ print("Using TempDir: "+gTemporaryBuildDir)
         
 if success:
     prepareSourceCode(gBaseVersion, gReleaseRevision, gDoDevRelease)
-    if not buildRelease():
-        success = False
-        cleanUp()
-        printError("Compilation script failed in compilation error.")
+    if doBuild:
+        if not buildRelease():
+            success = False
+            cleanUp()
+            printError("Compilation script failed in compilation error.")
     
 if success:
     #Copy depedency bin files to bin diirectory
