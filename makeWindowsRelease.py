@@ -50,6 +50,9 @@ mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwBins32   = ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwOptBins  = []
 
+dependencyFiles = ['qwt/lib/qwt.dll', 'zeromq/bin/libzmq.dll', 'hdf5/bin/hdf5_cpp-shared.dll', 'hdf5/bin/hdf5-shared.dll', 'FMILibrary/lib/libfmilib_shared.dll',
+                   'discount/lib/libmarkdown.dll']
+
 # -------------------- Setup End --------------------
 
 # Internal global help variables
@@ -283,7 +286,7 @@ def lastpathelement(path):
         return None
 
 
-def copyFileToDir(srcDir, srcFile, dstDir):
+def copyFileToDir(srcDir, srcFile, dstDir, keep_relative_path=True):
     if not srcDir[-1] == '/':
         srcDir = srcDir+'/'
     if not dstDir[-1] == '/':
@@ -291,11 +294,12 @@ def copyFileToDir(srcDir, srcFile, dstDir):
     src = srcDir+srcFile
     #print(src)
     if fileExists(src):
-        src_dirname = os.path.dirname(srcFile)
-        if not src_dirname == '':
-            #print(src_dirname)
-            dstDir=dstDir+src_dirname
-        #print(dstDir)
+        if keep_relative_path:
+            src_dirname = os.path.dirname(srcFile)
+            if not src_dirname == '':
+                #print(src_dirname)
+                dstDir=dstDir+src_dirname
+            #print(dstDir)
         if not os.path.exists(dstDir):
             print('Creating dst: '+dstDir)
             os.makedirs(dstDir)
@@ -909,6 +913,8 @@ if success:
         copyFileToDir(mingwDir, f, hopsanDir+'/bin')
     for f in mingwOptBins:
         copyFileToDir(mingwDir+'/../opt/bin', f, hopsanDir+'/bin')
+    for f in dependencyFiles:
+        copyFileToDir(hopsanDir+'/Dependencies', f, hopsanDir+'/bin', keep_relative_path=False)
 
 if success:
     if not createCleanOutputDirectory():
