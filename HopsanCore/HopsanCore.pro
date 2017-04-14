@@ -26,7 +26,7 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
-INCLUDEPATH *= $${PWD}/dependencies/rapidxml-1.13
+INCLUDEPATH *= $${PWD}/dependencies/rapidxml
 INCLUDEPATH *= $${PWD}/dependencies/IndexingCSVParser
 #--------------------------------------------------------
 
@@ -187,7 +187,7 @@ HEADERS += \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
-    $${PWD}/dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
+    $${PWD}/dependencies/rapidxml/hopsan_rapidxml.hpp \
     include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
