@@ -630,11 +630,11 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(componentsSourceCodeFile.exists())
     {
         QDir zipDir;
-        zipDir = QDir::cleanPath(mBinPath + "../ThirdParty/7z");
+        zipDir = QDir::cleanPath(mBinPath + "../Dependencies/tools/7z");
     #ifdef _WIN32
         QStringList arguments;
         arguments << "x" << componentsSourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path() << "-aoa" << "-phopsanhejsan";
-        callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());
+        callProcess(zipDir.path()+"/7za.exe", arguments, zipDir.path());
     #else
         //! @todo Not verified in Linux
         QStringList arguments = QStringList() << componentsSourceCodeFile.absoluteFilePath() << "-d" << fileInfo.absoluteDir().path() << "-phopsanhejsan";

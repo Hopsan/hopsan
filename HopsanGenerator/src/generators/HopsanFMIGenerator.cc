@@ -1911,7 +1911,7 @@ void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &m
     printMessage("Compressing files");
 
 #ifdef _WIN32
-    QString program = mBinPath + "../ThirdParty/7z/7z";
+    QString program = mBinPath + "../Dependencies/tools/7z/7za";
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
 #elif __linux__ && __i386__

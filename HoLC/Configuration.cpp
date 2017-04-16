@@ -284,9 +284,9 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
             mCompilerPath = "/usr/bin";
         }
 #elif WIN32
-        if(QFile::exists(qApp->applicationDirPath()+"/../ThirdParty/mingw32/bin/g++.exe"))
+        if(QFile::exists(qApp->applicationDirPath()+"/../Dependencies/tools/mingw32/bin/g++.exe"))
         {
-            mCompilerPath = qApp->applicationDirPath()+"/../ThirdParty/mingw32/bin";
+            mCompilerPath = qApp->applicationDirPath()+"/../Dependencies/tools/mingw32/bin";
         }
 #endif
     }

@@ -611,11 +611,10 @@ def copyFiles():
         return False
 
     # Create directories    
-    mkdirs(gTemporaryBuildDir+r'\Models')
-    mkdirs(gTemporaryBuildDir+r'\componentLibraries')
-    mkdirs(gTemporaryBuildDir+r'\doc')
-    mkdirs(gTemporaryBuildDir+r'\ThirdParty')
-    mkdirs(gTemporaryBuildDir+r'\Dependencies')
+    mkdirs(gTemporaryBuildDir+'/Models')
+    mkdirs(gTemporaryBuildDir+'/componentLibraries')
+    mkdirs(gTemporaryBuildDir+'/doc')
+    mkdirs(gTemporaryBuildDir+'/Dependencies/tools')
 
     # Copy "bin" folder to temporary directory
     copyDirTo(r'bin', gTemporaryBuildDir)
@@ -630,13 +629,13 @@ def copyFiles():
 
     # Export needed core code dependencies
     copyDirTo(r'Dependencies/katex',                gTemporaryBuildDir+r'/Dependencies')
-    #copyDirTo(r'Dependencies\IndexingCSVParser',    gTemporaryBuildDir+r'\Dependencies')
-    #copyDirTo(r'Dependencies\libNumHop',            gTemporaryBuildDir+r'\Dependencies')
-    #copyDirTo(r'Dependencies\rapidxml-1.13',        gTemporaryBuildDir+r'\Dependencies')
 
     # Copy 3pdependency installations
     if not copyDirTo(r'Dependencies/FMILibrary', gTemporaryBuildDir+r'/Dependencies'):
         return False
+
+    # Copy 7zip to temporary directory
+    git_export(r'Dependencies/tools/7z', gTemporaryBuildDir+'/Dependencies/tools')
 
     # Export "Example Models" SVN directory to temporary directory
     git_export(r'Models\Example Models', gTemporaryBuildDir+r'\Models')
@@ -665,12 +664,6 @@ def copyFiles():
     # Copy "release notes" file to temporary directory
     git_export("Hopsan-release-notes.txt", gTemporaryBuildDir)
     
-    # Copy 7zip to temporary directory
-    #git_export(r'ThirdParty\7z', gTemporaryBuildDir+r'\ThirdParty\7z')
-
-    # Copy fmi to temporary directory
-    #git_export(r'ThirdParty\fmi', gTemporaryBuildDir+r'\ThirdParty\fmi')
-
     # Copy documentation to temporary directory
     copyDirTo(r'doc\html', gTemporaryBuildDir+r'\doc')
     copyDirTo(r'doc\graphics', gTemporaryBuildDir+r'\doc')

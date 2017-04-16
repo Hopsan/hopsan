@@ -108,7 +108,7 @@ private Q_SLOTS:
         args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu1_32/unittestmodel_export.fmu";
         QProcess p;
-        p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
+        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win32.exe", args);
         p.waitForReadyRead();
         QString output = p.readAllStandardError();
         QStringList errors = output.split("\n");
@@ -120,7 +120,7 @@ private Q_SLOTS:
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu1_64/unittestmodel_export.fmu";
-        p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win64.exe", args);
+        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win64.exe", args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
         errors = output.split("\n");
@@ -132,7 +132,7 @@ private Q_SLOTS:
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu2_32/unittestmodel_export.fmu";
-        p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
+        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win32.exe", args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
         errors = output.split("\n");
@@ -144,7 +144,7 @@ private Q_SLOTS:
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu2_64/unittestmodel_export.fmu";
-        p.start(QDir::currentPath()+"/../ThirdParty/FMUChecker/fmuCheck.win64.exe", args);
+        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win64.exe", args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
         errors = output.split("\n");

@@ -14,7 +14,7 @@ echo ====================
 echo Unpacking sourcecode
 echo ====================
 if exist %pythonqtVersion% rd /s/q %pythonqtVersion%
-..\ThirdParty\7z\7z.exe x %pythonqtVersion%.zip -y
+..\Dependencies\tools\7z\7za.exe x %pythonqtVersion%.zip -y
 
 REM Now apply patch
 echo.
@@ -22,7 +22,7 @@ echo =====================
 echo Applying Hopsan patch
 echo =====================
 cd %pythonqtVersion%
-..\..\ThirdParty\patch\doit.exe -i ..\\%pythonqtVersion%_winMinGW44.patch -p1
+..\..\Dependencies\tools\patch\doit.exe -i ..\\%pythonqtVersion%_winMinGW44.patch -p1
 cd ..
 
 REM Now build
