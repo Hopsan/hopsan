@@ -36,7 +36,6 @@ addit http://git.code.sf.net/p/tclap/code Dependencies/tclap tclap-1-2-1-release
 addit https://github.com/peterNordin/IndexingCSVParser.git HopsanCore/dependencies/IndexingCSVParser HEAD
 addit https://github.com/peterNordin/libNumHop.git HopsanCore/dependencies/libNumHop HEAD
 
+addit https://github.com/peterNordin/hopsan_deps_tools.git Dependencies/tools HEAD
 
-
-#addit Dependencies/
 echo Done
