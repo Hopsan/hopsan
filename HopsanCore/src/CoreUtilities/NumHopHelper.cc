@@ -24,6 +24,8 @@
 
 //$Id$
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "CoreUtilities/NumHopHelper.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/StringUtilities.h"
@@ -297,6 +299,7 @@ NumHopHelper::NumHopHelper()
     mpComponent = 0;
     mpPrivate = 0;
     mpPrivate = new NumHopHelperPrivate();
+    mpPrivate->mVarStorage.reserveVariable("pi", M_PI);
 }
 
 NumHopHelper::~NumHopHelper()

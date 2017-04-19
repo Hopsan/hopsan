@@ -628,11 +628,11 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
                 // If scale or offset would be empty here, then result of evaluation would be "pi"
                 if (!scale.isEmpty())
                 {
-                    scale = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+scale),0,'g',10);
+                    scale = QString("%1").arg(evalWithNumHop(scale),0,'g',10);
                 }
                 if (!offset.isEmpty())
                 {
-                    offset = QString("%1").arg(evalWithNumHop("pi=3.14159265359;"+offset),0,'g',10);
+                    offset = QString("%1").arg(evalWithNumHop(offset),0,'g',10);
                 }
                 qit.value().customUnits.insert(unitname, UnitConverter(quantity, unitname, scale, offset));
                 if (tagAsBuiltIn)
