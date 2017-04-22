@@ -195,8 +195,15 @@ def replace_line_with_pattern(filepath, re_pattern, replacement):
     with open(filepath, 'w+') as f:
         f.write(data)
 
+def is_git_submodule(dir):
+    dotgitfile = os.path.join(dir, '.git')
+    return os.path.isfile(dotgitfile)
+
 def git_export(rel_src_dir, dst_dir):
-    print "Exporting "+quotePath(rel_src_dir)+" to "+quotePath(dst_dir)
+    if is_git_submodule(rel_src_dir):
+        print('Exporting submodule"'+rel_src_dir+'" to "'+dst_dir+'"')
+    else:
+        print('Exporting "'+rel_src_dir+'" to "'+dst_dir+'"')
     src = rel_src_dir.rstrip('/')
     dst = dst_dir
 
@@ -209,14 +216,21 @@ def git_export(rel_src_dir, dst_dir):
         src_dir, src_file = os.path.split(src_bash)
         if src_dir != '':
             src_dir = ':'+src_dir
-        args = ['git', 'archive', '--format=tar', r'HEAD'+src_dir, src_file, '-o', temp_file_path_bash]    
+        args = ['git', 'archive', '--format=tar', r'HEAD'+src_dir, src_file, '-o', temp_file_path_bash]
+        wd = os.getcwd()
     else:
         # Append dirname to destination path
         dirname = lastpathelement(src_bash)
         dst = os.path.join(dst_dir, dirname)
-        args = ['git', 'archive', '--format=tar', r'HEAD:'+src_bash, '-o', temp_file_path_bash]    
+        if is_git_submodule(src):
+            #print('"'+rel_src_dir+'" is a submodule')
+            args = ['git', 'archive', '--format=tar', r'HEAD', '-o', temp_file_path_bash]
+            wd = src
+        else:
+            args = ['git', 'archive', '--format=tar', r'HEAD:'+src_bash, '-o', temp_file_path_bash]
+            wd = os.getcwd()
     
-    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=wd)
     stdout, stderr = p.communicate()
     was_export_ok = False
     if p.returncode != 0:
@@ -231,6 +245,19 @@ def git_export(rel_src_dir, dst_dir):
         was_export_ok = True
     # Cleanup 
     shutil.rmtree(temp_dir)
+
+    if was_export_ok:
+        # Now recurse into subdirectories if they are submodules
+        rootdir = os.path.join(os.getcwd(),src)
+        for currdir, subdirst, files in os.walk(src):
+            #print(currdir)
+            if currdir != src:
+                currdirdst = os.path.split(os.path.join(dst_dir, currdir))[0]
+                if is_git_submodule(currdir):
+                    if not git_export(currdir, currdirdst):
+                        was_export_ok = False
+                        break
+    
     return was_export_ok
 
 def copy_file(src, dst):
