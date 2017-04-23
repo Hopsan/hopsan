@@ -187,15 +187,9 @@ win32 {
         CONFIG += console
 #    }
 
-    # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
-#    rev = $$system($${PWD}/../getSvnRevision.bat)
-#    message(GUI revision: $${rev})
-#    !equals(rev, "RevisionInformationNotFound") {
-#        DEFINES *= "HOPSANGUISVNREVISION=$${rev}"
-#    }
     # Get the git commit timestamp
-     timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
-     DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
+    timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+    DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
 }
 macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
