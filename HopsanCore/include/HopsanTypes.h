@@ -141,12 +141,7 @@ public:
     //! @brief copy constructor
     HVector(const HVector<T> &rOther)
     {
-        mpDataArray = new T[rOther.size()];
-        mSize = rOther.size();
-        for (size_t i=0; i<rOther.size(); ++i)
-        {
-            mpDataArray[i] = rOther[i];
-        }
+        *this = rOther;
     }
 
     ~HVector()
@@ -240,6 +235,17 @@ public:
     bool empty() const
     {
         return (mSize==0);
+    }
+
+    HVector<T>& operator=(const HVector<T> &rhs)
+    {
+        mpDataArray = new T[rhs.size()];
+        mSize = rhs.size();
+        for (size_t i=0; i<rhs.size(); ++i)
+        {
+            mpDataArray[i] = rhs[i];
+        }
+        return *this;
     }
 };
 
