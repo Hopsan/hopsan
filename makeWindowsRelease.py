@@ -195,29 +195,62 @@ def replace_line_with_pattern(filepath, re_pattern, replacement):
     with open(filepath, 'w+') as f:
         f.write(data)
 
-def is_git_submodule(dir):
-    dotgitfile = os.path.join(dir, '.git')
-    return os.path.isfile(dotgitfile)
+def is_git_repo(dir):
+    if os.path.isdir(dir):
+        dotgitfile = os.path.join(dir, '.git')
+        return os.path.isdir(dotgitfile)
+    return False
 
-def git_export(rel_src_dir, dst_dir):
-    if is_git_submodule(rel_src_dir):
-        print('Exporting submodule"'+rel_src_dir+'" to "'+dst_dir+'"')
+def is_git_submodule(dir):
+    if os.path.isdir(dir):
+        dotgitfile = os.path.join(dir, '.git')
+        return os.path.isfile(dotgitfile)
+    return False
+
+def find_repo_root(path):
+    if is_git_repo(path) or is_git_submodule(path):
+        return path, True
     else:
-        print('Exporting "'+rel_src_dir+'" to "'+dst_dir+'"')
+        parts = os.path.split(path)
+        if len(path) > 1:
+            return find_repo_root(parts[0])
+        else:
+            return parts[0], False
+
+def git_export(rel_src_dir, dst_dir, repo_dir=None):
+    if repo_dir is None:
+        repo_dir = os.getcwd()
+
     src = rel_src_dir.rstrip('/')
     dst = dst_dir
+
+    # Check if src is subdir or file under a submodule of the current repo
+    # if so, then export from the submodule instead
+    repo_root, found = find_repo_root(os.path.join(repo_dir,src))
+    src_rel_root = os.path.relpath(os.path.abspath(src), repo_root)
+    #        print('rr '+repo_root)
+    #        print('rd '+repo_dir)
+    #        print('srr '+src_rel_root)
+    if repo_root != repo_dir and src_rel_root != '.':
+        print('Exporting "'+src+'", a member of submodule '+os.path.relpath(repo_root,repo_dir))
+        return git_export(src_rel_root, dst_dir, repo_dir=os.path.abspath(repo_root) )
+        
+    if is_git_submodule(rel_src_dir):
+        print('Exporting submodule "'+rel_src_dir+'" to "'+dst_dir+'"')
+    else:
+        print('Exporting "'+rel_src_dir+'" to "'+dst_dir+'"')
 
     temp_dir = tempfile.mkdtemp()
     time.sleep(1)
     temp_file_path = os.path.join(temp_dir, str(uuid.uuid4())).replace(' ','_')+'.tar'
     temp_file_path_bash = temp_file_path.replace('\\','/')
     src_bash = src.replace('\\','/')
-    if os.path.isfile(src):
+    if os.path.isfile(os.path.join(repo_dir,src)):
         src_dir, src_file = os.path.split(src_bash)
         if src_dir != '':
             src_dir = ':'+src_dir
         args = ['git', 'archive', '--format=tar', r'HEAD'+src_dir, src_file, '-o', temp_file_path_bash]
-        wd = os.getcwd()
+        wd = repo_dir
     else:
         # Append dirname to destination path
         dirname = lastpathelement(src_bash)
@@ -228,8 +261,8 @@ def git_export(rel_src_dir, dst_dir):
             wd = src
         else:
             args = ['git', 'archive', '--format=tar', r'HEAD:'+src_bash, '-o', temp_file_path_bash]
-            wd = os.getcwd()
-    
+            wd = repo_dir
+
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=wd)
     stdout, stderr = p.communicate()
     was_export_ok = False
@@ -248,9 +281,7 @@ def git_export(rel_src_dir, dst_dir):
 
     if was_export_ok:
         # Now recurse into subdirectories if they are submodules
-        rootdir = os.path.join(os.getcwd(),src)
         for currdir, subdirst, files in os.walk(src):
-            #print(currdir)
             if currdir != src:
                 currdirdst = os.path.split(os.path.join(dst_dir, currdir))[0]
                 if is_git_submodule(currdir):
