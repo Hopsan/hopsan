@@ -330,7 +330,15 @@ def callDel(tgt):
 
 def zip_directory(dir_path, zip_file_path):
     print('Compressing directory: '+dir_path+' into: '+zip_file_path)
-    shutil.make_archive(os.path.splitext(zip_file_path)[0], 'zip', dir_path)
+    file_basepath = os.path.splitext(zip_file_path)[0]
+    dir_parts = os.path.split(dir_path)
+    if dir_parts[0] != '':
+        root = dir_parts[0]
+        base = dir_parts[1]
+        shutil.make_archive(file_basepath, 'zip', root_dir=root, base_dir=base)
+    else:
+        base = dir_parts[1]
+        shutil.make_archive(file_basepath, 'zip', base_dir=base)
 
 
 # Returns the last part of a path (split[1] or split[0] if only one part)
@@ -876,7 +884,7 @@ def extractHopsanBuildPath(arch, path_name):
 
 print "\n"
 print "/------------------------------------------------------------\\"
-print "| HOPSAN RELEASE BUILD AND PACKAGING SCRIPT                          |"
+print "| HOPSAN RELEASE BUILD AND PACKAGING SCRIPT                  |"
 print "|                                                            |"
 print "\\------------------------------------------------------------/"
 print "\n"
