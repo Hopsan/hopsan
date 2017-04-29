@@ -181,29 +181,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 \section sec_optionalhopsandependencies Optional Hopsan Dependencies
 
-\subsection sec_optionalhopsandependencies_tbb Intel - Thread Building Blocks
-Used for multi core simulation support in the Hopsan Core \n
-https://www.threadingbuildingblocks.org/
-
-__License:__ \n
-\verbatim
-GNU General Public License, version 2
-http://www.gnu.org/licenses/gpl-2.0
-
-with
-
-Runtime Exception
-
-As a special exception, you may use this file as part of a free software
-library without restriction.  Specifically, if other files instantiate
-templates or use macros or inline functions from this file, or you compile
-this file and link it with other files to produce an executable, this
-file does not by itself cause the resulting executable to be covered by
-the GNU General Public License.  This exception does not however
-invalidate any other reasons why the executable file might be covered by
-the GNU General Public License.
-
-\endverbatim
 
 \subsection sec_optionalhopsandependencies_pythonqt PythonQt
 Gives python script access to GUI functions \n

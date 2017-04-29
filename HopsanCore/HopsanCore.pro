@@ -61,21 +61,6 @@ win32 {
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
     DEFINES -= UNICODE
 
-    #--------------------------------------------------------
-    # Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
-    #foundTBB = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
-    foundTBB = false
-    equals(foundTBB, true) {
-        DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
-        !build_pass:message("Compiling HopsanCore with TBB support")
-        LIBS *= $$magic_hopsan_libpath
-        INCLUDEPATH *= $$magic_hopsan_includepath
-        QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-    } else {
-        !build_pass:message("Compiling HopsanCore WITHOUT TBB support")
-    }
-    #--------------------------------------------------------
-
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
@@ -87,9 +72,7 @@ win32 {
     system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
 }
 unix { 
-    DEFINES *= USETBB
-    LIBS += -ltbb -ldl
-    INCLUDEPATH += /usr/include/tbb/
+    LIBS += -ldl
 
     # Retreive the HopsanCore source code version info and regenerate version header
     commitdatetime=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
