@@ -564,9 +564,9 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 
     # Set splash screen version and revision number
 #    callSed(r'"s|X\.X\.X|'+versionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
-    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'X.X.X', versionnumber)
+    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.0\.0', versionnumber)
 #    callSed(r'"s|R\.R\.R|r'+revisionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
-    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'R.R.R', revisionnumber)
+    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'20170000\.0000', revisionnumber)
     # Regenerate splash screen
     callEXE(inkscapeDir+r'\inkscape.exe', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-png HopsanGUI/graphics/splash.png')
     callDel(r'HopsanGUI\graphics\tempdummysplash.svg')

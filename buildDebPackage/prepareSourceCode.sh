@@ -89,8 +89,8 @@ if [ $doDevRelease = "false" ]; then
 fi
 
 # Set splash screen version number
-sed "s|X\.X\.X|$baseversion|g" -i HopsanGUI/graphics/splash2.svg
-sed "s|R\.R\.R|$releaserevision|g" -i HopsanGUI/graphics/splash2.svg
+sed "s|0\.0\.0|$baseversion|g" -i HopsanGUI/graphics/splash2.svg
+sed "s|20170000\.0000|$releaserevision|g" -i HopsanGUI/graphics/splash2.svg
 inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
 
 # Make sure we compile defaultLibrary into core
