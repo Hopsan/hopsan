@@ -47,15 +47,12 @@ srcDeps=${srcDir}/Dependencies
 
 mkdir -p                                                   $dstDir/Dependencies
 cp -a    ${srcDeps}/katex                                  $dstDir/Dependencies
-
 cp -a    ${srcDeps}/FMILibrary                             $dstDir/Dependencies
 
-cp -a    ${srcDeps}/qwt/lib/libqwt.so                      $dstDir/bin
+cp -a    ${srcDeps}/qwt/lib/libqwt.so*                     $dstDir/bin
 cp -a    ${srcDeps}/zeromq/lib/libzmq.so                   $dstDir/bin
-cp -a    ${srcDeps}/hdf5/lib/libhdf5_cpp-shared.so         $dstDir/bin
-cp -a    ${srcDeps}/hdf5/lib/libhdf5-shared.so             $dstDir/bin
 cp -a    ${srcDeps}/FMILibrary/lib/libfmilib_shared.so     $dstDir/bin
-cp -a    ${srcDeps}/discount/lib/libmarkdown.so            $dstDir/bin
+cp -a    ${srcDeps}/discount/lib/libmarkdown.so*           $dstDir/bin
 
 # Copy additional files
 # =====================
