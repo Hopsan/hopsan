@@ -5,15 +5,10 @@
 # Author: Peter Nordin peter.nordin@liu.se
 
 basedir=`pwd`
-basedir=`pwd`
 name=FMILibrary
 codedir=${basedir}/${name}_code
 builddir=${basedir}/${name}_build
 installdir=${basedir}/${name}
-
-codedir=${basedir}/
-builddir=${codedir}_build
-installdir=${codedir}_install
 
 source setHopsanBuildPaths.sh
 
