@@ -15,7 +15,7 @@ git_export_all()
   echo "Exporting from git: ${src} to ${dst}"
   mkdir -p ${dst}
   cd ${src}
-  ${hopsanroot}/git_archive_all.py ${tarfile}
+  ${hopsanroot}/Dependencies/git-archive-all/git_archive_all.py ${tarfile}
   cd $olddir
   mv ${src}/${tarfile} ${dst}
   cd ${dst}

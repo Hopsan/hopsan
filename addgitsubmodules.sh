@@ -37,5 +37,6 @@ addit https://github.com/peterNordin/IndexingCSVParser.git HopsanCore/dependenci
 addit https://github.com/peterNordin/libNumHop.git HopsanCore/dependencies/libNumHop HEAD
 
 addit https://github.com/peterNordin/hopsan_deps_tools.git Dependencies/tools HEAD
+addit https://github.com/Kentzo/git-archive-all.git Dependencies/git-archive-all 1.16.4
 
 echo Done
