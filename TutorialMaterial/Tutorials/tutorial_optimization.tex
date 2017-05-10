@@ -110,6 +110,7 @@ Apart from minimizing the average difference, we also want to minimize the overs
 
 Now choose \enquote{Minimize} and \enquote{Overshoot}, and then click \enquote{Add Function}. In the box called \enquote{arg1}, change the value to 0.7. 
 
+\newpage
 Now we have added a second objective function. The total objective function will the sum of these. As they may not be equally important or equally scaled, it is possible to weight the individual functions.  Change \enquote{Weight} for the first function to 10. Now the page should look like this:
 
 \FloatBarrier
@@ -129,6 +130,7 @@ Next page shows the generated script code. Modifications can be made if necessar
 \end{figure}
 \FloatBarrier
 
+\newpage
 Go to the next page. From here the optimization can be executed:
 
 \FloatBarrier
@@ -147,6 +149,7 @@ Click on \enquote{Start Optimization}. During the optimization the objective fun
 \end{figure}
 \FloatBarrier
 
+\newpage
 \tutitem{Evaluate the results} 
 Once the optimization has finished, we can evaluate the results. Parameters from a point can be written back to the original model by using the \enquote{Apply} buttons. 
 
@@ -178,10 +181,7 @@ Click on Save script file in the dialog.
 To load a previously saved script file, click on Load script file in the dialog. You will be taken directly to the code tab. Go to the last tab and start the optimization as before. Note that the settings on the first three pages are not updated by the script. Going back to these might re-generate the script and overwrite the loaded code.
 
 \tutitem{Loading a script file from command terminal} 
-It is also possible to load a script file from the command terminal. Just write \enquote{exec} followed by the path to the file. Hopsan will automatically understand that this is an optimization script and start the dialog. You can use \enquote{pwd} to show current directory and \enquote{cd} to change directory if necessary. Example:	
-\begin{verbatim}
->> exec ..\folder\myscript.hcom
-\end{verbatim}
+It is also possible to load a script file from the command terminal. Just write \enquote{exec} followed by the path to the file. Hopsan will automatically understand that this is an optimization script and start the dialog. You can use \enquote{pwd} to show current directory and \enquote{cd} to change directory if necessary. Example: \texttt{>{}> exec ..\textbackslash folder\textbackslash myscript.hcom}
 
 \end{tutenumerate}
 

@@ -44,9 +44,10 @@ The components connected to each side of the pipe are thereby separated from eac
 In Hopsan the TLM-components, like this pipe example, are called  C-components.
 Ordinary components, for example, pumps and valves, are called Q-components.
 
+\vfill
 \section*{Program Overview}
 Before you build your own first Hopsan model, it is necessary to understand the different parts of the graphical user interface.
-After starting Hopsan and opening a model, it will look like the picture bellow.  
+After starting Hopsan and opening a model, it will look like figure \ref{fig:hopsan_gui}.  
 
 \begin{figure}[ht]
   \centering
@@ -89,7 +90,7 @@ If something is wrong in your model, for example if a connection is missing, an 
 \tutitem{Plot button}
 Click the diagram button to open a list of all logged variables from the simulation.
 These can be plotted by double-clicking them, or by dragging them to the workspace.
-A plot window will look like this.
+A plot window will look like figure \ref{fig:hopsan_plotwindow}.
 
 \begin{figure}[ht]
   \centering
@@ -115,7 +116,7 @@ The generation for individual curves be can changed in the plot curve settings a
 This makes it possible to compare the results from two different simulations, for instance after you have change parameter values in your model.
  
 \end{tutenumerate}
-
+\vfill
 \section*{Building a model}
 This tutorial will show how to build the model shown in Figure~\ref{fig:hopsan_gui}.
 The model consists of a hydraulic position servo, where a directional valve is used to control a piston connected to a translational inertia.
@@ -168,6 +169,7 @@ Try making an erroneous connection on purpose, and note the resulting error mess
 Then connect all components according to Figure~\ref{fig:hopsan_gui}.
 
 %\pagebreak
+\vfill
 \tutitem{Change parameter values}
 In order to recreate the result shown in Figure~\ref{fig:hopsan_plotwindow} it is necessary to adjust some parameter values in the model.
 This is done from the Properties dialog, which can be accessed by double-clicking a component.
