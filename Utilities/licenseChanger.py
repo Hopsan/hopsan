@@ -1,26 +1,29 @@
 #!/usr/bin/python
 # Script to change the license header of code files
 # Author: Peter Nordin
-# Date:  20150206
 # $Id$
 
 import os
 import sys
+import argparse
+
+verbose = False
 
 def findFiles(rootDir, suffixes, excludeDirs):
     files = list()
     for dirpath, dirnames, filenames in os.walk(rootDir):
-        print(dirpath)
+        #print(dirpath)
         enterDir = True
         for d in excludeDirs:
             if d in dirpath:
+                print('Excluding: '+dirpath)
                 enterDir=False
         if enterDir:
             for filename in filenames:
                 name, ext = os.path.splitext(filename)
                 if ext in suffixes:
                     filepath = os.path.join(dirpath,filename)
-                    print(filepath)
+                    #print(filepath)
                     files.append(filepath)
     return files
 
@@ -28,16 +31,16 @@ def checkLicense(filename,  licenseTemplate):
     noLicense=None
     sameLicense=None
     otherLicense=None
-    file = open(filename,  'rb')
-    if not file.closed:
-        # Read first char
-        fileLicense =r'';
+    with open(filename,  'r') as file:
+         # Read first char
+        fileLicense = '';
         str = file.read(2);
-        if str==r'/*':
+        #print(str)
+        if str == r'/*':
             c1=r''
             c2=file.read(1)
             while not (c1+c2)  == r'*/':
-                #Read until */
+                # Read until */
                 c1=c2
                 c2=file.read(1)
             file.read(1) #Gobble newline, at least on linux
@@ -48,60 +51,55 @@ def checkLicense(filename,  licenseTemplate):
             if fileLicense == licenseTemplate:
                 sameLicense=filename
             else:
-                print("===== Other License =====")
-                print(filename)
-                print(licenseTemplate)
-                print(fileLicense)
-                print("=========================")
-                print('\n')
+                if verbose:
+                    print("===== Other License =====")
+                    print(filename)
+                    print(licenseTemplate)
+                    print(fileLicense)
+                    print("=========================")
+                    print('\n')
                 otherLicense=filename
         else:
             noLicense=filename
-    file.close()
+
     return noLicense,  sameLicense,  otherLicense
 
-def replaceLicense(filename,  newLicense):
-    file = open(filename,  'rb+')
-    if not file.closed:
+def replaceLicense(filename,  new_license):
+    with open(filename,  'r+') as file:
         c1=r''
         c2=file.read(1)
         while not (c1+c2)  == r'*/':
-            #Read until */
+            # Read until */
             c1=c2
             c2=file.read(1)
         file.read(1) #Gobble newline (at-least on linux)
         contents = file.read()
-        file.close()
-        file = open(filename,  'wb')
-        file.write(newLicense)
+
+    with open(filename,  'w') as file:
+        file.write(new_license)
         file.write(contents)
-    file.close()
     
-def setLicense(filename,  license):
-    file = open(filename,  'rb+')
-    if not file.closed:
+def setLicense(filename,  new_license):
+    with open(filename,  'r+') as file:
         contents = file.read()
-        file.close()
-        file = open(filename,  'wb')
-        file.write(license)
+
+    with open(filename,  'w') as file:
+        file.write(new_license)
         file.write('\n')
         file.write(contents)
-    file.close()    
 
-def main(rootDir, licFile,  setNew):
-    suffixes = ('.c', '.cc', '.cpp', '.h', '.hpp')
-    excludeDirs =  ('Dependencies', )
+def main(rootDir, licFile, exclude, setNew):
+    suffixes = ('.c', '.cc', '.cpp', '.cci', '.h', '.hpp')
     
-    nlf = open(licFile)
-    newLicense=nlf.read()
-    nlf.close()
-    print(newLicense)
+    with open(licFile) as f:
+        newLicense = f.read()
+    #print(newLicense)
     
     filesWithout = list()
     filesWithSame = list()
     filesWithOther = list()
-    
-    files = findFiles(rootDir, suffixes, excludeDirs)
+ 
+    files = findFiles(rootDir, suffixes, exclude)
     for file in files:
         no,  same,  other = checkLicense(file,  newLicense)
         if no:
@@ -130,16 +128,22 @@ def main(rootDir, licFile,  setNew):
             replaceLicense(file,  newLicense)
     
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print('Error: You must give at least two argument, the root dir, and the new license header file')
-        exit()
-    else:
-        rootDir = sys.argv[1]
-        licFile = sys.argv[2]
-    
-    setNew = False
-    if len(sys.argv) == 4:
-        if sys.argv[3] == r'set':
-            setNew = True
-    
-    main(rootDir, licFile, setNew)
+
+    parser = argparse.ArgumentParser(description='Change license in Hopsan source code files.')
+    parser.add_argument('rootDir', help='directory')
+    parser.add_argument('license', help='License file')
+    parser.add_argument('-e', '--exclude', action='append', nargs='+', help='Exclude')
+    parser.add_argument('--set', help='Replace the licens', action='store_true', default=False)
+    parser.add_argument('-v', '--verbose', action='store_true', default=False)
+
+    args = vars(parser.parse_args())
+    #print(args)
+    verbose = args['verbose']
+    exclude = [e for exclist in args['exclude'] for e in exclist] 
+
+    #print(args['rootDir'])
+    #print(args['license'])
+    #print(args['set'])
+    #print(args['exclude'])
+    #print(exclude)
+    main(args['rootDir'], args['license'], exclude, args['set'])
