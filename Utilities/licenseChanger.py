@@ -90,11 +90,11 @@ def setLicense(filename,  new_license):
 
 def main(rootDir, licFile, exclude, setNew):
     suffixes = ('.c', '.cc', '.cpp', '.cci', '.h', '.hpp')
-    
+
     with open(licFile) as f:
         newLicense = f.read()
     #print(newLicense)
-    
+
     filesWithout = list()
     filesWithSame = list()
     filesWithOther = list()
@@ -108,8 +108,7 @@ def main(rootDir, licFile, exclude, setNew):
             filesWithSame.append(same)
         if other:
             filesWithOther.append(other)
-    
-    
+
     print(r'Files without license header')
     print( filesWithout)
     print('\n')
@@ -119,14 +118,14 @@ def main(rootDir, licFile, exclude, setNew):
     print(r'Num files with same license header')
     print(len(filesWithSame))
     print('\n')
-    
+
     if setNew:
         for file in filesWithout:
             setLicense(file,  newLicense)
-        
+
         for file in filesWithOther:
             replaceLicense(file,  newLicense)
-    
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Change license in Hopsan source code files.')
@@ -139,7 +138,9 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
     #print(args)
     verbose = args['verbose']
-    exclude = [e for exclist in args['exclude'] for e in exclist] 
+    exclude = list()
+    if args['exclude'] is not None:
+        exclude = [e for exclist in args['exclude'] for e in exclist]
 
     #print(args['rootDir'])
     #print(args['license'])
