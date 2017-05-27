@@ -31,6 +31,30 @@
     Version History
 ******************************
 
+0.7.8 (2017-04-04)
+- Bug fixed: Plot widget is updated correctly when creating temporary HCOM variables
+- Bug fixed: Fixed annoying warning of incorrect sRGB profile
+- Bug fixed: HCOM "close" command can no longer close welcome screen
+- Bug fixed: Legend setting no longer gets enourmous width
+- Bug fixed: S-function compilation with Visual Studio
+
+- Feature: Optimization can now be autostarted from regular HCOM terminal
+- Feature: It is now possible to unload all external libraries at once
+- Feature: Optimization can now have fixed start values for parameters
+- Feature: Parts of a model can now be deactivated, so that it is not used in the simulation
+- Feature: HCOM "ls" command now accepts wildcards
+- Feature: HCOM "load" command now accepts wildcards
+- Feature: HCOM "load" command now has an "all" option, to close all models
+- Feature: HCOM "load" command now has a force flag, to supress warnings about closing unsaved models
+- Feature: Pi constant in NumHop scripting
+- Feature: It is now possible to load several models at the same time
+
+- New component: 4/2 pressure controlled valve with no closed position
+
+- Fixed component: Several errors in Forks component were solved
+- Fixed component: Added end limitations to rotational inertia components
+- Fixed component: Lossless connector components now stop simulation if connected to zero impedance components
+
 0.7.7 (2016-10-12)
 - Bug fixed: Undefined reference errors for some functions in Matrix library
 - Bug fixed: Imported FMUs now find their resource files as they should
