@@ -5481,8 +5481,8 @@ void HcomHandler::extractCurveStyle(QString &value, PlotCurveStyle &style)
 {
     if(!value.contains("{"))
     {
-        style.type = 1;
-        style.symbol = 0;
+        style.line_style = Qt::SolidLine;
+        style.symbol = QwtSymbol::NoSymbol;
         style.color = QColor();
         style.thickness = 2;
         return;
@@ -5494,13 +5494,20 @@ void HcomHandler::extractCurveStyle(QString &value, PlotCurveStyle &style)
 
     QString typeStr= styleStr.section(",",0,0);
     if(typeStr == "solid")
-        style.type = 1;
+        style.line_style = Qt::SolidLine;
     else if(typeStr == "dashed")
-        style.type = 2;
+        style.line_style = Qt::DashLine;
     else if(typeStr == "dotted")
-        style.type = 3;
+        style.line_style = Qt::DotLine;
     else
-        style.type = typeStr.toInt();
+    {
+        bool is_ok;
+        const int val = typeStr.toInt(&is_ok);;
+        if (is_ok) {
+            style.line_style = static_cast<Qt::PenStyle>(val);
+        }
+    }
+
 
     QString colorStr = styleStr.section(",",1,1);
     style.color = QColor(colorStr);
@@ -5508,40 +5515,22 @@ void HcomHandler::extractCurveStyle(QString &value, PlotCurveStyle &style)
     QString thicknessStr = styleStr.section(",",2,2);
     style.thickness = thicknessStr.toInt();
 
-    style.symbol = 0;
+    style.symbol = QwtSymbol::NoSymbol;
     if(styleStr.count(",") >= 3)
     {
         QString symbolStr = styleStr.section(",",3,3);
-        if(symbolStr == "cross")
-            style.symbol = 1;
-        else if(symbolStr == "ellipse")
-            style.symbol = 2;
-        else if(symbolStr == "xcross")
-            style.symbol = 3;
-        else if(symbolStr == "triangle")
-            style.symbol = 2;
-        else if(symbolStr == "rectangle")
-            style.symbol = 3;
-        else if(symbolStr == "diamond")
-            style.symbol = 2;
-        else if(symbolStr == "downtriangle")
-            style.symbol = 3;
-        else if(symbolStr == "uptriangle")
-            style.symbol = 2;
-        else if(symbolStr == "righttriangle")
-            style.symbol = 3;
-        else if(symbolStr == "hexagon")
-            style.symbol = 2;
-        else if(symbolStr == "horizontalline")
-            style.symbol = 3;
-        else if(symbolStr == "verticalline")
-            style.symbol = 2;
-        else if(symbolStr == "star1")
-            style.symbol = 3;
-        else if(symbolStr == "star2")
-            style.symbol = 2;
-        else
-            style.symbol = symbolStr.toInt();
+        if (isNumber(symbolStr)) {
+            bool parse_ok;
+            int index = symbolStr.toInt(&parse_ok);
+            if (parse_ok && index < PlotCurveStyle::symbol_enums.size()) {
+                // Use corresponding value
+                style.symbol = PlotCurveStyle::symbol_enums[index];
+                //! @todo We should not use index (order) value in HCOM, we should use corresponding QwtSymbol::Style value directly
+            }
+        }
+        else {
+            style.symbol = PlotCurveStyle::toSymbolEnum(symbolStr);
+        }
     }
 }
 

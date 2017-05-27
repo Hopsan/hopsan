@@ -43,6 +43,8 @@
 #include <QCheckBox>
 #include <QComboBox>
 
+#include "PlotCurveStyle.h"
+
 // Forward declarations
 class PlotArea;
 class PlotCurve;
@@ -76,8 +78,8 @@ public:
     PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParentArea);
     PlotCurve *getCurve();
     void setSizeValue(int value);
-    void setLineType(int value);
-    void setSymbol(int value);
+    void setLineType(Qt::PenStyle value);
+    void setSymbol(QwtSymbol::Style value);
 
 signals:
     void removeCurve(PlotCurve* pCurve);

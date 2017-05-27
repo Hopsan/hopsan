@@ -123,23 +123,10 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     // New Combo Box for Symbol Style
     mpLineSymbolCombo = new QComboBox;
-    mpLineSymbolCombo->addItem(tr("None"));
-    mpLineSymbolCombo->addItem(tr("Cross"));
-    mpLineSymbolCombo->addItem(tr("Ellipse"));
-    mpLineSymbolCombo->addItem(tr("XCross"));
-    mpLineSymbolCombo->addItem(tr("Triangle"));
-    mpLineSymbolCombo->addItem(tr("Rectangle"));
-    mpLineSymbolCombo->addItem(tr("Diamond"));
-    mpLineSymbolCombo->addItem(tr("Down Triangle"));
-    mpLineSymbolCombo->addItem(tr("Up Triangle"));
-    mpLineSymbolCombo->addItem(tr("Right Triangle"));
-    mpLineSymbolCombo->addItem(tr("Hexagon"));
-    mpLineSymbolCombo->addItem(tr("Horizontal Line"));
-    mpLineSymbolCombo->addItem(tr("Vertical Line"));
-    mpLineSymbolCombo->addItem(tr("Star 1"));
-    mpLineSymbolCombo->addItem(tr("Star 2"));
-    //mpLineSymbol->addItem(tr("Dots"));
-
+    for (const auto& symbol_name : PlotCurveStyle::symbol_names)
+    {
+        mpLineSymbolCombo->addItem(symbol_name);
+    }
 
     QToolButton *pCloseButton = new QToolButton(this);
     pCloseButton->setToolTip("Remove Curve");
@@ -204,14 +191,14 @@ void PlotCurveControlBox::setSizeValue(int value)
     mpSizeSpinBox->setValue(value);
 }
 
-void PlotCurveControlBox::setLineType(int value)
+void PlotCurveControlBox::setLineType(Qt::PenStyle value)
 {
-    mpLineStyleCombo->setCurrentIndex(value);
+    mpLineStyleCombo->setCurrentIndex(PlotCurveStyle::toLineStyleIndex(value));
 }
 
-void PlotCurveControlBox::setSymbol(int value)
+void PlotCurveControlBox::setSymbol(QwtSymbol::Style  value)
 {
-    mpLineSymbolCombo->setCurrentIndex(value);
+    mpLineSymbolCombo->setCurrentIndex(PlotCurveStyle::toSymbolIndex(value));
 }
 
 void PlotCurveControlBox::updateColor(const QColor color)

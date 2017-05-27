@@ -922,70 +922,7 @@ void PlotCurve::setLineSymbol(QString lineSymbol)
 {
     mLineSymbol = lineSymbol;
     mpCurveSymbol = new QwtSymbol();
-    if(lineSymbol == "Cross")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Cross);
-    }
-    else if(lineSymbol == "XCross")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::XCross);
-    }
-    else if(lineSymbol == "Ellipse")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Ellipse);
-    }
-    else if(lineSymbol == "Star 1")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Star1);
-    }
-    else if(lineSymbol == "Star 2")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Star2);
-    }
-    else if(lineSymbol == "Hexagon")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Hexagon);
-    }
-    else if(lineSymbol == "Rectangle")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Rect);
-    }
-    else if(lineSymbol == "Horizontal Line")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::HLine);
-    }
-    else if(lineSymbol == "Vertical Line")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::VLine);
-    }
-    else if(lineSymbol == "Diamond")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Diamond);
-    }
-    else if(lineSymbol == "Triangle")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::Triangle);
-    }
-    else if(lineSymbol == "Up Triangle")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::UTriangle);
-    }
-    else if(lineSymbol == "Down Triangle")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::DTriangle);
-    }
-    else if(lineSymbol == "Right Triangle")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::RTriangle);
-    }
-    else if(lineSymbol == "Left Triangle")
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::LTriangle);
-    }
-    else
-    {
-        mpCurveSymbol->setStyle(QwtSymbol::NoSymbol);
-    }
+    mpCurveSymbol->setStyle(PlotCurveStyle::toSymbolEnum(lineSymbol));
 
     QPen tempPen = pen();
     tempPen.setStyle(Qt::SolidLine);
@@ -1416,19 +1353,10 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
             QMenu *pSymbolMenu = new QMenu("Marker Symbol");
             pContextMenu->addMenu(pSymbolMenu);
             QList<SymbolSelectionStruct> symbols;
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Ellipse, "Ellipse"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Rect, "Rect"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Diamond, "Diamond"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Triangle, "Triangle"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::DTriangle, "DTriangle"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::UTriangle, "UTriangle"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::LTriangle, "LTriangle"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::RTriangle, "RTriangle"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Cross, "Cross"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::XCross, "XCross"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Star1, "Star1"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Star2, "Star2"));
-            symbols.append(SymbolSelectionStruct(QwtSymbol::Hexagon, "Hexagon"));
+            for (size_t i=1; i<PlotCurveStyle::symbol_enums.size(); ++i ) {
+                symbols.append(SymbolSelectionStruct(PlotCurveStyle::symbol_enums[i], PlotCurveStyle::symbol_names[i]));
+            }
+
             QMap<QAction*, SymbolSelectionStruct*> symbolSelectionMap;
             for (int i=0; i<symbols.size(); ++i)
             {

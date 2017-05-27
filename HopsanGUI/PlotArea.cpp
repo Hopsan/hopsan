@@ -295,13 +295,10 @@ void PlotArea::addCurve(PlotCurve *pCurve, PlotCurveStyle style)
     pCurve->setZ(CurveZOrderType);
     pCurve->setLineWidth(style.thickness);
     QPen pen = pCurve->pen();
-    pen.setStyle(Qt::PenStyle(style.type));
+    pen.setStyle(Qt::PenStyle(style.line_style));
     pCurve->setPen(pen);
-    QStringList symbols = QStringList() << "None" << "Cross" << "Ellipse" << "XCross" << "Triangle"
-                                        << "Rectangle" << "Diamond" << "Down Triangle" << "Up Triangle"
-                                        << "Right Triangle" << "Hexagon" << "Horizontal Line"
-                                        << "Vertical Line" << "Star 1" << "Star 2";
-    pCurve->setLineSymbol(symbols[style.symbol]);
+
+    pCurve->setLineSymbol(PlotCurveStyle::toSymbolName(style.symbol));
     pCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     setLegendSymbol(mpLegendSymbolType->currentText(), pCurve);
 
@@ -375,7 +372,7 @@ void PlotArea::addCurve(PlotCurve *pCurve, PlotCurveStyle style)
     connect(pControlBox, SIGNAL(showCurve(PlotCurve*)), this, SLOT(showCurve(PlotCurve*)));
     pControlBox->setSizeValue(style.thickness);
     pControlBox->setSymbol(style.symbol);
-    pControlBox->setLineType(style.type);
+    pControlBox->setLineType(style.line_style);
     mPlotCurveControlBoxes.append(pControlBox);
     mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mPlotCurveControlBoxes.last());
 

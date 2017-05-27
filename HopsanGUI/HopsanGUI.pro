@@ -311,7 +311,8 @@ SOURCES += main.cpp \
     RemoteSimulationUtils.cpp \
     Dialogs/LicenseDialog.cpp \
     Widgets/TimeOffsetWidget.cpp \
-    Dialogs/NumHopScriptDialog.cpp
+    Dialogs/NumHopScriptDialog.cpp \
+    PlotCurveStyle.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
