@@ -17,7 +17,7 @@ Utilities/licenseChanger.py HopsanGenerator ${LIC_HEADER} ${DOSET} -e HopsanGene
 Utilities/licenseChanger.py Ops ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py SymHop ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py componentLibraries/defaultLibrary ${LIC_HEADER} ${DOSET}
-Utilities/licenseChanger.py componentLibraries/exampleComponentLibrary ${LIC_HEADER} ${DOSET}
+Utilities/licenseChanger.py componentLibraries/exampleComponentLib ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py componentLibraries/devLibraries ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py componentLibraries/extensionLibrary ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py componentLibraries/extensionLibrary08 ${LIC_HEADER} ${DOSET}
