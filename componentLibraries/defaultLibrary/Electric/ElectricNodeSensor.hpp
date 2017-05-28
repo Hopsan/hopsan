@@ -31,7 +31,7 @@
 //!
 //! @brief Contains a Electric Node Sensor Component
 //!
-//$Id: ElectricNodeSensor.hpp 8207 2015-07-16 18:49:37Z petno25 $
+//$Id$
 
 #ifndef ElectricNODESENSOR_HPP_INCLUDED
 #define ElectricNODESENSOR_HPP_INCLUDED

@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 
-//$Id: ElectricCSource.hpp 8974 2016-05-02 07:40:48Z petno25 $
+//$Id$
 
 #ifndef ElectricCSOURCE_HPP
 #define ElectricCSOURCE_HPP
