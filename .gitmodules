@@ -1,0 +1,42 @@
+[submodule "Dependencies/msgpack-c"]
+	path = Dependencies/msgpack-c
+	url = https://github.com/msgpack/msgpack-c.git
+[submodule "Dependencies/cppzmq"]
+	path = Dependencies/cppzmq
+	url = https://github.com/zeromq/cppzmq.git
+[submodule "Dependencies/zeromq_code"]
+	path = Dependencies/zeromq_code
+	url = https://github.com/zeromq/zeromq4-1.git
+[submodule "Dependencies/discount_code"]
+	path = Dependencies/discount_code
+	url = https://github.com/Orc/discount.git
+[submodule "Dependencies/FMILibrary_code"]
+	path = Dependencies/FMILibrary_code
+	url = https://github.com/modelon/FMILibrary.git
+[submodule "Dependencies/matio_code"]
+	path = Dependencies/matio_code
+	url = https://github.com/tbeu/matio.git
+[submodule "Dependencies/qwt_code"]
+	path = Dependencies/qwt_code
+	url = https://github.com/osakared/qwt.git
+[submodule "Dependencies/hdf5_code"]
+	path = Dependencies/hdf5_code
+	url = https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git
+[submodule "Dependencies/katex_code"]
+	path = Dependencies/katex_code
+	url = https://github.com/Khan/KaTeX.git
+[submodule "Dependencies/tclap"]
+	path = Dependencies/tclap
+	url = http://git.code.sf.net/p/tclap/code
+[submodule "HopsanCore/dependencies/IndexingCSVParser"]
+	path = HopsanCore/dependencies/IndexingCSVParser
+	url = https://github.com/peterNordin/IndexingCSVParser.git
+[submodule "HopsanCore/dependencies/libNumHop"]
+	path = HopsanCore/dependencies/libNumHop
+	url = https://github.com/peterNordin/libNumHop.git
+[submodule "Dependencies/tools"]
+	path = Dependencies/tools
+	url = https://github.com/peterNordin/hopsan_deps_tools.git
+[submodule "Dependencies/git-archive-all"]
+	path = Dependencies/git-archive-all
+	url = https://github.com/Kentzo/git-archive-all.git
