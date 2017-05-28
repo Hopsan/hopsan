@@ -20,9 +20,7 @@ If you wish to see the old (outdated) instructions for manual dependency buildin
 -# Go to Projects->Build and under __Build Steps__ enter the __Make argument:__ `-j4` to speed up compilation using 4 cores. (Optional)
 -# It is recommended to activate shadow build for both debug and release, (you will likely be able to use the default shadow build location)
    Shadow build means that all of the build files will be put someplace else to avoid clutter
--# qmake will automatically search for the previously build dependencies in the `Dependencies` directory according to default paths given in the .prf files.
-  -# If you have a new version of a library that should be officially supported add the path to the TOP of the default list the .prf files
-  -# If you want to use a completely custom path to your library then set the appropriate environment variable, eg. TBB_PATH, QWT_PATH or PYTHONQT_PATH.
+-# qmake will automatically search for the previously build dependencies in the `Dependencies` directory. Each dependency have a .pri file that specify the needed compilation and linking variables. 
 -# Before you compile, <b>run qmake</b> on the HopsanNG project (right click), to see the qmake messages, (you will see if all dependencies were found correctly). This information is shown in the compile tab.
 -# Build the project in either debug or release mode
 -# If you want to start HopsanGUI through Qt Creator, go into the left panel Projects->Run and change the Run configuration.

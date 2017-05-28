@@ -22,14 +22,10 @@ echo "Copy installing Hopsan from $srcDir to $dstDir"
 mkdir -p                                                   $dstDir/HopsanCore
 cp -a    $srcDir/HopsanCore/include                        $dstDir/HopsanCore
 cp -a    $srcDir/HopsanCore/src                            $dstDir/HopsanCore
-cp -a    $srcDir/HopsanCore/Dependencies                   $dstDir/HopsanCore
+cp -a    $srcDir/HopsanCore/dependencies                   $dstDir/HopsanCore
 
 mkdir -p                                                   $dstDir/Dependencies
-cp -a    $srcDir/Dependencies/IndexingCSVParser            $dstDir/Dependencies
-cp -a    $srcDir/Dependencies/libcsv_parser++-1.0.0        $dstDir/Dependencies
-cp -a    $srcDir/Dependencies/rapidxml-1.13                $dstDir/Dependencies
-mkdir -p                                                   $dstDir/Dependencies/FMILibrary-2.0.1
-cp -a    $srcDir/Dependencies/FMILibrary-2.0.1/install     $dstDir/Dependencies/FMILibrary-2.0.1
+cp -a    $srcDir/Dependencies/FMILibrary                   $dstDir/Dependencies
 
 mkdir -p                                                   $dstDir/componentLibraries
 cp -a    $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries

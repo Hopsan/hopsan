@@ -5,7 +5,6 @@
 # Global project options
 # -------------------------------------------------
 include( HopsanGuiBuild.prf )
-include( $${PWD}/../HopsanRemote/HopsanRemoteBuild.pri )
 
 TARGET = HopsanGUI
 TEMPLATE = app
@@ -23,45 +22,36 @@ isEqual(QT_MAJOR_VERSION, 5){
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
-# Set the QWT paths and dll/so/dylib/framework post linking copy command
-d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
-!isEmpty(d){
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-
-    macx:QMAKE_LFLAGS *= -lqwt
-    macx:message(LIBS=$$LIBS)
-    macx:message(INCLUDEPATH=$$INCLUDEPATH)
-    macx:message(QMAKE_LFLAGS=$$QMAKE_LFLAGS)
-} else {
-    !build_pass:error(Failed to locate QWT libs, have you compiled them and put them in the expected location)
+# Set the QWT paths
+include($${PWD}/../Dependencies/qwt.pri)
+!have_qwt(){
+    !build_pass:error("Could not find QWT libs, have you compiled them in the expected location")
 }
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set the PythonQt paths and dll/so post linking copy command
-d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
-!isEmpty(d){
+# Set the PythonQt paths
+include($${PWD}/../Dependencies/pythonqt.pri)
+have_pythonqt(){
     DEFINES *= USEPYTHONQT       #If PythonQt was found then lets build GUI with PythonQt and Python support
     !build_pass:message(Compiling HopsanGUI with PythonQt support)
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 } else {
-    !build_pass:message(Compiling HopsanGUI WITHOUT PythonQt and Python support)
+    !build_pass:warning(Compiling HopsanGUI WITHOUT PythonQt and Python support)
 }
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set the ZMQ paths and dll/so post linking copy command
-d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
-!isEmpty(d){
+# Set the ZeroMQ paths
+include($${PWD}/../Dependencies/zeromq.pri)
+have_zeromq() {
     DEFINES *= USEZMQ       #If ZMQ was found then lets build GUI with ZMQ / msgpack support
     !build_pass:message(Compiling HopsanGUI with ZeroMQ and msgpack support)
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+    include($${PWD}/../Dependencies/msgpack.pri)
+
+    # Also require msgpack.c, setup msgpack path
+    !have_msgpack() {
+        !build_pass:error("Could not find msgpack-c, which is required for serialization")
+    }
 
     INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServer
     INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServerClient
@@ -70,7 +60,7 @@ d = $$setZMQPathInfo($$(ZMQ_PATH), $$DESTDIR)
     SOURCES += $${PWD}/../HopsanRemote/include/FileAccess.cpp
 
 } else {
-    !build_pass:message(Compiling HopsanGUI WITHOUT ZeroMQ and msgpack support)
+    !build_pass:warning("Could not find ZeroMQ, compiling HopsanGUI WITHOUT ZeroMQ support")
 }
 #--------------------------------------------------------
 
@@ -94,13 +84,12 @@ LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set Discount Paths
-d = $$setDiscountPathInfo($$(DISCOUNT_PATH), $$DESTDIR)
-!isEmpty(d){
-    DEFINES *= USEDISCOUNT
-    LIBS *= $$magic_hopsan_libpath
-    INCLUDEPATH *= $$magic_hopsan_includepath
-    QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-    !build_pass:message(Compiling with Discount (libmarkdown) support)
+include($${PWD}/../Dependencies/discount.pri)
+have_discount(){
+  DEFINES *= USEDISCOUNT
+  !build_pass:message(Compiling with Discount (libmarkdown) support)
+} else {
+  !build_pass:warning(Compiling WITHOUT Discount (libmarkdown) support)
 }
 #--------------------------------------------------------
 
@@ -157,12 +146,10 @@ unix {
     !macx:QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
      macx:QMAKE_RPATHDIR *= $${PWD}/../bin
 
-    # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
-    rev = $$system($${PWD}/../getSvnRevision.sh)
-    message(GUI revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        DEFINES *= "HOPSANGUISVNREVISION=$${rev}"
-    }
+    # Get the git commit timestamp
+     timestamp=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
+     DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
+
 }
 win32 {
     #DEFINES += STATICCORE
@@ -179,17 +166,13 @@ win32 {
     }
 
     # Set hdf5 paths
-    d = $$setHDF5PathInfo($$(HDF5_PATH), $$DESTDIR)
-    !isEmpty(d){
-        DEFINES *= USEHDF5
-        LIBS *= $$magic_hopsan_libpath
-        INCLUDEPATH *= $$magic_hopsan_includepath
-        QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-        !build_pass:message("Compiling with HDF5 support")
+    include($${PWD}/../Dependencies/hdf5.pri)
+    have_hdf5(){
+      DEFINES *= USEHDF5
+      !build_pass:message("Compiling with HDF5 support")
     } else {
-        !build_pass:message("Compiling without HDF5 support")
+      !build_pass:message("Compiling without HDF5 support")
     }
-
 
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
@@ -204,12 +187,9 @@ win32 {
         CONFIG += console
 #    }
 
-    # Get the svn revision in here if script succeed, Note! Checking return code does not work, so we compare version instead
-    rev = $$system($${PWD}/../getSvnRevision.bat)
-    message(GUI revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        DEFINES *= "HOPSANGUISVNREVISION=$${rev}"
-    }
+    # Get the git commit timestamp
+    timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+    DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
 }
 macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9

@@ -7,11 +7,7 @@ defineReplace(setFMILIBPathInfo){
     dstDir = $$2
 
     #Set FMILibrary paths, Paths that are higher up in the list will have priority if found
-    FMILIB_PATHS *= $${PWD}/../Dependencies/FMILibrary-2.0.1
-    win32:contains(QMAKE_HOST.arch, x86_64){
-        # Fallback OBSOLETE 64 bit Windows release
-        FMILIB_PATHS *= $${PWD}/../Dependencies/FMILibrary-2.0.1_x64
-    }
+    FMILIB_PATHS *= $${PWD}/../Dependencies/FMILibrary
     FMILIB_PATH = $$selectPath($$externalSrc, $$FMILIB_PATHS, "FMILibrary")
 
     #warning(FMILIB_PATH $${FMILIB_PATH})

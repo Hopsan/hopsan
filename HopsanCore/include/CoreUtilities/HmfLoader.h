@@ -1,25 +1,25 @@
 /*-----------------------------------------------------------------------------
- This source file is a part of Hopsan
 
- Copyright (c) 2009 to present year, Hopsan Group
+ Copyright 2017 Hopsan Group
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
- For license details and information about the Hopsan Group see the files
- GPLv3 and HOPSANGROUP in the Hopsan source code root directory
 
- For author and contributor information see the AUTHORS file
+ The full license is available in the file LICENSE.
+ For details about the 'Hopsan Group' or information about Authors and
+ Contributors see the HOPSANGROUP and AUTHORS files that are located in
+ the Hopsan source code root directory.
+
 -----------------------------------------------------------------------------*/
 
 //!
@@ -38,6 +38,7 @@
 #include <vector>
 #include <ctype.h>
 #include "HopsanTypes.h"
+#include "win32dll.h"
 
 namespace hopsan {
 
@@ -46,133 +47,11 @@ class ComponentSystem;
 class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
-inline int getGenerationVersion(const HString &version)
-{
-    HString tempStr;
-    for(size_t i=0; i<version.size() && version.at(i) != '.'; ++i)
-    {
-        tempStr.append(version.at(i));
-    }
-
-    bool dummy;
-    return tempStr.toLongInt(&dummy);
-}
-
-inline int getMajorVersion(const HString &version)
-{
-    HString tempStr;
-    size_t i;
-    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
-    for(++i; i<version.size() && version.at(i) != '.'; ++i)
-    {
-        tempStr.append(version.at(i));
-    }
-
-    bool dummy;
-    return tempStr.toLongInt(&dummy);
-}
-
-inline int getMinorVersion(const HString &version)
-{
-    HString tempStr;
-    size_t i;
-    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
-    for(++i; i<version.size() && version.at(i) != '.'; ++i) {}
-    for(++i; i<version.size() && version.at(i) != 'x'; ++i)
-    {
-        tempStr.append(version.at(i));
-    }
-
-    bool dummy;
-    if(tempStr == "")
-        return -1;
-
-    return tempStr.toLongInt(&dummy);
-}
-
-
-inline char getHotfixLetter(const HString &version)
-{
-    HString tempStr;
-    size_t i;
-    for(i=0; i<version.size() && version.at(i) != '.'; ++i) {}
-    for(++i; i<version.size() && version.at(i) != '.'; ++i) {}
-    for(++i; i<version.size() && version.at(i) != 'x'; ++i)
-    {
-        if(!isdigit(version.at(i)))
-            tempStr.append(version.at(i));
-    }
-
-    if(tempStr.size() > 1)
-        return ' ';
-
-    return tempStr.at(0);
-}
-
-
-inline int getRevisionNumber(const HString &version)
-{
-    HString tempStr;
-    size_t i;
-    for(i=1; i<version.size() && version.at(i-1) != '_' && version.at(i) != 'r'; ++i) {}
-    for(++i; i<version.size(); ++i)
-    {
-        tempStr.append(version.at(i));
-    }
-
-    bool dummy;
-    if(tempStr == "")
-        return -1;
-
-    return tempStr.toLongInt(&dummy);
-}
-
-
-inline bool isVersionGreaterThan(HString version1, HString version2)
-{
-    int gen1 = getGenerationVersion(version1);
-    int gen2 = getGenerationVersion(version2);
-    int maj1 = getMajorVersion(version1);
-    int maj2 = getMajorVersion(version2);
-    int min1 = getMinorVersion(version1);
-    int min2 = getMinorVersion(version2);
-    char letter1 = getHotfixLetter(version1);
-    char letter2 = getHotfixLetter(version2);
-    int rev1 = getRevisionNumber(version1);
-    int rev2 = getRevisionNumber(version2);
-
-    if(gen1 > gen2)
-        return true;
-    if(gen1 < gen2)
-        return false;
-
-    if(maj1 > maj2)
-        return true;
-    if(maj1 < maj2)
-        return false;
-
-    if(min1 > -1 && min2 == -1)
-        return false;               //Assume that revision build is higher generation than release builds
-    if(min1 == -1 && min2 > -1)
-        return true;
-
-    if(min1 > min2)
-        return true;
-    if(min1 < min2)
-        return false;
-
-    if(letter1 > letter2)
-        return true;
-    if(letter1 < letter2)
-        return false;
-
-    if(rev1 > rev2)
-        return true;
-    if(rev1 < rev2)
-        return false;
-
-    return false;
-}
+int DLLIMPORTEXPORT getEpochVersion(const HString& version);
+int DLLIMPORTEXPORT getMajorVersion(const HString& version);
+int DLLIMPORTEXPORT getMinorVersion(const HString& version);
+bool DLLIMPORTEXPORT isVersionGreaterThan(const HString& version1, const HString& version2);
+int DLLIMPORTEXPORT compareHopsanVersions(const HString& version1, const HString& version2);
 
 ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModel(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);

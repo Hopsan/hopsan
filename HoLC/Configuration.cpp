@@ -1,7 +1,6 @@
 /*-----------------------------------------------------------------------------
- This source file is a part of Hopsan
 
- Copyright (c) 2009 to present year, Hopsan Group
+ Copyright 2017 Hopsan Group
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,10 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
- For license details and information about the Hopsan Group see the files
- GPLv3 and HOPSANGROUP in the Hopsan source code root directory
+ The full license is available in the file GPLv3.
+ For details about the 'Hopsan Group' or information about Authors and
+ Contributors see the HOPSANGROUP and AUTHORS files that are located in
+ the Hopsan source code root directory.
 
- For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
 //Qt includes
@@ -284,9 +284,9 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
             mCompilerPath = "/usr/bin";
         }
 #elif WIN32
-        if(QFile::exists(qApp->applicationDirPath()+"/../ThirdParty/mingw32/bin/g++.exe"))
+        if(QFile::exists(qApp->applicationDirPath()+"/../Dependencies/tools/mingw32/bin/g++.exe"))
         {
-            mCompilerPath = qApp->applicationDirPath()+"/../ThirdParty/mingw32/bin";
+            mCompilerPath = qApp->applicationDirPath()+"/../Dependencies/tools/mingw32/bin";
         }
 #endif
     }

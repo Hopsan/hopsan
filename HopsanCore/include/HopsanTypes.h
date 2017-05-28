@@ -1,25 +1,25 @@
 /*-----------------------------------------------------------------------------
- This source file is a part of Hopsan
 
- Copyright (c) 2009 to present year, Hopsan Group
+ Copyright 2017 Hopsan Group
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
- For license details and information about the Hopsan Group see the files
- GPLv3 and HOPSANGROUP in the Hopsan source code root directory
 
- For author and contributor information see the AUTHORS file
+ The full license is available in the file LICENSE.
+ For details about the 'Hopsan Group' or information about Authors and
+ Contributors see the HOPSANGROUP and AUTHORS files that are located in
+ the Hopsan source code root directory.
+
 -----------------------------------------------------------------------------*/
 
 
@@ -32,6 +32,9 @@
 #include <cstddef>
 
 namespace hopsan {
+
+template<typename T>
+class HVector;
 
 class DLLIMPORTEXPORT HString
 {
@@ -72,6 +75,7 @@ public:
     long int toLongInt(bool *isOK) const;
 
     HString substr(const size_t pos, const size_t len=npos) const;
+    HVector<HString> split(const char delim) const;
 
     size_t find_first_of(const char c, size_t pos = 0) const;
     size_t rfind(const char c, size_t pos = npos) const;
@@ -137,12 +141,7 @@ public:
     //! @brief copy constructor
     HVector(const HVector<T> &rOther)
     {
-        mpDataArray = new T[rOther.size()];
-        mSize = rOther.size();
-        for (size_t i=0; i<rOther.size(); ++i)
-        {
-            mpDataArray[i] = rOther[i];
-        }
+        *this = rOther;
     }
 
     ~HVector()
@@ -236,6 +235,17 @@ public:
     bool empty() const
     {
         return (mSize==0);
+    }
+
+    HVector<T>& operator=(const HVector<T> &rhs)
+    {
+        mpDataArray = new T[rhs.size()];
+        mSize = rhs.size();
+        for (size_t i=0; i<rhs.size(); ++i)
+        {
+            mpDataArray[i] = rhs[i];
+        }
+        return *this;
     }
 };
 

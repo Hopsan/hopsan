@@ -2,7 +2,7 @@ Source: hopsan
 Section: non-free/x11
 Priority: extra
 Maintainer: Peter Nordin <peter.nordin@liu.se>
-Build-Depends: debhelper (>= 8.0.0), libtbb-dev, python-dev (<< 3.0.0), qtbase5-dev, libqt5webkit5-dev, libqt5svg5-dev, qtmultimedia5-dev, libqt5opengl5-dev, libhdf5-dev, unzip, cmake, libtool-bin, automake, pkg-config
+Build-Depends: debhelper (>= 8.0.0), python-dev (<< 3.0.0), qtbase5-dev, libqt5webkit5-dev, libqt5svg5-dev, qtmultimedia5-dev, libqt5opengl5-dev, libhdf5-dev, unzip, cmake, libtool-bin, automake, pkg-config
 Standards-Version: 3.9.2
 Homepage: http://www.iei.liu.se/flumes/system-simulation/hopsan
 

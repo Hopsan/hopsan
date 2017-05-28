@@ -3,16 +3,16 @@ include( $${PWD}/../Common.prf )
 # Set thisDir to the directory of the pri file, else lookup will use PWD from the calling project file
 thisDir = $${PWD}
 
-#Helpfunction to fetch correct QWT INCLUDEPATH and LIBS path
+#Helpfunction to fetch correct zmq INCLUDEPATH and LIBS path
 defineReplace(setZMQPathInfo){
     #Assign input arguments
     externalSrc = $$1
     dstDir = $$2
 
-    #Set QWT paths, Paths that are higher up in the list will have priority if found
-    ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq4-1-4.1.3
+    #Set paths, Paths that are higher up in the list will have priority if found
+    ZMQ_PATHS *= $${thisDir}/../Dependencies/zeromq
     ZMQ_PATH = $$selectPath($$externalSrc, $$ZMQ_PATHS, "zmq")
-
+ 
     #warning(ZMQ_PATH $${ZMQ_PATH})
 
     #Empty variables to fill in
@@ -22,7 +22,8 @@ defineReplace(setZMQPathInfo){
     libDir =
 
     exists($${ZMQ_PATH}){
-        libDir = $${ZMQ_PATH}/.libs
+        win32:libDir = $${ZMQ_PATH}/build_install/bin
+        unix:libDir = $${ZMQ_PATH}/build_install/lib
         #message(libDir: $${libDir})
 
         #Check libfolder path
@@ -78,5 +79,5 @@ defineReplace(setZMQPathInfo){
     return($$magic_hopsan_libpath)
 }
 
-INCLUDEPATH *= $${PWD}/../Dependencies/msgpack-c-cpp-1.3.0/include/
-INCLUDEPATH *= $${PWD}/../Dependencies/cppzmq-master/
+INCLUDEPATH *= $${PWD}/../Dependencies/msgpack-c/include/
+INCLUDEPATH *= $${PWD}/../Dependencies/cppzmq/

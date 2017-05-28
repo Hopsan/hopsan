@@ -6,6 +6,7 @@ REM We need 32-bit Ghostscript version as it seems to be hard-coded in Doxygen (
 REM Lets add default path for installation on both 32 and 64 bit Windows
 REM TODO: It would be nice if we would not need to rely on a specific version here, (search for available version by itself)
 set PATH=C:\Program Files\gs\gs9.18\bin;C:\Program Files (x86)\gs\gs9.18\bin;%PATH%
+set PATH=C:\Program Files\gs\gs9.21\bin;C:\Program Files (x86)\gs\gs9.21\bin;%PATH%
 set PATH=C:\Program Files (x86)\Graphviz2.38\bin;%PATH%
 
 where /q gswin32c.exe

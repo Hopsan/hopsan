@@ -1,7 +1,6 @@
 /*-----------------------------------------------------------------------------
- This source file is a part of Hopsan
 
- Copyright (c) 2009 to present year, Hopsan Group
+ Copyright 2017 Hopsan Group
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,10 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
- For license details and information about the Hopsan Group see the files
- GPLv3 and HOPSANGROUP in the Hopsan source code root directory
+ The full license is available in the file GPLv3.
+ For details about the 'Hopsan Group' or information about Authors and
+ Contributors see the HOPSANGROUP and AUTHORS files that are located in
+ the Hopsan source code root directory.
 
- For author and contributor information see the AUTHORS file
 -----------------------------------------------------------------------------*/
 
 //!
@@ -38,11 +38,11 @@
 
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
-#ifndef HOPSANGUISVNREVISION
-#define HOPSANGUISVNREVISION UNKNOWN
+#ifndef HOPSANGUI_COMMIT_TIMESTAMP
+#define HOPSANGUI_COMMIT_TIMESTAMP UNKNOWN
 #endif
 
-#define HOPSANGUIVERSION "0.8.x_r" TO_STR(HOPSANGUISVNREVISION)
+#define HOPSANGUIVERSION "2.8.0." TO_STR(HOPSANGUI_COMMIT_TIMESTAMP)
 #define HMF_VERSIONNUM "0.4"
 #define HMF_REQUIREDVERSIONNUM "0.3"
 #define CAF_VERSIONNUM "0.3"

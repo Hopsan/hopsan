@@ -1,25 +1,25 @@
 /*-----------------------------------------------------------------------------
- This source file is a part of Hopsan
 
- Copyright (c) 2009 to present year, Hopsan Group
+ Copyright 2017 Hopsan Group
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
- For license details and information about the Hopsan Group see the files
- GPLv3 and HOPSANGROUP in the Hopsan source code root directory
 
- For author and contributor information see the AUTHORS file
+ The full license is available in the file LICENSE.
+ For details about the 'Hopsan Group' or information about Authors and
+ Contributors see the HOPSANGROUP and AUTHORS files that are located in
+ the Hopsan source code root directory.
+
 -----------------------------------------------------------------------------*/
 
 #include <QtTest>
@@ -377,6 +377,36 @@ private Q_SLOTS:
         QTest::newRow("234634 64")  << HString("234634 64") << 234634 << false;
         QTest::newRow("2346346 ")   << HString("2346346 ") << 2346346 << false;
     }
+
+    void HString_split()
+    {
+        QFETCH(HString, str_with_delim);
+        QFETCH(HString, str_without_delim);
+
+	HVector<HString> parts = str_with_delim.split('.');
+	HString str;
+	for (size_t i=0; i<parts.size(); ++i)
+	{
+	  str.append(parts[i]);
+	}
+
+        QVERIFY2(str == str_without_delim, ("split did not produce the expected result: "+str).c_str());        
+    }
+    void HString_split_data()
+    {
+        QTest::addColumn<HString>("str_with_delim");
+        QTest::addColumn<HString>("str_without_delim");
+
+        QTest::newRow("0") << HString("2.8.0.12345.1234") << HString("280123451234");
+ 	QTest::newRow("1") << HString("2.8..") << HString("28");
+ 	QTest::newRow("2") << HString("...") << HString("");
+ 	QTest::newRow("3") << HString(".4.7.0") << HString("470");
+ 	QTest::newRow("4") << HString(".4.7.") << HString("47");
+ 	QTest::newRow("5") << HString("4..0") << HString("40");
+ 	QTest::newRow("6") << HString("") << HString("");
+ 	QTest::newRow("7") << HString("kaka") << HString("kaka");
+    }
+
 };
 
 QTEST_APPLESS_MAIN(HStringTests)

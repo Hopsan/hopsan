@@ -80,11 +80,11 @@ You should use the Qt-libraries in you distribution package repository.
 Make sure that you install the Qt development packages.
 
 1. To install GCC (and some other tools) on Ubuntu run `apt-get install build-essential`.
-2. The following packages seem to include all necessary components: `apt-get install libtbb-dev, python-dev, qtbase5-dev, libqt5webkit5-dev, libqt5svg5-dev, qtmultimedia5-dev, libqt5opengl5-dev, libhdf5-dev, unzip, cmake, libtool-bin, automake, pkg-config`\n
+2. The following packages seem to include all necessary components: `apt-get install python-dev, qtbase5-dev, libqt5webkit5-dev, libqt5svg5-dev, qtmultimedia5-dev, libqt5opengl5-dev, libhdf5-dev, unzip, cmake, libtool-bin, automake, pkg-config`\n
    __Note!__ What packages are needed may change between OS versions (due to repackaging), you may need additional packages.
 3. Download Qt Creator from your package repository or a newer version from http://download.qt.io/official_releases/qtcreator/ \n
 
 
 \subsection qt4-linux-gcc Installing Qt4 (If Qt5 is not available)
-If Qt5 libraries are not available you will need the following packages instead: `apt-get install libtbb-dev, python-dev, libqt4-dev, libqtwebkit-dev, libhdf5-dev, unzip, cmake, libtool, automake, pkg-config`.
+If Qt5 libraries are not available you will need the following packages instead: `apt-get install python-dev, libqt4-dev, libqtwebkit-dev, libhdf5-dev, unzip, cmake, libtool, automake, pkg-config`.
 */

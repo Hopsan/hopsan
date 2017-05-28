@@ -26,18 +26,17 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
-INCLUDEPATH *= $${PWD}/../Dependencies/rapidxml-1.13
-INCLUDEPATH *= $${PWD}/../Dependencies/IndexingCSVParser
-#INCLUDEPATH *= $${PWD}/Dependencies/boost
+INCLUDEPATH *= $${PWD}/dependencies/rapidxml
+INCLUDEPATH *= $${PWD}/dependencies/IndexingCSVParser
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set numHop paths, (compile in)
-INCLUDEPATH *= $${PWD}/../Dependencies/libNumHop/libNumHop
-SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Expression.cc
-SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/Helpfunctions.cc
-SOURCES += $${PWD}/../Dependencies/libNumHop/libNumHop/VariableStorage.cc
-HEADERS += $${PWD}/../Dependencies/libNumHop/libNumHop/numhop.h
+INCLUDEPATH *= $${PWD}/dependencies/libNumHop/libNumHop
+SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/Expression.cc
+SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/Helpfunctions.cc
+SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/VariableStorage.cc
+HEADERS += $${PWD}/dependencies/libNumHop/libNumHop/numhop.h
 #--------------------------------------------------------
 
 # -------------------------------------------------
@@ -64,42 +63,26 @@ win32 {
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
     DEFINES -= UNICODE
 
-    #--------------------------------------------------------
-    # Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
-    #foundTBB = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
-    foundTBB = false
-    equals(foundTBB, true) {
-        DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
-        !build_pass:message("Compiling HopsanCore with TBB support")
-        LIBS *= $$magic_hopsan_libpath
-        INCLUDEPATH *= $$magic_hopsan_includepath
-        QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
-    } else {
-        !build_pass:message("Compiling HopsanCore WITHOUT TBB support")
-    }
-    #--------------------------------------------------------
-
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
-    # Retreive the hopsan core source code revision number, regenerate revnum file if we find revision
-    rev=$$system($${PWD}/../getSvnRevision.bat)
-    message(Core revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        system($${PWD}/../getSvnRevision.bat include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
-    }
+    # Retreive the HopsanCore source code version info and regenerate version header
+    commitdatetime=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+    commithash=$$system($${PWD}/../getGitInfo.bat shorthash $${PWD})
+    message(Core revision: $${commitdatetime})
+    message(Core hash: $${commithash})
+    system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
 }
 unix { 
-    DEFINES *= USETBB
-    LIBS += -ltbb -ldl
-    INCLUDEPATH += /usr/include/tbb/
+    LIBS += -ldl
 
-    # Retreive the hopsan core source code revision number, regenerate revnum file if we find revision
-    rev=$$system($${PWD}/../getSvnRevision.sh)
-    message(Core revision: $${rev})
-    !equals(rev, "RevisionInformationNotFound") {
-        system($${PWD}/../getSvnRevision.sh include HopsanCoreSVNRevision.h HOPSANCORESVNREVISION)
-    }
+    # Retreive the HopsanCore source code version info and regenerate version header
+    commitdatetime=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
+    commithash=$$system($${PWD}/../getGitInfo.sh shorthash $${PWD})
+    message(Core revision: $${commitdatetime})
+    message(Core hash: $${commithash})
+    system($${PWD}/../writeGitVersionHeader.sh $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
+ 
 }
 macx { 
     INCLUDEPATH += /opt/local/include/
@@ -143,7 +126,7 @@ SOURCES += \
     src/ComponentUtilities/HopsanPowerUser.cc \
     src/ComponentUtilities/LookupTable.cc \
     src/ComponentUtilities/PLOParser.cc \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
+    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
     src/Quantities.cc \
     src/CoreUtilities/NumHopHelper.cc \
     src/CoreUtilities/AliasHandler.cc \
@@ -189,7 +172,7 @@ HEADERS += \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
-    ../Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
+    $${PWD}/dependencies/rapidxml/hopsan_rapidxml.hpp \
     include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
@@ -201,12 +184,12 @@ HEADERS += \
     include/Components/ModelicaComponent.hpp \
     include/ComponentUtilities/LookupTable.h \
     include/ComponentUtilities/PLOParser.h \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParser.h \
-    ../Dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
+    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.h \
+    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
     include/Quantities.h \
     include/NodeRWHelpfuncs.hpp \
     include/HopsanCoreVersion.h \
-    include/HopsanCoreSVNRevision.h \
+    include/HopsanCoreGitVersion.h \
     include/CoreUtilities/NumHopHelper.h \
     include/CoreUtilities/ConnectionAssistant.h \
     include/CoreUtilities/AliasHandler.h \

@@ -11,7 +11,7 @@
 #--------------------------------------------------------------------------------------------------
 buildRoot="buildDebPackage/"
 name=hopsan
-devversion=0.8.x
+devversion=2.8.0
 
 # Pbuilder dists and archs
 debianDistArchArray=( stretch:amd64:qt5 stretch:i386:qt5 jessie:amd64:qt5 jessie:i386:qt5 )
@@ -24,13 +24,15 @@ debianMirror="http://ftp.se.debian.org/debian/"
 #--------------------------------------------------------------------------------------------------
 # Code starts here
 #--------------------------------------------------------------------------------------------------
+hopsanroot=$(pwd)
+echo $hopsanroot
 
 # Move directory overwriting dst function, dst dir will be removed if name is same
 mvrDir ()
 {
-  src=${1%/}
-  dst=${2%/}
-  dstname="$dst/$src"
+  local src=${1%/}
+  local dst=${2%/}
+  local dstname="$dst/$src"
   if [ -d "$dstname" ]; then
     rm -r $dstname
   fi
@@ -55,14 +57,34 @@ boolAskYNQuestion()
   fi
 }
 
+# Export a specific git directory, submodules are not included
+git_export()
+{
+  local src=$1
+  local dst=$2
+  local olddir=$(pwd)
+  local tarfile=hopsan_git_export.tar
+  echo "Exporting from git: ${src} to ${dst}"
+  mkdir -p ${dst}
+  cd ${src}
+  git archive --output ${tarfile} HEAD
+  cd $olddir
+  mv ${src}/${tarfile} ${dst}
+  cd ${dst}
+  tar -xf ${tarfile}
+  rm ${tarfile}
+  cd $olddir
+}
+
+
 dscFile="NoFile"
 builDSCFile()
 {
-  packagedir="$1"
-  packageorigsrcfile="$2"
-  qtver="$3"
-  doUsePythonQt="$4"
-  outputbasename="$5"
+  local packagedir="$1"
+  local packageorigsrcfile="$2"
+  local qtver="$3"
+  local doUsePythonQt="$4"
+  local outputbasename="$5"
 
   echo $packagedir
   echo $packageorigsrcfile
@@ -74,7 +96,7 @@ builDSCFile()
   rm -rf $packagedir
 
   # Export template
-  svn export hopsan-template $packagedir
+  git_export hopsan-template $packagedir
   if [ "$qtver" = "qt5" ]; then
       mv $packagedir/debian/control_qt5 $packagedir/debian/control
       mv $packagedir/debian/rules_qt5 $packagedir/debian/rules
@@ -112,8 +134,8 @@ if [ -z "$baseversion" ]; then
   doDevRelease="true"
   baseversion=$devversion
 fi
-releaserevision=`./getSvnRevision.sh`
-fullversionname=$baseversion"_r"$releaserevision
+releaserevision=`./getGitInfo.sh date.time .`
+fullversionname=${baseversion}.${releaserevision}
 
 echo
 boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" "n"
@@ -162,7 +184,7 @@ echo
 #
 cd $buildRoot
 outputDir=output
-pbuilderWorkDir="$PWD/$outputDir/pbuilder/"
+pbuilderWorkDir="/var/tmp/deb_hopsan/pbuilder/"
 outputDebDir="$outputDir/debs"
 mkdir -p $outputDebDir
 mkdir -p $pbuilderWorkDir
@@ -171,15 +193,15 @@ mkdir -p $pbuilderWorkDir
 # Determine deb dir name
 #
 
-outputbasename=$name\_$baseversion.r$releaserevision
+outputbasename=${name}_${fullversionname}
 packageorigsrcfile=$outputbasename.orig.tar.gz
-packagedir=$name-$baseversion.r$releaserevision
-packagesrcfile=$name-$baseversion.r$releaserevision.tar.gz
+packagedir=$name-${fullversionname}
+packagesrcfile=${packagedir}.tar.gz
 
 # -----------------------------------------------------------------------------
 # Prepare source code
 #
-srcExportDir=$outputDir/hopsanSrcExport\_$fullversionname
+srcExportDir=$outputDir/hopsanSrcExport\_${fullversionname}
 ./prepareSourceCode.sh `pwd`/../  $srcExportDir $baseversion $releaserevision $fullversionname $doDevRelease $doBuildInComponents
 
 cd $srcExportDir
@@ -263,9 +285,9 @@ for i in "${distArchArrayDo[@]}"; do
 
     # Set packages that need to be installed, this installs them once and for all, and avoids wasting time on every build
     if [ "$qtver" = "qt5" ]; then
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev qtbase5-dev libqt5webkit5-dev libqt5svg5-dev qtmultimedia5-dev libqt5opengl5-dev python-dev libhdf5-dev  fakeroot cmake libtool-bin qt5-default automake pkg-config"
+      extraPackages="debhelper unzip subversion lsb-release qtbase5-dev libqt5webkit5-dev libqt5svg5-dev qtmultimedia5-dev libqt5opengl5-dev python-dev libhdf5-dev  fakeroot cmake libtool-bin qt5-default automake pkg-config"
     else
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev libhdf5-dev fakeroot cmake automake libtool pkg-config"
+      extraPackages="debhelper unzip subversion lsb-release libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev libhdf5-dev fakeroot cmake automake libtool pkg-config"
     fi
 
     # Update or create pbuild environments

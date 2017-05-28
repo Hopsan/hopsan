@@ -3,42 +3,29 @@
 
 # Shell script building HopsaGUI dependency Discount automatically
 # Author: Peter Nordin peter.nordin@liu.se
-# Date:   2015-02-24
 
-filename="discount-2.1.8.zip"
-dirname="discount-2.1.8"
-basepwd=`pwd`
+basedir=`pwd`
+name=discount
+codedir=${basedir}/${name}_code
+builddir=${basedir}/${name}_build
+installdir=${basedir}/${name}
 
-# include general settings
-#source setHopsanBuildPaths.sh
+# Copy code to build dir, not sure if out-of-source build is possible
+mkdir -p $builddir
+cd $builddir
+cp -a $codedir/* .
 
-# If arg 1 is --force then override regardless
-if [ "$1" != "--force" ]; then
-    # Abort if dir already exist. When running release build script we dont want to build twice
-    if [ -d $dirname ]; then
-        echo "Directory $dirname already exist. Remove it or give argument --force if you want (re)build using this script."
-        exit 0
-    fi
-fi
+# Generate makefiles
+chmod u+x ./configure.sh
+./configure.sh --shared --prefix=$installdir --confdir=$installdir/etc
+# Fix non-root ldconfig cache file location (permission) problem
+sed -e 's/ldconfig "$1"/ldconfig -C .\/ld.so.cache "$1"/' -i librarian.sh
 
-# Clean old files
-rm -rf $dirname
-# Unzip
-unzip -q $filename
-
-
-# Create Shadowbbuild directory
-cd $dirname
-# Generate makefiles on different platforms
-if [ "$OSTYPE" == "linux-gnu" ]; then
-    chmod u+x ./configure.sh
-    ./configure.sh --shared
-elif [ "$OSTYPE" == "darwin14" ]; then
-    chmod u+x ./configure.sh
-    ./configure.sh --shared
-else
-    echo "Unknown OS for Discount build"
-fi
 # Build
 make -j4 -w
+
+# Install
+make install
+
 cd $basepwd
+echo "setupDiscount.sh done!"

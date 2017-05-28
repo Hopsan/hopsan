@@ -6,12 +6,8 @@ defineReplace(setHDF5PathInfo){
     externalSrc = $$1
     dstDir = $$2
 
-    #Set QWT paths, Paths that are higher up in the list will have priority if found
-    HDF5_PATHS *= $${PWD}/../Dependencies/hdf5-1.8.15-patch1/install
-    win32:contains(QMAKE_HOST.arch, x86_64){
-        # Fallback OBSOLETE 64 bit Windows release
-        HDF5_PATHS *= $${PWD}/../Dependencies/hdf5-1.8.15-patch1_x64/install
-    }
+    #Set paths, Paths that are higher up in the list will have priority if found
+    HDF5_PATHS *= $${PWD}/../Dependencies/hdf5/install
     HDF5_PATH = $$selectPath($$externalSrc, $$HDF5_PATHS, "HDF5")
 
     #Empty variables to fill in
@@ -36,15 +32,16 @@ defineReplace(setHDF5PathInfo){
             #win32:CONFIG(debug, debug|release):dbg_ext = d
             #unix:CONFIG(debug, debug|release):dbg_ext = d
 
-            # Standard way of finding Discount lib&include
+            # Standard way of finding lib&include
             magic_hopsan_libpath = -L$${libDir} -l$${libName}$${dbg_ext} -l$${libName}_cpp$${dbg_ext}
+            win32:magic_hopsan_libpath = -L$${libDir} -l$${libName}-shared$${dbg_ext} -l$${libName}_cpp-shared$${dbg_ext}
             magic_hopsan_includepath = $${incDir}
 
 
             #Set files to copy
-            win32:files = $${LIB_PREFIX}$${libName}$${dbg_ext}$${DLL_EXT}
+            win32:files = $${LIB_PREFIX}$${libName}-shared$${dbg_ext}$${DLL_EXT}
             unix:files = $${LIB_PREFIX}$${libName}$${dbg_ext}$${DLL_EXT}*
-            win32:files += $${LIB_PREFIX}$${libName}_cpp$${dbg_ext}$${DLL_EXT}
+            win32:files += $${LIB_PREFIX}$${libName}_cpp-shared$${dbg_ext}$${DLL_EXT}
             unix:files += $${LIB_PREFIX}$${libName}_cpp$${dbg_ext}$${DLL_EXT}*
             # On mac we need all of the framework
             #macx:files = $${libName}.framework
@@ -76,12 +73,8 @@ defineReplace(setDiscountPathInfo){
     externalSrc = $$1
     dstDir = $$2
 
-    #Set QWT paths, Paths that are higher up in the list will have priority if found
-    DISCOUNT_PATHS *= $${PWD}/../Dependencies/discount-2.1.8
-    win32:contains(QMAKE_HOST.arch, x86_64){
-        #Fallback OBSOLETE 64 bit Windows release
-        DISCOUNT_PATHS *= $${PWD}/../Dependencies/discount-2.1.8_x64
-    }
+    #Set paths, Paths that are higher up in the list will have priority if found
+    DISCOUNT_PATHS *= $${PWD}/../Dependencies/discount
     DISCOUNT_PATH = $$selectPath($$externalSrc, $$DISCOUNT_PATHS, "Discount")
 
     #Empty variables to fill in
@@ -142,11 +135,7 @@ defineReplace(setQWTPathInfo){
     dstDir = $$2
 
     #Set QWT paths, Paths that are higher up in the list will have priority if found
-    QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.2
-    win32:contains(QMAKE_HOST.arch, x86_64){
-        # Fallback OBSOLETE 64 bit Windows release
-        QWT_PATHS *= $${PWD}/../Dependencies/qwt-6.1.2_x64
-    }
+    QWT_PATHS *= $${PWD}/../Dependencies/qwt
     QWT_PATH = $$selectPath($$externalSrc, $$QWT_PATHS, "qwt")
 
     #warning(QWT_PATH $${QWT_PATH})

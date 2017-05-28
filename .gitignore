@@ -1,0 +1,14 @@
+.svn/
+bin/
+*.pro.user*
+*~
+*.o
+*.so
+*.so.*
+*.dll
+*.dylib
+*.a
+*.moc
+*.exe
+moc_*.cpp
+Makefile
