@@ -160,4 +160,7 @@
         <file>graphics/porticons/SignalPort2D_read.svg</file>
         <file>graphics/porticons/SignalPort2D_write.svg</file>
     </qresource>
+    <qresource prefix="/license">
+        <file alias="licenseHeaderGPL3">../licenseHeaderGPL3</file>
+    </qresource>
 </RCC>
