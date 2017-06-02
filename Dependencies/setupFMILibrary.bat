@@ -6,9 +6,20 @@ REM Author: Peter Nordin peter.nordin@liu.se
 
 set basedir=%~dp0
 set name=FMILibrary
+set zipdir=%name%-2.0.2
+set zipfile=tools\%zipdir%-src.zip
 set codedir=%basedir%\%name%_code
 set builddir=%basedir%\%name%_build
 set installdir=%basedir%\%name%
+
+
+REM Unpack
+echo.
+echo Clearing old directory (if it exists)
+if exist %codedir% rd /s/q %codedir%
+echo Unpacking %zipfile%
+tools\7z\7za.exe x %zipfile% -y > nul
+move %zipdir% %codedir%
 
 
 set OLDPATH=%PATH%
