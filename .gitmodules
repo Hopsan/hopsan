@@ -10,9 +10,6 @@
 [submodule "Dependencies/discount_code"]
 	path = Dependencies/discount_code
 	url = https://github.com/Orc/discount.git
-[submodule "Dependencies/FMILibrary_code"]
-	path = Dependencies/FMILibrary_code
-	url = https://github.com/modelon/FMILibrary.git
 [submodule "Dependencies/matio_code"]
 	path = Dependencies/matio_code
 	url = https://github.com/tbeu/matio.git
