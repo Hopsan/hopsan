@@ -1,13 +1,16 @@
-#!/bin/sh
+#!/bin/bash
 # $Id$
 
 # Shell script building HopsaGUI dependency PythonQt automatically
 # Author: Peter Nordin peter.nordin@liu.se
 
+#set -u
+set -e
 
 pyversion="2.7"
 basedir=`pwd`
 pythonqtname="PythonQt3.1"
+pythonqtfile=tools/${pythonqtname}.zip
 name=pythonqt
 codedir=${basedir}/${name}_code
 builddir=${basedir}/${name}_build
@@ -36,11 +39,11 @@ fi
 if [ -d $codedir ]; then
     echo "$codedir Already exists, not replacing files!"
 else
-    if [ -f ${pythonqtname}.zip ]; then
-        unzip -q ${pythonqtname}.zip
+    if [ -f ${pythonqtfile} ]; then
+        unzip -q ${pythonqtfile}
         mv $pythonqtname $codedir
     else
-	echo "Warning: ${pythonqtname}.zip is missing, you need to download it"
+	echo "Warning: ${pythonqtfile} is missing, you need to download it"
 	exit 0
     fi
 fi
