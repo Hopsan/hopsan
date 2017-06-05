@@ -9,7 +9,7 @@ set -u
 
 basedir=`pwd`
 zipname=FMILibrary-2.0.2
-zipfile=tools/${zipname}-src.zip
+zipfile=releases/${zipname}-src.zip
 
 name=FMILibrary
 codedir=${basedir}/${name}_code

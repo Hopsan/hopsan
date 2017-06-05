@@ -10,7 +10,7 @@ set -e
 pyversion="2.7"
 basedir=`pwd`
 pythonqtname="PythonQt3.1"
-pythonqtfile=tools/${pythonqtname}.zip
+pythonqtfile=releases/${pythonqtname}.zip
 name=pythonqt
 codedir=${basedir}/${name}_code
 builddir=${basedir}/${name}_build
