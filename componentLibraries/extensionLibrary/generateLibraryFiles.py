@@ -321,8 +321,8 @@ if __name__ == "__main__":
         exit()
     elif len(sys.argv) < 3:
         rootDir = sys.argv[1]
-        print('Warning: No license file given, using: ../../licenseHeader')
-        licenseheader = readFile('../../licenseHeader')
+        print('Warning: No license file given, using: ../../licenseHeaderAPL2')
+        licenseheader = readFile('../../licenseHeaderAPL2')
     else:
         rootDir = sys.argv[1]
         licenseheader = readFile(sys.argv[2])
