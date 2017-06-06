@@ -4,7 +4,7 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
-include( HopsanGuiBuild.prf )
+include( ../Common.prf )
 
 TARGET = HopsanGUI
 TEMPLATE = app
@@ -390,5 +390,4 @@ HEADERS += MainWindow.h \
     }
 
 OTHER_FILES += \
-    ../hopsandefaults \
-    HopsanGuiBuild.prf
+    ../hopsandefaults

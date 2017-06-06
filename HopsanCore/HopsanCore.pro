@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
-include( HopsanCoreBuild.prf )
+include( ../Common.prf )
 
 TARGET = HopsanCore
 TEMPLATE = lib
@@ -196,8 +196,6 @@ HEADERS += \
     include/CoreUtilities/SimulationHandler.h \
     include/CoreUtilities/SaveRestoreSimulationPoint.h
 
-OTHER_FILES += \
-    HopsanCoreBuild.prf
 
 
 

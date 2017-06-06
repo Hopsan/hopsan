@@ -2,7 +2,6 @@
 # Global project options
 # -------------------------------------------------
 include( ../Common.prf )
-include( HopsanGeneratorBuild.prf )
 
 TARGET = HopsanGenerator
 TEMPLATE = lib
@@ -90,11 +89,3 @@ HEADERS += \
 
 RESOURCES += \
     templates.qrc
-
-
-
-
-
-
-
-
