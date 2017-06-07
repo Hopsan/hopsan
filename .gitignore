@@ -1,5 +1,8 @@
 .svn/
 bin/
+HopsanNG_bd/
+output64/
+output/
 *.pro.user*
 *~
 *.o
@@ -12,3 +15,4 @@ bin/
 *.exe
 moc_*.cpp
 Makefile
+compileWithMinGW.bat
