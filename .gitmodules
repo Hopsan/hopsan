@@ -16,6 +16,7 @@
 [submodule "Dependencies/qwt_code"]
 	path = Dependencies/qwt_code
 	url = https://github.com/osakared/qwt.git
+	ignore = dirty
 [submodule "Dependencies/hdf5_code"]
 	path = Dependencies/hdf5_code
 	url = https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git
