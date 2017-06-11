@@ -9,7 +9,7 @@ set -u
 DOSET='--set'
 #DOSET=''
 
-LIC_HEADER='licenseHeaderAPL2'
+LIC_HEADER='licenseHeaderALv2'
 Utilities/licenseChanger.py HopsanCore ${LIC_HEADER} ${DOSET} -e HopsanCore/dependencies
 Utilities/licenseChanger.py HopsanCLI ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py HopsanRemote ${LIC_HEADER} ${DOSET}
