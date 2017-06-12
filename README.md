@@ -7,7 +7,7 @@ Features include:
 * Simulation core library
     * Plain C++ library for easy integration
     * Multi-core support for faster simulations
-    * Create your own component models libraries in C++
+    * Create your own component models libraries in C++  
       using a subset of Modelica is also supported
     * Embedded simple numeric script language (numhop)
 * Command line application
@@ -24,9 +24,11 @@ Features include:
     * Frequency-domain analysis (based on simulation results)
     * Numerical optimization
     * Scripting using the HCOM or Python language
-    * Model import/export using Functional Mock-Up Interface (FMI)
+    * Functional Mock-Up Interface (FMI) model import/export using co-simulation FMUs
     * Model export to Matlab/Simulink
-* Support for parallel simulation utilizing Hopsan simulation server applications on networked computers
+* Parallel simulation and optimization
+    * On local machine using multiple cores
+    * On networked computers using the Hopsan simulation server application
 
 ## License
 
@@ -41,6 +43,12 @@ The Hopsan simulation core and support libraries are released under the permissi
 The GUI applications are released under the copyleft **GNU General Public License 3.0**
 * HopsanGUI Graphical modeling and results analysis application
 * HoLC The Hopsan Library Creator application
+
+## Download
+
+You can find official releases and more or less experimental development snapshots at:  
+https://www.iei.liu.se/flumes/system-simulation/hopsan/download?l=en  
+http://flumes.iei.liu.se/hopsan/files/
 
 ## Links
 
