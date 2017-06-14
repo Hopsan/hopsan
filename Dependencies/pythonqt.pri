@@ -1,6 +1,6 @@
 # Add debug if debugmode (only default on for windows)
-dbg_ext = _d
-#win32:CONFIG(debug, debug|release):dbg_ext =
+dbg_ext =
+win32:CONFIG(debug, debug|release):dbg_ext = _d
 unix:CONFIG(debug, debug|release):dbg_ext =
 
 # Set hompath and libname
