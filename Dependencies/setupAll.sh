@@ -4,4 +4,4 @@
 ./setupQwt.sh
 ./setupZeroMQ.sh
 ./setupKatex.sh
-./setupPythonQt.sh release
+#./setupPythonQt.sh release
