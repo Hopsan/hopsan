@@ -55,7 +55,7 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     QLabel *pDependencies = new QLabel(this);
 
     QString gplv3short;
-    QFile gplv3short_file(":/license/licenseHeaderGPL3");
+    QFile gplv3short_file(":/license/licenseNoticeGPLv3");
     if (gplv3short_file.exists()) {
         gplv3short_file.open(QIODevice::ReadOnly);
         QTextStream ts(&gplv3short_file);
