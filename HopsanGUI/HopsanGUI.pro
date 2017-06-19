@@ -93,6 +93,17 @@ have_discount(){
 }
 #--------------------------------------------------------
 
+# Set hdf5 paths
+include($${PWD}/../Dependencies/hdf5.pri)
+have_hdf5(){
+  DEFINES *= USEHDF5
+  !build_pass:message("Compiling with HDF5 support")
+} else {
+  !build_pass:message("Compiling without HDF5 support")
+}
+
+
+
 #--------------------------------------------------------
 # Set our own HopsanGUI Include Path
 INCLUDEPATH *= $${PWD}/
@@ -121,26 +132,6 @@ unix {
         !build_pass:message("Not looking for Python since we are not using PythonQT")
     }
 
-    system(ldconfig -p | grep libhdf5_cpp) {
-        build_pass:message("Found libHDF5_cpp in system")
-        build_pass:message("Compiling with HDF5 support")
-        DEFINES += USEHDF5
-        LIBS += -lhdf5_cpp
-
-        # This is kind of a hack, on newer versions of Ubuntu (where we choose to use Qt5, the HDF libraries and headers har stored elswhere and have slightly different names
-        isEqual(QT_MAJOR_VERSION, 5){
-            INCLUDEPATH += /usr/include/hdf5/serial
-            LIBS += -lhdf5_serial
-        } else {
-            # Includepath not needed here, H5Cpp.h file should reside directly in /usr/include (searched by default)
-            LIBS += -lhdf5
-        }
-
-        !build_pass:message("Compiling with HDF5 support")
-    } else {
-        !build_pass:message("Compiling without HDF5 support")
-    }
-
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative the executable (regardless of working dir, VERY useful)
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to handle the $$ORIGIN stuff, adding manually to LFLAGS
     !macx:QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
@@ -163,15 +154,6 @@ win32 {
         LIBS += -L$${PYTHON_PATH}/libs
     } else {
        !build_pass: message("Not looking for Python since we are not using PythonQT")
-    }
-
-    # Set hdf5 paths
-    include($${PWD}/../Dependencies/hdf5.pri)
-    have_hdf5(){
-      DEFINES *= USEHDF5
-      !build_pass:message("Compiling with HDF5 support")
-    } else {
-      !build_pass:message("Compiling without HDF5 support")
     }
 
     # Enable auto-import
