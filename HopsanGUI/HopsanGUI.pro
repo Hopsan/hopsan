@@ -83,9 +83,9 @@ LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set Discount Paths
+# Set Discount (libmarkdown) paths
 include($${PWD}/../Dependencies/discount.pri)
-have_discount(){
+have_libmarkdown(){
   DEFINES *= USEDISCOUNT
   !build_pass:message(Compiling with Discount (libmarkdown) support)
 } else {
