@@ -13,7 +13,13 @@ build:
 	dh_testdir
 
 	#First build dependencies
-	cd Dependencies; ./setupAll.sh
+	cd Dependencies; ./setupDiscount.sh
+	cd Dependencies; ./setupFMILibrary.sh
+	cd Dependencies; ./setupQwt.sh
+	cd Dependencies; ./setupZeroMQ.sh
+	cd Dependencies; ./setupKatex.sh
+	cd Dependencies; ./setupPythonQt.sh release 2.7 3.0
+
 
 	#Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
