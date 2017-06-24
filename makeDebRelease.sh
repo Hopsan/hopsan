@@ -3,19 +3,20 @@
 
 # Shell script for building DEB packages of hopsan for multiple distributions using pbuilder
 # Author: Peter Nordin peter.nordin@liu.se
-# Date:   2012-04-04
 
+set -u
+#set -e
 
 #--------------------------------------------------------------------------------------------------
 # Config starts here
 #--------------------------------------------------------------------------------------------------
-buildRoot="buildDebPackage/"
+buildRoot=buildDebPackage
 name=hopsan
 devversion=2.8.0
 
 # Pbuilder dists and archs
-debianDistArchArray=( stretch:amd64:qt5 stretch:i386:qt5 jessie:amd64:qt5 jessie:i386:qt5 )
-ubuntuDistArchArray=( zesty:amd64:qt5 zesty:i386:qt5 yakkety:amd64:qt5 yakkety:i386:qt5 xenial:amd64:qt5 xenial:i386:qt5 trusty:amd64:qt4 trusty:i386:qt4 )
+debianDistArchArray=( stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
+ubuntuDistArchArray=( zesty:amd64:qt5py27 zesty:i386:qt5py27 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
 
 # Pbuilder mirrors
 ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
@@ -25,27 +26,28 @@ debianMirror="http://ftp.se.debian.org/debian/"
 # Code starts here
 #--------------------------------------------------------------------------------------------------
 hopsanroot=$(pwd)
-echo $hopsanroot
+echo "Using Hopsan root: $hopsanroot"
+echo "Enter sudo password for pbuilder:"
+sudo -v
 
-# Move directory overwriting dst function, dst dir will be removed if name is same
+# Move directory src into directory dst. If a dir with the same name as src already exists it will be removed
 mvrDir ()
 {
-  local src=${1%/}
-  local dst=${2%/}
-  local dstname="$dst/$src"
+  local -r src=${1%/}
+  local -r dst=${2%/}
+  local -r dstname="$dst/$src"
   if [ -d "$dstname" ]; then
-    rm -r $dstname
+    rm -r "$dstname"
   fi
-  #Now move to unique directory
+  # Now move to unique directory
   echo "mv $1 to $dstname"
-  mv $1 $dstname
+  mv "$1" "$dstname"
 }
 
 # Ask yes/no question, returning true or false in the global variable boolYNQuestionAnswer
-boolYNQuestionAnswer="false"
 boolAskYNQuestion()
 {
-  boolYNQuestionAnswer="false"
+  declare -g boolYNQuestionAnswer=false
   echo -n "$1" "Answer y/n [""$2""]: "
   read ans
   if [ -z "$ans" ]; then
@@ -53,19 +55,19 @@ boolAskYNQuestion()
       boolYNQuestionAnswer="true"
     fi
   elif [ "$ans" = "y" ]; then
-    boolYNQuestionAnswer="true"
+    boolYNQuestionAnswer=true
   fi
 }
 
 # Export a specific git directory, submodules are not included
 git_export()
 {
-  local src=$1
-  local dst=$2
-  local olddir=$(pwd)
-  local tarfile=hopsan_git_export.tar
+  local -r src="$1"
+  local -r dst="$2"
+  local -r olddir=$(pwd)
+  local -r tarfile=hopsan_git_export.tar
   echo "Exporting from git: ${src} to ${dst}"
-  mkdir -p ${dst}
+  mkdir -p "${dst}"
   cd ${src}
   git archive --output ${tarfile} HEAD
   cd $olddir
@@ -80,48 +82,43 @@ git_export()
 dscFile="NoFile"
 builDSCFile()
 {
-  local packagedir="$1"
-  local packageorigsrcfile="$2"
-  local qtver="$3"
-  local doUsePythonQt="$4"
-  local outputbasename="$5"
+  local -r packagedir="$1"
+  local -r packageorigsrcfile="$2"
+  local -r config="$3"
+  local -r usepythonqt="$4"
+  local -r outputbasename="$5"
 
   echo $packagedir
   echo $packageorigsrcfile
-  echo $qtver
+  echo $config
   echo $doUsePythonQt
   echo $outputbasename
 
   # First clear dir if it already exist
-  rm -rf $packagedir
+  rm -rf ${packagedir}
 
-  # Export template
-  git_export hopsan-template $packagedir
-  if [ "$qtver" = "qt5" ]; then
-      mv $packagedir/debian/control_qt5 $packagedir/debian/control
-      mv $packagedir/debian/rules_qt5 $packagedir/debian/rules
-  else
-      rm $packagedir/debian/control_qt5
-      rm $packagedir/debian/rules_qt5
-  fi
+  # Export package configuration
+  git_export debconfig_base $packagedir
+  git_export debconfig_${config} $packagedir
 
   # Check if we should remove PythonQt if it should not be used
-  if [ "$doUsePythonQt" = "false" ]; then
+  if [ "$usepythonqt" = false ]; then
     sed "/setupPythonQt.sh/d" -i "$packagedir/debian/rules"
   fi
+
   # Copy "unpack" prepared source files to this dir
   tar -xzf $packageorigsrcfile -C $packagedir
 
   # Generate NEW change log file for this release version with no content in particular
-  cd $packagedir
+  pushd $packagedir
   rm debian/changelog
   dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
   dch -p -m --release ""
-  cd ..
+  popd
 
   # Generate dsc source file
-  dpkg-source --before-build $packagedir
-  dpkg-source -b $packagedir
+  dpkg-source --before-build ${packagedir}
+  dpkg-source -b ${packagedir}
   dscFile=`ls $outputbasename*.dsc`
 }
 
@@ -134,16 +131,16 @@ if [ -z "$baseversion" ]; then
   doDevRelease="true"
   baseversion=$devversion
 fi
-releaserevision=`./getGitInfo.sh date.time .`
-fullversionname=${baseversion}.${releaserevision}
+readonly releaserevision=$(./getGitInfo.sh date.time .)
+readonly fullversionname=${baseversion}.${releaserevision}
 
 echo
 boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" "n"
-doBuildInComponents="$boolYNQuestionAnswer"
+readonly doBuildInComponents="$boolYNQuestionAnswer"
 
 echo
 boolAskYNQuestion "Do you want to build with PythonQt and python support?" "y"
-doUsePythonQt="$boolYNQuestionAnswer"
+readonly doUsePythonQt="$boolYNQuestionAnswer"
 
 echo
 distArchArrayDo=()
@@ -165,13 +162,10 @@ echo "Release revision number: $releaserevision"
 echo "Release version name: $fullversionname"
 echo "Built in components: $doBuildInComponents"
 echo "Using PythonQt: $doUsePythonQt"
-echo "Using pbuilder: true"
-if [ "true" = "true" ]; then
-  printf "%s\n" "${distArchArrayDo[@]}"
-fi
+printf "%s\n" "${distArchArrayDo[@]}"
 echo ---------------------------------------
 boolAskYNQuestion "Is this OK?" "n"
-if [ "$boolYNQuestionAnswer" = "false" ]; then
+if [ "$boolYNQuestionAnswer" = false ]; then
   echo Aborting!
   exit 1
 fi
@@ -182,69 +176,42 @@ echo
 # Go to buildRoot before build
 # Set output directories and absolute Pbuildpath
 #
-cd $buildRoot
+cd ${buildRoot}
 outputDir=output
-pbuilderWorkDir="/var/tmp/deb_hopsan/pbuilder/"
-outputDebDir="$outputDir/debs"
+pbuilderWorkDir='/var/tmp/deb_hopsan/pbuilder'
+outputDebDir="${outputDir}/debs"
 mkdir -p $outputDebDir
 mkdir -p $pbuilderWorkDir
 
 # -----------------------------------------------------------------------------
 # Determine deb dir name
 #
-
 outputbasename=${name}_${fullversionname}
-packageorigsrcfile=$outputbasename.orig.tar.gz
-packagedir=$name-${fullversionname}
+packageorigsrcfile=${outputbasename}.orig.tar.gz
+packagedir=${name}-${fullversionname}
 packagesrcfile=${packagedir}.tar.gz
 
 # -----------------------------------------------------------------------------
 # Prepare source code
 #
-srcExportDir=$outputDir/hopsanSrcExport\_${fullversionname}
-./prepareSourceCode.sh `pwd`/../  $srcExportDir $baseversion $releaserevision $fullversionname $doDevRelease $doBuildInComponents
+srcExportDir=${outputDir}/hopsanSrcExport_${fullversionname}
+./prepareSourceCode.sh $(pwd)/../  ${srcExportDir} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
 
-cd $srcExportDir
+pushd $srcExportDir
 tar -czf $packageorigsrcfile *
-cd $OLDPWD
-mv $srcExportDir/$packageorigsrcfile .
+popd
+mv ${srcExportDir}/${packageorigsrcfile} .
 
 # -----------------------------------------------------------------------------
 # Now build DEB package
 #
 buildStatusArray=()
-
-# # First clear dir if it already exist
-# rm -rf $packagedir
-#
-# # Export template
-# svn export hopsan-template $packagedir
-# # Check if we should remove PythonQt if it should not be used
-# if [ "$doUsePythonQt" = "false" ]; then
-#   sed "/unpackPatchAndBuildPythonQt.sh/d" -i "$packagedir/debian/rules"
-# fi
-# # Copy "unpack" prepared source files to this dir
-# tar -xzf $packageorigsrcfile -C $packagedir
-#
-# # Generate NEW changelog file for this release version with no content in particular
-# cd $packagedir
-# rm debian/changelog
-# dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
-# dch -p -m --release ""
-# cd ..
-
-
-#   # Generate dsc source file
-#   dpkg-source --before-build $packagedir
-#   dpkg-source -b $packagedir
-#   dscFile=`ls $outputbasename*.dsc`
-
 for i in "${distArchArrayDo[@]}"; do
   # Split input into array to extract data
   IFS=':' read -ra arr <<< "$i"
   dist="${arr[0]}"
   arch="${arr[1]}"
-  qtver="${arr[2]}"
+  conf="${arr[2]}"
   distBase="${arr[3]}"
   doBuild="${arr[4]}"
 
@@ -255,19 +222,18 @@ for i in "${distArchArrayDo[@]}"; do
     echo "==========================="
     sleep 1
 
-    builDSCFile $packagedir $packageorigsrcfile $qtver $doUsePythonQt $outputbasename
+    builDSCFile $packagedir $packageorigsrcfile $conf $doUsePythonQt $outputbasename
 
-    doCreateUpdatePbuilderBaseTGZ="true"
-    basetgzFile="$pbuilderWorkDir$dist$arch.tgz"
-    pbuilderBuildDir="$pbuilderWorkDir""build/"
-    mkdir -p $pbuilderBuildDir
-    resultPath="$pbuilderWorkDir""result/$dist"
-    mkdir -p "$resultPath"
-    logFile="$resultPath/$outputbasename.log"
+    doCreateUpdatePbuilderBaseTGZ=true
+    basetgzFile=${pbuilderWorkDir}/${dist}${arch}.tgz
+    pbuilderBuildDir=${pbuilderWorkDir}/build
+    mkdir -p ${pbuilderBuildDir}
+    resultPath=${pbuilderWorkDir}/result/${dist}
+    mkdir -p ${resultPath}
+    logFile=${resultPath}/${outputbasename}.log
 
     # Set pbuild options specific to ubuntu or debian
     if [ "$distBase" = "U" ]; then
-      #todo add mirror and keyring
       optsComponents="main universe"
       optsMirror="$ubuntuMirror"
       optsDebootstrap="--debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
@@ -283,48 +249,55 @@ for i in "${distArchArrayDo[@]}"; do
     #echo $optsDebootstrap
     #sleep 2
 
-    # Set packages that need to be installed, this installs them once and for all, and avoids wasting time on every build
-    if [ "$qtver" = "qt5" ]; then
-      extraPackages="debhelper unzip subversion lsb-release qtbase5-dev qtbase5-private-dev libqt5webkit5-dev libqt5svg5-dev qtmultimedia5-dev libqt5opengl5-dev python-dev libhdf5-dev  fakeroot cmake libtool-bin qt5-default automake pkg-config"
-    else
-      extraPackages="debhelper unzip subversion lsb-release libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev libhdf5-dev fakeroot cmake automake libtool pkg-config"
+    # Extract build dependencies from control file
+    # Installs them once and for all to avoid wasting time on every build
+    extraPackages=$(grep Build-Depends debconfig_${conf}/debian/control | sed -e 's/Build-Depends://' -e 's/[(][^)]*[)]//g' -e 's/\,//g')
+    echo $extraPackages
+
+    # Remove file if it is corrupt
+    if [ -f ${basetgzFile} ]; then
+      if ! gunzip -t $basetgzFile ; then
+        rm -f "${basetgzFile}"
+      fi
+    fi
+
+    # Check if its time to update
+    if [ -f ${basetgzFile} ]; then
+      age=$(( $(date +%s) - $(stat -c %Y ${basetgzFile}) ))
+      echo "age: $age"
+      if [ ${age} -le $((3600*6)) ]; then
+        doCreateUpdatePbuilderBaseTGZ="false"
+      fi
     fi
 
     # Update or create pbuild environments
-    debootstrapOk="true"
-    if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
-    
-      # Remove corrupt files
-      gunzip -t $basetgzFile
-      if [ $? != 0 ]; then
-        rm $basetgzFile
-      fi
-    
+    debootstrapOk=true
+    if [ "$doCreateUpdatePbuilderBaseTGZ" = true ]; then    
       if [ -f $basetgzFile ]; then
         echo
         echo "Updating existing TGZ: $basetgzFile"
         echo "------------------------"
-        sudo pbuilder --update $distBaseOpts  --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
+        sudo pbuilder --update  --basetgz "${basetgzFile}" --extrapackages "${extraPackages}" --aptcache "" --buildplace "${pbuilderBuildDir}"
       else
         echo
         echo "Creating new TGZ: $basetgzFile"
         echo "------------------------"
-        sudo pbuilder --create --distribution $dist --architecture $arch --mirror $optsMirror $optsDebootstrap --components "$optsComponents" --basetgz "$basetgzFile" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir"
+        sudo pbuilder --create --distribution ${dist} --architecture ${arch} --mirror ${optsMirror} ${optsDebootstrap} --components "${optsComponents}" --basetgz "${basetgzFile}" --extrapackages "${extraPackages}" --aptcache "" --buildplace "${pbuilderBuildDir}"
       fi
       # Check for success
       if [ $? -ne 0 ]; then
-        debootstrapOk="false"
+        debootstrapOk=false
         buildStatusArray+=("$dist""_""$arch"":DebootstrapFailed")
         echo "pubulider create or update FAILED! for $dist $arch, aborting!"
       fi
     fi
 
-    if [ "$debootstrapOk" = "true" ]; then
+    if [ "$debootstrapOk" = true ]; then
       # Now build source package
       echo
       echo "Building with pbuilder"
       echo "------------------------"
-      sudo pbuilder --build --basetgz "$basetgzFile" --aptcache "" --buildplace "$pbuilderBuildDir" --logfile "$logFile" --buildresult $resultPath $dscFile
+      sudo pbuilder --build --basetgz "${basetgzFile}" --aptcache "" --buildplace "$pbuilderBuildDir" --logfile "$logFile" --buildresult $resultPath $dscFile
 
       # Figure out the actual output file name
       outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
@@ -334,10 +307,11 @@ for i in "${distArchArrayDo[@]}"; do
         buildStatusArray+=("$dist""_""$arch"":BuildOk")
 
         # Now move and rename output deb file to dist output dir
-        mv $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
+	resultingDebFile=${outputDebDir}/${outputbasename}_${dist}_${arch}.deb
+        mv $outputDebName ${resultingDebFile}
 
-        # Check package with lintian
-        lintian --color always -X files $outputDebDir/$outputbasename\_$dist\_$arch.deb
+        # Check package with lintian ('|| true' avoids script abort on errors)
+        lintian --color always -X files ${resultingDebFile} || true
       else
         buildStatusArray+=("$dist""_""$arch"":BuildFailed")
       fi
@@ -346,9 +320,9 @@ for i in "${distArchArrayDo[@]}"; do
 done
   
 # Move the package directory
-mvrDir $packagedir $outputDir
+mvrDir ${packagedir} ${outputDir}
 # Move the package related files
-mv $outputbasename* $outputDir
+mv ${outputbasename}* ${outputDir}
 
 echo
 echo "Build Status:"
