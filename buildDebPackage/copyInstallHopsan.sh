@@ -12,8 +12,8 @@ if [ $# -lt 2 ]; then
   exit $E_BADARGS
 fi
 
-srcDir=$1
-dstDir=$2
+srcDir=${1%/}
+dstDir=${2%/}
 echo "Copy installing Hopsan from $srcDir to $dstDir"
 
 # Copy whole directories
@@ -53,7 +53,7 @@ cp -a    ${srcDeps}/qwt/lib/libqwt.so*                     $dstDir/bin
 cp -a    ${srcDeps}/zeromq/lib/libzmq.so                   $dstDir/bin
 cp -a    ${srcDeps}/FMILibrary/lib/libfmilib_shared.so     $dstDir/bin
 cp -a    ${srcDeps}/discount/lib/libmarkdown.so*           $dstDir/bin
-cp -a    ${srcDeps}/pythonqt/lib/libPythonQt.so*           $dstDir/bin
+cp -a    ${srcDeps}/pythonqt/lib/libPythonQt*.so*          $dstDir/bin
 
 # Copy additional files
 # =====================
