@@ -34,12 +34,16 @@ defineTest(have_pythonqt) {
 
 have_local_pythonqt() {
   INCLUDEPATH *= $${pythonqt_home}/include
-  LIBS *= -L$${pythonqt_lib} -l$${libname}$${dbg_ext}
+  #TODO Use prf instead
+  exists($${pythonqt_lib}/libPythonQt-Qt5-Python3$${dbg_ext}.so) {
+    LIBS *= -L$${pythonqt_lib} -l$${PythonQt-Qt5-Python3}$${dbg_ext}
+  } else {
+    LIBS *= -L$${pythonqt_lib} -l$${libname}$${dbg_ext}
+  }
   # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
   QMAKE_RPATHDIR *= $${pythonqt_lib}
   message(Found local PythonQt)
 } else:have_system_pythonqt() {
   LIBS += -l$${libname}
   message(Found system ldconfig PythonQt)
-
 }
