@@ -16,7 +16,9 @@ devversion=2.8.0
 
 # Pbuilder dists and archs
 debianDistArchArray=( stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
+debianDistArchSDArray=( stretch:amd64:qt5py3sd0 )
 ubuntuDistArchArray=( zesty:amd64:qt5py27 zesty:i386:qt5py27 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
+ubuntuDistArchSDArray=( zesty:amd64:qt5py3sd0 )
 
 # Pbuilder mirrors
 ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
@@ -152,6 +154,14 @@ for i in "${ubuntuDistArchArray[@]}"; do
   boolAskYNQuestion "Do you want to build, "$i"?" "n"
   distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
 done
+for i in "${debianDistArchSDArray[@]}"; do
+  boolAskYNQuestion "Do you want to build (system deps), "$i"?" "n"
+  distArchArrayDo+=("$i"":""D"":""$boolYNQuestionAnswer")
+done
+for i in "${ubuntuDistArchSDArray[@]}"; do
+  boolAskYNQuestion "Do you want to build (system deps), "$i"?" "n"
+  distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
+done
 
 
 echo
@@ -252,7 +262,7 @@ for i in "${distArchArrayDo[@]}"; do
     # Extract build dependencies from control file
     # Installs them once and for all to avoid wasting time on every build
     extraPackages=$(grep Build-Depends debconfig_${conf}/debian/control | sed -e 's/Build-Depends://' -e 's/[(][^)]*[)]//g' -e 's/\,//g')
-    echo $extraPackages
+    #echo $extraPackages
 
     # Remove file if it is corrupt
     if [ -f ${basetgzFile} ]; then
@@ -264,7 +274,7 @@ for i in "${distArchArrayDo[@]}"; do
     # Check if its time to update
     if [ -f ${basetgzFile} ]; then
       age=$(( $(date +%s) - $(stat -c %Y ${basetgzFile}) ))
-      echo "age: $age"
+      #echo "age: $age"
       if [ ${age} -le $((3600*6)) ]; then
         doCreateUpdatePbuilderBaseTGZ="false"
       fi
