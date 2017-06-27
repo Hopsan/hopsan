@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5172" hopsancoreversion="0.6.x_r5177">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info>
+    <author>Peter Nordin</author>
+    <email>peter.nordin@liu.se</email>
+    <affiliation>Flumes</affiliation>
+    <description>A test model</description>
+  </info>
+  <system logsamples="2048" typename="Subsystem" name="MechanicMotorTest">
+    <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="1"/>
+      <viewport x="2312.41" y="2126.95" zoom="1.41"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="MechanicMotorTest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <favoritevariables/>
+      <optimization>
+        <settings>
+          <niter>100</niter>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+    </hopsangui>
+    <objects>
+      <component typename="MechanicTorqueSensor" name="Torque_Transducer">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2287.25" y="2121.333333" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicTorqueSensor" displayname="Torque_Transducer">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicMotor" name="Ideal_Motor_With_Speed_Control">
+        <parameters>
+          <parameter unit="[-]" value="20" type="double" name="omega_ref"/>
+          <parameter unit="[-]" value="80" type="double" name="K_p"/>
+          <parameter unit="[-]" value="10" type="double" name="K_i"/>
+          <parameter unit="[-]" value="0" type="double" name="K_d"/>
+          <parameter unit="[W]" value="100000" type="double" name="W_max"/>
+          <parameter unit="[Nm]" value="100000" type="double" name="T_max"/>
+          <parameter unit="[rad/s]" value="25" type="double" name="omega_max"/>
+          <parameter unit="rad/s" value="0" type="double" name="P1::AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="P1::Torque"/>
+          <parameter unit="rad" value="0" type="double" name="P1::Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="P1::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="P1::EquivalentInertia"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+        </ports>
+        <hopsangui>
+          <pose x="2088.25" y="2240.333333" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicMotor" displayname="Ideal_Motor_With_Speed_Control">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicAngularVelocitySensor" name="Angular_Velocity_Transducer">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2124.25" y="2121.333333" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicAngularVelocitySensor" displayname="Angular_Velocity_Transducer">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicRotationalInertiaWithCoulumbFriction" name="Rotational_Inertia_With_Coulomb_Friction">
+        <parameters>
+          <parameter unit="[kgm^2]" value="0.5" type="double" name="J"/>
+          <parameter unit="[Nms/rad]" value="1" type="double" name="B"/>
+          <parameter unit="[Nm]" value="50" type="double" name="t_s"/>
+          <parameter unit="[Nm]" value="45" type="double" name="t_k"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+          <port nodetype="NodeMechanicRotational" name="P2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2260.25" y="2244.33" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicRotationalInertiaWithCoulumbFriction" displayname="Rotational_Inertia_With_Coulomb_Friction">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicTorqueTransformer" name="Torque_Source">
+        <parameters>
+          <parameter unit="rad/s" value="0" type="double" name="P1::AngularVelocity"/>
+          <parameter unit="rad" value="0" type="double" name="P1::Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="P1::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="P1::EquivalentInertia"/>
+          <parameter unit="[Nm]" value="0" type="double" name="T"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+          <port nodetype="NodeSignal" name="in"/>
+        </ports>
+        <hopsangui>
+          <pose x="2452.25" y="2240.333333" flipped="false" a="180"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicTorqueTransformer" displayname="Torque_Source">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="MechanicAngleSensor" name="Angle_Transducer">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeMechanicRotational" name="P1"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2205.75" y="2121.333333" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="MechanicAngleSensor" displayname="Angle_Transducer">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1997.751773" y="2021.283688"/>
+          <textobject fontcolor="#556b2f" text="Test model for mechanical motor as well as rotaional mechanic sensors" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="515.576130" height="282.269504"/>
+          <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+    </objects>
+    <connections>
+      <connect endport="P1" endcomponent="Rotational_Inertia_With_Coulomb_Friction" startport="P1" startcomponent="Ideal_Motor_With_Speed_Control">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2117.75000000000000000000" y="2240.33333333333348491578"/>
+            <coordinate x="2196.25000000000000000000" y="2240.33333333333348491578"/>
+            <coordinate x="2196.25000000000000000000" y="2240.33000000159972842084"/>
+            <coordinate x="2228.25000000000000000000" y="2240.33000000159972842084"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P2" endcomponent="Rotational_Inertia_With_Coulomb_Friction" startport="P1" startcomponent="Torque_Source">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2428.75000000000000000000" y="2240.33333333493374084355"/>
+            <coordinate x="2312.25000000000000000000" y="2240.33333333493374084355"/>
+            <coordinate x="2312.25000000000000000000" y="2240.33000000159972842084"/>
+            <coordinate x="2292.25000000000000000000" y="2240.33000000159972842084"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Rotational_Inertia_With_Coulomb_Friction" startport="P1" startcomponent="Angle_Transducer">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2205.75000000000000000000" y="2139.33333333333393966313"/>
+            <coordinate x="2205.75000000000000000000" y="2240.33000000159972842084"/>
+            <coordinate x="2228.25000000000000000000" y="2240.33000000159972842084"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>dashed</style>
+          <color>0,0,255</color>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Angle_Transducer" startport="P1" startcomponent="Angular_Velocity_Transducer">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2124.25000000000000000000" y="2139.33333333333393966313"/>
+            <coordinate x="2124.25000000000000000000" y="2155.00000000000000000000"/>
+            <coordinate x="2205.75000000000000000000" y="2155.00000000000000000000"/>
+            <coordinate x="2205.75000000000000000000" y="2139.33333333333393966313"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Angle_Transducer" startport="P1" startcomponent="Torque_Transducer">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2287.25000000000000000000" y="2139.33333333333393966313"/>
+            <coordinate x="2287.25000000000000000000" y="2155.00000000000000000000"/>
+            <coordinate x="2205.75000000000000000000" y="2155.00000000000000000000"/>
+            <coordinate x="2205.75000000000000000000" y="2139.33333333333393966313"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.1">
+  <validation hopsanguiversion="0.6.x_r6569" time="102254" date="20140213" hopsancoreversion="0.6.x_r6545">
+    <modelfile>../Example Models/Dynamic Pressure Feedback.hmf</modelfile>
+    <component name="Translational_Mass">
+      <port name="P2">
+        <variable name="Position">
+          <csvfile>Dynamic Pressure Feedback.csv</csvfile>
+          <column>1</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+  </validation>
+</hopsanvalidationconfiguration>

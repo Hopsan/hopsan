@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7224" time="154829" date="20140711" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicFourChamberPistonTest.hmf</modelfile>
+    <hvdfile>HydraulicFourChamberPistonTest.hvd</hvdfile>
+    <variable name="HydraulicFourChamberPistonTest$Sum#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicFourChamberPistonTest$Force_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7224" time="153441" date="20140711" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Component Test/HydraulicComponent Test/Hydraulic43LoadSensingValveTest.hmf</modelfile>
+    <hvdfile>Hydraulic43LoadSensingValveTest.hvd</hvdfile>
+    <variable name="Hydraulic43LoadSensingValveTest$Pressure_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Hydraulic43LoadSensingValveTest$Pressure_Transducer_1#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Hydraulic43LoadSensingValveTest$Pressure_Transducer_2#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Hydraulic43LoadSensingValveTest$4_3_Load_Sensing_Valve#xv#Value">
+      <timecolumn>0</timecolumn>
+      <column>4</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>

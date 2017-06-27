@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7220" time="091538" date="20140709" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicCylinderBlockTest.hmf</modelfile>
+    <hvdfile>CylinderBlockTest.hvd</hvdfile>
+    <variable name="HydraulicCylinderBlockTest$Position_Transducer_1#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicCylinderBlockTest$Position_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="HydraulicCylinderBlockTest$Torque_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>

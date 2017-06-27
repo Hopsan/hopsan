@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hopsancoreversion="0.7.x_r8051" hmfversion="0.4" hopsanguiversion="0.7.x_r8065">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info/>
+  <system name="SegareTest" typename="Subsystem">
+    <simulationtime start="0" timestep="0.001" inherit_timestep="true" stop="1"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose flipped="false" a="0" x="0" y="0"/>
+      <nametext visible="0" position="0"/>
+      <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
+      <viewport x="2500" y="2500" zoom="1"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject displayname="SegareTest" typename="Subsystem">
+          <icons>
+            <icon type="defaultmissing" path="subsystemDefault.svg"/>
+          </icons>
+          <ports/>
+          <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <optimization>
+        <settings>
+          <iterations>100</iterations>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <savecsv>true</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
+    </hopsangui>
+    <objects>
+      <component name="Segare" typename="SignalSegare">
+        <parameters>
+          <parameter type="double" name="x#Value" unit="" value="0"/>
+          <parameter type="double" name="diameter#Value" unit="" value=".1"/>
+        </parameters>
+        <ports>
+          <port name="area" nodetype="NodeSignal"/>
+          <port name="diameter" nodetype="NodeSignal"/>
+          <port name="x" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2452" y="2501"/>
+          <nametext visible="0" position="0"/>
+          <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Segare" typename="SignalSegare">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope" typename="SignalSink">
+        <parameters>
+          <parameter type="double" name="in_bottom#Value" unit="" value="0"/>
+        </parameters>
+        <ports>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2541" y="2501"/>
+          <nametext visible="0" position="0"/>
+          <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Scope" typename="SignalSink">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp" typename="SignalRamp">
+        <parameters>
+          <parameter type="double" name="y_0#Value" unit="-" value="0"/>
+          <parameter type="double" name="y_A#Value" unit="-" value=".2"/>
+          <parameter type="double" name="t_start#Value" unit="s" value="0"/>
+          <parameter type="double" name="t_end#Value" unit="s" value="1"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2184" y="2501"/>
+          <nametext visible="0" position="0"/>
+          <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Ramp" typename="SignalRamp">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Constant" typename="SignalConstant">
+        <parameters>
+          <parameter type="double" name="y#Value" unit="" value=".1"/>
+        </parameters>
+        <ports>
+          <port name="y" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2279" y="2437"/>
+          <nametext visible="0" position="0"/>
+          <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="Constant" typename="SignalConstant">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="DxSegare" typename="SignalDxSegare">
+        <parameters>
+          <parameter type="double" name="x#Value" unit="" value="0"/>
+          <parameter type="double" name="diameter#Value" unit="" value=".10"/>
+        </parameters>
+        <ports>
+          <port name="width" nodetype="NodeSignal"/>
+          <port name="diameter" nodetype="NodeSignal"/>
+          <port name="x" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2452" y="2545"/>
+          <nametext visible="0" position="0"/>
+          <animation hydraulicmaxpressure="20000000" flowspeed="100" hydraulicminpressure="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="DxSegare" typename="SignalDxSegare">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2271.000000" y="2329.000000"/>
+          <textobject text="Test of the Segare function (segment area) and its derivative the DxSegare function (the secant line distance)" reflow="1" font="Calibri,12,-1,0,50,0,0,0,0,0" fontcolor="#556b2f"/>
+          <size width="267.000000" height="75.000000"/>
+          <line visible="1" width="2" style="solidline" color="#556b2f"/>
+        </hopsangui>
+      </textboxwidget>
+    </objects>
+    <connections>
+      <connect startport="out" startcomponent="Ramp" endcomponent="DxSegare" endport="x">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2196.50000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2421.50000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2421.50000000000000000000" y="2545.00000000000000000000"/>
+            <coordinate x="2439.50000000000000000000" y="2545.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" startcomponent="Ramp" endcomponent="Scope" endport="in_bottom">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2196.50000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2253.00000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2253.00000000000000000000" y="2580.00000000000000000000"/>
+            <coordinate x="2541.00000000000000000000" y="2580.00000000000000000000"/>
+            <coordinate x="2541.00000000000000000000" y="2516.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="width" startcomponent="DxSegare" endcomponent="Scope" endport="in_right">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2464.50000000000000000000" y="2545.00000000000000000000"/>
+            <coordinate x="2575.00000000000000000000" y="2545.00000000000000000000"/>
+            <coordinate x="2575.00000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2561.00000000000000000000" y="2501.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="out" startcomponent="Ramp" endcomponent="Segare" endport="x">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2196.50000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2421.50000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2421.50000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2439.50000000000000000000" y="2501.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="area" startcomponent="Segare" endcomponent="Scope" endport="in">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2464.50000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2521.00000000000000000000" y="2501.00000000000000000000"/>
+            <coordinate x="2521.00000000000000000000" y="2501.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="y" startcomponent="Constant" endcomponent="Segare" endport="diameter">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2291.50000000000000000000" y="2437.00000000000000000000"/>
+            <coordinate x="2452.00000000000000000000" y="2437.00000000000000000000"/>
+            <coordinate x="2452.00000000000000000000" y="2488.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect startport="y" startcomponent="Constant" endcomponent="DxSegare" endport="diameter">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2291.50000000000000000000" y="2437.00000000000000000000"/>
+            <coordinate x="2452.00000000000000000000" y="2437.00000000000000000000"/>
+            <coordinate x="2452.00000000000000000000" y="2532.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>

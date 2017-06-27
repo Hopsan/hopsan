@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+	<validation hopsancliversion="0.7.x_r8251" time="105034" date="20150821" hopsancoreversion="0.7.x_r8262">
+		<modelfile>../Component Test/HydraulicComponent Test/HydraulicLineTest.hmf</modelfile>
+		<hvdfile>HydraulicLineTest.hvd</hvdfile>
+		<variable name="Pressure_Transducer#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>1</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="Flow_Rate_Transducer#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>2</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="Pressure_Transducer_1#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>3</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="Flow_Rate_Transducer_1#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>4</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+	</validation>
+</hopsanvalidationconfiguration>
+

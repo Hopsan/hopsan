@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+	<validation hopsancliversion="0.6.12" time="093822" date="2015093" hopsancoreversion="0.6.12">
+		<modelfile>../Example Models/Sub System Example.hmf</modelfile>
+		<hvdfile>Sub System Example.hvd</hvdfile>
+		<variable name="Sub_System_Example$Position_Transducer#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>1</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="Sub_System_Example$Position_Transducer_1#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>2</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="Sub_System_Example$Pulse#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>3</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+	</validation>
+</hopsanvalidationconfiguration>
+

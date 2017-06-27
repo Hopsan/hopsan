@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.x_r7224" time="162143" date="20140711" hopsancoreversion="0.6.x_r7219">
+    <modelfile>../Example Models/Open Centre System.hmf</modelfile>
+    <hvdfile>Open Centre System.hvd</hvdfile>
+    <variable name="Open_Centre_System$Angular_Velocity_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Open_Centre_System$Angular_Velocity_Transducer_1#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Open_Centre_System$Angular_Velocity_Transducer_2#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>

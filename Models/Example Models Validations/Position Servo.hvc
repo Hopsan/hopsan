@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+	<validation hopsancliversion="0.7.x_r8278" time="125425" date="2015092" hopsancoreversion="0.7.x_r8296">
+		<modelfile>../Example Models/Position Servo.hmf</modelfile>
+		<hvdfile>Position Servo.hvd</hvdfile>
+		<variable name="Position_Sensor#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>1</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="Step#out#Value">
+			<timecolumn>0</timecolumn>
+			<column>2</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="4_3_Servo_Valve#xv#Value">
+			<timecolumn>0</timecolumn>
+			<column>3</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+		<variable name="Pressure_Relief_Valve#xv#Value">
+			<timecolumn>0</timecolumn>
+			<column>4</column>
+			<tolerance>0.01</tolerance>
+		</variable>
+	</validation>
+</hopsanvalidationconfiguration>
+

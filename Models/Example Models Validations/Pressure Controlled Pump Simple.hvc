@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation hopsanguiversion="0.6.12" time="084459" date="20150903" hopsancoreversion="0.6.12">
+    <modelfile>../Example Models/Pressure Controlled Pump Simple.hmf</modelfile>
+    <hvdfile>Pressure Controlled Pump Simple.hvd</hvdfile>
+    <variable name="Pressure_Controlled_Pump_Simple$Load#P2#Pressure">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>

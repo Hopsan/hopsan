@@ -1,0 +1,1472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hopsancoreversion="0.7.x_r7937" hmfversion="0.4" hopsanguiversion="0.7.x_r7958">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info/>
+  <system name="SignalMathFunctionsTest" typename="Subsystem">
+    <simulationtime start="0" stop="10" timestep="0.001" inherit_timestep="true"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose flipped="false" a="0" x="0" y="0"/>
+      <nametext position="0" visible="0"/>
+      <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+      <viewport zoom="0.842151" x="1584.63" y="2714.48"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="SignalMathFunctionsTest">
+          <icons>
+            <icon type="defaultmissing" path="subsystemDefault.svg"/>
+          </icons>
+          <ports/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <optimization>
+        <settings>
+          <iterations>100</iterations>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <savecsv>true</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
+    </hopsangui>
+    <objects>
+      <component name="Scope" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2360" y="2461"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Log_1" typename="SignalLog">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="error" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2257.86214" y="3269"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalLog" displayname="Log_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2064" y="2461"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_10" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2365" y="2125"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_10">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Atan" typename="SignalAtan">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2221.212884" y="2879.93558"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAtan" displayname="Atan">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_11" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2369" y="2049"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_11">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Atan2" typename="SignalAtan2">
+        <parameters>
+          <parameter name="inY#Value" value="0" unit="" type="double"/>
+          <parameter name="inX#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="inY" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+          <port name="inX" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2223.212884" y="3023.93558"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAtan2" displayname="Atan2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Sinh_1" typename="SignalCosh">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2227" y="2275"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalCosh" displayname="Sinh_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Asin" typename="SignalAsin">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="error" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2256" y="2602.96779"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAsin" displayname="Asin">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_1" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2057.666667" y="2602.96779"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_1" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2349.666667" y="2602.96779"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_2" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2345.555556" y="2749.96779"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_2" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2053.555556" y="2749.96779"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_3" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2354.027699" y="3023.93558"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_3">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_3" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="5" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2062.027699" y="3023.93558"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_3">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_4" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2358.13881" y="2879.93558"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_4">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_4" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2057.729147" y="2879.93558"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_4">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_5" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2355.047325" y="3269"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_5">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_5" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-100" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="200" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2050.047325" y="3269"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_5">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_6" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2359.590535" y="3415"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_6">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_6" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-100" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="200" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2050.590535" y="3415"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_6">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_7" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2364.555556" y="2212"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_7">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_7" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="5" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2061.212884" y="3080.93558"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_7">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_8" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2369" y="2275"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_8">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_8" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2060.555556" y="2212"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_8">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Sqrt" typename="SignalSqrt">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="error" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2241.377453" y="2461"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSqrt" displayname="Sqrt">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Scope_9" typename="SignalSink">
+        <parameters>
+          <parameter name="in_bottom#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in_right" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="in_bottom" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2363.666667" y="2359"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_9">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_9" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2062" y="2275"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_9">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Log10_1" typename="SignalLog10">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="error" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2264.86214" y="3415"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalLog10" displayname="Log10_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_10" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2056.666667" y="2359"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_10">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Tanh" typename="SignalTanh">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2230" y="2359"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalTanh" displayname="Tanh">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_11" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2059" y="2125"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_11">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Ramp_12" typename="SignalRamp">
+        <parameters>
+          <parameter name="y_0#Value" value="-2" unit="-" type="double"/>
+          <parameter name="y_A#Value" value="4" unit="-" type="double"/>
+          <parameter name="t_start#Value" value="0" unit="s" type="double"/>
+          <parameter name="t_end#Value" value="10" unit="s" type="double"/>
+        </parameters>
+        <ports>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2061" y="2049"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_12">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Exp" typename="SignalExp">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2227" y="2125"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalExp" displayname="Exp">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Sinh" typename="SignalSinh">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2225" y="2212"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSinh" displayname="Sinh">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Power" typename="SignalPower">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+          <parameter name="x#Value" value="2" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2224" y="2049"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalPower" displayname="Power">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="Acos" typename="SignalAcos">
+        <parameters>
+          <parameter name="in#Value" value="0" unit="" type="double"/>
+        </parameters>
+        <ports>
+          <port name="error" nodetype="NodeSignal"/>
+          <port name="in" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal"/>
+        </ports>
+        <hopsangui>
+          <pose flipped="false" a="0" x="2261" y="2749.96779"/>
+          <nametext position="0" visible="0"/>
+          <animation hydraulicminpressure="0" flowspeed="100" hydraulicmaxpressure="20000000"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAcos" displayname="Acos">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+    </objects>
+    <connections>
+      <connect endport="in" startport="out" endcomponent="Sqrt" startcomponent="Ramp">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2076.50000000000000000000" y="2461.00000000000000000000"/>
+            <coordinate x="2228.50000000000000000000" y="2461.00000000000000000000"/>
+            <coordinate x="2228.50000000000000000000" y="2461.00000000000000000000"/>
+            <coordinate x="2228.87745300000005954644" y="2461.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope" startcomponent="Sqrt">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2253.87745300000005954644" y="2461.00000000000000000000"/>
+            <coordinate x="2340.00000000000000000000" y="2461.00000000000000000000"/>
+            <coordinate x="2340.00000000000000000000" y="2461.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_right" startport="error" endcomponent="Scope" startcomponent="Sqrt">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2241.37745300000005954644" y="2473.50000000000000000000"/>
+            <coordinate x="2241.37745300000005954644" y="2528.00000000000000000000"/>
+            <coordinate x="2400.00000000000000000000" y="2528.00000000000000000000"/>
+            <coordinate x="2400.00000000000000000000" y="2461.00000000000000000000"/>
+            <coordinate x="2380.00000000000000000000" y="2461.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Asin" startcomponent="Ramp_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2070.16666699999996126280" y="2602.96779000000015003025"/>
+            <coordinate x="2223.49999999999954525265" y="2602.96779000000015003025"/>
+            <coordinate x="2223.49999999999954525265" y="2602.96779000000015003025"/>
+            <coordinate x="2243.50000000000000000000" y="2602.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_1" startcomponent="Asin">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2268.50000000000000000000" y="2602.96779000000015003025"/>
+            <coordinate x="2329.66666699999996126280" y="2602.96779000000015003025"/>
+            <coordinate x="2329.66666699999996126280" y="2602.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_right" startport="error" endcomponent="Scope_1" startcomponent="Asin">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2256.00000000000000000000" y="2615.46779000000015003025"/>
+            <coordinate x="2256.00000000000000000000" y="2676.96778999999969528290"/>
+            <coordinate x="2399.00000000000000000000" y="2676.96778999999969528290"/>
+            <coordinate x="2399.00000000000000000000" y="2602.96779000000015003025"/>
+            <coordinate x="2369.66666699999996126280" y="2602.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Acos" startcomponent="Ramp_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2066.05555599999979676795" y="2749.96779000000015003025"/>
+            <coordinate x="2223.49999999999954525265" y="2749.96779000000015003025"/>
+            <coordinate x="2223.49999999999954525265" y="2749.96779000000015003025"/>
+            <coordinate x="2248.50000000000000000000" y="2749.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_2" startcomponent="Acos">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2273.50000000000000000000" y="2749.96779000000015003025"/>
+            <coordinate x="2325.55555599999979676795" y="2749.96779000000015003025"/>
+            <coordinate x="2325.55555599999979676795" y="2749.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Log_1" startcomponent="Ramp_5">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2062.54732500000000072760" y="3269.00000000000000000000"/>
+            <coordinate x="2225.36213999999927182216" y="3269.00000000000000000000"/>
+            <coordinate x="2225.36213999999927182216" y="3269.00000000000000000000"/>
+            <coordinate x="2245.36214000000018131686" y="3269.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_5" startcomponent="Log_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2270.36214000000018131686" y="3269.00000000000000000000"/>
+            <coordinate x="2335.04732500000000072760" y="3269.00000000000000000000"/>
+            <coordinate x="2335.04732500000000072760" y="3269.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Log10_1" startcomponent="Ramp_6">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2063.09053499999981795554" y="3415.00000000000000000000"/>
+            <coordinate x="2232.36213999999881707481" y="3415.00000000000000000000"/>
+            <coordinate x="2232.36213999999881707481" y="3415.00000000000000000000"/>
+            <coordinate x="2252.36214000000018131686" y="3415.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_6" startcomponent="Log10_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2277.36214000000018131686" y="3415.00000000000000000000"/>
+            <coordinate x="2339.59053499999981795554" y="3415.00000000000000000000"/>
+            <coordinate x="2339.59053499999981795554" y="3415.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_right" startport="error" endcomponent="Scope_5" startcomponent="Log_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2257.86214000000018131686" y="3281.50000000000000000000"/>
+            <coordinate x="2257.86214000000018131686" y="3318.00000000000000000000"/>
+            <coordinate x="2408.86213999999927182216" y="3318.00000000000000000000"/>
+            <coordinate x="2408.86213999999927182216" y="3269.00000000000000000000"/>
+            <coordinate x="2375.04732500000000072760" y="3269.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_right" startport="error" endcomponent="Scope_6" startcomponent="Log10_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2264.86214000000018131686" y="3427.50000000000000000000"/>
+            <coordinate x="2264.86214000000018131686" y="3466.00000000000000000000"/>
+            <coordinate x="2414.86213999999927182216" y="3466.00000000000000000000"/>
+            <coordinate x="2414.86213999999927182216" y="3415.00000000000000000000"/>
+            <coordinate x="2379.59053499999981795554" y="3415.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Atan" startcomponent="Ramp_4">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2070.22914700000001175795" y="2879.93557999999984531314"/>
+            <coordinate x="2188.71288400000003093737" y="2879.93557999999984531314"/>
+            <coordinate x="2188.71288400000003093737" y="2879.93557999999984531314"/>
+            <coordinate x="2208.71288400000003093737" y="2879.93557999999984531314"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_4" startcomponent="Atan">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2233.71288400000003093737" y="2879.93557999999984531314"/>
+            <coordinate x="2338.13880999999992127414" y="2879.93557999999984531314"/>
+            <coordinate x="2338.13880999999992127414" y="2879.93557999999984531314"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="inY" startport="out" endcomponent="Atan2" startcomponent="Ramp_3">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2074.52769900000021152664" y="3023.93557999999984531314"/>
+            <coordinate x="2190.71288399999912144267" y="3023.93557999999984531314"/>
+            <coordinate x="2190.71288399999912144267" y="3023.93557999999984531314"/>
+            <coordinate x="2210.71288400000003093737" y="3023.93557999999984531314"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_3" startcomponent="Atan2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2235.71288400000003093737" y="3023.93557999999984531314"/>
+            <coordinate x="2334.02769900000021152664" y="3023.93557999999984531314"/>
+            <coordinate x="2334.02769900000021152664" y="3023.93557999999984531314"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="inX" startport="out" endcomponent="Atan2" startcomponent="Ramp_7">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2073.71288400000003093737" y="3080.93557999999984531314"/>
+            <coordinate x="2223.21288400000003093737" y="3080.93557999999984531314"/>
+            <coordinate x="2223.21288400000003093737" y="3036.43557999999984531314"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_right" startport="error" endcomponent="Scope_2" startcomponent="Acos">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2261.00000000000000000000" y="2762.46779000000015003025"/>
+            <coordinate x="2261.00000000000000000000" y="2802.96778999999969528290"/>
+            <coordinate x="2401.00000000000000000000" y="2802.96778999999969528290"/>
+            <coordinate x="2401.00000000000000000000" y="2749.96779000000015003025"/>
+            <coordinate x="2365.55555599999979676795" y="2749.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Sinh" startcomponent="Ramp_8">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2073.05555599999979676795" y="2212.00000000000000000000"/>
+            <coordinate x="2192.49999999999954525265" y="2212.00000000000000000000"/>
+            <coordinate x="2192.49999999999954525265" y="2212.00000000000000000000"/>
+            <coordinate x="2212.50000000000000000000" y="2212.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_7" startcomponent="Sinh">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2237.50000000000000000000" y="2212.00000000000000000000"/>
+            <coordinate x="2344.55555599999979676795" y="2212.00000000000000000000"/>
+            <coordinate x="2344.55555599999979676795" y="2212.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Sinh_1" startcomponent="Ramp_9">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2074.50000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2194.50000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2194.50000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2214.50000000000000000000" y="2275.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_8" startcomponent="Sinh_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2239.50000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2349.00000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2349.00000000000000000000" y="2275.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_8" startcomponent="Ramp_9">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2074.50000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2097.00000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2097.00000000000000000000" y="2295.95491502499999114661"/>
+            <coordinate x="2369.00000000000000000000" y="2295.95491502499999114661"/>
+            <coordinate x="2369.00000000000000000000" y="2290.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_7" startcomponent="Ramp_8">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2073.05555599999979676795" y="2212.00000000000000000000"/>
+            <coordinate x="2094.99999999999954525265" y="2212.00000000000000000000"/>
+            <coordinate x="2094.99999999999954525265" y="2232.95491502499999114661"/>
+            <coordinate x="2364.55555599999979676795" y="2232.95491502499999114661"/>
+            <coordinate x="2364.55555599999979676795" y="2227.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope" startcomponent="Ramp">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2076.50000000000000000000" y="2461.00000000000000000000"/>
+            <coordinate x="2107.00000000000000000000" y="2461.00000000000000000000"/>
+            <coordinate x="2107.00000000000000000000" y="2481.95491502499999114661"/>
+            <coordinate x="2360.00000000000000000000" y="2481.95491502499999114661"/>
+            <coordinate x="2360.00000000000000000000" y="2476.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_1" startcomponent="Ramp_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2070.16666699999996126280" y="2602.96779000000015003025"/>
+            <coordinate x="2085.99999999999954525265" y="2602.96779000000015003025"/>
+            <coordinate x="2085.99999999999954525265" y="2623.92270502499968642951"/>
+            <coordinate x="2349.66666699999996126280" y="2623.92270502499968642951"/>
+            <coordinate x="2349.66666699999996126280" y="2617.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_2" startcomponent="Ramp_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2066.05555599999979676795" y="2749.96779000000015003025"/>
+            <coordinate x="2080.99999999999954525265" y="2749.96779000000015003025"/>
+            <coordinate x="2080.99999999999954525265" y="2770.92270502499968642951"/>
+            <coordinate x="2345.55555599999979676795" y="2770.92270502499968642951"/>
+            <coordinate x="2345.55555599999979676795" y="2764.96779000000015003025"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_4" startcomponent="Ramp_4">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2070.22914700000001175795" y="2879.93557999999984531314"/>
+            <coordinate x="2099.21288400000003093737" y="2879.93557999999984531314"/>
+            <coordinate x="2099.21288400000003093737" y="2900.89049502499983645976"/>
+            <coordinate x="2358.13880999999992127414" y="2900.89049502499983645976"/>
+            <coordinate x="2358.13880999999992127414" y="2894.93557999999984531314"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_5" startcomponent="Ramp_5">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2062.54732500000000072760" y="3269.00000000000000000000"/>
+            <coordinate x="2083.00000000000000000000" y="3269.00000000000000000000"/>
+            <coordinate x="2083.00000000000000000000" y="3289.95491502499999114661"/>
+            <coordinate x="2355.04732500000000072760" y="3289.95491502499999114661"/>
+            <coordinate x="2355.04732500000000072760" y="3284.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_6" startcomponent="Ramp_6">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2063.09053499999981795554" y="3415.00000000000000000000"/>
+            <coordinate x="2084.00000000000000000000" y="3415.00000000000000000000"/>
+            <coordinate x="2084.00000000000000000000" y="3435.95491502499999114661"/>
+            <coordinate x="2359.59053499999981795554" y="3435.95491502499999114661"/>
+            <coordinate x="2359.59053499999981795554" y="3430.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_9" startcomponent="Ramp_10">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2069.16666699999996126280" y="2359.00000000000000000000"/>
+            <coordinate x="2091.66666666666606033687" y="2359.00000000000000000000"/>
+            <coordinate x="2091.66666666666606033687" y="2379.95491502499999114661"/>
+            <coordinate x="2363.66666699999996126280" y="2379.95491502499999114661"/>
+            <coordinate x="2363.66666699999996126280" y="2374.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Tanh" startcomponent="Ramp_10">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2069.16666699999996126280" y="2359.00000000000000000000"/>
+            <coordinate x="2197.50000000000000000000" y="2359.00000000000000000000"/>
+            <coordinate x="2197.50000000000000000000" y="2359.00000000000000000000"/>
+            <coordinate x="2217.50000000000000000000" y="2359.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_9" startcomponent="Tanh">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2242.50000000000000000000" y="2359.00000000000000000000"/>
+            <coordinate x="2343.66666699999996126280" y="2359.00000000000000000000"/>
+            <coordinate x="2343.66666699999996126280" y="2359.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Exp" startcomponent="Ramp_11">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2071.50000000000000000000" y="2125.00000000000000000000"/>
+            <coordinate x="2194.50000000000000000000" y="2125.00000000000000000000"/>
+            <coordinate x="2194.50000000000000000000" y="2125.00000000000000000000"/>
+            <coordinate x="2214.50000000000000000000" y="2125.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_10" startcomponent="Exp">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2239.50000000000000000000" y="2125.00000000000000000000"/>
+            <coordinate x="2345.00000000000000000000" y="2125.00000000000000000000"/>
+            <coordinate x="2345.00000000000000000000" y="2125.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_10" startcomponent="Ramp_11">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2071.50000000000000000000" y="2125.00000000000000000000"/>
+            <coordinate x="2094.00000000000000000000" y="2125.00000000000000000000"/>
+            <coordinate x="2094.00000000000000000000" y="2145.95491502499999114661"/>
+            <coordinate x="2365.00000000000000000000" y="2145.95491502499999114661"/>
+            <coordinate x="2365.00000000000000000000" y="2140.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Scope_11" startcomponent="Power">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2236.50000000000000000000" y="2049.00000000000000000000"/>
+            <coordinate x="2349.00000000000000000000" y="2049.00000000000000000000"/>
+            <coordinate x="2349.00000000000000000000" y="2049.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" startport="out" endcomponent="Power" startcomponent="Ramp_12">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2073.50000000000000000000" y="2049.00000000000000000000"/>
+            <coordinate x="2191.50000000000000000000" y="2049.00000000000000000000"/>
+            <coordinate x="2191.50000000000000000000" y="2049.00000000000000000000"/>
+            <coordinate x="2211.50000000000000000000" y="2049.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" startport="out" endcomponent="Scope_11" startcomponent="Ramp_12">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2073.50000000000000000000" y="2049.00000000000000000000"/>
+            <coordinate x="2090.00000000000000000000" y="2049.00000000000000000000"/>
+            <coordinate x="2090.00000000000000000000" y="2079.00000000000000000000"/>
+            <coordinate x="2369.00000000000000000000" y="2079.00000000000000000000"/>
+            <coordinate x="2369.00000000000000000000" y="2064.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>

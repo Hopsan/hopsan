@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r6754" hopsancoreversion="0.6.x_r6745">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info>
+    <author>Peter Nordin</author>
+    <email>peter.nordin@liu.se</email>
+    <affiliation>Linköping University</affiliation>
+    <description>Rate limiter test model</description>
+  </info>
+  <system typename="Subsystem" name="RateLimiterTest">
+    <simulationtime stop="10" timestep="0.0001" start="0" inherit_timestep="true"/>
+    <simulationlogsettings numsamples="2048" starttime="0"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="0"/>
+      <animation flowspeed="100"/>
+      <viewport x="2376.56" y="2448.99" zoom="1.18743"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="RateLimiterTest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <optimization>
+        <settings>
+          <iterations>100</iterations>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+      <senstivitityanalysis>
+        <settings>
+          <iterations>100</iterations>
+          <distribution>uniform</distribution>
+        </settings>
+        <parameters/>
+        <plotvariables/>
+      </senstivitityanalysis>
+    </hopsangui>
+    <objects>
+      <component typename="SignalFirstOrderTransferFunction" name="dxdt">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0" type="double" name="out#Value"/>
+          <parameter unit="-" value="1" type="double" name="a_1"/>
+          <parameter unit="-" value="0" type="double" name="a_0"/>
+          <parameter unit="-" value="0.0001" type="double" name="b_1"/>
+          <parameter unit="-" value="1" type="double" name="b_0"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2401.817279" y="2443.082723" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalFirstOrderTransferFunction" displayname="dxdt">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2516.34994" y="2443.082723" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_2">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2474.49" y="2626.220943" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalPulseWave" name="PulseWave">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="-" value="0" type="double" name="t_start#Value"/>
+          <parameter unit="-" value="2" type="double" name="dT#Value"/>
+          <parameter unit="-" value="0.5" type="double" name="D#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2209.16" y="2626.220943" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalPulseWave" displayname="PulseWave">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_3">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2516.36" y="2716.790943" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_3">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalRateLimiter" name="Rate_limiter">
+        <parameters>
+          <parameter unit="-" value="1" type="double" name="c_up#Value"/>
+          <parameter unit="-" value="-1.5" type="double" name="c_down#Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2330" y="2369" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRateLimiter" displayname="Rate_limiter">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalFirstOrderTransferFunction" name="dxdt_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="0" type="double" name="out#Value"/>
+          <parameter unit="-" value="1" type="double" name="a_1"/>
+          <parameter unit="-" value="0" type="double" name="a_0"/>
+          <parameter unit="-" value="0.0001" type="double" name="b_1"/>
+          <parameter unit="-" value="1" type="double" name="b_0"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2401.83" y="2716.790943" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalFirstOrderTransferFunction" displayname="dxdt_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSineWave" name="Sine_Wave">
+        <parameters>
+          <parameter unit="-" value="0.25" type="double" name="f#Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A#Value"/>
+          <parameter unit="-" value="0" type="double" name="y_offset#Value"/>
+          <parameter unit="-" value="0" type="double" name="t_start#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2210" y="2369" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSineWave" displayname="Sine_Wave">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2476" y="2369" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalRateLimiter" name="Rate_limiter_1">
+        <parameters>
+          <parameter unit="-" value="1" type="double" name="c_up#Value"/>
+          <parameter unit="-" value="-1" type="double" name="c_down#Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2328.49" y="2626.220943" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRateLimiter" displayname="Rate_limiter_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1958.713062" y="2170.420000"/>
+          <textobject reflow="1" fontcolor="#556b2f" text="Rate limiter example&#xa;The rate limiter prevents the signal from increasing or decreasing to fast" font="Ubuntu,14,-1,5,50,0,0,0,0,0"/>
+          <size width="650.000000" height="74.000000"/>
+          <line width="2" visible="0" style="solidline" color="#556b2f"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1962.710000" y="2260.420000"/>
+          <textobject reflow="1" fontcolor="#556b2f" text="Sinuswave rate limited to [+1.0, -1.5]&#xa;The lower scope shows the signal derivative" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="640.015625" height="237.271250"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1961.710000" y="2515.470000"/>
+          <textobject reflow="1" fontcolor="#556b2f" text="Pulse train rate limited to [+1.0, -1.0]&#xa;The lower scope shows the signal derivative" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="642.015625" height="237.271250"/>
+          <line width="2" visible="1" style="solidline" color="#556b2f"/>
+        </hopsangui>
+      </textboxwidget>
+    </objects>
+    <connections>
+      <connect endport="in" endcomponent="Rate_limiter" startport="out" startcomponent="Sine_Wave">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2222.50000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2297.50000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2297.50000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2317.50000000000000000000" y="2369.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Rate_limiter">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2342.50000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2456.00000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2456.00000000000000000000" y="2369.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Sine_Wave">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2222.50000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2263.00000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2263.00000000000000000000" y="2328.00000000000000000000"/>
+            <coordinate x="2385.00000000000000000000" y="2328.00000000000000000000"/>
+            <coordinate x="2385.00000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2456.00000000000000000000" y="2369.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="Rate_limiter_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2340.98999999999978172127" y="2626.22094299999980648863"/>
+            <coordinate x="2454.48999999999978172127" y="2626.22094299999980648863"/>
+            <coordinate x="2454.48999999999978172127" y="2626.22094299999980648863"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Rate_limiter_1" startport="out" startcomponent="PulseWave">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2221.65999999999985448085" y="2626.22094299999980648863"/>
+            <coordinate x="2295.99333341226747506880" y="2626.22094299999980648863"/>
+            <coordinate x="2295.99333341226747506880" y="2626.22094299999980648863"/>
+            <coordinate x="2315.98999999999978172127" y="2626.22094299999980648863"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="PulseWave">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2221.65999999999985448085" y="2626.22094299999980648863"/>
+            <coordinate x="2264.16000007893353540567" y="2626.22094299999980648863"/>
+            <coordinate x="2264.16000007893353540567" y="2582.22094337294493016088"/>
+            <coordinate x="2382.16000007893353540567" y="2582.22094337294493016088"/>
+            <coordinate x="2382.16000007893353540567" y="2626.22094299999980648863"/>
+            <coordinate x="2454.48999999999978172127" y="2626.22094299999980648863"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="dxdt" startport="out" startcomponent="Rate_limiter">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2342.50000000000000000000" y="2369.00000000000000000000"/>
+            <coordinate x="2354.65677130198764643865" y="2369.00000000000000000000"/>
+            <coordinate x="2354.65677130198764643865" y="2443.08272299999998722342"/>
+            <coordinate x="2371.81727899999987130286" y="2443.08272299999998722342"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="dxdt">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2431.81727899999987130286" y="2443.08272299999998722342"/>
+            <coordinate x="2496.34994000000006053597" y="2443.08272299999998722342"/>
+            <coordinate x="2496.34994000000006053597" y="2443.08272299999998722342"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_3" startport="out" startcomponent="dxdt_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2431.82999999999992724042" y="2716.79094299999997019768"/>
+            <coordinate x="2496.36000000000012732926" y="2716.79094299999997019768"/>
+            <coordinate x="2496.36000000000012732926" y="2716.79094299999997019768"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="dxdt_1" startport="out" startcomponent="Rate_limiter_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2340.98999999999978172127" y="2626.22094299999980648863"/>
+            <coordinate x="2350.45316157177285276703" y="2626.22094299999980648863"/>
+            <coordinate x="2350.45316157177285276703" y="2716.79094299999997019768"/>
+            <coordinate x="2371.82999999999992724042" y="2716.79094299999997019768"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>
