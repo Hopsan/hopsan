@@ -100,7 +100,7 @@ public:
 
     //Enabled or disabled?
     void setDisabled(bool value);
-    bool isDisabled();
+    bool isDisabled() const;
 
     // Timestep functions
     void setDesiredTimestep(const double timestep);

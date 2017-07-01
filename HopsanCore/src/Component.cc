@@ -76,6 +76,7 @@ Component::Component()
     mName = "NoNameSetYet";
 
     mInheritTimestep = true;
+    mIsDisabled = false;
     mTimestep = 0.001;
 
     mpSystemParent = 0;
@@ -297,7 +298,7 @@ void Component::setDisabled(bool value)
     mIsDisabled = value;
 }
 
-bool Component::isDisabled()
+bool Component::isDisabled() const
 {
     return mIsDisabled;
 }

@@ -526,6 +526,9 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     string displayName = readStringAttribute(pSysNode, "name", typeName );
     pSystem->setName(displayName.c_str());
 
+    bool componentDisabled = readBoolAttribute(pSysNode, "disabled", false);
+    pSystem->setDisabled(componentDisabled);
+
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
     double Ts = readDoubleAttribute(pSimtimeNode, "timestep", 0.001);
     pSystem->setDesiredTimestep(Ts);

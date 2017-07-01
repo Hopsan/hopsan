@@ -31,9 +31,11 @@
     Version History
 ******************************
 
-0.7.9 (????-??-??)
+0.7.9 (2017-07-02)
 - Bug fixed: Plot curves default to dashed lines
 - Bug fixed: Reading symbols name from HCOM plot command will always give value 1,2 or 3 for symbol type
+- Bug fixed: Subsytems become randomly disabled when models are loaded by the simulation core model loader, Affects CLI, FMU and Simulink export.
+             Simulation through HopsanGUI was apperantly not affected.
 
 0.7.8 (2017-04-04)
 - Bug fixed: Plot widget is updated correctly when creating temporary HCOM variables
