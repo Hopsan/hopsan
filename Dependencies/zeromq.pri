@@ -5,6 +5,7 @@ win32:CONFIG(debug, debug|release):dbg_ext =
 
 # Set expected local install dir
 zeromq_home = $${PWD}/zeromq
+cppzmq_home = $${PWD}/cppzmq
 zeromq_lib = $${zeromq_home}/lib
 zeromq_bin = $${zeromq_home}/bin
 
@@ -34,6 +35,7 @@ defineTest(have_zeromq) {
 
 have_local_zeromq() {
   INCLUDEPATH *= $${zeromq_home}/include
+  INCLUDEPATH *= $${cppzmq_home}
   win32:LIBS *= -L$${zeromq_bin} -lzmq$${dbg_ext}
   unix:LIBS *= -L$${zeromq_lib} -lzmq$${dbg_ext}
   # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
