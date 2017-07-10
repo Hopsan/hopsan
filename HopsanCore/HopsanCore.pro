@@ -42,10 +42,15 @@ HEADERS += $${PWD}/dependencies/libNumHop/libNumHop/numhop.h
 # -------------------------------------------------
 # Non platform specific HopsanCore options
 # -------------------------------------------------
-CONFIG(debug, debug|release) {
-  QMAKE_CXXFLAGS += -pedantic -Wno-long-long -std=c++11
-}
+QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 
+# Enable C++11
+lessThan(QT_MAJOR_VERSION, 5){
+  QMAKE_CXXFLAGS += -std=c++11
+} else {
+  CONFIG += c++11
+}
+# Enable the use of M_PI and such
 DEFINES *= _USE_MATH_DEFINES
 
 # Turn on the Hopsan Core runtime log file
