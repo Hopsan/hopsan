@@ -30,7 +30,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #include <atomic>
 #endif
 #ifndef _WIN32
@@ -78,7 +78,7 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 }
 
 
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 
 //! @brief Constructor for slave simulation thread function.
 //! @param pSystem Pointer to top level component system

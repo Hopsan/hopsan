@@ -36,28 +36,31 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #include <mutex>
 #endif
 
 using namespace std;
-using namespace hopsan;
+
+namespace hopsan {
+
+class HopsanCoreMessageHandlerPrivates {
+public:
+#if __cplusplus >= 201103L
+    std::mutex mMutex;
+#endif
+};
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
+    mpPrivates = new HopsanCoreMessageHandlerPrivates;
     mMaxQueueSize = 10000;
-#if __cplusplus > 199711L
-    mpMutex = new std::mutex;
-#endif
     clear(); // Using clear here to init the message counters (init code in one place only)
 }
 
 HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 {
     clear();
-#if __cplusplus > 199711L
-    delete mpMutex;
-#endif
 }
 
 //! @brief Adds a message to the message queue
@@ -68,9 +71,10 @@ HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 //! @param [in] debuglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addMessage(const HopsanCoreMessage::MessageEnumT type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel)
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
+
     HopsanCoreMessage* pMsg = new HopsanCoreMessage(type, rPreFix+rMessage, rTag, debuglevel);
     mMessageQueue.push_back(pMsg);
     switch (type)
@@ -120,16 +124,13 @@ void HopsanCoreMessageHandler::addMessage(const HopsanCoreMessage::MessageEnumT 
         delete mMessageQueue.front();
         mMessageQueue.pop_front();
     }
-#if __cplusplus > 199711L
-    mpMutex->unlock();
-#endif
 }
 
 //! @brief Clears the message queue
 void HopsanCoreMessageHandler::clear()
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
     // Delete each message and pop each message pointer
     while(mMessageQueue.size() > 0)
@@ -143,9 +144,6 @@ void HopsanCoreMessageHandler::clear()
     mNumErrorMessages = 0;
     mNumFatalMessages = 0;
     mNumDebugMessages = 0;
-#if __cplusplus > 199711L
-    mpMutex->unlock();
-#endif
 }
 
 //! @brief Convenience function to add info message
@@ -201,8 +199,8 @@ void HopsanCoreMessageHandler::addFatalMessage(const HString &rMessage, const HS
 //! @param [out] rTag A tag describing the message
 void HopsanCoreMessageHandler::getMessage(HString &rMessage, HString &rType, HString &rTag)
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
 
     if (mMessageQueue.size() > 0)
@@ -245,101 +243,72 @@ void HopsanCoreMessageHandler::getMessage(HString &rMessage, HString &rType, HSt
         rTag = "";
         rType = "error";
     }
-
-#if __cplusplus > 199711L
-    mpMutex->unlock();
-#endif
 }
 
 //! @brief Returns the number of waiting messages on the message queue
 size_t HopsanCoreMessageHandler::getNumWaitingMessages() const
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
-    const size_t num = mMessageQueue.size();
-    mpMutex->unlock();
-    return num;
-#else
-    return mMessageQueue.size();
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
+    return mMessageQueue.size();
 }
 
 //! @brief Returns the number of waiting info messages on the message queue
 size_t HopsanCoreMessageHandler::getNumInfoMessages() const
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
-    const size_t num = mNumInfoMessages;
-    mpMutex->unlock();
-    return num;
-#else
-    return mNumInfoMessages;
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
+    return mNumInfoMessages;
 }
 
 //! @brief Returns the number of waiting warning messages on the message queue
 size_t HopsanCoreMessageHandler::getNumWarningMessages() const
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
-    const size_t num = mNumWarningMessages;
-    mpMutex->unlock();
-    return num;
-#else
-    return mNumWarningMessages;
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
+    return mNumWarningMessages;
 }
 
 //! @brief Returns the number of waiting error messages on the message queue
 size_t HopsanCoreMessageHandler::getNumErrorMessages() const
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
-    const size_t num = mNumErrorMessages;
-    mpMutex->unlock();
-    return num;
-#else
-    return mNumErrorMessages;
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
+    return mNumErrorMessages;
 }
 
 //! @brief Returns the number of waiting debug messages on the message queue
 size_t HopsanCoreMessageHandler::getNumDebugMessages() const
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
-    const size_t num = mNumDebugMessages;
-    mpMutex->unlock();
-    return num;
-#else
-    return mNumDebugMessages;
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
+    return mNumDebugMessages;
 }
 
 //! @brief Returns the number of waiting fatal messages on the message queue
 size_t HopsanCoreMessageHandler::getNumFatalMessages() const
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
-    const size_t num = mNumFatalMessages;
-    mpMutex->unlock();
-    return num;
-#else
-    return mNumFatalMessages;
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
+    return mNumFatalMessages;
 }
 
 void HopsanCoreMessageHandler::printMessagesToStdOut()
 {
-#if __cplusplus > 199711L
-    mpMutex->lock();
+#if __cplusplus >= 201103L
+    std::lock_guard<std::mutex> lock(mpPrivates->mMutex);
 #endif
     std::deque<HopsanCoreMessage*>::iterator it;
     for (it=mMessageQueue.begin(); it!=mMessageQueue.end(); ++it)
     {
         std::cout << (*it)->mType << " " << (*it)->mMessage.c_str() << std::endl;
     }
-#if __cplusplus > 199711L
-    mpMutex->unlock();
-#endif
 }
+
+} // namespace hopsan

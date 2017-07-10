@@ -38,7 +38,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -64,10 +64,9 @@
 #include "CoreUtilities/ConnectionAssistant.h"
 
 using namespace std;
-using namespace hopsan;
 
 
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #ifdef _WIN32
 const long long g_Frequency = []() -> long long
 {
@@ -86,7 +85,7 @@ HighResClock::time_point HighResClock::now()
 #endif //_WIN32
 #endif //C++11
 
-
+namespace {
 //! @brief Figure out whether or not a vector contains a certain "object", exact comparison
 //! @param[in] rVector Vector of objects
 //! @param[in] rObj Object to find
@@ -104,6 +103,22 @@ bool vectorContains(const std::vector<T> &rVector, const T &rObj)
     }
     return false;
 }
+} // anon namespace
+
+namespace hopsan {
+
+class ComponentSystemMultiThreadPrivates {
+public:
+    std::vector<double *> mvTimePtrs;
+    std::vector< std::vector<Component*> > mSplitCVector;
+    std::vector< std::vector<Component*> > mSplitQVector;
+    std::vector< std::vector<Component*> > mSplitSignalVector;
+    std::vector< std::vector<Node*> > mSplitNodeVector;
+#if __cplusplus >= 201103L
+    std::mutex mStopMutex;
+#endif
+
+};
 
 
 //Constructor
@@ -118,9 +133,7 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mKeepValuesAsStartValues = false;
     mRequestedNumLogSamples = 0; //This has to be 0 since we want logging to be disabled by default
     mRequestedLogStartTime = 0;
-#if __cplusplus > 199711L
-    mpStopMutex = new std::mutex();
-#endif
+    mpMultiThreadPrivates = new ComponentSystemMultiThreadPrivates;
     mpNumHopHelper = 0;
 
     // Set default (disabled) values for log data
@@ -132,9 +145,7 @@ ComponentSystem::~ComponentSystem()
 {
     // Clear the contents of the system
     clear();
-#if __cplusplus > 199711L
-    delete mpStopMutex;
-#endif
+    delete mpMultiThreadPrivates;
 }
 
 void ComponentSystem::configure()
@@ -200,10 +211,10 @@ void ComponentSystem::stopSimulation(const HString &rReason)
     addInfoMessage(infoMsg);
     addLogMess(infoMsg);
 
-#if __cplusplus > 199711L
-    mpStopMutex->lock();
+#if __cplusplus >= 201103L
+    mpMultiThreadPrivates->mStopMutex.lock();
     mStopSimulation = true;
-    mpStopMutex->unlock();
+    mpMultiThreadPrivates->mStopMutex.unlock();
 #else
     mStopSimulation = true;
 #endif
@@ -218,10 +229,10 @@ void ComponentSystem::stopSimulation(const HString &rReason)
 //! @todo maybe we should only have with messages version
 void ComponentSystem::stopSimulation()
 {
-#if __cplusplus > 199711L
-    mpStopMutex->lock();
+#if __cplusplus >= 201103L
+    mpMultiThreadPrivates->mStopMutex.lock();
     mStopSimulation = true;
-    mpStopMutex->unlock();
+    mpMultiThreadPrivates->mStopMutex.unlock();
 #else
     mStopSimulation = true;
 #endif
@@ -234,7 +245,7 @@ void ComponentSystem::stopSimulation()
 
 //! @brief Check if the simulation was aborted
 //! @returns true if Initialize, Simulate, or Finalize was aborted
-bool ComponentSystem::wasSimulationAborted()
+bool ComponentSystem::wasSimulationAborted() const
 {
     return mStopSimulation;
 }
@@ -2388,7 +2399,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
 }
 
 
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges, const ParallelAlgorithmT algorithm)
 {
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
@@ -2401,10 +2412,10 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     {
         if(algorithm != TaskStealingAlgorithm)
         {
-            mSplitCVector.clear();
-            mSplitQVector.clear();
-            mSplitSignalVector.clear();
-            mSplitNodeVector.clear();
+            mpMultiThreadPrivates->mSplitCVector.clear();
+            mpMultiThreadPrivates->mSplitQVector.clear();
+            mpMultiThreadPrivates->mSplitSignalVector.clear();
+            mpMultiThreadPrivates->mSplitNodeVector.clear();
 
             simulateAndMeasureTime(100);                                //Measure time
             sortComponentVectorsByMeasuredTime();                       //Sort component vectors
@@ -2422,10 +2433,10 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
                 addDebugMessage("Time for "+mComponentSignalptrs.at(s)->getName()+": "+to_hstring(mComponentSignalptrs.at(s)->getMeasuredTime()));
             }
 
-            distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
-            distributeQcomponents(mSplitQVector, nThreads);
-            distributeSignalcomponents(mSplitSignalVector, nThreads);
-            distributeNodePointers(mSplitNodeVector, nThreads);
+            distributeCcomponents(mpMultiThreadPrivates->mSplitCVector, nThreads);              //Distribute components and nodes
+            distributeQcomponents(mpMultiThreadPrivates->mSplitQVector, nThreads);
+            distributeSignalcomponents(mpMultiThreadPrivates->mSplitSignalVector, nThreads);
+            distributeNodePointers(mpMultiThreadPrivates->mSplitNodeVector, nThreads);
 
             // Re-initialize the system to reset values and timers
             //! @note This only work for top level systems where the simulateMultiThreaded will not be called more than once
@@ -2433,13 +2444,13 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         }
         else
         {
-            mSplitCVector.clear();
-            mSplitQVector.clear();
-            mSplitSignalVector.clear();
+            mpMultiThreadPrivates->mSplitCVector.clear();
+            mpMultiThreadPrivates->mSplitQVector.clear();
+            mpMultiThreadPrivates->mSplitSignalVector.clear();
 
-            mSplitCVector.resize(nThreads);
-            mSplitQVector.resize(nThreads);
-            mSplitSignalVector.resize(nThreads);
+            mpMultiThreadPrivates->mSplitCVector.resize(nThreads);
+            mpMultiThreadPrivates->mSplitQVector.resize(nThreads);
+            mpMultiThreadPrivates->mSplitSignalVector.resize(nThreads);
 
             for(size_t c=0; c<mComponentCptrs.size();)
             {
@@ -2447,7 +2458,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
                 {
                     if(c>mComponentCptrs.size()-1)
                         break;
-                    mSplitCVector[t].push_back(mComponentCptrs[c]);
+                    mpMultiThreadPrivates->mSplitCVector[t].push_back(mComponentCptrs[c]);
                     ++c;
                 }
             }
@@ -2458,12 +2469,12 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
                 {
                     if(q>mComponentQptrs.size()-1)
                         break;
-                    mSplitQVector[t].push_back(mComponentQptrs[q]);
+                    mpMultiThreadPrivates->mSplitQVector[t].push_back(mComponentQptrs[q]);
                     ++q;
                 }
             }
 
-            distributeSignalcomponents(mSplitSignalVector, nThreads);
+            distributeSignalcomponents(mpMultiThreadPrivates->mSplitSignalVector, nThreads);
         }
     }
 
@@ -2475,7 +2486,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     {
         addInfoMessage("Using offline scheduling algorithm with "+threadStr+" threads.");
 
-        mvTimePtrs.push_back(&mTime);
+        mpMultiThreadPrivates->mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
         BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
         BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
@@ -2485,11 +2496,11 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
         tt[0] = std::thread(simMaster,
                             this,
-                            std::ref(mSplitSignalVector[0]),
-                            std::ref(mSplitCVector[0]),
-                            std::ref(mSplitQVector[0]),             //Create master thread
-                            std::ref(mSplitNodeVector[0]),
-                            std::ref(mvTimePtrs),
+                            std::ref(mpMultiThreadPrivates->mSplitSignalVector[0]),
+                            std::ref(mpMultiThreadPrivates->mSplitCVector[0]),
+                            std::ref(mpMultiThreadPrivates->mSplitQVector[0]),             //Create master thread
+                            std::ref(mpMultiThreadPrivates->mSplitNodeVector[0]),
+                            std::ref(mpMultiThreadPrivates->mvTimePtrs),
                             mTime,
                             mTimestep,
                             nSteps,
@@ -2502,10 +2513,10 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         {
             tt[t] = std::thread(simSlave,
                                 this,
-                                std::ref(mSplitSignalVector[t]),
-                                std::ref(mSplitCVector[t]),
-                                std::ref(mSplitQVector[t]),          //Create slave threads
-                                std::ref(mSplitNodeVector[t]),
+                                std::ref(mpMultiThreadPrivates->mSplitSignalVector[t]),
+                                std::ref(mpMultiThreadPrivates->mSplitCVector[t]),
+                                std::ref(mpMultiThreadPrivates->mSplitQVector[t]),          //Create slave threads
+                                std::ref(mpMultiThreadPrivates->mSplitNodeVector[t]),
                                 mTime,
                                 mTimestep,
                                 nSteps,
@@ -2614,7 +2625,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     {
         addInfoMessage("Using task stealing algorithm with "+threadStr+" threads.");
 
-        mvTimePtrs.push_back(&mTime);
+        mpMultiThreadPrivates->mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
         BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
         BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
@@ -2623,15 +2634,15 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         size_t maxSize = mComponentCptrs.size()+mComponentQptrs.size()+mComponentSignalptrs.size();
 
         std::vector<ThreadSafeVector *> *pVectorsC = new std::vector<ThreadSafeVector *>();
-        for(size_t i=0; i<mSplitCVector.size(); ++i)
+        for(size_t i=0; i<mpMultiThreadPrivates->mSplitCVector.size(); ++i)
         {
-            pVectorsC->push_back(new ThreadSafeVector(mSplitCVector[i], maxSize));
+            pVectorsC->push_back(new ThreadSafeVector(mpMultiThreadPrivates->mSplitCVector[i], maxSize));
         }
 
         std::vector<ThreadSafeVector *> *pVectorsQ = new std::vector<ThreadSafeVector *>();
-        for(size_t i=0; i<mSplitQVector.size(); ++i)
+        for(size_t i=0; i<mpMultiThreadPrivates->mSplitQVector.size(); ++i)
         {
-            pVectorsQ->push_back(new ThreadSafeVector(mSplitQVector[i], maxSize));
+            pVectorsQ->push_back(new ThreadSafeVector(mpMultiThreadPrivates->mSplitQVector[i], maxSize));
         }
 
         std::thread *tt = new std::thread[nThreads];
@@ -2641,7 +2652,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
                             std::ref(mComponentSignalptrs),
                             pVectorsC,
                             pVectorsQ,             //Create master thread
-                            std::ref(mvTimePtrs),
+                            std::ref(mpMultiThreadPrivates->mvTimePtrs),
                             mTime,
                             mTimestep,
                             nSteps,
@@ -2775,7 +2786,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             for (size_t c=0; c < mComponentCptrs.size(); ++c)
             {
                 tt[c] = std::thread(simOneStep,
-                                    &mSplitCVector[c],
+                                    &mpMultiThreadPrivates->mSplitCVector[c],
                                     mTime);
             }
             for(size_t c=0; c<mComponentCptrs.size(); ++c)
@@ -2789,7 +2800,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             for (size_t q=0; q < mComponentQptrs.size(); ++q)
             {
                 tt[q] = std::thread(simOneStep,
-                                    &mSplitQVector[q],
+                                    &mpMultiThreadPrivates->mSplitQVector[q],
                                     mTime);
             }
             for(size_t q=0; q<mComponentQptrs.size(); ++q)
@@ -2812,7 +2823,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 //! @param steps How many steps to simulate
 bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
 {
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
     // Reset all measured times first
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         mComponentSignalptrs[s]->setMeasuredTime(0);
@@ -3245,18 +3256,18 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
 
 void ComponentSystem::reschedule(size_t nThreads)
 {
-    mSplitCVector.clear();
-    mSplitQVector.clear();
-    mSplitSignalVector.clear();
-    mSplitNodeVector.clear();
+    mpMultiThreadPrivates->mSplitCVector.clear();
+    mpMultiThreadPrivates->mSplitQVector.clear();
+    mpMultiThreadPrivates->mSplitSignalVector.clear();
+    mpMultiThreadPrivates->mSplitNodeVector.clear();
 
     simulateAndMeasureTime(10);                                //Measure time
     sortComponentVectorsByMeasuredTime();                       //Sort component vectors
 
-    distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
-    distributeQcomponents(mSplitQVector, nThreads);
-    distributeSignalcomponents(mSplitSignalVector, nThreads);
-    distributeNodePointers(mSplitNodeVector, nThreads);
+    distributeCcomponents(mpMultiThreadPrivates->mSplitCVector, nThreads);              //Distribute components and nodes
+    distributeQcomponents(mpMultiThreadPrivates->mSplitQVector, nThreads);
+    distributeSignalcomponents(mpMultiThreadPrivates->mSplitSignalVector, nThreads);
+    distributeNodePointers(mpMultiThreadPrivates->mSplitNodeVector, nThreads);
 }
 
 #else
@@ -3548,3 +3559,5 @@ void ConditionalComponentSystem::simulateMultiThreaded(const double startT, cons
 {
     ComponentSystem::simulateMultiThreaded(startT,  stopT, nDesiredThreads, noChanges, algorithm);
 }
+
+} // namespace hopsan

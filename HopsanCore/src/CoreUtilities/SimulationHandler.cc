@@ -35,7 +35,7 @@
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "ComponentSystem.h"
 
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #include <thread>
 #endif
 
@@ -273,7 +273,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     HOPSAN_UNUSED(noChanges)
 
     vector<ComponentSystem*> tempSystemVector = rSystemVector;
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
     if(!noChanges)
@@ -317,7 +317,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
 
 //! @brief Sorts a vector of component system pointers by their required simulation time
 //! @param [in out]systemVector Vector with system pointers to sort
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
 {
     size_t i, j;

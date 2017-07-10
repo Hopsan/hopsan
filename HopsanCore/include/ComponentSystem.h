@@ -34,7 +34,7 @@
 #ifndef COMPONENTSYSTEM_H
 #define COMPONENTSYSTEM_H
 
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #include <mutex>
 #include <chrono>
 #include <ctime>
@@ -46,6 +46,7 @@
 
 namespace hopsan {
     class NumHopHelper;
+    class ComponentSystemMultiThreadPrivates;
 
     class DLLIMPORTEXPORT ComponentSystem :public Component
     {
@@ -164,7 +165,7 @@ namespace hopsan {
         // Stop a running initialization or simulation
         void stopSimulation(const HString &rReason);
         void stopSimulation();
-        bool wasSimulationAborted();
+        bool wasSimulationAborted() const;
 
         // System parameters
         bool setOrAddSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnitOrQuantity="", const bool force=false);
@@ -245,14 +246,16 @@ namespace hopsan {
         // This block of variables are only used with multi-threading but they must be included always else
         // components inheriting ComponentSystem will not know that they exist resulting in overwriting memory
         //! @todo we could hide them in a private struct and put a forward declared pointer here instead
-#if __cplusplus > 199711L
-        std::mutex *mpStopMutex;
-#endif
-        std::vector<double *> mvTimePtrs;
-        std::vector< std::vector<Component*> > mSplitCVector;
-        std::vector< std::vector<Component*> > mSplitQVector;
-        std::vector< std::vector<Component*> > mSplitSignalVector;
-        std::vector< std::vector<Node*> > mSplitNodeVector;
+	//#if __cplusplus >= 201103L
+        //std::mutex *mpStopMutex;
+	//#endif
+        //std::vector<double *> mvTimePtrs;
+        //std::vector< std::vector<Component*> > mSplitCVector;
+        //std::vector< std::vector<Component*> > mSplitQVector;
+        //std::vector< std::vector<Component*> > mSplitSignalVector;
+        //std::vector< std::vector<Node*> > mSplitNodeVector;
+
+        ComponentSystemMultiThreadPrivates *mpMultiThreadPrivates;
         //------------------------------------------------------------------
 
         bool mKeepValuesAsStartValues;
@@ -282,7 +285,7 @@ namespace hopsan {
 
 
 
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #ifdef _WIN32
 //! @todo Move to utilities?
 struct HighResClock

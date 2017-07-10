@@ -34,7 +34,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 #include <atomic>
 #include <mutex>
 #endif
@@ -48,7 +48,7 @@ using namespace hopsan;
 size_t DLLIMPORTEXPORT determineActualNumberOfThreads(const size_t nDesiredThreads);
 
 
-#if __cplusplus > 199711L
+#if __cplusplus >= 201103L
 
 //! @brief Class for barrier locks in multi-threaded simulations.
 class BarrierLock

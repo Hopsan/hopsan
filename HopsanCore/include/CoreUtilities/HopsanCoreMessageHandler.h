@@ -35,9 +35,6 @@
 #define HOPSANCOREMESSAGEHANDLER_H
 
 #include <deque>
-#if __cplusplus > 199711L
-#include <mutex>
-#endif
 #include "HopsanTypes.h"
 #include "win32dll.h"
 
@@ -66,6 +63,8 @@ public:
     int mDebugLevel;
 };
 
+class HopsanCoreMessageHandlerPrivates;
+
 class DLLIMPORTEXPORT HopsanCoreMessageHandler
 {
 private:
@@ -74,9 +73,7 @@ private:
     void clear();
     size_t mMaxQueueSize, mNumInfoMessages, mNumWarningMessages, mNumErrorMessages, mNumFatalMessages, mNumDebugMessages;
 
-#if __cplusplus > 199711L
-    std::mutex *mpMutex;
-#endif
+    HopsanCoreMessageHandlerPrivates *mpPrivates;
 
 public:
     HopsanCoreMessageHandler();
