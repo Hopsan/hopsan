@@ -59,7 +59,7 @@ QStringList compileComponentLibrary(const QString &compilerPath, const QString &
     {
         returnLog.append("  "+lib);
         QString baseName = QFileInfo(lib).baseName();
-#ifdef linux
+#ifdef __linux__
         baseName.remove(0,3);
 #endif
         l.append("-L\""+QFileInfo(lib).absolutePath()+"\" -l"+baseName+" ");
@@ -83,7 +83,7 @@ QStringList compileComponentLibrary(const QString &compilerPath, const QString &
 bool compile(const QString &compilerPath, const QString &path, const QString &o, const QString &c, const QString &i, const QString &l, const QString &flags, QStringList &output)
 {
     //Create compilation script file
-#ifdef WIN32
+#ifdef _WIN32
     QFile clBatchFile;
     clBatchFile.setFileName(path + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -98,7 +98,7 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
 #endif
 
     //Call compilation script file
-#ifdef WIN32
+#ifdef _WIN32
     QProcess gccProcess;
     gccProcess.setWorkingDirectory(path);
 
@@ -129,7 +129,7 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
         output.append(gccErrorList.at(i));
         //output = output.remove(output.size()-1, 1);
     }
-#elif linux
+#elif defined __linux__
     QString gccCommand = "cd \""+path+"\" && "+compilerPath+" "+flags+" ";
     gccCommand.append(c+" -fpermissive -o "+o+".so "+i+" "+l);
     //qDebug() << "Command = " << gccCommand;
@@ -154,14 +154,14 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
 #endif
 
     QDir targetDir(path);
-#ifdef WIN32
+#ifdef _WIN32
 
     if(!targetDir.exists(o + ".dll") || !gccErrorList.isEmpty())
     {
         output.append("Compilation failed.");
         return false;
     }
-#elif linux
+#elif defined __linux__
     if(!targetDir.exists(o + ".so"))
     {
         qDebug() << targetDir.absolutePath();

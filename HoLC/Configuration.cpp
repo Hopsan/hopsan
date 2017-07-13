@@ -225,7 +225,7 @@ void Configuration::loadDefaultsFromXml()
 
         bool success = true;
         QString lib, includeDir;
-    #ifdef WIN32
+    #ifdef _WIN32
         lib = testPath+"/bin/HopsanCore.dll";
     #else
         lib = testPath+"/bin/libHopsanCore.so";
@@ -278,12 +278,12 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     //Default to installed gcc path in linux (if file exists and no other path specified)
     if(mCompilerPath.isEmpty())
     {
-#ifdef linux
+#ifdef __linux__
         if(QFile::exists("/usr/bin/gcc"))
         {
             mCompilerPath = "/usr/bin";
         }
-#elif WIN32
+#elif _WIN32
         if(QFile::exists(qApp->applicationDirPath()+"/../Dependencies/tools/mingw32/bin/g++.exe"))
         {
             mCompilerPath = qApp->applicationDirPath()+"/../Dependencies/tools/mingw32/bin";
@@ -359,9 +359,9 @@ QString Configuration::getIncludePath() const
 
 QString Configuration::getHopsanCoreLibPath() const
 {
-#ifdef linux
+#ifdef __linux__
     return mHopsanPath+"/bin/libHopsanCore.so";
-#elif WIN32
+#elif _WIN32
     return mHopsanPath+"/bin/HopsanCore.dll";
 #endif
 }

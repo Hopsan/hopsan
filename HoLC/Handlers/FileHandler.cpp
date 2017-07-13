@@ -586,13 +586,13 @@ void FileHandler::compileLibrary()
     libs.append(mpConfiguration->getHopsanCoreLibPath());
 
     QString target = mLibTarget;
-#ifdef linux
+#ifdef __linux__
     target.prepend("lib");
 #endif
 
-#ifdef linux
+#ifdef __linux__
     QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
-#elif WIN32
+#elif _WIN32
     QString compilerPath = mpConfiguration->getCompilerPath()+"/g++.exe";
 #endif
 

@@ -143,7 +143,7 @@ void OptionsWidget::setHopsanPath(const QString &path)
 {
     bool success = true;
     QString lib, includeDir;
-#ifdef WIN32
+#ifdef _WIN32
     lib = path+"/bin/HopsanCore.dll";
 #else
     lib = path+"/bin/libHopsanCore.so";
@@ -191,7 +191,7 @@ void OptionsWidget::setCompilerPath()
 void OptionsWidget::setCompilerPath(QString path)
 {
     QString filePath;
-#ifdef linux
+#ifdef __linux__
     if(path.endsWith("/gcc"))
         path.chop(4);
     filePath = path+"/gcc";
