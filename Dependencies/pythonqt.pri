@@ -36,7 +36,7 @@ have_local_pythonqt() {
   INCLUDEPATH *= $${pythonqt_home}/include
   #TODO Use prf instead
   exists($${pythonqt_lib}/libPythonQt-Qt5-Python3$${dbg_ext}.so) {
-    LIBS *= -L$${pythonqt_lib} -l$${PythonQt-Qt5-Python3}$${dbg_ext}
+    LIBS *= -L$${pythonqt_lib} -lPythonQt-Qt5-Python3$${dbg_ext}
   } else {
     LIBS *= -L$${pythonqt_lib} -l$${libname}$${dbg_ext}
   }
