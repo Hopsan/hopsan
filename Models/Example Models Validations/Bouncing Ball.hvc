@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.2">
   <validation hopsancoreversion="0.7.x_r9150" hopsanguiversion="0.7.x_r9147" time="135258" date="20161011">
-    <modelfile>../../../Hopsan_0.7.x/Models/Example Models/Bouncing Ball.hmf</modelfile>
+    <modelfile>../Example Models/Bouncing Ball.hmf</modelfile>
     <hvdfile>Bouncing Ball.hvd</hvdfile>
     <variable name="Position_Transducer#out#Value">
       <timecolumn>0</timecolumn>
