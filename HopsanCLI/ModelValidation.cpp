@@ -124,9 +124,9 @@ bool exportHVCData(const string modelpath, const string baseFilePath, const std:
                 // Write time vector
                 for (size_t i=0; i<pLogTime->size()-1; ++i)
                 {
-                    csvFile << (*pLogTime)[i] << ", ";
+                    csvFile << std::scientific << (*pLogTime)[i] << ", ";
                 }
-                csvFile << (*pLogTime)[pLogTime->size()-1] << std::endl;
+                csvFile << std::scientific << (*pLogTime)[pLogTime->size()-1] << std::endl;
                 csvTimeRow = csvRow;
                 savedTimeVectors.insert(std::pair<vector<double>*, size_t>(pLogTime, csvTimeRow));
                 ++csvRow;
@@ -151,9 +151,9 @@ bool exportHVCData(const string modelpath, const string baseFilePath, const std:
                 {
                     for (size_t r=0; r<nRows-1; ++r)
                     {
-                        csvFile << (*pLogData)[r][c] << ", ";
+                        csvFile << std::scientific << (*pLogData)[r][c] << ", ";
                     }
-                    csvFile << (*pLogData)[nRows-1][c] << std::endl;
+                    csvFile << std::scientific << (*pLogData)[nRows-1][c] << std::endl;
                     ++csvRow;
                 }
             }

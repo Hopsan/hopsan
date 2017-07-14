@@ -361,7 +361,7 @@ void PlotTab::exportToCsv()
 
 //! @brief Exports plot tab to comma-separated value file with specified filename
 //! @param fileName File name
-void PlotTab::exportToCsv(QString fileName)
+void PlotTab::exportToCsv(const QString fileName, const QTextStream::RealNumberNotation notation, const int precision)
 {
     QFile file;
     file.setFileName(fileName);   //Create a QFile object
@@ -372,6 +372,8 @@ void PlotTab::exportToCsv(QString fileName)
     }
 
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+    fileStream.setRealNumberNotation(notation);
+    fileStream.setRealNumberPrecision(precision);
 
     //! @todo this function should use export functions in the log data handler instead
     // Cycle plot curves
@@ -478,7 +480,7 @@ void PlotTab::exportToHvc(QString fileName)
     // Save the csv data
     QString hvdFileName=hvcFileInfo.baseName()+".hvd";
     //! @todo this will only support one timevector
-    this->exportToCsv(hvcFileInfo.absolutePath()+"/"+hvdFileName);
+    this->exportToCsv(hvcFileInfo.absolutePath()+"/"+hvdFileName, QTextStream::ScientificNotation);
 
     qDebug() << hvcFileInfo.absoluteFilePath();
     qDebug() << hvcFileInfo.absolutePath()+"/"+hvdFileName;

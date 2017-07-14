@@ -182,7 +182,7 @@ public:
     void update();
 
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
-    void exportToCsv(QString fileName);
+    void exportToCsv(const QString fileName, const QTextStream::RealNumberNotation notation=QTextStream::SmartNotation, const int precision=6);
     void exportAsImage(const QString fileName, const QString fileType, const QString width, const QString height, const QString dim, const QString dpi);
 
     void showHelpPopupMessage(const QString &rMessage);
