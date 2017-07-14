@@ -713,8 +713,8 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
 
 int hopsan::getEpochVersion(const HString& version)
 {
-  bool ok=false;
-  int epoch;
+  bool ok = false;
+  int epoch = -1;
   HVector<HString> parts = version.split('.');
   if (!parts.empty())
   {
@@ -725,8 +725,8 @@ int hopsan::getEpochVersion(const HString& version)
 
 int hopsan::getMajorVersion(const HString& version)
 {
-  bool ok=false;
-  int major;
+  bool ok = false;
+  int major = -1;
   HVector<HString> parts = version.split('.');
   if (parts.size() > 1)
   {
@@ -737,8 +737,8 @@ int hopsan::getMajorVersion(const HString& version)
 
 int hopsan::getMinorVersion(const HString& version)
 {
-  bool ok=false;
-  int minor;
+  bool ok = false;
+  int minor = -1;
   HVector<HString> parts = version.split('.');
   if (parts.size() > 2)
   {
