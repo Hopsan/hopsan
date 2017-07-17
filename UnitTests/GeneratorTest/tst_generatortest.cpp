@@ -38,7 +38,7 @@
 #define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTLIBFILE TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(SHAREDLIB_SUFFIX)
 const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
 #else
 const std::string defaultLibraryFilePath = "";
@@ -67,11 +67,11 @@ void removeDir(QString path)
 
 QString getLibFile(const ComponentLibrary& cl) {
     QFileInfo libXmlFi(cl.mLoadFilePath);
-    QString libfile = libXmlFi.absolutePath()+"/"+(TO_STR(DLL_PREFIX)+cl.mSharedLibraryName);
+    QString libfile = libXmlFi.absolutePath()+"/"+(TO_STR(SHAREDLIB_PREFIX)+cl.mSharedLibraryName);
 #ifdef DEBUGCOMPILING
     libfile.append(cl.mSharedLibraryDebugExtension);
 #endif
-    libfile.append(TO_STR(DLL_EXT));
+    libfile.append("." TO_STR(SHAREDLIB_SUFFIX));
     return libfile;
 }
 
@@ -116,7 +116,16 @@ public:
         messages.clear();
     }
 
-private:
+    void printCoreMessages()
+    {
+        while (mHopsanCore.getCoreMessageHandler()->getNumWaitingMessages() > 0) {
+            HString message, type, tag;
+            mHopsanCore.getCoreMessageHandler()->getMessage(message, type, tag);
+            std::cout << type.c_str() << ": " << message.c_str() << std::endl;
+        }
+    }
+
+ private:
     QString qcwd;
     std::string cwd;
     std::string hopsanRoot;
@@ -175,6 +184,9 @@ private slots:
         QString libfile = getLibFile(cl);
         //! @todo The core should be able to load xml
         bool loadOK = mHopsanCore.loadExternalComponentLib(qPrintable(libfile));
+        if (!loadOK) {
+            printCoreMessages();
+        }
         QVERIFY2(loadOK, qPrintable(QString("Could not load component library: %1").arg(libraryPath)));
     }
 
@@ -497,7 +509,7 @@ private slots:
 //            printMessages();
 //        }
 
-//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(TO_STR(DLL_EXT))).c_str()),
+//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(TO_STR(SHAREDLIB_SUFFIX))).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");
         QWARN("Modelica generator test is disabled");
     }

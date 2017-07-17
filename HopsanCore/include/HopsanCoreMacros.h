@@ -25,7 +25,6 @@
 //!
 //! @file   HopsanCoreMacros.h
 //! @author <peter.nordin@liu.se>
-//! @date   2013-11-20
 //!
 //! @brief Contains HopsanCore global macro definitions
 //!
@@ -42,6 +41,17 @@
  #define TO_STR_2(s) #s
  //! @brief This macro is used to turn a defined value into a string
  #define TO_STR(s) TO_STR_2(s)
+#endif
+
+#if defined _WIN32
+#define SHAREDLIB_PREFIX
+#define SHAREDLIB_SUFFIX dll
+#elif defined __APPLE__
+#define SHAREDLIB_PREFIX lib
+#define SHAREDLIB_SUFFIX dylib
+#else
+#define SHAREDLIB_PREFIX lib
+#define SHAREDLIB_SUFFIX so
 #endif
 
 #endif // HOPSANCOREMACROS_H

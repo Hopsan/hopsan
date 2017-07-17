@@ -368,7 +368,7 @@ void loadComponentLibraries(const std::string &rDir, bool doRecurse)
     FileAccess fa;
     if (fa.enterDir(rDir))
     {
-        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(DLL_EXT), doRecurse);
+        vector<string> soFiles = fa.findFilesWithSuffix(TO_STR(SHAREDLIB_SUFFIX), doRecurse);
         for (string f : soFiles)
         {
             cout << PRINTWORKER << nowDateTime() << " Loading library file: " << f << endl;

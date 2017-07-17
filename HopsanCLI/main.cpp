@@ -70,7 +70,7 @@
 #endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-    #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+constexpr auto default_library = "../componentLibraries/defaultLibrary/" TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) "." TO_STR(SHAREDLIB_SUFFIX);
 #endif
 
 using namespace std;
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         // Load default Hopsan component lib
-        string libpath = getCurrentExecPath()+"/" DEFAULTCOMPONENTLIB;
+        string libpath = getCurrentExecPath()+"/"+default_library;
         gHopsanCore.loadExternalComponentLib(libpath.c_str());
 #endif
         // Print initial core messages

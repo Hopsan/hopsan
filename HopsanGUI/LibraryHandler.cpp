@@ -321,7 +321,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
     }
     else
     {
-        gpMessageHandler->addErrorMessage("Did not find any libary xml files, fall-back " TO_STR(DLL_EXT) " loading is no longer possible");
+        gpMessageHandler->addErrorMessage("Did not find any libary xml files, fall-back " TO_STR(SHAREDLIB_SUFFIX) " loading is no longer possible");
     }
 
     if (!loadedSomething)
@@ -1094,7 +1094,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     }
     else if (!pLibrary->libFilePath.isEmpty())
     {
-        gpMessageHandler->addErrorMessage("Fall-back " TO_STR(DLL_EXT) " loading is no longer possible, your library must have a library xml file");
+        gpMessageHandler->addErrorMessage("Fall-back " TO_STR(SHAREDLIB_SUFFIX) " loading is no longer possible, your library must have a library xml file");
         return false;
     }
     QFileInfo libraryDLLFileInfo(pLibrary->libFilePath);

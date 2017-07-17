@@ -10,20 +10,6 @@ CONFIG(debug, debug|release) {
 #Add a defined value with the debug extension (that can be used in the code)
 DEFINES *= DEBUG_EXT=$${DEBUG_EXT}
 
-#Determine the dynamic link library file extension, typically .dll for Windows, .so for UNIX and .dylib for OSX
-win32:DLL_EXT = .dll
-unix:DLL_EXT = .so
-macx:DLL_EXT = .dylib
-
-#Add a defined value with the dll extension (that can be used in the code)
-DEFINES *= DLL_EXT=$${DLL_EXT}
-
-#Define the lib prefix for the different platforms, (not you can NOT change the prefix here)
-unix:LIB_PREFIX = lib
-win32:LIB_PREFIX =
-macx:LIB_PREFIX = lib
-DEFINES *= DLL_PREFIX=$${LIB_PREFIX}
-
 # Set optimization flags
 # Og = optimization that does not interfere with debugging
 # O3 = highest optimization level for speed

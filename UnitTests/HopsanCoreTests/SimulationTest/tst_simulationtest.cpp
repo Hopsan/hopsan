@@ -32,7 +32,7 @@
 #define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTLIBFILE TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) "." TO_STR(SHAREDLIB_SUFFIX)
 const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
 #else
 const std::string defaultLibraryFilePath = "";
