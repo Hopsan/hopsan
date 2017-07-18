@@ -50,42 +50,5 @@ defineReplace(selectPath){
     return($${PATH})
 }
 
-#This function generates the command line code necessary to copy a certain file or files from src directory to dst directory
-defineReplace(generateCopyDllCommand){
-    fileNames = $$1
-    srcDir = $$2
-    dstDir = $$3
-
-    files =
-    qmake_post_link =
-
-    #message(fileNames $$fileNames)
-    #message(srcDir $$srcDir)
-    #message(dstDir $$dstDir)
-
-    for(file, fileNames){
-        files += $${srcDir}/$${file}
-    }
-    #message(files $$files)
-
-    #On win32 we need to replace all slash with backslash (escaped backslashes)
-    win32 {
-        for(file, files){
-            qmake_post_link += $$quote(xcopy /Y \"$$replace(file,/,\\)\" \"$$replace(dstDir,/,\\)\"$$escape_expand(\\n\\t))
-        }
-    }
-
-    #On unix we dont need to replace slashes
-    unix {
-        for(file, files){
-            !macx:qmake_post_link += $$quote(cp -df $${file} $${dstDir}$$escape_expand(\\n\\t))
-             macx:qmake_post_link += $$quote(cp -fp $${file} $${dstDir}$$escape_expand(\\n\\t))
-        }
-    }
-
-    #message(qmake_post_link $${qmake_post_link})
-    return($$qmake_post_link)
-}
-
 #Make compile output clean
 CONFIG += silent warn_on
