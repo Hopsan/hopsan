@@ -161,5 +161,6 @@
     </qresource>
     <qresource prefix="/license">
         <file alias="licenseNoticeGPLv3">../licenseNoticeGPLv3</file>
+        <file alias="licenseNoticeALv2">../licenseNoticeALv2</file>
     </qresource>
 </RCC>

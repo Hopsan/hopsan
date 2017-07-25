@@ -47,39 +47,58 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
 
     QVBoxLayout *pLayout = new QVBoxLayout(this);
-    QLabel *pGUIHeader = new QLabel(this);
-    QLabel *pGplV3short = new QLabel(this);
-    QLabel *pCoreHeader = new QLabel(this);
+    QLabel *pGUIText = new QLabel(this);
+    QLabel *pGPLv3Header = new QLabel(this);
+    QLabel *pGPLv3Notice = new QLabel(this);
+    QLabel *pALv2Notice = new QLabel(this);
+    QLabel *pALv2Header = new QLabel(this);
     QLabel *pCoreText = new QLabel(this);
     QLabel *pDepHeader = new QLabel(this);
-    QLabel *pDependencies = new QLabel(this);
+    QLabel *pDepText = new QLabel(this);
 
-    QString gplv3short;
-    QFile gplv3short_file(":/license/licenseNoticeGPLv3");
-    if (gplv3short_file.exists()) {
-        gplv3short_file.open(QIODevice::ReadOnly);
-        QTextStream ts(&gplv3short_file);
-        // Read line by line and remove the comment lines
-        while (!ts.atEnd()) {
-            auto line = ts.readLine();
-            if (!(line.startsWith("/*") || line.endsWith("*/"))) {
-                gplv3short.append("        "+line+"\n");
-            }
-        }
-        gplv3short_file.close();
+    QString gplv3_notice;
+    QFile gplv3_notice_file(":/license/licenseNoticeGPLv3");
+    if (gplv3_notice_file.exists()) {
+        gplv3_notice_file.open(QIODevice::ReadOnly);
+        QTextStream ts(&gplv3_notice_file);
+        gplv3_notice = ts.readAll();
+        gplv3_notice_file.close();
     }
 
-    QFont bigFont = pGUIHeader->font();
+    QString alv2_notice;
+    QFile al2_notice_file(":/license/licenseNoticeALv2");
+    if (al2_notice_file.exists()) {
+        al2_notice_file.open(QIODevice::ReadOnly);
+        QTextStream ts(&al2_notice_file);
+        alv2_notice = ts.readAll();
+        al2_notice_file.close();
+    }
+
+    QFont bigFont = pGUIText->font();
+    QFont mediumFont = pGUIText->font();
+    mediumFont.setPointSizeF(mediumFont.pointSizeF()*1.2);
     bigFont.setPointSizeF(bigFont.pointSizeF()*2.0);
 
-    pGUIHeader->setText("This application, HopsanGUI, is released under the\nGPL version 3 license."); ;
-    pGUIHeader->setFont(bigFont);
-    //pLicenseText->setAlignment(Qt::AlignHCenter);
-    pGplV3short->setText(gplv3short);
+    pGUIText->setText("This application, HopsanGUI, is released under the GPL version 3 license.");
+    pCoreText->setText("The HopsanCore simulation library, default component library and utility function libraries are released under the\nApache License version 2.0.");
+    pGUIText->setFont(mediumFont);
+    pCoreText->setFont(mediumFont);
 
-    pCoreHeader->setText("The simulation library, HopsanCore, is released\nunder the Apache License version 2.0.");
-    pCoreHeader->setFont(bigFont);
-    pCoreText->setText("Utility libraries and the default component library are also released under this license.\n");
+    QWidget *pNoticeBox = new QWidget(this);
+    QGridLayout *pNoticeLayout = new QGridLayout(pNoticeBox);
+    pNoticeLayout->setColumnMinimumWidth(1,30);
+
+    pGPLv3Header->setText("GPL version 3");
+    pGPLv3Header->setFont(bigFont);
+    pGPLv3Notice->setText(gplv3_notice);
+    pNoticeLayout->addWidget(pGPLv3Header,0,0,1,1);
+    pNoticeLayout->addWidget(pGPLv3Notice,1,0,1,1);
+
+    pALv2Header->setText("Apache License version 2.0");
+    pALv2Header->setFont(bigFont);
+    pALv2Notice->setText(alv2_notice);
+    pNoticeLayout->addWidget(pALv2Header,0,2,1,1);
+    pNoticeLayout->addWidget(pALv2Notice,1,2,1,1);
 
     pDepHeader->setText("Dependencies:");
     pDepHeader->setFont(bigFont);
@@ -87,14 +106,14 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     deps.append("Hopsan uses third-party dependencies released under various licenses such as:\n");
     deps.append("LGPL v2.1, LGPL v3.0, BSD, MIT and Apache License 2.0\n\n");
     deps.append("For details on third-party dependencies and their respective licenses, see the documentation!");
-    pDependencies->setText(deps);
+    pDepText->setText(deps);
 
-    pLayout->addWidget(pGUIHeader, 1);
-    pLayout->addWidget(pGplV3short, 1);
-    pLayout->addWidget(pCoreHeader, 1);
+    pLayout->addWidget(pGUIText, 1);
     pLayout->addWidget(pCoreText, 1);
+    pLayout->addWidget(pNoticeBox);
+
     pLayout->addWidget(pDepHeader, 1);
-    pLayout->addWidget(pDependencies, 1);
+    pLayout->addWidget(pDepText, 1);
     pLayout->addWidget(new QLabel(this), 4);
 
     QPushButton *pDocsButton = new QPushButton("Show license documentation",  this);
