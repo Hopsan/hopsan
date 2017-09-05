@@ -36,14 +36,16 @@
 #include <QGridLayout>
 #include <QDebug>
 #include <QStringList>
-#include <QWebFrame>
 #include <QtXml>
-#include <QWebPage>
 #include <QNetworkReply>
 #include <QProgressBar>
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopServices>
+#ifdef USEWEBKIT
+#include <QWebPage>
+#include <QWebFrame>
+#endif
 
 // Hopsan includes
 #include "Widgets/WelcomeWidget.h"
@@ -561,6 +563,8 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
     {
         qDebug() << pReply->url();
         QByteArray all = pReply->readAll();
+//! @todo Auto update info should not come from parsing a html page, a text or xml or such file would be better, then webview is not needed here
+#ifdef USEWEBKIT
         QWebPage page;
         page.mainFrame()->setHtml(QString(all));
         QMultiMap<QString,QString> metadata = page.mainFrame()->metaData();
@@ -582,6 +586,7 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
             mAUFileLink = metadata.value("hopsanupdatelink");
 #endif
         }
+#endif
     }
 }
 
