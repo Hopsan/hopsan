@@ -12,3 +12,4 @@ mkdir %installdir%
 xcopy %codedir%\dist\* %installdir% /Y
 
 echo "setupKatex.bat done"
+pause
