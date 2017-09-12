@@ -29,9 +29,9 @@ if not "%hopsan_arch%"=="x86" (
 REM Setup compiler and Qt paths
 REM These paths require the official Qt version from Qt.io (for 32-bit) and the custom build Qt library for Hopsan 64-bit
 set mingw_path32=C:\Qt\Tools\mingw492_32\bin
-set mingw_path64=C:\Qt\x86_64-4.9.3-release-posix-seh-rt_v4-rev1\mingw64\bin
+set mingw_path64=C:\hopsan-dev\x86_64-4.9.4-release-posix-seh-rt_v5-rev0\mingw64\bin
 set qmake_path32=C:\Qt\5.6.3\mingw49_32\bin
-set qmake_path64=C:\Qt\qt-5.4.2-x64-mingw493r4-seh-rev1\bin
+set qmake_path64=C:\hopsan-dev\qt-5.6.3-x64-mingw494-posix-seh-rt_v5-rev0\bin
 
 REM Tool paths
 set msys_path=C:\msys64\usr\bin
