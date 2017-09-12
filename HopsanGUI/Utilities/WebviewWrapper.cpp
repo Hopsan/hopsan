@@ -17,6 +17,7 @@ public:
 #ifdef USEWEBKIT
     QWebView* mpWebView = nullptr;
 #else
+    QLabel* mpNotice = nullptr;
     QLabel* mpText = nullptr;
 #endif
 
@@ -44,10 +45,14 @@ WebViewWrapper::WebViewWrapper(const bool useToolbar, QWidget *parent) : QWidget
     mpPrivates->mpLayout->setStretch(1,1);
 #else
     Q_UNUSED(useToolbar)
+    mpPrivates->mpNotice = new QLabel(this);
     mpPrivates->mpText = new QLabel(this);
     mpPrivates->mpText->setOpenExternalLinks(true);
+    mpPrivates->mpLayout->addWidget(mpPrivates->mpNotice);
     mpPrivates->mpLayout->addWidget(mpPrivates->mpText);
+    mpPrivates->mpLayout->addStretch(1);
 #endif
+
 }
 
 WebViewWrapper::~WebViewWrapper()
@@ -62,6 +67,8 @@ void WebViewWrapper::loadHtmlFile(const QUrl &url)
 #ifdef USEWEBKIT
     mpPrivates->mpWebView->load(url);
 #else
+    mpPrivates->mpNotice->setText("Sorry, no WebKit or WebEngine support in this release, open in external browser!");
+    mpPrivates->mpNotice->show(); // If previously hidden by showText
     mpPrivates->mpText->setText(QString("<a href=\"%1\">%2</a>").arg(url.toString()).arg(url.toString()));
 #endif
 
@@ -72,6 +79,7 @@ void WebViewWrapper::showText(const QString &text)
 #ifdef USEWEBKIT
     mpPrivates->mpWebView->setHtml(QString("<p>%1</p>").arg(text));
 #else
+    mpPrivates->mpNotice->hide();
     mpPrivates->mpText->setText(text);
 #endif
 }
