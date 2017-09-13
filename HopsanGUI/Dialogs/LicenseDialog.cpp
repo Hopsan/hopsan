@@ -44,7 +44,6 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     resize(640,480);
     setWindowTitle(tr("Hopsan License"));
     setAttribute(Qt::WA_DeleteOnClose, true);
-    setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
 
     QVBoxLayout *pLayout = new QVBoxLayout(this);
     QLabel *pGUIText = new QLabel(this);
