@@ -44,7 +44,6 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     resize(640,480);
     setWindowTitle(tr("Hopsan License"));
     setAttribute(Qt::WA_DeleteOnClose, true);
-    setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
 
     QVBoxLayout *pLayout = new QVBoxLayout(this);
     QLabel *pGUIText = new QLabel(this);
@@ -123,7 +122,15 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     QCheckBox *pAlwaysShow = new QCheckBox("Always show on startup", this);
     pAlwaysShow->setChecked(gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP));
     connect(pAlwaysShow, SIGNAL(clicked(bool)), this, SLOT(toggleAlwaysShow(bool)));
-    pLayout->addWidget(pAlwaysShow, 1);
+
+    QPushButton *pCloseButton = new QPushButton("Close", this);
+    pCloseButton->setDefault(true);
+    connect(pCloseButton, SIGNAL(clicked(bool)), this, SLOT(close()));
+
+    QHBoxLayout *pBottomHLayout = new QHBoxLayout();
+    pBottomHLayout->addWidget(pAlwaysShow, 2);
+    pBottomHLayout->addWidget(pCloseButton, 1);
+    pLayout->addLayout(pBottomHLayout, 1);
 
     setLayout(pLayout);
 }
