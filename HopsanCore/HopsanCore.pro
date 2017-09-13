@@ -126,7 +126,7 @@ SOURCES += \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
     src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc \
-    src/ComponentUtilities/EquationSystemSolver.cpp \
+    src/ComponentUtilities/EquationSystemSolver.cc \
     src/HopsanTypes.cc \
     src/ComponentUtilities/HopsanPowerUser.cc \
     src/ComponentUtilities/LookupTable.cc \

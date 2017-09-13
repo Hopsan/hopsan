@@ -50,7 +50,7 @@ win32 {
 # -------------------------------------------------
 
 SOURCES += \
-    src/OpsWorker.cc \
+    src/OpsWorker.cpp \
     src/OpsWorkerSimplex.cpp \
     src/OpsWorkerComplexRF.cpp \
     src/OpsWorkerNelderMead.cpp \
