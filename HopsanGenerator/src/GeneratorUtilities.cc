@@ -982,27 +982,15 @@ bool copyFile(const QString &source, const QString &target, QString &rErrorMessa
     return true;
 }
 
-void getHopsanCoreDependecyFiles(const QString &hopsanRoot, QStringList &rSrcFiles, QStringList &rIncludeFiles)
-{
-    rSrcFiles.clear();
-    rIncludeFiles.clear();
-
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/rapidxml", "hpp", rIncludeFiles);
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/include", "h", rIncludeFiles);
-    rIncludeFiles << hopsanRoot+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
-                     hopsanRoot+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
-
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/src", "cc", rSrcFiles);
-    rSrcFiles << hopsanRoot+"HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
-}
-
 QStringList listHopsanCoreSourceFiles(const QString rootPath)
 {
     QStringList allFiles;
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "cc", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "cpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "cc", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "cpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/src", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/src", "cpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/src", "cc", allFiles);
+    allFiles << rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 
     QDir rootDir(rootPath);
 
@@ -1018,10 +1006,14 @@ QStringList listHopsanCoreSourceFiles(const QString rootPath)
 QStringList listHopsanCoreIncludeFiles(const QString rootPath)
 {
     QStringList allFiles;
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "h", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/", "hpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "h", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies/", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/include", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/include", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/rapidxml", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/include", "h", allFiles);
+    allFiles << rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
+                rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
 
     QDir rootDir(rootPath);
 

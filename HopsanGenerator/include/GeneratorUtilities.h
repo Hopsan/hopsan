@@ -186,7 +186,6 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
 
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &rFiles);
-void getHopsanCoreDependecyFiles(const QString &hopsanRoot, QStringList &rSrcFiles, QStringList &rIncludeFiles);
 QStringList listHopsanCoreSourceFiles(const QString rootPath);
 QStringList listDefaultLibrarySourceFiles(const QString rootPath);
 QStringList listHopsanCoreIncludeFiles(const QString rootPath);

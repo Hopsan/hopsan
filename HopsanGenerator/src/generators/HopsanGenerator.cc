@@ -1083,34 +1083,17 @@ bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &
 
 
 //! @todo maybe this function should not be among general utils
-//! @todo should not copy .svn folders
+//! @todo should not copy .git folders
 bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(QString tgtPath) const
 {
-    printMessage("Copying HopsanCore source and include files...");
-
-    if(!tgtPath.endsWith("/") && !tgtPath.endsWith("\\"))
-        tgtPath.append("/");
+    printMessage("Copying HopsanCore source, header and dependencies...");
 
     QDir saveDir(tgtPath);
-    saveDir.mkpath(".");
-
-    if (!copyDir(mHopsanRootPath+"/HopsanCore", tgtPath+"/HopsanCore"))
+    if (saveDir.mkpath(".") && copyDir(mHopsanRootPath+"/HopsanCore", tgtPath+"/HopsanCore"))
     {
-        return false;
+        return true;
     }
-
-    printMessage("Copying HopsanCore dependency files...");
-    QDir root(mHopsanRootPath);
-    QStringList src, include;
-    getHopsanCoreDependecyFiles(mHopsanRootPath, src, include);
-    Q_FOREACH(const QString &file, src+include)
-    {
-        if(!copyFile(file, tgtPath+root.relativeFilePath(file)))
-        {
-            return false;
-        }
-    }
-    return true;
+    return false;
 }
 
 
