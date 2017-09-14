@@ -1480,7 +1480,10 @@ void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAc
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToFmu(savePath, version, arch, this);
+    if(!pCoreAccess->generateToFmu(savePath, version, arch, this))
+    {
+        gpMessageHandler->addErrorMessage("Failed to export FMU for some reason.");
+    }
     delete(pCoreAccess);
 }
 

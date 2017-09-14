@@ -1183,10 +1183,14 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     //Copy HopsanCore files to export directory
     //------------------------------------------------------------------//
 
-    if(!this->copyHopsanCoreSourceFilesToDir(savePath))
+    if(!this->copyHopsanCoreSourceFilesToDir(savePath)) {
+        printErrorMessage("Failed to copy Hopsan source code files.");
         return;
-    if(!this->copyDefaultComponentCodeToDir(savePath))
+    }
+    if(!this->copyDefaultComponentCodeToDir(savePath)) {
+        printErrorMessage("Failed to copy default component library files.");
         return;
+    }
 
     //------------------------------------------------------------------//
     //Generate identifier string
