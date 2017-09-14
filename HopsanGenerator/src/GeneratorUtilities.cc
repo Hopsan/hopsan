@@ -606,8 +606,8 @@ QStringList getHopsanCoreIncludePaths()
     includePaths << "HopsanCore/include" <<
                     "componentLibraries/defaultLibrary";
     includePaths << "HopsanCore/dependencies/rapidxml" <<
-                    "HopsanCore/dependencies/IndexingCSVParser/" <<
-                    "HopsanCore/dependencies/libNumHop/libNumHop";
+                    "HopsanCore/dependencies/IndexingCSVParser" <<
+                    "HopsanCore/dependencies/libNumHop/include";
     return includePaths;
 }
 
@@ -988,11 +988,11 @@ void getHopsanCoreDependecyFiles(const QString &hopsanRoot, QStringList &rSrcFil
     rIncludeFiles.clear();
 
     findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/rapidxml", "hpp", rIncludeFiles);
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/libNumHop", "h", rIncludeFiles);
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/include", "h", rIncludeFiles);
     rIncludeFiles << hopsanRoot+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
                      hopsanRoot+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
 
-    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/libNumHop", "cc", rSrcFiles);
+    findAllFilesInFolderAndSubFolders(hopsanRoot+"/HopsanCore/dependencies/libNumHop/src", "cc", rSrcFiles);
     rSrcFiles << hopsanRoot+"HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 }
 

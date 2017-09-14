@@ -32,11 +32,11 @@ INCLUDEPATH *= $${PWD}/dependencies/IndexingCSVParser
 
 #--------------------------------------------------------
 # Set numHop paths, (compile in)
-INCLUDEPATH *= $${PWD}/dependencies/libNumHop/libNumHop
-SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/Expression.cc
-SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/Helpfunctions.cc
-SOURCES += $${PWD}/dependencies/libNumHop/libNumHop/VariableStorage.cc
-HEADERS += $${PWD}/dependencies/libNumHop/libNumHop/numhop.h
+INCLUDEPATH *= $${PWD}/dependencies/libNumHop/include
+SOURCES += $${PWD}/dependencies/libNumHop/src/Expression.cc
+SOURCES += $${PWD}/dependencies/libNumHop/src/Helpfunctions.cc
+SOURCES += $${PWD}/dependencies/libNumHop/src/VariableStorage.cc
+HEADERS += $${PWD}/dependencies/libNumHop/include/numhop.h
 #--------------------------------------------------------
 
 # -------------------------------------------------
