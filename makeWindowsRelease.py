@@ -195,6 +195,20 @@ def replace_line_with_pattern(filepath, re_pattern, replacement):
     with open(filepath, 'w+') as f:
         f.write(data)
 
+def prepend_append_line_with_pattern(filepath, re_pattern, prepend_text, append_text):
+    data = str()
+    with open(filepath, 'r+') as f:
+        for line in f:
+            if re.search(re_pattern, line) is not None:
+                new_line = line;    
+                new_line = prepend_text + new_line
+                new_line = new_line[:-1] + append_text
+                data += new_line + '\n'
+            else:
+                data += line
+    with open(filepath, 'w+') as f:
+        f.write(data)
+
 def is_git_repo(dir):
     if os.path.isdir(dir):
         dotgitfile = os.path.join(dir, '.git')
@@ -610,7 +624,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     #callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
     replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\')
     #callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
-    replace_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '')
+    prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     #callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
     replace_pattern('HopsanNG_remote.pro', 'componentLibraries', '')
 
