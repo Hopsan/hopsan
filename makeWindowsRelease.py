@@ -95,11 +95,6 @@ def setColor(color, handle=std_out_handle):
 setColor(bcolors.WHITE)
 
 
-def runCmd(cmd):
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    return process.communicate()
-
-
 def printSuccess(text):
     setColor(bcolors.GREEN)
     print "Success: " + text
@@ -516,10 +511,16 @@ def verifyPaths():
 def askForVersion():
     dodevrelease = False
     version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')
-    print runCmd("getGitInfo.bat date.time .")[0]
-    revnum = raw_input('Enter the revision number shown above: ')
-    if version == "": 
+    if version == '': 
         dodevrelease = True
+
+    # Get date and time stamp of last commit used instead of "revision number"
+    revnum = '19700101.0000'
+    p = subprocess.Popen(['getGitInfo.bat', 'date.time', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode == 0:
+        revnum = stdout[:-1]
+
     return version, revnum, dodevrelease
 
 
@@ -976,14 +977,11 @@ if success:
     print "Include compiler: " + str(gIncludeCompiler)
     print "Pause on failed validation: " + str(pauseOnFailValidation)
     print "---------------------------------------"
-    if not askYesNoQuestion("Is this OK? (y/n): "):
+    if askYesNoQuestion("Is this OK? (y/n): "):
+        success = renameBinFolder()
+    else:
         printError("Aborted by user.")
         success = False
-        cleanUp()
-
-    success = renameBinFolder()
-    if not success:
-        cleanUp()
 
 if gDo64BitRelease:
     gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win64'
@@ -992,6 +990,9 @@ else:
     mingwBins = mingwBins32
     gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win32'
 print("Using TempDir: "+gTemporaryBuildDir)
+
+if not success:
+    cleanUp()
         
 if success:
     prepareSourceCode(gBaseVersion, gReleaseRevision, gDoDevRelease)
