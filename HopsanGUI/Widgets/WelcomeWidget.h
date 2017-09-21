@@ -112,7 +112,6 @@ public slots:
     void autoHide();
 
 private slots:
-    void debugSlot();
     void updateHoverEffects();
     void openRecentModel();
     void openExampleModel();
