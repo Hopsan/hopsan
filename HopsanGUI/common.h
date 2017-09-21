@@ -94,6 +94,6 @@ enum HiddenVisibleEnumT {Hidden, Visible};
 enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
 
 extern const char* getHopsanGUIBuildTime();
-extern bool isHospanGUIVersionHigherThan(const char*);
+extern bool isVersionHigherThanCurrentHospanGUI(const char*);
 
 #endif // COMMON_H

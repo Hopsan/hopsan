@@ -241,7 +241,7 @@ void splitFullName(const HString &rFullName, HString &rCompName, HString &rPortN
 
 void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const HString &rHmfCoreVersion)
 {
-    if (isVersionGreaterThan("0.6.0", rHmfCoreVersion) || rHmfCoreVersion.containes("0.6.x_r") )
+    if (isVersionAGreaterThanB("0.6.0", rHmfCoreVersion) || rHmfCoreVersion.containes("0.6.x_r") )
     {
         if (pParameterNode)
         {
@@ -661,7 +661,7 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
             // Check version
             HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
             pHopsanEssentials->getCoreMessageHandler()->addDebugMessage("Model saved with core version: " + savedwithcoreversion);
-            if (isVersionGreaterThan("0.6.0", savedwithcoreversion) || (isVersionGreaterThan(savedwithcoreversion, "0.6.x") && isVersionGreaterThan("0.6.x_r5500", savedwithcoreversion)))
+            if (isVersionAGreaterThanB("0.6.0", savedwithcoreversion) || (isVersionAGreaterThanB(savedwithcoreversion, "0.6.x") && isVersionAGreaterThanB("0.6.x_r5500", savedwithcoreversion)))
             {
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
                 return 0;
@@ -747,18 +747,26 @@ int hopsan::getMinorVersion(const HString& version)
   return ok ? minor : -1;  
 }
 
-bool hopsan::isVersionGreaterThan(const HString& version1, const HString& version2)
+//! @brief Check if one Hopsan version number is larger then an other
+//! @param [in] versionA The version to check
+//! @param [in] versionB The version to compare to
+//! @returns true if versionA > versionB
+bool hopsan::isVersionAGreaterThanB(const HString& versionA, const HString& versionB)
 {
-  return compareHopsanVersions(version1, version2) > 0;
+  return compareHopsanVersions(versionA, versionB) > 0;
 }
 
-int hopsan::compareHopsanVersions(const HString& version1, const HString& version2)
+//! @brief Compare two Hopsan version numbers
+//! @param [in] versionA The first version number to check
+//! @param [in] versionB The second version number to check
+//! @returns 1 if versionA > versionB, 0 if versionA == versionB, -1 if versionA < versionB
+int hopsan::compareHopsanVersions(const HString& versionA, const HString& versionB)
 {
   HVector<HString> parts1, parts2;
   HString branch1, branch2;
   //! @todo Maybe ~branchname should not really be part of the version number but only the release name
-  parts1 = version1.split('~');
-  parts2 = version2.split('~');
+  parts1 = versionA.split('~');
+  parts2 = versionB.split('~');
   if (parts1.size() > 1)
   {
     branch1 = parts1[1];
@@ -788,7 +796,7 @@ int hopsan::compareHopsanVersions(const HString& version1, const HString& versio
     // Handle comparison of the old version number format
     if (i==0 && v1==0)
     {
-      oldversionformat::isVersionGreaterThan(version1, version2);
+      oldversionformat::isVersionGreaterThan(versionA, versionB);
     }
     
 
