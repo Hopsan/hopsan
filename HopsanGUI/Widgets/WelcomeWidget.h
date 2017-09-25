@@ -103,6 +103,7 @@ private:
     QPushButton *mpNewVersionButton;
     QNetworkReply *mpAUDownloadStatus;
     QProgressDialog *mpAUDownloadDialog;
+    QAction *mpAutoUpdateAction=nullptr;
     QString mAUFileLink;
 
 signals:

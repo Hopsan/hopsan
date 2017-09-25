@@ -373,9 +373,9 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
     QMenu *pNewVersionMenu = new QMenu(this);
 #ifdef _WIN32
-    QAction *pAutoUpdateAction = new QAction("Launch Auto Updater", this);
-    pNewVersionMenu->addAction(pAutoUpdateAction);
-    connect(pAutoUpdateAction, SIGNAL(triggered()), this, SLOT(launchAutoUpdate()));
+    mpAutoUpdateAction = new QAction("Launch Auto Updater", this);
+    pNewVersionMenu->addAction(mpAutoUpdateAction);
+    connect(mpAutoUpdateAction, SIGNAL(triggered()), this, SLOT(launchAutoUpdate()));
 #endif
     QAction *pGoToDownloadPageAction = new QAction("Open Download Page In Browser", this);
     pNewVersionMenu->addAction(pGoToDownloadPageAction);
@@ -690,6 +690,12 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
             else
             {
                 mAUFileLink = newest_release.url_installer;
+            }
+
+            // Disable auto update if no file given
+            if (mpAutoUpdateAction && mAUFileLink.isEmpty())
+            {
+                mpAutoUpdateAction->setDisabled(true);
             }
         }
     }
