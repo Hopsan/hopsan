@@ -41,10 +41,9 @@
 
 // Web link definitions
 #define HOPSANLINK "http://tiny.cc/hopsan"
-#define VERSIONLINK "http://tiny.cc/hopsannews"
+#define VERSIONLINK "http://tiny.cc/hopsanreleases"
 #define NEWSLINK "http://tiny.cc/hopsannewsfeed"
 #define DOWNLOADLINK "http://tiny.cc/hopsanarchive"
-#define AUTOUPDATELINK "http://tiny.cc/hopsanupdate"
 
 // Path definitions (development and release)
 // qrc paths
