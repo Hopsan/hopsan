@@ -798,4 +798,6 @@ void WelcomeWidget::launchAutoUpdate()
 
     mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(QUrl(mAUFileLink)));
     connect(mpAUDownloadStatus, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateDownloadProgressBar(qint64, qint64)));
+    connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadStatus, SLOT(abort()));
+    connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadDialog, SLOT(close()));
 }
