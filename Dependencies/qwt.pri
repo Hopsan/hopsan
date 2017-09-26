@@ -1,7 +1,6 @@
 # Add debug if debugmode (only default on for windows)
 dbg_ext =
-win32:CONFIG(debug, debug|release):dbg_ext =
-#unix:CONFIG(debug, debug|release):dbg_ext = d
+win32:CONFIG(debug, debug|release):dbg_ext = d
 
 # Set hompath and libname for local install
 qwt_home = $${PWD}/qwt
