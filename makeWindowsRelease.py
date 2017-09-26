@@ -30,15 +30,15 @@ gTemporaryBuildDir = r'C:\temp_release'
 inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
 innoDirList = [r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 doxygenDirList = [r'C:\Program Files\doxygen\bin', r'C:\Program Files (x86)\doxygen\bin']
-gsDirList = [r'C:\Program Files\gs\gs9.21\bin', r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin']
+gsDirList = [r'C:\Program Files\gs\gs9.21\bin', r'C:\Program Files (x86)\gs\gs9.21\bin', r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files (x86)\gs\gs9.19\bin']
 
 # Compilers and build tools
 qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1', r'C:\Qt\qtcreator-3.6.0', r'C:\Qt\Tools\QtCreator']
 msvc2008DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin']
 msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin']
 
-# Runtime binaries to copy to bin directory (Note! Path to qt/bin and mingw/bin and plugin dirs is set by external script)
-# Note! This list must be adapted to the actual version of Qt/MinGW that you are using when build ithe release
+# Runtime binaries to copy to bin directory (Note! Path to qt/bin and mingw/bin and plugin directories is set by external script)
+# Note! This list must be adapted to the actual version of Qt/MinGW that you are using when building the release
 qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
                  'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
                  'Qt5Test.dll', 'icuin56.dll', 'icuuc56.dll', 'icudt56.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
@@ -139,17 +139,26 @@ def fileExists(fileName):
     return os.path.isfile(fileName)
 
 
-def selectPathFromList(list, failMsg, sucessMsg):
+def selectPathFromList(list_of_paths, failMsg, sucessMsg):
     selected=""
-    for item in list:
+    for item in list_of_paths:
         if pathExists(item):
             selected = item
+            break
     if selected=="":
         printError(failMsg)
     else:
         printSuccess(sucessMsg)
     return selected
 
+
+def findFileInDirTree(root_dir, file_name):
+    for dirpath, dirnames, filenames in os.walk(root_dir,topdown=True):
+        for filename in filenames:
+            if file_name == filename:
+                return True
+    return False
+	
 
 def askYesNoQuestion(msg):
     # Returns true on yes
@@ -457,8 +466,10 @@ def verifyPaths():
     #Make sure that doxygen is present for documentation build, but we dont care about result just print error if missing
     selectPathFromList(doxygenDirList, "Doxygen is not installed in expected place.", "Found Doxygen!")
 
-    #Make sure that ghostscript is present for documentation build, but we dont care about result just print error if missing
-    selectPathFromList(gsDirList, "Ghostscript is not installed in expected place.", "Found Ghostscript!")
+    # Make sure that Ghostscript is present for documentation build, Doxygen seems to require 32-bit version
+    gs_dir = selectPathFromList(gsDirList, "Ghostscript 32-bit is not installed in expected place.", "Found Ghostscript!")
+    if not findFileInDirTree(gs_dir, 'gswin32.exe'):
+        printError('You must install the 32-bit version of Ghostscipt, Doxygen is apparently hard-coded for that version')
     
     if isOk:
         printSuccess("Verification of path variables.")
