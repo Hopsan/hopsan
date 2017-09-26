@@ -664,14 +664,13 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
                     official_releases = parseHopsanReleases(reader, HOPSANGUIVERSION);
                 }
 
-                if (reader.readNextStartElement() && reader.name() == "development")
+                if (reader.readNextStartElement() && gpConfig->getBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES) && reader.name() == "development")
                 {
                     development_release = parseHopsanReleases(reader, HOPSANGUIVERSION);
                 }
             }
         }
 
-        //! @todo Check config option if development should be included
         if (official_releases.size() + development_release.size() > 0)
         {
             // Assume sorted, first is highest

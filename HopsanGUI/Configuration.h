@@ -40,6 +40,7 @@
 #define CFG_LIBRARYSTYLE "librarystyle"
 #define CFG_PLOEXPORTVERSION "ploexportversion"
 
+#define CFG_CHECKFORDEVELOPMENTUPDATES "checkfordevelopmentupdates"
 #define CFG_SHOWLICENSEONSTARTUP "showlicenseonstartup2"
 #define CFG_SHOWHIDDENNODEDATAVARIABLES "showhiddennodedatavariables"
 #define CFG_SHOWPOPUPHELP "showpopuphelp"
