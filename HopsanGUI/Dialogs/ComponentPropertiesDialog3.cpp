@@ -41,8 +41,6 @@
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QMenu>
-#include <QWebView>
-#include <QWebFrame>
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QGroupBox>
@@ -65,6 +63,7 @@
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include "Utilities/HighlightingUtilities.h"
+#include "Utilities/WebviewWrapper.h"
 #include "LibraryHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/SystemParametersWidget.h"
@@ -456,7 +455,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
 
         if (!mpModelObject->getHelpHtmlPath().isEmpty())
         {
-            QWebView * pHtmlView = new QWebView();
+            WebViewWrapper* pHtmlView = new WebViewWrapper(false);
             QString path = mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath();
             if (path.endsWith(".md"))
             {
@@ -585,19 +584,19 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                     }
 
                     // Set html to view
-                    pHtmlView->load(QUrl::fromLocalFile(htmlFilePath));
+                    pHtmlView->loadHtmlFile(QUrl::fromLocalFile(htmlFilePath));
                 }
                 else
                 {
-                    pHtmlView->setHtml(QString("<p>Error: Could not convert %1 to HTML or load the file.</p>").arg(path));
+                    pHtmlView->showText(QString("Error: Could not convert %1 to HTML or load the file.").arg(path));
                 }
 #else
-                pHtmlView->setHtml(QString("<p>Error: Markdown support is not available in this build!</p>").arg(path));
+                pHtmlView->showText(QString("Error: Markdown support is not available in this build!").arg(path));
 #endif
             }
             else
             {
-                pHtmlView->load(QUrl::fromLocalFile(path));
+                pHtmlView->loadHtmlFile(QUrl::fromLocalFile(path));
             }
             pHelpLayout->addWidget(pHtmlView);
         }

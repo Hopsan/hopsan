@@ -34,8 +34,8 @@
 #ifndef HELPDIALOG_H
 #define HELPDIALOG_H
 
-#include <QWebView>
 #include <QDialog>
+#include "Utilities/WebviewWrapper.h"
 
 class HelpDialog : public QDialog
 {
@@ -50,7 +50,7 @@ public slots:
     void centerOnScreen();
 
 private:
-    QWebView *mpHelp;
+    WebViewWrapper *mpHelp;
 };
 
 #endif // HELPDIALOG_H

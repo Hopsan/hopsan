@@ -14,7 +14,14 @@ QT += svg xml
 QT += core gui network
 
 isEqual(QT_MAJOR_VERSION, 5){
-    QT += widgets webkitwidgets printsupport
+    QT += widgets printsupport
+    qtHaveModule(webkitwidgets) {
+        QT += webkitwidgets
+        DEFINES *= USEWEBKIT
+        message(Using WebKit)
+    } else {
+        message(WebKit is not available)
+    }
 } else {
     QT += webkit
 }
@@ -280,7 +287,8 @@ SOURCES += main.cpp \
     Dialogs/LicenseDialog.cpp \
     Widgets/TimeOffsetWidget.cpp \
     Dialogs/NumHopScriptDialog.cpp \
-    PlotCurveStyle.cpp
+    PlotCurveStyle.cpp \
+    Utilities/WebviewWrapper.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -370,7 +378,8 @@ HEADERS += MainWindow.h \
     Utilities/EventFilters.h \
     Widgets/TimeOffsetWidget.h \
     Dialogs/NumHopScriptDialog.h \
-    PlotCurveStyle.h
+    PlotCurveStyle.h \
+    Utilities/WebviewWrapper.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

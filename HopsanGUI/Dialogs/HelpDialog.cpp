@@ -32,7 +32,7 @@
 //$Id$
 
 //Qt includes
-#include <QWebView>
+#include <QUrl>
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QApplication>
@@ -62,22 +62,9 @@ HelpDialog::HelpDialog(QWidget *parent)
     this->setMinimumSize(640, 480);
     this->setWindowModality(Qt::NonModal);
 
-    mpHelp = new QWebView(this);
-
-    QAction *pBackAction = mpHelp->pageAction(QWebPage::Back);
-    pBackAction->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-StepLeft.png")));
-    QAction *pForwardAction = mpHelp->pageAction(QWebPage::Forward);
-    pForwardAction->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-StepRight.png")));
-
-    QToolBar *pToolBar = new QToolBar(this);
-    pToolBar->addAction(pBackAction);
-    pToolBar->addAction(pForwardAction);
-
     QVBoxLayout *pLayout = new QVBoxLayout(this);
-    pLayout->addWidget(pToolBar);
+    mpHelp = new WebViewWrapper(true, this);
     pLayout->addWidget(mpHelp);
-    pLayout->setStretch(1,1);
-    this->setLayout(pLayout);
 
     //! @todo Set size depending one screen size
     this->resize(1024,768);
@@ -86,7 +73,7 @@ HelpDialog::HelpDialog(QWidget *parent)
 
 void HelpDialog::open()
 {
-    mpHelp->load(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + "index.html"));
+    mpHelp->loadHtmlFile(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + "index.html"));
 
     //Using show instead of open for modaless window
     QDialog::show();
@@ -95,7 +82,7 @@ void HelpDialog::open()
 
 void HelpDialog::open(QString file)
 {
-    mpHelp->load(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + file));
+    mpHelp->loadHtmlFile(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + file));
 
     //Using show instead of open for modaless window
     QDialog::show();
