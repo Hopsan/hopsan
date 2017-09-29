@@ -30,8 +30,20 @@ lessThan(QT_MAJOR_VERSION, 5){
 }
 
 #--------------------------------------------------------
-# Set the FMILibrary paths and dll/so/dylib/framework post linking copy command
+# Set the FMILibrary include and library paths
 include($${PWD}/../Dependencies/fmilibrary.pri)
+# On Windows, since RPATH is ignored by LoadLibrary(), copy the fmi library file to the bin directory after build,
+# so that libHopsanGenerator may find it when loaded at runtime
+# (this is only necessary for dev builds, on release all DLLs will be copied anyway)
+# TODO: It would be better if this could be handled by the fmilibrary.pri somehow
+win32 {
+  src_file = $$quote($${PWD}/../Dependencies/FMILibrary/lib/libfmilib_shared.dll)
+  dst_dir = $$quote($${DESTDIR})
+  # Replace slashes in paths with backslashes for Windows
+  src_file ~= s,/,\\,g
+  dst_dir ~= s,/,\\,g
+  QMAKE_POST_LINK *= $$QMAKE_COPY $${src_file} $${dst_dir}
+}
 
 #--------------------------------------------------
 # Add the include path to our self, (HopsanGenerator)

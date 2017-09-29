@@ -925,9 +925,9 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool show
     QString extraCFlags, extraLFlags;
     if(pLib->type == FmuLib)
     {
-        QString fmiLibDir="/Dependencies/FMILibrary-2.0.1/";
-        extraCFlags = QString("-I\"%1\"").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"install/include");
-        extraLFlags = QString("-L\"%1\" -l").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"install/lib");
+        const QString fmiLibDir="/Dependencies/FMILibrary";
+        extraCFlags = QString("-I\"%1\"").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"/include");
+        extraLFlags = QString("-L\"%1\" -l").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"/lib");
 #ifdef _WIN32
     extraLFlags += "libfmilib_shared";
 #else
