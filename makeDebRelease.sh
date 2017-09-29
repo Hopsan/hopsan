@@ -317,11 +317,11 @@ for i in "${distArchArrayDo[@]}"; do
         buildStatusArray+=("$dist""_""$arch"":BuildOk")
 
         # Now move and rename output deb file to dist output dir
-	resultingDebFile=${outputDebDir}/${outputbasename}_${dist}_${arch}.deb
+        resultingDebFile=${outputDebDir}/${outputbasename}_${dist}_${arch}.deb
         mv $outputDebName ${resultingDebFile}
 
         # Check package with lintian ('|| true' avoids script abort on errors)
-        lintian --color always -X files ${resultingDebFile} || true
+        lintian --no-tag-display-limit --color always -X files ${resultingDebFile} || true
       else
         buildStatusArray+=("$dist""_""$arch"":BuildFailed")
       fi
