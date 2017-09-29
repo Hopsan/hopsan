@@ -73,6 +73,7 @@ private:
     QWidget *mpInterfaceWidget;
     QToolButton *mpBackgroundColorButton;
     QColor mPickedBackgroundColor;
+    QCheckBox *mpCheckDevelopmentUpdatesCheckBox;
     QCheckBox *mpNativeStyleSheetCheckBox;
     QCheckBox *mpShowPopupHelpCheckBox;
     QCheckBox *mpInvertWheelCheckBox;

@@ -265,6 +265,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpShowPopupHelpCheckBox = new QCheckBox(tr("Show Popup Help Messages"));
     mpShowPopupHelpCheckBox->setCheckable(true);
 
+    mpCheckDevelopmentUpdatesCheckBox = new QCheckBox(tr("Check for development snapshot updates"));
+    mpCheckDevelopmentUpdatesCheckBox->setCheckable(true);
 
     mpAntiAliasingCheckBox = new QCheckBox(tr("Use Anti-Aliasing"));
     mpAntiAliasingCheckBox->setCheckable(true);
@@ -297,7 +299,11 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pInterfaceLayout->addWidget(pBackgroundColorLabel,         8, 0);
     pInterfaceLayout->addWidget(mpBackgroundColorButton,       8, 1);
     pInterfaceLayout->addWidget(new QWidget(),                 9, 0, 1, 2);
-    pInterfaceLayout->setRowStretch(8,1);
+    pInterfaceLayout->addWidget(new QLabel(tr("New version check:")), 10, 0);
+    pInterfaceLayout->addWidget(mpCheckDevelopmentUpdatesCheckBox, 11, 0);
+    pInterfaceLayout->addWidget(new QWidget(),                 12, 0, 1, 2);
+    pInterfaceLayout->setRowStretch(9,1);
+    pInterfaceLayout->setRowStretch(12,1);
     mpInterfaceWidget->setLayout(pInterfaceLayout);
 
         //Simulation Options
@@ -545,6 +551,7 @@ void OptionsDialog::setValues()
 
     gpConfig->setBoolSetting(CFG_SHOWPOPUPHELP, mpShowPopupHelpCheckBox->isChecked());
     gpConfig->setBoolSetting(CFG_NATIVESTYLESHEET, mpNativeStyleSheetCheckBox->isChecked());
+    gpConfig->setBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES, mpCheckDevelopmentUpdatesCheckBox->isChecked());
 
     if(gpConfig->getBoolSetting(CFG_NATIVESTYLESHEET))
     {
@@ -672,6 +679,7 @@ void OptionsDialog::show()
     mpBackgroundColorButton->setStyleSheet(buttonStyle);
     mPickedBackgroundColor = gpConfig->getBackgroundColor();
 
+    mpCheckDevelopmentUpdatesCheckBox->setChecked(gpConfig->getBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES));
     mpNativeStyleSheetCheckBox->setChecked(gpConfig->getBoolSetting(CFG_NATIVESTYLESHEET));
     mpShowPopupHelpCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWPOPUPHELP));
     mpAntiAliasingCheckBox->setChecked(gpConfig->getBoolSetting(CFG_ANTIALIASING));

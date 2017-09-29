@@ -36,16 +36,15 @@
 #include <QGridLayout>
 #include <QDebug>
 #include <QStringList>
-#include <QtXml>
+#include <QTimer>
+#include <QDir>
+#include <QXmlStreamReader>
 #include <QNetworkReply>
 #include <QProgressBar>
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopServices>
-#ifdef USEWEBKIT
-#include <QWebPage>
-#include <QWebFrame>
-#endif
+#include <QProcess>
 
 // Hopsan includes
 #include "Widgets/WelcomeWidget.h"
@@ -59,6 +58,97 @@
 #include "MessageHandler.h"
 #include "version_gui.h"
 
+// Hopsan Core includes
+#include "CoreUtilities/HmfLoader.h"
+
+namespace {
+
+struct HopsanRelease
+{
+    QString version;
+    QString url;
+    QString url_installer;
+    QString url_installer_wo_compiler;
+};
+
+QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QString &minimumVersion)
+{
+    QVector<HopsanRelease> releases;
+    while (reader.readNextStartElement() && reader.name() == "release")
+    {
+        bool addThis = true;
+        HopsanRelease release;
+        while (reader.readNextStartElement())
+        {
+            if (reader.name() == "version")
+            {
+                release.version =  reader.readElementText();
+                addThis = hopsan::isVersionAGreaterThanB( release.version.toStdString().c_str(), minimumVersion.toStdString().c_str());
+            }
+
+            if (reader.name() == "url")
+            {
+                release.url = reader.readElementText();
+            }
+#ifdef _WIN32
+#ifdef HOPSANCOMPILED64BIT
+            if (reader.name() == "win64_installer")
+            {
+                release.url_installer = reader.readElementText();
+            }
+
+            if (reader.name() == "win64_installer_wo_compiler")
+            {
+                release.url_installer_wo_compiler = reader.readElementText();
+            }
+#else
+            if (reader.name() == "win32_installer")
+            {
+                release.url_installer = reader.readElementText();
+            }
+
+            if (reader.name() == "win32_installer_wo_compiler")
+            {
+                release.url_installer_wo_compiler = reader.readElementText();
+            }
+#endif
+#endif
+        }
+
+        if (addThis)
+        {
+            releases.append(release);
+        }
+    }
+    return releases;
+}
+
+HopsanRelease getNewestRelease(QVector<HopsanRelease> &official, QVector<HopsanRelease> &development)
+{
+    // Assume sorted, newest first
+    if (official.isEmpty() && !development.isEmpty())
+    {
+        return development.front();
+    }
+    else if (!official.isEmpty() && development.isEmpty())
+    {
+        return official.front();
+    }
+    else
+    {
+        if (hopsan::isVersionAGreaterThanB(official.front().version.toStdString().c_str(),
+                                           development.front().version.toStdString().c_str()))
+        {
+            return official.front();
+        }
+        else
+        {
+            return development.front();
+        }
+    }
+}
+
+} // End anonymous namespace
 
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
     QWidget(parent)
@@ -283,9 +373,9 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
     QMenu *pNewVersionMenu = new QMenu(this);
 #ifdef _WIN32
-    QAction *pAutoUpdateAction = new QAction("Launch Auto Updater", this);
-    pNewVersionMenu->addAction(pAutoUpdateAction);
-    connect(pAutoUpdateAction, SIGNAL(triggered()), this, SLOT(launchAutoUpdate()));
+    mpAutoUpdateAction = new QAction("Launch Auto Updater", this);
+    pNewVersionMenu->addAction(mpAutoUpdateAction);
+    connect(mpAutoUpdateAction, SIGNAL(triggered()), this, SLOT(launchAutoUpdate()));
 #endif
     QAction *pGoToDownloadPageAction = new QAction("Open Download Page In Browser", this);
     pNewVersionMenu->addAction(pGoToDownloadPageAction);
@@ -360,12 +450,6 @@ void WelcomeWidget::mouseMoveEvent(QMouseEvent *event)
     emit hovered();
 
     QWidget::mouseMoveEvent(event);
-}
-
-
-void WelcomeWidget::debugSlot()
-{
-    qDebug() << "Debug slot!";
 }
 
 
@@ -561,32 +645,58 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 
     if (pReply->error() == QNetworkReply::NoError)
     {
-        qDebug() << pReply->url();
         QByteArray all = pReply->readAll();
-//! @todo Auto update info should not come from parsing a html page, a text or xml or such file would be better, then webview is not needed here
-#ifdef USEWEBKIT
-        QWebPage page;
-        page.mainFrame()->setHtml(QString(all));
-        QMultiMap<QString,QString> metadata = page.mainFrame()->metaData();
+        QXmlStreamReader reader(all);
 
-        //Verify that the loaded page is the correct one, otherwise do not show it
-        if(metadata.contains("type", "hopsanngnews"))
+        QString format;
+        QVector<HopsanRelease> official_releases, development_release;
+        while (!reader.atEnd())
         {
-            QString webVersionString = metadata.find("hopsanversionfull").value();
-            mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
+            if (reader.readNextStartElement() && reader.name() == "hopsan_releases")
+            {
+                format = reader.attributes().value("format").toString();
+            }
+
+            if (format == "1")
+            {
+                if (reader.readNextStartElement() && reader.name() == "official")
+                {
+                    official_releases = parseHopsanReleases(reader, HOPSANGUIVERSION);
+                }
+
+                if (reader.readNextStartElement() && gpConfig->getBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES) && reader.name() == "development")
+                {
+                    development_release = parseHopsanReleases(reader, HOPSANGUIVERSION);
+                }
+            }
+        }
+
+        if (official_releases.size() + development_release.size() > 0)
+        {
+            // Assume sorted, first is highest
+            HopsanRelease newest_release = getNewestRelease(official_releases, development_release);
+
+            mpNewVersionButton->setText("Version " + newest_release.version + " is now available!");
 #ifdef DEVELOPMENT
             mpNewVersionButton->setVisible(true);
 #else
-            //const QString thisVersionString = QString(HOPSANGUIVERSION);
-            mpNewVersionButton->setVisible(isHospanGUIVersionHigherThan(webVersionString.toStdString().c_str()));
+            mpNewVersionButton->setVisible(isVersionHigherThanCurrentHospanGUI(newest_release.version.toStdString().c_str()));
 #endif
-#ifdef HOPSANCOMPILED64BIT
-            mAUFileLink = metadata.value("hopsanupdatelink64");
-#else
-            mAUFileLink = metadata.value("hopsanupdatelink");
-#endif
+            if (gpDesktopHandler->getIncludedCompilerPath().isEmpty())
+            {
+                mAUFileLink = newest_release.url_installer_wo_compiler;
+            }
+            else
+            {
+                mAUFileLink = newest_release.url_installer;
+            }
+
+            // Disable auto update if no file given
+            if (mpAutoUpdateAction && mAUFileLink.isEmpty())
+            {
+                mpAutoUpdateAction->setDisabled(true);
+            }
         }
-#endif
     }
 }
 
@@ -640,17 +750,19 @@ void WelcomeWidget::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytes
 //! @param reply Contains information about the downloaded installation executable
 void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
 {
-    QUrl url = reply->url();
+    QFileInfo auf_info(mAUFileLink);
+    const QString file_name = gpDesktopHandler->getDataPath()+QString("/%1").arg(auf_info.fileName());
+    QUrl update_url = reply->url();
     if (reply->error())
     {
-        gpMessageHandler->addErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
+        gpMessageHandler->addErrorMessage("Download of " + QString(update_url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
         return;
     }
     else
     {
-        QFile file(gpDesktopHandler->getDataPath()+"update.exe");
+        QFile file(file_name);
         if (!file.open(QIODevice::WriteOnly)) {
-            gpMessageHandler->addErrorMessage("Could not open update.exe for writing.");
+            gpMessageHandler->addErrorMessage(QString("Could not open %1 for writing.").arg(file_name));
             return;
         }
         file.write(reply->readAll());
@@ -665,8 +777,8 @@ void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
     // Note Do NOT add "dir" quotes to dir here, then QProcess or innosetup will somehow messup the dir argument and add C:\ twice.
     // QProcess::start will add " " automatically if needed (on windows)
     arguments << QString("/dir=%1").arg(dir);
-    pProcess->start(gpDesktopHandler->getDataPath()+"update.exe", arguments);
-    pProcess->waitForStarted();
+    pProcess->startDetached(file_name, arguments);
+    pProcess->deleteLater();
     QApplication::quit();
 }
 
@@ -677,14 +789,14 @@ void WelcomeWidget::launchAutoUpdate()
     QNetworkAccessManager *pNetworkManager = new QNetworkAccessManager();
     connect(pNetworkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(commenceAutoUpdate(QNetworkReply*)));
 
-    QUrl url = QUrl(mAUFileLink);
-
     mpAUDownloadDialog = new QProgressDialog("Downloading new version...", "Cancel",0, 100, this);
     mpAUDownloadDialog->setWindowTitle("Hopsan Auto Updater");
     mpAUDownloadDialog->setWindowModality(Qt::WindowModal);
     mpAUDownloadDialog->setMinimumWidth(300);
     mpAUDownloadDialog->setValue(0);
 
-    mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(url));
+    mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(QUrl(mAUFileLink)));
     connect(mpAUDownloadStatus, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateDownloadProgressBar(qint64, qint64)));
+    connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadStatus, SLOT(abort()));
+    connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadDialog, SLOT(close()));
 }

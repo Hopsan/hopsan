@@ -103,6 +103,7 @@ private:
     QPushButton *mpNewVersionButton;
     QNetworkReply *mpAUDownloadStatus;
     QProgressDialog *mpAUDownloadDialog;
+    QAction *mpAutoUpdateAction=nullptr;
     QString mAUFileLink;
 
 signals:
@@ -112,7 +113,6 @@ public slots:
     void autoHide();
 
 private slots:
-    void debugSlot();
     void updateHoverEffects();
     void openRecentModel();
     void openExampleModel();
