@@ -95,11 +95,6 @@ def setColor(color, handle=std_out_handle):
 setColor(bcolors.WHITE)
 
 
-def runCmd(cmd):
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    return process.communicate()
-
-
 def printSuccess(text):
     setColor(bcolors.GREEN)
     print "Success: " + text
@@ -195,6 +190,20 @@ def replace_line_with_pattern(filepath, re_pattern, replacement):
     with open(filepath, 'w+') as f:
         f.write(data)
 
+def prepend_append_line_with_pattern(filepath, re_pattern, prepend_text, append_text):
+    data = str()
+    with open(filepath, 'r+') as f:
+        for line in f:
+            if re.search(re_pattern, line) is not None:
+                new_line = line;    
+                new_line = prepend_text + new_line
+                new_line = new_line[:-1] + append_text
+                data += new_line + '\n'
+            else:
+                data += line
+    with open(filepath, 'w+') as f:
+        f.write(data)
+
 def is_git_repo(dir):
     if os.path.isdir(dir):
         dotgitfile = os.path.join(dir, '.git')
@@ -217,7 +226,7 @@ def find_repo_root(path):
         else:
             return parts[0], False
 
-def git_export(rel_src_dir, dst_dir, repo_dir=None):
+def git_export(rel_src_dir, dst_dir, repo_dir=None, allow_dirty=True):
     if repo_dir is None:
         repo_dir = os.getcwd()
 
@@ -233,7 +242,7 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None):
     #        print('srr '+src_rel_root)
     if repo_root != repo_dir and src_rel_root != '.':
         print('Exporting "'+src+'", a member of submodule '+os.path.relpath(repo_root,repo_dir))
-        return git_export(src_rel_root, dst_dir, repo_dir=os.path.abspath(repo_root) )
+        return git_export(src_rel_root, dst_dir, repo_dir=os.path.abspath(repo_root), allow_dirty=allow_dirty )
         
     if is_git_submodule(rel_src_dir):
         print('Exporting submodule "'+rel_src_dir+'" to "'+dst_dir+'"')
@@ -242,26 +251,58 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None):
 
     temp_dir = tempfile.mkdtemp()
     time.sleep(1)
-    temp_file_path = os.path.join(temp_dir, str(uuid.uuid4())).replace(' ','_')+'.tar'
+    temp_file_name = str(uuid.uuid4())
+    temp_file_path = os.path.join(temp_dir, temp_file_name).replace(' ','_')+'.tar'
     temp_file_path_bash = temp_file_path.replace('\\','/')
     src_bash = src.replace('\\','/')
-    if os.path.isfile(os.path.join(repo_dir,src)):
+
+    src_is_file = os.path.isfile(os.path.join(repo_dir,src))
+
+    if src_is_file:
+        wd = repo_dir
+    elif is_git_submodule(src):
+        wd = src
+    else:
+        wd = repo_dir
+
+    # If a dirty state is allowed, we must first create a stash commit that we then export
+    commit_hash = 'HEAD'
+    was_stashed_ok = True
+    if allow_dirty:
+        args = ['git', 'stash', 'create', 'dirty_git_export_state']
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=wd)
+        stdout, stderr = p.communicate()
+        if p.returncode != 0:
+            print(args)
+            print('Stash create failed with return code: '+str(p.returncode))
+            print(stdout)
+            print(stderr)
+            was_stashed_ok = False
+        else:    
+            if stdout != '':
+                # Remove newline from stdout containing the commit hash
+                commit_hash = stdout[:-1]
+
+    if not was_stashed_ok:
+        # Cleanup
+        shutil.rmtree(temp_dir)
+        return False
+        
+
+    if src_is_file:
         src_dir, src_file = os.path.split(src_bash)
         if src_dir != '':
             src_dir = ':'+src_dir
-        args = ['git', 'archive', '--format=tar', r'HEAD'+src_dir, src_file, '-o', temp_file_path_bash]
-        wd = repo_dir
+        args = ['git', 'archive', '--format=tar', commit_hash+src_dir, src_file, '-o', temp_file_path_bash]
     else:
         # Append dirname to destination path
         dirname = lastpathelement(src_bash)
         dst = os.path.join(dst_dir, dirname)
         if is_git_submodule(src):
             #print('"'+rel_src_dir+'" is a submodule')
-            args = ['git', 'archive', '--format=tar', r'HEAD', '-o', temp_file_path_bash]
-            wd = src
+            args = ['git', 'archive', '--format=tar', commit_hash, '-o', temp_file_path_bash]
         else:
-            args = ['git', 'archive', '--format=tar', r'HEAD:'+src_bash, '-o', temp_file_path_bash]
-            wd = repo_dir
+            args = ['git', 'archive', '--format=tar', commit_hash+':'+src_bash, '-o', temp_file_path_bash]
 
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=wd)
     stdout, stderr = p.communicate()
@@ -276,7 +317,8 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None):
         tf.extractall(path=dst)
         tf.close()
         was_export_ok = True
-    # Cleanup 
+
+    # Cleanup
     shutil.rmtree(temp_dir)
 
     if was_export_ok:
@@ -285,7 +327,7 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None):
             if currdir != src:
                 currdirdst = os.path.split(os.path.join(dst_dir, currdir))[0]
                 if is_git_submodule(currdir):
-                    if not git_export(currdir, currdirdst):
+                    if not git_export(currdir, currdirdst, repo_dir=None, allow_dirty=allow_dirty):
                         was_export_ok = False
                         break
     
@@ -469,10 +511,16 @@ def verifyPaths():
 def askForVersion():
     dodevrelease = False
     version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')
-    print runCmd("getGitInfo.bat date.time .")[0]
-    revnum = raw_input('Enter the revision number shown above: ')
-    if version == "": 
+    if version == '': 
         dodevrelease = True
+
+    # Get date and time stamp of last commit used instead of "revision number"
+    revnum = '19700101.0000'
+    p = subprocess.Popen(['getGitInfo.bat', 'date.time', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode == 0:
+        revnum = stdout[:-1]
+
     return version, revnum, dodevrelease
 
 
@@ -577,7 +625,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     #callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
     replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\')
     #callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
-    replace_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '')
+    prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     #callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
     replace_pattern('HopsanNG_remote.pro', 'componentLibraries', '')
 
@@ -929,14 +977,11 @@ if success:
     print "Include compiler: " + str(gIncludeCompiler)
     print "Pause on failed validation: " + str(pauseOnFailValidation)
     print "---------------------------------------"
-    if not askYesNoQuestion("Is this OK? (y/n): "):
+    if askYesNoQuestion("Is this OK? (y/n): "):
+        success = renameBinFolder()
+    else:
         printError("Aborted by user.")
         success = False
-        cleanUp()
-
-    success = renameBinFolder()
-    if not success:
-        cleanUp()
 
 if gDo64BitRelease:
     gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win64'
@@ -945,6 +990,9 @@ else:
     mingwBins = mingwBins32
     gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win32'
 print("Using TempDir: "+gTemporaryBuildDir)
+
+if not success:
+    cleanUp()
         
 if success:
     prepareSourceCode(gBaseVersion, gReleaseRevision, gDoDevRelease)

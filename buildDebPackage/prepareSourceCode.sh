@@ -97,7 +97,7 @@ inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\)
 if [ "$doBuildInComponents" = "true" ]; then
   sed 's|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g' -i Common.prf
   sed 's|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g' -i HopsanCore/HopsanCore.pro
-  sed '/.*<lib>.*/d' -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml
+  sed '/.*<lib>.*/d' -i componentLibraries/defaultLibrary/defaultComponentLibrary.xml
   sed 's|componentLibraries||g' -i HopsanNG.pro
 fi
 
