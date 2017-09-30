@@ -42,7 +42,7 @@ cp -a    $srcDir/Scripts                                   $dstDir
 cp -a    $srcDir/bin                                       $dstDir
 
 # Copy dependencies files
-# =====================
+# =======================
 srcDeps=${srcDir}/Dependencies
 
 mkdir -p                                                   $dstDir/Dependencies
@@ -59,3 +59,10 @@ cp -a    ${srcDeps}/pythonqt/lib/libPythonQt*.so*          $dstDir/bin
 # =====================
 cp -a    $srcDir/hopsandefaults                            $dstDir
 cp -a    $srcDir/Hopsan-release-notes.txt                  $dstDir
+
+# Strip any runpaths to Dependencies directory
+# from ELF binaries. Note! ($ORIGIN/./) will remain
+# =================================================
+mv ${srcDeps} ${srcDeps}_temporary
+find ${dstDir}/bin -type f -executable -exec patchelf --shrink-rpath {} \;
+mv ${srcDeps}_temporary ${srcDeps}
