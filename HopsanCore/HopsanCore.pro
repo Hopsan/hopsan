@@ -71,23 +71,26 @@ win32 {
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
-    # Retreive the HopsanCore source code version info and regenerate version header
-    commitdatetime=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
-    commithash=$$system($${PWD}/../getGitInfo.bat shorthash $${PWD})
-    message(Core revision: $${commitdatetime})
-    message(Core hash: $${commithash})
-    system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
+    # Retreive the HopsanCore source code version info and regenerate version header (if getGitInfo succeeds)
+    system("$${PWD}/../getGitInfo.bat shorthash $${PWD}") {
+        commitdatetime=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+        commithash=$$system($${PWD}/../getGitInfo.bat shorthash $${PWD})
+        message(Core revision: $${commitdatetime})
+        message(Core hash: $${commithash})
+        system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
+    }
 }
 unix { 
     LIBS += -ldl
 
-    # Retreive the HopsanCore source code version info and regenerate version header
-    commitdatetime=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
-    commithash=$$system($${PWD}/../getGitInfo.sh shorthash $${PWD})
-    message(Core revision: $${commitdatetime})
-    message(Core hash: $${commithash})
-    system($${PWD}/../writeGitVersionHeader.sh $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
- 
+    # Retreive the HopsanCore source code version info and regenerate version header (if getGitInfo succeeds)
+    system("$${PWD}/../getGitInfo.sh shorthash $${PWD}") {
+        commitdatetime=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
+        commithash=$$system($${PWD}/../getGitInfo.sh shorthash $${PWD})
+        message(Core revision: $${commitdatetime})
+        message(Core hash: $${commithash})
+        system($${PWD}/../writeGitVersionHeader.sh $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
+    }
 }
 macx { 
     INCLUDEPATH += /opt/local/include/

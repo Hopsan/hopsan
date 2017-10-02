@@ -150,10 +150,11 @@ unix {
     !macx:QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
      macx:QMAKE_RPATHDIR *= $${PWD}/../bin
 
-    # Get the git commit timestamp
-     timestamp=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
-     DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
-
+    # Get the git commit timestamp and define it (if the command succeeds)
+    system("$${PWD}/../getGitInfo.sh date.time $${PWD}") {
+        timestamp=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
+        DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
+    }
 }
 win32 {
     #DEFINES += STATICCORE
@@ -182,9 +183,11 @@ win32 {
         CONFIG += console
 #    }
 
-    # Get the git commit timestamp
-    timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
-    DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
+    # Get the git commit timestamp and define it (if the command succeeds)
+    system("$${PWD}/../getGitInfo.bat date.time $${PWD}") {
+        timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+        DEFINES *= "HOPSANGUI_COMMIT_TIMESTAMP=$${timestamp}"
+    }
 }
 macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9

@@ -66,9 +66,11 @@ unix {
     # Is the following really needed on Linux? /magse
     !macx:LIBS *= -lrt
 
-    # Get git version info
-    timestamp=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
-    DEFINES *= "HOPSANCLI_COMMIT_TIMESTAMP=$${timestamp}"
+    # Get git version info and define if return code success
+    system("$${PWD}/../getGitInfo.sh date.time $${PWD}") {
+        timestamp=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
+        DEFINES *= "HOPSANCLI_COMMIT_TIMESTAMP=$${timestamp}"
+    }
 }
 win32 {
 
@@ -77,10 +79,11 @@ win32 {
         QMAKE_LFLAGS += -Wl,--large-address-aware
     }
 
-    # Get git version info
-    timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
-    DEFINES *= "HOPSANCLI_COMMIT_TIMESTAMP=$${timestamp}"
-
+    # Get git version info and define if return code success
+    system("$${PWD}/../getGitInfo.bat date.time $${PWD}") {
+        timestamp=$$system($${PWD}/../getGitInfo.bat date.time $${PWD})
+        DEFINES *= "HOPSANCLI_COMMIT_TIMESTAMP=$${timestamp}"
+    }
 }
 
 #Debug output
