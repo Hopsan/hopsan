@@ -4,10 +4,6 @@
 
 - See the issue-tracker (link on web page) for all known issues.
 
-- Older versions of Hopsan may crash if the configuration file is saved with a newer version. Delete the configuration file to solve this. 
-  In Windows it is usually located in: c:\Users\XXXXX\AppData\Local\Temp\Hopsan
-  In Ubuntu it is usually located in: /home/XXXXX/.local/share/data/Hopsan
-
 - There is no guarantee that the default components are working under all conditions, you have decide for yourself if you trust the simulation results.
   From version 0.6.0, the source code for all default components is included in the release.
 
@@ -17,7 +13,7 @@
   * Pay attention to any Warnings or Errors you may receive when loading your old model. If parameters fail to load they will be discarded.
   * Parameters and ports may have changed name, in such cases you have to manually set the parameter value that could not be loaded (according to messages).
   
-- Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We have not had time to fix this problem.
+- Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We have not been able to fix this problem.
   If this is a problem take a screen-shot instead. You can quickly hide all of the side widgets with a button on the left pane.
 
 - Hopsan internally relies on using the U.S English locale ( decimal separator '.' ) and should internally switch to this mode.
@@ -26,10 +22,47 @@
   Example:
     cd /opt/hopsan/bin
     LC_NUMERIC=C; ./HopsanGUI
-  
+
 ******************************
     Version History
 ******************************
+
+2.8.0 (2017-10-13)
+
+- Change: Moved source code to GitHub: https://github.com/Hopsan/hopsan
+          Due to switching source code version control system from Subversion to Git(Hub), significant changes have been made to the build system and version numbering format.
+
+- Change: New version numbering format (we also bumped the epoch number to avoid confusion with the previous generation of Hopsan (Version 1.4 released in 2001)
+          The new full version number format is: EPOCH.MAJOR.MINOR.DATE.TIME~BRANCH_NAME
+          For official releases, only the three first numbers will be shown in the file name, example: 2.8.0. But internally and for snapshots the date and time of the last commit will be appended.
+          This gives a behaviour that is similar to the monotonically increasing revision number used previously when the source code was handled by Subversion.
+          Optionally the branch name may be appended in the end (for experimental or snapshot builds, that do not originate from the "master" branch.
+
+- Change: Re-licensed HopsanCore, HopsanCLI, libOps, libSymHop, libHopsanGenerator and libDefaultLibrary to Apache License 2.0
+          This is a more permissive license than the GPL license previously used.
+          Essentially: If you create derived work of the Hopsan core components (and distribute that work), your work must no longer be released under the GPL license.
+          Note! HopsanGUI and HoLC (the GUI applications) are still GPLv3 licensed.
+          Read the full license notices for details.
+
+- Change: Removed obsolete csv_parser++ library (GPL licensed) from HopsanCore
+          libIndexingCSVParser is used everywhere instead (compiled into HopsanCore)
+
+- Change: Removed Intel Thread Building Blocks library.
+          HopsanCore now relies on C++11 std::threads for multi-threading capabilities.
+
+- Feature: Vector signal nodes. Note! Only realized by 2D node components as of yet.
+           These nodes are still static, so there would have to be a set of components for every vector size.
+- Feature: Bi-directional signal ports (2D) read/write.
+           See external Grafcet example library
+- Feature: HCOM New 'eval' command, Evaluate string expressions.
+           Example: eval "chpv Gain$i$.out.y" would first evaluate the variable i and then execute the 'chpv' command
+- Feature: HCOM New 'mkdir' command, to create directories. 
+           This may be useful when automate saving of data
+
+- Enhancement: The version check and auto update (Windows only) system has been improved. If you have downloaded a version with the compiler included,
+               the auto update will now be able to download the new version also with the compiler included.
+
+- Bug fixed: Prevent crash when copying HVectors of HStrings
 
 0.7.9 (2017-07-02)
 - Bug fixed: Plot curves default to dashed lines
