@@ -49,7 +49,6 @@
 #include <chrono>
 #include <ctime>
 #endif
-#include <unistd.h>
 
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
