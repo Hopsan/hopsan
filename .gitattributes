@@ -21,7 +21,7 @@
 *.pro text
 *.pri text
 *.prf text
-
+*.iss text eol=crlf
 
 *.pdf binary
 *.png binary
