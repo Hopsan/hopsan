@@ -76,8 +76,8 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tas
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\bin\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall
-Filename: "{app}\Hopsan-release-notes.txt"; Description: "View release notes"; Flags: nowait postinstall shellexec
+Filename: "{app}\bin\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Hopsan-release-notes.txt"; Description: "View release notes"; Flags: nowait postinstall shellexec skipifsilent
 
 [Registry]
 Root: HKCR; Subkey: ".hmf"; ValueType: string; ValueName: ""; ValueData: "HopsanModelFile"; Flags: uninsdeletevalue; Tasks: associatehmf
