@@ -768,7 +768,10 @@ def copyFiles():
     
     # Export "exampleComponentLib" SVN directory to temporary directory
     git_export(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries')
-    
+
+    # Export "extensionLibrary" Git directory to temporary directory
+    git_export(r'componentLibraries\extensionLibrary', gTemporaryBuildDir+r'\componentLibraries')
+
     # Export "autoLibs" SVN directory to temporary directory
     git_export(r'componentLibraries\autoLibs', gTemporaryBuildDir+r'\componentLibraries')
    
