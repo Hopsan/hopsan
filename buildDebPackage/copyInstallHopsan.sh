@@ -26,6 +26,8 @@ cp -a    $srcDir/HopsanCore/dependencies                   $dstDir/HopsanCore
 mkdir -p                                                   $dstDir/componentLibraries
 cp -a    $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries
 cp -a    $srcDir/componentLibraries/exampleComponentLib    $dstDir/componentLibraries
+cp -a    $srcDir/componentLibraries/extensionLibrary       $dstDir/componentLibraries
+cp -a    $srcDir/componentLibraries/autoLibs               $dstDir/componentLibraries
 
 mkdir -p                                                   $dstDir/Models
 cp -a    $srcDir/Models/Example\ Models                    $dstDir/Models

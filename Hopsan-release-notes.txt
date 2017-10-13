@@ -28,7 +28,6 @@
 ******************************
 
 2.8.0 (2017-10-13)
-
 - Change: Moved source code to GitHub: https://github.com/Hopsan/hopsan
           Due to switching source code version control system from Subversion to Git(Hub), significant changes have been made to the build system and version numbering format.
 
@@ -64,12 +63,14 @@
 
 - Bug fixed: Prevent crash when copying HVectors of HStrings
 
+------------------------------
 0.7.9 (2017-07-02)
 - Bug fixed: Plot curves default to dashed lines
 - Bug fixed: Reading symbols name from HCOM plot command will always give value 1,2 or 3 for symbol type
 - Bug fixed: Subsytems become randomly disabled when models are loaded by the simulation core model loader, Affects CLI, FMU and Simulink export.
              Simulation through HopsanGUI was apperantly not affected.
 
+------------------------------
 0.7.8 (2017-04-04)
 - Bug fixed: Plot widget is updated correctly when creating temporary HCOM variables
 - Bug fixed: Fixed annoying warning of incorrect sRGB profile
@@ -94,6 +95,7 @@
 - Fixed component: Added end limitations to rotational inertia components
 - Fixed component: Lossless connector components now stop simulation if connected to zero impedance components
 
+------------------------------
 0.7.7 (2016-10-12)
 - Bug fixed: Undefined reference errors for some functions in Matrix library
 - Bug fixed: Imported FMUs now find their resource files as they should
@@ -111,7 +113,7 @@
 
 - Feature:	Plot symbols can now be specify from from plot commands in HCOM
 
-
+------------------------------
 0.7.6  (2016-07-01)
 - Bug fixed: Numhop +- expressions fail if left-hand variable name ends with e or E
 - Bug fixed: If you close the add-system-parameter widget with the "cross" in the top right corner, it is impossible to open it again

@@ -17,7 +17,8 @@ import time
 # Version numbers
 gBaseVersion = '2.8.0'
 gReleaseRevision = ''
-gFullVersionName = gBaseVersion
+gFullVersion = gBaseVersion
+gReleaseFileVersionName = gBaseVersion
 
 # Global parameters
 gDoDevRelease = False
@@ -607,11 +608,11 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
         # Set version numbers (by changing .h files) BEFORE build
         fullversion = versionnumber+'.'+revisionnumber
 #        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+versionnumber+r'\"|g" -i HopsanCore\include\HopsanCoreVersion.h')
-        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(versionnumber))
+        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
 #        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+versionnumber+r'\"|g" -i HopsanGUI\version_gui.h')
-        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(versionnumber))
+        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
 #        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"'+versionnumber+r'\"|g" -i HopsanCLI\version_cli.h')
-        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(versionnumber))
+        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
 
         # Hide splash screen development warning
 #        callSed(r'"s|Development version||g" -i HopsanGUI\graphics\tempdummysplash.svg')
@@ -638,7 +639,8 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     #callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     #callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
-    replace_pattern('HopsanNG_remote.pro', 'componentLibraries', '')
+    replace_pattern('componentLibraries/componentLibraries.pro', 'defaultLibrary', '')
+    replace_pattern('componentLibraries/componentLibraries.pro', 'devLibraries', '')
 
 
 def buildRelease():
@@ -768,7 +770,12 @@ def copyFiles():
     
     # Export "exampleComponentLib" SVN directory to temporary directory
     git_export(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries')
-    
+    copyFileToDir('componentLibraries/exampleComponentLib', 'exampleComponentLib.dll', gTemporaryBuildDir+r'\componentLibraries\exampleComponentLib')
+
+    # Export "extensionLibrary" Git directory to temporary directory
+    git_export(r'componentLibraries\extensionLibrary', gTemporaryBuildDir+r'\componentLibraries')
+    copyFileToDir('componentLibraries/extensionLibrary', 'extensionLibrary.dll', gTemporaryBuildDir+r'\componentLibraries\extensionLibrary')
+
     # Export "autoLibs" SVN directory to temporary directory
     git_export(r'componentLibraries\autoLibs', gTemporaryBuildDir+r'\componentLibraries')
    
@@ -806,7 +813,7 @@ def createZipInstaller(zipFile, outputDir):
 def createInnoInstaller(exeFileName, innoArch, outputDir):
     exeFile=exeFileName+'.exe'
     print 'Generating install executable: '+exeFile+'...'
-    innocmd=r' /o"'+outputDir+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+gFullVersionName+r'" /dMyArchitecture="'+innoArch+r'" /dMyFilesSource="'+gTemporaryBuildDir+r'" HopsanReleaseInnoSetupScript.iss'
+    innocmd=r' /o"'+outputDir+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+gFullVersion+r'" /dMyArchitecture="'+innoArch+r'" /dMyFilesSource="'+gTemporaryBuildDir+r'" HopsanReleaseInnoSetupScript.iss'
     #print innocmd
     callEXE(innoDir+r'\iscc.exe', innocmd)
     if not fileExists(outputDir+'/'+exeFile):
@@ -823,16 +830,16 @@ def createInstallFiles():
     os.chdir(hopsanDir)
 
     if gDo64BitRelease:
-        zipFile=r'Hopsan-'+gFullVersionName+r'-win64-zip.zip'
-        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-zip.zip'
-        exeFileName=r'Hopsan-'+gFullVersionName+r'-win64-installer'
-        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win64-with_compiler-installer'
+        zipFile=r'Hopsan-'+gReleaseFileVersionName+r'-win64-zip.zip'
+        zipWithCompilerFile=r'Hopsan-'+gReleaseFileVersionName+r'-win64-with_compiler-zip.zip'
+        exeFileName=r'Hopsan-'+gReleaseFileVersionName+r'-win64-installer'
+        exeWithCompilerFileName=r'Hopsan-'+gReleaseFileVersionName+r'-win64-with_compiler-installer'
         innoArch=r'x64'
     else:
-        zipFile=r'Hopsan-'+gFullVersionName+r'-win32-zip.zip'
-        zipWithCompilerFile=r'Hopsan-'+gFullVersionName+r'-win32-with_compiler-zip.zip'
-        exeFileName=r'Hopsan-'+gFullVersionName+r'-win32-installer'
-        exeWithCompilerFileName=r'Hopsan-'+gFullVersionName+r'-win32-with_compiler-installer'
+        zipFile=r'Hopsan-'+gReleaseFileVersionName+r'-win32-zip.zip'
+        zipWithCompilerFile=r'Hopsan-'+gReleaseFileVersionName+r'-win32-with_compiler-zip.zip'
+        exeFileName=r'Hopsan-'+gReleaseFileVersionName+r'-win32-installer'
+        exeWithCompilerFileName=r'Hopsan-'+gReleaseFileVersionName+r'-win32-with_compiler-installer'
         innoArch=r'' #Should be empty for 32-bit
 
     # Create zip package
@@ -973,7 +980,10 @@ if success:
     (baseversion, gReleaseRevision, gDoDevRelease) = askForVersion()
     if baseversion != '':
         gBaseVersion = baseversion
-    gFullVersionName = gBaseVersion+"."+gReleaseRevision
+    gFullVersion = gBaseVersion+"."+gReleaseRevision
+    gReleaseFileVersionName = gBaseVersion
+    if gDoDevRelease:
+        gReleaseFileVersionName = gFullVersion
 
     pauseOnFailValidation = False
     buildVCpp = askYesNoQuestion("Do you want to build VC++ HopsanCore? (y/n): ")
@@ -982,8 +992,9 @@ if success:
     print "---------------------------------------"
     print "This is a DEV release: " + str(gDoDevRelease)
     print "This is a 64-bit release: " + str(gDo64BitRelease)
-    print "Release version name: " + str(gFullVersionName)
+    print "Release file version name: " + str(gReleaseFileVersionName)
     print "Release revision number: " + str(gReleaseRevision)
+    print "Release full version number: " + str(gFullVersion)
     print "Build VC++ HopsanCore: " + str(buildVCpp)
     print "Include compiler: " + str(gIncludeCompiler)
     print "Pause on failed validation: " + str(pauseOnFailValidation)
@@ -995,11 +1006,11 @@ if success:
         success = False
 
 if gDo64BitRelease:
-    gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win64'
+    gTemporaryBuildDir += r'\Hopsan-'+gReleaseFileVersionName+r'-win64'
 else:
     qtRuntimeBins = qtRuntimeBins32
     mingwBins = mingwBins32
-    gTemporaryBuildDir += r'\Hopsan-'+gFullVersionName+r'-win32'
+    gTemporaryBuildDir += r'\Hopsan-'+gReleaseFileVersionName+r'-win32'
 print("Using TempDir: "+gTemporaryBuildDir)
 
 if not success:

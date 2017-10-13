@@ -6,26 +6,22 @@ This assumes that the new component do no make use of functionality that is only
 ******************************
   Requirements:
 ******************************
-  Hopsan 0.7.5 or newer
+  Hopsan 2.8.0 or newer
 
 ******************************
   To add components:
 ******************************
 1. Add the .hpp .xml .svg and other needed files directly under the correct type subdirectory, or create a new one if one a suitable one does not exist.
 2. Run the generateLibraryFiles script "./generateLibraryFiles.py ." or double-click the 'generateLibraryFiles.bat' file on Windows to regenerate the library include files.
-3. Add and commit the new and modified files to subversion.
+3. Add and commit the new and modified files to git.
    Note! If you added a new subdirectory, then make sure to add the new .h and .cci files created under this directory.
 
 ******************************
   To distribute this library:
-******************************   
-1. Export the directory from subversion
+******************************
+1. Export / copy the directory from git
 2. Run the generateLibraryFiles.py script (or .bat) to make sure tat the library files are refreshed (Python interpreter required)
 3. The library can now be distributed
-
-Note! After every commit to this library, a post-commit hook will take care of automatically creating a distribution zip, and upload it to 
-      http://flumes.iei.liu.se/hopsan/files/extensionLibrary/
-
 
 ******************************
   To use this library:
