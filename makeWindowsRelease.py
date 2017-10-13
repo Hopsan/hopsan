@@ -638,7 +638,8 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     #callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     #callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
-    replace_pattern('HopsanNG_remote.pro', 'componentLibraries', '')
+    replace_pattern('componentLibraries/componentLibraries.pro', 'defaultLibrary', '')
+    replace_pattern('componentLibraries/componentLibraries.pro', 'devLibraries', '')
 
 
 def buildRelease():
@@ -768,9 +769,11 @@ def copyFiles():
     
     # Export "exampleComponentLib" SVN directory to temporary directory
     git_export(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries')
+    copyFileToDir('componentLibraries/exampleComponentLib', 'exampleComponentLib.dll', gTemporaryBuildDir+r'\componentLibraries\exampleComponentLib')
 
     # Export "extensionLibrary" Git directory to temporary directory
     git_export(r'componentLibraries\extensionLibrary', gTemporaryBuildDir+r'\componentLibraries')
+    copyFileToDir('componentLibraries/extensionLibrary', 'extensionLibrary.dll', gTemporaryBuildDir+r'\componentLibraries\extensionLibrary')
 
     # Export "autoLibs" SVN directory to temporary directory
     git_export(r'componentLibraries\autoLibs', gTemporaryBuildDir+r'\componentLibraries')
