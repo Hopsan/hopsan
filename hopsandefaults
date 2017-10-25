@@ -209,6 +209,7 @@
             <unit name="inch" scale="1/39.370"/>
         </quantity>
         <quantity name="Velocity" baseunit="m/s">
+            <unit name="km/h" scale="1000/3600"/>
         </quantity>
         <quantity name="Voltage" baseunit="V">
         </quantity>
