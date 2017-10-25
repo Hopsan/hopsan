@@ -148,12 +148,14 @@ private slots:
         pLayout->addWidget(new QLabel("Quantity: ", this),r,0);
         pLayout->addWidget(new QLabel(mQuantity, this),r,1);
         r++;
-        pLayout->addWidget(new QLabel("base = scale * unit + offset", this),r,0);
+        pLayout->addWidget(new QLabel(QString("base_value in [%1] = scale * some_value in [Unit Name] + offset").arg(gpConfig->getBaseUnit(mQuantity)), this),r,0,1,2);
+        ++r;
+        pLayout->addWidget(new QLabel(""), r, 0, 1, 2);
         r++;
         pLayout->addWidget(new QLabel("Unit Name: ", this),r,0);
         pLayout->addWidget(pUnitName,r,1);
         r++;
-        pLayout->addWidget(new QLabel("Scaling: ", this),r,0);
+        pLayout->addWidget(new QLabel("Scale: ", this),r,0);
         pLayout->addWidget(pScale,r,1);
         r++;
         pLayout->addWidget(new QLabel("Offset: ", this),r,0);
@@ -187,20 +189,34 @@ private slots:
         pDialog->setWindowTitle("Custom "+mQuantity+" Unit Scales");
         QGridLayout *pLayout = new QGridLayout(pDialog);
 
-        QString si = gpConfig->getBaseUnit(mQuantity);
+        QString bu = gpConfig->getBaseUnit(mQuantity);
         QList<UnitConverter> scales;
         gpConfig->getUnitScales(mQuantity, scales);
 
         int r=0;
-        foreach(const UnitConverter& scale, scales)
+        pLayout->addWidget(new QLabel(QString("base_value [%1]").arg(bu)), r, 0);
+        pLayout->addWidget(new QLabel(" = "), r, 1);
+        pLayout->addWidget(new QLabel("scale"), r, 2);
+        pLayout->addWidget(new QLabel(" * some_value in"), r, 3);
+        pLayout->addWidget(new QLabel("[custom_unit]"), r, 4);
+        pLayout->addWidget(new QLabel(" + offset"), r, 5);
+        ++r;
+        pLayout->addWidget(new QLabel(""), r, 0, 1, 5);
+        ++r;
+        for(const UnitConverter& scale: scales)
         {
-            pLayout->addWidget(new QLabel("1 "+si, pDialog), r, 0);
+            pLayout->addWidget(new QLabel(QString("base_value [ %1 ]").arg(bu), pDialog), r, 0);
             pLayout->addWidget(new QLabel(" = ", pDialog), r, 1);
-            pLayout->addWidget(new QLabel(scale.mScale, pDialog), r, 2);
-            pLayout->addWidget(new QLabel(scale.mUnit, pDialog), r, 3);
-            if (!scale.isOffsetEmpty())
+            pLayout->addWidget(new QLabel(QString("%1").arg(scale.mScale), pDialog), r, 2);
+            pLayout->addWidget(new QLabel(QString(" * some_value"), pDialog), r, 3);
+            pLayout->addWidget(new QLabel(QString("[ %1 ]").arg(scale.mUnit), pDialog), r, 4);
+            if (scale.isOffsetEmpty())
             {
-                pLayout->addWidget(new QLabel(" + "+scale.mOffset, pDialog), r, 4);
+                pLayout->addWidget(new QLabel(" + 0", pDialog), r, 5);
+            }
+            else
+            {
+                pLayout->addWidget(new QLabel(" + "+scale.mOffset, pDialog), r, 5);
             }
             ++r;
         }
