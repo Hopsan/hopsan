@@ -173,7 +173,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
 
     if (!libraryLoadPathInfo.exists())
     {
-        gpMessageHandler->addWarningMessage("Library: "+libraryLoadPathInfo.absoluteFilePath()+" does not exist");
+        gpMessageHandler->addWarningMessage("Library: "+libraryLoadPathInfo.absoluteFilePath()+" does not exist. The library was not loaded!");
         gpConfig->removeUserLib(loadPath);
         return;
     }
@@ -201,12 +201,22 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
                 int errorLine, errorColumn;
                 if(domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
                 {
+                    // Here only library xml files are interesting, other xml files are ignored
                     QDomElement xmlRoot = domDocument.documentElement();
                     if(xmlRoot.tagName() == QString(XML_LIBRARY))
                     {
-                        foundLibraryXmlFiles.append(fileInfo.absoluteFilePath());
+                        foundLibraryXmlFiles.append(fileInfo.canonicalFilePath());
                     }
                 }
+                else
+                {
+                    gpMessageHandler->addWarningMessage(QString("When looking for Library XML files. Could not parse file: %1, Error: %2, Line: %3, Column: %4")
+                                                        .arg(fileInfo.canonicalFilePath()).arg(errorStr).arg(errorLine).arg(errorColumn));
+                }
+            }
+            else
+            {
+                gpMessageHandler->addWarningMessage(QString("When looking for Library XML files. Could not open file: %1").arg(fileInfo.canonicalFilePath()));
             }
             file.close();
         }
@@ -229,14 +239,33 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
                 int errorLine, errorColumn;
                 if(domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
                 {
+                    // The document must have library root tag to be valid
                     QDomElement xmlRoot = domDocument.documentElement();
                     if(xmlRoot.tagName() == QString(XML_LIBRARY))
                     {
-                        foundLibraryXmlFiles.append(fileInfo.absoluteFilePath());
+                        foundLibraryXmlFiles.append(fileInfo.canonicalFilePath());
+                    }
+                    else
+                    {
+                        gpMessageHandler->addErrorMessage(QString("The specified XML file does not have Hopsan library root element. Expected: %1, Found: %2, In: %3")
+                                                          .arg(XML_LIBRARY).arg(xmlRoot.tagName()).arg(fileInfo.canonicalFilePath()));
                     }
                 }
+                else
+                {
+                    gpMessageHandler->addErrorMessage(QString("Could not parse File: %1, Error: %2, Line: %3, Column: %4. Is it a Library XML file?")
+                                                      .arg(fileInfo.canonicalFilePath()).arg(errorStr).arg(errorLine).arg(errorColumn));
+                }
+            }
+            else
+            {
+                gpMessageHandler->addErrorMessage(QString("Could not open (read) Library XML file: %1").arg(fileInfo.canonicalFilePath()));
             }
             file.close();
+        }
+        else
+        {
+            gpMessageHandler->addErrorMessage(QString("The Library XML file must have file suffix .xml, File: %1").arg(fileInfo.canonicalFilePath()));
         }
     }
 
@@ -281,6 +310,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
     if (!loadedSomething)
     {
         gpConfig->removeUserLib(loadPath);
+        gpMessageHandler->addWarningMessage("Could not find any component libraries to load!");
     }
 }
 
@@ -393,7 +423,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     }
     else if (!pLibrary->libFilePath.isEmpty())
     {
-        gpMessageHandler->addWarningMessage("Fallback loading " TO_STR(DLL_EXT));
+        gpMessageHandler->addWarningMessage("Trying fallback loading " TO_STR(DLL_EXT));
         isDllLib=true;
         libraryMainFileInfo.setFile(pLibrary->libFilePath);
     }
@@ -428,7 +458,8 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
                     else
                     {
-                        pLibrary->name = libraryMainFileInfo.fileName().section(".", 0,0);  //Use filename in case no lib name is provided
+                        // Use filename in case no lib name is provided
+                        pLibrary->name = libraryMainFileInfo.fileName().section(".", 0,0);
                     }
 
                     // Set library DLL file
@@ -463,14 +494,14 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     QDomElement sourceElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_SOURCE));
                     while(!sourceElement.isNull())
                     {
-                        pLibrary->sourceFiles.append(QFileInfo(file).absolutePath()+"/"+sourceElement.text());
+                        pLibrary->sourceFiles.append(QFileInfo(file).canonicalPath()+"/"+sourceElement.text());
                         sourceElement = sourceElement.nextSiblingElement(QString(XML_LIBRARY_SOURCE));
                     }
 
                     // Remember library (we do this here even if no DLL/SO files are loaded as we might load internal or "gui only" components
                     mLoadedLibraries.append(pLibrary);
 
-                    // Try to load specified library file (if available)
+                    // Try to load specified compiled library "plugin" file (if available)
                     if(!pLibrary->libFilePath.isEmpty())
                     {
                         if(!coreAccess.loadComponentLib(pLibrary->libFilePath))
@@ -489,7 +520,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                                 if(!coreAccess.loadComponentLib(pLibrary->libFilePath))
                                 {
                                     // Still no success, recompilation failed. Ignore and go on.
-                                    gpMessageHandler->addErrorMessage("Failed to load recompiled library.");
+                                    gpMessageHandler->addErrorMessage("Failed to load recompiled library!");
                                     mLoadedLibraries.pop_back(); //Discard library
                                 }
                                 else
@@ -501,7 +532,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             }
                             else
                             {
-                                gpMessageHandler->addWarningMessage("No compiler path set, can not recompile");
+                                gpMessageHandler->addWarningMessage("No compiler path set, will not try to recompile the library!");
                                 mLoadedLibraries.pop_back(); //Discard library
                             }
                         }
@@ -512,7 +543,21 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         }
                     }
                 }
+                else
+                {
+                    gpMessageHandler->addErrorMessage(QString("The specified XML file does not have Hopsan library root element. Expected: %1, Found: %2, In: %3")
+                                                      .arg(XML_LIBRARY).arg(xmlRoot.tagName()).arg(libraryMainFileInfo.canonicalFilePath()));
+                }
             }
+            else
+            {
+                gpMessageHandler->addErrorMessage(QString("Could not parse File: %1, Error: %2, Line: %3, Column: %4. Is it a Library XML file?")
+                                                  .arg(libraryMainFileInfo.canonicalFilePath()).arg(errorStr).arg(errorLine).arg(errorColumn));
+            }
+        }
+        else
+        {
+            gpMessageHandler->addErrorMessage(QString("Could not open (read) Library XML file: %1").arg(libraryMainFileInfo.canonicalFilePath()));
         }
         file.close();
     }
@@ -540,6 +585,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     libraryRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
     libraryRootDir.setNameFilters(QStringList() << "*.xml");
     QDirIterator it(libraryRootDir, QDirIterator::Subdirectories);
+    bool foundCafFiles = false;
     while(it.hasNext())
     {
         //Read from the xml file
@@ -557,6 +603,8 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 QDomElement cafRoot = domDocument.documentElement();
                 if(cafRoot.tagName() == QString(CAF_ROOT))
                 {
+                    foundCafFiles = true;
+
                     //Read appearance data from the caf xml file, begin with the first
                     QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file
                     SharedModelObjectAppearanceT pAppearanceData = SharedModelObjectAppearanceT(new ModelObjectAppearance);
@@ -629,10 +677,13 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
 
                     // Verify appearance data loaded from caf file
                     bool success = true;
-                    if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
+                    const QString typeName = pAppearanceData->getTypeName();
+                    // Do not check in case it is a Subsystem or SystemPort
+                    if( !((typeName==HOPSANGUISYSTEMTYPENAME) || (typeName==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (typeName==HOPSANGUICONTAINERPORTTYPENAME)) )
                     {
-                        //! @todo maybe they should be reserved in hopsan core instead
-                        success = coreAccess.hasComponent(pAppearanceData->getTypeName()) || !pAppearanceData->getHmfFile().isEmpty(); //Check so that there is such a component available in the Core
+                        //! @todo maybe they should be reserved in hopsan core instead, then we could aske the core if the exist
+                        // Check so that there is such a component available in the Core, or if the component points to an external model file
+                        success = coreAccess.hasComponent(typeName) || !pAppearanceData->getHmfFile().isEmpty();
                         if(!success)
                         {
                             gpMessageHandler->addWarningMessage("Failed to load component of type: "+pAppearanceData->getFullTypeName(), "failedtoloadcomp");
@@ -640,13 +691,13 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         }
                     }
 
-                    //Success, add component to library
+                    // Success, add component to library
                     if (success)
                     {
                         LibraryEntry entry;
                         entry.pLibrary = mLoadedLibraries.last();
 
-                        //Store appearance data
+                        // Store appearance data
                         entry.pAppearance = pAppearanceData;
                         QString subTypeName = pAppearanceData->getSubTypeName();
                         QString fullTypeName = makeFullTypeString(entry.pAppearance->getTypeName(), subTypeName);
@@ -672,10 +723,10 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             entry.pLibrary->guiOnlyComponents.append(fullTypeName);
                         }
 
-                        //Store caf file
+                        // Store caf file
                         entry.pLibrary->cafFiles.append(cafFileInfo.canonicalFilePath());
 
-                        //Calculate path to show in library
+                        // Calculate path to show in library
                         QString relDir = QDir(libraryMainFileInfo.canonicalPath()).relativeFilePath(cafFileInfo.canonicalFilePath());
                         entry.path = relDir.split("/");
                         entry.path.removeLast();
@@ -691,10 +742,10 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         }
 
 
-                        //Store visibility
+                        // Store visibility
                         entry.visibility = visibility;
 
-                        //Store new entry, but only if it does not already exist
+                        // Store new entry, but only if it does not already exist
                         if(!mLibraryEntries.contains(fullTypeName))
                         {
                             mLibraryEntries.insert(fullTypeName, entry);
@@ -711,8 +762,22 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
                 }
             }
+            else
+            {
+                gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not parse file: %1, Error: %2, Line: %3, Column: %4. Is it a component XML file?")
+                                                  .arg(cafFileInfo.canonicalFilePath()).arg(errorStr).arg(errorLine).arg(errorColumn));
+            }
+        }
+        else
+        {
+            gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not open (read) file: %1").arg(cafFileInfo.canonicalFilePath()));
         }
         cafFile.close();
+    }
+
+    if (!foundCafFiles)
+    {
+        gpMessageHandler->addWarningMessage(QString("Did not find any component XML files when loading library: %1").arg(pLibrary->getLibraryMainFilePath()));
     }
 
     gpMessageHandler->collectHopsanCoreMessages();
