@@ -138,9 +138,10 @@ unix {
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
         !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")
-        QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
-        LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
-        INCLUDEPATH *= $$system(python$${PYTHON_VERSION}-config --includes)
+        !build_pass:message("PythonQt appears to require Python $${PYTHONQT_PYVERSION}")
+        QMAKE_CXXFLAGS *= $$system(python$${PYTHONQT_PYVERSION}-config --includes) #TODO: Why does not include path work here
+        LIBS *= $$system(python$${PYTHONQT_PYVERSION}-config --libs)
+        INCLUDEPATH *= $$system(python$${PYTHONQT_PYVERSION}-config --includes)
     } else {
         !build_pass:message("Not looking for Python since we are not using PythonQT")
     }

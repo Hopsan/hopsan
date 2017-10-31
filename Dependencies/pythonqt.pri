@@ -3,6 +3,10 @@ dbg_ext =
 win32:CONFIG(debug, debug|release):dbg_ext = _d
 unix:CONFIG(debug, debug|release):dbg_ext =
 
+# By default assume Python version 2
+PYTHONQT_PYVERSION=2
+export(PYTHONQT_PYVERSION)
+
 # Set hompath and libname
 pythonqt_home = $${PWD}/pythonqt
 pythonqt_lib = $${pythonqt_home}/lib
@@ -37,6 +41,8 @@ have_local_pythonqt() {
   #TODO Use prf instead
   exists($${pythonqt_lib}/libPythonQt-Qt5-Python3$${dbg_ext}.so) {
     LIBS *= -L$${pythonqt_lib} -lPythonQt-Qt5-Python3$${dbg_ext}
+    PYTHONQT_PYVERSION=3
+    export(PYTHONQT_PYVERSION)
   } else {
     LIBS *= -L$${pythonqt_lib} -l$${libname}$${dbg_ext}
   }
