@@ -3,25 +3,25 @@
 
 # Shell script for exporting and preparing the Hopsan source code before RELEASE build
 # Author: Peter Nordin peter.nordin@liu.se
-# Date:   2012-04-01
 # For use in Hopsan, requires "subversion command line" installed (apt-get install subversion)
 
 git_export_all()
 {
+  set -e
   local src=$1
   local dst=$2
-  local olddir=$(pwd)
   local tarfile=hopsan_git_export.tar
   echo "Exporting from git: ${src} to ${dst}"
   mkdir -p ${dst}
-  cd ${src}
+  pushd ${src}
   ${hopsanroot}/Dependencies/git-archive-all/git_archive_all.py ${tarfile}
-  cd $olddir
+  popd
   mv ${src}/${tarfile} ${dst}
-  cd ${dst}
+  pushd ${dst}
   tar -xf ${tarfile} --strip-components=1
   rm ${tarfile}
-  cd $olddir
+  popd
+  set +e
 }
 
 
@@ -56,7 +56,7 @@ echo "Core_CDT: ${corecommitdt}, GUI_CDT: ${guicommitdt}, CLI_CDT: ${clicommitdt
 #
 echo "Exporting $srcDir to $dstDir for preparation"
 rm -rf $dstDir
-git_export_all $srcDir $dstDir 
+git_export_all $srcDir $dstDir
 
 
 # -----------------------------------------------------------------------------
