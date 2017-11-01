@@ -199,7 +199,7 @@
         </quantity>
     </unitscales>
     <unitsettings>
-        <!-- baseUnit = scale * unit + offset  -->
+        <!-- value in [BaseUnit] = scale * value in [CustomUnit] + offset  -->
         <quantity name="Position" baseunit="m">
             <unit name="mm" scale="1e-3"/>
             <unit name="cm" scale="1e-2"/>
@@ -209,6 +209,9 @@
             <unit name="inch" scale="1/39.370"/>
         </quantity>
         <quantity name="Velocity" baseunit="m/s">
+            <unit name="km/h" scale="1000/3600"/>
+            <unit name="mph" scale="1609.344/3600"/>
+            <unit name="knot" scale="1852/3600"/>
         </quantity>
         <quantity name="Voltage" baseunit="V">
         </quantity>
