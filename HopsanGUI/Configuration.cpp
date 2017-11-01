@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------
 
  Copyright 2017 Hopsan Group
@@ -51,6 +52,74 @@
 #include <QAction>
 #include <QApplication>
 #include <QMainWindow>
+
+#include <functional>
+
+class SaveFileHelper
+{
+public:
+    static QString currentDateTime()
+    {
+        return QDate::currentDate().toString("yyMMdd") + QTime::currentTime().toString("HHmmss");
+    }
+
+    static QString findFreeFilePath(const QString &desiredPath)
+    {
+        QString path = desiredPath;
+        int ctr=1;
+        while(QFile::exists(path))
+        {
+            path = appendToFileName(desiredPath, QString("_%1").arg(ctr));
+        }
+        return path;
+    }
+
+    static QString appendToFileName(const QFileInfo &fi, const QString &appendText)
+    {
+        // Note! Absolute path (rather than canonical path) is used here so that a path is returned even if the file does not yet exist
+        return fi.absolutePath() + "/" + fi.baseName()+appendText + "." + fi.completeSuffix();
+    }
+
+    static QString appendToFileName(const QString &filePath, const QString &appendText)
+    {
+        QFileInfo fi(filePath);
+        return appendToFileName(fi, appendText);
+    }
+
+    static void saveFileBackupExisting(const QString &filePath, std::function<void (QFile&)> saveFunction, const QString &backupText)
+    {
+        QString backup_path = appendToFileName(filePath, backupText);
+        QString temp_path = findFreeFilePath(appendToFileName(filePath, "_temporary_"+currentDateTime()));
+
+        // Save to a temp file first to avoid corrupt "real file" if Hopsan crash during the save operation
+        QFile temp_file(temp_path);
+        if (!temp_file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            gpMessageHandler->addErrorMessage("Failed to open configuration file for writing: "+temp_path);
+            return;
+        }
+
+        // Run the provided save-function to save to temporary file
+        saveFunction(temp_file);
+        temp_file.close();
+
+        // Now lets backup the old config file
+        // First remove the old backup file
+        if (QFile::exists(backup_path))
+        {
+            QFile::remove(backup_path);
+        }
+
+        // Then rename the existing actual file so that it becomes the new backup
+        if (QFile::exists(filePath))
+        {
+            QFile::rename(filePath, backup_path);
+        }
+
+        // Now rename the temp file to the actual file name
+        QFile::rename(temp_path, filePath);
+    }
+};
 
 
 //! @class Configuration
@@ -225,19 +294,23 @@ void Configuration::saveToXml()
 
         appendRootXMLProcessingInstruction(domDocument);
 
-        //Save to file
+        // Save to file
+
+        QString config_file_path = gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml");
+
+        // If destination does not exist, create it
         if(!QDir(gpDesktopHandler->getConfigPath()).exists())
         {
             QDir().mkpath(gpDesktopHandler->getConfigPath());
         }
-        QFile xmlsettings(gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
-        if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-        {
-            gpMessageHandler->addErrorMessage("Failed to open configuration file for writing: "+gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
-            return;
-        }
-        QTextStream out(&xmlsettings);
-        domDocument.save(out, XMLINDENTATION);
+
+        // Use save file helper to avoid corrupting existing destination file if program crash during save
+        SaveFileHelper sfh;
+        auto saveFunc = [&](QFile& outFile) {
+            QTextStream text_stream(&outFile);
+            domDocument.save(text_stream, XMLINDENTATION);
+        };
+        sfh.saveFileBackupExisting(config_file_path, saveFunc, "_backup");
     }
 }
 
@@ -245,14 +318,20 @@ void Configuration::saveToXml()
 //! @brief Updates all settings from hopsanconfig.xml
 void Configuration::loadFromXml()
 {
-    //Read from hopsandefaults.xml
+    // Read from hopsandefaults.xml
     loadDefaultsFromXml();
 
-    //Read from hopsanconfig.xml
-    QFile file(gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml"));
+    // Read from hopsanconfig.xml
+    QString file_path = gpDesktopHandler->getConfigPath() + QString("hopsanconfig.xml");
+    QString file_backup_path = SaveFileHelper::appendToFileName(file_path, "_backup");
+
+    QFileInfo fi(file_path);
+    QFile file(fi.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        gpMessageHandler->addWarningMessage(QString("Unable to find configuration file: %1, Configuration file was recreated with default settings.").arg(file.fileName()));
+        // Note! We dont want to use the backup here, a missing file means reset
+        gpMessageHandler->addWarningMessage(QString("Unable to find configuration file: %1, Configuration file was recreated with default settings.")
+                                            .arg(fi.absoluteFilePath()));
         return;
     }
 
@@ -261,11 +340,20 @@ void Configuration::loadFromXml()
     int errorLine, errorColumn;
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
-        QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
-                                 gpMainWindowWidget->tr("hopsanconfig.xml: Parse error at line %1, column %2:\n%3")
-                                 .arg(errorLine)
-                                 .arg(errorColumn)
-                                 .arg(errorStr));
+        gpMessageHandler->addErrorMessage(QString("Parse error in configuration file: %1, Error: %2, Line: %3, Column: %4")
+                                          .arg(fi.canonicalFilePath()).arg(errorStr).arg(errorLine).arg(errorColumn));
+        if (QFile::exists(file_backup_path))
+        {
+            gpMessageHandler->addWarningMessage("Found backup! Restoring backup config file (but preserving your broken file)");
+            file.close();
+            QString conf_file_broken = SaveFileHelper::findFreeFilePath(SaveFileHelper::appendToFileName(file_path, "_broken_"+SaveFileHelper::currentDateTime()));
+            QFile::rename(file_path, conf_file_broken);
+            // Restore from backup, the backup file must be remove, in case it also is corrupt (dont want to get stuck in a loop)
+            QFile::rename(file_backup_path, file_path);
+        }
+        // Try again to load with restored configuration file
+        loadFromXml();
+        return;
     }
     else
     {
