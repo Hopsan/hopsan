@@ -17,7 +17,7 @@ devversion=2.8.0
 # Pbuilder dists and archs
 debianDistArchArray=( stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
 debianDistArchSDArray=( stretch:amd64:qt5py3sd0 )
-ubuntuDistArchArray=( zesty:amd64:qt5py27 zesty:i386:qt5py27 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
+ubuntuDistArchArray=( artful:amd64:qt5py3 artful:i386:qt5py3 zesty:amd64:qt5py27 zesty:i386:qt5py27 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
 ubuntuDistArchSDArray=( zesty:amd64:qt5py3sd0 )
 
 # Pbuilder mirrors
@@ -64,20 +64,21 @@ boolAskYNQuestion()
 # Export a specific git directory, submodules are not included
 git_export()
 {
+  set -e
   local -r src="$1"
   local -r dst="$2"
-  local -r olddir=$(pwd)
   local -r tarfile=hopsan_git_export.tar
   echo "Exporting from git: ${src} to ${dst}"
   mkdir -p "${dst}"
-  cd ${src}
+  pushd ${src}
   git archive --output ${tarfile} HEAD
-  cd $olddir
+  popd
   mv ${src}/${tarfile} ${dst}
-  cd ${dst}
+  pushd ${dst}
   tar -xf ${tarfile}
   rm ${tarfile}
-  cd $olddir
+  popd
+  set +e
 }
 
 
@@ -204,6 +205,7 @@ packagesrcfile=${packagedir}.tar.gz
 # -----------------------------------------------------------------------------
 # Prepare source code
 #
+set -e
 srcExportDir=${outputDir}/hopsanSrcExport_${fullversionname}
 ./prepareSourceCode.sh $(pwd)/../  ${srcExportDir} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
 
@@ -211,6 +213,7 @@ pushd $srcExportDir
 tar -czf $packageorigsrcfile *
 popd
 mv ${srcExportDir}/${packageorigsrcfile} .
+set +e
 
 # -----------------------------------------------------------------------------
 # Now build DEB package

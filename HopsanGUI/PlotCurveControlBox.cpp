@@ -338,7 +338,7 @@ void PlotCurveControlBox::setXData(QString fullName)
 
 void PlotCurveControlBox::resetXData()
 {
-    mpPlotCurve->setCustomXData(0);
+    mpPlotCurve->setCustomXData(SharedVectorVariableT());
 }
 
 void PlotCurveControlBox::setGeneration(const int gen)
