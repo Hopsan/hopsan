@@ -757,7 +757,11 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         }
                         else
                         {
-                            gpMessageHandler->addWarningMessage("Component with full type name \""+fullTypeName+"\" is already registered in library handler. Ignored.");
+                            const auto& existingEntery = mLibraryEntries[fullTypeName];
+                            gpMessageHandler->addWarningMessage(QString("A component with type name '%1' was already registered by library '%2'. Ignoring version in library '%3'.")
+                                                                .arg(fullTypeName)
+                                                                .arg(existingEntery.pLibrary ? existingEntery.pLibrary->name : "Unknown")
+                                                                .arg(entry.pLibrary ? entry.pLibrary->name : "Unknown"));
                         }
                     }
                 }
