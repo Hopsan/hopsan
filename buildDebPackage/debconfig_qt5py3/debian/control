@@ -1,6 +1,6 @@
 Source: hopsan
 Section: non-free/x11
-Priority: extra
+Priority: optional
 Maintainer: Peter Nordin <peter.nordin@liu.se>
 Build-Depends: fakeroot, debhelper (>= 8.0.0), patchelf, unzip, cmake, libtool-bin, automake, pkg-config, qt5-default, python3-dev, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libhdf5-dev,
 Standards-Version: 3.9.2
