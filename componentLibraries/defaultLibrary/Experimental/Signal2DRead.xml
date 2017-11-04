@@ -10,7 +10,7 @@
        <ports>
             <port x="1" y="0.25" a="0" name="out1"/>
             <port x="1" y="0.75" a="0" name="out2"/>
-            <port x="0 y="0.5" a="180" name="P2d"/>
+            <port x="0" y="0.5" a="180" name="P2d"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
