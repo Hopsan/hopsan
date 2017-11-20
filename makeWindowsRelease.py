@@ -604,41 +604,33 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 
     copy_file(r'HopsanGUI\graphics\splash2.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
 
+    fullversion = versionnumber+'.'+revisionnumber
     if not dodevrelease:
-        # Set version numbers (by changing .h files) BEFORE build
-        fullversion = versionnumber+'.'+revisionnumber
-#        callSed(r'"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"'+versionnumber+r'\"|g" -i HopsanCore\include\HopsanCoreVersion.h')
+        # Set version numbers (by changing .h files)
         replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
-#        callSed(r'"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"'+versionnumber+r'\"|g" -i HopsanGUI\version_gui.h')
         replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
-#        callSed(r'"s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"'+versionnumber+r'\"|g" -i HopsanCLI\version_cli.h')
         replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
 
         # Hide splash screen development warning
-#        callSed(r'"s|Development version||g" -i HopsanGUI\graphics\tempdummysplash.svg')
         replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'Development version', '')
 
         # Make sure development flag is not defined
-#        callSed(r'"s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro')
         replace_pattern(r'HopsanGUI/HopsanGUI.pro', r'.*?DEFINES \*= DEVELOPMENT', r'#DEFINES *= DEVELOPMENT')
 
+    # Set the release version definition
+    replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION.*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
+    
     # Set splash screen version and revision number
-#    callSed(r'"s|X\.X\.X|'+versionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.0\.0', versionnumber)
-#    callSed(r'"s|R\.R\.R|r'+revisionnumber+r'|g" -i HopsanGUI\graphics\tempdummysplash.svg')
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'20170000\.0000', revisionnumber)
     # Regenerate splash screen
     callEXE(inkscapeDir+r'\inkscape.exe', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-png HopsanGUI/graphics/splash.png')
     callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
 
     # Make sure we compile defaultLibrary into core
-#    callSed(r'"s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf')
     replace_pattern('Common.prf', r'.*?DEFINES \*= BUILTINDEFAULTCOMPONENTLIB', r'DEFINES *= BUILTINDEFAULTCOMPONENTLIB')
-    #callSed(r'"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g" -i HopsanCore\HopsanCore.pro')
     replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\')
-    #callSed(r'"/.*<lib.*>.*/d" -i componentLibraries\defaultLibrary\defaultComponentLibrary.xml')
     prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
-    #callSed(r'"s|componentLibraries||" -i HopsanNG_remote.pro')
     replace_pattern('componentLibraries/componentLibraries.pro', 'defaultLibrary', '')
     replace_pattern('componentLibraries/componentLibraries.pro', 'devLibraries', '')
 
@@ -646,7 +638,6 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 def buildRelease():
 
     # Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
-#    callSed(r'"s|.*DEFINES \*= MAINCORE|#DEFINES *= MAINCORE|g" -i HopsanCore\HopsanCore.pro')
     replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= MAINCORE', r'#DEFINES *= MAINCORE')
 
     # ========================================================
@@ -671,7 +662,6 @@ def buildRelease():
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x64"))
     
     # Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
-#    callSed(r'"s|.*DEFINES \*= MAINCORE|DEFINES *= MAINCORE|" -i HopsanCore\HopsanCore.pro')
     replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= MAINCORE', 'DEFINES *= MAINCORE')
      
     # ========================================================

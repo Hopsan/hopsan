@@ -24,8 +24,6 @@
 
 //!
 //! @file   version_gui.h
-//! @author Flumes <flumes@lists.iei.liu.se>
-//! @date   2010-01-01
 //!
 //! @brief Contains version definitions for the HopsanGUI, HMF files and component appearance files
 //!
@@ -34,7 +32,7 @@
 #define VERSION_GUI_H
 
 // Include compiler info and hopsan core macros
-#include "compiler_info.h"
+#include "HopsanCoreVersion.h"
 
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
@@ -42,11 +40,12 @@
 #define HOPSANGUI_COMMIT_TIMESTAMP UNKNOWN
 #endif
 
-#define HOPSANGUIVERSION "2.8.0." TO_STR(HOPSANGUI_COMMIT_TIMESTAMP)
+#define HOPSANGUIVERSION HOPSANBASEVERSION "." TO_STR(HOPSANGUI_COMMIT_TIMESTAMP)
+// The actual Hopsan release version will be set by external script
+#define HOPSANRELEASEVERSION HOPSANGUIVERSION
+
 #define HMF_VERSIONNUM "0.4"
 #define HMF_REQUIREDVERSIONNUM "0.3"
 #define CAF_VERSIONNUM "0.3"
-
-
 
 #endif // VERSION_GUI_H

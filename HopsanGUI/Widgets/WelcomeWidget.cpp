@@ -24,8 +24,6 @@
 
 //!
 //! @file   WelcomeWidget.cpp
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2012
 //!
 //! @brief Contains the welcome widget class
 //!
@@ -661,12 +659,12 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
             {
                 if (reader.readNextStartElement() && reader.name() == "official")
                 {
-                    official_releases = parseHopsanReleases(reader, HOPSANGUIVERSION);
+                    official_releases = parseHopsanReleases(reader, HOPSANRELEASEVERSION);
                 }
 
                 if (reader.readNextStartElement() && gpConfig->getBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES) && reader.name() == "development")
                 {
-                    development_release = parseHopsanReleases(reader, HOPSANGUIVERSION);
+                    development_release = parseHopsanReleases(reader, HOPSANRELEASEVERSION);
                 }
             }
         }
@@ -680,7 +678,8 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 #ifdef DEVELOPMENT
             mpNewVersionButton->setVisible(true);
 #else
-            mpNewVersionButton->setVisible(isVersionHigherThanCurrentHospanGUI(newest_release.version.toStdString().c_str()));
+	    
+            mpNewVersionButton->setVisible(hopsan::isVersionAGreaterThanB(newest_release.version.toStdString().c_str(), HOPSANRELEASEVERSION));
 #endif
             if (gpDesktopHandler->getIncludedCompilerPath().isEmpty())
             {

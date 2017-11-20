@@ -24,8 +24,6 @@
 
 //!
 //! @file   HopsanGUI/main.cpp
-//! @author Flumes <flumes@lists.iei.liu.se>
-//! @date   2010-01-01
 //!
 //! @brief The main program for the HopsanGUI application
 //!
@@ -155,10 +153,4 @@ int main(int argc, char *argv[])
 const char* getHopsanGUIBuildTime()
 {
     return __DATE__ " " __TIME__;
-}
-
-
-bool isVersionHigherThanCurrentHospanGUI(const char *version)
-{
-    return hopsan::isVersionAGreaterThanB(QString(version).toStdString().c_str(), QString(HOPSANGUIVERSION).toStdString().c_str());
 }

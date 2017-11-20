@@ -12,7 +12,7 @@ set -u
 #--------------------------------------------------------------------------------------------------
 buildRoot=buildDebPackage
 name=hopsan
-devversion=2.8.0
+devversion=2.8.1
 
 # Pbuilder dists and archs
 debianDistArchArray=( stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )

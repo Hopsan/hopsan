@@ -24,8 +24,8 @@
 
 //$Id$
 
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef HOPSANCOREVERSION_H
+#define HOPSANCOREVERSION_H
 
 #include "HopsanCoreMacros.h"
 
@@ -33,7 +33,8 @@
 // not the latest revision that you get when compiling the external component.
 #include "HopsanCoreGitVersion.h"
 
-#define HOPSANCOREVERSION "2.8.0." TO_STR(HOPSANCORE_COMMIT_TIMESTAMP)
+#define HOPSANBASEVERSION "2.8.1"
+#define HOPSANCOREVERSION HOPSANBASEVERSION "." TO_STR(HOPSANCORE_COMMIT_TIMESTAMP)
 #define HOPSANCOREMODELFILEVERSION "0.4"
 
 #ifdef DEBUGCOMPILING
@@ -48,4 +49,4 @@
 // Include compiler info macros
 #include "compiler_info.h"
 
-#endif // VERSION_H
+#endif // HOPSANCOREVERSION_H

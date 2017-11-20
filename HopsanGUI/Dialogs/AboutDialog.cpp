@@ -81,7 +81,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     QLabel *pVersionHeading = new QLabel();
     QFont boldHeadingFont = pVersionHeading->font();
     boldHeadingFont.setBold(true);
-    pVersionHeading->setText(tr("Version and Build Info:"));
+    pVersionHeading->setText(tr("Build Info for Version: ")+QString(HOPSANRELEASEVERSION));
     pVersionHeading->setAlignment(Qt::AlignCenter);
     pVersionHeading->setFont(boldHeadingFont);
     QLabel *pVersionText = new QLabel();
