@@ -65,7 +65,7 @@ struct HopsanRelease
 {
     QString version;
     QString url;
-    QString url_installer;
+    QString url_installer_with_compiler;
     QString url_installer_wo_compiler;
 };
 
@@ -90,9 +90,9 @@ QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QStri
             }
 #ifdef _WIN32
 #ifdef HOPSANCOMPILED64BIT
-            if (reader.name() == "win64_installer")
+            if ( (reader.name() == "win64_installer_with_compiler")  || (reader.name() == "win64_installer") )
             {
-                release.url_installer = reader.readElementText();
+                release.url_installer_with_compiler = reader.readElementText();
             }
 
             if (reader.name() == "win64_installer_wo_compiler")
@@ -100,9 +100,9 @@ QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QStri
                 release.url_installer_wo_compiler = reader.readElementText();
             }
 #else
-            if (reader.name() == "win32_installer")
+            if ( (reader.name() == "win32_installer_with_compiler") || (reader.name() == "win32_installer") )
             {
-                release.url_installer = reader.readElementText();
+                release.url_installer_with_compiler = reader.readElementText();
             }
 
             if (reader.name() == "win32_installer_wo_compiler")
@@ -687,7 +687,7 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
             }
             else
             {
-                mAUFileLink = newest_release.url_installer;
+                mAUFileLink = newest_release.url_installer_with_compiler;
             }
 
             // Disable auto update if no file given
@@ -750,7 +750,7 @@ void WelcomeWidget::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytes
 void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
 {
     QFileInfo auf_info(mAUFileLink);
-    const QString file_name = gpDesktopHandler->getDataPath()+QString("/%1").arg(auf_info.fileName());
+    const QString file_name = gpDesktopHandler->getTempPath()+QString("/%1").arg(auf_info.fileName());
     QUrl update_url = reply->url();
     if (reply->error())
     {
