@@ -27,6 +27,18 @@
     Version History
 ******************************
 
+2.8.1 (2017-11-??)
+- Bug fixed: Prevent notifying that a new version is available if Hospan release "revision" is newer then the HopsanGUI "revision" in the same release.
+- Bug fixed: Numbers are inverted in custom unit scale display dialogue. Actually they were not. They were supposed to be part of an equation, this is now shown.
+- Bug fixed: If Hopsan is terminated or crash while the configuration file is saved, it will no longer become corrupt. (The previous version will remain intact)
+
+- Enhancement: Auto download of new (Windows) versions will now save installer to the user "temp" directory rather than the "data" directory.
+               You should check your data directory for old installers and delete them manually!
+               Look in "C:\Users\USERNAME\AppData\Local\HopsanGUI" or similar.
+- Enhancement: Greatly improved error/warning  message output while loading external libraries, this should prevent bug: "Sometimes external components fails to load without error message"
+- Enhancement: Added km/h, mph and knot custom speed units (Note! You can add your own in the Options menu if your favorites are missing)
+
+------------------------------
 2.8.0 (2017-10-13)
 - Change: Moved source code to GitHub: https://github.com/Hopsan/hopsan
           Due to switching source code version control system from Subversion to Git(Hub), significant changes have been made to the build system and version numbering format.
