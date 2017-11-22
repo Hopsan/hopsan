@@ -1199,7 +1199,10 @@ void ModelWidget::simulateModelica()
         moFile.close();
 
         CoreGeneratorAccess coreGen;
-        coreGen.generateFromModelica(QFileInfo(moFile).absoluteFilePath(), true, 0, true);
+        if (!coreGen.generateFromModelica(QFileInfo(moFile).absoluteFilePath(), true, 0, true))
+        {
+            gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGen.error()));
+        }
         qDebug() << flatModel;
 
         gpLibraryHandler->loadLibrary(path+"/"+name+"._lib.xml");

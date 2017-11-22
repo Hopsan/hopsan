@@ -46,7 +46,9 @@ public:
     GeneratorHandler();
     ~GeneratorHandler();
 
-    bool isLoadedSuccessfully();
+    bool isLoadedSuccessfully() const;
+    bool isLoadedSuccessfully(HString &error) const;
+    HString error() const;
 
     typedef void (*call_modelica_generator_t)(HString path, hopsan::HString gccPath, bool showDialog, int solver, bool compile, hopsan::HString coreIncludePath, hopsan::HString binPath);
     typedef void (*call_cpp_generator_t)(HString hppPath, hopsan::HString gccPath, bool compile, hopsan::HString coreIncludePath, hopsan::HString binPath);
@@ -70,6 +72,7 @@ public:
 
 private:
     bool mLoadedSuccessfully;
+    HString mErrorString;
 
 #ifdef _WIN32
     HINSTANCE mpLib;

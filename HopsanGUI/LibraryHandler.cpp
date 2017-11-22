@@ -948,9 +948,11 @@ void LibraryHandler::importFmu()
     }
     gpConfig->setStringSetting(CFG_FMUIMPORTDIR, fmuFileInfo.absolutePath());
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateFromFmu(filePath);
-    delete(pCoreAccess);
+    CoreGeneratorAccess generator;
+    if (!generator.generateFromFmu(filePath))
+    {
+        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(generator.error()));
+    }
 }
 
 
@@ -985,7 +987,10 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool show
         if(sourceFile.endsWith(".mo"))
         {
             qDebug() << "GENERATING: " << path+"/"+sourceFile;
-            coreGenerator.generateFromModelica(path+"/"+sourceFile, showDialog, solver, false);
+            if (!coreGenerator.generateFromModelica(path+"/"+sourceFile, showDialog, solver, false))
+            {
+                gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+            }
         }
     }
 
@@ -1005,7 +1010,10 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool show
     }
 
     //Call compile utility
-    coreGenerator.compileComponentLibrary(QFileInfo(pLib->xmlFilePath).absoluteFilePath(), extraCFlags, extraLFlags, showDialog);
+    if (!coreGenerator.compileComponentLibrary(QFileInfo(pLib->xmlFilePath).absoluteFilePath(), extraCFlags, extraLFlags, showDialog))
+    {
+        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+    }
 
     if(!dontUnloadAndLoad)
     {

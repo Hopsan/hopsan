@@ -24,8 +24,6 @@
 
 //!
 //! @file   CoreAccess.h
-//! @author Flumes <flumes@lists.iei.liu.se>
-//! @date   2010-01-01
 //!
 //! @brief Contains the HopsanCore Qt API classes for communication with the HopsanCore
 //!
@@ -80,8 +78,13 @@ public:
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false);
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
-    void generateLibrary(QString path, QStringList hppFiles);
+    bool generateLibrary(QString path, QStringList hppFiles);
     bool compileComponentLibrary(QString libPath, QString extraCFlags="", QString extraLFlags="", bool showDialog=true);
+
+    QString error();
+
+private:
+    QString mErrorMessage;
 };
 
 class CoreLibraryAccess

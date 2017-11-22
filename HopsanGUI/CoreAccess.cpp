@@ -23,9 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   CoreAccess.cpp
-//! @author Flumes <flumes@lists.iei.liu.se>
-//! @date   2010-01-01
+//! @file CoreAccess.cpp
 //!
 //! @brief Contains the HopsanCore Qt API classes for communication with the HopsanCore
 //!
@@ -72,6 +70,10 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
     }
 }
 
+QString CoreGeneratorAccess::error()
+{
+    return mErrorMessage;
+}
 
 bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, int solver, bool compile)
 {
@@ -89,7 +91,11 @@ bool CoreGeneratorAccess::generateFromModelica(QString path, bool showDialog, in
         pHandler->callModelicaGenerator(hPath, hGccPath, showDialog, solver, compile, hIncludePath, hBinPath);
         return true;
     }
-    return false;
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
+    }
 }
 
 
@@ -107,7 +113,11 @@ bool CoreGeneratorAccess::generateFromCpp(QString hppFile, bool compile)
         pHandler->callCppGenerator(hHppFile, hGccPath, compile, hIncludePath, hBinPath);
         return true;
     }
-    return false;
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
+    }
 }
 
 
@@ -162,6 +172,10 @@ bool CoreGeneratorAccess::generateFromFmu(QString fmuFilePath)
             return true;
         }
     }
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+    }
     return false;
 }
 
@@ -209,7 +223,11 @@ bool CoreGeneratorAccess::generateToFmu(QString path, int version, TargetArchite
         pHandler->callFmuExportGenerator(hPath, pCoreSystem, hIncludePath, hBinPath, hGccPath, version, use64bit, true);
         return true;
     }
-    return false;
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
+    }
 }
 
 
@@ -225,7 +243,11 @@ bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSys
         pHandler->callSimulinkExportGenerator(path.toStdString().c_str(), pSystem->getModelFileInfo().fileName().toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
-    return false;
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
+    }
 }
 
 
@@ -237,7 +259,11 @@ bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer 
         pHandler->callSimulinkCoSimExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
-    return false;
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
+    }
 }
 
 
@@ -252,14 +278,18 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
         pHandler->callLabViewSITGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
         return true;
     }
-    return false;
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
+    }
 }
 
 
 //! @brief Generates source and appearance files for a component library
 //! @param path Path where to create files
 //! @param hppFiles List with component source code files to use in library
-void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
+bool CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
 {
     QScopedPointer<hopsan::GeneratorHandler> pHandler(new hopsan::GeneratorHandler());
     if(pHandler->isLoadedSuccessfully())
@@ -270,6 +300,12 @@ void CoreGeneratorAccess::generateLibrary(QString path, QStringList hppFiles)
             hppList.push_back(hppFiles[i].toStdString().c_str());
         }
         pHandler->callLibraryGenerator(path.toStdString().c_str(), hppList, true);
+	return true;
+    }
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
     }
 }
 
@@ -293,7 +329,11 @@ bool CoreGeneratorAccess::compileComponentLibrary(QString libPath, QString extra
         pHandler->callComponentLibraryCompiler(hLibPath, hExtraCFlags, hExtraLFlags, hIncludePath, hBinPath, hGccPath, showDialog);
         return true;
     }
-    return false;
+    else
+    {
+        mErrorMessage = pHandler->error().c_str();
+        return false;
+    }
 }
 
 

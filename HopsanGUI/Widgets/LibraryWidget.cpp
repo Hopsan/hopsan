@@ -24,8 +24,6 @@
 
 //!
 //! @file   LibraryWidget.h
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2013-10-23
 //!
 //! @brief Contains classes for Library Widgets
 //!
@@ -51,6 +49,7 @@
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "ModelicaEditor.h"
 #include "ProjectTabWidget.h"
+#include "MessageHandler.h"
 
 //! @todo Ok don't know where I should put this, putting it here for now /Peter
 QString gHopsanCoreVersion = getHopsanCoreVersion();
@@ -807,7 +806,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                             // But since we only need to unload one particular library this should work
                             //! @todo fix the problem with save state
                             CoreGeneratorAccess coreGenerator;
-                            coreGenerator.compileComponentLibrary(libPath, "", "", true);
+                            if (!coreGenerator.compileComponentLibrary(libPath, "", "", true))
+                            {
+                                gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+                            }
 
                             // Now reload the library
                             gpLibraryHandler->loadLibrary(libPath);
