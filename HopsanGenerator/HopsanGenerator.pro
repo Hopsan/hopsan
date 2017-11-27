@@ -20,6 +20,7 @@ contains( useqtgui, True ) {
     isEqual(QT_MAJOR_VERSION, 5){
         QT += widgets
     }
+    message(Using Qt GUI components in HopsanGenerator)
 }
 
 # Enable C++11
@@ -80,7 +81,10 @@ win32 {
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the generator as a DLL or SO
     DEFINES -= UNICODE
 }
-unix { 
+unix {
+    # Add runtime search path so that dynamically loaded libraries in the same directory can be found.
+    # Note! QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem hande $$ORIGIN, adding manually to LFLAGS
+    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 }
 
 # -------------------------------------------------
