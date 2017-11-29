@@ -1401,9 +1401,11 @@ void SystemContainer::exportToLabView()
     QFileInfo file(filePath);
     gpConfig->setStringSetting(CFG_LABVIEWEXPORTDIR, file.absolutePath());
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToLabViewSIT(filePath, this);
-    delete(pCoreAccess);
+    CoreGeneratorAccess coreGenerator;
+    if (!coreGenerator.generateToLabViewSIT(filePath, this))
+    {
+        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+    }
 }
 
 void SystemContainer::exportToFMU1_32()
@@ -1479,12 +1481,11 @@ void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAc
     //Save model to hmf in export directory
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    if(!pCoreAccess->generateToFmu(savePath, version, arch, this))
+    CoreGeneratorAccess coreGenerator;
+    if (!coreGenerator.generateToFmu(savePath, version, arch, this))
     {
-        gpMessageHandler->addErrorMessage("Failed to export FMU for some reason.");
+        gpMessageHandler->addErrorMessage(QString("Failed to export FMU. Generator failed: %1").arg(coreGenerator.error()));
     }
-    delete(pCoreAccess);
 }
 
 //void SystemContainer::exportToFMU()
@@ -2022,10 +2023,11 @@ void SystemContainer::exportToSimulink()
 //        compiler=3;
 //    }
 
-
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked());
-    delete(pCoreAccess);
+    CoreGeneratorAccess coreGenerator;
+    if (!coreGenerator.generateToSimulink(savePath, this, pDisablePortLabels->isChecked()))
+    {
+        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+    }
 
 
     //Clean up widgets that do not have a parent
@@ -2134,9 +2136,11 @@ void SystemContainer::exportToSimulinkCoSim()
     }
 
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToSimulinkCoSim(savePath, this, pDisablePortLabels->isChecked(), compiler);
-    delete(pCoreAccess);
+    CoreGeneratorAccess coreGenerator;
+    if (!coreGenerator.generateToSimulinkCoSim(savePath, this, pDisablePortLabels->isChecked(), compiler))
+    {
+        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+    }
 
 
     //Clean up widgets that do not have a parent

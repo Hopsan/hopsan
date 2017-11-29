@@ -36,18 +36,20 @@ using namespace std ;
 
 bool buildComponentLibrary(const std::string &rLibraryXML, std::string &rOutput)
 {
-    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
-    if(pHandler->isLoadedSuccessfully())
+    hopsan::GeneratorHandler generator;
+    if(generator.isLoadedSuccessfully())
     {
         string path = getCurrentExecPath();
         // Expected include and bin path for HopsanCore
         string hopsanIncludePath = path+"../HopsanCore/include/";
         string hopsanBinPath = path;
 
-        pHandler->callComponentLibraryCompiler(rLibraryXML.c_str(), "", "", hopsanIncludePath.c_str(), hopsanBinPath.c_str(), "", true);
-        delete(pHandler);
+        generator.callComponentLibraryCompiler(rLibraryXML.c_str(), "", "", hopsanIncludePath.c_str(), hopsanBinPath.c_str(), "", true);
         return true;
     }
-    delete(pHandler);
-    return false;
+    else
+    {
+        printErrorMessage(std::string("Generator failed: ")+generator.error().c_str());
+        return false;
+    }
 }

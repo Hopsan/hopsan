@@ -38,97 +38,108 @@ using namespace hopsan;
 GeneratorHandler::GeneratorHandler()
 {
     mLoadedSuccessfully = false;
-    HString generatorLibName = TO_STR(DLL_PREFIX) "HopsanGenerator" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT);
+    mErrorString.clear();
+
+    const HString generatorLibName = TO_STR(DLL_PREFIX) "HopsanGenerator" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT);
 
 #ifdef _WIN32
     mpLib = LoadLibrary(generatorLibName.c_str()); //Load the dll
 
     if (!mpLib)
     {
-        //! @todo Error message
+        //! @todo Getting Windows Error messages is complicated. Hand-coded for now.
+        mErrorString = HString("LoadLibrary failed for: ")+generatorLibName;
         return;
     }
 
     //Load modelica generator function
-    callModelicaGenerator = (call_modelica_generator_t)GetProcAddress(mpLib, "callModelicaGenerator");
+    HString name = "callModelicaGenerator";
+    callModelicaGenerator = (call_modelica_generator_t)GetProcAddress(mpLib, name.c_str() );
     if (!callModelicaGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load C++ generator function
-    callCppGenerator = (call_cpp_generator_t)GetProcAddress(mpLib, "callCppGenerator");
+    name = "callCppGenerator";
+    callCppGenerator = (call_cpp_generator_t)GetProcAddress(mpLib, name.c_str() );
     if (!callCppGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load FMU generator function
-    callFmuImportGenerator = (call_fmu_import_generator_t)GetProcAddress(mpLib, "callFmuImportGenerator");
+    name = "callFmuImportGenerator";
+    callFmuImportGenerator = (call_fmu_import_generator_t)GetProcAddress(mpLib, name.c_str() );
     if (!callFmuImportGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load FMU generator function
-    callFmuExportGenerator = (call_fmu_export_generator_t)GetProcAddress(mpLib, "callFmuExportGenerator");
+    name = "callFmuExportGenerator";
+    callFmuExportGenerator = (call_fmu_export_generator_t)GetProcAddress(mpLib, name.c_str() );
     if (!callFmuExportGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load Simulink generator function
-    callSimulinkExportGenerator = (call_simulink_export_generator_t)GetProcAddress(mpLib, "callSimulinkExportGenerator");
+    name = "callSimulinkExportGenerator";
+    callSimulinkExportGenerator = (call_simulink_export_generator_t)GetProcAddress(mpLib, name.c_str() );
     if (!callSimulinkExportGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load Simulink Co-Simulation generator function
-    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)GetProcAddress(mpLib, "callSimulinkCoSimExportGenerator");
+    name = "callSimulinkCoSimExportGenerator";
+    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)GetProcAddress(mpLib, name.c_str() );
     if (!callSimulinkCoSimExportGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load LabVIEW/SIT generator function
-    callLabViewSITGenerator = (call_lvsit_export_generator_t)GetProcAddress(mpLib, "callLabViewSITGenerator");
+    name = "callLabViewSITGenerator";
+    callLabViewSITGenerator = (call_lvsit_export_generator_t)GetProcAddress(mpLib, name.c_str() );
     if (!callLabViewSITGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load compile component library function
-    callComponentLibraryCompiler = (call_complib_compiler_t)GetProcAddress(mpLib, "callComponentLibraryCompiler");
+    name = "callComponentLibraryCompiler";
+    callComponentLibraryCompiler = (call_complib_compiler_t)GetProcAddress(mpLib, name.c_str() );
     if(!callComponentLibraryCompiler)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
     //Load library generator function
-    callLibraryGenerator = (call_library_generator_t)GetProcAddress(mpLib, "callLibraryGenerator");
+    name = "callLibraryGenerator";
+    callLibraryGenerator = (call_library_generator_t)GetProcAddress(mpLib, name.c_str() );
     if(!callLibraryGenerator)
     {
-        //! @todo Error message
+        mErrorString = HString("GetProcAddress failed for: ")+name;
         return;
     }
 
 #else
-
-    mpLib = dlopen(generatorLibName.c_str(), RTLD_NOW);  //Load the dll
-
+    // Load the dynamic library
+    mpLib = dlopen(generatorLibName.c_str(), RTLD_NOW);
     if(!mpLib)
     {
-        fprintf (stderr, "%s\n", dlerror());
-        //! @todo Error message
+        //fprintf (stderr, "Failed in dlopen: %s\n", dlerror());
+        mErrorString = dlerror();
         return;
     }
 
@@ -137,7 +148,7 @@ GeneratorHandler::GeneratorHandler()
     char *dlsym_error = dlerror();
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -146,7 +157,7 @@ GeneratorHandler::GeneratorHandler()
     dlsym_error = dlerror();
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -155,7 +166,7 @@ GeneratorHandler::GeneratorHandler()
     dlsym_error = dlerror();
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -164,7 +175,7 @@ GeneratorHandler::GeneratorHandler()
     dlsym_error = dlerror();
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -173,7 +184,7 @@ GeneratorHandler::GeneratorHandler()
     dlsym_error = dlerror();
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -183,7 +194,7 @@ GeneratorHandler::GeneratorHandler()
     dlsym_error = dlerror();
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -192,7 +203,7 @@ GeneratorHandler::GeneratorHandler()
     dlsym_error = dlerror();
     if (dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -201,7 +212,7 @@ GeneratorHandler::GeneratorHandler()
     dlsym_error = dlerror();
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 
@@ -209,12 +220,11 @@ GeneratorHandler::GeneratorHandler()
     callLibraryGenerator = (call_library_generator_t)dlsym(mpLib, "callLibraryGenerator");
     if(dlsym_error)
     {
-        //! @todo Error message
+        mErrorString = dlsym_error;
         return;
     }
 #endif
 
-    //! @todo Success message
     mLoadedSuccessfully = true;
 }
 
@@ -234,9 +244,18 @@ GeneratorHandler::~GeneratorHandler()
 
 
 
-bool GeneratorHandler::isLoadedSuccessfully()
+bool GeneratorHandler::isLoadedSuccessfully() const
 {
     return mLoadedSuccessfully;
 }
 
+bool GeneratorHandler::isLoadedSuccessfully(HString &rError) const
+{
+    rError = error();
+    return isLoadedSuccessfully();
+}
 
+HString GeneratorHandler::error() const
+{
+    return mErrorString;
+}

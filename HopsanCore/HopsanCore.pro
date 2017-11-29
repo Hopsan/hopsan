@@ -83,6 +83,10 @@ win32 {
 unix { 
     LIBS += -ldl
 
+    # Add runtime search path so that dynamically loaded libraries in the same directory can be found.
+    # Note! QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem hande $$ORIGIN, adding manually to LFLAGS
+    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
+
     # Retreive the HopsanCore source code version info and regenerate version header (if getGitInfo succeeds)
     system("$${PWD}/../getGitInfo.sh shorthash $${PWD}") {
         commitdatetime=$$system($${PWD}/../getGitInfo.sh date.time $${PWD})
