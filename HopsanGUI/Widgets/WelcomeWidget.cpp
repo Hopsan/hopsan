@@ -24,8 +24,6 @@
 
 //!
 //! @file   WelcomeWidget.cpp
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2012
 //!
 //! @brief Contains the welcome widget class
 //!
@@ -67,7 +65,7 @@ struct HopsanRelease
 {
     QString version;
     QString url;
-    QString url_installer;
+    QString url_installer_with_compiler;
     QString url_installer_wo_compiler;
 };
 
@@ -92,9 +90,9 @@ QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QStri
             }
 #ifdef _WIN32
 #ifdef HOPSANCOMPILED64BIT
-            if (reader.name() == "win64_installer")
+            if ( (reader.name() == "win64_installer_with_compiler")  || (reader.name() == "win64_installer") )
             {
-                release.url_installer = reader.readElementText();
+                release.url_installer_with_compiler = reader.readElementText();
             }
 
             if (reader.name() == "win64_installer_wo_compiler")
@@ -102,9 +100,9 @@ QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QStri
                 release.url_installer_wo_compiler = reader.readElementText();
             }
 #else
-            if (reader.name() == "win32_installer")
+            if ( (reader.name() == "win32_installer_with_compiler") || (reader.name() == "win32_installer") )
             {
-                release.url_installer = reader.readElementText();
+                release.url_installer_with_compiler = reader.readElementText();
             }
 
             if (reader.name() == "win32_installer_wo_compiler")
@@ -661,12 +659,12 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
             {
                 if (reader.readNextStartElement() && reader.name() == "official")
                 {
-                    official_releases = parseHopsanReleases(reader, HOPSANGUIVERSION);
+                    official_releases = parseHopsanReleases(reader, HOPSANRELEASEVERSION);
                 }
 
                 if (reader.readNextStartElement() && gpConfig->getBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES) && reader.name() == "development")
                 {
-                    development_release = parseHopsanReleases(reader, HOPSANGUIVERSION);
+                    development_release = parseHopsanReleases(reader, HOPSANRELEASEVERSION);
                 }
             }
         }
@@ -680,7 +678,8 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 #ifdef DEVELOPMENT
             mpNewVersionButton->setVisible(true);
 #else
-            mpNewVersionButton->setVisible(isVersionHigherThanCurrentHospanGUI(newest_release.version.toStdString().c_str()));
+	    
+            mpNewVersionButton->setVisible(hopsan::isVersionAGreaterThanB(newest_release.version.toStdString().c_str(), HOPSANRELEASEVERSION));
 #endif
             if (gpDesktopHandler->getIncludedCompilerPath().isEmpty())
             {
@@ -688,7 +687,7 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
             }
             else
             {
-                mAUFileLink = newest_release.url_installer;
+                mAUFileLink = newest_release.url_installer_with_compiler;
             }
 
             // Disable auto update if no file given
@@ -751,7 +750,7 @@ void WelcomeWidget::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytes
 void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
 {
     QFileInfo auf_info(mAUFileLink);
-    const QString file_name = gpDesktopHandler->getDataPath()+QString("/%1").arg(auf_info.fileName());
+    const QString file_name = gpDesktopHandler->getTempPath()+QString("/%1").arg(auf_info.fileName());
     QUrl update_url = reply->url();
     if (reply->error())
     {

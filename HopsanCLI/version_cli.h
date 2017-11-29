@@ -24,8 +24,6 @@
 
 //!
 //! @file   HopsanCLI/version_cli.h
-//! @author peter.nordin@liu.se
-//! @date   2014-04-29
 //!
 //! @brief Contains version number macro for the Hopsan CLI
 //!
@@ -34,12 +32,14 @@
 #ifndef VERSION_CLI_H
 #define VERSION_CLI_H
 
+#include "HopsanCoreVersion.h"
+
 // If we don't have the revision number then define UNKNOWN
 // On real release  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANCLI_COMMIT_TIMESTAMP
 #define HOPSANCLI_COMMIT_TIMESTAMP UNKNOWN
 #endif
 
-#define HOPSANCLIVERSION "2.8.0." TO_STR(HOPSANCLI_COMMIT_TIMESTAMP)
+#define HOPSANCLIVERSION HOPSANBASEVERSION "." TO_STR(HOPSANCLI_COMMIT_TIMESTAMP)
 
 #endif // VERSION_CLI_H

@@ -23,9 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   common.h
-//! @author Flumes <flumes@lists.iei.liu.se>
-//! @date   2010-01-01
+//! @file common.h
 //!
 //! @brief Contains HopsanGUI common global definitions, enums and objects
 //!
@@ -93,6 +91,5 @@ enum HiddenVisibleEnumT {Hidden, Visible};
 enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
 
 extern const char* getHopsanGUIBuildTime();
-extern bool isVersionHigherThanCurrentHospanGUI(const char*);
 
 #endif // COMMON_H

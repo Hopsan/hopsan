@@ -44,25 +44,24 @@ doBuildInComponents="$7"
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI svn rev numbers for this release
 #
-
-cd $srcDir/HopsanCore; corecommitdt=`../getGitInfo.sh date.time .`; cd $OLDPWD
-cd $srcDir/HopsanCore; corecommithash=`../getGitInfo.sh shorthash .`; cd $OLDPWD
-cd $srcDir/HopsanGUI; guicommitdt=`../getGitInfo.sh date.time .`; cd $OLDPWD
-cd $srcDir/HopsanCLI; clicommitdt=`../getGitInfo.sh date.time .`; cd $OLDPWD
+cd ${srcDir}/HopsanCore; corecommitdt=$(../getGitInfo.sh date.time .); cd $OLDPWD
+cd ${srcDir}/HopsanCore; corecommithash=$(../getGitInfo.sh shorthash .); cd $OLDPWD
+cd ${srcDir}/HopsanGUI; guicommitdt=$(../getGitInfo.sh date.time .); cd $OLDPWD
+cd ${srcDir}/HopsanCLI; clicommitdt=$(../getGitInfo.sh date.time .); cd $OLDPWD
 echo "Core_CDT: ${corecommitdt}, GUI_CDT: ${guicommitdt}, CLI_CDT: ${clicommitdt}"
 
 # -----------------------------------------------------------------------------
 # Export source dirs and files
 #
 echo "Exporting $srcDir to $dstDir for preparation"
-rm -rf $dstDir
-git_export_all $srcDir $dstDir
+rm -rf ${dstDir}
+git_export_all ${srcDir} ${dstDir}
 
 
 # -----------------------------------------------------------------------------
 # Prepare files
 #
-cd $dstDir
+cd ${dstDir}
 
 # Clean bin folder
 #rm -rf ./bin/*
@@ -76,10 +75,13 @@ sed "s|#define HOPSANCORE_COMMIT_TIMESTAMP.*|#define HOPSANCORE_COMMIT_TIMESTAMP
 sed "s|#define HOPSANGUI_COMMIT_TIMESTAMP.*|#define HOPSANGUI_COMMIT_TIMESTAMP ${guicommitdt}|g" -i HopsanGUI/version_gui.h
 sed "s|#define HOPSANCLI_COMMIT_TIMESTAMP.*|#define HOPSANCLI_COMMIT_TIMESTAMP ${clicommitdt}|g" -i HopsanCLI/version_cli.h
 
+sed "s|#define HOPSANRELEASEVERSION.*|#define HOPSANRELEASEVERSION \"${fullversionname}\"|g" -i HopsanGUI/version_gui.h
+
 if [ $doDevRelease = "false" ]; then
   # Set version numbers (by changing .h files) BEFORE build
-  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$fullversionname\"|g" -i HopsanCore/include/HopsanCoreVersion.h
-  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$fullversionname\"|g" -i HopsanGUI/version_gui.h
+  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"${fullversionname}\"|g" -i HopsanCore/include/HopsanCoreVersion.h
+  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"${fullversionname}\"|g" -i HopsanGUI/version_gui.h
+  sed "s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"${fullversionname}\"|g" -i HopsanCLI/version_cli.h
 
   # Hide splash screen development warning
   sed "s|Development version||g" -i HopsanGUI/graphics/splash2.svg
