@@ -34,6 +34,7 @@ install:
 	dh_testdir
 	dh_prep
 	dh_installdirs
+	buildDebPackage/fixPythonShebang.sh ./ 2
 	buildDebPackage/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
 
 
