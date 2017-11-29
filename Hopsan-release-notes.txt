@@ -27,10 +27,11 @@
     Version History
 ******************************
 
-2.8.1 (2017-11-??)
+2.8.1 (2017-11-30)
 - Bug fixed: Prevent notifying that a new version is available if Hospan release "revision" is newer then the HopsanGUI "revision" in the same release.
 - Bug fixed: Numbers are inverted in custom unit scale display dialogue. Actually they were not. They were supposed to be part of an equation, this is now shown.
 - Bug fixed: If Hopsan is terminated or crash while the configuration file is saved, it will no longer become corrupt. (The previous version will remain intact)
+- Bug fixed: The Linux version of Hopsan 2.8.0 can not dlopen libHopsanGenerator making it impossible to (re)compile external component libraries
 
 - Enhancement: Auto download of new (Windows) versions will now save installer to the user "temp" directory rather than the "data" directory.
                You should check your data directory for old installers and delete them manually!
