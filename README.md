@@ -50,6 +50,10 @@ You can find official releases and more or less experimental development snapsho
 https://www.iei.liu.se/flumes/system-simulation/hopsan/download?l=en  
 http://flumes.iei.liu.se/hopsan/files/
 
+## Issue Tracker
+
+https://flumes.iei.liu.se/redmine/projects/hopsan
+
 ## Links
 
 https://www.iei.liu.se/flumes/system-simulation/hopsan?l=en  
