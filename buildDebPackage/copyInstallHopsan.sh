@@ -63,8 +63,13 @@ cp -a    $srcDir/hopsandefaults                            $dstDir
 cp -a    $srcDir/Hopsan-release-notes.txt                  $dstDir
 
 # Strip any runpaths to Dependencies directory
-# from ELF binaries. Note! ($ORIGIN/./) will remain
-# =================================================
-mv ${srcDeps} ${srcDeps}_temporary
-find ${dstDir}/bin -type f -executable -exec patchelf --shrink-rpath {} \;
-mv ${srcDeps}_temporary ${srcDeps}
+# from ELF binaries. Note! ($ORIGIN/./) will remain.
+# By first moving the source dependencies directory
+# the runpaths will no longer be valid and patchelf
+# will remove them.
+# ==================================================
+if [[ $(command -v patchelf) ]]; then
+  mv ${srcDeps} ${srcDeps}_temporary
+  find ${dstDir}/bin -type f -executable -exec patchelf --shrink-rpath {} \;
+  mv ${srcDeps}_temporary ${srcDeps}
+fi
