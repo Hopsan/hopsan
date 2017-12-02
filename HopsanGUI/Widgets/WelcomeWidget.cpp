@@ -43,6 +43,7 @@
 #include <QApplication>
 #include <QDesktopServices>
 #include <QProcess>
+#include <QDate>
 
 // Hopsan includes
 #include "Widgets/WelcomeWidget.h"
