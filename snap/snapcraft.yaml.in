@@ -6,6 +6,8 @@ description: |
   .
   Hopsan uses bi-directional delay lines, (or transmission line elements TLM) to connect physical component models, but also supports signal flow modelling with common mathematical operators and functions.
 
+icon: HopsanGUI/graphics/uiicons/hopsan.png
+
 grade: HOPSAN_SNAP_GRADE
 confinement: devmode
 
