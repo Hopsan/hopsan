@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=HoLC
+Comment=Hopsan Library Creator
+Icon=hopsan128x128
+TryExec=$SNAP/bin/HoLC
+Exec=$SNAP/bin/HoLC
+Path=$SNAP/bin
+Categories=Development;
