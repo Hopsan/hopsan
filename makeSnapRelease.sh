@@ -64,4 +64,12 @@ fi
 
 echo Done preparing snapcraft.yaml
 echo
-echo Now manually build/upload the snap
+echo Copying icons
+# Consider stage/prime
+cp HopsanGUI/graphics/uiicons/hopsan.png snap/gui
+cp HopsanGUI/graphics/uiicons/hopsan128x128.png snap/gui
+cp HoLC/graphics/uiicons/Holc-Icon.png snap/gui
+echo
+
+echo Now manually build the snap \(snapcraft cleanbuild\) and then upload the snap
+echo
