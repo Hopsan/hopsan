@@ -50,7 +50,7 @@ parts:
     source: .
     plugin: qmake
     qt-version: qt5
-    build-packages: [patchelf, unzip, cmake, libtool-bin, pkg-config, doxygen, inkscape, libzmq3-dev, python3-dev, libhdf5-dev, libmarkdown2-dev, qt5-default, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libqwt-qt5-dev]
+    build-packages: [patchelf, unzip, cmake, libtool-bin, pkg-config, doxygen, graphviz, dvipng, inkscape, libzmq3-dev, python3-dev, libhdf5-dev, libmarkdown2-dev, qt5-default, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libqwt-qt5-dev]
     prepare: |
       cd ../src
       echo 'TEMPLATE = subdirs' > hopsan.pro
