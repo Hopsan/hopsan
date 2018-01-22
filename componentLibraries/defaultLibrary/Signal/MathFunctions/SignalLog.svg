@@ -13,8 +13,8 @@
    height="25.000004"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.48.2 r9819"
-   sodipodi:docname="SignalCos.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="SignalLog.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -94,13 +94,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="16.501798"
-     inkscape:cx="26.424982"
-     inkscape:cy="9.3802175"
+     inkscape:cx="18.78945"
+     inkscape:cy="6.9562392"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1018"
+     inkscape:window-width="1680"
+     inkscape:window-height="987"
      inkscape:window-x="1672"
      inkscape:window-y="-8"
      showguides="true"
@@ -128,7 +128,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -145,18 +145,24 @@
        sodipodi:cy="513.07648"
        sodipodi:rx="63.57143"
        sodipodi:ry="63.57143"
-       d="m 218.57143,513.07648 c 0,35.10953 -28.4619,63.57143 -63.57143,63.57143 -35.10953,0 -63.57143,-28.4619 -63.57143,-63.57143 0,-35.10953 28.4619,-63.57143 63.57143,-63.57143 35.10953,0 63.57143,28.4619 63.57143,63.57143 z"
+       d="M 218.57143,513.07648 A 63.57143,63.57143 0 0 1 155,576.64791 63.57143,63.57143 0 0 1 91.42857,513.07648 63.57143,63.57143 0 0 1 155,449.50505 a 63.57143,63.57143 0 0 1 63.57143,63.57143 z"
        transform="matrix(-0.18483146,0,0,-0.18483146,288.61497,459.62581)" />
-    <text
-       xml:space="preserve"
-       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000080;fill-opacity:1;stroke:none;font-family:Sans"
-       x="253.28365"
-       y="368.02145"
-       id="text2997"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan2999"
-         x="253.28365"
-         y="368.02145">log</tspan></text>
+    <g
+       aria-label="log"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#0000bb;fill-opacity:1;stroke:none"
+       id="text2997">
+      <path
+         d="m 253.2742,359.95425 h 0.89844 v 7.59766 h -0.89844 z"
+         style="font-size:10px;line-height:1.25;font-family:sans-serif;fill:#0000bb;fill-opacity:1"
+         id="path3803" />
+      <path
+         d="m 258.16678,362.71304 q -0.72266,0 -1.14258,0.56641 -0.41992,0.56152 -0.41992,1.54297 0,0.98144 0.41504,1.54785 0.41992,0.56152 1.14746,0.56152 0.71777,0 1.13769,-0.5664 0.41993,-0.56641 0.41993,-1.54297 0,-0.97168 -0.41993,-1.53809 -0.41992,-0.57129 -1.13769,-0.57129 z m 0,-0.76172 q 1.17187,0 1.84082,0.76172 0.66894,0.76172 0.66894,2.10938 0,1.34277 -0.66894,2.10937 -0.66895,0.76172 -1.84082,0.76172 -1.17676,0 -1.8457,-0.76172 -0.66407,-0.7666 -0.66407,-2.10937 0,-1.34766 0.66407,-2.10938 0.66894,-0.76172 1.8457,-0.76172 z"
+         style="font-size:10px;line-height:1.25;font-family:sans-serif;fill:#0000bb;fill-opacity:1"
+         id="path3805" />
+      <path
+         d="m 265.75955,364.75406 q 0,-0.97656 -0.40527,-1.51367 -0.40039,-0.53711 -1.12793,-0.53711 -0.72266,0 -1.12793,0.53711 -0.40039,0.53711 -0.40039,1.51367 0,0.97168 0.40039,1.50879 0.40527,0.53711 1.12793,0.53711 0.72754,0 1.12793,-0.53711 0.40527,-0.53711 0.40527,-1.50879 z m 0.89844,2.11914 q 0,1.39648 -0.62012,2.07519 -0.62011,0.6836 -1.89941,0.6836 -0.47363,0 -0.89356,-0.0732 -0.41992,-0.0684 -0.81543,-0.21485 v -0.87402 q 0.39551,0.21484 0.78125,0.31738 0.38575,0.10254 0.78614,0.10254 0.88379,0 1.32324,-0.46387 0.43945,-0.45898 0.43945,-1.3916 V 366.59 q -0.27832,0.48339 -0.71289,0.72265 -0.43457,0.23926 -1.04004,0.23926 -1.00586,0 -1.62109,-0.7666 -0.61524,-0.7666 -0.61524,-2.03125 0,-1.26953 0.61524,-2.03613 0.61523,-0.76661 1.62109,-0.76661 0.60547,0 1.04004,0.23926 0.43457,0.23926 0.71289,0.72266 v -0.83008 h 0.89844 z"
+         style="font-size:10px;line-height:1.25;font-family:sans-serif;fill:#0000bb;fill-opacity:1"
+         id="path3807" />
+    </g>
   </g>
 </svg>
