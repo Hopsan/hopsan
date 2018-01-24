@@ -8613,27 +8613,34 @@ double HcomFunctionoidObj::operator()(QString &str, bool &ok)
 //! @brief Function operator for the "min" functionoid
 double HcomFunctionoidMin::operator()(QString &str, bool &ok)
 {
-  SharedVectorVariableT pData = mpHandler->getLogVariable(str);
+    SharedVectorVariableT pData = mpHandler->getLogVariable(str);
     if(!pData)
     {
         QStringList args;
         splitRespectingQuotationsAndParanthesis(str, ',', args);
-        double min=1e100;
+        double min=std::numeric_limits<double>::max();
         for(QString &arg : args)
         {
-            mpHandler->evaluateExpression(arg, HcomHandler::Scalar);
+            mpHandler->evaluateExpression(arg);
+            double new_val;
             if(mpHandler->mAnsType == HcomHandler::Scalar)
             {
-                if(mpHandler->mAnsScalar < min)
-                {
-                    min = mpHandler->mAnsScalar;
-                }
+                new_val = mpHandler->mAnsScalar;
+            }
+            else if (mpHandler->mAnsType == HcomHandler::DataVector)
+            {
+                new_val = mpHandler->mAnsVector->minOfData();
             }
             else
             {
                 mpHandler->mpConsole->printErrorMessage(QString("%1 could not be evaluated").arg(arg), "", false);
                 ok = false;
                 return 0;
+            }
+
+            if(new_val < min)
+            {
+                min = new_val;
             }
         }
         ok=true;
@@ -8644,9 +8651,6 @@ double HcomFunctionoidMin::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->minOfData());
     }
-    //mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
-    ok=false;
-    return 0;
 }
 
 
@@ -8658,22 +8662,29 @@ double HcomFunctionoidMax::operator()(QString &str, bool &ok)
     {
         QStringList args;
         splitRespectingQuotationsAndParanthesis(str, ',', args);
-        double max=-1e100;
+        double max=-std::numeric_limits<double>::max();
         for(QString &arg : args)
         {
-            mpHandler->evaluateExpression(arg, HcomHandler::Scalar);
+            mpHandler->evaluateExpression(arg);
+            double new_val;
             if(mpHandler->mAnsType == HcomHandler::Scalar)
             {
-                if(mpHandler->mAnsScalar > max)
-                {
-                    max = mpHandler->mAnsScalar;
-                }
+                new_val = mpHandler->mAnsScalar;
+            }
+            else if (mpHandler->mAnsType == HcomHandler::DataVector)
+            {
+                new_val = mpHandler->mAnsVector->maxOfData();
             }
             else
             {
                 mpHandler->mpConsole->printErrorMessage(QString("%1 could not be evaluated").arg(arg), "", false);
                 ok = false;
                 return 0;
+            }
+
+            if(new_val > max)
+            {
+                max = new_val;
             }
         }
         ok=true;
@@ -8684,9 +8695,6 @@ double HcomFunctionoidMax::operator()(QString &str, bool &ok)
         ok=true;
         return(pData->maxOfData());
     }
-    //mpHandler->mpConsole->printErrorMessage(QString("Failed to find variable %1").arg(str), "", false);
-    ok=false;
-    return 0;
 }
 
 

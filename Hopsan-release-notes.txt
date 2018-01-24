@@ -27,6 +27,10 @@
     Version History
 ******************************
 
+2.8.2 (2018-??-??)
+- Bug fixed: HCOM max(abs(var)) fail to evaluate if var is a vector (also affects min)
+
+------------------------------
 2.8.1 (2017-11-30)
 - Bug fixed: Prevent notifying that a new version is available if Hospan release "revision" is newer then the HopsanGUI "revision" in the same release.
 - Bug fixed: Numbers are inverted in custom unit scale display dialogue. Actually they were not. They were supposed to be part of an equation, this is now shown.
