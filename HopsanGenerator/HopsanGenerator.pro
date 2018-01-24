@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = HopsanGenerator
+TARGET = hopsangenerator
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
@@ -54,13 +54,13 @@ INCLUDEPATH *= $${PWD}/include/
 #--------------------------------------------------
 # Add the include path to (HopsanCore)
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
-LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
 #--------------------------------------------------
 
 #--------------------------------------------------
 # Add the include path to (SymHop)
 INCLUDEPATH *= $${PWD}/../SymHop/include/
-LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
 #--------------------------------------------------
 
 # -------------------------------------------------

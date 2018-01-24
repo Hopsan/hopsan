@@ -23,7 +23,7 @@ INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 LIBS *= -L$${PWD}/../../bin
 
 # In debug mode HopsanCore has the debug extension _d
-LIBS *= -lHopsanCore$${DEBUG_EXT}
+LIBS *= -lhopsancore$${DEBUG_EXT}
 
 # Reduce compile output clutter, but show warnings
 CONFIG += silent warn_on plugin

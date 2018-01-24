@@ -45,7 +45,7 @@ cp -a    $srcDir/Scripts                                   $dstDir
 # =================================
 mkdir -p                                                   $dstDir/bin
 cp -a    $srcDir/bin/*.so*                                 $dstDir/bin
-cp -a    $srcDir/bin/Hopsan*                               $dstDir/bin
+cp -a    $srcDir/bin/hopsan*                               $dstDir/bin
 
 # Copy additional files
 # =====================

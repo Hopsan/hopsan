@@ -61,7 +61,7 @@ if __name__ == "__main__":
     print('Using root dir: '+rootdir)
 
     # Find necessary files
-    clipath = os.path.join(rootdir, 'bin/HopsanCLI')
+    clipath = os.path.join(rootdir, 'bin/hopsancli')
     compilescript = os.path.join(rootdir, 'Utilities/compileHopsanCore.sh')
     common_prf = os.path.join(rootdir, 'Common.prf')
     if not os.path.isfile(compilescript):
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     cflags.append('-O3')
 
     # Setup tests
-    clipath = os.path.join(rootdir, 'bin/HopsanCLI')
+    clipath = os.path.join(rootdir, 'bin/hopsancli')
     testcommands = list()
     testcommands.append(clipath+r' -m $HOME/Dropbox/Work/Hopsan/Benchmark/multiportTest.hmf -s hmf')
 

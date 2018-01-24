@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 {
     string addressServerAddress;
 
-    TCLAP::CmdLine cmd("ServerMonitor", ' ', "0.1");
+    TCLAP::CmdLine cmd("HopsanServerMonitor", ' ', "0.1");
 
     // Define a value argument and add it to the command line.
     TCLAP::ValueArg<int> shortTOOption("","timeout","The receive timeout for requests", false, 5,"Time in seconds (default 5)", cmd);

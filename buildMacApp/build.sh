@@ -38,9 +38,9 @@ cd bin
 
 macdeployqt HopsanGUI$LIBTAG.app $DEPLOY
 
-cp -prfX libHopsanCore$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
-cp -prfX libHopsanGenerator$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
-cp -prfX libSymHop$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
+cp -prfX libhopsancore$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
+cp -prfX libhopsangenerator$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
+cp -prfX libsymhop$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 
 cp -prfX ../Dependencies/qwt-6.1.2/lib/libqwt.6.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 
@@ -53,7 +53,7 @@ mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/MSVC2010_x64
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/autoLibs
-cp -prfX ../componentLibraries/defaultLibrary/libdefaultComponentLibrary$LIBTAG.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
+cp -prfX ../componentLibraries/defaultLibrary/libdefaultcomponentlibrary$LIBTAG.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
 cp -prfX ../componentLibraries/exampleComponentLib/[HMSeh]* HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib/
 
 cp -prfX ../Hopsan-release-notes.txt HopsanGUI$LIBTAG.app/Contents/Resources/

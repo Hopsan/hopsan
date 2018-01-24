@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = Ops
+TARGET = ops
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin

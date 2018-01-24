@@ -6,7 +6,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = HopsanGUI
+TARGET = hopsangui
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
@@ -74,19 +74,19 @@ have_zeromq() {
 #--------------------------------------------------------
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
-LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set SymHop Paths
 INCLUDEPATH *= $${PWD}/../SymHop/include/
-LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set Ops Paths
 INCLUDEPATH *= $${PWD}/../Ops/include/
-LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
@@ -198,7 +198,7 @@ macx {
 #message(GUI Libs is $${LIBS})
 #message(GUI QMAKE_POST_LINK $$QMAKE_POST_LINK)
 
-RESOURCES += \  
+RESOURCES += \
     Resources.qrc
 
 # Release compile only, will add the application icon

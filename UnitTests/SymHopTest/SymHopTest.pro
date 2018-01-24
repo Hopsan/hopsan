@@ -18,7 +18,7 @@ DESTDIR = $${PWD}/../../bin
 TEMPLATE = app
 
 INCLUDEPATH += $${PWD}/../../SymHop/include/
-LIBS += -L$${PWD}/../../bin -lSymHop$${DEBUG_EXT}
+LIBS += -L$${PWD}/../../bin -lsymhop$${DEBUG_EXT}
 
 unix{
 QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'

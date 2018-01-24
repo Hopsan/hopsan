@@ -7,6 +7,7 @@ CONFIG += thread
 CONFIG -= app_bundle
 CONFIG -= qt
 
+TARGET = hopsanserverclient
 DESTDIR = $${PWD}/../../bin
 
 #--------------------------------------------------------

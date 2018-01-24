@@ -310,7 +310,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 
     QString hopsanBinDir = pGenerator->getBinPath();
     QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath());
-    lflags += QString(" -L\"%1\" -l%2").arg(hopsanBinDir).arg("HopsanCore" TO_STR(DEBUG_EXT))+" "+extraLFlags;
+    lflags += QString(" -L\"%1\" -l%2").arg(hopsanBinDir).arg("hopsancore" TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
     //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work) /Peter
     cflags += QString(" -Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(libRootDir);

@@ -9,19 +9,19 @@ failed=0
 searchdir="$1"
 startDir=$(pwd)
 cd bin
-if [ -x HopsanCLI_d ]; then
-  cmd="./HopsanCLI_d"
-elif [ -x HopsanCLI ]; then
-  cmd="./HopsanCLI"
+if [ -x hopsancli_d ]; then
+  cmd="./hopsancli_d"
+elif [ -x hopsancli ]; then
+  cmd="./hopsancli"
 else
-  echo "Error: HopsanCLI not found"
+  echo "Error: hopsancli not found"
   exit 1
 fi
 
 echo "Using $cmd for evaluation"
 #sleep 1
 
-# Now run HopsanCLI model unit test on all  hopsanvalidationconfig files found
+# Now run hopsancli model unit test on all  hopsanvalidationconfig files found
 echo    "**********************************************************" > valtest_failed
 echo -n "Validation tests that failed: " >> valtest_failed
 echo `date` >> valtest_failed

@@ -1,1 +1,0 @@
-call g++.exe -Dhopsan=hopsan -fPIC -w -Wl,--rpath -Wl,"C:/Users/robbr48/Documents/Subversion/Hopsan_trunk/componentLibraries/devLibraries/ForkLifterLib" -shared ForkLifterLib.cc -o ForkLifterLib.dll -I"C:/Program Files/Hopsan/bin/../HopsanCore/include/" -L"C:/Program Files/Hopsan/bin/" -lHopsanCore 

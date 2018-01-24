@@ -8,6 +8,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+TARGET = hopsanserver
 DESTDIR = $${PWD}/../../bin
 
 #--------------------------------------------------------

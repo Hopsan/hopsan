@@ -226,7 +226,7 @@ The compilation goes through two phases, first the .cc file(s) are compiled and 
 If something is wrong in your code you may get compilation errors in the first phase, you will need to correct those before the linking step can proceed. You should also pay attention to warnings, they may indicate that your code will not produce the expected result. The error and warning messages are _usually_ quite descriptive and points to the line where the problem comes from.
 
 You may also get linker errors which are a bit more difficult to understand if you are not used to compiling you own code.
-If you get something similar to the following error message: `"cannot find -lHopsanCore"` you have probably set the \e LIBS path incorrectly in your Qt project file. It should point to where the HopsanCore .dll, .so, .dynlib file is located. Also specify the correct _release_ or _debug_ HopsanCore file `-lHopsancore` or `-lHopsanCore_d`
+If you get something similar to the following error message: `"cannot find -lhopsancore"` you have probably set the \e LIBS path incorrectly in your Qt project file. It should point to where the HopsanCore .dll, .so, .dynlib file is located. Also specify the correct _release_ or _debug_ HopsanCore file `-lhopsancore` or `-lhopsancore_d`
 
 \printtodo{This section should list common compilation and linking errors and who to solve them}
 */

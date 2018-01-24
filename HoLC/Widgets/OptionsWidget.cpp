@@ -144,9 +144,9 @@ void OptionsWidget::setHopsanPath(const QString &path)
     bool success = true;
     QString lib, includeDir;
 #ifdef _WIN32
-    lib = path+"/bin/HopsanCore.dll";
+    lib = path+"/bin/hopsancore.dll";
 #else
-    lib = path+"/bin/libHopsanCore.so";
+    lib = path+"/bin/libhopsancore.so";
 #endif
     if(!QFile::exists(lib))
     {

@@ -51,7 +51,7 @@ Hopsan and modeFRONTIER will communicate by using comma-separated files (.csv). 
 \item Go to the folder you created
 \item Execute HopsanCLI with the following command (change the Hopsan installation path to the one you have):
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, breaklines=true]
-c:\"Program Files (x86)"\hopsan\bin\HopsanCLI --hmf PositionServo.hmf    --simulate hmf --resultsFinalCSV resultsFinal.csv 
+c:\"Program Files (x86)"\hopsan\bin\hopsancli --hmf PositionServo.hmf    --simulate hmf --resultsFinalCSV resultsFinal.csv 
     --parameterExport parameters.csv
 \end{lstlisting}
 \end{itemize}
@@ -177,17 +177,17 @@ The objective function in modeFRONTIER will be to simply minimize the value obta
 \pagebreak
 
 \tutitem{Write a script for controlling HopsanCLI}
-Hopsan will be controlled through the command line interface (\texttt{HopsanCLI.exe}) from a batch script in modeFRONTIER.
+Hopsan will be controlled through the command line interface (\texttt{hopsancli.exe}) from a batch script in modeFRONTIER.
 \begin{itemize}
 \item Double-click on the script node
 
 \icon{0}{gfx/modefrontier/dos_batch_script.png}{DOS Batch Script}
 
-\item Set \textit{"Name"} to \textit{"HopsanCLI"}
+\item Set \textit{"Name"} to \textit{"hopsancli"}
 \item Click on \textit{"Edit DOS Batch Script"}
 \item Enter the following command:
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily, breaklines=true]
-C:\"Program Files (x86)"\Hopsan\bin\HopsanCLI --hmf PositionServo.hmf
+C:\"Program Files (x86)"\Hopsan\bin\hopsancli --hmf PositionServo.hmf
     --simulate hmf --resultsFinalCSV resultsFinal.csv 
     --parameterImport parameters.csv
 \end{lstlisting}
@@ -240,7 +240,7 @@ First we need to generate a new .csv file to use as a template for the data.
 \item Open the command prompt in Windows and go to your folder
 \item Start HopsanCLI with the following command:
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily, breaklines=true]
-c:\Program Files (x86)"\hopsan\bin\HopsanCLI --hmf PositionServo.hmf 
+c:\Program Files (x86)"\hopsan\bin\hopsancli --hmf PositionServo.hmf 
     --simulate hmf --resultsFinalCSV resultsFinal.csv  
 \end{lstlisting}
 \end{itemize}
@@ -256,7 +256,7 @@ Now we must modify the script where modeFRONTIER calls HopsanCLI, so that the fu
 \item Click on \textit{"Edit DOS Batch Script"}
 \item Modify the command to the following:
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily, breaklines=true]
-C:\"Program Files (x86)"\Hopsan\bin\HopsanCLI --hmf PositionServo.hmf
+C:\"Program Files (x86)"\Hopsan\bin\hopsancli --hmf PositionServo.hmf
     --simulate hmf --resultsFullCSV resultsFull.csv 
     --parameterImport parameters.csv
 \end{lstlisting}

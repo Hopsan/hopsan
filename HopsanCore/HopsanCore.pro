@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = HopsanCore
+TARGET = hopsancore
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
@@ -80,7 +80,7 @@ win32 {
         system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
     }
 }
-unix { 
+unix {
     LIBS += -ldl
 
     # Add runtime search path so that dynamically loaded libraries in the same directory can be found.
@@ -96,7 +96,7 @@ unix {
         system($${PWD}/../writeGitVersionHeader.sh $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
     }
 }
-macx { 
+macx {
     INCLUDEPATH += /opt/local/include/
     QMAKE_LIBDIR += /opt/local/lib/
 }

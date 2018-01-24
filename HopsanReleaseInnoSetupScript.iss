@@ -4,7 +4,7 @@
 #define MyAppName "Hopsan"
 #define MyAppPublisher "Linköping University"
 #define MyAppURL "http://www.iei.liu.se/flumes/hopsan"
-#define MyAppExeName "HopsanGUI.exe"
+#define MyAppExeName "hopsangui.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -68,7 +68,7 @@ Source: "{#MyFilesSource}\Scripts\*";  Excludes: "---*---";  DestDir: "{userdocs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"
-Name: "{group}\HoLC"; Filename: "{app}\bin\HoLC.exe"
+Name: "{group}\HoLC"; Filename: "{app}\bin\holc.exe"
 Name: "{group}\{cm:UserGuide,{#MyAppName}}"; Filename: "{app}\doc\html\index.html"
 Name: "{group}\{cm:ProjectHomepage,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
@@ -82,5 +82,5 @@ Filename: "{app}\Hopsan-release-notes.txt"; Description: "View release notes"; F
 [Registry]
 Root: HKCR; Subkey: ".hmf"; ValueType: string; ValueName: ""; ValueData: "HopsanModelFile"; Flags: uninsdeletevalue; Tasks: associatehmf
 Root: HKCR; Subkey: "HopsanModelFile"; ValueType: string; ValueName: ""; ValueData: "Hopsan Model File"; Flags: uninsdeletekey; Tasks: associatehmf
-Root: HKCR; Subkey: "HopsanModelFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\HopsanGUI.exe,1"; Tasks: associatehmf
-Root: HKCR; Subkey: "HopsanModelFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\HopsanGUI.exe"" ""%1"""; Tasks: associatehmf
+Root: HKCR; Subkey: "HopsanModelFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\hopsangui.exe,1"; Tasks: associatehmf
+Root: HKCR; Subkey: "HopsanModelFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\hopsangui.exe"" ""%1"""; Tasks: associatehmf

@@ -9,6 +9,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 DESTDIR = $${PWD}/../../bin
+TARGET = hopsanserverworker
 
 #--------------------------------------------------------
 # Set the ZeroMQ paths
@@ -28,7 +29,7 @@ INCLUDEPATH *= $${PWD}/../include
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../../Utilities/
 INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
-LIBS *= -L$${PWD}/../../bin -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../../bin -lhopsancore$${DEBUG_EXT}
 
 # -------------------------------------------------
 # Platform specific additional project options

@@ -6,7 +6,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 DESTDIR = $${PWD}/../../bin
-TARGET = HopsanAddressServer
+TARGET = hopsanaddressserver
 
 #--------------------------------------------------------
 # Set the ZeroMQ paths

@@ -8,7 +8,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = HopsanCLI
+TARGET = hopsancli
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
@@ -42,13 +42,13 @@ INCLUDEPATH *= $${PWD}/../Utilities
 DEFINES *= USEOPS
 contains(DEFINES, USEOPS) {
 INCLUDEPATH *= $${PWD}/../Ops/include
-LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
 }
 
 #--------------------------------------------------------
 # Set hopsan core paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include
-LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
 #--------------------------------------------------------
 
 CONFIG(debug, debug|release) {

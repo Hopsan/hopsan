@@ -12,7 +12,7 @@
   * Deactivate "Group Similar Messages" in the message widget at the bottom before loading a model.
   * Pay attention to any Warnings or Errors you may receive when loading your old model. If parameters fail to load they will be discarded.
   * Parameters and ports may have changed name, in such cases you have to manually set the parameter value that could not be loaded (according to messages).
-  
+
 - Sometime when exporting a model as PNG or PDF some components "vanish" or become very small. We have not been able to fix this problem.
   If this is a problem take a screen-shot instead. You can quickly hide all of the side widgets with a button on the left pane.
 
@@ -21,7 +21,7 @@
   If you do not want to change your system settings you can start Hopsan with the following command to locally ensure that U.S English numeric locale is used.
   Example:
     cd /opt/hopsan/bin
-    LC_NUMERIC=C; ./HopsanGUI
+    LC_NUMERIC=C; ./hopsangui
 
 ******************************
     Version History
@@ -303,7 +303,7 @@
 - Feature: A remote Hopsan simulation framework has been developed and is included in this release.
            Unfortunately there is no documentation about how to use it but if you are clever, you can probably figure it out.
            Run the following programs with the "--help" flag for more information:
-           HopsanAddressServer.exe, HopsanServer.exe, HopsanServerClient.exe, ServerMonitor.exe
+           hopsanaddressserver.exe, hopsanserver.exe, hopsanserverclient.exe, hopsanservermonitor.exe
            HopsanGUI can connect to the server(s) and run remote simulation, and some optimization algorithms can run in parallel if many server computers are set up.
            Note! This is VERY experimental.
 - Feature: It is now possible to set plot label in the component properties dialogue, this label will be used in plot legend (overwriting full name and alias)

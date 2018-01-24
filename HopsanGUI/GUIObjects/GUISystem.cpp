@@ -1840,7 +1840,7 @@ void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAc
 ////    {
 //        //! @todo Ship Mingw with Hopsan, or check if it exists in system and inform user if it does not.
 //    clBatchStream << "g++ -DWRAPPERCOMPILATION -c -Wl,--rpath,'$ORIGIN/.' HopsanFMU.cpp -I./include\n";
-//    clBatchStream << "g++ -shared -Wl,--rpath,'$ORIGIN/.' -o HopsanFMU.dll HopsanFMU.o -L./ -lHopsanCore";
+//    clBatchStream << "g++ -shared -Wl,--rpath,'$ORIGIN/.' -o HopsanFMU.dll HopsanFMU.o -L./ -lhopsancore";
 ////    }
 ////    else
 ////    {
@@ -1879,8 +1879,8 @@ void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAc
 ////    }
 //#elif linux
 //    QFile soFile;
-//    soFile.setFileName(gDesktopHandler.getExecPath() + "libHopsanCore.so");
-//    soFile.copy(savePath + "/libHopsanCore.so");
+//    soFile.setFileName(gDesktopHandler.getExecPath() + "libhopsancore.so");
+//    soFile.copy(savePath + "/libhopsancore.so");
 //#endif
 
 

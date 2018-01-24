@@ -369,8 +369,8 @@ int main(int argc, char* argv[])
                         string nthreads = to_string(requestNumThreads);
                         string uidstr = to_string(uid);
 
-                        std::string appName("HopsanServerWorker.exe");
-                        std::string cmdLine("HopsanServerWorker "+uidstr+" "+scport+" "+swport+" "+nthreads);
+                        std::string appName("hopsanserverworker.exe");
+                        std::string cmdLine("hopsanserverworker "+uidstr+" "+scport+" "+swport+" "+nthreads);
                         TCHAR tempCmdLine[cmdLine.size()*2];
                         strcpy_s(tempCmdLine, cmdLine.size()*2, cmdLine.c_str());
 
@@ -393,7 +393,7 @@ int main(int argc, char* argv[])
 #else
                         char name_buff[64], sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];
                         // Write name
-                        sprintf(name_buff, "%s", "HopsanServerWorker");
+                        sprintf(name_buff, "%s", "hopsanserverworker");
                         // Write port as char in buffer
                         sprintf(sport_buff, "%d", gServerConfig.mControlPort);
                         sprintf(wport_buff, "%d", int(workerPort));
@@ -405,7 +405,7 @@ int main(int argc, char* argv[])
                         char *argv[] = {name_buff, uid_buff, sport_buff, wport_buff, thread_buff, nullptr};
 
                         pid_t pid;
-                        int status = posix_spawn(&pid,"./HopsanServerWorker",nullptr,nullptr,argv,environ);
+                        int status = posix_spawn(&pid,"./hopsanserverworker",nullptr,nullptr,argv,environ);
                         if(status == 0)
                         {
                             std::cout << PRINTSERVER << nowDateTime() << " Launched Worker Process, pid: "<< pid << " port: " << workerPort << " uid: " << uid << " nThreads: " << requestNumThreads << endl;
