@@ -1748,39 +1748,6 @@ void ComponentSystem::setupLogSlotsAndTs(const double simStartT, const double si
     }
 }
 
-//! @brief Determines if all subnodes and subsystems subnodes should log data, Turn ALL ON or OFF
-//! @todo name of this function is bad, this is a toggle function
-void ComponentSystem::setAllNodesDoLogData(const bool logornot)
-{
-    // Do this systems nodes
-    if (logornot)
-    {
-
-        for (size_t i=0; i<mSubNodePtrs.size(); ++i)
-        {
-            mSubNodePtrs[i]->setLoggingEnabled(true);
-        }
-    }
-    else
-    {
-        for (size_t i=0; i<mSubNodePtrs.size(); ++i)
-        {
-            mSubNodePtrs[i]->setLoggingEnabled(false);
-        }
-    }
-
-    // Do all subsystems
-    SubComponentMapT::iterator scit;
-    for (scit=mSubComponentMap.begin(); scit!=mSubComponentMap.end(); ++scit)
-    {
-        if (scit->second->isComponentSystem())
-        {
-            //!< @todo maybe should use static cast (quicker) or overloaded function in Component instead of casting
-            dynamic_cast<ComponentSystem*>(scit->second)->setAllNodesDoLogData(logornot);
-        }
-    }
-}
-
 
 //! @brief Returns whether or not to keep node values instead of over writing with defaultStartValues
 bool ComponentSystem::keepsValuesAsStartValues()
