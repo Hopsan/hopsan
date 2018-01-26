@@ -1223,7 +1223,7 @@ Node *MultiPort::getNodePtr(const size_t subPortIdx)
 {
     if(mSubPortsVector.size() <= subPortIdx)
     {
-        mpComponent->addWarningMessage("MultiPort::getNodePtr(): mSubPortsSVector.size() <= portIdx");
+        mpComponent->addWarningMessage("MultiPort::getNodePtr(): mSubPortsVector.size() <= portIdx");
         return 0;
     }
     return mSubPortsVector[subPortIdx]->getNodePtr();
