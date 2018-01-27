@@ -957,11 +957,11 @@ void ComponentSystem::preAllocateLogSpace()
                     // Then we should disable logging for that node as logging the start value does not make sense
                     if ( ((*it)->getNumConnectedPorts() < 2) && ((*it)->getNumberOfPortsByType(ReadPortType) == 1) )
                     {
-                        (*it)->setLoggingEnabled(false);
+                        (*it)->setDoLogIfEnabled(false);
                     }
                     else
                     {
-                        (*it)->setLoggingEnabled(true);
+                        (*it)->setDoLogIfEnabled(true);
                         (*it)->preAllocateLogSpace(mnLogSlots);
                     }
                     success = true;
@@ -970,7 +970,7 @@ void ComponentSystem::preAllocateLogSpace()
                 {
                     //cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
                     addErrorMessage("Failed to allocate log data memory, try reducing the amount of log data", "FailedMemoryAllocation");
-                    (*it)->setLoggingEnabled(false);
+                    (*it)->setDoLogIfEnabled(false);
                     success = false;
                 }
             }

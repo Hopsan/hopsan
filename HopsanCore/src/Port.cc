@@ -60,10 +60,10 @@ Port::Port(const HString &rNodeType, const HString &rPortName, Component *pParen
     mSortHint = NoSortHint;
     mpNode = 0;
     mpStartNode = 0;
+    mEnableLogging = true;
 
     // Create the initial node
-    mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType.c_str());
-    this->setNode(mpNode);
+    setNode(getComponent()->getHopsanEssentials()->createNode(mNodeType.c_str()));
     if (getComponent()->getSystemParent())
     {
         getComponent()->getSystemParent()->addSubNode(mpNode);
@@ -253,7 +253,7 @@ double *Port::getNodeDataPtr(const size_t idx, const size_t subPortIdx) const
 
 
 //! @brief Set the node that the port is connected to
-//! @param [in] pNode A pointer to the Node, or 0 for NC dummy node
+//! @param [in] pNode A pointer to the Node
 void Port::setNode(Node* pNode)
 {
     if (!pNode)
@@ -262,8 +262,10 @@ void Port::setNode(Node* pNode)
     }
     else
     {
-        //! @todo what to do with log data (clear maybe) if dummy node
-        mpNode->removeConnectedPort(this);
+        if (mpNode)
+        {
+            mpNode->removeConnectedPort(this);
+        }
         mpNode = pNode;
         mpNode->addConnectedPort(this);
     }
@@ -427,6 +429,15 @@ bool Port::haveLogData(const size_t subPortIdx)
     return false;
 }
 
+void Port::setEnableLogging(const bool enableLog)
+{
+    mEnableLogging = enableLog;
+}
+
+bool Port::isLoggingEnabled() const
+{
+    return mEnableLogging;
+}
 
 //! @brief Get all node data descriptions
 //! @param [in] subPortIdx Ignored on non multi ports
@@ -892,7 +903,6 @@ SortHintEnumT SystemPort::getInternalSortHint()
     }
 }
 
-
 //! @brief PowerPort constructor
 PowerPort::PowerPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
@@ -982,7 +992,9 @@ WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Compone
 MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
     Port(rNodeType, rPortName, pParentComponent, pParentPort)
 {
-    // Do nothing special
+    // Do not log multiports,
+    // It is not possible to determin what sub port to log anyway
+    mEnableLogging = false;
 }
 
 MultiPort::~MultiPort()
@@ -1126,6 +1138,13 @@ std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t s
     return 0;
 }
 
+void MultiPort::setEnableLogging(const bool enableLog)
+{
+    HOPSAN_UNUSED(enableLog);
+    // Do nothing since multiports can not be logged
+}
+
+
 std::vector<double> *MultiPort::getDataVectorPtr(const size_t subPortIdx)
 {
     if (isConnected())
@@ -1216,6 +1235,15 @@ void MultiPort::removeSubPort(Port* ptr)
     }
 }
 
+//! @brief Adds a subport of a particular type to a multiport
+Port* MultiPort::addSubPort(const hopsan::PortTypesEnumT type)
+{
+    hopsan::Port* pNewSubPort = createPort(type, mNodeType, "noname_subport", 0, this);
+    pNewSubPort->setEnableLogging(mEnableLogging);
+    mSubPortsVector.push_back( pNewSubPort );
+    return pNewSubPort;
+}
+
 //! @brief Returns the node pointer from one of the subports in the port
 //! @param [in] subPortIdx The sub port to retrieve from, (range check is performed)
 //! @returns The node pointer in the sub port, or 0 if index out of range
@@ -1273,8 +1301,7 @@ PowerMultiPort::PowerMultiPort(const HString &rNodeType, const HString &rPortNam
 //! @brief Adds a subport to a powermultiport
 Port* PowerMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( createPort(PowerPortType, mNodeType, "noname_subport", 0, this) );
-    return mSubPortsVector.back();
+    return MultiPort::addSubPort(PowerPortType);
 }
 
 ReadMultiPort::ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort) :
@@ -1295,8 +1322,7 @@ void ReadMultiPort::setSortHint(SortHintEnumT hint)
 //! @brief Adds a subport to a readmultiport
 Port* ReadMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( createPort(ReadPortType, mNodeType, "noname_subport", 0, this) );
-    return mSubPortsVector.back();
+    return MultiPort::addSubPort(ReadPortType);
 }
 
 //! @brief A very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
