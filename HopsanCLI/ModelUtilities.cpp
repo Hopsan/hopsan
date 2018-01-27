@@ -522,3 +522,39 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
         printErrorMessage("Could not open file: " + filePath);
     }
 }
+
+hopsan::Port* getPortWithFullName(hopsan::ComponentSystem *pRootSystem, const std::string &fullPortName)
+{
+    std::vector<std::string> nameParts;
+    splitStringOnDelimiter(fullPortName, '#', nameParts);
+    hopsan::ComponentSystem* pCurrentSystem = pRootSystem;
+    hopsan::Component* pComponent = nullptr;
+    for (const auto& namePart : nameParts)
+    {
+        // If component has been found, then look for the port
+        if (pComponent)
+        {
+            return pComponent->getPort(namePart.c_str());
+        }
+        else
+        {
+            // First check if the component is a sub system, in which case the loop continues to the next part
+            auto pSystemComponent = pCurrentSystem->getSubComponentSystem(namePart.c_str());
+            if (pSystemComponent)
+            {
+                pCurrentSystem = pSystemComponent;
+            }
+            // Else check if this is an ordinary component
+            else
+            {
+                pComponent = pCurrentSystem->getSubComponent(namePart.c_str());
+                // If not found, maybe the name is that of an interface port (system port)
+                if (!pComponent)
+                {
+                    return pCurrentSystem->getPort(namePart.c_str());
+                }
+            }
+        }
+    }
+    return nullptr;
+}

@@ -250,6 +250,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> parameterImportOption("", "parameterImport", "CSV file with parameter values to import", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> hvcTestOption("t","validate","Perform model validation based on HopsanValidationConfiguration",false,"","Path to .hvc file", cmd);
         TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
+        TCLAP::ValueArg<std::string> logonlyOption("","logonly","If specified, log only given ports. Can be a file (one full port name per line) or coma separated list.",false,"","string", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
         TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
@@ -852,6 +853,46 @@ int main(int argc, char *argv[])
                         size_t nSamp = atoi(nLogSamplesOption.getValue().c_str());
                         cout << "Setting nLogSamples to: " << nSamp << endl;
                         pRootSystem->setNumLogSamples(nSamp);
+                    }
+
+                    if (logonlyOption.isSet())
+                    {
+                        std::vector<std::string> enabled_ports;
+                        auto file_or_list = logonlyOption.getValue();
+                        // Check if argument is a file, if so, read from it line-by-line
+                        std::ifstream port_name_file(file_or_list);
+                        if (port_name_file.is_open())
+                        {
+                            std::string line;
+                            while(std::getline(port_name_file, line))
+                            {
+                                if (!line.empty())
+                                {
+                                    enabled_ports.push_back(line);
+                                }
+                            }
+                            port_name_file.close();
+                        }
+                        // Else read , separated string
+                        else
+                        {
+                            splitStringOnDelimiter(file_or_list,',',enabled_ports);
+                        }
+
+                        // Now disable all nodes and then enable the requested ones
+                        forEachPort(pRootSystem, [](hopsan::Port& port){port.setEnableLogging(false);});
+                        for (const auto& port_name : enabled_ports)
+                        {
+                            hopsan::Port* pPort = getPortWithFullName(pRootSystem, port_name);
+                            if (pPort)
+                            {
+                                pPort->setEnableLogging(true);
+                            }
+                            else
+                            {
+                                printWarningMessage("Could not find port: '"+port_name+"' when processing logonly input");
+                            }
+                        }
                     }
 
                     // Apply loaded simulation states or only load start values
