@@ -184,54 +184,52 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
             if (pComp)
             {
                 //cout << "comp: " << c << " of: " << names.size() << endl;
-                if (pComp->isComponentSystem())
+                vector<Port*> ports = pComp->getPortPtrVector();
+                for (size_t p=0; p<ports.size(); ++p)
                 {
-                    // Save results for subsystem
-                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix+pComp->getName().c_str()+"$", pFile);
-                }
-                else
-                {
-                    vector<Port*> ports = pComp->getPortPtrVector();
-                    for (size_t p=0; p<ports.size(); ++p)
+                    //cout << "port: " << p << " of: " << ports.size() << endl;
+                    Port *pPort = ports[p];
+                    if (!pPort->isLoggingEnabled())
                     {
-                        //cout << "port: " << p << " of: " << ports.size() << endl;
-                        Port *pPort = ports[p];
-                        if (!pPort->isLoggingEnabled())
+                        // Ignore ports that have logging disabled
+                        continue;
+                    }
+                    const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
+                    if (pVars)
+                    {
+                        for (size_t v=0; v<pVars->size(); ++v)
                         {
-                            // Ignore ports that have logging disabled
-                            continue;
-                        }
-                        const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
-                        if (pVars)
-                        {
-                            for (size_t v=0; v<pVars->size(); ++v)
-                            {
-                                HString fullname = prefix.c_str() + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
+                            HString fullname = prefix.c_str() + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
 
-                                if (howMany == Final)
+                            if (howMany == Final)
+                            {
+                                *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
+                                *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
+                            }
+                            else if (howMany == Full)
+                            {
+                                // Only write something if data has been logged (skip ports that are not logged)
+                                // We assume that the data vector has been cleared
+                                if (pPort->getLogDataVectorPtr()->size() > 0)
                                 {
                                     *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
-                                    *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
-                                }
-                                else if (howMany == Full)
-                                {
-                                    // Only write something if data has been logged (skip ports that are not logged)
-                                    // We assume that the data vector has been cleared
-                                    if (pPort->getLogDataVectorPtr()->size() > 0)
+                                    //! @todo what about time vector
+                                    vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                                    for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
                                     {
-                                        *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
-                                        //! @todo what about time vector
-                                        vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
-                                        for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
-                                        {
-                                            *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
-                                        }
-                                        *pFile << endl;
+                                        *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
                                     }
+                                    *pFile << endl;
                                 }
                             }
                         }
                     }
+                }
+
+                // Recurse into subsystems
+                if (pComp->isComponentSystem())
+                {
+                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix+pComp->getName().c_str()+"$", pFile);
                 }
             }
         }
