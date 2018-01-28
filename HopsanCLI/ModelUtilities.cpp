@@ -196,9 +196,9 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                     {
                         //cout << "port: " << p << " of: " << ports.size() << endl;
                         Port *pPort = ports[p];
-                        if (pPort->isMultiPort())
+                        if (!pPort->isLoggingEnabled())
                         {
-                            // Ignore multiports, not possible to determin what we want to log anyway
+                            // Ignore ports that have logging disabled
                             continue;
                         }
                         const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
