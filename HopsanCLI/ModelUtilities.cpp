@@ -160,7 +160,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
         //! @todo alias a for time ? is that even posible
         if (howMany == Final)
         {
-            *pFile << prefix.c_str() << "Time,,s," << pSys->getTime() << endl;
+            *pFile << prefix.c_str() << "Time,,s," << std::scientific << pSys->getTime() << endl;
         }
         else if (howMany == Full)
         {
@@ -170,7 +170,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 *pFile << prefix.c_str() << "Time,,s";
                 for (size_t t=0; t<pLogTimeVector->size(); ++t)
                 {
-                    *pFile << "," << (*pLogTimeVector)[t];//!< @todo what about precission
+                    *pFile << "," << std::scientific << (*pLogTimeVector)[t];
                 }
                 *pFile << endl;
             }
@@ -204,7 +204,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                             if (howMany == Final)
                             {
                                 *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
-                                *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
+                                *pFile << "," << std::scientific << pPort->readNode(v) << endl;
                             }
                             else if (howMany == Full)
                             {
@@ -217,7 +217,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                                     vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
                                     for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
                                     {
-                                        *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
+                                        *pFile << "," << std::scientific << (*pLogData)[t][v];
                                     }
                                     *pFile << endl;
                                 }
