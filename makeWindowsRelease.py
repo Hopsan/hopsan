@@ -602,7 +602,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     os.system(r'generateLibraryFiles.bat -nopause')
     os.chdir(hopsanDir)
 
-    copy_file(r'HopsanGUI\graphics\splash2.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
+    copy_file(r'HopsanGUI\graphics\splash.svg', r'HopsanGUI\graphics\tempdummysplash.svg')
 
     fullversion = versionnumber+'.'+revisionnumber
     if not dodevrelease:

@@ -60,8 +60,8 @@ if [ $doDevRelease = "false" ]; then
   sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i bak HopsanGUI/version_gui.h
 
   # Set splash screen version number
-  sed "s|0\.0\.0|$version|g" -i bak HopsanGUI/graphics/splash2.svg
-  $Inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
+  sed "s|0\.0\.0|$version|g" -i bak HopsanGUI/graphics/splash.svg
+  $Inkscape ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
   
   # Make sure development flag is not defined
   sed "s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|g" -i bak HopsanGUI/HopsanGUI.pro
