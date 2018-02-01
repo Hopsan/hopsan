@@ -1,0 +1,67 @@
+name: hopsan
+version: 'HOPSAN_FULL_RELEASE_VERSION'
+summary: A modelling and simulation tool for fluid power and mechatronic systems.
+description: |
+  Hopsan is a modelling and simulation environment for fluid and mechatronic systems. It was originally developed for simulation of fluid power systems, but has also been extended with support for other domains such as electric power, mechanics, flight and vehicle dynamics.
+  .
+  Hopsan uses bi-directional delay lines, (or transmission line elements TLM) to connect physical component models, but also supports signal flow modelling with common mathematical operators and functions.
+
+icon: HopsanGUI/graphics/uiicons/hopsan.png
+
+grade: HOPSAN_SNAP_GRADE
+confinement: devmode
+
+apps:
+  cli:
+    command: bin/HopsanCLI
+    plugs: [home]
+
+  gui:
+    command: desktop-launch $SNAP/bin/HopsanGUI
+    plugs: [home, x11, desktop-legacy, opengl, network]
+
+  holc:
+    command: desktop-launch $SNAP/bin/HoLC
+    plugs: [home, x11, desktop-legacy]
+
+  addresserver:
+    command: bin/HopsanAddressServer
+    plugs: [home, network, network-bind]
+
+  server:
+    command: bin/HopsanServer
+    plugs: [home, network, network-bind]
+
+  serverworker:
+    command: bin/HopsanServerWorker
+    plugs: [home, network, network-bind]
+
+  serverclient:
+    command: bin/HopsanServerClient
+    plugs: [home, network]
+
+  servermonitor:
+    command: bin/ServerMonitor
+    plugs: [home, network]
+
+
+parts:
+  hopsan:
+    source: .
+    plugin: qmake
+    qt-version: qt5
+    build-packages: [patchelf, unzip, cmake, libtool-bin, pkg-config, doxygen, graphviz, dvipng, inkscape, libzmq3-dev, python3-dev, libhdf5-dev, libmarkdown2-dev, qt5-default, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libqwt-qt5-dev]
+    prepare: |
+      cd ../src
+      echo 'TEMPLATE = subdirs' > hopsan.pro
+      echo 'CONFIG += ordered' >> hopsan.pro
+      echo 'SUBDIRS = HopsanCore componentLibraries Ops HopsanCLI HopsanRemote SymHop HopsanGenerator HopsanGUI HoLC' >> hopsan.pro
+      ./buildDebPackage/prepareSourceCode.sh $(pwd) $(pwd) HOPSAN_BASE_VERSION HOPSAN_RELEASE_REVISION HOPSAN_FULL_RELEASE_VERSION HOPSAN_DEVELOPMENT_RELEASE false
+      cd Dependencies
+      ./setupFMILibrary.sh
+      ./setupKatex.sh
+      #./setupPythonQt.sh release 3 3.2
+    project-files: ['hopsan.pro']
+    install: |
+      ./buildDebPackage/copyInstallHopsan.sh $(pwd)/../src ${SNAPCRAFT_PART_INSTALL}
+    after: [desktop-qt5]

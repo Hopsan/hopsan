@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=HoLC
+Comment=Hopsan Library Creator
+Icon=holc-icon192x192.png
+TryExec=/opt/hopsan/bin/HoLC
+Exec=/opt/hopsan/bin/HoLC
+Path=/opt/hopsan/bin
+Categories=Science;Engineering;Education;
