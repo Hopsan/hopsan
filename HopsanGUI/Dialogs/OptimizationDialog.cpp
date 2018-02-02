@@ -497,7 +497,8 @@ void OptimizationDialog::updateParameterOutputs(const std::vector<double> &objec
         for(int j=0; j<values[i].size(); ++j)
         {
             QString numStr = QString::number(values[i][j], 'g', 8);
-            while(numStr.size() < 13)
+            numStr.append(",");
+            while(numStr.size() < 15)
             {
                 numStr.append(" ");
             }
