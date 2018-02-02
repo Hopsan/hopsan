@@ -92,7 +92,7 @@ fi
 # Set splash screen version number
 sed "s|0\.0\.0|$base_version|g" -i HopsanGUI/graphics/splash.svg
 sed "s|20170000\.0000|$release_revision|g" -i HopsanGUI/graphics/splash.svg
-inkscape ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
+inkscape ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-png ./HopsanGUI/graphics/splash.png
 
 # If selected, make changes to compile defaultLibrary into Hopsan Core
 # Deprecated, we should not do this anymore
