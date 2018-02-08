@@ -6,7 +6,7 @@
 
 namespace Ops {
 
-class WorkerGenetic : public Worker
+class OPS_DLLAPI WorkerGenetic : public Worker
 {
 public:
   WorkerGenetic(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
@@ -33,8 +33,8 @@ private:
   size_t mParent1,mParent2;
   std::vector<double> mChild1, mChild2;
 
-  double mCrossoverProbability;
-  double mMutationProbability;
+  double mCrossoverProbability = 0.2;
+  double mMutationProbability = 0.1;
   std::default_random_engine mRandomGenerator;
 };
 

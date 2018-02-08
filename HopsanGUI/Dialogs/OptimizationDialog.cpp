@@ -144,11 +144,11 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpCRLineEdit->setValidator(new QDoubleValidator());
 
     mpCPLabel = new QLabel("Crossover probability: ");
-    mpCPLineEdit = new QLineEdit("0.5", this);
+    mpCPLineEdit = new QLineEdit("0.2", this);
     mpCPLineEdit->setValidator(new QDoubleValidator());
 
     mpMPLabel = new QLabel("Mutation probability: ");
-    mpMPLineEdit = new QLineEdit("0.5", this);
+    mpMPLineEdit = new QLineEdit("0.1", this);
     mpMPLineEdit->setValidator(new QDoubleValidator());
 
     mpNumModelsLabel = new QLabel("Number of models: ");
@@ -1981,7 +1981,7 @@ void OptimizationDialog::recreateCoreProgressBars()
             mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         }
         break;
-    case Ops::ParameterSweep :    //Particle swarm
+    case Ops::ParameterSweep :    //Parameter sweep
         if(showProgressPerParticle)
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
@@ -1998,7 +1998,7 @@ void OptimizationDialog::recreateCoreProgressBars()
             mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         }
         break;
-    case Ops::Genetic:    //Particle swarm
+    case Ops::Genetic:    //Genetic algorithm
         if(showProgressPerParticle)
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)

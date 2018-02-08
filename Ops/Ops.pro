@@ -75,8 +75,8 @@ HEADERS += \
     include/OpsWorkerDifferentialEvolution.h \
     include/OpsWorkerControlledRandomSearch.h \
     include/OpsWorkerComplexBurmen.h \
-    include/OpsMessageHandler.h \
     include/OpsWorkerGenetic.h \
+    include/OpsMessageHandler.h \
     include/OpsWin32DLL.h
 
 

@@ -1,4 +1,4 @@
-# Auto-generated HCOM script for particle swarm optimization algorithm
+# Auto-generated HCOM script for genetic optimization algorithm
 
 #Evaluate function
 define setpars

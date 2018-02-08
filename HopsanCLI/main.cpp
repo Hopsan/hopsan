@@ -61,6 +61,7 @@
 #include "OpsWorkerDifferentialEvolution.h"
 #include "OpsWorkerParticleSwarm.h"
 #include "OpsWorkerParameterSweep.h"
+#include "OpsWorkerGenetic.h"
 #endif
 
 // If debug extension has not already been defined then define it to prevent compilation error
@@ -429,6 +430,8 @@ int main(int argc, char *argv[])
             double C1 = 2;
             double C2 = 2;
             double vmax = 2;
+            double CP = 0.2;
+            double MP = 0.1;
             std::string parallelMethod = "multidistance";
             double alphaMin = 0.0;
             double alphaMax = 2.0;
@@ -540,6 +543,14 @@ int main(int argc, char *argv[])
                 {
                     vmax = std::stod(words[1]);
                 }
+                else if(words.size() == 2 && words[0] == "CP")
+                {
+                    CP = std::stod(words[1]);
+                }
+                else if(words.size() == 2 && words[0] == "MP")
+                {
+                    MP = std::stod(words[1]);
+                }
                 else if(words.size() == 2 && words[0] == "sigma")
                 {
                     sigma = std::stod(words[1]);
@@ -646,6 +657,8 @@ int main(int argc, char *argv[])
                         pBaseWorker = new Ops::WorkerParticleSwarm(pEvaluator, pOpsMessages);
                     else if(algorithm == "parametersweep")
                         pBaseWorker = new Ops::WorkerParameterSweep(pEvaluator, pOpsMessages);
+                    else if(algorithm == "genetic")
+                        pBaseWorker = new Ops::WorkerGenetic(pEvaluator, pOpsMessages);
                     else
                         pBaseWorker = new Ops::Worker(pEvaluator, pOpsMessages);
 
@@ -726,6 +739,12 @@ int main(int argc, char *argv[])
                         pWorker->setC1(C1);
                         pWorker->setC2(C2);
                         pWorker->setVmax(vmax);
+                    }
+                    else if(algorithm == "genetic")
+                    {
+                        Ops::WorkerGenetic *pWorker = dynamic_cast<Ops::WorkerGenetic*>(pBaseWorker);
+                        pWorker->setCrossoverProbability(CP);
+                        pWorker->setMutationProbability(MP);
                     }
 
                     //Error checking

@@ -56,7 +56,7 @@ void WorkerGenetic::initialize()
 }
 
 
-//! @brief Executes a particle swarm algorithm. optParticleInit() must be called before this one.
+//! @brief Executes a genetic algorithm
 void WorkerGenetic::run()
 {
     mpMessageHandler->printMessage("Running optimization with genetic algorithm.");
@@ -83,7 +83,7 @@ void WorkerGenetic::run()
         mpEvaluator->evaluateAllCandidates();
 
 
-        for(int i=0; i<mNumPoints; ++i)
+        for(size_t i=0; i<mNumPoints; ++i)
         {
             calculateBestAndWorstId();
             int worst = getWorstId();
@@ -98,10 +98,10 @@ void WorkerGenetic::run()
 
         mpMessageHandler->objectivesChanged();
 
+        mpMessageHandler->stepCompleted(mIterationCounter);
+
         //Check convergence
         if(checkForConvergence()) break;      //Use complex method, it's the same principle
-
-        mpMessageHandler->stepCompleted(mIterationCounter);
     }
 
     if(mpMessageHandler->aborted())
@@ -150,7 +150,7 @@ void WorkerGenetic::setMutationProbability(double value)
 
 //! @brief Auxiliary function for selecting parents for crossover
 void WorkerGenetic::selectParents() {
-    double bestValue = 1e100;
+    double bestValue = std::numeric_limits<double>::max();
     for(size_t i=0; i<mNumPoints; ++i) {
         double value = mObjectives[i]*opsRand();
         if(value < bestValue) {
@@ -159,7 +159,7 @@ void WorkerGenetic::selectParents() {
         }
     }
 
-    bestValue = 1e100;
+    bestValue = std::numeric_limits<double>::max();
     for(size_t i=0; i<mNumPoints; ++i) {
         double value = mObjectives[i]*opsRand();
         if(value < bestValue && i != mParent1) {
