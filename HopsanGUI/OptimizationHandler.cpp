@@ -44,6 +44,7 @@
 #include "OpsWorkerDifferentialEvolution.h"
 #include "OpsWorkerControlledRandomSearch.h"
 #include "OpsWorkerComplexBurmen.h"
+#include "OpsWorkerGenetic.h"
 #include "MessageHandler.h"
 #include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
@@ -410,6 +411,14 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             }
             mpWorker = new Ops::WorkerComplexBurmen(mpEvaluator, mpOpsMessageHandler);
         }
+        else if(value == "ga" || value == "genetic")
+        {
+            if(mpWorker)
+            {
+                delete mpWorker;
+            }
+            mpWorker = new Ops::WorkerGenetic(mpEvaluator, mpOpsMessageHandler);
+        }
         return;
     }
     else if(var == "evalid")
@@ -603,6 +612,18 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         else if(var == "CR")
         {
             pWorker->setCrossoverProbability(value.toDouble());
+        }
+    }
+    else if(mpWorker->getAlgorithm() == Ops::Genetic)
+    {
+        Ops::WorkerGenetic *pWorker = dynamic_cast<Ops::WorkerGenetic*>(mpWorker);
+        if(var == "CP")
+        {
+           pWorker->setCrossoverProbability(value.toDouble());
+        }
+        else if(var == "MP")
+        {
+            pWorker->setMutationProbability(value.toDouble());
         }
     }
 }

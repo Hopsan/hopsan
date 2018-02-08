@@ -101,6 +101,7 @@ private:
     void generateComplexRFScript(const QString &subAlgorithm);
     void generateParticleSwarmScript();
     void generateDifferentialEvolutionScript();
+    void generateGeneticScript();
     void generateParameterSweepScript();
 
     void generateObjectiveFunctionCode(QString &templateCode);
@@ -146,6 +147,10 @@ private:
     QLineEdit *mpFLineEdit;
     QLabel *mpCRLabel;
     QLineEdit *mpCRLineEdit;
+    QLabel *mpCPLabel;
+    QLineEdit *mpCPLineEdit;
+    QLabel *mpMPLabel;
+    QLineEdit *mpMPLineEdit;
     QLabel *mpNumModelsLabel;
     QLineEdit *mpNumModelsLineEdit;
     QLabel *mpMethodLabel;
