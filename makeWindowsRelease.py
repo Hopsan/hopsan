@@ -426,6 +426,15 @@ def copyFileToDir(srcDir, srcFile, dstDir, keep_relative_path=True):
         print('Error: Source file '+src+' does not exist!')
 
 
+def checkFilesExistInDir(root_dir, list_of_files):
+    did_find_all = True;
+    for f in list_of_files:
+        file_path = os.path.join(root_dir, f)
+        if not fileExists(file_path):
+            printError(file_path+' does not exist!')
+            did_find_all = False
+    return did_find_all
+
 #  Copy srcDir into dstDir, creating dstDir if necessary
 def copyDirTo(srcDir, dstDir):
     srcDir = os.path.normpath(srcDir)
@@ -436,13 +445,13 @@ def copyDirTo(srcDir, dstDir):
             os.makedirs(dstDir)
         tgtDir = os.path.join(dstDir, lastpathelement(srcDir))
         if os.path.exists(tgtDir):
-            print('Error: tgtDir '+tgtDir+' already exists')
+            printError('tgtDir '+tgtDir+' already exists')
             return False
         print('Copying: '+srcDir+' to: '+tgtDir)
         shutil.copytree(srcDir, tgtDir)
         return True
     else:
-        print('Error: Src directory '+srcDir+' does not exist!')
+        printError('Src directory '+srcDir+' does not exist!')
         return False
 
 def move(src, dst):
@@ -1003,9 +1012,18 @@ else:
     gTemporaryBuildDir += r'\Hopsan-'+gReleaseFileVersionName+r'-win32'
 print("Using TempDir: "+gTemporaryBuildDir)
 
+qt_bins_ok = checkFilesExistInDir(qmakeDir, qtRuntimeBins)
+qt_plugins_ok = checkFilesExistInDir(qmakeDir+'/../plugins',qtPluginBins)
+mingw_bins_ok = checkFilesExistInDir(mingwDir, mingwBins)
+mingw_optbins_ok = checkFilesExistInDir(mingwDir+'/../opt/bin', mingwOptBins)
+deps_ok = checkFilesExistInDir(hopsanDir+'/Dependencies', dependencyFiles)
+
+success = success and qt_bins_ok and qt_plugins_ok and mingw_bins_ok and mingw_optbins_ok and deps_ok
+
 if not success:
     cleanUp()
-        
+    printError("Could not find all needed files.")
+
 if success:
     prepareSourceCode(gBaseVersion, gReleaseRevision, gDoDevRelease)
     if doBuild:
@@ -1013,9 +1031,9 @@ if success:
             success = False
             cleanUp()
             printError("Compilation script failed in compilation error.")
-    
+
 if success:
-    #Copy depedency bin files to bin diirectory
+    #Copy dependency bin files to bin directory
     for f in qtRuntimeBins:
         copyFileToDir(qmakeDir, f, hopsanDir+'/bin')
     for f in qtPluginBins:
