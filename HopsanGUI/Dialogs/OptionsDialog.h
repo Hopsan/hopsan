@@ -113,6 +113,7 @@ private:
     QCheckBox *mpShowHiddenNodeDataVarCheckBox;
     QCheckBox *mpPlotWindowsOnTop;
     QSpinBox *mpDefaultPloExportVersion;
+    QLineEdit *mpCustomTempPathLineEdit;
 };
 
 #endif // OPTIONSDIALOG_H

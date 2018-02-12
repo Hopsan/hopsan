@@ -379,6 +379,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden node data variables");
     mpPlotWindowsOnTop = new QCheckBox("Show plot windows on top of main window");
 
+    auto pCustomTempPathLabel = new QLabel(tr("Absolute path to custom temp directory (for log data cache)"));
+    mpCustomTempPathLineEdit = new QLineEdit();
+
     mpUnitScaleWidget = new QWidget(this);
     mpUnitScaleWidget->setPalette(this->palette());
     QScrollArea *pUnitScaleScrollArea = new QScrollArea(this);
@@ -398,6 +401,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpPlottingWidget = new QWidget(this);
     QGridLayout *pPlottingLayout = new QGridLayout(mpPlottingWidget);
     pPlottingLayout->addWidget(mpCacheLogDataCeckBox,             r, 0, 1, 3);
+    ++r;
+    pPlottingLayout->addWidget(pCustomTempPathLabel,              r, 0, 1, 3);
+    ++r;
+    pPlottingLayout->addWidget(mpCustomTempPathLineEdit,          r, 0, 1, 3);
     ++r;
     pPlottingLayout->addWidget(mpAutoLimitGenerationsCheckBox,    r, 0, 1, 3);
     ++r;
@@ -607,6 +614,7 @@ void OptionsDialog::setValues()
     gpConfig->setIntegerSetting(CFG_GENERATIONLIMIT, mpGenerationLimitSpinBox->value());
     gpConfig->setIntegerSetting(CFG_PLOEXPORTVERSION, mpDefaultPloExportVersion->value());
     gpConfig->setBoolSetting(CFG_CACHELOGDATA, mpCacheLogDataCeckBox->isChecked());
+    gpConfig->setStringSetting(CFG_CUSTOMTEMPPATH, mpCustomTempPathLineEdit->text());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
         gpModelHandler->getModel(i)->getLogDataHandler()->limitPlotGenerations();
@@ -716,6 +724,7 @@ void OptionsDialog::show()
     mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES));
     mpPlotWindowsOnTop->setChecked(gpConfig->getBoolSetting(CFG_PLOTWINDOWSONTOP));
     mpCacheLogDataCeckBox->setChecked(gpConfig->getBoolSetting(CFG_CACHELOGDATA));
+    mpCustomTempPathLineEdit->setText(gpConfig->getStringSetting(CFG_CUSTOMTEMPPATH));
 
     mpRemoteHopsanAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS));
     mpRemoteHopsanAddressServerAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
