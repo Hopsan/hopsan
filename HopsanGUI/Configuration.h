@@ -88,6 +88,7 @@
 #define CFG_PREFERINCLUDEDCOMPILER "preferincludedcompiler"
 #define CFG_GCC32DIR "gcc32dir"
 #define CFG_GCC64DIR "gcc64dir"
+#define CFG_CUSTOMTEMPPATH "customtemppath"
 
 #define CFG_REMOTEHOPSANADDRESS "remotehopsanaddress"
 #define CFG_REMOTEHOPSANADDRESSSERVERADDRESS "remotehopsanaddressserveraddress"
@@ -242,6 +243,7 @@ private:
     void loadModelSettings(QDomElement &rDomElement);
     void loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement);
     void refreshQuickAccessVariables();
+    void refreshIfDesktopPath(const QString &cfgKey);
 
     class QuantityUnitScale
     {

@@ -45,6 +45,8 @@
 #include <QTimer>
 #include "Utilities/GUIUtilities.h"
 
+namespace {
+
 #if QT_VERSION >= 0x050000
 #include <QStandardPaths>
 QString getStandardLocation(QStandardPaths::StandardLocation type)
@@ -105,6 +107,7 @@ bool mkpath(const QString &rPath)
     return mkpath(QDir(rPath));
 }
 
+} // End anon namespace
 
 DesktopHandler::DesktopHandler()
 {
@@ -161,7 +164,6 @@ DesktopHandler::DesktopHandler()
     mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
 #endif
     mFMUPath = mDefaultDocumentsPath+"import/FMU/";
-    mLogDataPath = mDefaultTempPath + "LogData/";
 }
 
 
@@ -242,7 +244,6 @@ void DesktopHandler::setupPaths()
     mModelsPath = getDocumentsPath()+"Models/";
     mScriptsPath = getDocumentsPath()+"Scripts/";
     mFMUPath = getDocumentsPath()+"import/FMU/";
-    mLogDataPath = getTempPath()+"LogData/";
 
      // Make sure backup folder exists, create it if not
     mkpath(getBackupPath());
@@ -394,9 +395,9 @@ const QString &DesktopHandler::getFMUPath() const
     return mFMUPath;
 }
 
-const QString &DesktopHandler::getLogDataPath() const
+QString DesktopHandler::getLogDataPath() const
 {
-    return mLogDataPath;
+    return getTempPath()+"/LogData/";
 }
 
 const QString &DesktopHandler::getResourcesPath() const
@@ -442,4 +443,10 @@ QString DesktopHandler::getIncludedCompilerPath(int expectedArch) const
         return compilerpath.canonicalPath();
     }
     return "";
+}
+
+void DesktopHandler::setCustomTempPath(const QString &tempPath)
+{
+    mCustomTempPath = tempPath;
+    mUseCustomTempPath = !mCustomTempPath.isEmpty();
 }
