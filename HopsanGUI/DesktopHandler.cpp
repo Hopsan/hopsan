@@ -368,7 +368,7 @@ const QString &DesktopHandler::getFMUPath() const
 
 QString DesktopHandler::getLogDataPath() const
 {
-    return getTempPath()+"/LogData/";
+    return getTempPath()+"/logdata_cache/";
 }
 
 const QString &DesktopHandler::getResourcesPath() const
