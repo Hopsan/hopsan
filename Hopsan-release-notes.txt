@@ -27,8 +27,13 @@
     Version History
 ******************************
 
-2.8.2 (2018-??-??)
+2.8.2 (2018-03-02)
 - Bug fixed: HCOM max(abs(var)) fail to evaluate if var is a vector (also affects min)
+- Bug fixed: Optimization: There should be a comma separator between the numbers in the parameter outputs
+
+- Enhancement: It is now possible to choose what temp directory to use for the Hopsan GUI cache.
+               This may be helpful if the default directory is located on a slow network drive.
+               After each simulation, potentially very large log data cache files will be written here.
 
 ------------------------------
 2.8.1 (2017-11-30)
