@@ -55,6 +55,8 @@
 
 #include <functional>
 
+namespace {
+
 class SaveFileHelper
 {
 public:
@@ -120,6 +122,8 @@ public:
         QFile::rename(temp_path, filePath);
     }
 };
+
+}
 
 
 //! @class Configuration
@@ -527,6 +531,7 @@ void Configuration::setStringSetting(const QString &rName, const QString &rValue
     Q_ASSERT(mStringSettings.contains(rName));
     mStringSettings.insert(rName, rValue);
     refreshQuickAccessVariables();
+    refreshIfDesktopPath(rName);
     saveToXml();
 }
 
@@ -561,6 +566,7 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     for (auto it = mStringSettings.begin(); it != mStringSettings.end(); ++it)
     {
         it.value() = parseDomStringNode(rDomElement.firstChildElement(it.key()), it.value());
+        refreshIfDesktopPath(it.key());
     }
 
     // Load bool settings
@@ -1344,6 +1350,7 @@ void Configuration::registerSettings()
     mStringSettings.insert(CFG_FMUIMPORTDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_FMUEXPORTDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_LABVIEWEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_CUSTOMTEMPPATH, "");
     mStringSettings.insert(CFG_GCC64DIR, "");
     mStringSettings.insert(CFG_GCC32DIR, "");
 #ifndef _WIN32
@@ -1422,4 +1429,12 @@ QString Configuration::getGCCPath() const
 #else
     return getStringSetting(CFG_GCC32DIR);
 #endif
+}
+
+void Configuration::refreshIfDesktopPath(const QString &cfgKey)
+{
+    if (cfgKey == CFG_CUSTOMTEMPPATH)
+    {
+        gpDesktopHandler->setCustomTempPath(mStringSettings[CFG_CUSTOMTEMPPATH]);
+    }
 }

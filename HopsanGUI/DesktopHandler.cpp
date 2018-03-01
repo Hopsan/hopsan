@@ -45,6 +45,8 @@
 #include <QTimer>
 #include "Utilities/GUIUtilities.h"
 
+namespace {
+
 #if QT_VERSION >= 0x050000
 #include <QStandardPaths>
 QString getStandardLocation(QStandardPaths::StandardLocation type)
@@ -105,6 +107,7 @@ bool mkpath(const QString &rPath)
     return mkpath(QDir(rPath));
 }
 
+} // End anon namespace
 
 DesktopHandler::DesktopHandler()
 {
@@ -161,7 +164,6 @@ DesktopHandler::DesktopHandler()
     mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
 #endif
     mFMUPath = mDefaultDocumentsPath+"import/FMU/";
-    mLogDataPath = mDefaultTempPath + "LogData/";
 }
 
 
@@ -242,7 +244,6 @@ void DesktopHandler::setupPaths()
     mModelsPath = getDocumentsPath()+"Models/";
     mScriptsPath = getDocumentsPath()+"Scripts/";
     mFMUPath = getDocumentsPath()+"import/FMU/";
-    mLogDataPath = getTempPath()+"LogData/";
 
      // Make sure backup folder exists, create it if not
     mkpath(getBackupPath());
@@ -253,35 +254,6 @@ void DesktopHandler::setupPaths()
     // Select which scripts path to use, create it if not, if create not successful use dev dir
     //! @todo problem in linux if scripts must be changed, as they  are not installed to user home
     mkpath(getScriptsPath());
-
-    // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
-    qDebug() << "LogdataCache: " << getLogDataPath();
-    QDir logcache(getLogDataPath());
-    if (logcache.exists())
-    {
-        QStringList enteries = logcache.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-        if (!enteries.isEmpty())
-        {
-            QMessageBox msgBox;
-            msgBox.setText("There are files present in the LogCache directory!\n\n"
-                           "They may be used by an other instance of Hopsan or be leftover\n"
-                           "from an abnormal program termination\n\n"
-                           "(This message will automatically close after 10 seconds!)");
-            msgBox.setInformativeText("Do you want to clear them?");
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setDefaultButton(QMessageBox::No);
-            QTimer t;
-            t.setSingleShot(true);
-            t.connect(&t, SIGNAL(timeout()), &msgBox, SLOT(reject()));
-            t.start(10000);
-            int ret = msgBox.exec();
-            if (ret == QMessageBox::Yes)
-            {
-                removeDir(getLogDataPath());
-            }
-            t.stop();
-        }
-    }
 }
 
 
@@ -394,9 +366,9 @@ const QString &DesktopHandler::getFMUPath() const
     return mFMUPath;
 }
 
-const QString &DesktopHandler::getLogDataPath() const
+QString DesktopHandler::getLogDataPath() const
 {
-    return mLogDataPath;
+    return getTempPath()+"/logdata_cache/";
 }
 
 const QString &DesktopHandler::getResourcesPath() const
@@ -442,4 +414,41 @@ QString DesktopHandler::getIncludedCompilerPath(int expectedArch) const
         return compilerpath.canonicalPath();
     }
     return "";
+}
+
+void DesktopHandler::setCustomTempPath(const QString &tempPath)
+{
+    mCustomTempPath = tempPath;
+    mUseCustomTempPath = !mCustomTempPath.isEmpty();
+}
+
+void DesktopHandler::checkLogCacheForOldFiles()
+{
+    qDebug() << "LogdataCache: " << getLogDataPath();
+    QDir logcache(getLogDataPath());
+    if (logcache.exists())
+    {
+        QStringList enteries = logcache.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+        if (!enteries.isEmpty())
+        {
+            QMessageBox msgBox;
+            msgBox.setText("There are files present in the LogCache directory!\n\n"
+                           "They may be used by an other instance of Hopsan or be leftover\n"
+                           "from an abnormal program termination\n\n"
+                           "(This message will automatically close after 10 seconds!)");
+            msgBox.setInformativeText("Do you want to clear them?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+            QTimer t;
+            t.setSingleShot(true);
+            t.connect(&t, SIGNAL(timeout()), &msgBox, SLOT(reject()));
+            t.start(10000);
+            int ret = msgBox.exec();
+            if (ret == QMessageBox::Yes)
+            {
+                removeDir(getLogDataPath());
+            }
+            t.stop();
+        }
+    }
 }

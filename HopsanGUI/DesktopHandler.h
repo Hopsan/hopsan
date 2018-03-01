@@ -24,8 +24,6 @@
 
 //!
 //! @file   DesktopHandler.h
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2013-03-13
 //!
 //! @brief Contains a utility class for handling desktop interaction, especially paths
 //!
@@ -64,9 +62,13 @@ public:
     const QString &getMSVC2008X64Path() const;
     const QString &getMSVC2010X64Path() const;
     const QString &getFMUPath() const;
-    const QString &getLogDataPath() const;
+    QString getLogDataPath() const;
     const QString &getResourcesPath() const;
     QString getIncludedCompilerPath(int expectedArch=-1) const;
+
+    void setCustomTempPath(const QString &tempPath);
+
+    void checkLogCacheForOldFiles();
 
 private:
     QString mExecPath;
@@ -97,7 +99,6 @@ private:
     QString mMSVC2008X64Path;
     QString mMSVC2010X64Path;
     QString mFMUPath;
-    QString mLogDataPath;
     QString mResourcesPath; // Primarilly used for handling the Resources dir in a Apple App bundle
 };
 

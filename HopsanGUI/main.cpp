@@ -105,6 +105,9 @@ int main(int argc, char *argv[])
     //Create contents in MainWindow
     mainwindow.createContents();
 
+    // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
+    gpDesktopHandler->checkLogCacheForOldFiles();
+
     // Show main window and initialize workspace
     //QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
     mainwindow.initializeWorkspace();

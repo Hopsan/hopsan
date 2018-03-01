@@ -39,6 +39,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QApplication>
 
 #include "global.h"
 #include "Configuration.h"
@@ -379,6 +380,24 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpShowHiddenNodeDataVarCheckBox = new QCheckBox("Show (and collect) hidden node data variables");
     mpPlotWindowsOnTop = new QCheckBox("Show plot windows on top of main window");
 
+    auto pCustomTempPathLabel = new QLabel(tr("Absolute path to custom temp directory (for log data cache)"));
+    mpCustomTempPathLineEdit = new QLineEdit();
+    auto pCustomTempPathDialogButton = new QPushButton();
+    auto pCustomTempPathClearButton = new QPushButton();
+    pCustomTempPathDialogButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogOpenButton));
+    pCustomTempPathDialogButton->setToolTip(tr("Browse for custom temp directory"));
+    pCustomTempPathClearButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogDiscardButton));
+    pCustomTempPathClearButton->setToolTip(tr("Restore default temp directory"));
+    auto chooseCustomTempPath = [this](){
+        auto newPath = QFileDialog::getExistingDirectory(0, tr("Choose custom temporary directory"), QString(), QFileDialog::ShowDirsOnly);
+        if (!newPath.isEmpty())
+        {
+            this->mpCustomTempPathLineEdit->setText(newPath);
+        }
+    };
+    connect(pCustomTempPathDialogButton, &QPushButton::clicked, this, chooseCustomTempPath);
+    connect(pCustomTempPathClearButton, &QPushButton::clicked, mpCustomTempPathLineEdit, &QLineEdit::clear);
+
     mpUnitScaleWidget = new QWidget(this);
     mpUnitScaleWidget->setPalette(this->palette());
     QScrollArea *pUnitScaleScrollArea = new QScrollArea(this);
@@ -397,22 +416,30 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     int r=0;
     mpPlottingWidget = new QWidget(this);
     QGridLayout *pPlottingLayout = new QGridLayout(mpPlottingWidget);
-    pPlottingLayout->addWidget(mpCacheLogDataCeckBox,             r, 0, 1, 3);
+    pPlottingLayout->addWidget(mpCacheLogDataCeckBox,             r, 0, 1, 4);
     ++r;
-    pPlottingLayout->addWidget(mpAutoLimitGenerationsCheckBox,    r, 0, 1, 3);
+    pPlottingLayout->addWidget(pCustomTempPathLabel,              r, 0, 1, 4);
     ++r;
-    pPlottingLayout->addWidget(pGenerationLimitLabel,             r, 0, 1, 3);
-    pPlottingLayout->addWidget(mpGenerationLimitSpinBox,          r, 2, 1, 1);
+    pPlottingLayout->addWidget(mpCustomTempPathLineEdit,          r, 0, 1, 2);
+    pPlottingLayout->addWidget(pCustomTempPathDialogButton,       r, 2, 1, 1);
+    pPlottingLayout->addWidget(pCustomTempPathClearButton,        r, 3, 1, 1);
+
     ++r;
-    pPlottingLayout->addWidget(mpShowHiddenNodeDataVarCheckBox,   r, 0, 1, 3);
+    pPlottingLayout->addWidget(mpAutoLimitGenerationsCheckBox,    r, 0, 1, 4);
     ++r;
-    pPlottingLayout->addWidget(mpPlotWindowsOnTop,                r, 0, 1, 3);
+    pPlottingLayout->addWidget(pGenerationLimitLabel,             r, 0, 1, 4);
+    pPlottingLayout->addWidget(mpGenerationLimitSpinBox,          r, 2, 1, 2);
     ++r;
-    pPlottingLayout->addWidget(pDefaultPloExportLabel,            r, 0, 1, 3);
-    pPlottingLayout->addWidget(mpDefaultPloExportVersion,         r, 2, 1, 1);
+    pPlottingLayout->addWidget(mpShowHiddenNodeDataVarCheckBox,   r, 0, 1, 4);
     ++r;
-    pPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 3);
-    pPlottingLayout->setRowStretch(10, 1);
+    pPlottingLayout->addWidget(mpPlotWindowsOnTop,                r, 0, 1, 4);
+    ++r;
+    pPlottingLayout->addWidget(pDefaultPloExportLabel,            r, 0, 1, 4);
+    pPlottingLayout->addWidget(mpDefaultPloExportVersion,         r, 2, 1, 2);
+    ++r;
+    pPlottingLayout->addWidget(new QWidget(),                     r, 0, 1, 4);
+    pPlottingLayout->setRowStretch(r, 1);
+    pPlottingLayout->setColumnStretch(0, 1);
 
     QLabel *pCompiler32Label = new QLabel("32-bit GCC Compiler Path:");
     mpCompiler32LineEdit = new QLineEdit(this);
@@ -607,6 +634,7 @@ void OptionsDialog::setValues()
     gpConfig->setIntegerSetting(CFG_GENERATIONLIMIT, mpGenerationLimitSpinBox->value());
     gpConfig->setIntegerSetting(CFG_PLOEXPORTVERSION, mpDefaultPloExportVersion->value());
     gpConfig->setBoolSetting(CFG_CACHELOGDATA, mpCacheLogDataCeckBox->isChecked());
+    gpConfig->setStringSetting(CFG_CUSTOMTEMPPATH, mpCustomTempPathLineEdit->text());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
         gpModelHandler->getModel(i)->getLogDataHandler()->limitPlotGenerations();
@@ -716,6 +744,7 @@ void OptionsDialog::show()
     mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES));
     mpPlotWindowsOnTop->setChecked(gpConfig->getBoolSetting(CFG_PLOTWINDOWSONTOP));
     mpCacheLogDataCeckBox->setChecked(gpConfig->getBoolSetting(CFG_CACHELOGDATA));
+    mpCustomTempPathLineEdit->setText(gpConfig->getStringSetting(CFG_CUSTOMTEMPPATH));
 
     mpRemoteHopsanAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS));
     mpRemoteHopsanAddressServerAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
