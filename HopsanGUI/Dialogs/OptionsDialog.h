@@ -63,6 +63,7 @@ private slots:
     void setCompiler64Path();
     void setCompiler32Path(QString path);
     void setCompiler64Path(QString path);
+    void chooseCustomTempPath();
 
 signals:
     void paletteChanged();

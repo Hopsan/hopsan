@@ -388,15 +388,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pCustomTempPathDialogButton->setToolTip(tr("Browse for custom temp directory"));
     pCustomTempPathClearButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogDiscardButton));
     pCustomTempPathClearButton->setToolTip(tr("Restore default temp directory"));
-    auto chooseCustomTempPath = [this](){
-        auto newPath = QFileDialog::getExistingDirectory(0, tr("Choose custom temporary directory"), QString(), QFileDialog::ShowDirsOnly);
-        if (!newPath.isEmpty())
-        {
-            this->mpCustomTempPathLineEdit->setText(newPath);
-        }
-    };
-    connect(pCustomTempPathDialogButton, &QPushButton::clicked, this, chooseCustomTempPath);
-    connect(pCustomTempPathClearButton, &QPushButton::clicked, mpCustomTempPathLineEdit, &QLineEdit::clear);
+    connect(pCustomTempPathDialogButton, SIGNAL(clicked()), this, SLOT(chooseCustomTempPath()));
+    connect(pCustomTempPathClearButton, SIGNAL(clicked()), mpCustomTempPathLineEdit, SLOT(clear()));
 
     mpUnitScaleWidget = new QWidget(this);
     mpUnitScaleWidget->setPalette(this->palette());
@@ -860,3 +853,11 @@ void OptionsDialog::setCompilerPath(QString path, bool x64)
         mpCompiler32WarningLabel->setVisible(!exists);
     }
 }
+
+void OptionsDialog::chooseCustomTempPath(){
+    auto newPath = QFileDialog::getExistingDirectory(0, tr("Choose custom temporary directory"), QString(), QFileDialog::ShowDirsOnly);
+    if (!newPath.isEmpty())
+    {
+        mpCustomTempPathLineEdit->setText(newPath);
+    }
+};
