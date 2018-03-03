@@ -68,19 +68,19 @@ cd ${dst_directory}
 cd componentLibraries/defaultLibrary; ./generateLibraryFiles.py .; cd $OLDPWD
 
 # Set the Core Gui and CLI rev numbers, hashes and release version for this release
-sed "s|#define HOPSANCORE_COMMIT_HASH.*|#define HOPSANCORE_COMMIT_HASH ${corecommithash}|g" -i HopsanCore/include/HopsanCoreGitVersion.h
-sed "s|#define HOPSANCORE_COMMIT_TIMESTAMP.*|#define HOPSANCORE_COMMIT_TIMESTAMP ${corecommitdt}|g" -i HopsanCore/include/HopsanCoreGitVersion.h
-sed "s|#define HOPSANGUI_COMMIT_TIMESTAMP.*|#define HOPSANGUI_COMMIT_TIMESTAMP ${guicommitdt}|g" -i HopsanGUI/version_gui.h
-sed "s|#define HOPSANCLI_COMMIT_TIMESTAMP.*|#define HOPSANCLI_COMMIT_TIMESTAMP ${clicommitdt}|g" -i HopsanCLI/version_cli.h
+sed "s|#define HOPSANCORE_COMMIT_HASH .*|#define HOPSANCORE_COMMIT_HASH ${corecommithash}|g" -i HopsanCore/include/HopsanCoreGitVersion.h
+sed "s|#define HOPSANCORE_COMMIT_TIMESTAMP .*|#define HOPSANCORE_COMMIT_TIMESTAMP ${corecommitdt}|g" -i HopsanCore/include/HopsanCoreGitVersion.h
+sed "s|#define HOPSANGUI_COMMIT_TIMESTAMP .*|#define HOPSANGUI_COMMIT_TIMESTAMP ${guicommitdt}|g" -i HopsanGUI/version_gui.h
+sed "s|#define HOPSANCLI_COMMIT_TIMESTAMP .*|#define HOPSANCLI_COMMIT_TIMESTAMP ${clicommitdt}|g" -i HopsanCLI/version_cli.h
 
-sed "s|#define HOPSANRELEASEVERSION.*|#define HOPSANRELEASEVERSION \"${full_version_string}\"|g" -i HopsanGUI/version_gui.h
+sed "s|#define HOPSANRELEASEVERSION .*|#define HOPSANRELEASEVERSION \"${full_version_string}\"|g" -i HopsanGUI/version_gui.h
 
 # Handle official release preparation
 if [[ $doDevRelease = "false" ]]; then
   # Overwrite version numbers for official release so that allcomponents show the same version
-  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"${full_version_string}\"|g" -i HopsanCore/include/HopsanCoreVersion.h
-  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"${full_version_string}\"|g" -i HopsanGUI/version_gui.h
-  sed "s|#define HOPSANCLIVERSION.*|#define HOPSANCLIVERSION \"${full_version_string}\"|g" -i HopsanCLI/version_cli.h
+  sed "s|#define HOPSANCOREVERSION .*|#define HOPSANCOREVERSION \"${full_version_string}\"|g" -i HopsanCore/include/HopsanCoreVersion.h
+  sed "s|#define HOPSANGUIVERSION .*|#define HOPSANGUIVERSION \"${full_version_string}\"|g" -i HopsanGUI/version_gui.h
+  sed "s|#define HOPSANCLIVERSION .*|#define HOPSANCLIVERSION \"${full_version_string}\"|g" -i HopsanCLI/version_cli.h
 
   # Hide splash screen development warning
   sed "s|Development version||g" -i HopsanGUI/graphics/splash.svg

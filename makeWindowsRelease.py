@@ -617,9 +617,9 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     fullversion = versionnumber+'.'+revisionnumber
     if not dodevrelease:
         # Set version numbers (by changing .h files)
-        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
-        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
-        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
+        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION .*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
+        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION .*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
+        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION .*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
 
         # Hide splash screen development warning
         replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'Development version', '')
@@ -628,7 +628,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
         replace_pattern(r'HopsanGUI/HopsanGUI.pro', r'.*?DEFINES \*= DEVELOPMENT', r'#DEFINES *= DEVELOPMENT')
 
     # Set the release version definition
-    replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION.*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
+    replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION .*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
     
     # Set splash screen version and revision number
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.0\.0', versionnumber)
