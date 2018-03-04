@@ -54,7 +54,7 @@ lessThan(QT_MAJOR_VERSION, 5){
 DEFINES *= _USE_MATH_DEFINES
 
 # Turn on the Hopsan Core runtime log file
-DEFINES *= WRITEHOPSANCORELOG
+DEFINES *= HOPSANCORE_WRITELOG
 
 # Turn on multi-threading
 DEFINES *= MULTITHREADING

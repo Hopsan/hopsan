@@ -647,8 +647,8 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 
 def buildRelease():
 
-    # Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
-    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= MAINCORE', r'#DEFINES *= MAINCORE')
+    # Make sure we undefine HOPSANCORE_WRITELOG, so that MSVC dlls do not try to access the log file
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= HOPSANCORE_WRITELOG', r'#DEFINES *= HOPSANCORE_WRITELOG')
 
     # ========================================================
     #  Build HOPSANCORE with MSVC, else remove those folders
@@ -671,8 +671,8 @@ def buildRelease():
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x86"))
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x64"))
     
-    # Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
-    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= MAINCORE', 'DEFINES *= MAINCORE')
+    # Make sure the MinGW compilation uses the HOPSANCORE_WRITELOG define, so that log file is enabled
+    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= HOPSANCORE_WRITELOG', 'DEFINES *= HOPSANCORE_WRITELOG')
      
     # ========================================================
     #  BUILD WITH MINGW32
