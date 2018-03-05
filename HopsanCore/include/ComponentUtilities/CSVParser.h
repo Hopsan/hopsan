@@ -47,7 +47,7 @@ namespace hopsan {
 
 //! @ingroup ComponentUtilityClasses
 //! @brief The CSV file parser utility
-class DLLIMPORTEXPORT CSVParserNG
+class HOPSANCORE_DLLAPI CSVParserNG
 {
 public:
     CSVParserNG(const char separator_char = ',');

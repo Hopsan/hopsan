@@ -43,7 +43,7 @@ namespace hopsan {
 class Component;
 class ParameterEvaluatorHandler;
 
-class DLLIMPORTEXPORT ParameterEvaluator
+class HOPSANCORE_DLLAPI ParameterEvaluator
 {
     friend class ParameterEvaluatorHandler;
 public:
@@ -85,7 +85,7 @@ protected:
 };
 
 
-class DLLIMPORTEXPORT ParameterEvaluatorHandler
+class HOPSANCORE_DLLAPI ParameterEvaluatorHandler
 {
 public:
     ParameterEvaluatorHandler(Component* parentComponent);

@@ -24,10 +24,7 @@
 
 //!
 //! @file   win32dll.h
-//! @author <peter.nordin@liu.se>
-//! @date   2009-12-26
-//!
-//! @brief Handles DLLIMPORT, DLLEXPORT and DLLIMPORTEXPORT for win32 dll support
+//! @brief Configure symbol export/import for Windows DLL linking
 //!
 //$Id$
 
@@ -36,35 +33,37 @@
 
 #ifdef _WIN32
 
-//! Specifies that a function or class will only be exported on windows platforms
+//! Specifies that a function or class will be exported from a DLL  on Windows platforms
 #define DLLEXPORT __declspec(dllexport)
-//! Specifies that a function or class will only be imported on windows platforms
+//! Specifies that a function or class will be imported from a DLL on windows platforms
 #define DLLIMPORT __declspec(dllimport)
 
 //!
-//! @def DLLIMPORTEXPORT
-//! @brief Will either be DLLIMPORT or DLLEXPORT depending on how the files are used when compiling.
+//! @def HOPSANCORE_DLLAPI
+//! @brief Export or import symbol from a DLL
 //!
-//! If the files are compiled as part of a lib it will be DLLEXPORT
-//! If the files are included as a lib they will be DLLIMPORT
-//! This only applies to Windows operation systems
+//! If the core is compiled as a DLL, it should have the value DLLEXPORT,
+//! When an application depends on the core as a DLL and includes the header files,
+//! it should havevthe value DLLIMPORT
+//! If the core is build as astatic library, this macro should be empty.
+//! On non Windows platforms, it shall always be empty!
 //!
 
-#ifdef STATICCORE
-#define DLLIMPORTEXPORT
-#elif defined DOCOREDLLEXPORT
-#define DLLIMPORTEXPORT DLLEXPORT /* DLL export */
+#if defined HOPSANCORE_DLLEXPORT
+#define HOPSANCORE_DLLAPI DLLEXPORT
+#elif defined HOPSANCORE_DLLIMPORT
+#define HOPSANCORE_DLLAPI DLLIMPORT
 #else
-#define DLLIMPORTEXPORT DLLIMPORT /* EXE import */
+#define HOPSANCORE_DLLAPI
 #endif
 
-
 #else
-//Define nothing on non WIN32 systems
+
+// Define nothing on non windows systems
 #define DLLEXPORT
 #define DLLIMPORT
-#define DLLIMPORTEXPORT
+#define HOPSANCORE_DLLAPI
 
 #endif
 
-#endif // WIN32DLL_H_INCLUDED
+#endif

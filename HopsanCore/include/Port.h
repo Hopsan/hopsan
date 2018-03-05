@@ -52,7 +52,7 @@ namespace hopsan {
     enum PortTypesEnumT {UndefinedPortType, PowerPortType, BiDirectionalSignalPortType, ReadPortType, WritePortType, SystemPortType, MultiportType, PowerMultiportType, ReadMultiportType};
     enum SortHintEnumT {NoSortHint, Source, Destination, IndependentDestination};
 
-    class DLLIMPORTEXPORT Port
+    class HOPSANCORE_DLLAPI Port
     {
         friend class Component;
         friend class ComponentSystem;
@@ -432,7 +432,7 @@ namespace hopsan {
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);
-    HString DLLIMPORTEXPORT portTypeToString(const PortTypesEnumT type);
+    HString HOPSANCORE_DLLAPI portTypeToString(const PortTypesEnumT type);
 }
 
 #endif // PORT_H_INCLUDED

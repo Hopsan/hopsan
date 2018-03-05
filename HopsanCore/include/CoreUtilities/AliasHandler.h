@@ -43,7 +43,7 @@ namespace hopsan {
 
 class ComponentSystem;
 
-class DLLIMPORTEXPORT AliasHandler
+class HOPSANCORE_DLLAPI AliasHandler
 {
 public:
     AliasHandler(ComponentSystem *pSystem);

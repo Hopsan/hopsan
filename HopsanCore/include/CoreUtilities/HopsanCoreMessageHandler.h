@@ -65,7 +65,7 @@ public:
 
 class HopsanCoreMessageHandlerPrivates;
 
-class DLLIMPORTEXPORT HopsanCoreMessageHandler
+class HOPSANCORE_DLLAPI HopsanCoreMessageHandler
 {
 private:
     std::deque<HopsanCoreMessage*> mMessageQueue;

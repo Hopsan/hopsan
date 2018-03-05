@@ -40,7 +40,7 @@
 
 namespace hopsan {
 
-    class DLLIMPORTEXPORT IntegratorLimited
+    class HOPSANCORE_DLLAPI IntegratorLimited
     {
     public:
         void initialize(double timestep, double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);

@@ -45,7 +45,7 @@
 using namespace std;
 using namespace hopsan;
 
-size_t DLLIMPORTEXPORT determineActualNumberOfThreads(const size_t nDesiredThreads);
+size_t HOPSANCORE_DLLAPI determineActualNumberOfThreads(const size_t nDesiredThreads);
 
 
 #if __cplusplus >= 201103L

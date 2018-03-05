@@ -34,8 +34,8 @@ namespace hopsan {
 
 class ComponentSystem;
 
-void DLLIMPORTEXPORT saveSimulationPoint(HString fileName, ComponentSystem* pRootSystem);
-void DLLIMPORTEXPORT restoreSimulationPoint(HString fileName, ComponentSystem* pRootSystem, double &rTimeOffset);
+void HOPSANCORE_DLLAPI saveSimulationPoint(HString fileName, ComponentSystem* pRootSystem);
+void HOPSANCORE_DLLAPI restoreSimulationPoint(HString fileName, ComponentSystem* pRootSystem, double &rTimeOffset);
 
 }
 

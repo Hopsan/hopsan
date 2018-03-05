@@ -54,7 +54,7 @@ class HopsanCoreMessageHandler;
 class QuantityRegister;
 
 //! @brief This class gives access to HopsanCore for model and externalLib loading as well as component creation and simulation.
-class DLLIMPORTEXPORT HopsanEssentials
+class HOPSANCORE_DLLAPI HopsanEssentials
 {
 private:
     NodeFactory* mpNodeFactory;

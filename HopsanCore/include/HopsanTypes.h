@@ -36,7 +36,7 @@ namespace hopsan {
 template<typename T>
 class HVector;
 
-class DLLIMPORTEXPORT HString
+class HOPSANCORE_DLLAPI HString
 {
 private:
     char *mpDataBuffer;

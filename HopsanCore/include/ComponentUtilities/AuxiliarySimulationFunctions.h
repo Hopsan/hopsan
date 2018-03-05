@@ -46,30 +46,30 @@ const double pi = 3.14159265358979323846;
 // We do not use M_PI here as it is not C++ standard (will not work so easily in MSVC compilation)
 // However the value has been copied from M_PI
 
-void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
-bool DLLIMPORTEXPORT fuzzyEqual(const double x, const double y, const double epsilon=0.00001);
+void HOPSANCORE_DLLAPI limitValue(double &rValue, double min, double max);
+bool HOPSANCORE_DLLAPI fuzzyEqual(const double x, const double y, const double epsilon=0.00001);
 
 // ----------Exported Functions converted from auxhop in old Hopsan----------
-double DLLIMPORTEXPORT signedSquareL(const double x, const double x0);
-double DLLIMPORTEXPORT dxSignedSquareL(const double x, const double x0);
-double DLLIMPORTEXPORT squareAbsL(const double x, const double x0);
-double DLLIMPORTEXPORT dxSquareAbsL(const double x, const double x0);
-double DLLIMPORTEXPORT Atan2L(const double y, const double x);
-double DLLIMPORTEXPORT ArcSinL(const double x);
-double DLLIMPORTEXPORT dxArcSinL(const double x);
-double DLLIMPORTEXPORT diffAngle(const double fi1, const double fi2);
-double DLLIMPORTEXPORT CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
-double DLLIMPORTEXPORT CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
-double DLLIMPORTEXPORT CMoment(double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double expclp, const double expcln);
-double DLLIMPORTEXPORT segare(const double x, const double d);
-double DLLIMPORTEXPORT dxSegare(const double x, const double d);
-double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
-double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
-double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
-double DLLIMPORTEXPORT lowLimit(const double x, const double xmin);
-double DLLIMPORTEXPORT dxLowLimit(const double x, const double xmin);
-double DLLIMPORTEXPORT dxLowLimit2(const double x, const double sx, const double xmin);
-double DLLIMPORTEXPORT div(const double x, const double y);
+double HOPSANCORE_DLLAPI signedSquareL(const double x, const double x0);
+double HOPSANCORE_DLLAPI dxSignedSquareL(const double x, const double x0);
+double HOPSANCORE_DLLAPI squareAbsL(const double x, const double x0);
+double HOPSANCORE_DLLAPI dxSquareAbsL(const double x, const double x0);
+double HOPSANCORE_DLLAPI Atan2L(const double y, const double x);
+double HOPSANCORE_DLLAPI ArcSinL(const double x);
+double HOPSANCORE_DLLAPI dxArcSinL(const double x);
+double HOPSANCORE_DLLAPI diffAngle(const double fi1, const double fi2);
+double HOPSANCORE_DLLAPI CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
+double HOPSANCORE_DLLAPI CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
+double HOPSANCORE_DLLAPI CMoment(double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double expclp, const double expcln);
+double HOPSANCORE_DLLAPI segare(const double x, const double d);
+double HOPSANCORE_DLLAPI dxSegare(const double x, const double d);
+double HOPSANCORE_DLLAPI limit(const double x, const double xmin, const double xmax);
+double HOPSANCORE_DLLAPI dxLimit(const double x, const double xmin, const double xmax);
+double HOPSANCORE_DLLAPI dxLimit2(const double x, const double sx, const double xmin, const double xmax);
+double HOPSANCORE_DLLAPI lowLimit(const double x, const double xmin);
+double HOPSANCORE_DLLAPI dxLowLimit(const double x, const double xmin);
+double HOPSANCORE_DLLAPI dxLowLimit2(const double x, const double sx, const double xmin);
+double HOPSANCORE_DLLAPI div(const double x, const double y);
 
 
 // ----------Inline Functions converted from auxhop in old Hopsan----------

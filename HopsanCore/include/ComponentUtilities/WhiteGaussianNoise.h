@@ -39,7 +39,7 @@
 namespace hopsan {
 
     //! @ingroup ComponentUtilityClasses
-    class DLLIMPORTEXPORT WhiteGaussianNoise
+    class HOPSANCORE_DLLAPI WhiteGaussianNoise
     {
     public:
         double getValue();

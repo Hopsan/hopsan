@@ -75,6 +75,7 @@ have_zeromq() {
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------

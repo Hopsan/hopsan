@@ -41,7 +41,7 @@
 namespace hopsan {
 
 //! @ingroup ComponentUtilityClasses
-class DLLIMPORTEXPORT PLOParser
+class HOPSANCORE_DLLAPI PLOParser
 {
 public:
     PLOParser();

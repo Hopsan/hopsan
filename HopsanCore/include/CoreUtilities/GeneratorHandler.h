@@ -40,7 +40,7 @@ namespace hopsan {
 
 class ComponentSystem;
 
-class DLLIMPORTEXPORT GeneratorHandler
+class HOPSANCORE_DLLAPI GeneratorHandler
 {
 public:
     GeneratorHandler();

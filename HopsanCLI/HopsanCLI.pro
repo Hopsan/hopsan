@@ -49,6 +49,7 @@ LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
 # Set hopsan core paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include
 LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 #--------------------------------------------------------
 
 CONFIG(debug, debug|release) {
