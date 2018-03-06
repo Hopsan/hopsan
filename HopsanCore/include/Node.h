@@ -117,9 +117,6 @@ public:
     Component *getWritePortComponentPtr() const;
     ComponentSystem *getOwnerSystem() const;
 
-    void setForceDisableLog(bool value);
-    bool getForceDisableLog() const;
-
 protected:
     // Protected member functions
     void setNiceName(const HString &rNicename);
@@ -144,7 +141,7 @@ private:
     void addConnectedPort(Port *pPort);
     void removeConnectedPort(const Port *pPort);
 
-    void setLoggingEnabled(bool enable=true);
+    void setDoLogIfEnabled(bool doLog=true);
 
     // Private member variables
     HString mNodeType;
@@ -154,7 +151,6 @@ private:
     // Log specific variables
     std::vector<std::vector<double> > mDataStorage;
     bool mDoLog;
-    bool mForceDisableLog;
 };
 
 typedef ClassFactory<HString, Node> NodeFactory;

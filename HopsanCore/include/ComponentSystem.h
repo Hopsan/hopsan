@@ -109,9 +109,6 @@ namespace hopsan {
         bool disconnect(const HString &compname1, const HString &portname1, const HString &compname2, const HString &portname2);
         bool disconnect(Port *pPort1, Port *pPort2);
 
-        // Convenience functions to enable and disable data logging
-        void setAllNodesDoLogData(const bool logornot);
-
         // Start value loading
         bool keepsValuesAsStartValues();
         void setKeepValuesAsStartValues(bool load);

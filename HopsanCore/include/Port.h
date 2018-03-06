@@ -163,6 +163,8 @@ namespace hopsan {
         virtual bool haveLogData(const size_t subPortIdx=0);
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
+        virtual void setEnableLogging(const bool enableLog);
+        bool isLoggingEnabled() const;
 
         virtual bool isConnected() const;
         virtual bool isConnectedTo(Port *pOtherPort);
@@ -199,6 +201,7 @@ namespace hopsan {
         SortHintEnumT mSortHint;
         Component* mpComponent;
         Port* mpParentPort;
+        bool mEnableLogging;
 
         std::vector<Port*> mConnectedPorts;
 
@@ -312,6 +315,7 @@ namespace hopsan {
         bool haveLogData(const size_t subPortIdx=0);
         std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
         std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
+        virtual void setEnableLogging(const bool enableLog);
 
         double getStartValue(const size_t idx, const size_t subPortIdx=0);
 
@@ -328,6 +332,8 @@ namespace hopsan {
         void setNode(Node* pNode);
         Node *getNodePtr(const size_t subPortIdx=0);
         void removeSubPort(Port* ptr);
+
+        Port* addSubPort(const hopsan::PortTypesEnumT type);
 
         std::vector<Port*> mSubPortsVector;
     };

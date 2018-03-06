@@ -1278,18 +1278,18 @@ bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 void CoreSystemAccess::setLoggingEnabled(const QString &componentName, const QString &portName, bool enable)
 {
     hopsan::Port* pPort = this->getCorePortPtr(componentName, portName);
-    if(pPort && pPort->getNodePtr())
+    if(pPort)
     {
-        pPort->getNodePtr()->setForceDisableLog(!enable);
+        pPort->setEnableLogging(enable);
     }
 }
 
 bool CoreSystemAccess::isLoggingEnabled(const QString &componentName, const QString &portName)
 {
     hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
-    if(pPort && pPort->getNodePtr())
+    if(pPort)
     {
-        return !pPort->getNodePtr()->getForceDisableLog();
+        return pPort->isLoggingEnabled();
     }
     else
     {

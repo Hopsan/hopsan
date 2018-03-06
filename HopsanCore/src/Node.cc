@@ -45,6 +45,20 @@
 #include "ComponentSystem.h"
 #include "Quantities.h"
 
+namespace {
+bool anyPortWantsLogging(std::vector<hopsan::Port*>& ports)
+{
+    for (size_t p=0; p<ports.size(); ++p)
+    {
+        if (ports[p]->isLoggingEnabled())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+}
+
 using namespace std;
 using namespace hopsan;
 
@@ -67,10 +81,8 @@ Node::Node(const size_t datalength)
     mDataDescriptions.resize(datalength);
     mDataValues.resize(datalength,0.0);
 
-    mForceDisableLog = false;
-
     // Default disabled logging
-    setLoggingEnabled(false);
+    setDoLogIfEnabled(false);
 }
 
 Node::~Node()
@@ -354,10 +366,11 @@ Port *Node::getSortOrderSourcePort() const
 }
 
 
-//! @brief Enable node data logging
-void Node::setLoggingEnabled(bool enable)
+//! @brief Tag this node for logging
+//! @param[in] doLog Flag that tags the node for logging or not
+void Node::setDoLogIfEnabled(bool doLog)
 {
-    if(!mForceDisableLog && enable)
+    if(doLog && anyPortWantsLogging(mConnectedPorts))
     {
         mDoLog = true;
     }
@@ -367,17 +380,6 @@ void Node::setLoggingEnabled(bool enable)
         mDataStorage.clear();
     }
 }
-
-void Node::setForceDisableLog(bool value)
-{
-    mForceDisableLog = value;
-}
-
-bool Node::getForceDisableLog() const
-{
-    return mForceDisableLog;
-}
-
 
 //! @brief Returns the number of attached ports of a specific type
 int Node::getNumberOfPortsByType(const int type) const

@@ -27,6 +27,15 @@
     Version History
 ******************************
 
+2.9.0 (2018-??-??)
+- Enhancement: It is now possible to choose what ports to log when simulation using HopsanCLI.
+               Use the --logonly command line argument, and specify a comma-separated list of full port names.
+               It is also possible to alternatively specify a text file with one full port name per line.
+               Examples: Gain#out or SubsystemName#Gain#out
+- Enhancement: When saving results from a HopsanCLI simulation, interface ports (system ports) will also be saved
+- Enhancement: Results saved by HopsanCLI now use scientific notation, this may increase precision for small values
+
+------------------------------
 2.8.2 (2018-03-02)
 - Bug fixed: HCOM max(abs(var)) fail to evaluate if var is a vector (also affects min)
 - Bug fixed: Optimization: There should be a comma separator between the numbers in the parameter outputs

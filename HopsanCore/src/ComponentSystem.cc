@@ -957,11 +957,11 @@ void ComponentSystem::preAllocateLogSpace()
                     // Then we should disable logging for that node as logging the start value does not make sense
                     if ( ((*it)->getNumConnectedPorts() < 2) && ((*it)->getNumberOfPortsByType(ReadPortType) == 1) )
                     {
-                        (*it)->setLoggingEnabled(false);
+                        (*it)->setDoLogIfEnabled(false);
                     }
                     else
                     {
-                        (*it)->setLoggingEnabled(true);
+                        (*it)->setDoLogIfEnabled(true);
                         (*it)->preAllocateLogSpace(mnLogSlots);
                     }
                     success = true;
@@ -970,7 +970,7 @@ void ComponentSystem::preAllocateLogSpace()
                 {
                     //cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
                     addErrorMessage("Failed to allocate log data memory, try reducing the amount of log data", "FailedMemoryAllocation");
-                    (*it)->setLoggingEnabled(false);
+                    (*it)->setDoLogIfEnabled(false);
                     success = false;
                 }
             }
@@ -1745,39 +1745,6 @@ void ComponentSystem::setupLogSlotsAndTs(const double simStartT, const double si
     else
     {
         disableLog();
-    }
-}
-
-//! @brief Determines if all subnodes and subsystems subnodes should log data, Turn ALL ON or OFF
-//! @todo name of this function is bad, this is a toggle function
-void ComponentSystem::setAllNodesDoLogData(const bool logornot)
-{
-    // Do this systems nodes
-    if (logornot)
-    {
-
-        for (size_t i=0; i<mSubNodePtrs.size(); ++i)
-        {
-            mSubNodePtrs[i]->setLoggingEnabled(true);
-        }
-    }
-    else
-    {
-        for (size_t i=0; i<mSubNodePtrs.size(); ++i)
-        {
-            mSubNodePtrs[i]->setLoggingEnabled(false);
-        }
-    }
-
-    // Do all subsystems
-    SubComponentMapT::iterator scit;
-    for (scit=mSubComponentMap.begin(); scit!=mSubComponentMap.end(); ++scit)
-    {
-        if (scit->second->isComponentSystem())
-        {
-            //!< @todo maybe should use static cast (quicker) or overloaded function in Component instead of casting
-            dynamic_cast<ComponentSystem*>(scit->second)->setAllNodesDoLogData(logornot);
-        }
     }
 }
 

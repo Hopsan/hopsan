@@ -160,7 +160,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
         //! @todo alias a for time ? is that even posible
         if (howMany == Final)
         {
-            *pFile << prefix.c_str() << "Time,,s," << pSys->getTime() << endl;
+            *pFile << prefix.c_str() << "Time,,s," << std::scientific << pSys->getTime() << endl;
         }
         else if (howMany == Full)
         {
@@ -170,7 +170,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 *pFile << prefix.c_str() << "Time,,s";
                 for (size_t t=0; t<pLogTimeVector->size(); ++t)
                 {
-                    *pFile << "," << (*pLogTimeVector)[t];//!< @todo what about precission
+                    *pFile << "," << std::scientific << (*pLogTimeVector)[t];
                 }
                 *pFile << endl;
             }
@@ -184,54 +184,52 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
             if (pComp)
             {
                 //cout << "comp: " << c << " of: " << names.size() << endl;
-                if (pComp->isComponentSystem())
+                vector<Port*> ports = pComp->getPortPtrVector();
+                for (size_t p=0; p<ports.size(); ++p)
                 {
-                    // Save results for subsystem
-                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix+pComp->getName().c_str()+"$", pFile);
-                }
-                else
-                {
-                    vector<Port*> ports = pComp->getPortPtrVector();
-                    for (size_t p=0; p<ports.size(); ++p)
+                    //cout << "port: " << p << " of: " << ports.size() << endl;
+                    Port *pPort = ports[p];
+                    if (!pPort->isLoggingEnabled())
                     {
-                        //cout << "port: " << p << " of: " << ports.size() << endl;
-                        Port *pPort = ports[p];
-                        if (pPort->isMultiPort())
+                        // Ignore ports that have logging disabled
+                        continue;
+                    }
+                    const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
+                    if (pVars)
+                    {
+                        for (size_t v=0; v<pVars->size(); ++v)
                         {
-                            // Ignore multiports, not possible to determin what we want to log anyway
-                            continue;
-                        }
-                        const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
-                        if (pVars)
-                        {
-                            for (size_t v=0; v<pVars->size(); ++v)
-                            {
-                                HString fullname = prefix.c_str() + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
+                            HString fullname = prefix.c_str() + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
 
-                                if (howMany == Final)
+                            if (howMany == Final)
+                            {
+                                *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
+                                *pFile << "," << std::scientific << pPort->readNode(v) << endl;
+                            }
+                            else if (howMany == Full)
+                            {
+                                // Only write something if data has been logged (skip ports that are not logged)
+                                // We assume that the data vector has been cleared
+                                if (pPort->getLogDataVectorPtr()->size() > 0)
                                 {
                                     *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
-                                    *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
-                                }
-                                else if (howMany == Full)
-                                {
-                                    // Only write something if data has been logged (skip ports that are not logged)
-                                    // We assume that the data vector has been cleared
-                                    if (pPort->getLogDataVectorPtr()->size() > 0)
+                                    //! @todo what about time vector
+                                    vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                                    for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
                                     {
-                                        *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
-                                        //! @todo what about time vector
-                                        vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
-                                        for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
-                                        {
-                                            *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
-                                        }
-                                        *pFile << endl;
+                                        *pFile << "," << std::scientific << (*pLogData)[t][v];
                                     }
+                                    *pFile << endl;
                                 }
                             }
                         }
                     }
+                }
+
+                // Recurse into subsystems
+                if (pComp->isComponentSystem())
+                {
+                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix+pComp->getName().c_str()+"$", pFile);
                 }
             }
         }
@@ -521,4 +519,40 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
     {
         printErrorMessage("Could not open file: " + filePath);
     }
+}
+
+hopsan::Port* getPortWithFullName(hopsan::ComponentSystem *pRootSystem, const std::string &fullPortName)
+{
+    std::vector<std::string> nameParts;
+    splitStringOnDelimiter(fullPortName, '#', nameParts);
+    hopsan::ComponentSystem* pCurrentSystem = pRootSystem;
+    hopsan::Component* pComponent = nullptr;
+    for (const auto& namePart : nameParts)
+    {
+        // If component has been found, then look for the port
+        if (pComponent)
+        {
+            return pComponent->getPort(namePart.c_str());
+        }
+        else
+        {
+            // First check if the component is a sub system, in which case the loop continues to the next part
+            auto pSystemComponent = pCurrentSystem->getSubComponentSystem(namePart.c_str());
+            if (pSystemComponent)
+            {
+                pCurrentSystem = pSystemComponent;
+            }
+            // Else check if this is an ordinary component
+            else
+            {
+                pComponent = pCurrentSystem->getSubComponent(namePart.c_str());
+                // If not found, maybe the name is that of an interface port (system port)
+                if (!pComponent)
+                {
+                    return pCurrentSystem->getPort(namePart.c_str());
+                }
+            }
+        }
+    }
+    return nullptr;
 }

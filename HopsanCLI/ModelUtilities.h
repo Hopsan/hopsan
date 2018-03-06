@@ -37,6 +37,7 @@
 #include <string>
 #include <vector>
 #include "core_cli.h"
+#include "HopsanEssentials.h"
 
 void printTsInfo(const hopsan::ComponentSystem* pSystem);
 void printSystemParams(hopsan::ComponentSystem* pSystem);
@@ -57,6 +58,29 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
 // ===== Help Functions =====
 void generateFullSubSystemHierarchyName(const hopsan::ComponentSystem *pSys, hopsan::HString &rFullSysName);
 hopsan::HString generateFullPortVariableName(const hopsan::Port *pPort, const size_t dataId);
+
+
+hopsan::Port* getPortWithFullName(hopsan::ComponentSystem *pRootSystem, const std::string &fullPortName);
+
+template<typename PortFunction>
+void forEachPort(hopsan::ComponentSystem *pRootSystem, PortFunction function )
+{
+    auto components = pRootSystem->getSubComponents();
+    for (auto& pComponent : components)
+    {
+        auto ports = pComponent->getPortPtrVector();
+        for (auto& pPort : ports)
+        {
+            function(*pPort);
+        }
+
+        // Recurse into subsystems
+        if (pComponent->isComponentSystem())
+        {
+            forEachPort(dynamic_cast<hopsan::ComponentSystem*>(pComponent), function);
+        }
+    }
+}
 
 
 #endif // MODELUTILITIES_H
