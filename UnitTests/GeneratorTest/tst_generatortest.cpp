@@ -29,7 +29,7 @@
 #include "CoreUtilities/GeneratorHandler.h"
 #include <assert.h>
 
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 #endif
 #define LIBEXT TO_STR(DLL_EXT)
@@ -50,7 +50,7 @@ class GeneratorTests : public QObject
 public:
     GeneratorTests()
     {
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
     }

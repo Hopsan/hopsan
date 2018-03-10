@@ -30,7 +30,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include <assert.h>
 
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
 #ifdef _WIN32
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultcomponentlibrary" TO_STR(DEBUG_EXT) ".dll"
 #define LIBEXT ".dll"
@@ -56,7 +56,7 @@ class SimulationTests : public QObject
 public:
     SimulationTests()
     {
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"

@@ -49,7 +49,7 @@
 #include <fstream>
 
 
-#ifdef BUILTINDEFAULTCOMPONENTLIB
+#ifdef HOPSAN_INTERNALDEFAULTCOMPONENTS
 #include "defaultComponentLibraryInternal.h"
 #endif
 
@@ -88,7 +88,7 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory->registerCreatorFunction(CONDITIONALTYPENAME, ConditionalComponentSystem::Creator);
     mpComponentFactory->registerCreatorFunction(CPPTYPENAME, DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction(MODELICATYPENAME, ModelicaComponent::Creator);
-#ifdef BUILTINDEFAULTCOMPONENTLIB
+#ifdef HOPSAN_INTERNALDEFAULTCOMPONENTS
     register_default_components(mpComponentFactory);
 #endif
 

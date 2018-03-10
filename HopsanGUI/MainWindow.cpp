@@ -393,7 +393,7 @@ void MainWindow::initializeWorkspace()
     QString componentPath = gpDesktopHandler->getComponentsPath();
 
     // Load built in default Library
-#ifdef BUILTINDEFAULTCOMPONENTLIB
+#ifdef HOPSAN_INTERNALDEFAULTCOMPONENTS
     gpLibraryHandler->loadLibrary(componentPath, InternalLib);
 #else
     gpLibraryHandler->loadLibrary(componentPath+"defaultComponentLibrary.xml", InternalLib);
