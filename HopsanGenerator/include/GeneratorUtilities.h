@@ -42,7 +42,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QDomElement>
-#include "win32dll.h"
+#include "hopsangenerator_win32dll.h"
 
 #include "SymHop.h"
 

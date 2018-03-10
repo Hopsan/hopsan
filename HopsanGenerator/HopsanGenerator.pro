@@ -78,8 +78,7 @@ CONFIG(release, debug|release) {
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    #DEFINES += STATICCORE      #Use this if you are compiling the generator into a program directly or building a static lib
-    DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the generator as a DLL or SO
+    DEFINES += HOPSANGENERATOR_DLLEXPORT
     DEFINES -= UNICODE
 }
 unix {
@@ -101,7 +100,7 @@ SOURCES += \
     src/generators/HopsanLabViewGenerator.cc
 
 HEADERS += \
-    include/win32dll.h \
+    include/hopsangenerator_win32dll.h \
     include/GeneratorUtilities.h \
     include/generators/HopsanGenerator.h \
     include/generators/HopsanModelicaGenerator.h \

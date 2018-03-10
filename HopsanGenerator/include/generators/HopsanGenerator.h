@@ -51,7 +51,6 @@
 #include <QDebug>
 #include <QDomElement>
 
-#include "win32dll.h"
 #include "SymHop.h"
 #include "GeneratorUtilities.h"
 
@@ -70,7 +69,7 @@ class ComponentSystem;
 }
 
 
-class DLLIMPORTEXPORT HopsanGenerator
+class HOPSANGENERATOR_DLLAPI HopsanGenerator
 {
 public:
     enum SolverT {NumericalIntegration, BilinearTransform};
