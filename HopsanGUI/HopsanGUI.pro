@@ -82,6 +82,7 @@ DEFINES *= HOPSANCORE_DLLIMPORT
 # Set SymHop Paths
 INCLUDEPATH *= $${PWD}/../SymHop/include/
 LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
+DEFINES *= SYMHOP_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------

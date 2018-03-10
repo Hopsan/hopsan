@@ -38,7 +38,7 @@
 #include <QList>
 #include <QStringList>
 #include <QDebug>
-#include "win32dll.h"
+#include "symhop_win32dll.h"
 
 
 //! @class SymHopFunctionoid
@@ -47,7 +47,7 @@
 //!
 //! Function operator can be overloaded, and member variables can be added if necessary.
 //!
-class DLLIMPORTEXPORT SymHopFunctionoid
+class SYMHOP_DLLAPI SymHopFunctionoid
 {
 public:
     virtual double operator()(QString&str, bool &ok) = 0;
@@ -60,7 +60,7 @@ namespace SymHop {
 
 typedef double (*FunctionPtr)(QString, bool&); // function pointer type
 
-class DLLIMPORTEXPORT Expression
+class SYMHOP_DLLAPI Expression
 {
 public:
     enum ExpressionTypeT {Null, Equality,Symbol,Operator,Function};
@@ -182,15 +182,15 @@ private:
     QStringList reservedSymbols;
 };
 
-QString DLLIMPORTEXPORT getFunctionDerivative(const QString &key);
-QStringList DLLIMPORTEXPORT getSupportedFunctionsList();
-QStringList DLLIMPORTEXPORT getCustomFunctionList();
+QString SYMHOP_DLLAPI getFunctionDerivative(const QString &key);
+QStringList SYMHOP_DLLAPI getSupportedFunctionsList();
+QStringList SYMHOP_DLLAPI getCustomFunctionList();
 
-bool DLLIMPORTEXPORT findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0, QList<int> preferredPath=QList<int>());
-bool DLLIMPORTEXPORT sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder);
-void DLLIMPORTEXPORT removeDuplicates(QList<Expression> &rSet);
+bool SYMHOP_DLLAPI findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0, QList<int> preferredPath=QList<int>());
+bool SYMHOP_DLLAPI sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder);
+void SYMHOP_DLLAPI removeDuplicates(QList<Expression> &rSet);
 
-bool DLLIMPORTEXPORT isWhole(const double value);
+bool SYMHOP_DLLAPI isWhole(const double value);
 }
 
 //bool fuzzyEqual(const double &x, const double &y);

@@ -61,6 +61,7 @@ LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
 # Add the include path to (SymHop)
 INCLUDEPATH *= $${PWD}/../SymHop/include/
 LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
+DEFINES *= SYMHOP_DLLIMPORT
 #--------------------------------------------------
 
 # -------------------------------------------------
