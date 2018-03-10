@@ -159,8 +159,6 @@ unix {
     }
 }
 win32 {
-    #DEFINES += STATICCORE
-
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
         !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")
