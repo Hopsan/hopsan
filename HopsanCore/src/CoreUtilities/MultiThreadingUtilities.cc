@@ -30,17 +30,16 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#if __cplusplus >= 201103L
-#include <atomic>
-#endif
+#include <string>
+
 #ifndef _WIN32
 #include <unistd.h>
 #endif
 
-
 #include "CoreUtilities/MultiThreadingUtilities.h"
+#include "ComponentSystem.h"
 
-
+namespace hopsan {
 
 //! @brief Helper function that decides how many thread to use.
 //! User specifies desired amount, but it is limited by how many cores the processor has.
@@ -53,7 +52,7 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 #ifdef _WIN32
     if(getenv("NUMBER_OF_PROCESSORS") != 0)
     {
-        string temp = getenv("NUMBER_OF_PROCESSORS");
+        std::string temp = getenv("NUMBER_OF_PROCESSORS");
         nCores = atoi(temp.c_str());
     }
     else
@@ -61,13 +60,13 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
         nCores = 1;               //If non-Windows system, make sure there is at least one thread
     }
 #else
-    nCores = max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+    nCores = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
 #endif
     if(nDesiredThreads != 0)
     {
         // If user specifies a number of threads, attempt to use this number
         // But limit number of threads to the number of system cores
-        nThreads = min(nCores, nDesiredThreads);
+        nThreads = std::min(nCores, nDesiredThreads);
     }
     else
     {
@@ -78,7 +77,7 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 }
 
 
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
 
 //! @brief Constructor for slave simulation thread function.
 //! @param pSystem Pointer to top level component system
@@ -94,10 +93,10 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 //! @param *pBarrier_Q Pointer to barrier before Q-type components
 //! @param *pBarrier_N Pointer to barrier before node logging
 void simSlave(ComponentSystem *pSystem,
-              vector<Component*> &sVector,
-              vector<Component*> &cVector,
-              vector<Component*> &qVector,
-              vector<Node*> &nVector,
+              std::vector<Component*> &sVector,
+              std::vector<Component*> &cVector,
+              std::vector<Component*> &qVector,
+              std::vector<Node*> &nVector,
               double startTime,
               double timeStep,
               size_t numSimSteps,
@@ -178,8 +177,8 @@ void simSlave(ComponentSystem *pSystem,
 //! @param *pBarrier_C Pointer to barrier before C-type components
 //! @param *pBarrier_Q Pointer to barrier before Q-type components
 //! @param *pBarrier_N Pointer to barrier before node logging
-void simMaster(ComponentSystem *pSystem, vector<Component *> &sVector, vector<Component *> &cVector,
-               vector<Component *> &qVector, vector<Node *> &nVector, vector<double *> &pSimTimes, double startTime, double timeStep,
+void simMaster(ComponentSystem *pSystem, std::vector<Component *> &sVector, std::vector<Component *> &cVector,
+               std::vector<Component *> &qVector, std::vector<Node *> &nVector, std::vector<double *> &pSimTimes, double startTime, double timeStep,
                size_t numSimSteps, BarrierLock *pBarrier_S, BarrierLock *pBarrier_C,
                BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
 {
@@ -341,10 +340,10 @@ void simPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, std::atomic<double
 
 //! @brief Function for master simulation thread, that is responsible for synchronizing the simulation
 void simStealingMaster(ComponentSystem *pSystem,
-                       vector<Component *> &sVector,
+                       std::vector<Component *> &sVector,
                        std::vector<ThreadSafeVector *> *cVectors,
                        std::vector<ThreadSafeVector *> *qVectors,
-                       vector<double *> &pSimTimes,
+                       std::vector<double *> &pSimTimes,
                        double startTime,
                        double timeStep,
                        size_t numSimSteps,
@@ -488,7 +487,7 @@ void simStealingSlave(ComponentSystem *pSystem,
 
 {
     double time = startTime;;
-     std::vector<ThreadSafeVector*> *pUnFinishedVectorsC = cVectors;
+    std::vector<ThreadSafeVector*> *pUnFinishedVectorsC = cVectors;
     std::vector<ThreadSafeVector*> *pUnFinishedVectorsQ = qVectors;
     //! @todo memory leak, never deleted, however, dont delete in destructor, that will cause double free corruption since this object is copied when new tasks are created
     ThreadSafeVector *pFinishedVectorC = new ThreadSafeVector(std::vector<Component*>(), maxSize);
@@ -610,7 +609,7 @@ void simOneStep(std::vector<Component *> *pComponentPtrs, double stopTime)
 //! @brief Function for simulating whole systems multi-threaded
 //! @param systemPtrs Vector with pointers to the systems to simulate
 //! @param stopTime Stop time of simulation
-void simWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime)
+void simWholeSystems(std::vector<ComponentSystem *> systemPtrs, double stopTime)
 {
     for(size_t i=0; i<systemPtrs.size(); ++i)
     {
@@ -618,6 +617,8 @@ void simWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime)
     }
 }
 
-#endif //C++11
+#endif //Multithreading
+
+}
 
 

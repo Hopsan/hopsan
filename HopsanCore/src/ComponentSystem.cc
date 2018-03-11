@@ -24,8 +24,6 @@
 
 //!
 //! @file   ComponentSystem.cc
-//! @author FluMeS
-//! @date   2009-12-20
 //!
 //! @brief Contains the subsystem component class and connection assistant help class
 //!
@@ -38,7 +36,21 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
-#if __cplusplus >= 201103L
+#include <map>
+
+#include "ComponentSystem.h"
+#include "HopsanEssentials.h"
+#include "Quantities.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/StringUtilities.h"
+#include "CoreUtilities/MultiThreadingUtilities.h"
+#include "CoreUtilities/CoSimulationUtilities.h"
+#include "CoreUtilities/HmfLoader.h"
+#include "CoreUtilities/NumHopHelper.h"
+#include "CoreUtilities/ConnectionAssistant.h"
+#include "ComponentUtilities/num2string.hpp"
+
+#if defined(HOPSANCORE_USEMULTITHREADING)
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -50,22 +62,11 @@
 #include <ctime>
 #endif
 
-#include "ComponentSystem.h"
-#include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include "CoreUtilities/StringUtilities.h"
-#include "HopsanEssentials.h"
-#include "CoreUtilities/MultiThreadingUtilities.h"
-#include "CoreUtilities/CoSimulationUtilities.h"
-#include "CoreUtilities/HmfLoader.h"
-#include "CoreUtilities/NumHopHelper.h"
-#include "ComponentUtilities/num2string.hpp"
-#include "Quantities.h"
-#include "CoreUtilities/ConnectionAssistant.h"
 
 using namespace std;
 
 
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
 #ifdef _WIN32
 const long long g_Frequency = []() -> long long
 {
@@ -82,7 +83,7 @@ HighResClock::time_point HighResClock::now()
     return time_point(duration(count.QuadPart * static_cast<rep>(period::den) / g_Frequency));
 }
 #endif //_WIN32
-#endif //C++11
+#endif //C++11 and multithreading
 
 namespace {
 //! @brief Figure out whether or not a vector contains a certain "object", exact comparison
@@ -113,7 +114,7 @@ public:
     std::vector< std::vector<Component*> > mSplitQVector;
     std::vector< std::vector<Component*> > mSplitSignalVector;
     std::vector< std::vector<Node*> > mSplitNodeVector;
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
     std::mutex mStopMutex;
 #endif
 
@@ -210,7 +211,7 @@ void ComponentSystem::stopSimulation(const HString &rReason)
     addInfoMessage(infoMsg);
     addLogMess(infoMsg);
 
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
     mpMultiThreadPrivates->mStopMutex.lock();
     mStopSimulation = true;
     mpMultiThreadPrivates->mStopMutex.unlock();
@@ -228,7 +229,7 @@ void ComponentSystem::stopSimulation(const HString &rReason)
 //! @todo maybe we should only have with messages version
 void ComponentSystem::stopSimulation()
 {
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
     mpMultiThreadPrivates->mStopMutex.lock();
     mStopSimulation = true;
     mpMultiThreadPrivates->mStopMutex.unlock();
@@ -2365,7 +2366,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
 }
 
 
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const bool noChanges, const ParallelAlgorithmT algorithm)
 {
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
@@ -2789,7 +2790,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 //! @param steps How many steps to simulate
 bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
 {
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
     // Reset all measured times first
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         mComponentSignalptrs[s]->setMeasuredTime(0);

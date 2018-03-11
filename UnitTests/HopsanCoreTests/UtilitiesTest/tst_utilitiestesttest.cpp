@@ -205,7 +205,7 @@ private Q_SLOTS:
     {
         QFETCH(int,desired);
 
-        QVERIFY2(determineActualNumberOfThreads(size_t(desired)) == (size_t)min(desired, QThread::idealThreadCount()), "determineActualNumberOfThreads() returned wrong value!");
+        QVERIFY2(determineActualNumberOfThreads(size_t(desired)) == (size_t)std::min(desired, QThread::idealThreadCount()), "determineActualNumberOfThreads() returned wrong value!");
     }
 
     void Determine_Actual_Number_Of_Threads_data()

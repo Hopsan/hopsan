@@ -56,8 +56,8 @@ DEFINES *= _USE_MATH_DEFINES
 # Turn on the Hopsan Core runtime log file
 DEFINES *= HOPSANCORE_WRITELOG
 
-# Turn on multi-threading
-DEFINES *= MULTITHREADING
+# Turn off multi-threading
+# DEFINES *= HOPSANCORE_NOMULTITHREADING
 
 
 # -------------------------------------------------
