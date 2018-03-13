@@ -68,14 +68,14 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
             addInputVariable("alpha", "Low pass coefficient", "-", 0.0, &mpAlpha);
-            addInputVariable("Z_c", "Impedance", "Ns/m^5",  1.0e9, &mpZc);
+            addInputVariable("Z_c", "Impedance", "Pa s/m^3",  1.0e9, &mpZc);
 
             addConstant("deltat", "Time delay", "s",   0.1, mTimeDelay);
 
-            setDefaultStartValue(mpP1, NodeHydraulic::Flow, 0.0);
-            setDefaultStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
-            setDefaultStartValue(mpP2, NodeHydraulic::Flow, 0.0);
-            setDefaultStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
+            disableStartValue(mpP1, NodeHydraulic::WaveVariable);
+            disableStartValue(mpP1, NodeHydraulic::CharImpedance);
+            disableStartValue(mpP2, NodeHydraulic::WaveVariable);
+            disableStartValue(mpP2, NodeHydraulic::CharImpedance);
         }
 
 
@@ -97,11 +97,11 @@ namespace hopsan {
             //Write to nodes
             (*mpP1_q) = getDefaultStartValue(mpP1,NodeHydraulic::Flow);
             (*mpP1_p) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure);
-            (*mpP1_c) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpP1_c) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP2,NodeHydraulic::Flow);
             (*mpP1_Zc) = Zc;
             (*mpP2_q) = getDefaultStartValue(mpP2,NodeHydraulic::Flow);
             (*mpP2_p) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure);
-            (*mpP2_c) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpP2_c) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP1,NodeHydraulic::Flow);
             (*mpP2_Zc) = Zc;
 
             if (mTimeDelay-mTimestep < 0)
