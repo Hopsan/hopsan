@@ -478,4 +478,4 @@ void LookupTableTest::lookup3D_data()
 
 QTEST_APPLESS_MAIN(LookupTableTest)
 
-#include "tst_LookupTableTest.moc"
+#include "tst_lookuptabletest.moc"

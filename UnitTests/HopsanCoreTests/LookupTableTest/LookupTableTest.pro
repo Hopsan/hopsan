@@ -10,7 +10,7 @@ QT       -= gui
 #Determine debug extension
 include( ../../../Common.prf )
 
-TARGET = tst_LookupTableTest$${DEBUG_EXT}
+TARGET = tst_lookuptabletest$${DEBUG_EXT}
 CONFIG   += console
 CONFIG   -= app_bundle
 DESTDIR = $${PWD}/../../../bin
@@ -25,5 +25,6 @@ QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 }
 
-SOURCES += tst_LookupTableTest.cpp
+SOURCES += \
+    tst_lookuptabletest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
