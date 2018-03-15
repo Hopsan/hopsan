@@ -38,7 +38,7 @@
 
 namespace Ops {
 
-class WorkerComplexRF : public WorkerSimplex
+class OPS_DLLAPI WorkerComplexRF : public WorkerSimplex
 {
 public:
     WorkerComplexRF(Evaluator *pEvaluator, MessageHandler *pMessageHandler);

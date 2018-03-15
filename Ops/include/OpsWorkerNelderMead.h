@@ -38,7 +38,7 @@
 
 namespace Ops {
 
-class WorkerNelderMead : public WorkerSimplex
+class OPS_DLLAPI WorkerNelderMead : public WorkerSimplex
 {
 public:
     WorkerNelderMead(Evaluator *pEvaluator, MessageHandler *pMessageHandler);

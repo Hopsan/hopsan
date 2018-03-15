@@ -36,11 +36,13 @@
 
 #include <stdlib.h>
 
+#include "OpsWin32DLL.h"
+
 namespace Ops {
 
 class Worker;
 
-class Evaluator
+class OPS_DLLAPI Evaluator
 {
 public:
     Evaluator();

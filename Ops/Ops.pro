@@ -41,7 +41,7 @@ CONFIG(release, debug|release) {
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    DEFINES += OPSDLLEXPORT
+    DEFINES += OPS_DLLEXPORT
     DEFINES -= UNICODE
 }
 
@@ -63,7 +63,6 @@ SOURCES += \
     src/OpsWorkerComplexBurmen.cpp
 
 HEADERS += \
-    include/win32dll.h \
     include/OpsWorker.h \
     include/OpsWorkerSimplex.h \
     include/OpsWorkerComplexRF.h \
@@ -75,7 +74,8 @@ HEADERS += \
     include/OpsWorkerDifferentialEvolution.h \
     include/OpsWorkerControlledRandomSearch.h \
     include/OpsWorkerComplexBurmen.h \
-    include/OpsMessageHandler.h
+    include/OpsMessageHandler.h \
+    include/OpsWin32DLL.h
 
 
 

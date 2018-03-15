@@ -37,7 +37,7 @@
 
 namespace Ops {
 
-class WorkerDifferentialEvolution : public Worker
+class OPS_DLLAPI WorkerDifferentialEvolution : public Worker
 {
 public:
     WorkerDifferentialEvolution(Evaluator *pEvaluator, MessageHandler *pMessageHandler);

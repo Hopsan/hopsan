@@ -39,7 +39,7 @@ namespace Ops {
 
 enum OpsInertiaStrategy {InertiaConstant, InertiaLinearDecreasing};
 
-class WorkerParticleSwarm : public Worker
+class OPS_DLLAPI WorkerParticleSwarm : public Worker
 {
 public:
     WorkerParticleSwarm(Evaluator *pEvaluator, MessageHandler *pMessageHandler);

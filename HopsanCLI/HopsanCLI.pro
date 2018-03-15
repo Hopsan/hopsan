@@ -43,6 +43,7 @@ DEFINES *= USEOPS
 contains(DEFINES, USEOPS) {
 INCLUDEPATH *= $${PWD}/../Ops/include
 LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
+DEFINES *= OPS_DLLIMPORT
 }
 
 #--------------------------------------------------------

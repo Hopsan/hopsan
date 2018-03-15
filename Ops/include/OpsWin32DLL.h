@@ -23,31 +23,29 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Ops.h
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2015-08-31
-//!
-//! @brief Contains the optimization worker class for the PSO algorithm
+//! @file   OpsWin32DLL.h
+//! @brief Handles symbol export/import macros for win32 dll support
 //!
 //$Id$
 
-#ifndef OPSWORKERPARAMETERSWEEP_H
-#define OPSWORKERPARAMETERSWEEP_H
-#include "OpsWorker.h"
+#ifndef OPSWIN32DLL_H_INCLUDED
+#define OPSWIN32DLL_H_INCLUDED
 
-namespace Ops {
+#ifdef _WIN32
 
-class OPS_DLLAPI WorkerParameterSweep : public Worker
-{
-public:
-    WorkerParameterSweep(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
+#if defined(OPS_DLLEXPORT)
+#define OPS_DLLAPI __declspec(dllexport)
+#elif defined(OPS_DLLIMPORT)
+#define OPS_DLLAPI __declspec(dllimport)
+#else /*Ops static library*/
+#define OPS_DLLAPI
+#endif
 
-    AlgorithmT getAlgorithm();
+#else
 
-    void run();
-};
+// Define empty on non-windows systems
+#define OPS_DLLAPI
 
-}
+#endif
 
-
-#endif // OPSWORKERPARAMETERSWEEP_H
+#endif // OPSWIN32DLL_H_INCLUDED

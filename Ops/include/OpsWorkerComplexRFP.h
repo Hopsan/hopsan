@@ -40,7 +40,7 @@ namespace Ops {
 
 enum ParallelMethodT {MultiDistance, TaskPrediction, MultiDirection, MultiDirectionBurmen};
 
-class Candidate
+class OPS_DLLAPI Candidate
 {
 public:
     Candidate();
@@ -52,7 +52,7 @@ public:
     size_t idx;
 };
 
-class WorkerComplexRFP : public WorkerComplexRF
+class OPS_DLLAPI WorkerComplexRFP : public WorkerComplexRF
 {
 public:
     WorkerComplexRFP(Evaluator *pEvaluator, MessageHandler *pMessageHandler);
