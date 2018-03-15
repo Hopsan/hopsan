@@ -36,9 +36,9 @@
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
     #ifdef _WIN32
-        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
+        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/defaultcomponentlibrary" TO_STR(DEBUG_EXT) ".dll"
     #else
-        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
+        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/libdefaultcomponentlibrary" TO_STR(DEBUG_EXT) ".so"
     #endif
 #endif
 

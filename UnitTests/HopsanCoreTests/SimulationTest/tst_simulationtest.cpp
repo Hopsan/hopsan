@@ -32,10 +32,10 @@
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef _WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultcomponentlibrary" TO_STR(DEBUG_EXT) ".dll"
 #define LIBEXT ".dll"
 #else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultcomponentlibrary" TO_STR(DEBUG_EXT) ".so"
 #define LIBEXT ".so"
 #endif
 #endif

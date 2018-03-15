@@ -7,7 +7,7 @@ TEMPLATE = lib
 
 # TARGET is the name of the compiled lib, (.dll or .so will be added automatically)
 # Change this to the name of YOUR lib
-TARGET = defaultComponentLibrary
+TARGET = defaultcomponentlibrary
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build

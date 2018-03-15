@@ -30,7 +30,7 @@
 #include <assert.h>
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 #endif
 #define LIBEXT TO_STR(DLL_EXT)
 

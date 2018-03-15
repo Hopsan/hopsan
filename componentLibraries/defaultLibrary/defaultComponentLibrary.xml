@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsancomponentlibrary xmlversion="0.1" libversion="1" name="DefaultLibrary">
-  <lib debug_ext="_d">defaultComponentLibrary</lib>
+  <lib debug_ext="_d">defaultcomponentlibrary</lib>
   <source>defaultComponentLibrary.cc</source>
   <source>defaultComponentLibraryInternal.cc</source>
 </hopsancomponentlibrary>
