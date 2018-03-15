@@ -2,13 +2,12 @@
     Important Information
 ******************************
 
-- See the issue-tracker (link on web page) for all known issues.
+- See the issue-tracker https://github.com/Hopsan/hopsan/issues for all known issues. 
+  You can also report new issues, if you first create a GitHub account.
 
-- There is no guarantee that the default components are working under all conditions, you have decide for yourself if you trust the simulation results.
-  From version 0.6.0, the source code for all default components is included in the release.
+- There is no guarantee that the included component models are working under all conditions, you must decide for yourself if you trust the simulation results.
 
-- There have been substantial "under the hood" changes between the 0.6.* and 0.7.* versions of Hopsan.
-  Loading old models in 0.7.0 should work without issues in most cases, HOWEVER, to be sure that you do not loose any information:
+- When you load models saved with an older version of Hopsan, make sure that you follow these recommendations to avoid loosing information:
   * Deactivate "Group Similar Messages" in the message widget at the bottom before loading a model.
   * Pay attention to any Warnings or Errors you may receive when loading your old model. If parameters fail to load they will be discarded.
   * Parameters and ports may have changed name, in such cases you have to manually set the parameter value that could not be loaded (according to messages).
