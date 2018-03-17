@@ -435,7 +435,7 @@ void Component::stopSimulation(const HString &rReason)
         infoMsg = "Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason;
     }
     addInfoMessage(infoMsg);
-    addLogMess(infoMsg);
+    addCoreLogMessage(infoMsg);
 
     mpSystemParent->stopSimulation(""); // We use string version here to make sure sub system hierarchy is printed
 }
@@ -785,7 +785,7 @@ double *Component::getTimePtr()
 //! @returns A pointer to the created port
 Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection)
 {
-    addLogMess(getName()+"::addPort "+rPortName);
+    addCoreLogMessage(getName()+"::addPort "+rPortName);
 
     //Make sure name is unique before insert
     HString newname = this->determineUniquePortName(rPortName);
@@ -1035,7 +1035,7 @@ double *Component::getSafeNodeDataPtr(const HString &rPortName, const int dataId
 //! @returns A pointer to the specified NodeData or a null pointer
 double *Component::getNodeDataPtr(Port *pPort, const int dataId)
 {
-    //addLogMess(getName()+"::getNodeDataPtr Id:"+to_hstring(dataId));
+    //addCoreLogMessage(getName()+"::getNodeDataPtr Id:"+to_hstring(dataId));
     //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a mistake
     if (pPort->getPortType() >= MultiportType)
     {
@@ -1458,7 +1458,7 @@ void Component::addInfoMessage(const HString &rMessage, const HString &rTag) con
 //! @param [in] rTag The message tag, used to group similar messages
 void Component::addFatalMessage(const HString &rMessage, const HString &rTag) const
 {
-    addLogMess("Fatal error: "+rMessage+" in component: "+getName());
+    addCoreLogMessage("Fatal error: "+rMessage+" in component: "+getName());
     if (mpMessageHandler)
     {
         mpMessageHandler->addFatalMessage(getName()+"::"+rMessage, rTag);

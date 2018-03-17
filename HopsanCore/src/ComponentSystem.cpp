@@ -209,7 +209,7 @@ void ComponentSystem::stopSimulation(const HString &rReason)
         infoMsg = "Simulation was stopped at t="+to_hstring(mTime)+ " : "+rReason;
     }
     addInfoMessage(infoMsg);
-    addLogMess(infoMsg);
+    addCoreLogMessage(infoMsg);
 
 #if defined(HOPSANCORE_USEMULTITHREADING)
     mpMultiThreadPrivates->mStopMutex.lock();
@@ -841,7 +841,7 @@ Component* ComponentSystem::getSubComponent(const HString &rName) const
     }
     else
     {
-        addLogMess("ComponentSystem::getSubComponent(): The requested component does not exist.");
+        addCoreLogMessage("ComponentSystem::getSubComponent(): The requested component does not exist.");
         return 0;
     }
 }
@@ -2166,7 +2166,7 @@ void ComponentSystem::setNumHopScript(const HString &rScript)
 bool ComponentSystem::initialize(const double startT, const double stopT)
 {
     //cout << "Initializing SubSystem: " << this->mName << endl;
-    addLogMess("ComponentSystem::initialize() in "+getName());
+    addCoreLogMessage("ComponentSystem::initialize() in "+getName());
 
     //Move all disabled components to temporary vectors
     for(size_t i=0; i<mComponentCptrs.size();)
@@ -2296,7 +2296,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setLogStartTime(mRequestedLogStartTime);
         }
 
-        addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentSignalptrs[s]->getName());
+        addCoreLogMessage("ComponentSystem::initialize() Initializing component: "+mComponentSignalptrs[s]->getName());
         if(!mComponentSignalptrs[s]->initialize(startT, stopT))
         {
             stopSimulation("Failed to initialize: "+mComponentSignalptrs[s]->getName());
@@ -2321,7 +2321,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             static_cast<ComponentSystem*>(mComponentCptrs[c])->setLogStartTime(mRequestedLogStartTime);
         }
 
-        addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentCptrs[c]->getName());
+        addCoreLogMessage("ComponentSystem::initialize() Initializing component: "+mComponentCptrs[c]->getName());
         if(!mComponentCptrs[c]->initialize(startT, stopT))
         {
             stopSimulation("Failed to initialize: "+mComponentCptrs[c]->getName());
@@ -2346,7 +2346,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             static_cast<ComponentSystem*>(mComponentQptrs[q])->setLogStartTime(mRequestedLogStartTime);
         }
 
-        addLogMess("ComponentSystem::initialize() Initializing component: "+mComponentQptrs[q]->getName());
+        addCoreLogMessage("ComponentSystem::initialize() Initializing component: "+mComponentQptrs[q]->getName());
         if(!mComponentQptrs[q]->initialize(startT, stopT))
         {
             stopSimulation("Failed to initialize: "+mComponentQptrs[q]->getName());

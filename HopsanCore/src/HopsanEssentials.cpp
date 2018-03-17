@@ -24,9 +24,6 @@
 
 //!
 //! @file   HopsanEssentials.cpp
-//! @author <peter.nordin@liu.se>
-//! @date   2010-02-19
-//!
 //! @brief Contains the HopsanEssentials Class
 //!
 //$Id$
@@ -56,17 +53,37 @@
 using namespace std;
 using namespace hopsan;
 
+namespace {
+
+#ifdef HOPSANCORE_WRITELOG
+static std::ofstream gCoreLogFile;
+#endif
+
+//! @brief Closes the HopsanCore runtime log when refcounter reaches 0
+void closeCoreLogFile()
+{
+#ifdef HOPSANCORE_WRITELOG
+    if (gCoreLogFile.is_open()) {
+        gCoreLogFile.close();
+    }
+#endif
+}
+
+}
+
 QuantityRegister *hopsan::gpInternalCoreQuantityRegister=0; // Do not use this pointer outside of HopsanCore
-size_t HopsanEssentials::mQRctr = 0;
+size_t HopsanEssentials::mInstanceCounter = 0;
 
 //! @brief HopsanEssentials Constructor
 HopsanEssentials::HopsanEssentials()
-{ 
+{
+    mInstanceCounter++;
+
     // Create Factories and handlers
     mpNodeFactory = new NodeFactory;
     mpComponentFactory = new ComponentFactory;
     mpMessageHandler = new HopsanCoreMessageHandler;
-    if (mQRctr==0)
+    if (mInstanceCounter==1)
     {
         mpQuantityRegister = new QuantityRegister;
         gpInternalCoreQuantityRegister = mpQuantityRegister;
@@ -74,9 +91,7 @@ HopsanEssentials::HopsanEssentials()
     else
     {
         mpQuantityRegister = gpInternalCoreQuantityRegister;
-
     }
-    mQRctr++;
 
     mpExternalLoader = new LoadExternal(mpComponentFactory, mpNodeFactory, mpMessageHandler);
 
@@ -100,7 +115,6 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory->clearRegisterStatus();
     mpNodeFactory->clearRegisterStatus();
 
-
     // Do some other stuff
     HString debugtext;
     if (isCoreDebugCompiled())
@@ -115,9 +129,6 @@ HopsanEssentials::HopsanEssentials()
     {
         mpMessageHandler->addInfoMessage("HopsanCore 32-bit, Version: " + HString(HOPSANCOREVERSION)+debugtext);
     }
-
-    openLogFile();
-    addLogMess("This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n");
 }
 
 //! @brief HopsanEssentials Destructor
@@ -127,7 +138,6 @@ HopsanEssentials::~HopsanEssentials()
     //! @todo need to make sure that every one has destroyed all components/nodes before we unregister them, it probably cant be done from inside here
     mpNodeFactory->clearFactory();
     mpComponentFactory->clearFactory();
-    closeLogFile();
 
     delete mpNodeFactory;
     delete mpComponentFactory;
@@ -135,12 +145,32 @@ HopsanEssentials::~HopsanEssentials()
     // Delete the message handler
     delete mpMessageHandler;
 
-    mQRctr--;
-    if (mQRctr==0)
+    if (mInstanceCounter==1)
     {
         delete mpQuantityRegister;
         gpInternalCoreQuantityRegister = 0;
+        closeCoreLogFile();
     }
+
+    mInstanceCounter--;
+}
+
+//! @brief Opens the HopsanCore runtime log file, if not already opened
+//! @param[in] absoluteFilePath The file path of the log file
+//! @returns True if the file could be opened, else false
+bool HopsanEssentials::openCoreLogFile(const char* absoluteFilePath)
+{
+    bool opened = false;
+#ifdef HOPSANCORE_WRITELOG
+    if (!gCoreLogFile.is_open()) {
+        gCoreLogFile.open(absoluteFilePath);
+        opened = gCoreLogFile.is_open();
+    }
+#endif
+    if (opened) {
+        addCoreLogMessage("This file logs the actions made by HopsanCore.\nTo trace a program crash you can look at the last line in this file to see what the last logged action was.\n\n\n");
+    }
+    return opened;
 }
 
 //! @brief Returns the HopsanCore version as a string
@@ -185,7 +215,7 @@ bool HopsanEssentials::isCoreDebugCompiled() const
 //! @param [in] rTypeName The unique type identifier of the component to create
 Component* HopsanEssentials::createComponent(const HString &rTypeName)
 {
-    addLogMess(rTypeName+"::createComponent");
+    addCoreLogMessage(rTypeName+"::createComponent");
     Component* pComp = mpComponentFactory->createInstance(rTypeName);
     if (pComp)
     {
@@ -406,36 +436,13 @@ void HopsanEssentials::getExternalLibraryContents(const char *libPath, std::vect
 }
 
 
-static std::ofstream hopsanLogFile;
-
-//! @brief Opens the HopsanCore runtime log
-bool hopsan::openLogFile()
-{
-#ifdef HOPSANCORE_WRITELOG
-    hopsanLogFile.open("hopsan_logfile.txt");
-    return hopsanLogFile.is_open();
-#else
-    return false;
-#endif
-}
-
-//! @brief Closes the HopsanCore runtime log
-void hopsan::closeLogFile()
-{
-#ifdef HOPSANCORE_WRITELOG
-    hopsanLogFile.close();
-#endif
-}
-
 //! @brief Adds a message to the HopsanCore runtime log
 //! @param[in] message The message to write to the log file
-void hopsan::addLogMess(const char *message)
+void hopsan::addCoreLogMessage(const char *message)
 {
 #ifdef HOPSANCORE_WRITELOG
-    if(hopsanLogFile.good())
-    {
-        hopsanLogFile << message << "\n";
-        hopsanLogFile.flush();
+    if(gCoreLogFile.good()) {
+        gCoreLogFile << message << std::endl;
     }
 #endif
 }

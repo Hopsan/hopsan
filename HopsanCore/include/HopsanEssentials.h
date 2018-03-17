@@ -61,7 +61,7 @@ private:
     LoadExternal* mpExternalLoader;
     SimulationHandler mSimulationHandler;
     QuantityRegister* mpQuantityRegister;
-    static size_t mQRctr;
+    static size_t mInstanceCounter;
 
 public:
     HopsanEssentials();
@@ -91,7 +91,7 @@ public:
     // Quantities
     bool haveQuantity(const HString &rQuantity) const;
 
-    // Messages
+    // Messages and log
     HopsanCoreMessageHandler* getCoreMessageHandler();
     void getMessage(HString &rMessage, HString &rType, HString &rTag);
     size_t checkMessage();
@@ -100,6 +100,8 @@ public:
     size_t getNumErrorMessages() const;
     size_t getNumFatalMessages() const;
     size_t getNumDebugMessages() const;
+
+    bool openCoreLogFile(const char* absoluteFilePath);
 
     // External libraries
     bool loadExternalComponentLib(const char* path);
@@ -117,12 +119,23 @@ public:
     SimulationHandler *getSimulationHandler();
 };
 
-bool openLogFile();
-void closeLogFile();
-void addLogMess(const char* message);
-inline void addLogMess(const HString &rMessage)
+
+void HOPSANCORE_DLLAPI addCoreLogMessage(const char* message);
+inline void addCoreLogMessage(const HString& message)
 {
-    addLogMess(rMessage.c_str());
+    addCoreLogMessage(message.c_str());
 }
+
+// This one is for backwards compatibility, due to name change
+inline void addLogMess(const char* message)
+{
+    addCoreLogMessage(message);
+}
+// This one is for backwards compatibility, due to name change
+inline void addLogMess(const HString& message)
+{
+    addCoreLogMessage(message.c_str());
+}
+
 }
 #endif // HopsanEssentials_H
