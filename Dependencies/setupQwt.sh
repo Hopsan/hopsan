@@ -5,13 +5,13 @@
 # Author: Peter Nordin peter.nordin@liu.se
 
 
-basedir=`pwd`
+basedir=$(pwd)
 name=qwt
 codedir=${basedir}/${name}_code
 builddir=${basedir}/${name}_build
 installdir=${basedir}/${name}
 
-# include general settings
+# Include general settings
 source setHopsanBuildPaths.sh
 
 # Adjust CRLF on Mac OS X
@@ -26,12 +26,10 @@ patch --binary --forward -p1 < ../qwt-build.patch
 mkdir -p $builddir
 cd $builddir
 # Generate makefiles on different platforms
-if [ "$OSTYPE" == "linux-gnu" ]; then
-        $hopsan_qt_qmake ${codedir}/qwt.pro -r -spec linux-g++
-elif [ "$OSTYPE" == "darwin14" ]; then
-        $hopsan_qt_qmake ${codedir}/qwt.pro -r # This is a rather temporary ugly solution...
+if [ "$OSTYPE" == "darwin14" ]; then
+    ${hopsan_qt_qmake} ${codedir}/qwt.pro -r # This is a rather temporary ugly solution...
 else
-        echo "Unknown OS for qwt build and patch"
+    ${hopsan_qt_qmake} ${codedir}/qwt.pro -r -spec linux-g++
 fi
 
 # Build

@@ -9,7 +9,7 @@ set -e
 
 pyqtversion="3.0"
 pyversion="2.7"
-basedir=`pwd`
+basedir=$(pwd)
 
 if [ $# -lt 1 ]; then
   echo "Error: To few input arguments!"
@@ -20,11 +20,11 @@ if [ $# -lt 1 ]; then
 fi
 
 if [ $# -gt 1 ]; then
-  pyversion="$2"  
+  pyversion="$2"
 fi
 
 if [ $# -gt 2 ]; then
-  pyqtversion="$3"  
+  pyqtversion="$3"
 fi
 
 pythonqtname="PythonQt${pyqtversion}"
@@ -35,20 +35,22 @@ builddir=${basedir}/${name}_build
 installdir=${basedir}/${name}
 E_BADARGS=65
 
+# Include general settings
+source setHopsanBuildPaths.sh
 
 if [ -d ${codedir} ]; then
     echo "$codedir Already exists, not replacing files!"
 else
     if [ -f ${pythonqtfile} ]; then
         unzip -q ${pythonqtfile}
-        mv $pythonqtname $codedir
+        mv ${pythonqtname} ${codedir}
     else
-	echo "Warning: ${pythonqtfile} is missing, not building PythonQt"
-	exit 0
+        echo "Warning: ${pythonqtfile} is missing, not building PythonQt"
+        exit 0
     fi
 fi
 
-cd $codedir
+cd ${codedir}
 
 # Remove extensions tests and examples to speedup build
 sed "s|extensions tests examples||" -i PythonQt.pro
@@ -65,7 +67,7 @@ sed "s|unix:PYTHON_VERSION=.*|unix:PYTHON_VERSION=${pyversion}|" -i build/python
 mkdir -p $builddir
 cd $builddir
 
-qmake ${codedir}/PythonQt.pro -r -spec linux-g++
+${hopsan_qt_qmake} ${codedir}/PythonQt.pro -r -spec linux-g++
 make -j4 -w
 
 # Install manually since PythonQt code does not have install target configured
