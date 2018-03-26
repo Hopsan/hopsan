@@ -10,7 +10,7 @@ libname = qwt
 defineTest(have_local_qwt) {
   exists($${qwt_lib}) {
     return(true)
-  } 
+  }
   return(false)
 }
 
@@ -18,8 +18,10 @@ defineTest(have_local_qwt) {
 defineTest(have_system_qwt) {
   unix:system(pkg-config --exists $${libname}) {
     return(true)
-  } else:unix:system(ldconfig -p | grep -q lib$${libname}) {
-    return(true)
+  } else:unix:system(command -v ldconfig) {
+    system(ldconfig -p | grep -q lib$${libname}) {
+      return(true)
+    }
   }
   return(false)
 }
