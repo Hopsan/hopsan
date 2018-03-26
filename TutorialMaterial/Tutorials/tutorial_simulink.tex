@@ -180,4 +180,65 @@ It is thus possible to modify the model from Hopsan without exporting it again, 
 
 \end{enumerate}
 
+\section*{External Component Libaries}
+If the model contains components from an external component library, i.e. components not included in the default library, these will not automatically be exported. Hence, they need to manually added to the exported code. It is here assumed that the code for each component in the external library is contained in a single .hpp file.
+
+\begin{enumerate}
+\tutitem{Copy component files to export folder}
+Copy all external component header files (.hpp) to the "<exportpath>/componentLibraries/defaultLibrary" folder.
+
+\tutitem{Include component header files in exported code}
+Open "<exportpath>/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc". Include your component header files directly after the inclusion of "Components.h":
+
+\newcommand{\hilight}{\makebox[0pt][l]{%
+		\color{yellow}\rule[-4pt]{1\linewidth}{14pt}}%
+}
+
+\lstdefinestyle{base}{
+	language=c++,
+	basicstyle=\footnotesize\ttfamily,
+	moredelim=**[is][\color{red}]{|}{|},
+}
+
+
+\begin{lstlisting}[style=base]
+ #include "defaultComponentLibraryInternal.h"
+
+ // Include automatically generated header code for all default...
+ #include "Components.h"
+ 
+ |#include "MyComp1.hpp"|  
+ |#include "MyComp2.hpp"|
+
+ //! @defgroup Components Components
+ //!
+\end{lstlisting}
+
+\tutitem{Register components in source code}
+Add registration of your component(s) in the "Additional Components" section below.
+
+\begin{lstlisting}[style=base]
+void hopsan::register_default_components(ComponentFactory* pComponentFactory)
+{
+    // Include automatically generated registration code for all ...
+    #include "Components.cci"
+	
+    // ========== Additional Components ==========
+	
+    // Here you can add your own components if you want to compile ...
+    // Use the following form:
+    // pComponentFactory->registerCreatorFunction("TYPENAME", ...
+    //
+    // Example:
+    // pComponentFactory->registerCreatorFunction("HydraulicVolume", ...
+	
+    |ComponentFactory->registerCreatorFunction("MyComp1",MyComp1::Creator);|
+    |ComponentFactory->registerCreatorFunction("MyComp2",MyComp2::Creator);|
+}
+\end{lstlisting}
+\end{enumerate}
+
+\noindent After these modifications the exported code can be compiled using the compilation script as described above.
+The added components will now be available for use with the included model.
+
 \end{document}
