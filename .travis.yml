@@ -27,5 +27,6 @@ script:
   - ${hopsan_qt_qmake} ../HopsanNG_remote.pro -r -spec linux-g++ -config release
   - cd ..
   - make -j4 -C build
+  - ./runValidationTests.sh
 
-# todo, add tests
+# todo, add unit tests
