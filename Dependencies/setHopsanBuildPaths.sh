@@ -5,7 +5,8 @@
 
 if [[ ! -v QT_SELECT ]]; then
     echo Set \(and export\) QT_SELECT if you want to choose Qt version
-    export QT_SELECT=0
+    echo Defaulting to Qt 5
+    export QT_SELECT=5
 fi
 
 if [[ "$OSTYPE" == "darwin14" ]]; then
