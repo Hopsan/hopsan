@@ -712,7 +712,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                     Component* pRequiredComponent=0;
 
                     SortHintEnumT sortHint = pPort->getSortHint();
-                    if ((pUnsrtComp->getTypeName() == SUBSYSTEMTYPENAME) || (pUnsrtComp->getTypeName() == CONDITIONALTYPENAME))
+                    if ((pUnsrtComp->getTypeName() == HOPSAN_BUILTIN_TYPENAME_SUBSYSTEM) ||
+                        (pUnsrtComp->getTypeName() == HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM))
                     {
                         sortHint = pPort->getInternalSortHint();
                     }

@@ -24,8 +24,6 @@
 
 //!
 //! @file   HopsanEssentials.h
-//! @author <peter.nordin@liu.se>
-//! @date   2010-02-19
 //!
 //! @brief Contains the HopsanEssentials Class
 //!
@@ -34,12 +32,12 @@
 #ifndef HopsanEssentials_H
 #define HopsanEssentials_H
 
-#define DUMMYTYPENAME "DummyComponent"
-#define MISSINGTYPENAME "MissingComponent"
-#define SUBSYSTEMTYPENAME "Subsystem"
-#define CONDITIONALTYPENAME "ConditionalSubsystem"
-#define CPPTYPENAME "CppComponent"
-#define MODELICATYPENAME "ModelicaComponent"
+#define HOPSAN_BUILTIN_TYPENAME_DUMMYCOMPONENT "DummyComponent"
+#define HOPSAN_BUILTIN_TYPENAME_MISSINGCOMPONENT "MissingComponent"
+#define HOPSAN_BUILTIN_TYPENAME_SUBSYSTEM "Subsystem"
+#define HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM "ConditionalSubsystem"
+#define HOPSAN_BUILTIN_TYPENAME_CPPCOMPONENT "CppComponent"
+#define HOPSAN_BUILTIN_TYPENAME_MODELICACOMPONENT "ModelicaComponent"
 
 #include "Node.h"
 #include "Component.h"
