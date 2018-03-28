@@ -40,16 +40,17 @@ msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Pro
 
 # Runtime binaries to copy to bin directory (Note! Path to qt/bin and mingw/bin and plugin directories is set by external script)
 # Note! This list must be adapted to the actual version of Qt/MinGW that you are using when building the release
-qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
-                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
+qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll',
+                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll',
                  'Qt5Test.dll', 'icuin56.dll', 'icuuc56.dll', 'icudt56.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
 qtRuntimeBins32 = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
-                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
-                 'Qt5Test.dll', 'icuin53.dll', 'icuuc53.dll', 'icudt53.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
+                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5Xml.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
+                 'Qt5Test.dll', 'Qt5PrintSupport.dll']
 qtPluginBins  = [r'iconengines/qsvgicon.dll', r'imageformats/qjpeg.dll', r'imageformats/qsvg.dll', r'platforms/qwindows.dll']
 mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwBins32   = ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwOptBins  = []
+mingwOptBins32  = ['libeay32.dll', 'ssleay32.dll']
 
 dependencyFiles = ['qwt/lib/qwt.dll', 'zeromq/bin/libzmq.dll', 'hdf5/bin/hdf5_cpp-shared.dll', 'hdf5/bin/hdf5-shared.dll', 'FMILibrary/lib/libfmilib_shared.dll',
                    'discount/lib/libmarkdown.dll']
@@ -426,6 +427,15 @@ def copyFileToDir(srcDir, srcFile, dstDir, keep_relative_path=True):
         print('Error: Source file '+src+' does not exist!')
 
 
+def checkFilesExistInDir(root_dir, list_of_files):
+    did_find_all = True;
+    for f in list_of_files:
+        file_path = os.path.join(root_dir, f)
+        if not fileExists(file_path):
+            printError(file_path+' does not exist!')
+            did_find_all = False
+    return did_find_all
+
 #  Copy srcDir into dstDir, creating dstDir if necessary
 def copyDirTo(srcDir, dstDir):
     srcDir = os.path.normpath(srcDir)
@@ -436,13 +446,13 @@ def copyDirTo(srcDir, dstDir):
             os.makedirs(dstDir)
         tgtDir = os.path.join(dstDir, lastpathelement(srcDir))
         if os.path.exists(tgtDir):
-            print('Error: tgtDir '+tgtDir+' already exists')
+            printError('tgtDir '+tgtDir+' already exists')
             return False
         print('Copying: '+srcDir+' to: '+tgtDir)
         shutil.copytree(srcDir, tgtDir)
         return True
     else:
-        print('Error: Src directory '+srcDir+' does not exist!')
+        printError('Src directory '+srcDir+' does not exist!')
         return False
 
 def move(src, dst):
@@ -1000,12 +1010,22 @@ if gDo64BitRelease:
 else:
     qtRuntimeBins = qtRuntimeBins32
     mingwBins = mingwBins32
+    mingwOptBins = mingwOptBins32
     gTemporaryBuildDir += r'\Hopsan-'+gReleaseFileVersionName+r'-win32'
 print("Using TempDir: "+gTemporaryBuildDir)
 
+qt_bins_ok = checkFilesExistInDir(qmakeDir, qtRuntimeBins)
+qt_plugins_ok = checkFilesExistInDir(qmakeDir+'/../plugins',qtPluginBins)
+mingw_bins_ok = checkFilesExistInDir(mingwDir, mingwBins)
+mingw_optbins_ok = checkFilesExistInDir(mingwDir+'/../opt/bin', mingwOptBins)
+deps_ok = checkFilesExistInDir(hopsanDir+'/Dependencies', dependencyFiles)
+
+success = success and qt_bins_ok and qt_plugins_ok and mingw_bins_ok and mingw_optbins_ok and deps_ok
+
 if not success:
     cleanUp()
-        
+    printError("Could not find all needed files.")
+
 if success:
     prepareSourceCode(gBaseVersion, gReleaseRevision, gDoDevRelease)
     if doBuild:
@@ -1013,9 +1033,9 @@ if success:
             success = False
             cleanUp()
             printError("Compilation script failed in compilation error.")
-    
+
 if success:
-    #Copy depedency bin files to bin diirectory
+    #Copy dependency bin files to bin directory
     for f in qtRuntimeBins:
         copyFileToDir(qmakeDir, f, hopsanDir+'/bin')
     for f in qtPluginBins:
