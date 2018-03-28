@@ -1,5 +1,7 @@
 # Hopsan
 
+[![Build Status](https://travis-ci.org/Hopsan/hopsan.svg?branch=master)](https://travis-ci.org/Hopsan/hopsan)
+
 Hopsan is a free open-source multi-domain system simulation tool developed at the division of Fluid and mechatronic systems at Linkoping university.
 
 Features include:
@@ -14,12 +16,12 @@ Features include:
     * Call from external software, save results to file
     * Automate batch simulation
     * Run validation or generate validation data set from model
-* Graphical users interface 
+* Graphical users interface
     * Drag and drop / power-port based modeling including support for reusable subsystems
     * Advanced simulation result analysis capabilities
-    * Energy losses calculations 
-    * Data export to CSV, XML, Gnuplot, HDF5 & Matlab formats 
-    * Interactive animation of the simulated system (real-time and playback)   
+    * Energy losses calculations
+    * Data export to CSV, XML, Gnuplot, HDF5 & Matlab formats
+    * Interactive animation of the simulated system (real-time and playback)
     * Model variable sensitivity analysis
     * Frequency-domain analysis (based on simulation results)
     * Numerical optimization
@@ -85,7 +87,7 @@ To get the source code clone it including dependencies using the following comma
 ```
 git clone https://github.com/Hopsan/hopsan.git
 cd hopsan
-git submodule update --init 
+git submodule update --init
 ```
 If a submodule fails to clone then you must get a hold of it some other way.
 **Note!** Not all of the dependencies are required. See the documentation for details.

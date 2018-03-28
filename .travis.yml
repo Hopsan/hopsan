@@ -1,0 +1,32 @@
+# Use trusty
+dist: trusty
+sudo: required
+
+# Enable C++ support
+language: cpp
+
+# Compiler selection
+compiler:
+  - gcc
+#  - clang
+
+# Build steps
+script:
+  - export QT_SELECT=4
+  - cd Dependencies
+  - ./setupDiscount.sh
+  - ./setupFMILibrary.sh
+  - ./setupQwt.sh
+  - ./setupZeroMQ.sh
+  - ./setupKatex.sh
+  - ./setupPythonQt.sh release 2.7 3.0
+  - cd ..
+  - mkdir -p build
+  - cd build
+  - source ../Dependencies/setHopsanBuildPaths.sh
+  - ${hopsan_qt_qmake} ../HopsanNG_remote.pro -r -spec linux-g++ -config release
+  - cd ..
+  - make -j4 -C build
+  - ./runValidationTests.sh
+
+# todo, add unit tests
