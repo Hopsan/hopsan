@@ -48,7 +48,7 @@ class HopsanEssentials;
 
 enum NodeDataVariableTypeEnumT {DefaultType, IntensityType, FlowType, TLMType, HiddenType};
 
-DLLIMPORTEXPORT HString nodeDataVariableTypeAsString(const NodeDataVariableTypeEnumT type);
+HOPSANCORE_DLLAPI HString nodeDataVariableTypeAsString(const NodeDataVariableTypeEnumT type);
 
 class NodeDataDescription
 {
@@ -62,7 +62,7 @@ public:
     size_t id;
 };
 
-class DLLIMPORTEXPORT Node
+class HOPSANCORE_DLLAPI Node
 {
     friend class Port;
     friend class MultiPort;

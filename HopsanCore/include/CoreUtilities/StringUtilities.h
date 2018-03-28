@@ -40,12 +40,12 @@
 
 namespace hopsan {
 
-void DLLIMPORTEXPORT santizeName(HString &rName);
-HString DLLIMPORTEXPORT santizeName(const HString &rName);
+void HOPSANCORE_DLLAPI santizeName(HString &rName);
+HString HOPSANCORE_DLLAPI santizeName(const HString &rName);
 
-bool DLLIMPORTEXPORT isNameValid(const HString &rString);
-bool DLLIMPORTEXPORT isNameValid(const HString &rString, const HString &rExceptions);
-void DLLIMPORTEXPORT splitString(const HString &rString, const char delim, std::vector<HString> &rParts);
+bool HOPSANCORE_DLLAPI isNameValid(const HString &rString);
+bool HOPSANCORE_DLLAPI isNameValid(const HString &rString, const HString &rExceptions);
+void HOPSANCORE_DLLAPI splitString(const HString &rString, const char delim, std::vector<HString> &rParts);
 
 //! @brief Help function for create a unique name among names from one STL Container
 template<typename ContainerT>

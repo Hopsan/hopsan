@@ -50,7 +50,7 @@ namespace hopsan {
 
     //! defines a vector of doubles
     //! @ingroup ComponentUtilityClasses
-    class DLLIMPORTEXPORT Vec {
+    class HOPSANCORE_DLLAPI Vec {
     public:
         Vec(); //!< default no-argument constructor
         Vec(const Vec &src); //!< copy constructor
@@ -79,11 +79,11 @@ namespace hopsan {
         static double dot(const Vec &a, const Vec &b);
 
         // operator overloads
-        DLLIMPORTEXPORT friend Vec operator+(const Vec &a, const Vec &b);  //!< returns a+b
-        friend Vec DLLIMPORTEXPORT operator-(const Vec &a, const Vec &b); //!< returns a-b
-        DLLIMPORTEXPORT friend Vec operator*(double c, const Vec &a);     //!< returns scalar multiplied by Vec
-        DLLIMPORTEXPORT friend Vec operator*(const Vec &a, double c); //!< returns Vec multiplied by scalar
-        DLLIMPORTEXPORT friend Vec operator/(const Vec &a, double c); //!< returns Vec divided by scalar
+        HOPSANCORE_DLLAPI friend Vec operator+(const Vec &a, const Vec &b);  //!< returns a+b
+        friend Vec HOPSANCORE_DLLAPI operator-(const Vec &a, const Vec &b); //!< returns a-b
+        HOPSANCORE_DLLAPI friend Vec operator*(double c, const Vec &a);     //!< returns scalar multiplied by Vec
+        HOPSANCORE_DLLAPI friend Vec operator*(const Vec &a, double c); //!< returns Vec multiplied by scalar
+        HOPSANCORE_DLLAPI friend Vec operator/(const Vec &a, double c); //!< returns Vec divided by scalar
 
     private:
         int n;	                    //!< number of elements in the vector
@@ -93,7 +93,7 @@ namespace hopsan {
 
     //! defines a two-dimensional Matrix of doubles
     //! @ingroup ComponentUtilityClasses
-    class DLLIMPORTEXPORT Matrix {
+    class HOPSANCORE_DLLAPI Matrix {
     public:
         //! default (no argument) constructor
         Matrix(): nrows(0), ncols(0), body(0) {}
@@ -146,14 +146,14 @@ namespace hopsan {
 
 
 
-    DLLIMPORTEXPORT Matrix identity(int size);
-    DLLIMPORTEXPORT Matrix diagonal(double *v, int size);
-    //DLLIMPORTEXPORT int read_matrix(Matrix &mx, std::string &title, FILE *in);
-    DLLIMPORTEXPORT void print_vector(double *v, int n);
-    DLLIMPORTEXPORT void copy_matrix(Matrix &dst, Matrix &src);
-    DLLIMPORTEXPORT double* vector(int length);
-    DLLIMPORTEXPORT int* ivector(int length);
-    DLLIMPORTEXPORT void errmsg(char *text);
+    HOPSANCORE_DLLAPI Matrix identity(int size);
+    HOPSANCORE_DLLAPI Matrix diagonal(double *v, int size);
+    //HOPSANCORE_DLLAPI int read_matrix(Matrix &mx, std::string &title, FILE *in);
+    HOPSANCORE_DLLAPI void print_vector(double *v, int n);
+    HOPSANCORE_DLLAPI void copy_matrix(Matrix &dst, Matrix &src);
+    HOPSANCORE_DLLAPI double* vector(int length);
+    HOPSANCORE_DLLAPI int* ivector(int length);
+    HOPSANCORE_DLLAPI void errmsg(char *text);
 }
 
 #endif

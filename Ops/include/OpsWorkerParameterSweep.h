@@ -37,7 +37,7 @@
 
 namespace Ops {
 
-class WorkerParameterSweep : public Worker
+class OPS_DLLAPI WorkerParameterSweep : public Worker
 {
 public:
     WorkerParameterSweep(Evaluator *pEvaluator, MessageHandler *pMessageHandler);

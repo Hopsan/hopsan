@@ -49,7 +49,7 @@ enum ParallelAlgorithmT {OfflineSchedulingAlgorithm,
 // Forward declaration
 class ComponentSystem;
 
-class DLLIMPORTEXPORT SimulationHandler
+class HOPSANCORE_DLLAPI SimulationHandler
 {
 public:
     enum SimulationErrorTypesT {NotRedy, InitFailed, SimuFailed, FiniFailed};

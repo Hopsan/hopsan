@@ -78,7 +78,7 @@ public:
     size_t mVariableId;
 };
 
-class DLLIMPORTEXPORT Component
+class HOPSANCORE_DLLAPI Component
 {
     friend class ComponentSystem;
     friend class ConditionalComponentSystem;
@@ -308,7 +308,7 @@ private:
 
 
 
-class DLLIMPORTEXPORT ComponentSignal : public Component
+class HOPSANCORE_DLLAPI ComponentSignal : public Component
 {
 public:
     CQSEnumT getTypeCQS() const {return SType;}
@@ -316,14 +316,14 @@ public:
 };
 
 
-class DLLIMPORTEXPORT ComponentC : public Component
+class HOPSANCORE_DLLAPI ComponentC : public Component
 {
     CQSEnumT getTypeCQS() const {return CType;}
     bool isComponentC() const {return true;}
 };
 
 
-class DLLIMPORTEXPORT ComponentQ : public Component
+class HOPSANCORE_DLLAPI ComponentQ : public Component
 {
     CQSEnumT getTypeCQS() const {return QType;}
     bool isComponentQ() const {return true;}

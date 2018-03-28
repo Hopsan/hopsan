@@ -39,7 +39,7 @@
 namespace hopsan {
 
     //! @ingroup ComponentUtilityClasses
-    class DLLIMPORTEXPORT DoubleIntegratorWithDamping
+    class HOPSANCORE_DLLAPI DoubleIntegratorWithDamping
     {
     public:
         void initialize(double timestep, double w0, double u0=0.0, double y0=0.0, double sy0=0.0);

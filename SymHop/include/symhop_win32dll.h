@@ -23,35 +23,31 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ludcmp.h
-//! @author ?? <??@??.??>
-//! @date   2010-11-29
+//! @file   win32dll.h
 //!
-//! @brief Contains a functions to solve eq.systems
+//! @brief Defines macro for DLL symbol export and import
 //!
-//!
-//! Finds solution to set of linear equations A x = b by LU decomposition.
-//!
-//! Chapter 2, Programs 3-5, Fig. 2.8-2.10
-//! Gerald/Wheatley, APPLIED NUMERICAL ANALYSIS (fourth edition)
-//! Addison-Wesley, 1989
-//! (found by Petter on the net, url may be nice)
-//!
+
 //$Id$
 
-#ifndef LUDCMP_HPP_INCLUDED
-#define LUDCMP_HPP_INCLUDED
-#include "win32dll.h"
+#ifndef SYMHOP_WIN32DLL_H_INCLUDED
+#define SYMHOP_WIN32DLL_H_INCLUDED
 
-namespace hopsan {
+#ifdef _WIN32
 
-    class Matrix;
-    class Vec;
+#if defined SYMHOP_DLLEXPORT
+#define SYMHOP_DLLAPI __declspec(dllexport)
+#elif defined SYMHOP_DLLIMPORT
+#define SYMHOP_DLLAPI __declspec(dllimport)
+#else /*Symhop static library*/
+#define SYMHOP_DLLAPI
+#endif
 
-    bool HOPSANCORE_DLLAPI ludcmp(Matrix &a, int order[]);
-    void HOPSANCORE_DLLAPI solvlu(const Matrix &a, const Vec &b, Vec &x, const int order[]);
-    bool HOPSANCORE_DLLAPI pivot(Matrix &a, int order[], int jcol);
-}
-#define TINY 1e-200
+#else
 
-#endif // LUDCMP_HPP_INCLUDED
+// Define empty on non-windows systems
+#define SYMHOP_DLLAPI
+
+#endif
+
+#endif

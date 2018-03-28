@@ -38,7 +38,7 @@
 
 namespace Ops {
 
-class WorkerControlledRandomSearch : public WorkerSimplex
+class OPS_DLLAPI WorkerControlledRandomSearch : public WorkerSimplex
 {
 public:
     WorkerControlledRandomSearch(Evaluator *pEvaluator, MessageHandler *pMessageHandler);

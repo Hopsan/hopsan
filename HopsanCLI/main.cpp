@@ -68,7 +68,7 @@
  #define DEBUG_EXT
 #endif
 
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
     #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 #endif
 
@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
         }
 
 
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         // Load default Hopsan component lib
         string libpath = getCurrentExecPath()+"/" DEFAULTCOMPONENTLIB;
         gHopsanCore.loadExternalComponentLib(libpath.c_str());

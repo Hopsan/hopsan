@@ -36,7 +36,8 @@
 
 #include <vector>
 #include <string>
-#include <map>
+
+#include "OpsWin32DLL.h"
 
 namespace Ops {
 
@@ -64,7 +65,7 @@ void removeFromVector(std::vector<T> &rVector, const size_t idx)
     rVector.erase(rVector.begin() + idx);
 }
 
-class Worker
+class OPS_DLLAPI Worker
 {
     friend class Evaluator;
 public:

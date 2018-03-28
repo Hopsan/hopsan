@@ -47,11 +47,11 @@ class ComponentSystem;
 class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
-int DLLIMPORTEXPORT getEpochVersion(const HString& version);
-int DLLIMPORTEXPORT getMajorVersion(const HString& version);
-int DLLIMPORTEXPORT getMinorVersion(const HString& version);
-bool DLLIMPORTEXPORT isVersionAGreaterThanB(const HString& versionA, const HString& versionB);
-int DLLIMPORTEXPORT compareHopsanVersions(const HString& versionA, const HString& versionB);
+int HOPSANCORE_DLLAPI getEpochVersion(const HString& version);
+int HOPSANCORE_DLLAPI getMajorVersion(const HString& version);
+int HOPSANCORE_DLLAPI getMinorVersion(const HString& version);
+bool HOPSANCORE_DLLAPI isVersionAGreaterThanB(const HString& versionA, const HString& versionB);
+int HOPSANCORE_DLLAPI compareHopsanVersions(const HString& versionA, const HString& versionB);
 
 ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModel(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);

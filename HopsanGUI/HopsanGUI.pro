@@ -75,18 +75,21 @@ have_zeromq() {
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set SymHop Paths
 INCLUDEPATH *= $${PWD}/../SymHop/include/
 LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
+DEFINES *= SYMHOP_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set Ops Paths
 INCLUDEPATH *= $${PWD}/../Ops/include/
 LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
+DEFINES *= OPS_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
@@ -157,8 +160,6 @@ unix {
     }
 }
 win32 {
-    #DEFINES += STATICCORE
-
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
         !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")

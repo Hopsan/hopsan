@@ -38,7 +38,7 @@
 
 namespace Ops {
 
-class WorkerSimplex : public Worker
+class OPS_DLLAPI WorkerSimplex : public Worker
 {
 public:
     WorkerSimplex(Evaluator *pEvaluator, MessageHandler *pMessageHandler);

@@ -106,9 +106,9 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
     compileScriptLStream << "disp('Compiling S-function from Hopsan model...');";
 #ifdef _WIN32
-    compileScriptStream << "mex -DWIN32 -DSTATICCORE -DBUILTINDEFAULTCOMPONENTLIB -D_USE_MATH_DEFINES";
+    compileScriptStream << "mex -DWIN32 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -D_USE_MATH_DEFINES";
 #else
-    compileScriptStream << "mex -DSTATICCORE -DBUILTINDEFAULTCOMPONENTLIB -D_USE_MATH_DEFINES";
+    compileScriptStream << "mex -DHOPSAN_INTERNALDEFAULTCOMPONENTS -D_USE_MATH_DEFINES";
 #endif
     Q_FOREACH(const QString &s, getHopsanCoreIncludePaths())
     {
@@ -810,7 +810,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
 
     QTextStream compileStream(&compileFile);
 #ifdef _WIN32
-    compileStream << "mex -DWIN32 -DSTATICCORE -D_USE_MATH_DEFINES -L./ -I./include -I./include/boost HopsanSimulink.cpp\n";
+    compileStream << "mex -DWIN32 -D_USE_MATH_DEFINES -L./ -I./include -I./include/boost HopsanSimulink.cpp\n";
 #else
     compileStream << "mex -D_USE_MATH_DEFINES -L./ -Iinclude -Iinclude/boost HopsanSimulink.cpp" << endl;
 #endif

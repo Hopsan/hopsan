@@ -41,7 +41,7 @@ CONFIG(release, debug|release) {
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    DEFINES += SYMHOPDLLEXPORT
+    DEFINES += SYMHOP_DLLEXPORT
     DEFINES -= UNICODE
 }
 
@@ -53,12 +53,3 @@ SOURCES += src/SymHop.cc
 
 HEADERS += include/SymHop.h \
     include/win32dll.h
-
-
-
-
-
-
-
-
-

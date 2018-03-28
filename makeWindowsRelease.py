@@ -617,9 +617,9 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     fullversion = versionnumber+'.'+revisionnumber
     if not dodevrelease:
         # Set version numbers (by changing .h files)
-        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
-        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
-        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
+        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION .*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
+        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION .*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
+        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION .*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
 
         # Hide splash screen development warning
         replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'Development version', '')
@@ -628,7 +628,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
         replace_pattern(r'HopsanGUI/HopsanGUI.pro', r'.*?DEFINES \*= DEVELOPMENT', r'#DEFINES *= DEVELOPMENT')
 
     # Set the release version definition
-    replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION.*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
+    replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION .*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
     
     # Set splash screen version and revision number
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.0\.0', versionnumber)
@@ -638,7 +638,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
 
     # Make sure we compile defaultLibrary into core
-    replace_pattern('Common.prf', r'.*?DEFINES \*= BUILTINDEFAULTCOMPONENTLIB', r'DEFINES *= BUILTINDEFAULTCOMPONENTLIB')
+    replace_pattern('Common.prf', r'.*?DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS', r'DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS')
     replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\')
     prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     replace_pattern('componentLibraries/componentLibraries.pro', 'defaultLibrary', '')
@@ -647,8 +647,8 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 
 def buildRelease():
 
-    # Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
-    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= MAINCORE', r'#DEFINES *= MAINCORE')
+    # Make sure we undefine HOPSANCORE_WRITELOG, so that MSVC dlls do not try to access the log file
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= HOPSANCORE_WRITELOG', r'#DEFINES *= HOPSANCORE_WRITELOG')
 
     # ========================================================
     #  Build HOPSANCORE with MSVC, else remove those folders
@@ -671,8 +671,8 @@ def buildRelease():
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x86"))
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x64"))
     
-    # Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
-    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= MAINCORE', 'DEFINES *= MAINCORE')
+    # Make sure the MinGW compilation uses the HOPSANCORE_WRITELOG define, so that log file is enabled
+    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= HOPSANCORE_WRITELOG', 'DEFINES *= HOPSANCORE_WRITELOG')
      
     # ========================================================
     #  BUILD WITH MINGW32

@@ -36,7 +36,7 @@ class Component;
 class ComponentSystem;
 class NumHopHelperPrivate;
 
-class DLLIMPORTEXPORT NumHopHelper
+class HOPSANCORE_DLLAPI NumHopHelper
 {
 public:
     NumHopHelper();

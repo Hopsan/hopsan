@@ -54,18 +54,19 @@ lessThan(QT_MAJOR_VERSION, 5){
 DEFINES *= _USE_MATH_DEFINES
 
 # Turn on the Hopsan Core runtime log file
-DEFINES *= WRITEHOPSANCORELOG
+DEFINES *= HOPSANCORE_WRITELOG
 
-# Turn on multi-threading
-DEFINES *= MULTITHREADING
+# Turn off multi-threading
+# DEFINES *= HOPSANCORE_NOMULTITHREADING
 
 
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    #DEFINES += STATICCORE      #Use this if you are compiling the core into a program directly or building a static lib
-    DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
+    # Turn on symbol export when building a  DLL
+    DEFINES += HOPSANCORE_DLLEXPORT
+    # Disable unicode strings (use ascii)
     DEFINES -= UNICODE
 
     # Enable auto-import

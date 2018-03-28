@@ -39,7 +39,7 @@
 
 namespace hopsan {
 
-    class DLLIMPORTEXPORT SecondOrderTransferFunction
+    class HOPSANCORE_DLLAPI SecondOrderTransferFunction
     {
     public:
         void initialize(double timestep, double num[3], double den[3], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300, double sy0=0.0);
@@ -71,7 +71,7 @@ namespace hopsan {
         Delay mBackupU, mBackupY;
     };
 
-    class DLLIMPORTEXPORT SecondOrderTransferFunctionVariable
+    class HOPSANCORE_DLLAPI SecondOrderTransferFunctionVariable
     {
     public:
         void initialize(double *pTimestep, double num[3], double den[3], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);

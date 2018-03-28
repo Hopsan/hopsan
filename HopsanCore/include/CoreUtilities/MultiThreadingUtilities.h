@@ -34,21 +34,31 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#if __cplusplus >= 201103L
-#include <atomic>
-#include <mutex>
+#include <cstddef>
+#include "win32dll.h"
+
+#if (__cplusplus >= 201103L) && !defined(HOPSANCORE_NOMULTITHREADING)
+#define HOPSANCORE_USEMULTITHREADING
 #endif
 
-#include "Component.h"
-#include "ComponentSystem.h"
 
-using namespace std;
-using namespace hopsan;
+namespace hopsan {
 
-size_t DLLIMPORTEXPORT determineActualNumberOfThreads(const size_t nDesiredThreads);
+size_t HOPSANCORE_DLLAPI determineActualNumberOfThreads(const size_t nDesiredThreads);
 
+}
 
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
+
+#include <atomic>
+#include <mutex>
+
+namespace hopsan {
+
+// Forward declaration
+class Component;
+class ComponentSystem;
+class Node;
 
 //! @brief Class for barrier locks in multi-threaded simulations.
 class BarrierLock
@@ -86,17 +96,17 @@ private:
 };
 
 
-void simMaster(ComponentSystem *pSystem, vector<Component *> &sVector, vector<Component *> &cVector,
-               vector<Component *> &qVector, vector<Node *> &nVector, vector<double *> &pSimTimes,
+void simMaster(ComponentSystem *pSystem, std::vector<Component *> &sVector, std::vector<Component *> &cVector,
+               std::vector<Component *> &qVector, std::vector<Node *> &nVector, std::vector<double *> &pSimTimes,
                double startTime, double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
                BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
 
-void simSlave(ComponentSystem *pSystem, vector<Component*> &sVector, vector<Component*> &cVector,
-              vector<Component*> &qVector, vector<Node*> &nVector, double startTime,
+void simSlave(ComponentSystem *pSystem, std::vector<Component*> &sVector, std::vector<Component*> &cVector,
+              std::vector<Component*> &qVector, std::vector<Node*> &nVector, double startTime,
               double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
               BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
 
-void simWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime);
+void simWholeSystems(std::vector<ComponentSystem *> systemPtrs, double stopTime);
 
 
 //////////////////////////////
@@ -185,7 +195,7 @@ public:
             mVector[i] = data[i];
         }
         firstIdx=0;
-        lastIdx=max(size_t(1), data.size())-1;
+        lastIdx=std::max(size_t(1), data.size())-1;
         mpMutex = new std::mutex();
     }
 
@@ -278,18 +288,11 @@ private:
 };
 
 
-
-
-
-
-
-
-
 void simStealingMaster(ComponentSystem *pSystem,
-                       vector<Component*> &sVector,
+                       std::vector<Component*> &sVector,
                        std::vector<ThreadSafeVector*> *cVectors,
                        std::vector<ThreadSafeVector*> *qVectors,
-                       vector<double *> &pSimTimes,
+                       std::vector<double *> &pSimTimes,
                        double startTime,
                        double timeStep,
                        size_t numSimSteps,
@@ -332,7 +335,8 @@ void simOneComponentOneStep(Component * pComp, double stopTime);
 
 void simOneStep(std::vector<Component *> *pComponentPtrs, double stopTime);
 
+}
 
-#endif //C++11
+#endif //C++11 and threading
 
 #endif // MULTITHREADINGUTILITIES_H

@@ -49,7 +49,7 @@
 #include <fstream>
 
 
-#ifdef BUILTINDEFAULTCOMPONENTLIB
+#ifdef HOPSAN_INTERNALDEFAULTCOMPONENTS
 #include "defaultComponentLibraryInternal.h"
 #endif
 
@@ -82,13 +82,13 @@ HopsanEssentials::HopsanEssentials()
 
     // Make sure that internal Nodes and Components register
     register_default_nodes(mpNodeFactory);
-    mpComponentFactory->registerCreatorFunction(DUMMYTYPENAME, DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction(MISSINGTYPENAME, DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction(SUBSYSTEMTYPENAME, ComponentSystem::Creator);
-    mpComponentFactory->registerCreatorFunction(CONDITIONALTYPENAME, ConditionalComponentSystem::Creator);
-    mpComponentFactory->registerCreatorFunction(CPPTYPENAME, DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction(MODELICATYPENAME, ModelicaComponent::Creator);
-#ifdef BUILTINDEFAULTCOMPONENTLIB
+    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_DUMMYCOMPONENT, DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_MISSINGCOMPONENT, DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_SUBSYSTEM, ComponentSystem::Creator);
+    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM, ConditionalComponentSystem::Creator);
+    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_CPPCOMPONENT, DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_MODELICACOMPONENT, ModelicaComponent::Creator);
+#ifdef HOPSAN_INTERNALDEFAULTCOMPONENTS
     register_default_components(mpComponentFactory);
 #endif
 
@@ -411,7 +411,7 @@ static std::ofstream hopsanLogFile;
 //! @brief Opens the HopsanCore runtime log
 bool hopsan::openLogFile()
 {
-#ifdef WRITEHOPSANCORELOG
+#ifdef HOPSANCORE_WRITELOG
     hopsanLogFile.open("hopsan_logfile.txt");
     return hopsanLogFile.is_open();
 #else
@@ -422,7 +422,7 @@ bool hopsan::openLogFile()
 //! @brief Closes the HopsanCore runtime log
 void hopsan::closeLogFile()
 {
-#ifdef WRITEHOPSANCORELOG
+#ifdef HOPSANCORE_WRITELOG
     hopsanLogFile.close();
 #endif
 }
@@ -431,7 +431,7 @@ void hopsan::closeLogFile()
 //! @param[in] message The message to write to the log file
 void hopsan::addLogMess(const char *message)
 {
-#ifdef WRITEHOPSANCORELOG
+#ifdef HOPSANCORE_WRITELOG
     if(hopsanLogFile.good())
     {
         hopsanLogFile << message << "\n";

@@ -48,7 +48,7 @@ namespace hopsan {
     class NumHopHelper;
     class ComponentSystemMultiThreadPrivates;
 
-    class DLLIMPORTEXPORT ComponentSystem :public Component
+    class HOPSANCORE_DLLAPI ComponentSystem :public Component
     {
         friend class ConnectionAssistant;
         friend class AliasHandler;

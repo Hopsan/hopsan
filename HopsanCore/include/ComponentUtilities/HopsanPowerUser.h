@@ -32,9 +32,9 @@
 
 namespace hopsan {
 
-Component DLLIMPORTEXPORT *createSafeComponent(ComponentSystem *pSystem, const HString &rType);
-bool DLLIMPORTEXPORT smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2);
-bool DLLIMPORTEXPORT smartDisconnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2);
+Component HOPSANCORE_DLLAPI *createSafeComponent(ComponentSystem *pSystem, const HString &rType);
+bool HOPSANCORE_DLLAPI smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2);
+bool HOPSANCORE_DLLAPI smartDisconnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2);
 
 
 //! @brief Help function to safely get the internal parameter data pointer from a subcomponent, the type needs to be known

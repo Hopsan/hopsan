@@ -593,11 +593,11 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                     // Get the typename for this new subsystem
                     string newTypeName = readStringAttribute(pObject, "typename", "UNSUPORTED_SYSTEM_TYPENAME");
                     // Create the appropriate subsystem
-                    if (newTypeName == CONDITIONALTYPENAME)
+                    if (newTypeName == HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM)
                     {
                         pSys = pHopsanEssentials->createConditionalComponentSystem();
                     }
-                    else if (newTypeName == SUBSYSTEMTYPENAME )
+                    else if (newTypeName == HOPSAN_BUILTIN_TYPENAME_SUBSYSTEM)
                     {
                         pSys = pHopsanEssentials->createComponentSystem();
                     }

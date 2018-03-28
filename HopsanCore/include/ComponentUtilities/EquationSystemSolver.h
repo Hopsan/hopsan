@@ -41,7 +41,7 @@
 namespace hopsan {
 
 //! @ingroup ComponentUtilityClasses
-class DLLIMPORTEXPORT EquationSystemSolver
+class HOPSANCORE_DLLAPI EquationSystemSolver
 {
 public:
 
@@ -66,7 +66,7 @@ private:
 
 
 //! @ingroup ComponentUtilityClasses
-class DLLIMPORTEXPORT NumericalIntegrationSolver
+class HOPSANCORE_DLLAPI NumericalIntegrationSolver
 {
 public:
     typedef double (NumericalIntegrationSolver::*callback_function)(int);
