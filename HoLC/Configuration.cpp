@@ -226,9 +226,9 @@ void Configuration::loadDefaultsFromXml()
         bool success = true;
         QString lib, includeDir;
     #ifdef _WIN32
-        lib = testPath+"/bin/HopsanCore.dll";
+        lib = testPath+"/bin/hopsancore.dll";
     #else
-        lib = testPath+"/bin/libHopsanCore.so";
+        lib = testPath+"/bin/libhopsancore.so";
     #endif
         if(!QFile::exists(lib))
         {
@@ -360,9 +360,9 @@ QString Configuration::getIncludePath() const
 QString Configuration::getHopsanCoreLibPath() const
 {
 #ifdef __linux__
-    return mHopsanPath+"/bin/libHopsanCore.so";
+    return mHopsanPath+"/bin/libhopsancore.so";
 #elif _WIN32
-    return mHopsanPath+"/bin/HopsanCore.dll";
+    return mHopsanPath+"/bin/hopsancore.dll";
 #endif
 }
 

@@ -10,7 +10,7 @@ QT       -= gui
 #Determine debug extension
 include( ../../../Common.prf )
 
-TARGET = tst_LookupTableTest$${DEBUG_EXT}
+TARGET = tst_lookuptabletest$${DEBUG_EXT}
 CONFIG   += console
 CONFIG   -= app_bundle
 DESTDIR = $${PWD}/../../../bin
@@ -18,12 +18,13 @@ DESTDIR = $${PWD}/../../../bin
 TEMPLATE = app
 
 INCLUDEPATH += $${PWD}/../../../HopsanCore/include/
-LIBS += -L$${PWD}/../../../bin -lHopsanCore$${DEBUG_EXT}
+LIBS += -L$${PWD}/../../../bin -lhopsancore$${DEBUG_EXT}
 
 unix{
 QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 }
 
-SOURCES += tst_LookupTableTest.cpp
+SOURCES += \
+    tst_lookuptabletest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"

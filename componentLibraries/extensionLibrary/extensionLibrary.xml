@@ -2,7 +2,7 @@
 <hopsancomponentlibrary xmlversion="0.1" libversion="1" name="extensionLibrary">
   <!-- The "lib" element defines the name of the (.dll / .so / .dynlib) file, (without file extension) -->
   <!-- Use the "debug_ext" attribute to define the optional debug extension, used in debug mode -->
-  <lib debug_ext="_d">extensionLibrary</lib>
+  <lib debug_ext="_d">extensionlibrary</lib>
   <!-- Use one or more "source" elements to define the files that should be compiled and linked into the library -->
   <source>extensionLibrary.cc</source>
   <!-- The "buildflags" element can be used to specify optional compiler and linker flags necessary when compiling the library -->

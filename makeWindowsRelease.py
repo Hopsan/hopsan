@@ -544,7 +544,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
         return False
     
     # Remove previous files
-    callDel(hopsanDir+r'\bin\HopsanCore*.*')
+    callDel(hopsanDir+r'\bin\hopsancore*.*')
 
     # Create clean build directory
     hopsanBuildDir = hopsanDir+r'\HopsanCore_bd'
@@ -580,7 +580,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     callRd(hopsanBuildDir)
 
     hopsanDirBin = hopsanDir+r'\bin'
-    if not fileExists(hopsanDirBin+r'\HopsanCore.dll'):
+    if not fileExists(hopsanDirBin+r'\hopsancore.dll'):
         printError("Failed to build HopsanCore with Visual Studio "+msvcVersion+" "+architecture)
         return False
 
@@ -588,9 +588,9 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     targetDir = hopsanDirBin+"\\"+makeMSVCOutDirName(msvcVersion, architecture)
     callRd(targetDir)
     mkdirs(targetDir)
-    move(hopsanDirBin+r'\HopsanCore.dll', targetDir)
-    move(hopsanDirBin+r'\HopsanCore.lib', targetDir)
-    move(hopsanDirBin+r'\HopsanCore.exp', targetDir)
+    move(hopsanDirBin+r'\hopsancore.dll', targetDir)
+    move(hopsanDirBin+r'\hopsancore.lib', targetDir)
+    move(hopsanDirBin+r'\hopsancore.exp', targetDir)
     
     return True
 
@@ -670,9 +670,9 @@ def buildRelease():
     print "Compiling with MinGW"
 
     # Remove previous files
-    #callDel(hopsanDir+r'\bin\HopsanCore*.*')
-    #callDel(hopsanDir+r'\bin\HopsanGUI*.*')
-    #callDel(hopsanDir+r'\bin\HopsanCLI*.*')
+    #callDel(hopsanDir+r'\bin\hopsancore*.*')
+    #callDel(hopsanDir+r'\bin\hopsangui*.*')
+    #callDel(hopsanDir+r'\bin\hopsancli*.*')
 
     # Create clean build directory
     hopsanBuildDir = hopsanDir+r'\HopsanNG_bd'
@@ -694,7 +694,7 @@ def buildRelease():
     os.chdir(hopsanBuildDir)    
     os.system(r'..\compileWithMinGW.bat')
 
-    if not fileExists(hopsanDir+r'\bin\HopsanCore.dll') or not fileExists(hopsanDir+r'\bin\HopsanGUI.exe') or not fileExists(hopsanDir+r'\bin\HopsanCLI.exe'):
+    if not fileExists(hopsanDir+r'\bin\hopsancore.dll') or not fileExists(hopsanDir+r'\bin\hopsangui.exe') or not fileExists(hopsanDir+r'\bin\hopsancli.exe'):
         printError("Failed to build Hopsan with MinGW.")
         return False
   

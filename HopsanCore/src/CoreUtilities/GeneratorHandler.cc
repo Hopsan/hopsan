@@ -40,7 +40,7 @@ GeneratorHandler::GeneratorHandler()
     mLoadedSuccessfully = false;
     mErrorString.clear();
 
-    const HString generatorLibName = TO_STR(DLL_PREFIX) "HopsanGenerator" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT);
+    const HString generatorLibName = TO_STR(DLL_PREFIX) "hopsangenerator" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT);
 
 #ifdef _WIN32
     mpLib = LoadLibrary(generatorLibName.c_str()); //Load the dll

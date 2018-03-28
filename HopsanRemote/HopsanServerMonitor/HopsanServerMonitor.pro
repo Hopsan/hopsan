@@ -5,6 +5,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+TARGET = hopsanservermonitor
 DESTDIR = $${PWD}/../../bin
 
 #--------------------------------------------------------

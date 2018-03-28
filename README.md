@@ -50,11 +50,12 @@ The GUI applications are released under the copyleft **GNU General Public Licens
 
 You can find official releases and more or less experimental development snapshots at:  
 https://www.iei.liu.se/flumes/system-simulation/hopsan/download?l=en  
-http://flumes.iei.liu.se/hopsan/files/
+https://flumes.iei.liu.se/hopsan/files/releases
 
-## Issue Tracker
-
-https://flumes.iei.liu.se/redmine/projects/hopsan
+## Issue Tracker and Questions
+If you want to report an issue, make a feature request or have a question, please create a new issue in the issue tracker.  
+If you want to ask a question, please label the issue with the "question" label.
+https://github.com/Hopsan/hopsan/issues
 
 ## Links
 
@@ -72,6 +73,9 @@ The old repository should still be accessible (read only) at:
 
 **Username:** anonymous  
 **Password:** hut6Opoj
+
+In late February 2018, the issue tracker was also moved to GitHub.  
+The old one can be found here: https://flumes.iei.liu.se/redmine/projects/hopsan
 
 # Build instructions
 

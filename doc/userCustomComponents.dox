@@ -26,8 +26,8 @@ __Remember__ that you can not make any more changes (that affect simulation resu
 The HopsanCLI can automatically create a validation data set based on all scopes in your model. If no scopes are available, no data set will be created.
 -# Use the HopsanCLI (Hopsan CommandLineInterface) with the -m and --createValidationData switches according to the following examples:\n
    The -d (destination directory) switch is optional
-  -# Windows: HopsanCLI.exe -m pathto\\ExampleModel.hmf --createValidationData -d outputDirectoryPath
-  -# Ubuntu:  ./HopsanCLI -m pathto/ExampleModel.hmf --createValidationData -d outputDirectoryPath
+  -# Windows: hopsancli.exe -m pathto\\ExampleModel.hmf --createValidationData -d outputDirectoryPath
+  -# Ubuntu:  ./hopsancli -m pathto/ExampleModel.hmf --createValidationData -d outputDirectoryPath
 -# Store the model, dataset and hvc file in a safe place. 
 
 \section userUnitTestModelsAndComponentsPage-components_howtocreateGUI How to Create a Validation Model in Hopsan GUI
@@ -39,8 +39,8 @@ The HopsanCLI can automatically create a validation data set based on all scopes
 
 \section userUnitTestModelsAndComponentsPage-components_howtotestCLI How to Test a Validation Model in Hopsan CLI
 -# Use the HopsanCLI (Hopsan CommandLineInterface) with the -t (for test) switch according to:
-  -# Windows: HopsanCLI.exe -t "MyHVCFile.hvc"
-  -# Ubuntu:  ./HopsanCLI -t "MyHVCFile.hvc"
+  -# Windows: hopsancli.exe -t "MyHVCFile.hvc"
+  -# Ubuntu:  ./hopsancli -t "MyHVCFile.hvc"
 -# If you want to automatically test multiple models, then you should write a script that goes through all of your hvc files.
 
 \section userUnitTestModelsAndComponentsPage-components_howtotestGUI How to Test a Validation Model in Hopsan GUI

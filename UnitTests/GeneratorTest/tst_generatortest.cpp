@@ -30,7 +30,7 @@
 #include <assert.h>
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultComponentLibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 #endif
 #define LIBEXT TO_STR(DLL_EXT)
 
@@ -184,9 +184,9 @@ private Q_SLOTS:
         pHandler->callSimulinkExportGenerator(HString(pwd.toStdString().c_str())+"/simulink/", "unittestmodel_export.hmf", system, false, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", false);
 
         QVERIFY2(QFile::exists(pwd+"/simulink/externalLibs.txt"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.dll"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.exp"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanCore.lib"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/hopsancore.dll"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/hopsancore.exp"), "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(pwd+"/simulink/hopsancore.lib"), "Failed to generate S-function, all files not found.");
         QVERIFY2(QFile::exists(pwd+"/simulink/"+system->getName().c_str()+".cpp"), "Failed to generate S-function, all files not found.");
         QVERIFY2(QFile::exists(pwd+"/simulink/HopsanSimulinkCompile.m"), "Failed to generate S-function, all files not found.");
         QVERIFY2(QFile::exists(pwd+"/simulink/"+system->getName().c_str()+"PortLabels.m"), "Failed to generate S-function, all files not found.");

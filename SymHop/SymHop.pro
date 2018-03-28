@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = SymHop
+TARGET = symhop
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin

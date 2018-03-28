@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example execution:
-# ./sendComplibAll.sh ~/svn/hopsan/trunk/bin/HopsanServerClient serverlist petno25 ~/svn/hopsan_private/dynafmu/hopsanComponents/dynaFmuLib.zip buildcomplib.sh
+# ./sendComplibAll.sh ~/svn/hopsan/trunk/bin/hopsandserverclient serverlist petno25 ~/svn/hopsan_private/dynafmu/hopsanComponents/dynaFmuLib.zip buildcomplib.sh
 
 remoteclient=$1
 nodelist=$2

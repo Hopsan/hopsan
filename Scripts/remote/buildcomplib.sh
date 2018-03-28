@@ -23,4 +23,4 @@ libdir=`pwd`
 
 # Now go back to home dir and call build utility in CLI
 cd $homedir
-HopsanCLI --buildComponentLibrary $libdir/$name.xml
+hopsancli --buildComponentLibrary $libdir/$name.xml

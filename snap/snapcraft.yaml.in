@@ -13,35 +13,35 @@ confinement: devmode
 
 apps:
   cli:
-    command: bin/HopsanCLI
+    command: bin/hopsancli
     plugs: [home]
 
   gui:
-    command: desktop-launch $SNAP/bin/HopsanGUI
+    command: desktop-launch $SNAP/bin/hopsangui
     plugs: [home, x11, desktop-legacy, opengl, network]
 
   holc:
-    command: desktop-launch $SNAP/bin/HoLC
+    command: desktop-launch $SNAP/bin/holc
     plugs: [home, x11, desktop-legacy]
 
   addresserver:
-    command: bin/HopsanAddressServer
+    command: bin/hopsanaddressserver
     plugs: [home, network, network-bind]
 
   server:
-    command: bin/HopsanServer
+    command: bin/hopsanserver
     plugs: [home, network, network-bind]
 
   serverworker:
-    command: bin/HopsanServerWorker
+    command: bin/hopsanserverworker
     plugs: [home, network, network-bind]
 
   serverclient:
-    command: bin/HopsanServerClient
+    command: bin/hopsanserverclient
     plugs: [home, network]
 
   servermonitor:
-    command: bin/ServerMonitor
+    command: bin/hopsanservermonitor
     plugs: [home, network]
 
 
