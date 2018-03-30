@@ -49,7 +49,7 @@ win32 {
 # Project files
 # -------------------------------------------------
 
-SOURCES += src/SymHop.cc
+SOURCES += src/SymHop.cpp
 
 HEADERS += include/SymHop.h \
-    include/win32dll.h
+    include/symhop_win32dll.h
