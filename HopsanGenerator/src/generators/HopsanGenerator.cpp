@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ComponentGeneratorUtilities.cc
+//! @file   ComponentGeneratorUtilities.cpp
 //! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-01-08
 //!
@@ -670,13 +670,13 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 
     file.close();
 
-    printMessage("Writing tempLib.cc...");
+    printMessage("Writing tempLib.cpp...");
 
     QFile ccLibFile;
-    ccLibFile.setFileName(QString(mTempPath)+"tempLib.cc");
+    ccLibFile.setFileName(QString(mTempPath)+"tempLib.cpp");
     if(!ccLibFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open tempLib.cc for writing.");
+        printErrorMessage("Failed to open tempLib.cpp for writing.");
         return;
     }
     QTextStream ccLibStream(&ccLibFile);
@@ -767,7 +767,7 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 }
 
 
-//! @brief Generates library .cc and .xml files for a folder with .hpp files
+//! @brief Generates library .cpp and .xml files for a folder with .hpp files
 //! @param[in] dstPath Destination path for library
 //! @param[in] hppFiles Relative path to hpp files
 //! @param[in] cflags Compiler flags required for building the library
@@ -796,13 +796,13 @@ void HopsanGenerator::generateNewLibrary(QString dstPath, QStringList hppFiles, 
         typeNames.append(temp.section(" : public",0,0).trimmed());
     }
 
-    printMessage("Writing "+libName+".cc...");
+    printMessage("Writing "+libName+".cpp...");
 
     QFile ccLibFile;
-    ccLibFile.setFileName(dstPath+libName+".cc");
+    ccLibFile.setFileName(dstPath+libName+".cpp");
     if(!ccLibFile.open(QFile::WriteOnly | QFile::Text))
     {
-        printErrorMessage("Failed to open "+libName+".cc for writing.");
+        printErrorMessage("Failed to open "+libName+".cpp for writing.");
         return;
     }
     QTextStream ccLibStream(&ccLibFile);
@@ -843,7 +843,7 @@ void HopsanGenerator::generateNewLibrary(QString dstPath, QStringList hppFiles, 
 
         xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\" name=\""+libName+"\">\n";
         xmlStream << "  <lib>" << libName  << "</lib>\n";
-        xmlStream << "  <source>" << libName << ".cc</source>\n";
+        xmlStream << "  <source>" << libName << ".cpp</source>\n";
         xmlStream << "  <buildflags>\n";
         xmlStream << "    <cflags>" << cflags.join(" ") << "</cflags>\n";
         xmlStream << "    <lflags>" << lflags.join(" ") << "</lflags>\n";

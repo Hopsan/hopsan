@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ComponentGeneratorLib.cc
+//! @file   ComponentGeneratorLib.cpp
 //! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-01-08
 //!
@@ -64,7 +64,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(hopsan::HString pat
 }
 
 
-//! @brief Generates .cc and .xml files for a library from a list of .hpp files
+//! @brief Generates .cpp and .xml files for a library from a list of .hpp files
 //! @param path Path to where the files shall be created
 //! @param hppFiles Vector with filenames for .hpp files
 //! @param showDialog True if generator output shall be displayed in a dialog window
