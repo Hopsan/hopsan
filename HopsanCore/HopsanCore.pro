@@ -114,42 +114,42 @@ macx {
 SOURCES += \
     #DO NOT remove the commented line below, it will be autoreplaced by script
     #INTERNALCOMPLIB.CC#
-    src/Port.cc \
-    src/Nodes.cc \
-    src/Node.cc \
-    src/HopsanEssentials.cc \
-    src/ComponentSystem.cc \
-    src/Component.cc \
-    src/CoreUtilities/LoadExternal.cc \
-    src/CoreUtilities/HopsanCoreMessageHandler.cc \
-    src/CoreUtilities/HmfLoader.cc \
-    src/ComponentUtilities/WhiteGaussianNoise.cc \
-    src/ComponentUtilities/SecondOrderTransferFunction.cc \
-    src/ComponentUtilities/matrix.cc \
-    src/ComponentUtilities/ludcmp.cc \
-    src/ComponentUtilities/IntegratorLimited.cc \
-    src/ComponentUtilities/FirstOrderTransferFunction.cc \
-    src/ComponentUtilities/CSVParser.cc \
-    src/Parameters.cc \
-    src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
-    src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
-    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc \
-    src/ComponentUtilities/EquationSystemSolver.cc \
-    src/HopsanTypes.cc \
-    src/ComponentUtilities/HopsanPowerUser.cc \
-    src/ComponentUtilities/LookupTable.cc \
-    src/ComponentUtilities/PLOParser.cc \
+    src/Port.cpp \
+    src/Nodes.cpp \
+    src/Node.cpp \
+    src/HopsanEssentials.cpp \
+    src/ComponentSystem.cpp \
+    src/Component.cpp \
+    src/CoreUtilities/LoadExternal.cpp \
+    src/CoreUtilities/HopsanCoreMessageHandler.cpp \
+    src/CoreUtilities/HmfLoader.cpp \
+    src/ComponentUtilities/WhiteGaussianNoise.cpp \
+    src/ComponentUtilities/SecondOrderTransferFunction.cpp \
+    src/ComponentUtilities/matrix.cpp \
+    src/ComponentUtilities/ludcmp.cpp \
+    src/ComponentUtilities/IntegratorLimited.cpp \
+    src/ComponentUtilities/FirstOrderTransferFunction.cpp \
+    src/ComponentUtilities/CSVParser.cpp \
+    src/Parameters.cpp \
+    src/ComponentUtilities/AuxiliarySimulationFunctions.cpp \
+    src/ComponentUtilities/DoubleIntegratorWithDamping.cpp \
+    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
+    src/ComponentUtilities/EquationSystemSolver.cpp \
+    src/HopsanTypes.cpp \
+    src/ComponentUtilities/HopsanPowerUser.cpp \
+    src/ComponentUtilities/LookupTable.cpp \
+    src/ComponentUtilities/PLOParser.cpp \
     $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
-    src/Quantities.cc \
-    src/CoreUtilities/NumHopHelper.cc \
-    src/CoreUtilities/AliasHandler.cc \
-    src/CoreUtilities/ConnectionAssistant.cc \
-    src/CoreUtilities/SimulationHandler.cc \
-    src/CoreUtilities/CoSimulationUtilities.cc \
-    src/CoreUtilities/GeneratorHandler.cc \
-    src/CoreUtilities/MultiThreadingUtilities.cc \
-    src/CoreUtilities/StringUtilities.cc \
-    src/CoreUtilities/SaveRestoreSimulationPoint.cc
+    src/Quantities.cpp \
+    src/CoreUtilities/NumHopHelper.cpp \
+    src/CoreUtilities/AliasHandler.cpp \
+    src/CoreUtilities/ConnectionAssistant.cpp \
+    src/CoreUtilities/SimulationHandler.cpp \
+    src/CoreUtilities/CoSimulationUtilities.cpp \
+    src/CoreUtilities/GeneratorHandler.cpp \
+    src/CoreUtilities/MultiThreadingUtilities.cpp \
+    src/CoreUtilities/StringUtilities.cpp \
+    src/CoreUtilities/SaveRestoreSimulationPoint.cpp
 HEADERS += \
     include/win32dll.h \
     include/Port.h \
