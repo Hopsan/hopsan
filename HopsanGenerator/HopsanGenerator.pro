@@ -91,13 +91,13 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    src/HopsanGeneratorLib.cc \
-    src/GeneratorUtilities.cc \
-    src/generators/HopsanGenerator.cc \
-    src/generators/HopsanSimulinkGenerator.cc \
-    src/generators/HopsanModelicaGenerator.cc \
-    src/generators/HopsanFMIGenerator.cc \
-    src/generators/HopsanLabViewGenerator.cc
+    src/HopsanGeneratorLib.cpp \
+    src/GeneratorUtilities.cpp \
+    src/generators/HopsanGenerator.cpp \
+    src/generators/HopsanSimulinkGenerator.cpp \
+    src/generators/HopsanModelicaGenerator.cpp \
+    src/generators/HopsanFMIGenerator.cpp \
+    src/generators/HopsanLabViewGenerator.cpp
 
 HEADERS += \
     include/hopsangenerator_win32dll.h \
