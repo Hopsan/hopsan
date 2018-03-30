@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ComponentSystem.cc
+//! @file   ComponentSystem.cpp
 //!
 //! @brief Contains the subsystem component class and connection assistant help class
 //!

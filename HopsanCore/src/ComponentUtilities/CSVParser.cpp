@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   CSVParser.cc
+//! @file   CSVParser.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //!
 //! @brief Contains the Core Utility CSVParser class

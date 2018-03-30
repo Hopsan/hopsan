@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   WhiteGaussianNoise.cc
+//! @file   WhiteGaussianNoise.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2011-06-09
 //!

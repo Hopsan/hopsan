@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   HmfLoader.cc
+//! @file   HmfLoader.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-03-20
 //!

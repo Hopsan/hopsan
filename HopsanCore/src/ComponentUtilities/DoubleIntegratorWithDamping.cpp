@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   DoubleIntegratorWithDamping.cc
+//! @file   DoubleIntegratorWithDamping.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-06-30
 //!

@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   FirstOrderTransferFunction.cc
+//! @file   FirstOrderTransferFunction.cpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-23
 //!

@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SimulationHandler.cc
+//! @file   SimulationHandler.cpp
 //! @author FluMeS
 //! @date   2009-12-20
 //!

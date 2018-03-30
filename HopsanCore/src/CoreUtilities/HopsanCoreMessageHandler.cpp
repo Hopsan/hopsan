@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   HopsanCoreMessageHandler.cc
+//! @file   HopsanCoreMessageHandler.cpp
 //! @author <peter.nordin@liu.se>
 //! @date   2010-03-03
 //!

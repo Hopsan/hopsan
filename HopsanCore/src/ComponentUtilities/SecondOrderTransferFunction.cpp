@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SecondOrderTransferFunction.cc
+//! @file   SecondOrderTransferFunction.cpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-23
 //!

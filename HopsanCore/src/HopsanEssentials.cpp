@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   HopsanEssentials.cc
+//! @file   HopsanEssentials.cpp
 //! @author <peter.nordin@liu.se>
 //! @date   2010-02-19
 //!
