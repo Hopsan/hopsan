@@ -32,10 +32,10 @@ The following tools are also required:
 \end{itemize} %
 
 \section*{Hopsan Component Libraries}
-A component library consists of one or more components that can be loaded from Hopsan. It is written in C++ and then compiled to a shared library file (\texttt{.dll} in Windows or \texttt{.so} in Linux). A complete library constists of the files listen below. First, there is a \textit{library description file} in \texttt{.xml} format, which contains basic information about the library. Second, there is a source code file of the library with the \texttt{.cc} extension.\vspace{10pt}\\
+A component library consists of one or more components that can be loaded from Hopsan. It is written in C++ and then compiled to a shared library file (\texttt{.dll} in Windows or \texttt{.so} in Linux). A complete library constists of the files listen below. First, there is a \textit{library description file} in \texttt{.xml} format, which contains basic information about the library. Second, there is a source code file of the library with the \texttt{.cpp} extension.\vspace{10pt}\\
 $\mathrm{Component\ Library} \begin{cases}
 \mathtt{\textbf{MyLibrary.xml}} \mathrm{\ -\ Library\ description\ file}\\
-\mathtt{\textbf{MyLibrary.cc}} \mathrm{\ -\ Library\ source\ code}\vspace{7pt} \\ 
+\mathtt{\textbf{MyLibrary.cpp}} \mathrm{\ -\ Library\ source\ code}\vspace{7pt} \\ 
 \begin{rcases}
   \mathtt{\textbf{MyFirstComponent.hpp}} \\
   \mathtt{\textbf{MyFirstComponent.xml}} \\
@@ -61,7 +61,7 @@ It can for example look like this:
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsancomponentlibrary xmlversion="0.1" libversion="1" name="LibName">
     <lib>LibName</lib>
-    <source>LibName.cc</source>
+    <source>LibName.cpp</source>
     <component>Component1.hpp</component>
     <component>Component2.hpp</component>
     <caf>MyComponent1.xml</caf>
@@ -369,7 +369,7 @@ The dialog should now look like this:
 \includegraphics[width=0.7\textwidth]{gfx/writingcomponents/newlibrarydialog.png}.
 
 Click on "OK" to close the dialog.
-As you can see, two new files have been created, one \texttt{.xml} file and one .cc file.
+As you can see, two new files have been created, one \texttt{.xml} file and one .cpp file.
 
 \tutitem{Add a component}
 A component library is not very useful without any components.
