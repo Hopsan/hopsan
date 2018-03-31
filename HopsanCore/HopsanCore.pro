@@ -113,7 +113,7 @@ macx {
 # -------------------------------------------------
 SOURCES += \
     #DO NOT remove the commented line below, it will be autoreplaced by script
-    #INTERNALCOMPLIB.CC#
+    #INTERNALCOMPLIB.CPP#
     src/Port.cpp \
     src/Nodes.cpp \
     src/Node.cpp \

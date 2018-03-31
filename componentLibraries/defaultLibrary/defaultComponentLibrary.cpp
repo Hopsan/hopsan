@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   defaultComponentLibrary.cc
+//! @file   defaultComponentLibrary.cpp
 //! @author FluMeS
 //! @date   2010-01-08
 //! @brief Contains the register_contents function that registers all built in components

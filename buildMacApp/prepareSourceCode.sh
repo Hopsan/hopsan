@@ -70,7 +70,7 @@ fi
 # Make sure we compile defaultLibrary into core
 if [ "$doBuildInComponents" = "true" ]; then
   sed 's|.*DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS|DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS|g' -i bak Common.prf
-  sed 's|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g' -i bak HopsanCore/HopsanCore.pro
+  sed 's|#INTERNALCOMPLIB.CPP#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\|g' -i bak HopsanCore/HopsanCore.pro
   sed '/.*<lib>.*/d' -i bak componentLibraries\defaultLibrary\defaultComponentLibrary.xml
   sed 's|componentLibraries||g' -i bak HopsanNG.pro
 fi
