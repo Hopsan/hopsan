@@ -26,7 +26,7 @@ include(hopsanDebugReleaseCompile.prf)
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    VagganLib.cc
+    VagganLib.cpp
 
 HEADERS += \
     code/MechanicSeesaw.hpp

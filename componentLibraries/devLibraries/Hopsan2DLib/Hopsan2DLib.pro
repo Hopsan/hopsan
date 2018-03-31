@@ -25,7 +25,7 @@ include(hopsanDebugReleaseCompile.pri)
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    Hopsan2DLib.cc
+    Hopsan2DLib.cpp
 
 HEADERS += \
     Hopsan2DBody2.hpp \

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsancomponentlibrary xmlversion="0,1" libversion="1" name="HopsanDevTestLibrary">
     <lib>devTestLib</lib>
-    <source>TestLib.cc</source>
+    <source>TestLib.cpp</source>
     <component>Hydraulic/HydraulicAlternativePRV.hpp</component>
     <component>Hydraulic/HydraulicLaminarOrifice.hpp</component>
     <component>Hydraulic/HydraulicComponentsInComponentTest.hpp</component>

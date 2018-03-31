@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsancomponentlibrary xmlversion="0.1" libversion="1" name="My2DTestLib">
     <lib debug_ext="">Hopsan2DLib</lib>
-    <source>Hopsan2DLib.cc</source>
+    <source>Hopsan2DLib.cpp</source>
     <component>Hopsan2DBody2.hpp</component>
     <component>Hopsan2DBodyTest.hpp</component>
     <component>Hopsan2DJoint.hpp</component>
