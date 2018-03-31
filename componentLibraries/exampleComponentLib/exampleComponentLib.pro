@@ -44,7 +44,7 @@ DEFINES *= _USE_MATH_DEFINES
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    exampleComponentLib.cc
+    exampleComponentLib.cpp
 
 HEADERS += \
     HydraulicComponents/MyExampleVolume.hpp \
