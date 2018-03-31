@@ -989,7 +989,7 @@ QStringList listHopsanCoreSourceFiles(const QString rootPath)
     findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/src", "cpp", allFiles);
     findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cc", allFiles);
     findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/src", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/src", "cpp", allFiles);
     allFiles << rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 
     QDir rootDir(rootPath);
