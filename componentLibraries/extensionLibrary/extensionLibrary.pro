@@ -25,7 +25,7 @@ include($${PWD}/../exampleComponentLib/hopsanDebugReleaseCompile.pri)
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------
-SOURCES += extensionLibrary.cc
+SOURCES += extensionLibrary.cpp
 
 include(Components.pri)
 
