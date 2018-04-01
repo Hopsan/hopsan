@@ -133,8 +133,8 @@ int getRevisionNumber(const HString &version)
 
 bool isVersionGreaterThan(HString version1, HString version2)
 {
-    int gen1 = getGenerationVersion(version1);
-    int gen2 = getGenerationVersion(version2);
+    int gen1 = oldversionformat::getGenerationVersion(version1);
+    int gen2 = oldversionformat::getGenerationVersion(version2);
     int maj1 = oldversionformat::getMajorVersion(version1);
     int maj2 = oldversionformat::getMajorVersion(version2);
     int min1 = oldversionformat::getMinorVersion(version1);
@@ -154,10 +154,12 @@ bool isVersionGreaterThan(HString version1, HString version2)
     if(maj1 < maj2)
         return false;
 
-    if(min1 > -1 && min2 == -1)
-        return false;               //Assume that revision build is higher generation than release builds
-    if(min1 == -1 && min2 > -1)
+    // Assume that revision build is higher generation than release builds,
+    // this is a completely absurd assumtion (but this is legacy code)
+    if( (min1 == -1) && (min2 > -1) )
         return true;
+    if( (min1 > -1) && (min2 == -1) )
+        return false;
 
     if(min1 > min2)
         return true;
@@ -744,7 +746,7 @@ int hopsan::getMinorVersion(const HString& version)
   {
     minor = parts[2].toLongInt(&ok);
   }
-  return ok ? minor : -1;  
+  return ok ? minor : -1;
 }
 
 //! @brief Check if one Hopsan version number is larger then an other
@@ -781,27 +783,26 @@ int hopsan::compareHopsanVersions(const HString& versionA, const HString& versio
   size_t minSize = std::min(parts1.size(), parts2.size());
   for (size_t i=0; i<minSize; ++i)
   {
-    bool dummy;
-    long int v1 = parts1[i].toLongInt(&dummy);
-    long int v2 = parts2[i].toLongInt(&dummy);
-    if (v1 > v2)
-    {
-      return 1;
-    }
-    else if (v1 < v2)
-    {
-      return -1;
+    bool ok1,ok2;
+    long int v1 = parts1[i].toLongInt(&ok1);
+    long int v2 = parts2[i].toLongInt(&ok2);
+    if (ok1 && ok2) {
+        if (v1 > v2)
+        {
+            return 1;
+        }
+        else if (v1 < v2)
+        {
+            return -1;
+        }
     }
 
     // Handle comparison of the old version number format
-    if (i==0 && v1==0)
+    if ( (i==0 && v1==0) || !(ok1 && ok2))
     {
-      oldversionformat::isVersionGreaterThan(versionA, versionB);
+      return oldversionformat::isVersionGreaterThan(versionA, versionB);
     }
-    
-
-
-  } 
+  }
   // If we get here, then the numbers are the same up until minSize
 
   // Treat the shortest one as "larger", it probalby indicates a "stable" release
@@ -815,7 +816,6 @@ int hopsan::compareHopsanVersions(const HString& versionA, const HString& versio
   }
 
   //! @todo Compare branchnames, but this will likely never be required
-  
   return 0;
 }
 

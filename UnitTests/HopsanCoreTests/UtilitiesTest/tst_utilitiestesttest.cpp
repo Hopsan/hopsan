@@ -55,7 +55,7 @@ private Q_SLOTS:
         QFETCH(QString, version2);
         QFETCH(bool, ans);
         bool test = isVersionAGreaterThanB(version1.toStdString().c_str(), version2.toStdString().c_str());
-        QVERIFY2(isVersionAGreaterThanB(version1.toStdString().c_str(), version2.toStdString().c_str()) == ans, "Version check returned wrong answer.");
+        QVERIFY2(test == ans, "Version check returned wrong answer.");
     }
 
     void Version_Check_data()
