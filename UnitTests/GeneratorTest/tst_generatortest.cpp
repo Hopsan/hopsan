@@ -283,9 +283,9 @@ private Q_SLOTS:
         QDir srcDir(qcwd+"/labview/HopsanCore/src");
         QVERIFY2(srcDir.exists() && !srcDir.entryList().isEmpty(),
                  "Failed to generate LabVIEW files: Source files not found.");
-        QDir dependenciesDir(qcwd+"/labview/HopsanCore/Dependencies");
+        QDir dependenciesDir(qcwd+"/labview/HopsanCore/dependencies");
         QVERIFY2(dependenciesDir.exists() && !dependenciesDir.entryList(QDir::AllEntries).isEmpty(),
-                 "Failed to generate LabVIEW files: Dependency files not found.");
+                 "Failed to generate LabVIEW files: dependency files not found.");
         QDir libDir(qcwd+"/labview/componentLibraries/defaultLibrary");
         QVERIFY2(libDir.exists() && !libDir.entryList().isEmpty(),
                  "Failed to generate LabVIEW files: Default library files not found.");
