@@ -25,6 +25,7 @@
 #include <QtTest>
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
+#include "compiler_info.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include <assert.h>
@@ -113,36 +114,6 @@ private Q_SLOTS:
     {
         QFETCH(ComponentSystem*, system);
 
-        //Generate FMU
-        mpHandler->callFmuExportGenerator(cwd+"/fmu1_32/", system, includePath, binPath, gcc32Path, 1, false, false);
-        mpHandler->callFmuExportGenerator(cwd+"/fmu1_64/", system, includePath, binPath, gcc64Path, 1, true, false);
-        mpHandler->callFmuExportGenerator(cwd+"/fmu2_32/", system, includePath, binPath, gcc32Path, 2, false, false);
-        mpHandler->callFmuExportGenerator(cwd+"/fmu2_64/", system, includePath, binPath, gcc64Path, 2, true, false);
-
-//        QString code = "#include \"ComponentEssentials.h\"\n"
-//                "namespace hopsan {\n"
-//                "  class HydraulicLaminarOrifice : public ComponentQ\n"
-//                "    {\n"
-//                "      public:\n"
-//                "        double ko;\n"
-//                "      private:\n"
-//                "        int gris;\n"
-//                "        Integrator katt;\n"
-//                "      void simulateOneTimestep()\n"
-//                "      {\n"
-//                "        gris=ko+5;\n"
-//                "      }\n"
-//                "      bool initialize()\n"
-//                "      {\n"
-//                "        int x=gris*3;\n"
-//                "        gris= 3;\n"
-//                "        ko=5;\n"
-//                "      }\n"
-//                "    };\n"
-//                "}\n";
-//        QStringList errorMsgs;
-        //examineCode(code, errorMsgs);
-
         QString fmuCheckPath=qcwd+"/../Dependencies/tools/FMUChecker/";
 #ifdef _WIN32
         QString fmuChecker32="fmuCheck.win32.exe";
@@ -152,38 +123,30 @@ private Q_SLOTS:
         QString fmuChecker64="fmuCheck.linux64";
 #endif
 
-        //Run FMUChecker for FMU 1.0 32-bit export
         QStringList args;
+        QProcess p;
+        QString output;
+
+#if !defined(HOPSANCOMPILED64BIT)
+        // Run FMUChecker for FMU 1.0 32-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu1_32/", system, includePath, binPath, gcc32Path, 1, false, false);
+
+
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << qcwd+"/fmu1_32/unittestmodel_export.fmu";
-        QProcess p;
         p.start(fmuCheckPath+fmuChecker32, args);
         p.waitForReadyRead();
-        QString output = p.readAllStandardError();
-        QStringList errors = output.split("\n");
+        output = p.readAllStandardError();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 1.0 (32-bit), FMUChecker crashed");
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
 
-        //Run FMUChecker for FMU 1.0 64-bit export
-        args.clear();
-        args << "-l" << "2";
-        args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu1_64/unittestmodel_export.fmu";
-        p.start(fmuCheckPath+fmuChecker64, args);
-        p.waitForReadyRead();
-        output = p.readAllStandardError();
-        errors = output.split("\n");
+        // Run FMUChecker for FMU 2.0 32-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu2_32/", system, includePath, binPath, gcc32Path, 2, false, false);
 
-        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
-                 "Failed to generate valid FMU 1.0 (64-bit), FMUChecker crashed");
-        QVERIFY2(p.exitCode() == 0,
-                 "Failed to generate valid FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
-
-        //Run FMUChecker for FMU 2.0 32-bit export
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
@@ -191,14 +154,33 @@ private Q_SLOTS:
         p.start(fmuCheckPath+fmuChecker32, args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
-        errors = output.split("\n");
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 2.0 (32-bit), FMUChecker crashed");
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 2.0 (32-bit), FMU not accepted by FMUChecker.");
+#endif
 
-        //Run FMUChecker for FMU 2.0 64-bit export
+#if defined (HOPSANCOMPILED64BIT)
+        // Run FMUChecker for FMU 1.0 64-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu1_64/", system, includePath, binPath, gcc64Path, 1, true, false);
+
+        args.clear();
+        args << "-l" << "2";
+        args << "-o" << "log.txt";
+        args << QDir::currentPath()+"/fmu1_64/unittestmodel_export.fmu";
+        p.start(fmuCheckPath+fmuChecker64, args);
+        p.waitForReadyRead();
+        output = p.readAllStandardError();
+
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 1.0 (64-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
+
+        // Run FMUChecker for FMU 2.0 64-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu2_64/", system, includePath, binPath, gcc64Path, 2, true, false);
+
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
@@ -206,34 +188,40 @@ private Q_SLOTS:
         p.start(fmuCheckPath+fmuChecker64, args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
-        errors = output.split("\n");
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 2.0 (64-bit), FMUChecker crashed");
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
-
+#endif
     }
 
     void Generator_FMU_Export_data()
     {
         QTest::addColumn<ComponentSystem*>("system");
-        double start, stop;
+        QString modelpath=qcwd+"/../Models/unittestmodel_export.hmf";
+        QFile file(modelpath);
+
+#if !defined (HOPSANCOMPILED64BIT)
         removeDir(QDir::currentPath()+"/fmu1_32/");
-        removeDir(QDir::currentPath()+"/fmu1_64/");
         removeDir(QDir::currentPath()+"/fmu2_32/");
-        removeDir(QDir::currentPath()+"/fmu2_64/");
         QDir().mkpath(QDir::currentPath()+"/fmu1_32/");
-        QDir().mkpath(QDir::currentPath()+"/fmu1_64/");
         QDir().mkpath(QDir::currentPath()+"/fmu2_32/");
-        QDir().mkpath(QDir::currentPath()+"/fmu2_64/");
-        QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
-        QFile file(path);
         file.copy(QDir::currentPath()+"/fmu1_32/unittestmodel_export.hmf");
-        file.copy(QDir::currentPath()+"/fmu1_64/unittestmodel_export.hmf");
         file.copy(QDir::currentPath()+"/fmu2_32/unittestmodel_export.hmf");
+#endif
+
+#if defined (HOPSANCOMPILED64BIT)
+        removeDir(QDir::currentPath()+"/fmu1_64/");
+        removeDir(QDir::currentPath()+"/fmu2_64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu1_64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu2_64/");
+        file.copy(QDir::currentPath()+"/fmu1_64/unittestmodel_export.hmf");
         file.copy(QDir::currentPath()+"/fmu2_64/unittestmodel_export.hmf");
-        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
+#endif
+
+        double start, stop;
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(modelpath.toStdString().c_str(),start,stop);
     }
 
     void Generator_Simulink_Export()
