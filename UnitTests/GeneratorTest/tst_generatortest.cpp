@@ -25,6 +25,7 @@
 #include <QtTest>
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
+#include "compiler_info.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include <assert.h>
@@ -33,6 +34,26 @@
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
 #endif
 #define LIBEXT TO_STR(DLL_EXT)
+
+namespace {
+    void removeDir(QString path)
+    {
+        QDir dir;
+        dir.setPath(path);
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+        {
+            if (info.isDir())
+            {
+                removeDir(info.absoluteFilePath());
+            }
+            else
+            {
+                QFile::remove(info.absoluteFilePath());
+            }
+        }
+        dir.rmdir(path);
+    }
+}
 
 using namespace hopsan;
 
@@ -43,6 +64,7 @@ Q_DECLARE_METATYPE(Port*)
 Q_DECLARE_METATYPE(HString)
 Q_DECLARE_METATYPE(Node*)
 
+
 class GeneratorTests : public QObject
 {
     Q_OBJECT
@@ -50,146 +72,177 @@ class GeneratorTests : public QObject
 public:
     GeneratorTests()
     {
+        qcwd = QDir::currentPath();
+        cwd = qcwd.toStdString().c_str();
+        includePath = cwd+"/../HopsanCore/include/";
+        binPath = cwd+"/../bin/";
+
+#ifdef _WIN32
+        //! @todo do not hard-code these
+        gcc32Path="c:/mingw/bin";
+        gcc64Path="c:/mingw64/bin";
+#else
+        gcc32Path="";
+        gcc64Path="";
+#endif
+
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
+        mpHandler = new GeneratorHandler();
     }
 
+    ~GeneratorTests()
+     {
+         delete mpHandler;
+     }
+
 private:
+    QString qcwd;
+    HString cwd;
+    HString includePath;
+    HString binPath;
+
+    HString gcc32Path;
+    HString gcc64Path;
+
     HopsanEssentials mHopsanCore;
-    ComponentSystem *mpSystemFromText;
-    ComponentSystem *mpSystemFromFile;
+    GeneratorHandler *mpHandler;
 
 private Q_SLOTS:
-#define WIN32
-#ifdef WIN32
     void Generator_FMU_Export()
     {
         QFETCH(ComponentSystem*, system);
 
-        QString pwd = QDir::currentPath();
+        QString fmuCheckPath=qcwd+"/../Dependencies/tools/FMUChecker/";
+#ifdef _WIN32
+        QString fmuChecker32="fmuCheck.win32.exe";
+        QString fmuChecker64="fmuCheck.win64.exe";
+#else
+        QString fmuChecker32="fmuCheck.linux32";
+        QString fmuChecker64="fmuCheck.linux64";
+#endif
 
-        //Generate FMU
-        GeneratorHandler *pHandler = new GeneratorHandler();
-        HString includePath = HString(pwd.toStdString().c_str())+"/../HopsanCore/include/";
-        HString binPath = HString(pwd.toStdString().c_str())+"/../bin/";
-        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu1_32/", system, includePath, binPath, "c:/mingw/bin", 1, false, false);
-        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu1_64/", system, includePath, binPath, "c:/mingw64/bin", 1, true, false);
-        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu2_32/", system, includePath, binPath, "c:/mingw/bin", 2, false, false);
-        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu2_64/", system, includePath, binPath, "c:/mingw64/bin", 2, true, false);
-
-//        QString code = "#include \"ComponentEssentials.h\"\n"
-//                "namespace hopsan {\n"
-//                "  class HydraulicLaminarOrifice : public ComponentQ\n"
-//                "    {\n"
-//                "      public:\n"
-//                "        double ko;\n"
-//                "      private:\n"
-//                "        int gris;\n"
-//                "        Integrator katt;\n"
-//                "      void simulateOneTimestep()\n"
-//                "      {\n"
-//                "        gris=ko+5;\n"
-//                "      }\n"
-//                "      bool initialize()\n"
-//                "      {\n"
-//                "        int x=gris*3;\n"
-//                "        gris= 3;\n"
-//                "        ko=5;\n"
-//                "      }\n"
-//                "    };\n"
-//                "}\n";
-//        QStringList errorMsgs;
-        //examineCode(code, errorMsgs);
-
-        //Run FMUChecker for FMU 1.0 32-bit export
         QStringList args;
-        args << "-l" << "2";
-        args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu1_32/unittestmodel_export.fmu";
         QProcess p;
-        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win32.exe", args);
-        p.waitForReadyRead();
-        QString output = p.readAllStandardError();
-        QStringList errors = output.split("\n");
+        QString output;
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
+#if !defined(HOPSANCOMPILED64BIT)
+        // Run FMUChecker for FMU 1.0 32-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu1_32/", system, includePath, binPath, gcc32Path, 1, false, false);
 
-        //Run FMUChecker for FMU 1.0 64-bit export
-        args.clear();
+
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu1_64/unittestmodel_export.fmu";
-        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win64.exe", args);
+        args << qcwd+"/fmu1_32/unittestmodel_export.fmu";
+        p.start(fmuCheckPath+fmuChecker32, args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
-        errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 1.0 (32-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
 
-        //Run FMUChecker for FMU 2.0 32-bit export
+        // Run FMUChecker for FMU 2.0 32-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu2_32/", system, includePath, binPath, gcc32Path, 2, false, false);
+
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu2_32/unittestmodel_export.fmu";
-        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win32.exe", args);
+        p.start(fmuCheckPath+fmuChecker32, args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
-        errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 2.0 (32-bit), FMU not accepted by FMUChecker.");
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 2.0 (32-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 2.0 (32-bit), FMU not accepted by FMUChecker.");
+#endif
 
-        //Run FMUChecker for FMU 2.0 64-bit export
+#if defined (HOPSANCOMPILED64BIT)
+        // Run FMUChecker for FMU 1.0 64-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu1_64/", system, includePath, binPath, gcc64Path, 1, true, false);
+
+        args.clear();
+        args << "-l" << "2";
+        args << "-o" << "log.txt";
+        args << QDir::currentPath()+"/fmu1_64/unittestmodel_export.fmu";
+        p.start(fmuCheckPath+fmuChecker64, args);
+        p.waitForReadyRead();
+        output = p.readAllStandardError();
+
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 1.0 (64-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
+
+        // Run FMUChecker for FMU 2.0 64-bit export
+        mpHandler->callFmuExportGenerator(cwd+"/fmu2_64/", system, includePath, binPath, gcc64Path, 2, true, false);
+
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu2_64/unittestmodel_export.fmu";
-        p.start(QDir::currentPath()+"/../Dependencies/tools/FMUChecker/fmuCheck.win64.exe", args);
+        p.start(fmuCheckPath+fmuChecker64, args);
         p.waitForReadyRead();
         output = p.readAllStandardError();
-        errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 2.0 (64-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
+#endif
     }
 
     void Generator_FMU_Export_data()
     {
         QTest::addColumn<ComponentSystem*>("system");
-        double start, stop;
+        QString modelpath=qcwd+"/../Models/unittestmodel_export.hmf";
+        QFile file(modelpath);
+
+#if !defined (HOPSANCOMPILED64BIT)
         removeDir(QDir::currentPath()+"/fmu1_32/");
-        removeDir(QDir::currentPath()+"/fmu1_64/");
         removeDir(QDir::currentPath()+"/fmu2_32/");
-        removeDir(QDir::currentPath()+"/fmu2_64/");
         QDir().mkpath(QDir::currentPath()+"/fmu1_32/");
-        QDir().mkpath(QDir::currentPath()+"/fmu1_64/");
         QDir().mkpath(QDir::currentPath()+"/fmu2_32/");
-        QDir().mkpath(QDir::currentPath()+"/fmu2_64/");
-        QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
-        QFile file(path);
         file.copy(QDir::currentPath()+"/fmu1_32/unittestmodel_export.hmf");
-        file.copy(QDir::currentPath()+"/fmu1_64/unittestmodel_export.hmf");
         file.copy(QDir::currentPath()+"/fmu2_32/unittestmodel_export.hmf");
+#endif
+
+#if defined (HOPSANCOMPILED64BIT)
+        removeDir(QDir::currentPath()+"/fmu1_64/");
+        removeDir(QDir::currentPath()+"/fmu2_64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu1_64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu2_64/");
+        file.copy(QDir::currentPath()+"/fmu1_64/unittestmodel_export.hmf");
         file.copy(QDir::currentPath()+"/fmu2_64/unittestmodel_export.hmf");
-        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
+#endif
+
+        double start, stop;
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(modelpath.toStdString().c_str(),start,stop);
     }
 
     void Generator_Simulink_Export()
     {
         QFETCH(ComponentSystem*, system);
 
-        QString pwd = QDir::currentPath();
-
         //Generate S-function
-        GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callSimulinkExportGenerator(HString(pwd.toStdString().c_str())+"/simulink/", "unittestmodel_export.hmf", system, false, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../bin/", false);
+        mpHandler->callSimulinkExportGenerator(cwd+"/simulink/", "unittestmodel_export.hmf", system, false, includePath, binPath, false);
 
-        QVERIFY2(QFile::exists(pwd+"/simulink/externalLibs.txt"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/hopsancore.dll"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/hopsancore.exp"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/hopsancore.lib"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/"+system->getName().c_str()+".cpp"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/HopsanSimulinkCompile.m"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/simulink/"+system->getName().c_str()+"PortLabels.m"), "Failed to generate S-function, all files not found.");
+        QDir coreDir(qcwd+"/simulink/HopsanCore");
+        QVERIFY2(coreDir.exists() && !coreDir.entryList().isEmpty(),
+                 "Failed to generate S-function, all files not found.");
+        QDir compDir(qcwd+"/simulink/componentLibraries/defaultLibrary");
+        QVERIFY2(compDir.exists() && !compDir.entryList().isEmpty(),
+                 "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/simulink/"+system->getName().c_str()+".cpp"),
+                 "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/simulink/HopsanSimulinkCompile.m"),
+                 "Failed to generate S-function, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/simulink/"+system->getName().c_str()+"MaskSetup.m"),
+                 "Failed to generate S-function, all files not found.");
     }
 
     void Generator_Simulink_Export_data()
@@ -203,34 +256,39 @@ private Q_SLOTS:
         file.copy(QDir::currentPath()+"/simulink/unittestmodel_export.hmf");
         QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
     }
-#endif
 
     void Generator_Labview_Export()
     {
         QFETCH(ComponentSystem*, system);
 
-        QString pwd = QDir::currentPath();
-        HString pwdPath = HString(pwd.toStdString().c_str());
-
         //Generate S-function
-        GeneratorHandler *pHandler = new GeneratorHandler();
-        pHandler->callLabViewSITGenerator(pwdPath+"/labview/unittestmodel_export.cpp", system, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/", false);
+        mpHandler->callLabViewSITGenerator(cwd+"/labview/unittestmodel_export.cpp", system, includePath, binPath, false);
 
-        QVERIFY2(QFile::exists(pwd+"/labview/codegen.c"), "Failed to generate LabVIEW files, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/labview/hopsanrt-wrapper.h"), "Failed to generate LabVIEW files, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/labview/HOW_TO_COMPILE.txt"), "Failed to generate LabVIEW files, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/labview/model.h"), "Failed to generate LabVIEW files, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/labview/SIT_API.h"), "Failed to generate LabVIEW files, all files not found.");
-        QVERIFY2(QFile::exists(pwd+"/labview/unittestmodel_export.cpp"), "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/labview/codegen.c"),
+                 "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/labview/hopsanrt-wrapper.h"),
+                 "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/labview/HOW_TO_COMPILE.txt"),
+                 "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/labview/model.h"),
+                 "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/labview/SIT_API.h"),
+                 "Failed to generate LabVIEW files, all files not found.");
+        QVERIFY2(QFile::exists(qcwd+"/labview/unittestmodel_export.cpp"),
+                 "Failed to generate LabVIEW files, all files not found.");
 
-        QDir includeDir(pwd+"/labview/HopsanCore/include");
-        QVERIFY2(includeDir.exists() && !includeDir.entryList().isEmpty(), "Failed to generate LabVIEW files: Include files not found.");
-        QDir srcDir(pwd+"/labview/HopsanCore/src");
-        QVERIFY2(srcDir.exists() && !srcDir.entryList().isEmpty(), "Failed to generate LabVIEW files: Source files not found.");
-        QDir dependenciesDir(pwd+"/labview/HopsanCore/Dependencies");
-        QVERIFY2(dependenciesDir.exists() && !dependenciesDir.entryList(QDir::AllEntries).isEmpty(), "Failed to generate LabVIEW files: Dependency files not found.");
-        QDir libDir(pwd+"/labview/componentLibraries/defaultLibrary");
-        QVERIFY2(libDir.exists() && !libDir.entryList().isEmpty(), "Failed to generate LabVIEW files: Default library files not found.");
+        QDir includeDir(qcwd+"/labview/HopsanCore/include");
+        QVERIFY2(includeDir.exists() && !includeDir.entryList().isEmpty(),
+                 "Failed to generate LabVIEW files: Include files not found.");
+        QDir srcDir(qcwd+"/labview/HopsanCore/src");
+        QVERIFY2(srcDir.exists() && !srcDir.entryList().isEmpty(),
+                 "Failed to generate LabVIEW files: Source files not found.");
+        QDir dependenciesDir(qcwd+"/labview/HopsanCore/dependencies");
+        QVERIFY2(dependenciesDir.exists() && !dependenciesDir.entryList(QDir::AllEntries).isEmpty(),
+                 "Failed to generate LabVIEW files: dependency files not found.");
+        QDir libDir(qcwd+"/labview/componentLibraries/defaultLibrary");
+        QVERIFY2(libDir.exists() && !libDir.entryList().isEmpty(),
+                 "Failed to generate LabVIEW files: Default library files not found.");
     }
 
     void Generator_Labview_Export_data()
@@ -248,18 +306,24 @@ private Q_SLOTS:
         QFETCH(HString, code);
         QFETCH(HString, name);
 
-        QString pwd = QDir::currentPath();
-
         //Generate FMU
-        QFile moFile(pwd+"/modelica/motest.mo");
+        QFile moFile(qcwd+"/modelica/motest.mo");
         moFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
         moFile.write(QString(code.c_str()).toUtf8());
         moFile.close();
 
-        GeneratorHandler *pHandler = new GeneratorHandler();
-        //pHandler->callModelicaGenerator(HString(QFileInfo(moFile).absoluteFilePath().toStdString().c_str()), false, 0, true, HString(pwd.toStdString().c_str())+"/../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/");
+        HString moFilePath = QFileInfo(moFile).absoluteFilePath().toStdString().c_str();
+        HString gccPath;
+#ifdef HOPSANCOMPILED64BIT
+        gccPath = gcc64Path;
+#else
+        gccPath = gvv32Path;
+#endif
+        mpHandler->callModelicaGenerator(moFilePath, gccPath, false, 0, true, includePath, binPath);
 
-        QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(LIBEXT)).c_str())), "Failure! Modelica generator failed to generate dll.");
+//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+HString(LIBEXT)).c_str()),
+//                 "Failure! Modelica generator failed to generate .dll/.so.");
+        QWARN("Modelica generator test is disabled");
     }
 
     void Generator_Modelica_data()
@@ -277,6 +341,9 @@ private Q_SLOTS:
               "   P1.p = P1.c + P1.Zc*P1.q;\n"
               "   P2.p = P2.c + P2.Zc*P2.q;\n"
               "end LaminarOrifice;\n";
+
+        removeDir(QDir::currentPath()+"/modelica");
+        QDir().mkpath(QDir::currentPath()+"/modelica");
 
         QTest::newRow("0") << HString(moCode) << HString("MyLaminarOrifice");
     }
@@ -399,24 +466,6 @@ private Q_SLOTS:
             if(!assignedBeforeUse[i])
                 errors.append("WARNING: Member variable \""+memberNames[i]+"\" is used uninitialized!");
         }
-    }
-
-    void removeDir(QString path)
-    {
-        QDir dir;
-        dir.setPath(path);
-        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
-        {
-            if (info.isDir())
-            {
-                removeDir(info.absoluteFilePath());
-            }
-            else
-            {
-                QFile::remove(info.absoluteFilePath());
-            }
-        }
-        dir.rmdir(path);
     }
 };
 
