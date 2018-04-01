@@ -163,7 +163,10 @@ private Q_SLOTS:
         QString output = p.readAllStandardError();
         QStringList errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 1.0 (32-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
 
         //Run FMUChecker for FMU 1.0 64-bit export
         args.clear();
@@ -175,7 +178,10 @@ private Q_SLOTS:
         output = p.readAllStandardError();
         errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 1.0 (64-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
 
         //Run FMUChecker for FMU 2.0 32-bit export
         args.clear();
@@ -187,7 +193,10 @@ private Q_SLOTS:
         output = p.readAllStandardError();
         errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 2.0 (32-bit), FMU not accepted by FMUChecker.");
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 2.0 (32-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 2.0 (32-bit), FMU not accepted by FMUChecker.");
 
         //Run FMUChecker for FMU 2.0 64-bit export
         args.clear();
@@ -199,7 +208,11 @@ private Q_SLOTS:
         output = p.readAllStandardError();
         errors = output.split("\n");
 
-        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit,
+                 "Failed to generate valid FMU 2.0 (64-bit), FMUChecker crashed");
+        QVERIFY2(p.exitCode() == 0,
+                 "Failed to generate valid FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
+
     }
 
     void Generator_FMU_Export_data()
