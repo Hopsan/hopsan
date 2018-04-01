@@ -231,16 +231,17 @@ private Q_SLOTS:
         //Generate S-function
         mpHandler->callSimulinkExportGenerator(cwd+"/simulink/", "unittestmodel_export.hmf", system, false, includePath, binPath, false);
 
-        QVERIFY2(QFile::exists(qcwd+"/simulink/externalLibs.txt"),
+        QDir coreDir(qcwd+"/simulink/HopsanCore");
+        QVERIFY2(coreDir.exists() && !coreDir.entryList().isEmpty(),
                  "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(qcwd+"/simulink/hopsancore.dll"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(qcwd+"/simulink/hopsancore.exp"), "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(qcwd+"/simulink/hopsancore.lib"), "Failed to generate S-function, all files not found.");
+        QDir compDir(qcwd+"/simulink/componentLibraries/defaultLibrary");
+        QVERIFY2(compDir.exists() && !compDir.entryList().isEmpty(),
+                 "Failed to generate S-function, all files not found.");
         QVERIFY2(QFile::exists(qcwd+"/simulink/"+system->getName().c_str()+".cpp"),
                  "Failed to generate S-function, all files not found.");
         QVERIFY2(QFile::exists(qcwd+"/simulink/HopsanSimulinkCompile.m"),
                  "Failed to generate S-function, all files not found.");
-        QVERIFY2(QFile::exists(qcwd+"/simulink/"+system->getName().c_str()+"PortLabels.m"),
+        QVERIFY2(QFile::exists(qcwd+"/simulink/"+system->getName().c_str()+"MaskSetup.m"),
                  "Failed to generate S-function, all files not found.");
     }
 
