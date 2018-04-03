@@ -45,6 +45,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <functional>
 
 #include "GeneratorUtilities.h"
 #include "GeneratorTypes.h"
@@ -65,6 +66,8 @@ public:
     HopsanGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
     virtual ~HopsanGenerator();
 
+    void setMessageHandler(std::function<void(const char* msg, const char type)> messageHandler);
+
     void setOutputPath(const QString &path);
 
     QString getHopsanRootPath() const;
@@ -73,7 +76,7 @@ public:
     QString getCompilerPath() const;
 
     void setQuiet(bool quiet);
-    void printMessage(const QString &msg, const QString &color="Black") const;
+    void printMessage(const QString &msg, const QChar &type='I') const;
     void printWarningMessage(const QString &msg) const;
     void printErrorMessage(const QString &msg) const;
 
@@ -82,8 +85,6 @@ public:
     bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
 protected:
-    virtual void handlePrintMessage(const QString &msg, const QString &color="Black") const;
-
     QString generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues=false) const;
     void generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile=QString());
 
@@ -100,6 +101,8 @@ protected:
     bool copyDir(const QString &fromPath, const QString &toPath) const;
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
     void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
+
+    std::function<void (const char *, const char)> mMessageHandler;
 
     QString mHopsanRootPath;
     QString mHopsanCoreIncludePath;

@@ -38,6 +38,7 @@
 #include <QDebug>
 
 #include <cassert>
+#include <iostream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -723,3 +724,9 @@ bool matchOSString(QString os)
     }
 }
 
+
+void default_message_handler(const char *msg, const char type)
+{
+    Q_UNUSED(type);
+    std::cout << msg << std::endl;
+}

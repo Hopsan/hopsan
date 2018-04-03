@@ -36,8 +36,6 @@
 #include <QProcess>
 #include <QDomElement>
 
-
-#include <iostream>
 #include <cassert>
 
 #ifdef _WIN32
@@ -59,7 +57,8 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGenerator::HopsanGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
+HopsanGenerator::HopsanGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath) :
+    mMessageHandler(default_message_handler)
 {
     mHopsanRootPath = hopsanInstallPath;
     mHopsanCoreIncludePath = mHopsanRootPath+"/HopsanCore/include";
@@ -87,12 +86,16 @@ HopsanGenerator::~HopsanGenerator()
     // Do nothing right now
 }
 
+void HopsanGenerator::setMessageHandler(std::function<void (const char *, char)> messageHandler)
+{
+    mMessageHandler = messageHandler;
+}
 
-void HopsanGenerator::printMessage(const QString &msg, const QString &color) const
+void HopsanGenerator::printMessage(const QString &msg, const QChar &type) const
 {
     if(mShowMessages)
     {
-        handlePrintMessage(msg, color);
+        mMessageHandler(msg.toStdString().c_str(), type.toLatin1());
     }
     else
     {
@@ -103,13 +106,13 @@ void HopsanGenerator::printMessage(const QString &msg, const QString &color) con
 
 void HopsanGenerator::printWarningMessage(const QString &msg) const
 {
-    printMessage(msg, "Orange");
+    printMessage(msg, 'W');
 }
 
 
 void HopsanGenerator::printErrorMessage(const QString &msg) const
 {
-    printMessage(msg, "Red");
+    printMessage(msg, 'E');
 }
 
 
@@ -897,13 +900,6 @@ bool HopsanGenerator::generateCafFile(QString &rPath, ComponentAppearanceSpecifi
 
     return true;
 }
-
-void HopsanGenerator::handlePrintMessage(const QString &msg, const QString &color) const
-{
-    Q_UNUSED(color)
-    std::cout << msg.toStdString() << std::endl;
-}
-
 
 
 void HopsanGenerator::setOutputPath(const QString &path)
