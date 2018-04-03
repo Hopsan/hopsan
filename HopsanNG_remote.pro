@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
 
 CONFIG += ordered
-SUBDIRS = HopsanCore componentLibraries SymHop Ops HopsanGenerator HopsanRemote HopsanGUI HopsanCLI UnitTests HoLC
+SUBDIRS = HopsanCore componentLibraries SymHop Ops HopsanGenerator hopsangeneratorgui HopsanRemote HopsanGUI HopsanCLI UnitTests HoLC
