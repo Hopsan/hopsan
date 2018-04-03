@@ -29,6 +29,8 @@
 #include <QProcess>
 #include <QUuid>
 #include <QDateTime>
+#include <QFileInfo>
+#include <QDir>
 
 #include <stddef.h>
 
@@ -131,10 +133,24 @@ bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPo
     return true;
 }
 
+void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+{
+    if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
+    {
+        //printErrorMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
+    }
+    else if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
+    {
+        //printWarningMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
+    }
+    else
+    {
+        //printMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
+    }
+}
 
-
-HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog)
-    : HopsanGenerator(coreIncludePath, binPath, gccPath, showDialog)
+HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath)
+    : HopsanGenerator(coreIncludePath, binPath, gccPath)
 {
 }
 

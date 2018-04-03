@@ -12,17 +12,6 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 QT -= gui
 QT += core xml
 
-# Keep these QtGui related options by them self so that external scrip may deactivate them when needed
-useqtgui=True
-contains( useqtgui, True ) {
-    DEFINES += USEQTGUI
-    QT += gui
-    isEqual(QT_MAJOR_VERSION, 5){
-        QT += widgets
-    }
-    message(Using Qt GUI components in HopsanGenerator)
-}
-
 # Enable C++11
 lessThan(QT_MAJOR_VERSION, 5){
   QMAKE_CXXFLAGS += -std=c++11
@@ -97,7 +86,8 @@ SOURCES += \
     src/generators/HopsanSimulinkGenerator.cpp \
     src/generators/HopsanModelicaGenerator.cpp \
     src/generators/HopsanFMIGenerator.cpp \
-    src/generators/HopsanLabViewGenerator.cpp
+    src/generators/HopsanLabViewGenerator.cpp \
+    src/GeneratorTypes.cpp
 
 HEADERS += \
     include/hopsangenerator_win32dll.h \
@@ -106,7 +96,8 @@ HEADERS += \
     include/generators/HopsanModelicaGenerator.h \
     include/generators/HopsanSimulinkGenerator.h \
     include/generators/HopsanFMIGenerator.h \
-    include/generators/HopsanLabViewGenerator.h
+    include/generators/HopsanLabViewGenerator.h \
+    include/GeneratorTypes.h
 
 RESOURCES += \
     templates.qrc

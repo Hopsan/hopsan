@@ -30,7 +30,7 @@
 class HopsanLabViewGenerator : public HopsanGenerator
 {
 public:
-    HopsanLabViewGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
+    HopsanLabViewGenerator(QString coreIncludePath, QString binPath);
     void generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem);
 };
 

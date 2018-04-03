@@ -25,11 +25,13 @@
 #include "generators/HopsanLabViewGenerator.h"
 #include "ComponentSystem.h"
 #include <cassert>
+#include <QFileInfo>
+#include <QDir>
 
 using namespace hopsan;
 
-HopsanLabViewGenerator::HopsanLabViewGenerator(QString coreIncludePath, QString binPath, bool showDialog)
-    : HopsanGenerator(coreIncludePath, binPath, "", showDialog)
+HopsanLabViewGenerator::HopsanLabViewGenerator(QString coreIncludePath, QString binPath)
+    : HopsanGenerator(coreIncludePath, binPath, "")
 {
 
 }

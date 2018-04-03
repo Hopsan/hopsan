@@ -32,8 +32,8 @@
 //$Id$
 
 
-#ifndef HOPSANGENERAETOR_H
-#define HOPSANGENERAETOR_H
+#ifndef HOPSANGENERATOR_H
+#define HOPSANGENERATOR_H
 
 #ifdef _WIN32
 #define LIBEXT ".dll"
@@ -43,27 +43,15 @@
 #define LIBPREFIX "lib"
 #endif
 
-#include <QPointF>
 #include <QString>
-#include <QDir>
-#include <QFileInfo>
-#include <QTextStream>
-#include <QDebug>
-#include <QDomElement>
+#include <QStringList>
 
-#include "SymHop.h"
 #include "GeneratorUtilities.h"
+#include "GeneratorTypes.h"
 
-//class ModelObjectAppearance;
+#include "hopsangenerator_win32dll.h"
 
 // Forward declarations
-#ifdef USEQTGUI
-class QTextEdit;
-class QVBoxLayout;
-class QDialog;
-class QPushButton;
-#endif
-
 namespace hopsan {
 class ComponentSystem;
 }
@@ -74,33 +62,43 @@ class HOPSANGENERATOR_DLLAPI HopsanGenerator
 public:
     enum SolverT {NumericalIntegration, BilinearTransform};
 
-    HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath, const bool showDialog=false);
+    HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath);
+    virtual ~HopsanGenerator();
+
     void setOutputPath(const QString path);
     void setTarget(const QString fileName);
+
+    QString getHopsanRootPath() const;
     QString getCoreIncludePath() const;
     QString getBinPath() const;
-    QString getHopsanRootPath() const;
     QString getGccPath() const;
+
+    void setQuiet(bool quiet);
     void printMessage(const QString &msg, const QString &color="Black") const;
     void printWarningMessage(const QString &msg) const;
     void printErrorMessage(const QString &msg) const;
-    void compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
+
+    void compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
     void generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags=QStringList(), QStringList lflags=QStringList());
     bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
 protected:
+    virtual void handlePrintMessage(const QString &msg, const QString &color="Black") const;
 
-    QString generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues=false) const;
+    QString generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues=false) const;
     void generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile=QString());
+
     bool assertFilesExist(const QString &path, const QStringList &files) const;
+
     void callProcess(const QString &name, const QStringList &args, const QString workingDirectory=QString()) const;
-    bool runUnixCommand(QString cmd) const;
-    bool replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const;
-    bool copyHopsanCoreSourceFilesToDir(QString tgtPath) const;
+
+    bool replaceInFile(const QString &filePath, const QStringList &before, const QStringList &after) const;
+
+    bool copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const;
     bool copyDefaultComponentCodeToDir(const QString &path) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     bool copyFile(const QString &source, const QString &target) const;
-    bool copyDir(const QString fromPath, const QString toPath) const;
+    bool copyDir(const QString &fromPath, const QString &toPath) const;
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
     void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
 
@@ -113,16 +111,8 @@ protected:
     QString mHopsanRootPath;
     QString mGccPath;
 
-#ifdef USEQTGUI
-    QTextEdit *mpTextEdit;
-    QVBoxLayout *mpLayout;
-    QPushButton *mpDoneButton;
-    QWidget *mpDialog;
-    QDialog *mpPortsDialog;
-#endif
-
-    bool mShowDialog;
+    bool mShowMessages;
 };
 
 
-#endif // HOPSANGENERAETOR_H
+#endif // HOPSANGENERATOR_H

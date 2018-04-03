@@ -26,16 +26,12 @@
 #define HOPSANMODELICAGENERATOR_H
 
 #include "HopsanGenerator.h"
-
-extern SymHop::Expression gTempExpr;
-
-
-SymHop::Expression concurrentDiff(SymHop::Expression expr);
+#include "SymHop.h"
 
 class HopsanModelicaGenerator : public HopsanGenerator
 {
 public:
-    HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog=false);
+    HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath);
     void generateFromModelica(QString code, SolverT solver=NumericalIntegration);
 
 private:

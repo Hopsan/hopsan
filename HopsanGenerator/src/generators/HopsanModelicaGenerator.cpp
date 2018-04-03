@@ -24,17 +24,62 @@
 
 #include "generators/HopsanModelicaGenerator.h"
 #include "GeneratorUtilities.h"
-#include "SymHop.h"
 #include <QTime>
+#include <QFileInfo>
 
+namespace {
+
+SymHop::Expression gTempExpr;
+
+//! @brief Verifies that a system of equations is solvable (number of equations = number of unknowns etc)
+bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator)
+{
+    bool retval = true;
+
+    if(equations.size() != stateVars.size())
+    {
+        QStringList equationList;
+        for(int s=0; s<equations.size(); ++s)
+        {
+            equationList.append(equations[s].toString());
+        }
+        qDebug() << "Equations: " << equationList;
+
+        QStringList stateVarList;
+        for(int s=0; s<stateVars.size(); ++s)
+        {
+            stateVarList.append(stateVars[s].toString());
+        }
+        qDebug() << "State vars: " << stateVarList;
+
+        pGenerator->printErrorMessage("Number of equations = " + QString::number(equations.size()) + ", number of state variables = " + QString::number(stateVars.size()));
+        retval = false;
+    }
+
+    return retval;
+}
+
+SymHop::Expression concurrentDiff(SymHop::Expression expr)
+{
+    SymHop::Expression tempExpr = gTempExpr;
+
+    bool ok = true;
+    SymHop::Expression derExpr = tempExpr.derivative(expr, ok);
+    if(!ok)
+    {
+        //printErrorMessage("Failed to differentiate expression: " + tempExpr.toString() + " for variable " + expr.toString());
+        return SymHop::Expression(0);
+    }
+    derExpr._simplify(SymHop::Expression::FullSimplification);
+    return derExpr;
+}
+
+} // End anon namespace
 
 using namespace SymHop;
 
-
-Expression gTempExpr;
-
-HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog)
-    : HopsanGenerator(coreIncludePath, binPath, gccPath, showDialog)
+HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath)
+    : HopsanGenerator(coreIncludePath, binPath, gccPath)
 {
 
 }
@@ -87,7 +132,7 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     printMessage("Generating component...");
 
     //Compile component
-    QString cppCode = generateSourceCodefromComponentObject(comp, false);
+    QString cppCode = generateSourceCodefromComponentSpec(comp, false);
 
     //Write output file
     QString moPath = path;
@@ -1890,23 +1935,6 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     equations.clear();
 }
 
-
-
-
-Expression concurrentDiff(Expression expr)
-{
-    Expression tempExpr = gTempExpr;
-
-    bool ok = true;
-    Expression derExpr = tempExpr.derivative(expr, ok);
-    if(!ok)
-    {
-        //printErrorMessage("Failed to differentiate expression: " + tempExpr.toString() + " for variable " + expr.toString());
-        return Expression(0);
-    }
-    derExpr._simplify(Expression::FullSimplification);
-    return derExpr;
-}
 
 
 //! @brief Sorts and equation system by its depending variables, so that it can be solved equation-by-equation

@@ -32,23 +32,12 @@
 //$Id$
 
 #include <QStringList>
+#include <QDir>
 #include <QProcess>
 #include <QDomElement>
 
-#ifdef USEQTGUI
-#include <QDialog>
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <QApplication>
-#include <QPushButton>
-#include <QProgressDialog>
-#include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QLabel>
-#else
-#include <iostream>
-#endif
 
+#include <iostream>
 #include <cassert>
 
 #ifdef _WIN32
@@ -66,12 +55,11 @@
 #include "HopsanCoreVersion.h"
 
 
-using namespace std;
 using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath, const bool showDialog)
+HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath)
 {
 #ifdef _WIN32
     mOutputPath = "C:/HopsanGeneratorTempFiles/output/";
@@ -89,85 +77,40 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
     {
         mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
     }
+}
 
-    mShowDialog = showDialog;
-    if(mShowDialog)
-    {
-#ifdef USEQTGUI
-        mpTextEdit = new QTextEdit();
-        mpTextEdit->setReadOnly(true);
-        QFont monoFont = QFont("Monospace", 10, 50);
-        monoFont.setStyleHint(QFont::TypeWriter);
-        mpTextEdit->setFont(monoFont);
-
-        mpDoneButton = new QPushButton("Close");
-        mpDoneButton->setFixedWidth(200);
-
-        mpLayout = new QVBoxLayout();
-        mpLayout->addWidget(mpTextEdit);
-        mpLayout->addWidget(mpDoneButton);
-        mpLayout->setAlignment(mpDoneButton, Qt::AlignCenter);
-
-        mpDialog = new QWidget(0);
-        mpDialog->setWindowModality(Qt::ApplicationModal);
-        mpDialog->setLayout(mpLayout);
-        mpDialog->setMinimumSize(640, 480);
-        mpDialog->setWindowTitle("HopsanGenerator");
-
-        mpDoneButton->connect(mpDoneButton, SIGNAL(clicked()), mpDialog, SLOT(hide()));
-
-        mpDialog->show();
-        QApplication::processEvents();
-#endif
-        printMessage("##########################\n# Loaded HopsanGenerator #\n##########################\n");
-    }
+HopsanGenerator::~HopsanGenerator()
+{
+    // Do nothing right now
 }
 
 
 void HopsanGenerator::printMessage(const QString &msg, const QString &color) const
 {
-    if(mShowDialog)
+    if(mShowMessages)
     {
-#ifdef USEQTGUI
-        mpTextEdit->setTextColor(QColor(color));
-        mpTextEdit->append(msg);
-        QApplication::processEvents();
-#ifdef _WIN32
-        Sleep(10);
-#else
-        usleep(10000);
-#endif
-#else
-        Q_UNUSED(color)
-        cout << msg.toStdString() << endl;
-#endif
+        handlePrintMessage(msg, color);
     }
     else
     {
-        //qDebug() << msg;
+        qDebug() << msg;
     }
 }
 
 
 void HopsanGenerator::printWarningMessage(const QString &msg) const
 {
-    if(mShowDialog)
-    {
-        printMessage(msg, "Orange");
-    }
+    printMessage(msg, "Orange");
 }
 
 
 void HopsanGenerator::printErrorMessage(const QString &msg) const
 {
-    if(mShowDialog)
-    {
-        printMessage(msg, "Red");
-    }
+    printMessage(msg, "Red");
 }
 
 
-QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues) const
+QString HopsanGenerator::generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues) const
 {
     if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
 
@@ -627,13 +570,13 @@ void HopsanGenerator::generateOrUpdateComponentAppearanceFile(QString path, Comp
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void HopsanGenerator::compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues, const QString customSourceFile)
+void HopsanGenerator::compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues, const QString customSourceFile)
 {
     QString code;
 
     if(comp.plainCode.isEmpty())
     {
-        code = generateSourceCodefromComponentObject(comp, overwriteStartValues);
+        code = generateSourceCodefromComponentSpec(comp, overwriteStartValues);
     }
     else
     {
@@ -952,6 +895,12 @@ bool HopsanGenerator::generateCafFile(QString &rPath, ComponentAppearanceSpecifi
     return true;
 }
 
+void HopsanGenerator::handlePrintMessage(const QString &msg, const QString &color) const
+{
+    Q_UNUSED(color)
+    std::cout << msg.toStdString() << std::endl;
+}
+
 
 
 void HopsanGenerator::setOutputPath(const QString path)
@@ -989,6 +938,11 @@ QString HopsanGenerator::getGccPath() const
     return mGccPath;
 }
 
+void HopsanGenerator::setQuiet(bool quiet)
+{
+    mShowMessages = !quiet;
+}
+
 
 bool HopsanGenerator::assertFilesExist(const QString &path, const QStringList &files) const
 {
@@ -1020,71 +974,48 @@ void HopsanGenerator::callProcess(const QString &name, const QStringList &args, 
 }
 
 
-bool HopsanGenerator::runUnixCommand(QString cmd) const
-{
-    char line[130];
-    cmd +=" 2>&1";
-    FILE *fp = popen(  (const char *) cmd.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + cmd + "'! err=%d");
-        return false;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-           printMessage((const QString &)line);
-        }
-    }
-    return true;
-}
-
-
 //! @warning May delete contents in file if it fails to open in write mode
-bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const
+bool HopsanGenerator::replaceInFile(const QString &filePath, const QStringList &before, const QStringList &after) const
 {
     Q_ASSERT(before.size() == after.size());
 
-    QFile file(fileName);
+    QFile file(filePath);
     if(!file.open(QFile::ReadOnly | QFile::Text))
     {
-        printErrorMessage("Unable to open file: "+fileName+" for reading.");
+        printErrorMessage("Unable to open file: "+filePath+" for reading.");
         return false;
     }
     QString contents = file.readAll();
     file.close();
 
-    bool didSomething = false;
+    bool foundTextToReplace = false;
     for(int i=0; i<before.size(); ++i)
     {
         if(contents.contains(before[i]))
         {
-            didSomething = true;
+            foundTextToReplace = true;
             contents.replace(before[i], after[i]);
         }
     }
 
-    if(!didSomething)
+    if(foundTextToReplace)
     {
-        return true;
+        if(!file.open(QFile::ReadWrite | QFile::Truncate | QFile::Text))
+        {
+            printErrorMessage("Unable to open file: "+filePath+" for writing.");
+            return false;
+        }
+        file.write(contents.toLatin1());
+        file.close();
     }
-
-    if(!file.open(QFile::ReadWrite | QFile::Truncate | QFile::Text))
-    {
-        printErrorMessage("Unable to open file "+fileName+" for writing.");
-    }
-    file.write(contents.toLatin1());
-    file.close();
 
     return true;
 }
 
 
 
-//! @todo maybe this function should not be among general utils
 //! @todo should not copy .git folders
-bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(QString tgtPath) const
+bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const
 {
     printMessage("Copying HopsanCore source, header and dependencies...");
 
@@ -1179,10 +1110,10 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
 
 //! @brief Copy a directory with contents
 //! @param[in] fromPath The absolute path to the directory to copy
-//! @param[in] toPath The absolute path to the destination (including resulting dir name)
+//! @param[in] toPath The absolute path to the destination (including destination dir name)
 //! @returns True if success else False
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
-bool HopsanGenerator::copyDir(const QString fromPath, const QString toPath) const
+bool HopsanGenerator::copyDir(const QString &fromPath, const QString &toPath) const
 {
     QString error;
     if(::copyDir(fromPath, toPath, error))
