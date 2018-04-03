@@ -39,7 +39,7 @@ void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 class HopsanFMIGenerator : public HopsanGenerator
 {
 public:
-    HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath);
+    HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
     bool generateFromFmu(const QString &rFmuPath, QString targetPath, QString &rTypeName, QString &rHppPath);
     void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, int version=2, bool x64=true);
 

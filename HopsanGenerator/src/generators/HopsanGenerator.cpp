@@ -59,24 +59,27 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath)
+HopsanGenerator::HopsanGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
 {
-#ifdef _WIN32
-    mOutputPath = "C:/HopsanGeneratorTempFiles/output/";
-    mTempPath = "C:/HopsanGeneratorTempFiles/temp/";
-#else
-    mOutputPath = QDir::currentPath()+"/output/";
-    mTempPath = QDir::currentPath()+"/temp/";
-#endif
-    mTarget = "";
-    mCoreIncludePath = coreIncludePath;
-    mBinPath = binPath;
+    mHopsanRootPath = hopsanInstallPath;
+    mHopsanCoreIncludePath = mHopsanRootPath+"/HopsanCore/include";
+    mHopsanBinPath = mHopsanRootPath+"/bin";
 
-    mHopsanRootPath = mBinPath+"../";
-    if(!gccPath.isEmpty())
+    if(!compilerPath.isEmpty())
     {
-        mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
+        mCompilerPath = QFileInfo(compilerPath).absoluteFilePath();
     }
+
+    if(!tempPath.isEmpty())
+    {
+        mTempPath = QFileInfo(tempPath).absoluteFilePath();
+    }
+    else
+    {
+        mTempPath = QDir::currentPath()+"/temp";
+    }
+
+    mOutputPath = QDir::currentPath()+"/output";
 }
 
 HopsanGenerator::~HopsanGenerator()
@@ -903,29 +906,22 @@ void HopsanGenerator::handlePrintMessage(const QString &msg, const QString &colo
 
 
 
-void HopsanGenerator::setOutputPath(const QString path)
+void HopsanGenerator::setOutputPath(const QString &path)
 {
     mOutputPath = path;
     printMessage("Setting output path: " + path);
 }
 
 
-void HopsanGenerator::setTarget(const QString fileName)
+QString HopsanGenerator::getHopsanCoreIncludePath() const
 {
-    mTarget = fileName;
-    printMessage("Setting target: " + fileName);
+    return mHopsanCoreIncludePath;
 }
 
 
-QString HopsanGenerator::getCoreIncludePath() const
+QString HopsanGenerator::getHopsanBinPath() const
 {
-    return mCoreIncludePath;
-}
-
-
-QString HopsanGenerator::getBinPath() const
-{
-    return mBinPath;
+    return mHopsanBinPath;
 }
 
 QString HopsanGenerator::getHopsanRootPath() const
@@ -933,9 +929,9 @@ QString HopsanGenerator::getHopsanRootPath() const
     return mHopsanRootPath;
 }
 
-QString HopsanGenerator::getGccPath() const
+QString HopsanGenerator::getCompilerPath() const
 {
-    return mGccPath;
+    return mCompilerPath;
 }
 
 void HopsanGenerator::setQuiet(bool quiet)
@@ -1042,7 +1038,7 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
     saveDir.cd("componentLibraries");
     saveDir.cd("defaultLibrary");
 
-    copyDir( QString(mBinPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
+    copyDir( QString(mHopsanBinPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
 
     QStringList allFiles;
     findAllFilesInFolderAndSubFolders(saveDir.path(),"hpp",allFiles);

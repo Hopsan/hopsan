@@ -31,8 +31,8 @@
 #include <QDir>
 
 
-HopsanSimulinkGenerator::HopsanSimulinkGenerator(QString coreIncludePath, QString binPath)
-    : HopsanGenerator(coreIncludePath, binPath, "")
+HopsanSimulinkGenerator::HopsanSimulinkGenerator(const QString &hopsanInstallPath)
+    : HopsanGenerator(hopsanInstallPath, "", "")
 {
 
 }

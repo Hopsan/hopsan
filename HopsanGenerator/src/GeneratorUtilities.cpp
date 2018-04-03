@@ -239,8 +239,8 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
         c.append(file+" ");
     c.chop(1);
 
-    QString hopsanBinDir = pGenerator->getBinPath();
-    QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath());
+    QString hopsanBinDir = pGenerator->getHopsanBinPath();
+    QString iflags = QString("-I\"%1\"").arg(pGenerator->getHopsanCoreIncludePath());
     lflags += QString(" -L\"%1\" -l%2").arg(hopsanBinDir).arg("hopsancore" TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
     //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work) /Peter
@@ -265,7 +265,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 
     pGenerator->printMessage("Compiling please wait!");
     QString output;
-    QString gccPath = pGenerator->getGccPath();
+    QString gccPath = pGenerator->getCompilerPath();
     bool success = compile(libRootDir, gccPath, libFile, c, iflags, cflags, lflags, output);
     pGenerator->printMessage(output);
     return success;

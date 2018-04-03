@@ -78,8 +78,8 @@ SymHop::Expression concurrentDiff(SymHop::Expression expr)
 
 using namespace SymHop;
 
-HopsanModelicaGenerator::HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath)
-    : HopsanGenerator(coreIncludePath, binPath, gccPath)
+HopsanModelicaGenerator::HopsanModelicaGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
+    : HopsanGenerator(hopsanInstallPath, compilerPath, tempPath)
 {
 
 }

@@ -62,16 +62,15 @@ class HOPSANGENERATOR_DLLAPI HopsanGenerator
 public:
     enum SolverT {NumericalIntegration, BilinearTransform};
 
-    HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath);
+    HopsanGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
     virtual ~HopsanGenerator();
 
-    void setOutputPath(const QString path);
-    void setTarget(const QString fileName);
+    void setOutputPath(const QString &path);
 
     QString getHopsanRootPath() const;
-    QString getCoreIncludePath() const;
-    QString getBinPath() const;
-    QString getGccPath() const;
+    QString getHopsanCoreIncludePath() const;
+    QString getHopsanBinPath() const;
+    QString getCompilerPath() const;
 
     void setQuiet(bool quiet);
     void printMessage(const QString &msg, const QString &color="Black") const;
@@ -102,16 +101,17 @@ protected:
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
     void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
 
-
-    QString mOutputPath;
-    QString mTarget;        //Name of HMF file, empty by default, only used if not empty
-    QString mTempPath;
-    QString mCoreIncludePath;
-    QString mBinPath;
     QString mHopsanRootPath;
-    QString mGccPath;
+    QString mHopsanCoreIncludePath;
+    QString mHopsanBinPath;
+    QString mCompilerPath;
+    QString mTempPath;
+    QString mOutputPath;
+
+private:
 
     bool mShowMessages;
+
 };
 
 

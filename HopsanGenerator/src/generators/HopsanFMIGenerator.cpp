@@ -149,8 +149,8 @@ void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_leve
     }
 }
 
-HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath)
-    : HopsanGenerator(coreIncludePath, binPath, gccPath)
+HopsanFMIGenerator::HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
+    : HopsanGenerator(hopsanInstallPath, compilerPath, tempPath)
 {
 }
 
@@ -1181,7 +1181,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSystem, int version, bool x64)
 {
 #ifdef _WIN32
-    if(mGccPath.isEmpty())
+    if(mCompilerPath.isEmpty())
     {
         printErrorMessage("Compiler path not specified.");
         return;
@@ -1741,7 +1741,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
     compileBatchCStream << "@echo off\n";
-    compileBatchCStream << "PATH=" << mGccPath << ";%PATH%\n";
+    compileBatchCStream << "PATH=" << mCompilerPath << ";%PATH%\n";
     compileBatchCStream << "@echo on\n";
     compileBatchCStream << "gcc.exe -c fmu"+vStr+"_model_cs.c " <<
                            QString("-I\"%1/include\"").arg(mHopsanRootPath+fmiLibDir) << "\n";
@@ -1784,7 +1784,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
     compileCppBatchStream << "@echo off\n";
-    compileCppBatchStream << "PATH=" << mGccPath << ";%PATH%\n";
+    compileCppBatchStream << "PATH=" << mCompilerPath << ";%PATH%\n";
     compileCppBatchStream << "@echo on\n";
     compileCppBatchStream << "g++ -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS " << "fmu_hopsan.c";
     QStringList srcFiles = listHopsanCoreSourceFiles(savePath) + listDefaultLibrarySourceFiles(savePath);
@@ -1810,7 +1810,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mGccPath+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS " << "fmu_hopsan.c";
+    compileCppBatchStream << mCompilerPath+"/g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS " << "fmu_hopsan.c";
     QStringList srcFiles = listHopsanCoreSourceFiles(savePath) + listDefaultLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
@@ -1851,7 +1851,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
     linkBatchStream << "@echo off\n";
-    linkBatchStream << "PATH=" << mGccPath << ";%PATH%\n";
+    linkBatchStream << "PATH=" << mCompilerPath << ";%PATH%\n";
     linkBatchStream << "@echo on\n";
     linkBatchStream << "g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' " <<
                      "fmu"+vStr+"_model_cs.o";
@@ -1876,7 +1876,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << mGccPath+"g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " <<
+    linkBatchStream << mCompilerPath+"/g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " <<
                        "fmu"+vStr+"_model_cs.o";
     Q_FOREACH(const QString &objFile, objectFiles)
     {
@@ -1931,7 +1931,7 @@ void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &m
     printMessage("Compressing files");
 
 #ifdef _WIN32
-    QString program = mBinPath + "../Dependencies/tools/7z/7za";
+    QString program = mHopsanRootPath + "/Dependencies/tools/7z/7za";
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
 #elif __linux__ && __i386__

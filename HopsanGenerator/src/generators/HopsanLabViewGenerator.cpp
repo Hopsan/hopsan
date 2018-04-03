@@ -30,8 +30,8 @@
 
 using namespace hopsan;
 
-HopsanLabViewGenerator::HopsanLabViewGenerator(QString coreIncludePath, QString binPath)
-    : HopsanGenerator(coreIncludePath, binPath, "")
+HopsanLabViewGenerator::HopsanLabViewGenerator(const QString &hopsanInstallPath)
+    : HopsanGenerator(hopsanInstallPath, "", "")
 {
 
 }
@@ -628,11 +628,11 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Extracting component libraries source code...");
 
-    QFileInfo componentsSourceCodeFile(mBinPath+"../componentLibrariesSourceCode.zip");
+    QFileInfo componentsSourceCodeFile(mHopsanBinPath+"../componentLibrariesSourceCode.zip");
     if(componentsSourceCodeFile.exists())
     {
         QDir zipDir;
-        zipDir = QDir::cleanPath(mBinPath + "../Dependencies/tools/7z");
+        zipDir = QDir::cleanPath(mHopsanBinPath + "../Dependencies/tools/7z");
     #ifdef _WIN32
         QStringList arguments;
         arguments << "x" << componentsSourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path() << "-aoa" << "-phopsanhejsan";

@@ -31,7 +31,7 @@
 class HopsanModelicaGenerator : public HopsanGenerator
 {
 public:
-    HopsanModelicaGenerator(QString coreIncludePath, QString binPath, QString gccPath);
+    HopsanModelicaGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
     void generateFromModelica(QString code, SolverT solver=NumericalIntegration);
 
 private:
