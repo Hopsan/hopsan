@@ -89,6 +89,7 @@ enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
 enum LibraryTypeEnumT {InternalLib, ExternalLib, FmuLib};
 enum HiddenVisibleEnumT {Hidden, Visible};
 enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
+enum class ArchitectureEnumT {x86, x64};
 
 extern const char* getHopsanGUIBuildTime();
 
