@@ -26,30 +26,24 @@
 //$Id$
 
 #include "BuildUtilities.h"
-
-#include "CoreUtilities/GeneratorHandler.h"
 #include "CliUtilities.h"
 
-#include <iostream>
-
-using namespace std ;
+#if defined(HOPSANCLI_USEGENERATOR)
+#include "hopsangenerator.h"
+#endif
 
 bool buildComponentLibrary(const std::string &rLibraryXML, std::string &rOutput)
 {
-    hopsan::GeneratorHandler generator;
-    if(generator.isLoadedSuccessfully())
-    {
-        string path = getCurrentExecPath();
-        // Expected include and bin path for HopsanCore
-        string hopsanIncludePath = path+"../HopsanCore/include/";
-        string hopsanBinPath = path;
+#if defined(HOPSANCLI_USEGENERATOR)
+    const std::string hopsanRootPath = getCurrentExecPath()+"/..";
+    constexpr auto cflags = "";
+    constexpr auto lflags = "";
+    constexpr auto compilerPath = "";
 
-        generator.callComponentLibraryCompiler(rLibraryXML.c_str(), "", "", hopsanIncludePath.c_str(), hopsanBinPath.c_str(), "", true);
-        return true;
-    }
-    else
-    {
-        printErrorMessage(std::string("Generator failed: ")+generator.error().c_str());
-        return false;
-    }
+    callComponentLibraryCompiler(rLibraryXML.c_str(), cflags, lflags, hopsanRootPath.c_str(), compilerPath, false);
+    return true;
+#else
+    printErrorMessage("This HopsanCLI is not built with HopsanGenerator support");
+    return false;
+#endif
 }

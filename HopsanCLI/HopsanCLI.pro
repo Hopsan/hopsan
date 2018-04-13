@@ -39,18 +39,36 @@ INCLUDEPATH *= $${PWD}/../HopsanCore/dependencies/rapidxml
 INCLUDEPATH *= $${PWD}/../Utilities
 #--------------------------------------------------------
 
-DEFINES *= USEOPS
-contains(DEFINES, USEOPS) {
-INCLUDEPATH *= $${PWD}/../Ops/include
-LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
-DEFINES *= OPS_DLLIMPORT
-}
-
 #--------------------------------------------------------
 # Set hopsan core paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include
 LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
 DEFINES *= HOPSANCORE_DLLIMPORT
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Set OPS paths
+DEFINES *= USEOPS
+contains(DEFINES, USEOPS) {
+  INCLUDEPATH *= $${PWD}/../Ops/include
+  LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
+  DEFINES *= OPS_DLLIMPORT
+}
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Set HopsanGenerator Paths
+DEFINES *= HOPSANCLI_USEGENERATOR
+contains(DEFINES, HOPSANCLI_USEGENERATOR) {
+  message(Compiling HopsanCLI with HopsanGenerator)
+  INCLUDEPATH *= $${PWD}/../HopsanGenerator/include
+  LIBS *= -L$${PWD}/../bin -lhopsangenerator$${DEBUG_EXT}
+  LIBS *= -lsymhop$${DEBUG_EXT}
+  include($${PWD}/../Dependencies/fmilibrary.pri)
+  DEFINES *= HOPSANGENERATOR_DLLIMPORT
+} else {
+  message(Compiling HopsanCLI without HopsanGenerator)
+}
 #--------------------------------------------------------
 
 CONFIG(debug, debug|release) {
