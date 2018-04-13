@@ -32,7 +32,7 @@ namespace {
 SymHop::Expression gTempExpr;
 
 //! @brief Verifies that a system of equations is solvable (number of equations = number of unknowns etc)
-bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator)
+bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGeneratorBase *pGenerator)
 {
     bool retval = true;
 
@@ -79,7 +79,7 @@ SymHop::Expression concurrentDiff(SymHop::Expression expr)
 using namespace SymHop;
 
 HopsanModelicaGenerator::HopsanModelicaGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
-    : HopsanGenerator(hopsanInstallPath, compilerPath, tempPath)
+    : HopsanGeneratorBase(hopsanInstallPath, compilerPath, tempPath)
 {
 
 }

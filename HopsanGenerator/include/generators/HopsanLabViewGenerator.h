@@ -25,9 +25,9 @@
 #ifndef HOPSANLABVIEWGENERATOR_H
 #define HOPSANLABVIEWGENERATOR_H
 
-#include "HopsanGenerator.h"
+#include "HopsanGeneratorBase.h"
 
-class HopsanLabViewGenerator : public HopsanGenerator
+class HopsanLabViewGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanLabViewGenerator(const QString &hopsanInstallPath);

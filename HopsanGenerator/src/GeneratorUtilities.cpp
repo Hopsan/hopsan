@@ -47,7 +47,7 @@
 #endif
 
 #include "GeneratorUtilities.h"
-#include "generators/HopsanGenerator.h"
+#include "generators/HopsanGeneratorBase.h"
 #include "HopsanCoreVersion.h"
 
 //! @brief Function for loading an XML DOM Document from file
@@ -163,7 +163,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const QString &input)
 
 
 
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraCFlags, QString extraLFlags)
+bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QString extraCFlags, QString extraLFlags)
 {
     pGenerator->printMessage("Writing compilation script...");
 

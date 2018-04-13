@@ -29,7 +29,6 @@
 //!
 //$Id$
 
-#include "generators/HopsanGenerator.h"
 #include "generators/HopsanModelicaGenerator.h"
 #include "generators/HopsanSimulinkGenerator.h"
 #include "generators/HopsanLabViewGenerator.h"
@@ -61,7 +60,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(const char* moFileP
     HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(hopsanInstallPath, compilerPath);
     pGenerator->setMessageHandler(gMessageCallback);
     pGenerator->setQuiet(quiet);
-    pGenerator->generateFromModelica(moFilePath, HopsanGenerator::SolverT(solver));
+    pGenerator->generateFromModelica(moFilePath, HopsanGeneratorBase::SolverT(solver));
     if(compile)
     {
         QFileInfo mofile(moFilePath);
@@ -81,7 +80,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(const char* moFileP
 //! @param[in] quiet Hide generator output
 extern "C" HOPSANGENERATOR_DLLAPI void callLibraryGenerator(const char*  outputPath, const char* const hppFiles[], const size_t numFiles, bool quiet=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator("", "", "");
+    HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase("", "", "");
     pGenerator->setMessageHandler(gMessageCallback);
     pGenerator->setQuiet(quiet);
     QStringList tempList;
@@ -154,7 +153,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callCppGenerator(const char* hppPath, con
 
     if(compile)
     {
-        HopsanGenerator *pGenerator = new HopsanGenerator(hopsanInstallPath, compilerPath);
+        HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase(hopsanInstallPath, compilerPath);
         pGenerator->setMessageHandler(gMessageCallback);
         QFileInfo hp(hppPath);
         QString dir = hp.absolutePath()+"/";
@@ -287,7 +286,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callLabViewSITGenerator(const char* outpu
 //! @param quiet Hide generator output
 extern "C" HOPSANGENERATOR_DLLAPI void callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, bool quiet=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator(hopsanInstallPath, compilerPath);
+    HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase(hopsanInstallPath, compilerPath);
     pGenerator->setMessageHandler(gMessageCallback);
     pGenerator->setQuiet(quiet);
     compileComponentLibrary(outputPath, pGenerator, extraCFlags, extraLFlags);

@@ -25,9 +25,9 @@
 #ifndef HOPSANSIMULINKGENERATOR_H
 #define HOPSANSIMULINKGENERATOR_H
 
-#include "HopsanGenerator.h"
+#include "HopsanGeneratorBase.h"
 
-class HopsanSimulinkGenerator : public HopsanGenerator
+class HopsanSimulinkGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanSimulinkGenerator(const QString &hopsanInstallPath);

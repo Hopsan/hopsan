@@ -44,7 +44,7 @@
 #include <unistd.h>
 #endif
 
-#include "generators/HopsanGenerator.h"
+#include "generators/HopsanGeneratorBase.h"
 #include "GeneratorUtilities.h"
 #include "SymHop.h"
 
@@ -57,7 +57,7 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGenerator::HopsanGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath) :
+HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath) :
     mMessageHandler(default_message_handler)
 {
     mHopsanRootPath = hopsanInstallPath;
@@ -81,17 +81,17 @@ HopsanGenerator::HopsanGenerator(const QString &hopsanInstallPath, const QString
     mOutputPath = QDir::currentPath()+"/output";
 }
 
-HopsanGenerator::~HopsanGenerator()
+HopsanGeneratorBase::~HopsanGeneratorBase()
 {
     // Do nothing right now
 }
 
-void HopsanGenerator::setMessageHandler(std::function<void (const char *, char)> messageHandler)
+void HopsanGeneratorBase::setMessageHandler(std::function<void (const char *, char)> messageHandler)
 {
     mMessageHandler = messageHandler;
 }
 
-void HopsanGenerator::printMessage(const QString &msg, const QChar &type) const
+void HopsanGeneratorBase::printMessage(const QString &msg, const QChar &type) const
 {
     if(mShowMessages)
     {
@@ -104,19 +104,19 @@ void HopsanGenerator::printMessage(const QString &msg, const QChar &type) const
 }
 
 
-void HopsanGenerator::printWarningMessage(const QString &msg) const
+void HopsanGeneratorBase::printWarningMessage(const QString &msg) const
 {
     printMessage(msg, 'W');
 }
 
 
-void HopsanGenerator::printErrorMessage(const QString &msg) const
+void HopsanGeneratorBase::printErrorMessage(const QString &msg) const
 {
     printMessage(msg, 'E');
 }
 
 
-QString HopsanGenerator::generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues) const
+QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues) const
 {
     if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
 
@@ -470,7 +470,7 @@ QString HopsanGenerator::generateSourceCodefromComponentSpec(ComponentSpecificat
 //! @brief Generates appearance file from a component specification object
 //! @param path Path to generated (or existing) .xml file
 //! @param comp Component specification object
-void HopsanGenerator::generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile)
+void HopsanGeneratorBase::generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile)
 {
     QFile file(path);
     QString code;
@@ -576,7 +576,7 @@ void HopsanGenerator::generateOrUpdateComponentAppearanceFile(QString path, Comp
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void HopsanGenerator::compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues, const QString customSourceFile)
+void HopsanGeneratorBase::compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues, const QString customSourceFile)
 {
     QString code;
 
@@ -721,7 +721,7 @@ void HopsanGenerator::compileFromComponentSpecification(const QString &outputFil
 //! @param[in] hppFiles Relative path to hpp files
 //! @param[in] cflags Compiler flags required for building the library
 //! @param[in] lflags Linker flags required for building the library
-void HopsanGenerator::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags)
+void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags)
 {
     printMessage("Creating new component library...");
 
@@ -806,7 +806,7 @@ void HopsanGenerator::generateNewLibrary(QString dstPath, QStringList hppFiles, 
 
 
 
-bool HopsanGenerator::generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec)
+bool HopsanGeneratorBase::generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec)
 {
     //Create <fmuname>.xml
     QFile fmuCafFile;
@@ -902,41 +902,41 @@ bool HopsanGenerator::generateCafFile(QString &rPath, ComponentAppearanceSpecifi
 }
 
 
-void HopsanGenerator::setOutputPath(const QString &path)
+void HopsanGeneratorBase::setOutputPath(const QString &path)
 {
     mOutputPath = path;
     printMessage("Setting output path: " + path);
 }
 
 
-QString HopsanGenerator::getHopsanCoreIncludePath() const
+QString HopsanGeneratorBase::getHopsanCoreIncludePath() const
 {
     return mHopsanCoreIncludePath;
 }
 
 
-QString HopsanGenerator::getHopsanBinPath() const
+QString HopsanGeneratorBase::getHopsanBinPath() const
 {
     return mHopsanBinPath;
 }
 
-QString HopsanGenerator::getHopsanRootPath() const
+QString HopsanGeneratorBase::getHopsanRootPath() const
 {
     return mHopsanRootPath;
 }
 
-QString HopsanGenerator::getCompilerPath() const
+QString HopsanGeneratorBase::getCompilerPath() const
 {
     return mCompilerPath;
 }
 
-void HopsanGenerator::setQuiet(bool quiet)
+void HopsanGeneratorBase::setQuiet(bool quiet)
 {
     mShowMessages = !quiet;
 }
 
 
-bool HopsanGenerator::assertFilesExist(const QString &path, const QStringList &files) const
+bool HopsanGeneratorBase::assertFilesExist(const QString &path, const QStringList &files) const
 {
     Q_FOREACH(const QString &file, files)
     {
@@ -951,7 +951,7 @@ bool HopsanGenerator::assertFilesExist(const QString &path, const QStringList &f
 }
 
 
-void HopsanGenerator::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
+void HopsanGeneratorBase::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
 {
     QProcess p;
     if(!workingDirectory.isEmpty())
@@ -967,7 +967,7 @@ void HopsanGenerator::callProcess(const QString &name, const QStringList &args, 
 
 
 //! @warning May delete contents in file if it fails to open in write mode
-bool HopsanGenerator::replaceInFile(const QString &filePath, const QStringList &before, const QStringList &after) const
+bool HopsanGeneratorBase::replaceInFile(const QString &filePath, const QStringList &before, const QStringList &after) const
 {
     Q_ASSERT(before.size() == after.size());
 
@@ -1007,7 +1007,7 @@ bool HopsanGenerator::replaceInFile(const QString &filePath, const QStringList &
 
 
 //! @todo should not copy .git folders
-bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const
+bool HopsanGeneratorBase::copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const
 {
     printMessage("Copying HopsanCore source, header and dependencies...");
 
@@ -1024,7 +1024,7 @@ bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(const QString &tgtPath) con
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
 //! @todo Error checking
-bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
+bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) const
 {
     printMessage("Copying default component library...");
 
@@ -1054,7 +1054,7 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
 //! @todo Error checking
-bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
+bool HopsanGeneratorBase::copyBoostIncludeFilesToDir(const QString &path) const
 {
     printMessage("Copying Boost include files...");
 
@@ -1084,7 +1084,7 @@ bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
 //! @param[in] source Source file
 //! @param[in] target Target where to copy file
 //! @returns True if copy successful, otherwise false
-bool HopsanGenerator::copyFile(const QString &source, const QString &target) const
+bool HopsanGeneratorBase::copyFile(const QString &source, const QString &target) const
 {
     QString error;
     if (::copyFile(source, target, error))
@@ -1105,7 +1105,7 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
 //! @param[in] toPath The absolute path to the destination (including destination dir name)
 //! @returns True if success else False
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
-bool HopsanGenerator::copyDir(const QString &fromPath, const QString &toPath) const
+bool HopsanGeneratorBase::copyDir(const QString &fromPath, const QString &toPath) const
 {
     QString error;
     if(::copyDir(fromPath, toPath, error))
@@ -1124,7 +1124,7 @@ bool HopsanGenerator::copyDir(const QString &fromPath, const QString &toPath) co
 //! @param path Path to directory to clean up
 //! @param files List of files to remove
 //! @param subDirs List of sub directories to remove
-void HopsanGenerator::cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const
+void HopsanGeneratorBase::cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const
 {
     printMessage("Cleaning up directory: " + path);
 
@@ -1141,7 +1141,7 @@ void HopsanGenerator::cleanUp(const QString &path, const QStringList &files, con
 
 
 
-void HopsanGenerator::getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType)
+void HopsanGeneratorBase::getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType)
 {
     if(compType == "HydraulicInterfaceC")
     {

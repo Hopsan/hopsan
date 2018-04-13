@@ -82,22 +82,22 @@ unix {
 SOURCES += \
     src/HopsanGeneratorLib.cpp \
     src/GeneratorUtilities.cpp \
-    src/generators/HopsanGenerator.cpp \
     src/generators/HopsanSimulinkGenerator.cpp \
     src/generators/HopsanModelicaGenerator.cpp \
     src/generators/HopsanFMIGenerator.cpp \
     src/generators/HopsanLabViewGenerator.cpp \
-    src/GeneratorTypes.cpp
+    src/GeneratorTypes.cpp \
+    src/generators/HopsanGeneratorBase.cpp
 
 HEADERS += \
     include/hopsangenerator_win32dll.h \
     include/GeneratorUtilities.h \
-    include/generators/HopsanGenerator.h \
     include/generators/HopsanModelicaGenerator.h \
     include/generators/HopsanSimulinkGenerator.h \
     include/generators/HopsanFMIGenerator.h \
     include/generators/HopsanLabViewGenerator.h \
-    include/GeneratorTypes.h
+    include/GeneratorTypes.h \
+    include/generators/HopsanGeneratorBase.h
 
 RESOURCES += \
     templates.qrc

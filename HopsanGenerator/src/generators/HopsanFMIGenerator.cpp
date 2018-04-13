@@ -150,7 +150,7 @@ void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_leve
 }
 
 HopsanFMIGenerator::HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
-    : HopsanGenerator(hopsanInstallPath, compilerPath, tempPath)
+    : HopsanGeneratorBase(hopsanInstallPath, compilerPath, tempPath)
 {
 }
 

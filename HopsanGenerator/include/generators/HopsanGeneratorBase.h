@@ -32,8 +32,8 @@
 //$Id$
 
 
-#ifndef HOPSANGENERATOR_H
-#define HOPSANGENERATOR_H
+#ifndef HOPSANGENERATORBASE_H
+#define HOPSANGENERATORBASE_H
 
 #ifdef _WIN32
 #define LIBEXT ".dll"
@@ -58,13 +58,13 @@ class ComponentSystem;
 }
 
 
-class HOPSANGENERATOR_DLLAPI HopsanGenerator
+class HOPSANGENERATOR_DLLAPI HopsanGeneratorBase
 {
 public:
     enum SolverT {NumericalIntegration, BilinearTransform};
 
-    HopsanGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
-    virtual ~HopsanGenerator();
+    HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
+    virtual ~HopsanGeneratorBase();
 
     void setMessageHandler(std::function<void(const char* msg, const char type)> messageHandler);
 
@@ -118,4 +118,4 @@ private:
 };
 
 
-#endif // HOPSANGENERATOR_H
+#endif // HOPSANGENERATORBASE_H

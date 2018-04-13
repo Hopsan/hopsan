@@ -25,10 +25,10 @@
 #ifndef HOPSANMODELICAGENERATOR_H
 #define HOPSANMODELICAGENERATOR_H
 
-#include "HopsanGenerator.h"
+#include "HopsanGeneratorBase.h"
 #include "SymHop.h"
 
-class HopsanModelicaGenerator : public HopsanGenerator
+class HopsanModelicaGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanModelicaGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");

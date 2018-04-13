@@ -39,7 +39,7 @@
 #include <QTextStream>
 #include <QDomElement>
 
-class HopsanGenerator;
+class HopsanGeneratorBase;
 
 bool matchOSString(QString os);
 
@@ -49,7 +49,7 @@ bool removeDir(QString path);
 bool copyDir(const QString &fromPath, QString toPath, QString &rErrorMessage);
 bool copyFile(const QString &source, const QString &target, QString &rErrorMessage);
 
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraCFlags="", QString extraLFlags="");
+bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QString extraCFlags="", QString extraLFlags="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);
 
 int callProcess(const QString &name, const QStringList &args, const QString &workingDirectory, const int timeout, QString &rStdOut, QString &rStdErr);

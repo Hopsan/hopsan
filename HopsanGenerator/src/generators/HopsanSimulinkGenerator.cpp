@@ -32,7 +32,7 @@
 
 
 HopsanSimulinkGenerator::HopsanSimulinkGenerator(const QString &hopsanInstallPath)
-    : HopsanGenerator(hopsanInstallPath, "", "")
+    : HopsanGeneratorBase(hopsanInstallPath, "", "")
 {
 
 }

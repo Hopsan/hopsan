@@ -26,7 +26,7 @@
 #define HOPSANFMIGENERAETOR_H
 
 // Hopsan includes
-#include "HopsanGenerator.h"
+#include "HopsanGeneratorBase.h"
 
 // FMILibrary includes
 #include "FMI/fmi_import_context.h"
@@ -36,7 +36,7 @@
 
 void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
-class HopsanFMIGenerator : public HopsanGenerator
+class HopsanFMIGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
