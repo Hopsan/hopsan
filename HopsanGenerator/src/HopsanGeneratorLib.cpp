@@ -29,15 +29,20 @@
 //!
 //$Id$
 
+#include "hopsangenerator.h"
+
 #include "generators/HopsanModelicaGenerator.h"
 #include "generators/HopsanSimulinkGenerator.h"
 #include "generators/HopsanLabViewGenerator.h"
 #include "generators/HopsanFMIGenerator.h"
 #include "GeneratorUtilities.h"
-#include "hopsangenerator_win32dll.h"
 
 #include <QFileInfo>
 #include <QDir>
+
+namespace hopsan {
+class ComponentSystem;
+}
 
 namespace {
 
@@ -45,7 +50,7 @@ std::function<void(const char* msg, const char type)> gMessageCallback = default
 
 }
 
-extern "C" HOPSANGENERATOR_DLLAPI void setMessageHandler(void (*message_handler)(const char* msg, char type))
+void setMessageHandler(void (*message_handler)(const char* msg, char type))
 {
     gMessageCallback = message_handler;
 }
@@ -55,7 +60,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void setMessageHandler(void (*message_handler)
 //! @param compilerPath Path to compiler bin directory
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param[in] quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(const char* moFilePath, const char* compilerPath, bool quiet=false, int solver=0, bool compile=false, const char* hopsanInstallPath="")
+void callModelicaGenerator(const char* moFilePath, const char* compilerPath, bool quiet, int solver, bool compile, const char* hopsanInstallPath)
 {
     HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(hopsanInstallPath, compilerPath);
     pGenerator->setMessageHandler(gMessageCallback);
@@ -78,7 +83,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(const char* moFileP
 //! @param outputPath Path to where the files shall be created
 //! @param hppFiles Vector with filenames for .hpp files
 //! @param[in] quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callLibraryGenerator(const char*  outputPath, const char* const hppFiles[], const size_t numFiles, bool quiet=false)
+void callLibraryGenerator(const char*  outputPath, const char* const hppFiles[], const int numFiles, bool quiet)
 {
     HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase("", "", "");
     pGenerator->setMessageHandler(gMessageCallback);
@@ -98,7 +103,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callLibraryGenerator(const char*  outputP
 //! @param compilerPath Path to the compiler bin directory
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param[in] quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callCppGenerator(const char* hppPath, const char* compilerPath, bool compile=false, const char* hopsanInstallPath="")
+void callCppGenerator(const char* hppPath, const char* compilerPath, bool compile, const char* hopsanInstallPath)
 {
     qDebug() << "Called C++ generator (in dll)!";
 
@@ -172,7 +177,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callCppGenerator(const char* hppPath, con
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param compilerPath Path to the compiler binaries
 //! @param[in] quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, const char* hopsanInstallPath, const char* compilerPath, bool quiet=false)
+void callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, const char* hopsanInstallPath, const char* compilerPath, bool quiet)
 {
     HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(hopsanInstallPath, compilerPath);
     pGenerator->setMessageHandler(gMessageCallback);
@@ -218,12 +223,12 @@ extern "C" HOPSANGENERATOR_DLLAPI void callFmuImportGenerator(const char* fmuFil
 //! @param[in] version The FMU version to export 1 or 2
 //! @param[in] architecture 32 or 64
 //! @param[in] quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callFmuExportGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, const char* compilerPath, int version=2, int architecture=64, bool quiet=false)
+void callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, const char* compilerPath, int version, int architecture, bool quiet)
 {
     HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(hopsanInstallPath, compilerPath);
     pGenerator->setMessageHandler(gMessageCallback);
     pGenerator->setQuiet(quiet);
-    pGenerator->generateToFmu(outputPath, pSystem, version, architecture);
+    pGenerator->generateToFmu(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), version, architecture);
     delete(pGenerator);
 }
 
@@ -235,29 +240,12 @@ extern "C" HOPSANGENERATOR_DLLAPI void callFmuExportGenerator(const char* output
 //! @param disablePortLabels Tells whether or not port labels shall be disabled (for compatibility with older MATLAB versions)
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callSimulinkExportGenerator(const char* outputPath, const char* modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels, const char* hopsanInstallPath, bool quiet=false)
+void callSimulinkExportGenerator(const char* outputPath, const char* modelFile, void* pHopsanSystem, bool disablePortLabels, const char* hopsanInstallPath, bool quiet)
 {
     HopsanSimulinkGenerator *pGenerator = new HopsanSimulinkGenerator(hopsanInstallPath);
     pGenerator->setMessageHandler(gMessageCallback);
     pGenerator->setQuiet(quiet);
-    pGenerator->generateToSimulink(outputPath, modelFile, pSystem, disablePortLabels);
-    delete(pGenerator);
-}
-
-
-//! @brief Calls the Simulink S-function generator for co-simulations
-//! @param outputPath Path to export to
-//! @param pSystem Pointer to system that shall be exported
-//! @param compiler Compiler to use, 0 = MSVC2008 32-bit, 1 = MSVC2008 64-bit, 2 = MSVC2010 32-bit, 3 = MSVC2010 64-bit
-//! @param disablePortLabels Tells whether or not port labels shall be disabled (for compatibility with older MATLAB versions)
-//! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
-//! @param quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callSimulinkCoSimExportGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, const char* hopsanInstallPath, bool quiet=false)
-{
-    HopsanSimulinkGenerator *pGenerator = new HopsanSimulinkGenerator(hopsanInstallPath);
-    pGenerator->setMessageHandler(gMessageCallback);
-    pGenerator->setQuiet(quiet);
-    pGenerator->generateToSimulinkCoSim(outputPath, pSystem, disablePortLabels, compiler);
+    pGenerator->generateToSimulink(outputPath, modelFile, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), disablePortLabels);
     delete(pGenerator);
 }
 
@@ -267,12 +255,12 @@ extern "C" HOPSANGENERATOR_DLLAPI void callSimulinkCoSimExportGenerator(const ch
 //! @param pSystem Pointer to system that shall be exported
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callLabViewSITGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, bool quiet=false)
+void callLabViewSITGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, bool quiet)
 {
     HopsanLabViewGenerator *pGenerator = new HopsanLabViewGenerator(hopsanInstallPath);
     pGenerator->setMessageHandler(gMessageCallback);
     pGenerator->setQuiet(quiet);
-    pGenerator->generateToLabViewSIT(outputPath, pSystem);
+    pGenerator->generateToLabViewSIT(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem));
     delete(pGenerator);
 }
 
@@ -284,7 +272,7 @@ extern "C" HOPSANGENERATOR_DLLAPI void callLabViewSITGenerator(const char* outpu
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param compilerPath Path to the compiler bin directory
 //! @param quiet Hide generator output
-extern "C" HOPSANGENERATOR_DLLAPI void callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, bool quiet=false)
+void callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, bool quiet)
 {
     HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase(hopsanInstallPath, compilerPath);
     pGenerator->setMessageHandler(gMessageCallback);

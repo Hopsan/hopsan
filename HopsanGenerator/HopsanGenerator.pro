@@ -97,7 +97,8 @@ HEADERS += \
     include/generators/HopsanFMIGenerator.h \
     include/generators/HopsanLabViewGenerator.h \
     include/GeneratorTypes.h \
-    include/generators/HopsanGeneratorBase.h
+    include/generators/HopsanGeneratorBase.h \
+    include/hopsangenerator.h
 
 RESOURCES += \
     templates.qrc
