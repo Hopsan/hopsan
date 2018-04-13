@@ -55,6 +55,7 @@
 #include "MessageHandler.h"
 #include "Dialogs/EditComponentDialog.h"
 #include "GUIObjects/GUISystem.h"
+#include "GeneratorUtils.h"
 
 //! @brief Helpfunction to create full typename from type and subtype
 //! @returns The full typename type|subtype, or type is subtype was empty
@@ -948,11 +949,7 @@ void LibraryHandler::importFmu()
     }
     gpConfig->setStringSetting(CFG_FMUIMPORTDIR, fmuFileInfo.absolutePath());
 
-    CoreGeneratorAccess generator;
-    if (!generator.generateFromFmu(filePath))
-    {
-        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(generator.error()));
-    }
+    importFMU(fmuFileInfo.absolutePath());
 }
 
 
@@ -962,7 +959,7 @@ void LibraryHandler::importFmu()
 void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog, int solver, bool dontUnloadAndLoad)
 {
     CoreLibraryAccess coreLibrary;
-    CoreGeneratorAccess coreGenerator;
+    auto spGenerator = createDefaultGenerator();
 
     if(!dontUnloadAndLoad)
     {
@@ -987,9 +984,10 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool show
         if(sourceFile.endsWith(".mo"))
         {
             qDebug() << "GENERATING: " << path+"/"+sourceFile;
-            if (!coreGenerator.generateFromModelica(path+"/"+sourceFile, showDialog, solver, false))
+            if (!spGenerator->generateFromModelica(path+"/"+sourceFile, solver,
+                                                   HopsanGeneratorGUI::CompileT::DoNotCompile))
             {
-                gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+                gpMessageHandler->addErrorMessage("Failed to import Modelica");
             }
         }
     }
@@ -1010,9 +1008,10 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool show
     }
 
     //Call compile utility
-    if (!coreGenerator.compileComponentLibrary(QFileInfo(pLib->xmlFilePath).absoluteFilePath(), extraCFlags, extraLFlags, showDialog))
+    QString libfile = QFileInfo(pLib->xmlFilePath).absoluteFilePath();
+    if (!spGenerator->compileComponentLibrary(libfile, extraCFlags, extraLFlags))
     {
-        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+        gpMessageHandler->addErrorMessage(QString("Failed to compile component library: %1").arg(libfile));
     }
 
     if(!dontUnloadAndLoad)

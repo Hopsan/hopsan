@@ -66,27 +66,6 @@ private:
 };
 
 
-class CoreGeneratorAccess
-{
-public:
-    enum FmuKind {ModelExchange, CoSimulation};
-    enum TargetArchitectureT {x86, x64};
-    bool generateFromModelica(QString path, bool showDialog=true, int solver=0, bool compile=false);
-    bool generateFromCpp(QString hppFile, bool compile=false);
-    bool generateFromFmu(QString fmuFilePath);
-    bool generateToFmu(QString path, int version, TargetArchitectureT architecture, SystemContainer *pSystem);
-    bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false);
-    bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
-    bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
-    bool generateLibrary(QString path, QStringList hppFiles);
-    bool compileComponentLibrary(QString libPath, QString extraCFlags="", QString extraLFlags="", bool showDialog=true);
-
-    QString error();
-
-private:
-    QString mErrorMessage;
-};
-
 class CoreLibraryAccess
 {
 public:
@@ -178,6 +157,7 @@ public:
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
     ~CoreSystemAccess();
     void deleteRootSystemPtr(); //!< @todo This is very strange, needed because core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
+    hopsan::ComponentSystem *getCoreSystemPtr();
 
     // Name and type functions
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
@@ -307,7 +287,7 @@ public:
     void loadSimulationState(const QString &filePath, double &rTimeOffset);
 
 private:
-    hopsan::ComponentSystem *getCoreSystemPtr();
+
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
     hopsan::Port* getCorePortPtr(QString componentName, QString portName) const;
 

@@ -55,6 +55,9 @@
 #include "GUIComponent.h"
 #include "GUIPort.h"
 #include "Dialogs/ComponentPropertiesDialog3.h"
+#include "DesktopHandler.h"
+#include "GeneratorUtils.h"
+
 
 SystemContainer::SystemContainer(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -1384,15 +1387,13 @@ void SystemContainer::exportToLabView()
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(gpMainWindowWidget, tr("Export to LabVIEW/SIT"),
-                                  "This will create source code for a LabVIEW/SIT DLL-file from current model. You will need the HopsanCore source code and Visual Studio 2003 to compile it.\nContinue?",
+                                  "This will create source code for a LabVIEW/SIT DLL-file from current model. The  HopsanCore source code is included but you will neee Visual Studio 2003 to compile it.\nContinue?",
                                   QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::No)
         return;
 
     //Open file dialog and initialize the file stream
     QString filePath;
-    //QFileInfo fileInfo;
-    //QFile file;
     filePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Export Project to HopsanRT Wrapper Code"),
                                             gpConfig->getStringSetting(CFG_LABVIEWEXPORTDIR),
                                             tr("C++ Source File (*.cpp)"));
@@ -1401,37 +1402,37 @@ void SystemContainer::exportToLabView()
     QFileInfo file(filePath);
     gpConfig->setStringSetting(CFG_LABVIEWEXPORTDIR, file.absolutePath());
 
-    CoreGeneratorAccess coreGenerator;
-    if (!coreGenerator.generateToLabViewSIT(filePath, this))
+    auto spGenerator = createDefaultGenerator();
+    if (!spGenerator->generateToLabViewSIT(filePath, mpCoreSystemAccess->getCoreSystemPtr()))
     {
-        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+        gpMessageHandler->addErrorMessage("LabView SIT export failed");
     }
 }
 
 void SystemContainer::exportToFMU1_32()
 {
-    exportToFMU("", 1, CoreGeneratorAccess::x86);
+    exportToFMU("", 1, ArchitectureEnumT::x86);
 }
 
 void SystemContainer::exportToFMU1_64()
 {
-    exportToFMU("", 1, CoreGeneratorAccess::x64);
+    exportToFMU("", 1, ArchitectureEnumT::x64);
 }
 
 void SystemContainer::exportToFMU2_32()
 {
-    exportToFMU("", 2, CoreGeneratorAccess::x86);
+    exportToFMU("", 2, ArchitectureEnumT::x86);
 }
 
 void SystemContainer::exportToFMU2_64()
 {
-    exportToFMU("", 2, CoreGeneratorAccess::x64);
+    exportToFMU("", 2, ArchitectureEnumT::x64);
 }
 
 
 
 
-void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAccess::TargetArchitectureT arch)
+void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnumT arch)
 {
     if(savePath.isEmpty())
     {
@@ -1474,17 +1475,30 @@ void SystemContainer::exportToFMU(QString savePath, int version, CoreGeneratorAc
 
     if(!mpModelWidget->isSaved())
     {
-        QMessageBox::information(gpMainWindowWidget, "Model not saved", "Please save your model before exporting an FMU");
+        QMessageBox::information(gpMainWindowWidget, "tr(Model not saved)", "tr(Please save your model before exporting an FMU)");
         return;
     }
 
     //Save model to hmf in export directory
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
-    CoreGeneratorAccess coreGenerator;
-    if (!coreGenerator.generateToFmu(savePath, version, arch, this))
+    auto spGenerator = createDefaultGenerator();
+    spGenerator->setCompilerPath(gpConfig->getCompilerPath(arch));
+
+    HopsanGeneratorGUI::TargetArchitectureT garch;
+    if (arch == ArchitectureEnumT::x64)
     {
-        gpMessageHandler->addErrorMessage(QString("Failed to export FMU. Generator failed: %1").arg(coreGenerator.error()));
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x64;
+    }
+    else
+    {
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x86;
+    }
+    auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
+    auto fmuVersion = static_cast<HopsanGeneratorGUI::FmuVersionT>(version);
+    if (!spGenerator->generateToFmu(savePath, pCoreSystem, fmuVersion, garch))
+    {
+        gpMessageHandler->addErrorMessage("Failed to export FMU");
     }
 }
 
@@ -2002,7 +2016,7 @@ void SystemContainer::exportToSimulink()
     QFileInfo file(savePath);
     gpConfig->setStringSetting(CFG_SIMULINKEXPORTDIR, file.absolutePath());
 
-       //Save xml document
+    // Save xml document
     mpModelWidget->saveTo(savePath+"/"+fileName);
 
 //    int compiler;
@@ -2023,10 +2037,14 @@ void SystemContainer::exportToSimulink()
 //        compiler=3;
 //    }
 
-    CoreGeneratorAccess coreGenerator;
-    if (!coreGenerator.generateToSimulink(savePath, this, pDisablePortLabels->isChecked()))
+    auto spGenerator = createDefaultGenerator();
+    QString modelPath = getModelFileInfo().fileName();
+    auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
+    auto portLabels = pDisablePortLabels->isChecked() ? HopsanGeneratorGUI::UsePortlablesT::DisablePortLables :
+                                                        HopsanGeneratorGUI::UsePortlablesT::EnablePortLabels;
+    if (!spGenerator->generateToSimulink(savePath, modelPath, pCoreSystem, portLabels ))
     {
-        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+        gpMessageHandler->addErrorMessage("Simulink export generator failed");
     }
 
 
@@ -2037,121 +2055,6 @@ void SystemContainer::exportToSimulink()
 //    delete(p32bitRadioButton);
 //    delete(p64bitRadioButton);
 }
-
-
-void SystemContainer::exportToSimulinkCoSim()
-{
-    QDialog *pExportDialog = new QDialog(gpMainWindowWidget);
-    pExportDialog->setWindowTitle("Create Simulink Source Files");
-
-    QLabel *pExportDialogLabel1 = new QLabel(tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console."), pExportDialog);
-    pExportDialogLabel1->setWordWrap(true);
-
-    QGroupBox *pCompilerGroupBox = new QGroupBox(tr("Choose compiler:"), pExportDialog);
-    QRadioButton *pMSVC2008RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2008"));
-    QRadioButton *pMSVC2010RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2010"));
-    pMSVC2008RadioButton->setChecked(true);
-    QVBoxLayout *pCompilerLayout = new QVBoxLayout;
-    pCompilerLayout->addWidget(pMSVC2008RadioButton);
-    pCompilerLayout->addWidget(pMSVC2010RadioButton);
-    pCompilerLayout->addStretch(1);
-    pCompilerGroupBox->setLayout(pCompilerLayout);
-
-    QGroupBox *pArchitectureGroupBox = new QGroupBox(tr("Choose architecture:"), pExportDialog);
-    QRadioButton *p32bitRadioButton = new QRadioButton(tr("32-bit (x86)"));
-    QRadioButton *p64bitRadioButton = new QRadioButton(tr("64-bit (x64)"));
-    p32bitRadioButton->setChecked(true);
-    QVBoxLayout *pArchitectureLayout = new QVBoxLayout;
-    pArchitectureLayout->addWidget(p32bitRadioButton);
-    pArchitectureLayout->addWidget(p64bitRadioButton);
-    pArchitectureLayout->addStretch(1);
-    pArchitectureGroupBox->setLayout(pArchitectureLayout);
-
-    QLabel *pExportDialogLabel2 = new QLabel("Matlab must use the same compiler during compilation.    ", pExportDialog);
-
-    QCheckBox *pDisablePortLabels = new QCheckBox("Disable port labels (for older versions of Matlab)");
-
-    QDialogButtonBox *pExportButtonBox = new QDialogButtonBox(pExportDialog);
-    QPushButton *pExportButtonOk = new QPushButton("Ok", pExportDialog);
-    QPushButton *pExportButtonCancel = new QPushButton("Cancel", pExportDialog);
-    pExportButtonBox->addButton(pExportButtonOk, QDialogButtonBox::AcceptRole);
-    pExportButtonBox->addButton(pExportButtonCancel, QDialogButtonBox::RejectRole);
-
-    QVBoxLayout *pExportDialogLayout = new QVBoxLayout(pExportDialog);
-    pExportDialogLayout->addWidget(pExportDialogLabel1);
-    pExportDialogLayout->addWidget(pCompilerGroupBox);
-    pExportDialogLayout->addWidget(pArchitectureGroupBox);
-    pExportDialogLayout->addWidget(pExportDialogLabel2);
-    pExportDialogLayout->addWidget(pDisablePortLabels);
-    pExportDialogLayout->addWidget(pExportButtonBox);
-    pExportDialog->setLayout(pExportDialogLayout);
-
-    connect(pExportButtonBox, SIGNAL(accepted()), pExportDialog, SLOT(accept()));
-    connect(pExportButtonBox, SIGNAL(rejected()), pExportDialog, SLOT(reject()));
-
-    if(pExportDialog->exec() == QDialog::Rejected)
-    {
-        return;
-    }
-
-    QString fileName;
-    if(!mModelFileInfo.fileName().isEmpty())
-    {
-        fileName = mModelFileInfo.fileName();
-    }
-    else
-    {
-        fileName = "untitled.hmf";
-    }
-
-        //Open file dialog and initialize the file stream
-    QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
-                                                    gpConfig->getStringSetting(CFG_SIMULINKEXPORTDIR),
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
-    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
-    QFileInfo file(savePath);
-    gpConfig->setStringSetting(CFG_SIMULINKEXPORTDIR, file.absolutePath());
-
-
-
-
-    int compiler;
-    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
-    {
-        compiler=0;
-    }
-    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
-    {
-        compiler=1;
-    }
-    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
-    {
-        compiler=2;
-    }
-    else/* if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())*/
-    {
-        compiler=3;
-    }
-
-
-    CoreGeneratorAccess coreGenerator;
-    if (!coreGenerator.generateToSimulinkCoSim(savePath, this, pDisablePortLabels->isChecked(), compiler))
-    {
-        gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
-    }
-
-
-    //Clean up widgets that do not have a parent
-    delete(pDisablePortLabels);
-    delete(pMSVC2008RadioButton);
-    delete(pMSVC2010RadioButton);
-    delete(p32bitRadioButton);
-    delete(p64bitRadioButton);
-}
-
-
 
 
 //! @brief Sets the modelfile info from the file representing this system

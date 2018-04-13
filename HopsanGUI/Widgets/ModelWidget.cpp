@@ -64,6 +64,7 @@
 #include "MessageHandler.h"
 #include "LogDataHandler2.h"
 #include "CoreAccess.h"
+#include "hopsangeneratorgui/hopsangeneratorgui.h"
 
 //Needed for Modelica experiments, move later if necessary
 #include "ModelicaLibrary.h"
@@ -1198,10 +1199,10 @@ void ModelWidget::simulateModelica()
         moFile.write(flatModel.toUtf8());
         moFile.close();
 
-        CoreGeneratorAccess coreGen;
-        if (!coreGen.generateFromModelica(QFileInfo(moFile).absoluteFilePath(), true, 0, true))
+        HopsanGeneratorGUI generator(gpDesktopHandler->getMainPath(), gpMainWindowWidget);
+        if (!generator.generateFromModelica(QFileInfo(moFile).absoluteFilePath(), 0, HopsanGeneratorGUI::CompileT::DoCompile))
         {
-            gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGen.error()));
+            gpMessageHandler->addErrorMessage("Modelica import generator failed");
         }
         qDebug() << flatModel;
 

@@ -50,6 +50,10 @@
 #include "ModelicaEditor.h"
 #include "ProjectTabWidget.h"
 #include "MessageHandler.h"
+#include "Configuration.h"
+#include "DesktopHandler.h"
+
+#include "hopsangeneratorgui/hopsangeneratorgui.h"
 
 //! @todo Ok don't know where I should put this, putting it here for now /Peter
 QString gHopsanCoreVersion = getHopsanCoreVersion();
@@ -805,10 +809,11 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                             // We use the core generator directly to avoid calling the save state code in the library handler it does not seem to be working so well
                             // But since we only need to unload one particular library this should work
                             //! @todo fix the problem with save state
-                            CoreGeneratorAccess coreGenerator;
-                            if (!coreGenerator.compileComponentLibrary(libPath, "", "", true))
+                            HopsanGeneratorGUI generator(gpDesktopHandler->getMainPath(), gpMainWindowWidget);
+                            generator.setCompilerPath(gpConfig->getGCCPath());
+                            if (!generator.compileComponentLibrary(libPath))
                             {
-                                gpMessageHandler->addErrorMessage(QString("Generator failed: %1").arg(coreGenerator.error()));
+                                gpMessageHandler->addErrorMessage("Library compiler failed");
                             }
 
                             // Now reload the library
@@ -876,4 +881,3 @@ void LibraryWidget::getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTree
         getAllSubTreeItems(pParentItem->child(c), rSubItems);
     }
 }
-

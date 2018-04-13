@@ -79,6 +79,12 @@ DEFINES *= HOPSANCORE_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
+# Set hopsangeneratorgui Paths
+INCLUDEPATH *= $${PWD}/../hopsangeneratorgui/include
+LIBS *= -L$${PWD}/../bin -lhopsangeneratorgui$${DEBUG_EXT}
+#--------------------------------------------------------
+
+#--------------------------------------------------------
 # Set SymHop Paths
 INCLUDEPATH *= $${PWD}/../SymHop/include/
 LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
@@ -292,7 +298,8 @@ SOURCES += main.cpp \
     Widgets/TimeOffsetWidget.cpp \
     Dialogs/NumHopScriptDialog.cpp \
     PlotCurveStyle.cpp \
-    Utilities/WebviewWrapper.cpp
+    Utilities/WebviewWrapper.cpp \
+    GeneratorUtils.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -383,7 +390,8 @@ HEADERS += MainWindow.h \
     Widgets/TimeOffsetWidget.h \
     Dialogs/NumHopScriptDialog.h \
     PlotCurveStyle.h \
-    Utilities/WebviewWrapper.h
+    Utilities/WebviewWrapper.h \
+    GeneratorUtils.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp
