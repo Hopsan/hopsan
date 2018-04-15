@@ -595,60 +595,13 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     wrapperTemplateHeaderFile.copy(fileInfo.absoluteDir().path()+"/hopsanrt-wrapper.h");
 
 
-    printMessage("Extracting HopsanCore source code...");
-
-    //Copy HopsanCore files to export directory
-    //qDebug() << "TARGET DIR: " << fileInfo.absoluteDir().path();
-
+    printMessage("Copying HopsanCore source code...");
     if(!this->copyHopsanCoreSourceFilesToDir(fileInfo.absoluteDir().path()))
         return;
+
+    printMessage("Copying component libraries source code...");
     if(!this->copyDefaultComponentCodeToDir(fileInfo.absoluteDir().path()))
         return;
-
-//    QFileInfo sourceCodeFile(mBinPath+"../HopsanCoreSourceCode.zip");
-//    if(sourceCodeFile.exists())
-//    {
-//        QDir zipDir;
-//        zipDir = QDir::cleanPath(mExecPath + "../ThirdParty/7z");
-//    #ifdef _WIN32
-//        QStringList arguments;
-//        arguments << "x" << sourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path()+"/HopsanCore" << "-aoa" << "-phopsanhejsan";
-//        callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());
-//    #else
-//        //! @todo Not verified in Linux
-//        QStringList arguments = QStringList() << sourceCodeFile.absoluteFilePath() << "-d" << fileInfo.absoluteDir().path()+"/HopsanCore" << "-phopsanhejsan";
-//        callProcess("unzip", arguments, fileInfo.absoluteDir().path()+"/HopsanCore");
-//    #endif
-//    }
-//    else
-//    {
-//        printMessage("\nNote: Package with HopsanCore source code could not be found. Source files must be copied to output folder manually before compiling. Contact Hopsan developers for assistance.\n");
-//    }
-
-
-    printMessage("Extracting component libraries source code...");
-
-    QFileInfo componentsSourceCodeFile(mHopsanBinPath+"../componentLibrariesSourceCode.zip");
-    if(componentsSourceCodeFile.exists())
-    {
-        QDir zipDir;
-        zipDir = QDir::cleanPath(mHopsanBinPath + "../Dependencies/tools/7z");
-    #ifdef _WIN32
-        QStringList arguments;
-        arguments << "x" << componentsSourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path() << "-aoa" << "-phopsanhejsan";
-        callProcess(zipDir.path()+"/7za.exe", arguments, zipDir.path());
-    #else
-        //! @todo Not verified in Linux
-        QStringList arguments = QStringList() << componentsSourceCodeFile.absoluteFilePath() << "-d" << fileInfo.absoluteDir().path() << "-phopsanhejsan";
-        callProcess("unzip", arguments, fileInfo.absoluteDir().path());
-    #endif
-    }
-    else
-    {
-        printMessage("Note: Package with component libraries source code could not be found. Source files must be copied to output folder manually before compiling. Contact Hopsan developers for assistance.");
-    }
-    //
-
 
     //! @todo Check if success, otherwise tell user with error message
     printMessage("Finished!");

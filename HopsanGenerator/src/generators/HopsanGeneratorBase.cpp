@@ -1034,7 +1034,7 @@ bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) con
     saveDir.cd("componentLibraries");
     saveDir.cd("defaultLibrary");
 
-    copyDir( QString(mHopsanBinPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
+    copyDir( QString(mHopsanRootPath+"/componentLibraries/defaultLibrary"), saveDir.path() );
 
     QStringList allFiles;
     findAllFilesInFolderAndSubFolders(saveDir.path(),"hpp",allFiles);
