@@ -27,7 +27,7 @@
 #include "HopsanCoreMacros.h"
 #include "compiler_info.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include "CoreUtilities/GeneratorHandler.h"
+#include "hopsangenerator.h"
 #include <assert.h>
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
@@ -61,7 +61,7 @@ Q_DECLARE_METATYPE(bool)
 Q_DECLARE_METATYPE(ComponentSystem*)
 Q_DECLARE_METATYPE(Component*)
 Q_DECLARE_METATYPE(Port*)
-Q_DECLARE_METATYPE(HString)
+Q_DECLARE_METATYPE(std::string)
 Q_DECLARE_METATYPE(Node*)
 
 
@@ -73,9 +73,8 @@ public:
     GeneratorTests()
     {
         qcwd = QDir::currentPath();
-        cwd = qcwd.toStdString().c_str();
-        includePath = cwd+"/../HopsanCore/include/";
-        binPath = cwd+"/../bin/";
+        cwd = qcwd.toStdString();
+        hopsanRoot = cwd+"/../";
 
 #ifdef _WIN32
         //! @todo do not hard-code these
@@ -89,25 +88,17 @@ public:
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
-        mpHandler = new GeneratorHandler();
     }
-
-    ~GeneratorTests()
-     {
-         delete mpHandler;
-     }
 
 private:
     QString qcwd;
-    HString cwd;
-    HString includePath;
-    HString binPath;
+    std::string cwd;
+    std::string hopsanRoot;
 
-    HString gcc32Path;
-    HString gcc64Path;
+    std::string gcc32Path;
+    std::string gcc64Path;
 
     HopsanEssentials mHopsanCore;
-    GeneratorHandler *mpHandler;
 
 private Q_SLOTS:
     void Generator_FMU_Export()
@@ -129,7 +120,8 @@ private Q_SLOTS:
 
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
-        mpHandler->callFmuExportGenerator(cwd+"/fmu1_32/", system, includePath, binPath, gcc32Path, 1, false, false);
+        std::string outpath = cwd+"/fmu1_32/";
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path.c_str(), 1, false, false);
 
 
         args << "-l" << "2";
@@ -145,7 +137,8 @@ private Q_SLOTS:
                  "Failed to generate valid FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
 
         // Run FMUChecker for FMU 2.0 32-bit export
-        mpHandler->callFmuExportGenerator(cwd+"/fmu2_32/", system, includePath, binPath, gcc32Path, 2, false, false);
+        outpath = cwd+"/fmu2_32/";
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path, 2, false, false);
 
         args.clear();
         args << "-l" << "2";
@@ -163,7 +156,8 @@ private Q_SLOTS:
 
 #if defined (HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 64-bit export
-        mpHandler->callFmuExportGenerator(cwd+"/fmu1_64/", system, includePath, binPath, gcc64Path, 1, true, false);
+        std::string outpath = cwd+"/fmu1_64/";
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, true, false);
 
         args.clear();
         args << "-l" << "2";
@@ -179,7 +173,8 @@ private Q_SLOTS:
                  "Failed to generate valid FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
 
         // Run FMUChecker for FMU 2.0 64-bit export
-        mpHandler->callFmuExportGenerator(cwd+"/fmu2_64/", system, includePath, binPath, gcc64Path, 2, true, false);
+        outpath = cwd+"/fmu2_64/";
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, true, false);
 
         args.clear();
         args << "-l" << "2";
@@ -229,7 +224,8 @@ private Q_SLOTS:
         QFETCH(ComponentSystem*, system);
 
         //Generate S-function
-        mpHandler->callSimulinkExportGenerator(cwd+"/simulink/", "unittestmodel_export.hmf", system, false, includePath, binPath, false);
+        std::string outpath = cwd+"/simulink/";
+        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, false, hopsanRoot.c_str(),  false);
 
         QDir coreDir(qcwd+"/simulink/HopsanCore");
         QVERIFY2(coreDir.exists() && !coreDir.entryList().isEmpty(),
@@ -262,7 +258,8 @@ private Q_SLOTS:
         QFETCH(ComponentSystem*, system);
 
         //Generate S-function
-        mpHandler->callLabViewSITGenerator(cwd+"/labview/unittestmodel_export.cpp", system, includePath, binPath, false);
+        std::string outfile = cwd+"/labview/unittestmodel_export.cpp";
+        callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str(), false);
 
         QVERIFY2(QFile::exists(qcwd+"/labview/codegen.c"),
                  "Failed to generate LabVIEW files, all files not found.");
@@ -303,8 +300,8 @@ private Q_SLOTS:
 
     void Generator_Modelica()
     {
-        QFETCH(HString, code);
-        QFETCH(HString, name);
+        QFETCH(std::string, code);
+        QFETCH(std::string, name);
 
         //Generate FMU
         QFile moFile(qcwd+"/modelica/motest.mo");
@@ -312,24 +309,24 @@ private Q_SLOTS:
         moFile.write(QString(code.c_str()).toUtf8());
         moFile.close();
 
-        HString moFilePath = QFileInfo(moFile).absoluteFilePath().toStdString().c_str();
-        HString gccPath;
+        std::string moFilePath = QFileInfo(moFile).absoluteFilePath().toStdString();
+        std::string gccPath;
 #ifdef HOPSANCOMPILED64BIT
         gccPath = gcc64Path;
 #else
         gccPath = gvv32Path;
 #endif
-        mpHandler->callModelicaGenerator(moFilePath, gccPath, false, 0, true, includePath, binPath);
+        callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), false, 0, true, hopsanRoot.c_str());
 
-//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+HString(LIBEXT)).c_str()),
+//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(LIBEXT)).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");
         QWARN("Modelica generator test is disabled");
     }
 
     void Generator_Modelica_data()
     {
-        QTest::addColumn<HString>("code");
-        QTest::addColumn<HString>("name");
+        QTest::addColumn<std::string>("code");
+        QTest::addColumn<std::string>("name");
 
         const char* moCode = "model MyLaminarOrifice \"Hydraulic Laminar Orifice\"\n"
               "   annotation(hopsanCqsType = \"Q\");\n"
@@ -345,7 +342,7 @@ private Q_SLOTS:
         removeDir(QDir::currentPath()+"/modelica");
         QDir().mkpath(QDir::currentPath()+"/modelica");
 
-        QTest::newRow("0") << HString(moCode) << HString("MyLaminarOrifice");
+        QTest::newRow("0") << std::string(moCode) << std::string("MyLaminarOrifice");
     }
 
     void examineCode(QString code, QStringList &errors)

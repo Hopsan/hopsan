@@ -18,8 +18,15 @@ TEMPLATE = app
 
 
 
-INCLUDEPATH += $${PWD}/../../HopsanCore/include/
+INCLUDEPATH += $${PWD}/../../HopsanCore/include
+INCLUDEPATH *= $${PWD}/../../HopsanGenerator/include
 LIBS += -L$${PWD}/../../bin -lhopsancore$${DEBUG_EXT}
+LIBS *= -lhopsangenerator$${DEBUG_EXT}
+LIBS *= -lsymhop$${DEBUG_EXT}
+include($${PWD}/../../Dependencies/fmilibrary.pri)
+DEFINES *= HOPSANGENERATOR_DLLIMPORT
+
+
 
 unix{
 QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
