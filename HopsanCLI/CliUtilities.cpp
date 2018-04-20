@@ -69,6 +69,14 @@ void printWarningMessage(const std::string &rWarning, bool silent)
     setTerminalColor(Reset);
 }
 
+void printMessage(const std::string &rMessage, bool silent)
+{
+    if(silent) return;
+
+    setTerminalColor(Reset);
+    cout << rMessage << endl;
+}
+
 //! @brief Prints a message with green color (resets color to defaul after)
 //! @param[in] color The text color for the message
 //! @param[in] rMessage The message

@@ -62,11 +62,12 @@ class HOPSANGENERATOR_DLLAPI HopsanGeneratorBase
 {
 public:
     enum SolverT {NumericalIntegration, BilinearTransform};
+    using MessageHandlerT = std::function<void(const char*, const char, void*)>;
 
     HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
     virtual ~HopsanGeneratorBase();
 
-    void setMessageHandler(std::function<void(const char* msg, const char type)> messageHandler);
+    void setMessageHandler(MessageHandlerT messageHandler, void* pMessageObject=nullptr);
 
     void setOutputPath(const QString &path);
 
@@ -102,8 +103,6 @@ protected:
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
     void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
 
-    std::function<void (const char *, const char)> mMessageHandler;
-
     QString mHopsanRootPath;
     QString mHopsanCoreIncludePath;
     QString mHopsanBinPath;
@@ -112,8 +111,9 @@ protected:
     QString mOutputPath;
 
 private:
-
-    bool mShowMessages;
+    bool mShowMessages = true;
+    MessageHandlerT mMessageHandler = nullptr;
+    void* mpMessageHandlerObject = nullptr;
 
 };
 

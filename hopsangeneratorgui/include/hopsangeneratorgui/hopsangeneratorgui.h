@@ -46,15 +46,11 @@ public:
     bool compileComponentLibrary(const QString& libPath, const QString& extraCFlags="", const QString& extraLFlags="");
 
 
-    void printMessage(const char* message, const char type);
     void printMessage(const QString& msg, const char type='I');
-    void printMessage(const QString& msg, const QColor& color);
     void printErrorMessage(const QString& msg);
     void printWarningMessage(const QString& msg);
 
 private:
-    void generateDone(bool didSucceed);
-    void createWidget();
     std::unique_ptr<HopsanGeneratorGUIPrivateImpl> mPrivates;
 };
 

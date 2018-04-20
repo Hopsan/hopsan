@@ -157,7 +157,7 @@ private Q_SLOTS:
 #if defined (HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 64-bit export
         std::string outpath = cwd+"/fmu1_64/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, true, false);
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, true);
 
         args.clear();
         args << "-l" << "2";
@@ -174,7 +174,7 @@ private Q_SLOTS:
 
         // Run FMUChecker for FMU 2.0 64-bit export
         outpath = cwd+"/fmu2_64/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, true, false);
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, true);
 
         args.clear();
         args << "-l" << "2";
@@ -225,7 +225,7 @@ private Q_SLOTS:
 
         //Generate S-function
         std::string outpath = cwd+"/simulink/";
-        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, false, hopsanRoot.c_str(),  false);
+        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, false, hopsanRoot.c_str());
 
         QDir coreDir(qcwd+"/simulink/HopsanCore");
         QVERIFY2(coreDir.exists() && !coreDir.entryList().isEmpty(),
@@ -259,7 +259,7 @@ private Q_SLOTS:
 
         //Generate S-function
         std::string outfile = cwd+"/labview/unittestmodel_export.cpp";
-        callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str(), false);
+        callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str());
 
         QVERIFY2(QFile::exists(qcwd+"/labview/codegen.c"),
                  "Failed to generate LabVIEW files, all files not found.");
@@ -316,7 +316,7 @@ private Q_SLOTS:
 #else
         gccPath = gvv32Path;
 #endif
-        callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), false, 0, true, hopsanRoot.c_str());
+        callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), nullptr, nullptr, 0, true, hopsanRoot.c_str());
 
 //        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(LIBEXT)).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");

@@ -19,7 +19,12 @@
 #define DEBUG_SUFFIX ""
 #endif
 
+class WidgetLock;
+
 namespace {
+
+class HopsanGeneratorWidget;
+
 class CApiStringList
 {
 public:
@@ -58,10 +63,10 @@ private:
     std::vector<std::string> strings;
     std::vector<const char*> charptr_array;
 };
-}
 
 class HopsanGeneratorWidget : public QWidget
 {
+    friend WidgetLock;
 public:
     HopsanGeneratorWidget(QWidget *parent, bool autoCloseOnSuccess=false)
         : QWidget(parent, Qt::Window), mAutoCloseOnSuccess(autoCloseOnSuccess)
@@ -91,13 +96,17 @@ public:
         show();
     }
 
-    void finalize(bool didSucceed)
+    void printMessage(const QString &msg, const char type)
     {
-        if (mAutoCloseOnSuccess && didSucceed) {
-            close();
+        QColor color;
+        if (type == 'W') {
+            color = "Orange";
+        } else if (type == 'E') {
+            color = "Red";
         } else {
-            mpCloseButton->setEnabled(true);
+            color = "Black";
         }
+        printMessage(msg, color);
     }
 
     void printMessage(const QString &msg, const QColor &color)
@@ -112,30 +121,79 @@ public:
     }
 
 private:
+    void finalize(bool didSucceed)
+    {
+        if (mAutoCloseOnSuccess && didSucceed) {
+            close();
+        } else {
+            mpCloseButton->setEnabled(true);
+        }
+    }
+
     bool mAutoCloseOnSuccess;
     QTextEdit* mpTextEdit;
     QPushButton* mpCloseButton;
 };
 
 
+using MessageHandler_t = void(const char* msg, const char type, void*);
+void messageHandler(const char* msg, const char type, void* pObj)
+{
+    auto pWidget = static_cast<HopsanGeneratorWidget*>(pObj);
+    pWidget->printMessage(QString(msg), type);
+}
+}
+
+
+
+class WidgetLock {
+
+public:
+    WidgetLock(QWidget* parent)
+    {
+        mpWidget = new ::HopsanGeneratorWidget(parent);
+    }
+
+    ~WidgetLock()
+    {
+        mpWidget->finalize(mDidSucceed);
+    }
+
+    WidgetLock(const WidgetLock& other) = delete;
+    void operator=(const WidgetLock& other) = delete;
+
+
+    void setDidSucceed(bool tf)
+    {
+        mDidSucceed = tf;
+    }
+
+    ::HopsanGeneratorWidget* widget()
+    {
+        return mpWidget.data();
+    }
+
+private:
+    bool mDidSucceed=false;
+    QPointer<::HopsanGeneratorWidget> mpWidget;
+};
+
 class HopsanGeneratorGUIPrivateImpl
 {
 public:
-    void createNewWidget(QWidget* parent)
+    QSharedPointer<WidgetLock> createNewWidget()
     {
-        // If we switch widget, enable close button on previous one
-        if (mpCurrentWidget) {
-            mpCurrentWidget->finalize(false);
-        }
         // Create a new widget, Note! it shall delete itself on close
-        mpCurrentWidget = new HopsanGeneratorWidget(parent);
+        auto widgetlock = QSharedPointer<WidgetLock>(new WidgetLock(mpWidgetParent));
+        mpCurrentWidget = widgetlock->widget();
+        return widgetlock;
     }
 
     std::string hopsanRoot;
     std::string compilerPath;
     QLibrary mGeneratorLibrary;
-    QPointer<QWidget> mpWidgetParent=nullptr;
-    QPointer<HopsanGeneratorWidget> mpCurrentWidget=nullptr;
+    QPointer<QWidget> mpWidgetParent;
+    QPointer<HopsanGeneratorWidget> mpCurrentWidget;
 };
 
 HopsanGeneratorGUI::HopsanGeneratorGUI(const QString& hopsanInstallPath, QWidget* pWidgetParent)
@@ -182,7 +240,7 @@ void HopsanGeneratorGUI::setCompilerPath(const QString& compilerPath)
 
 bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const int solver, const CompileT compile)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
 //extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(const char* outputPath, const char* compilerPath, bool quiet=false, int solver=0, bool compile=false, const char* hopsanInstallPath="")
@@ -195,38 +253,35 @@ bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const
     auto& compilerPath = mPrivates->compilerPath;
     bool doCompile = (compile == CompileT::DoCompile);
 
-    using ModelicaImportFunction_t = void(const char*, const char*, bool quiet, int, bool, const char*);
+    using ModelicaImportFunction_t = void(const char*, const char*, MessageHandler_t, void*, int, bool, const char*);
     auto func = (ModelicaImportFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
-    bool generatedOK;
+    bool generatedOK = false;
     if (func)
     {
-        func(mofile.c_str(), compilerPath.c_str(), false, solver, doCompile, hopsanRoot.c_str());
+        func(mofile.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(lw->widget()), solver, doCompile, hopsanRoot.c_str());
         generatedOK = true;
     }
     else
     {
         printErrorMessage(QString("Could not load: %1").arg(functionName));
-        generatedOK = false;
     }
 
-    generateDone(generatedOK);
     return generatedOK;
 }
 
 bool HopsanGeneratorGUI::generateFromFmu(const QString& fmuFilePath, const QString& destination)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
     QFileInfo fmuFileInfo(fmuFilePath);
     QString fmuFileName = fmuFileInfo.fileName();
     fmuFileName.chop(4);
     QDir importDestination(destination);
-    bool generatedOK;
+    bool generatedOK = false;
     if(importDestination.exists())
     {
         printErrorMessage(QString("Destination already exist %1").arg(destination));
-        generatedOK =  false;
     }
     else
     {
@@ -236,27 +291,26 @@ bool HopsanGeneratorGUI::generateFromFmu(const QString& fmuFilePath, const QStri
         auto& hopsanRoot = mPrivates->hopsanRoot;
         auto& compilerPath = mPrivates->compilerPath;
 
-        using FmuImportFunction_t = void(const char*, const char*, const char*, const char*, bool);
+        using FmuImportFunction_t = void(const char*, const char*, const char*, const char*, MessageHandler_t, void*);
         auto func = (FmuImportFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
         if (func)
         {
-            func(fmu.c_str(), dst.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), false);
+            func(fmu.c_str(), dst.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
             generatedOK = true;
         }
         else
         {
             printErrorMessage(QString("Could not load: %1").arg(functionName));
-            generatedOK = false;
         }
     }
-    generateDone(generatedOK);
+
     return generatedOK;
 }
 
 bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::ComponentSystem* pSystem,
                                        const FmuVersionT version, const TargetArchitectureT architecture)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
     constexpr auto functionName = "callFmuExportGenerator";
@@ -266,21 +320,19 @@ bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::Compon
     int arch =  (architecture == TargetArchitectureT::x64) ? 64 : 32;
 
 //callFmuExportGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, const char* compilerPath, int version=2, int architecture=64, bool quiet=false)
-    using FmuExportFunction_t = void(const char*, hopsan::ComponentSystem*, const char*, const char*, int, int, bool);
+    using FmuExportFunction_t = void(const char*, hopsan::ComponentSystem*, const char*, const char*, int, int, MessageHandler_t, void*);
     auto func = (FmuExportFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
-    bool generatedOK;
+    bool generatedOK = false;
     if (func)
     {
-        func(outpath.c_str(), pSystem, hopsanRoot.c_str(), compilerPath.c_str(), static_cast<int>(version), arch, false);
+        func(outpath.c_str(), pSystem, hopsanRoot.c_str(), compilerPath.c_str(), static_cast<int>(version), arch, &messageHandler, static_cast<void*>(lw->widget()));
         generatedOK = true;
     }
     else
     {
         printErrorMessage(QString("Could not load: %1").arg(functionName));
-        generatedOK = false;
     }
 
-    generateDone(generatedOK);
     return generatedOK;
 }
 
@@ -288,7 +340,7 @@ bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::Compon
 bool HopsanGeneratorGUI::generateToSimulink(const QString& outputPath, const QString& modelPath,
                                             hopsan::ComponentSystem *pSystem, const UsePortlablesT portLabels)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
 //    extern "C" HOPSANGENERATOR_DLLAPI void callSimulinkExportGenerator(const char* outputPath, const char* modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels, const char* hopsanInstallPath, bool quiet=false)
@@ -301,28 +353,26 @@ bool HopsanGeneratorGUI::generateToSimulink(const QString& outputPath, const QSt
     auto& hopsanRoot = mPrivates->hopsanRoot;
     bool disablePortLabels = (portLabels == UsePortlablesT::DisablePortLables);
 
-    using SimulinkExportFunction_t = void(const char*, const char*,  hopsan::ComponentSystem*, bool, const char*, bool);
+    using SimulinkExportFunction_t = void(const char*, const char*,  hopsan::ComponentSystem*, bool, const char*, MessageHandler_t, void*);
     auto func = (SimulinkExportFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
-    bool generatedOK;
+    bool generatedOK = false;
     if (func)
     {
-        func(outpath.c_str(), modelpath.c_str(), pSystem, disablePortLabels, hopsanRoot.c_str(), false);
+        func(outpath.c_str(), modelpath.c_str(), pSystem, disablePortLabels, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
         generatedOK = true;
     }
     else
     {
         printErrorMessage(QString("Could not load: %1").arg(functionName));
-        generatedOK = false;
     }
 
-    generateDone(generatedOK);
     return generatedOK;
 }
 
 
 bool HopsanGeneratorGUI::generateToLabViewSIT(const QString& outputPath, hopsan::ComponentSystem *pSystem)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 //    extern "C" HOPSANGENERATOR_DLLAPI void callLabViewSITGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, bool quiet=false)
 
@@ -330,28 +380,26 @@ bool HopsanGeneratorGUI::generateToLabViewSIT(const QString& outputPath, hopsan:
     auto outpath = outputPath.toStdString();
     auto& hopsanRoot = mPrivates->hopsanRoot;
 
-    using LabViewSITExportFunction_t = void(const char*, hopsan::ComponentSystem*, const char*, bool);
+    using LabViewSITExportFunction_t = void(const char*, hopsan::ComponentSystem*, const char*, MessageHandler_t, void*);
     auto func = (LabViewSITExportFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
-    bool generatedOK;
+    bool generatedOK = false;
     if (func)
     {
-        func(outpath.c_str(), pSystem, hopsanRoot.c_str(), false);
+        func(outpath.c_str(), pSystem, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
         generatedOK = true;
     }
     else
     {
         printErrorMessage(QString("Could not load: %1").arg(functionName));
-        generatedOK = false;
     }
 
-    generateDone(generatedOK);
     return generatedOK;
 }
 
 
 bool HopsanGeneratorGUI::generateFromCpp(const QString& hppFile, const CompileT compile)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
 //    extern "C" HOPSANGENERATOR_DLLAPI? void callCppGenerator(const char* hppPath, const char* compilerPath, bool compile=false, const char* hopsanInstallPath="")
@@ -364,28 +412,26 @@ bool HopsanGeneratorGUI::generateFromCpp(const QString& hppFile, const CompileT 
     bool doCompile = (compile == CompileT::DoCompile);
 
 
-    using CppGeneratorFunction_t = void(const char*, const char*, bool, const char*);
+    using CppGeneratorFunction_t = void(const char*, const char*, bool, const char*, MessageHandler_t, void*);
     auto func = (CppGeneratorFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
-    bool generatedOK;
+    bool generatedOK = false;
     if (func)
     {
-        func(hppfile.c_str(), compilerPath.c_str(), doCompile, hopsanRoot.c_str());
+        func(hppfile.c_str(), compilerPath.c_str(), doCompile, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
         generatedOK = true;
     }
     else
     {
         printErrorMessage(QString("Could not load: %1").arg(functionName));
-        generatedOK = false;
     }
 
-    generateDone(generatedOK);
     return generatedOK;
 }
 
 
 bool HopsanGeneratorGUI::generateLibrary(const QString& outputPath, const QStringList& hppFiles)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
 //    extern "C" HOPSANGENERATOR_DLLAPI void callLibraryGenerator(const char* outputPath, std::vector<hopsan::HString> hppFiles, bool quiet=false)
@@ -393,29 +439,27 @@ bool HopsanGeneratorGUI::generateLibrary(const QString& outputPath, const QStrin
     constexpr auto functionName = "callLibraryGenerator";
     auto outpath = outputPath.toStdString();
 
-    using GenerateLibraryFunction_t = void(const char*, const char* const*, size_t,  bool);
+    using GenerateLibraryFunction_t = void(const char*, const char* const*, size_t, MessageHandler_t, void*);
     auto func = (GenerateLibraryFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
-    bool generatedOK;
+    bool generatedOK = false;
     if (func)
     {
         CApiStringList hppfiles(hppFiles);
-        func(outpath.c_str(), hppfiles.data(), hppfiles.size(),  false);
+        func(outpath.c_str(), hppfiles.data(), hppfiles.size(), &messageHandler, static_cast<void*>(lw->widget()));
         generatedOK = true;
     }
     else
     {
         printErrorMessage(QString("Could not load: %1").arg(functionName));
-        generatedOK = false;
     }
 
-    generateDone(generatedOK);
     return generatedOK;
 }
 
 bool HopsanGeneratorGUI::compileComponentLibrary(const QString& libPath, const QString& extraCFlags,
                                                  const QString& extraLFlags)
 {
-    createWidget();
+    auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
     //   extern "C" HOPSANGENERATOR_DLLAPI void callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, bool quiet=false)
@@ -428,47 +472,27 @@ bool HopsanGeneratorGUI::compileComponentLibrary(const QString& libPath, const Q
     auto& hopsanRoot = mPrivates->hopsanRoot;
     auto& compilerPath = mPrivates->compilerPath;
 
-    using CompileLibraryFunction_t = void(const char*, const char*, const char*, const char*, const char*, bool);
+    using CompileLibraryFunction_t = void(const char*, const char*, const char*, const char*, const char*, MessageHandler_t, void*);
     auto func = (CompileLibraryFunction_t*) mPrivates->mGeneratorLibrary.resolve(functionName);
-    bool generatedOK;
+    bool generatedOK = false;
     if (func)
     {
-        func(libpath.c_str(), cflags.c_str(), lflags.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), false);
+        func(libpath.c_str(), cflags.c_str(), lflags.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
         generatedOK = true;
     }
     else
     {
         printErrorMessage(QString("Could not load: %1").arg(functionName));
-        generatedOK = false;
     }
 
-    generateDone(generatedOK);
     return generatedOK;
-}
-
-void HopsanGeneratorGUI::printMessage(const char *message, const char type)
-{
-    printMessage(QString(message), type);
-}
-
-void HopsanGeneratorGUI::printMessage(const QString &msg, const QColor &color)
-{
-    if (mPrivates->mpCurrentWidget) {
-        mPrivates->mpCurrentWidget->printMessage(msg, color);
-    }
 }
 
 void HopsanGeneratorGUI::printMessage(const QString &msg, const char type)
 {
-    QColor color;
-    if (type == 'W') {
-        color = "Orange";
-    } else if (type == 'E') {
-        color = "Red";
-    } else {
-        color = "Black";
+    if (mPrivates->mpCurrentWidget) {
+        mPrivates->mpCurrentWidget->printMessage(msg, type);
     }
-    printMessage(msg, color);
 }
 
 void HopsanGeneratorGUI::printErrorMessage(const QString &msg)
@@ -479,17 +503,4 @@ void HopsanGeneratorGUI::printErrorMessage(const QString &msg)
 void HopsanGeneratorGUI::printWarningMessage(const QString& msg)
 {
     printMessage(msg, 'W');
-}
-
-void HopsanGeneratorGUI::generateDone(bool didSucceed)
-{
-    if (mPrivates->mpCurrentWidget) {
-        mPrivates->mpCurrentWidget->finalize(didSucceed);
-    }
-
-}
-
-void HopsanGeneratorGUI::createWidget()
-{
-    mPrivates->createNewWidget(mPrivates->mpWidgetParent);
 }

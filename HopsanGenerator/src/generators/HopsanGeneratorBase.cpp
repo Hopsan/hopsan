@@ -57,8 +57,7 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath) :
-    mMessageHandler(default_message_handler)
+HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
 {
     mHopsanRootPath = hopsanInstallPath;
     mHopsanCoreIncludePath = mHopsanRootPath+"/HopsanCore/include";
@@ -86,20 +85,17 @@ HopsanGeneratorBase::~HopsanGeneratorBase()
     // Do nothing right now
 }
 
-void HopsanGeneratorBase::setMessageHandler(std::function<void (const char *, char)> messageHandler)
+void HopsanGeneratorBase::setMessageHandler(std::function<void (const char*, const char, void*)> messageHandler, void* pMessageObject)
 {
     mMessageHandler = messageHandler;
+    mpMessageHandlerObject = pMessageObject;
 }
 
 void HopsanGeneratorBase::printMessage(const QString &msg, const QChar &type) const
 {
-    if(mShowMessages)
+    if(mShowMessages && mMessageHandler)
     {
-        mMessageHandler(msg.toStdString().c_str(), type.toLatin1());
-    }
-    else
-    {
-        qDebug() << msg;
+        mMessageHandler(msg.toStdString().c_str(), type.toLatin1(), mpMessageHandlerObject);
     }
 }
 

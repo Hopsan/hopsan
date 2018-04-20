@@ -32,6 +32,19 @@
 #include "hopsangenerator.h"
 #endif
 
+namespace {
+    void messageHandler(const char* msg, const char type, void* pDummy)
+    {
+        if (type == 'E') {
+            printErrorMessage(msg);
+        } else if (type == 'W') {
+            printWarningMessage(msg);
+        } else {
+            printMessage(msg);
+        }
+    }
+}
+
 bool buildComponentLibrary(const std::string &rLibraryXML, std::string &rOutput)
 {
 #if defined(HOPSANCLI_USEGENERATOR)
@@ -40,7 +53,7 @@ bool buildComponentLibrary(const std::string &rLibraryXML, std::string &rOutput)
     constexpr auto lflags = "";
     constexpr auto compilerPath = "";
 
-    callComponentLibraryCompiler(rLibraryXML.c_str(), cflags, lflags, hopsanRootPath.c_str(), compilerPath, false);
+    callComponentLibraryCompiler(rLibraryXML.c_str(), cflags, lflags, hopsanRootPath.c_str(), compilerPath, &messageHandler, nullptr);
     return true;
 #else
     printErrorMessage("This HopsanCLI is not built with HopsanGenerator support");

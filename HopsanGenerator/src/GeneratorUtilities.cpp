@@ -723,10 +723,3 @@ bool matchOSString(QString os)
         return false;
     }
 }
-
-
-void default_message_handler(const char *msg, const char type)
-{
-    Q_UNUSED(type);
-    std::cout << msg << std::endl;
-}

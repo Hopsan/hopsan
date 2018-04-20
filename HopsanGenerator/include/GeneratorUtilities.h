@@ -84,6 +84,4 @@ private:
     QTextStream* mpQTextSream;
 };
 
-void default_message_handler(const char* msg, const char type);
-
 #endif // GENERATORUTILITIES_H
