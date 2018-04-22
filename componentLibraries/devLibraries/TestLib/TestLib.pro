@@ -26,7 +26,7 @@ include(hopsanDebugReleaseCompile.prf)
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    TestLib.cc
+    TestLib.cpp
 
 HEADERS += \
     Hydraulic/HydraulicComponentsInComponentTest.hpp \

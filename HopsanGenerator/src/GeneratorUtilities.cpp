@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ComponentGeneratorUtilities.cc
+//! @file   ComponentGeneratorUtilities.cpp
 //! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-01-08
 //!
@@ -285,7 +285,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
         // If no cc files were specified then add at least the lib file
         if (ccFiles.isEmpty())
         {
-            ccFiles.append(libElement.text()+".cc");
+            ccFiles.append(libElement.text()+".cpp");
         }
 
         xmlFile.close();
@@ -294,7 +294,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
     else if (QFileInfo(path).isDir())
     {
         libFile = QString(LIBPREFIX)+QDir(path).dirName();
-        ccFiles = QDir(path).entryList(QStringList() << "*.cc");
+        ccFiles = QDir(path).entryList(QStringList() << "*.cpp");
         libRootDir = path;
     }
     else
@@ -344,7 +344,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 //! @brief Calls GCC or MinGW compiler with specified parameters
 //! @param wdPath Absolute path where compiler shall be run
 //! @param o Objective file name (without file extension)
-//! @param srcFiles List with source files, example: "file1.cpp file2.cc"
+//! @param srcFiles List with source files, example: "file1.cpp file2.cpp"
 //! @param inclPaths Include paths, example: "-Ipath1 -Ipath2"
 //! @param cflags Compiler flags
 //! @param lflags Link paths and libs, example: "-Lpath1 -lfile1 -lfile2"
@@ -989,7 +989,7 @@ QStringList listHopsanCoreSourceFiles(const QString rootPath)
     findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/src", "cpp", allFiles);
     findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cc", allFiles);
     findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/src", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/src", "cpp", allFiles);
     allFiles << rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 
     QDir rootDir(rootPath);
@@ -1031,7 +1031,7 @@ QStringList listDefaultLibrarySourceFiles(const QString rootPath)
     QStringList allFiles;
     //! @todo handle external internal library
     // Now only internal
-    allFiles << rootPath+"/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc";
+    allFiles << rootPath+"/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp";
 
     QDir rootDir(rootPath);
 

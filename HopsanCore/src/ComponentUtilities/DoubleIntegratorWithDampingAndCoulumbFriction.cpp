@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   DoubleIntegratorWithDampingAndCoulumbFriction.cc
+//! @file   DoubleIntegratorWithDampingAndCoulumbFriction.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2011-08-03
 //!

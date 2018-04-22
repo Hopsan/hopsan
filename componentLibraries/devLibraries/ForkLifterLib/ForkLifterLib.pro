@@ -26,7 +26,7 @@ include(hopsanDebugReleaseCompile.prf)
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    ForkLifterLib.cc
+    ForkLifterLib.cpp
 
 HEADERS += \
     code/Forks.hpp

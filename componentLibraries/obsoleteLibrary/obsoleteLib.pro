@@ -26,7 +26,7 @@ include(hopsanDebugReleaseCompile.prf)
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    obsoleteLib.cc
+    obsoleteLib.cpp
 
 HEADERS += \
     Hydraulic/HydraulicComponentsInComponentTest.hpp \

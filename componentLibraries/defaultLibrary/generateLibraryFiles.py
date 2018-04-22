@@ -265,7 +265,7 @@ def generateRootFiles(root_dir):
     emmheaders = root_dir.emmediateHeaders()
     emmcci = root_dir.emmediateCCIs()
     rootccfiles = list()
-    #rootccfiles.append('Component.cc')
+    #rootccfiles.append('Component.cpp')
 
     generateCCIFileForComponentRegistration(root_dir.dirPath, 'Components.cci', root_dir.typeNames, emmcci)
     generateHeaderFileForComponentHeaderInclusion(root_dir.dirPath, 'Components.h', emmheaders+root_dir.compHeaders)

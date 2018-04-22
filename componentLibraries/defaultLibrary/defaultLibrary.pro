@@ -46,8 +46,8 @@ DEFINES *= _USE_MATH_DEFINES
 HEADERS += \
 
 SOURCES += \
-    defaultComponentLibraryInternal.cc \
-    defaultComponentLibrary.cc
+    defaultComponentLibraryInternal.cpp \
+    defaultComponentLibrary.cpp
 
 OTHER_FILES += \
 

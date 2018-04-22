@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Parameters.cc
+//! @file   Parameters.cpp
 //! @author FluMeS
 //! @date   2012-01-05
 //! @brief Contains the parameter and parameters classes

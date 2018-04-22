@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   defaultComponentLibraryInternal.cc
+//! @file   defaultComponentLibraryInternal.cpp
 //! @author FluMeS
 //! @date   2012-01-13
 //! @brief Contains the register_default_components function that registers all built in components

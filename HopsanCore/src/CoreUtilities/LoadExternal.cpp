@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   LoadExternal.cc
+//! @file   LoadExternal.cpp
 //! @author <peter.nordin@liu.se>
 //! @date   2009-12-22
 //!

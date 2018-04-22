@@ -23,38 +23,29 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   defaultComponentLibrary.cc
-//! @author FluMeS
-//! @date   2010-01-08
-//! @brief Contains the register_contents function that registers all built in components
+//! @file   extensionLibrary.cpp
 //!
 //$Id$
 
-#include "defaultComponentLibraryInternal.h"
-using namespace hopsan;
+// Include automatically generated header code for all default library components
+#include "Component.h"
+#include "HopsanCoreVersion.h"
+#include "Components.h"
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
+extern "C" DLLEXPORT void register_contents(hopsan::ComponentFactory* pComponentFactory, hopsan::NodeFactory* pNodeFactory)
 {
-    // ========== Register Components ==========
-    // Use the registerCreatorFunction(KeyValue, Function) in the component factory to register components
-    // TheKeyValue is a text string with the TypeName of the component.
-    // This value must be unique for every component in Hopsan.
-    // If a typename is already in use, your component will not be added.
-    // Suggestion, let the KeyValue (TypeName) be the same as your Class name
-
-    hopsan::register_default_components(pComponentFactory);
+    // Include automatically generated registration code for all default library components
+    #include "Components.cci"
 
     // ========== Register Custom Nodes (if any) ==========
-    // These are built into Hopsan Core
     HOPSAN_UNUSED(pNodeFactory)
-
 }
 
 // When you load your model into Hopsan, the get_hopsan_info() function bellow will be called
-// This information is used to make sure that your component and the hopsan core have the same version
-extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
+// This information is used to make sure that your component and the Hopsan core have the same version
+extern "C" DLLEXPORT void get_hopsan_info(hopsan::HopsanExternalLibInfoT *pHopsanExternalLibInfo)
 {
-    pHopsanExternalLibInfo->libName = (char*)"HopsanDefaultComponentLibrary";
+    pHopsanExternalLibInfo->libName = (char*)"HopsanExtensionLibrary";
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
     pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
 }

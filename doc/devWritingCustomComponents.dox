@@ -56,7 +56,7 @@ There needs to be one .xml file for every component in the library but .svg file
 If you have access to the component library source code, some additional important files should also be mentioned.
 -# A Qt project file .\b pro, used to generate a so called Makefile (build script) that is needed for building the code into the .dll. \n
    This file is only required if you build your library manually through QtCreator (or with qmake directly).
--# One \e "libraryName".\b cc file. This is the source code file that is compiled into the .dll.
+-# One \e "libraryName".\b cpp file. This is the source code file that is compiled into the .dll.
 -# One or several \e "componentName".\b hpp files containing the source code of each individual component.
 
 The header-only .\b hpp files contains the source code for each components, see \ref devWritingCppComponentsPageTheComponentPage. \n
@@ -76,15 +76,15 @@ A few modifications are required in this file. First of all the \b INCLUDEPATH m
 \b exampleComponentLib.pro
 \verbinclude exampleComponentLib.pro
 
-\section devWritingComponentInCppPage-library_cc_file The Component Library Source File
+\section devWritingComponentInCppPage-library_cpp_file The Component Library Source File
 This file contains code that is used to register you library components in the HopsanCore. A few modifications are required. 
--# First of all, all component header code files must be included. (The `#include` directive will actually in-place copy the included files into the cc file prior to compilation)
+-# First of all, all component header code files must be included. (The `#include` directive will actually in-place copy the included files into the cpp file prior to compilation)
 -# Second, each component needs to be registered in the HopsanCore by the "`pComponentFactory->registerCreatorFunction("KeyValue", CreatorFunction)`" lines.\n
 The \e "KeyValue" argument must be a unique \e TypeName that identifies you component. The \e CreatorFunction argument is the \b Creator() function the must exist in each component.
 -# Third, Make sure that you write a unique libName (as a string) in the `get_hopsan_info` function. Leave the two last lines as they are.
 
-\b exampleComponentLib.cc
-\dontinclude exampleComponentLib.cc
+\b exampleComponentLib.cpp
+\dontinclude exampleComponentLib.cpp
 \skipline //
 \until }
 \until }
@@ -221,7 +221,7 @@ __The less simple way:__ \n
 
 __Compiling and Linking:__ \n
 
-The compilation goes through two phases, first the .cc file(s) are compiled and then they are linked into a shared object .dll, .so or .dynlib file that will appear in your library directory.
+The compilation goes through two phases, first the .cpp file(s) are compiled and then they are linked into a shared object .dll, .so or .dynlib file that will appear in your library directory.
 
 If something is wrong in your code you may get compilation errors in the first phase, you will need to correct those before the linking step can proceed. You should also pay attention to warnings, they may indicate that your code will not produce the expected result. The error and warning messages are _usually_ quite descriptive and points to the line where the problem comes from.
 
@@ -272,7 +272,7 @@ The first line contains basic information about the XML code, and should always 
 - \b hopsanobjectappearance Main tag for appearance file
   - \b version Should always be 0.3 with this XML layout
 - \b modelobject Main tag for the component
-  - \b typename Name of the component as registered in the simulation core, see \ref devWritingComponentInCppPage-library_cc_file. (Required)
+  - \b typename Name of the component as registered in the simulation core, see \ref devWritingComponentInCppPage-library_cpp_file. (Required)
   - \b subtypename Specific version of a typename component, if you have multiple appearance files for the same component code. (Optional)
   - \b displayname Name for the component shown in the graphical interface. (If omitted typename will be used)
 - \b icons Contains information about icons. At least one type, user or iso is required.

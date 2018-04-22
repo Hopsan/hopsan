@@ -3,8 +3,8 @@ Note: This guide is verified against LabVIEW 2009. Other versions may require di
 1. Use Visual C++ 2003 compiler (included in Visual Studio .NET 2003).
 2. Create a new project. Use "Win32 Console Project", "DLL" and "Empty Project" settings.
 3. Add all header files and source files in this folder, EXCEPT codegen.c and SIT_API.h.
-4. Add all .cc/.cpp files from the HopsanCore/src and HopsanCore/Dependencies directories INCLUDING subdirectories to the project 
-5. Add the defaultComponentLibraryInternal.cc file from the componentLibraries/defaultLibrary to the project
+4. Add all .cpp files from the HopsanCore/src and HopsanCore/Dependencies directories INCLUDING subdirectories to the project 
+5. Add the defaultComponentLibraryInternal.cpp file from the componentLibraries/defaultLibrary to the project
 6. In project properties, add the following include directories (absolute paths): 
 <thispath>\HopsanCore\include
 <thispath>\HopsanCore\Dependencies\rapidxml-1.13

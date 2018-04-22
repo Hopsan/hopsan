@@ -43,8 +43,8 @@ HEADERS += \
     SocketIOTestComponent.hpp
 
 SOURCES += \
-    socketutility.cc \
-    SocketComponents.cc
+    socketutility.cpp \
+    SocketComponents.cpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.pri

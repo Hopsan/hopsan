@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   AliasHandler.cc
+//! @file   AliasHandler.cpp
 //! @author Peter Nordin
 //!
 //! @brief Contains the alias handler help class

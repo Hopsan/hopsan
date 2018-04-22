@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   PLOParser.cc
+//! @file   PLOParser.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2014-10-03
 //!

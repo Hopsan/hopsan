@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ConnectionAssistant.cc
+//! @file   ConnectionAssistant.cpp
 //! @author Peter Nordin
 //! @date   2009-12-20
 //!
