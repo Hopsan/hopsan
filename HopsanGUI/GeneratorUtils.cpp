@@ -45,10 +45,9 @@ bool importFMU(const QString& fmuFilePath)
     auto pGenerator = createDefaultGenerator();
 
     QFileInfo fmuFileInfo(fmuFilePath);
-    QString fmuFileName = fmuFileInfo.fileName();
-    fmuFileName.chop(4);
-    QString fmuImportDestination = gpDesktopHandler->getFMUPath()+"/"+fmuFileName;
-    if(QDir().exists(fmuImportDestination))
+    QString fmuFileName = fmuFileInfo.baseName();
+    QString fmuImportDestination = QDir::cleanPath(gpDesktopHandler->getFMUPath()+"/"+fmuFileName);
+    if(QDir(fmuImportDestination).exists())
     {
         QMessageBox existWarningBox(QMessageBox::Warning, QObject::tr("Warning"),
                                     QObject::tr("Another FMU with same name exist. Do you want unload this library (if loaded) and then overwrite the generated import files?"),
@@ -60,7 +59,7 @@ bool importFMU(const QString& fmuFilePath)
         if(doIt)
         {
             gpLibraryHandler->unloadLibraryFMU(fmuFileName);
-            removeDir(QDir::cleanPath(fmuImportDestination));
+            removeDir(fmuImportDestination);
         }
         else
         {
@@ -68,8 +67,7 @@ bool importFMU(const QString& fmuFilePath)
         }
     }
 
-    QString  destinationPath = gpDesktopHandler->getFMUPath();
-    if (!pGenerator->generateFromFmu(fmuFilePath, destinationPath))
+    if (!pGenerator->generateFromFmu(fmuFilePath, gpDesktopHandler->getFMUPath()))
     {
         gpMessageHandler->addErrorMessage("Fmu import generator failed");
     }

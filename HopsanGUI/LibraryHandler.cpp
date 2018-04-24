@@ -949,7 +949,7 @@ void LibraryHandler::importFmu()
     }
     gpConfig->setStringSetting(CFG_FMUIMPORTDIR, fmuFileInfo.absolutePath());
 
-    importFMU(fmuFileInfo.absolutePath());
+    importFMU(fmuFileInfo.absoluteFilePath());
 }
 
 

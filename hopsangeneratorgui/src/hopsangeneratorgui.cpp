@@ -284,12 +284,11 @@ bool HopsanGeneratorGUI::generateFromFmu(const QString& fmuFilePath, const QStri
     loadGeneratorLibrary();
 
     QFileInfo fmuFileInfo(fmuFilePath);
-    QString fmuFileName = fmuFileInfo.fileName();
-    fmuFileName.chop(4);
-    QDir importDestination(destination);
+    QString fmuFileName = fmuFileInfo.baseName();
+    QDir importDestination(QDir::cleanPath(destination+"/"+fmuFileName));
     if(importDestination.exists())
     {
-        printErrorMessage(QString("Destination already exist %1").arg(destination));
+        printErrorMessage(QString("Destination already exist %1").arg(importDestination.path()));
         return false;
     }
     else
