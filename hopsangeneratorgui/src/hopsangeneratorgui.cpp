@@ -218,7 +218,7 @@ public:
 HopsanGeneratorGUI::HopsanGeneratorGUI(const QString& hopsanInstallPath, QWidget* pWidgetParent)
     : mPrivates(new  HopsanGeneratorGUIPrivateImpl())
 {
-    mPrivates->hopsanRoot = hopsanInstallPath.toStdString();
+    mPrivates->hopsanRoot = QDir::cleanPath(hopsanInstallPath).toStdString();
     mPrivates->mpWidgetParent = pWidgetParent;
 }
 
@@ -237,17 +237,36 @@ bool HopsanGeneratorGUI::loadGeneratorLibrary()
     if (!isGeneratorLibraryLoaded())
     {
         constexpr auto generatorLibName = SHAREDLIB_PREFIX "hopsangenerator" DEBUG_SUFFIX;
+
         mPrivates->mGeneratorLibrary.setFileName(generatorLibName);
-        bool loadok = mPrivates->mGeneratorLibrary.load();
-        if (loadok)
+        QString errorString1, errorString2;
+        bool loadok1, loadok2;
+        loadok1 = mPrivates->mGeneratorLibrary.load();
+        if (!loadok1)
+        {
+            errorString1 = mPrivates->mGeneratorLibrary.errorString();
+            // Try again with expected absolute path in case current dir is not in the search path
+            // (depends on distribution) or LD_LIBRARY_PATH, but if that fail, show the first error message
+            const auto absGeneratorLibName = QString("%1/bin/%2").arg(mPrivates->hopsanRoot.c_str()).arg(generatorLibName);
+            mPrivates->mGeneratorLibrary.setFileName(absGeneratorLibName);
+            loadok2 = mPrivates->mGeneratorLibrary.load();
+            if (!loadok2)
+            {
+                errorString2 = mPrivates->mGeneratorLibrary.errorString();
+            }
+        }
+
+        if (loadok1 || loadok2)
         {
             printMessage(QString("Loaded %1").arg(generatorLibName));
+            return true;
         }
         else
         {
-            printErrorMessage(mPrivates->mGeneratorLibrary.errorString());
+            printErrorMessage(errorString1);
+            printErrorMessage(errorString2);
+            return false;
         }
-        return loadok;
     }
     return true;
 }
