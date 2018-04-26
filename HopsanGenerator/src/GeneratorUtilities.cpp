@@ -305,7 +305,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     clBatchStream << "g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
     clBatchStream << " -o " << o << " " << lflags <<"\n";
     compileScript.close();
-#elif __linux__
+#else
     Q_UNUSED(gccPath);
     compileScript.setFileName(wdPath + "/compile.sh");
     if(!compileScript.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -348,7 +348,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         output = output+ gccErrorList.at(i);
         //output = output.remove(output.size()-1, 1);
     }
-#elif __linux__
+#else
     QString stdOut,stdErr;
     callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, 60, stdOut, stdErr);
     output.append(stdOut);
@@ -365,7 +365,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         output.append("Compilation failed.");
         return false;
     }
-#elif __linux__
+#else
     if(!targetDir.exists(o))
     {
         output.append("Compilation failed.");

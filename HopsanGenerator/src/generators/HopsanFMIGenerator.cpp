@@ -1748,7 +1748,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
-#elif __linux__
+#else
     QFile compileCBatchFile;
     compileCBatchFile.setFileName(savePath + "/compileC.sh");
     if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1800,7 +1800,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCppBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileCpp.bat");
-#elif __linux__
+#else
     QFile compileCppBatchFile;
     compileCppBatchFile.setFileName(savePath + "/compileCpp.sh");
     if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1866,7 +1866,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & link.bat");
 
     return assertFilesExist(savePath, QStringList() << modelName+".dll");
-#elif __linux__
+#else
     QFile linkBatchFile;
     linkBatchFile.setFileName(savePath + "/link.sh");
     if(!linkBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1921,6 +1921,8 @@ void HopsanFMIGenerator::sortFiles(const QString &savePath, const QString &model
     targetDLL = savePath+"/fmu/binaries/linux64/"+modelName+".so";
 #endif
 #endif
+    //! @todo Add OSX support
+
     copyFile(srcDLL, targetDLL);
     copyFile(savePath+"/modelDescription.xml", savePath+"/fmu/modelDescription.xml");
     //tlmDescriptionFile.copy(savePath+"/fmu/"+modelName+"_TLM.xml");
@@ -1941,6 +1943,7 @@ void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &m
     QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << /*modelName+"_TLM.xml" <<*/ "binaries/linux64/"+modelName+".so";
     callProcess("zip", arguments, savePath+"/fmu");
 #endif
+    //! @todo Add OSX support
 
     if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
         return;

@@ -815,10 +815,10 @@ void MainWindow::createActions()
     mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
     mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
-#elif __linux__ && __i386__
+#elif __i386__
     mpExportToFMUMenu->addAction(mpExportToFMU1_32Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
-#elif __linux__ && __x86_64__
+#elif __x86_64__
     mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
 #endif

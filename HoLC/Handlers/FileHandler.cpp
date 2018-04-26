@@ -590,10 +590,11 @@ void FileHandler::compileLibrary()
     target.prepend("lib");
 #endif
 
+    QString compilerPath;
 #ifdef __linux__
-    QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
+    compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
 #elif _WIN32
-    QString compilerPath = mpConfiguration->getCompilerPath()+"/g++.exe";
+    compilerPath = mpConfiguration->getCompilerPath()+"/g++.exe";
 #endif
 
     bool success;
