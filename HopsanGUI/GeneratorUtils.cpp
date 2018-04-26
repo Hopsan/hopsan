@@ -60,6 +60,9 @@ bool importFMU(const QString& fmuFilePath)
         {
             gpLibraryHandler->unloadLibraryFMU(fmuFileName);
             removeDir(fmuImportDestination);
+            if (QDir(fmuImportDestination).exists()) {
+               gpMessageHandler->addErrorMessage(QString("Could not remove directory: %1").arg(fmuImportDestination));
+            }
         }
         else
         {
