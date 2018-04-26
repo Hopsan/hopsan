@@ -153,7 +153,6 @@ public:
     QAction *mpImportFMUAction;
     QAction *mpImportDataFileAction;
     QAction *mpExportToSimulinkAction;
-    QAction *mpExportToSimulinkCoSimAction;
     QAction *mpExportToFMU1_32Action;
     QAction *mpExportToFMU1_64Action;
     QAction *mpExportToFMU2_32Action;
