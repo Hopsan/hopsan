@@ -35,7 +35,7 @@
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "ComponentSystem.h"
 
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
 #include <thread>
 #endif
 
@@ -273,7 +273,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     HOPSAN_UNUSED(noChanges)
 
     vector<ComponentSystem*> tempSystemVector = rSystemVector;
-#if __cplusplus >= 201103L
+#if defined(HOPSANCORE_USEMULTITHREADING)
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
     if(!noChanges)
