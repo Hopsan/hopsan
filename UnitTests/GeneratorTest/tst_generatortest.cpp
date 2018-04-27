@@ -29,6 +29,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "hopsangenerator.h"
 #include <assert.h>
+#include <iostream>
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
@@ -52,6 +53,14 @@ namespace {
             }
         }
         dir.rmdir(path);
+    }
+
+    constexpr bool showmessages = false;
+    void generatorMessageCallback(const char* msg, const char type, void*)
+    {
+        if (showmessages) {
+            std::cout << "Type: " << type << " Message: " << msg << std::endl;
+        }
     }
 }
 
@@ -121,7 +130,8 @@ private Q_SLOTS:
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
         std::string outpath = cwd+"/fmu1_32/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path.c_str(), 1, false, false);
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path.c_str(), 1, 32,
+                               &generatorMessageCallback);
 
 
         args << "-l" << "2";
@@ -138,7 +148,8 @@ private Q_SLOTS:
 
         // Run FMUChecker for FMU 2.0 32-bit export
         outpath = cwd+"/fmu2_32/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path, 2, false, false);
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path, 2, 32,
+                               &generatorMessageCallback);
 
         args.clear();
         args << "-l" << "2";
@@ -157,7 +168,8 @@ private Q_SLOTS:
 #if defined (HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 64-bit export
         std::string outpath = cwd+"/fmu1_64/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, true);
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, 64,
+                               &generatorMessageCallback);
 
         args.clear();
         args << "-l" << "2";
@@ -174,7 +186,8 @@ private Q_SLOTS:
 
         // Run FMUChecker for FMU 2.0 64-bit export
         outpath = cwd+"/fmu2_64/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, true);
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, 64,
+                               &generatorMessageCallback);
 
         args.clear();
         args << "-l" << "2";
@@ -225,7 +238,8 @@ private Q_SLOTS:
 
         //Generate S-function
         std::string outpath = cwd+"/simulink/";
-        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, false, hopsanRoot.c_str());
+        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, false, hopsanRoot.c_str(),
+                                    &generatorMessageCallback);
 
         QDir coreDir(qcwd+"/simulink/HopsanCore");
         QVERIFY2(coreDir.exists() && !coreDir.entryList().isEmpty(),
@@ -259,7 +273,7 @@ private Q_SLOTS:
 
         //Generate S-function
         std::string outfile = cwd+"/labview/unittestmodel_export.cpp";
-        callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str());
+        callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str(), &generatorMessageCallback);
 
         QVERIFY2(QFile::exists(qcwd+"/labview/codegen.c"),
                  "Failed to generate LabVIEW files, all files not found.");
@@ -316,7 +330,7 @@ private Q_SLOTS:
 #else
         gccPath = gvv32Path;
 #endif
-        callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), nullptr, nullptr, 0, true, hopsanRoot.c_str());
+        callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, nullptr, 0, true, hopsanRoot.c_str());
 
 //        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(LIBEXT)).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");
