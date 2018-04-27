@@ -29,6 +29,7 @@
 //!
 //$Id$
 
+#include <locale>
 #include <clocale>
 
 #include <QApplication>
