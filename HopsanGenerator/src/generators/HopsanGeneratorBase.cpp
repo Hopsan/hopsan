@@ -66,6 +66,12 @@ HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const
     if(!compilerPath.isEmpty())
     {
         mCompilerPath = QFileInfo(compilerPath).absoluteFilePath();
+#ifndef _WIN32
+        // Add the last / here so that the compiler name can be directly appended to mCompilerPath.
+        // If compilerPath is empty (compiler in PATH) then we do not want to check if a / should be added or not
+        // when using this variable
+        mCompilerPath.append("/");
+#endif
     }
 
     if(!tempPath.isEmpty())

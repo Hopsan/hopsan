@@ -1876,7 +1876,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << mCompilerPath+"/g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " <<
+    linkBatchStream << mCompilerPath+"g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " <<
                        "fmu"+vStr+"_model_cs.o";
     Q_FOREACH(const QString &objFile, objectFiles)
     {
