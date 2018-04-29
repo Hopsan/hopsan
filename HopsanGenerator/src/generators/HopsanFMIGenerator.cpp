@@ -522,14 +522,17 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         return false;
     }
 
-//    if(fmi2_import_get_fmu_kind(fmu) == fmi2_fmu_kind_me)
-//    {
-//        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
-//        printErrorMessage("Only FMUs for co-simulation are supported by this code");
-//        return false;
-//    }
-
     fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
+    if(fmuKind == fmi2_fmu_kind_unknown || fmuKind == fmi2_fmu_kind_me )
+    {
+        printErrorMessage("Hopsan only supports import of co-simulation FMUs");
+        return false;
+    }
+    // Handle me / cs combo FMUs as cs
+    if (fmuKind == fmi2_fmu_kind_me_and_cs)
+    {
+        fmuKind = fmi2_fmu_kind_cs;
+    }
 
     callBackFunctions.logger = fmi2_log_forwarding;
     callBackFunctions.allocateMemory = calloc;
