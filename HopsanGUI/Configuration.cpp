@@ -1363,6 +1363,7 @@ void Configuration::registerSettings()
 #endif
     mStringSettings.insert(CFG_PLOTGFXIMAGEFORMAT, "png");
     mStringSettings.insert(CFG_PLOTGFXDIMENSIONSUNIT, "px");
+    mStringSettings.insert(cfg::paths::corelogfile, "");
 
     // Bool settings
     mBoolSettings.insert(CFG_USEREMOTEADDRESSSERVER, false);

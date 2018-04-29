@@ -55,6 +55,18 @@
 // Here the HopsanCore object is created
 hopsan::HopsanEssentials gHopsanCore;
 
+void initializaHopsanCore(QString logPath)
+{
+    if (logPath.isEmpty()) {
+        logPath = gpDesktopHandler->getTempPath();
+    }
+    QFileInfo fi(logPath);
+    if (fi.isDir()) {
+        logPath.append("hopsan_logfile.txt");
+    }
+    gHopsanCore.openCoreLogFile(logPath.toStdString().c_str());
+}
+
 //! @brief Help function to copy parameter data from core to GUI class
 void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParameterData &rGUIParam)
 {

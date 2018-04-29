@@ -124,6 +124,12 @@
 #define CFG_PWD "pwd"
 #define CFG_COMMAND "command"
 
+namespace cfg {
+    namespace paths {
+        constexpr auto corelogfile = "corelogfile";
+    }
+}
+
 #include <QMap>
 #include <QColor>
 #include <QList>
