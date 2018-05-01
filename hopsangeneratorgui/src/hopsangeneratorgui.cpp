@@ -173,9 +173,8 @@ private:
     QPointer<::HopsanGeneratorWidget> mpWidget;
 };
 
-class HopsanGeneratorGUIPrivateImpl
+struct HopsanGeneratorGUI::PrivateImpl
 {
-public:
     QSharedPointer<WidgetLock> createNewWidget()
     {
         // Create a new widget, Note! it shall delete itself on close
@@ -216,7 +215,7 @@ public:
 };
 
 HopsanGeneratorGUI::HopsanGeneratorGUI(const QString& hopsanInstallPath, QWidget* pWidgetParent)
-    : mPrivates(new  HopsanGeneratorGUIPrivateImpl())
+    : mPrivates(new  HopsanGeneratorGUI::PrivateImpl())
 {
     mPrivates->hopsanRoot = QDir::cleanPath(hopsanInstallPath).toStdString();
     mPrivates->mpWidgetParent = pWidgetParent;
@@ -224,7 +223,9 @@ HopsanGeneratorGUI::HopsanGeneratorGUI(const QString& hopsanInstallPath, QWidget
 
 HopsanGeneratorGUI::~HopsanGeneratorGUI()
 {
-    // Virtual destructor needed so that PIMPL works
+    if (isGeneratorLibraryLoaded()) {
+        mPrivates->mGeneratorLibrary.unload();
+    }
 }
 
 bool HopsanGeneratorGUI::isGeneratorLibraryLoaded() const

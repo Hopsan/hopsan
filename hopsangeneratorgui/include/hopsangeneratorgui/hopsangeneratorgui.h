@@ -10,7 +10,6 @@
 namespace hopsan {
 class ComponentSystem;
 }
-class HopsanGeneratorGUIPrivateImpl;
 
 class HopsanGeneratorGUI : public QWidget
 {
@@ -51,7 +50,8 @@ public:
     void printWarningMessage(const QString& msg);
 
 private:
-    std::unique_ptr<HopsanGeneratorGUIPrivateImpl> mPrivates;
+    struct PrivateImpl;
+    std::unique_ptr<PrivateImpl> mPrivates;
 };
 
 #endif // HOPSANGENERATORGUI_H
