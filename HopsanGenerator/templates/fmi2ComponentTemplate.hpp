@@ -128,7 +128,7 @@ public:
         {
             addErrorMessage("Only CS 2.0 is supported by this code\n");
             stopSimulation();
-             return;
+            return;
         }
 
         callBackFunctions.logger = fmi2_log_forwarding;
@@ -148,9 +148,9 @@ public:
 
         //Instantiate FMU
         fmi2_string_t instanceName = "Test CS model instance";
-        fmi2_string_t fmuLocation = "";
+        fmi2_string_t fmuResourceLocation = NULL;
         fmi2_boolean_t visible = fmi2_false;
-        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, fmuLocation, visible);
+        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, fmuResourceLocation, visible);
         if (jmstatus == jm_status_error)
         {
             addErrorMessage("fmi2_import_instantiate() failed!");
