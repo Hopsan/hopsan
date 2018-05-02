@@ -503,7 +503,6 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 //! @param context Context struct used by FMILibrary
 bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
 {
-    fmi2_callback_functions_t callBackFunctions;
     jm_status_enu_t status;
 
     //-----------------------------------------//
@@ -514,7 +513,6 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     const char* tmpPath = targetArray.data();
 
     fmi2_import_t* fmu = fmi2_import_parse_xml(context, tmpPath, 0);
-
     if(!fmu)
     {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
@@ -523,28 +521,11 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
-    if(fmuKind == fmi2_fmu_kind_unknown || fmuKind == fmi2_fmu_kind_me )
-    {
-        printErrorMessage("Hopsan only supports import of co-simulation FMUs");
-        return false;
-    }
     // Handle me / cs combo FMUs as cs
+    //! @todo The user should be able to choose
     if (fmuKind == fmi2_fmu_kind_me_and_cs)
     {
         fmuKind = fmi2_fmu_kind_cs;
-    }
-
-    callBackFunctions.logger = fmi2_log_forwarding;
-    callBackFunctions.allocateMemory = calloc;
-    callBackFunctions.freeMemory = free;
-    callBackFunctions.componentEnvironment = fmu;
-
-    status = fmi2_import_create_dllfmu(fmu, fmuKind, &callBackFunctions);
-    if (status == jm_status_error)
-    {
-        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
-        printErrorMessage(QString("Could not create the DLL loading mechanism(C-API) (error: %1).\n").arg(fmi2_import_get_last_error(fmu)));
-        return false;
     }
 
     //Declare lists for parameters, input variables and output variables
