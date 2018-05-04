@@ -35,20 +35,10 @@
 #include <QProcess>
 #include <QDomElement>
 #include <QDirIterator>
-
-#ifdef USEQTGUI
-#include <QDialog>
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <QApplication>
-#include <QPushButton>
-#include <QProgressDialog>
-#include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QLabel>
-#endif
+#include <QDebug>
 
 #include <cassert>
+#include <iostream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -57,66 +47,8 @@
 #endif
 
 #include "GeneratorUtilities.h"
-#include "generators/HopsanGenerator.h"
-#include "SymHop.h"
-
-#include "HopsanEssentials.h"
-#include "ComponentSystem.h"
-#include "Port.h"
+#include "generators/HopsanGeneratorBase.h"
 #include "HopsanCoreVersion.h"
-
-
-using namespace std;
-using namespace SymHop;
-using namespace hopsan;
-
-
-
-
-PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue)
-{
-    this->porttype = porttype;
-    this->nodetype = nodetype;
-    this->name = name;
-    this->notrequired = notrequired;
-    this->defaultvalue = defaultvalue;
-}
-
-
-ParameterSpecification::ParameterSpecification(QString name, QString displayName, QString description, QString unit, QString init)
-{
-    this->name = name;
-    this->displayName = displayName;
-    this->description = description;
-    this->unit = unit;
-    this->init = init;
-}
-
-
-VariableSpecification::VariableSpecification(QString name, QString init)
-{
-    this->name = name;
-    this->init = init;
-}
-
-
-
-
-ComponentSpecification::ComponentSpecification(QString typeName, QString displayName, QString cqsType)
-{
-    this->typeName = typeName;
-    this->displayName = displayName;
-    if(cqsType == "S")
-        cqsType = "Signal";
-    this->cqsType = cqsType;
-
-    this->auxiliaryFunctions = QStringList();
-}
-
-
-
-
-
 
 //! @brief Function for loading an XML DOM Document from file
 //! @param[in] rFile The file to load from
@@ -176,11 +108,11 @@ bool removeDir(QString path)
 
 //! @brief Copy a directory with contents
 //! @param[in] fromPath The absolute path to the directory to copy
-//! @param[in] toPath The absolute path to the destination (including resulting dir name)
+//! @param[in] toPath The absolute path to the destination (including destination dir name)
 //! @param[out] rErrorMessage Error message if copy fail
 //! @returns True if success else False
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
-bool copyDir(const QString fromPath, QString toPath, QString &rErrorMessage)
+bool copyDir(const QString &fromPath, QString toPath, QString &rErrorMessage)
 {
     QDir toDir(toPath);
     if (!toDir.mkpath(toPath))
@@ -231,7 +163,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const QString &input)
 
 
 
-bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString extraCFlags, QString extraLFlags)
+bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QString extraCFlags, QString extraLFlags)
 {
     pGenerator->printMessage("Writing compilation script...");
 
@@ -308,8 +240,8 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
         c.append(file+" ");
     c.chop(1);
 
-    QString hopsanBinDir = pGenerator->getBinPath();
-    QString iflags = QString("-I\"%1\"").arg(pGenerator->getCoreIncludePath());
+    QString hopsanBinDir = pGenerator->getHopsanBinPath();
+    QString iflags = QString("-I\"%1\"").arg(pGenerator->getHopsanCoreIncludePath());
     lflags += QString(" -L\"%1\" -l%2").arg(hopsanBinDir).arg("hopsancore" TO_STR(DEBUG_EXT))+" "+extraLFlags;
 
     //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work) /Peter
@@ -334,7 +266,7 @@ bool compileComponentLibrary(QString path, HopsanGenerator *pGenerator, QString 
 
     pGenerator->printMessage("Compiling please wait!");
     QString output;
-    QString gccPath = pGenerator->getGccPath();
+    QString gccPath = pGenerator->getCompilerPath();
     bool success = compile(libRootDir, gccPath, libFile, c, iflags, cflags, lflags, output);
     pGenerator->printMessage(output);
     return success;
@@ -373,7 +305,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     clBatchStream << "g++.exe " << cflags << " " << srcFiles << " " << inclPaths;
     clBatchStream << " -o " << o << " " << lflags <<"\n";
     compileScript.close();
-#elif __linux__
+#else
     Q_UNUSED(gccPath);
     compileScript.setFileName(wdPath + "/compile.sh");
     if(!compileScript.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -416,9 +348,9 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         output = output+ gccErrorList.at(i);
         //output = output.remove(output.size()-1, 1);
     }
-#elif __linux__
+#else
     QString stdOut,stdErr;
-    callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, stdOut, stdErr);
+    callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, 60, stdOut, stdErr);
     output.append(stdOut);
     output.append("\n");
     output.append(stdErr);
@@ -433,7 +365,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
         output.append("Compilation failed.");
         return false;
     }
-#elif __linux__
+#else
     if(!targetDir.exists(o))
     {
         output.append("Compilation failed.");
@@ -448,27 +380,27 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
 
 
 //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
-//! @param org Original string
+//! @param name Original string
 //! @returns String without illegal characters
-QString toValidHopsanVarName(const QString &org)
+QString toValidHopsanVarName(const QString &name)
 {
     QString ret;
-    if (!org.isEmpty())
+    if (!name.isEmpty())
     {
         // Reserve memory for entire string (we will only append as many chars as we decide to keep)
-        ret.reserve(org.size());
+        ret.reserve(name.size());
         // First ignore any non letter or number or underscore char in the beginning
         int c=0;
-        while ( (c<org.size()) && !(org[c].isLetterOrNumber() || org[c]=='_') )
+        while ( (c<name.size()) && !(name[c].isLetterOrNumber() || name[c]=='_') )
         {
             ++c;
         }
         // Now ignore any non letter or number or underscore
-        while ( c < org.size() )
+        while ( c < name.size() )
         {
-            if  ( org[c].isLetterOrNumber() || org[c]=='_' )
+            if  ( name[c].isLetterOrNumber() || name[c]=='_' )
             {
-                ret.append(org[c]);
+                ret.append(name[c]);
             }
             ++c;
         }
@@ -477,27 +409,27 @@ QString toValidHopsanVarName(const QString &org)
 }
 
 //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
-//! @param org Original string
+//! @param name Original string
 //! @returns String without illegal characters
-QString toValidLabViewVarName(const QString &org)
+QString toValidLabViewVarName(const QString &name)
 {
     QString ret;
-    if (!org.isEmpty())
+    if (!name.isEmpty())
     {
         // Reserve memory for entire string (we will only append as many chars as we decide to keep)
-        ret.reserve(org.size());
+        ret.reserve(name.size());
         // First ignore any non letter char in the beginning
         int c=0;
-        while ( (c<org.size()) && !org[c].isLetter() )
+        while ( (c<name.size()) && !name[c].isLetter() )
         {
             ++c;
         }
         // Now ignore any non letter or number
-        while ( c < org.size() )
+        while ( c < name.size() )
         {
-            if ( org[c].isLetterOrNumber() )
+            if ( name[c].isLetterOrNumber() )
             {
-                ret.append(org[c]);
+                ret.append(name[c]);
             }
             ++c;
         }
@@ -506,86 +438,52 @@ QString toValidLabViewVarName(const QString &org)
 }
 
 
-QString extractTaggedSection(QString str, QString tag)
+QString extractTaggedSection(const QString &text, const QString &tagName)
 {
-    QString startStr = ">>>"+tag+">>>";
-    QString endStr = "<<<"+tag+"<<<";
-    if(!str.contains(startStr) || !str.contains(endStr))
+    QString startStr = ">>>"+tagName+">>>";
+    QString endStr = "<<<"+tagName+"<<<";
+    if(text.contains(startStr) && text.contains(endStr))
     {
-        return QString();
+        int i = text.indexOf(startStr)+startStr.size();
+        int n = text.indexOf(endStr)-i;
+        return text.mid(i, n);
     }
-    else
+    return QString();
+}
+
+
+void replaceTaggedSection(QString &text, const QString &tagName, const QString &replacement)
+{
+    QString taggedSection = ">>>"+tagName+">>>"+extractTaggedSection(text, tagName)+"<<<"+tagName+"<<<";
+    text.replace(taggedSection, replacement);
+}
+
+
+QString replaceTag(QString text, const QString &tagName, const QString &replacement)
+{
+    text.replace("<<<"+tagName+">>>", replacement);
+    return text;
+}
+
+
+QString replaceTags(QString text, const QStringList &tagNames, const QStringList &replacements)
+{
+    Q_ASSERT(tagNames.size() == replacements.size());
+    for(int i=0; i<tagNames.size(); ++i)
     {
-        int i = str.indexOf(startStr)+startStr.size();
-        int n = str.indexOf(endStr)-i;
-        return str.mid(i, n);
+        text.replace("<<<"+tagNames[i]+">>>", replacements[i]);
     }
+    return text;
 }
-
-
-void replaceTaggedSection(QString &str, QString tag, QString replacement)
-{
-    QString taggedSection = ">>>"+tag+">>>"+extractTaggedSection(str, tag)+"<<<"+tag+"<<<";
-    str.replace(taggedSection, replacement);
-}
-
-
-QString replaceTag(QString str, QString tag, QString replacement)
-{
-    QString retval = str;
-    retval.replace("<<<"+tag+">>>", replacement);
-    return retval;
-}
-
-
-QString replaceTags(QString str, QStringList tags, QStringList replacements)
-{
-    QString retval = str;
-    for(int i=0; i<tags.size(); ++i)
-    {
-        retval.replace("<<<"+tags[i]+">>>", replacements[i]);
-    }
-    return retval;
-}
-
-
-//! @brief Verifies that a system of equations is solvable (number of equations = number of unknowns etc)
-bool verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVars, HopsanGenerator *pGenerator)
-{
-    bool retval = true;
-
-    if(equations.size() != stateVars.size())
-    {
-        QStringList equationList;
-        for(int s=0; s<equations.size(); ++s)
-        {
-            equationList.append(equations[s].toString());
-        }
-        qDebug() << "Equations: " << equationList;
-
-        QStringList stateVarList;
-        for(int s=0; s<stateVars.size(); ++s)
-        {
-            stateVarList.append(stateVars[s].toString());
-        }
-        qDebug() << "State vars: " << stateVarList;
-
-        pGenerator->printErrorMessage("Number of equations = " + QString::number(equations.size()) + ", number of state variables = " + QString::number(stateVars.size()));
-        retval = false;
-    }
-
-    return retval;
-}
-
 
 
 //! @brief Find all files with given file extension recursively
-//! @param [in] path The root directory path for the search
-//! @param [in] ext The file extension to look for
+//! @param [in] rootPath The root directory path for the search
+//! @param [in] suffix The file extension to look for
 //! @param [in,out] rFiles A list of filenames to which the found results will be appended
-void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &rFiles)
+void findAllFilesInFolderAndSubFolders(const QString &rootPath, const QString &suffix, QStringList &rFiles)
 {
-    QDir dir(path);
+    QDir dir(rootPath);
     QDirIterator iterator(dir.absolutePath(), QDirIterator::Subdirectories);
     while (iterator.hasNext())
     {
@@ -593,8 +491,9 @@ void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &r
         if (!iterator.fileInfo().isDir())
         {
             QString fileName = iterator.filePath();
-            if (fileName.endsWith("."+ext))
+            if (fileName.endsWith("."+suffix)) {
                 rFiles.append(fileName);
+            }
         }
     }
 }
@@ -613,272 +512,6 @@ QStringList getHopsanCoreIncludePaths()
 
 
 
-GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
-{
-    //! @todo this will only be able to create the default included nodes (which may be a problem in the future)
-    hopsan::HopsanEssentials hopsanCore;
-    Node *pNode = hopsanCore.createNode(nodeType.toStdString().c_str());
-    isValidNode = false;
-    if (pNode)
-    {
-        isValidNode = true;
-        niceName = pNode->getNiceName().c_str();
-        for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
-        {
-            const hopsan::NodeDataDescription *pVarDesc = pNode->getDataDescription(i);
-            NodeDataVariableTypeEnumT varType = pVarDesc->varType;
-            // Check if  "Q-type variable"
-            if(varType == DefaultType || varType == FlowType || varType == IntensityType)
-            {
-                qVariables << pVarDesc->shortname.c_str();
-                qVariableIds << pVarDesc->id;
-                variableLabels << pVarDesc->name.c_str();
-                varIdx << pVarDesc->id;
-            }
-            // Check if "C-type variable"
-            else if(varType == TLMType)
-            {
-                cVariables << pVarDesc->shortname.c_str();
-                cVariableIds << pVarDesc->id;
-                variableLabels << pVarDesc->name.c_str();
-                varIdx << pVarDesc->id;
-            }
-
-        }
-        hopsanCore.removeNode(pNode);
-    }
-}
-
-void GeneratorNodeInfo::getNodeTypes(QStringList &nodeTypes)
-{
-    //! @todo this will only be able to list the default included nodes (which may be a problem in the future)
-    hopsan::HopsanEssentials hopsanCore;
-    std::vector<hopsan::HString> types = hopsanCore.getRegisteredNodeTypes();
-    Q_FOREACH(const hopsan::HString &type, types)
-    {
-        nodeTypes << type.c_str();
-    }
-}
-
-
-void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
-{
-    if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
-    {
-        //printErrorMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
-    }
-    else if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
-    {
-        //printWarningMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
-    }
-    else
-    {
-        //printMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
-    }
-}
-
-
-
-
-InterfacePortSpec::InterfacePortSpec(InterfaceTypesEnumT type, QString component, QString port, QStringList path)
-{
-    this->type = type;
-    this->path = path;
-    this->component = component;
-    this->port = port;
-
-    QStringList inputDataNames;
-    QStringList outputDataNames;
-    QList<size_t> inputDataIds, outputDataIds;
-
-    switch(type)
-    {
-    case InterfacePortSpec::Input:
-        inputDataNames << "";
-        inputDataIds << 0;
-        break;
-    case InterfacePortSpec::Output:
-        outputDataNames << "";
-        outputDataIds << 0;
-        break;
-    case InterfacePortSpec::MechanicQ:
-    {
-        GeneratorNodeInfo gni("NodeMechanic");
-        inputDataNames  << gni.qVariables;
-        inputDataIds    << gni.qVariableIds;
-        outputDataNames << gni.cVariables;
-        outputDataIds   << gni.cVariableIds;
-        break;
-    }
-    case InterfacePortSpec::MechanicC:
-    {
-        GeneratorNodeInfo gni("NodeMechanic");
-        inputDataNames  << gni.cVariables;
-        inputDataIds    << gni.cVariableIds;
-        outputDataNames << gni.qVariables;
-        outputDataIds   << gni.qVariableIds;
-        break;
-    }
-    case InterfacePortSpec::MechanicRotationalQ:
-    {
-        GeneratorNodeInfo gni("NodeMechanicRotational");
-        inputDataNames  << gni.qVariables;
-        inputDataIds    << gni.qVariableIds;
-        outputDataNames << gni.cVariables;
-        outputDataIds   << gni.cVariableIds;
-        break;
-    }
-    case InterfacePortSpec::MechanicRotationalC:
-    {
-        GeneratorNodeInfo gni("NodeMechanicRotational");
-        inputDataNames  << gni.cVariables;
-        inputDataIds    << gni.cVariableIds;
-        outputDataNames << gni.qVariables;
-        outputDataIds   << gni.qVariableIds;
-        break;
-    }
-    case InterfacePortSpec::HydraulicQ:
-    {
-        GeneratorNodeInfo gni("NodeHydraulic");
-        inputDataNames  << gni.qVariables;
-        inputDataIds    << gni.qVariableIds;
-        outputDataNames << gni.cVariables;
-        outputDataIds   << gni.cVariableIds;
-        break;
-    }
-    case InterfacePortSpec::HydraulicC:
-    {
-        GeneratorNodeInfo gni("NodeHydraulic");
-        inputDataNames  << gni.cVariables;
-        inputDataIds    << gni.cVariableIds;
-        outputDataNames << gni.qVariables;
-        outputDataIds   << gni.qVariableIds;
-        break;
-    }
-    case InterfacePortSpec::PneumaticQ:
-    {
-        GeneratorNodeInfo gni("NodePneumatic");
-        inputDataNames  << gni.qVariables;
-        inputDataIds    << gni.qVariableIds;
-        outputDataNames << gni.cVariables;
-        outputDataIds   << gni.cVariableIds;
-        break;
-    }
-    case InterfacePortSpec::PneumaticC:
-    {
-        GeneratorNodeInfo gni("NodePneumatic");
-        inputDataNames  << gni.cVariables;
-        inputDataIds    << gni.cVariableIds;
-        outputDataNames << gni.qVariables;
-        outputDataIds   << gni.qVariableIds;
-        break;
-    }
-    case InterfacePortSpec::ElectricQ:
-    {
-        GeneratorNodeInfo gni("NodeElectric");
-        inputDataNames  << gni.qVariables;
-        inputDataIds    << gni.qVariableIds;
-        outputDataNames << gni.cVariables;
-        outputDataIds   << gni.cVariableIds;
-        break;
-    }
-    case InterfacePortSpec::ElectricC:
-    {
-        GeneratorNodeInfo gni("NodeElectric");
-        inputDataNames  << gni.cVariables;
-        inputDataIds    << gni.cVariableIds;
-        outputDataNames << gni.qVariables;
-        outputDataIds   << gni.qVariableIds;
-        break;
-    }
-    default:
-        break;
-    }
-
-    foreach(const QString &dataName, inputDataNames)
-    {
-        vars.append(InterfaceVarSpec(dataName, inputDataIds.takeFirst(), InterfaceVarSpec::Input));
-    }
-    foreach(const QString &dataName, outputDataNames)
-    {
-        vars.append(InterfaceVarSpec(dataName, outputDataIds.takeFirst(), InterfaceVarSpec::Output));
-    }
-}
-
-
-
-void getInterfaces(QList<InterfacePortSpec> &interfaces, ComponentSystem *pSystem, QStringList &path)
-{
-    std::vector<HString> names = pSystem->getSubComponentNames();
-    for(size_t i=0; i<names.size(); ++i)
-    {
-        Component *pComponent = pSystem->getSubComponent(names[i]);
-        HString typeName = pComponent->getTypeName();
-
-        if(typeName == "SignalInputInterface")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::Input, names[i].c_str(), "out", path));
-        }
-        else if(typeName == "SignalOutputInterface")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::Output, names[i].c_str(), "in", path));
-        }
-        else if(typeName == "MechanicInterfaceQ")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicQ, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "MechanicInterfaceC")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicC, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "MechanicRotationalInterfaceQ")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicRotationalQ, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "MechanicRotationalInterfaceC")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::MechanicRotationalC, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "HydraulicInterfaceQ")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::HydraulicQ, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "HydraulicInterfaceC")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::HydraulicC, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "PneumaticInterfaceQ")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::PneumaticQ, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "PneumaticInterfaceC")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::PneumaticC, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "ElectricInterfaceQ")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::ElectricQ, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "ElectricInterfaceC")
-        {
-            interfaces.append(InterfacePortSpec(InterfacePortSpec::ElectricC, names[i].c_str(), "P1", path));
-        }
-        else if(typeName == "Subsystem")
-        {
-            QStringList path2 = path;
-            getInterfaces(interfaces, dynamic_cast<hopsan::ComponentSystem *>(pComponent), path2 << pComponent->getName().c_str());
-        }
-    }
-}
-
-
-
-InterfaceVarSpec::InterfaceVarSpec(QString dataName, int dataId, InterfaceVarSpec::CausalityEnumT causality)
-{
-    this->dataName = dataName;
-    this->dataId = dataId;
-    this->causality = causality;
-}
 
 //! @brief Replaces a pattern preserving pattern indentation, adding indentation to each line of text
 //! @param[in] rPattern The pattern to replace
@@ -933,7 +566,7 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
 }
 
 
-void callProcess(const QString &name, const QStringList &args, const QString workingDirectory, QString &rStdOut, QString &rStdErr)
+int callProcess(const QString &name, const QStringList &args, const QString& workingDirectory, const int timeout, QString &rStdOut, QString &rStdErr)
 {
     QProcess p;
     if(!workingDirectory.isEmpty())
@@ -941,16 +574,24 @@ void callProcess(const QString &name, const QStringList &args, const QString wor
         p.setWorkingDirectory(workingDirectory);
     }
     p.start(name, args);
-    p.waitForFinished(60000);
+    p.waitForFinished(timeout*10000);
 
     rStdOut = p.readAllStandardOutput();
     rStdErr = p.readAllStandardError();
-    //p.readAll();
+
+    if (p.exitStatus() == QProcess::ExitStatus::NormalExit)
+    {
+        return p.exitCode();
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 //! @brief Copies a file to a target and informs user of the outcome
-//! @param[in] source Source file
-//! @param[in] target Target where to copy file
+//! @param[in] source Source file path
+//! @param[in] target Full target file path
 //! @param[out] rErrorMessage If copy fail, this contains an error message
 //! @returns True if copy successful, otherwise false
 bool copyFile(const QString &source, const QString &target, QString &rErrorMessage)
@@ -982,17 +623,16 @@ bool copyFile(const QString &source, const QString &target, QString &rErrorMessa
     return true;
 }
 
-QStringList listHopsanCoreSourceFiles(const QString rootPath)
+QStringList listHopsanCoreSourceFiles(const QString &hopsanInstallationPath)
 {
     QStringList allFiles;
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/src", "cc", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/src", "cpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cc", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "cpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/src", "cpp", allFiles);
-    allFiles << rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/src", "cpp", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "cpp", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libNumHop/src", "cpp", allFiles);
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
 
-    QDir rootDir(rootPath);
+    QDir rootDir(hopsanInstallationPath);
 
     // Make path relative to root dir
     for(int i=0; i<allFiles.size(); ++i)
@@ -1003,19 +643,19 @@ QStringList listHopsanCoreSourceFiles(const QString rootPath)
     return allFiles;
 }
 
-QStringList listHopsanCoreIncludeFiles(const QString rootPath)
+QStringList listHopsanCoreIncludeFiles(const QString &hopsanInstallationPath)
 {
     QStringList allFiles;
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/include", "h", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/include", "hpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "h", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/Dependencies", "hpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/rapidxml", "hpp", allFiles);
-    findAllFilesInFolderAndSubFolders(rootPath+"/HopsanCore/dependencies/libNumHop/include", "h", allFiles);
-    allFiles << rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
-                rootPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/include", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/include", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/rapidxml", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libNumHop/include", "h", allFiles);
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
+                hopsanInstallationPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
 
-    QDir rootDir(rootPath);
+    QDir rootDir(hopsanInstallationPath);
 
     // Make path relative to root dir
     for(int i=0; i<allFiles.size(); ++i)
@@ -1026,14 +666,14 @@ QStringList listHopsanCoreIncludeFiles(const QString rootPath)
     return allFiles;
 }
 
-QStringList listDefaultLibrarySourceFiles(const QString rootPath)
+QStringList listDefaultLibrarySourceFiles(const QString &hopsanInstallationPath)
 {
     QStringList allFiles;
     //! @todo handle external internal library
     // Now only internal
-    allFiles << rootPath+"/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp";
+    allFiles << hopsanInstallationPath+"/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp";
 
-    QDir rootDir(rootPath);
+    QDir rootDir(hopsanInstallationPath);
 
     // Make path relative to root dir
     for(int i=0; i<allFiles.size(); ++i)

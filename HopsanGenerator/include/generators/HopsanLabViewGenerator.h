@@ -25,12 +25,12 @@
 #ifndef HOPSANLABVIEWGENERATOR_H
 #define HOPSANLABVIEWGENERATOR_H
 
-#include "HopsanGenerator.h"
+#include "HopsanGeneratorBase.h"
 
-class HopsanLabViewGenerator : public HopsanGenerator
+class HopsanLabViewGenerator : public HopsanGeneratorBase
 {
 public:
-    HopsanLabViewGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
+    HopsanLabViewGenerator(const QString &hopsanInstallPath);
     void generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem);
 };
 

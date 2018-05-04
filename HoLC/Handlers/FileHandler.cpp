@@ -590,10 +590,15 @@ void FileHandler::compileLibrary()
     target.prepend("lib");
 #endif
 
-#ifdef __linux__
-    QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
-#elif _WIN32
-    QString compilerPath = mpConfiguration->getCompilerPath()+"/g++.exe";
+    QString compilerPath = mpConfiguration->getCompilerPath();
+#ifdef _WIN32
+    compilerPath = compilerPath+"/g++.exe";
+#else
+    if (!compilerPath.isEmpty()) {
+        compilerPath.append("/");
+    }
+    compilerPath.append("gcc");
+    //! @todo support other compilers
 #endif
 
     bool success;

@@ -25,12 +25,12 @@
 #ifndef HOPSANSIMULINKGENERATOR_H
 #define HOPSANSIMULINKGENERATOR_H
 
-#include "HopsanGenerator.h"
+#include "HopsanGeneratorBase.h"
 
-class HopsanSimulinkGenerator : public HopsanGenerator
+class HopsanSimulinkGenerator : public HopsanGeneratorBase
 {
 public:
-    HopsanSimulinkGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
+    HopsanSimulinkGenerator(const QString &hopsanInstallPath);
     void generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels);
     void generateToSimulinkCoSim(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler);
 };

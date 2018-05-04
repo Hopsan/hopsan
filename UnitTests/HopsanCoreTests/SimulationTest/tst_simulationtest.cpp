@@ -26,7 +26,6 @@
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include "CoreUtilities/GeneratorHandler.h"
 #include "CoreUtilities/HmfLoader.h"
 #include <assert.h>
 

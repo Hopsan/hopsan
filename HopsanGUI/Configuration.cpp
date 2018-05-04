@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------
 
  Copyright 2017 Hopsan Group
@@ -1437,4 +1436,32 @@ void Configuration::refreshIfDesktopPath(const QString &cfgKey)
     {
         gpDesktopHandler->setCustomTempPath(mStringSettings[CFG_CUSTOMTEMPPATH]);
     }
+}
+
+QString Configuration::getCompilerPath(const ArchitectureEnumT arch)
+{
+    int a;
+    QString cfgkey;
+
+    if(arch == ArchitectureEnumT::x86)
+    {
+        a = 32;
+        cfgkey = CFG_GCC32DIR;
+    }
+    else //x64
+    {
+        a = 64;
+        cfgkey = CFG_GCC64DIR;
+    }
+
+    QString compilerPath;
+    if (getBoolSetting(CFG_PREFERINCLUDEDCOMPILER))
+    {
+        compilerPath = gpDesktopHandler->getIncludedCompilerPath(a);
+    }
+    if (compilerPath.isEmpty())
+    {
+        compilerPath = getStringSetting(cfgkey);
+    }
+    return compilerPath;
 }

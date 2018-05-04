@@ -28,13 +28,11 @@
 #include "Component.h"
 #include <cassert>
 
-
-using namespace std;
-using namespace hopsan;
+#include <QDir>
 
 
-HopsanSimulinkGenerator::HopsanSimulinkGenerator(QString coreIncludePath, QString binPath, bool showDialog)
-    : HopsanGenerator(coreIncludePath, binPath, "", showDialog)
+HopsanSimulinkGenerator::HopsanSimulinkGenerator(const QString &hopsanInstallPath)
+    : HopsanGeneratorBase(hopsanInstallPath, "", "")
 {
 
 }
@@ -68,7 +66,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     this->copyHopsanCoreSourceFilesToDir(savePath);
     this->copyDefaultComponentCodeToDir(savePath);
 
-    const std::vector<ParameterEvaluator*> *pParameters = pSystem->getParametersVectorPtr();
+    const std::vector<hopsan::ParameterEvaluator*> *pParameters = pSystem->getParametersVectorPtr();
     int numParameters = pParameters->size();
 
     QList<InterfacePortSpec> interfacePortSpecs;
@@ -366,7 +364,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     saveDir.setPath(savePath);
 
 
-    std::vector<HString> parameterNames;
+    std::vector<hopsan::HString> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
     for(size_t i=0; i<parameterNames.size(); ++i)
@@ -386,10 +384,10 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     QStringList mechanicRotationalCComponents;
     QStringList mechanicRotationalCPorts;
 
-    std::vector<HString> names = pSystem->getSubComponentNames();
+    std::vector<hopsan::HString> names = pSystem->getSubComponentNames();
     for(size_t i=0; i<names.size(); ++i)
     {
-        Component *pComponent = pSystem->getSubComponent(names[i]);
+        hopsan::Component *pComponent = pSystem->getSubComponent(names[i]);
         if(pComponent->getTypeName() == "SignalInputInterface")
         {
             inputComponents.append(names[i].c_str());

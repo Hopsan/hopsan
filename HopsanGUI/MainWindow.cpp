@@ -792,10 +792,6 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpExportToSimulinkAction, "Export model to Simulink S-function.");
     connect(mpExportToSimulinkAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToSimulinkCoSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Export to Simulink Co-Simulation S-function Source Files"), this);
-    mHelpPopupTextMap.insert(mpExportToSimulinkCoSimAction, "Export model Simulink S-function for co-simulation (under development).");
-    connect(mpExportToSimulinkCoSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-
     mpExportToFMU1_32Action = new QAction(tr("FMU 1.0 (32-bit)"), this);
     mHelpPopupTextMap.insert(mpExportToFMU1_32Action, "FMU 1.0 (32-bit)");
     connect(mpExportToFMU1_32Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
@@ -819,10 +815,10 @@ void MainWindow::createActions()
     mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
     mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
-#elif __linux__ && __i386__
+#elif __i386__
     mpExportToFMUMenu->addAction(mpExportToFMU1_32Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
-#elif __linux__ && __x86_64__
+#elif __x86_64__
     mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
 #endif
@@ -1041,9 +1037,7 @@ void MainWindow::createMenus()
     mpExportMenu->addAction(mpExportToSimulinkAction);
     mpExportMenu->addAction(mpExportToLabviewAction);
     mpExportMenu->addMenu(mpExportToFMUMenu);
-#ifdef DEVELOPMENT
-    mpExportMenu->addAction(mpExportToSimulinkCoSimAction);
-#endif
+
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportPDFAction);
     mpExportMenu->addAction(mpExportPNGAction);
@@ -1091,9 +1085,7 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar->addAction(mpExportPNGAction);
     mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportToSimulinkAction);
-#ifdef DEVELOPMENT
-    mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
-#endif
+
     mpConnectivityToolBar->addAction(mpExportToLabviewAction);
     mpExportToFMUMenuButton = new QToolButton(this);
     mpExportToFMUMenuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"));
@@ -1189,7 +1181,6 @@ void MainWindow::createToolbars()
 
     connect(mpImportFMUAction,              SIGNAL(triggered()), gpLibraryHandler,     SLOT(importFmu()));
     connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulink()));
-    connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulinkCoSim()));
     connect(mpExportToFMU1_32Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU1_32()));
     connect(mpExportToFMU1_64Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU1_64()));
     connect(mpExportToFMU2_32Action,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU2_32()));
@@ -1453,7 +1444,6 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToFMU2_32Action->setEnabled(modelTab);
     mpExportToLabviewAction->setEnabled(modelTab);
     mpExportToSimulinkAction->setEnabled(modelTab);
-    mpExportToSimulinkCoSimAction->setEnabled(modelTab);
     mpLoadModelParametersAction->setEnabled(modelTab);
 }
 

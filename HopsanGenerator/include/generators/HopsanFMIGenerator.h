@@ -25,19 +25,21 @@
 #ifndef HOPSANFMIGENERAETOR_H
 #define HOPSANFMIGENERAETOR_H
 
-//Hopsan includes
-#include "HopsanGenerator.h"
+// Hopsan includes
+#include "HopsanGeneratorBase.h"
 
-//FMILibrary includes
+// FMILibrary includes
 #include "FMI/fmi_import_context.h"
 #include <FMI1/fmi1_import.h>
 #include <FMI2/fmi2_import.h>
 #include <JM/jm_portability.h>
 
-class HopsanFMIGenerator : public HopsanGenerator
+void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
+
+class HopsanFMIGenerator : public HopsanGeneratorBase
 {
 public:
-    HopsanFMIGenerator(QString coreIncludePath, QString binPath, QString gccPath, bool showDialog=false);
+    HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
     bool generateFromFmu(const QString &rFmuPath, QString targetPath, QString &rTypeName, QString &rHppPath);
     void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, int version=2, bool x64=true);
 

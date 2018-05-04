@@ -32,22 +32,9 @@
 //$Id$
 
 #include <QStringList>
+#include <QDir>
 #include <QProcess>
 #include <QDomElement>
-
-#ifdef USEQTGUI
-#include <QDialog>
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <QApplication>
-#include <QPushButton>
-#include <QProgressDialog>
-#include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QLabel>
-#else
-#include <iostream>
-#endif
 
 #include <cassert>
 
@@ -57,7 +44,7 @@
 #include <unistd.h>
 #endif
 
-#include "generators/HopsanGenerator.h"
+#include "generators/HopsanGeneratorBase.h"
 #include "GeneratorUtilities.h"
 #include "SymHop.h"
 
@@ -66,108 +53,72 @@
 #include "HopsanCoreVersion.h"
 
 
-using namespace std;
 using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const QString gccPath, const bool showDialog)
+HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
 {
-#ifdef _WIN32
-    mOutputPath = "C:/HopsanGeneratorTempFiles/output/";
-    mTempPath = "C:/HopsanGeneratorTempFiles/temp/";
-#else
-    mOutputPath = QDir::currentPath()+"/output/";
-    mTempPath = QDir::currentPath()+"/temp/";
-#endif
-    mTarget = "";
-    mCoreIncludePath = coreIncludePath;
-    mBinPath = binPath;
+    mHopsanRootPath = hopsanInstallPath;
+    mHopsanCoreIncludePath = mHopsanRootPath+"/HopsanCore/include";
+    mHopsanBinPath = mHopsanRootPath+"/bin";
 
-    mHopsanRootPath = mBinPath+"../";
-    if(!gccPath.isEmpty())
+    if(!compilerPath.isEmpty())
     {
-        mGccPath = QFileInfo(gccPath).absoluteFilePath()+"/";
+        mCompilerPath = QFileInfo(compilerPath).absoluteFilePath();
+#ifndef _WIN32
+        // Add the last / here so that the compiler name can be directly appended to mCompilerPath.
+        // If compilerPath is empty (compiler in PATH) then we do not want to check if a / should be added or not
+        // when using this variable
+        mCompilerPath.append("/");
+#endif
     }
 
-    mShowDialog = showDialog;
-    if(mShowDialog)
+    if(!tempPath.isEmpty())
     {
-#ifdef USEQTGUI
-        mpTextEdit = new QTextEdit();
-        mpTextEdit->setReadOnly(true);
-        QFont monoFont = QFont("Monospace", 10, 50);
-        monoFont.setStyleHint(QFont::TypeWriter);
-        mpTextEdit->setFont(monoFont);
-
-        mpDoneButton = new QPushButton("Close");
-        mpDoneButton->setFixedWidth(200);
-
-        mpLayout = new QVBoxLayout();
-        mpLayout->addWidget(mpTextEdit);
-        mpLayout->addWidget(mpDoneButton);
-        mpLayout->setAlignment(mpDoneButton, Qt::AlignCenter);
-
-        mpDialog = new QWidget(0);
-        mpDialog->setWindowModality(Qt::ApplicationModal);
-        mpDialog->setLayout(mpLayout);
-        mpDialog->setMinimumSize(640, 480);
-        mpDialog->setWindowTitle("HopsanGenerator");
-
-        mpDoneButton->connect(mpDoneButton, SIGNAL(clicked()), mpDialog, SLOT(hide()));
-
-        mpDialog->show();
-        QApplication::processEvents();
-#endif
-        printMessage("##########################\n# Loaded HopsanGenerator #\n##########################\n");
-    }
-}
-
-
-void HopsanGenerator::printMessage(const QString &msg, const QString &color) const
-{
-    if(mShowDialog)
-    {
-#ifdef USEQTGUI
-        mpTextEdit->setTextColor(QColor(color));
-        mpTextEdit->append(msg);
-        QApplication::processEvents();
-#ifdef _WIN32
-        Sleep(10);
-#else
-        usleep(10000);
-#endif
-#else
-        Q_UNUSED(color)
-        cout << msg.toStdString() << endl;
-#endif
+        mTempPath = QFileInfo(tempPath).absoluteFilePath();
     }
     else
     {
-        //qDebug() << msg;
+        mTempPath = QDir::currentPath()+"/temp";
     }
+
+    mOutputPath = QDir::currentPath()+"/output";
 }
 
-
-void HopsanGenerator::printWarningMessage(const QString &msg) const
+HopsanGeneratorBase::~HopsanGeneratorBase()
 {
-    if(mShowDialog)
-    {
-        printMessage(msg, "Orange");
-    }
+    // Do nothing right now
 }
 
-
-void HopsanGenerator::printErrorMessage(const QString &msg) const
+void HopsanGeneratorBase::setMessageHandler(std::function<void (const char*, const char, void*)> messageHandler, void* pMessageObject)
 {
-    if(mShowDialog)
+    mMessageHandler = messageHandler;
+    mpMessageHandlerObject = pMessageObject;
+}
+
+void HopsanGeneratorBase::printMessage(const QString &msg, const QChar &type) const
+{
+    if(mShowMessages && mMessageHandler)
     {
-        printMessage(msg, "Red");
+        mMessageHandler(msg.toStdString().c_str(), type.toLatin1(), mpMessageHandlerObject);
     }
 }
 
 
-QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues) const
+void HopsanGeneratorBase::printWarningMessage(const QString &msg) const
+{
+    printMessage(msg, 'W');
+}
+
+
+void HopsanGeneratorBase::printErrorMessage(const QString &msg) const
+{
+    printMessage(msg, 'E');
+}
+
+
+QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues) const
 {
     if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
 
@@ -521,7 +472,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
 //! @brief Generates appearance file from a component specification object
 //! @param path Path to generated (or existing) .xml file
 //! @param comp Component specification object
-void HopsanGenerator::generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile)
+void HopsanGeneratorBase::generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile)
 {
     QFile file(path);
     QString code;
@@ -627,13 +578,13 @@ void HopsanGenerator::generateOrUpdateComponentAppearanceFile(QString path, Comp
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void HopsanGenerator::compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues, const QString customSourceFile)
+void HopsanGeneratorBase::compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues, const QString customSourceFile)
 {
     QString code;
 
     if(comp.plainCode.isEmpty())
     {
-        code = generateSourceCodefromComponentObject(comp, overwriteStartValues);
+        code = generateSourceCodefromComponentSpec(comp, overwriteStartValues);
     }
     else
     {
@@ -772,7 +723,7 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 //! @param[in] hppFiles Relative path to hpp files
 //! @param[in] cflags Compiler flags required for building the library
 //! @param[in] lflags Linker flags required for building the library
-void HopsanGenerator::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags)
+void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags)
 {
     printMessage("Creating new component library...");
 
@@ -857,7 +808,7 @@ void HopsanGenerator::generateNewLibrary(QString dstPath, QStringList hppFiles, 
 
 
 
-bool HopsanGenerator::generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec)
+bool HopsanGeneratorBase::generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec)
 {
     //Create <fmuname>.xml
     QFile fmuCafFile;
@@ -953,44 +904,41 @@ bool HopsanGenerator::generateCafFile(QString &rPath, ComponentAppearanceSpecifi
 }
 
 
-
-void HopsanGenerator::setOutputPath(const QString path)
+void HopsanGeneratorBase::setOutputPath(const QString &path)
 {
     mOutputPath = path;
     printMessage("Setting output path: " + path);
 }
 
 
-void HopsanGenerator::setTarget(const QString fileName)
+QString HopsanGeneratorBase::getHopsanCoreIncludePath() const
 {
-    mTarget = fileName;
-    printMessage("Setting target: " + fileName);
+    return mHopsanCoreIncludePath;
 }
 
 
-QString HopsanGenerator::getCoreIncludePath() const
+QString HopsanGeneratorBase::getHopsanBinPath() const
 {
-    return mCoreIncludePath;
+    return mHopsanBinPath;
 }
 
-
-QString HopsanGenerator::getBinPath() const
-{
-    return mBinPath;
-}
-
-QString HopsanGenerator::getHopsanRootPath() const
+QString HopsanGeneratorBase::getHopsanRootPath() const
 {
     return mHopsanRootPath;
 }
 
-QString HopsanGenerator::getGccPath() const
+QString HopsanGeneratorBase::getCompilerPath() const
 {
-    return mGccPath;
+    return mCompilerPath;
+}
+
+void HopsanGeneratorBase::setQuiet(bool quiet)
+{
+    mShowMessages = !quiet;
 }
 
 
-bool HopsanGenerator::assertFilesExist(const QString &path, const QStringList &files) const
+bool HopsanGeneratorBase::assertFilesExist(const QString &path, const QStringList &files) const
 {
     Q_FOREACH(const QString &file, files)
     {
@@ -1005,7 +953,7 @@ bool HopsanGenerator::assertFilesExist(const QString &path, const QStringList &f
 }
 
 
-void HopsanGenerator::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
+void HopsanGeneratorBase::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
 {
     QProcess p;
     if(!workingDirectory.isEmpty())
@@ -1020,71 +968,48 @@ void HopsanGenerator::callProcess(const QString &name, const QStringList &args, 
 }
 
 
-bool HopsanGenerator::runUnixCommand(QString cmd) const
-{
-    char line[130];
-    cmd +=" 2>&1";
-    FILE *fp = popen(  (const char *) cmd.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + cmd + "'! err=%d");
-        return false;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-           printMessage((const QString &)line);
-        }
-    }
-    return true;
-}
-
-
 //! @warning May delete contents in file if it fails to open in write mode
-bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const
+bool HopsanGeneratorBase::replaceInFile(const QString &filePath, const QStringList &before, const QStringList &after) const
 {
     Q_ASSERT(before.size() == after.size());
 
-    QFile file(fileName);
+    QFile file(filePath);
     if(!file.open(QFile::ReadOnly | QFile::Text))
     {
-        printErrorMessage("Unable to open file: "+fileName+" for reading.");
+        printErrorMessage("Unable to open file: "+filePath+" for reading.");
         return false;
     }
     QString contents = file.readAll();
     file.close();
 
-    bool didSomething = false;
+    bool foundTextToReplace = false;
     for(int i=0; i<before.size(); ++i)
     {
         if(contents.contains(before[i]))
         {
-            didSomething = true;
+            foundTextToReplace = true;
             contents.replace(before[i], after[i]);
         }
     }
 
-    if(!didSomething)
+    if(foundTextToReplace)
     {
-        return true;
+        if(!file.open(QFile::ReadWrite | QFile::Truncate | QFile::Text))
+        {
+            printErrorMessage("Unable to open file: "+filePath+" for writing.");
+            return false;
+        }
+        file.write(contents.toLatin1());
+        file.close();
     }
-
-    if(!file.open(QFile::ReadWrite | QFile::Truncate | QFile::Text))
-    {
-        printErrorMessage("Unable to open file "+fileName+" for writing.");
-    }
-    file.write(contents.toLatin1());
-    file.close();
 
     return true;
 }
 
 
 
-//! @todo maybe this function should not be among general utils
 //! @todo should not copy .git folders
-bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(QString tgtPath) const
+bool HopsanGeneratorBase::copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const
 {
     printMessage("Copying HopsanCore source, header and dependencies...");
 
@@ -1101,7 +1026,7 @@ bool HopsanGenerator::copyHopsanCoreSourceFilesToDir(QString tgtPath) const
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
 //! @todo Error checking
-bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
+bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) const
 {
     printMessage("Copying default component library...");
 
@@ -1111,7 +1036,7 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
     saveDir.cd("componentLibraries");
     saveDir.cd("defaultLibrary");
 
-    copyDir( QString(mBinPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
+    copyDir( QString(mHopsanRootPath+"/componentLibraries/defaultLibrary"), saveDir.path() );
 
     QStringList allFiles;
     findAllFilesInFolderAndSubFolders(saveDir.path(),"hpp",allFiles);
@@ -1131,7 +1056,7 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
 //! @todo Error checking
-bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
+bool HopsanGeneratorBase::copyBoostIncludeFilesToDir(const QString &path) const
 {
     printMessage("Copying Boost include files...");
 
@@ -1161,7 +1086,7 @@ bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
 //! @param[in] source Source file
 //! @param[in] target Target where to copy file
 //! @returns True if copy successful, otherwise false
-bool HopsanGenerator::copyFile(const QString &source, const QString &target) const
+bool HopsanGeneratorBase::copyFile(const QString &source, const QString &target) const
 {
     QString error;
     if (::copyFile(source, target, error))
@@ -1179,10 +1104,10 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
 
 //! @brief Copy a directory with contents
 //! @param[in] fromPath The absolute path to the directory to copy
-//! @param[in] toPath The absolute path to the destination (including resulting dir name)
+//! @param[in] toPath The absolute path to the destination (including destination dir name)
 //! @returns True if success else False
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
-bool HopsanGenerator::copyDir(const QString fromPath, const QString toPath) const
+bool HopsanGeneratorBase::copyDir(const QString &fromPath, const QString &toPath) const
 {
     QString error;
     if(::copyDir(fromPath, toPath, error))
@@ -1201,7 +1126,7 @@ bool HopsanGenerator::copyDir(const QString fromPath, const QString toPath) cons
 //! @param path Path to directory to clean up
 //! @param files List of files to remove
 //! @param subDirs List of sub directories to remove
-void HopsanGenerator::cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const
+void HopsanGeneratorBase::cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const
 {
     printMessage("Cleaning up directory: " + path);
 
@@ -1218,7 +1143,7 @@ void HopsanGenerator::cleanUp(const QString &path, const QStringList &files, con
 
 
 
-void HopsanGenerator::getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType)
+void HopsanGeneratorBase::getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType)
 {
     if(compType == "HydraulicInterfaceC")
     {

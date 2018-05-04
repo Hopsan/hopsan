@@ -146,7 +146,6 @@ SOURCES += \
     src/CoreUtilities/ConnectionAssistant.cpp \
     src/CoreUtilities/SimulationHandler.cpp \
     src/CoreUtilities/CoSimulationUtilities.cpp \
-    src/CoreUtilities/GeneratorHandler.cpp \
     src/CoreUtilities/MultiThreadingUtilities.cpp \
     src/CoreUtilities/StringUtilities.cpp \
     src/CoreUtilities/SaveRestoreSimulationPoint.cpp
@@ -186,7 +185,6 @@ HEADERS += \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
     $${PWD}/dependencies/rapidxml/hopsan_rapidxml.hpp \
-    include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
     include/CoreUtilities/StringUtilities.h \

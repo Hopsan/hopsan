@@ -50,23 +50,16 @@
 #include "CoreUtilities/ConnectionAssistant.h"
 #include "ComponentUtilities/num2string.hpp"
 
-#if defined(HOPSANCORE_USEMULTITHREADING)
+using namespace std;
+
+#if (__cplusplus >= 201103L)
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include <thread>
 #include <functional>
-#include <atomic>
-#include <mutex>
 #include <chrono>
 #include <ctime>
-#endif
 
-
-using namespace std;
-
-
-#if defined(HOPSANCORE_USEMULTITHREADING)
 #ifdef _WIN32
 const long long g_Frequency = []() -> long long
 {
@@ -83,7 +76,14 @@ HighResClock::time_point HighResClock::now()
     return time_point(duration(count.QuadPart * static_cast<rep>(period::den) / g_Frequency));
 }
 #endif //_WIN32
-#endif //C++11 and multithreading
+
+#endif //C++11
+
+#if defined(HOPSANCORE_USEMULTITHREADING)
+#include <atomic>
+#include <mutex>
+#include <thread>
+#endif // multithreading
 
 namespace {
 //! @brief Figure out whether or not a vector contains a certain "object", exact comparison
@@ -2785,161 +2785,6 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 }
 
 
-
-
-//! @brief Helper function that simulates all components and measure their average time requirements.
-//! @param steps How many steps to simulate
-bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
-{
-#if defined(HOPSANCORE_USEMULTITHREADING)
-    // Reset all measured times first
-    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-        mComponentSignalptrs[s]->setMeasuredTime(0);
-    for(size_t c=0; c<mComponentCptrs.size(); ++c)
-        mComponentCptrs[c]->setMeasuredTime(0);
-    for(size_t q=0; q<mComponentQptrs.size(); ++q)
-        mComponentQptrs[q]->setMeasuredTime(0);
-
-
-        // Measure time for each component during specified amount of steps
-    double time;
-
-    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-    {
-        time = mTime; // Init time
-#ifdef _WIN32
-        HighResClock::time_point t0 = HighResClock::now();
-#else
-        timespec t0;
-        clock_gettime(CLOCK_REALTIME, &t0);
-#endif
-        time += mTimestep*nSteps;
-        mComponentSignalptrs[s]->simulate(time);
-#ifdef _WIN32
-        HighResClock::time_point t1 = HighResClock::now();
-        HighResClock::duration dt = t1-t0;
-        mComponentSignalptrs[s]->setMeasuredTime(dt.count()/1000000.0);
-#else
-        timespec t1;
-        clock_gettime(CLOCK_REALTIME, &t1);
-        mComponentSignalptrs[s]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
-#endif
-    }
-
-    for(size_t c=0; c<mComponentCptrs.size(); ++c)
-    {
-        time=mTime; // Reset time
-#ifdef _WIN32
-        HighResClock::time_point t0 = HighResClock::now();
-#else
-        timespec t0;
-        clock_gettime(CLOCK_REALTIME, &t0);
-#endif
-        time += mTimestep*nSteps;
-        mComponentCptrs[c]->simulate(time);
-#ifdef _WIN32
-        HighResClock::time_point t1 = HighResClock::now();
-        HighResClock::duration dt = t1-t0;
-        mComponentCptrs[c]->setMeasuredTime(dt.count()/1000000.0);
-#else
-        timespec t1;
-        clock_gettime(CLOCK_REALTIME, &t1);
-        mComponentCptrs[c]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
-#endif
-    }
-
-    for(size_t q=0; q<mComponentQptrs.size(); ++q)
-    {
-        time=mTime; // Reset time
-#ifdef _WIN32
-        HighResClock::time_point t0 = HighResClock::now();
-#else
-        timespec t0;
-        clock_gettime(CLOCK_REALTIME, &t0);
-#endif
-        time += mTimestep*nSteps;
-        mComponentQptrs[q]->simulate(time);
-
-#ifdef _WIN32
-        HighResClock::time_point t1 = HighResClock::now();
-        HighResClock::duration dt = t1-t0;
-        mComponentQptrs[q]->setMeasuredTime(dt.count()/1000000.0);
-#else
-        timespec t1;
-        clock_gettime(CLOCK_REALTIME, &t1);
-        mComponentQptrs[q]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
-#endif
-    }
-
-    return true;
-#else
-    return false;
-#endif
-}
-
-
-//! @brief Returns the total sum of the measured time of the components in the system
-double ComponentSystem::getTotalMeasuredTime()
-{
-    double time = 0;
-    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-    {
-        time += mComponentSignalptrs[s]->getMeasuredTime();
-    }
-    for(size_t c=0; c<mComponentCptrs.size(); ++c)
-    {
-        time += mComponentCptrs[c]->getMeasuredTime();
-    }
-    for(size_t q=0; q<mComponentQptrs.size(); ++q)
-    {
-        time += mComponentQptrs[q]->getMeasuredTime();
-    }
-
-    return time;
-}
-
-
-//! @brief Helper function that sorts C- and Q- component vectors by simulation time for each component.
-//! @todo This function uses bubblesort. Maybe change to something faster.
-void ComponentSystem::sortComponentVectorsByMeasuredTime()
-{
-    //Sort the components from longest to shortest time requirement
-    size_t i, j;
-    bool flag = true;
-    Component *tempC;
-    for(i = 1; (i < mComponentCptrs.size()) && flag; ++i)
-    {
-        flag = false;
-        for (j=0; j < (mComponentCptrs.size()-1); ++j)
-        {
-            if (mComponentCptrs[j+1]->getMeasuredTime() > mComponentCptrs[j]->getMeasuredTime())
-            {
-                tempC = mComponentCptrs[j];             //Swap elements
-                mComponentCptrs[j] = mComponentCptrs[j+1];
-                mComponentCptrs[j+1] = tempC;
-                flag = true;               //Indicates that a swap occurred
-            }
-        }
-    }
-    flag = true;
-    Component *tempQ;
-    for(i = 1; (i < mComponentQptrs.size()) && flag; ++i)
-    {
-        flag = false;
-        for (j=0; j < (mComponentQptrs.size()-1); ++j)
-        {
-            if (mComponentQptrs[j+1]->getMeasuredTime() > mComponentQptrs[j]->getMeasuredTime())
-            {
-                tempQ = mComponentQptrs[j];             //Swap elements
-                mComponentQptrs[j] = mComponentQptrs[j+1];
-                mComponentQptrs[j+1] = tempQ;
-                flag = true;               //Indicates that a swap occurred
-            }
-        }
-    }
-}
-
-
 ////! @brief Helper function that decides how many thread to use.
 ////! User specifies desired amount, but it is limited by how many cores the processor has.
 ////! @param nDesiredThreads How many threads the user wants
@@ -3238,8 +3083,169 @@ void ComponentSystem::reschedule(size_t nThreads)
     distributeNodePointers(mpMultiThreadPrivates->mSplitNodeVector, nThreads);
 }
 
-#else
+#endif
 
+//! @brief Helper function that simulates all components and measure their average time requirements.
+//! @param steps How many steps to simulate
+bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
+{
+#if (__cplusplus >= 201103L)
+    // Reset all measured times first
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+        mComponentSignalptrs[s]->setMeasuredTime(0);
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+        mComponentCptrs[c]->setMeasuredTime(0);
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+        mComponentQptrs[q]->setMeasuredTime(0);
+
+
+        // Measure time for each component during specified amount of steps
+    double time;
+
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+    {
+        time = mTime; // Init time
+#ifdef _WIN32
+        HighResClock::time_point t0 = HighResClock::now();
+#else
+        timespec t0;
+        clock_gettime(CLOCK_REALTIME, &t0);
+#endif
+        time += mTimestep*nSteps;
+        mComponentSignalptrs[s]->simulate(time);
+#ifdef _WIN32
+        HighResClock::time_point t1 = HighResClock::now();
+        HighResClock::duration dt = t1-t0;
+        mComponentSignalptrs[s]->setMeasuredTime(dt.count()/1000000.0);
+#else
+        timespec t1;
+        clock_gettime(CLOCK_REALTIME, &t1);
+        mComponentSignalptrs[s]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
+#endif
+    }
+
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+    {
+        time=mTime; // Reset time
+#ifdef _WIN32
+        HighResClock::time_point t0 = HighResClock::now();
+#else
+        timespec t0;
+        clock_gettime(CLOCK_REALTIME, &t0);
+#endif
+        time += mTimestep*nSteps;
+        mComponentCptrs[c]->simulate(time);
+#ifdef _WIN32
+        HighResClock::time_point t1 = HighResClock::now();
+        HighResClock::duration dt = t1-t0;
+        mComponentCptrs[c]->setMeasuredTime(dt.count()/1000000.0);
+#else
+        timespec t1;
+        clock_gettime(CLOCK_REALTIME, &t1);
+        mComponentCptrs[c]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
+#endif
+    }
+
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+    {
+        time=mTime; // Reset time
+#ifdef _WIN32
+        HighResClock::time_point t0 = HighResClock::now();
+#else
+        timespec t0;
+        clock_gettime(CLOCK_REALTIME, &t0);
+#endif
+        time += mTimestep*nSteps;
+        mComponentQptrs[q]->simulate(time);
+
+#ifdef _WIN32
+        HighResClock::time_point t1 = HighResClock::now();
+        HighResClock::duration dt = t1-t0;
+        mComponentQptrs[q]->setMeasuredTime(dt.count()/1000000.0);
+#else
+        timespec t1;
+        clock_gettime(CLOCK_REALTIME, &t1);
+        mComponentQptrs[q]->setMeasuredTime(double(t1.tv_nsec-t0.tv_nsec)/1000000.0);
+#endif
+    }
+
+    return true;
+#else
+    this->addErrorMessage("Measuring simulation time requires C++11 support.");
+    return false;
+#endif
+}
+
+
+//! @brief Returns the total sum of the measured time of the components in the system
+double ComponentSystem::getTotalMeasuredTime()
+{
+    double time = 0;
+#if (__cplusplus >= 201103L)
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+    {
+        time += mComponentSignalptrs[s]->getMeasuredTime();
+    }
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+    {
+        time += mComponentCptrs[c]->getMeasuredTime();
+    }
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+    {
+        time += mComponentQptrs[q]->getMeasuredTime();
+    }
+#else
+    this->addErrorMessage("Measuring simulation time requires C++11 support.");
+#endif
+    return time;
+}
+
+
+//! @brief Helper function that sorts C- and Q- component vectors by simulation time for each component.
+//! @todo This function uses bubblesort. Maybe change to something faster.
+void ComponentSystem::sortComponentVectorsByMeasuredTime()
+{
+#if (__cplusplus >= 201103L)
+    //Sort the components from longest to shortest time requirement
+    size_t i, j;
+    bool flag = true;
+    Component *tempC;
+    for(i = 1; (i < mComponentCptrs.size()) && flag; ++i)
+    {
+        flag = false;
+        for (j=0; j < (mComponentCptrs.size()-1); ++j)
+        {
+            if (mComponentCptrs[j+1]->getMeasuredTime() > mComponentCptrs[j]->getMeasuredTime())
+            {
+                tempC = mComponentCptrs[j];             //Swap elements
+                mComponentCptrs[j] = mComponentCptrs[j+1];
+                mComponentCptrs[j+1] = tempC;
+                flag = true;               //Indicates that a swap occurred
+            }
+        }
+    }
+    flag = true;
+    Component *tempQ;
+    for(i = 1; (i < mComponentQptrs.size()) && flag; ++i)
+    {
+        flag = false;
+        for (j=0; j < (mComponentQptrs.size()-1); ++j)
+        {
+            if (mComponentQptrs[j+1]->getMeasuredTime() > mComponentQptrs[j]->getMeasuredTime())
+            {
+                tempQ = mComponentQptrs[j];             //Swap elements
+                mComponentQptrs[j] = mComponentQptrs[j+1];
+                mComponentQptrs[j+1] = tempQ;
+                flag = true;               //Indicates that a swap occurred
+            }
+        }
+    }
+#else
+    this->addErrorMessage("Cannot sort! Measuring simulation time requires C++11 support.");
+#endif
+}
+
+#if !defined(HOPSANCORE_USEMULTITHREADING)
 //This overrides the multi-threaded simulation call with a single-threaded simulation if multi-threading is not available.
 //! @brief Simulate function that overrides multi-threaded simulation call with a single-threaded call
 //! In case multi-threaded support is not available
@@ -3247,19 +3253,6 @@ void ComponentSystem::simulateMultiThreaded(const double /*startT*/, const doubl
 {
     this->addErrorMessage("Multi-threaded simulation not available (compiled without C++11 support). Simulating single-threaded.");
     this->simulate(stopT);
-}
-
-
-bool ComponentSystem::simulateAndMeasureTime(const size_t /*steps*/)
-{
-    this->addErrorMessage("Measuring simulation time requires C++11 support.");
-    return false;
-}
-
-double ComponentSystem::getTotalMeasuredTime()
-{
-    this->addErrorMessage("Measuring simulation time requires C++11 support.");
-    return 0;
 }
 
 

@@ -169,6 +169,9 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
         output.append("Compilation failed.");
         return false;
     }
+#else
+    output.append("OS not supported yet, Compilation failed.");
+    return false;
 #endif
 
     output.append("Compilation successful.");

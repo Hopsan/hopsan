@@ -703,13 +703,6 @@ void ModelHandler::exportCurrentModelToSimulink()
     qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToSimulink();
 }
 
-
-void ModelHandler::exportCurrentModelToSimulinkCoSim()
-{
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToSimulinkCoSim();
-}
-
-
 void ModelHandler::showLosses(bool show)
 {
     qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->showLosses(show);

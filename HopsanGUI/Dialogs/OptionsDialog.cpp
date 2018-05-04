@@ -813,22 +813,19 @@ void OptionsDialog::setCompiler64Path(QString path)
 
 void OptionsDialog::setCompilerPath(QString path, bool x64)
 {
-    bool exists;
-#ifdef __linux__
-    if(path.endsWith("/gcc"))
-    {
-        path.chop(4);
+    QFileInfo fi(path);
+    if (fi.isFile()) {
+        path = fi.canonicalPath();
+    } else {
+        path = QDir::cleanPath(path);
     }
-    exists = QFile::exists(path+"/gcc");
-#else
-    if(path.endsWith("/g++.exe") || path.endsWith("\\g++.exe"))
-    {
-        path.chop(8);
-    }
-    exists = QFile::exists(path+"/gcc.exe");
-#endif
-    //! @todo We should also check that it is the correct version of gcc!
 
+    bool exists = QFile::exists(path+"/gcc");
+    if (!exists) {
+        exists = QFile::exists(path+"/gcc.exe");
+    }
+    //! @todo We should also check that it is the correct version of the compiler!
+    //! @todo Support other compilers, clang / msvc / maybe not check exist at all
 
     if(x64)
     {

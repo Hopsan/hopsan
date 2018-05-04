@@ -4754,14 +4754,14 @@ void HcomHandler::executeExportToFMUCommand(const QString cmd)
         return;
     }
 
-    CoreGeneratorAccess::TargetArchitectureT arch;
+    ArchitectureEnumT arch;
     if(args[2] == "32")
     {
-        arch = CoreGeneratorAccess::x86;
+        arch = ArchitectureEnumT::x86;
     }
     else if(args[2] == "64")
     {
-        arch = CoreGeneratorAccess::x64;
+        arch = ArchitectureEnumT::x64;
     }
     else
     {

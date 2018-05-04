@@ -149,9 +149,8 @@ public:
     void exportToFMU1_64();
     void exportToFMU2_32();
     void exportToFMU2_64();
-    void exportToFMU(QString savePath, int version, CoreGeneratorAccess::TargetArchitectureT arch);
+    void exportToFMU(QString savePath, int version, ArchitectureEnumT arch);
     void exportToSimulink();
-    void exportToSimulinkCoSim();
 
     // Parameter methods
     QStringList getParameterNames();
