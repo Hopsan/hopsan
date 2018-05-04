@@ -65,6 +65,7 @@
 #include "HcomHandler.h"
 #include "ModelicaLibrary.h"
 #include "SimulationThreadHandler.h"
+#include "CoreAccess.h"
 
 #include "Widgets/DebuggerWidget.h"
 #include "Widgets/PlotWidget2.h"
@@ -210,6 +211,7 @@ void MainWindow::createContents()
     //Load configuration from settings file
     gpSplash->showMessage("Loading configuration...");
     gpConfig->loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
+    initializaHopsanCore(gpConfig->getStringSetting(cfg::paths::corelogfile));
 
     gpSplash->showMessage("Initializing GUI...");
 

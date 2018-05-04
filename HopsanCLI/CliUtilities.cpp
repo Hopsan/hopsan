@@ -322,7 +322,7 @@ string getCurrentExecPath()
     {
         string base, file;
         splitFilePath(string(result, count), base, file);
-        cout << "base, file: " << base << " " << file << endl;
+        //cout << "base, file: " << base << " " << file << endl;
         return base;
     }
 

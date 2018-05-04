@@ -238,6 +238,7 @@ int main(int argc, char *argv[])
         TCLAP::SwitchArg createHvcTestOption("", "createValidationData","Create a model validation data set based on the variables connected to scopes in the model given by option -m", cmd);
         TCLAP::SwitchArg prefixRootLevelName("", "prefixRootSystemName", "Prefix the root-level system name to exported results and parameters", cmd);
 
+        TCLAP::ValueArg<std::string> coreLogFileOption("", "log.corelogfile", "The simulation core log file destination", false, "", "Filepath", cmd);
         TCLAP::ValueArg<std::string> buildCompLibOption("", "buildComponentLibrary", "Build the specified component library (point to the library xml)", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> destinationOption("d","destination","Destination for resulting files",false,"","Path to directory", cmd);
         TCLAP::ValueArg<std::string> saveSimulationStateOption("", "saveSimState", "Export the simulation state to this file", false, "Path to file", "string", cmd);
@@ -281,6 +282,11 @@ int main(int argc, char *argv[])
             }
         }
 
+        if (coreLogFileOption.isSet()) {
+            gHopsanCore.openCoreLogFile(coreLogFileOption.getValue().c_str());
+        } else {
+            gHopsanCore.openCoreLogFile("hopsan_logfile.txt");
+        }
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         // Load default Hopsan component lib

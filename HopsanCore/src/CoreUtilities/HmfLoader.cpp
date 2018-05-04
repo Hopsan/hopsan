@@ -686,25 +686,25 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
             }
             else
             {
-                addLogMess("hopsan::loadHopsanModelFileActual(): No system found in file.");
+                addCoreLogMessage("hopsan::loadHopsanModelFileActual(): No system found in file.");
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has no system to load");
             }
         }
         else
         {
-            addLogMess("hopsan::loadHopsanModelFileActual(): Wrong root tag name.");
+            addCoreLogMessage("hopsan::loadHopsanModelFileActual(): Wrong root tag name.");
             pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
     }
     catch(std::exception &e)
     {
-        addLogMess("hopsan::loadHopsanModelFileActual(): Unable to parse xml doc.");
+        addCoreLogMessage("hopsan::loadHopsanModelFileActual(): Unable to parse xml doc.");
         pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Unable to parse xml doc");
         cout << "throws: " << e.what() << endl;
     }
 
-    addLogMess("hopsan::loadHopsanModelFileActual(): Failed.");
+    addCoreLogMessage("hopsan::loadHopsanModelFileActual(): Failed.");
 
     // We failed, return 0 ptr
     return 0;
@@ -828,7 +828,7 @@ int hopsan::compareHopsanVersions(const HString& versionA, const HString& versio
 //! @todo if possible merge the two differen main load functions
 ComponentSystem* hopsan::loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
-    addLogMess("hopsan::loadHopsanModelFile("+rFilePath+")");
+    addCoreLogMessage("hopsan::loadHopsanModelFile("+rFilePath+")");
     try
     {
         rapidxml::file<> hmfFile(rFilePath.c_str());
@@ -839,11 +839,11 @@ ComponentSystem* hopsan::loadHopsanModelFile(const HString &rFilePath, HopsanEss
     }
     catch(std::exception &e)
     {
-        addLogMess("hopsan::loadHopsanModelFile(): Unable to open file.");
+        addCoreLogMessage("hopsan::loadHopsanModelFile(): Unable to open file.");
         pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+rFilePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
-    addLogMess("hopsan::loadHopsanModelFile(): Failed.");
+    addCoreLogMessage("hopsan::loadHopsanModelFile(): Failed.");
     // We failed, return 0 ptr
     return 0;
 }
@@ -902,7 +902,7 @@ ComponentSystem* hopsan::loadHopsanModel(char* xmlStr, HopsanEssentials* pHopsan
 //! @returns A pointer to the rootsystem of the loaded model
 void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
 {
-    addLogMess("hopsan::loadHopsanParameterFile("+rFilePath+")");
+    addCoreLogMessage("hopsan::loadHopsanParameterFile("+rFilePath+")");
     try
     {
         rapidxml::file<> hmfFile(rFilePath.c_str());
@@ -960,25 +960,25 @@ void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials*
             }
             else
             {
-                addLogMess("hopsan::loadHopsanParameterFile(): No system found in file.");
+                addCoreLogMessage("hopsan::loadHopsanParameterFile(): No system found in file.");
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has no system to load");
             }
         }
         else
         {
-            addLogMess("hopsan::loadHopsanParameterFile(): Wrong root tag name.");
+            addCoreLogMessage("hopsan::loadHopsanParameterFile(): Wrong root tag name.");
             pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
     }
     catch(std::exception &e)
     {
-        addLogMess("hopsan::loadHopsanParameterFile(): Unable to open file.");
+        addCoreLogMessage("hopsan::loadHopsanParameterFile(): Unable to open file.");
         pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+rFilePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
 
-    addLogMess("hopsan::loadHopsanParameterFile(): Failed.");
+    addCoreLogMessage("hopsan::loadHopsanParameterFile(): Failed.");
 
     // We failed, return 0 ptr
     return;

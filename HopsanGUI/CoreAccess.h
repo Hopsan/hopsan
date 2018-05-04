@@ -51,6 +51,7 @@ class SimulationHandler;
 class CSVParserNG;
 }
 
+void initializaHopsanCore(QString logPath);
 
 class CoreCSVParserAccess
 {
