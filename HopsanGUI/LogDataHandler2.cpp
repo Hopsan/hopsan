@@ -78,22 +78,18 @@ void appendH5Attribute(H5::H5Object &rObject, const H5std_string &attrName, cons
 //! @param pParent Pointer to parent container object
 LogDataHandler2::LogDataHandler2(ModelWidget *pParentModel) : QObject(pParentModel)
 {
-    mpParentModel = 0;
     setParentModel(pParentModel);
-    mNumPlotCurves = 0;
-    mCurrentGenerationNumber = -1;
 
     // Create the temporary directory that will contain cache data
     int ctr=0;
-    QDir tmp;
+    QDir desiredLogCacheDir;
     do
     {
-        tmp = QDir(gpDesktopHandler->getLogDataPath() + QString("handler%1").arg(ctr));
+        desiredLogCacheDir = QDir(gpDesktopHandler->getLogDataPath() + QString("handler%1").arg(ctr));
         ++ctr;
-    }while(tmp.exists());
-    tmp.mkpath(tmp.absolutePath());
-    mCacheDirs.append(tmp);
-    mCacheSubDirCtr = 0;
+    }while(desiredLogCacheDir.exists());
+    desiredLogCacheDir.mkpath(desiredLogCacheDir.absolutePath());
+    mCacheDirs.append(desiredLogCacheDir);
 }
 
 LogDataHandler2::~LogDataHandler2()
@@ -1103,7 +1099,7 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
         return;
     }
     SystemContainer *pTopLevelSystem = mpParentModel->getTopLevelSystemContainer();
-    if (pTopLevelSystem->getCoreSystemAccessPtr()->getNSamples() == 0)
+    if (pTopLevelSystem->getCoreSystemAccessPtr()->getNumLogSamples() == 0)
     {
         //Don't collect plot data if logging is disabled (to avoid empty generations)
         return;

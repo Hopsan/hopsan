@@ -247,7 +247,7 @@ public:
     bool doesInheritTimeStep(QString compname);
 
     double getDesiredTimeStep();
-    size_t getNSamples();
+    size_t getNumLogSamples();
 
     // System Port Functions
     void deleteSystemPort(QString portname);

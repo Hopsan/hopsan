@@ -70,11 +70,12 @@ public:
     qint64 getNumSubscribers() const;
 
 protected:
-    typedef struct CheckoutInfo{
-        CheckoutInfo(quint64 sb, quint64 nb) {startByte = sb; nBytes=nb;}
+    struct CheckoutInfo
+    {
+        CheckoutInfo(quint64 sb, quint64 nb) : startByte(sb), nBytes(nb) {}
         quint64 startByte;
         quint64 nBytes;
-    }CheckoutInfoT;
+    };
 
     bool writeInCache(const quint64 startByte, const QVector<double> &rDataVector, quint64 &rBytesWriten);
     bool appendToCache(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
@@ -83,7 +84,7 @@ protected:
     void smartCloseFile();
     void removeCacheFile();
 
-    QMap<QVector<double> *, CheckoutInfoT> mCheckoutMap;
+    QMap<QVector<double> *, CheckoutInfo> mCheckoutMap;
     qint64 mNumSubscribers;
     QFile mCacheFile;
     QString mError;

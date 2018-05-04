@@ -238,7 +238,7 @@ bool MultiDataVectorCache::checkoutVector(const quint64 startByte, const quint64
     if (readToMem(startByte, nBytes, pData))
     {
         rpData = pData;
-        mCheckoutMap.insert(pData, CheckoutInfoT(startByte,nBytes));
+        mCheckoutMap.insert(pData, CheckoutInfo(startByte,nBytes));
         return true;
     }
     delete pData;
@@ -250,7 +250,7 @@ bool MultiDataVectorCache::returnVector(QVector<double> *&rpData)
     bool rc = false;
     if (mCheckoutMap.contains(rpData))
     {
-        CheckoutInfoT info = mCheckoutMap.value(rpData, CheckoutInfoT(0,0));
+        CheckoutInfo info = mCheckoutMap.value(rpData, CheckoutInfo(0,0));
         if (info.nBytes == rpData->size()*sizeof(double))
         {
             quint64 dummy;
