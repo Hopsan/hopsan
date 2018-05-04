@@ -49,7 +49,6 @@ The GUI applications are released under the copyleft **GNU General Public Licens
 ## Download
 
 You can find official releases and more or less experimental development snapshots at:  
-https://www.iei.liu.se/flumes/system-simulation/hopsan/download?l=en  
 https://flumes.iei.liu.se/hopsan/files/releases
 
 ## Issue Tracker and Questions
@@ -59,7 +58,7 @@ https://github.com/Hopsan/hopsan/issues
 
 ## Links
 
-https://www.iei.liu.se/flumes/system-simulation/hopsan?l=en  
+https://liu.se/en/research/hopsan  
 https://github.com/Hopsan
 
 
