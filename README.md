@@ -51,6 +51,10 @@ The GUI applications are released under the copyleft **GNU General Public Licens
 You can find official releases and more or less experimental development snapshots at:  
 https://flumes.iei.liu.se/hopsan/files/releases
 
+## Documentation
+
+https://flumes.iei.liu.se/hopsan/docs/2.8/html
+
 ## Issue Tracker and Questions
 If you want to report an issue, make a feature request or have a question, please create a new issue in the issue tracker.  
 If you want to ask a question, please label the issue with the "question" label.
@@ -58,9 +62,9 @@ https://github.com/Hopsan/hopsan/issues
 
 ## Links
 
+https://github.com/Hopsan  
 https://liu.se/en/research/hopsan  
-https://github.com/Hopsan
-
+https://flumes.iei.liu.se/hopsan
 
 ## Migration notice
 
@@ -79,11 +83,11 @@ The old one can be found here: https://flumes.iei.liu.se/redmine/projects/hopsan
 # Build instructions
 
 Hopsan is a cross-platform supported application and it should be possible to build
-on most GNU/Linux based distributions, Microsoft Windows (using MinGW) and Apple Mac OS.
-*Mac building is not supported out of the box yet.*
+on most GNU/Linux based distributions, Microsoft Windows (using MinGW) and Apple macOS.
+*macOS building is not supported out of the box yet.*
 
-**Note!** See the "old" developer documentation for detailed instructions.
-http://flumes.iei.liu.se/hopsan/docs/0.7/html/page_hopsandevelopment.html
+**Note!** See the developer documentation for detailed instructions.
+https://flumes.iei.liu.se/hopsan/docs/2.8/html/page_hopsandevelopment.html
 
 ## Cloning the source code
 To get the source code clone it including dependencies using the following commands.
@@ -97,8 +101,8 @@ If a submodule fails to clone then you must get a hold of it some other way.
 
 ## Build on a GNU/Linux system
 TODO Write this  
-For now, see the old developer documentation
+For now, see the developer documentation linked above
 
 ## Build on a Microsoft Windows system
 TODO Write this  
-For now, see the old developer documentation
+For now, see the developer documentation linked above
