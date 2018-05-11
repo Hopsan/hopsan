@@ -78,7 +78,7 @@ public:
     int getLastSimulationTime();
     void setLastSimulationTime(int time);
 
-    bool saveTo(QString path, SaveContentsEnumT contents=FullModel);
+    bool saveTo(const QString &path, SaveContentsEnumT contents=FullModel);
     QDomDocument saveToDom(SaveContentsEnumT contents=FullModel);
     bool isSaved();
     void setSaved(bool value);

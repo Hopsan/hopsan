@@ -1772,30 +1772,35 @@ QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)
     return domDocument;
 }
 
-bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
+//! @brief Save model to file
+//! @param[in] path File path
+//! @param[in] contents What should be saved
+bool ModelWidget::saveTo(const QString& path, SaveContentsEnumT contents)
 {
-//    QFile file(path);   //Create a QFile object
-//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//    {
-//        mpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
-//        return false;
-//    }
-
-    // Save to file
+    TicToc tt;
     QFile xmlFile(path);
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         mpMessageHandler->addErrorMessage("Could not open the file: "+xmlFile.fileName()+" for writing.");
         return false;
     }
+    const int open_ms = tt.toc();
 
+    tt.tic();
     QTextStream out(&xmlFile);
-
     QDomDocument doc = saveToDom(contents);
     doc.save(out, XMLINDENTATION);
+    const double save_ms = tt.toc();
 
-    // Close the file
+    tt.tic();
     xmlFile.close();
+    const int close_ms = tt.toc();
+
+    const double total_s = (open_ms+save_ms+close_ms)*1.0e-3;
+    const double save_s = save_ms*1.0e-3;
+    const double size_mb = xmlFile.size() * 1.0e-6;
+    mpMessageHandler->addDebugMessage(QString("Saving file: %1 took %2 s at %3 MB/s. Opening: %4 ms, Closing: %5 ms")
+                                      .arg(path).arg(total_s).arg(size_mb/save_s).arg(open_ms).arg(close_ms));
 
     return true;
 }
