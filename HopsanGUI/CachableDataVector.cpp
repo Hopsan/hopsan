@@ -294,6 +294,11 @@ QFileInfo MultiDataVectorCache::getCacheFileInfo() const
     return QFileInfo(mCacheFile);
 }
 
+qint64 MultiDataVectorCache::getCacheSize() const
+{
+    return mCacheFile.size();
+}
+
 void MultiDataVectorCache::incrementSubscribers()
 {
     ++mNumSubscribers;

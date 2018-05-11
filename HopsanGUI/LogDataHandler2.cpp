@@ -1092,7 +1092,7 @@ void LogDataHandler2::clear()
 //! @brief Collects plot data from last simulation
 void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
 {
-    TicToc tictoc;
+
 
     if (!(mpParentModel && mpParentModel->getTopLevelSystemContainer()))
     {
@@ -1111,19 +1111,29 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
         ++mCurrentGenerationNumber;
     }
 
-
+    auto pGMC = this->getGenerationMultiCache(mCurrentGenerationNumber);
     //! @todo why not run multiappend when overwriting generation ? Because then we are not appending, need some common open mode
     if(!overWriteLastGeneration)
     {
-        this->getGenerationMultiCache(mCurrentGenerationNumber)->beginMultiAppend();
+        TicToc tt(TicToc::TextOutput::DebugMessage);
+        pGMC->beginMultiAppend();
+        tt.toc(QString("Opening cache file: %1").arg(pGMC->getCacheFileInfo().absoluteFilePath()));
     }
 
+    TicToc tictoc(TicToc::TextOutput::DebugMessage);
+    auto sizeBefore = pGMC->getCacheSize();
     QMap<std::vector<double>*, SharedVectorVariableT> generationTimeVectors;
     bool foundData = collectLogDataFromSystem(pTopLevelSystem, QStringList(), generationTimeVectors);
+    auto sizeAfter = pGMC->getCacheSize();
+    const double cachedSize_mb = (sizeAfter-sizeBefore)*1.0e-6;
+    const double collect_ms = tictoc.toc("Collecting all log data");
+    gpMessageHandler->addDebugMessage(QString("Collected %1 MB data at %2 MB/s").arg(cachedSize_mb).arg( cachedSize_mb*1.0e3/collect_ms));
 
     if(!overWriteLastGeneration)
     {
-        this->getGenerationMultiCache(mCurrentGenerationNumber)->endMultiAppend();
+        TicToc tt(TicToc::TextOutput::DebugMessage);
+        pGMC->endMultiAppend();
+        tt.toc("Closing cache file");
     }
 
     // Limit number of plot generations if there are too many
@@ -1141,7 +1151,6 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
         // Revert generation number if no data was found
         --mCurrentGenerationNumber;
     }
-    tictoc.toc("Collect plot data");
 }
 
 bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double>*, SharedVectorVariableT> &rGenTimeVectors)

@@ -64,6 +64,7 @@ public:
     QString getError() const;
     QString getAndClearError();
     QFileInfo getCacheFileInfo() const;
+    qint64 getCacheSize() const;
 
     void incrementSubscribers();
     void decrementSubscribers();
