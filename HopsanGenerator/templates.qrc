@@ -14,7 +14,7 @@
         <file>templates/fmuCoSimComponentTemplate.hpp</file>
         <file>templates/fmi2ComponentTemplate.hpp</file>
         <file>templates/fmi2MeComponentTemplate.hpp</file>
-        <file>templates/fmu_hopsan.c</file>
+        <file>templates/fmu_hopsan.cpp</file>
         <file>templates/fmu_hopsan.h</file>
         <file>templates/fmu2_model.c</file>
         <file>templates/fmu2_model.h</file>

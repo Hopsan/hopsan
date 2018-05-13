@@ -47,4 +47,4 @@ void hopsan_set_string(int vr, const char* value);
 }
 #endif
 
-#endif /* End of header FMU2_MODEL_H_ */
+#endif /* End of header FMU2_HOPSAN_H_ */
