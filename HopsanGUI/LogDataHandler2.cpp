@@ -78,22 +78,18 @@ void appendH5Attribute(H5::H5Object &rObject, const H5std_string &attrName, cons
 //! @param pParent Pointer to parent container object
 LogDataHandler2::LogDataHandler2(ModelWidget *pParentModel) : QObject(pParentModel)
 {
-    mpParentModel = 0;
     setParentModel(pParentModel);
-    mNumPlotCurves = 0;
-    mCurrentGenerationNumber = -1;
 
     // Create the temporary directory that will contain cache data
     int ctr=0;
-    QDir tmp;
+    QDir desiredLogCacheDir;
     do
     {
-        tmp = QDir(gpDesktopHandler->getLogDataPath() + QString("handler%1").arg(ctr));
+        desiredLogCacheDir = QDir(gpDesktopHandler->getLogDataPath() + QString("handler%1").arg(ctr));
         ++ctr;
-    }while(tmp.exists());
-    tmp.mkpath(tmp.absolutePath());
-    mCacheDirs.append(tmp);
-    mCacheSubDirCtr = 0;
+    }while(desiredLogCacheDir.exists());
+    desiredLogCacheDir.mkpath(desiredLogCacheDir.absolutePath());
+    mCacheDirs.append(desiredLogCacheDir);
 }
 
 LogDataHandler2::~LogDataHandler2()
@@ -1096,14 +1092,14 @@ void LogDataHandler2::clear()
 //! @brief Collects plot data from last simulation
 void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
 {
-    TicToc tictoc;
+
 
     if (!(mpParentModel && mpParentModel->getTopLevelSystemContainer()))
     {
         return;
     }
     SystemContainer *pTopLevelSystem = mpParentModel->getTopLevelSystemContainer();
-    if (pTopLevelSystem->getCoreSystemAccessPtr()->getNSamples() == 0)
+    if (pTopLevelSystem->getCoreSystemAccessPtr()->getNumLogSamples() == 0)
     {
         //Don't collect plot data if logging is disabled (to avoid empty generations)
         return;
@@ -1115,19 +1111,29 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
         ++mCurrentGenerationNumber;
     }
 
-
+    auto pGMC = this->getGenerationMultiCache(mCurrentGenerationNumber);
     //! @todo why not run multiappend when overwriting generation ? Because then we are not appending, need some common open mode
     if(!overWriteLastGeneration)
     {
-        this->getGenerationMultiCache(mCurrentGenerationNumber)->beginMultiAppend();
+        TicToc tt(TicToc::TextOutput::DebugMessage);
+        pGMC->beginMultiAppend();
+        tt.toc(QString("Opening cache file: %1").arg(pGMC->getCacheFileInfo().absoluteFilePath()));
     }
 
+    TicToc tictoc(TicToc::TextOutput::DebugMessage);
+    auto sizeBefore = pGMC->getCacheSize();
     QMap<std::vector<double>*, SharedVectorVariableT> generationTimeVectors;
     bool foundData = collectLogDataFromSystem(pTopLevelSystem, QStringList(), generationTimeVectors);
+    auto sizeAfter = pGMC->getCacheSize();
+    const double cachedSize_mb = (sizeAfter-sizeBefore)*1.0e-6;
+    const double collect_ms = tictoc.toc("Collecting all log data");
+    gpMessageHandler->addDebugMessage(QString("Collected %1 MB data at %2 MB/s").arg(cachedSize_mb).arg( cachedSize_mb*1.0e3/collect_ms));
 
     if(!overWriteLastGeneration)
     {
-        this->getGenerationMultiCache(mCurrentGenerationNumber)->endMultiAppend();
+        TicToc tt(TicToc::TextOutput::DebugMessage);
+        pGMC->endMultiAppend();
+        tt.toc("Closing cache file");
     }
 
     // Limit number of plot generations if there are too many
@@ -1145,7 +1151,6 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
         // Revert generation number if no data was found
         --mCurrentGenerationNumber;
     }
-    tictoc.toc("Collect plot data");
 }
 
 bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double>*, SharedVectorVariableT> &rGenTimeVectors)

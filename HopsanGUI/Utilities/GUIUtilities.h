@@ -149,11 +149,15 @@ private:
 class TicToc : public QTime
 {
 public:
-    TicToc();
+    enum class TextOutput {Quiet, Qdebug, DebugMessage, InfoMessage};
+    explicit TicToc(const TextOutput outType=TextOutput::Qdebug);
     void tic();
-    void tic(const QString &rWhat);
+    void tic(const QString &text);
     int toc();
-    int toc(const QString &rWhat, const int minMs=0);
+    int toc(const QString &text, const int minMs=0);
+private:
+    void print(const QString &text);
+    TextOutput mTextOutput;
 };
 
 #endif // GUIUTILITIES_H

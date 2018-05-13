@@ -310,7 +310,7 @@ double CoreSystemAccess::getDesiredTimeStep()
 }
 
 
-size_t CoreSystemAccess::getNSamples()
+size_t CoreSystemAccess::getNumLogSamples()
 {
     return mpCoreComponentSystem->getNumLogSamples();
 }

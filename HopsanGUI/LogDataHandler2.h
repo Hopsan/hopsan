@@ -194,18 +194,16 @@ private:
     void removeGenerationCacheIfEmpty(const int gen);
     void pruneGenerationCache(const int generation, LogDataGeneration *pGeneration);
 
-    ModelWidget *mpParentModel;
-
+    ModelWidget *mpParentModel = nullptr;
+    int mNumPlotCurves = 0;
+    int mCurrentGenerationNumber = -1;
 
     ImportedGenerationsMapT mImportedGenerationsMap;
     GenerationCacheMapT mGenerationCacheMap;
-
     GenerationMapT mGenerationMap;
 
-    int mNumPlotCurves = 0;
-    int mCurrentGenerationNumber = -1;
     QList<QDir> mCacheDirs;
-    quint64 mCacheSubDirCtr;
+    quint64 mCacheSubDirCtr = 0;
 };
 
 

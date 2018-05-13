@@ -56,6 +56,7 @@
 #include "DesktopHandler.h"
 #include "CoreUtilities/HmfLoader.h"
 #include "Widgets/LibraryWidget.h"
+#include "MessageHandler.h"
 
 #define UNDERSCORE 95
 #define UPPERCASE_LOW 65
@@ -875,7 +876,7 @@ QString extractBetweenFromQString(const QString &rString, const QChar &rFirst, c
 }
 
 
-TicToc::TicToc() : QTime()
+TicToc::TicToc(const TextOutput outType) : QTime(), mTextOutput(outType)
 {
     tic();
 }
@@ -885,9 +886,9 @@ void TicToc::tic()
     this->restart();
 }
 
-void TicToc::tic(const QString &rWhat)
+void TicToc::tic(const QString &text)
 {
-    qDebug() << rWhat;
+    print(text);
     tic();
 }
 
@@ -896,21 +897,39 @@ int TicToc::toc()
     return this->elapsed();
 }
 
-int TicToc::toc(const QString &rWhat, const int minMs)
+int TicToc::toc(const QString &text, const int minMs)
 {
     const int ms = toc();
     if (ms >= minMs)
     {
         if (ms == 0)
         {
-            qDebug() << rWhat << " took: less then 1 ms";
+            print(text+" took: less then 1 ms");
         }
         else
         {
-            qDebug() << rWhat << " took: " << ms << " ms";
+            print(QString("%1 took: %2 ms").arg(text).arg(ms));
         }
     }
     return ms;
+}
+
+void TicToc::print(const QString &text)
+{
+    switch (mTextOutput) {
+    case TextOutput::Qdebug:
+        qDebug() << text;
+        break;
+    case TextOutput::DebugMessage:
+        gpMessageHandler->addDebugMessage(text);
+        break;
+    case TextOutput::InfoMessage:
+        gpMessageHandler->addInfoMessage(text);
+        break;
+    default:
+        break;
+    }
+
 }
 
 //! @brief Creates a linear space between start and stop with step size step
