@@ -29,6 +29,8 @@
 #include "model.hpp"
 #include <cassert>
 
+namespace {
+
 static double fmu_time=0;
 static hopsan::ComponentSystem *spCoreComponentSystem = 0;
 static std::vector<std::string> sComponentNames;
@@ -36,34 +38,44 @@ hopsan::HopsanEssentials gHopsanCore;
 
 double *dataPtrs[<<<nports>>>];
 
-extern "C" {
-
-void hopsan_instantiate()
-{
-    double startT;      //Dummy variable
-    double stopT;       //Dummy variable
-    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
-
-    //Assert that model was successfully loaded
-    assert(spCoreComponentSystem);
-
-    //Initialize system
-    spCoreComponentSystem->setDesiredTimestep(<<<timestep>>>);
-    spCoreComponentSystem->disableLog();
-    spCoreComponentSystem->initialize(0,10);
-
-    <<<setdataptrs>>>
 }
 
-void hopsan_initialize()
+extern "C" {
+
+int hopsan_instantiate()
 {
-    spCoreComponentSystem->initialize(0,10);
+    double startT, stopT;      // Dummy variables
+    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
+    if (spCoreComponentSystem)
+    {
+        // Get pointers to I/O data variables
+        <<<setdataptrs>>>
+
+        // Initialize system
+        spCoreComponentSystem->setDesiredTimestep(<<<timestep>>>);
+        spCoreComponentSystem->disableLog();
+        if (spCoreComponentSystem->checkModelBeforeSimulation())
+        {
+            return 1; // C true
+        }
+    }
+    return 0;  // C false
+}
+
+int hopsan_initialize(double startT, double stopT)
+{
+    return spCoreComponentSystem->initialize(startT, stopT) ? 1 : 0;
 }
 
 
 void hopsan_simulate(double stopTime)
 {
     spCoreComponentSystem->simulate(stopTime);
+}
+
+void hopsan_finalize()
+{
+    spCoreComponentSystem->finalize();
 }
 
 

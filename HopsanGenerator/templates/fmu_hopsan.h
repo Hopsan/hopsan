@@ -29,9 +29,10 @@
 extern "C" {
 #endif
 
-void hopsan_instantiate();
-void hopsan_initialize();
+int hopsan_instantiate();
+int hopsan_initialize(double startT, double stopT);
 void hopsan_simulate(double stopTime);
+void hopsan_finalize();
 
 double hopsan_get_real(int vr);
 int hopsan_get_integer(int vr);

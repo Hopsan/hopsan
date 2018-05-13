@@ -23,9 +23,24 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
 {
-    hopsan_initialize();
+    int initOK;
+    double tStop;
 
-	return 0;
+    tStop = comp->tStart + 1.0; // Use a dummy stop value if one is not given
+    if (comp->StopTimeDefined)
+    {
+        tStop = comp->tStop;
+    }
+
+    initOK = hopsan_initialize(comp->tStart, tStop);
+    if (initOK)
+    {
+        return fmiOK;
+    }
+    else
+    {
+        return fmiError;
+    }
 }
 
 static int calc_get_derivatives(component_ptr_t comp)
@@ -220,10 +235,14 @@ const char* fmi_get_model_types_platform()
 
 fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCallbackFunctions functions, fmiBoolean loggingOn)
 {
-    hopsan_instantiate();
-
 	component_ptr_t comp;
-	int k, p;
+    int k, p, instantiateOK ;
+
+    instantiateOK = hopsan_instantiate();
+    if (!instantiateOK)
+    {
+        return NULL;
+    }
 
 	comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
 	if (comp == NULL) 
@@ -344,11 +363,9 @@ fmiStatus fmi_initialize(fmiComponent c, fmiBoolean toleranceControlled, fmiReal
 		comp->toleranceControlled = toleranceControlled;
 		comp->relativeTolerance = relativeTolerance;
 		
-		calc_initialize(comp);
-
 		*eventInfo = comp->eventInfo;
 
-		return fmiOK;
+        return calc_initialize(comp);
 	}
 }
 
@@ -459,6 +476,7 @@ fmiStatus fmi_terminate(fmiComponent c)
 	if (comp == NULL) {
 		return fmiFatal;
 	} else {
+        hopsan_finalize();
 		return fmiOK;
 	}
 }
