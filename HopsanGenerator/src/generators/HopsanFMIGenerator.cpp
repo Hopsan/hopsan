@@ -1706,13 +1706,13 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
 
 bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const
 {
-    QString vStr = QString::number(version);
+    const QString vStr = QString::number(version);
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Compiling C files");
     printMessage("------------------------------------------------------------------------");
 
-    const QString fmiLibDir="Dependencies/FMILibrary";
+    const QString fmiLibDir=mHopsanRootPath+"/Dependencies/FMILibrary";
 
 #ifdef _WIN32
     QFile compileCBatchFile;
@@ -1727,8 +1727,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileBatchCStream << "@echo off\n";
     compileBatchCStream << "PATH=" << mCompilerPath << ";%PATH%\n";
     compileBatchCStream << "@echo on\n";
-    compileBatchCStream << "gcc.exe -c fmu"+vStr+"_model_cs.c " <<
-                           QString("-I\"%1/include\"").arg(mHopsanRootPath+fmiLibDir) << "\n";
+    compileBatchCStream << QString("gcc.exe -c fmu%1_model_cs.c -I\"%2/include\"").arg(vStr).arg(fmiLibDir) << "\n";
     compileCBatchFile.close();
 
     callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
@@ -1742,14 +1741,14 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
-    compileBatchCStream << "gcc -fPIC -c fmu"+vStr+"_model_cs.c "+
-                           "-I"+mHopsanRootPath+fmiLibDir+"/include\n";
+    compileBatchCStream << QString("gcc -fPIC -c fmu%1_model_cs.c -I%2/include").arg(vStr).arg(fmiLibDir)<< "\n";
     compileCBatchFile.close();
 
     callProcess("/bin/sh", QStringList() << "compileC.sh", savePath);
 #endif
-    if(!assertFilesExist(savePath, QStringList() << "fmu"+vStr+"_model_cs.o"))
+    if(!assertFilesExist(savePath, QStringList() << QString("fmu%1_model_cs.o").arg(vStr))) {
         return false;
+    }
 
 
     printMessage("------------------------------------------------------------------------");
