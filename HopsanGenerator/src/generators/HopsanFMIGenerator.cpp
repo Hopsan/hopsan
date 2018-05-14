@@ -234,9 +234,6 @@ bool HopsanFMIGenerator::generateFromFmu(const QString &rFmuPath, QString target
 //! @param context Context struct used by FMILibrary
 bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
 {
-    fmi1_callback_functions_t callBackFunctions;
-    jm_status_enu_t status;
-
     //-----------------------------------------//
     printMessage("Reading modelDescription.xml");
     //-----------------------------------------//
@@ -257,18 +254,6 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
         printErrorMessage("Only FMUs for co-simulation are supported by this code.");
-        return false;
-    }
-
-    callBackFunctions.logger = fmi1_log_forwarding;
-    callBackFunctions.allocateMemory = calloc;
-    callBackFunctions.freeMemory = free;
-
-    status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
-    if (status == jm_status_error)
-    {
-        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
-        printErrorMessage(QString("Could not create the DLL loading mechanism (C-API) (error: %1).\n").arg(fmi1_import_get_last_error(fmu)));
         return false;
     }
 
