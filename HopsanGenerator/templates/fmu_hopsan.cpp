@@ -78,6 +78,17 @@ void hopsan_finalize()
     spCoreComponentSystem->finalize();
 }
 
+int hopsan_has_message()
+{
+    return (gHopsanCore.checkMessage() > 0) ? 1 : 0;
+}
+
+void hopsan_get_message(hopsan_message_callback_t message_callback, void* userState)
+{
+    hopsan::HString message, type, tag;
+    gHopsanCore.getMessage(message, type, tag);
+    message_callback(message.c_str(), type.c_str(), userState);
+}
 
 double hopsan_get_real(int vr)
 {

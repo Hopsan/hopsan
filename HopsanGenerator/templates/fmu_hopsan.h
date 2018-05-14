@@ -44,6 +44,11 @@ void hopsan_set_integer(int vr, int value);
 void hopsan_set_boolean(int vr, int value);
 void hopsan_set_string(int vr, const char* value);
 
+typedef void (*hopsan_message_callback_t) (const char* message, const char* type, void* userState);
+
+int hopsan_has_message();
+void hopsan_get_message(hopsan_message_callback_t message_callback, void* userState);
+
 #ifdef __cplusplus
 }
 #endif

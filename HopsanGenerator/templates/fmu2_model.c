@@ -20,6 +20,46 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include "fmu2_model.h"
 #include "fmu_hopsan.h"
 
+void forward_message(const char* message, const char* type, void* userState)
+{
+    component_ptr_t comp = (component_ptr_t)userState;
+    if (comp == NULL) {
+        return;
+    }
+
+    if (comp->loggingOn == fmi2False) {
+        return;
+    }
+
+    fmi2Status status = fmi2OK;
+    if (strcmp(type, "warning") == 0)
+    {
+        status = fmi2Warning;
+    }
+    else if (strcmp(type, "error") == 0)
+    {
+        status = fmi2Error;
+    }
+    else if (strcmp(type, "fatal") == 0)
+    {
+        status = fmi2Fatal;
+    }
+    else if (strcmp(type, "debug") == 0)
+    {
+        //! @todo Make it possible to choose debug logs or not
+        status = fmi2OK;
+    }
+    comp->functions->logger(NULL, comp->instanceName, status, type, message);
+}
+
+void get_all_hopsan_messages(component_ptr_t comp)
+{
+    while (hopsan_has_message() > 0)
+    {
+        hopsan_get_message(forward_message, (void*)comp);
+    }
+}
+
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
 {
@@ -39,13 +79,9 @@ static int calc_initialize(component_ptr_t comp)
     }
     else
     {
+        get_all_hopsan_messages(comp);
         return fmi2Error;
     }
-    
-//	if(comp->loggingOn) 
-//  {
-//		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "###### Initializing component ######");
-//	}
 }
 
 static int calc_get_derivatives(component_ptr_t comp)
@@ -243,12 +279,6 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 	component_ptr_t comp;
     int k, p, instantiateOK ;
 
-    instantiateOK = hopsan_instantiate();
-    if (!instantiateOK)
-    {
-        return NULL;
-    }
-
 	comp = (component_ptr_t)functions->allocateMemory(1, sizeof(component_t));
 	if (comp == NULL) 
     {
@@ -262,10 +292,10 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
     {	
 		sprintf(comp->instanceName, "%s", instanceName);
 		sprintf(comp->GUID, "%s",fmuGUID);
-		comp->functions		= functions;
-		/*comp->functions->allocateMemory = functions->allocateMemory;*/
-		
+        sprintf(comp->fmuLocation, "%s",fmuLocation);
+        comp->functions		= functions;
 		comp->loggingOn		= loggingOn;
+        comp->visible		= visible;
 
 		/* Set default values */
 		for (k = 0; k < N_STATES;			k++) comp->states[k]			= 0.0;
@@ -292,8 +322,14 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 			}
 		}
 	
-		sprintf(comp->fmuLocation, "%s",fmuLocation);
-		comp->visible		= visible;
+        instantiateOK = hopsan_instantiate();
+        if (!instantiateOK)
+        {
+            get_all_hopsan_messages(comp);
+            fmi_free_instance(comp);
+            return NULL;
+        }
+
 		return comp;
 	}
 }
@@ -512,6 +548,7 @@ fmi2Status fmi_terminate(fmi2Component c)
     else 
     {
         hopsan_finalize();
+        get_all_hopsan_messages(comp);
 		return fmi2OK;
 	}
 }
