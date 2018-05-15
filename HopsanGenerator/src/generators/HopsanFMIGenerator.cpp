@@ -337,7 +337,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     //Generate HPP file
     QFile fmuComponentTemplateFile;
-    fmuComponentTemplateFile.setFileName(":templates/fmuComponentTemplate.hpp");
+    fmuComponentTemplateFile.setFileName(":templates/fmu1CsImportComponentTemplate.hpp");
     assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString fmuComponentCode;
     QTextStream t2(&fmuComponentTemplateFile);
@@ -768,11 +768,11 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QFile fmuComponentTemplateFile;
     if(fmuKind == fmi2_fmu_kind_me)
     {
-        fmuComponentTemplateFile.setFileName(":templates/fmi2MeComponentTemplate.hpp");
+        fmuComponentTemplateFile.setFileName(":templates/fmu2MeImportComponentTemplate.hpp");
     }
     else
     {
-        fmuComponentTemplateFile.setFileName(":templates/fmi2ComponentTemplate.hpp");
+        fmuComponentTemplateFile.setFileName(":templates/fmu2CsImportComponentTemplate.hpp");
     }
     QString fmuComponentCode;
     if(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
