@@ -36,12 +36,64 @@
 #include "ComponentUtilities.h"
 
 #include "FMI/fmi_import_context.h"
-#include "FMI1/fmi1_import.h"
 #include "FMI2/fmi2_import.h"
 #include "JM/jm_portability.h"
 
+namespace {
+void jmLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+{
+    hopsan::Component* pComponent = (hopsan::Component*)(c->context);
+    if (pComponent) {
+        switch (log_level) {
+        case jm_log_level_fatal:
+            pComponent->addFatalMessage(message);
+            break;
+        case jm_log_level_error:
+            pComponent->addErrorMessage(message);
+            break;
+        case jm_log_level_warning:
+            pComponent->addWarningMessage(message);
+            break;
+        // Typically the jm logger info messages are not something we want to see in Hopsan, so show them as debug type
+        case jm_log_level_verbose:
+        case jm_log_level_info:
+        case jm_log_level_debug:
+            pComponent->addDebugMessage(message);
+            break;
+        default:
+            break;
+        }
+    }
+}
 
-void localLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message) { }
+void fmiLogger(fmi2ComponentEnvironment pComponentEnvironment, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message)
+{
+    hopsan::Component* pComponent = (hopsan::Component*)pComponentEnvironment;
+    if (pComponent == NULL) {
+        return;
+    }
+
+    switch (status) {
+    // Typically info messages are not something we want to see in Hopsan, so show them as debug type
+    case fmi2_status_ok:
+        pComponent->addDebugMessage(message);
+        break;
+    case fmi2_status_warning:
+        pComponent->addWarningMessage(message);
+        break;
+    case fmi2_status_error:
+        pComponent->addErrorMessage(message);
+        break;
+    case fmi2_status_fatal:
+        pComponent->addFatalMessage(message);
+        break;
+    default:
+        // Discard
+        break;
+    }
+}
+
+} // end anonymous-namespace
 
 namespace hopsan {
 
@@ -52,15 +104,16 @@ private:
     //Node data pointers
     <<<localvars>>>
 
-    fmi2_callback_functions_t callBackFunctions;
-    jm_callbacks callbacks;
+    jm_callbacks jmCallbacks;
+    jm_status_enu_t status;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
-    jm_status_enu_t status;
+    fmi2_callback_functions_t fmiCallbackFunctions;
     fmi2_status_t fmistatus;
+    fmi2_import_t* fmu;
     int k;
 
-    fmi2_import_t* fmu;
+
 
 public:
     static Component *Creator()
@@ -96,15 +149,15 @@ public:
         const char* FMUPath = "<<<fmupath>>>";
         const char* tmpPath = "<<<temppath>>>";
 
-        callbacks.malloc = malloc;
-        callbacks.calloc = calloc;
-        callbacks.realloc = realloc;
-        callbacks.free = free;
-        callbacks.logger = localLogger;
-        callbacks.log_level = jm_log_level_debug;
-        callbacks.context = 0;
+        jmCallbacks.malloc = malloc;
+        jmCallbacks.calloc = calloc;
+        jmCallbacks.realloc = realloc;
+        jmCallbacks.free = free;
+        jmCallbacks.logger = jmLogger;
+        jmCallbacks.log_level = jm_log_level_debug;
+        jmCallbacks.context = (jm_voidp)this;   // This pointer is used by the jmLogger callback;
 
-        context = fmi_import_allocate_context(&callbacks);
+        context = fmi_import_allocate_context(&jmCallbacks);
 
         version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
@@ -115,7 +168,7 @@ public:
             return;
         }
 
-        fmu = fmi2_import_parse_xml(context, tmpPath, 0);
+        fmu = fmi2_import_parse_xml(context, tmpPath, NULL);
 
         if(!fmu)
         {
@@ -131,12 +184,12 @@ public:
             return;
         }
 
-        callBackFunctions.logger = fmi2_log_forwarding;
-        callBackFunctions.allocateMemory = calloc;
-        callBackFunctions.freeMemory = free;
-        callBackFunctions.componentEnvironment = fmu;
+        fmiCallbackFunctions.logger = fmiLogger;
+        fmiCallbackFunctions.allocateMemory = calloc;
+        fmiCallbackFunctions.freeMemory = free;
+        fmiCallbackFunctions.componentEnvironment = (fmi2ComponentEnvironment*)this;
 
-        status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callBackFunctions);
+        status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &fmiCallbackFunctions);
         if (status == jm_status_error)
         {
             std::stringstream ss;
@@ -147,10 +200,10 @@ public:
         }
 
         //Instantiate FMU
-        fmi2_string_t instanceName = "Test CS model instance";
+        HString instanceName = getName();
         fmi2_string_t fmuResourceLocation = NULL;
         fmi2_boolean_t visible = fmi2_false;
-        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, fmuResourceLocation, visible);
+        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, fmuResourceLocation, visible);
         if (jmstatus == jm_status_error)
         {
             addErrorMessage("fmi2_import_instantiate() failed!");

@@ -87,6 +87,8 @@ void hopsan_get_message(hopsan_message_callback_t message_callback, void* userSt
 {
     hopsan::HString message, type, tag;
     gHopsanCore.getMessage(message, type, tag);
+    // Replace any # with ## (# is reserved by FMI for value references)
+    message.replace("#", "##");
     message_callback(message.c_str(), type.c_str(), userState);
 }
 

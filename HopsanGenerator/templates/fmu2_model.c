@@ -49,7 +49,7 @@ void forward_message(const char* message, const char* type, void* userState)
         //! @todo Make it possible to choose debug logs or not
         status = fmi2OK;
     }
-    comp->functions->logger(NULL, comp->instanceName, status, type, message);
+    comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, status, type, message);
 }
 
 void get_all_hopsan_messages(component_ptr_t comp)
