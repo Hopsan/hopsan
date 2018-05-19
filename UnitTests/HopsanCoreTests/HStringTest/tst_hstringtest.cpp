@@ -230,6 +230,9 @@ private Q_SLOTS:
         QTest::newRow("Replace empty0") << HString("The Brown Fox Jumps") << HString("") << HString("_") << HString("The Brown Fox Jumps");
         QTest::newRow("Replace empty1") << HString("") << HString("_") << HString("_") << HString("");
         QTest::newRow("Replace empty2") << HString("") << HString("") << HString("_") << HString("");
+        QTest::newRow("Replace # with ##") << HString("Some text #1 some more #2 done") << HString("#") << HString("##") << HString("Some text ##1 some more ##2 done");
+        QTest::newRow("Replace A with AB multiple times") << HString("Some A text AA more AAA") << HString("A") << HString("AB") << HString("Some AB text ABAB more ABABAB");
+        QTest::newRow("Replace A with BB multiple times") << HString("Some AAA text AAAA") << HString("A") << HString("BB") << HString("Some BBBBBB text BBBBBBBB");
 
     }
 
