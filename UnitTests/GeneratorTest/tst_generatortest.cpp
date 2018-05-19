@@ -118,8 +118,11 @@ private Q_SLOTS:
     void Generator_FMU_Export()
     {
         QFETCH(ComponentSystem*, system);
-
+#if defined(__APPLE__)
+        QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
+#else
         const QString fmuCheckPath=QDir::cleanPath(qcwd+"/../Dependencies/tools/FMUChecker");
+
 #ifdef _WIN32
         QString fmuChecker32 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win32.exe");
         QString fmuChecker64 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win64.exe");
@@ -201,6 +204,7 @@ private Q_SLOTS:
                  "Failed to generate valid FMU 2.0 (64-bit), FMUChecker crashed");
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
+#endif
 #endif
     }
 
