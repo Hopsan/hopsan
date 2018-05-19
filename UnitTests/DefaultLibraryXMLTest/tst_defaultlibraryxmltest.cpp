@@ -35,11 +35,10 @@
 #define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-    #ifdef _WIN32
-        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/defaultcomponentlibrary" TO_STR(DEBUG_EXT) ".dll"
-    #else
-        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/libdefaultcomponentlibrary" TO_STR(DEBUG_EXT) ".so"
-    #endif
+#define DEFAULTLIBFILE TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
+#else
+const std::string defaultLibraryFilePath = "";
 #endif
 
 using namespace hopsan;
@@ -135,10 +134,11 @@ void DefaultLibraryXMLTest::initTestCase()
     QVERIFY2(libRoot.exists(), QString("Libroot: %1 could not be found!").arg(DEFAULTLIBPATH).toStdString().c_str());
     recurseCollectXMLFiles(libRoot);
 
-#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-    bool loadOK = mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
-    QVERIFY2(loadOK, "could not load the component library");
-#endif
+    if (!defaultLibraryFilePath.empty())
+    {
+        bool loadOK = mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        QVERIFY2(loadOK, "Could not load the default component library file");
+    }
 }
 
 void DefaultLibraryXMLTest::testIconPaths()

@@ -31,10 +31,14 @@
 #include <assert.h>
 #include <iostream>
 
+#define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
+
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+#define DEFAULTLIBFILE TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
+#else
+const std::string defaultLibraryFilePath = "";
 #endif
-#define LIBEXT TO_STR(DLL_EXT)
 
 namespace {
     void removeDir(QString path)
@@ -94,9 +98,10 @@ public:
         gcc64Path="";
 #endif
 
-#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-        mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
-#endif
+        if (!defaultLibraryFilePath.empty())
+        {
+            mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        }
     }
 
 private:
@@ -327,7 +332,7 @@ private Q_SLOTS:
 #endif
         callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, nullptr, 0, true, hopsanRoot.c_str());
 
-//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(LIBEXT)).c_str()),
+//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(TO_STR(DLL_EXT))).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");
         QWARN("Modelica generator test is disabled");
     }
