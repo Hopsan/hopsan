@@ -94,6 +94,10 @@ public:
 
     void configure()
     {
+        //Init fmu pointers
+        context = 0;
+        fmu = 0;
+
         //Add constants
         <<<addconstants>>>
 
@@ -215,9 +219,18 @@ public:
 
     void finalize()
     {
-        fmi1_import_destroy_dllfmu(fmu);
-        fmi1_import_free(fmu);
-        fmi_import_free_context(context);
+        if (fmu)
+        {
+            fmi1_import_destroy_dllfmu(fmu);
+            fmi1_import_free(fmu);
+            fmu = 0;
+        }
+
+        if (context)
+        {
+            fmi_import_free_context(context);
+            context = 0;
+        }
     }
 };
 }

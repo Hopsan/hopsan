@@ -123,6 +123,10 @@ public:
 
     void configure()
     {
+        //Init fmu pointers
+        context = 0;
+        fmu = 0;
+
         //Add constants
         <<<addconstants>>>
 
@@ -134,10 +138,6 @@ public:
 
         //Add ports
         <<<addports>>>
-
-        //Init fmu pointers
-        context = 0;
-        fmu = 0;
     }
 
     void initialize()
