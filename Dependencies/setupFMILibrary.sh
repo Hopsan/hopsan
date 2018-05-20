@@ -5,7 +5,6 @@
 # Author: Peter Nordin peter.nordin@liu.se
 
 set -e
-set -u
 
 basedir=`pwd`
 zipname=FMILibrary-2.0.2
@@ -24,8 +23,8 @@ else
         unzip -q ${zipfile}
         mv $zipname $codedir
     else
-	echo "Warning: ${zipfile} is missing, you need to download it"
-	exit 0
+        echo "Warning: ${zipfile} is missing, you need to download it"
+        exit 0
     fi
 fi
 

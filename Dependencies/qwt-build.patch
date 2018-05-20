@@ -1,5 +1,18 @@
+diff --git a/qwtbuild.pri b/qwtbuild.pri
+index c1ad8a8..f624087 100644
+--- a/qwtbuild.pri
++++ b/qwtbuild.pri
+@@ -50,7 +50,7 @@ linux-g++ | linux-g++-64 {
+     #QMAKE_CXXFLAGS   *= -Wsign-conversion 
+     #QMAKE_CXXFLAGS   *= -Wlogical-op
+     #QMAKE_CXXFLAGS   *= -Werror=format-security
+-    #QMAKE_CXXFLAGS   *= -std=c++11
++    QMAKE_CXXFLAGS   *= -std=c++11
+ 
+     # when using the gold linker ( Qt < 4.8 ) - might be 
+     # necessary on non linux systems too
 diff --git a/qwtconfig.pri b/qwtconfig.pri
-index ccb0aef..4c0ad60 100644
+index ccb0aef..7d9a4f0 100644
 --- a/qwtconfig.pri
 +++ b/qwtconfig.pri
 @@ -28,6 +28,8 @@ win32 {
@@ -20,3 +33,12 @@ index ccb0aef..4c0ad60 100644
  
  ######################################################################
  # Compile all Qwt classes into the designer plugin instead
+@@ -161,7 +163,7 @@ win32 {
+ 
+ macx:!static:CONFIG(qt_framework, qt_framework|qt_no_framework) {
+ 
+-    QWT_CONFIG += QwtFramework
++#    QWT_CONFIG += QwtFramework
+ }  
+ 
+ ######################################################################
