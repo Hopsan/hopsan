@@ -87,8 +87,16 @@ void hopsan_get_message(hopsan_message_callback_t message_callback, void* userSt
 {
     hopsan::HString message, type, tag;
     gHopsanCore.getMessage(message, type, tag);
+
     // Replace any # with ## (# is reserved by FMI for value references)
+    // # is used as escape character in this case
     message.replace("#", "##");
+
+    // Replace any single % since we do not use printf format strings inside Hopsan
+    // The FMI standard assuems that message is a printf format string
+    // Use %% to print %
+    message.replace("%", "%%");
+
     message_callback(message.c_str(), type.c_str(), userState);
 }
 
