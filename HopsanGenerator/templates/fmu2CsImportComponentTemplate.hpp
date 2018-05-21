@@ -66,26 +66,32 @@ void jmLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, j
     }
 }
 
-void fmiLogger(fmi2ComponentEnvironment pComponentEnvironment, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message)
+void fmiLogger(fmi2ComponentEnvironment pComponentEnvironment, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
     hopsan::Component* pComponent = (hopsan::Component*)pComponentEnvironment;
     if (pComponent == NULL) {
         return;
     }
 
+    char buffer[512];
+    va_list args;
+    va_start(args, message);
+    vsnprintf(buffer, 512, message, args);
+    va_end(args);
+
     switch (status) {
     // Typically info messages are not something we want to see in Hopsan, so show them as debug type
     case fmi2_status_ok:
-        pComponent->addDebugMessage(message);
+        pComponent->addDebugMessage(buffer);
         break;
     case fmi2_status_warning:
-        pComponent->addWarningMessage(message);
+        pComponent->addWarningMessage(buffer);
         break;
     case fmi2_status_error:
-        pComponent->addErrorMessage(message);
+        pComponent->addErrorMessage(buffer);
         break;
     case fmi2_status_fatal:
-        pComponent->addFatalMessage(message);
+        pComponent->addFatalMessage(buffer);
         break;
     default:
         // Discard
