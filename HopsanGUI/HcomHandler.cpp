@@ -1069,6 +1069,14 @@ void HcomHandler::createCommands()
     cocoCmd.group = "Model Commands";
     mCmdList << cocoCmd;
 
+    HcomCommand uncoCmd;
+    uncoCmd.cmd = "unco";
+    uncoCmd.description.append("List unconnected ports in current model");
+    uncoCmd.help.append(" Usage: unco [wildcard]");
+    uncoCmd.fnc = &HcomHandler::executeListUnconnectedCommand;
+    uncoCmd.group = "Model Commands";
+    mCmdList << uncoCmd;
+
     HcomCommand crmoCmd;
     crmoCmd.cmd = "crmo";
     crmoCmd.description.append("Creates a new model");
@@ -4714,6 +4722,34 @@ void HcomHandler::executeConnectCommand(const QString cmd)
 
         pConn->setPointsAndGeometries(pointVector, geometryList);
         pConn->refreshConnectorAppearance();
+    }
+}
+
+
+//! @brief Execute function for "unco" command
+void HcomHandler::executeListUnconnectedCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    QString wildcard = "*";
+    if(args.size() == 1)
+    {
+        wildcard = args[0];
+    }
+    else if(args.size() > 1)
+    {
+        HCOMERR("Wrong number of arguments, should  be 0 or 1");
+        return;
+    }
+
+    QList<Port*> ports;
+    getPorts(wildcard,ports);
+
+    for(Port* pPort : ports)
+    {
+        if(!pPort->isConnected())
+        {
+            HCOMPRINT(pPort->getParentModelObjectName()+"."+pPort->getName());
+        }
     }
 }
 

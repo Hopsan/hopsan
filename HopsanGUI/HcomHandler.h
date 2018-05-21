@@ -197,6 +197,7 @@ private:
     void executeChangeTabCommand(const QString cmd);
     void executeAddComponentCommand(const QString cmd);
     void executeConnectCommand(const QString cmd);
+    void executeListUnconnectedCommand(const QString cmd);
     void executeCreateModelCommand(const QString cmd);
     void executeExportToFMUCommand(const QString cmd);
     void executeChangeTimestepCommand(const QString cmd);
