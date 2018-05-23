@@ -227,6 +227,7 @@ public:
 signals:
     void startSimulation();
     void startProgressBarRefreshTimer(int ms);
+    void stopProgressBarRefreshTimer();
     void done(bool);
 };
 

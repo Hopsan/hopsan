@@ -37,18 +37,39 @@
 
 #include "FMI/fmi_import_context.h"
 #include "FMI1/fmi1_import.h"
-#include "FMI2/fmi2_import.h"
 #include "JM/jm_portability.h"
 
+namespace {
+void jmLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+{
+    hopsan::Component* pComponent = (hopsan::Component*)(c->context);
+    if (pComponent) {
+        switch (log_level) {
+        case jm_log_level_fatal:
+            pComponent->addFatalMessage(message);
+            break;
+        case jm_log_level_error:
+            pComponent->addErrorMessage(message);
+            break;
+        case jm_log_level_warning:
+            pComponent->addWarningMessage(message);
+            break;
+        // Typically the jm logger info messages are not something we want to see in Hopsan, so show them as debug type
+        case jm_log_level_verbose:
+        case jm_log_level_info:
+        case jm_log_level_debug:
+            pComponent->addDebugMessage(message);
+            break;
+        default:
+            break;
+        }
+    }
+}
 
-void localLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message) { }
+} // end anonymous-namespace
 
 namespace hopsan {
 
-//!
-//! @brief
-//! @ingroup HydraulicComponents
-//!
 class <<<className>>> : public <<<classParent>>>
 {
 
@@ -56,15 +77,14 @@ private:
     //Node data pointers
     <<<localvars>>>
 
-    fmi1_callback_functions_t callBackFunctions;
-    jm_callbacks callbacks;
+    jm_callbacks jmCallbacks;
+    jm_status_enu_t status;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
+    fmi1_callback_functions_t fmiCallbackFunctions;
     fmi1_status_t fmistatus;
-    jm_status_enu_t status;
-    int k;
-
     fmi1_import_t* fmu;
+    int k;
 
 public:
     static Component *Creator()
@@ -74,6 +94,10 @@ public:
 
     void configure()
     {
+        //Init fmu pointers
+        context = 0;
+        fmu = 0;
+
         //Add constants
         <<<addconstants>>>
 
@@ -91,16 +115,15 @@ public:
         const char* FMUPath = "<<<fmupath>>>";
         const char* tmpPath = "<<<temppath>>>";
 
-        callbacks.malloc = malloc;
-        callbacks.calloc = calloc;
-        callbacks.realloc = realloc;
-        callbacks.free = free;
-        callbacks.logger = localLogger;
-        callbacks.log_level = jm_log_level_debug;
-        callbacks.context = 0;
+        jmCallbacks.malloc = malloc;
+        jmCallbacks.calloc = calloc;
+        jmCallbacks.realloc = realloc;
+        jmCallbacks.free = free;
+        jmCallbacks.logger = jmLogger;
+        jmCallbacks.log_level = jm_log_level_debug;
+        jmCallbacks.context = (jm_voidp)this;   // This pointer is used by the jmLogger callback
 
-        context = fmi_import_allocate_context(&callbacks);
-
+        context = fmi_import_allocate_context(&jmCallbacks);
         version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
         if(version != fmi_version_1_enu)
@@ -126,11 +149,12 @@ public:
              return;
         }
 
-        callBackFunctions.logger = fmi1_log_forwarding;
-        callBackFunctions.allocateMemory = calloc;
-        callBackFunctions.freeMemory = free;
+        // Since FMI1 does not support sending a void* to this environment, we use the default log forwarder
+        fmiCallbackFunctions.logger = fmi1_log_forwarding;
+        fmiCallbackFunctions.allocateMemory = calloc;
+        fmiCallbackFunctions.freeMemory = free;
 
-        status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
+        status = fmi1_import_create_dllfmu(fmu, fmiCallbackFunctions, 1);
         if (status == jm_status_error)
         {
             std::stringstream ss;
@@ -141,13 +165,13 @@ public:
         }
 
         //Instantiate FMU
-        fmi1_string_t mimeType = "application/x-fmu-sharedlibrary";
-        fmi1_string_t instanceName = "Test CS model instance";
-        fmi1_string_t fmuLocation = "";
+        HString instanceName = getName();
+        fmi1_string_t mimeType = NULL;
+        fmi1_string_t fmuLocation = NULL;
         fmi1_real_t timeout = 0.0;
         fmi1_boolean_t visible = fmi1_false;
         fmi1_boolean_t interactive = fmi1_false;
-        status = fmi1_import_instantiate_slave(fmu, instanceName, 0, mimeType, timeout, visible, interactive);
+        status = fmi1_import_instantiate_slave(fmu, instanceName.c_str(), fmuLocation, mimeType, timeout, visible, interactive);
         if (status == jm_status_error)
         {
             addErrorMessage("fmi1_import_instantiate_slave() failed!");
@@ -195,9 +219,18 @@ public:
 
     void finalize()
     {
-        fmi1_import_destroy_dllfmu(fmu);
-        fmi1_import_free(fmu);
-        fmi_import_free_context(context);
+        if (fmu)
+        {
+            fmi1_import_destroy_dllfmu(fmu);
+            fmi1_import_free(fmu);
+            fmu = 0;
+        }
+
+        if (context)
+        {
+            fmi_import_free_context(context);
+            context = 0;
+        }
     }
 };
 }

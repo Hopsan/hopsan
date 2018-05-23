@@ -20,12 +20,68 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include "fmu1_model.h"
 #include "fmu_hopsan.h"
 
+void forward_message(const char* message, const char* type, void* userState)
+{
+    component_ptr_t comp = (component_ptr_t)userState;
+    if (comp == NULL) {
+        return;
+    }
+
+    if (comp->loggingOn == fmiFalse) {
+        return;
+    }
+
+    fmiStatus status = fmiOK;
+    if (strcmp(type, "warning") == 0)
+    {
+        status = fmiWarning;
+    }
+    else if (strcmp(type, "error") == 0)
+    {
+        status = fmiError;
+    }
+    else if (strcmp(type, "fatal") == 0)
+    {
+        status = fmiFatal;
+    }
+    else if (strcmp(type, "debug") == 0)
+    {
+        //! @todo Make it possible to choose debug logs or not
+        status = fmiOK;
+    }
+    comp->functions.logger(NULL, comp->instanceName, status, type, message);
+}
+
+void get_all_hopsan_messages(component_ptr_t comp)
+{
+    while (hopsan_has_message() > 0)
+    {
+        hopsan_get_message(forward_message, (void*)comp);
+    }
+}
+
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
 {
-    hopsan_initialize();
+    int initOK;
+    double tStop;
 
-	return 0;
+    tStop = comp->tStart + 1.0; // Use a dummy stop value if one is not given
+    if (comp->StopTimeDefined)
+    {
+        tStop = comp->tStop;
+    }
+
+    initOK = hopsan_initialize(comp->tStart, tStop);
+    if (initOK)
+    {
+        return fmiOK;
+    }
+    else
+    {
+        get_all_hopsan_messages(comp);
+        return fmiError;
+    }
 }
 
 static int calc_get_derivatives(component_ptr_t comp)
@@ -220,10 +276,8 @@ const char* fmi_get_model_types_platform()
 
 fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCallbackFunctions functions, fmiBoolean loggingOn)
 {
-    hopsan_instantiate();
-
 	component_ptr_t comp;
-	int k, p;
+    int k, p, instantiateOK ;
 
 	comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
 	if (comp == NULL) 
@@ -268,6 +322,14 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
                 comp->output_real[k][p] = 0.0;
 			}
 		}
+
+        instantiateOK = hopsan_instantiate();
+        if (!instantiateOK)
+        {
+            get_all_hopsan_messages(comp);
+            fmi_free_model_instance(comp);
+            return NULL;
+        }
 
 		return comp;
 	}
@@ -344,11 +406,9 @@ fmiStatus fmi_initialize(fmiComponent c, fmiBoolean toleranceControlled, fmiReal
 		comp->toleranceControlled = toleranceControlled;
 		comp->relativeTolerance = relativeTolerance;
 		
-		calc_initialize(comp);
-
 		*eventInfo = comp->eventInfo;
 
-		return fmiOK;
+        return calc_initialize(comp);
 	}
 }
 
@@ -459,6 +519,8 @@ fmiStatus fmi_terminate(fmiComponent c)
 	if (comp == NULL) {
 		return fmiFatal;
 	} else {
+        hopsan_finalize();
+        get_all_hopsan_messages(comp);
 		return fmiOK;
 	}
 }

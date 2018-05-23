@@ -475,7 +475,7 @@ HString &HString::replace(const char *oldstr, const char *newstr)
     while (pos!=HString::npos)
     {
         replace(pos, strlen(oldstr), newstr);
-        pos = find(oldstr);
+        pos = find(oldstr, pos+strlen(newstr));
     }
     return *this;
 }

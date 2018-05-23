@@ -234,9 +234,6 @@ bool HopsanFMIGenerator::generateFromFmu(const QString &rFmuPath, QString target
 //! @param context Context struct used by FMILibrary
 bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
 {
-    fmi1_callback_functions_t callBackFunctions;
-    jm_status_enu_t status;
-
     //-----------------------------------------//
     printMessage("Reading modelDescription.xml");
     //-----------------------------------------//
@@ -257,18 +254,6 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
         printErrorMessage("Only FMUs for co-simulation are supported by this code.");
-        return false;
-    }
-
-    callBackFunctions.logger = fmi1_log_forwarding;
-    callBackFunctions.allocateMemory = calloc;
-    callBackFunctions.freeMemory = free;
-
-    status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
-    if (status == jm_status_error)
-    {
-        printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
-        printErrorMessage(QString("Could not create the DLL loading mechanism (C-API) (error: %1).\n").arg(fmi1_import_get_last_error(fmu)));
         return false;
     }
 
@@ -337,7 +322,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     //Generate HPP file
     QFile fmuComponentTemplateFile;
-    fmuComponentTemplateFile.setFileName(":templates/fmuComponentTemplate.hpp");
+    fmuComponentTemplateFile.setFileName(":templates/fmu1CsImportComponentTemplate.hpp");
     assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString fmuComponentCode;
     QTextStream t2(&fmuComponentTemplateFile);
@@ -768,11 +753,11 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QFile fmuComponentTemplateFile;
     if(fmuKind == fmi2_fmu_kind_me)
     {
-        fmuComponentTemplateFile.setFileName(":templates/fmi2MeComponentTemplate.hpp");
+        fmuComponentTemplateFile.setFileName(":templates/fmu2MeImportComponentTemplate.hpp");
     }
     else
     {
-        fmuComponentTemplateFile.setFileName(":templates/fmi2ComponentTemplate.hpp");
+        fmuComponentTemplateFile.setFileName(":templates/fmu2CsImportComponentTemplate.hpp");
     }
     QString fmuComponentCode;
     if(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -1253,11 +1238,11 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     fmuModelDefinesHeaderFile.close();
 
     //------------------------------------------------------------------//
-    printMessage("Generating fmu_hopsan.c");
+    printMessage("Generating fmu_hopsan.cpp");
     //------------------------------------------------------------------//
 
     QFile fmuHopsanSourceFileTemplate;
-    fmuHopsanSourceFileTemplate.setFileName(":templates/fmu_hopsan.c");
+    fmuHopsanSourceFileTemplate.setFileName(":templates/fmu_hopsan.cpp");
     assert(fmuHopsanSourceFileTemplate.open(QIODevice::ReadOnly | QIODevice::Text));
     QString fmuHopsanSourceCode;
     QTextStream t6(&fmuHopsanSourceFileTemplate);
@@ -1265,7 +1250,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     fmuHopsanSourceFileTemplate.close();
     if(fmuHopsanSourceCode.isEmpty())
     {
-        printErrorMessage("Unable to generate code for fmu_hopsan.c");
+        printErrorMessage("Unable to generate code for fmu_hopsan.cpp");
         return;
     }
 
@@ -1291,10 +1276,10 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     fmuHopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
     fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
     fmuHopsanSourceCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
-    QFile fmuHopsanSourceFile(savePath+"/fmu_hopsan.c");
+    QFile fmuHopsanSourceFile(savePath+"/fmu_hopsan.cpp");
     if(!fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
     {
-        printErrorMessage("Unable to open fmu_hopsan.c for writing");
+        printErrorMessage("Unable to open fmu_hopsan.cpp for writing");
         return;
     }
     QTextStream fmuHopsanSourceStream(&fmuHopsanSourceFile);
@@ -1698,7 +1683,7 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
         if(!replaceInFile(file, before, after))
             return;
     }
-    if(!replaceInFile(savePath+"/fmu_hopsan.c", before, after))
+    if(!replaceInFile(savePath+"/fmu_hopsan.cpp", before, after))
         return;
     if(!replaceInFile(savePath+"/fmu_hopsan.h", before, after))
         return;
@@ -1769,7 +1754,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileCppBatchStream << "@echo off\n";
     compileCppBatchStream << "PATH=" << mCompilerPath << ";%PATH%\n";
     compileCppBatchStream << "@echo on\n";
-    compileCppBatchStream << "g++ -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.c";
+    compileCppBatchStream << "g++ -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp";
     QStringList srcFiles = listHopsanCoreSourceFiles(savePath) + listDefaultLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
@@ -1793,7 +1778,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mCompilerPath+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.c";
+    compileCppBatchStream << mCompilerPath+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp";
     QStringList srcFiles = listHopsanCoreSourceFiles(savePath) + listDefaultLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {

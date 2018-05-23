@@ -29,9 +29,10 @@
 extern "C" {
 #endif
 
-void hopsan_instantiate();
-void hopsan_initialize();
+int hopsan_instantiate();
+int hopsan_initialize(double startT, double stopT);
 void hopsan_simulate(double stopTime);
+void hopsan_finalize();
 
 double hopsan_get_real(int vr);
 int hopsan_get_integer(int vr);
@@ -43,8 +44,13 @@ void hopsan_set_integer(int vr, int value);
 void hopsan_set_boolean(int vr, int value);
 void hopsan_set_string(int vr, const char* value);
 
+typedef void (*hopsan_message_callback_t) (const char* message, const char* type, void* userState);
+
+int hopsan_has_message();
+void hopsan_get_message(hopsan_message_callback_t message_callback, void* userState);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* End of header FMU2_MODEL_H_ */
+#endif /* End of header FMU2_HOPSAN_H_ */

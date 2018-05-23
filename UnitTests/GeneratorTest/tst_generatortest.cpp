@@ -114,18 +114,17 @@ private Q_SLOTS:
     {
         QFETCH(ComponentSystem*, system);
 
-        QString fmuCheckPath=qcwd+"/../Dependencies/tools/FMUChecker/";
+        const QString fmuCheckPath=QDir::cleanPath(qcwd+"/../Dependencies/tools/FMUChecker");
 #ifdef _WIN32
-        QString fmuChecker32="fmuCheck.win32.exe";
-        QString fmuChecker64="fmuCheck.win64.exe";
+        QString fmuChecker32 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win32.exe");
+        QString fmuChecker64 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win64.exe");
 #else
-        QString fmuChecker32="fmuCheck.linux32";
-        QString fmuChecker64="fmuCheck.linux64";
+        QString fmuChecker32 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.linux32");
+        QString fmuChecker64 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.linux64");
 #endif
 
         QStringList args;
         QProcess p;
-        QString output;
 
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
@@ -137,9 +136,8 @@ private Q_SLOTS:
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << qcwd+"/fmu1_32/unittestmodel_export.fmu";
-        p.start(fmuCheckPath+fmuChecker32, args);
-        p.waitForReadyRead();
-        output = p.readAllStandardError();
+        p.start(fmuChecker32, args);
+        p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 1.0 (32-bit), FMUChecker crashed");
@@ -154,10 +152,9 @@ private Q_SLOTS:
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu2_32/unittestmodel_export.fmu";
-        p.start(fmuCheckPath+fmuChecker32, args);
-        p.waitForReadyRead();
-        output = p.readAllStandardError();
+        args << qcwd+"/fmu2_32/unittestmodel_export.fmu";
+        p.start(fmuChecker32, args);
+        p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 2.0 (32-bit), FMUChecker crashed");
@@ -174,10 +171,9 @@ private Q_SLOTS:
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu1_64/unittestmodel_export.fmu";
-        p.start(fmuCheckPath+fmuChecker64, args);
-        p.waitForReadyRead();
-        output = p.readAllStandardError();
+        args << qcwd+"/fmu1_64/unittestmodel_export.fmu";
+        p.start(fmuChecker64, args);
+        p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 1.0 (64-bit), FMUChecker crashed");
@@ -192,10 +188,9 @@ private Q_SLOTS:
         args.clear();
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << QDir::currentPath()+"/fmu2_64/unittestmodel_export.fmu";
-        p.start(fmuCheckPath+fmuChecker64, args);
-        p.waitForReadyRead();
-        output = p.readAllStandardError();
+        args << qcwd+"/fmu2_64/unittestmodel_export.fmu";
+        p.start(fmuChecker64, args);
+        p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 2.0 (64-bit), FMUChecker crashed");
