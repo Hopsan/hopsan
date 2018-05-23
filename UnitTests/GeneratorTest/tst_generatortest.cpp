@@ -31,10 +31,14 @@
 #include <assert.h>
 #include <iostream>
 
+#define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
+
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/" TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+#define DEFAULTLIBFILE TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
+#else
+const std::string defaultLibraryFilePath = "";
 #endif
-#define LIBEXT TO_STR(DLL_EXT)
 
 namespace {
     void removeDir(QString path)
@@ -94,9 +98,10 @@ public:
         gcc64Path="";
 #endif
 
-#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-        mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
-#endif
+        if (!defaultLibraryFilePath.empty())
+        {
+            mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        }
     }
 
 private:
@@ -113,8 +118,11 @@ private Q_SLOTS:
     void Generator_FMU_Export()
     {
         QFETCH(ComponentSystem*, system);
-
+#if defined(__APPLE__)
+        QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
+#else
         const QString fmuCheckPath=QDir::cleanPath(qcwd+"/../Dependencies/tools/FMUChecker");
+
 #ifdef _WIN32
         QString fmuChecker32 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win32.exe");
         QString fmuChecker64 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win64.exe");
@@ -196,6 +204,7 @@ private Q_SLOTS:
                  "Failed to generate valid FMU 2.0 (64-bit), FMUChecker crashed");
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
+#endif
 #endif
     }
 
@@ -327,7 +336,7 @@ private Q_SLOTS:
 #endif
         callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, nullptr, 0, true, hopsanRoot.c_str());
 
-//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(LIBEXT)).c_str()),
+//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(TO_STR(DLL_EXT))).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");
         QWARN("Modelica generator test is disabled");
     }

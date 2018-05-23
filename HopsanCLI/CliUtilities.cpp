@@ -38,11 +38,14 @@
 #include <fstream>
 #include <cmath>
 
-#ifndef _WIN32
-#include <unistd.h>
-#include <limits.h>
+#if defined(_WIN32)
+  #include <windows.h>
+#elif defined(__APPLE__)
+  #include <mach-o/dyld.h>
+  #include <unistd.h>
 #else
-#include <windows.h>
+  #include <unistd.h>
+  #include <limits.h>
 #endif
 
 using namespace std;
@@ -310,18 +313,27 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
 //! @returns The path or empty string if path can not be found
 string getCurrentExecPath()
 {
-#ifdef _WIN32
+#if defined(_WIN32)
     char result[ MAX_PATH ];
-    size_t count = GetModuleFileNameA( NULL, result, MAX_PATH );
+    size_t pathSize = GetModuleFileNameA( NULL, result, MAX_PATH );
+#elif defined(__APPLE__)
+    unsigned int pathSize;
+    std::vector<char> buffer(1024+1);
+    if(_NSGetExecutablePath(&buffer[0], &pathSize))
+    {
+        buffer.resize(pathSize);
+        _NSGetExecutablePath(&buffer[0], &pathSize);
+    }
+    char* result = buffer.data();
 #else
     char result[ PATH_MAX ];
-    ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+    ssize_t pathSize = readlink( "/proc/self/exe", result, PATH_MAX );
 #endif
 
-    if (count > 0)
+    if (pathSize > 0)
     {
         string base, file;
-        splitFilePath(string(result, count), base, file);
+        splitFilePath(string(result, pathSize), base, file);
         //cout << "base, file: " << base << " " << file << endl;
         return base;
     }

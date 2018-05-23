@@ -4,7 +4,6 @@
 # Shell script building HopsaGUI dependency PythonQt automatically
 # Author: Peter Nordin peter.nordin@liu.se
 
-set -u
 set -e
 
 pyqtversion="3.0"

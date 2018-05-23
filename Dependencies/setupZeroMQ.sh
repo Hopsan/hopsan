@@ -14,10 +14,13 @@ installdir=${basedir}/${name}
 mkdir -p $builddir
 cd $builddir
 
+zmq_cmake_args="-Wno-dev"
+if [[ ${OSTYPE} == darwin* ]]; then
+    zmq_cmake_args="${zmq_cmake_args} -DZMQ_BUILD_FRAMEWORK=OFF"
+fi
+
 # Configure
-cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=$installdir $codedir 
-#./autogen.sh
-#./configure --without-libsodium         # Configure
+cmake ${zmq_cmake_args} -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
 make -j4

@@ -29,14 +29,13 @@
 #include "CoreUtilities/HmfLoader.h"
 #include <assert.h>
 
+#define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
+
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#ifdef _WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultcomponentlibrary" TO_STR(DEBUG_EXT) ".dll"
-#define LIBEXT ".dll"
+#define DEFAULTLIBFILE TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
+const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
 #else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultcomponentlibrary" TO_STR(DEBUG_EXT) ".so"
-#define LIBEXT ".so"
-#endif
+const std::string defaultLibraryFilePath = "";
 #endif
 
 using namespace hopsan;
@@ -55,9 +54,10 @@ class SimulationTests : public QObject
 public:
     SimulationTests()
     {
-#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-        mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
-#endif
+        if (!defaultLibraryFilePath.empty())
+        {
+            mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        }
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 "<hopsanmodelfile hmfversion=\"0.4\" hopsanguiversion=\"0.6.0\" hopsancoreversion=\"0.6.0\">"
                 "  <system logsamples=\"2048\" typename=\"Subsystem\" name=\"unittestmodel\">"

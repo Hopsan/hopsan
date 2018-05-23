@@ -1,17 +1,27 @@
 # Use trusty
-dist: trusty
-sudo: required
 
 # Enable C++ support
 language: cpp
 
-# Compiler selection
-compiler:
-  - gcc
-#  - clang
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: trusty
+      compiler: gcc
+      env: HOPSAN_BUILD_QMAKE_SPEC=linux-g++
+    - os: osx
+      compiler: clang
+      env: HOPSAN_BUILD_QMAKE_SPEC=macx-clang
+      install:
+        - brew install qt
+        - brew link --force qt
+        - which qmake
 
 # Build steps
 script:
+  - bash --version
+  - echo OSType $OSTYPE
   - export QT_SELECT=4
   - cd Dependencies
   - ./setupDiscount.sh
@@ -19,12 +29,12 @@ script:
   - ./setupQwt.sh
   - ./setupZeroMQ.sh
   - ./setupKatex.sh
-  - ./setupPythonQt.sh release 2.7 3.0
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./setupPythonQt.sh release 2.7 3.0 ; fi
   - cd ..
   - mkdir -p build
   - cd build
   - source ../Dependencies/setHopsanBuildPaths.sh
-  - ${hopsan_qt_qmake} ../HopsanNG_remote.pro -r -spec linux-g++ -config release
+  - ${hopsan_qt_qmake} ../HopsanNG_remote.pro -r -spec ${HOPSAN_BUILD_QMAKE_SPEC} -config release
   - cd ..
   - make -j4 -C build
   - ./runUnitTests.sh
