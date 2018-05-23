@@ -19,10 +19,9 @@
 #define DEBUG_SUFFIX ""
 #endif
 
-class WidgetLock;
-
 namespace {
 
+class WidgetLock;
 class HopsanGeneratorWidget;
 
 class CApiStringList
@@ -66,7 +65,7 @@ private:
 
 class HopsanGeneratorWidget : public QWidget
 {
-    friend WidgetLock;
+    friend class WidgetLock;
 public:
     HopsanGeneratorWidget(QWidget *parent, bool autoCloseOnSuccess=false)
         : QWidget(parent, Qt::Window), mAutoCloseOnSuccess(autoCloseOnSuccess)
@@ -137,16 +136,13 @@ void messageHandler(const char* msg, const char type, void* pObj)
     auto pWidget = static_cast<HopsanGeneratorWidget*>(pObj);
     pWidget->printMessage(QString(msg), type);
 }
-}
-
-
 
 class WidgetLock {
 
 public:
-    WidgetLock(QWidget* parent)
+    explicit WidgetLock(QWidget* parent, bool autoClose)
     {
-        mpWidget = new ::HopsanGeneratorWidget(parent);
+        mpWidget = new ::HopsanGeneratorWidget(parent, autoClose);
     }
 
     ~WidgetLock()
@@ -173,12 +169,14 @@ private:
     QPointer<::HopsanGeneratorWidget> mpWidget;
 };
 
+} // End anon namespace
+
 struct HopsanGeneratorGUI::PrivateImpl
 {
     QSharedPointer<WidgetLock> createNewWidget()
     {
         // Create a new widget, Note! it shall delete itself on close
-        auto widgetlock = QSharedPointer<WidgetLock>(new WidgetLock(mpWidgetParent));
+        auto widgetlock = QSharedPointer<WidgetLock>(new WidgetLock(mpWidgetParent, mAutoCloseWidgets));
         mpCurrentWidget = widgetlock->widget();
         return widgetlock;
     }
@@ -207,6 +205,7 @@ struct HopsanGeneratorGUI::PrivateImpl
         }
     }
 
+    bool mAutoCloseWidgets = false;
     std::string hopsanRoot;
     std::string compilerPath;
     QLibrary mGeneratorLibrary;
@@ -275,6 +274,11 @@ bool HopsanGeneratorGUI::loadGeneratorLibrary()
 void HopsanGeneratorGUI::setCompilerPath(const QString& compilerPath)
 {
     mPrivates->compilerPath = compilerPath.toStdString();
+}
+
+void HopsanGeneratorGUI::setAutoCloseWidgetsOnSuccess(bool doAutoClose)
+{
+    mPrivates->mAutoCloseWidgets = doAutoClose;
 }
 
 bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const int solver, const CompileT compile)

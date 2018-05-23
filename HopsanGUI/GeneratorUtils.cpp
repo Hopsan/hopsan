@@ -37,6 +37,7 @@ QSharedPointer<HopsanGeneratorGUI> createDefaultGenerator()
     auto pGenerator = QSharedPointer<HopsanGeneratorGUI>(new HopsanGeneratorGUI(gpDesktopHandler->getMainPath(),
                                                                                 gpMainWindowWidget));
     pGenerator->setCompilerPath(gpConfig->getGCCPath());
+    pGenerator->setAutoCloseWidgetsOnSuccess(true);
     return pGenerator;
 }
 
