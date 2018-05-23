@@ -282,10 +282,6 @@ bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
-//extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(const char* outputPath, const char* compilerPath, bool quiet=false, int solver=0, bool compile=false, const char* hopsanInstallPath="")
-
-//        pHandler->callModelicaGenerator(hPath, hGccPath, showDialog, solver, compile, hIncludePath, hBinPath);
-
     constexpr auto functionName = "callModelicaGenerator";
     const auto mofile = modelicaFile.toStdString();
     const auto& hopsanRoot = mPrivates->hopsanRoot;
@@ -336,7 +332,6 @@ bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::Compon
     const auto& compilerPath = mPrivates->compilerPath;
     int arch =  (architecture == TargetArchitectureT::x64) ? 64 : 32;
 
-//callFmuExportGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, const char* compilerPath, int version=2, int architecture=64, bool quiet=false)
     using FmuExportFunction_t = void(const char*, hopsan::ComponentSystem*, const char*, const char*, int, int, MessageHandler_t, void*);
     return mPrivates->call<FmuExportFunction_t>(functionName, outpath.c_str(), pSystem, hopsanRoot.c_str(), compilerPath.c_str(), static_cast<int>(version), arch, &messageHandler, static_cast<void*>(lw->widget()));
 }
@@ -347,10 +342,6 @@ bool HopsanGeneratorGUI::generateToSimulink(const QString& outputPath, const QSt
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
-
-//    extern "C" HOPSANGENERATOR_DLLAPI void callSimulinkExportGenerator(const char* outputPath, const char* modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels, const char* hopsanInstallPath, bool quiet=false)
-
-//                pHandler->callSimulinkExportGenerator(path.toStdString().c_str(), pSystem->getModelFileInfo().fileName().toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
 
     constexpr auto functionName = "callSimulinkExportGenerator";
     const auto outpath = outputPath.toStdString();
@@ -367,7 +358,6 @@ bool HopsanGeneratorGUI::generateToLabViewSIT(const QString& outputPath, hopsan:
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
-//    extern "C" HOPSANGENERATOR_DLLAPI void callLabViewSITGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, bool quiet=false)
 
     constexpr auto functionName = "callLabViewSITGenerator";
     const auto outpath = outputPath.toStdString();
@@ -382,9 +372,6 @@ bool HopsanGeneratorGUI::generateFromCpp(const QString& hppFile, const CompileT 
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
-
-//    extern "C" HOPSANGENERATOR_DLLAPI? void callCppGenerator(const char* hppPath, const char* compilerPath, bool compile=false, const char* hopsanInstallPath="")
-//        pHandler->callCppGenerator(hHppFile, hGccPath, compile, hIncludePath, hBinPath);
 
     constexpr auto functionName = "callCppGenerator";
     const auto hppfile = hppFile.toStdString();
@@ -403,8 +390,6 @@ bool HopsanGeneratorGUI::generateLibrary(const QString& outputPath, const QStrin
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
-//    extern "C" HOPSANGENERATOR_DLLAPI void callLibraryGenerator(const char* outputPath, std::vector<hopsan::HString> hppFiles, bool quiet=false)
-
     constexpr auto functionName = "callLibraryGenerator";
     const auto outpath = outputPath.toStdString();
     CApiStringList hppfiles(hppFiles);
@@ -418,9 +403,6 @@ bool HopsanGeneratorGUI::compileComponentLibrary(const QString& libPath, const Q
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
-
-    //   extern "C" HOPSANGENERATOR_DLLAPI void callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, bool quiet=false)
-//        pHandler->callComponentLibraryCompiler(hLibPath, hExtraCFlags, hExtraLFlags, hIncludePath, hBinPath, hGccPath, showDialog);
 
     constexpr auto functionName = "callComponentLibraryCompiler";
     const auto libpath = libPath.toStdString();
