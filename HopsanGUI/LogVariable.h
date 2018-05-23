@@ -170,6 +170,9 @@ public:
     bool indexInRange(const int idx) const;
     double peekData(const int index, QString &rErr) const;
     double peekData(const int idx) const;
+    QVector<double> roundOfData() const;
+    QVector<double> floorOfData() const;
+    QVector<double> ceilOfData() const;
     QVector<double> absOfData() const;
     double averageOfData() const;
     double minOfData(int &rIdx) const;

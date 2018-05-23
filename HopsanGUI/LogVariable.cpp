@@ -1684,6 +1684,42 @@ double VectorVariable::peekData(const int idx) const
     return val;
 }
 
+QVector<double> VectorVariable::roundOfData() const
+{
+    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> rounddata(pData->size());
+    for (int i=0; i<pData->size(); ++i)
+    {
+        rounddata[i] = qRound((*pData)[i]);
+    }
+    mpCachedDataVector->endFullVectorOperation(pData);
+    return rounddata;
+}
+
+QVector<double> VectorVariable::floorOfData() const
+{
+    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> floordata(pData->size());
+    for (int i=0; i<pData->size(); ++i)
+    {
+        floordata[i] = qFloor((*pData)[i]);
+    }
+    mpCachedDataVector->endFullVectorOperation(pData);
+    return floordata;
+}
+
+QVector<double> VectorVariable::ceilOfData() const
+{
+    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> ceildata(pData->size());
+    for (int i=0; i<pData->size(); ++i)
+    {
+        ceildata[i] = qCeil((*pData)[i]);
+    }
+    mpCachedDataVector->endFullVectorOperation(pData);
+    return ceildata;
+}
+
 QVector<double> VectorVariable::absOfData() const
 {
     QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();

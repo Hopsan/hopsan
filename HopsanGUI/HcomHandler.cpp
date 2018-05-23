@@ -321,6 +321,9 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("maxof", "Returns the element-wise maximum values of x and y vectors","Usage: maxof(x,y)");
     registerInternalFunction("minof", "Returns the element-wise minimum values of x and y vectors","Usage: minof(x,y)");
     registerInternalFunction("abs", "The absolute value of each vector element", "Usage: abs(vector)");
+    registerInternalFunction("round", "Rounds the value of each vector element to closest integer value", "Usage: round(vector)");
+    registerInternalFunction("ceil", "Rounds the value of each vector element to the smallest integer larger than the value", "Usage: ceil(vector)");
+    registerInternalFunction("floor", "Rounds the value of each vector element to the largest integer smaller than the value", "Usage: floor(vector)");
     registerInternalFunction("x", "Returns the X-vector of the specified variable.","Usage: x(vector)");
     registerInternalFunction("td", "Converts variable to time domain." "Usage: y = td(x)");
     registerInternalFunction("fd", "Converts variable to frequency domain." "Usage: y = fd(x)");
@@ -5698,6 +5701,90 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     if(mpModel && mpModel->getViewContainerObject())
     {
         pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+    }
+
+    if(isHcomFunctionCall("round", expr))
+    {
+        QString argStr = expr.mid(6, expr.size()-7).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData)
+        {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector)
+            {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar)
+            {
+                mAnsScalar = qRound(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Round%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->roundOfData());
+            return;
+        }
+    }
+
+    if(isHcomFunctionCall("floor", expr))
+    {
+        QString argStr = expr.mid(6, expr.size()-7).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData)
+        {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector)
+            {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar)
+            {
+                mAnsScalar = qFloor(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Floor%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->floorOfData());
+            return;
+        }
+    }
+
+    if(isHcomFunctionCall("ceil", expr))
+    {
+        QString argStr = expr.mid(5, expr.size()-6).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData)
+        {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector)
+            {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar)
+            {
+                mAnsScalar = qCeil(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Ceil%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->ceilOfData());
+            return;
+        }
     }
 
     //if(expr.startsWith("abs(") && expr.endsWith(")"))
