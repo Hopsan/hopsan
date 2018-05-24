@@ -570,7 +570,12 @@ void HcomHandler::createCommands()
     HcomCommand dipaCmd;
     dipaCmd.cmd = "dipa";
     dipaCmd.description.append("Display parameter value");
-    dipaCmd.help.append(" Usage: dipa [parameter]");
+    dipaCmd.help.append(" Usage: dipa\n");
+    dipaCmd.help.append(" Usage: dipa [parameter]\n");
+    dipaCmd.help.append(" Usage: dipa [parameter] [condition]\n\n");
+    dipaCmd.help.append(" Example: Display all parameters starting");
+    dipaCmd.help.append(" with \"Mass\" and a value greater than 10:\n");
+    dipaCmd.help.append(" >> dipa Mass* >10");
     dipaCmd.fnc = &HcomHandler::executeDisplayParameterCommand;
     dipaCmd.group = "Parameter Commands";
     mCmdList << dipaCmd;
@@ -1810,8 +1815,25 @@ void HcomHandler::executeChangeLogarithmicAxisYR(const QString cmd)
 //! @brief Execute function for "dipa" command
 void HcomHandler::executeDisplayParameterCommand(const QString cmd)
 {
+    QStringList args = splitCommandArguments(cmd);
+    QString nameWildcard = "*";
+    QString valueWildcard = "*";
+    if(args.size() > 0)
+    {
+        nameWildcard = args[0];
+    }
+    if(args.size() > 1)
+    {
+        valueWildcard = args[1];
+    }
+    if(args.size() > 2)
+    {
+        HCOMERR("Wrong number of arguments, should be 0, 1 or 2");
+        return;
+    }
+
     QStringList parameters;
-    getParameters(cmd, parameters);
+    getParameters(nameWildcard, parameters);
 
     int longestParameterName=0;
     for(int p=0; p<parameters.size(); ++p)
@@ -1831,8 +1853,34 @@ void HcomHandler::executeDisplayParameterCommand(const QString cmd)
         {
             output.append(" ");
         }
-        output.append(getParameterValue(parameters[p]));
-        HCOMPRINT(output);
+        QString outputValue = getParameterValue(parameters[p]);
+        output.append(outputValue);
+        if(valueWildcard.startsWith(">") && isNumber(valueWildcard.right(valueWildcard.size()-1)))
+        {
+            double limit = valueWildcard.right(valueWildcard.size()-1).toDouble();
+            if(isNumber(outputValue) && outputValue.toDouble() > limit)
+            {
+                HCOMPRINT(output);
+            }
+        }
+        else if(valueWildcard.startsWith("<") && isNumber(valueWildcard.right(valueWildcard.size()-1)))
+        {
+            double limit = valueWildcard.right(valueWildcard.size()-1).toDouble();
+            if(isNumber(outputValue) && outputValue.toDouble() < limit)
+            {
+                HCOMPRINT(output);
+            }
+        }
+        else
+        {
+            QRegExp rx(valueWildcard);
+            rx.setPatternSyntax(QRegExp::Wildcard);
+            if(rx.exactMatch(outputValue))
+            {
+                HCOMPRINT(output);
+            }
+        }
+
     }
 }
 
