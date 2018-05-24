@@ -1364,3 +1364,8 @@ void OptimizationMessageHandler::abort()
 {
     mIsAborted = true;
 }
+
+void OptimizationMessageHandler::stepCompleted(size_t steps)
+{
+    mpHandler->updateProgressBar(steps);
+}

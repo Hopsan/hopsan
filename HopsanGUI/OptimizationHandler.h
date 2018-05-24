@@ -77,6 +77,7 @@ public:
     void objectiveChanged(size_t idx);
     void candidatesChanged();
     void candidateChanged(size_t idx);
+    void stepCompleted(size_t steps) override;
 
 public slots:
     void abort();
