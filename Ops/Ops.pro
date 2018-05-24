@@ -60,7 +60,8 @@ SOURCES += \
     src/OpsWorkerParamterSweep.cpp \
     src/OpsWorkerDifferentialEvolution.cpp \
     src/OpsWorkerControlledRandomSearch.cpp \
-    src/OpsWorkerComplexBurmen.cpp
+    src/OpsWorkerComplexBurmen.cpp \
+    src/OpsWorkerGenetic.cpp
 
 HEADERS += \
     include/OpsWorker.h \
@@ -74,9 +75,9 @@ HEADERS += \
     include/OpsWorkerDifferentialEvolution.h \
     include/OpsWorkerControlledRandomSearch.h \
     include/OpsWorkerComplexBurmen.h \
+    include/OpsWorkerGenetic.h \
     include/OpsMessageHandler.h \
     include/OpsWin32DLL.h
-
 
 
 

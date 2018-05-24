@@ -49,7 +49,7 @@ AlgorithmT WorkerParameterSweep::getAlgorithm()
 
 
 
-//! @brief Executes a particle swarm algorithm. optParticleInit() must be called before this one.
+//! @brief Executes a parameter sweep algorithm
 void WorkerParameterSweep::run()
 {
     mpMessageHandler->printMessage("Running optimization with parameter sweep algorithm.");

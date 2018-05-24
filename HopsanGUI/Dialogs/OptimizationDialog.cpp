@@ -82,7 +82,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     QLabel *pAlgorithmLabel = new QLabel("Optimiation algorithm:");
     mpAlgorithmBox = new QComboBox(this);
-    mpAlgorithmBox->addItems(QStringList() << "Simplex (Nelder-Mead)" << "Complex-RF" << "Complex-RFP" << "Particle Swarm" << "Differential Evolution" << "Parameter Sweep");
+    mpAlgorithmBox->addItems(QStringList() << "Simplex (Nelder-Mead)" << "Complex-RF" << "Complex-RFP" << "Particle Swarm" << "Differential Evolution"<< "Genetic Algorithm" << "Parameter Sweep");
     connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
 
     QLabel *pIterationsLabel = new QLabel("Number of iterations:");
@@ -142,6 +142,14 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     mpCRLabel = new QLabel("Crossover probability: ");
     mpCRLineEdit = new QLineEdit("0.5", this);
     mpCRLineEdit->setValidator(new QDoubleValidator());
+
+    mpCPLabel = new QLabel("Crossover probability: ");
+    mpCPLineEdit = new QLineEdit("0.2", this);
+    mpCPLineEdit->setValidator(new QDoubleValidator());
+
+    mpMPLabel = new QLabel("Mutation probability: ");
+    mpMPLineEdit = new QLineEdit("0.1", this);
+    mpMPLineEdit->setValidator(new QDoubleValidator());
 
     mpNumModelsLabel = new QLabel("Number of models: ");
     mpNumModelsLineEdit = new QLineEdit(QString::number(qMax(1,gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS))), this);
@@ -219,6 +227,10 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     pSettingsLayout->addWidget(mpFLineEdit,            row++, 1);
     pSettingsLayout->addWidget(mpCRLabel,              row,   0);
     pSettingsLayout->addWidget(mpCRLineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpCPLabel,              row,   0);
+    pSettingsLayout->addWidget(mpCPLineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpMPLabel,              row,   0);
+    pSettingsLayout->addWidget(mpMPLineEdit,           row++, 1);
     pSettingsLayout->addWidget(mpNumModelsLabel,       row,   0);
     pSettingsLayout->addWidget(mpNumModelsLineEdit,    row++, 1);
     pSettingsLayout->addWidget(mpMethodLabel,          row,   0);
@@ -979,6 +991,9 @@ void OptimizationDialog::generateScriptFile()
     case Ops::DifferentialEvolution :
         generateDifferentialEvolutionScript();
         break;
+    case Ops::Genetic :
+        generateGeneticScript();
+        break;
     case Ops::ParameterSweep :
         generateParameterSweepScript();
         break;
@@ -1095,6 +1110,25 @@ void OptimizationDialog::generateDifferentialEvolutionScript()
     templateCode.replace("<<<f>>>", mpFLineEdit->text());
     templateCode.replace("<<<cr>>>", mpCRLineEdit->text());
     templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+
+    mScript = templateCode;
+}
+
+void OptimizationDialog::generateGeneticScript()
+{
+    QFile templateFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optTemplateGenetic.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    generateObjectiveFunctionCode(templateCode);
+    generateParameterCode(templateCode);
+    generateCommonOptions(templateCode);
+
+    templateCode.replace("<<<cp>>>", mpCPLineEdit->text());
+    templateCode.replace("<<<mp>>>", mpMPLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+    templateCode.replace("<<<nmodels>>>", mpNumModelsLineEdit->text());
 
     mScript = templateCode;
 }
@@ -1267,6 +1301,10 @@ void OptimizationDialog::setAlgorithm(int i)
     mpFLineEdit->setVisible(false);
     mpCRLabel->setVisible(false);
     mpCRLineEdit->setVisible(false);
+    mpCPLabel->setVisible(false);
+    mpCPLineEdit->setVisible(false);
+    mpMPLabel->setVisible(false);
+    mpMPLineEdit->setVisible(false);
     mpLengthLabel->setVisible(false);
     mpLengthSpinBox->setVisible(false);
     mpPercDiffLabel->setVisible(false);
@@ -1341,6 +1379,11 @@ void OptimizationDialog::setAlgorithm(int i)
         mpCRLabel->setVisible(true);
         mpCRLineEdit->setVisible(true);
         break;
+    case Ops::Genetic:
+        mpCPLabel->setVisible(true);
+        mpCPLineEdit->setVisible(true);
+        mpMPLabel->setVisible(true);
+        mpMPLineEdit->setVisible(true);
     case Ops::ParameterSweep:
         break;
     default:
@@ -1938,7 +1981,24 @@ void OptimizationDialog::recreateCoreProgressBars()
             mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         }
         break;
-    case Ops::ParameterSweep :    //Particle swarm
+    case Ops::ParameterSweep :    //Parameter sweep
+        if(showProgressPerParticle)
+        {
+            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
+            {
+                mCoreProgressBarPtrs.append(new QProgressBar(this));
+                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
+                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
+            }
+        }
+        else
+        {
+            mCoreProgressBarPtrs.append(new QProgressBar(this));
+            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
+            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
+        }
+        break;
+    case Ops::Genetic:    //Genetic algorithm
         if(showProgressPerParticle)
         {
             for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)

@@ -1,0 +1,42 @@
+# Auto-generated HCOM script for genetic optimization algorithm
+
+#Evaluate function
+define setpars
+    <<<setpars>>>
+enddefine
+
+
+#Objective function
+define obj
+    <<<objfuncs>>>
+    totalObj = <<<totalobj>>>
+    opt set obj optvar(evalid) totalObj
+enddefine
+
+opt set algorithm genetic
+opt set sampling latinhypercube
+#opt set sampling random
+opt set maxevals <<<maxevals>>>
+opt set datatype double
+opt set nmodels <<<nmodels>>>
+opt set npoints <<<npoints>>>
+opt set nparams <<<nparams>>>
+opt set partol <<<partol>>>
+opt set CP <<<cp>>>
+opt set MP <<<mp>>>
+opt set plotobjectives <<<plotobjectives>>>
+opt set plotpoints <<<plotpoints>>>
+opt set plotentropy <<<plotentropy>>>
+opt set plotparameters off
+opt set printresultfile on
+opt set printlogfile off
+
+#Set min and max values for parameters
+<<<setminmax>>>
+
+set backup off
+
+opt run
+
+set backup on
+   

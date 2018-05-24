@@ -76,7 +76,7 @@ AlgorithmT WorkerDifferentialEvolution::getAlgorithm()
 
 
 
-//! @brief Executes a particle swarm algorithm. optParticleInit() must be called before this one.
+//! @brief Executes a differential evolution algorithm
 void WorkerDifferentialEvolution::run()
 {
     if(mNumCandidates != mNumPoints)
