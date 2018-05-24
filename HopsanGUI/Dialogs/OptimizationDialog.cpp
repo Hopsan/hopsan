@@ -853,8 +853,6 @@ void OptimizationDialog::open()
     mpParameterMaxLineEdits.clear();
     mpParameterRemoveButtons.clear();
 
-    mScript.clear();
-    mpOutputBox->clear();
     //mpRunButton->setDisabled(true);
 
     loadConfiguration();
