@@ -1156,6 +1156,7 @@ void OptimizationDialog::generateParameterSweepScript()
 void OptimizationDialog::generateObjectiveFunctionCode(QString &templateCode)
 {
     QString objFuncs, totalObj;
+    objFuncs.append("echo off\n");
     for(int i=0; i<mFunctionName.size(); ++i)
     {
         QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
@@ -1192,7 +1193,7 @@ void OptimizationDialog::generateObjectiveFunctionCode(QString &templateCode)
         QString idx = QString::number(i+1);
         totalObj.append(mWeightLineEditPtrs[i]->text()+"*"+mNormLineEditPtrs[i]->text()+"*exp("+mExpLineEditPtrs[i]->text()+")*obj"+idx);
     }
-    objFuncs.chop(1);
+    objFuncs.append("echo on");
 
     replacePattern("<<<objfuncs>>>", objFuncs, templateCode);
     replacePattern("<<<totalobj>>>", totalObj, templateCode);
@@ -1201,6 +1202,7 @@ void OptimizationDialog::generateObjectiveFunctionCode(QString &templateCode)
 void OptimizationDialog::generateParameterCode(QString &templateCode)
 {
     QString setMinMax, setPars;
+    setPars.append("echo off\n");
     for(int p=0; p<mSelectedParameters.size(); ++p)
     {
         QString par;
@@ -1217,8 +1219,8 @@ void OptimizationDialog::generateParameterCode(QString &templateCode)
 
         setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
+    setPars.append("echo on");
     // Remove last newlines
-    setPars.chop(1);
     setMinMax.chop(1);
 
     replacePattern("<<<setminmax>>>", setMinMax, templateCode);
