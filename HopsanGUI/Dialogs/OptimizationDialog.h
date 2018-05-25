@@ -120,6 +120,8 @@ private:
     bool mCoreProgressBarsRecreated;
     bool mOutputDisabled=false;
     QVector<int> mParameterOutputIndexes;
+    const int mObjectiveColumnWidth = 12;
+    const int mParameterColumnWidth = 15;
 };
 
 

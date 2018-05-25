@@ -191,13 +191,10 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWi
     pSettingsLayout->addWidget(pSettingsLabel,         row++, 0);
     pSettingsLayout->addWidget(pAlgorithmLabel,        row,   0);
     pSettingsLayout->addWidget(mpAlgorithmBox,         row++, 1);
-    connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateCoreProgressBars()));
     pSettingsLayout->addWidget(pIterationsLabel,       row,   0);
     pSettingsLayout->addWidget(mpIterationsSpinBox,    row++, 1);
     pSettingsLayout->addWidget(mpParticlesLabel,       row,   0);
     pSettingsLayout->addWidget(mpParticlesSpinBox,     row++, 1);
-    connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateCoreProgressBars()));
-    connect(mpParticlesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(recreateParameterOutputLineEdits()));
     pSettingsLayout->addWidget(mpAlphaLabel,           row,   0);
     pSettingsLayout->addWidget(mpAlphaLineEdit,        row++, 1);
     pSettingsLayout->addWidget(mpOmega1Label,          row,   0);
@@ -334,8 +331,6 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWi
     this->addPage(pSettingsWidget);
     this->addPage(pParametersWidget);
     this->addPage(pObjectiveWidget);
-    //this->addPage(pOutputWidget);
-    //this->addPage(pRunWidget);
 
     setButtonText(QWizard::FinishButton, tr("&Generate Script"));
     setButtonText(QWizard::CancelButton, tr("&Abort"));
@@ -541,10 +536,10 @@ void OptimizationScriptWizard::open()
         mpParametersLayout->removeWidget(mpParameterMaxLineEdits.at(i));
         mpParametersLayout->removeWidget(mpParameterRemoveButtons.at(i));
 
-        delete(mpParameterLabels.at(i));
-        delete(mpParameterMinLineEdits.at(i));
-        delete(mpParameterMaxLineEdits.at(i));
-        delete(mpParameterRemoveButtons.at(i));
+        mpParameterLabels.at(i)->deleteLater();
+        mpParameterMinLineEdits.at(i)->deleteLater();
+        mpParameterMaxLineEdits.at(i)->deleteLater();
+        mpParameterRemoveButtons.at(i)->deleteLater();
     }
 
     mpParameterLabels.clear();
@@ -773,10 +768,10 @@ void OptimizationScriptWizard::updateChosenParameters(QTreeWidgetItem* item, int
         mpParametersLayout->removeWidget(mpParameterMaxLineEdits.at(i));
         mpParametersLayout->removeWidget(mpParameterRemoveButtons.at(i));
 
-        delete(mpParameterLabels.at(i));
-        delete(mpParameterMinLineEdits.at(i));
-        delete(mpParameterMaxLineEdits.at(i));
-        delete(mpParameterRemoveButtons.at(i));
+        mpParameterLabels.at(i)->deleteLater();
+        mpParameterMinLineEdits.at(i)->deleteLater();
+        mpParameterMaxLineEdits.at(i)->deleteLater();
+        mpParameterRemoveButtons.at(i)->deleteLater();
 
         mpParameterLabels.removeAt(i);
         mpParameterMinLineEdits.removeAt(i);
@@ -809,10 +804,10 @@ void OptimizationScriptWizard::removeParameter()
     mpParametersLayout->removeWidget(mpParameterMaxLineEdits.at(i));
     mpParametersLayout->removeWidget(mpParameterRemoveButtons.at(i));
 
-    delete(mpParameterLabels.at(i));
-    delete(mpParameterMinLineEdits.at(i));
-    delete(mpParameterMaxLineEdits.at(i));
-    delete(mpParameterRemoveButtons.at(i));
+    mpParameterLabels.at(i)->deleteLater();
+    mpParameterMinLineEdits.at(i)->deleteLater();
+    mpParameterMaxLineEdits.at(i)->deleteLater();
+    mpParameterRemoveButtons.at(i)->deleteLater();
 
     mpParameterLabels.removeAt(i);
     mpParameterMinLineEdits.removeAt(i);
@@ -1392,7 +1387,7 @@ bool OptimizationScriptWizard::loadObjectiveFunctions()
 
     // Look in both local and global scripts directory in case they are different
 
-    QDir scriptsDir(gpDesktopHandler->getScriptsPath()+"HCOM/objFuncTemplates");
+    QDir scriptsDir(gpDesktopHandler->getScriptsPath()+"/HCOM/objFuncTemplates");
     QStringList files = scriptsDir.entryList(QStringList() << "*.hcom");
     int f=0;
     for(; f<files.size(); ++f)

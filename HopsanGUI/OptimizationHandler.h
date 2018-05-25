@@ -95,7 +95,6 @@ class OptimizationHandler : public QObject
 
     friend class HcomHandler;           //! @todo Should probably not be friends
     friend class OptimizationDialog;    //! @todo Should probably not be friends
-    friend class OptimizationScriptWizard;    //DEBUG! REMOVE LATER /robbr
     friend class OptimizationMessageHandler;    //! @note Ok to be friends due to inherited class from Ops
 public:
     //Enums

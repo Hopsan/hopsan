@@ -78,7 +78,6 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
 
     // Main layout
     QVBoxLayout *pLayout = new QVBoxLayout(this);
-    this->setLayout(pLayout);
 
     // Toolbar
     QToolBar *pToolBar = createToolBar();
@@ -151,7 +150,8 @@ void OptimizationDialog::updateParameterOutputs(const std::vector<double> &objec
             mpMessageHandler->addErrorMessage("In code: updateParameterOutputs objectives.size() < i");
             return;
         }
-        while(objStr.size() < 12)
+
+        while(objStr.size() < mObjectiveColumnWidth)
         {
             objStr.append(" ");
         }
@@ -161,7 +161,7 @@ void OptimizationDialog::updateParameterOutputs(const std::vector<double> &objec
         {
             QString numStr = QString::number(values[i][j], 'g', 8);
             numStr.append(",");
-            while(numStr.size() < 15)
+            while(numStr.size() < mParameterColumnWidth)
             {
                 numStr.append(" ");
             }
@@ -308,7 +308,7 @@ void OptimizationDialog::generateScriptSkeleton()
         return;
     }
 
-    QFile skeletonFile(gpDesktopHandler->getExecPath()+"../Scripts/HCOM/optSkeleton.hcom");
+    QFile skeletonFile(gpDesktopHandler->getExecPath()+"/../Scripts/HCOM/optSkeleton.hcom");
     skeletonFile.open(QFile::ReadOnly | QFile::Text);
     QString skeletonCode = skeletonFile.readAll();
     skeletonFile.close();
@@ -464,70 +464,20 @@ void OptimizationDialog::recreateCoreProgressBars()
     switch (mpTerminal->mpHandler->mpOptHandler->getAlgorithm())
     {
     case Ops::NelderMead :    //Complex-RF
-        mCoreProgressBarPtrs.append(new QProgressBar(this));
-        mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
-        mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
-        break;
     case Ops::ComplexRF :    //Complex-RF
         mCoreProgressBarPtrs.append(new QProgressBar(this));
         mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
         mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
         break;
     case Ops::ComplexRFP :    //Complex-RFP
-        if(showProgressPerParticle)
-        {
-            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
-            {
-                mCoreProgressBarPtrs.append(new QProgressBar(this));
-                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
-                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
-            }
-        }
-        else
-        {
-            mCoreProgressBarPtrs.append(new QProgressBar(this));
-            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
-            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
-        }
-        break;
     case Ops::ParticleSwarm :    //Particle swarm
-        if(showProgressPerParticle)
-        {
-            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
-            {
-                mCoreProgressBarPtrs.append(new QProgressBar(this));
-                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
-                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
-            }
-        }
-        else
-        {
-            mCoreProgressBarPtrs.append(new QProgressBar(this));
-            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
-            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
-        }
-        break;
+    case Ops::DifferentialEvolution :    //Differential Evolution
     case Ops::ParameterSweep :    //Parameter sweep
-        if(showProgressPerParticle)
-        {
-            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
-            {
-                mCoreProgressBarPtrs.append(new QProgressBar(this));
-                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
-                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
-            }
-        }
-        else
-        {
-            mCoreProgressBarPtrs.append(new QProgressBar(this));
-            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
-            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
-        }
-        break;
     case Ops::Genetic:    //Genetic algorithm
         if(showProgressPerParticle)
         {
-            for(int n=0; n<mpTerminal->mpHandler->mpOptHandler->mModelPtrs.size(); ++n)
+            int nModels = mpTerminal->mpHandler->mpOptHandler->getOptVar("nmodels");
+            for(int n=0; n<nModels; ++n)
             {
                 mCoreProgressBarPtrs.append(new QProgressBar(this));
                 mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
@@ -640,26 +590,31 @@ QToolBar*OptimizationDialog::createToolBar()
     QToolButton *pNewScriptButton = new QToolButton(this);
     pNewScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-New.png"));
     pNewScriptButton->setText("New Script Skeleton");
+    pNewScriptButton->setToolTip("New Script Skeleton");
     pToolBar->addWidget(pNewScriptButton);
 
     QToolButton *pScriptWizardButton = new QToolButton(this);
     pScriptWizardButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Wizard.png"));
     pScriptWizardButton->setText("Script Wizard");
+    pScriptWizardButton->setToolTip("Script Wizard");
     pToolBar->addWidget(pScriptWizardButton);
 
     QToolButton *pLoadScriptButton = new QToolButton(this);
     pLoadScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
     pLoadScriptButton->setText("Load Script File");
+    pLoadScriptButton->setToolTip("Load Script File");
     pToolBar->addWidget(pLoadScriptButton);
 
     QToolButton *pSaveScriptButton = new QToolButton(this);
     pSaveScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
     pSaveScriptButton->setText("Save To Script File");
+    pSaveScriptButton->setToolTip("Save To Script File");
     pToolBar->addWidget(pSaveScriptButton);
 
     mpRunButton = new QToolButton(this);
     mpRunButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"));
     mpRunButton->setText("Start Optimization");
+    mpRunButton->setToolTip("Start Optimization");
     pToolBar->addWidget(mpRunButton);
 
     QWidget *pSpacerWidget = new QWidget(this);
@@ -670,13 +625,16 @@ QToolBar*OptimizationDialog::createToolBar()
     QToolButton *pHelpButton = new QToolButton(this);
     pHelpButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
     pHelpButton->setText("Show Context Help");
+    pHelpButton->setToolTip("Show Context Help");
+    pHelpButton->setObjectName("optimizationHelpButton");
     pToolBar->addWidget(pHelpButton);
 
-    connect(pNewScriptButton,    SIGNAL(clicked(bool)), this, SLOT(generateScriptSkeleton()));
-    connect(pScriptWizardButton, SIGNAL(clicked(bool)), this, SLOT(openScriptWizard()));
-    connect(pLoadScriptButton,   SIGNAL(clicked(bool)), this, SLOT(loadScriptFile()));
-    connect(pSaveScriptButton,   SIGNAL(clicked(bool)), this, SLOT(saveScriptFile()));
-    connect(mpRunButton,          SIGNAL(clicked(bool)), this, SLOT(run()));
+    connect(pNewScriptButton,    SIGNAL(clicked(bool)), this,               SLOT(generateScriptSkeleton()));
+    connect(pScriptWizardButton, SIGNAL(clicked(bool)), this,               SLOT(openScriptWizard()));
+    connect(pLoadScriptButton,   SIGNAL(clicked(bool)), this,               SLOT(loadScriptFile()));
+    connect(pSaveScriptButton,   SIGNAL(clicked(bool)), this,               SLOT(saveScriptFile()));
+    connect(mpRunButton,         SIGNAL(clicked(bool)), this,               SLOT(run()));
+    connect(pHelpButton,         SIGNAL(clicked()),     gpHelpPopupWidget,  SLOT(openContextHelp()));
 
     return pToolBar;
 }
