@@ -2297,9 +2297,9 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
         gpOptimizationDialog->open();
         gpOptimizationDialog->setCode(code);
         if(code.contains("opt autostart")) {
-            gpOptimizationDialog->next();
-            gpOptimizationDialog->next();
-            gpOptimizationDialog->next();
+//            gpOptimizationDialog->next();
+//            gpOptimizationDialog->next();
+//            gpOptimizationDialog->next();
             gpOptimizationDialog->run();
         }
         return;

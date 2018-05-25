@@ -710,7 +710,7 @@ bool OptimizationHandler::evaluateAllCandidates()
     mNeedsRescheduling = false;
 
     //Multi-threading, we cannot use the "evalall" function
-    for(int i=0; i<mpWorker->getNumberOfCandidates(); ++i)
+    for(size_t i=0; i<mpWorker->getNumberOfCandidates(); ++i)
     {
         mpHcomHandler->setModelPtr(mModelPtrs[i]);
         mpHcomHandler->executeCommand("opt set evalid "+QString::number(i));
@@ -739,7 +739,7 @@ bool OptimizationHandler::evaluateAllCandidates()
         return false;
     }
 
-    for(int i=0; i<mpWorker->getNumberOfCandidates(); ++i)
+    for(size_t i=0; i<mpWorker->getNumberOfCandidates(); ++i)
     {
         mpHcomHandler->setModelPtr(mModelPtrs[i]);
         mpHcomHandler->executeCommand("opt set evalid "+QString::number(i));
@@ -760,13 +760,13 @@ void OptimizationHandler::plotPoints()
         return;
     }
 
-    for(int p=0; p<mpWorker->getNumberOfPoints(); ++p)
+    for(size_t p=0; p<mpWorker->getNumberOfPoints(); ++p)
     {
 
         double x = mpWorker->getParameter(p,0);
         double y = mpWorker->getParameter(p,1);
 
-        if(mPointVars_x.size() <= p)
+        if(mPointVars_x.size() <= (int)p)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
             mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
@@ -794,13 +794,13 @@ void OptimizationHandler::plotPoints()
         }
     }
 
-    for(int p=0; p<mpWorker->getNumberOfCandidates(); ++p)
+    for(size_t p=0; p<mpWorker->getNumberOfCandidates(); ++p)
     {
 
         double x = mpWorker->getCandidateParameter(p,0);
         double y = mpWorker->getCandidateParameter(p,1);
 
-        if(mPointVars_x.size() <= mpWorker->getNumberOfPoints()+p)
+        if(mPointVars_x.size() <= (int)mpWorker->getNumberOfPoints()+(int)p)
         {
             //! @todo we should set name and unit and maybe description (in define variable)
             mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
@@ -835,7 +835,7 @@ void OptimizationHandler::plotPoints()
         PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
         for(int c=0; c<pTab->getCurves(0).size(); ++c)
         {
-            if(c==mpWorker->getBestId())
+            if(c == (int)mpWorker->getBestId())
             {
                 pTab->getCurves(0).at(c)->setLineSymbol("Star 1");
             }
@@ -853,7 +853,7 @@ void OptimizationHandler::plotParameters()
 {
     if(!mPlotParameters) { return; }
 
-    for(int p=0; p<mpWorker->getNumberOfParameters(); ++p)
+    for(int p=0; p<(int)mpWorker->getNumberOfParameters(); ++p)
     {
         if(mParVars.size() <= p)
         {
@@ -1098,6 +1098,7 @@ void OptimizationHandler::printResultFile()
         break;
     case OptimizationHandler::Uninitialized:
         algStr = "Uninitialized";
+        break;
     default:
         algStr = "Unknown";
     }
@@ -1122,7 +1123,7 @@ void OptimizationHandler::printResultFile()
     htmlCode.append("<tr>\n<td><b>f(x)</b></td>\n<td>"+QString::number(mpWorker->getObjectiveValue(mpWorker->getBestId()))+"</td>\n</tr>\n");
 
     //Parameter values
-    for(int i=0; i<mpWorker->getNumberOfParameters(); ++i)
+    for(int i=0; i<(int)mpWorker->getNumberOfParameters(); ++i)
     {
         htmlCode.append("<tr>\n<td><b>x"+QString::number(i+1)+"</b></td>\n<td>"+QString::number(mpWorker->getParameter(mpWorker->getBestId(),i))+"</td>\n</tr>\n");
 
@@ -1146,7 +1147,7 @@ void OptimizationHandler::printResultFile()
 //! @brief Logs parameters and objective value of all points to log variables
 void OptimizationHandler::logAllPoints()
 {
-    for(int i=0; i<mpWorker->getNumberOfPoints(); ++i)
+    for(int i=0; i<(int)mpWorker->getNumberOfPoints(); ++i)
     {
         logPoint(i);
     }
@@ -1162,7 +1163,7 @@ void OptimizationHandler::logPoint(int idx)
 
     mLoggedParameters.append(QVector<double>());
     mLoggedParameters.last().append(mpWorker->getObjectiveValue(idx));
-    for(int p=0; p<mpWorker->getNumberOfParameters(); ++p)
+    for(int p=0; p<(int)mpWorker->getNumberOfParameters(); ++p)
     {
         mLoggedParameters.last().append(mpWorker->getParameter(idx,p));
     }
@@ -1202,7 +1203,7 @@ void OptimizationHandler::printDebugFile()
     output.append(QString::number(mEvaluations)+",");
     output.append(QString::number(0)+",");  //Surrogate models, not currently implemented
     output.append(QString::number(mpWorker->getObjectiveValue(mpWorker->getBestId()))+",");
-    for(int i=0; i<mpWorker->getNumberOfParameters(); ++i)
+    for(int i=0; i<(int)mpWorker->getNumberOfParameters(); ++i)
     {
         output.append(QString::number(mpWorker->getParameter(mpWorker->getBestId(),i))+",");
     }
@@ -1346,6 +1347,7 @@ void OptimizationMessageHandler::objectivesChanged()
 
 void OptimizationMessageHandler::objectiveChanged(size_t idx)
 {
+    Q_UNUSED(idx);
     mpHandler->plotObjectiveValues();
     mpHandler->updateOutputs();
 }
@@ -1357,6 +1359,7 @@ void OptimizationMessageHandler::candidatesChanged()
 
 void OptimizationMessageHandler::candidateChanged(size_t idx)
 {
+    Q_UNUSED(idx);
     mpHandler->plotPoints();
 }
 

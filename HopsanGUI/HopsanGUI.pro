@@ -299,7 +299,8 @@ SOURCES += main.cpp \
     Dialogs/NumHopScriptDialog.cpp \
     PlotCurveStyle.cpp \
     Utilities/WebviewWrapper.cpp \
-    GeneratorUtils.cpp
+    GeneratorUtils.cpp \
+    Dialogs/OptimizationScriptWizard.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -391,7 +392,8 @@ HEADERS += MainWindow.h \
     Dialogs/NumHopScriptDialog.h \
     PlotCurveStyle.h \
     Utilities/WebviewWrapper.h \
-    GeneratorUtils.h
+    GeneratorUtils.h \
+    Dialogs/OptimizationScriptWizard.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

@@ -47,43 +47,35 @@
 #include <QTreeWidgetItem>
 #include <QTextEdit>
 #include <QProgressBar>
+#include <QToolBar>
 
 class TerminalWidget;
 class SystemContainer;
 class GUIMessageHandler;
+class OptimizationScriptWizard;
 
-class OptimizationDialog : public QWizard
+
+class OptimizationDialog : public QDialog
 {
-    Q_OBJECT
-
-    friend class OptimizationHandler;
+  Q_OBJECT
 
 public:
-    OptimizationDialog(QWidget *parent = 0);
+  OptimizationDialog(QWidget *parent = 0);
 
-    void updateParameterOutputs(const std::vector<double> &objectives, const std::vector<std::vector<double> > &values, int bestId, int worstId);
-    void updateTotalProgressBar(double progress);
-    void setOptimizationFinished();
-    void setCode(const QString &code);
-protected:
-    QTreeWidgetItem* findParameterTreeItem(QString componentName, QString parameterName);
+  void updateParameterOutputs(const std::vector<double> &objectives, const std::vector<std::vector<double> > &values, const int bestId, const int worstId);
+  void updateTotalProgressBar(double progress);
+  void setOptimizationFinished();
+  void setCode(const QString &code);
 
 public slots:
     virtual void open();
-    virtual void accept();
-    virtual void reject();
-    virtual void okPressed();
+    virtual void close();
     void setOutputDisabled(bool disabled);
     void run();
 
 private slots:
-    void setAlgorithm(int i);
-    void updateChosenParameters(QTreeWidgetItem* item, int i);
-    void removeParameter();
-    void updateChosenVariables(QTreeWidgetItem* item, int i);
-    void addFunction();
-    void removeFunction();
-    void update(int idx);
+    void generateScriptSkeleton();
+    void openScriptWizard();
     void saveScriptFile();
     void saveScriptFile(const QString &filePath);
     void loadScriptFile();
@@ -91,146 +83,46 @@ private slots:
     void recreateCoreProgressBars();
     void recreateParameterOutputLineEdits();
     void applyParameters();
-    void saveConfiguration();
-    void regenerateScript();
 
 private:
-    void generateScriptFile();
-
-    void generateNelderMeadScript();
-    void generateComplexRFScript(const QString &subAlgorithm);
-    void generateParticleSwarmScript();
-    void generateDifferentialEvolutionScript();
-    void generateGeneticScript();
-    void generateParameterSweepScript();
-
-    void generateObjectiveFunctionCode(QString &templateCode);
-    void generateParameterCode(QString &templateCode);
-    void generateCommonOptions(QString &templateCode);
-    QString generateFunctionCode(int i);
-    bool verifyNumberOfVariables(int i, int nSelVar);
-    bool loadObjectiveFunctions();
-
-    void loadConfiguration();
-
-    void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData);
+    bool checkIfScriptIsEmpty();
+    QToolBar *createToolBar();
+    QWidget *createScriptWidget();
+    QWidget *createRunWidget();
 
     //Original system
     SystemContainer *mpSystem;
 
-    //Settings page
-    QComboBox *mpAlgorithmBox;
-    QSpinBox *mpIterationsSpinBox;
-    QLabel *mpParticlesLabel;
-    QSpinBox *mpParticlesSpinBox;
-    QLineEdit *mpAlphaLineEdit;
-    QLabel *mpAlphaLabel;
-    QLabel *mpBetaLabel;
-    QLabel *mpGammaLabel;
-    QLabel *mpRhoLabel;
-    QLabel *mpSigmaLabel;
-    QLineEdit *mpBetaLineEdit;
-    QLineEdit *mpGammaLineEdit;
-    QLineEdit *mpRhoLineEdit;
-    QLineEdit *mpSigmaLineEdit;
-    QLabel *mpOmega1Label;
-    QLineEdit *mpOmega1LineEdit;
-    QLabel *mpOmega2Label;
-    QLineEdit *mpOmega2LineEdit;
-    QLabel *mpC1Label;
-    QLineEdit *mpC1LineEdit;
-    QLabel *mpC2Label;
-    QLineEdit *mpC2LineEdit;
-    QLabel *mpVmaxLabel;
-    QLineEdit *mpVmaxLineEdit;
-    QLabel *mpFLabel;
-    QLineEdit *mpFLineEdit;
-    QLabel *mpCRLabel;
-    QLineEdit *mpCRLineEdit;
-    QLabel *mpCPLabel;
-    QLineEdit *mpCPLineEdit;
-    QLabel *mpMPLabel;
-    QLineEdit *mpMPLineEdit;
-    QLabel *mpNumModelsLabel;
-    QLineEdit *mpNumModelsLineEdit;
-    QLabel *mpMethodLabel;
-    QComboBox *mpMethodComboBox;
-    QLabel *mpLengthLabel;
-    QSpinBox *mpLengthSpinBox;
-    QLabel *mpPercDiffLabel;
-    QLineEdit *mpPercDiffLineEdit;
-    QLabel *mpCountMaxLabel;
-    QSpinBox *mpCountMaxSpinBox;
-    QLineEdit *mpEpsilonXLineEdit;
-    QCheckBox *mpPlotParticlesCheckBox;
-    QCheckBox *mpPlotEntropyCheckBox;
-    QCheckBox *mpPlotBestWorstCheckBox;
-    QCheckBox *mpExport2CSVBox;
-    QCheckBox *mpFinalEvalCheckBox;
+    //Main dialog
+    QTabWidget *mpTabWidget;
 
-    //Parameters page
-    QCheckBox *mpParametersLogCheckBox;
-    QTreeWidget *mpParametersList;
-    QGridLayout *mpParametersLayout;
+    //Script tab
+    QTextEdit *mpScriptBox;
 
-    //Objective function page
-    QComboBox *mpMinMaxComboBox;
-    QComboBox *mpFunctionsComboBox;
-    QTreeWidget *mpVariablesList;
-    QPushButton *mpAddFunctionButton;
-    QList<QLineEdit*> mWeightLineEditPtrs;
-    QList<QLineEdit*> mNormLineEditPtrs;
-    QList<QLineEdit*> mExpLineEditPtrs;
-    QList<QLabel*> mFunctionLabelPtrs;
-    QList<QString> mFunctionName;
-    QList<QWidget*> mDataWidgetPtrs;
-    QList< QList<QLineEdit*> > mDataLineEditPtrs;
-    QList<QToolButton*> mRemoveFunctionButtonPtrs;
-    QGridLayout *mpObjectiveLayout;
-
-    QStringList mObjectiveFunctionDescriptions;
-    QStringList mObjectiveFunctionCalls;
-    QList<int> mObjectiveFunctionNumberOfVariables;
-    QList<bool> mObjectiveFunctionUsesTimeVector;
-    QList<QStringList> mObjectiveFunctionDataLists;
-
-    //Output
-    QTextEdit *mpOutputBox;
-    TerminalWidget *mpTerminal;
-    GUIMessageHandler *mpMessageHandler;
-
-    //Run page
+    //Run tab
+    QList<QProgressBar*> mCoreProgressBarPtrs;
+    QProgressBar *mpTotalProgressBar;
     QGridLayout *mpParametersOutputTextEditsLayout;
     QList<QLineEdit *> mParametersOutputLineEditPtrs;
     QList<QPushButton *> mParametersApplyButtonPtrs;
     QGridLayout *mpCoreProgressBarsLayout;
-    QList<QProgressBar*> mCoreProgressBarPtrs;
-    QProgressBar *mpTotalProgressBar;
-    QPushButton *mpStartButton;
+    TerminalWidget *mpTerminal;
     QLabel *mpModelNameLabel;
     QLabel *mpScriptFileLabel;
 
-    //Member variables
-    QTimer *mpTimer;
-    QString mScript;
-    QStringList mFunctions;
-    QStringList mSelectedFunctionsMinMax;
-    QList<int> mSelectedFunctions;
-    QList<QStringList> mFunctionComponents;
-    QList<QStringList> mFunctionPorts;
-    QList<QStringList> mFunctionVariables;
-    QList<double> mFunctionData;
-    QStringList mSelectedComponents;
-    QStringList mSelectedParameters;
-    QList<QLabel*> mpParameterLabels;
-    QList<QLineEdit*> mpParameterMinLineEdits;
-    QList<QLineEdit*> mpParameterMaxLineEdits;
-    QList<QToolButton*> mpParameterRemoveButtons;
-    QList<QStringList> mSelectedVariables;
-    bool mCoreProgressBarsRecreated;
-    QVector<int> mParameterOutputIndexes;
+    //Toolbar
+    QToolButton *mpRunButton;
 
+    //Utilities
+    GUIMessageHandler *mpMessageHandler;
+    QTimer *mpTimer;
+
+    bool mCoreProgressBarsRecreated;
     bool mOutputDisabled=false;
+    QVector<int> mParameterOutputIndexes;
 };
+
+
+
 
 #endif // OPTIMIZATIONDIALOG_H
