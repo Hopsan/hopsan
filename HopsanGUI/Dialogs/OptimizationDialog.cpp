@@ -287,11 +287,6 @@ void OptimizationDialog::run()
 
     mpRunButton->setDisabled(true);
 
-    for(int i=0; i<mParametersApplyButtonPtrs.size(); ++i)
-    {
-        mParametersApplyButtonPtrs[i]->setEnabled(false);
-    }
-
     QStringList commands = mpScriptBox->toPlainText().split("\n");
     bool *abort = new bool;
     *abort = false;
@@ -572,7 +567,6 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
         mParametersApplyButtonPtrs.append(new QPushButton("Apply", this));
         mpParametersOutputTextEditsLayout->addWidget(mParametersApplyButtonPtrs.last(), mParametersOutputLineEditPtrs.size(), 0);
         mpParametersOutputTextEditsLayout->addWidget(mParametersOutputLineEditPtrs.last(), mParametersOutputLineEditPtrs.size(), 1);
-        mParametersApplyButtonPtrs.last()->setEnabled(false);
         connect(mParametersApplyButtonPtrs.last(), SIGNAL(clicked()), this, SLOT(applyParameters()));
     }
     while(mParametersOutputLineEditPtrs.size() > nPoints)
