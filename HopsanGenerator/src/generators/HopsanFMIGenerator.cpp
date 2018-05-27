@@ -45,6 +45,27 @@
 #include <unistd.h>
 #endif
 
+namespace {
+QString readTextFromFile(const QString& filePath)
+{
+    QString text;
+    QFile fileToOpen(filePath);
+    if(fileToOpen.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream ts(&fileToOpen);
+        text = ts.readAll();
+        fileToOpen.close();
+    }
+    return text;
+}
+
+void writeTextToFile(QFile& file, const QString& text)
+{
+    QTextStream ts(&file);
+    ts << text;
+}
+
+}
+
 using namespace hopsan;
 
 typedef struct
@@ -1147,13 +1168,13 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
 
 
-void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSystem, int version, bool x64)
+bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSystem, int version, bool x64)
 {
 #ifdef _WIN32
     if(mCompilerPath.isEmpty())
     {
         printErrorMessage("Compiler path not specified.");
-        return;
+        return false;
     }
 #endif
 
@@ -1168,13 +1189,13 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     //Copy HopsanCore files to export directory
     //------------------------------------------------------------------//
 
-    if(!this->copyHopsanCoreSourceFilesToDir(savePath)) {
+    if(!copyHopsanCoreSourceFilesToDir(savePath)) {
         printErrorMessage("Failed to copy Hopsan source code files.");
-        return;
+        return false;
     }
-    if(!this->copyDefaultComponentCodeToDir(savePath)) {
+    if(!copyDefaultComponentCodeToDir(savePath)) {
         printErrorMessage("Failed to copy default component library files.");
-        return;
+        return false;
     }
 
     //------------------------------------------------------------------//
@@ -1188,36 +1209,36 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     //------------------------------------------------------------------//
 
     size_t nReals, nInputs, nOutputs;
-    generateModelDescriptionXmlFile(pSystem, savePath, guid, version, nReals, nInputs, nOutputs);
+    bool genOK = generateModelDescriptionXmlFile(pSystem, savePath, guid, version, nReals, nInputs, nOutputs);
+    if (!genOK) {
+        return false;
+    }
 
     //------------------------------------------------------------------//
     //Copy source files from templates
     //------------------------------------------------------------------//
 
-    copyFile(":/templates/fmu"+vStr+"_model.h", savePath+"/fmu"+vStr+"_model.h");
-    copyFile(":/templates/fmu"+vStr+"_model.c", savePath+"/fmu"+vStr+"_model.c");
-    copyFile(":/templates/fmu"+vStr+"_model_cs.c", savePath+"/fmu"+vStr+"_model_cs.c");
-    copyFile(":/templates/fmu_hopsan.h", savePath+"/fmu_hopsan.h");
-
-    //------------------------------------------------------------------//
-    printMessage("Generating fmu1_model_defines.h");
-    //------------------------------------------------------------------//
-
-    QFile fmuModelDefinesHeaderTemplateFile;
-    fmuModelDefinesHeaderTemplateFile.setFileName(":templates/fmu"+vStr+"_model_defines.h");
-    if(!fmuModelDefinesHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open fmu"+vStr+"_model_defines.h for reading.");
-        return;
+    bool c1 = copyFile(":/templates/fmu"+vStr+"_model.h", savePath+"/fmu"+vStr+"_model.h");
+    bool c2 = copyFile(":/templates/fmu"+vStr+"_model.c", savePath+"/fmu"+vStr+"_model.c");
+    bool c3 = copyFile(":/templates/fmu"+vStr+"_model_cs.c", savePath+"/fmu"+vStr+"_model_cs.c");
+    bool c4 = copyFile(":/templates/fmu_hopsan.h", savePath+"/fmu_hopsan.h");
+    if (!(c1 && c2 && c3 && c4)) {
+        printErrorMessage("Failed to copy template file(s)");
+        return false;
     }
-    QString fmuModelDefinesHeaderCode;
-    QTextStream t3(&fmuModelDefinesHeaderTemplateFile);
-    fmuModelDefinesHeaderCode = t3.readAll();
-    fmuModelDefinesHeaderTemplateFile.close();
+
+    //------------------------------------------------------------------//
+    // Generate fmu_model_defines.h
+    //------------------------------------------------------------------//
+    const auto fmuModelDefinesH = QString("fmu%1_model_defines.h").arg(vStr);
+    QFile fmuModelDefinesHeaderFile(savePath+"/"+fmuModelDefinesH);
+    printMessage("Generating "+fmuModelDefinesHeaderFile.fileName());
+
+    QString fmuModelDefinesHeaderCode = readTextFromFile(":templates/"+fmuModelDefinesH);
     if(fmuModelDefinesHeaderCode.isEmpty())
     {
-        printErrorMessage("Unable to generate code for fmu"+vStr+"_model_defines.h");
-        return;
+        printErrorMessage("Unable to read template code for "+fmuModelDefinesH);
+        return false;
     }
     fmuModelDefinesHeaderCode.replace("<<<n_reals>>>", QString::number(nReals));
     fmuModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
@@ -1227,31 +1248,30 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     {
         fmuModelDefinesHeaderCode.replace("<<<modelname>>>", modelName);
     }
-    QFile fmuModelDefinesHeaderFile(savePath+"/fmu"+vStr+"_model_defines.h");
-    if(!fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly))
+
+    if(fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly))
     {
-        printErrorMessage("Unable to open fmu"+vStr+"_model_defines.h for writing");
-        return;
+        writeTextToFile(fmuModelDefinesHeaderFile, fmuModelDefinesHeaderCode);
+        fmuModelDefinesHeaderFile.close();
     }
-    QTextStream fmuModelDefinesHeaderStream(&fmuModelDefinesHeaderFile);
-    fmuModelDefinesHeaderStream << fmuModelDefinesHeaderCode;
-    fmuModelDefinesHeaderFile.close();
+    else
+    {
+        printErrorMessage(QString("Unable to open %1 for writing").arg(fmuModelDefinesHeaderFile.fileName()));
+        return false;
+    }
+
 
     //------------------------------------------------------------------//
-    printMessage("Generating fmu_hopsan.cpp");
+    // Generate fmu_hopsan.cpp
     //------------------------------------------------------------------//
+    QFile fmuHopsanSourceFile(savePath+"/fmu_hopsan.cpp");
+    printMessage("Generating "+fmuHopsanSourceFile.fileName());
 
-    QFile fmuHopsanSourceFileTemplate;
-    fmuHopsanSourceFileTemplate.setFileName(":templates/fmu_hopsan.cpp");
-    assert(fmuHopsanSourceFileTemplate.open(QIODevice::ReadOnly | QIODevice::Text));
-    QString fmuHopsanSourceCode;
-    QTextStream t6(&fmuHopsanSourceFileTemplate);
-    fmuHopsanSourceCode = t6.readAll();
-    fmuHopsanSourceFileTemplate.close();
+    QString fmuHopsanSourceCode = readTextFromFile(":templates/fmu_hopsan.cpp");
     if(fmuHopsanSourceCode.isEmpty())
     {
-        printErrorMessage("Unable to generate code for fmu_hopsan.cpp");
-        return;
+        printErrorMessage("Unable to read template code for fmu_hopsan.cpp");
+        return false;
     }
 
     QString setDataPtrsString;
@@ -1276,21 +1296,28 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     fmuHopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
     fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
     fmuHopsanSourceCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
-    QFile fmuHopsanSourceFile(savePath+"/fmu_hopsan.cpp");
-    if(!fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
+
+    if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
+    {
+        writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
+        fmuHopsanSourceFile.close();
+    }
+    else
     {
         printErrorMessage("Unable to open fmu_hopsan.cpp for writing");
-        return;
+        return false;
     }
-    QTextStream fmuHopsanSourceStream(&fmuHopsanSourceFile);
-    fmuHopsanSourceStream << fmuHopsanSourceCode;
-    fmuHopsanSourceFile.close();
+
 
     //------------------------------------------------------------------//
     // Generate model file
     //------------------------------------------------------------------//
 
-    generateModelFile(pSystem, savePath);
+    genOK = generateModelFile(pSystem, savePath);
+    if (!genOK) {
+        printErrorMessage("Failed to generate model file");
+        return false;
+    }
 
     //------------------------------------------------------------------//
     // Replacing namespace
@@ -1304,7 +1331,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
 
     if(!compileAndLinkFMU(savePath, modelName, version))
     {
-        return;
+        return false;
     }
 
     //------------------------------------------------------------------//
@@ -1317,7 +1344,10 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     // Compressing files
     //------------------------------------------------------------------//
 
-    compressFiles(savePath, modelName);
+    bool compressOK = compressFiles(savePath, modelName);
+    if (!compressOK) {
+        return false;
+    }
 
     //------------------------------------------------------------------//
     //printMessage("Cleaning up");
@@ -1329,7 +1359,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
    //         "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
 
     printMessage("Finished.");
-
+    return true;
 }
 
 
@@ -1491,7 +1521,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
     return true;
 }
 
-void HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs)
+bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs)
 {
     QString versionStr = QString::number(version, 'f', 1);
     QString today = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm");
@@ -1600,35 +1630,30 @@ void HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     QFile modelDescriptionFile(savePath + "/modelDescription.xml");
     if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open modelDescription.xml for writing.");
-        return;
+        printErrorMessage(QString("Failed to open %1 for writing.").arg(modelDescriptionFile.fileName()));
+        return false;
     }
     QTextStream out(&modelDescriptionFile);
     domDocument.save(out, 4);
     modelDescriptionFile.close();
+    return true;
 }
 
-void HopsanFMIGenerator::generateModelFile(const ComponentSystem *pSystem, const QString &savePath) const
+bool HopsanFMIGenerator::generateModelFile(const ComponentSystem *pSystem, const QString &savePath) const
 {
-    printMessage("Generating model.hpp");
-
     QString modelName = pSystem->getName().c_str();
+    QFile modelHppFile(savePath + "/model.hpp");
+    QFile modelFile(savePath + "/" + modelName + ".hmf");
 
-    QFile modelHppFile;
-    modelHppFile.setFileName(savePath + "/model.hpp");
-    if(!modelHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    printMessage("Generating "+modelHppFile.fileName());
+
+    if (!modelFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open model.hpp for writing.");
-        return;
+        printErrorMessage(QString("Could not open %1 for reading.").arg(modelFile.fileName()));
+        return false;
     }
 
     QStringList modelLines;
-    QFile modelFile(savePath + "/" + modelName + ".hmf");
-    if (!modelFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage("Could not open "+modelName+".hmf for reading.");
-        return;
-    }
     while (!modelFile.atEnd())
     {
         QString line = modelFile.readLine();
@@ -1639,17 +1664,25 @@ void HopsanFMIGenerator::generateModelFile(const ComponentSystem *pSystem, const
     modelLines.last().append("\\n");
     modelFile.close();
 
+
+    if(!modelHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage(QString("Failed to open %1 for writing.").arg(modelHppFile.fileName()));
+        return false;
+    }
+
     QTextStream modelHppStream(&modelHppFile);
     modelHppStream << "#include <vector>\n\n";
     modelHppStream << "std::string getModelString()\n{\n";
     modelHppStream << "    std::string model = ";
-    Q_FOREACH(const QString line, modelLines)
+    for(const QString& line : modelLines)
     {
         modelHppStream << "\""+line+"\"\n";
     }
     modelHppStream << "    ;\n\n";
     modelHppStream << "    return model;\n}\n";
     modelHppFile.close();
+    return true;
 }
 
 void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
@@ -1699,6 +1732,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
 
     const QString fmiLibDir=mHopsanRootPath+"/Dependencies/FMILibrary";
 
+    bool cCompileOK=false;
 #ifdef _WIN32
     QFile compileCBatchFile;
     compileCBatchFile.setFileName(savePath + "/compileC.bat");
@@ -1715,7 +1749,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileBatchCStream << QString("gcc.exe -c fmu%1_model_cs.c -I\"%2/include\"").arg(vStr).arg(fmiLibDir) << "\n";
     compileCBatchFile.close();
 
-    callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
+    cCompileOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileC.bat");
 #else
     QFile compileCBatchFile;
     compileCBatchFile.setFileName(savePath + "/compileC.sh");
@@ -1729,8 +1763,12 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     compileBatchCStream << QString("gcc -fPIC -c fmu%1_model_cs.c -I%2/include").arg(vStr).arg(fmiLibDir)<< "\n";
     compileCBatchFile.close();
 
-    callProcess("/bin/sh", QStringList() << "compileC.sh", savePath);
+    cCompileOK = callProcess("/bin/sh", QStringList() << "compileC.sh", savePath);
 #endif
+    if (!cCompileOK) {
+        printErrorMessage("Failed to compile exported FMU C code.");
+        return false;
+    }
     if(!assertFilesExist(savePath, QStringList() << QString("fmu%1_model_cs.o").arg(vStr))) {
         return false;
     }
@@ -1740,6 +1778,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     printMessage("Compiling C++ files");
     printMessage("------------------------------------------------------------------------");
 
+    bool cppCompileOK=false;
 #ifdef _WIN32
     QFile compileCppBatchFile;
     compileCppBatchFile.setFileName(savePath + "/compileCpp.bat");
@@ -1767,7 +1806,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     compileCppBatchFile.close();
 
-    callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileCpp.bat");
+    cppCompileOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & compileCpp.bat");
 #else
     QFile compileCppBatchFile;
     compileCppBatchFile.setFileName(savePath + "/compileCpp.sh");
@@ -1791,23 +1830,30 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     }
     compileCppBatchFile.close();
 
-    callProcess("/bin/sh", QStringList() << "compileCpp.sh", savePath);
+    cppCompileOK = callProcess("/bin/sh", QStringList() << "compileCpp.sh", savePath);
 #endif
+    if (!cppCompileOK) {
+        printErrorMessage("Failed to compile exported FMU C++ Hopsan code.");
+        return false;
+    }
+
     QStringList objectFiles;
     objectFiles << "fmu_hopsan.o";
-    Q_FOREACH(const QString &srcFile, srcFiles)
-    {
+    for(const QString &srcFile : srcFiles) {
         QFileInfo fi(srcFile);
         objectFiles << fi.baseName()+".o";
     }
 
-    if(!assertFilesExist(savePath, objectFiles))
+    if(!assertFilesExist(savePath, objectFiles)) {
         return false;
+    }
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Linking");
     printMessage("------------------------------------------------------------------------");
 
+    bool linkingOK=false;
+    QString outputLibraryFile = modelName;
 #ifdef _WIN32
     QFile linkBatchFile;
     linkBatchFile.setFileName(savePath + "/link.bat");
@@ -1828,12 +1874,12 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
         linkBatchStream << " " << objFile;
     }
     //! @todo should not hardcode .dll should use define from Common.prf
-    linkBatchStream << " -o "+modelName+".dll\n";
+    outputLibraryFile.append(".dll");
+    linkBatchStream << " -o "+outputLibraryFile+"\n";
     linkBatchFile.close();
 
-    callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & link.bat");
+    linkingOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + savePath + " & link.bat");
 
-    return assertFilesExist(savePath, QStringList() << modelName+".dll");
 #else
     QFile linkBatchFile;
     linkBatchFile.setFileName(savePath + "/link.sh");
@@ -1850,14 +1896,20 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &savePath, const QStrin
     {
         linkBatchStream << " " << objFile;
     }
-    linkBatchStream << " -o "+modelName+".so\n";
+    outputLibraryFile.append(".so");
+    linkBatchStream << " -o "+outputLibraryFile+"\n";
     linkBatchFile.close();
 
-    callProcess("/bin/sh", QStringList() << "link.sh", savePath);
-
-    return assertFilesExist(savePath, QStringList() << modelName+".so");
+    linkingOK = callProcess("/bin/sh", QStringList() << "link.sh", savePath);
 
 #endif
+
+    if (!linkingOK) {
+        printErrorMessage("Failed to link exported FMU code.");
+        return false;
+    }
+
+    return assertFilesExist(savePath, QStringList() << outputLibraryFile);
 }
 
 void HopsanFMIGenerator::sortFiles(const QString &savePath, const QString &modelName, bool x64) const
@@ -1896,25 +1948,25 @@ void HopsanFMIGenerator::sortFiles(const QString &savePath, const QString &model
     //tlmDescriptionFile.copy(savePath+"/fmu/"+modelName+"_TLM.xml");
 }
 
-void HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &modelName) const
+bool HopsanFMIGenerator::compressFiles(const QString &savePath, const QString &modelName) const
 {
     printMessage("Compressing files");
 
+    bool compressedOK = false;
 #ifdef _WIN32
     QString program = mHopsanRootPath + "/Dependencies/tools/7z/7za";
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
-    callProcess(program, arguments, savePath+"/fmu");
+    compressedOK = callProcess(program, arguments, savePath+"/fmu");
 #elif __linux__ && __i386__
     QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << /*modelName+"_TLM.xml" <<*/ "binaries/linux32/"+modelName+".so";
-    callProcess("zip", arguments, savePath+"/fmu");
+    compressedOK = callProcess("zip", arguments, savePath+"/fmu");
 #elif __linux__ && __x86_64__
     QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << /*modelName+"_TLM.xml" <<*/ "binaries/linux64/"+modelName+".so";
-    callProcess("zip", arguments, savePath+"/fmu");
+    compressedOK = callProcess("zip", arguments, savePath+"/fmu");
 #endif
     //! @todo Add OSX support
 
-    if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
-        return;
+    return compressedOK && assertFilesExist(savePath, modelName+".fmu");
 }
 
 //bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,

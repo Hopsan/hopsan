@@ -39,6 +39,7 @@
 
 #include <QFileInfo>
 #include <QDir>
+#include <memory>
 
 namespace hopsan {
 class ComponentSystem;
@@ -49,21 +50,24 @@ class ComponentSystem;
 //! @param compilerPath Path to compiler bin directory
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param[in] quiet Hide generator output
-void callModelicaGenerator(const char* moFilePath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject, int solver, bool compile, const char* hopsanInstallPath)
+bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject, int solver, bool compile, const char* hopsanInstallPath)
 {
-    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(hopsanInstallPath, compilerPath);
+    auto pGenerator = std::unique_ptr<HopsanModelicaGenerator>(new HopsanModelicaGenerator(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    pGenerator->generateFromModelica(moFilePath, HopsanGeneratorBase::SolverT(solver));
+    bool genImportOK = pGenerator->generateFromModelica(moFilePath, HopsanGeneratorBase::SolverT(solver));
     if(compile)
     {
         QFileInfo mofile(moFilePath);
         QString dir = mofile.absolutePath()+"/";
         QString typeName = mofile.baseName();
         QStringList hppFiles {typeName+".hpp"};
-        pGenerator->generateNewLibrary(dir, hppFiles);
-        compileComponentLibrary(dir+typeName+"_lib.xml", pGenerator);
+        bool genLibraryOK = pGenerator->generateNewLibrary(dir, hppFiles);
+        if (!genLibraryOK) {
+            return false;
+        }
+        return compileComponentLibrary(dir+typeName+"_lib.xml", pGenerator.get());
     }
-    delete(pGenerator);
+    return genImportOK;
 }
 
 
@@ -71,17 +75,16 @@ void callModelicaGenerator(const char* moFilePath, const char* compilerPath, mes
 //! @param outputPath Path to where the files shall be created
 //! @param hppFiles Vector with filenames for .hpp files
 //! @param[in] quiet Hide generator output
-void callLibraryGenerator(const char*  outputPath, const char* const hppFiles[], const int numFiles, messagehandler_t messageHandler, void* pMessageObject)
+bool callLibraryGenerator(const char*  outputPath, const char* const hppFiles[], const int numFiles, messagehandler_t messageHandler, void* pMessageObject)
 {
-    HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase("", "", "");
+    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase("", "", ""));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
     QStringList tempList;
-    for(size_t i=0; i<numFiles; ++i)
+    for(int i=0; i<numFiles; ++i)
     {
         tempList.append(hppFiles[i]);
     }
-    pGenerator->generateNewLibrary(outputPath, tempList);
-    delete(pGenerator);
+    return pGenerator->generateNewLibrary(outputPath, tempList);
 }
 
 
@@ -90,10 +93,8 @@ void callLibraryGenerator(const char*  outputPath, const char* const hppFiles[],
 //! @param compilerPath Path to the compiler bin directory
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param[in] quiet Hide generator output
-void callCppGenerator(const char* hppPath, const char* compilerPath, bool compile, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
+bool callCppGenerator(const char* hppPath, const char* compilerPath, bool compile, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
 {
-    qDebug() << "Called C++ generator (in dll)!";
-
     QFile hppFile(hppPath);
     hppFile.open(QFile::ReadOnly);
     QString code = hppFile.readAll();
@@ -121,7 +122,7 @@ void callCppGenerator(const char* hppPath, const char* compilerPath, bool compil
     {
         if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
         {
-            return;
+            return false;
         }
         QTextStream xmlStream(&xmlFile);
         xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -145,16 +146,20 @@ void callCppGenerator(const char* hppPath, const char* compilerPath, bool compil
 
     if(compile)
     {
-        HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase(hopsanInstallPath, compilerPath);
+        auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(hopsanInstallPath, compilerPath));
         pGenerator->setMessageHandler(messageHandler, pMessageObject);
         QFileInfo hp(hppPath);
         QString dir = hp.absolutePath()+"/";
         QString typeName = hp.baseName();
         QStringList hppFiles {typeName+".hpp"};
-        pGenerator->generateNewLibrary(dir, hppFiles);
-        compileComponentLibrary(dir+typeName+"_lib.xml", pGenerator);
-        delete(pGenerator);
+        bool genLibraryOK = pGenerator->generateNewLibrary(dir, hppFiles);
+        if (!genLibraryOK) {
+            return false;
+        }
+        return compileComponentLibrary(dir+typeName+"_lib.xml", pGenerator.get());
     }
+
+    return true;
 }
 
 
@@ -164,15 +169,15 @@ void callCppGenerator(const char* hppPath, const char* compilerPath, bool compil
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param compilerPath Path to the compiler binaries
 //! @param[in] quiet Hide generator output
-void callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
+bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
 {
-    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(hopsanInstallPath, compilerPath);
+    auto pGenerator = std::unique_ptr<HopsanFMIGenerator>(new HopsanFMIGenerator(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
     QString typeName, hppFile;
     if(!pGenerator->generateFromFmu(fmuFilePath, targetPath, typeName, hppFile))
     {
-        pGenerator->printErrorMessage("Import of FMU failed.");
-        return;
+        pGenerator->printErrorMessage("Failed to generate code when importing from FMU");
+        return false;
     }
 
     QString fmuFileName = QFileInfo(fmuFilePath).baseName();
@@ -192,12 +197,18 @@ void callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, con
 
     // Generate the component library files
     QStringList hppFiles {hppFileInfo.filePath()};
-    pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), hppFiles , cflags, lflags);
+    bool genOK = pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), hppFiles , cflags, lflags);
+    if (!genOK) {
+        pGenerator->printErrorMessage("Failed to generate FMU import library");
+        return false;
+    }
 
     // Compile the generated component library
-    compileComponentLibrary(fmuImportRoot.canonicalFilePath()+"/"+fmuFileName+"_lib.xml", pGenerator);
-
-    delete(pGenerator);
+    bool compileOK = compileComponentLibrary(fmuImportRoot.canonicalFilePath()+"/"+fmuFileName+"_lib.xml", pGenerator.get());
+    if (!compileOK) {
+        pGenerator->printErrorMessage("Failed to compile imported FMU library");
+    }
+    return compileOK;
 }
 
 
@@ -209,12 +220,11 @@ void callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, con
 //! @param[in] version The FMU version to export 1 or 2
 //! @param[in] architecture 32 or 64
 //! @param[in] quiet Hide generator output
-void callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, const char* compilerPath, int version, int architecture, messagehandler_t messageHandler, void* pMessageObject)
+bool callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, const char* compilerPath, int version, int architecture, messagehandler_t messageHandler, void* pMessageObject)
 {
-    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(hopsanInstallPath, compilerPath);
+    auto pGenerator = std::unique_ptr<HopsanFMIGenerator>(new HopsanFMIGenerator(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    pGenerator->generateToFmu(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), version, architecture);
-    delete(pGenerator);
+    return pGenerator->generateToFmu(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), version, architecture);
 }
 
 
@@ -225,12 +235,11 @@ void callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const c
 //! @param disablePortLabels Tells whether or not port labels shall be disabled (for compatibility with older MATLAB versions)
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param quiet Hide generator output
-void callSimulinkExportGenerator(const char* outputPath, const char* modelFile, void* pHopsanSystem, bool disablePortLabels, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
+bool callSimulinkExportGenerator(const char* outputPath, const char* modelFile, void* pHopsanSystem, bool disablePortLabels, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
 {
-    HopsanSimulinkGenerator *pGenerator = new HopsanSimulinkGenerator(hopsanInstallPath);
+    auto pGenerator = std::unique_ptr<HopsanSimulinkGenerator>(new HopsanSimulinkGenerator(hopsanInstallPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    pGenerator->generateToSimulink(outputPath, modelFile, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), disablePortLabels);
-    delete(pGenerator);
+    return pGenerator->generateToSimulink(outputPath, modelFile, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), disablePortLabels);
 }
 
 
@@ -239,12 +248,11 @@ void callSimulinkExportGenerator(const char* outputPath, const char* modelFile, 
 //! @param pSystem Pointer to system that shall be exported
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param quiet Hide generator output
-void callLabViewSITGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
+bool callLabViewSITGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
 {
-    HopsanLabViewGenerator *pGenerator = new HopsanLabViewGenerator(hopsanInstallPath);
+    auto pGenerator = std::unique_ptr<HopsanLabViewGenerator>(new HopsanLabViewGenerator(hopsanInstallPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    pGenerator->generateToLabViewSIT(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem));
-    delete(pGenerator);
+    return pGenerator->generateToLabViewSIT(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem));
 }
 
 
@@ -255,11 +263,10 @@ void callLabViewSITGenerator(const char* outputPath, void* pHopsanSystem, const 
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param compilerPath Path to the compiler bin directory
 //! @param quiet Hide generator output
-void callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
+bool callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
 {
-    HopsanGeneratorBase *pGenerator = new HopsanGeneratorBase(hopsanInstallPath, compilerPath);
+    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    compileComponentLibrary(outputPath, pGenerator, extraCFlags, extraLFlags);
-    delete(pGenerator);
+    return compileComponentLibrary(outputPath, pGenerator.get(), extraCFlags, extraLFlags);
 }
 

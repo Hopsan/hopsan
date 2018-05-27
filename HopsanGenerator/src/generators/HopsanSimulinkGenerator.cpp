@@ -38,14 +38,14 @@ HopsanSimulinkGenerator::HopsanSimulinkGenerator(const QString &hopsanInstallPat
 }
 
 
-void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels)
+bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels)
 {
     printMessage("Initializing Simulink S-function export...");
 
     if(pSystem == 0)
     {
         printErrorMessage("System pointer is null. Aborting.");
-        return;
+        return false;
     }
 
     QDir saveDir;
@@ -80,7 +80,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     if(!wrapperFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open "+name+".cpp for writing.");
-        return;
+        return false;
     }
 
     QFile maskSetupFile;
@@ -88,7 +88,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     if(!maskSetupFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open "+name+"MaskSetup.m for writing.");
-        return;
+        return false;
     }
 
     printMessage("Writing HopsanSimulinkCompile.m...");
@@ -97,7 +97,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     if(!compileScriptFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open HopsanSimulinkCompile.m for writing.");
-        return;
+        return false;
     }
     QTextStream compileScriptStream(&compileScriptFile);
     QTextLineStream compileScriptLStream(compileScriptStream);
@@ -340,10 +340,11 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     if(!assertFilesExist(savePath, QStringList() << modelFile <<  name+".cpp" <<
                      "HopsanSimulinkCompile.m" << name+"MaskSetup.m"))
     {
-        return;
+        return false;
     }
 
     printMessage("Finished.");
+    return true;
 }
 
 

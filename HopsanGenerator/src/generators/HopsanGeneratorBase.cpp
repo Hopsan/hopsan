@@ -472,13 +472,16 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
 //! @brief Generates appearance file from a component specification object
 //! @param path Path to generated (or existing) .xml file
 //! @param comp Component specification object
-void HopsanGeneratorBase::generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile)
+bool HopsanGeneratorBase::generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile)
 {
     QFile file(path);
     QString code;
     if(file.exists())   //An xml file already exists
     {
-        file.open(QFile::ReadOnly);
+        if(!file.open(QFile::ReadOnly)) {
+            printErrorMessage(QString("Failed to open '%1' for reading.").arg(path));
+            return false;
+        }
         code = file.readAll();
         file.close();
 
@@ -531,7 +534,10 @@ void HopsanGeneratorBase::generateOrUpdateComponentAppearanceFile(QString path, 
 
         code = lines.join("\n");
 
-        file.open(QFile::ReadOnly | QFile::Text | QFile::Truncate);
+        if(!file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)){
+            printErrorMessage(QString("Failed to open '%1' for writing.").arg(path));
+            return false;
+        }
         file.write(code.toUtf8());
         file.close();
     }
@@ -539,8 +545,8 @@ void HopsanGeneratorBase::generateOrUpdateComponentAppearanceFile(QString path, 
     {
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
         {
-            printErrorMessage("Failed to open " + comp.typeName + ".xml  for writing.");
-            return;
+            printErrorMessage(QString("Failed to open %1 for writing.").arg(path));
+            return false;
         }
         QTextStream xmlStream(&file);
         xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -566,6 +572,7 @@ void HopsanGeneratorBase::generateOrUpdateComponentAppearanceFile(QString path, 
         xmlStream << "</hopsanobjectappearance>\n";
         file.close();
     }
+    return true;
 }
 
 
@@ -723,7 +730,7 @@ void HopsanGeneratorBase::compileFromComponentSpecification(const QString &outpu
 //! @param[in] hppFiles Relative path to hpp files
 //! @param[in] cflags Compiler flags required for building the library
 //! @param[in] lflags Linker flags required for building the library
-void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags)
+bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags)
 {
     printMessage("Creating new component library...");
 
@@ -736,7 +743,7 @@ void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
     QString libName = QDir(dstPath).dirName();
 
     QStringList typeNames;
-    Q_FOREACH(const QString &file, hppFiles)
+    for(const QString &file : hppFiles)
     {
         QFile hppFile(dstPath+file);
         hppFile.open(QFile::ReadOnly);
@@ -754,10 +761,10 @@ void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
     if(!ccLibFile.open(QFile::WriteOnly | QFile::Text))
     {
         printErrorMessage("Failed to open "+libName+".cpp for writing.");
-        return;
+        return false;
     }
     QTextStream ccLibStream(&ccLibFile);
-    Q_FOREACH(const QString &file, hppFiles)
+    for(const QString &file : hppFiles)
     {
         ccLibStream << "#include \"" << file << "\"\n";
     }
@@ -765,7 +772,7 @@ void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
     ccLibStream << "using namespace hopsan;\n\n";
     ccLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* /*nfact_ptr*/)\n";
     ccLibStream << "{\n";
-    Q_FOREACH(const QString &type, typeNames)
+    for(const QString &type : typeNames)
     {
         ccLibStream << "    cfact_ptr->registerCreatorFunction(\"" << type << "\", " << type << "::Creator);\n";
     }
@@ -787,7 +794,7 @@ void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
         if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
         {
             printErrorMessage("Failed to open " + libName + "_lib.xml  for writing.");
-            return;
+            return false;
         }
         QTextStream xmlStream(&xmlFile);
         xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -804,6 +811,7 @@ void HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
     }
 
     printMessage("Finished.");
+    return true;
 }
 
 
@@ -940,7 +948,7 @@ void HopsanGeneratorBase::setQuiet(bool quiet)
 
 bool HopsanGeneratorBase::assertFilesExist(const QString &path, const QStringList &files) const
 {
-    Q_FOREACH(const QString &file, files)
+    for(const QString& file : files)
     {
         if(!QFile::exists(path+"/"+file))
         {
@@ -952,19 +960,21 @@ bool HopsanGeneratorBase::assertFilesExist(const QString &path, const QStringLis
     return true;
 }
 
-
-void HopsanGeneratorBase::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
+bool HopsanGeneratorBase::assertFilesExist(const QString &path, const QString &file) const
 {
-    QProcess p;
-    if(!workingDirectory.isEmpty())
-    {
-        p.setWorkingDirectory(workingDirectory);
-    }
-    p.start(name, args);
-    p.waitForFinished(300000);
-    printMessage(p.readAll());
-    printMessage(p.readAllStandardError());
-    printMessage(p.readAllStandardOutput());
+    QStringList files;
+    files << file;
+    return assertFilesExist(path, files);
+}
+
+
+bool HopsanGeneratorBase::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
+{
+    QString stdOut, stdErr;
+    int i = ::callProcess(name, args, workingDirectory, 600, stdOut, stdErr);
+    printMessage(stdOut);
+    printMessage(stdErr);
+    return (i==0);
 }
 
 

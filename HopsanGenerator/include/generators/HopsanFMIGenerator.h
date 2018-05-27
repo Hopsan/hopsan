@@ -41,7 +41,7 @@ class HopsanFMIGenerator : public HopsanGeneratorBase
 public:
     HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
     bool generateFromFmu(const QString &rFmuPath, QString targetPath, QString &rTypeName, QString &rHppPath);
-    void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, int version=2, bool x64=true);
+    bool generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, int version=2, bool x64=true);
 
 private:
     bool generateFromFmu1(const QString &rFmuPath, const QString &targetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
@@ -57,12 +57,12 @@ private:
                               QList<QStringList> &tlmPortValueRefs, QStringList &inVarValueRefs, QStringList &inVarPortNames,
                               QStringList &outVarValueRefs, QStringList &outVarPortNames, QString &cqsType);
 
-    void generateModelDescriptionXmlFile(hopsan::ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs);
-    void generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &savePath) const;
+    bool generateModelDescriptionXmlFile(hopsan::ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs);
+    bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &savePath) const;
     void replaceNameSpace(const QString &savePath) const;
     bool compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const;
     void sortFiles(const QString &savePath, const QString &modelName, bool x64) const;
-    void compressFiles(const QString &savePath, const QString &modelName) const;
+    bool compressFiles(const QString &savePath, const QString &modelName) const;
 };
 
 #endif // HOPSANFMIGENERAETOR_H

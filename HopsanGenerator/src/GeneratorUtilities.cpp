@@ -350,7 +350,7 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
     }
 #else
     QString stdOut,stdErr;
-    callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, 60, stdOut, stdErr);
+    callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, 600, stdOut, stdErr);
     output.append(stdOut);
     output.append("\n");
     output.append(stdErr);
@@ -566,7 +566,7 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
 }
 
 
-int callProcess(const QString &name, const QStringList &args, const QString& workingDirectory, const int timeout, QString &rStdOut, QString &rStdErr)
+int callProcess(const QString &name, const QStringList &args, const QString& workingDirectory, const int timeout_s, QString &rStdOut, QString &rStdErr)
 {
     QProcess p;
     if(!workingDirectory.isEmpty())
@@ -574,7 +574,7 @@ int callProcess(const QString &name, const QStringList &args, const QString& wor
         p.setWorkingDirectory(workingDirectory);
     }
     p.start(name, args);
-    p.waitForFinished(timeout*10000);
+    p.waitForFinished(timeout_s*1000);
 
     rStdOut = p.readAllStandardOutput();
     rStdErr = p.readAllStandardError();

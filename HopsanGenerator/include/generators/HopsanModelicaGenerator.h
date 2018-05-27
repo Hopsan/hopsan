@@ -32,7 +32,7 @@ class HopsanModelicaGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanModelicaGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
-    void generateFromModelica(QString code, SolverT solver=NumericalIntegration);
+    bool generateFromModelica(QString code, SolverT solver=NumericalIntegration);
 
 private:
     void parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &preAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList);

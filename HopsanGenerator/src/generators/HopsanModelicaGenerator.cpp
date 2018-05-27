@@ -85,7 +85,7 @@ HopsanModelicaGenerator::HopsanModelicaGenerator(const QString &hopsanInstallPat
 }
 
 
-void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
+bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
 {
     qDebug() << "SOLVER: " << solver;
 
@@ -142,10 +142,15 @@ void HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     hppFile.close();
 
     //Generate or update appearance file
-    generateOrUpdateComponentAppearanceFile(path.replace(".hpp",".xml"), comp, QFileInfo(moPath).fileName());
+    bool genOK = generateOrUpdateComponentAppearanceFile(path.replace(".hpp",".xml"), comp, QFileInfo(moPath).fileName());
+    if (!genOK) {
+        printErrorMessage("Could not generate component appearance file");
+        return false;
+    }
 
     //qDebug() << "Finished!";
     printMessage("HopsanGenerator finished!");
+    return true;
 }
 
 
