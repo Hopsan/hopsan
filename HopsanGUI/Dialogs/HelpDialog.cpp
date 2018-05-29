@@ -82,7 +82,7 @@ void HelpDialog::open()
 
 void HelpDialog::open(QString file)
 {
-    mpHelp->loadHtmlFile(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + file));
+    mpHelp->loadHtmlFile(QUrl::fromLocalFile(gpDesktopHandler->getHelpPath() + "/" + file));
 
     //Using show instead of open for modaless window
     QDialog::show();

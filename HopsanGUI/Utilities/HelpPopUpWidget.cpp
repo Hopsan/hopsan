@@ -100,15 +100,15 @@ void HelpPopUpWidget::openContextHelp()
     {
         if(action->parent() == gpSensitivityAnalysisDialog)
         {
-            gpHelpDialog->open("userSensitivityAnalysis.html");
+            gpHelpDialog->open("userSensitivityAnalysisPage.html");
         }
         else if(action->parent() == gpModelHandler->getCurrentViewContainerObject())
         {
-            gpHelpDialog->open("userEnergyLosses.html");
+            gpHelpDialog->open("userEnergyLossesPage.html");
         }
         else if(action->parent() == gpLibraryWidget)
         {
-            gpHelpDialog->open("userCustomComponents.html");
+            gpHelpDialog->open("userModelingInHopsanPage.html");
         }
         else
         {
@@ -118,13 +118,14 @@ void HelpPopUpWidget::openContextHelp()
     QToolButton *button = qobject_cast<QToolButton *>(sender());
     if(button != 0)
     {
+        qDebug() << "Name = " << button->objectName();
         if(button->parent() == gpLibraryWidget)
         {
-            gpHelpDialog->open("userCustomComponents.html");
+            gpHelpDialog->open("userModelingInHopsanPage.html");
         }
         else if(button->objectName() == "optimizationHelpButton")
         {
-            gpHelpDialog->open("userOptimization.html");
+            gpHelpDialog->open("userOptimizationPage.html");
         }
         else
         {

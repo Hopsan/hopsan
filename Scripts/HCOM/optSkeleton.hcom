@@ -1,0 +1,46 @@
+# HCOM Optimization Script Skeleton
+
+define setpars
+    # Apply parameteres here
+    # Example: 
+    #  chpa Piston.A1 optpar(optvar(evalid),0)
+    #  chpa Piston.A2 optpar(optvar(evalid),1)
+enddefine
+
+define obj
+    # Compute objective function here 
+    #  totalObj = ...
+
+    opt set obj optvar(evalid) totalObj
+enddefine
+
+# Set general settings here
+opt set algorithm <algorithm>
+opt set sampling <random/latinhypercube>
+opt set maxevals <maxevals>
+opt set npoints <npoints>
+opt set nparams <nparams>
+opt set partol <partol>
+
+# Set algorithm specific settings here 
+# Example: 
+#  opt set alpha 1.3
+
+# Set output settings here
+opt set printresultfile <on/off>
+opt set printlogfile <on/off>
+opt set plotpoints <on/off>
+opt set plotobjectives <on/off>
+opt set plotparameters <on/off>
+opt set plotentropy <on/off>
+
+# Set parameter limits here 
+# Example:
+#  opt set limits 0 0.001 0.005
+#  opt set limits 1 -100 200
+
+set backup off
+
+opt run
+
+set backup on
