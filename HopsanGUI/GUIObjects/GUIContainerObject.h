@@ -187,6 +187,10 @@ public:
     bool areLossesVisible();
     QRadioButton *mpAvgPwrRadioButton;
 
+    //Animation methods
+    bool isAnimationDisabled();
+    void setAnimationDisabled(bool disabled);
+
 public slots:
 
     //Selection slots
@@ -374,6 +378,9 @@ protected:
     //Time measurement dialog
     QTableView *mpComponentTable;
     QTableView *mpTypeTable;
+
+    //Animation members
+    bool mAnimationDisabled = false;
 };
 
 #endif // GUICONTAINEROBJECT_H

@@ -623,7 +623,7 @@ void AnimationWidget::resetAllAnimationDataToDefault()
         AnimatedComponent *pComp = mAnimatedComponentList.at(c);
 
         QDomDocument domDocument;
-        QDomElement animationRoot = domDocument.createElement("animation");
+        QDomElement animationRoot = domDocument.createElement(HMF_ANIMATION);
         domDocument.appendChild(animationRoot);
 
         QString subTypeName = pComp->mpModelObject->getSubTypeName();

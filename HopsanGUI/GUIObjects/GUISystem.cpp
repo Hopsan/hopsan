@@ -828,6 +828,10 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     QDomElement guiStuff = ModelObject::saveGuiDataToDomElement(rDomElement);
 
+    //Save animation disabled setting
+    QDomElement animationElement = guiStuff.firstChildElement(HMF_ANIMATION);
+    animationElement.setAttribute(HMF_DISABLEDTAG, bool2str(mAnimationDisabled));
+
     //Should we try to append appearancedata stuff, we don't want this in external systems as they contain their own appearance
     if (mLoadType!="EXTERNAL")
     {
@@ -1046,6 +1050,14 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
         mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
+
+        QDomElement animationElement = guiStuff.firstChildElement(HMF_ANIMATION);
+        bool animationDisabled = false;
+        if(!animationElement.isNull())
+        {
+            animationDisabled = parseAttributeBool(animationElement, HMF_DISABLEDTAG, false);
+        }
+        setAnimationDisabled(animationDisabled);
 
         // Load system/model info
         QDomElement infoElement = domElement.parentNode().firstChildElement(HMF_INFOTAG); //!< @deprecated info tag is in the system from 0.7.5 an onwards, this line loads from old models

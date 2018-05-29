@@ -1103,7 +1103,7 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 //    }
 
     // Save animation settings
-    QDomElement animationElement = appendDomElement(xmlGuiStuff, "animation");
+    QDomElement animationElement = appendDomElement(xmlGuiStuff, HMF_ANIMATION);
     mModelObjectAppearance.getAnimationDataPtr()->saveToDomElement(animationElement);
 
     // Return dom node with appended gui contents
