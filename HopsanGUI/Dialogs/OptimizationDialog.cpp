@@ -646,7 +646,6 @@ QWidget*OptimizationDialog::createScriptWidget()
     QWidget *pScriptWidget = new QWidget(this);
 
     QVBoxLayout *pScriptLayout = new QVBoxLayout(pScriptWidget);
-    pScriptWidget->setLayout(pScriptLayout);
 
 
     mpScriptBox = new QTextEdit(this);
@@ -668,8 +667,7 @@ QWidget*OptimizationDialog::createRunWidget()
 {
     QWidget *pRunWidget = new QWidget(this);
     pRunWidget->setPalette(gpConfig->getPalette());
-    QGridLayout *pRunLayout = new QGridLayout(this);
-    pRunWidget->setLayout(pRunLayout);
+    QGridLayout *pRunLayout = new QGridLayout(pRunWidget);
 
     mpModelNameLabel = new QLabel("Model name: ", this);
     mpScriptFileLabel = new QLabel("Script File:", this);

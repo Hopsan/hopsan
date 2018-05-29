@@ -58,6 +58,29 @@
 #include "Utilities/GUIUtilities.h"
 #include "OptimizationScriptWizard.h"
 
+
+
+OptimizationScriptWizardPage::OptimizationScriptWizardPage(OptimizationScriptWizard *pParent)
+    : QWizardPage(pParent)
+{
+    mpWizard = pParent;
+
+    connect(mpWizard, SIGNAL(contentsChanged()), this, SIGNAL(completeChanged()));
+}
+
+bool OptimizationScriptWizardPage::isComplete() const
+{
+    if(isFinalPage())
+    {
+        return (!mpWizard->mSelectedParameters.empty() && !mpWizard->mSelectedFunctions.empty());
+    }
+    else
+    {
+        return QWizardPage::isComplete();
+    }
+}
+
+
 //! @brief Constructor
 OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWidget *parent)
     : QWizard(parent)
@@ -242,7 +265,7 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWi
     pSettingsLayout->addWidget(mpFinalEvalCheckBox,    row++, 0, 1, 2);
     pSettingsLayout->addWidget(new QWidget(this),      row++, 0, 1, 2);    //Dummy widget for stretching the layout
     pSettingsLayout->setRowStretch(row++, 1);
-    QWizardPage *pSettingsWidget = new QWizardPage(this);
+    auto *pSettingsWidget = new OptimizationScriptWizardPage(this);
     pSettingsWidget->setLayout(pSettingsLayout);
     pSettingsWidget->setPalette(gpConfig->getPalette());
     setAlgorithm(0);
@@ -269,7 +292,7 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWi
     mpParametersLayout->addWidget(pParameterMinLabel,      3, 0, 1, 1);
     mpParametersLayout->addWidget(pParameterNameLabel,     3, 1, 1, 1);
     mpParametersLayout->addWidget(pParameterMaxLabel,      3, 2, 1, 1);
-    QWizardPage *pParametersWidget = new QWizardPage(this);
+    OptimizationScriptWizardPage *pParametersWidget = new OptimizationScriptWizardPage(this);
     pParametersWidget->setLayout(mpParametersLayout);
 
     //Objective function tab
@@ -315,7 +338,7 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWi
     mpObjectiveLayout->setColumnStretch(4, 1);
     mpObjectiveLayout->setColumnStretch(5, 0);
     mpObjectiveLayout->setColumnStretch(6, 0);
-    QWizardPage *pObjectiveWidget = new QWizardPage(this);
+    OptimizationScriptWizardPage *pObjectiveWidget = new OptimizationScriptWizardPage(this);
     pObjectiveWidget->setLayout(mpObjectiveLayout);
 
     //Tool bar
@@ -565,10 +588,12 @@ void OptimizationScriptWizard::accept()
     }
     else
     {
-        generateScript();
-        gpOptimizationDialog->setCode(mScript);
-        saveConfiguration();
-        QDialog::accept();
+        if(generateScript())
+        {
+            gpOptimizationDialog->setCode(mScript);
+            saveConfiguration();
+            QDialog::accept();
+        }
     }
 }
 
@@ -846,6 +871,7 @@ void OptimizationScriptWizard::addFunction()
 {
     int idx = mpFunctionsComboBox->currentIndex();
     addObjectiveFunction(idx, 1.0, 1.0, 2.0, mSelectedVariables, QStringList());
+    emit(contentsChanged());
 }
 
 
@@ -887,6 +913,7 @@ void OptimizationScriptWizard::removeFunction()
     mFunctionPorts.removeAt(i);
     mFunctionVariables.removeAt(i);
 
+    emit(contentsChanged());
 }
 
 
@@ -970,36 +997,22 @@ void OptimizationScriptWizard::saveConfiguration()
 
 
 //! @brief Generates the Python script based upon selections made in the dialog
-void OptimizationScriptWizard::generateScript()
+bool OptimizationScriptWizard::generateScript()
 {
-    if(mpParametersLogCheckBox->isChecked())
+    for(int i=0; i<mpParameterMinLineEdits.size(); ++i)
     {
-        bool itsOk = true;
-        for(int i=0; i<mpParameterMinLineEdits.size(); ++i)
+        double minVal = mpParameterMinLineEdits[i]->text().toDouble();
+        double maxVal = mpParameterMaxLineEdits[i]->text().toDouble();
+        if(maxVal < minVal)
         {
-            if(mpParameterMinLineEdits[i]->text().toDouble() <= 0 || mpParameterMinLineEdits[i]->text().toDouble() <= 0)
-            {
-                itsOk = false;
-            }
+            QMessageBox::warning(this, "Error", "All maximum parameter values must be greater than their minimum parameter values.");
+            return false;
         }
-        if(!itsOk)
+        if(minVal <= 0 && mpParametersLogCheckBox->isChecked())
         {
-            QMessageBox::warning(this, "Warning", "Logarithmic scaling is selected, but parameters are allowed to be negative or zero. This will probably not work.");
+            QMessageBox::warning(this, "Error", "Logarithmic scaling requires all parameters to be strictly greater than zero.");
+            return false;
         }
-    }
-
-    if(mSelectedParameters.isEmpty())
-    {
-        //This error makes no sense, since it is showed on the last page only, so user will see it too late
-        //mpMessageHandler->addErrorMessage("No parameters specified for optimization.");
-        return;
-    }
-
-    if(mSelectedFunctions.isEmpty())
-    {
-        //This error makes no sense, since it is showed on the last page only, so user will see it too late
-        //mpMessageHandler->addErrorMessage("No objective functions specified for optimization.");
-        return;
     }
 
     bool algorithmOk=true;
@@ -1031,10 +1044,7 @@ void OptimizationScriptWizard::generateScript()
         algorithmOk=false;
     }
 
-    if(!algorithmOk)
-    {
-        //! @todo Error message somehow
-    }
+    return algorithmOk;
 }
 
 
@@ -1356,20 +1366,18 @@ QString OptimizationScriptWizard::generateFunctionCode(int i)
 
 //! @brief Checks if number of selected variables is correct. Gives error messages if they are too many or too low.
 //! @param i Selected objective function
-bool OptimizationScriptWizard::verifyNumberOfVariables(int idx, int nSelVar)
+bool OptimizationScriptWizard::verifyNumberOfVariables(int idx, int nSelVar, bool printWarning)
 {
     int nVar = mObjectiveFunctionNumberOfVariables.at(idx);
 
-    if(nSelVar > nVar)
+    if(nSelVar != nVar)
     {
-        //This error makes no sense, since it is showed on the last page only, so user will see it too late
-        //mpMessageHandler->addErrorMessage("Too many variables selected for this function.");
-        return false;
-    }
-    else if(nSelVar < nVar)
-    {
-        //This error makes no sense, since it is showed on the last page only, so user will see it too late
-        //mpMessageHandler->addErrorMessage("Too few variables selected for this function.");
+        if(printWarning)
+        {
+            QMessageBox::warning(this, QString("Wrong number of arguments"),
+                                 QString("The selected function requires exactly %1 variables, but you selected %2.").arg(nVar).arg(nSelVar),
+                                 QMessageBox::Ok);
+        }
         return false;
     }
     return true;
@@ -1492,19 +1500,27 @@ void OptimizationScriptWizard::loadConfiguration()
     {
         //! @todo Find a good way of setting the objective functions
 
-        int idx = mpFunctionsComboBox->findText(optSettings.mObjectives.at(i).mFunctionName);
+        auto& objectives = optSettings.mObjectives.at(i);
+        int idx = mpFunctionsComboBox->findText(objectives.mFunctionName);
         if(idx > -1) //found!
         {//Lägg till variabel i XML -> compname, portname, varname, ska vara i mSelectedVariables
             mpFunctionsComboBox->setCurrentIndex(idx);
-            addObjectiveFunction(idx, optSettings.mObjectives.at(i).mWeight, optSettings.mObjectives.at(i).mNorm, optSettings.mObjectives.at(i).mExp, optSettings.mObjectives.at(i).mVariableInfo, optSettings.mObjectives.at(i).mData);
+            addObjectiveFunction(idx, objectives.mWeight, objectives.mNorm, objectives.mExp, objectives.mVariableInfo, objectives.mData, false);
         }
     }
 }
 
 //! @brief Adds a new objective function
-void OptimizationScriptWizard::addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData)
+//! @param[in] idx                  Function index
+//! @param[in] weight               Weight factor of objective function
+//! @param[in] norm                 Normalization factor of objective function
+//! @param[in] exp                  Expononential of objective function
+//! @param[in] selectedVariables    List with selected model variables
+//! @param[in] objData              Scalar parameters for optimization function
+//! @param[in] printWarning         Tells whether or not to warn user when using wrong number of variables
+void OptimizationScriptWizard::addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData, bool printWarning)
 {
-    if(!verifyNumberOfVariables(idx, selectedVariables.size()))
+    if(!verifyNumberOfVariables(idx, selectedVariables.size(), printWarning))
         return;
 
     QStringList data = mObjectiveFunctionDataLists.at(idx);

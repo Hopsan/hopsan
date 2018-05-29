@@ -46,21 +46,36 @@
 #include <QWizard>
 #include <QTreeWidgetItem>
 
-//class TerminalWidget;
 class SystemContainer;
-//class GUIMessageHandler;
+class OptimizationScriptWizard;
+
+class OptimizationScriptWizardPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    OptimizationScriptWizardPage(OptimizationScriptWizard *pParent);
+public slots:
+    bool isComplete() const;
+private:
+    OptimizationScriptWizard *mpWizard;
+};
 
 class OptimizationScriptWizard : public QWizard
 {
     Q_OBJECT
 
     friend class OptimizationHandler;
+    friend class OptimizationScriptWizardPage;
 
 public:
     OptimizationScriptWizard(SystemContainer *pSystem, QWidget* parent = 0);
 
 protected:
     QTreeWidgetItem* findParameterTreeItem(QString componentName, QString parameterName);
+
+signals:
+    void contentsChanged();
 
 public slots:
     virtual void open();
@@ -77,7 +92,7 @@ private slots:
     void saveConfiguration();
 
 private:
-    void generateScript();
+    bool generateScript();
 
     void generateNelderMeadScript();
     void generateComplexRFScript(const QString &subAlgorithm);
@@ -90,12 +105,12 @@ private:
     void generateParameterCode(QString &templateCode);
     void generateCommonOptions(QString &templateCode);
     QString generateFunctionCode(int i);
-    bool verifyNumberOfVariables(int i, int nSelVar);
+    bool verifyNumberOfVariables(int i, int nSelVar, bool printWarning);
     bool loadObjectiveFunctions();
 
     void loadConfiguration();
 
-    void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData);
+    void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData, bool printWarning=true);
 
     //Original system
     SystemContainer *mpSystem;
