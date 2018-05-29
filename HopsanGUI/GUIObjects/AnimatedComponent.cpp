@@ -49,6 +49,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/ModelWidget.h"
+#include "MessageHandler.h"
 
 #include "PlotHandler.h"
 #include "PlotWindow.h"
@@ -106,6 +107,17 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                             tempPortName = mpModelObject->getPort(portName)->getConnectedPorts().first()->getName();
                         }
                         mpData->last().append(mpAnimationWidget->getPlotDataPtr()->copyVariableDataVector(makeFullVariableName(mpModelObject->getParentSystemNameHieararchy(), tempComponentName, tempPortName, dataName),generation));
+
+                        const auto& dataValues = mpData->last().last();
+                        for(const auto& dataValue : dataValues)
+                        {
+                            if(!std::isfinite(dataValue))
+                            {
+                                mpAnimationWidget->disablePlayback();
+                                gpMessageHandler->addErrorMessage("Model results contain Inf or NaN. Animation playback not available.");
+                                return;
+                            }
+                        }
                     }
                     mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
                     if(!mpNodeDataPtrs->last().last())
@@ -187,6 +199,12 @@ void AnimatedComponent::updateAnimation()
                     for(int i=0; i<mpNodeDataPtrs->at(m).size(); ++i)
                     {
                             data.append(*mpNodeDataPtrs->at(m).at(i));
+                            if(!std::isfinite(data.last()))
+                            {
+                                mpAnimationWidget->stop();
+                                gpMessageHandler->addErrorMessage("Encountered Inf or NaN value. Real-time animation aborted.");
+                                return;
+                            }
                     }
                     data.append(0);
                     //mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);

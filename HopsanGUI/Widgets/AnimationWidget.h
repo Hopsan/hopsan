@@ -91,6 +91,8 @@ public:
     double getLastAnimationTime();
     AnimatedComponent *getAnimatedComponent(QString name);
 
+    void disablePlayback();
+
     //Public member pointers
     AnimatedGraphicsView *mpGraphicsView=nullptr;
     ContainerObject *mpContainer=nullptr;
@@ -108,9 +110,11 @@ public:
     double mHydraulicIntensityMin;
     double mHydraulicSpeed;
 
+public slots:
+    void stop();
+
 private slots:
     void openPreferencesDialog();
-    void stop();
     void rewind();
     void pause();
     void play();
