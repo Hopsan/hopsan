@@ -680,6 +680,19 @@ AnimatedComponent *AnimationWidget::getAnimatedComponent(QString name)
     return 0;
 }
 
+void AnimationWidget::disablePlayback()
+{
+    mpPlayButton->setDisabled(true);
+    mpPlayRealTimeButton->setDisabled(true);
+    mpSettingsButton->setDisabled(true);
+    mpStopButton->setDisabled(true);
+    mpRewindButton->setDisabled(true);
+    mpPauseButton->setDisabled(true);
+    mpTimeSlider->setDisabled(true);
+    mpSpeedSpinBox->setDisabled(true);
+    mpTimeDisplay->setDisabled(true);
+}
+
 
 //! @brief Returns a pointer to the graphics scene
 QGraphicsScene* AnimationWidget::getGraphicsScene()
