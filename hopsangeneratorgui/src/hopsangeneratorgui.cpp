@@ -7,6 +7,7 @@
 #include <QLibrary>
 #include <QPointer>
 #include <QEventLoop>
+#include <QDialog>
 #include <future>
 
 
@@ -66,16 +67,17 @@ private:
     std::vector<const char*> charptr_array;
 };
 
-class HopsanGeneratorWidget : public QWidget
+class HopsanGeneratorWidget : public QDialog
 {
     friend class WidgetLock;
 public:
     HopsanGeneratorWidget(QWidget *parent, bool autoCloseOnSuccess=false)
-        : QWidget(parent, Qt::Window), mAutoCloseOnSuccess(autoCloseOnSuccess)
+        : QDialog(parent, Qt::Window), mAutoCloseOnSuccess(autoCloseOnSuccess)
     {
         setWindowModality(Qt::ApplicationModal);
         setMinimumSize(640, 480);
         setWindowTitle("HopsanGenerator");
+        setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
         setAttribute(Qt::WA_DeleteOnClose);
 
         auto pLayout = new QVBoxLayout(this);
@@ -88,8 +90,10 @@ public:
         mpTextEdit->setFont(monoFont);
         pLayout->addWidget(mpTextEdit);
 
-        mpCloseButton = new QPushButton("Close", this);
+        mpCloseButton = new QPushButton("In progress...", this);
         mpCloseButton->setFixedWidth(200); //! @todo not hard coded width
+        mpCloseButton->setAutoDefault(true);
+        mpCloseButton->setDefault(true);
         mpCloseButton->setDisabled(true);
         connect(mpCloseButton, SIGNAL(clicked()), this, SLOT(close()));
         pLayout->addWidget(mpCloseButton);
@@ -120,10 +124,10 @@ public:
 private:
     void finalize(bool didSucceed)
     {
+        mpCloseButton->setText("Close");
+        mpCloseButton->setEnabled(true);
         if (mAutoCloseOnSuccess && didSucceed) {
             close();
-        } else {
-            mpCloseButton->setEnabled(true);
         }
     }
 
