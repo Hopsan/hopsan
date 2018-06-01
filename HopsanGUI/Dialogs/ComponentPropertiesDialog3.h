@@ -166,6 +166,8 @@ private:
 
     QLineEdit *mpPyScriptPath;
 
+    QCheckBox *mpDisableAnimationCheckBox;
+
     QCheckBox *mpTimeStepCheckBox;
     QCheckBox *mpKeepValuesAsStartValues;
     QLineEdit *mpTimeStepEdit;

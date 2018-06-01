@@ -609,7 +609,7 @@ void AnimatedIconPropertiesDialog::setValues()
 void AnimatedIconPropertiesDialog::resetValues()
 {
     QDomDocument domDocument;
-    QDomElement animationRoot = domDocument.createElement("animation");
+    QDomElement animationRoot = domDocument.createElement(HMF_ANIMATION);
     domDocument.appendChild(animationRoot);
 
     QString subTypeName = mpAnimatedComponent->mpModelObject->getSubTypeName();

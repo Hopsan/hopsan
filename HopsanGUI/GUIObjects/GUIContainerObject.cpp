@@ -186,6 +186,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
     gpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(this->mUndoDisabled);
+    gpMainWindow->mpAnimateAction->setDisabled(this->mAnimationDisabled);
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
@@ -2548,6 +2549,7 @@ void ContainerObject::updateMainWindowButtons()
 {
     gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
+    gpMainWindow->mpAnimateAction->setDisabled(mAnimationDisabled);
 
     //gpMainWindow->mpPlotAction->setDisabled(mpLogDataHandler->isEmpty());
     //gpMainWindow->mpShowLossesAction->setDisabled(mpLogDataHandler->isEmpty());
@@ -3466,6 +3468,21 @@ bool ContainerObject::isAncestorOfExternalSubsystem()
 bool ContainerObject::isExternal()
 {
     return !mModelFileInfo.filePath().isEmpty();
+}
+
+bool ContainerObject::isAnimationDisabled()
+{
+    return mAnimationDisabled;
+}
+
+void ContainerObject::setAnimationDisabled(bool disabled)
+{
+    if(disabled != mAnimationDisabled)
+    {
+        this->hasChanged();
+    }
+    mAnimationDisabled = disabled;
+    gpMainWindow->mpAnimateAction->setDisabled(disabled);
 }
 
 

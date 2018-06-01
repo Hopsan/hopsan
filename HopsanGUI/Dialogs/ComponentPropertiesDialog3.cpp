@@ -744,14 +744,21 @@ QWidget *SystemProperties::createSystemSettings()
     QPushButton* pPyScriptBrowseButton = new QPushButton(tr("..."), pSettingsWidget);
     connect(pPyScriptBrowseButton, SIGNAL(clicked(bool)), this, SLOT(browseScript()));
 
+    // Disalbe animation setting
+    mpDisableAnimationCheckBox = new QCheckBox("Disable animation mode for current system (for educational use)", pSettingsWidget);
+    mpDisableAnimationCheckBox->setCheckable(true);
+    mpDisableAnimationCheckBox->setChecked(mpSystemObject->isAnimationDisabled());
+
     QGridLayout *pSettingsLayout = new QGridLayout(pSettingsWidget);
-    pSettingsLayout->addWidget(pPyScriptLabel,               0, 0);
-    pSettingsLayout->addWidget(mpPyScriptPath,               0, 1);
-    pSettingsLayout->addWidget(pPyScriptBrowseButton,        0, 2);
-    pSettingsLayout->addWidget(mpKeepValuesAsStartValues,    1, 0, 1, 2);
-    pSettingsLayout->addWidget(mpDisableUndoCheckBox,        2, 0, 1, 2);
-    pSettingsLayout->addWidget(mpSaveUndoCheckBox,           3, 0, 1, 2);
-    pSettingsLayout->addWidget(new QWidget(pSettingsWidget), 4, 0, 1, 2);
+    int row = 0;
+    pSettingsLayout->addWidget(pPyScriptLabel,               row,   0);
+    pSettingsLayout->addWidget(mpPyScriptPath,               row,   1);
+    pSettingsLayout->addWidget(pPyScriptBrowseButton,        row,   2);
+    pSettingsLayout->addWidget(mpKeepValuesAsStartValues,    ++row, 0, 1, 2);
+    pSettingsLayout->addWidget(mpDisableUndoCheckBox,        ++row, 0, 1, 2);
+    pSettingsLayout->addWidget(mpSaveUndoCheckBox,           ++row, 0, 1, 2);
+    pSettingsLayout->addWidget(mpDisableAnimationCheckBox,   ++row, 0, 1, 2);
+    pSettingsLayout->addWidget(new QWidget(pSettingsWidget), ++row, 0, 1, 2);
     pSettingsLayout->setRowStretch(4, 1);
 
     // Time step
@@ -776,31 +783,31 @@ QWidget *SystemProperties::createSystemSettings()
     connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), pTimeStepLabel, SLOT(setDisabled(bool)));
     connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepEdit, SLOT(setDisabled(bool)));
     connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), this,           SLOT(fixTimeStepInheritance(bool)));
-    pSettingsLayout->addWidget(mpTimeStepCheckBox, 4, 0, 1, 2);
-    pSettingsLayout->addWidget(pTimeStepLabel,                         5, 0, 1, 1);
-    pSettingsLayout->addWidget(mpTimeStepEdit,     5, 1, 1, 1);
+    pSettingsLayout->addWidget(mpTimeStepCheckBox, row,   0, 1, 2);
+    pSettingsLayout->addWidget(pTimeStepLabel,     ++row, 0, 1, 1);
+    pSettingsLayout->addWidget(mpTimeStepEdit,     row,   1, 1, 1);
 
     // Log samples
     mpNumLogSamplesEdit = new QLineEdit(pSettingsWidget);
     mpNumLogSamplesEdit->setValidator(new QIntValidator(0, 2000000000, pSettingsWidget));
     mpNumLogSamplesEdit->setText(QString("%1").arg(mpSystemObject->getNumberOfLogSamples())); //!< @todo what if group
-    pSettingsLayout->addWidget(new QLabel(tr("Log Samples:"), pSettingsWidget), 6, 0);
-    pSettingsLayout->addWidget(mpNumLogSamplesEdit, 6, 1);
+    pSettingsLayout->addWidget(new QLabel(tr("Log Samples:"), pSettingsWidget), row,   0);
+    pSettingsLayout->addWidget(mpNumLogSamplesEdit,                             ++row, 1);
 
     // Log start time
     mpLogStartTimeEdit = new QLineEdit(pSettingsWidget);
     mpLogStartTimeEdit->setValidator(new QDoubleValidator(pSettingsWidget));
     mpLogStartTimeEdit->setText(QString("%1").arg(mpSystemObject->getLogStartTime())); //!< @todo what if group
-    pSettingsLayout->addWidget(new QLabel(tr("Log Start:"), pSettingsWidget), 7, 0);
-    pSettingsLayout->addWidget(mpLogStartTimeEdit, 7, 1);
+    pSettingsLayout->addWidget(new QLabel(tr("Log Start:"), pSettingsWidget), ++row, 0);
+    pSettingsLayout->addWidget(mpLogStartTimeEdit, row, 1);
 
     QPushButton *pClearLogDataButton = new QPushButton("Clear All Log Data", pSettingsWidget);
     pClearLogDataButton->setEnabled(!mpSystemObject->getLogDataHandler()->isEmpty());
     connect(pClearLogDataButton, SIGNAL(clicked()), this, SLOT(clearLogData()));
-    pSettingsLayout->addWidget(pClearLogDataButton, 8,0);
+    pSettingsLayout->addWidget(pClearLogDataButton, ++row, 0);
 
-    pSettingsLayout->addWidget(new QWidget(pSettingsWidget), 9, 0, 1, 2);
-    pSettingsLayout->setRowStretch(9, 1);
+    pSettingsLayout->addWidget(new QWidget(pSettingsWidget), ++row, 0, 1, 2);
+    pSettingsLayout->setRowStretch(row, 1);
 
     return pSettingsWidget;
 }
@@ -2323,6 +2330,8 @@ void SystemProperties::setValues()
     }
 
     mpSystemObject->setSaveUndo(mpSaveUndoCheckBox->isChecked());
+
+    mpSystemObject->setAnimationDisabled(mpDisableAnimationCheckBox->isChecked());
 
     // Set the icon paths, only update and refresh appearance if a change has occurred
     AbsoluteRelativeEnumT absrel=Relative;
