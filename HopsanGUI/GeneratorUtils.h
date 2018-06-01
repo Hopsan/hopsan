@@ -28,7 +28,9 @@
 #include <QSharedPointer>
 #include "hopsangeneratorgui/hopsangeneratorgui.h"
 
-QSharedPointer<HopsanGeneratorGUI> createDefaultGenerator();
+QSharedPointer<HopsanGeneratorGUI> createDefaultGenerator(bool autoCloseOnSuccess=false);
+QSharedPointer<HopsanGeneratorGUI> createDefaultImportGenerator();
+QSharedPointer<HopsanGeneratorGUI> createDefaultExportGenerator();
 
 bool importFMU(const QString& fmuFilePath);
 

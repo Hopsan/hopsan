@@ -959,7 +959,7 @@ void LibraryHandler::importFmu()
 void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog, int solver, bool dontUnloadAndLoad)
 {
     CoreLibraryAccess coreLibrary;
-    auto spGenerator = createDefaultGenerator();
+    auto spGenerator = createDefaultImportGenerator();
 
     if(!dontUnloadAndLoad)
     {
