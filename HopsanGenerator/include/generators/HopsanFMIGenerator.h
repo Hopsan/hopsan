@@ -28,13 +28,9 @@
 // Hopsan includes
 #include "HopsanGeneratorBase.h"
 
-// FMILibrary includes
+// FMILibrary includes and forward declaration
 #include "FMI/fmi_import_context.h"
-#include <FMI1/fmi1_import.h>
-#include <FMI2/fmi2_import.h>
-#include <JM/jm_portability.h>
-
-void hopsanLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
+struct jm_callbacks;
 
 class HopsanFMIGenerator : public HopsanGeneratorBase
 {

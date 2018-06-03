@@ -64,6 +64,43 @@ void writeTextToFile(QFile& file, const QString& text)
     ts << text;
 }
 
+bool fromFmiBoolean(fmi2_boolean_t b)
+{
+    if (b)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void jmLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+{
+    (void)module;
+    auto pGenerator = static_cast<HopsanFMIGenerator*>(c->context);
+    if (pGenerator) {
+        switch (log_level) {
+        case jm_log_level_fatal:
+        case jm_log_level_error:
+            pGenerator->printErrorMessage(message);
+            break;
+        case jm_log_level_warning:
+            pGenerator->printWarningMessage(message);
+            break;
+        // Typically the jm logger info messages are not something we want to see in Hopsan, so show them as debug type
+        case jm_log_level_verbose:
+        case jm_log_level_info:
+            pGenerator->printMessage(message);
+            break;
+        case jm_log_level_debug:
+        default:
+            break;
+        }
+    }
+}
+
 }
 
 using namespace hopsan;
@@ -92,29 +129,6 @@ typedef struct
     size_t portVariableIOBreakN;
 }hopsan_fmi_import_tlm_port_t;
 
-inline bool fromFmiBoolean(fmi2_boolean_t b)
-{
-    if (b)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-inline fmi2_boolean_t toFmiBoolean(bool b)
-{
-    if (b)
-    {
-        return fmi2_true;
-    }
-    else
-    {
-        return fmi2_false;
-    }
-}
 
 
 bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
@@ -154,21 +168,6 @@ bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPo
     return true;
 }
 
-void hopsanLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
-{
-    if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
-    {
-        //printErrorMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
-    }
-    else if(log_level == jm_log_level_error || log_level == jm_log_level_fatal)
-    {
-        //printWarningMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
-    }
-    else
-    {
-        //printMessage(QString("Module = %s, log level = %d: %s\n").arg(module).arg(log_level).arg(message));
-    }
-}
 
 HopsanFMIGenerator::HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
     : HopsanGeneratorBase(hopsanInstallPath, compilerPath, tempPath)
@@ -212,9 +211,9 @@ bool HopsanFMIGenerator::generateFromFmu(const QString &rFmuPath, QString target
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
-    callbacks.logger = hopsanLogger;
+    callbacks.logger = jmLogger;
     callbacks.log_level = jm_log_level_debug;
-    callbacks.context = 0;
+    callbacks.context = static_cast<jm_voidp>(this);
 
     context = fmi_import_allocate_context(&callbacks);
 
@@ -525,8 +524,6 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 //! @param context Context struct used by FMILibrary
 bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context)
 {
-    jm_status_enu_t status;
-
     //-----------------------------------------//
     printMessage("Reading modelDescription.xml");
     //-----------------------------------------//
