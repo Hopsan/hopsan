@@ -33,7 +33,6 @@
 
 #include <QStringList>
 #include <QDir>
-#include <QProcess>
 #include <QDomElement>
 
 #include <cassert>

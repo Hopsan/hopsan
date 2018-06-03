@@ -26,7 +26,6 @@
 #include "GeneratorUtilities.h"
 #include "ComponentSystem.h"
 #include <cassert>
-#include <QProcess>
 #include <QUuid>
 #include <QDateTime>
 #include <QFileInfo>
