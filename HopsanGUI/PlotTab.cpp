@@ -1198,12 +1198,21 @@ void PlotTab::exportImage()
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasFrame,true);
     renderer.renderDocument(getQwtPlot(0), mGraphicsExporter.imageFilename(), mGraphicsExporter.calcSizeMM(), mGraphicsExporter.dpi());
     //! @todo should work for all subplots in plot
+
+    // The QwtPlotRenderer code does not check if the file was successfully written, so we can not know for sure.
+    // Lets at least check if the file exists.
+    QFileInfo fi(mGraphicsExporter.imageFilename());
+    if (!fi.exists()) {
+        gpMessageHandler->addErrorMessage(QString("Could not export plot to image: '%1'").arg(mGraphicsExporter.imageFilename()), "Plot export");
+    }
 }
 
 void PlotTab::exportImageSelectFile()
 {
-    mGraphicsExporter.selectExportFilename();
-    exportImage();
+    QString selectedFilePath = mGraphicsExporter.selectExportFilename();
+    if (!selectedFilePath.isEmpty()) {
+        exportImage();
+    }
 }
 
 PlotArea *PlotTab::addPlotArea()
@@ -1598,12 +1607,10 @@ void PlotGraphicsExporter::openExportDialog()
         return;
     }
 
-    //QDialog *pDialog = new QDialog(mpParentPlotWindow);
     mpDialog = new QDialog();
     mpDialog->setWindowTitle("Plot Graphics Export");
     mpDialog->setWindowModality(Qt::WindowModal);
     mpDialog->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
-    //pDialog->setWindowFlags();
 
     mpSetImageFormat = new QComboBox(mpDialog);
     mpSetImageFormat->setSizeAdjustPolicy(QComboBox::AdjustToContents);
@@ -1657,7 +1664,7 @@ void PlotGraphicsExporter::openExportDialog()
     mpPixelSizeLabel = new QLabel(QString("%1X%2").arg(mPixelSize.width()).arg(mPixelSize.height()),mpDialog);
 
     int r=0;
-    QGridLayout *pLayout = new QGridLayout();
+    QGridLayout *pLayout = new QGridLayout(mpDialog);
     pLayout->addWidget(new QLabel("Format:"),r,0, 1,1,Qt::AlignRight);
     pLayout->addWidget(mpSetImageFormat,r,1);
     pLayout->addWidget(new QLabel("Px:"),r,2, 1,1,Qt::AlignRight);
@@ -1678,19 +1685,28 @@ void PlotGraphicsExporter::openExportDialog()
     pLayout->addWidget(mpUseScreenSizeCheckBox,r,2,1,2);
     ++r;
 
-    QPushButton *pExportButton = new QPushButton("Export");
+    QPushButton *pExportButton = new QPushButton("Apply Export", mpDialog);
+    pExportButton->setToolTip("Export but keep dialog open");
     pExportButton->setAutoDefault(false);
     pLayout->addWidget(pExportButton,r,0);
     connect(pExportButton, SIGNAL(clicked()), this, SIGNAL(exportImage()));
-    QPushButton *pCloseButton = new QPushButton("Close");
+
+    QPushButton *pExportCloseButton = new QPushButton("Export", mpDialog);
+    pExportCloseButton->setToolTip("Export and close dialog");
+    pExportCloseButton->setAutoDefault(false);
+    pLayout->addWidget(pExportCloseButton,r,3);
+    connect(pExportCloseButton, SIGNAL(clicked()), this, SIGNAL(exportImage()));
+    connect(pExportCloseButton, SIGNAL(clicked()), mpDialog, SLOT(close()));
+
+    QPushButton *pCloseButton = new QPushButton("Close", mpDialog);
+    pCloseButton->setToolTip("Close dialog without exporting");
     pCloseButton->setAutoDefault(false);
-    pLayout->addWidget(pCloseButton,r,5);
+    pLayout->addWidget(pCloseButton,r,4);
     connect(pCloseButton, SIGNAL(clicked()), mpDialog, SLOT(close()));
 
-    mpDialog->setLayout(pLayout);
     mpDialog->exec();
     mpDialog->deleteLater();
-    mpDialog = 0;
+    mpDialog = nullptr;
 }
 
 QString PlotGraphicsExporter::selectExportFilename()
@@ -1726,7 +1742,7 @@ QString PlotGraphicsExporter::selectExportFilename()
         path = file.canonicalPath();
     }
 
-    mImageFilename = QFileDialog::getSaveFileName(0, "Choose Export Filename", path, fileFilter);
+    mImageFilename = QFileDialog::getSaveFileName(mpDialog, "Choose Export Filename", path, fileFilter);
     if(!mImageFilename.isEmpty())
     {
         QFileInfo file(mImageFilename);
