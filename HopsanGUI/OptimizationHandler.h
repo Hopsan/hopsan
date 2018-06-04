@@ -127,6 +127,8 @@ public:
     void clearModels();
     void addModel(ModelWidget *pModel);
 
+    void clearPlotVariables();
+
     Ops::AlgorithmT getAlgorithm() const;
     GUIMessageHandler *getMessageHandler();
 

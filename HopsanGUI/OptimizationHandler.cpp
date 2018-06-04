@@ -89,6 +89,8 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 {
     if(mpWorker)
     {
+        clearPlotVariables();
+
         mModelPath = modelPath;
 
         mEvaluations = 0;
@@ -773,12 +775,12 @@ void OptimizationHandler::plotPoints()
             mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
             mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
 
-            auto& varDesc_x = mPointVars_x.last()->getVariableDescription();
+            auto varDesc_x = mPointVars_x.last()->getVariableDescription();
             varDesc_x->mCustomLabel = QString("x[%1]").arg(p);
             varDesc_x->mDataQuantity = "parameter 0";
             varDesc_x->mDataUnit = "-";
 
-            auto& varDesc_y = mPointVars_y.last()->getVariableDescription();
+            auto varDesc_y = mPointVars_y.last()->getVariableDescription();
             varDesc_y->mCustomLabel = QString("x[%1]").arg(p);
             varDesc_y->mDataQuantity = "parameter 1";
             varDesc_y->mDataUnit = "-";
@@ -817,12 +819,12 @@ void OptimizationHandler::plotPoints()
             mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
             mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
 
-            auto& varDesc_x = mPointVars_x.last()->getVariableDescription();
+            auto varDesc_x = mPointVars_x.last()->getVariableDescription();
             varDesc_x->mCustomLabel = QString("c[%1]").arg(p);
             varDesc_x->mDataQuantity = "parameter 0";
             varDesc_x->mDataUnit = "-";
 
-            auto& varDesc_y = mPointVars_y.last()->getVariableDescription();
+            auto varDesc_y = mPointVars_y.last()->getVariableDescription();
             varDesc_y->mCustomLabel = QString("c[%1]").arg(p);
             varDesc_y->mDataQuantity = "parameter 1";
             varDesc_y->mDataUnit = "-";
@@ -886,7 +888,7 @@ void OptimizationHandler::plotParameters()
         {
             mParVars.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
             mParVars.last()->assignFrom(mpWorker->getParameter(mpWorker->getWorstId(),p));
-            auto& varDesc = mParVars.last()->getVariableDescription();
+            auto varDesc = mParVars.last()->getVariableDescription();
             varDesc->mCustomLabel = QString("parameter %1").arg(p+1);
             varDesc->mDataQuantity = "parameter value";
             varDesc->mDataUnit = "-";
@@ -924,7 +926,7 @@ void OptimizationHandler::plotObjectiveValues()
     {
         mBestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mBestVar->assignFrom(best);
-        auto& varDesc = mBestVar->getVariableDescription();
+        auto varDesc = mBestVar->getVariableDescription();
         varDesc->mCustomLabel = "best";
         varDesc->mDataQuantity = "fitness";
         varDesc->mDataUnit = "-";
@@ -939,7 +941,7 @@ void OptimizationHandler::plotObjectiveValues()
     {
         mWorstVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mWorstVar->assignFrom(worst);
-        auto& varDesc = mWorstVar->getVariableDescription();
+        auto varDesc = mWorstVar->getVariableDescription();
         varDesc->mCustomLabel = "worst";
         varDesc->mDataQuantity = "fitness";
         varDesc->mDataUnit = "-";
@@ -954,7 +956,7 @@ void OptimizationHandler::plotObjectiveValues()
     {
         mNewestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mNewestVar->assignFrom(lastworst);
-        auto& varDesc = mNewestVar->getVariableDescription();
+        auto varDesc = mNewestVar->getVariableDescription();
         varDesc->mCustomLabel = "latest";
         varDesc->mDataQuantity = "fitness";
         varDesc->mDataUnit = "-";
@@ -997,7 +999,7 @@ void OptimizationHandler::plotEntropy()
         mEntropy.append(entropy);
         mEntropyVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mEntropyVar->assignFrom(entropy);
-        auto& varDesc = mEntropyVar->getVariableDescription();
+        auto varDesc = mEntropyVar->getVariableDescription();
         varDesc->mCustomLabel = "entropy";
         varDesc->mDataQuantity = "entropy";
         varDesc->mDataUnit = "bits";
@@ -1077,6 +1079,25 @@ void OptimizationHandler::addModel(ModelWidget *pModel)
     {
         mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
     }
+}
+
+
+//! @brief Clears the contents from all optimization plot variables
+void OptimizationHandler::clearPlotVariables()
+{
+    mEntropyVar.clear();
+    mBestVar.clear();
+    mWorstVar.clear();
+    mNewestVar.clear();
+    for(auto &var : mParVars)
+        var.clear();
+    for(auto &var : mPointVars_x)
+        var.clear();
+    for(auto &var : mPointVars_y)
+        var.clear();
+    mParVars.clear();
+    mPointVars_x.clear();
+    mPointVars_y.clear();
 }
 
 Ops::AlgorithmT OptimizationHandler::getAlgorithm() const
