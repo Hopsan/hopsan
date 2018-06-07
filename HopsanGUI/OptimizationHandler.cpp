@@ -57,6 +57,7 @@
 #include "GUIPort.h"
 #include "DesktopHandler.h"
 #include "Widgets/HcomWidget.h"
+#include "LogVariable.h"
 
 #ifdef USEZMQ
 #include "RemoteSimulationUtils.h"
@@ -88,6 +89,8 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 {
     if(mpWorker)
     {
+        clearPlotVariables();
+
         mModelPath = modelPath;
 
         mEvaluations = 0;
@@ -772,6 +775,16 @@ void OptimizationHandler::plotPoints()
             mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
             mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
 
+            auto varDesc_x = mPointVars_x.last()->getVariableDescription();
+            varDesc_x->mCustomLabel = QString("x[%1]").arg(p);
+            varDesc_x->mDataQuantity = "parameter 0";
+            varDesc_x->mDataUnit = "-";
+
+            auto varDesc_y = mPointVars_y.last()->getVariableDescription();
+            varDesc_y->mCustomLabel = QString("x[%1]").arg(p);
+            varDesc_y->mDataQuantity = "parameter 1";
+            varDesc_y->mDataUnit = "-";
+
             mPointVars_x.last()->assignFrom(x);
             mPointVars_y.last()->assignFrom(y);
 
@@ -806,6 +819,16 @@ void OptimizationHandler::plotPoints()
             mPointVars_x.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
             mPointVars_y.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
 
+            auto varDesc_x = mPointVars_x.last()->getVariableDescription();
+            varDesc_x->mCustomLabel = QString("c[%1]").arg(p);
+            varDesc_x->mDataQuantity = "parameter 0";
+            varDesc_x->mDataUnit = "-";
+
+            auto varDesc_y = mPointVars_y.last()->getVariableDescription();
+            varDesc_y->mCustomLabel = QString("c[%1]").arg(p);
+            varDesc_y->mDataQuantity = "parameter 1";
+            varDesc_y->mDataUnit = "-";
+
             mPointVars_x.last()->assignFrom(x);
             mPointVars_y.last()->assignFrom(y);
 
@@ -813,12 +836,18 @@ void OptimizationHandler::plotPoints()
             mpWorker->getParameterLimits(0, min0, max0);
             mpWorker->getParameterLimits(1, min1, max1);
 
-            gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0, QColor("red"));
-            PlotArea *pPlotArea = gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea();
+            auto pPlotWindow = gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0, QColor("red"));
+            auto pPlotArea = gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea();
             pPlotArea->setAxisLimits(QwtPlot::xBottom, min0, max0);
             pPlotArea->setAxisLimits(QwtPlot::yLeft, min1, max1);
-            pPlotArea->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
-            pPlotArea->setAxisLabel(QwtPlot::yLeft, "Optimization Parameter 1");
+            pPlotArea->setAxisLabel(QwtPlot::xBottom, "parameter 0");
+            pPlotArea->setAxisLabel(QwtPlot::yLeft, "parameter 1");
+            pPlotArea->setLegendsVisible(false);
+            for(auto pPlotCurve : pPlotWindow->getCurrentPlotTab()->getCurves())
+            {
+                pPlotCurve->setIncludeGenerationInTitle(false);
+                pPlotCurve->refreshCurveTitle();
+            }
         }
         else
         {
@@ -859,6 +888,10 @@ void OptimizationHandler::plotParameters()
         {
             mParVars.append(createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription)));
             mParVars.last()->assignFrom(mpWorker->getParameter(mpWorker->getWorstId(),p));
+            auto varDesc = mParVars.last()->getVariableDescription();
+            varDesc->mCustomLabel = QString("parameter %1").arg(p+1);
+            varDesc->mDataQuantity = "parameter value";
+            varDesc->mDataUnit = "-";
         }
         else
         {
@@ -871,6 +904,11 @@ void OptimizationHandler::plotParameters()
         {
             PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("ParameterValues");
             gpPlotHandler->plotDataToWindow(pPW, mParVars.at(p), 0, true);
+            auto pPlotCurve = pPW->getCurrentPlotTab()->getCurves().last();
+            pPlotCurve->setIncludeGenerationInTitle(false);
+            pPlotCurve->refreshCurveTitle();
+            auto pPlotArea = pPW->getCurrentPlotTab()->getPlotArea();
+            pPlotArea->setAxisLabel(QwtPlot::xBottom, "evaluations");
         }
     }
 }
@@ -888,6 +926,10 @@ void OptimizationHandler::plotObjectiveValues()
     {
         mBestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mBestVar->assignFrom(best);
+        auto varDesc = mBestVar->getVariableDescription();
+        varDesc->mCustomLabel = "best";
+        varDesc->mDataQuantity = "fitness";
+        varDesc->mDataUnit = "-";
     }
     else
     {
@@ -899,6 +941,10 @@ void OptimizationHandler::plotObjectiveValues()
     {
         mWorstVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mWorstVar->assignFrom(worst);
+        auto varDesc = mWorstVar->getVariableDescription();
+        varDesc->mCustomLabel = "worst";
+        varDesc->mDataQuantity = "fitness";
+        varDesc->mDataUnit = "-";
     }
     else
     {
@@ -910,6 +956,10 @@ void OptimizationHandler::plotObjectiveValues()
     {
         mNewestVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mNewestVar->assignFrom(lastworst);
+        auto varDesc = mNewestVar->getVariableDescription();
+        varDesc->mCustomLabel = "latest";
+        varDesc->mDataQuantity = "fitness";
+        varDesc->mDataUnit = "-";
     }
     else
     {
@@ -924,6 +974,14 @@ void OptimizationHandler::plotObjectiveValues()
         gpPlotHandler->plotDataToWindow(pPW, mBestVar, 0, true, QColor("Green"));
         gpPlotHandler->plotDataToWindow(pPW, mWorstVar, 0, true, QColor("Red"));
         gpPlotHandler->plotDataToWindow(pPW, mNewestVar, 0, true, QColor("Orange"));
+
+        for(auto pPlotCurve : pPW->getCurrentPlotTab()->getCurves())
+        {
+            pPlotCurve->setIncludeGenerationInTitle(false);
+            pPlotCurve->refreshCurveTitle();
+        }
+        auto pPlotArea = pPW->getCurrentPlotTab()->getPlotArea();
+        pPlotArea->setAxisLabel(QwtPlot::xBottom, "evaluations");
     }
 }
 
@@ -941,6 +999,10 @@ void OptimizationHandler::plotEntropy()
         mEntropy.append(entropy);
         mEntropyVar = createFreeVectorVariable(QVector<double>(), SharedVariableDescriptionT(new VariableDescription));
         mEntropyVar->assignFrom(entropy);
+        auto varDesc = mEntropyVar->getVariableDescription();
+        varDesc->mCustomLabel = "entropy";
+        varDesc->mDataQuantity = "entropy";
+        varDesc->mDataUnit = "bits";
     }
     else
     {
@@ -951,8 +1013,13 @@ void OptimizationHandler::plotEntropy()
     // If this is the first time, then recreate the plotwindows
     if(mEntropyVar.data()->getDataSize() == 1)
     {
-        PlotWindow *pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("OptimizationEntropy");
-        gpPlotHandler->plotDataToWindow(pPW, mEntropyVar, 0, true);
+        auto pPlotWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("OptimizationEntropy");
+        gpPlotHandler->plotDataToWindow(pPlotWindow, mEntropyVar, 0, true);
+        auto pPlotCurve = pPlotWindow->getCurrentPlotTab()->getCurves().last();
+        pPlotCurve->setIncludeGenerationInTitle(false);
+        pPlotCurve->refreshCurveTitle();
+        auto pPlotArea = pPlotWindow->getCurrentPlotTab()->getPlotArea();
+        pPlotArea->setAxisLabel(QwtPlot::xBottom, "evaluations");
     }
 }
 
@@ -1012,6 +1079,25 @@ void OptimizationHandler::addModel(ModelWidget *pModel)
     {
         mpMessageHandler->addErrorMessage("No optimization algorithm selected.");
     }
+}
+
+
+//! @brief Clears the contents from all optimization plot variables
+void OptimizationHandler::clearPlotVariables()
+{
+    mEntropyVar.clear();
+    mBestVar.clear();
+    mWorstVar.clear();
+    mNewestVar.clear();
+    for(auto &var : mParVars)
+        var.clear();
+    for(auto &var : mPointVars_x)
+        var.clear();
+    for(auto &var : mPointVars_y)
+        var.clear();
+    mParVars.clear();
+    mPointVars_x.clear();
+    mPointVars_y.clear();
 }
 
 Ops::AlgorithmT OptimizationHandler::getAlgorithm() const
