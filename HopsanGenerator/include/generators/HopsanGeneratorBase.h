@@ -82,16 +82,17 @@ public:
     void printErrorMessage(const QString &msg) const;
 
     void compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
-    void generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags=QStringList(), QStringList lflags=QStringList());
+    bool generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags=QStringList(), QStringList lflags=QStringList());
     bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
 protected:
     QString generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues=false) const;
-    void generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile=QString());
+    bool generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile=QString());
 
     bool assertFilesExist(const QString &path, const QStringList &files) const;
+    bool assertFilesExist(const QString &path, const QString &file) const;
 
-    void callProcess(const QString &name, const QStringList &args, const QString workingDirectory=QString()) const;
+    bool callProcess(const QString &name, const QStringList &args, const QString workingDirectory=QString()) const;
 
     bool replaceInFile(const QString &filePath, const QStringList &before, const QStringList &after) const;
 

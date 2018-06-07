@@ -1414,7 +1414,7 @@ void SystemContainer::exportToLabView()
     QFileInfo file(filePath);
     gpConfig->setStringSetting(CFG_LABVIEWEXPORTDIR, file.absolutePath());
 
-    auto spGenerator = createDefaultGenerator();
+    auto spGenerator = createDefaultExportGenerator();
     if (!spGenerator->generateToLabViewSIT(filePath, mpCoreSystemAccess->getCoreSystemPtr()))
     {
         gpMessageHandler->addErrorMessage("LabView SIT export failed");
@@ -1494,7 +1494,7 @@ void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnu
     //Save model to hmf in export directory
     mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
-    auto spGenerator = createDefaultGenerator();
+    auto spGenerator = createDefaultExportGenerator();
     spGenerator->setCompilerPath(gpConfig->getCompilerPath(arch));
 
     HopsanGeneratorGUI::TargetArchitectureT garch;
@@ -2049,7 +2049,7 @@ void SystemContainer::exportToSimulink()
 //        compiler=3;
 //    }
 
-    auto spGenerator = createDefaultGenerator();
+    auto spGenerator = createDefaultExportGenerator();
     QString modelPath = getModelFileInfo().fileName();
     auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
     auto portLabels = pDisablePortLabels->isChecked() ? HopsanGeneratorGUI::UsePortlablesT::DisablePortLables :

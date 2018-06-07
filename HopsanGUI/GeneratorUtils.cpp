@@ -32,17 +32,29 @@
 
 #include <QMessageBox>
 
-QSharedPointer<HopsanGeneratorGUI> createDefaultGenerator()
+QSharedPointer<HopsanGeneratorGUI> createDefaultGenerator(bool autoCloseOnSuccess)
 {
     auto pGenerator = QSharedPointer<HopsanGeneratorGUI>(new HopsanGeneratorGUI(gpDesktopHandler->getMainPath(),
                                                                                 gpMainWindowWidget));
     pGenerator->setCompilerPath(gpConfig->getGCCPath());
+    pGenerator->setAutoCloseWidgetsOnSuccess(autoCloseOnSuccess);
     return pGenerator;
 }
 
+QSharedPointer<HopsanGeneratorGUI> createDefaultImportGenerator()
+{
+    return createDefaultGenerator(true);
+}
+
+QSharedPointer<HopsanGeneratorGUI> createDefaultExportGenerator()
+{
+    return createDefaultGenerator(false);
+}
+
+
 bool importFMU(const QString& fmuFilePath)
 {
-    auto pGenerator = createDefaultGenerator();
+    auto pGenerator = createDefaultImportGenerator();
 
     QFileInfo fmuFileInfo(fmuFilePath);
     QString fmuFileName = fmuFileInfo.baseName();

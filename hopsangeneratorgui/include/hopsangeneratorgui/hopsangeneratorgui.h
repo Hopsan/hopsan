@@ -20,6 +20,7 @@ public:
     bool isGeneratorLibraryLoaded() const;
     bool loadGeneratorLibrary();
     void setCompilerPath(const QString& compilerPath);
+    void setAutoCloseWidgetsOnSuccess(bool doAutoClose);
 
     enum class FmuKindT {ModelExchange, CoSimulation};
     enum class FmuVersionT {One=1, Two=2};

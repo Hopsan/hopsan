@@ -6,6 +6,10 @@
 #include <QPushButton>
 #include <QLibrary>
 #include <QPointer>
+#include <QEventLoop>
+#include <QDialog>
+#include <future>
+
 
 #ifdef _WIN32
 #define SHAREDLIB_PREFIX ""
@@ -19,10 +23,9 @@
 #define DEBUG_SUFFIX ""
 #endif
 
-class WidgetLock;
-
 namespace {
 
+class WidgetLock;
 class HopsanGeneratorWidget;
 
 class CApiStringList
@@ -64,16 +67,17 @@ private:
     std::vector<const char*> charptr_array;
 };
 
-class HopsanGeneratorWidget : public QWidget
+class HopsanGeneratorWidget : public QDialog
 {
-    friend WidgetLock;
+    friend class WidgetLock;
 public:
     HopsanGeneratorWidget(QWidget *parent, bool autoCloseOnSuccess=false)
-        : QWidget(parent, Qt::Window), mAutoCloseOnSuccess(autoCloseOnSuccess)
+        : QDialog(parent, Qt::Window), mAutoCloseOnSuccess(autoCloseOnSuccess)
     {
         setWindowModality(Qt::ApplicationModal);
         setMinimumSize(640, 480);
         setWindowTitle("HopsanGenerator");
+        setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
         setAttribute(Qt::WA_DeleteOnClose);
 
         auto pLayout = new QVBoxLayout(this);
@@ -86,8 +90,10 @@ public:
         mpTextEdit->setFont(monoFont);
         pLayout->addWidget(mpTextEdit);
 
-        mpCloseButton = new QPushButton("Close", this);
+        mpCloseButton = new QPushButton("In progress...", this);
         mpCloseButton->setFixedWidth(200); //! @todo not hard coded width
+        mpCloseButton->setAutoDefault(true);
+        mpCloseButton->setDefault(true);
         mpCloseButton->setDisabled(true);
         connect(mpCloseButton, SIGNAL(clicked()), this, SLOT(close()));
         pLayout->addWidget(mpCloseButton);
@@ -118,10 +124,10 @@ public:
 private:
     void finalize(bool didSucceed)
     {
+        mpCloseButton->setText("Close");
+        mpCloseButton->setEnabled(true);
         if (mAutoCloseOnSuccess && didSucceed) {
             close();
-        } else {
-            mpCloseButton->setEnabled(true);
         }
     }
 
@@ -130,23 +136,53 @@ private:
     QPushButton* mpCloseButton;
 };
 
+// Thread safe message forwarder helper
+class MessageForwarder {
+public:
+    MessageForwarder(HopsanGeneratorWidget* pWidget) : mpWidget(pWidget) {}
+
+    void addMessage(const char* msg, const char type)
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        mMessages.emplace_back(msg, type);
+    }
+
+    void transfereMessage()
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        for (const auto& message : mMessages)
+        {
+            mpWidget->printMessage(message.message.c_str(), message.type);
+        }
+        mMessages.clear();
+    }
+
+private:
+    struct Message
+    {
+        Message(const char* m, char t) : message(m), type(t) {}
+        std::string message;
+        char type;
+    };
+
+    std::mutex mMutex;
+    std::vector<Message> mMessages;
+    HopsanGeneratorWidget* mpWidget;
+};
 
 using MessageHandler_t = void(const char* msg, const char type, void*);
-void messageHandler(const char* msg, const char type, void* pObj)
+void messageHandler(const char* msg, const char type, void* pVoidForwarder)
 {
-    auto pWidget = static_cast<HopsanGeneratorWidget*>(pObj);
-    pWidget->printMessage(QString(msg), type);
+    auto pForwarder = static_cast<MessageForwarder*>(pVoidForwarder);
+    pForwarder->addMessage(msg, type);
 }
-}
-
-
 
 class WidgetLock {
 
 public:
-    WidgetLock(QWidget* parent)
+    explicit WidgetLock(QWidget* parent, bool autoClose)
     {
-        mpWidget = new ::HopsanGeneratorWidget(parent);
+        mpWidget = new ::HopsanGeneratorWidget(parent, autoClose);
     }
 
     ~WidgetLock()
@@ -173,12 +209,14 @@ private:
     QPointer<::HopsanGeneratorWidget> mpWidget;
 };
 
+} // End anon namespace
+
 struct HopsanGeneratorGUI::PrivateImpl
 {
     QSharedPointer<WidgetLock> createNewWidget()
     {
         // Create a new widget, Note! it shall delete itself on close
-        auto widgetlock = QSharedPointer<WidgetLock>(new WidgetLock(mpWidgetParent));
+        auto widgetlock = QSharedPointer<WidgetLock>(new WidgetLock(mpWidgetParent, mAutoCloseWidgets));
         mpCurrentWidget = widgetlock->widget();
         return widgetlock;
     }
@@ -191,13 +229,21 @@ struct HopsanGeneratorGUI::PrivateImpl
     }
 
     template<typename FunctionT, typename ...FunctionArgs>
-    bool call(const char* functionName, FunctionArgs... args)
+    bool call(MessageForwarder& messageForwarder, const char* functionName, FunctionArgs... args)
     {
         auto func = (FunctionT*) mGeneratorLibrary.resolve(functionName);
         if (func)
         {
-            func(args...);
-            return true;
+            std::future<bool> asyncFuncCall = std::async(std::launch::async, func, args...);
+            QEventLoop localEvenLoop;
+            while(asyncFuncCall.wait_for(std::chrono::milliseconds(10)) != std::future_status::ready)
+            {
+                messageForwarder.transfereMessage();
+                localEvenLoop.processEvents();
+            }
+            messageForwarder.transfereMessage();
+            localEvenLoop.processEvents();
+            return asyncFuncCall.get();
         }
         else
         {
@@ -207,6 +253,7 @@ struct HopsanGeneratorGUI::PrivateImpl
         }
     }
 
+    bool mAutoCloseWidgets = false;
     std::string hopsanRoot;
     std::string compilerPath;
     QLibrary mGeneratorLibrary;
@@ -277,25 +324,27 @@ void HopsanGeneratorGUI::setCompilerPath(const QString& compilerPath)
     mPrivates->compilerPath = compilerPath.toStdString();
 }
 
+void HopsanGeneratorGUI::setAutoCloseWidgetsOnSuccess(bool doAutoClose)
+{
+    mPrivates->mAutoCloseWidgets = doAutoClose;
+}
+
 bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const int solver, const CompileT compile)
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
-
-//extern "C" HOPSANGENERATOR_DLLAPI void callModelicaGenerator(const char* outputPath, const char* compilerPath, bool quiet=false, int solver=0, bool compile=false, const char* hopsanInstallPath="")
-
-//        pHandler->callModelicaGenerator(hPath, hGccPath, showDialog, solver, compile, hIncludePath, hBinPath);
 
     constexpr auto functionName = "callModelicaGenerator";
     const auto mofile = modelicaFile.toStdString();
     const auto& hopsanRoot = mPrivates->hopsanRoot;
     const auto& compilerPath = mPrivates->compilerPath;
     bool doCompile = (compile == CompileT::DoCompile);
+    MessageForwarder forwarder(lw->widget());
 
-    using ModelicaImportFunction_t = void(const char*, const char*, MessageHandler_t, void*, int, bool, const char*);
-    bool ok = mPrivates->call<ModelicaImportFunction_t>(functionName, mofile.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(lw->widget()), solver, doCompile, hopsanRoot.c_str());
-
-    return ok;
+    using ModelicaImportFunction_t = bool(const char*, const char*, MessageHandler_t, void*, int, bool, const char*);
+    bool didOK = mPrivates->call<ModelicaImportFunction_t>(forwarder, functionName, mofile.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(&forwarder), solver, doCompile, hopsanRoot.c_str());
+    lw->setDidSucceed(didOK);
+    return didOK;
 }
 
 bool HopsanGeneratorGUI::generateFromFmu(const QString& fmuFilePath, const QString& destination)
@@ -318,9 +367,12 @@ bool HopsanGeneratorGUI::generateFromFmu(const QString& fmuFilePath, const QStri
         const auto dst = destination.toStdString();
         const auto& hopsanRoot = mPrivates->hopsanRoot;
         const auto& compilerPath = mPrivates->compilerPath;
+        MessageForwarder forwarder(lw->widget());
 
-        using FmuImportFunction_t = void(const char*, const char*, const char*, const char*, MessageHandler_t, void*);
-        return mPrivates->call<FmuImportFunction_t>(functionName, fmu.c_str(), dst.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
+        using FmuImportFunction_t = bool(const char*, const char*, const char*, const char*, MessageHandler_t, void*);
+        bool didOK = mPrivates->call<FmuImportFunction_t>(forwarder, functionName, fmu.c_str(), dst.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+        lw->setDidSucceed(didOK);
+        return didOK;
     }
 }
 
@@ -335,10 +387,12 @@ bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::Compon
     const auto& hopsanRoot = mPrivates->hopsanRoot;
     const auto& compilerPath = mPrivates->compilerPath;
     int arch =  (architecture == TargetArchitectureT::x64) ? 64 : 32;
+    MessageForwarder forwarder(lw->widget());
 
-//callFmuExportGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, const char* compilerPath, int version=2, int architecture=64, bool quiet=false)
-    using FmuExportFunction_t = void(const char*, hopsan::ComponentSystem*, const char*, const char*, int, int, MessageHandler_t, void*);
-    return mPrivates->call<FmuExportFunction_t>(functionName, outpath.c_str(), pSystem, hopsanRoot.c_str(), compilerPath.c_str(), static_cast<int>(version), arch, &messageHandler, static_cast<void*>(lw->widget()));
+    using FmuExportFunction_t = bool(const char*, hopsan::ComponentSystem*, const char*, const char*, int, int, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<FmuExportFunction_t>(forwarder, functionName, outpath.c_str(), pSystem, hopsanRoot.c_str(), compilerPath.c_str(), static_cast<int>(version), arch, &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(didOK);
+    return didOK;
 }
 
 
@@ -348,18 +402,17 @@ bool HopsanGeneratorGUI::generateToSimulink(const QString& outputPath, const QSt
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
-//    extern "C" HOPSANGENERATOR_DLLAPI void callSimulinkExportGenerator(const char* outputPath, const char* modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels, const char* hopsanInstallPath, bool quiet=false)
-
-//                pHandler->callSimulinkExportGenerator(path.toStdString().c_str(), pSystem->getModelFileInfo().fileName().toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, gpDesktopHandler->getCoreIncludePath().toStdString().c_str(), gpDesktopHandler->getExecPath().toStdString().c_str(), true);
-
     constexpr auto functionName = "callSimulinkExportGenerator";
     const auto outpath = outputPath.toStdString();
     const auto modelpath = modelPath.toStdString();
     const auto& hopsanRoot = mPrivates->hopsanRoot;
     bool disablePortLabels = (portLabels == UsePortlablesT::DisablePortLables);
+    MessageForwarder forwarder(lw->widget());
 
-    using SimulinkExportFunction_t = void(const char*, const char*,  hopsan::ComponentSystem*, bool, const char*, MessageHandler_t, void*);
-    return mPrivates->call<SimulinkExportFunction_t>(functionName, outpath.c_str(), modelpath.c_str(), pSystem, disablePortLabels, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
+    using SimulinkExportFunction_t = bool(const char*, const char*,  hopsan::ComponentSystem*, bool, const char*, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<SimulinkExportFunction_t>(forwarder, functionName, outpath.c_str(), modelpath.c_str(), pSystem, disablePortLabels, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(didOK);
+    return didOK;
 }
 
 
@@ -367,14 +420,16 @@ bool HopsanGeneratorGUI::generateToLabViewSIT(const QString& outputPath, hopsan:
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
-//    extern "C" HOPSANGENERATOR_DLLAPI void callLabViewSITGenerator(const char* outputPath, hopsan::ComponentSystem *pSystem, const char* hopsanInstallPath, bool quiet=false)
 
     constexpr auto functionName = "callLabViewSITGenerator";
     const auto outpath = outputPath.toStdString();
     const auto& hopsanRoot = mPrivates->hopsanRoot;
+    MessageForwarder forwarder(lw->widget());
 
-    using LabViewSITExportFunction_t = void(const char*, hopsan::ComponentSystem*, const char*, MessageHandler_t, void*);
-    return mPrivates->call<LabViewSITExportFunction_t>(functionName, outpath.c_str(), pSystem, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
+    using LabViewSITExportFunction_t = bool(const char*, hopsan::ComponentSystem*, const char*, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<LabViewSITExportFunction_t>(forwarder, functionName, outpath.c_str(), pSystem, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(didOK);
+    return didOK;
 }
 
 
@@ -383,18 +438,18 @@ bool HopsanGeneratorGUI::generateFromCpp(const QString& hppFile, const CompileT 
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
-//    extern "C" HOPSANGENERATOR_DLLAPI? void callCppGenerator(const char* hppPath, const char* compilerPath, bool compile=false, const char* hopsanInstallPath="")
-//        pHandler->callCppGenerator(hHppFile, hGccPath, compile, hIncludePath, hBinPath);
-
     constexpr auto functionName = "callCppGenerator";
     const auto hppfile = hppFile.toStdString();
     const auto& hopsanRoot = mPrivates->hopsanRoot;
     const auto& compilerPath = mPrivates->compilerPath;
     bool doCompile = (compile == CompileT::DoCompile);
+    MessageForwarder forwarder(lw->widget());
 
 
-    using CppGeneratorFunction_t = void(const char*, const char*, bool, const char*, MessageHandler_t, void*);
-    return mPrivates->call<CppGeneratorFunction_t>(functionName, hppfile.c_str(), compilerPath.c_str(), doCompile, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
+    using CppGeneratorFunction_t = bool(const char*, const char*, bool, const char*, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<CppGeneratorFunction_t>(forwarder, functionName, hppfile.c_str(), compilerPath.c_str(), doCompile, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(didOK);
+    return didOK;
 }
 
 
@@ -403,14 +458,15 @@ bool HopsanGeneratorGUI::generateLibrary(const QString& outputPath, const QStrin
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
-//    extern "C" HOPSANGENERATOR_DLLAPI void callLibraryGenerator(const char* outputPath, std::vector<hopsan::HString> hppFiles, bool quiet=false)
-
     constexpr auto functionName = "callLibraryGenerator";
     const auto outpath = outputPath.toStdString();
     CApiStringList hppfiles(hppFiles);
+    MessageForwarder forwarder(lw->widget());
 
-    using GenerateLibraryFunction_t = void(const char*, const char* const*, size_t, MessageHandler_t, void*);
-    return mPrivates->call<GenerateLibraryFunction_t>(functionName, outpath.c_str(), hppfiles.data(), hppfiles.size(), &messageHandler, static_cast<void*>(lw->widget()));
+    using GenerateLibraryFunction_t = bool(const char*, const char* const*, size_t, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<GenerateLibraryFunction_t>(forwarder, functionName, outpath.c_str(), hppfiles.data(), hppfiles.size(), &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(didOK);
+    return didOK;
 }
 
 bool HopsanGeneratorGUI::compileComponentLibrary(const QString& libPath, const QString& extraCFlags,
@@ -419,18 +475,18 @@ bool HopsanGeneratorGUI::compileComponentLibrary(const QString& libPath, const Q
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
 
-    //   extern "C" HOPSANGENERATOR_DLLAPI void callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, bool quiet=false)
-//        pHandler->callComponentLibraryCompiler(hLibPath, hExtraCFlags, hExtraLFlags, hIncludePath, hBinPath, hGccPath, showDialog);
-
     constexpr auto functionName = "callComponentLibraryCompiler";
     const auto libpath = libPath.toStdString();
     const auto cflags  = extraCFlags.toStdString();
     const auto lflags  = extraLFlags.toStdString();
     const auto& hopsanRoot = mPrivates->hopsanRoot;
     const auto& compilerPath = mPrivates->compilerPath;
+    MessageForwarder forwarder(lw->widget());
 
-    using CompileLibraryFunction_t = void(const char*, const char*, const char*, const char*, const char*, MessageHandler_t, void*);
-    return mPrivates->call<CompileLibraryFunction_t>(functionName, libpath.c_str(), cflags.c_str(), lflags.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(lw->widget()));
+    using CompileLibraryFunction_t = bool(const char*, const char*, const char*, const char*, const char*, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<CompileLibraryFunction_t>(forwarder, functionName, libpath.c_str(), cflags.c_str(), lflags.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(didOK);
+    return didOK;
 }
 
 void HopsanGeneratorGUI::printMessage(const QString &msg, const char type)

@@ -31,7 +31,7 @@ class HopsanLabViewGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanLabViewGenerator(const QString &hopsanInstallPath);
-    void generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem);
+    bool generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem);
 };
 
 #endif // HOPSANLABVIEWGENERATOR_H

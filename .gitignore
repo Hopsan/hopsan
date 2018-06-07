@@ -16,3 +16,7 @@ output/
 moc_*.cpp
 Makefile
 compileWithMinGW.bat
+GPATH
+GTAGS
+GRTAGS
+GSYMS

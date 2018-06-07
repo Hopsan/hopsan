@@ -37,14 +37,14 @@ HopsanLabViewGenerator::HopsanLabViewGenerator(const QString &hopsanInstallPath)
 }
 
 
-void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem)
+bool HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem)
 {
     printMessage("Initializing LabVIEW/SIT export");
 
     if(pSystem == 0)
     {
         printErrorMessage("System pointer is null. Aborting.");
-        return;
+        return false;
     }
 
     QFileInfo fileInfo;
@@ -56,7 +56,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!modelHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open model.h for writing.");
-        return;
+        return false;
     }
 
     QFile codegenSourceFile;
@@ -64,7 +64,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!codegenSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open codegen.c for writing.");
-        return;
+        return false;
     }
 
     QFile apiHeaderFile;
@@ -72,7 +72,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!apiHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open SIT_API.h for writing.");
-        return;
+        return false;
     }
 
     QFile howToFile;
@@ -80,7 +80,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!howToFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open SIT_API.h for writing.");
-        return;
+        return false;
     }
 
     printMessage("Writing model.h...");
@@ -89,7 +89,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!modelHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewModelTemplate.h for reading.");
-        return;
+        return false;
     }
 
     QString modelHeaderCode;
@@ -99,7 +99,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(modelHeaderCode.isEmpty())
     {
         printErrorMessage("Failed to generate code for model.h.");
-        return;
+        return false;
     }
 
     QTextStream modelHeaderStream(&modelHeaderFile);
@@ -113,7 +113,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!codegenSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewCodegenTemplate.c for reading.");
-        return;
+        return false;
     }
 
     QString codegenSourceCode;
@@ -123,7 +123,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(codegenSourceCode.isEmpty())
     {
         printErrorMessage("Failed to generate code for codegen.c.");
-        return;
+        return false;
     }
 
     QTextStream codegenSourceStream(&codegenSourceFile);
@@ -137,7 +137,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!apiHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewApiTemplate.h for reading.");
-        return;
+        return false;
     }
 
     QString apiHeaderCode;
@@ -147,7 +147,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(apiHeaderCode.isEmpty())
     {
         printErrorMessage("Failed to generate code for SIT_API.h.");
-        return;
+        return false;
     }
 
     QTextStream apiHeaderStream(&apiHeaderFile);
@@ -161,7 +161,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(!howToTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewHowToTemplate.txt for reading.");
-        return;
+        return false;
     }
 
     QString howToCode;
@@ -171,7 +171,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if(howToCode.isEmpty())
     {
         printErrorMessage("Failed to generate code for HOW_TO_COMPILE.txt.");
-        return;
+        return false;
     }
 
     QTextStream howToStream(&howToFile);
@@ -186,7 +186,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open file for writing: " + savePath);
-        return;
+        return false;
     }
 
     printMessage("Generating lists for input and output ports");
@@ -597,12 +597,13 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Copying HopsanCore source code...");
     if(!this->copyHopsanCoreSourceFilesToDir(fileInfo.absoluteDir().path()))
-        return;
+        return false;
 
     printMessage("Copying component libraries source code...");
     if(!this->copyDefaultComponentCodeToDir(fileInfo.absoluteDir().path()))
-        return;
+        return false;
 
     //! @todo Check if success, otherwise tell user with error message
     printMessage("Finished!");
+    return true;
 }

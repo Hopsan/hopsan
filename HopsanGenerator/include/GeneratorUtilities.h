@@ -52,7 +52,7 @@ bool copyFile(const QString &source, const QString &target, QString &rErrorMessa
 bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QString extraCFlags="", QString extraLFlags="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);
 
-int callProcess(const QString &name, const QStringList &args, const QString &workingDirectory, const int timeout, QString &rStdOut, QString &rStdErr);
+int callProcess(const QString &name, const QStringList &args, const QString &workingDirectory, const int timeout_s, QString &rStdOut, QString &rStdErr);
 
 QString toValidHopsanVarName(const QString &name);
 QString toValidLabViewVarName(const QString &name);

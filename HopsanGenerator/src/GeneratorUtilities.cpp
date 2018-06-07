@@ -323,55 +323,28 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
 #endif
 
     //Call compilation script file
-#ifdef _WIN32
-    QProcess gccProcess;
-    gccProcess.setWorkingDirectory(wdPath);
-    gccProcess.start("cmd.exe", QStringList() << "/c" << "compile.bat");
-    gccProcess.waitForFinished();
-    QByteArray gccResult = gccProcess.readAllStandardOutput();
-    QByteArray gccError = gccProcess.readAllStandardError();
-    QList<QByteArray> gccResultList = gccResult.split('\n');
-    for(int i=0; i<gccResultList.size(); ++i)
-    {
-        output = gccResultList.at(i);
-        //output = output.remove(output.size()-1, 1);
-    }
-    QList<QByteArray> gccErrorList = gccError.split('\n');
-    for(int i=0; i<gccErrorList.size(); ++i)
-    {
-        if(gccErrorList.at(i).trimmed() == "")
-        {
-            gccErrorList.removeAt(i);
-            --i;
-            continue;
-        }
-        output = output+ gccErrorList.at(i);
-        //output = output.remove(output.size()-1, 1);
-    }
-#else
     QString stdOut,stdErr;
-    callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, 60, stdOut, stdErr);
+    bool compiledOK = false;
+#ifdef _WIN32
+    compiledOK = (callProcess("cmd.exe", QStringList() << "/c" << "compile.bat", wdPath, 600, stdOut, stdErr) == 0);
+#else
+    compiledOK = (callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, 600, stdOut, stdErr) == 0);
+#endif
     output.append(stdOut);
     output.append("\n");
     output.append(stdErr);
     output.append("\n");
-#endif
+
+    if (!compiledOK) {
+        output.append("Compilation failed.");
+        return false;
+    }
 
     QDir targetDir(wdPath);
-#ifdef _WIN32
-
-    if(!targetDir.exists(o) || !gccErrorList.isEmpty())
-    {
+    if(!targetDir.exists(o)) {
         output.append("Compilation failed.");
         return false;
     }
-#else
-    if(!targetDir.exists(o))
-    {
-        output.append("Compilation failed.");
-        return false;
-    }
-#endif
 
     output.append("Compilation successful.");
     return true;
@@ -566,7 +539,7 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
 }
 
 
-int callProcess(const QString &name, const QStringList &args, const QString& workingDirectory, const int timeout, QString &rStdOut, QString &rStdErr)
+int callProcess(const QString &name, const QStringList &args, const QString& workingDirectory, const int timeout_s, QString &rStdOut, QString &rStdErr)
 {
     QProcess p;
     if(!workingDirectory.isEmpty())
@@ -574,7 +547,7 @@ int callProcess(const QString &name, const QStringList &args, const QString& wor
         p.setWorkingDirectory(workingDirectory);
     }
     p.start(name, args);
-    p.waitForFinished(timeout*10000);
+    p.waitForFinished(timeout_s*1000);
 
     rStdOut = p.readAllStandardOutput();
     rStdErr = p.readAllStandardError();
