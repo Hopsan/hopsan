@@ -12,6 +12,7 @@ DESTDIR = $${PWD}/../bin
 
 QT += svg xml
 QT += core gui network
+CONFIG -= app_bundle
 
 isEqual(QT_MAJOR_VERSION, 5){
     QT += widgets printsupport
