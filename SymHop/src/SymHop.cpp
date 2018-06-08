@@ -32,6 +32,7 @@
 //$Id$
 
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 #include "SymHop.h"
@@ -824,7 +825,21 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
 
         if(mFunction == "der") { return 0; }
 
-        if(mArguments.size() == 1)
+        if(mArguments.size() == 0)
+        {
+            bool ok1=true;
+            if(mFunction == "pi") { retval = M_PI; }
+            else
+            {
+                ok1=false;
+            }
+
+            if(ok1)
+            {
+                return retval;
+            }
+        }
+        else if(mArguments.size() == 1)
         {
             bool ok1=true;
             if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables, functions, &ok1)); }
@@ -3494,6 +3509,11 @@ bool Expression::verifyParantheses(const QString str)
 //FIXED
 QStringList Expression::splitWithRespectToParentheses(const QString str, const QChar c)
 {
+    if(str.isEmpty())
+    {
+        return QStringList();
+    }
+
     QStringList ret;
     int parBal=0;
     int start=0;
