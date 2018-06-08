@@ -72,6 +72,7 @@ class OptimizationSettings
 public:
     OptimizationSettings();
 
+    QString mScriptFile;
     int mNiter;
     int mNsearchp;
     double mRefcoeff;

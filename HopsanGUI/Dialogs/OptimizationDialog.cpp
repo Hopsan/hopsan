@@ -104,7 +104,7 @@ OptimizationDialog::OptimizationDialog(QWidget *parent)
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
     pButtonBox->addButton(QDialogButtonBox::Close);
     pLayout->addWidget(pButtonBox);
-    connect(pButtonBox,          SIGNAL(rejected()),    this, SLOT(close()));
+    connect(pButtonBox, SIGNAL(rejected()), this, SLOT(close()));
 }
 
 //! @brief Updates output boxes displaying the parameters
@@ -238,6 +238,14 @@ void OptimizationDialog::open()
 
     mpModelNameLabel->setText("Model file: "+mpSystem->getModelFileInfo().fileName());
 
+    OptimizationSettings optSettings;
+    mpSystem->getOptimizationSettings(optSettings);
+    if(!optSettings.mScriptFile.isEmpty())
+    {
+        mScriptTextChanged = false; //Needed to avoid "do you want to save" dialog
+        loadScriptFile(optSettings.mScriptFile);
+    }
+
     QDialog::show();
 }
 
@@ -245,6 +253,11 @@ void OptimizationDialog::open()
 //! @brief Closes the optimization dialog
 void OptimizationDialog::close()
 {
+    if(!askForSavingScript())
+    {
+        return;
+    }
+
     if(mpTerminal->mpHandler->mpOptHandler->isRunning())    //Optimization is running, ask user about it
     {
         QMessageBox closeWarningBox(QMessageBox::Warning, tr("Warning"),tr("An optimization is still running. Do you wish to abort it?\n\nHint: Optimzations can be aborted without closing the dialog with the \"Abort Script\" button."), 0, 0);
@@ -277,9 +290,14 @@ void OptimizationDialog::setOutputDisabled(bool disabled)
 //! @brief Saves the generated script code to file and executes the script
 void OptimizationDialog::run()
 {
+    if(!askForSavingScript())
+    {
+        return;
+    }
+
     mpTabWidget->setCurrentIndex(1);    //Go to run tab
 
-    saveScriptFile(gpDesktopHandler->getBackupPath()+"optimization_script"+QDateTime::currentDateTime().toString("_yyyy-MM-dd_hh_mm")+".hcom");
+    saveAs(gpDesktopHandler->getBackupPath()+"optimization_script"+QDateTime::currentDateTime().toString("_yyyy-MM-dd_hh_mm")+".hcom");
 
     mCoreProgressBarsRecreated = false;
 
@@ -303,7 +321,7 @@ void OptimizationDialog::run()
 //! @brief Generates a script skeleton for custom scripts
 void OptimizationDialog::generateScriptSkeleton()
 {
-    if(!checkIfScriptIsEmpty())
+    if(!askForSavingScript())
     {
         return;
     }
@@ -314,13 +332,19 @@ void OptimizationDialog::generateScriptSkeleton()
     skeletonFile.close();
 
     this->setCode(skeletonCode);
+
+    mScriptFileInfo.setFile(QFile());
+    mScriptTextChanged = true;
+    mSavedScriptText = QString();
+    updateModificationStatus();
 }
 
 
 //! @brief Opens the optimization script wizard
 void OptimizationDialog::openScriptWizard()
 {
-    if(!checkIfScriptIsEmpty()) {
+    if(!askForSavingScript())
+    {
         return;
     }
 
@@ -331,33 +355,44 @@ void OptimizationDialog::openScriptWizard()
 
 
 //! @brief Saves generated script to path specified by user
-void OptimizationDialog::saveScriptFile()
+void OptimizationDialog::save()
+{
+    if(mScriptFileInfo.fileName().isEmpty())
+    {
+        saveAs();
+    }
+    else
+    {
+        saveAs(mScriptFileInfo.absoluteFilePath());
+    }
+}
+
+
+//! @brief Saves generated script to file
+//! @param[in] filePath File path, empty means open file dialog
+void OptimizationDialog::saveAs(QString filePath)
 {
     if(mpScriptBox->toPlainText().isEmpty())
     {
         return;
     }
 
-    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Script File"),
-                                                 gpConfig->getStringSetting(CFG_SCRIPTDIR),
-                                                 this->tr("HCOM Script (*.hcom)"));
-
-    if(filePath.isEmpty())     //Don't save anything if user presses cancel
+    else if(filePath.isEmpty())
     {
-        return;
+        filePath = QFileDialog::getSaveFileName(this, tr("Save Script File"),
+                                                gpConfig->getStringSetting(CFG_SCRIPTDIR),
+                                                this->tr("HCOM Script (*.hcom)"));
+
+        if(filePath.isEmpty())     //Don't save anything if user presses cancel
+        {
+            return;
+        }
+        mScriptFileInfo.setFile(filePath);  //Save file info for "save as"
+        mpTabWidget->setTabText(0, QString("Script (%1)").arg(mScriptFileInfo.fileName()));
+        mpScriptFileLabel->setText(QString("Script file: %1").arg(mScriptFileInfo.fileName()));
+        gpConfig->setStringSetting(CFG_SCRIPTDIR, mScriptFileInfo.absolutePath());
     }
 
-    QFileInfo fileInfo = QFileInfo(filePath);
-    gpConfig->setStringSetting(CFG_SCRIPTDIR, fileInfo.absolutePath());
-
-    saveScriptFile(filePath);
-
-    mpScriptFileLabel->setText("Script file: "+fileInfo.fileName());
-}
-
-//! @brief Saves generated script to specified path
-void OptimizationDialog::saveScriptFile(const QString &filePath)
-{
     QFile file(filePath);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
@@ -366,21 +401,28 @@ void OptimizationDialog::saveScriptFile(const QString &filePath)
     QTextStream out(&file);
     out << mpScriptBox->toPlainText();
     file.close();
+
+    mSavedScriptText = mpScriptBox->toPlainText();
+    mScriptTextChanged = false;
 }
 
 
 //! @brief Loads an optimization script file
-void OptimizationDialog::loadScriptFile()
+void OptimizationDialog::loadScriptFile(QString filePath)
 {
-    if(!checkIfScriptIsEmpty()) {
+    if(!askForSavingScript())
+    {
         return;
     }
 
-    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Script File)"),
-                                                    gpConfig->getStringSetting(CFG_SCRIPTDIR),
-                                                    tr("HCOM Script (*.hcom)"));
-    if(filePath.isEmpty())      //Canceled by user
-        return;
+    if(filePath.isEmpty())
+    {
+        filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Script File)"),
+                                                        gpConfig->getStringSetting(CFG_SCRIPTDIR),
+                                                        tr("HCOM Script (*.hcom)"));
+        if(filePath.isEmpty())      //Canceled by user
+            return;
+    }
 
     gpConfig->setStringSetting(CFG_SCRIPTDIR, QFileInfo(filePath).absolutePath());
 
@@ -391,7 +433,15 @@ void OptimizationDialog::loadScriptFile()
 
     setCode(script);
 
-    mpScriptFileLabel->setText("Script file: "+QFileInfo(file).fileName());
+    mScriptFileInfo.setFile(file);
+    mSavedScriptText = script;
+    updateModificationStatus();
+    mpScriptFileLabel->setText(QString("Script file: %1").arg(mScriptFileInfo.fileName()));
+
+    OptimizationSettings optSettings;
+    mpSystem->getOptimizationSettings(optSettings);
+    optSettings.mScriptFile = mScriptFileInfo.absoluteFilePath();
+    mpSystem->setOptimizationSettings(optSettings);
 }
 
 
@@ -568,16 +618,53 @@ void OptimizationDialog::applyParameters()
 }
 
 
-//! @brief Asks user whether or not to overwrite optimization script
-bool OptimizationDialog::checkIfScriptIsEmpty()
+//! @brief Slot for flagging that script text has changed
+void OptimizationDialog::updateModificationStatus()
 {
-    if(!mpScriptBox->document()->isEmpty())
+    mScriptTextChanged = (mpScriptBox->toPlainText() != mSavedScriptText);
+
+    QString asterisk = (mScriptTextChanged ? "*" : "");
+    if(mScriptFileInfo.fileName().isEmpty())
     {
-        QMessageBox clearScriptQuestionBox(QMessageBox::Warning, tr("Warning"),tr("Existing script will be overwritten. Do you want to continue?"), 0, 0);
-        clearScriptQuestionBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
-        clearScriptQuestionBox.addButton(tr("&No"), QMessageBox::RejectRole);
-        clearScriptQuestionBox.setWindowIcon(gpMainWindowWidget->windowIcon());
-        return (clearScriptQuestionBox.exec() == QMessageBox::AcceptRole);
+        mpTabWidget->setTabText(0,
+                                QString("Script%1")
+                                .arg(asterisk));
+    }
+    else
+    {
+        mpTabWidget->setTabText(0,
+                                QString("Script (%1)%2")
+                                .arg(mScriptFileInfo.fileName())
+                                .arg(asterisk));
+    }
+}
+
+
+//! @brief Asks user whether or not to save script if it has changed
+//! @return True if user selects "yes"/"no", false if user selects "cancel"
+bool OptimizationDialog::askForSavingScript()
+{
+    if(mScriptTextChanged)
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, mScriptFileInfo.fileName(),
+                                      "Do you want to save changes to current script?",
+                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if(reply == QMessageBox::Cancel)
+        {
+            return false;
+        }
+        if(reply == QMessageBox::Yes)
+        {
+            if(mScriptFileInfo.fileName().isEmpty())
+            {
+                saveAs();
+            }
+            else
+            {
+                saveAs();
+            }
+        }
     }
     return true;
 }
@@ -607,9 +694,16 @@ QToolBar*OptimizationDialog::createToolBar()
 
     QToolButton *pSaveScriptButton = new QToolButton(this);
     pSaveScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
-    pSaveScriptButton->setText("Save To Script File");
-    pSaveScriptButton->setToolTip("Save To Script File");
+    pSaveScriptButton->setText("Save Script File");
+    pSaveScriptButton->setToolTip("Save Script File");
     pToolBar->addWidget(pSaveScriptButton);
+
+    QToolButton *pSaveAsScriptButton = new QToolButton(this);
+    pSaveAsScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"));
+    pSaveAsScriptButton->setText("Save Script File As");
+    pSaveAsScriptButton->setToolTip("Save Script File As");
+    pToolBar->addWidget(pSaveAsScriptButton);
+
 
     mpRunButton = new QToolButton(this);
     mpRunButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"));
@@ -629,12 +723,13 @@ QToolBar*OptimizationDialog::createToolBar()
     pHelpButton->setObjectName("optimizationHelpButton");
     pToolBar->addWidget(pHelpButton);
 
-    connect(pNewScriptButton,    SIGNAL(clicked(bool)), this,               SLOT(generateScriptSkeleton()));
-    connect(pScriptWizardButton, SIGNAL(clicked(bool)), this,               SLOT(openScriptWizard()));
-    connect(pLoadScriptButton,   SIGNAL(clicked(bool)), this,               SLOT(loadScriptFile()));
-    connect(pSaveScriptButton,   SIGNAL(clicked(bool)), this,               SLOT(saveScriptFile()));
-    connect(mpRunButton,         SIGNAL(clicked(bool)), this,               SLOT(run()));
-    connect(pHelpButton,         SIGNAL(clicked()),     gpHelpPopupWidget,  SLOT(openContextHelp()));
+    connect(pNewScriptButton,       SIGNAL(clicked(bool)), this,               SLOT(generateScriptSkeleton()));
+    connect(pScriptWizardButton,    SIGNAL(clicked(bool)), this,               SLOT(openScriptWizard()));
+    connect(pLoadScriptButton,      SIGNAL(clicked(bool)), this,               SLOT(loadScriptFile()));
+    connect(pSaveScriptButton,      SIGNAL(clicked(bool)), this,               SLOT(save()));
+    connect(pSaveAsScriptButton,    SIGNAL(clicked(bool)), this,               SLOT(saveAs()));
+    connect(mpRunButton,            SIGNAL(clicked(bool)), this,               SLOT(run()));
+    connect(pHelpButton,            SIGNAL(clicked()),     gpHelpPopupWidget,  SLOT(openContextHelp()));
 
     return pToolBar;
 }
@@ -658,6 +753,7 @@ QWidget*OptimizationDialog::createScriptWidget()
     mpScriptBox->setMinimumWidth(450);
     pScriptLayout->addWidget(mpScriptBox);
 
+    connect(mpScriptBox, SIGNAL(textChanged()), this, SLOT(updateModificationStatus()));
     return pScriptWidget;
 }
 

@@ -656,6 +656,7 @@ void SystemContainer::saveOptimizationSettingsToDomElement(QDomElement &rDomElem
 {
     QDomElement XMLopt = appendDomElement(rDomElement, HMF_OPTIMIZATION);
     QDomElement XMLsetting = appendDomElement(XMLopt, HMF_SETTINGS);
+    appendDomTextNode(XMLsetting, HMF_SCRIPTFILETAG, mOptSettings.mScriptFile);
     appendDomIntegerNode(XMLsetting, HMF_ITERATIONS, mOptSettings.mNiter);
     appendDomIntegerNode(XMLsetting, HMF_SEARCHPOINTS, mOptSettings.mNsearchp);
     appendDomValueNode(XMLsetting, HMF_REFLCOEFF, mOptSettings.mRefcoeff);
@@ -719,6 +720,7 @@ void SystemContainer::loadOptimizationSettingsFromDomElement(QDomElement &rDomEl
     QDomElement settingsElement = rDomElement.firstChildElement(HMF_SETTINGS);
     if(!settingsElement.isNull())
     {
+        mOptSettings.mScriptFile = parseDomStringNode(settingsElement.firstChildElement(HMF_SCRIPTFILETAG), mOptSettings.mScriptFile);
         mOptSettings.mNiter = parseDomIntegerNode(settingsElement.firstChildElement(HMF_ITERATIONS), mOptSettings.mNiter);
         mOptSettings.mNsearchp = parseDomIntegerNode(settingsElement.firstChildElement(HMF_SEARCHPOINTS), mOptSettings.mNsearchp);
         mOptSettings.mRefcoeff = parseDomValueNode(settingsElement.firstChildElement(HMF_REFLCOEFF), mOptSettings.mRefcoeff);
@@ -2160,6 +2162,7 @@ void SystemContainer::setLogStartTime(const double logStartT)
 OptimizationSettings::OptimizationSettings()
 {
     //Defaulf values
+    mScriptFile = QString();
     mNiter=100;
     mNsearchp=8;
     mRefcoeff=1.3;
