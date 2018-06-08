@@ -48,6 +48,9 @@
 #include <QTextEdit>
 #include <QProgressBar>
 #include <QToolBar>
+#include <QFileInfo>
+
+#include "common.h"
 
 class TerminalWidget;
 class SystemContainer;
@@ -76,16 +79,17 @@ public slots:
 private slots:
     void generateScriptSkeleton();
     void openScriptWizard();
-    void saveScriptFile();
-    void saveScriptFile(const QString &filePath);
-    void loadScriptFile();
+    void save();
+    void saveAs(QString filePath = QString());
+    void loadScriptFile(QString filePath = QString());
     void updateCoreProgressBars();
     void recreateCoreProgressBars();
     void recreateParameterOutputLineEdits();
     void applyParameters();
+    void updateModificationStatus();
 
 private:
-    bool checkIfScriptIsEmpty();
+    bool askForSavingScript();
     QToolBar *createToolBar();
     QWidget *createScriptWidget();
     QWidget *createRunWidget();
@@ -122,6 +126,10 @@ private:
     QVector<int> mParameterOutputIndexes;
     const int mObjectiveColumnWidth = 12;
     const int mParameterColumnWidth = 15;
+
+    QFileInfo mScriptFileInfo;
+    bool mScriptTextChanged = false;
+    QString mSavedScriptText = QString();
 };
 
 
