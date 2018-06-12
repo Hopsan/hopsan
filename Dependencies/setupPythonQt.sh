@@ -66,7 +66,7 @@ sed "s|unix:PYTHON_VERSION=.*|unix:PYTHON_VERSION=${pyversion}|" -i build/python
 mkdir -p $builddir
 cd $builddir
 
-${hopsan_qt_qmake} ${codedir}/PythonQt.pro -r -spec linux-g++
+${HOPSAN_BUILD_QT_QMAKE} ${codedir}/PythonQt.pro -r -spec linux-g++
 make -j4 -w
 
 # Install manually since PythonQt code does not have install target configured

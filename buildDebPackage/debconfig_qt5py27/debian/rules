@@ -20,7 +20,7 @@ build:
 
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
-	source Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${hopsan_qt_qmake} ../HopsanNG_remote.pro -r -spec linux-g++ -config release
+	source Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG_remote.pro -r -spec linux-g++ -config release
 	make -j4 -C hopsanShadowBuild
 
 clean:
