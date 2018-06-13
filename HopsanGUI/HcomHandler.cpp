@@ -7784,6 +7784,11 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
             CoreParameterData par;
             pMO->getParameter(parName, par);
             rParameterType = par.mType;
+            if(par.mValue.startsWith("self."))
+            {
+                QString otherPar = par.mValue.remove(0,5);
+                return getParameterValue(compName+"."+otherPar);
+            }
             return par.mValue;
         }
 
@@ -8143,7 +8148,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         evaluateExpression(right);
 
         QStringList pars;
-        if (mAnsType==Scalar)
+        if (mAnsType==Scalar || mAnsType==Wildcard)
         {
             getParameters(left, pars);
             SharedVectorVariableT data = getLogVariable(left);
@@ -8173,7 +8178,12 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             return false;
         }
 
-        if(mAnsType==Scalar)
+        if(mAnsType == Wildcard && !pars.isEmpty())
+        {
+            executeCommand("chpa "+left+" "+mAnsWildcard);
+            return true;
+        }
+        else if(mAnsType==Scalar)
         {
             if(!pars.isEmpty())
             {
