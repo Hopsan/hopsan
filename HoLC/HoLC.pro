@@ -8,6 +8,7 @@ include( ../Common.prf )
 QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+CONFIG -= app_bundle
 
 TARGET = holc
 TEMPLATE = app

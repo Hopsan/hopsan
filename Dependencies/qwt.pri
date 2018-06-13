@@ -41,8 +41,13 @@ have_local_qwt() {
   #CONFIG += qwt
   INCLUDEPATH *= $${qwt_home}/include
   LIBS *= -L$${qwt_lib} -l$${libname}$${dbg_ext}
-  # Note! The RPATH is absolute and only meant for dev builds in the IDE, on releaspe runtime paths should be stripped
-  QMAKE_RPATHDIR *= $${qwt_lib}
+  macx {
+    # TODO: I am unable to get RPATH to work on osx, so ugly copying the dylib. file for now
+    QMAKE_POST_LINK += $$QMAKE_COPY $$quote($${qwt_lib}/lib$${libname}$${dbg_ext}.6.dylib) $$quote($${PWD}/../bin) $$escape_expand(\\n\\t)
+  } else {
+    # Note! The RPATH is absolute and only meant for dev builds in the IDE, on releaspe runtime paths should be stripped
+    QMAKE_RPATHDIR *= $${qwt_lib}
+  }
   message(Found local qwt)
 } else:have_system_qwt() {
   unix:CONFIG += qwt

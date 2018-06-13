@@ -30,7 +30,7 @@ qwt_qmake_spec=linux-g++
 if [[ $OSTYPE == darwin* ]]; then
     qwt_qmake_spec=macx-clang
 fi
-${hopsan_qt_qmake} ${codedir}/qwt.pro -r -spec ${qwt_qmake_spec}
+${HOPSAN_BUILD_QT_QMAKE} ${codedir}/qwt.pro -r -spec ${qwt_qmake_spec}
 
 # Build
 make -j4 -w

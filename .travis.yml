@@ -1,5 +1,3 @@
-# Use trusty
-
 # Enable C++ support
 language: cpp
 
@@ -9,10 +7,13 @@ matrix:
       sudo: required
       dist: trusty
       compiler: gcc
-      env: HOPSAN_BUILD_QMAKE_SPEC=linux-g++
+      env:
+        - QT_SELECT=4
+        - HOPSAN_BUILD_QMAKE_SPEC=linux-g++
     - os: osx
       compiler: clang
-      env: HOPSAN_BUILD_QMAKE_SPEC=macx-clang
+      env:
+        - HOPSAN_BUILD_QMAKE_SPEC=macx-clang
       install:
         - brew install qt
         - brew link --force qt
@@ -22,7 +23,6 @@ matrix:
 script:
   - bash --version
   - echo OSType $OSTYPE
-  - export QT_SELECT=4
   - cd Dependencies
   - ./setupDiscount.sh
   - ./setupFMILibrary.sh
@@ -34,8 +34,14 @@ script:
   - mkdir -p build
   - cd build
   - source ../Dependencies/setHopsanBuildPaths.sh
-  - ${hopsan_qt_qmake} ../HopsanNG_remote.pro -r -spec ${HOPSAN_BUILD_QMAKE_SPEC} -config release
+  - ${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG_remote.pro -r -spec ${HOPSAN_BUILD_QMAKE_SPEC} -config release
   - cd ..
   - make -j4 -C build
   - ./runUnitTests.sh
   - ./runValidationTests.sh
+  - cd bin
+  - ls -l
+#  - otool -lv hopsancli
+#  - otool -lv hopsangui
+#  - otool -lv holc
+#  - ./hopsangui ../Scripts/HCOM/exit.hcom
