@@ -230,6 +230,26 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         return;
     }
 
+    if(existingNames.contains(parameterValue) &&
+       !pObject->getParentContainerObject()->hasParameter(parameterValue))
+    {
+        gpMessageHandler->addWarningMessage(QString("%1: Updating parameter value from \"%2\" to \"self.%2\"")
+                                            .arg(pObject->getName())
+                                            .arg(parameterValue));
+        pObject->setParameterValue(parameterName, "self."+parameterValue, true);
+        return;
+    }
+
+    if(existingNames.contains(parameterValue) &&
+       !pObject->getParentContainerObject()->hasParameter(parameterValue))
+    {
+        gpMessageHandler->addWarningMessage(QString("%1: Updating parameter value from \"%2\" to \"self.%2\"")
+                                            .arg(pObject->getName())
+                                            .arg(parameterValue));
+        pObject->setParameterValue(parameterName, "self."+parameterValue, true);
+        return;
+    }
+
     if(!(pObject->getTypeName() == MODELICATYPENAME &&
        (parameterName == "ports" || parameterName == "parameters" || parameterName == "defaults")))
     {
