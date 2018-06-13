@@ -699,21 +699,15 @@ bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HS
 //! @param [out] rEvaluatedParameterValue The result of the evaluation
 //! @param [in] rType The type of how the parameter should be interpreted
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
+bool ParameterEvaluatorHandler::evaluateInLocalComponent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
     bool success = false;
-    // Try our own parameters
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
         if ( (mParameters[i]->getName() == rName) && (mParameters[i]->getType() == rType) )
         {
             success = mParameters[i]->evaluate(rEvaluatedParameterValue);
         }
-    }
-    if(!success)
-    {
-        // Try one of our system parent component parameters
-        success = evaluateInSystemParent(rName, rEvaluatedParameterValue, rType);
     }
     return success;
 }
@@ -746,7 +740,10 @@ bool ParameterEvaluatorHandler::refreshParameterValueText(const HString &rParame
 bool ParameterEvaluatorHandler::evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
     // Try one of our system parent component parameters
-    if(mParentComponent && mParentComponent->getSystemParent())
+    if(mParentComponent && mParentComponent->isComponentSystem()) {
+        return mParentComponent->evaluateParameter(rName, rEvaluatedParameterValue, rType);
+    }
+    else if(mParentComponent && mParentComponent->getSystemParent())
     {
         return mParentComponent->getSystemParent()->evaluateParameter(rName, rEvaluatedParameterValue , rType);
     }

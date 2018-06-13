@@ -128,7 +128,16 @@ void Component::getParameterValue(const HString &rName, HString &rValue)
 double Component::evaluateDoubleParameter(const HString &rName, bool &rEvalOK)
 {
     HString val;
-    bool rc = mpParameters->evaluateParameter(rName, val, "double");
+    bool rc = false;
+    if(rName.startsWith("self#"))
+    {
+        HString name =rName.substr(5,rName.size()-5);
+        rc = mpParameters->evaluateInLocalComponent(name, val, "double");
+    }
+    else
+    {
+        rc = mpParameters->evaluateInSystemParent(rName, val, "double");
+    }
     double v = val.toDouble(&rEvalOK);
     rEvalOK = (rEvalOK && rc);
     return v;
@@ -154,7 +163,7 @@ void Component::evaluateParameters()
 
 bool Component::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
-    return mpParameters->evaluateParameter(rName, rEvaluatedParameterValue, rType);
+    return mpParameters->evaluateInLocalComponent(rName, rEvaluatedParameterValue, rType);
 }
 
 
