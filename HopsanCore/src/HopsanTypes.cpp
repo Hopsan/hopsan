@@ -235,6 +235,19 @@ bool HString::compare(const HString &rOther) const
     }
 }
 
+bool HString::startsWith(const HString &rOther) const
+{
+    if (mSize < rOther.size()) {
+        return false;
+    }
+    else if (empty() && rOther.empty()) {
+        return true;
+    }
+    else {
+        return (strncmp(mpDataBuffer, rOther.c_str(), rOther.size()) == 0);
+    }
+}
+
 //! @brief Check if the string can be interpreted as a number
 bool HString::isNummeric() const
 {
