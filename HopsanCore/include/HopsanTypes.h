@@ -69,6 +69,7 @@ public:
     bool empty() const;
     bool compare(const char* other) const;
     bool compare(const HString &rOther) const;
+    bool startsWith(const HString& rOther) const;
     bool isNummeric() const;
     bool isBool() const;
     double toDouble(bool *isOK) const;
