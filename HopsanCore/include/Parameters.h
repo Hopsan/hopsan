@@ -107,7 +107,7 @@ public:
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
     void* getParameterDataPtr(const HString &rName);
 
-    bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
+    bool evaluateInLocalComponent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
     bool evaluateParameters();
     bool refreshParameterValueText(const HString &rParameterName);
 
