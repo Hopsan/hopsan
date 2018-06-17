@@ -42,6 +42,7 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QNetworkAccessManager>
+#include <QUrl>
 
 class WelcomeWidget : public QWidget
 {
@@ -104,7 +105,7 @@ private:
     QNetworkReply *mpAUDownloadStatus;
     QProgressDialog *mpAUDownloadDialog;
     QAction *mpAutoUpdateAction=nullptr;
-    QString mAUFileLink;
+    QUrl mAutoUpdateFileLink;
 
 signals:
     void hovered();

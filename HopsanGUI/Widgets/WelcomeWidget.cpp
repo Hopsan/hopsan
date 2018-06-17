@@ -62,12 +62,41 @@
 
 namespace {
 
+QString withTrailingSlash(QString text)
+{
+    if (!text.endsWith('/')) {
+        text.append('/');
+    }
+    return text;
+}
+
+QString withoutLeadingSlash(QString text)
+{
+    while (text.startsWith('/')) {
+        text.remove(0,1);
+    }
+    return text;
+}
+
+void resolveRelativeURL(const QUrl& baseURL, QUrl& rUrl)
+{
+    if (rUrl.isValid() && rUrl.isRelative()) {
+        rUrl = baseURL.resolved(rUrl);
+    }
+}
+
 struct HopsanRelease
 {
     QString version;
-    QString url;
-    QString url_installer_with_compiler;
-    QString url_installer_wo_compiler;
+    QUrl base_url;
+    QUrl url_installer_with_compiler;
+    QUrl url_installer_wo_compiler;
+
+    void resolveInstallerURLs()
+    {
+        resolveRelativeURL(base_url, url_installer_with_compiler);
+        resolveRelativeURL(base_url, url_installer_wo_compiler);
+    }
 };
 
 QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QString &minimumVersion)
@@ -87,32 +116,33 @@ QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QStri
 
             if (reader.name() == "url")
             {
-                release.url = reader.readElementText();
+                release.base_url = withTrailingSlash(reader.readElementText());
             }
 #ifdef _WIN32
 #ifdef HOPSANCOMPILED64BIT
-            if ( (reader.name() == "win64_installer_with_compiler")  || (reader.name() == "win64_installer") )
+            if (reader.name() == "win64_installer_with_compiler")
             {
-                release.url_installer_with_compiler = reader.readElementText();
+                release.url_installer_with_compiler = withoutLeadingSlash(reader.readElementText());
             }
 
             if (reader.name() == "win64_installer_wo_compiler")
             {
-                release.url_installer_wo_compiler = reader.readElementText();
+                release.url_installer_wo_compiler = withoutLeadingSlash(reader.readElementText());
             }
 #else
-            if ( (reader.name() == "win32_installer_with_compiler") || (reader.name() == "win32_installer") )
+            if (reader.name() == "win32_installer_with_compiler")
             {
-                release.url_installer_with_compiler = reader.readElementText();
+                release.url_installer_with_compiler = withoutLeadingSlash(reader.readElementText());
             }
 
             if (reader.name() == "win32_installer_wo_compiler")
             {
-                release.url_installer_wo_compiler = reader.readElementText();
+                release.url_installer_wo_compiler = withoutLeadingSlash(reader.readElementText());
             }
 #endif
 #endif
         }
+        release.resolveInstallerURLs();
 
         if (addThis)
         {
@@ -684,15 +714,15 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
 #endif
             if (gpDesktopHandler->getIncludedCompilerPath().isEmpty())
             {
-                mAUFileLink = newest_release.url_installer_wo_compiler;
+                mAutoUpdateFileLink = newest_release.url_installer_wo_compiler;
             }
             else
             {
-                mAUFileLink = newest_release.url_installer_with_compiler;
+                mAutoUpdateFileLink = newest_release.url_installer_with_compiler;
             }
 
             // Disable auto update if no file given
-            if (mpAutoUpdateAction && mAUFileLink.isEmpty())
+            if (mpAutoUpdateAction && mAutoUpdateFileLink.isEmpty())
             {
                 mpAutoUpdateAction->setDisabled(true);
             }
@@ -750,7 +780,7 @@ void WelcomeWidget::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytes
 //! @param reply Contains information about the downloaded installation executable
 void WelcomeWidget::commenceAutoUpdate(QNetworkReply* reply)
 {
-    QFileInfo auf_info(mAUFileLink);
+    QFileInfo auf_info(mAutoUpdateFileLink.toString());
     const QString file_name = gpDesktopHandler->getTempPath()+QString("/%1").arg(auf_info.fileName());
     QUrl update_url = reply->url();
     if (reply->error())
@@ -795,7 +825,7 @@ void WelcomeWidget::launchAutoUpdate()
     mpAUDownloadDialog->setMinimumWidth(300);
     mpAUDownloadDialog->setValue(0);
 
-    mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(QUrl(mAUFileLink)));
+    mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(mAutoUpdateFileLink));
     connect(mpAUDownloadStatus, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateDownloadProgressBar(qint64, qint64)));
     connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadStatus, SLOT(abort()));
     connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadDialog, SLOT(close()));
