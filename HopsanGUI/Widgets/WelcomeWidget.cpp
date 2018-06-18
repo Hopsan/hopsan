@@ -113,34 +113,36 @@ QVector<HopsanRelease> parseHopsanReleases(QXmlStreamReader &reader, const QStri
                 release.version =  reader.readElementText();
                 addThis = hopsan::isVersionAGreaterThanB( release.version.toStdString().c_str(), minimumVersion.toStdString().c_str());
             }
-
-            if (reader.name() == "url")
+            else if (reader.name() == "url")
             {
                 release.base_url = withTrailingSlash(reader.readElementText());
             }
 #ifdef _WIN32
 #ifdef HOPSANCOMPILED64BIT
-            if (reader.name() == "win64_installer_with_compiler")
+            else if (reader.name() == "win64_installer_with_compiler")
             {
                 release.url_installer_with_compiler = withoutLeadingSlash(reader.readElementText());
             }
-
-            if (reader.name() == "win64_installer_wo_compiler")
+            else if (reader.name() == "win64_installer_wo_compiler")
             {
                 release.url_installer_wo_compiler = withoutLeadingSlash(reader.readElementText());
             }
 #else
-            if (reader.name() == "win32_installer_with_compiler")
+            else if (reader.name() == "win32_installer_with_compiler")
             {
                 release.url_installer_with_compiler = withoutLeadingSlash(reader.readElementText());
             }
-
-            if (reader.name() == "win32_installer_wo_compiler")
+            else if (reader.name() == "win32_installer_wo_compiler")
             {
                 release.url_installer_wo_compiler = withoutLeadingSlash(reader.readElementText());
             }
 #endif
 #endif
+            else
+            {
+                // Discard element text (so that readNextStartElement proceeds to the next sibling)
+                reader.readElementText();
+            }
         }
         release.resolveInstallerURLs();
 
