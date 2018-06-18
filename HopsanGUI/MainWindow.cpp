@@ -1260,13 +1260,13 @@ void MainWindow::openRecentModel()
 
 void MainWindow::openHopsanURL()
 {
-    QDesktopServices::openUrl(QUrl(QString(HOPSANLINK)));
+    QDesktopServices::openUrl(QUrl(hopsanweblinks::homepage));
 }
 
 
 void MainWindow::openArchiveURL()
 {
-    QDesktopServices::openUrl(QUrl(QString(DOWNLOADLINK)));
+    QDesktopServices::openUrl(QUrl(hopsanweblinks::releases_archive));
 }
 
 void MainWindow::openIssueTrackerDialog()

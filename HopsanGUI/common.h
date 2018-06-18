@@ -38,10 +38,12 @@
 #define XMLINDENTATION 2
 
 // Web link definitions
-#define HOPSANLINK "http://tiny.cc/hopsan"
-#define VERSIONLINK "http://tiny.cc/hopsanreleases"
-#define NEWSLINK "http://tiny.cc/hopsannewsfeed"
-#define DOWNLOADLINK "http://tiny.cc/hopsanarchive"
+namespace hopsanweblinks {
+    constexpr auto homepage = "http://tiny.cc/hopsan";
+    constexpr auto news = "http://tiny.cc/hopsannewsfeed";
+    constexpr auto releases = "http://tiny.cc/hopsanreleases";
+    constexpr auto releases_archive = "http://tiny.cc/hopsanarchive";
+}
 
 // Path definitions (development and release)
 // qrc paths

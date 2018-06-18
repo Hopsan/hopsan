@@ -365,11 +365,11 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
     mpVersioncheckNAM = new QNetworkAccessManager(this);
     connect(mpVersioncheckNAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkVersion(QNetworkReply*)));
-    mpVersioncheckNAM->get(QNetworkRequest(QUrl(VERSIONLINK)));
+    mpVersioncheckNAM->get(QNetworkRequest(QUrl(hopsanweblinks::releases)));
 
     mpNewsFeedNAM = new QNetworkAccessManager(this);
     connect(mpNewsFeedNAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(showNews(QNetworkReply*)));
-    mpNewsFeedNAM->get(QNetworkRequest(QUrl(NEWSLINK)));
+    mpNewsFeedNAM->get(QNetworkRequest(QUrl(hopsanweblinks::news)));
 
     mpNewsScrollWidget = new QWidget(this);
     //mpNewsScrollWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
@@ -748,7 +748,7 @@ void WelcomeWidget::urlClicked(const QUrl &link)
 //! @brief Opens the download page in external browser.
 void WelcomeWidget::openDownloadPage()
 {
-    QDesktopServices::openUrl(QUrl(QString(DOWNLOADLINK)));
+    QDesktopServices::openUrl(QUrl(hopsanweblinks::releases_archive));
 }
 
 
