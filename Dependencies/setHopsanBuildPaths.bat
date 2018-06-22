@@ -14,7 +14,7 @@ if not "%~1"=="" (
 	set hopsan_arch=%~1
 )
 if not "%~2"=="" (
-REM Do something maybe	
+REM Do something maybe
 )
 
 echo Setting paths for architecture: %hopsan_arch%
@@ -26,19 +26,23 @@ if not "%hopsan_arch%"=="x86" (
   )
 )
 
-REM Setup compiler and Qt paths
-REM These paths require the official Qt version from Qt.io (for 32-bit) and the custom build Qt library for Hopsan 64-bit
-set mingw_path32=C:\Qt\Tools\mingw492_32\bin
-set qmake_path32=C:\Qt\5.6.3\mingw49_32\bin
-set mingw_path64=C:\hopsan-dev\x86_64-4.9.4-release-posix-seh-rt_v5-rev0\mingw64\bin
-set qmake_path64=C:\hopsan-dev\qt-5.6.3-x64-mingw494-posix-seh-rt_v5-rev0\bin
+REM Setup Default compiler and Qt paths
+if "%hopsan_arch%"=="x86" (
+	REM These paths require the official Qt version from Qt.io (for 32-bit)
+	set mingw_path=C:\Qt\Tools\mingw492_32\bin
+	set qmake_path=C:\Qt\5.6.3\mingw49_32\bin
+) else (
+	REM These paths require the custom build Qt library for Hopsan 64-bit
+	set mingw_path=C:\hopsan-dev\x86_64-4.9.4-release-posix-seh-rt_v5-rev0\mingw64\bin
+	set qmake_path=C:\hopsan-dev\qt-5.6.3-x64-mingw494-posix-seh-rt_v5-rev0\bin
+)
 
 REM Tool paths
 set msys_path=C:\msys64\usr\bin
 
 REM Set default installation tools paths depending on current Windows architecture
 if defined ProgramFiles(x86) (
-	REM do stuff for 64bit here
+	REM Lookup tools paths for 64-bit Windows
 	echo 64bit Windows detected, expecting 64-bit tools, but checking for 32-bit anyway
 	if exist "%ProgramFiles(x86)%\CMake\bin" (
 		set "cmake_path=%ProgramFiles(x86)%\CMake\bin" 
@@ -59,7 +63,7 @@ if defined ProgramFiles(x86) (
 		set "gitmsys_path=%ProgramW6432%\Git\usr\bin"
 	)
 ) else (
-    REM do stuff for 32bit here
+    REM Lookup tools paths  for 32-bit Windows
 	echo 32bit Windows detected, expecting 32-bit tools
 	set "cmake_path=%ProgramFiles%\CMake\bin"
 	set "doxygen_path=%ProgramFiles%\doxygen\bin"
@@ -68,13 +72,13 @@ if defined ProgramFiles(x86) (
 	set "gitmsys_path=%ProgramFiles%\Git\usr\bin"
 )
 
-REM Choose compiler and Qt path depending on selected build type
-if "%hopsan_arch%"=="x64" (
-	set "mingw_path=%mingw_path64%"
-	set "qmake_path=%qmake_path64%"
-) else (
-	set "mingw_path=%mingw_path32%"
-	set "qmake_path=%qmake_path32%"
+REM If the HOME directory of Qt is already specified, use that instead of default expected path
+if not "%HOPSAN_BUILD_QT_HOME%" == "" (
+	set "qmake_path=%HOPSAN_BUILD_QT_HOME%\bin"
+)
+REM If the HOME directory of MinGW is already specified, use that instead of default expected path
+if not "%HOPSAN_BUILD_MINGW_HOME%" == "" (
+	set "mingw_path=%HOPSAN_BUILD_MINGW_HOME%\bin"
 )
 
 REM Echo expected paths
