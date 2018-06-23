@@ -21,10 +21,11 @@ echo Unpacking %zipfile%
 tools\7z\7za.exe x %zipfile% -y > nul
 move %zipdir% %codedir%
 
-
+REM We don want msys sh.exe in the PATH so we have clean it and set it manually
 set OLDPATH=%PATH%
+set OLDPATH=%OLDPATH:C:\Program Files (x86)\Git\usr\bin;=%
+set OLDPATH=%OLDPATH:C:\Program Files\Git\usr\bin;=%
 call setHopsanBuildPaths.bat
-REM We don want msys in the path so we have to set it manually
 set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
 
 REM build
