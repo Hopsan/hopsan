@@ -37,4 +37,6 @@ mingw32-make.exe install
 cd %basedir%
 echo.
 echo setupFMILibrary.bat done
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)

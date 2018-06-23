@@ -37,4 +37,6 @@ xcopy /Y %codedir%\zmq.hpp %installdir%
 cd %basedir%
 echo.
 echo setupZeroMQ.bat done!"
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)

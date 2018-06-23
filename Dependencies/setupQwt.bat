@@ -28,4 +28,6 @@ mingw32-make install
 cd %basedir%
 echo.
 echo setupQwt.bat Done
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)

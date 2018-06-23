@@ -33,4 +33,6 @@ REM Note! We use msys make here as mingw32-make is to strict since 4.9.2
 cd %basedir%
 echo.
 echo setupDiscount.bat done
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)

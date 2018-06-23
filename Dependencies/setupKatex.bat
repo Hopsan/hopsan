@@ -12,4 +12,6 @@ mkdir %installdir%
 xcopy %codedir%\dist\* %installdir% /Y
 
 echo "setupKatex.bat done"
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)
