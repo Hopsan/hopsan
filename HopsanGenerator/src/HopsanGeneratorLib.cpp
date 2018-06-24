@@ -224,7 +224,8 @@ bool callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const c
 {
     auto pGenerator = std::unique_ptr<HopsanFMIGenerator>(new HopsanFMIGenerator(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    return pGenerator->generateToFmu(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), version, architecture);
+    const bool isArchitecture64 = (architecture==64);
+    return pGenerator->generateToFmu(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), version, isArchitecture64);
 }
 
 
