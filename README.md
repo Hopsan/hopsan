@@ -53,7 +53,7 @@ https://flumes.iei.liu.se/hopsan/files/releases
 
 ## Documentation
 
-https://flumes.iei.liu.se/hopsan/docs/2.8/html
+https://flumes.iei.liu.se/hopsan/docs/latest/html
 
 ## Issue Tracker and Questions
 If you want to report an issue, make a feature request or have a question, please create a new issue in the issue tracker.  
@@ -78,7 +78,7 @@ The old repository should still be accessible (read only) at:
 **Password:** hut6Opoj
 
 In late February 2018, the issue tracker was also moved to GitHub.  
-The old one can be found here: https://flumes.iei.liu.se/redmine/projects/hopsan
+The old one was previously available here: https://flumes.iei.liu.se/redmine/projects/hopsan
 
 # Build instructions
 
@@ -87,7 +87,7 @@ on most GNU/Linux based distributions, Microsoft Windows (using MinGW) and Apple
 *macOS building is not supported out of the box yet.*
 
 **Note!** See the developer documentation for detailed instructions.
-https://flumes.iei.liu.se/hopsan/docs/2.8/html/page_hopsandevelopment.html
+https://flumes.iei.liu.se/hopsan/docs/latest/html/page_hopsandevelopment.html
 
 ## Cloning the source code
 To get the source code clone it including dependencies using the following commands.
