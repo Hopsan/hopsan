@@ -4,6 +4,7 @@ REM $Id$
 REM Bat script building FMILibrary dependency automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set basedir=%~dp0
 set name=FMILibrary
 set zipdir=%name%-2.0.2
@@ -41,3 +42,4 @@ echo setupFMILibrary.bat done
 if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
   pause
 )
+endlocal

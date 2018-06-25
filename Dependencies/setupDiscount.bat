@@ -1,9 +1,10 @@
 @ECHO OFF
 REM $Id$
 
-REM Bat script for building Discount automatically 
+REM Bat script for building Discount automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set basedir=%~dp0
 set name=discount
 set codedir=%basedir%\%name%_code
@@ -36,3 +37,4 @@ echo setupDiscount.bat done
 if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
   pause
 )
+endlocal

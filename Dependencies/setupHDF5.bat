@@ -4,6 +4,7 @@ REM $Id$
 REM Bat script building libHDF5 dependency automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set basedir=%~dp0
 set name=hdf5
 set codedir=%basedir%\%name%_code
@@ -25,9 +26,10 @@ REM mingw32-make.exe -j4 STOP! DO NOT enable multi-core build (make -j4), we mus
 mingw32-make.exe
 mingw32-make.exe install
 
-cd %basedir% 
+cd %basedir%
 echo.
 echo setupHDF5.bat done
 if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
   pause
 )
+endlocal

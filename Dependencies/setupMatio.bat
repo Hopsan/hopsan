@@ -4,6 +4,7 @@ REM $Id$
 REM Bat script for building Matio automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set dirname=matio
 
 REM Automatic code begins here
@@ -22,3 +23,4 @@ echo setupMatio.bat done
 if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
   pause
 )
+endlocal

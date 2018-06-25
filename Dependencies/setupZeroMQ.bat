@@ -4,6 +4,7 @@ REM $Id$
 REM Bat script building ZeroMQ and unpacking messagepack automatically 
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set basedir=%~dp0
 set name=zeromq
 set codedir=%basedir%\%name%_code
@@ -41,3 +42,4 @@ echo setupZeroMQ.bat done!"
 if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
   pause
 )
+endlocal
