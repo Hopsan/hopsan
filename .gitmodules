@@ -6,7 +6,7 @@
 	url = https://github.com/zeromq/cppzmq.git
 [submodule "Dependencies/zeromq_code"]
 	path = Dependencies/zeromq_code
-	url = https://github.com/zeromq/zeromq4-1.git
+	url = https://github.com/zeromq/libzmq.git
 [submodule "Dependencies/discount_code"]
 	path = Dependencies/discount_code
 	url = https://github.com/Orc/discount.git

@@ -99,6 +99,17 @@ git submodule update --init
 If a submodule fails to clone then you must get a hold of it some other way.
 **Note!** Not all of the dependencies are required. See the documentation for details.
 
+### Checkout and updated submodules
+Occasionally submodules are updated. After you checkout or update (pull) a branch, you may need to re-run ```git submodule update --init```
+
+If you get an error similar to:  
+```error: Server does not allow request for unadvertised object d062edd...```
+Then you may need to run:
+```
+git submodule sync
+git submodule update --init
+```
+
 ## Build on a GNU/Linux system
 TODO Write this  
 For now, see the developer documentation linked above
