@@ -4,6 +4,7 @@ REM $Id$
 REM Bat script building HopsaGUI dependency QWT automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set basedir=%~dp0
 set name=qwt
 set codedir=%basedir%\%name%_code
@@ -28,4 +29,7 @@ mingw32-make install
 cd %basedir%
 echo.
 echo setupQwt.bat Done
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)
+endlocal

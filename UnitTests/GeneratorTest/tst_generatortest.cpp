@@ -154,7 +154,7 @@ private Q_SLOTS:
 
         // Run FMUChecker for FMU 2.0 32-bit export
         outpath = cwd+"/fmu2_32/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path, 2, 32,
+        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path.c_str(), 2, 32,
                                &generatorMessageCallback);
 
         args.clear();
@@ -332,7 +332,7 @@ private Q_SLOTS:
 #ifdef HOPSANCOMPILED64BIT
         gccPath = gcc64Path;
 #else
-        gccPath = gvv32Path;
+        gccPath = gcc32Path;
 #endif
         callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, nullptr, 0, true, hopsanRoot.c_str());
 

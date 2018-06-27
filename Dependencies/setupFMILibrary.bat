@@ -4,6 +4,7 @@ REM $Id$
 REM Bat script building FMILibrary dependency automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set basedir=%~dp0
 set name=FMILibrary
 set zipdir=%name%-2.0.2
@@ -21,10 +22,11 @@ echo Unpacking %zipfile%
 tools\7z\7za.exe x %zipfile% -y > nul
 move %zipdir% %codedir%
 
-
+REM We don want msys sh.exe in the PATH so we have clean it and set it manually
 set OLDPATH=%PATH%
+set OLDPATH=%OLDPATH:C:\Program Files (x86)\Git\usr\bin;=%
+set OLDPATH=%OLDPATH:C:\Program Files\Git\usr\bin;=%
 call setHopsanBuildPaths.bat
-REM We don want msys in the path so we have to set it manually
 set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
 
 REM build
@@ -37,4 +39,7 @@ mingw32-make.exe install
 cd %basedir%
 echo.
 echo setupFMILibrary.bat done
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)
+endlocal

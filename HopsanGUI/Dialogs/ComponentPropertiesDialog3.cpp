@@ -791,8 +791,8 @@ QWidget *SystemProperties::createSystemSettings()
     mpNumLogSamplesEdit = new QLineEdit(pSettingsWidget);
     mpNumLogSamplesEdit->setValidator(new QIntValidator(0, 2000000000, pSettingsWidget));
     mpNumLogSamplesEdit->setText(QString("%1").arg(mpSystemObject->getNumberOfLogSamples())); //!< @todo what if group
-    pSettingsLayout->addWidget(new QLabel(tr("Log Samples:"), pSettingsWidget), row,   0);
-    pSettingsLayout->addWidget(mpNumLogSamplesEdit,                             ++row, 1);
+    pSettingsLayout->addWidget(new QLabel(tr("Log Samples:"), pSettingsWidget), ++row,   0);
+    pSettingsLayout->addWidget(mpNumLogSamplesEdit,                             row, 1);
 
     // Log start time
     mpLogStartTimeEdit = new QLineEdit(pSettingsWidget);

@@ -4,16 +4,19 @@ REM $Id$
 REM Bat script building libHDF5 dependency automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
+setlocal
 set basedir=%~dp0
 set name=hdf5
 set codedir=%basedir%\%name%_code
 set builddir=%basedir%\%name%_build
 set installdir=%basedir%\%name%
 
-REM Setup path
+REM Setup PATH
+REM We don want msys sh.exe in the PATH so we have clean it and set it manually
 set OLDPATH=%PATH%
+set OLDPATH=%OLDPATH:C:\Program Files (x86)\Git\usr\bin;=%
+set OLDPATH=%OLDPATH:C:\Program Files\Git\usr\bin;=%
 call setHopsanBuildPaths.bat
-REM We don want msys in the path so we have to set it manually
 set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
 
 mkdir %builddir%
@@ -23,7 +26,10 @@ REM mingw32-make.exe -j4 STOP! DO NOT enable multi-core build (make -j4), we mus
 mingw32-make.exe
 mingw32-make.exe install
 
-cd %basedir% 
+cd %basedir%
 echo.
 echo setupHDF5.bat done
-pause
+if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+  pause
+)
+endlocal

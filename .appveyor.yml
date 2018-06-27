@@ -1,0 +1,31 @@
+image:
+- Visual Studio 2017
+environment:
+  HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
+  HOPSAN_BUILD_QT_HOME: C:\Qt\5.6.3\mingw49_32
+  HOPSAN_BUILD_MINGW_HOME: C:\Qt\Tools\mingw492_32
+platform: x86
+configuration: Release
+install:
+  - git submodule update --init
+build_script:
+  - PATH
+  - cd Dependencies
+#  - setupDiscount.bat   (link fail in hopsangui)
+  - setupFMILibrary.bat
+#  - setupHDF5.bat (takes to long to build)
+  - setupKatex.bat
+  - setupQwt.bat
+  - setupZeroMQ.bat
+  - call setHopsanBuildPaths.bat
+  - cd ..
+  - mkdir build
+  - cd build
+  - qmake.exe ..\HopsanNG_remote.pro -r -spec win32-g++ CONFIG+=release
+  - cd ..
+  - mingw32-make.exe -j4 -C build
+  - dir bin
+test_script:
+  - runUnitTests.bat
+#  - runValidationTests.bat
+# one validation test fail on 32 bit due to very small numeric error. Activate this once that has been resolved.

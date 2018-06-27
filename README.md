@@ -1,6 +1,6 @@
 # Hopsan
 
-[![Build Status](https://travis-ci.org/Hopsan/hopsan.svg?branch=master)](https://travis-ci.org/Hopsan/hopsan)
+[![Build Status](https://travis-ci.org/Hopsan/hopsan.svg?branch=master)](https://travis-ci.org/Hopsan/hopsan) [![Build status](https://ci.appveyor.com/api/projects/status/ouf883yvoel0djgn/branch/master?svg=true)](https://ci.appveyor.com/project/peterNordin/hopsan/branch/master)
 
 Hopsan is a free open-source multi-domain system simulation tool developed at the division of Fluid and mechatronic systems at Linkoping university.
 
@@ -53,7 +53,7 @@ https://flumes.iei.liu.se/hopsan/files/releases
 
 ## Documentation
 
-https://flumes.iei.liu.se/hopsan/docs/2.8/html
+https://flumes.iei.liu.se/hopsan/docs/latest/html
 
 ## Issue Tracker and Questions
 If you want to report an issue, make a feature request or have a question, please create a new issue in the issue tracker.  
@@ -78,7 +78,7 @@ The old repository should still be accessible (read only) at:
 **Password:** hut6Opoj
 
 In late February 2018, the issue tracker was also moved to GitHub.  
-The old one can be found here: https://flumes.iei.liu.se/redmine/projects/hopsan
+The old one was previously available here: https://flumes.iei.liu.se/redmine/projects/hopsan
 
 # Build instructions
 
@@ -87,7 +87,7 @@ on most GNU/Linux based distributions, Microsoft Windows (using MinGW) and Apple
 *macOS building is not supported out of the box yet.*
 
 **Note!** See the developer documentation for detailed instructions.
-https://flumes.iei.liu.se/hopsan/docs/2.8/html/page_hopsandevelopment.html
+https://flumes.iei.liu.se/hopsan/docs/latest/html/page_hopsandevelopment.html
 
 ## Cloning the source code
 To get the source code clone it including dependencies using the following commands.
@@ -98,6 +98,17 @@ git submodule update --init
 ```
 If a submodule fails to clone then you must get a hold of it some other way.
 **Note!** Not all of the dependencies are required. See the documentation for details.
+
+### Checkout and updated submodules
+Occasionally submodules are updated. After you checkout or update (pull) a branch, you may need to re-run ```git submodule update --init```
+
+If you get an error similar to:  
+```error: Server does not allow request for unadvertised object d062edd...```
+Then you may need to run:
+```
+git submodule sync
+git submodule update --init
+```
 
 ## Build on a GNU/Linux system
 TODO Write this  

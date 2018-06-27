@@ -33,8 +33,14 @@ for /F "delims==" %%x in ('dir /B /S *.hvc') do (
 )
 if %failed% EQU 1 (
   echo ERROR: There was at least one failure!
-  pause
+  if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+    pause
+  )
   exit /B 1
 )
-if %okPause% EQU 1 pause
+if %okPause% EQU 1 (
+  if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
+    pause
+  )
+)
 exit /B 0
