@@ -30,14 +30,14 @@
 
 #include <iostream>
 #include <vector>
-#include "zmq.hpp"
 #include <map>
 #include <chrono>
 
-#include "Messages.h"
-#include "MessageUtilities.h"
+#include "hopsanremotecommon/Messages.h"
+#include "hopsanremotecommon/MessageUtilities.h"
 
 #include <tclap/CmdLine.h>
+#include "zmq.hpp"
 
 #ifdef _WIN32
 #include <windows.h>

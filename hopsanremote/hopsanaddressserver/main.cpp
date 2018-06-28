@@ -32,9 +32,9 @@
 #include <cmath>
 
 #include "zmq.hpp"
-#include "Messages.h"
-#include "MessageUtilities.h"
-#include "StatusInfoStructs.h"
+#include "hopsanremotecommon/Messages.h"
+#include "hopsanremotecommon/MessageUtilities.h"
+#include "hopsanremotecommon/StatusInfoStructs.h"
 #include "RelayHandler.h"
 
 #include "ServerHandler.h"

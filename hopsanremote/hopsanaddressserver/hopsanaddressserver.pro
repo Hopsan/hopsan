@@ -1,18 +1,30 @@
-# -------------------------------------------------
-# Global project options
-# -------------------------------------------------
+include( $${PWD}/../../Common.prf )
+
 TEMPLATE = app
 CONFIG += console
-CONFIG += thread
 CONFIG -= app_bundle
 CONFIG -= qt
 
-TARGET = hopsanserverclient
 DESTDIR = $${PWD}/../../bin
+TARGET = hopsanaddressserver
+
+# Enable C++11
+lessThan(QT_MAJOR_VERSION, 5){
+  QMAKE_CXXFLAGS += -std=c++11
+} else {
+  CONFIG += c++11
+}
 
 #--------------------------------------------------------
-# Set the tclap include path
-INCLUDEPATH *= $${PWD}/../../Dependencies/tclap/include
+# Depend on the remoteclient lib
+INCLUDEPATH += $${PWD}/../libhopsanremoteclient/include
+LIBS += -L$${PWD}/../../lib -lhopsanremoteclient
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Depend on the remote common lib
+INCLUDEPATH += $${PWD}/../libhopsanremotecommon/include
+LIBS += -L$${PWD}/../../lib -lhopsanremotecommon
 #--------------------------------------------------------
 
 #--------------------------------------------------------
@@ -25,32 +37,35 @@ include($${PWD}/../../Dependencies/msgpack.pri)
 !have_msgpack() {
   !build_pass:error("Failed to locate msgpack-c library")
 }
-QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
 
-
-
-INCLUDEPATH += $${PWD}/../include
+#--------------------------------------------------------
+# Set the tclap include path
+INCLUDEPATH *= $${PWD}/../../Dependencies/tclap/include
+#--------------------------------------------------------
 
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
+LIBS += -pthread
+
+win32 {
+    DEFINES -= UNICODE
+}
+
 unix {
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 }
 
-# -------------------------------------------------
-# Project files
-# -------------------------------------------------
-SOURCES += main.cpp \
-    ../include/FileAccess.cpp \
-    RemoteHopsanClient.cpp
 
+SOURCES += main.cpp \
+    ServerHandler.cpp \
+    RelayHandler.cpp \
 
 HEADERS += \
-    RemoteHopsanClient.h \
-    ../include/FileReceiver.hpp \
-    ../include/FileAccess.h
+    ServerHandler.h \
+    common.h \
+    RelayHandler.h
 

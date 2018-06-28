@@ -28,8 +28,8 @@
 #include <thread>
 #include <sstream>
 #include <chrono>
-#include "RemoteHopsanClient.h"
-#include "MessageUtilities.h"
+#include "hopsanremoteclient/RemoteHopsanClient.h"
+#include "hopsanremotecommon/MessageUtilities.h"
 
 #include <tclap/CmdLine.h>
 

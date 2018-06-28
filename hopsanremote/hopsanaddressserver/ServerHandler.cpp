@@ -24,8 +24,8 @@
 
 #include "ServerHandler.h"
 #include "common.h"
-#include "RemoteHopsanClient.h"
-#include "MessageUtilities.h"
+#include "hopsanremoteclient/RemoteHopsanClient.h"
+#include "hopsanremotecommon/MessageUtilities.h"
 
 #include "zmq.hpp"
 

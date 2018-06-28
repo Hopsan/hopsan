@@ -11,6 +11,19 @@ CONFIG -= qt
 DESTDIR = $${PWD}/../../bin
 TARGET = hopsanserverworker
 
+# Enable C++11
+lessThan(QT_MAJOR_VERSION, 5){
+  QMAKE_CXXFLAGS += -std=c++11
+} else {
+  CONFIG += c++11
+}
+
+#--------------------------------------------------------
+# Depend on the remote common lib
+INCLUDEPATH += $${PWD}/../libhopsanremotecommon/include
+LIBS += -L$${PWD}/../../lib -lhopsanremotecommon
+#--------------------------------------------------------
+
 #--------------------------------------------------------
 # Set the ZeroMQ paths
 include($${PWD}/../../Dependencies/zeromq.pri)
@@ -21,10 +34,7 @@ include($${PWD}/../../Dependencies/msgpack.pri)
 !have_msgpack() {
   !build_pass:error("Failed to locate msgpack-c library")
 }
-QMAKE_CXXFLAGS *= -std=c++11
 #--------------------------------------------------------
-
-INCLUDEPATH *= $${PWD}/../include
 
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../../Utilities/
@@ -48,9 +58,5 @@ unix {
 # Project files
 # -------------------------------------------------
 
-SOURCES += main.cpp \
-    ../include/FileAccess.cpp
-
-HEADERS += \
-    ../include/FileAccess.h \
-    ../include/FileReceiver.hpp
+SOURCES += main.cpp
+HEADERS +=

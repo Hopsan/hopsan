@@ -30,7 +30,7 @@
 #include <queue>
 
 #include "zmq.hpp"
-#include "MessageUtilities.h"
+#include "hopsanremotecommon/MessageUtilities.h"
 
 typedef std::lock_guard<std::mutex> scope_lock;
 

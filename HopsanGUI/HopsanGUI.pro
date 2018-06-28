@@ -61,11 +61,17 @@ have_zeromq() {
         !build_pass:error("Could not find msgpack-c, which is required for serialization")
     }
 
-    INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServer
-    INCLUDEPATH *= $${PWD}/../HopsanRemote/HopsanServerClient
-    SOURCES += $${PWD}/../HopsanRemote/HopsanServerClient/RemoteHopsanClient.cpp
-    HEADERS += $${PWD}/../HopsanRemote/HopsanServerClient/RemoteHopsanClient.h
-    SOURCES += $${PWD}/../HopsanRemote/include/FileAccess.cpp
+    #--------------------------------------------------------
+    # Depend on the remoteclient lib
+    INCLUDEPATH += $${PWD}/../hopsanremote/libhopsanremoteclient/include
+    LIBS += -L$${PWD}/../lib -lhopsanremoteclient
+    #--------------------------------------------------------
+
+    #--------------------------------------------------------
+    # Depend on the remote common lib
+    INCLUDEPATH += $${PWD}/../hopsanremote/libhopsanremotecommon/include
+    LIBS += -L$${PWD}/../lib -lhopsanremotecommon
+    #--------------------------------------------------------
 
 } else {
     !build_pass:warning("Could not find ZeroMQ, compiling HopsanGUI WITHOUT ZeroMQ support")

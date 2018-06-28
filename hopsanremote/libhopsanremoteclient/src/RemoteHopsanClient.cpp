@@ -24,12 +24,13 @@
 
 //$Id$
 
-#include "RemoteHopsanClient.h"
+#include "hopsanremoteclient/RemoteHopsanClient.h"
+#include "hopsanremotecommon/Messages.h"
+#include "hopsanremotecommon/MessageUtilities.h"
+#include "hopsanremotecommon/FileReceiver.hpp"
 
+#include "zmq.hpp"
 #include "msgpack.hpp"
-#include "../include/Messages.h"
-#include "../include/MessageUtilities.h"
-#include "../include/FileReceiver.hpp"
 
 #include <iostream>
 #include <thread>

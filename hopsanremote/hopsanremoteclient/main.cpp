@@ -26,9 +26,10 @@
 
 #include <unistd.h>
 
-#include "RemoteHopsanClient.h"
+#include "hopsanremoteclient/RemoteHopsanClient.h"
 
 #include <tclap/CmdLine.h>
+#include <zmq.hpp>
 
 #include <iostream>
 #include <fstream>

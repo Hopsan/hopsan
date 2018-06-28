@@ -24,7 +24,7 @@
 
 //$Id$
 
-#include "FileAccess.h"
+#include "hopsanremotecommon/FileAccess.h"
 
 #include <dirent.h>
 #include <sstream>
