@@ -37,10 +37,10 @@
 
 #include "zmq.hpp"
 
-#include "Messages.h"
-#include "MessageUtilities.h"
-#include "FileAccess.h"
-#include "FileReceiver.hpp"
+#include "hopsanremotecommon/Messages.h"
+#include "hopsanremotecommon/MessageUtilities.h"
+#include "hopsanremotecommon/FileAccess.h"
+#include "hopsanremotecommon/FileReceiver.hpp"
 
 #include "HopsanEssentials.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"

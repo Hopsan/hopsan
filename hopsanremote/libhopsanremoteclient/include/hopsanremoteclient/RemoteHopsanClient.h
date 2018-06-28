@@ -31,9 +31,15 @@
 #include <string>
 #include <mutex>
 
-#include "../include/StatusInfoStructs.h"
-#include "../include/DataStructs.h"
-#include "zmq.hpp"
+#include "hopsanremotecommon/StatusInfoStructs.h"
+#include "hopsanremotecommon/DataStructs.h"
+
+// Forward declarations
+namespace zmq {
+class socket_t;
+class context_t;
+class message_t;
+}
 
 class RemoteHopsanClient
 {
