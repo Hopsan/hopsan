@@ -26,7 +26,6 @@
 pComponentFactory->registerCreatorFunction("HydraulicAckumulator",HydraulicAckumulator::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicHose",HydraulicHose::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPistonAckumulator",HydraulicPistonAckumulator::Creator);
-pComponentFactory->registerCreatorFunction("HydraulicTLMRlineR",HydraulicTLMRlineR::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicTLMlossless",HydraulicTLMlossless::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicVolume",HydraulicVolume::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicVolumeMultiPort",HydraulicVolumeMultiPort::Creator);
