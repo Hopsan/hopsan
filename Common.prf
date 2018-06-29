@@ -35,7 +35,7 @@ CONFIG(release, debug|release) {
 }
 
 #Determine if default component lib should be build in
-#DEFINES *= BUILTINDEFAULTCOMPONENTLIB
+#DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS
 
 #Help function to select one of multiple choice paths to include
 defineReplace(selectPath){
