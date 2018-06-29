@@ -112,7 +112,7 @@ namespace hopsan {
             c_pilot = (*mpPPilot_c);
 
             //Checkvalve equations
-            if ((c1 > (c2 + (*mpPf))) || c_pilot > ((c1-c2) / (*mpPhi)) + c2 + (*mpPf) )
+            if(c1 + c_pilot*(*mpPhi) - c2 > (*mpPf))
             {
                 q2 = mQTurb.getFlow(c1, c2, Zc1, Zc2);
                 x=1;

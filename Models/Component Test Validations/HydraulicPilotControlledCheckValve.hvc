@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation date="20180629" time="095938" hopsanguiversion="2.8.1.20180613.0858" hopsancoreversion="2.8.1.20180520.2211">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicPilotControlledCheckValve.hmf</modelfile>
+    <hvdfile>HydraulicPilotControlledCheckValve.hvd</hvdfile>
+    <variable name="Pilot_Operated_Check_Valve#P2#Flow">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Pilot_Operated_Check_Valve#P_PILOT#Pressure">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Pilot_Operated_Check_Valve#P1#Pressure">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Pilot_Operated_Check_Valve#P2#Pressure">
+      <timecolumn>0</timecolumn>
+      <column>4</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>
