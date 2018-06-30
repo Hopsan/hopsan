@@ -6,13 +6,13 @@ set failed=0
 cd bin
 for /r "." %%a in (tst_*.exe) do (
   "%%~fa"
-  if not ERRORLEVEL 0 (
+  if !errorlevel! neq 0 (
     echo Test FAILED: "%%~fa"
-    set failed=1 
+    set failed=1
   )
 )
 cd ..
-if %failed% EQU 1 (
+if !failed! equ 1 (
   echo ERROR: At least one unit test failed!
   if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
     pause
