@@ -21,7 +21,7 @@ build_script:
   - cd ..
   - mkdir build
   - cd build
-  - qmake.exe ..\HopsanNG_remote.pro -r -spec win32-g++ CONFIG+=release
+  - qmake.exe ..\HopsanNG.pro -r -spec win32-g++ CONFIG+=release
   - cd ..
   - mingw32-make.exe -j4 -C build
   - dir bin
