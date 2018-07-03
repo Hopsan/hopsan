@@ -44,7 +44,6 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/StringUtilities.h"
 #include "CoreUtilities/MultiThreadingUtilities.h"
-#include "CoreUtilities/CoSimulationUtilities.h"
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/NumHopHelper.h"
 #include "CoreUtilities/ConnectionAssistant.h"

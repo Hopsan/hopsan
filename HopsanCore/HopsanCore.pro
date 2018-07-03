@@ -145,7 +145,6 @@ SOURCES += \
     src/CoreUtilities/AliasHandler.cpp \
     src/CoreUtilities/ConnectionAssistant.cpp \
     src/CoreUtilities/SimulationHandler.cpp \
-    src/CoreUtilities/CoSimulationUtilities.cpp \
     src/CoreUtilities/MultiThreadingUtilities.cpp \
     src/CoreUtilities/StringUtilities.cpp \
     src/CoreUtilities/SaveRestoreSimulationPoint.cpp
@@ -186,7 +185,6 @@ HEADERS += \
     include/ComponentUtilities/EquationSystemSolver.h \
     $${PWD}/dependencies/rapidxml/hopsan_rapidxml.hpp \
     include/CoreUtilities/MultiThreadingUtilities.h \
-    include/CoreUtilities/CoSimulationUtilities.h \
     include/CoreUtilities/StringUtilities.h \
     include/HopsanTypes.h \
     include/ComponentUtilities/HopsanPowerUser.h \

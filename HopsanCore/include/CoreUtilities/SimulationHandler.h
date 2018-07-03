@@ -65,8 +65,6 @@ public:
     void finalizeSystem(ComponentSystem* pSystem);
     void finalizeSystem(std::vector<ComponentSystem*> &rSystemVector);
 
-    void runCoSimulation(ComponentSystem *pSystem);
-
 private:
     bool simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, const std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
     bool simulateMultipleSystems(const double stopT, const std::vector<ComponentSystem *> &rSystemVector);

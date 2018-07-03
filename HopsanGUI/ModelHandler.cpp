@@ -538,7 +538,6 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
     disconnect(pModel, SIGNAL(simulationTimeChanged(QString,QString,QString)), gpMainWindow->mpSimulationTimeEdit, SLOT(displaySimulationTime(QString,QString,QString)));
 
     disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModel,  SLOT(simulate_nonblocking()));
-    disconnect(gpMainWindow->mpCoSimulationAction,          SIGNAL(triggered()),            pModel,  SLOT(startCoSimulation()));
     disconnect(gpMainWindow->mpToggleRemoteCoreSimAction,   SIGNAL(triggered(bool)),        pModel,  SLOT(setUseRemoteSimulation(bool)));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
@@ -563,7 +562,6 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
     connect(pModel, SIGNAL(simulationTimeChanged(QString,QString,QString)), gpMainWindow->mpSimulationTimeEdit, SLOT(displaySimulationTime(QString,QString,QString)), Qt::UniqueConnection);
 
     connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   pModel,    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpCoSimulationAction,             SIGNAL(triggered()),            pModel,    SLOT(startCoSimulation()), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleRemoteCoreSimAction,      SIGNAL(triggered(bool)),        pModel,    SLOT(setUseRemoteSimulation(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
