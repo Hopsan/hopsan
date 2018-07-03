@@ -719,15 +719,6 @@ bool ModelWidget::simulate_blocking()
 
 }
 
-void ModelWidget::startCoSimulation()
-{
-    CoreSimulationHandler *pHandler = new CoreSimulationHandler();
-    pHandler->runCoSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
-    delete(pHandler);
-
-    emit checkMessages();
-}
-
 
 //! Slot that saves current project to old file name if it exists.
 //! @see saveModel(int index)

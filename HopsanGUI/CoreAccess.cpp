@@ -187,11 +187,6 @@ bool CoreSimulationHandler::simulate(const double startTime, const double stopTi
     return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged, algorithm);
 }
 
-void CoreSimulationHandler::runCoSimulation(CoreSystemAccess* pCoreSystemAccess)
-{
-    gHopsanCore.getSimulationHandler()->runCoSimulation(pCoreSystemAccess->getCoreSystemPtr());
-}
-
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)
 {
     std::vector<hopsan::ComponentSystem*> coreSystems;

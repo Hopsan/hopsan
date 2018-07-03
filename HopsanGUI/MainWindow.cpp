@@ -626,10 +626,6 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpToggleRemoteCoreSimAction, "Connect or disconnect to a remote HopsanCore, this will determine if local or remote simulation is run, when calling simulate");
     connect(mpToggleRemoteCoreSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpCoSimulationAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Start Co-Simulation"), this);
-    mpCoSimulationAction->setToolTip(tr("Start Co-Simulation"));
-    connect(mpCoSimulationAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-
     mpOpenDebuggerAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Debug.png"), tr("&Launch Debugger"), this);
     mpOpenDebuggerAction->setToolTip(tr("Launch Debugger"));
     connect(mpOpenDebuggerAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
@@ -985,9 +981,6 @@ void MainWindow::createMenus()
     mpSimulationMenu->addAction(mpSimulateAction);
     mpSimulationMenu->addAction(mpToggleRemoteCoreSimAction);
     mpSimulationMenu->addAction(mpOpenDebuggerAction);
-#ifdef DEVELOPMENT
-    mpSimulationMenu->addAction(mpCoSimulationAction);
-#endif
     mpSimulationMenu->addAction(mpAnimateAction);
     mpSimulationMenu->addAction(mpMeasureSimulationTimeAction);
     mpSimulationMenu->addAction(mpOptimizeAction);
@@ -1128,9 +1121,6 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(mpSimulateAction);
     mpSimToolBar->addAction(mpToggleRemoteCoreSimAction);
     mpSimToolBar->addAction(mpOpenDebuggerAction);
-#ifdef DEVELOPMENT
-    mpSimToolBar->addAction(mpCoSimulationAction);
-#endif
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
     mpSimToolBar->addAction(mpPlotAction);
@@ -1435,7 +1425,6 @@ void MainWindow::updateToolBarsToNewTab()
     mpSimulateAction->setEnabled(modelTab);
     mpToggleRemoteCoreSimAction->setEnabled(modelTab);
     mpOpenDebuggerAction->setEnabled(modelTab);
-    mpCoSimulationAction->setEnabled(modelTab);
     mpOptimizeAction->setEnabled(modelTab);
     mpSensitivityAnalysisAction->setEnabled(modelTab);
     mpMeasureSimulationTimeAction->setEnabled(modelTab);
