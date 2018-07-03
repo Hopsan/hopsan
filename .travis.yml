@@ -34,7 +34,7 @@ script:
   - mkdir -p build
   - cd build
   - source ../Dependencies/setHopsanBuildPaths.sh
-  - ${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG_remote.pro -r -spec ${HOPSAN_BUILD_QMAKE_SPEC} -config release
+  - ${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec ${HOPSAN_BUILD_QMAKE_SPEC} -config release
   - cd ..
   - make -j4 -C build
   - ./runUnitTests.sh
