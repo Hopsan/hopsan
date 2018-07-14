@@ -1272,15 +1272,6 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
 //        }
 
 
-        //8. Load favorite variables
-//        QDomElement xmlFavVariables = guiStuff.firstChildElement(HMF_FAVORITEVARIABLES);
-//        QDomElement xmlFavVariable = xmlFavVariables.firstChildElement(HMF_FAVORITEVARIABLETAG);
-//        while (!xmlFavVariable.isNull())
-//        {
-//            loadFavoriteVariable(xmlFavVariable, this);
-//            xmlFavVariable = xmlFavVariable.nextSiblingElement(HMF_FAVORITEVARIABLETAG);
-//        }
-
         //8. Load system parameters again in case we need to reregister system port start values
         xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
         xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
