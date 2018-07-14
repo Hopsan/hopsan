@@ -287,8 +287,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
 
     const SharedModelObjectAppearanceT pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(type, subtype);
-
-    if (pAppearanceData != 0)
+    if (pAppearanceData)
     {
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
 
@@ -392,7 +391,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                 else
                 {
                     gpMessageHandler->addErrorMessage(QString("The file: %1 does not exist!").arg(externalFilePath));
-                    return 0;
+                    return nullptr;
                 }
             }
         }

@@ -1183,7 +1183,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         {
             verifyHmfComponentCompatibility(xmlSubObject, hmfFormatVersion, coreHmfVersion);
             ModelObject* pObj = loadModelObject(xmlSubObject, this, NoUndo);
-            if(pObj == NULL)
+            if(pObj == nullptr)
             {
                 gpMessageHandler->addErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
                                                                     xmlSubObject.attribute(HMF_TYPENAME) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
@@ -1367,7 +1367,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         }
         //Only do this for the root system
         //! @todo maybe can do this for subsystems to (even if we don't see them right now)
-        if (this->mpParentContainerObject == 0)
+        if (this->mpParentContainerObject == nullptr)
         {
             //mpParentModelWidget->getGraphicsView()->centerView();
             mpModelWidget->getGraphicsView()->updateViewPort();
@@ -1383,7 +1383,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
     }
     else
     {
-        gpMessageHandler->addWarningMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
+        gpMessageHandler->addErrorMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
     }
 }
 
