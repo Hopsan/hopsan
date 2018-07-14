@@ -110,8 +110,6 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define HMF_PARAMETERTAG "parameter"
 #define HMF_PARAMETERS "parameters"
 #define HMF_NUMHOPSCRIPT "numhopscript"
-#define HMF_FAVORITEVARIABLES "favoritevariables"
-#define HMF_FAVORITEVARIABLETAG "favoritevariable"
 #define HMF_ALIASES "aliases"
 #define HMF_ALIAS "alias"
 #define HMF_STARTVALUES "startvalues"
