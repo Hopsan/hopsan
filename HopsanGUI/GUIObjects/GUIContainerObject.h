@@ -86,12 +86,17 @@ public:
     //GUIModelObject methods
     ModelObject *addModelObject(QString fullTypeName, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
     ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
-    ModelObject *getModelObject(const QString &rModelObjectName);
-    const QList<ModelObject* > getModelObjects() const;
-    Port *getModelObjectPort(const QString modelObjectName, const QString portName);
     void deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings=Undo);
     void renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings=Undo);
+
+    void replaceComponent(QString name, QString newType);
+
+    ModelObject *getModelObject(const QString &rModelObjectName);
+    QList<ModelObject* > getModelObjects() const;
+    QStringList getModelObjectNames() const;
+    Port *getModelObjectPort(const QString modelObjectName, const QString portName);
     bool hasModelObject(const QString &rName) const;
+
     void rememberSelectedModelObject(ModelObject *object);
     void forgetSelectedModelObject(ModelObject *object);
     QList<ModelObject *> getSelectedModelObjectPtrs();
@@ -108,6 +113,10 @@ public:
     TextBoxWidget *addTextBoxWidget(QPointF position, const int desiredWidgetId, UndoStatusEnumT undoSettings=Undo);
     void deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings=Undo);
     void deleteWidget(const int id, UndoStatusEnumT undoSettings=Undo);
+
+    QList<Widget*> getWidgets() const;
+    Widget *getWidget(const int id) const;
+
     void rememberSelectedWidget(Widget *widget);
     void forgetSelectedWidget(Widget *widget);
     QList<Widget *> getSelectedGUIWidgetPtrs();
@@ -172,12 +181,6 @@ public:
     QString getModelPath() const;
     void setScriptFile(QString path);
     QString getScriptFile();
-
-    QStringList getModelObjectNames();
-    QList<Widget*> getWidgets();
-    Widget *getWidget(const int id);
-
-    void replaceComponent(QString name, QString newType);
 
     //Numbered sections methods
     void selectSection(int no, bool append=false);
@@ -332,7 +335,6 @@ protected:
     //Model object members
     typedef QHash<QString, ModelObject*> ModelObjectMapT;
     ModelObjectMapT mModelObjectMap;
-    ModelObject *mpTempGUIModelObject;
     QList<ModelObject *> mSelectedModelObjectsList;
 
     //Connector members

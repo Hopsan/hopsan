@@ -203,9 +203,6 @@ private:
     QString mLoadType;
     CoreSystemAccess *mpCoreSystemAccess;
 
-    QRadioButton *mpExportFmuGccRadioButton;
-    QRadioButton *mpExportFmuMsvcRadioButton;
-
     OptimizationSettings mOptSettings;
     SensitivityAnalysisSettings mSensSettings;
 };

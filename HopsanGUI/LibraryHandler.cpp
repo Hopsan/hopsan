@@ -841,7 +841,7 @@ bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)
 
 
 //! @brief Returns a list of all loaded component type names
-QStringList LibraryHandler::getLoadedTypeNames()
+QStringList LibraryHandler::getLoadedTypeNames() const
 {
     return mLibraryEntries.keys();
 }

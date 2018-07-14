@@ -110,11 +110,11 @@ protected:
     virtual void refreshSelectionBoxSize();
 
     // Protected members
-    ContainerObject *mpParentContainerObject;
-    bool mIsFlipped;
-    bool mEnableSnap;
+    ContainerObject *mpParentContainerObject = nullptr;
+    bool mIsFlipped = false;
+    bool mEnableSnap = true;
     bool mIsLocked=false;
-    WorkspaceObjectSelectionBox *mpSelectionBox;
+    WorkspaceObjectSelectionBox *mpSelectionBox = nullptr;
     QPointF mPreviousPos;
 };
 

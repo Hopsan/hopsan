@@ -45,11 +45,6 @@
 WorkspaceObject::WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT, ContainerObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
-    // Init variables
-    mpParentContainerObject = 0;
-    mIsFlipped = false;
-    mEnableSnap = true;
-
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     setAcceptHoverEvents(true);
 

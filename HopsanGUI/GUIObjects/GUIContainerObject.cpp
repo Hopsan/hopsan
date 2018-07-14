@@ -593,72 +593,65 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
 //! @todo only modelobjects for now
 ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
-        //Deselect all other components and connectors
+    // Deselect all other components and connectors
     emit deselectAllGUIObjects();
     emit deselectAllConnectors();
 
+    ModelObject* pNewModelObject = nullptr;
     QString componentTypeName = pAppearanceData->getTypeName();
     if (componentTypeName == HOPSANGUISYSTEMTYPENAME || componentTypeName == HOPSANGUICONDITIONALSYSTEMTYPENAME)
     {
-        mpTempGUIModelObject= new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        pNewModelObject = new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
         // We must create internal port FIRST before external one
-        mpTempGUIModelObject = new ContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
-        this->addExternalContainerPortObject(mpTempGUIModelObject);
+        pNewModelObject = new ContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        this->addExternalContainerPortObject(pNewModelObject);
         this->refreshExternalPortsAppearanceAndPosition();
     }
     else if (componentTypeName == HOPSANGUISCOPECOMPONENTTYPENAME)
     {
-        mpTempGUIModelObject = new ScopeComponent(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        pNewModelObject = new ScopeComponent(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
     else //Assume some standard component type
     {
-        mpTempGUIModelObject = new Component(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        pNewModelObject = new Component(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
 
     emit checkMessages();
 
-    if ( mModelObjectMap.contains(mpTempGUIModelObject->getName()) )
-    {
-        gpMessageHandler->addErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
-        //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
-    }
-    else
-    {
-        mModelObjectMap.insert(mpTempGUIModelObject->getName(), mpTempGUIModelObject);
-    }
+    mModelObjectMap.insert(pNewModelObject->getName(), pNewModelObject);
 
     if(undoSettings == Undo)
     {
-        mpUndoStack->registerAddedObject(mpTempGUIModelObject);
+        mpUndoStack->registerAddedObject(pNewModelObject);
     }
 
-    mpTempGUIModelObject->setSelected(false);
-    mpTempGUIModelObject->setSelected(true);
+    pNewModelObject->setSelected(false);
+    pNewModelObject->setSelected(true);
 
     if(nameStatus == NameVisible)
     {
-        mpTempGUIModelObject->showName(NoUndo);
+        pNewModelObject->showName(NoUndo);
     }
     else if(nameStatus == NameNotVisible)
     {
-        mpTempGUIModelObject->hideName(NoUndo);
+        pNewModelObject->hideName(NoUndo);
     }
     else if (nameStatus == UseDefault)
     {
         if (areSubComponentNamesShown())
         {
-            mpTempGUIModelObject->showName(NoUndo);
+            pNewModelObject->showName(NoUndo);
         }
         else
         {
-            mpTempGUIModelObject->hideName(NoUndo);
+            pNewModelObject->hideName(NoUndo);
         }
     }
 
-    return mpTempGUIModelObject;
+    return pNewModelObject;
 }
 
 
@@ -1096,7 +1089,7 @@ QList<ModelObject *> ContainerObject::getSelectedModelObjectPtrs()
 //! @brief Returns a pointer to the component with specified name, 0 if not found
 ModelObject *ContainerObject::getModelObject(const QString &rModelObjectName)
 {
-    ModelObjectMapT::Iterator moit = mModelObjectMap.find(rModelObjectName);
+    auto moit = mModelObjectMap.find(rModelObjectName);
     if (moit != mModelObjectMap.end())
     {
         return moit.value();
@@ -1107,7 +1100,7 @@ ModelObject *ContainerObject::getModelObject(const QString &rModelObjectName)
     }
 }
 
-const QList<ModelObject *> ContainerObject::getModelObjects() const
+QList<ModelObject *> ContainerObject::getModelObjects() const
 {
     return mModelObjectMap.values();
 }
@@ -1116,13 +1109,13 @@ const QList<ModelObject *> ContainerObject::getModelObjects() const
 Port *ContainerObject::getModelObjectPort(const QString modelObjectName, const QString portName)
 {
     ModelObject *pModelObject = this->getModelObject(modelObjectName);
-    if (pModelObject != 0)
+    if (pModelObject != nullptr)
     {
         return pModelObject->getPort(portName);
     }
     else
     {
-        return 0;
+        return nullptr;
     }
 }
 
@@ -2296,27 +2289,26 @@ QString ContainerObject::getScriptFile()
 
 
 //! @brief Returns a list with the names of the model objects in the container
-QStringList ContainerObject::getModelObjectNames()
+QStringList ContainerObject::getModelObjectNames() const
 {
-    QStringList retval;
-    ContainerObject::ModelObjectMapT::iterator it;
-    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
+    QStringList names;
+    for(const auto& mo : mModelObjectMap)
     {
-        retval.append(it.value()->getName());
+        names.append(mo->getName());
     }
-    return retval;
+    return names;
 }
 
 
 //! @brief Returns a list with pointers to GUI widgets
-QList<Widget *> ContainerObject::getWidgets()
+QList<Widget *> ContainerObject::getWidgets() const
 {
     return mWidgetMap.values();
 }
 
-Widget *ContainerObject::getWidget(const int id)
+Widget *ContainerObject::getWidget(const int id) const
 {
-    return mWidgetMap.value(id, 0);
+    return mWidgetMap.value(id, nullptr);
 }
 
 //! @brief Returns the path to the icon with iso graphics.

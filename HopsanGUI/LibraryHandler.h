@@ -95,7 +95,7 @@ public:
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
     void recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
 
-    QStringList getLoadedTypeNames();
+    QStringList getLoadedTypeNames() const;
     ComponentLibraryEntry getEntry(const QString &typeName, const QString &subTypeName="") const;
     ComponentLibraryEntry getFMUEntry(const QString &rFmuName) const;
     const SharedModelObjectAppearanceT getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="") const;
