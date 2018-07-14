@@ -27,9 +27,14 @@
 #ifndef LIBRARYHANDLER_H
 #define LIBRARYHANDLER_H
 
-#define EXTLIBSTR "External Libraries"
-#define MODELICALIBSTR "Modelica Components"
-#define FMULIBSTR "FMU"
+namespace componentlibrary {
+namespace roots {
+constexpr auto externalLibraries = "External Libraries";
+constexpr auto modelicaComponents = "Modelica Components";
+constexpr auto fmus = "FMUs";
+}
+}
+
 #define MODELICATYPENAME "ModelicaComponent"
 
 
@@ -43,8 +48,6 @@
 //Hopsan includes
 #include "common.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
-
-//Forward declarations
 
 //! @brief Component Library metadata class
 class ComponentLibrary
@@ -66,16 +69,17 @@ public:
 };
 typedef QSharedPointer<ComponentLibrary> SharedComponentLibraryPtrT;
 
-//! @brief Library entry class
-class LibraryEntry
+//! @brief Represents an object (most likely a component) that has been loaded
+class ComponentLibraryEntry
 {
 public:
-    bool isNull() const;
+    //! @brief Check if the object entry is valid
+    bool isValid() const;
 
-    SharedModelObjectAppearanceT pAppearance;
-    SharedComponentLibraryPtrT pLibrary;
-    HiddenVisibleEnumT visibility=Hidden;
-    QStringList path;
+    SharedModelObjectAppearanceT pAppearance;   //!< The appearance data for the object
+    SharedComponentLibraryPtrT pLibrary;        //!< What library the object belongs to
+    HiddenVisibleEnumT visibility=Hidden;       //!< Visible or hidden in library widget
+    QStringList displayPath;                    //!< The display path in the library widget
 };
 
 class LibraryHandler : public QObject
@@ -92,9 +96,9 @@ public:
     void recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames();
-    LibraryEntry getEntry(const QString &typeName, const QString &subTypeName="");
-    LibraryEntry getFMUEntry(const QString &rFmuName);
-    const SharedModelObjectAppearanceT getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="");
+    ComponentLibraryEntry getEntry(const QString &typeName, const QString &subTypeName="") const;
+    ComponentLibraryEntry getFMUEntry(const QString &rFmuName) const;
+    const SharedModelObjectAppearanceT getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="") const;
 
     void addReplacement(QString type1, QString type2);
     QStringList getReplacements(QString type);
@@ -114,14 +118,14 @@ private:
     bool unloadLibrary(SharedComponentLibraryPtrT pLibrary);
     bool loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
 
-    YesNoToAllEnumT mUpConvertAllCAF;
-
-    //Contents
+    // Library contents
     QList<SharedComponentLibraryPtrT> mLoadedLibraries;
-    QMap<QString, LibraryEntry> mLibraryEntries;
-//    QStringList mFailedComponents;
-    QDir mUpdateXmlBackupDir;
+    QMap<QString, ComponentLibraryEntry> mLibraryEntries;
     QMap<QString, QStringList> mReplacementsMap;
+
+    // Auto update appearance files
+    YesNoToAllEnumT mUpConvertAllCAF;
+    QDir mUpdateXmlBackupDir;
 };
 
 #endif // LIBRARYHANDLER_H
