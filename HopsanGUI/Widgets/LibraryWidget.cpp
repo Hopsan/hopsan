@@ -214,7 +214,7 @@ void LibraryWidget::update()
 
     Q_FOREACH(const QString typeName, gpLibraryHandler->getLoadedTypeNames())
     {
-        LibraryEntry entry = gpLibraryHandler->getEntry(typeName);
+        ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
         if(entry.visibility == Hidden || !(entry.pAppearance->getDisplayName().toLower().contains(filter.toLower())))
         {
             continue;
@@ -223,7 +223,7 @@ void LibraryWidget::update()
         QStringList path;
         if(filter.isEmpty())
         {
-            path = entry.path;
+            path = entry.displayPath;
         }
 
         QTreeWidgetItem *pItem = 0;
@@ -248,7 +248,7 @@ void LibraryWidget::update()
                     //Add top-level folder to tree view
                     pItem = new QTreeWidgetItem();
                     pItem->setFont(0,boldFont);
-                    if(folder == EXTLIBSTR || folder == FMULIBSTR)
+                    if(folder == componentlibrary::roots::externalLibraries || folder == componentlibrary::roots::fmus)
                     {
                         pItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
                     }
@@ -286,7 +286,7 @@ void LibraryWidget::update()
                     QTreeWidgetItem *pTopItem = pItem;
                     while(pTopItem->parent())
                         pTopItem = pTopItem->parent();
-                    if( pTopItem->text(0) == EXTLIBSTR || pTopItem->text(0) == FMULIBSTR)
+                    if( pTopItem->text(0) == componentlibrary::roots::externalLibraries || pTopItem->text(0) == componentlibrary::roots::fmus)
                         pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
                     else
                         pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
@@ -362,7 +362,7 @@ void LibraryWidget::update()
     while(*itt)
     {
 
-        if((*itt)->childCount() > 0 && (*itt)->text(0) != EXTLIBSTR)
+        if((*itt)->childCount() > 0 && (*itt)->text(0) != componentlibrary::roots::externalLibraries)
         {
             (*itt)->setText(0, "0000000000"+(*itt)->text(0));       //Prepends a lot of zeros to subfolders, to make sure they are sorted on top (REALLY ugly, but it works)
         }
@@ -371,7 +371,7 @@ void LibraryWidget::update()
     QTreeWidgetItem *pExternalItem = 0;
     for(int t=0; t<mpTree->topLevelItemCount(); ++t)
     {
-        if(mpTree->topLevelItem(t)->text(0) == EXTLIBSTR)
+        if(mpTree->topLevelItem(t)->text(0) == componentlibrary::roots::externalLibraries)
         {
             pExternalItem = mpTree->takeTopLevelItem(t);
             break;
@@ -386,7 +386,7 @@ void LibraryWidget::update()
     pExternalItem = 0;
     for(int t=0; t<mpDualTree->topLevelItemCount(); ++t)
     {
-        if(mpDualTree->topLevelItem(t)->text(0) == EXTLIBSTR)
+        if(mpDualTree->topLevelItem(t)->text(0) == componentlibrary::roots::externalLibraries)
         {
             pExternalItem = mpDualTree->takeTopLevelItem(t);
             break;
@@ -400,7 +400,7 @@ void LibraryWidget::update()
     QTreeWidgetItemIterator itt2(mpTree);
     while(*itt2)
     {
-        if((*itt2)->childCount() > 0 && (*itt2)->text(0) != EXTLIBSTR)
+        if((*itt2)->childCount() > 0 && (*itt2)->text(0) != componentlibrary::roots::externalLibraries)
         {
             (*itt2)->setText(0, (*itt2)->text(0).remove(0,10)); //Remove the extra zeros from subfolders (see above)
         }
@@ -409,7 +409,7 @@ void LibraryWidget::update()
 
     QTreeWidgetItem *pModelicaComponentsItem = new QTreeWidgetItem();
     pModelicaComponentsItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-FolderModelica.png"));
-    pModelicaComponentsItem->setText(0, MODELICALIBSTR);
+    pModelicaComponentsItem->setText(0, componentlibrary::roots::modelicaComponents);
     pModelicaComponentsItem->setFont(0,boldFont);
     mpTree->addTopLevelItem(pModelicaComponentsItem);
     foreach(const QString &model, gpModelicaLibrary->getModelNames())
@@ -647,7 +647,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 typeName = mListItemToTypeNameMap.find(pFirstSubComponentItem).value();
             }
 
-            if(item->text(0) != EXTLIBSTR && gpLibraryHandler->getEntry(typeName).path.startsWith(EXTLIBSTR))
+            if(item->text(0) != componentlibrary::roots::externalLibraries && gpLibraryHandler->getEntry(typeName).displayPath.startsWith(componentlibrary::roots::externalLibraries))
             {
                 pUnloadAction->setEnabled(true);
             }
@@ -718,18 +718,18 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 }
             }
 
-            if(item->text(0) == EXTLIBSTR)
+            if(item->text(0) == componentlibrary::roots::externalLibraries)
             {
                 pUnloadAllAction->setEnabled(true);
             }
-            if(item->text(0) != EXTLIBSTR && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).path.startsWith(EXTLIBSTR))
+            if(item->text(0) != componentlibrary::roots::externalLibraries && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))
             {
                 pUnloadAction->setEnabled(true);
                 pRecompileAction->setEnabled(true);
                 pReloadAction->setEnabled(true);
             }
 
-            if(item->text(0) != FMULIBSTR && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).path.startsWith(FMULIBSTR))
+            if(item->text(0) != componentlibrary::roots::fmus && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus))
             {
                 pUnloadAction->setEnabled(true);
             }
@@ -779,7 +779,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 else if (pReply == pReloadAction && !typeNames.isEmpty())
                 {
 
-                    LibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
+                    ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
                     if (le.pLibrary)
                     {
                         // First unload the library
@@ -796,7 +796,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 // Handle recompile
                 else if (!typeNames.isEmpty())
                 {
-                    LibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
+                    ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
                     if (le.pLibrary)
                     {
                         // First unload the library

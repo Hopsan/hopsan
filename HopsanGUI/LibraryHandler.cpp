@@ -337,8 +337,8 @@ bool LibraryHandler::isLibraryLoaded(const QString &rLibraryXmlPath, const QStri
 bool LibraryHandler::unloadLibraryByComponentType(QString typeName)
 {
     // Find the library that the component belongs to
-    LibraryEntry selectedEntry = getEntry(typeName);
-    if(selectedEntry.isNull())
+    ComponentLibraryEntry selectedEntry = getEntry(typeName);
+    if(!selectedEntry.isValid())
     {
         qDebug() << "Component: " << typeName << " not found.";
         return false; //No component found, probably already unloaded
@@ -357,8 +357,8 @@ bool LibraryHandler::unloadLibraryByComponentType(QString typeName)
 bool LibraryHandler::unloadLibraryFMU(QString fmuName)
 {
     // Find the library entery that has fmuName (and is an fmu)
-    LibraryEntry fmuEntry = getFMUEntry(fmuName);
-    if(fmuEntry.isNull())
+    ComponentLibraryEntry fmuEntry = getFMUEntry(fmuName);
+    if(!fmuEntry.isValid())
     {
         qDebug() << "fmuEntry: " << fmuName << " not found.";
         return false;
@@ -695,13 +695,15 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     // Success, add component to library
                     if (success)
                     {
-                        LibraryEntry entry;
-                        entry.pLibrary = mLoadedLibraries.last();
+                        auto pLibraryBeingLoaded = mLoadedLibraries.last();
+
+                        ComponentLibraryEntry newEntry;
+                        newEntry.pLibrary = pLibraryBeingLoaded;
 
                         // Store appearance data
-                        entry.pAppearance = pAppearanceData;
+                        newEntry.pAppearance = pAppearanceData;
                         QString subTypeName = pAppearanceData->getSubTypeName();
-                        QString fullTypeName = makeFullTypeString(entry.pAppearance->getTypeName(), subTypeName);
+                        QString fullTypeName = makeFullTypeString(newEntry.pAppearance->getTypeName(), subTypeName);
 
                         if (!subTypeName.isEmpty())
                         {
@@ -721,35 +723,35 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             }
 
                             // Make this library remember this entry as a gui only component
-                            entry.pLibrary->guiOnlyComponents.append(fullTypeName);
+                            pLibraryBeingLoaded->guiOnlyComponents.append(fullTypeName);
                         }
 
-                        // Store caf file
-                        entry.pLibrary->cafFiles.append(cafFileInfo.canonicalFilePath());
+                        // Make this library remember this entrys appearance file path
+                        pLibraryBeingLoaded->cafFiles.append(cafFileInfo.canonicalFilePath());
 
                         // Calculate path to show in library
                         QString relDir = QDir(libraryMainFileInfo.canonicalPath()).relativeFilePath(cafFileInfo.canonicalFilePath());
-                        entry.path = relDir.split("/");
-                        entry.path.removeLast();
+                        newEntry.displayPath = relDir.split("/");
+                        newEntry.displayPath.removeLast();
                         if(type == ExternalLib)
                         {
-                            entry.path.prepend(libraryRootDir.dirName());
-                            entry.path.prepend(QString(EXTLIBSTR));
+                            newEntry.displayPath.prepend(libraryRootDir.dirName());
+                            newEntry.displayPath.prepend(componentlibrary::roots::externalLibraries);
                         }
                         else if(type == FmuLib)
                         {
-                            entry.path.prepend(libraryRootDir.dirName());
-                            entry.path.prepend(QString(FMULIBSTR));
+                            newEntry.displayPath.prepend(libraryRootDir.dirName());
+                            newEntry.displayPath.prepend(componentlibrary::roots::fmus);
                         }
 
 
                         // Store visibility
-                        entry.visibility = visibility;
+                        newEntry.visibility = visibility;
 
                         // Store new entry, but only if it does not already exist
                         if(!mLibraryEntries.contains(fullTypeName))
                         {
-                            mLibraryEntries.insert(fullTypeName, entry);
+                            mLibraryEntries.insert(fullTypeName, newEntry);
                             loadedSomething = true;
                             if(gpSplash)
                             {
@@ -762,7 +764,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             gpMessageHandler->addWarningMessage(QString("A component with type name '%1' was already registered by library '%2'. Ignoring version in library '%3'.")
                                                                 .arg(fullTypeName)
                                                                 .arg(existingEntery.pLibrary ? existingEntery.pLibrary->name : "Unknown")
-                                                                .arg(entry.pLibrary ? entry.pLibrary->name : "Unknown"));
+                                                                .arg(newEntry.pLibrary ? newEntry.pLibrary->name : "Unknown"));
                         }
                     }
                 }
@@ -848,37 +850,37 @@ QStringList LibraryHandler::getLoadedTypeNames()
 //! @brief Returns a component entry in the library
 //! @param typeName Type name of component
 //! @param subTypeName of component (optional)
-LibraryEntry LibraryHandler::getEntry(const QString &typeName, const QString &subTypeName)
+ComponentLibraryEntry LibraryHandler::getEntry(const QString &typeName, const QString &subTypeName) const
 {
     QString fullTypeString = makeFullTypeString(typeName, subTypeName);
-    return mLibraryEntries.value(fullTypeString, LibraryEntry() );
+    return mLibraryEntries.value(fullTypeString, ComponentLibraryEntry() );
 }
 
 //! @brief Returns an FMU component entry in the library
 //! @param rFmuName The FMU name
 //! @returns The library entery for given fmu name or an invalid library entery if fmu name not found
-LibraryEntry LibraryHandler::getFMUEntry(const QString &rFmuName)
+ComponentLibraryEntry LibraryHandler::getFMUEntry(const QString &rFmuName) const
 {
     //! @todo I dont think we can have multiple component in the same FMU so this should be safe (for now)
     //QString fullTypeString = makeFullTypeString(typeName, subTypeName);
-    foreach (const LibraryEntry &le, mLibraryEntries.values())
+    for (const ComponentLibraryEntry &le : mLibraryEntries.values())
     {
         if (le.pLibrary && le.pLibrary->type == FmuLib)
         {
             // Here it is assumed that the load code prepends FMULIBSTR before the actual path
-            if (le.path.last() == rFmuName)
+            if (le.displayPath.last() == rFmuName)
             {
                 return le;
             }
         }
     }
-    return LibraryEntry();
+    return ComponentLibraryEntry();
 }
 
 
-const SharedModelObjectAppearanceT LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName)
+const SharedModelObjectAppearanceT LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName) const
 {
-    QMap<QString, LibraryEntry>::iterator it = mLibraryEntries.find((makeFullTypeString(typeName, subTypeName)));
+    auto it = mLibraryEntries.find((makeFullTypeString(typeName, subTypeName)));
     if(it != mLibraryEntries.end())
     {
         return it.value().pAppearance;
@@ -1024,9 +1026,9 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool show
     }
 }
 
-bool LibraryEntry::isNull() const
+bool ComponentLibraryEntry::isValid() const
 {
-    return ((pLibrary==0) && (pAppearance==0) && (path.isEmpty())) ;
+    return (pLibrary!=nullptr) && (pAppearance!=nullptr) && (!displayPath.isEmpty()) ;
 }
 
 
