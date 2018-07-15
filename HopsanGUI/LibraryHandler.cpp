@@ -742,17 +742,20 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         QString relDir = QDir(libraryMainFileInfo.canonicalPath()).relativeFilePath(cafFileInfo.canonicalFilePath());
                         newEntry.displayPath = relDir.split("/");
                         newEntry.displayPath.removeLast();
+                        QString libName = newEntry.pLibrary->name;
+                        if (libName.isEmpty()) {
+                            libName = libraryRootDir.dirName();
+                        }
                         if(type == ExternalLib)
                         {
-                            newEntry.displayPath.prepend(libraryRootDir.dirName());
+                            newEntry.displayPath.prepend(libName);
                             newEntry.displayPath.prepend(componentlibrary::roots::externalLibraries);
                         }
                         else if(type == FmuLib)
                         {
-                            newEntry.displayPath.prepend(libraryRootDir.dirName());
+                            newEntry.displayPath.prepend(libName);
                             newEntry.displayPath.prepend(componentlibrary::roots::fmus);
                         }
-
 
                         // Store visibility
                         newEntry.visibility = visibility;
