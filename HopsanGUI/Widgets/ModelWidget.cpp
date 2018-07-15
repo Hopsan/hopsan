@@ -1689,22 +1689,27 @@ bool ModelWidget::loadModel(QFile &rModelFile)
         mpToplevelSystem->setAppearanceDataBasePath(modelFileInfo.absolutePath());
         mpToplevelSystem->loadFromDomElement(systemElement);
 
-        // Check for required libraries and show error if they do not seem to be loaded
-        // Ignore "old" required data as it was incorrect
-        if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") > "2.9.0.20180715.2122")
+        // Check for required libraries and show warning if they do not seem to be loaded
+        QStringList loadedLibraryNames = gpLibraryHandler->getLoadedLibraryNames();
+        //! @todo not hardcoded strings
+        QDomElement compLib = hmfRoot.firstChildElement("requirements").firstChildElement("componentlibrary");
+        while (!compLib.isNull())
         {
-            QStringList loadedLibraryNames = gpLibraryHandler->getLoadedLibraryNames();
-            //! @todo not hardcoded strings
-            QDomElement compLib = hmfRoot.firstChildElement("requirements").firstChildElement("componentlibrary");
-            while (!compLib.isNull())
-            {
-                QString requiredLibName = compLib.text();
-                if (!loadedLibraryNames.contains(requiredLibName)) {
-                    gpMessageHandler->addErrorMessage(QString("The model '%1' requires library '%2' which does not seem to be loaded")
+            QString requiredLibName = compLib.text();
+            if (!loadedLibraryNames.contains(requiredLibName)) {
+                // Print debug for "old" required data as it was incorrect
+                if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") < "2.9.0.20180715.2122")
+                {
+                    gpMessageHandler->addDebugMessage(QString("If you got load errors, the model '%1' may require library '%2' which does not seem to be loaded")
                                                       .arg(rModelFile.fileName()).arg(requiredLibName));
                 }
-                compLib = compLib.nextSiblingElement("componentlibrary");
+                else
+                {
+                    gpMessageHandler->addWarningMessage(QString("The model '%1' requires library '%2' which does not seem to be loaded")
+                                                        .arg(rModelFile.fileName()).arg(requiredLibName));
+                }
             }
+            compLib = compLib.nextSiblingElement("componentlibrary");
         }
 
         setSaved(true);
