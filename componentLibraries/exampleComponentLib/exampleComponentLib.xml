@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="exampleComponentLib">
+<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="HopsanExampleComponentLibrary">
   <!-- The "lib" element defines the name of the (.dll / .so / .dynlib) file, (without file extension) -->
   <!-- Use the "debug_ext" attribute to define the optional debug extension, used in debug mode -->
   <lib debug_ext="_d">examplecomponentlib</lib>
