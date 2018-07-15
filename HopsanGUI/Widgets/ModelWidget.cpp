@@ -1689,13 +1689,15 @@ bool ModelWidget::loadModel(QFile &rModelFile)
         mpToplevelSystem->setAppearanceDataBasePath(modelFileInfo.absolutePath());
         mpToplevelSystem->loadFromDomElement(systemElement);
 
+        QStringList loadedLibraryNames = gpLibraryHandler->getLoadedLibraryNames();
         //! @todo not hardcoded strings
-        //! @todo in the future not only debug message but an actual check that libs are present
-        QDomElement reqDom = hmfRoot.firstChildElement("requirements");
-        QDomElement compLib = reqDom.firstChildElement("componentlibrary");
+        QDomElement compLib = hmfRoot.firstChildElement("requirements").firstChildElement("componentlibrary");
         while (!compLib.isNull())
         {
-            gpMessageHandler->addDebugMessage("This model MIGHT require Lib: " + compLib.text());
+            QString requiredLibName = compLib.text();
+            if (!loadedLibraryNames.contains(requiredLibName)) {
+                gpMessageHandler->addErrorMessage(QString("This model requires library '%1' which does not seem to be loaded").arg(requiredLibName));
+            }
             compLib = compLib.nextSiblingElement("componentlibrary");
         }
 
@@ -1736,17 +1738,14 @@ QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)
 
     if(contents==FullModel)
     {
-        // Save the required external lib names
-        QVector<QString> extLibNames;
-        CoreLibraryAccess coreLibAccess;
-        coreLibAccess.getLoadedLibNames(extLibNames);
-
-
+        // Save the required external library names
+        QStringList requiredLibraries = mpToplevelSystem->getRequiredComponentLibraries();
         //! @todo need HMF defines for hardcoded strings
         QDomElement reqDom = appendDomElement(rootElement, "requirements");
-        for (int i=0; i<extLibNames.size(); ++i)
+        for (const auto& libPath : requiredLibraries)
         {
-            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+            QFileInfo fi(libPath);
+            appendDomTextNode(reqDom, "componentlibrary", fi.fileName());
         }
     }
 

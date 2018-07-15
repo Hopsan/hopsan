@@ -42,7 +42,7 @@ class ContainerPort : public ModelObject
 public:
     ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Selected, GraphicsTypeEnumT gfxType = UserGraphics);
     void deleteInHopsanCore();
-    QString getTypeName() const;
+    QString getTypeName() const override;
     void refreshDisplayName(QString overrideName="");
 
     // Type info

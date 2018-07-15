@@ -403,15 +403,14 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QDomElement rootElement;
         rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
 
-        // Save the required external lib names
-        QVector<QString> extLibNames;
-        CoreLibraryAccess coreLibAccess;
-        coreLibAccess.getLoadedLibNames(extLibNames);
-
+        // Save the required external library names
+        QStringList requiredLibraries = this->getRequiredComponentLibraries();
+        //! @todo need HMF defines for hardcoded strings
         QDomElement reqDom = appendDomElement(rootElement, "requirements");
-        for (int i=0; i<extLibNames.size(); ++i)
+        for (const auto& libPath : requiredLibraries)
         {
-            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+            QFileInfo fi(libPath);
+            appendDomTextNode(reqDom, "componentlibrary", fi.fileName());
         }
 
         //Save the model component hierarchy
@@ -500,15 +499,14 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QDomElement rootElement;
         rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
 
-        // Save the required external lib names
-        QVector<QString> extLibNames;
-        CoreLibraryAccess coreLibAccess;
-        coreLibAccess.getLoadedLibNames(extLibNames);
-
+        // Save the required external library names
+        QStringList requiredLibraries = this->getRequiredComponentLibraries();
+        //! @todo need HMF defines for hardcoded strings
         QDomElement reqDom = appendDomElement(rootElement, "requirements");
-        for (int i=0; i<extLibNames.size(); ++i)
+        for (const auto& libPath : requiredLibraries)
         {
-            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+            QFileInfo fi(libPath);
+            appendDomTextNode(reqDom, "componentlibrary", fi.fileName());
         }
 
         //Save the model component hierarchy

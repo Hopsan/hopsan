@@ -1702,13 +1702,6 @@ void ModelObject::showName(UndoStatusEnumT undoSettings)
 
 
 
-//! @brief Virtual dummy function that returns the type name of the object (must be reimplemented by children)
-QString ModelObject::getTypeName() const
-{
-    assert(false);
-    return "";
-}
-
 //! @brief Returns this modelobjects subtype
 //! @todo maybe we should overload this in systems so that the parent can ask itself (useful in root systems)
 QString ModelObject::getSubTypeName() const

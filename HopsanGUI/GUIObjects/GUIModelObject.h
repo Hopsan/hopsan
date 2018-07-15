@@ -64,7 +64,7 @@ public:
     virtual void setName(QString name);
     virtual QString getName() const;
     virtual void refreshDisplayName(const QString overrideName="");
-    virtual QString getTypeName() const;
+    virtual QString getTypeName() const = 0;
     QString getSubTypeName() const;
     void setSubTypeName(const QString subTypeName);
     virtual int getNameTextPos();
