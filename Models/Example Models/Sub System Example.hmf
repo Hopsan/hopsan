@@ -2,11 +2,6 @@
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5552" hopsancoreversion="0.6.x_r5557">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_HopsanBrake</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_HopsanEngine</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaGearBox</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaVehicle</componentlibrary>
-    <componentlibrary>HopsanFMULibrary_OpenModelicaWheel</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
