@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.9pre" hopsancoreversion="0.6.9pre">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.9" hopsancoreversion="0.6.9">
   <requirements/>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>

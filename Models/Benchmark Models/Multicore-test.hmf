@@ -2,7 +2,6 @@
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5888" hopsancoreversion="0.6.x_r5888">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>HopsanGeneratedComponent_AircraftRudder</componentlibrary>
   </requirements>
   <info/>
   <system logsamples="2048" typename="Subsystem" name="Multicore_test">

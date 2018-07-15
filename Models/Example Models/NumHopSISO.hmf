@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.7.x_r8483" hopsancoreversion="0.7.x_r8493">
   <requirements>
-    <componentlibrary>pistonFMU</componentlibrary>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>DynaFMUHopsanComponentLibrary</componentlibrary>
   </requirements>
   <info>
     <author>Peter Nordin</author>

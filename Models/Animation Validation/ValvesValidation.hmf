@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7450" hopsancoreversion="0.6.x_r7431">
   <requirements>
-    <componentlibrary>ACAnalysisLibrary</componentlibrary>
-    <componentlibrary>ACHydraulicLibrary</componentlibrary>
-    <componentlibrary>ACMechanicLibrary</componentlibrary>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
   </requirements>
   <info/>

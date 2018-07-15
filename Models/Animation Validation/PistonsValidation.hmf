@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r7435" hopsancoreversion="0.6.x_r7431">
   <requirements>
-    <componentlibrary>DigitalHydraulicsLib</componentlibrary>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
   </requirements>
   <info/>
