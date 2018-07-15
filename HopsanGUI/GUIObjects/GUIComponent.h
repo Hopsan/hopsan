@@ -59,7 +59,7 @@ public:
     bool setParameterValue(QString name, QString value, bool force=0);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 
-    QString getTypeName() const;
+    QString getTypeName() const override;
     QString getTypeCQS();
 
     // Type info

@@ -3491,3 +3491,22 @@ LogDataHandler2 *ContainerObject::getLogDataHandler()
     return mpModelWidget->getLogDataHandler();
     //return mpLogDataHandler;
 }
+
+QStringList ContainerObject::getRequiredComponentLibraries() const
+{
+    QStringList requiredLibraryPaths;
+    for (const auto& mo : mModelObjectMap)
+    {
+        const auto entry = gpLibraryHandler->getEntry(mo->getTypeName(), mo->getSubTypeName());
+        const auto& entryLib = entry.pLibrary;
+        if (entry.isValid() && !entryLib->name.isEmpty()) {
+            requiredLibraryPaths.append(entryLib->name);
+        }
+        // Append subsystem requirements
+        if (mo->type() == SystemContainerType) {
+            requiredLibraryPaths.append(qobject_cast<ContainerObject*>(mo)->getRequiredComponentLibraries());
+        }
+    }
+    requiredLibraryPaths.removeDuplicates();
+    return requiredLibraryPaths;
+}

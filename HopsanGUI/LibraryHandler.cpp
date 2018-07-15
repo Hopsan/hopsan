@@ -331,6 +331,15 @@ bool LibraryHandler::isLibraryLoaded(const QString &rLibraryXmlPath, const QStri
     return false;
 }
 
+QStringList LibraryHandler::getLoadedLibraryNames() const
+{
+    QStringList libraries;
+    for (const auto& pLibrary : mLoadedLibraries) {
+        libraries.append(pLibrary->name);
+    }
+    return libraries;
+}
+
 
 //! @brief Unloads library by component type name
 //! @param typeName Type name of any component in the library

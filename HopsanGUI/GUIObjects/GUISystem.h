@@ -136,7 +136,7 @@ public:
     double getLogStartTime() const;
     void setLogStartTime(const double logStartT);
 
-    QString getTypeName() const;
+    QString getTypeName() const override;
     void setName(QString newName);
     QString getTypeCQS();
 

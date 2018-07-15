@@ -158,6 +158,8 @@ public:
     //Plot and simulation results methods
     LogDataHandler2 *getLogDataHandler();
 
+    QStringList getRequiredComponentLibraries() const;
+
     //Undo/redo methods
     UndoStack *getUndoStackPtr();
 

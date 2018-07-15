@@ -90,6 +90,7 @@ public:
 
     void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
     bool isLibraryLoaded(const QString &rLibraryXmlPath, const QString &rLibraryFilePath="") const;
+    QStringList getLoadedLibraryNames() const;
     bool unloadLibraryByComponentType(QString typeName);
     bool unloadLibraryFMU(QString fmuName);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
