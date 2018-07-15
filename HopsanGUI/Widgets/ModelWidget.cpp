@@ -1689,16 +1689,22 @@ bool ModelWidget::loadModel(QFile &rModelFile)
         mpToplevelSystem->setAppearanceDataBasePath(modelFileInfo.absolutePath());
         mpToplevelSystem->loadFromDomElement(systemElement);
 
-        QStringList loadedLibraryNames = gpLibraryHandler->getLoadedLibraryNames();
-        //! @todo not hardcoded strings
-        QDomElement compLib = hmfRoot.firstChildElement("requirements").firstChildElement("componentlibrary");
-        while (!compLib.isNull())
+        // Check for required libraries and show error if they do not seem to be loaded
+        // Ignore "old" required data as it was incorrect
+        if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") > "2.9.0.20180715.2122")
         {
-            QString requiredLibName = compLib.text();
-            if (!loadedLibraryNames.contains(requiredLibName)) {
-                gpMessageHandler->addErrorMessage(QString("This model requires library '%1' which does not seem to be loaded").arg(requiredLibName));
+            QStringList loadedLibraryNames = gpLibraryHandler->getLoadedLibraryNames();
+            //! @todo not hardcoded strings
+            QDomElement compLib = hmfRoot.firstChildElement("requirements").firstChildElement("componentlibrary");
+            while (!compLib.isNull())
+            {
+                QString requiredLibName = compLib.text();
+                if (!loadedLibraryNames.contains(requiredLibName)) {
+                    gpMessageHandler->addErrorMessage(QString("The model '%1' requires library '%2' which does not seem to be loaded")
+                                                      .arg(rModelFile.fileName()).arg(requiredLibName));
+                }
+                compLib = compLib.nextSiblingElement("componentlibrary");
             }
-            compLib = compLib.nextSiblingElement("componentlibrary");
         }
 
         setSaved(true);
