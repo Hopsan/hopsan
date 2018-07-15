@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="DefaultLibrary">
+<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="HopsanDefaultComponentLibrary">
   <lib debug_ext="_d">defaultcomponentlibrary</lib>
   <source>defaultComponentLibrary.cpp</source>
   <source>defaultComponentLibraryInternal.cpp</source>
