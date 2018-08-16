@@ -1,3 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="HopsanInternals">
+<hopsancomponentlibrary xmlversion="0.1" libversion="1">
+  <id>34d80e82-7ea5-442f-bf1f-31e18645de82</id>
+  <name>HopsanInternals</name>
 </hopsancomponentlibrary>
