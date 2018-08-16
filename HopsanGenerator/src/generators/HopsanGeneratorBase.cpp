@@ -34,6 +34,7 @@
 #include <QStringList>
 #include <QDir>
 #include <QDomElement>
+#include <QUuid>
 
 #include <cassert>
 
@@ -740,6 +741,7 @@ bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
     }
 
     QString libName = QDir(dstPath).dirName();
+    const QString libID = QUuid::createUuid().toString().remove('{').remove('}');
 
     QStringList typeNames;
     for(const QString &file : hppFiles)
@@ -798,7 +800,9 @@ bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
         QTextStream xmlStream(&xmlFile);
         xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-        xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\" name=\""+libName+"\">\n";
+        xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\">\n";
+        xmlStream << "  <id>" << libID  << "</id>\n";
+        xmlStream << "  <name>" << libName  << "</name>\n";
         xmlStream << "  <lib>" << libName  << "</lib>\n";
         xmlStream << "  <source>" << libName << ".cpp</source>\n";
         xmlStream << "  <buildflags>\n";
