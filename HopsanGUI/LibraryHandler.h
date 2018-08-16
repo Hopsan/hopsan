@@ -97,7 +97,7 @@ public:
     QStringList getLoadedLibraryNames() const;
     const SharedComponentLibraryPtrT getLibrary(const QString& id) const;
 
-    void recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
+    void recompileLibrary(SharedComponentLibraryPtrT pLib, int solver=0, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames() const;
     ComponentLibraryEntry getEntry(const QString &typeName, const QString &subTypeName="") const;
