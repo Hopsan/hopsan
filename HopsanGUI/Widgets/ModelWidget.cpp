@@ -1721,8 +1721,8 @@ bool ModelWidget::loadModel(QFile &rModelFile)
                 }
                 else
                 {
-                    gpMessageHandler->addWarningMessage(QString("The model '%1' requires library '%2' which does not seem to be loaded")
-                                                        .arg(rModelFile.fileName()).arg(requiredLibName));
+                    gpMessageHandler->addWarningMessage(QString("The model '%1' requires library '%2' with id: '%3' which does not seem to be loaded")
+                                                        .arg(rModelFile.fileName()).arg(requiredLibName).arg(requiredLibID));
                 }
             }
 
