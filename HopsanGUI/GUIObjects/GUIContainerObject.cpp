@@ -3494,19 +3494,19 @@ LogDataHandler2 *ContainerObject::getLogDataHandler()
 
 QStringList ContainerObject::getRequiredComponentLibraries() const
 {
-    QStringList requiredLibraryPaths;
+    QStringList requiredLibraryIds;
     for (const auto& mo : mModelObjectMap)
     {
         const auto entry = gpLibraryHandler->getEntry(mo->getTypeName(), mo->getSubTypeName());
         const auto& entryLib = entry.pLibrary;
-        if (entry.isValid() && !entryLib->name.isEmpty()) {
-            requiredLibraryPaths.append(entryLib->name);
+        if (entry.isValid()) {
+            requiredLibraryIds.append(entryLib->id);
         }
         // Append subsystem requirements
         if (mo->type() == SystemContainerType) {
-            requiredLibraryPaths.append(qobject_cast<ContainerObject*>(mo)->getRequiredComponentLibraries());
+            requiredLibraryIds.append(qobject_cast<ContainerObject*>(mo)->getRequiredComponentLibraries());
         }
     }
-    requiredLibraryPaths.removeDuplicates();
-    return requiredLibraryPaths;
+    requiredLibraryIds.removeDuplicates();
+    return requiredLibraryIds;
 }

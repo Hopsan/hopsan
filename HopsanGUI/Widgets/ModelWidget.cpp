@@ -1695,13 +1695,29 @@ bool ModelWidget::loadModel(QFile &rModelFile)
         QDomElement compLib = hmfRoot.firstChildElement("requirements").firstChildElement("componentlibrary");
         while (!compLib.isNull())
         {
-            QString requiredLibName = compLib.text();
-            if (!loadedLibraryNames.contains(requiredLibName)) {
-                // Print debug for "old" required data as it was incorrect
-                if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") < "2.9.0.20180715.2122")
+            QString requiredLibID = compLib.firstChildElement("id").text();
+            QString requiredLibName = compLib.firstChildElement("name").text();
+            auto pRequiredLib = gpLibraryHandler->getLibrary(requiredLibID);
+
+            // Print debug for "old" required data as that data was incorrect
+            if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") < "2.9.0.20180816.1300")
+            {
+                // Override name due to old xml format
+                requiredLibName = compLib.text();
+                if (!loadedLibraryNames.contains(requiredLibName))
                 {
                     gpMessageHandler->addDebugMessage(QString("If you got load errors, the model '%1' may require library '%2' which does not seem to be loaded")
                                                       .arg(rModelFile.fileName()).arg(requiredLibName));
+                }
+            }
+            else if (pRequiredLib.isNull())
+            {
+                bool hasRequiredLibName = loadedLibraryNames.contains(requiredLibName);
+                if (hasRequiredLibName)
+                {
+                    gpMessageHandler->addWarningMessage(QString("The model '%1' requires library '%2' with ID '%3'. However, a different library with the same "
+                                                                "name is currently loaded. (This might be OK if the library has been re-generated or re-imported.")
+                                                        .arg(rModelFile.fileName()).arg(requiredLibName).arg(requiredLibID));
                 }
                 else
                 {
@@ -1709,6 +1725,7 @@ bool ModelWidget::loadModel(QFile &rModelFile)
                                                         .arg(rModelFile.fileName()).arg(requiredLibName));
                 }
             }
+
             compLib = compLib.nextSiblingElement("componentlibrary");
         }
 
@@ -1753,10 +1770,14 @@ QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)
         QStringList requiredLibraries = mpToplevelSystem->getRequiredComponentLibraries();
         //! @todo need HMF defines for hardcoded strings
         QDomElement reqDom = appendDomElement(rootElement, "requirements");
-        for (const auto& libPath : requiredLibraries)
+        for (const auto& libID : requiredLibraries)
         {
-            QFileInfo fi(libPath);
-            appendDomTextNode(reqDom, "componentlibrary", fi.fileName());
+            auto pLibrary = gpLibraryHandler->getLibrary(libID);
+            if (pLibrary) {
+                auto libdom = appendDomElement(reqDom, "componentlibrary");
+                appendDomTextNode(libdom, "id", libID);
+                appendDomTextNode(libdom, "name", pLibrary->name);
+            }
         }
     }
 
