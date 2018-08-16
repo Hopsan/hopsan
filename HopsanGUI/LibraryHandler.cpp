@@ -287,26 +287,9 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
         }
         return;
     }
-    // Fall back, load dll/so/dynlibs
     else
     {
-        gpMessageHandler->addWarningMessage("Did not find any libary xml files, falling back to " TO_STR(DLL_EXT) " loading for: "+loadPath);
-        libraryLoadPathRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-        libraryLoadPathRootDir.setNameFilters(QStringList() << "*"+QString(LIBEXT));
-        QDirIterator itd(libraryLoadPathRootDir, QDirIterator::Subdirectories);
-        while(itd.hasNext())
-        {
-            QString filePath = itd.next();
-            SharedComponentLibraryPtrT pLib(new ComponentLibrary);
-            pLib->loadPath = loadPath;
-            pLib->name = filePath.section("/",-1,-1);
-            pLib->libFilePath = filePath;
-            pLib->type = type;
-            if (loadLibrary(pLib, type, visibility))
-            {
-                loadedSomething=true;
-            }
-        }
+        gpMessageHandler->addErrorMessage("Did not find any libary xml files, fall-back " TO_STR(DLL_EXT) " loading is no longer possible");
     }
 
     if (!loadedSomething)
@@ -435,7 +418,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     bool loadedSomething=false;
 
     QFileInfo libraryMainFileInfo;
-    bool isXmlLib=false, isDllLib=false;
+    bool isXmlLib=false;
     // Decide the library root dir and if this is an xml library or if it is a "fall-back" dll library
     if (!pLibrary->xmlFilePath.isEmpty())
     {
@@ -444,9 +427,8 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     }
     else if (!pLibrary->libFilePath.isEmpty())
     {
-        gpMessageHandler->addWarningMessage("Trying fallback loading " TO_STR(DLL_EXT));
-        isDllLib=true;
-        libraryMainFileInfo.setFile(pLibrary->libFilePath);
+        gpMessageHandler->addErrorMessage("Fall-back " TO_STR(DLL_EXT) " loading is no longer possible, your library must have a library xml file");
+        return false;
     }
     QFileInfo libraryDLLFileInfo(pLibrary->libFilePath);
     QDir libraryRootDir = libraryMainFileInfo.absoluteDir();
@@ -556,7 +538,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             if (!gpConfig->getGCCPath().isEmpty())
                             {
                                 gpMessageHandler->addInfoMessage("Attempting to recompile library: "+pLibrary->name+"...");
-                                recompileLibrary(pLibrary,true,0,true);
+                                recompileLibrary(pLibrary,0,true);
                                 gpMessageHandler->collectHopsanCoreMessages();
 
                                 // Try to load again
@@ -604,22 +586,6 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
         }
         file.close();
     }
-    // Fallback loading
-    else if (isDllLib)
-    {
-        if(coreAccess.loadComponentLib(libraryDLLFileInfo.canonicalFilePath()))
-        {
-            mLoadedLibraries.append(pLibrary);
-            loadedSomething = true;
-        }
-        else
-        {
-            gpMessageHandler->collectHopsanCoreMessages();
-            gpMessageHandler->addErrorMessage("Failed to load library: "+libraryMainFileInfo.filePath());
-            gpMessageHandler->collectHopsanCoreMessages();
-        }
-    }
-
 
     // Determine where to store any backups of updated appearance xml files
     mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
@@ -1003,7 +969,7 @@ void LibraryHandler::importFmu()
 //! @brief Recompiles specified component library (safe to use with opened models)
 //! @param lib Component library to recompile
 //! @param solver Solver to use (for Modelica code only)
-void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog, int solver, bool dontUnloadAndLoad)
+void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, int solver, bool dontUnloadAndLoad)
 {
     CoreLibraryAccess coreLibrary;
     auto spGenerator = createDefaultImportGenerator();
