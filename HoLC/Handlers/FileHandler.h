@@ -73,6 +73,7 @@ private:
 
     QMap<QTreeWidgetItem*, FileObject*> mTreeToFileMap;
 
+    QString mLibId;
     QString mLibName;
     QString mLibTarget;
     QString mLibDebugExt;
