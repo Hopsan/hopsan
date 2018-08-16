@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="HopsanDefaultComponentLibrary">
+<hopsancomponentlibrary xmlversion="0.1" libversion="1">
+  <id>59c07d33-554f-49d3-a163-a928823d4380</id>
+  <name>HopsanDefaultComponentLibrary</name>
   <lib debug_ext="_d">defaultcomponentlibrary</lib>
   <source>defaultComponentLibrary.cpp</source>
   <source>defaultComponentLibraryInternal.cpp</source>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="HopsanExampleComponentLibrary">
+<hopsancomponentlibrary xmlversion="0.1" libversion="1">
+  <!-- The "id" element gives the library a uniqe identity, a UUID is recommended but any "unique" string is accepted -->
+  <id>7f871523-08e4-4d68-a7e9-25860d861888</id>
+  <!-- The 'name' element gives the library a human readable name that will be used in the library widget -->
+  <name>HopsanExampleComponentLibrary</name>
   <!-- The "lib" element defines the name of the (.dll / .so / .dynlib) file, (without file extension) -->
   <!-- Use the "debug_ext" attribute to define the optional debug extension, used in debug mode -->
   <lib debug_ext="_d">examplecomponentlib</lib>
