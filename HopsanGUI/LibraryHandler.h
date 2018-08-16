@@ -53,6 +53,7 @@ constexpr auto fmus = "FMUs";
 class ComponentLibrary
 {
 public:
+    QString id;
     QString name;
     QString loadPath;
     QString xmlFilePath;
@@ -86,14 +87,16 @@ class LibraryHandler : public QObject
 {
     Q_OBJECT
 public:
-    LibraryHandler(QObject *parent=0);
+    LibraryHandler(QObject *parent=nullptr);
 
     void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
-    bool isLibraryLoaded(const QString &rLibraryXmlPath, const QString &rLibraryFilePath="") const;
-    QStringList getLoadedLibraryNames() const;
     bool unloadLibraryByComponentType(QString typeName);
     bool unloadLibraryFMU(QString fmuName);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
+    bool isLibraryLoaded(const QString &rLibraryXmlPath, const QString &rLibraryFilePath="") const;
+    QStringList getLoadedLibraryNames() const;
+    const SharedComponentLibraryPtrT getLibrary(const QString& id) const;
+
     void recompileLibrary(SharedComponentLibraryPtrT pLib, bool showDialog=true, int solver=0, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames() const;

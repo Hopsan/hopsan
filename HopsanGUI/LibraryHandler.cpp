@@ -34,6 +34,7 @@
 //Defines
 #define XML_LIBRARY "hopsancomponentlibrary"
 #define XML_LIBRARY_NAME "name"
+#define XML_LIBRARY_ID "id"
 #define XML_LIBRARY_LIB "lib"
 #define XML_LIBRARY_LIB_DBGEXT "debug_ext"
 #define XML_LIBRARY_CAF "caf"
@@ -340,6 +341,16 @@ QStringList LibraryHandler::getLoadedLibraryNames() const
     return libraries;
 }
 
+const SharedComponentLibraryPtrT LibraryHandler::getLibrary(const QString &id) const
+{
+    for (const auto& pLibrary : mLoadedLibraries) {
+        if (pLibrary->id == id) {
+            return pLibrary;
+        }
+    }
+    return {};
+}
+
 
 //! @brief Unloads library by component type name
 //! @param typeName Type name of any component in the library
@@ -425,7 +436,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
 
     QFileInfo libraryMainFileInfo;
     bool isXmlLib=false, isDllLib=false;
-    // Decide the library root dir and if this is an xml library or if it is a "fall back" dll library
+    // Decide the library root dir and if this is an xml library or if it is a "fall-back" dll library
     if (!pLibrary->xmlFilePath.isEmpty())
     {
         isXmlLib = true;
@@ -461,18 +472,40 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 QDomElement xmlRoot = domDocument.documentElement();
                 if(xmlRoot.tagName() == QString(XML_LIBRARY))
                 {
-                    // Set name of library
-                    if(xmlRoot.hasAttribute(QString(XML_LIBRARY_NAME)))
-                    {
-                        pLibrary->name = xmlRoot.attribute(QString(XML_LIBRARY_NAME));
-                    }
-                    else
-                    {
-                        // Use filename in case no lib name is provided
-                        pLibrary->name = libraryMainFileInfo.fileName().section(".", 0,0);
+                    // Read name of library
+                    pLibrary->name = xmlRoot.firstChildElement(XML_LIBRARY_NAME).text();
+                    if (pLibrary->name.isEmpty()) {
+                        // Try fall-back loading deprecated name attribute
+                        if(xmlRoot.hasAttribute(XML_LIBRARY_NAME)) {
+                            pLibrary->name = xmlRoot.attribute(XML_LIBRARY_NAME);
+                        }
                     }
 
-                    // Set library DLL file
+                    // A name is required so aborting if it is not present
+                    if (pLibrary->name.isEmpty()) {
+                        gpMessageHandler->addErrorMessage(QString("Library: %1 is missing the <name> element, or name is empty.")
+                                                          .arg(libraryMainFileInfo.canonicalFilePath()));
+                        return false;
+                    }
+
+                    // Read id of library
+                    pLibrary->id = xmlRoot.firstChildElement(XML_LIBRARY_ID).text();
+                    if (pLibrary->id.isEmpty()) {
+                        gpMessageHandler->addWarningMessage(QString("Library: %1 is missing the <id> element, or id is empty. Using name '%2' as fall-back.")
+                                                            .arg(libraryMainFileInfo.canonicalFilePath()).arg(pLibrary->name));
+                        pLibrary->id = pLibrary->name;
+                    }
+
+                    // Abort loading if a library with the samme ID is already loaded
+                    auto alreadyLoadedLibrary = getLibrary(pLibrary->id);
+                    if (!alreadyLoadedLibrary.isNull()) {
+                        gpMessageHandler->addErrorMessage(QString("A library with ID: %1 is already loaded. Its name is '%2'. If the library you are trying to"
+                                                                  " load: '%3' is a copy, it must have a new unique id given in its xml file.")
+                                                          .arg(alreadyLoadedLibrary->id).arg(alreadyLoadedLibrary->name).arg(pLibrary->name));
+                        return false;
+                    }
+
+                    // Read library share lib file
                     QDomElement libElement = xmlRoot.firstChildElement(XML_LIBRARY_LIB);
                     if(!libElement.isNull())
                     {
@@ -484,7 +517,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         pLibrary->libFilePath += QString(LIBEXT);
                     }
 
-                    // Set build flags
+                    // Read build flags
                     QDomElement bfElement = xmlRoot.firstChildElement("buildflags").firstChildElement();
                     while (!bfElement.isNull())
                     {
@@ -500,7 +533,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         bfElement = bfElement.nextSiblingElement();
                     }
 
-                    // Set source files
+                    // Read source files
                     QDomElement sourceElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_SOURCE));
                     while(!sourceElement.isNull())
                     {

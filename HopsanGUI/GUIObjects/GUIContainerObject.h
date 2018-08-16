@@ -158,6 +158,7 @@ public:
     //Plot and simulation results methods
     LogDataHandler2 *getLogDataHandler();
 
+    // Get the IDs of the component libraries that the components in this model come from
     QStringList getRequiredComponentLibraries() const;
 
     //Undo/redo methods

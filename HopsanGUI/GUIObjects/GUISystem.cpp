@@ -407,10 +407,14 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QStringList requiredLibraries = this->getRequiredComponentLibraries();
         //! @todo need HMF defines for hardcoded strings
         QDomElement reqDom = appendDomElement(rootElement, "requirements");
-        for (const auto& libPath : requiredLibraries)
+        for (const auto& libID : requiredLibraries)
         {
-            QFileInfo fi(libPath);
-            appendDomTextNode(reqDom, "componentlibrary", fi.fileName());
+            auto pLibrary = gpLibraryHandler->getLibrary(libID);
+            if (pLibrary) {
+                auto libdom = appendDomElement(reqDom, "componentlibrary");
+                appendDomTextNode(libdom, "id", libID);
+                appendDomTextNode(libdom, "name", pLibrary->name);
+            }
         }
 
         //Save the model component hierarchy
@@ -503,10 +507,14 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QStringList requiredLibraries = this->getRequiredComponentLibraries();
         //! @todo need HMF defines for hardcoded strings
         QDomElement reqDom = appendDomElement(rootElement, "requirements");
-        for (const auto& libPath : requiredLibraries)
+        for (const auto& libID : requiredLibraries)
         {
-            QFileInfo fi(libPath);
-            appendDomTextNode(reqDom, "componentlibrary", fi.fileName());
+            auto pLibrary = gpLibraryHandler->getLibrary(libID);
+            if (pLibrary) {
+                auto libdom = appendDomElement(reqDom, "componentlibrary");
+                appendDomTextNode(libdom, "id", libID);
+                appendDomTextNode(libdom, "name", pLibrary->name);
+            }
         }
 
         //Save the model component hierarchy
