@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="<<<libname>>>">
+<hopsancomponentlibrary xmlversion="0.1" libversion="1">
+    <id><<<libid>>></id>
+    <name><<<libname>>></name>
     <lib debug_ext="<<<debugext>>>"><<<libname>>></lib>
     <buildflags>
       <cflags><<<cflags>>></cflags>

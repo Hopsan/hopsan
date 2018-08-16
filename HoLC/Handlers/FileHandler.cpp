@@ -33,6 +33,7 @@
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QUuid>
 
 #include "Configuration.h"
 #include "FileHandler.h"
@@ -63,6 +64,7 @@ void FileHandler::generateNewXmlAndSourceFiles(const QString &libName, QString &
     mTreeToFileMap.clear();
    //mpFilesWidget->mpTreeWidget->clear();
     mpFilesWidget->clear();
+    mLibId.clear();
 
     mLibName = libName;
     mLibTarget = libName;
@@ -141,7 +143,10 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     replacePatternLine(sourceCode, "<<<includecomponents>>>", includeCompString);
     replacePatternLine(sourceCode, "<<<registercomponents>>>",registerCompString);
 
-
+    if (mLibId.isEmpty()) {
+        mLibId = QUuid::createUuid().toString().remove('{').remove('}');
+    }
+    xmlCode.replace("<<<libid>>>", mLibId);
     xmlCode.replace("<<<libname>>>", mLibName);
     xmlCode.replace("<<<debugext>>>", mLibDebugExt);
     //! @todo add support for entering cflags and lflags
@@ -358,7 +363,13 @@ void FileHandler::loadFromXml(const QString &path)
         mFilePtrs.clear();
         mpFilesWidget->clear();
 
-        mLibName = libRoot.attribute("name");
+        mLibId = libRoot.firstChildElement("id").text();
+
+        mLibName = libRoot.firstChildElement("name").text();
+        // If the element did not exist (or name empty) try loading according to old format
+        if (mLibName.isEmpty()) {
+            mLibName = libRoot.attribute("name");
+        }
 
         FileObject *pFile = new FileObject(path, FileObject::XML);
         mFilePtrs.append(pFile);
@@ -449,8 +460,18 @@ void FileHandler::saveToXml(const QString &filePath)
     QDomElement libRoot = domDocument.createElement("hopsancomponentlibrary");
     libRoot.setAttribute("xmlversion", 0.1);
     libRoot.setAttribute("libversion", 1);
-    libRoot.setAttribute("name", mLibName);
     domDocument.appendChild(libRoot);
+
+    if (mLibId.isEmpty()) {
+        mLibId = QUuid::createUuid().toString().remove('{').remove('}');
+    }
+    QDomElement libIdElement = domDocument.createElement("id");
+    libIdElement.appendChild(domDocument.createTextNode(mLibId));
+    libRoot.appendChild(libIdElement);
+
+    QDomElement libNameElement = domDocument.createElement("name");
+    libNameElement.appendChild(domDocument.createTextNode(mLibName));
+    libRoot.appendChild(libNameElement);
 
     QDomElement libElement = domDocument.createElement("lib");
     libElement.setAttribute("debug_ext", mLibDebugExt);
