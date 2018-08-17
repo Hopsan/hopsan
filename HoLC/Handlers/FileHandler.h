@@ -48,16 +48,16 @@ signals:
 public slots:
     void generateNewXmlAndSourceFiles(const QString &libName, QString &path);
     void generateXmlAndSourceFiles(QString path="");
-    void addComponent(QString path="");
+    void addComponent(QString existingPath="");
     void addComponent(const QString &code, const QString &typeName);
     void addAppearanceFile(const QString &code, const QString &fileName);
-    void addAppearanceFile(QString path="");
-    void loadFromXml();
+    void addAppearanceFile(QString existingPath="");
+    void loadLibraryFromXml();
     void saveToXml();
     void updateText();
     void compileLibrary();
     void saveToXml(const QString &path);
-    void loadFromXml(const QString &path);
+    void loadLibraryFromXml(const QString &path);
     void setFileNotSaved();
     bool hasFile(QString filePath);
 
@@ -71,15 +71,24 @@ private:
     EditorWidget *mpEditorWidget;
     MessageHandler *mpMessageHandler;
 
-    QMap<QTreeWidgetItem*, FileObject*> mTreeToFileMap;
+    QMap<QTreeWidgetItem*, QSharedPointer<FileObject>> mTreeToFileMap;
 
-    QString mLibId;
-    QString mLibName;
-    QString mLibTarget;
-    QString mLibDebugExt;
-    QVector<FileObject*> mFilePtrs;
+    struct BuildFlags {
+        QString type;
+        QString os;
+        QString content;
+    };
 
-    FileObject *mpCurrentFile;
+    QString mLibraryId;
+    QString mLibraryName;
+    QString mLibraryCompiledFile;
+    QString mLibraryDebugExtension;
+    QString mLibraryMainXMLFile;
+    QString mLibraryMainCPPFile;
+    QVector<BuildFlags> mLibraryBuildFlags;
+    QVector<QSharedPointer<FileObject>> mLibraryFiles;
+
+    QSharedPointer<FileObject> mpCurrentFile;
 };
 
 
@@ -88,15 +97,15 @@ class FileObject
 public:
     enum FileTypeEnum {XML, Source, Component, Auxiliary, CAF};
 
-    FileObject();
+    FileObject() = default;
     FileObject(const QString &path, FileTypeEnum type);
     bool operator==(const FileObject &other) const;
 
-    FileTypeEnum mType;
+    FileTypeEnum mType = FileObject::Auxiliary;
+    bool mIsSaved = false;
+    bool mExists = false;
     QFileInfo mFileInfo;
-    QString mText;
-    bool mIsSaved;
-    bool mExists;
+    QString mFileContents;
 };
 
 #endif // FILEHANDLER_H

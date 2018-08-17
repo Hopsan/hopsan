@@ -44,7 +44,7 @@
 #include "Utilities/StringUtilities.h"
 
 FileHandler::FileHandler(Configuration *pConfiuration, ProjectFilesWidget *pFilesWidget, EditorWidget *pEditorWidget, MessageHandler *pMessageHandler) :
-    QObject(0)
+    QObject(nullptr)
 {
     mpConfiguration = pConfiuration;
     mpFilesWidget = pFilesWidget;
@@ -54,20 +54,22 @@ FileHandler::FileHandler(Configuration *pConfiuration, ProjectFilesWidget *pFile
     connect(pFilesWidget->mpTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(openFile(QTreeWidgetItem*, int)));
     connect(pFilesWidget, SIGNAL(deleteRequested(QTreeWidgetItem*)), this, SLOT(removeFile(QTreeWidgetItem*)));
 
-    mpCurrentFile = 0;
-    mLibDebugExt = "_d";
+    mpCurrentFile.clear();
+    mLibraryDebugExtension = "_d";
 }
 
 void FileHandler::generateNewXmlAndSourceFiles(const QString &libName, QString &path)
 {
-    mFilePtrs.clear();
+    mLibraryMainXMLFile.clear();
+    mLibraryMainCPPFile.clear();
+    mLibraryFiles.clear();
     mTreeToFileMap.clear();
    //mpFilesWidget->mpTreeWidget->clear();
     mpFilesWidget->clear();
-    mLibId.clear();
+    mLibraryId.clear();
 
-    mLibName = libName;
-    mLibTarget = libName;
+    mLibraryName = libName;
+    mLibraryCompiledFile = libName;
 
     generateXmlAndSourceFiles(path);
 }
@@ -76,17 +78,27 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
 {
     if(path.isEmpty())
     {
-        foreach(const FileObject *pFile, mFilePtrs)
+        // Use the path of the first available file, the current library file.
+        if (!mLibraryFiles.isEmpty())
         {
-            if(pFile->mType == FileObject::XML)
-            {
-                path = pFile->mFileInfo.absolutePath();
-            }
+            path = mLibraryFiles.front()->mFileInfo.absolutePath();
+        }
+        else
+        {
+            mpMessageHandler->addErrorMessage("Unable to generate source files, no target location given");
+            return;
         }
     }
 
-    QFile xmlFile(path+"/"+mLibName+".xml");
-    QFile sourceFile(path+"/"+mLibName+".cpp");
+    if (mLibraryMainXMLFile.isEmpty()) {
+        mLibraryMainXMLFile = path+"/"+mLibraryName+".xml";
+    }
+    if (mLibraryMainCPPFile.isEmpty()) {
+        mLibraryMainCPPFile = path+"/"+mLibraryName+".cpp";
+    }
+
+    QFile xmlFile(mLibraryMainXMLFile);
+    QFile sourceFile(mLibraryMainCPPFile);
     QFile xmlTemplateFile(":Templates/xmlTemplate.xml");
     QFile sourceTemplateFile(":Templates/sourceTemplate.cpp");
 
@@ -121,7 +133,7 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     QString registerCompString;
     QString xmlCompString;
     QString xmlAppearanceString;
-    foreach(const FileObject *pFile, mFilePtrs)
+    for(const auto& pFile : mLibraryFiles)
     {
         if(pFile->mType == FileObject::Component)
         {
@@ -135,27 +147,27 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
         {
             QDir baseDir(path);
 
-            xmlAppearanceString.append(spaces(4)+QString("<caf>%1</caf>\n").arg(baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())));
+            xmlAppearanceString.append(spaces(4)+QString("<componentxml>%1</componentxml>\n").arg(baseDir.relativeFilePath(pFile->mFileInfo.absoluteFilePath())));
         }
     }
 
-    sourceCode.replace("<<<libname>>>", mLibName);
+    sourceCode.replace("<<<libname>>>", mLibraryName);
     replacePatternLine(sourceCode, "<<<includecomponents>>>", includeCompString);
     replacePatternLine(sourceCode, "<<<registercomponents>>>",registerCompString);
 
-    if (mLibId.isEmpty()) {
-        mLibId = QUuid::createUuid().toString().remove('{').remove('}');
+    if (mLibraryId.isEmpty()) {
+        mLibraryId = QUuid::createUuid().toString().remove('{').remove('}');
     }
-    xmlCode.replace("<<<libid>>>", mLibId);
-    xmlCode.replace("<<<libname>>>", mLibName);
-    xmlCode.replace("<<<debugext>>>", mLibDebugExt);
+    xmlCode.replace("<<<libid>>>", mLibraryId);
+    xmlCode.replace("<<<libname>>>", mLibraryName);
+    xmlCode.replace("<<<debugext>>>", mLibraryDebugExtension);
     //! @todo add support for entering cflags and lflags
     xmlCode.replace("<<<cflags>>>", "");
     xmlCode.replace("<<<lflags>>>", "");
     xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
     replacePatternLine(xmlCode,"<<<components>>>",xmlCompString);
     replacePatternLine(xmlCode,"<<<auxiliary>>>","");
-    replacePatternLine(xmlCode,"<<<caf>>>", xmlAppearanceString);
+    replacePatternLine(xmlCode,"<<<componentxml>>>", xmlAppearanceString);
 
     sourceFile.write(sourceCode.toUtf8());
     xmlFile.write(xmlCode.toUtf8());
@@ -163,47 +175,68 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     sourceFile.close();
     xmlFile.close();
 
-    loadFromXml(QFileInfo(xmlFile).absoluteFilePath());
+    loadLibraryFromXml(QFileInfo(xmlFile).absoluteFilePath());
 }
 
-void FileHandler::addComponent(QString path)
+void FileHandler::addComponent(QString existingPath)
 {
-    if(mFilePtrs.isEmpty())
+    if(mLibraryFiles.isEmpty())
     {
         mpMessageHandler->addErrorMessage("A project must be open before adding components.");
         return;
     }
 
-    //! @todo Make sure hpp file is in project directory
-
-    if(path.isEmpty())
+    // Get directory of last added code file
+    QString dir;
+    for(const auto& pFile : mLibraryFiles)
     {
-        path = QFileDialog::getOpenFileName(mpEditorWidget->parentWidget(), "Add Component From Existing File", "", "*.hpp");
+        if(pFile->mType == FileObject::Source) {
+            dir = pFile->mFileInfo.absolutePath();
+        }
     }
 
-    QFile file(path);
-    if(!path.isEmpty() && file.exists())
+    //! @todo Make sure hpp file is in project directory
+
+    QStringList paths;
+    if(existingPath.isEmpty())
     {
-        FileObject *pFileObject = new FileObject(path, FileObject::Component);
-        mFilePtrs.append(pFileObject);
+        paths = QFileDialog::getOpenFileNames(mpEditorWidget->parentWidget(), "Add Component From Existing File", dir, "Hopsan component sources (*.hpp)");
+    }
+    else if(QFile::exists(existingPath))
+    {
+        paths.append(existingPath);
+    }
 
-        QTreeWidgetItem *pItem = mpFilesWidget->addFile(mFilePtrs.last());
-        mTreeToFileMap.insert(pItem, mFilePtrs.last());
+    bool didAdd = false;
+    for (const auto& newPath : paths)
+    {
+        QFile file(newPath);
+        if(file.exists())
+        {
+            mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(newPath, FileObject::Component)));
 
+            QTreeWidgetItem *pItem = mpFilesWidget->addFile(mLibraryFiles.last());
+            mTreeToFileMap.insert(pItem, mLibraryFiles.last());
+
+            didAdd = true;
+        }
+    }
+
+    if (didAdd) {
         generateXmlAndSourceFiles();
     }
 }
 
 void FileHandler::addComponent(const QString &code, const QString &typeName)
 {
-    if(mFilePtrs.isEmpty())
+    if(mLibraryFiles.isEmpty())
     {
         mpMessageHandler->addErrorMessage("A project must be open before adding components.");
         return;
     }
 
     QString path;
-    foreach(const FileObject *pFile, mFilePtrs)
+    for(const auto& pFile : mLibraryFiles)
     {
         if(pFile->mType == FileObject::XML)
         {
@@ -232,14 +265,14 @@ void FileHandler::addComponent(const QString &code, const QString &typeName)
 
 void FileHandler::addAppearanceFile(const QString &code, const QString &fileName)
 {
-    if(mFilePtrs.isEmpty())
+    if(mLibraryFiles.isEmpty())
     {
         mpMessageHandler->addErrorMessage("A project must be open before adding appearance files.");
         return;
     }
 
     QString path;
-    foreach(const FileObject *pFile, mFilePtrs)
+    for(const auto& pFile : mLibraryFiles)
     {
         if(pFile->mType == FileObject::XML)
         {
@@ -265,66 +298,84 @@ void FileHandler::addAppearanceFile(const QString &code, const QString &fileName
     addAppearanceFile(QFileInfo(cafFile).absoluteFilePath());
 }
 
-void FileHandler::addAppearanceFile(QString path)
+void FileHandler::addAppearanceFile(QString existingPath)
 {
-    if(mFilePtrs.isEmpty())
+    if(mLibraryFiles.isEmpty())
     {
-        mpMessageHandler->addErrorMessage("A project must be open before adding appeaerance files.");
+        mpMessageHandler->addErrorMessage("A project must be open before adding appearance files.");
         return;
+    }
+
+    // Get directory of last added xml file
+    QString dir;
+    for(const auto& pFile : mLibraryFiles)
+    {
+        if(pFile->mType == FileObject::XML) {
+            dir = pFile->mFileInfo.absolutePath();
+        }
     }
 
     //! @todo Make sure caf file is in project directory
 
-    if(path.isEmpty())
+    QStringList paths;
+    if(existingPath.isEmpty())
     {
-        path = QFileDialog::getOpenFileName(mpEditorWidget->parentWidget(), "Add Component Appearance From Existing File", "", "*.xml");
+        paths = QFileDialog::getOpenFileNames(mpEditorWidget->parentWidget(), "Add Component Appearance From Existing File", dir, "XML files (*.xml)");
+    }
+    else if(QFile::exists(existingPath))
+    {
+        paths.append(existingPath);
     }
 
-    QFile file(path);
-    if(!path.isEmpty() && file.exists())
+    bool didAdd = false;
+    for (const auto& newPath : paths)
     {
-        FileObject *pFileObject = new FileObject(path, FileObject::CAF);
-        mFilePtrs.append(pFileObject);
+        QFile file(newPath);
+        if(file.exists())
+        {
+            mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(newPath, FileObject::CAF)));
 
-        QTreeWidgetItem *pItem = mpFilesWidget->addFile(mFilePtrs.last());
-        mTreeToFileMap.insert(pItem, mFilePtrs.last());
+            QTreeWidgetItem *pItem = mpFilesWidget->addFile(mLibraryFiles.last());
+            mTreeToFileMap.insert(pItem, mLibraryFiles.last());
 
+            didAdd = true;
+        }
+    }
+
+    if (didAdd) {
         generateXmlAndSourceFiles();
     }
 }
 
 
-void FileHandler::loadFromXml()
+void FileHandler::loadLibraryFromXml()
 {
     QString path;
-    foreach(const FileObject *file, mFilePtrs)
-    {
-        if(file->mType == FileObject::XML)
-        {
-            path = file->mFileInfo.absolutePath();
-        }
+    if (!mLibraryFiles.isEmpty()) {
+        // The first one should be the current project loaded
+        path = mLibraryFiles.front()->mFileInfo.absolutePath();
     }
 
-    path = QFileDialog::getOpenFileName(0, "Open Component Library", path, "*.xml");
+    path = QFileDialog::getOpenFileName(nullptr, "Open Component Library", path, "XML files (*.xml)");
     if(!path.isEmpty())
     {
-        loadFromXml(path);
+        loadLibraryFromXml(path);
     }
 }
 
 void FileHandler::saveToXml()
 {
-    for(int i=0; i<mFilePtrs.size(); ++i)
+    for(int i=0; i<mLibraryFiles.size(); ++i)
     {
-        if(mFilePtrs[i]->mType == FileObject::XML)
+        if(mLibraryFiles[i]->mType == FileObject::XML)
         {
-            saveToXml(mFilePtrs[i]->mFileInfo.absoluteFilePath());
+            saveToXml(mLibraryFiles[i]->mFileInfo.absoluteFilePath());
         }
     }
 }
 
 
-void FileHandler::loadFromXml(const QString &path)
+void FileHandler::loadLibraryFromXml(const QString &path)
 {
     mpMessageHandler->addInfoMessage("Loading from: " + path);
 
@@ -355,66 +406,83 @@ void FileHandler::loadFromXml(const QString &path)
 
         if(libRoot.tagName() != "hopsancomponentlibrary")
         {
-            mpMessageHandler->addErrorMessage(tr("Not a Hopsan componente library! Root tag: %1 != hopsancomponentlibrary")
+            mpMessageHandler->addErrorMessage(tr("Not a Hopsan component library! Root tag: %1 != hopsancomponentlibrary")
                                               .arg(libRoot.tagName()));
             return;
         }
 
-        mFilePtrs.clear();
+        mLibraryFiles.clear();
         mpFilesWidget->clear();
 
-        mLibId = libRoot.firstChildElement("id").text();
+        mLibraryMainXMLFile = path;
+        mLibraryId = libRoot.firstChildElement("id").text();
 
-        mLibName = libRoot.firstChildElement("name").text();
+        mLibraryName = libRoot.firstChildElement("name").text();
         // If the element did not exist (or name empty) try loading according to old format
-        if (mLibName.isEmpty()) {
-            mLibName = libRoot.attribute("name");
+        if (mLibraryName.isEmpty()) {
+            mLibraryName = libRoot.attribute("name");
         }
 
-        FileObject *pFile = new FileObject(path, FileObject::XML);
-        mFilePtrs.append(pFile);
-        QTreeWidgetItem *pItem = mpFilesWidget->addFile(mFilePtrs.last());
-        mTreeToFileMap.insert(pItem, mFilePtrs.last());
+        // The first file is the library xml file
+        mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(path, FileObject::XML)));
 
         QDomElement libElement = libRoot.firstChildElement("lib");
         if(!libElement.isNull())
         {
-            mLibTarget = libElement.text();
+            mLibraryCompiledFile = libElement.text();
         }
 
         QDomElement sourceElement = libRoot.firstChildElement("source");
         if(!sourceElement.isNull())
         {
-            mFilePtrs.append(new FileObject(info.absolutePath()+"/"+sourceElement.text(), FileObject::Source));
-            pItem = mpFilesWidget->addFile(mFilePtrs.last());
-            mTreeToFileMap.insert(pItem, mFilePtrs.last());
+            mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(info.absolutePath()+"/"+sourceElement.text(), FileObject::Source)));
+        }
+        // The first source file should be the main cpp file, this should then be the second in mLibraryFiles (first is main xml)
+        if (mLibraryFiles.size() > 1) {
+            mLibraryMainCPPFile = mLibraryFiles[1]->mFileInfo.absoluteFilePath();
+        }
+
+        QDomElement bfElement = libRoot.firstChildElement("buildflags");
+        QDomElement cflagsElement = bfElement.firstChildElement("cflags");
+        while(!cflagsElement.isNull()) {
+            mLibraryBuildFlags.append({"c", cflagsElement.attribute("os"), cflagsElement.text()});
+            cflagsElement = cflagsElement.nextSiblingElement("cflags");
+        }
+        QDomElement lflagsElement = bfElement.firstChildElement("lflags");
+        while(!lflagsElement.isNull()) {
+            mLibraryBuildFlags.append({"l", lflagsElement.attribute("os"), lflagsElement.text()});
+            lflagsElement = lflagsElement.nextSiblingElement("lflags");
         }
 
         QDomElement compElement = libRoot.firstChildElement("component");
         while(!compElement.isNull())
         {
-            mFilePtrs.append(new FileObject(info.absolutePath()+"/"+compElement.text(), FileObject::Component));
-            pItem = mpFilesWidget->addFile(mFilePtrs.last());
-            mTreeToFileMap.insert(pItem, mFilePtrs.last());
+            mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(info.absolutePath()+"/"+compElement.text(), FileObject::Component)));
             compElement = compElement.nextSiblingElement("component");
         }
 
         QDomElement auxElement = libRoot.firstChildElement("auxiliary");
         while(!auxElement.isNull())
         {
-            mFilePtrs.append(new FileObject(info.absolutePath()+"/"+auxElement.text(), FileObject::Auxiliary));
-            pItem = mpFilesWidget->addFile(mFilePtrs.last());
-            mTreeToFileMap.insert(pItem, mFilePtrs.last());
+            mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(info.absolutePath()+"/"+auxElement.text(), FileObject::Auxiliary)));
             auxElement = auxElement.nextSiblingElement("auxiliary");
         }
 
-        QDomElement cafElement = libRoot.firstChildElement("caf");
-        while(!cafElement.isNull())
-        {
-            mFilePtrs.append(new FileObject(info.absolutePath()+"/"+cafElement.text(), FileObject::CAF));
-            pItem = mpFilesWidget->addFile(mFilePtrs.last());
-            mTreeToFileMap.insert(pItem, mFilePtrs.last());
-            cafElement = cafElement.nextSiblingElement("caf");
+        // This name have varied between files, so checking all of them
+        // Note! componentxml is the name that should be used
+        for (const auto& name : {"componentxml", "hopsanobjectappearance", "caf"} ) {
+            QDomElement cafElement = libRoot.firstChildElement(name);
+            while(!cafElement.isNull())
+            {
+                mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(info.absolutePath()+"/"+cafElement.text(), FileObject::CAF)));
+                cafElement = cafElement.nextSiblingElement(name);
+            }
+        }
+
+        // Add all opened files to the widget and map
+        for (auto pFile : mLibraryFiles) {
+            QTreeWidgetItem *pItem = mpFilesWidget->addFile(pFile);
+            mTreeToFileMap.insert(pItem, pFile);
         }
     }
     file.close();
@@ -425,16 +493,18 @@ void FileHandler::loadFromXml(const QString &path)
 void FileHandler::setFileNotSaved()
 {
     mpFilesWidget->addAsterisk();
-    if(mpFilesWidget->mpTreeWidget->currentItem() && mTreeToFileMap.contains(mpFilesWidget->mpTreeWidget->currentItem()))
-      mTreeToFileMap.find(mpFilesWidget->mpTreeWidget->currentItem()).value()->mIsSaved = false;
+    auto it = mTreeToFileMap.find(mpFilesWidget->mpTreeWidget->currentItem());
+    if (it != mTreeToFileMap.end()) {
+        it.value()->mIsSaved = false;
+    }
 }
 
 bool FileHandler::hasFile(QString filePath)
 {
-    for(size_t i=0; i<mFilePtrs.size(); ++i)
+    QFileInfo info(filePath);
+    for (const auto& pFile : mLibraryFiles)
     {
-        QFileInfo info(filePath);
-        if(info.fileName() == mFilePtrs[i]->mFileInfo.fileName())
+        if(info.fileName() == pFile->mFileInfo.fileName())
         {
             return true;
         }
@@ -446,11 +516,11 @@ void FileHandler::saveToXml(const QString &filePath)
 {
     mpFilesWidget->removeAsterisks();
 
-    for(int i=0; i<mFilePtrs.size(); ++i)
+    for (const auto& pFile : mLibraryFiles)
     {
-        QFile file(mFilePtrs[i]->mFileInfo.absoluteFilePath());
+        QFile file(pFile->mFileInfo.absoluteFilePath());
         file.open(QFile::WriteOnly | QFile::Text);
-        file.write(mFilePtrs[i]->mText.toUtf8());
+        file.write(pFile->mFileContents.toUtf8());
         file.close();
     }
 
@@ -458,46 +528,54 @@ void FileHandler::saveToXml(const QString &filePath)
 
     QDomDocument domDocument;
     QDomElement libRoot = domDocument.createElement("hopsancomponentlibrary");
-    libRoot.setAttribute("xmlversion", 0.1);
-    libRoot.setAttribute("libversion", 1);
+    libRoot.setAttribute("version", "0.2");
     domDocument.appendChild(libRoot);
 
-    if (mLibId.isEmpty()) {
-        mLibId = QUuid::createUuid().toString().remove('{').remove('}');
+    if (mLibraryId.isEmpty()) {
+        mLibraryId = QUuid::createUuid().toString().remove('{').remove('}');
     }
     QDomElement libIdElement = domDocument.createElement("id");
-    libIdElement.appendChild(domDocument.createTextNode(mLibId));
+    libIdElement.appendChild(domDocument.createTextNode(mLibraryId));
     libRoot.appendChild(libIdElement);
 
     QDomElement libNameElement = domDocument.createElement("name");
-    libNameElement.appendChild(domDocument.createTextNode(mLibName));
+    libNameElement.appendChild(domDocument.createTextNode(mLibraryName));
     libRoot.appendChild(libNameElement);
 
     QDomElement libElement = domDocument.createElement("lib");
-    libElement.setAttribute("debug_ext", mLibDebugExt);
-    libElement.appendChild(domDocument.createTextNode(mLibTarget));
+    libElement.setAttribute("debug_ext", mLibraryDebugExtension);
+    libElement.appendChild(domDocument.createTextNode(mLibraryCompiledFile));
     libRoot.appendChild(libElement);
 
-    for(int f=0; f<mFilePtrs.size(); ++f)
+    QDomElement bfElement = domDocument.createElement("buildflags");
+    for (const auto& bf : mLibraryBuildFlags) {
+        QDomElement flagsElement = domDocument.createElement(QString("%1flags").arg(bf.type));
+        flagsElement.setAttribute("os", bf.os);
+        flagsElement.appendChild(domDocument.createTextNode(bf.content));
+        bfElement.appendChild(flagsElement);
+    }
+    libRoot.appendChild(bfElement);
+
+    for(int f=0; f<mLibraryFiles.size(); ++f)
     {
         QDomElement fileElement;
-        if(mFilePtrs[f]->mType == FileObject::Source)
+        if(mLibraryFiles[f]->mType == FileObject::Source)
         {
             fileElement = domDocument.createElement("source");
         }
-        else if(mFilePtrs[f]->mType == FileObject::Component)
+        else if(mLibraryFiles[f]->mType == FileObject::Component)
         {
             fileElement = domDocument.createElement("component");
         }
-        else if(mFilePtrs[f]->mType == FileObject::Auxiliary)
+        else if(mLibraryFiles[f]->mType == FileObject::Auxiliary)
         {
             fileElement = domDocument.createElement("auxiliary");
         }
-        else if(mFilePtrs[f]->mType == FileObject::CAF)
+        else if(mLibraryFiles[f]->mType == FileObject::CAF)
         {
-            fileElement = domDocument.createElement("caf");
+            fileElement = domDocument.createElement("componentxml");
         }
-        fileElement.appendChild(domDocument.createTextNode(mFilePtrs[f]->mFileInfo.absoluteFilePath().remove(path+"/")));
+        fileElement.appendChild(domDocument.createTextNode(mLibraryFiles[f]->mFileInfo.absoluteFilePath().remove(path+"/")));
         libRoot.appendChild(fileElement);
     }
 
@@ -512,14 +590,14 @@ void FileHandler::saveToXml(const QString &filePath)
         return;
     }
     QTextStream out(&xmlFile);
-    domDocument.save(out, 4);
+    domDocument.save(out, 2);
 }
 
 void FileHandler::updateText()
 {
     if(mpCurrentFile)
     {
-        mpCurrentFile->mText = mpEditorWidget->getText();
+        mpCurrentFile->mFileContents = mpEditorWidget->getText();
     }
 }
 
@@ -539,9 +617,9 @@ void FileHandler::compileLibrary()
     else
     {
         bool allSaved=true;
-        foreach(const FileObject *file, mFilePtrs)
+        for(const auto& pFile : mLibraryFiles)
         {
-            if(!file->mIsSaved)
+            if(!pFile->mIsSaved)
             {
                 allSaved=false;
             }
@@ -591,22 +669,22 @@ void FileHandler::compileLibrary()
     QStringList includeDirs;
     QStringList libs;
 
-    foreach(const FileObject *file, mFilePtrs)
+    for(const auto& pFile : mLibraryFiles)
     {
-        if(file->mType == FileObject::XML)
+        if(pFile->mType == FileObject::XML)
         {
-            path = file->mFileInfo.absolutePath();
+            path = pFile->mFileInfo.absolutePath();
         }
-        else if(file->mType == FileObject::Source)
+        else if(pFile->mType == FileObject::Source)
         {
-            sources.append(file->mFileInfo.absoluteFilePath());
+            sources.append(pFile->mFileInfo.absoluteFilePath());
         }
     }
 
     includeDirs.append(mpConfiguration->getIncludePath());
     libs.append(mpConfiguration->getHopsanCoreLibPath());
 
-    QString target = mLibTarget;
+    QString target = mLibraryCompiledFile;
 #ifdef __linux__
     target.prepend("lib");
 #endif
@@ -653,7 +731,7 @@ void FileHandler::openFile(QTreeWidgetItem *pItem, int)
 
     mpCurrentFile = mTreeToFileMap.find(pItem).value();
 
-    EditorWidget::HighlighterTypeEnum type;
+    EditorWidget::HighlighterTypeEnum highlightType = EditorWidget::HighlighterTypeEnum::PlainText;
     QString fileName = mpCurrentFile->mFileInfo.fileName();
     bool editingEnabled=true;
     if(mpCurrentFile->mType == FileObject::XML || mpCurrentFile->mType == FileObject::Source)
@@ -662,28 +740,28 @@ void FileHandler::openFile(QTreeWidgetItem *pItem, int)
     }
     if(fileName.endsWith(".xml"))
     {
-        type = EditorWidget::XML;
+        highlightType = EditorWidget::XML;
     }
     else if(fileName.endsWith(".hpp") || fileName.endsWith(".c") || fileName.endsWith(".cpp") ||
             fileName.endsWith(".cc") || fileName.endsWith(".h"))
     {
-        type = EditorWidget::Cpp;
+        highlightType = EditorWidget::Cpp;
     }
-    mpEditorWidget->setText(mTreeToFileMap.find(pItem).value()->mText, type, editingEnabled);
+    mpEditorWidget->setText(mpCurrentFile->mFileContents, highlightType, editingEnabled);
 
     emit fileOpened(false);
 }
 
 void FileHandler::removeFile(QTreeWidgetItem *pItem)
 {
-    if(mTreeToFileMap.find(pItem).value()->mType == FileObject::XML ||
-       mTreeToFileMap.find(pItem).value()->mType == FileObject::Source)
+    auto pFile = mTreeToFileMap.find(pItem).value();
+    if( (pFile->mType == FileObject::XML) || (pFile->mType == FileObject::Source) )
     {
         mpMessageHandler->addErrorMessage("Project files cannot be removed from project.");
         return;
     }
 
-    mFilePtrs.remove(mFilePtrs.indexOf(mTreeToFileMap.find(pItem).value()));
+    mLibraryFiles.remove(mLibraryFiles.indexOf(pFile));
     mpFilesWidget->removeItem(pItem);
     mpEditorWidget->clear();
     mTreeToFileMap.remove(pItem);
@@ -691,15 +769,6 @@ void FileHandler::removeFile(QTreeWidgetItem *pItem)
     generateXmlAndSourceFiles();
 }
 
-
-FileObject::FileObject()
-{
-    mFileInfo = QFileInfo();
-    mIsSaved = false;
-    mType = FileObject::Auxiliary;
-    mText = QString();
-    mExists = false;
-}
 
 FileObject::FileObject(const QString &path, FileTypeEnum type)
 {
@@ -710,7 +779,7 @@ FileObject::FileObject(const QString &path, FileTypeEnum type)
 
     QFile file(path);
     mExists = file.open(QFile::ReadOnly | QFile::Text);
-    mText = file.readAll();
+    mFileContents = file.readAll();
     file.close();
 }
 

@@ -47,8 +47,6 @@
 MainWindow::MainWindow(QWidget *pParent)
     : QMainWindow(pParent)
 {
-    qDebug() << "Testing debug!";
-
     //Create and load configuration
     mpConfiguration = new Configuration(this);
     mpConfiguration->loadFromXml();
@@ -139,7 +137,7 @@ MainWindow::MainWindow(QWidget *pParent)
 
     //Setup connections
     connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(updateText()));
-    connect(pOpenAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(loadFromXml()));
+    connect(pOpenAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(loadLibraryFromXml()));
     connect(pHistoryAction,                 SIGNAL(triggered()),        this,                       SLOT(showHistory()));
     connect(pSaveAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(saveToXml()));
     connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(setFileNotSaved()));
@@ -156,7 +154,7 @@ MainWindow::MainWindow(QWidget *pParent)
     //Load last session project (if exists)
     if(!mpConfiguration->getProjectPath().isEmpty())
     {
-        mpFileHandler->loadFromXml(mpConfiguration->getProjectPath());
+        mpFileHandler->loadLibraryFromXml(mpConfiguration->getProjectPath());
     }
 }
 
@@ -178,6 +176,6 @@ void MainWindow::showHistory()
 
     if(pLib && !pLib->text().isEmpty())
     {
-        mpFileHandler->loadFromXml(pLib->text());
+        mpFileHandler->loadLibraryFromXml(pLib->text());
     }
 }
