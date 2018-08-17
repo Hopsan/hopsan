@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1">
+<hopsancomponentlibrary version="0.2">
   <!-- The "id" element gives the library a uniqe identity, a UUID is recommended but any "unique" string is accepted -->
   <id>781af9cc-6966-4b27-bed5-db99380f3e42</id>
   <!-- The 'name' element gives the library a human readable name that will be used in the library widget -->
@@ -18,7 +18,40 @@
     <cflags>-I./someLib/include</cflags>
     <lflags>-L./someLib/bin -lsomeLib</lflags>
     <lflags os="win64">-lWs2_32</lflags> -->
-  </buildflags> 
-  <!-- Use one "hopsanobjectappearance" element for every component description xml file -->
-  <!-- Note! If you write this file manually you do not need to add these, they are only used by the HoLC program -->
+  </buildflags>
+  <component>Mechanical/MechanicalSeparator.hpp</component>
+  <component>Mechanical/MechanicForceTransformerQ.hpp</component>
+  <component>Mechanical/MechanicFreeFixWall.hpp</component>
+  <component>Mechanical/MechanicSteel.hpp</component>
+  <component>Hydraulic/HydraulicLosslessTLMPipe.hpp</component>
+  <component>Hydraulic/HydraulicVariableVolume.hpp</component>
+  <component>Hydraulic/HydraulicVariableVolumeLength.hpp</component>
+  <component>Hydraulic/HydraulicVariableVolumeLengthMP.hpp</component>
+  <component>Electrical/ElectricInductanceC.hpp</component>
+  <componentxml>Mechanical/MechanicalSeparator.xml</componentxml>
+  <componentxml>Mechanical/MechanicForceTransformerQ.xml</componentxml>
+  <componentxml>Mechanical/MechanicFreeFixWall.xml</componentxml>
+  <componentxml>Mechanical/MechanicLosslessTLM_SubSys.xml</componentxml>
+  <componentxml>Mechanical/MechanicSteel.xml</componentxml>
+  <componentxml>Hydraulic/HydraulicLosslessTLMPipe.xml</componentxml>
+  <componentxml>Hydraulic/HydraulicVariableVolume.xml</componentxml>
+  <componentxml>Hydraulic/HydraulicVariableVolumeLength.xml</componentxml>
+  <componentxml>Hydraulic/HydraulicVariableVolumeLengthMP.xml</componentxml>
+  <componentxml>Grafcet/BackwardStepSkip_begin.xml</componentxml>
+  <componentxml>Grafcet/BackwardStepSkip_end.xml</componentxml>
+  <componentxml>Grafcet/BottomTopArc.xml</componentxml>
+  <componentxml>Grafcet/Initial_Step.xml</componentxml>
+  <componentxml>Grafcet/Regular_Step.xml</componentxml>
+  <componentxml>Grafcet/Selection_begin2Steps.xml</componentxml>
+  <componentxml>Grafcet/Selection_begin3Steps.xml</componentxml>
+  <componentxml>Grafcet/Selection_end2Steps.xml</componentxml>
+  <componentxml>Grafcet/Selection_end3Steps.xml</componentxml>
+  <componentxml>Grafcet/StepSkip_begin.xml</componentxml>
+  <componentxml>Grafcet/StepSkip_end.xml</componentxml>
+  <componentxml>Grafcet/Synchronization_begin2Steps.xml</componentxml>
+  <componentxml>Grafcet/Synchronization_begin3Steps.xml</componentxml>
+  <componentxml>Grafcet/Synchronization_end2Steps.xml</componentxml>
+  <componentxml>Grafcet/Synchronization_end3Steps.xml</componentxml>
+  <componentxml>Grafcet/Transition.xml</componentxml>
+  <componentxml>Electrical/ElectricInductanceC.xml</componentxml>
 </hopsancomponentlibrary>

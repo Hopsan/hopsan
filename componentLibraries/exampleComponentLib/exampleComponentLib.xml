@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1">
-  <!-- The "id" element gives the library a uniqe identity, a UUID is recommended but any "unique" string is accepted -->
+<hopsancomponentlibrary version="0.2">
+  <!-- The "id" element gives the library a unique identity, a UUID is recommended but any "unique" string is accepted -->
   <id>7f871523-08e4-4d68-a7e9-25860d861888</id>
   <!-- The 'name' element gives the library a human readable name that will be used in the library widget -->
   <name>HopsanExampleComponentLibrary</name>
@@ -18,12 +18,19 @@
     <cflags>-I./someLib/include</cflags>
     <lflags>-L./someLib/bin -lsomeLib</lflags>
     <lflags os="win64">-lWs2_32</lflags> -->
-  </buildflags> 
-  <!-- Use one "hopsanobjectappearance" element for every component description xml file -->
+  </buildflags>
+  <!-- Use one "component" element for every component source code .hpp (header only implementation) file -->
+  <!-- This list of components will be used by the Hopsan library export code -->
+  <component>HydraulicComponents/MyExampleConstantOrifice.hpp</component>
+  <component>HydraulicComponents/MyExampleOrifice.hpp</component>
+  <component>HydraulicComponents/MyExampleVolume.hpp</component>
+  <component>HydraulicComponents/MyExampleVolume2.hpp</component>
+  <component>SignalComponents/MyExampleSignalSum.hpp</component>
+  <!-- Use one "componentxml" element for every component description XML file -->
   <!-- Note! If you write this file manually you do not need to add these, they are only used by the HoLC program -->
-  <hopsanobjectappearance>SignalComponents/MyExampleSignalSum.xml</hopsanobjectappearance>
-  <hopsanobjectappearance>HydraulicComponents/MyExampleConstantOrifice.xml</hopsanobjectappearance>
-  <hopsanobjectappearance>HydraulicComponents/MyExampleOrifice.xml</hopsanobjectappearance>
-  <hopsanobjectappearance>HydraulicComponents/MyExampleVolume.xml</hopsanobjectappearance>
-  <hopsanobjectappearance>HydraulicComponents/MyExampleVolume2.xml</hopsanobjectappearance>
+  <componentxml>SignalComponents/MyExampleSignalSum.xml</componentxml>
+  <componentxml>HydraulicComponents/MyExampleConstantOrifice.xml</componentxml>
+  <componentxml>HydraulicComponents/MyExampleOrifice.xml</componentxml>
+  <componentxml>HydraulicComponents/MyExampleVolume.xml</componentxml>
+  <componentxml>HydraulicComponents/MyExampleVolume2.xml</componentxml>
 </hopsancomponentlibrary>
