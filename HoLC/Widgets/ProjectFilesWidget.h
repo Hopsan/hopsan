@@ -34,7 +34,7 @@ class ProjectFilesWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ProjectFilesWidget(QWidget *parent = 0);
+    explicit ProjectFilesWidget(QWidget *parent = nullptr);
 
     QTreeWidget *mpTreeWidget;
 
@@ -42,7 +42,7 @@ signals:
     void deleteRequested(QTreeWidgetItem*);
 
 public slots:
-    QTreeWidgetItem *addFile(const FileObject *pFile);
+    QTreeWidgetItem *addFile(const QSharedPointer<FileObject> pFile);
     void addAsterisk();
     void removeAsterisks();
     void removeItem(QTreeWidgetItem *pItem);

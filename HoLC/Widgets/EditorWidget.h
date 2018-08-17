@@ -37,7 +37,7 @@ class EditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    enum HighlighterTypeEnum {XML, Cpp};
+    enum HighlighterTypeEnum {PlainText, XML, Cpp};
 
     explicit EditorWidget(Configuration *pConfiguration, QWidget *parent = 0);
     void setText(const QString &text, HighlighterTypeEnum type, bool editingEnabled=true);

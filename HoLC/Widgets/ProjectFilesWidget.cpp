@@ -63,7 +63,7 @@ ProjectFilesWidget::ProjectFilesWidget(QWidget *parent) :
     mpTreeWidget->addTopLevelItem(mpAppearanceFilesTopLevelItem);
 }
 
-QTreeWidgetItem *ProjectFilesWidget::addFile(const FileObject *pFile)
+QTreeWidgetItem *ProjectFilesWidget::addFile(const QSharedPointer<FileObject> pFile)
 {
     QTreeWidgetItem *pNewItem = new QTreeWidgetItem(0);
     pNewItem->setText(0,pFile->mFileInfo.fileName());
