@@ -23,10 +23,162 @@
 -----------------------------------------------------------------------------*/
 
 #include "GeneratorTypes.h"
+#include "GeneratorUtilities.h"
 
 #include "HopsanEssentials.h"
 #include "Port.h"
 
+#include <QFile>
+#include <QTextStream>
+#include <QXmlStreamReader>
+
+bool ComponentLibrary::saveToXML(QString filepath) const
+{
+    QFile templateFile(":/templates/library_template.xml");
+    templateFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream in(&templateFile);
+    QString contents = in.readAll();
+    templateFile.close();
+
+    contents.replace("<<<libid>>>", mId);
+    contents.replace("<<<libname>>>", mName);
+    contents.replace("<<<libdebugext>>>", mSharedLibraryDebugExtension);
+
+    // Local help function to generate multiline xml code
+    auto writeXmlFileList = [&contents](const QString& pattern, const QString& tagname, const QStringList& files) {
+        QString filesXml;
+        for (const auto& file : files) {
+            filesXml.append(QString("<%1>%2</%1>\n").arg(tagname).arg(file));
+        }
+        replacePattern(pattern, filesXml, contents);
+    };
+
+    writeXmlFileList("<<<sources>>>", "source", mSourceFiles);
+    writeXmlFileList("<<<components>>>", "component", mComponentCodeFiles);
+    writeXmlFileList("<<<componentxmls>>>", "componentxml", mComponentXMLFiles);
+    writeXmlFileList("<<<auxiliaryfiles>>>", "auxiliary", mAuxFiles);
+
+    // Write build flags
+    QString compilerFlagsXml, linkerFlagsXml;
+    for (const auto& buildFlagSet : mBuildFlags) {
+        if (!buildFlagSet.mCompilerFlags.isEmpty()) {
+            compilerFlagsXml.append(QString("<cflags os=\"%1\">%2</cflags>\n").arg(buildFlagSet.platformString())
+                                                                              .arg(buildFlagSet.mCompilerFlags.join(" ")));
+        }
+        if (!buildFlagSet.mLinkerFlags.isEmpty()) {
+            linkerFlagsXml.append(QString("<lflags os=\"%1\">%2</lflags>\n").arg(buildFlagSet.platformString())
+                                                                            .arg(buildFlagSet.mLinkerFlags.join(" ")));
+        }
+    }
+    // Remove final \n
+    if (!compilerFlagsXml.isEmpty()) {
+        compilerFlagsXml.chop(1);
+    }
+    if (!linkerFlagsXml.isEmpty()) {
+        linkerFlagsXml.chop(1);
+    }
+
+    replacePattern("<<<cflags>>>", compilerFlagsXml, contents);
+    replacePattern("<<<lflags>>>", linkerFlagsXml, contents);
+
+    QFile outFile(filepath);
+    if (outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        QTextStream outStream(&outFile);
+        outStream << contents;
+        outStream.flush();
+        outFile.close();
+        return true;
+    }
+    return false;
+}
+
+void ComponentLibrary::clear()
+{
+    mId.clear();
+    mName.clear();
+    mSourceFiles.clear();
+    mSharedLibraryName.clear();
+    mSharedLibraryDebugExtension.clear();
+    mComponentCodeFiles.clear();
+    mComponentXMLFiles.clear();
+    mAuxFiles.clear();
+    mBuildFlags.clear();
+}
+
+bool ComponentLibrary::loadFromXML(QString filepath)
+{
+    QFile file(filepath);
+    if(!file.open(QFile::ReadOnly | QFile::Text))
+    {
+        //mpMessageHandler->addErrorMessage("Cannot open file for reading: "+path);
+        return false;
+    }
+    clear();
+
+
+    QXmlStreamReader reader(file.readAll());
+
+    bool foundCorrectRootElement=false;
+    QString libraryVersion="0.1";
+    // Read root element
+    while (reader.readNextStartElement()) {
+        if(reader.name() == "hopsancomponentlibrary")
+        {
+            foundCorrectRootElement=true;
+            auto attributes = reader.attributes();
+            // Read deprecated name attribute if present
+            if (attributes.hasAttribute("name")) {
+                mName = attributes.value("name").toString();
+            }
+
+            libraryVersion = attributes.value("version").toString();
+            break;
+        }
+    }
+    if (!foundCorrectRootElement) {
+        //mpMessageHandler->addErrorMessage(tr("Not a Hopsan component library! Root tag: %1 != hopsancomponentlibrary").arg(libRoot.tagName()));
+        return false;
+    }
+
+    // Read contents
+    while (reader.readNextStartElement())
+    {
+        if (reader.name() == "id") {
+           mId = reader.readElementText();
+        }
+        else if (reader.name() == "name") {
+            mName = reader.readElementText();
+        }
+        else if (reader.name() == "lib") {
+            mSharedLibraryDebugExtension = reader.attributes().value("debug_ext").toString();
+            mSharedLibraryName = reader.readElementText();
+        }
+        else if (reader.name() == "source") {
+            mSourceFiles.append(reader.readElementText());
+        }
+        else if (reader.name() == "component") {
+            mComponentCodeFiles.append(reader.readElementText());
+        }
+        else if (reader.name() == "componentxml" ||
+                 reader.name() == "hopsanobjectappearance" ||
+                 reader.name() == "caf") {
+            mComponentXMLFiles.append(reader.readElementText());
+        }
+        else if (reader.name() == "auxiliary") {
+            mAuxFiles.append(reader.readElementText());
+        }
+        else if (reader.name() == "buildflags") {
+            //! @todo read build flags
+            reader.readElementText();
+        }
+        else {
+            // Discard to proceed
+            reader.readElementText();
+        }
+    }
+    file.close();
+    return true;
+}
 
 PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue)
 {
@@ -312,3 +464,19 @@ void getInterfaces(QList<InterfacePortSpec> &interfaces, hopsan::ComponentSystem
 }
 
 
+
+BuildFlags::BuildFlags(const QStringList &cflags, const QStringList &lflags) : mCompilerFlags(cflags), mLinkerFlags(lflags) {}
+
+BuildFlags::BuildFlags(const BuildFlags::Platform platform, const QStringList &cflags, const QStringList &lflags)
+    : mCompilerFlags(cflags), mLinkerFlags(lflags), mPlatform(platform) {}
+
+QString BuildFlags::platformString() const {
+    switch (mPlatform) {
+    case win : return hopsan::os_strings::win ;
+    case win32 : return hopsan::os_strings::win32 ;
+    case win64 : return hopsan::os_strings::win64 ;
+    case Linux : return hopsan::os_strings::Linux ;
+    case apple : return hopsan::os_strings::apple ;
+    default : return {} ;
+    }
+}

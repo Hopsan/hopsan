@@ -41,7 +41,17 @@
 
 class HopsanGeneratorBase;
 
-bool matchOSString(QString os);
+namespace hopsan {
+namespace os_strings {
+    constexpr auto win = "win";
+    constexpr auto win32 = "win32";
+    constexpr auto win64 = "win64";
+    constexpr auto apple = "apple";
+    constexpr auto Linux = "linux";
+}
+}
+
+bool matchOSString(const QString& os);
 
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 

@@ -657,42 +657,17 @@ QStringList listDefaultLibrarySourceFiles(const QString &hopsanInstallationPath)
     return allFiles;
 }
 
-bool matchOSString(QString os)
+bool matchOSString(const QString &os)
 {
-    if (os == "win32")
-    {
-#ifdef _WIN32
-      return true;
+#if defined (_WIN64)
+    return (os == hopsan::os_strings::win64) || (os == hopsan::os_strings::win);
+#elif defined(_WIN32)
+    return (os == hopsan::os_strings::win32) || (os == hopsan::os_strings::win);
+#elif defined(__linux__)
+    return (os == hopsan::os_strings::Linux);
+#elif defined(__APPLE__)
+    return (os == hopsan::os_strings::apple);
 #else
-      return false;
+    return false;
 #endif
-    }
-    else if (os == "win64")
-    {
-#ifdef _WIN64
-      return true;
-#else
-      return false;
-#endif
-    }
-    else if (os == "linux")
-    {
-#ifdef __linux__
-      return true;
-#else
-      return false;
-#endif
-    }
-    else if (os == "apple")
-    {
-#ifdef __APPLE__
-      return true;
-#else
-      return false;
-#endif
-    }
-    else
-    {
-        return false;
-    }
 }
