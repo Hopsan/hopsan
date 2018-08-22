@@ -28,10 +28,48 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
+//#include <QVector>
+
+#include "GeneratorUtilities.h"
+
 
 namespace hopsan {
 class ComponentSystem;
 }
+
+class BuildFlags
+{
+public:
+    enum Platform {notset, win, win32, win64, Linux, apple};
+    QString platformString() const;
+
+    BuildFlags() = default;
+    BuildFlags(const QStringList& cflags, const QStringList& lflags);
+    BuildFlags(const Platform platform, const QStringList& cflags, const QStringList& lflags);
+
+    QStringList mCompilerFlags;
+    QStringList mLinkerFlags;
+    Platform mPlatform = notset;
+};
+
+class ComponentLibrary
+{
+public:
+
+    QString mId;
+    QString mName;
+    QStringList mSourceFiles;
+    QString mSharedLibraryName;
+    QString mSharedLibraryDebugExtension;
+    QStringList mComponentCodeFiles;
+    QStringList mComponentXMLFiles;
+    QStringList mAuxFiles;
+    QList<BuildFlags> mBuildFlags;
+
+    void clear();
+    bool saveToXML(QString filepath) const;
+    bool loadFromXML(QString filepath);
+};
 
 class ComponentAppearanceSpecification
 {
