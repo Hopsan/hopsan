@@ -69,6 +69,7 @@ public:
     void clear();
     bool saveToXML(QString filepath) const;
     bool loadFromXML(QString filepath);
+    bool generateRegistrationCode(const QString& libraryRootPath, QString& rIncludeCode, QString& rRegisterCode, QString& rGeneratorError) const;
 };
 
 class ComponentAppearanceSpecification

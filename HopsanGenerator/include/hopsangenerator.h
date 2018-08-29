@@ -19,7 +19,7 @@ extern "C" {
 
     HOPSANGENERATOR_DLLAPI bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
 
-    HOPSANGENERATOR_DLLAPI bool callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, const char* compilerPath, int version=2, int architecture=64, messagehandler_t messageHandler=0, void* pMessageObject=0);
+    HOPSANGENERATOR_DLLAPI bool callFmuExportGenerator(const char* outputPath, void* pHopsanSystem,  const char* const externalLibraries[], const int numLibraries, const char* hopsanInstallPath, const char* compilerPath, int version=2, int architecture=64, messagehandler_t messageHandler=0, void* pMessageObject=0);
 
     HOPSANGENERATOR_DLLAPI bool callSimulinkExportGenerator(const char* outputPath, const char* modelFile, void* pHopsanSystem, bool disablePortLabels, const char* hopsanInstallPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
 

@@ -137,10 +137,13 @@ private Q_SLOTS:
 
         QString testStopTime = QString::number(modelstoptime*2);
 
+        std::vector<char*> externalLibraries;
+        constexpr int numExternalLibraries = 0;
+
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
         std::string outpath = cwd+"/fmu1_32/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path.c_str(), 1, 32,
+        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(), 1, 32,
                                &generatorMessageCallback);
 
         args << "-s" << testStopTime;
@@ -157,7 +160,7 @@ private Q_SLOTS:
 
         // Run FMUChecker for FMU 2.0 32-bit export
         outpath = cwd+"/fmu2_32/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path.c_str(), 2, 32,
+        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(), 2, 32,
                                &generatorMessageCallback);
 
         args.clear();
@@ -177,7 +180,7 @@ private Q_SLOTS:
 #if defined (HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 64-bit export
         std::string outpath = cwd+"/fmu1_64/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, 64,
+        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, 64,
                                &generatorMessageCallback);
 
         args.clear();
@@ -195,7 +198,7 @@ private Q_SLOTS:
 
         // Run FMUChecker for FMU 2.0 64-bit export
         outpath = cwd+"/fmu2_64/";
-        callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, 64,
+        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, 64,
                                &generatorMessageCallback);
 
         args.clear();

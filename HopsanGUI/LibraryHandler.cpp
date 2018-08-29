@@ -334,6 +334,18 @@ const SharedComponentLibraryPtrT LibraryHandler::getLibrary(const QString &id) c
     return {};
 }
 
+const QVector<SharedComponentLibraryPtrT> LibraryHandler::getLibraries(const QStringList &ids, const LibraryTypeEnumT type) const
+{
+    QVector<SharedComponentLibraryPtrT> result;
+    for (const auto& id : ids) {
+        auto pLib = getLibrary(id);
+        if ((type == LibraryTypeEnumT::AnyLib) || (pLib->type == type)) {
+            result.append(pLib);
+        }
+    }
+    return result;
+}
+
 
 //! @brief Unloads library by component type name
 //! @param typeName Type name of any component in the library

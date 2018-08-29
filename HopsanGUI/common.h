@@ -88,7 +88,7 @@ enum ContainerChildrenZValuesEnumT {WidgetZValue, ConnectorZValue, ModelobjectZV
 enum ModelObjectZValuesEnumT {PortZValue, SelectionboxZValue, HoveredPortZValue, LossesDisplayZValue};
 enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue};
 enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
-enum LibraryTypeEnumT {InternalLib, ExternalLib, FmuLib};
+enum LibraryTypeEnumT {AnyLib, InternalLib, ExternalLib, FmuLib};
 enum HiddenVisibleEnumT {Hidden, Visible};
 enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
 enum class ArchitectureEnumT {x86, x64};

@@ -215,17 +215,24 @@ bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, con
 //! @brief Calls the functional mockup interface (FMU) export generator
 //! @param[in] outputPath Path to export to
 //! @param[in] pSystem Pointer to system that shall be exported
+//! @param[in] externalLibraries C array with paths to external library xml files
+//! @param[in] numLibraries The number of elements in the C array
 //! @param[in] hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param[in] compilerPath Path to the compiler binaries
 //! @param[in] version The FMU version to export 1 or 2
 //! @param[in] architecture 32 or 64
 //! @param[in] quiet Hide generator output
-bool callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, const char* compilerPath, int version, int architecture, messagehandler_t messageHandler, void* pMessageObject)
+bool callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const char* const externalLibraries[], const int numLibraries, const char* hopsanInstallPath, const char* compilerPath, int version, int architecture, messagehandler_t messageHandler, void* pMessageObject)
 {
     auto pGenerator = std::unique_ptr<HopsanFMIGenerator>(new HopsanFMIGenerator(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
     const bool isArchitecture64 = (architecture==64);
-    return pGenerator->generateToFmu(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), version, isArchitecture64);
+    QStringList externalLibs;
+    for(int i=0; i<numLibraries; ++i)
+    {
+        externalLibs.append(externalLibraries[i]);
+    }
+    return pGenerator->generateToFmu(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), externalLibs,  version, isArchitecture64);
 }
 
 

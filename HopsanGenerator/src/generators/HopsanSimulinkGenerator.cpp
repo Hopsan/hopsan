@@ -112,7 +112,7 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         compileScriptStream << QString(" -I%1").arg(s);
     }
-    QStringList coreSourcefiles = listHopsanCoreSourceFiles(savePath)+listDefaultLibrarySourceFiles(savePath);
+    QStringList coreSourcefiles = listHopsanCoreSourceFiles(savePath)+listInternalLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &s, coreSourcefiles)
     {
         compileScriptStream << " " << s;

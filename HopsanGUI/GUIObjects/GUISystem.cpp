@@ -1507,7 +1507,13 @@ void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnu
     }
     auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
     auto fmuVersion = static_cast<HopsanGeneratorGUI::FmuVersionT>(version);
-    if (!spGenerator->generateToFmu(savePath, pCoreSystem, fmuVersion, garch))
+    QStringList externalLibraries;
+    //! @todo an idea here is to always treat the default library as external, and export it as such (and never build it in by default), that would reduce special handling of the default library
+    //! @todo This code prevents nesting an external fmu inside an export, not sure if we need to support this
+    for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
+        externalLibraries.append(pLib->getLibraryMainFilePath());
+    }
+    if (!spGenerator->generateToFmu(savePath, pCoreSystem, externalLibraries, fmuVersion, garch))
     {
         gpMessageHandler->addErrorMessage("Failed to export FMU");
     }
