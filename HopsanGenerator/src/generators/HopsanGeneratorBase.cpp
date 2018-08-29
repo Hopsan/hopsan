@@ -1052,14 +1052,101 @@ bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) con
     copyDir( QString(mHopsanRootPath+"/componentLibraries/defaultLibrary"), saveDir.path() );
 
     QStringList allFiles;
-    findAllFilesInFolderAndSubFolders(saveDir.path(),"hpp",allFiles);
-    findAllFilesInFolderAndSubFolders(saveDir.path(),"h",allFiles);
-    findAllFilesInFolderAndSubFolders(saveDir.path(),"cc",allFiles);
-    findAllFilesInFolderAndSubFolders(saveDir.path(),"cpp",allFiles);
-
-    Q_FOREACH(const QString file, allFiles)
-    {
+    for (const auto& suffix : {"hpp", "h", "cc", "cpp"}) {
+        findAllFilesInFolderAndSubFolders(saveDir.path(), suffix, allFiles);
+    }
+    for(const QString& file : allFiles) {
         QFile::setPermissions(file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
+    }
+
+    return true;
+}
+
+bool HopsanGeneratorBase::copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries) const
+{
+    QDir componentLibrariesDestinationPath;
+    componentLibrariesDestinationPath.setPath(destinationPath);
+    componentLibrariesDestinationPath.mkpath("componentLibraries");
+
+    QString externalLibraryIncludeCode =
+R"(// This file was automatically generated
+
+// Basic includes
+#include "ComponentEssentials.h"
+
+// Declare the registration function
+namespace hopsan {
+  void register_extra_components(hopsan::ComponentFactory* pComponentFactory);
+}
+
+//  Use hopsan namespace (if components do not specify it explicitly)
+using namespace hopsan;
+
+// Includes of external components from each library
+
+)";
+
+    QString externalLibraryRegistrationCode =
+R"(
+// Registration of components from each library
+void hopsan::register_extra_components(hopsan::ComponentFactory* pComponentFactory)
+{
+)";
+
+    QStringList takenNames;
+    for (const auto& libpath : externalLibraries) {
+        ComponentLibrary lib;
+        bool loadOK = lib.loadFromXML(libpath);
+        if (takenNames.contains(lib.mName)) {
+            printErrorMessage(QString("A library with name: %1 has already been exported. Unique names are required").arg(lib.mName));
+            return false;
+        }
+        if (loadOK)
+        {
+            printMessage(QString("Copying external component library: %1 ...").arg(lib.mName));
+
+            QDir libDestinationPath;
+            libDestinationPath.setPath(destinationPath+"/componentLibraries");
+            libDestinationPath.mkpath(lib.mName);
+            libDestinationPath.cd(lib.mName);
+
+            const QFileInfo libInfo(libpath);
+            const QString libraryRootPath = libInfo.absolutePath();
+            copyDir( libraryRootPath, libDestinationPath.path() );
+            //! @todo we should not copy all files, especially not the compiled files dll/so
+            //! @todo symlinks should be copied as symlinks
+
+            QStringList allFiles;
+            for (const auto& suffix : {"hpp", "h", "cc", "cpp"}) {
+                findAllFilesInFolderAndSubFolders(libDestinationPath.path(), suffix, allFiles);
+            }
+            for(const QString& file : allFiles) {
+                QFile::setPermissions(file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
+            }
+
+            QString generatorErrorMessage;
+            bool genOK = lib.generateRegistrationCode(libraryRootPath, externalLibraryIncludeCode, externalLibraryRegistrationCode, generatorErrorMessage);
+            if (!genOK) {
+                printErrorMessage(QString("Failed to generate code for library %1, Error: %2").arg(libpath).arg(generatorErrorMessage));
+                return false;
+            }
+        }
+        else
+        {
+            printErrorMessage(QString("Could not load %1 for some reason").arg(libpath));
+            return false;
+        }
+    }
+    externalLibraryRegistrationCode.append("}\n");
+
+    QFile commonLibraryCpp(destinationPath+"/componentLibraries/extra-components.cpp");
+    if (commonLibraryCpp.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream ts(&commonLibraryCpp);
+        ts << externalLibraryIncludeCode;
+        ts << externalLibraryRegistrationCode;
+    } else {
+        //! @todo some error
+        return false;
     }
 
     return true;

@@ -75,7 +75,7 @@ bool replacePattern(const QString &rPattern, const QString &rReplacement, QStrin
 
 void findAllFilesInFolderAndSubFolders(const QString &rootPath, const QString &suffix, QStringList &rFiles);
 QStringList listHopsanCoreSourceFiles(const QString &hopsanInstallationPath);
-QStringList listDefaultLibrarySourceFiles(const QString &hopsanInstallationPath);
+QStringList listInternalLibrarySourceFiles(const QString &hopsanInstallationPath);
 QStringList listHopsanCoreIncludeFiles(const QString &hopsanInstallationPath);
 QStringList getHopsanCoreIncludePaths();
 

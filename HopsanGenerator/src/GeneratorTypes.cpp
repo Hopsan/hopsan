@@ -28,9 +28,47 @@
 #include "HopsanEssentials.h"
 #include "Port.h"
 
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
 #include <QXmlStreamReader>
+
+namespace {
+
+QString extractComponentClassName(const QFileInfo& fileInfo)
+{
+    constexpr auto componentBaseClass = "Component";
+    QRegExp extractClassRegexp(R"(return\s+new\s+(\S+)\(\))");
+
+    QFile codeFile(fileInfo.absoluteFilePath());
+    if (codeFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream ts(&codeFile);
+        QString prevLine, line;
+        while (!ts.atEnd()) {
+            prevLine = line;
+            line = ts.readLine().trimmed();
+
+            // User may not write code according to example, but if a Creator() functions is found,
+            // the Component type shoule preceed it on the same or previous line.
+            if (line.contains("Creator()")) {
+                if (line.contains(componentBaseClass) || prevLine.contains(componentBaseClass)) {
+                    // Loop until a line that returns a new object is found (it may be on the same line or likely two further down
+                    while (!ts.atEnd()) {
+                        int i = extractClassRegexp.indexIn(line);
+                        if (i >= 0) {
+                            return extractClassRegexp.cap(1);
+                        }
+                        line = ts.readLine().trimmed();
+                    }
+                }
+            }
+        }
+    }
+    return {};
+}
+
+}
 
 bool ComponentLibrary::saveToXML(QString filepath) const
 {
@@ -177,6 +215,26 @@ bool ComponentLibrary::loadFromXML(QString filepath)
         }
     }
     file.close();
+    return true;
+}
+
+bool ComponentLibrary::generateRegistrationCode(const QString& libraryRootPath, QString& rIncludeCode, QString& rRegisterCode, QString &rGeneratorError) const
+{
+    rIncludeCode.append(QString("// From library: %1\n").arg(mName));
+    rRegisterCode.append(QString("  // From library: %1\n").arg(mName));
+    for (const auto& relCodeFilePath : mComponentCodeFiles ) {
+        rIncludeCode.append(QString(R"(#include "%1/%2")").arg(mName).arg(relCodeFilePath)).append("\n");
+        QString codeFilePath = QDir(libraryRootPath).filePath(relCodeFilePath);
+        QString componentTypeName = extractComponentClassName(codeFilePath);
+        if (!componentTypeName.isEmpty()) {
+            QString reg_line = QString(R"(  pComponentFactory->registerCreatorFunction("%1",%1::Creator);)").arg(componentTypeName);
+            rRegisterCode.append(reg_line).append("\n");
+        } else {
+            rGeneratorError = QString("Could not parse component typename from code file: %1").arg(codeFilePath);
+            return false;
+        }
+    }
+    rGeneratorError.clear();
     return true;
 }
 

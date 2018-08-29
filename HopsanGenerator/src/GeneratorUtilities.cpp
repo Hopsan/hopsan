@@ -639,16 +639,20 @@ QStringList listHopsanCoreIncludeFiles(const QString &hopsanInstallationPath)
     return allFiles;
 }
 
-QStringList listDefaultLibrarySourceFiles(const QString &hopsanInstallationPath)
+QStringList listInternalLibrarySourceFiles(const QString &hopsanInstallationPath)
 {
     QStringList allFiles;
-    //! @todo handle external internal library
-    // Now only internal
-    allFiles << hopsanInstallationPath+"/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp";
 
-    QDir rootDir(hopsanInstallationPath);
+    // Default component library
+    allFiles << hopsanInstallationPath+"/componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp";
+    // Extra libraries (if they exist)
+    const QString extraLibrary = hopsanInstallationPath+"/componentLibraries/extra-components.cpp";
+    if (QFile::exists(extraLibrary)) {
+        allFiles << extraLibrary;
+    }
 
     // Make path relative to root dir
+    QDir rootDir(hopsanInstallationPath);
     for(int i=0; i<allFiles.size(); ++i)
     {
         allFiles[i] = rootDir.relativeFilePath(allFiles[i]);

@@ -376,7 +376,7 @@ bool HopsanGeneratorGUI::generateFromFmu(const QString& fmuFilePath, const QStri
     }
 }
 
-bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::ComponentSystem* pSystem,
+bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::ComponentSystem* pSystem, const QStringList& externalLibraries,
                                        const FmuVersionT version, const TargetArchitectureT architecture)
 {
     auto lw = mPrivates->createNewWidget();
@@ -387,10 +387,11 @@ bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::Compon
     const auto& hopsanRoot = mPrivates->hopsanRoot;
     const auto& compilerPath = mPrivates->compilerPath;
     int arch =  (architecture == TargetArchitectureT::x64) ? 64 : 32;
+    CApiStringList extLibs(externalLibraries);
     MessageForwarder forwarder(lw->widget());
 
-    using FmuExportFunction_t = bool(const char*, hopsan::ComponentSystem*, const char*, const char*, int, int, MessageHandler_t, void*);
-    bool didOK = mPrivates->call<FmuExportFunction_t>(forwarder, functionName, outpath.c_str(), pSystem, hopsanRoot.c_str(), compilerPath.c_str(), static_cast<int>(version), arch, &messageHandler, static_cast<void*>(&forwarder));
+    using FmuExportFunction_t = bool(const char*, hopsan::ComponentSystem*, const char* const*, const int, const char*, const char*, int, int, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<FmuExportFunction_t>(forwarder, functionName, outpath.c_str(), pSystem, extLibs.data(), extLibs.size(), hopsanRoot.c_str(), compilerPath.c_str(), static_cast<int>(version), arch, &messageHandler, static_cast<void*>(&forwarder));
     lw->setDidSucceed(didOK);
     return didOK;
 }

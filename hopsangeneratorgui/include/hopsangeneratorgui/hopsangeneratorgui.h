@@ -32,7 +32,7 @@ public:
                               const CompileT compile=CompileT::DoNotCompile);
 
     bool generateFromFmu(const QString& fmuFilePath, const QString& destination);
-    bool generateToFmu(const QString& outputPath, hopsan::ComponentSystem *pSystem,  const FmuVersionT version,
+    bool generateToFmu(const QString& outputPath, hopsan::ComponentSystem *pSystem, const QStringList& externalLibraries, const FmuVersionT version,
                        TargetArchitectureT arch);
 
     bool generateToSimulink(const QString& outputPath, const QString& modelPath, hopsan::ComponentSystem *pSystem,

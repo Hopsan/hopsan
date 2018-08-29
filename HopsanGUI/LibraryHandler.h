@@ -96,6 +96,7 @@ public:
     bool isLibraryLoaded(const QString &rLibraryXmlPath, const QString &rLibraryFilePath="") const;
     QStringList getLoadedLibraryNames() const;
     const SharedComponentLibraryPtrT getLibrary(const QString& id) const;
+    const QVector<SharedComponentLibraryPtrT> getLibraries(const QStringList& ids, const LibraryTypeEnumT type=LibraryTypeEnumT::AnyLib) const;
 
     void recompileLibrary(SharedComponentLibraryPtrT pLib, int solver=0, bool dontUnloadAndLoad=false);
 

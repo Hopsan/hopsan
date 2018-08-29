@@ -50,6 +50,12 @@
 #include "defaultComponentLibraryInternal.h"
 #endif
 
+#if defined(HOPSAN_INTERNAL_EXTRACOMPONENTS)
+namespace hopsan {
+    void register_extra_components(hopsan::ComponentFactory* pComponentFactory);
+}
+#endif
+
 using namespace std;
 using namespace hopsan;
 
@@ -105,6 +111,9 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_MODELICACOMPONENT, ModelicaComponent::Creator);
 #ifdef HOPSAN_INTERNALDEFAULTCOMPONENTS
     register_default_components(mpComponentFactory);
+#endif
+#if defined(HOPSAN_INTERNAL_EXTRACOMPONENTS)
+    register_extra_components(mpComponentFactory);
 #endif
 
     // Check for register errors and status
