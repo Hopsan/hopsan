@@ -397,8 +397,8 @@ bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::Compon
 }
 
 
-bool HopsanGeneratorGUI::generateToSimulink(const QString& outputPath, const QString& modelPath,
-                                            hopsan::ComponentSystem *pSystem, const UsePortlablesT portLabels)
+bool HopsanGeneratorGUI::generateToSimulink(const QString& outputPath, const QString& modelPath, hopsan::ComponentSystem *pSystem,
+                                            const QStringList& externalLibraries, const UsePortlablesT portLabels)
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
@@ -407,11 +407,12 @@ bool HopsanGeneratorGUI::generateToSimulink(const QString& outputPath, const QSt
     const auto outpath = outputPath.toStdString();
     const auto modelpath = modelPath.toStdString();
     const auto& hopsanRoot = mPrivates->hopsanRoot;
+    CApiStringList extLibs(externalLibraries);
     bool disablePortLabels = (portLabels == UsePortlablesT::DisablePortLables);
     MessageForwarder forwarder(lw->widget());
 
-    using SimulinkExportFunction_t = bool(const char*, const char*,  hopsan::ComponentSystem*, bool, const char*, MessageHandler_t, void*);
-    bool didOK = mPrivates->call<SimulinkExportFunction_t>(forwarder, functionName, outpath.c_str(), modelpath.c_str(), pSystem, disablePortLabels, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    using SimulinkExportFunction_t = bool(const char*, const char*, hopsan::ComponentSystem*, const char* const*, const int, bool, const char*, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<SimulinkExportFunction_t>(forwarder, functionName, outpath.c_str(), modelpath.c_str(), pSystem, extLibs.data(), extLibs.size(), disablePortLabels, hopsanRoot.c_str(), &messageHandler, static_cast<void*>(&forwarder));
     lw->setDidSucceed(didOK);
     return didOK;
 }

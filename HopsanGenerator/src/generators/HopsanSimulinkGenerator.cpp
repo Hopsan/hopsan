@@ -38,11 +38,11 @@ HopsanSimulinkGenerator::HopsanSimulinkGenerator(const QString &hopsanInstallPat
 }
 
 
-bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels)
+bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, const QStringList& externalLibraries,  bool disablePortLabels)
 {
     printMessage("Initializing Simulink S-function export...");
 
-    if(pSystem == 0)
+    if(pSystem == nullptr)
     {
         printErrorMessage("System pointer is null. Aborting.");
         return false;
@@ -63,8 +63,18 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     }
 
     printMessage("Copying necessary files...");
-    this->copyHopsanCoreSourceFilesToDir(savePath);
-    this->copyDefaultComponentCodeToDir(savePath);
+    if(!copyHopsanCoreSourceFilesToDir(savePath)) {
+        printErrorMessage("Failed to copy Hopsan source code files.");
+        return false;
+    }
+    if(!copyDefaultComponentCodeToDir(savePath)) {
+        printErrorMessage("Failed to copy default component library files.");
+        return false;
+    }
+    if(!copyExternalComponentCodeToDir(savePath, externalLibraries)) {
+        printErrorMessage("Failed to export required external component library files.");
+        return false;
+    }
 
     const std::vector<hopsan::ParameterEvaluator*> *pParameters = pSystem->getParametersVectorPtr();
     int numParameters = pParameters->size();
@@ -103,10 +113,9 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QTextLineStream compileScriptLStream(compileScriptStream);
 
     compileScriptLStream << "disp('Compiling S-function from Hopsan model...');";
+    compileScriptStream << "mex -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -D_USE_MATH_DEFINES";
 #ifdef _WIN32
-    compileScriptStream << "mex -DWIN32 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -D_USE_MATH_DEFINES";
-#else
-    compileScriptStream << "mex -DHOPSAN_INTERNALDEFAULTCOMPONENTS -D_USE_MATH_DEFINES";
+    compileScriptStream << " -DWIN32";      //!< @todo Not sure if this one is needed, the correct macro to check for is _WIN32
 #endif
     Q_FOREACH(const QString &s, getHopsanCoreIncludePaths())
     {

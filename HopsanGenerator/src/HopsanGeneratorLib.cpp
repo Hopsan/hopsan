@@ -240,14 +240,21 @@ bool callFmuExportGenerator(const char* outputPath, void* pHopsanSystem, const c
 //! @param outputPath Path to export to
 //! @param modelFile Path to the hopsan model file
 //! @param pSystem Pointer to system that shall be exported
+//! @param[in] externalLibraries C array with paths to external library xml files
+//! @param[in] numLibraries The number of elements in the C array
 //! @param disablePortLabels Tells whether or not port labels shall be disabled (for compatibility with older MATLAB versions)
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param quiet Hide generator output
-bool callSimulinkExportGenerator(const char* outputPath, const char* modelFile, void* pHopsanSystem, bool disablePortLabels, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
+bool callSimulinkExportGenerator(const char* outputPath, const char* modelFile, void* pHopsanSystem, const char* const externalLibraries[], const int numLibraries, bool disablePortLabels, const char* hopsanInstallPath, messagehandler_t messageHandler, void* pMessageObject)
 {
     auto pGenerator = std::unique_ptr<HopsanSimulinkGenerator>(new HopsanSimulinkGenerator(hopsanInstallPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    return pGenerator->generateToSimulink(outputPath, modelFile, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), disablePortLabels);
+    QStringList externalLibs;
+    for(int i=0; i<numLibraries; ++i)
+    {
+        externalLibs.append(externalLibraries[i]);
+    }
+    return pGenerator->generateToSimulink(outputPath, modelFile, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), externalLibs, disablePortLabels);
 }
 
 

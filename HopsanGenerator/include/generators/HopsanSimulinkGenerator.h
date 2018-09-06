@@ -31,7 +31,7 @@ class HopsanSimulinkGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanSimulinkGenerator(const QString &hopsanInstallPath);
-    bool generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels);
+    bool generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, const QStringList &externalLibraries, bool disablePortLabels);
     void generateToSimulinkCoSim(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler);
 };
 
