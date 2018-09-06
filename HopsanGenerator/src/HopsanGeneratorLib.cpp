@@ -36,6 +36,7 @@
 #include "generators/HopsanLabViewGenerator.h"
 #include "generators/HopsanFMIGenerator.h"
 #include "GeneratorUtilities.h"
+#include "GeneratorTypes.h"
 
 #include <QFileInfo>
 #include <QDir>
@@ -285,3 +286,26 @@ bool callComponentLibraryCompiler(const char* outputPath, const char* extraCFlag
     return compileComponentLibrary(outputPath, pGenerator.get(), extraCFlags, extraLFlags);
 }
 
+bool callCheckComponentLibrary(const char* libraryXMLPath, messagehandler_t messageHandler, void* pMessageObject)
+{
+    ComponentLibrary lib;
+    lib.loadFromXML(libraryXMLPath);
+
+    if (messageHandler) {
+        auto message = QString("Checking component registration consistency for library: %1").arg(lib.mName);
+        messageHandler(qPrintable(message), 'I', pMessageObject);
+    }
+
+    QStringList differences = lib.checkSourceXMLConsistency();
+    if (messageHandler) {
+        for (const auto& item : differences) {
+            messageHandler(qPrintable(item), 'I', pMessageObject);
+        }
+        if (differences.empty()) {
+            messageHandler("No differences found", 'I', pMessageObject);
+        } else {
+            messageHandler("There are differenses that needs to be resolved. Edit the files manually or use HoLC to add the existing components.", 'W', pMessageObject);
+        }
+    }
+    return differences.empty();
+}
