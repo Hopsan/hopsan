@@ -2057,9 +2057,14 @@ void SystemContainer::exportToSimulink()
     auto spGenerator = createDefaultExportGenerator();
     QString modelPath = getModelFileInfo().fileName();
     auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
+    QStringList externalLibraries;
+    for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
+        externalLibraries.append(pLib->getLibraryMainFilePath());
+    }
     auto portLabels = pDisablePortLabels->isChecked() ? HopsanGeneratorGUI::UsePortlablesT::DisablePortLables :
                                                         HopsanGeneratorGUI::UsePortlablesT::EnablePortLabels;
-    if (!spGenerator->generateToSimulink(savePath, modelPath, pCoreSystem, portLabels ))
+
+    if (!spGenerator->generateToSimulink(savePath, modelPath, pCoreSystem, externalLibraries, portLabels ))
     {
         gpMessageHandler->addErrorMessage("Simulink export generator failed");
     }

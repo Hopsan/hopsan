@@ -35,7 +35,7 @@ public:
     bool generateToFmu(const QString& outputPath, hopsan::ComponentSystem *pSystem, const QStringList& externalLibraries, const FmuVersionT version,
                        TargetArchitectureT arch);
 
-    bool generateToSimulink(const QString& outputPath, const QString& modelPath, hopsan::ComponentSystem *pSystem,
+    bool generateToSimulink(const QString& outputPath, const QString& modelPath, hopsan::ComponentSystem *pSystem, const QStringList &externalLibraries,
                             const UsePortlablesT portLables=UsePortlablesT::EnablePortLabels);
 
     bool generateToLabViewSIT(const QString& outputPath, hopsan::ComponentSystem *pSystem);

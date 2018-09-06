@@ -250,10 +250,13 @@ private Q_SLOTS:
     {
         QFETCH(ComponentSystem*, system);
 
+        std::vector<char*> externalLibraries;
+        constexpr int numExternalLibraries = 0;
+
         //Generate S-function
         std::string outpath = cwd+"/simulink/";
-        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, false, hopsanRoot.c_str(),
-                                    &generatorMessageCallback);
+        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, externalLibraries.data(), numExternalLibraries, false,
+                                    hopsanRoot.c_str(), &generatorMessageCallback);
 
         QDir coreDir(qcwd+"/simulink/HopsanCore");
         QVERIFY2(coreDir.exists() && !coreDir.entryList().isEmpty(),
