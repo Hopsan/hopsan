@@ -25,6 +25,8 @@ extern "C" {
 
     HOPSANGENERATOR_DLLAPI bool callLabViewSITGenerator(const char* outputPath, void* pHopsanSystem, const char* hopsanInstallPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
 
+    HOPSANGENERATOR_DLLAPI bool callCheckComponentLibrary(const char* libraryXMLPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
+
 }
 
 #endif // HOPSANGENERATOR_H

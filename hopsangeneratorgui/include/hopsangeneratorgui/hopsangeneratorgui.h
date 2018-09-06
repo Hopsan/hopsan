@@ -45,6 +45,7 @@ public:
     bool generateLibrary(const QString& outputPath, const QStringList& hppFiles);
     bool compileComponentLibrary(const QString& libPath, const QString& extraCFlags="", const QString& extraLFlags="");
 
+    bool checkComponentLibrary(const QString& libraryXMLPath);
 
     void printMessage(const QString& msg, const char type='I');
     void printErrorMessage(const QString& msg);

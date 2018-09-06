@@ -31,6 +31,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QDir>
 #include <QTextStream>
 #include <QXmlStreamReader>
 
@@ -66,6 +67,48 @@ QString extractComponentClassName(const QFileInfo& fileInfo)
         }
     }
     return {};
+}
+
+QStringList extractRegisterTypenames(const QFileInfo& fileInfo)
+{
+    QRegExp includeExtractorRx(R"(["<]\s*(\S+)\s*[">])");
+    includeExtractorRx.setMinimal(true);
+
+    QRegExp registerClassExtractor(R"(,\s*(\S+)::Creator)");
+    registerClassExtractor.setMinimal(true);
+
+    QStringList extractedTypeNames;
+
+    QFile file(fileInfo.absoluteFilePath());
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream ts(&file);
+        while (!ts.atEnd()) {
+            QString line = ts.readLine().trimmed();
+            // Handle relative (below root dir) includes, headers or .cci / .cppi (include sources)
+            if (line.startsWith("//")) {
+                continue;
+            }
+            else if (line.startsWith("#include")) {
+                int i = includeExtractorRx.indexIn(line);
+                if (i >= 0) {
+                    const QString includeFileName = includeExtractorRx.cap(1);
+                    QString includeFilePath = fileInfo.absoluteDir().filePath(includeFileName);
+                    if (QFile::exists(includeFilePath)) {
+                        extractedTypeNames.append(extractRegisterTypenames(includeFilePath));
+                    }
+                }
+            }
+            else if (line.contains("registerCreatorFunction")) {
+                int i = registerClassExtractor.indexIn(line);
+                if (i >= 0) {
+                    QString className = registerClassExtractor.cap(1);
+                    extractedTypeNames.append(className);
+               }
+
+            }
+        }
+    }
+    return extractedTypeNames;
 }
 
 }
@@ -132,6 +175,7 @@ bool ComponentLibrary::saveToXML(QString filepath) const
 
 void ComponentLibrary::clear()
 {
+    mLoadFilePath.clear();
     mId.clear();
     mName.clear();
     mSourceFiles.clear();
@@ -152,6 +196,7 @@ bool ComponentLibrary::loadFromXML(QString filepath)
         return false;
     }
     clear();
+    mLoadFilePath = filepath;
 
 
     QXmlStreamReader reader(file.readAll());
@@ -236,6 +281,45 @@ bool ComponentLibrary::generateRegistrationCode(const QString& libraryRootPath, 
     }
     rGeneratorError.clear();
     return true;
+}
+
+QStringList ComponentLibrary::checkSourceXMLConsistency() const
+{
+    QStringList differences;
+    const QDir rootDir = QFileInfo(mLoadFilePath).absoluteDir();
+    // It is assumed that the first source file is the main cpp file where all components are registered
+    if (!mSourceFiles.isEmpty()) {
+        const QString sourceFilePath = rootDir.filePath(mSourceFiles.first());
+        QStringList sourceTypeNames = extractRegisterTypenames(sourceFilePath);
+        QStringList componentCodeTypeNames;
+        for (const auto& relCodeFilePath : mComponentCodeFiles ) {
+            QString codeFilePath = rootDir.filePath(relCodeFilePath);
+            QString componentTypeName = extractComponentClassName(codeFilePath);
+            if (!componentTypeName.isEmpty()) {
+                componentCodeTypeNames.append(componentTypeName);
+            }
+        }
+
+        // Compare all registered components,  remove those that match
+        for (int i=0; i<componentCodeTypeNames.size(); ++i) {
+            int j = sourceTypeNames.indexOf(componentCodeTypeNames[i]);
+            if (j > -1) {
+                // The type name exists in both data sets, remove it from them;
+                componentCodeTypeNames.removeAt(i);
+                sourceTypeNames.removeAt(j);
+                --i;
+            }
+        }
+
+        // Remaining type names are the difference
+        for (const auto& ctn : componentCodeTypeNames) {
+            differences.append(QString("Typename (class) '%1' does not seem to exist in the library source file: %2").arg(ctn).arg(sourceFilePath));
+        }
+        for (const auto& ctn : sourceTypeNames) {
+            differences.append(QString("Typename (class) '%1' does not seem to exist in the library XML file: %2").arg(ctn).arg(mLoadFilePath));
+        }
+    }
+    return differences;
 }
 
 PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue)

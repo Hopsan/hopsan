@@ -56,6 +56,7 @@ class ComponentLibrary
 {
 public:
 
+    QString mLoadFilePath;
     QString mId;
     QString mName;
     QStringList mSourceFiles;
@@ -70,6 +71,7 @@ public:
     bool saveToXML(QString filepath) const;
     bool loadFromXML(QString filepath);
     bool generateRegistrationCode(const QString& libraryRootPath, QString& rIncludeCode, QString& rRegisterCode, QString& rGeneratorError) const;
+    QStringList checkSourceXMLConsistency() const;
 };
 
 class ComponentAppearanceSpecification
