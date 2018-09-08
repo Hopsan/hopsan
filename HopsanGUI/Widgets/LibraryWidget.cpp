@@ -226,13 +226,13 @@ void LibraryWidget::update()
             path = entry.displayPath;
         }
 
-        QTreeWidgetItem *pItem = 0;
-        QTreeWidgetItem *pDualItem = 0;
+        QTreeWidgetItem *pItem = nullptr;
+        QTreeWidgetItem *pDualItem = nullptr;
         while(!path.isEmpty())
         {
             QString folder = path.first();
             path.removeFirst();
-            if(pItem == 0)
+            if(pItem == nullptr)
             {
                 for(int i=0; i<mpTree->topLevelItemCount(); ++i)
                 {
@@ -243,7 +243,7 @@ void LibraryWidget::update()
                         break;
                     }
                 }
-                if(pItem == 0)
+                if(pItem == nullptr)
                 {
                     //Add top-level folder to tree view
                     pItem = new QTreeWidgetItem();
@@ -368,7 +368,7 @@ void LibraryWidget::update()
         }
         ++itt;
     }
-    QTreeWidgetItem *pExternalItem = 0;
+    QTreeWidgetItem *pExternalItem = nullptr;
     for(int t=0; t<mpTree->topLevelItemCount(); ++t)
     {
         if(mpTree->topLevelItem(t)->text(0) == componentlibrary::roots::externalLibraries)
@@ -383,7 +383,7 @@ void LibraryWidget::update()
         mpTree->insertTopLevelItem(mpTree->topLevelItemCount(),pExternalItem);
         pExternalItem->setExpanded(true);
     }
-    pExternalItem = 0;
+    pExternalItem = nullptr;
     for(int t=0; t<mpDualTree->topLevelItemCount(); ++t)
     {
         if(mpDualTree->topLevelItem(t)->text(0) == componentlibrary::roots::externalLibraries)
@@ -652,7 +652,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 pUnloadAction->setEnabled(true);
             }
 
-            if(item != 0 && !typeName.isEmpty())
+            if(item != nullptr && !typeName.isEmpty())
             {
                 pOpenFolderAction->setEnabled(true);
             }
@@ -698,11 +698,13 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
             QAction *pRecompileAction = contextMenu.addAction("Recompile");
             QAction *pReloadAction = contextMenu.addAction("Reload");
+            QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
             pUnloadAllAction->setEnabled(false);
             pUnloadAction->setEnabled(false);
             pOpenFolderAction->setEnabled(false);
             pRecompileAction->setEnabled(false);
             pReloadAction->setEnabled(false);
+            pCheckConsistenceAction->setEnabled(false);
 
             QTreeWidgetItem *pFirstSubComponentItem = item;
 
@@ -712,7 +714,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             {
                 pFirstSubComponentItem = pFirstSubComponentItem->child(0);
                 // If we cant find a subcomponentn then exit
-                if (pFirstSubComponentItem == 0)
+                if (pFirstSubComponentItem == nullptr)
                 {
                     return;
                 }
@@ -727,6 +729,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 pUnloadAction->setEnabled(true);
                 pRecompileAction->setEnabled(true);
                 pReloadAction->setEnabled(true);
+                pCheckConsistenceAction->setEnabled(true);
             }
 
             if(item->text(0) != componentlibrary::roots::fmus && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus))
@@ -734,7 +737,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 pUnloadAction->setEnabled(true);
             }
 
-            if(item != 0 && mItemToTypeNameMap.contains(pFirstSubComponentItem))
+            if(item != nullptr && mItemToTypeNameMap.contains(pFirstSubComponentItem))
             {
                 pOpenFolderAction->setEnabled(true);
             }
@@ -745,7 +748,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
             QAction *pReply = contextMenu.exec(QCursor::pos());
 
-            if(pReply == pUnloadAllAction || pReply == pUnloadAction || pReply == pRecompileAction || pReply == pReloadAction)
+            if(pReply == pUnloadAllAction || pReply == pUnloadAction || pReply == pRecompileAction || pReply == pReloadAction || pReply == pCheckConsistenceAction)
             {
                 if(mItemToTypeNameMap.contains(item))
                 {
@@ -794,7 +797,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     }
                 }
                 // Handle recompile
-                else if (!typeNames.isEmpty())
+                else if ((pReply == pRecompileAction) && !typeNames.isEmpty())
                 {
                     ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
                     if (le.pLibrary)
@@ -817,6 +820,19 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
                             // Now reload the library
                             gpLibraryHandler->loadLibrary(libPath);
+                        }
+                    }
+                }
+                // Handle check consistency
+                else if ((pReply == pCheckConsistenceAction) && !typeNames.isEmpty())
+                {
+                    ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
+                    if (le.pLibrary)
+                    {
+                        auto spGenerator = createDefaultGenerator(false);
+                        bool checkOK = spGenerator->checkComponentLibrary(le.pLibrary->xmlFilePath);
+                        if (!checkOK) {
+                            gpMessageHandler->addWarningMessage(QString("The library '%1' has inconsistent component registration, this may cause exported models to fail.").arg(le.pLibrary->xmlFilePath));
                         }
                     }
                 }
