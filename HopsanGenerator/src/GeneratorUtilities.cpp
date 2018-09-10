@@ -109,10 +109,11 @@ bool removeDir(QString path)
 //! @brief Copy a directory with contents
 //! @param[in] fromPath The absolute path to the directory to copy
 //! @param[in] toPath The absolute path to the destination (including destination dir name)
+//! @param[in] excludeRegExps List of regexps for files to exclude
 //! @param[out] rErrorMessage Error message if copy fail
 //! @returns True if success else False
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
-bool copyDir(const QString &fromPath, QString toPath, QString &rErrorMessage)
+bool copyDir(const QString &fromPath, QString toPath, const QList<QRegExp>& excludeRegExps, QString &rErrorMessage)
 {
     QDir toDir(toPath);
     if (!toDir.mkpath(toPath))
@@ -126,18 +127,33 @@ bool copyDir(const QString &fromPath, QString toPath, QString &rErrorMessage)
     }
 
     QDir fromDir(fromPath);
-    foreach(QFileInfo info, fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+    for(const QFileInfo& info : fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
     {
+        // If symlink, check the destination name against exclusion list
+        QString currentResolvedFileOrDirName = info.fileName();
+        if (info.isSymLink()) {
+            currentResolvedFileOrDirName = QFileInfo(info.symLinkTarget()).fileName();
+        }
+        // If this file or directory matches the exclude regexp, then do not copy it
+        auto checkIfExclude = [&](const QRegExp& re) { return re.indexIn(currentResolvedFileOrDirName) > -1; };
+        bool excludeThisFile = std::any_of(excludeRegExps.begin(), excludeRegExps.end(), checkIfExclude);
+        if (excludeThisFile) {
+            continue;
+        }
+
+        const QString srcPath = info.absoluteFilePath();
+        const QString dstPath = toPath+"/"+info.fileName();
+
         if (info.isDir())
         {
-            if(!copyDir(info.absoluteFilePath(), toPath+"/"+info.fileName(), rErrorMessage))
+            if(!copyDir(srcPath, dstPath, excludeRegExps, rErrorMessage))
             {
                 return false;
             }
         }
         else
         {
-            if(!copyFile(info.absoluteFilePath(), toPath+"/"+info.fileName(), rErrorMessage))
+            if(!copyFile(srcPath, dstPath, rErrorMessage))
             {
                 return false;
             }
@@ -566,6 +582,7 @@ int callProcess(const QString &name, const QStringList &args, const QString& wor
 //! @param[in] source Source file path
 //! @param[in] target Full target file path
 //! @param[out] rErrorMessage If copy fail, this contains an error message
+//! @todo Copy symlinks as symlinks
 //! @returns True if copy successful, otherwise false
 bool copyFile(const QString &source, const QString &target, QString &rErrorMessage)
 {

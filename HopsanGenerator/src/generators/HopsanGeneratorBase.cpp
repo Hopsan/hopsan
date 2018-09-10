@@ -1027,7 +1027,7 @@ bool HopsanGeneratorBase::copyHopsanCoreSourceFilesToDir(const QString &tgtPath)
     printMessage("Copying HopsanCore source, header and dependencies...");
 
     QDir saveDir(tgtPath);
-    if (saveDir.mkpath(".") && copyDir(mHopsanRootPath+"/HopsanCore", tgtPath+"/HopsanCore"))
+    if (saveDir.mkpath(".") && copyDir(mHopsanRootPath+"/HopsanCore", tgtPath+"/HopsanCore", {}))
     {
         return true;
     }
@@ -1049,7 +1049,7 @@ bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) con
     saveDir.cd("componentLibraries");
     saveDir.cd("defaultLibrary");
 
-    copyDir( QString(mHopsanRootPath+"/componentLibraries/defaultLibrary"), saveDir.path() );
+    copyDir( QString(mHopsanRootPath+"/componentLibraries/defaultLibrary"), saveDir.path(), {} );
 
     QStringList allFiles;
     for (const auto& suffix : {"hpp", "h", "cc", "cpp"}) {
@@ -1112,9 +1112,17 @@ void hopsan::register_extra_components(hopsan::ComponentFactory* pComponentFacto
 
             const QFileInfo libInfo(libpath);
             const QString libraryRootPath = libInfo.absolutePath();
-            copyDir( libraryRootPath, libDestinationPath.path() );
-            //! @todo we should not copy all files, especially not the compiled files dll/so
-            //! @todo symlinks should be copied as symlinks
+            // Exclude pre-compiled dynamic library assuming typical suffixes
+            // Note! other dynamic libraries are included, in case they are needed by the code (unlikely)
+            QList<QRegExp> excludeFileRegexps;
+            QString regexp = "(lib)?"+lib.mSharedLibraryName;
+            if (!lib.mSharedLibraryDebugExtension.isEmpty()) {
+                regexp.append(QString(R"((%1)?)").arg(lib.mSharedLibraryDebugExtension));
+            }
+            regexp.append(R"(\.(dll|so|dylib|a).*)");
+            excludeFileRegexps.append(QRegExp(regexp));
+
+            copyDir( libraryRootPath, libDestinationPath.path(), excludeFileRegexps);
 
             QStringList allFiles;
             for (const auto& suffix : {"hpp", "h", "cc", "cpp"}) {
@@ -1166,7 +1174,7 @@ bool HopsanGeneratorBase::copyBoostIncludeFilesToDir(const QString &path) const
     saveDir.cd("include");
     saveDir.cd("boost");
 
-    copyDir( QString("../Dependencies/boost"), saveDir.path() );
+    copyDir( QString("../Dependencies/boost"), saveDir.path(), {} );
 
     saveDir.cd("bin");
     QStringList binFiles = saveDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
@@ -1205,12 +1213,13 @@ bool HopsanGeneratorBase::copyFile(const QString &source, const QString &target)
 //! @brief Copy a directory with contents
 //! @param[in] fromPath The absolute path to the directory to copy
 //! @param[in] toPath The absolute path to the destination (including destination dir name)
+//! @param[in] excludeRegExps List of regexps for files to exclude
 //! @returns True if success else False
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
-bool HopsanGeneratorBase::copyDir(const QString &fromPath, const QString &toPath) const
+bool HopsanGeneratorBase::copyDir(const QString &fromPath, const QString &toPath, const QList<QRegExp>& excludeRegExps) const
 {
     QString error;
-    if(::copyDir(fromPath, toPath, error))
+    if(::copyDir(fromPath, toPath, excludeRegExps, error))
     {
         printMessage("Copying " + fromPath);
         return true;

@@ -56,7 +56,7 @@ bool matchOSString(const QString& os);
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 
 bool removeDir(QString path);
-bool copyDir(const QString &fromPath, QString toPath, QString &rErrorMessage);
+bool copyDir(const QString &fromPath, QString toPath,  const QList<QRegExp> &excludeRegExps, QString &rErrorMessage);
 bool copyFile(const QString &source, const QString &target, QString &rErrorMessage);
 
 bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QString extraCFlags="", QString extraLFlags="");

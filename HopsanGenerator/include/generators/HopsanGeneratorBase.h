@@ -101,7 +101,7 @@ protected:
     bool copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     bool copyFile(const QString &source, const QString &target) const;
-    bool copyDir(const QString &fromPath, const QString &toPath) const;
+    bool copyDir(const QString &fromPath, const QString &toPath, const QList<QRegExp>& excludeRegExps) const;
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
     void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
 
