@@ -1092,8 +1092,6 @@ void LogDataHandler2::clear()
 //! @brief Collects plot data from last simulation
 void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
 {
-
-
     if (!(mpParentModel && mpParentModel->getTopLevelSystemContainer()))
     {
         return;
@@ -1120,6 +1118,9 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
         tt.toc(QString("Opening cache file: %1").arg(pGMC->getCacheFileInfo().absoluteFilePath()));
     }
 
+    // Block signaling while collecting all data to avoid signal spamming and extreme slowdown
+    this->blockSignals(true);
+
     TicToc tictoc(TicToc::TextOutput::DebugMessage);
     auto sizeBefore = pGMC->getCacheSize();
     QMap<std::vector<double>*, SharedVectorVariableT> generationTimeVectors;
@@ -1127,7 +1128,9 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
     auto sizeAfter = pGMC->getCacheSize();
     const double cachedSize_mb = (sizeAfter-sizeBefore)*1.0e-6;
     const double collect_ms = tictoc.toc("Collecting all log data");
-    gpMessageHandler->addDebugMessage(QString("Collected %1 MB data at %2 MB/s").arg(cachedSize_mb).arg( cachedSize_mb*1.0e3/collect_ms));
+    gpMessageHandler->addDebugMessage(QString("Wrote to disk: %1 MB data at %2 MB/s").arg(cachedSize_mb).arg( cachedSize_mb*1.0e3/collect_ms));
+
+    this->blockSignals(false);
 
     if(!overWriteLastGeneration)
     {
@@ -1321,6 +1324,8 @@ void LogDataHandler2::collectLogDataFromRemoteModel(QVector<RemoteResultVariable
     }
 
     auto timeIds = systemTimeVarIdAndSysname.keys();
+    // Block signaling while collecting all data to avoid signal spamming and extreme slowdown
+    this->blockSignals(true);
     for(int v=0; v<rResultVariables.size(); ++v)
     {
         // skip variables that were time variables
@@ -1341,6 +1346,7 @@ void LogDataHandler2::collectLogDataFromRemoteModel(QVector<RemoteResultVariable
         // Insert time domain variable
         insertTimeDomainVariable(pTime, newData, varDescs[v]);
     }
+    this->blockSignals(false);
 
     if(!overWriteLastGeneration)
     {
