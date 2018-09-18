@@ -25,6 +25,8 @@
 #ifndef HOPSANFMIGENERAETOR_H
 #define HOPSANFMIGENERAETOR_H
 
+//#include <QMap>
+
 // Hopsan includes
 #include "HopsanGeneratorBase.h"
 
@@ -54,7 +56,7 @@ private:
                               QStringList &outVarValueRefs, QStringList &outVarPortNames, QString &cqsType);
 
     bool generateModelDescriptionXmlFile(hopsan::ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs);
-    bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &savePath) const;
+    bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &savePath, const QMap<QString, QString> &replaceMap) const;
     void replaceNameSpace(const QString &savePath) const;
     bool compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const;
     void sortFiles(const QString &savePath, const QString &modelName, bool x64) const;
