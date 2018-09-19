@@ -56,11 +56,10 @@ private:
                               QStringList &outVarValueRefs, QStringList &outVarPortNames, QString &cqsType);
 
     bool generateModelDescriptionXmlFile(hopsan::ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs);
-    bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &savePath, const QMap<QString, QString> &replaceMap) const;
+    bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &fmuBuildPath, const QMap<QString, QString> &replaceMap) const;
     void replaceNameSpace(const QString &savePath) const;
-    bool compileAndLinkFMU(const QString &savePath, const QString &modelName, int version) const;
-    void sortFiles(const QString &savePath, const QString &modelName, bool x64) const;
-    bool compressFiles(const QString &savePath, const QString &modelName) const;
+    bool compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, int version, bool x64) const;
+    bool compressFiles(const QString &fmuStagePath, const QString &modelName) const;
 };
 
 #endif // HOPSANFMIGENERAETOR_H
