@@ -953,9 +953,10 @@ bool HopsanGeneratorBase::assertFilesExist(const QString &path, const QStringLis
 {
     for(const QString& file : files)
     {
-        if(!QFile::exists(path+"/"+file))
+        QString absFilePath = (path.isEmpty() ? file : path+"/"+file);
+        if(!QFile::exists(absFilePath))
         {
-            printErrorMessage("File not found: "+file);
+            printErrorMessage(QString("File '%1' not found in directory '%2'").arg(file).arg(path));
             return false;
         }
     }
