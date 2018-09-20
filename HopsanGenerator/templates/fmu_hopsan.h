@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-int hopsan_instantiate();
+int hopsan_instantiate(const char* resourceLocation);
 int hopsan_initialize(double startT, double stopT);
 void hopsan_simulate(double stopTime);
 void hopsan_finalize();

@@ -31,6 +31,7 @@
 #include <QDateTime>
 #include <QFileInfo>
 #include <QDir>
+#include <QUrl>
 
 #include <stddef.h>
 
@@ -1105,6 +1106,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     replacePattern("<<<fmupath>>>"     , rFmuPath       , fmuComponentCode);
     QDir().mkpath(rTargetPath+"/temp");
     replacePattern("<<<temppath>>>"    , rTargetPath+"/temp/", fmuComponentCode);
+    replacePattern("<<<resourcepath>>>", QUrl::fromLocalFile(rTargetPath+"/resources").toString(), fmuComponentCode);
     replaceTaggedSection(fmuComponentCode, "setpars", setPars);
     replaceTaggedSection(fmuComponentCode, "readvars", readVars);
     replaceTaggedSection(fmuComponentCode, "writevars", writeVars);
@@ -1322,7 +1324,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     // Generate model file and export assets, replacing asset paths in model
     //------------------------------------------------------------------//
 
-    QDir stageDir(fmuStagePath);
+    QDir resourceDir(fmuStagePath+"/resources/");
     std::list<hopsan::HString> assets = pSystem->getModelAssets();
     QMap<QString, QString> assetsMap;
     if (!assets.empty()) {
@@ -1356,7 +1358,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
         }
         targetPath.prepend(fmuStagePath+"/resources/");
         copyFile(absSourcePath, targetPath);
-        assetsMap.insert(asset.c_str(), stageDir.relativeFilePath(targetPath));
+        assetsMap.insert(asset.c_str(), resourceDir.relativeFilePath(targetPath));
     }
 
     genOK = generateModelFile(pSystem, fmuBuildPath, assetsMap);
