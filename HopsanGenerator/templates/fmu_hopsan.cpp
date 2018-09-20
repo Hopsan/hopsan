@@ -38,16 +38,50 @@ hopsan::HopsanEssentials gHopsanCore;
 
 double *dataPtrs[<<<nports>>>];
 
+std::string parseResourceLocation(std::string uri)
+{
+    // The resource location is an URI according to rfc3986 on the following format
+    // schema://authority/path or schema:/path
+    // authority is expected to be empty if included
+    // only the 'file' schema is supported by Hopsan
+    std::string::size_type se = uri.find_first_of(':');
+    std::string schema = uri.substr(0,se);
+    // If the next two chars are // then authority is included (may be empty)
+    std::string::size_type pb;
+    if (uri.substr(se+1,2) == "//") {
+        pb = uri.find_first_of('/', se+3);
+    } else {
+        pb = uri.find_first_of('/', se);
+    }
+    // Now we know were the path begins (pb), but is it a unix or windows path
+    // Check windows
+    if (uri.substr(pb+2,2) == ":/") {
+        // Skip first /
+        pb++;
+    }
+    std::string path = uri.substr(pb);
+#ifdef _WIN32
+    std::string::size_type i = path.find_first_of('/');
+    while (i != std::string::npos) {
+        path.replace(i, 1, 1, '\\');
+        i = path.find_first_of('/');
+    }
+#endif
+    return path;
+}
 }
 
 extern "C" {
 
-int hopsan_instantiate()
+int hopsan_instantiate(const char *resourceLocation)
 {
     double startT, stopT;      // Dummy variables
     spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
     if (spCoreComponentSystem)
     {
+        std::string rl = parseResourceLocation(resourceLocation);
+        spCoreComponentSystem->addSearchPath(rl.c_str());
+
         // Get pointers to I/O data variables
         <<<setdataptrs>>>
 

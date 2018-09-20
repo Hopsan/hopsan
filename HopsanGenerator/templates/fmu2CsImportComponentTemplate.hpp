@@ -207,7 +207,7 @@ public:
 
         //Instantiate FMU
         HString instanceName = getName();
-        fmi2_string_t fmuResourceLocation = NULL;
+        fmi2_string_t fmuResourceLocation = "<<<resourcepath>>>";
         fmi2_boolean_t visible = fmi2_false;
         jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, fmuResourceLocation, visible);
         if (jmstatus == jm_status_error)

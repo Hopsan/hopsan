@@ -272,7 +272,7 @@ const char* fmi_get_model_types_platform()
 } */
 
 fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
-                              fmi2String fmuGUID, fmi2String fmuLocation,
+                              fmi2String fmuGUID, fmi2String fmuResourceLocation,
                               const fmi2CallbackFunctions *functions, fmi2Boolean visible,
                               fmi2Boolean loggingOn)
 {
@@ -292,7 +292,7 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
     {	
 		sprintf(comp->instanceName, "%s", instanceName);
 		sprintf(comp->GUID, "%s",fmuGUID);
-        sprintf(comp->fmuLocation, "%s",fmuLocation);
+        sprintf(comp->fmuResourceLocation, "%s",fmuResourceLocation);
         comp->functions		= functions;
 		comp->loggingOn		= loggingOn;
         comp->visible		= visible;
@@ -322,7 +322,7 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 			}
 		}
 	
-        instantiateOK = hopsan_instantiate();
+        instantiateOK = hopsan_instantiate(fmuResourceLocation);
         if (!instantiateOK)
         {
             get_all_hopsan_messages(comp);

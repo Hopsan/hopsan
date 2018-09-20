@@ -52,7 +52,7 @@ typedef struct {
 	fmi2Real					states_prev		[N_STATES];
 
 	/* fmiInstantiateSlave */
-	char					fmuLocation		[BUFFER];
+    char					fmuResourceLocation		[BUFFER];
 	fmi2Boolean				visible;
 
 	/* fmiInitializeSlave */
@@ -81,7 +81,7 @@ fmi2Component fmi_instantiate (
     fmi2String instanceName,
     fmi2Type fmuType,
     fmi2String fmuGUID,
-    fmi2String fmuLocation,
+    fmi2String fmuResourceLocation,
     const fmi2CallbackFunctions* functions,
     fmi2Boolean visible,
     fmi2Boolean loggingOn);

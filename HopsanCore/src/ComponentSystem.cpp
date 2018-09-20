@@ -251,26 +251,27 @@ bool ComponentSystem::wasSimulationAborted() const
 
 //! @brief Adds a search path that can be used by its components to look for external files, e.g. area curves
 //! @param [in] rSearchPath The search path to be added
-void ComponentSystem::addSearchPath(const HString &rSearchPath)
+void ComponentSystem::addSearchPath(HString searchPath)
 {
-    HString fixedSearchString;
-    fixedSearchString = rSearchPath;
-    if (!fixedSearchString.empty())
-    {
-        while( (!fixedSearchString.empty()) && ((fixedSearchString.back() == '/') || (fixedSearchString.back() == '\\')) )
-        {
-            fixedSearchString = fixedSearchString.substr(0,fixedSearchString.size()-1);
-        }
+    if (searchPath.empty()) {
+        return;
     }
 
-    bool contain = false;
-    for(size_t i=0; i<mSearchPaths.size();++i)
+    // Strip trailing slash or back-slash
+    while( !searchPath.empty() && ((searchPath.back() == '/') || (searchPath.back() == '\\')) )
     {
-        if(mSearchPaths[i] == fixedSearchString)
-            contain = true;
+        searchPath = searchPath.substr(0,searchPath.size()-1);
     }
-    if(!contain)
-        mSearchPaths.push_back(fixedSearchString);
+
+    // Prevent adding a search path that already exists
+    for(size_t i=0; i<mSearchPaths.size(); ++i)
+    {
+        if(mSearchPaths[i] == searchPath) {
+            return;
+        }
+    }
+    addDebugMessage(HString("Adding asset searchPath: ")+searchPath);
+    mSearchPaths.push_back(searchPath);
 }
 
 
