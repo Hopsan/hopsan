@@ -1819,6 +1819,8 @@ bool ComponentSystem::checkModelBeforeSimulation()
     for ( ; scmit!=mSubComponentMap.end(); ++scmit)
     {
         Component* pComp = scmit->second; //Component pointer
+        if(pComp->isDisabled())
+            continue;
 
         // Check that ALL ports that MUST be connected are connected
         vector<Port*> ports = pComp->getPortPtrVector();
