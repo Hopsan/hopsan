@@ -53,6 +53,8 @@ int hopsan_instantiate()
 
         // Initialize system
         spCoreComponentSystem->setDesiredTimestep(<<<timestep>>>);
+        spCoreComponentSystem->setNumLogSamples(0);
+        //! @todo disableLog does not work without setNumLogsamples0
         spCoreComponentSystem->disableLog();
         if (spCoreComponentSystem->checkModelBeforeSimulation())
         {
