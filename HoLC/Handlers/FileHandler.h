@@ -60,9 +60,11 @@ public slots:
     void loadLibraryFromXml(const QString &path);
     void setFileNotSaved();
     bool hasFile(QString filePath);
+    void reloadFile();
 
 private slots:
     void openFile(QTreeWidgetItem *pItem, int);
+    void openFile(QSharedPointer<FileObject> pFile);
     void removeFile(QTreeWidgetItem *pItem);
 
 private:
@@ -86,7 +88,7 @@ private:
     QString mLibraryMainXMLFile;
     QString mLibraryMainCPPFile;
     QVector<BuildFlags> mLibraryBuildFlags;
-    QVector<QSharedPointer<FileObject>> mLibraryFiles;
+    QList<QSharedPointer<FileObject>> mLibraryFiles;
 
     QSharedPointer<FileObject> mpCurrentFile;
 };
