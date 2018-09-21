@@ -32,6 +32,7 @@
 #include <QDesktopWidget>
 #include <QKeySequence>
 #include <QDebug>
+#include <QMenuBar>
 
 #include "MainWindow.h"
 #include "Configuration.h"
@@ -111,6 +112,8 @@ MainWindow::MainWindow(QWidget *pParent)
     pCompileAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Compile.png"));
     QAction *pDebugAction = new QAction("Debug", this);
     pDebugAction->setShortcut(QKeySequence("Ctrl+D"));
+    QAction *pReloadAction = new QAction("Reload Current File", this);
+    QAction *pCloseAction = new QAction("Close HoLC", this);
 
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pNewAction);
@@ -124,6 +127,26 @@ MainWindow::MainWindow(QWidget *pParent)
     pToolBar->addAction(pCompileAction);
     pToolBar->addAction(pDebugAction);
     this->addToolBar(pToolBar);
+
+    QMenuBar *pMenuBar = new QMenuBar();
+    pMenuBar->show();
+    this->setMenuBar(pMenuBar);
+
+    QMenu *pFileMenu = pMenuBar->addMenu(tr("File"));
+    pFileMenu->addAction(pNewAction);
+    pFileMenu->addAction(pOpenAction);
+    pFileMenu->addAction(pSaveAction);
+    pFileMenu->addSeparator();
+    pFileMenu->addAction(pAddComponentAction);
+    pFileMenu->addAction(pAddComponentFromFileAction);
+    pFileMenu->addAction(pAddCafFromFileAction);
+    pFileMenu->addAction(pReloadAction);
+    pFileMenu->addSeparator();
+    pFileMenu->addAction(pCloseAction);
+
+    QMenu *pToolsMenu = pMenuBar->addMenu(tr("Tools"));
+    pToolsMenu->addAction(pOptionsAction);
+    pToolsMenu->addAction(pCompileAction);
 
     //Create handlers
     mpMessageHandler = new MessageHandler(mpMessageWidget);
@@ -150,6 +173,8 @@ MainWindow::MainWindow(QWidget *pParent)
     connect(pAddComponentFromFileAction,    SIGNAL(triggered()),        mpFileHandler,              SLOT(addComponent()));
     connect(pAddCafFromFileAction,          SIGNAL(triggered()),        mpFileHandler,              SLOT(addAppearanceFile()));
     connect(pDebugAction,                   SIGNAL(triggered()),        mpEditorWidget,             SLOT(generateAutoCompleteList()));
+    connect(pReloadAction,                  SIGNAL(triggered()),        mpFileHandler,              SLOT(reloadFile()));
+    connect(pCloseAction,                   SIGNAL(triggered()),        this,                       SLOT(close()));
 
     //Load last session project (if exists)
     if(!mpConfiguration->getProjectPath().isEmpty())

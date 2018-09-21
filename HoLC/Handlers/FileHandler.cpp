@@ -512,6 +512,16 @@ bool FileHandler::hasFile(QString filePath)
     return false;
 }
 
+void FileHandler::reloadFile()
+{
+    QString path = mpCurrentFile->mFileInfo.absoluteFilePath();
+    FileObject::FileTypeEnum type = mpCurrentFile->mType;
+    mpCurrentFile.clear();
+    mLibraryFiles.removeAll(mpCurrentFile);
+    mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(path, type)));
+    this->openFile(mLibraryFiles.last());
+}
+
 void FileHandler::saveToXml(const QString &filePath)
 {
     mpFilesWidget->removeAsterisks();
@@ -729,7 +739,12 @@ void FileHandler::openFile(QTreeWidgetItem *pItem, int)
 {
     if(!mTreeToFileMap.contains(pItem)) return;
 
-    mpCurrentFile = mTreeToFileMap.find(pItem).value();
+    openFile(mTreeToFileMap.find(pItem).value());
+}
+
+void FileHandler::openFile(QSharedPointer<FileObject> pFile)
+{
+    mpCurrentFile = pFile;
 
     EditorWidget::HighlighterTypeEnum highlightType = EditorWidget::HighlighterTypeEnum::PlainText;
     QString fileName = mpCurrentFile->mFileInfo.fileName();
@@ -761,7 +776,7 @@ void FileHandler::removeFile(QTreeWidgetItem *pItem)
         return;
     }
 
-    mLibraryFiles.remove(mLibraryFiles.indexOf(pFile));
+    mLibraryFiles.removeAt(mLibraryFiles.indexOf(pFile));
     mpFilesWidget->removeItem(pItem);
     mpEditorWidget->clear();
     mTreeToFileMap.remove(pItem);
