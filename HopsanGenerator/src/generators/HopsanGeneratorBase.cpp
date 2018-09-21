@@ -788,29 +788,20 @@ bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
 
     printMessage("Writing " + libName + "_lib.xml...");
 
-    QFile xmlFile;
-    xmlFile.setFileName(dstPath+libName+"_lib.xml");
-    if(!xmlFile.exists())
-    {
-        if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            printErrorMessage("Failed to open " + libName + "_lib.xml  for writing.");
-            return false;
-        }
-        QTextStream xmlStream(&xmlFile);
-        xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    ComponentLibrary lib;
+    lib.mId = libID;
+    lib.mName = libName;
+    lib.mSharedLibraryName = libName;
+    lib.mSharedLibraryDebugExtension = "_d";
+    lib.mSourceFiles.append(libName+".cpp");
+    lib.mBuildFlags.append(BuildFlags(cflags, lflags));
 
-        xmlStream << "<hopsancomponentlibrary xmlversion=\"0.1\" libversion=\"1\">\n";
-        xmlStream << "  <id>" << libID  << "</id>\n";
-        xmlStream << "  <name>" << libName  << "</name>\n";
-        xmlStream << "  <lib>" << libName  << "</lib>\n";
-        xmlStream << "  <source>" << libName << ".cpp</source>\n";
-        xmlStream << "  <buildflags>\n";
-        xmlStream << "    <cflags>" << cflags.join(" ") << "</cflags>\n";
-        xmlStream << "    <lflags>" << lflags.join(" ") << "</lflags>\n";
-        xmlStream << "  </buildflags>\n";
-        xmlStream << "</hopsancomponentlibrary>\n";
-        xmlFile.close();
+    const QString libFilePath = dstPath+libName+"_lib.xml";
+    bool saveOK = lib.saveToXML(libFilePath);
+    if(!saveOK)
+    {
+        printErrorMessage("Failed to open "+libFilePath+" for writing.");
+        return false;
     }
 
     printMessage("Finished.");
