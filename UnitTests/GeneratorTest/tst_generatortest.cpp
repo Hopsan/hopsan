@@ -118,6 +118,7 @@ private Q_SLOTS:
     void Generator_FMU_Export()
     {
         QFETCH(ComponentSystem*, system);
+        QFETCH(double, modelstoptime);
 #if defined(__APPLE__)
         QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
 #else
@@ -134,13 +135,15 @@ private Q_SLOTS:
         QStringList args;
         QProcess p;
 
+        QString testStopTime = QString::number(modelstoptime*2);
+
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
         std::string outpath = cwd+"/fmu1_32/";
         callFmuExportGenerator(outpath.c_str(), system, hopsanRoot.c_str(),  gcc32Path.c_str(), 1, 32,
                                &generatorMessageCallback);
 
-
+        args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << qcwd+"/fmu1_32/unittestmodel_export.fmu";
@@ -158,6 +161,7 @@ private Q_SLOTS:
                                &generatorMessageCallback);
 
         args.clear();
+        args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << qcwd+"/fmu2_32/unittestmodel_export.fmu";
@@ -177,6 +181,7 @@ private Q_SLOTS:
                                &generatorMessageCallback);
 
         args.clear();
+        args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << qcwd+"/fmu1_64/unittestmodel_export.fmu";
@@ -194,6 +199,7 @@ private Q_SLOTS:
                                &generatorMessageCallback);
 
         args.clear();
+        args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
         args << qcwd+"/fmu2_64/unittestmodel_export.fmu";
@@ -211,6 +217,7 @@ private Q_SLOTS:
     void Generator_FMU_Export_data()
     {
         QTest::addColumn<ComponentSystem*>("system");
+        QTest::addColumn<double>("modelstoptime");
         QString modelpath=qcwd+"/../Models/unittestmodel_export.hmf";
         QFile file(modelpath);
 
@@ -233,7 +240,7 @@ private Q_SLOTS:
 #endif
 
         double start, stop;
-        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(modelpath.toStdString().c_str(),start,stop);
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(modelpath.toStdString().c_str(),start,stop) << stop;
     }
 
     void Generator_Simulink_Export()
