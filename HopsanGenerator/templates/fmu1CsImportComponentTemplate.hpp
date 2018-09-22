@@ -167,7 +167,7 @@ public:
         //Instantiate FMU
         HString instanceName = getName();
         fmi1_string_t mimeType = NULL;
-        fmi1_string_t fmuLocation = NULL;
+        fmi1_string_t fmuLocation = "<<<fmulocation>>>";
         fmi1_real_t timeout = 0.0;
         fmi1_boolean_t visible = fmi1_false;
         fmi1_boolean_t interactive = fmi1_false;

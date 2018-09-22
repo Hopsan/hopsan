@@ -463,6 +463,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     fmuComponentCode.replace("<<<fmupath>>>", rFmuPath);
     QDir().mkpath(rTargetPath+"/temp");
     fmuComponentCode.replace("<<<temppath>>>", rTargetPath+"/temp/");
+    fmuComponentCode.replace("<<<fmulocation>>>", QUrl::fromLocalFile(rTargetPath).toString());
     replaceTaggedSection(fmuComponentCode, "setpars", setPars);
     replaceTaggedSection(fmuComponentCode, "readvars", readVars);
     replaceTaggedSection(fmuComponentCode, "writevars", writeVars);
