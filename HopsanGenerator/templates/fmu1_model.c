@@ -268,84 +268,6 @@ const char* fmi_get_model_types_platform()
 	return FMI_PLATFORM_TYPE;
 }
 
-
-
-/* static FILE* find_string(FILE* fp, char* str, int len) {
-
-} */
-
-fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCallbackFunctions functions, fmiBoolean loggingOn)
-{
-	component_ptr_t comp;
-    int k, p, instantiateOK ;
-
-	comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
-	if (comp == NULL) 
-    {
-		return NULL;
-	} 
-    else if (strcmp(GUID, FMI_GUID) != 0) 
-    {
-		return NULL;
-	} 
-    else 
-    {	
-		sprintf(comp->instanceName, "%s", instanceName);
-		sprintf(comp->GUID, "%s",GUID);
-		comp->functions		= functions;
-		comp->loggingOn		= loggingOn;
-
-		comp->callEventUpdate = fmiFalse;
-
-		/* Set default values */
-		for (k = 0; k < N_STATES;			k++) comp->states[k]			= 0.0;
-		for (k = 0; k < N_STATES;			k++) comp->states_prev[k]		= 0.0; /* Used in CS only */
-		for (k = 0; k < N_STATES;			k++) comp->states_nom[k]		= 1.0;
-		for (k = 0; k < N_STATES;			k++) comp->states_vr[k]			= k;
-		for (k = 0; k < N_STATES;			k++) comp->states_der[k]		= 0.0;
-		for (k = 0; k < N_EVENT_INDICATORS; k++) comp->event_indicators[k]	= 1e10;
-		for (k = 0; k < N_REAL;				k++) comp->reals[k]				= 0.0;
-		for (k = 0; k < N_INTEGER;			k++) comp->integers[k]			= 0;
-		for (k = 0; k < N_BOOLEAN;			k++) comp->booleans[k]			= fmiFalse;
-		for (k = 0; k < N_STRING;			k++) comp->strings[k]			= NULL;
-
-		/* Used in CS only */
-		for (k = 0; k < N_INPUT_REAL; k++) {
-			for (p = 0; p < N_INPUT_REAL_MAX_ORDER + 1; p++) {
-				comp->input_real[k][p] = 0.0;
-			}
-		}
-
-		/* Used in CS only */
-		for (k = 0; k < N_OUTPUT_REAL; k++) {
-			for (p = 0; p < N_OUTPUT_REAL_MAX_ORDER + 1; p++) {
-                comp->output_real[k][p] = 0.0;
-			}
-		}
-
-        instantiateOK = hopsan_instantiate();
-        if (!instantiateOK)
-        {
-            get_all_hopsan_messages(comp);
-            fmi_free_model_instance(comp);
-            return NULL;
-        }
-
-		return comp;
-	}
-}
-
-void fmi_free_model_instance(fmiComponent c)
-{
-	int i;
-	component_ptr_t comp = (fmiComponent)c;
-	for(i = 0; i < N_STRING; i++) {
-		comp->functions.freeMemory((void*)(comp->strings[i]));
-		comp->strings[i] = 0;
-	}
-	comp->functions.freeMemory(c);
-}
-
 fmiStatus fmi_set_time(fmiComponent c, fmiReal fmitime)
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -386,29 +308,6 @@ fmiStatus fmi_completed_integrator_step(fmiComponent c, fmiBoolean* callEventUpd
     {
 		*callEventUpdate = comp->callEventUpdate;
 		return fmiOK;
-	}
-}
-
-fmiStatus fmi_initialize(fmiComponent c, fmiBoolean toleranceControlled, fmiReal relativeTolerance, fmiEventInfo* eventInfo)
-{
-	component_ptr_t comp = (fmiComponent)c;
-
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		comp->eventInfo.iterationConverged			= fmiFalse;
-		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
-		comp->eventInfo.stateValuesChanged			= fmiFalse;
-		comp->eventInfo.terminateSimulation			= fmiFalse;
-		comp->eventInfo.upcomingTimeEvent			= fmiFalse;
-		comp->eventInfo.nextEventTime				= -0.0;
-
-		comp->toleranceControlled = toleranceControlled;
-		comp->relativeTolerance = relativeTolerance;
-		
-		*eventInfo = comp->eventInfo;
-
-        return calc_initialize(comp);
 	}
 }
 
@@ -533,39 +432,96 @@ const char* fmi_get_types_platform()
 
 fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, fmiString mimeType, fmiReal timeout, fmiBoolean visible, fmiBoolean interactive, fmiCallbackFunctions functions, fmiBoolean loggingOn)
 {
-	component_ptr_t comp;
+    component_ptr_t comp;
+    int k, p, instantiateOK ;
 
-	comp = fmi_instantiate_model(instanceName, fmuGUID, functions, loggingOn);
-	if (comp == NULL) {
-		return NULL;
-	} else if (strcmp(fmuGUID, FMI_GUID) != 0) {
-		return NULL;
-	} else {	
-		sprintf(comp->fmuLocation, "%s",fmuLocation);
-		sprintf(comp->mimeType, "%s",mimeType);
-		comp->timeout		= timeout;
-		comp->visible		= visible;
-		comp->interactive	= interactive;
-		return comp;
-	}
+    comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
+    if (comp == NULL)
+    {
+        return NULL;
+    }
+    else if (strcmp(fmuGUID, FMI_GUID) != 0)
+    {
+        return NULL;
+    }
+    else
+    {
+        sprintf(comp->instanceName, "%s", instanceName);
+        sprintf(comp->GUID, "%s", fmuGUID);
+        sprintf(comp->fmuLocation, "%s", fmuLocation);
+        sprintf(comp->mimeType, "%s", mimeType);
+        comp->timeout		= timeout;
+        comp->visible		= visible;
+        comp->interactive	= interactive;
+        comp->functions		= functions;
+        comp->loggingOn		= loggingOn;
+
+        comp->callEventUpdate = fmiFalse;
+
+        /* Set default values */
+        for (k = 0; k < N_STATES;			k++) comp->states[k]			= 0.0;
+        for (k = 0; k < N_STATES;			k++) comp->states_prev[k]		= 0.0; /* Used in CS only */
+        for (k = 0; k < N_STATES;			k++) comp->states_nom[k]		= 1.0;
+        for (k = 0; k < N_STATES;			k++) comp->states_vr[k]			= k;
+        for (k = 0; k < N_STATES;			k++) comp->states_der[k]		= 0.0;
+        for (k = 0; k < N_EVENT_INDICATORS; k++) comp->event_indicators[k]	= 1e10;
+        for (k = 0; k < N_REAL;				k++) comp->reals[k]				= 0.0;
+        for (k = 0; k < N_INTEGER;			k++) comp->integers[k]			= 0;
+        for (k = 0; k < N_BOOLEAN;			k++) comp->booleans[k]			= fmiFalse;
+        for (k = 0; k < N_STRING;			k++) comp->strings[k]			= NULL;
+
+        /* Used in CS only */
+        for (k = 0; k < N_INPUT_REAL; k++) {
+            for (p = 0; p < N_INPUT_REAL_MAX_ORDER + 1; p++) {
+                comp->input_real[k][p] = 0.0;
+            }
+        }
+
+        /* Used in CS only */
+        for (k = 0; k < N_OUTPUT_REAL; k++) {
+            for (p = 0; p < N_OUTPUT_REAL_MAX_ORDER + 1; p++) {
+                comp->output_real[k][p] = 0.0;
+            }
+        }
+
+        char fmuResourceLocation[1024];
+        strcpy(fmuResourceLocation, comp->fmuLocation);
+        strcat(fmuResourceLocation, "/resources");
+        instantiateOK = hopsan_instantiate(fmuResourceLocation);
+        if (!instantiateOK)
+        {
+            get_all_hopsan_messages(comp);
+            fmi_free_slave_instance(comp);
+            return NULL;
+        }
+
+        return comp;
+    }
 }
 
 fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
-	component_ptr_t comp	= (fmiComponent)c;
-	fmiReal relativeTolerance;
-	fmiEventInfo eventInfo;
-	fmiBoolean toleranceControlled;
+    component_ptr_t comp = (fmiComponent)c;
+    if (comp == NULL) {
+        return fmiFatal;
+    } else {
+        comp->tStart			= tStart;
+        comp->StopTimeDefined	= StopTimeDefined;
+        comp->tStop				= tStop;
 
+        //! @todo not sure if the eventInfo is relevant here, since this is not ME
+        comp->eventInfo.iterationConverged			= fmiFalse;
+        comp->eventInfo.stateValueReferencesChanged = fmiFalse;
+        comp->eventInfo.stateValuesChanged			= fmiFalse;
+        comp->eventInfo.terminateSimulation			= fmiFalse;
+        comp->eventInfo.upcomingTimeEvent			= fmiFalse;
+        comp->eventInfo.nextEventTime				= -0.0;
 
-	comp->tStart			= tStart;
-	comp->StopTimeDefined	= StopTimeDefined;
-	comp->tStop				= tStop;
+        comp->toleranceControlled = fmiTrue;
+        comp->relativeTolerance = 1e-4;
 
-	toleranceControlled = fmiTrue;
-	relativeTolerance = 1e-4;
-
-	return fmi_initialize((fmiComponent)comp, toleranceControlled, relativeTolerance, &eventInfo);
+        return calc_initialize(comp);
+    }
 }
 
 fmiStatus fmi_terminate_slave(fmiComponent c)
@@ -580,7 +536,13 @@ fmiStatus fmi_reset_slave(fmiComponent c)
 
 void fmi_free_slave_instance(fmiComponent c)
 {
-	fmi_free_model_instance(c);
+    int i;
+    component_ptr_t comp = (fmiComponent)c;
+    for(i = 0; i < N_STRING; i++) {
+        comp->functions.freeMemory((void*)(comp->strings[i]));
+        comp->strings[i] = 0;
+    }
+    comp->functions.freeMemory(c);
 }
 
 fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
