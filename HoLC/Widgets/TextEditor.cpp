@@ -356,6 +356,21 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
     }
 }
 
+void TextEditor::wheelEvent(QWheelEvent* event)
+{
+#if QT_VERSION >= 0x050000  //zoomIn() and zoomOut() not available in Qt4
+   if ((event->modifiers() == Qt::ControlModifier) && (event->delta() > 0))
+       zoomIn(2);
+   else if ((event->modifiers() == Qt::ControlModifier) && (event->delta() < 0))
+       zoomOut(2);
+   else
+       QPlainTextEdit::wheelEvent(event);
+#else
+   QPlainTextEdit::wheelEvent(event);
+#endif
+}
+
+
 
 //! @brief Highlights current line
 void TextEditor::highlightCurrentLine()
