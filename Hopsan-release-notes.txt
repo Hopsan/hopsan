@@ -31,6 +31,62 @@
     Version History
 ******************************
 
+2.10.0 (2018-09-28)
+
+--- Important Changes ---
+
+- The component library XML format has been updated.
+  See the included "componentLibraries\exampleComponentLib\exampleComponentLib.xml" for details.
+  Note! Hopsan will still be able to load files of the previous version.
+
+--- Enhancements ---
+
+- Models:
+  - Models will now know what external component libraries they require.
+    Libraries should have an <id> element in their XML file for this to work.
+    See the included "componentLibraries\exampleComponentLib\exampleComponentLib.xml" for details.
+
+- FMU:
+  - When a model is exported to FMU or S-function, any required external component library will be included in the
+    export and compiled into the target.
+    Note! This requires that the source-code for the library is available and that all components, source files or
+    special build flags (if any) are listed in the component library XML. You can use HoLC (Hopsan Library Creator),
+    to add existing component files using a graphical users interface, but you can also update the library XML file
+    manually in a text editor.
+  - When a model that depend on data files (assets) is exported as an FMU, these files will now be included inside
+    the FMU, in the (resources) directory.
+    Note! Currently, any data file is included regardless of its size. This may pose a problem for very large files.
+  - When a model is exported into an FMU, the exported directory structure is much cleaner, and the FMU easier to find.
+    Temporary build and staging files are put into DESTINATION/fmu_build and DESTINATION/fmu_stage.
+    These directories are deleted the next time an FMU is exported to the same directory.
+
+- HoLC:
+  - It is now possible to reload a file that was changed outside of HoLC, without restarting the program.
+  - It is now possible to add multiple existing files at the same time.
+  - Add existing files dialogues will now remember the last used directory.
+
+--- Bug Fixes ---
+
+- HoLC:
+  - It is no longer assumed that the name of library main XML and cpp files are the same as the library.
+    This allows overwriting existing library files on save.
+  - Build flags are now preserved when loading and saving a library XML file.
+    (You must still enter them manually in a text editor)
+  - The file dialog suffix filters should now work.
+
+- FMU:
+  - Hopsan models exported as FMUs will no longer crash after 1/Ts simulation steps.
+
+- HopsanGUI:
+  - Prevent severe slowdown after simulation when result data is collected.
+    This was especially noticable for large model or when many generations had been collected.
+
+- Simulation:
+  - Disabled components are now allowed to have non-connected ports.
+    Note! If you disable components that are connected to enabled ones,
+    the simulation may not behave as you expect.
+
+
 2.9.0 (2018-07-02)
 
 --- Important Changes ---
