@@ -44,6 +44,8 @@ protected:
     void resizeEvent(QResizeEvent *pEvent);
     void insertFromMimeData(const QMimeData *pData);
     void keyPressEvent(QKeyEvent *event);
+    void wheelEvent(QWheelEvent* e);
+
 public slots:
     void generateAutoCompleteList(QString filter, QStringList &variables, QStringList &dataTypes, QStringList &functions);
 private slots:
