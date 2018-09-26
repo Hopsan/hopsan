@@ -110,6 +110,7 @@ MainWindow::MainWindow(QWidget *pParent)
     pOptionsAction->setCheckable(true);
     QAction *pCompileAction = new QAction("Compile Library", this);
     pCompileAction->setIcon(QIcon(":graphics/uiicons/Hopsan-Compile.png"));
+    pCompileAction->setShortcut(QKeySequence("Ctrl+G"));
     QAction *pDebugAction = new QAction("Debug", this);
     pDebugAction->setShortcut(QKeySequence("Ctrl+D"));
     QAction *pReloadAction = new QAction("Reload Current File", this);
