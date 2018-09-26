@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject hmffile="Regular_Step.hmf" displayname="Regular_Step" typename="Subsystem" subtypename="Regular_Step">
+        <icons>
+            <icon scale="1" path="Regular_Step.svg" iconrotation="ON" type="user"/>
+        </icons>
+		<animation>
+			<icon userpath="Regular_Step.svg"/>
+		    <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="Step_active.svg"/>
+                <data port="Action" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
+                <indicator port="Action" dataname="Value"/>
+            </movable>
+		</animation>
+    </modelobject>
+</hopsanobjectappearance>
