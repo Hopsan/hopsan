@@ -26,6 +26,7 @@
 #define TEXTEDITOR_H
 
 #include <QPlainTextEdit>
+#include <QCompleter>
 
 class LineNumberArea;
 
@@ -47,14 +48,17 @@ protected:
     void wheelEvent(QWheelEvent* e);
 
 public slots:
-    void generateAutoCompleteList(QString filter, QStringList &variables, QStringList &dataTypes, QStringList &functions);
+    void updateAutoCompleteList();
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
     void updateLineNumberArea(const QRect &, int);
+    void insertCompletion(const QString& completion);
+
 
 private:
     QWidget *mpLineNumberArea;
+    QCompleter *mpCompleter;
 };
 
 

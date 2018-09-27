@@ -173,7 +173,6 @@ MainWindow::MainWindow(QWidget *pParent)
     connect(pAddComponentAction,            SIGNAL(triggered()),        mpCreateComponentWizard,    SLOT(open()));
     connect(pAddComponentFromFileAction,    SIGNAL(triggered()),        mpFileHandler,              SLOT(addComponent()));
     connect(pAddCafFromFileAction,          SIGNAL(triggered()),        mpFileHandler,              SLOT(addAppearanceFile()));
-    connect(pDebugAction,                   SIGNAL(triggered()),        mpEditorWidget,             SLOT(generateAutoCompleteList()));
     connect(pReloadAction,                  SIGNAL(triggered()),        mpFileHandler,              SLOT(reloadFile()));
     connect(pCloseAction,                   SIGNAL(triggered()),        this,                       SLOT(close()));
 

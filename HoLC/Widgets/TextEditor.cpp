@@ -31,6 +31,9 @@
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QAbstractItemView>
+#include <QStringListModel>
+#include <QScrollBar>
 #include <math.h>
 
 #include "TextEditor.h"
@@ -50,6 +53,16 @@ TextEditor::TextEditor(QWidget *parent) : QPlainTextEdit(parent)
     highlightCurrentLine();
 
     setLineWrapMode(QPlainTextEdit::NoWrap);
+
+
+    mpCompleter = new QCompleter(this);
+    updateAutoCompleteList();
+
+    mpCompleter->setWidget(this);
+    mpCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    mpCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    QObject::connect(mpCompleter, SIGNAL(activated(QString)),
+                     this, SLOT(insertCompletion(QString)));
 }
 
 
@@ -89,6 +102,18 @@ void TextEditor::updateLineNumberArea(const QRect &rect, int dy)
         updateLineNumberAreaWidth(0);
 }
 
+void TextEditor::insertCompletion(const QString& completion)
+{
+    if (mpCompleter->widget() != this)
+        return;
+    QTextCursor tc = textCursor();
+    int extra = completion.length() - mpCompleter->completionPrefix().length();
+    tc.movePosition(QTextCursor::Left);
+    tc.movePosition(QTextCursor::EndOfWord);
+    tc.insertText(completion.right(extra));
+    setTextCursor(tc);
+}
+
 
 //! @brief Resize event for text editor
 void TextEditor::resizeEvent(QResizeEvent *pEvent)
@@ -113,6 +138,22 @@ void TextEditor::insertFromMimeData(const QMimeData *pData)
 //! @brief Intercept key press event, to handle special keys
 void TextEditor::keyPressEvent(QKeyEvent *pEvent)
 {
+    if (mpCompleter->popup()->isVisible())
+    {
+        //Ignore the following keys when the completer is visible
+       switch (pEvent->key()) {
+       case Qt::Key_Enter:
+       case Qt::Key_Return:
+       case Qt::Key_Escape:
+       case Qt::Key_Tab:
+       case Qt::Key_Backtab:
+            pEvent->ignore();
+            return;
+       default:
+           break;
+       }
+    }
+
     //Replace tabs with four whitespaces
     if(pEvent->key() == Qt::Key_Backtab)    //Shift+tab, remove spaces to the left until next tab stop (or as many spaces as possible)
     {
@@ -194,50 +235,17 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
             }
         }
     }
-    else if(pEvent->key() == Qt::Key_T)     //Ctrl-T = block comment
+    else if(pEvent->key() == Qt::Key_T && pEvent->modifiers().testFlag(Qt::ControlModifier))     //Ctrl-T = block comment
     {
-        if((pEvent->modifiers().testFlag(Qt::ControlModifier)))
+        textCursor().beginEditBlock();
+        QString text = textCursor().selection().toPlainText();
+        text.replace("\n", "\n//");
+        if(textCursor().atBlockStart())
         {
-            textCursor().beginEditBlock();
-            QString text = textCursor().selection().toPlainText();
-            text.replace("\n", "\n//");
-            if(textCursor().atBlockStart())
-            {
-                text.prepend("//");
-            }
-            else
-            {
-                int pos = textCursor().position();
-                int stopPos = textCursor().anchor();
-                QTextCursor c;
-                c = textCursor();
-                c.setPosition(min(pos,stopPos));
-                setTextCursor(c);
-                moveCursor(QTextCursor::StartOfBlock);
-                insertPlainText("//");
-
-                c = textCursor();
-                c.setPosition(pos+2);
-                c.setPosition(stopPos+2, QTextCursor::KeepAnchor);
-                setTextCursor(c);
-            }
-            textCursor().removeSelectedText();
-            insertPlainText(text);
-            textCursor().endEditBlock();
+            text.prepend("//");
         }
         else
         {
-            QPlainTextEdit::keyPressEvent(pEvent);
-        }
-    }
-    else if(pEvent->key() == Qt::Key_U)     //Ctrl-U = uncomment block
-    {
-        if((pEvent->modifiers().testFlag(Qt::ControlModifier)))
-        {
-            textCursor().beginEditBlock();
-            QString text = textCursor().selection().toPlainText();
-            text.replace("\n//", "\n");
-
             int pos = textCursor().position();
             int stopPos = textCursor().anchor();
             QTextCursor c;
@@ -245,114 +253,68 @@ void TextEditor::keyPressEvent(QKeyEvent *pEvent)
             c.setPosition(min(pos,stopPos));
             setTextCursor(c);
             moveCursor(QTextCursor::StartOfBlock);
-            moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-            moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-            int movement = 0;
-            if(textCursor().selection().toPlainText() == "//")
-            {
-                textCursor().removeSelectedText();
-                movement = 2;
-            }
+            insertPlainText("//");
+
             c = textCursor();
-            c.setPosition(pos-movement);
-            c.setPosition(stopPos-movement, QTextCursor::KeepAnchor);
+            c.setPosition(pos+2);
+            c.setPosition(stopPos+2, QTextCursor::KeepAnchor);
             setTextCursor(c);
-
-            textCursor().removeSelectedText();
-            insertPlainText(text);
-
-            textCursor().endEditBlock();
         }
-        else
-        {
-            QPlainTextEdit::keyPressEvent(pEvent);
-        }
+        textCursor().removeSelectedText();
+        insertPlainText(text);
+        textCursor().endEditBlock();
     }
-    else if(pEvent->key() == Qt::Key_Space && pEvent->modifiers().testFlag(Qt::ControlModifier))
+    else if(pEvent->key() == Qt::Key_U && pEvent->modifiers().testFlag(Qt::ControlModifier))     //Ctrl-U = uncomment block
     {
-        QTextCursor tc = textCursor();
-        //tc.select(QTextCursor::WordUnderCursor);
-        QString block = tc.block().text();
-        int x = tc.positionInBlock();
+        textCursor().beginEditBlock();
+        QString text = textCursor().selection().toPlainText();
+        text.replace("\n//", "\n");
 
-        QString nonLetters = " .,;+-*/";
-        QChar nextLetter = block[x];
-        if(block.size() != x && !nonLetters.contains(nextLetter)) return;
-
-        QString word = block;
-        for(int i=0; i<nonLetters.size(); ++i)
+        int pos = textCursor().position();
+        int stopPos = textCursor().anchor();
+        QTextCursor c;
+        c = textCursor();
+        c.setPosition(min(pos,stopPos));
+        setTextCursor(c);
+        moveCursor(QTextCursor::StartOfBlock);
+        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        int movement = 0;
+        if(textCursor().selection().toPlainText() == "//")
         {
-          word.remove(nonLetters[i]);
+            textCursor().removeSelectedText();
+            movement = 2;
         }
+        c = textCursor();
+        c.setPosition(pos-movement);
+        c.setPosition(stopPos-movement, QTextCursor::KeepAnchor);
+        setTextCursor(c);
 
-        QStringList variables,dataTypes,functions;
-        generateAutoCompleteList(word,variables,dataTypes,functions);
+        textCursor().removeSelectedText();
+        insertPlainText(text);
 
-        QMenu menu;
-        menu.setStyleSheet("QMenu { menu-scrollable: 1; }");
-        QMap<QAction*, QString> a2sMap;
-        for(int i=0; i<variables.size(); ++i)
-        {
-            if(variables[i] != word)
-            {
-                a2sMap.insert(menu.addAction(variables[i]),variables[i]);
-            }
-        }
-        if(!variables.isEmpty() && !dataTypes.isEmpty() && functions.isEmpty())
-        {
-            menu.addSeparator();
-        }
-        for(int i=0; i<dataTypes.size(); ++i)
-        {
-            if(dataTypes[i] != word)
-            {
-                a2sMap.insert(menu.addAction(dataTypes[i]),dataTypes[i]);
-            }
-        }
-        if(!functions.isEmpty() && !(variables.isEmpty() && dataTypes.isEmpty()))
-        {
-            menu.addSeparator();
-        }
-        for(int i=0; i<functions.size(); ++i)
-        {
-            if(functions[i] != word)
-            {
-                a2sMap.insert(menu.addAction(functions[i]),functions[i]);
-            }
-        }
-
-        if(menu.isEmpty()) return;
-
-        menu.addSeparator();
-
-
-        QPoint menuPos = viewport()->mapToGlobal(cursorRect().center());
-//        int screenH = qApp->desktop()->screenGeometry().height();
-//        int menuH = menu.height();
-//        int menuY = menuPos.y();
-//        if(menuH > (screenH-menuY))
-//        {
-//            menuPos.setY(menuY+(menuY+menuH-screenH));
-//        }
-        menu.setMaximumHeight(100);
-        menu.move(menuPos.x()+menu.width()/2, menuPos.y()+menu.height()/2);
-        QAction *pAns = menu.exec(menuPos);
-
-        QMapIterator<QAction*, QString> it(a2sMap);
-        while(it.hasNext())
-        {
-            it.next();
-            if(pAns == it.key())
-            {
-                QString newText = it.value();
-                newText.remove(0, word.size());
-                this->insertPlainText(newText);
-            }
-        }
+        textCursor().endEditBlock();
     }
     else
     {
         QPlainTextEdit::keyPressEvent(pEvent);
+
+        updateAutoCompleteList();
+
+        QTextCursor tc = textCursor();
+        tc.select(QTextCursor::WordUnderCursor);
+        QString prefix = tc.selectedText();
+        if((pEvent->key() != Qt::Key_Space || !pEvent->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
+            return;
+
+        if (prefix != mpCompleter->completionPrefix()) {
+            mpCompleter->setCompletionPrefix(prefix);
+            mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
+        }
+        QRect cr = cursorRect();
+        cr.setWidth(mpCompleter->popup()->sizeHintForColumn(0)
+                    + mpCompleter->popup()->verticalScrollBar()->sizeHint().width());
+        mpCompleter->complete(cr);
     }
 }
 
@@ -422,17 +384,16 @@ void TextEditor::lineNumberAreaPaintEvent(QPaintEvent *pEvent)
 }
 
 
-void TextEditor::generateAutoCompleteList(QString filter, QStringList &variables, QStringList &dataTypes, QStringList &functions)
+void TextEditor::updateAutoCompleteList()
 {
-    filter = filter.trimmed();
-
     QStringList lines = toPlainText().split("\n");
 
-    dataTypes = QStringList() << "double" << "int" << "SecondOrderTransferFunction" << "FirstOrderTransferFunction" << "Port";
-    functions = QStringList() << "addInputVariable" << "addOutputVariable" << "addConstant" << "addPowerPort" << "getSafeNodeDataPtr";
+    QStringList dataTypes = QStringList() << "double" << "int" << "SecondOrderTransferFunction" << "FirstOrderTransferFunction" << "Port";
+    QStringList functions = QStringList() << "addInputVariable" << "addOutputVariable" << "addConstant" << "addPowerPort" << "getSafeNodeDataPtr";
 
     int bracketCounter=-1;
 
+    QStringList variables;
     foreach(const QString &line, lines)
     {
         if(line.simplified().startsWith("class "))
@@ -466,39 +427,8 @@ void TextEditor::generateAutoCompleteList(QString filter, QStringList &variables
         }
     }
 
-    for(int i=0; i<variables.size();++i)
-    {
-        if(!variables[i].startsWith(filter))
-        {
-            variables.removeAt(i);
-            --i;
-        }
-    }
-
-    for(int i=0; i<dataTypes.size();++i)
-    {
-        if(!dataTypes[i].startsWith(filter))
-        {
-            dataTypes.removeAt(i);
-            --i;
-        }
-    }
-
-    for(int i=0; i<functions.size(); ++i)
-    {
-        if(!functions[i].startsWith(filter))
-        {
-            functions.removeAt(i);
-            --i;
-        }
-    }
-
-
-    qDebug() << "Found variables: ";
-    foreach(const QString &var, variables)
-    {
-        qDebug() << var;
-    }
+    QStringList allWords = QStringList() << dataTypes << functions << variables;
+    mpCompleter->setModel(new QStringListModel(allWords, mpCompleter));
 }
 
 
