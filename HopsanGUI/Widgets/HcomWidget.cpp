@@ -39,7 +39,8 @@
 #include <QGridLayout>
 #include <QTextBlock>
 #include <QScrollBar>
-
+#include <QAbstractItemView>
+#include <QStringListModel>
 
 #include <cmath>
 
@@ -232,7 +233,12 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     mCurrentHistoryItem=-1;
     this->append(">> ");
 
-    //mpErrorSound = new QSound(QString(SOUNDSPATH)+"error.wav");
+    mpCompleter = new QCompleter(this);
+    mpCompleter->setWidget(this);
+    mpCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    mpCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    QObject::connect(mpCompleter, SIGNAL(activated(QString)),
+                     this, SLOT(insertCompletion(QString)));
 }
 
 
@@ -490,6 +496,22 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
 
     if(isOnLastLine())
     {
+        if (mpCompleter->popup()->isVisible())
+        {
+            //Ignore the following keys when the completer is visible
+           switch (event->key()) {
+           case Qt::Key_Enter:
+           case Qt::Key_Return:
+           case Qt::Key_Escape:
+           case Qt::Key_Tab:
+           case Qt::Key_Backtab:
+                event->ignore();
+                return;
+           default:
+               break;
+           }
+        }
+
         int col = this->textCursor().columnNumber();
         if((event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Left) && col == 3)
         {
@@ -519,9 +541,32 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
             handleEnterKeyPress();
             return;
         }
-        cancelRecentHistory();
-        cancelAutoComplete();
-        QTextEdit::keyPressEvent(event);
+        else    //Always popup auto-completer when user is typing
+        {
+            cancelRecentHistory();
+            cancelAutoComplete();
+            QTextEdit::keyPressEvent(event);
+
+            updateAutoCompleteList();
+
+            //Compute prefix letters before cursor
+            QTextCursor tc = textCursor();
+            tc.select(QTextCursor::WordUnderCursor);
+            QString prefix = tc.selectedText();
+
+            //Abort with empty prefix, unless Ctrl-Space is pressed
+            if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
+                return;
+
+            if (prefix != mpCompleter->completionPrefix()) {
+                mpCompleter->setCompletionPrefix(prefix);
+                mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
+            }
+            QRect cr = cursorRect();
+            cr.setWidth(mpCompleter->popup()->sizeHintForColumn(0)
+                        + mpCompleter->popup()->verticalScrollBar()->sizeHint().width());
+            mpCompleter->complete(cr);
+        }
     }
     else
     {
@@ -550,6 +595,29 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
         }
     }
 }
+
+//! @brief Inserts a selected completion from autocompleter
+void TerminalConsole::insertCompletion(QString& completion)
+{
+    if(completion.endsWith("()"))
+        completion.chop(1);
+
+    if (mpCompleter->widget() != this)
+        return;
+    QTextCursor tc = textCursor();
+    int extra = completion.length() - mpCompleter->completionPrefix().length();
+    tc.movePosition(QTextCursor::Left);
+    tc.movePosition(QTextCursor::EndOfWord);
+    tc.insertText(completion.right(extra));
+    setTextCursor(tc);
+}
+
+//! @brief Updates list of auto complete words
+void TerminalConsole::updateAutoCompleteList()
+{
+    mpCompleter->setModel(new QStringListModel(mpTerminal->mpHandler->getAutoCompleteWords(), mpCompleter));
+}
+
 
 
 //! @brief Handles enter key press (i.e. execute command)
@@ -839,6 +907,12 @@ void TerminalConsole::handleHomeKeyPress()
 
 void TerminalConsole::handleEscapeKeyPress()
 {
+    if(mpCompleter->popup()->isVisible())
+    {
+        mpCompleter->popup()->hide();
+        return;
+    }
+
     mHistoryFilter.clear();
 
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
