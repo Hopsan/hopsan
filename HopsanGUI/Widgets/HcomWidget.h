@@ -38,6 +38,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QTextEdit>
+#include <QCompleter>
 
 #include "MessageHandler.h"
 
@@ -110,6 +111,10 @@ public slots:
 protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
+private slots:
+    void insertCompletion(QString& completion);
+    void updateAutoCompleteList();
+
 private:
     //Output
     void setOutputColor(MessageTypeEnumT type);
@@ -147,8 +152,7 @@ private:
     bool mShowWarningMessages;
     bool mShowDebugMessages;
 
-    //Audio
-    //QSound *mpErrorSound;
+    QCompleter *mpCompleter;
 };
 
 #endif // HCOMWIDGET_H

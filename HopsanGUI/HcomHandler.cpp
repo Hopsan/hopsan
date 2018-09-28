@@ -7491,7 +7491,7 @@ QString HcomHandler::getfullNameFromAlias(const QString &rAlias) const
 //! @brief Generates a list of parameters based on regular expression with wildcards support
 //! @param[in] str String with (or without) wildcards
 //! @param[out] rParameters Reference to list of parameters
-void HcomHandler::getParameters(const QString str, QStringList &rParameters)
+void HcomHandler::getParameters(const QString str, QStringList &rParameters) const
 {
     if(!mpModel) { return; }
 
@@ -7523,7 +7523,7 @@ void HcomHandler::getParameters(const QString str, QStringList &rParameters)
     }
 }
 
-void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters)
+void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters) const
 {
     QStringList sysnames;
     if(pSystem != mpModel->getViewContainerObject())
@@ -8510,6 +8510,56 @@ SharedVectorVariableT HcomHandler::getLogVariable(QString fullShortName) const
 
     // Now return the data
     return data;
+}
+
+QStringList HcomHandler::getAutoCompleteWords() const
+{
+    QStringList ret;
+
+    //HCOM commands
+    QStringList commands = getCommands();
+    for(QString &command : commands)
+    {
+      command.append(" ");
+    }
+    ret << commands;
+
+    //Parameters
+    QStringList parameters;
+
+    getParameters("*", parameters);
+    ret << parameters;
+
+    //Local variables
+    ret << getLocalVariables().keys();
+
+    //Local functions
+    QStringList functions = mLocalFunctionDescriptions.keys();
+    for(QString &function : functions)
+    {
+      function.append("()");
+    }
+    ret << functions;
+
+    //Local functionoids
+    QStringList functionoids = mLocalFunctionoidPtrs.keys();
+    for(QString &functionoid : functionoids)
+    {
+      functionoid.append("()");
+    }
+    ret << functions;
+
+    //Log variables
+    QStringList variables;
+    getMatchingLogVariableNames("*" GENERATIONSPECIFIERSTR "H", variables, false);
+    ret <<  variables;
+
+
+    //Clean up and sort alphabetically
+    ret.removeDuplicates();
+    ret.sort();
+
+    return ret;
 }
 
 

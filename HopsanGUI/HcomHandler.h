@@ -83,6 +83,8 @@ public:
     QMap<QString, SymHopFunctionoid *> getLocalFunctionoidPointers() const;
     SharedVectorVariableT getLogVariable(QString fullShortName) const;
 
+    QStringList getAutoCompleteWords() const;
+
     // Public utilities
     void toShortDataNames(QString &rName) const;
     void toLongDataNames(QString &rName) const;
@@ -238,8 +240,8 @@ private:
     void getComponents(const QString &rStr, QList<ModelObject *> &rComponents, ContainerObject *pSystem=0) const;
     void getPorts(const QString &rStr, QList<Port *> &rPorts) const;
 
-    void getParameters(QString str, QStringList &rParameters);
-    void getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters);
+    void getParameters(QString str, QStringList &rParameters) const;
+    void getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters) const;
     QString getParameterValue(QString parameterName, QString &rParameterType, bool searchFromTopLevel=false) const;
     QString getParameterValue(QString parameterName) const;
 
