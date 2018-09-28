@@ -18,11 +18,11 @@ apps:
 
   gui:
     command: desktop-launch $SNAP/bin/hopsangui
-    plugs: [home, x11, desktop-legacy, opengl, network]
+    plugs: [home, x11, desktop, opengl, network]
 
   holc:
     command: desktop-launch $SNAP/bin/holc
-    plugs: [home, x11, desktop-legacy]
+    plugs: [home, x11, desktop]
 
   addresserver:
     command: bin/hopsanaddressserver
@@ -36,8 +36,8 @@ apps:
     command: bin/hopsanserverworker
     plugs: [home, network, network-bind]
 
-  serverclient:
-    command: bin/hopsanserverclient
+  remoteclient:
+    command: bin/hopsanremoteclient
     plugs: [home, network]
 
   servermonitor:
@@ -53,15 +53,13 @@ parts:
     build-packages: [patchelf, unzip, cmake, libtool-bin, pkg-config, doxygen, graphviz, dvipng, inkscape, libzmq3-dev, python3-dev, libhdf5-dev, libmarkdown2-dev, qt5-default, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libqwt-qt5-dev]
     prepare: |
       cd ../src
-      echo 'TEMPLATE = subdirs' > hopsan.pro
-      echo 'CONFIG += ordered' >> hopsan.pro
-      echo 'SUBDIRS = HopsanCore componentLibraries Ops HopsanCLI HopsanRemote SymHop HopsanGenerator HopsanGUI HoLC' >> hopsan.pro
+      sed -e "s|UnitTests||" -i HopsanNG.pro
       ./buildDebPackage/prepareSourceCode.sh $(pwd) $(pwd) HOPSAN_BASE_VERSION HOPSAN_RELEASE_REVISION HOPSAN_FULL_RELEASE_VERSION HOPSAN_DEVELOPMENT_RELEASE false
       cd Dependencies
       ./setupFMILibrary.sh
       ./setupKatex.sh
       #./setupPythonQt.sh release 3 3.2
-    project-files: ['hopsan.pro']
+    project-files: ['HopsanNG.pro']
     install: |
       ./buildDebPackage/copyInstallHopsan.sh $(pwd)/../src ${SNAPCRAFT_PART_INSTALL}
     after: [desktop-qt5]
