@@ -72,4 +72,6 @@ cp HoLC/graphics/uiicons/holc-icon192x192.png snap/gui
 echo
 
 echo Now manually build the snap \(snapcraft cleanbuild\) and then upload the snap
+echo If you are building in a container, make sure that "git status --ignored" was clean before you ran this script!
+echo Then build with \(snapcraft snap\)
 echo
