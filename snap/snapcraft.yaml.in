@@ -51,15 +51,16 @@ parts:
     plugin: qmake
     qt-version: qt5
     build-packages: [patchelf, unzip, cmake, libtool-bin, pkg-config, doxygen, graphviz, dvipng, inkscape, libzmq3-dev, python3-dev, libhdf5-dev, libmarkdown2-dev, qt5-default, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libqwt-qt5-dev]
-    prepare: |
+    override-build: |
       cd ../src
       sed -e "s|UnitTests||" -i HopsanNG.pro
       ./buildDebPackage/prepareSourceCode.sh $(pwd) $(pwd) HOPSAN_BASE_VERSION HOPSAN_RELEASE_REVISION HOPSAN_FULL_RELEASE_VERSION HOPSAN_DEVELOPMENT_RELEASE false
       cd Dependencies
       ./setupFMILibrary.sh
       ./setupKatex.sh
+      cd ..
       #./setupPythonQt.sh release 3 3.2
-    project-files: ['HopsanNG.pro']
-    install: |
+      snapcraftctl build
       ./buildDebPackage/copyInstallHopsan.sh $(pwd)/../src ${SNAPCRAFT_PART_INSTALL}
+    project-files: ['HopsanNG.pro']
     after: [desktop-qt5]
