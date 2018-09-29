@@ -51,6 +51,7 @@ parts:
     plugin: qmake
     qt-version: qt5
     build-packages: [patchelf, unzip, cmake, libtool-bin, pkg-config, doxygen, graphviz, dvipng, inkscape, libzmq3-dev, python3-dev, libhdf5-dev, libmarkdown2-dev, qt5-default, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libqwt-qt5-dev]
+    stage-packages: [libzmq5, libmarkdown2, libhdf5-10, libhdf5-cpp-11, libqt5opengl5, libqwt-qt5-6, libqt5xml5, libqt5webkit5]
     override-build: |
       cd ../src
       sed -e "s|UnitTests||" -i HopsanNG.pro
