@@ -1,0 +1,11 @@
+--- CMakeLists.txt-org	2018-09-30 19:39:05.832922501 +0000
++++ CMakeLists.txt	2018-09-30 19:36:10.322265755 +0000
+@@ -126,7 +126,7 @@
+ 
+ IF(CMAKE_COMPILER_IS_GNUCC)
+    SET(SAVED_C_DEFAULT_FLAGS "${CMAKE_C_FLAGS}")
+-   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89 -pedantic -Wall -Wno-unused-function")
++   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -pedantic -Wall -Wno-unused-function")
+    if(NOT MSYS)
+ 	include(CheckCCompilerFlag)
+ 	CHECK_C_COMPILER_FLAG("-fvisibility=hidden" SUPPORT_VISIBILITY)

@@ -4,8 +4,6 @@
 # Shell script building HopsaGUI dependency Qwt automatically
 # Author: Peter Nordin peter.nordin@liu.se
 
-set -e
-
 basedir=`pwd`
 zipname=FMILibrary-2.0.2
 zipfile=releases/${zipname}-src.zip
@@ -21,12 +19,18 @@ if [ -d $codedir ]; then
 else
     if [ -f ${zipfile} ]; then
         unzip -q ${zipfile}
-        mv $zipname $codedir
+        mv ${zipname} ${codedir}
     else
         echo "Warning: ${zipfile} is missing, you need to download it"
         exit 0
     fi
 fi
+
+pushd ${codedir}
+patch -p0 --forward < ../fmilibrary-c99.patch
+popd
+
+set -e
 
 source setHopsanBuildPaths.sh
 
@@ -35,9 +39,9 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -DFMILIB_INSTALL_PREFIX=$installdir -Wno-dev $codedir
+cmake -DFMILIB_INSTALL_PREFIX=${installdir} -Wno-dev ${codedir}
 
-# Build and install 
+# Build and install
 make -j4
 make install test
 
