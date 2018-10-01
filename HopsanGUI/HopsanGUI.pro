@@ -307,7 +307,8 @@ SOURCES += main.cpp \
     PlotCurveStyle.cpp \
     Utilities/WebviewWrapper.cpp \
     GeneratorUtils.cpp \
-    Dialogs/OptimizationScriptWizard.cpp
+    Dialogs/OptimizationScriptWizard.cpp \
+    Widgets/ScriptEditor.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -400,7 +401,8 @@ HEADERS += MainWindow.h \
     PlotCurveStyle.h \
     Utilities/WebviewWrapper.h \
     GeneratorUtils.h \
-    Dialogs/OptimizationScriptWizard.h
+    Dialogs/OptimizationScriptWizard.h \
+    Widgets/ScriptEditor.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

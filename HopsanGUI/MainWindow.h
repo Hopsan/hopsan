@@ -148,6 +148,8 @@ public:
     QAction *mpOpenAction;
     QAction *mpSaveAction;
     QAction *mpSaveAsAction;
+    QAction *mpNewScriptAction;
+    QAction *mpOpenScriptAction;
     QAction *mpExportSimulationStateAction;
     QAction *mpExportModelParametersAction;
     QAction *mpImportFMUAction;

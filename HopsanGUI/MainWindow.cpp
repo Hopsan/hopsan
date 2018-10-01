@@ -82,6 +82,7 @@
 #include "Widgets/DataExplorer.h"
 #include "Widgets/FindWidget.h"
 #include "Widgets/ModelicaEditor.h"
+#include "Widgets/ScriptEditor.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -512,6 +513,18 @@ void MainWindow::createActions()
     connect(mpOpenAction, SIGNAL(triggered()), mpModelHandler, SLOT(loadModel()));
     connect(mpOpenAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpOpenAction, "Open an existing model.");
+
+    mpNewScriptAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-NewScript.png"), tr("&New HCOM Script"), this);
+    mpNewScriptAction->setToolTip(tr("Create HCOM Script File"));
+    connect(mpNewScriptAction, SIGNAL(triggered()), mpModelHandler, SLOT(newScriptFile()));
+    connect(mpNewScriptAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpNewScriptAction, "Create a new HCOM script file.");
+
+    mpOpenScriptAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-OpenScript.png"), tr("&Open HCOM Script"), this);
+    mpOpenScriptAction->setToolTip(tr("Load HCOM Script File"));
+    connect(mpOpenScriptAction, SIGNAL(triggered()), mpModelHandler, SLOT(loadScriptFile()));
+    connect(mpOpenScriptAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpOpenScriptAction, "Open a HCOM script file.");
 
     mpSaveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
     mpSaveAction->setShortcut(QKeySequence("Ctrl+s"));
@@ -969,6 +982,8 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpSaveAsAction);
     mpFileMenu->addMenu(mpRecentMenu);
     mpFileMenu->addSeparator();
+    mpFileMenu->addAction(mpNewScriptAction);
+    mpFileMenu->addAction(mpOpenScriptAction);
     mpFileMenu->addAction(mpPrintAction);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpLoadLibsAction);
@@ -1068,6 +1083,8 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpOpenAction);
     mpFileToolBar->addAction(mpSaveAction);
     mpFileToolBar->addAction(mpSaveAsAction);
+    mpFileToolBar->addAction(mpNewScriptAction);
+    mpFileToolBar->addAction(mpOpenScriptAction);
     mpFileToolBar->addAction(mpPrintAction);
 
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
@@ -1381,9 +1398,13 @@ void MainWindow::openLicenseDialog()
 void MainWindow::updateToolBarsToNewTab()
 {
     bool modelOpen = mpModelHandler->count() > 0;
-    bool modelTab = modelOpen && (mpCentralTabs->currentWidget() != mpWelcomeWidget);
+
     ModelWidget *pModel = qobject_cast<ModelWidget*>(mpCentralTabs->currentWidget());
+    bool modelTab = modelOpen && pModel;
     bool logData = modelTab && pModel->getViewContainerObject()->getLogDataHandler();
+
+    ScriptEditor *pEditor = qobject_cast<ScriptEditor*>(mpCentralTabs->currentWidget());
+    bool editorTab = (pEditor != nullptr);
 
     if(modelTab)
     {
@@ -1392,25 +1413,25 @@ void MainWindow::updateToolBarsToNewTab()
 
     mpShowLossesAction->setEnabled(logData);
     mpAnimateAction->setEnabled(modelTab);
-    mpSaveAction->setEnabled(modelTab);
+    mpSaveAction->setEnabled(modelTab || editorTab);
     mpExportToFMUMenuButton->setEnabled(modelTab);
-    mpSaveAsAction->setEnabled(modelTab);
+    mpSaveAsAction->setEnabled(modelTab || editorTab);
     mpExportSimulationStateAction->setEnabled(modelTab);
     mpExportModelParametersAction->setEnabled(modelTab);
-    mpCutAction->setEnabled(modelTab);
-    mpCopyAction->setEnabled(modelTab);
-    mpPasteAction->setEnabled(modelTab);
-    mpUndoAction->setEnabled(modelTab);
-    mpRedoAction->setEnabled(modelTab);
+    mpCutAction->setEnabled(modelTab || editorTab);
+    mpCopyAction->setEnabled(modelTab || editorTab);
+    mpPasteAction->setEnabled(modelTab || editorTab);
+    mpUndoAction->setEnabled(modelTab || editorTab);
+    mpRedoAction->setEnabled(modelTab || editorTab);
     mpCenterViewAction->setEnabled(modelTab);
     mpResetZoomAction->setEnabled(modelTab);
-    mpZoomInAction->setEnabled(modelTab);
-    mpZoomOutAction->setEnabled(modelTab);
+    mpZoomInAction->setEnabled(modelTab || editorTab);
+    mpZoomOutAction->setEnabled(modelTab || editorTab);
     mpToggleNamesAction->setEnabled(modelTab);
     mpToggleSignalsAction->setEnabled(modelTab);
     mpTogglePortsAction->setEnabled(modelTab);
     mpTogglePortsAction->setEnabled(modelTab);
-    mpPrintAction->setEnabled(modelTab);
+    mpPrintAction->setEnabled(modelTab || editorTab);
     mpExportPDFAction->setEnabled(modelTab);
     mpExportPNGAction->setEnabled(modelTab);
     mpAlignXAction->setEnabled(modelTab);
