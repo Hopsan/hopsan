@@ -45,6 +45,7 @@ class ContainerObject;
 class LogDataHandler2;
 class SimulationThreadHandler;
 class DebuggerWidget;
+class ScriptEditor;
 
 class ModelHandler : public QObject
 {
@@ -70,15 +71,19 @@ public:
     int count() const;
 
     ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool detatched=false);
+    ScriptEditor *loadScriptFile(QString scriptFileName);
     SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
     ModelWidget *addNewModel(QString modelName="Untitled", bool hidden=false);
     void loadModel();
     void loadModel(QAction *action);
+    void newScriptFile();
+    void loadScriptFile();
     void loadModelParameters();
     bool closeModelByTabIndex(int tabIdx, bool force=false);
     bool closeModel(int idx, bool force=false);
+    bool closeScript(int idx, bool force=false);
     bool closeModel(ModelWidget *pModel, bool force=false);
     bool closeAllModels(bool force=false);
     void selectModelByTabIndex(int tabIdx);
@@ -111,13 +116,17 @@ signals:
 
 private:
     void refreshMainWindowConnections();
-    void disconnectMainWindowConnections(ModelWidget *pModel);
+    void disconnectMainWindowConnections(ModelWidget* pModel);
+    void disconnectMainWindowConnections(ScriptEditor *pScriptEditor);
     void connectMainWindowConnections(ModelWidget *pModel);
+    void connectMainWindowConnections(ScriptEditor *pScriptEditor);
     void setToolBarSimulationTimeFromTab(ModelWidget *pModel);
 
     QList<ModelWidget*> mModelPtrs;
+    QList<ScriptEditor*> mScriptEditors;
     int mCurrentIdx;
     int mNumberOfUntitledModels;
+    int mNumberOfUntitledScripts;
 
     QStringList mStateInfoHmfList;
     QStringList mStateInfoBackupList;

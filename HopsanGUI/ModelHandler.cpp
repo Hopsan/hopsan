@@ -54,6 +54,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/DataExplorer.h"
 #include "Widgets/PlotWidget2.h"
+#include "Widgets/ScriptEditor.h"
 #include "Utilities/GUIUtilities.h"
 
 #ifdef USEZMQ
@@ -66,6 +67,7 @@ ModelHandler::ModelHandler(QObject *parent)
     mpDebugger = 0;
 
     mNumberOfUntitledModels=0;
+    mNumberOfUntitledScripts=0;
 
     mpSimulationThreadHandler = new SimulationThreadHandler(); //!< @todo is this ever deleted
 
@@ -244,11 +246,50 @@ void ModelHandler::loadModel()
 }
 
 
+//! @brief Loads a HCOM script from a file and opens it in a new project tab.
+//! @see loadScriptFile(QString scriptFileName)
+void ModelHandler::loadScriptFile()
+{
+    QStringList scriptFileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Script File"),
+                                                                gpConfig->getStringSetting(CFG_LOADSCRIPTDIR),
+                                                                tr("HCOM Script Files (*.hcom)"));
+    for(const auto &scriptFileName : scriptFileNames)
+    {
+        QFileInfo scriptFileInfo = QFileInfo(scriptFileName);
+
+        // Make sure file not already open
+        for(auto &editor : mScriptEditors)
+        {
+            if(editor->getScriptFileInfo() == scriptFileInfo)
+            {
+                QMessageBox::information(gpMainWindowWidget, tr("Error"), tr("Unable to load HCOM script. File is already open."));
+                continue;
+            }
+        }
+
+        loadScriptFile(scriptFileName);
+        gpConfig->setStringSetting(CFG_LOADSCRIPTDIR, scriptFileInfo.absolutePath());
+    }
+}
+
+
 //! @brief Help function that loads a model from the text in a QAction object.
 //! Used to facilitate recent models function.
 void ModelHandler::loadModel(QAction *action)
 {
     loadModel(action->text());
+}
+
+
+//! @brief Screates a new empty HCOM script and opens it in a new project tab
+//! @see loadScriptFile()
+void ModelHandler::newScriptFile()
+{
+    ScriptEditor *pNewEditor = new ScriptEditor(QFileInfo(), gpCentralTabWidget);
+    gpCentralTabWidget->addTab(pNewEditor, "HcomScript"+QString::number(mNumberOfUntitledScripts));
+    gpCentralTabWidget->setCurrentWidget(pNewEditor);
+    mScriptEditors.append(pNewEditor);
+    mNumberOfUntitledScripts++;
 }
 
 
@@ -315,6 +356,28 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
 }
 
 
+//! @brief Loads a model from a file and opens it in a new project tab.
+//! @param modelFileName is the path to the loaded file
+//! @see loadModel()
+//! @see saveModel(saveTarget saveAsFlag)
+ScriptEditor *ModelHandler::loadScriptFile(QString scriptFileName)
+{
+    QFile scriptFile(scriptFileName);
+    if(!scriptFile.exists())
+    {
+        gpMessageHandler->addErrorMessage("File not found: " + scriptFile.fileName());
+        return nullptr;
+    }
+    QFileInfo scriptFileInfo(scriptFile);
+    ScriptEditor *pNewEditor = new ScriptEditor(QFileInfo(scriptFileName), gpCentralTabWidget);
+    gpCentralTabWidget->addTab(pNewEditor, scriptFileInfo.fileName());
+    gpCentralTabWidget->setCurrentWidget(pNewEditor);
+    mScriptEditors.append(pNewEditor);
+
+    return pNewEditor;
+}
+
+
 bool ModelHandler::closeModelByTabIndex(int tabIdx, bool force)
 {
     for(int i=0; i<mModelPtrs.size(); ++i)
@@ -323,6 +386,15 @@ bool ModelHandler::closeModelByTabIndex(int tabIdx, bool force)
         if(mModelPtrs[i] == gpCentralTabWidget->widget(tabIdx))
         {
             return closeModel(i,force);
+        }
+    }
+
+    //Also check script editors
+    for(auto &editor : mScriptEditors)
+    {
+        if(editor == gpCentralTabWidget->widget(tabIdx))
+        {
+            return closeScript(mScriptEditors.indexOf(editor), force);
         }
     }
 
@@ -443,6 +515,71 @@ bool ModelHandler::closeModel(int idx, bool force)
     return false;
 }
 
+bool ModelHandler::closeScript(int idx, bool force)
+{
+    // Only remove if we found the model by index
+    ScriptEditor *pEditor = mScriptEditors[idx];
+    if(pEditor)
+    {
+        if (!pEditor->isSaved() && !force)
+        {
+            QString modelName = pEditor->getScriptFileInfo().fileName();
+            QMessageBox msgBox;
+            msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+            msgBox.setText(QString("Script file '").append(modelName).append("'  is not saved."));
+            msgBox.setInformativeText("Do you want to save your changes before closing?");
+            msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+            msgBox.setDefaultButton(QMessageBox::Save);
+
+            int answer = msgBox.exec();
+            switch (answer)
+            {
+            case QMessageBox::Save:
+                // Save was clicked
+                pEditor->save();
+                if(!pEditor->isSaved())
+                    return false;       //Save ws aborted
+                break;
+            case QMessageBox::Discard:
+                // Don't Save was clicked
+                break;
+            case QMessageBox::Cancel:
+                // Cancel was clicked
+                return false;
+            default:
+                // should never be reached
+                return false;
+            }
+        }
+
+        // Disconnect signals
+        disconnectMainWindowConnections(pEditor);
+
+        // Disconnect and delete model tab if any
+        int tabIdx = gpCentralTabWidget->indexOf(pEditor);
+        if (tabIdx >= 0)
+        {
+            // Disconnect all signals from this, to prevent a text change will be triggered when the tab is removed
+            disconnect(gpCentralTabWidget->widget(tabIdx));
+            // Remove the tab
+            gpCentralTabWidget->removeTab(tabIdx);
+        }
+
+        // Remove and delete the script editor
+        delete pEditor; //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgets before it has been deleted because of this. This behavior is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
+        mScriptEditors.removeAt(idx);
+
+        // Refresh mainwindow sig/slot connections and button status to the new current model
+        refreshMainWindowConnections();
+
+        // Refresh toolbar connections if tab has been changed
+        gpMainWindow->updateToolBarsToNewTab();
+
+        // We are done removing the model widget
+        return true;
+    }
+    return false;
+}
 
 //! @brief Closes all opened projects.
 //! @return true if closing went ok. false if the user canceled the operation.
@@ -488,6 +625,11 @@ void ModelHandler::refreshMainWindowConnections()
         disconnectMainWindowConnections(getModel(i));
         getViewContainerObject(i)->unmakeMainWindowConnectionsAndRefresh();
     }
+    for(ScriptEditor *scriptEditor : mScriptEditors)
+    {
+        disconnectMainWindowConnections(scriptEditor);
+    }
+
     // Now refresh actions (we need to do this before reconnecting to avoid sending signals)
     ModelWidget *pCurrentModel = getCurrentModel();
     if (pCurrentModel)
@@ -519,6 +661,11 @@ void ModelHandler::refreshMainWindowConnections()
             gpLibraryWidget->setGfxType(pCurrentModel->getTopLevelSystemContainer()->getGfxType());
         }
     }
+    ScriptEditor *pScriptEditor = qobject_cast<ScriptEditor*>(gpMainWindow->mpCentralTabs->currentWidget());
+    if(pScriptEditor)
+    {
+        connectMainWindowConnections(pScriptEditor);
+    }
 
     emit modelChanged(pCurrentModel);
 }
@@ -547,6 +694,21 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }
 
+void ModelHandler::disconnectMainWindowConnections(ScriptEditor* pScriptEditor)
+{
+    //disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
+    disconnect(gpMainWindow->mpSaveAsAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(saveAs()));
+    disconnect(gpMainWindow->mpCutAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(cut()));
+    disconnect(gpMainWindow->mpCopyAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(copy()));
+    disconnect(gpMainWindow->mpPasteAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(paste()));
+    disconnect(gpMainWindow->mpUndoAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(undo()));
+    disconnect(gpMainWindow->mpRedoAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(redo()));
+    disconnect(gpMainWindow->mpZoomInAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(zoomIn()));
+    disconnect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(zoomOut()));
+    disconnect(gpMainWindow->mpPrintAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(print()));
+}
+
+
 void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
 {
     //! @todo  Are these connections such connection that are supposed to be permanent connections? otherwise they should be in the disconnectMainWindowActions function
@@ -569,6 +731,20 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
     connect(gpMainWindow->mpExportSimulationStateAction,    SIGNAL(triggered()),            pModel,    SLOT(exportSimulationStates()), Qt::UniqueConnection);
 
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
+}
+
+void ModelHandler::connectMainWindowConnections(ScriptEditor* pScriptEditor)
+{
+    connect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
+    connect(gpMainWindow->mpSaveAsAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(saveAs()));
+    connect(gpMainWindow->mpCutAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(cut()));
+    connect(gpMainWindow->mpCopyAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(copy()));
+    connect(gpMainWindow->mpPasteAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(paste()));
+    connect(gpMainWindow->mpUndoAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(undo()));
+    connect(gpMainWindow->mpRedoAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(redo()));
+    connect(gpMainWindow->mpZoomInAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(zoomIn()));
+    connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(zoomOut()));
+    connect(gpMainWindow->mpPrintAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(print()));
 }
 
 //! @brief Help function to update the toolbar simulation time parameters from a tab

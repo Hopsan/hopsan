@@ -72,6 +72,7 @@
 #define CFG_BACKGROUNDCOLOR "backgroundcolor"
 
 #define CFG_LOADMODELDIR "loadmodeldir"
+#define CFG_LOADSCRIPTDIR "loadmodeldir"
 #define CFG_MODELGFXDIR "modelgfxdir"
 #define CFG_PLOTDATADIR "plotdatadir"
 #define CFG_PLOTGFXDIR "plotgfxdir"
