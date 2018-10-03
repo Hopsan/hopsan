@@ -228,24 +228,91 @@ void HcomEditor::keyPressEvent(QKeyEvent* event)
        }
     }
 
-    QTextEdit::keyPressEvent(event);
-
-    updateAutoCompleteList();
-
-    QTextCursor tc = textCursor();
-    tc.select(QTextCursor::WordUnderCursor);
-    QString prefix = tc.selectedText();
-    if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
-        return;
-
-    if (prefix != mpCompleter->completionPrefix()) {
-        mpCompleter->setCompletionPrefix(prefix);
-        mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
+    //Replace tabs with four whitespaces
+    if(event->key() == Qt::Key_Backtab)    //Shift+tab, remove spaces to the left until next tab stop (or as many spaces as possible)
+    {
+        QString line = this->textCursor().block().text().toLatin1();
+        int pos = textCursor().positionInBlock();
+        while(pos > 0 && line.at(pos-1) == ' ')
+        {
+            this->textCursor().deletePreviousChar();
+            line = this->textCursor().block().text().toLatin1();
+            pos = textCursor().positionInBlock();
+            if(pos%2 == 0)
+            {
+                break;
+            }
+        }
     }
-    QRect cr = cursorRect();
-    cr.setWidth(mpCompleter->popup()->sizeHintForColumn(0)
-                + mpCompleter->popup()->verticalScrollBar()->sizeHint().width());
-    mpCompleter->complete(cr);
+    else if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+    {
+        QString line = this->textCursor().block().text().toLatin1();
+        QString newStr = "\n";
+        while(line.startsWith(" "))
+        {
+            line.remove(0,1);
+            newStr.append(" "); //Append one space to new line for each space on previous line, to keep indentation
+        }
+        insertPlainText(newStr);
+    }
+    else if(event->key() == Qt::Key_Tab)
+    {
+        if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
+        {
+            QString text = textCursor().selection().toPlainText();
+            text.replace("\n", "\n  ");
+            text.prepend("  ");
+            textCursor().beginEditBlock();
+            textCursor().removeSelectedText();
+            insertPlainText(text);
+            textCursor().endEditBlock();
+        }
+        else
+        {
+            QString line = this->textCursor().block().text().toLatin1();
+            int pos = textCursor().positionInBlock();
+            qDebug() << line << ", position: " << pos;
+            int nSpaces = 0;
+            while(line.startsWith(" "))
+            {
+                nSpaces++;
+                line.remove(0,1);
+            }
+            int nSpacesToInsert = 2;    //Insert two spaces by default
+            if(pos < nSpaces)           //If at beginning of line, insert until next tab stop
+            {
+                while((nSpaces+nSpacesToInsert)%2 != 0)
+                {
+                    nSpacesToInsert--;
+                }
+            }
+            for(int i=0; i<nSpacesToInsert; ++i)
+            {
+                this->insertPlainText(" ");
+            }
+        }
+    }
+    else
+    {
+        QTextEdit::keyPressEvent(event);
+
+        updateAutoCompleteList();
+
+        QTextCursor tc = textCursor();
+        tc.select(QTextCursor::WordUnderCursor);
+        QString prefix = tc.selectedText();
+        if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
+            return;
+
+        if (prefix != mpCompleter->completionPrefix()) {
+            mpCompleter->setCompletionPrefix(prefix);
+            mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
+        }
+        QRect cr = cursorRect();
+        cr.setWidth(mpCompleter->popup()->sizeHintForColumn(0)
+                    + mpCompleter->popup()->verticalScrollBar()->sizeHint().width());
+        mpCompleter->complete(cr);
+    }
 }
 
 
