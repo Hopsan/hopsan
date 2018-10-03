@@ -69,6 +69,20 @@ ScriptEditor::ScriptEditor(QFileInfo scriptFileInfo, QWidget *parent) : QWidget(
     connect(mpEditor, SIGNAL(textChanged()), this, SLOT(hasChanged()));
 }
 
+void ScriptEditor::wheelEvent(QWheelEvent* event)
+{
+#if QT_VERSION >= 0x050000  //zoomIn() and zoomOut() not available in Qt4
+   if ((event->modifiers() == Qt::ControlModifier) && (event->delta() > 0))
+       mpEditor->zoomIn(2);
+   else if ((event->modifiers() == Qt::ControlModifier) && (event->delta() < 0))
+       mpEditor->zoomOut(2);
+   else
+       QWidget::wheelEvent(event);
+#else
+   QWidget::wheelEvent(event);
+#endif
+}
+
 
 //! Saves the script tab to a model file.
 //! @param saveAsFlag tells whether or not an already existing file name shall be used

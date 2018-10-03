@@ -49,6 +49,9 @@ public:
     QFileInfo getScriptFileInfo() const { return mScriptFileInfo; }
     bool isSaved() const { return mIsSaved; }
 
+protected:
+    void wheelEvent(QWheelEvent* event);
+
 signals:
 
 private:
