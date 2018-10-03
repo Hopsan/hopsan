@@ -37,8 +37,28 @@
 #include <QWidget>
 #include <QTextEdit>
 #include <QFileInfo>
+#include <QCompleter>
 
 #include "common.h"
+
+class HcomEditor : public QTextEdit
+{
+    Q_OBJECT
+public:
+    HcomEditor(QWidget *parent = 0);
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
+
+public slots:
+    void updateAutoCompleteList();
+
+private slots:
+    void insertCompletion(const QString& completion);
+
+private:
+    QCompleter *mpCompleter;
+};
 
 class ScriptEditor : public QWidget
 {
@@ -55,7 +75,7 @@ protected:
 signals:
 
 private:
-    QTextEdit *mpEditor;
+    HcomEditor *mpEditor;
     QFileInfo mScriptFileInfo;
     bool mIsSaved = true;
     QString mSavedText;
