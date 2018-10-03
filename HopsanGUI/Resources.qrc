@@ -158,6 +158,8 @@
         <file>graphics/porticons/SignalPortBiDirectional.svg</file>
         <file>graphics/porticons/SignalPort2D_read.svg</file>
         <file>graphics/porticons/SignalPort2D_write.svg</file>
+        <file>graphics/uiicons/Hopsan-OpenScript.png</file>
+        <file>graphics/uiicons/Hopsan-NewScript.png</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="licenseNoticeGPLv3">../licenseNoticeGPLv3</file>
