@@ -38,17 +38,28 @@
 #include "Configuration.h"
 #include "MessageHandler.h"
 #include "Widgets/ProjectTabWidget.h"
+#include "HcomHandler.h"
+#include "Widgets/HcomWidget.h"
 
 #include <QGridLayout>
 #include <QFileDialog>
+#include <QStringListModel>
+#include <QAbstractItemView>
+#include <QScrollBar>
+#include <QTextDocumentFragment>
+#include <QKeyEvent>
+#include <math.h>
 
 ScriptEditor::ScriptEditor(QFileInfo scriptFileInfo, QWidget *parent) : QWidget(parent)
 {
     mScriptFileInfo = scriptFileInfo;
 
-    mpEditor = new QTextEdit(this);
+    mpEditor = new HcomEditor(this);
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    mpEditor->setFont(font);
+
     HcomHighlighter *pHighLighter = new HcomHighlighter(mpEditor->document());
-    //ModelicaHighlighter *pHighlighter = new ModelicaHighlighter(mpEditor->document());
 
     if(mScriptFileInfo.exists())
     {
@@ -135,6 +146,7 @@ void ScriptEditor::hasChanged()
     gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(this), tabName);
 }
 
+
 //! Slot that saves current script to a new model file.
 //! @see saveModel(int index)
 void ScriptEditor::saveAs()
@@ -184,4 +196,74 @@ void ScriptEditor::zoomOut()
 void ScriptEditor::print()
 {
     //! @todo Implement
+}
+
+HcomEditor::HcomEditor(QWidget* parent) : QTextEdit(parent)
+{
+    mpCompleter = new QCompleter(this);
+    updateAutoCompleteList();
+
+    mpCompleter->setWidget(this);
+    mpCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    mpCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    QObject::connect(mpCompleter, SIGNAL(activated(QString)),
+                     this, SLOT(insertCompletion(QString)));
+}
+
+void HcomEditor::keyPressEvent(QKeyEvent* event)
+{
+    if (mpCompleter->popup()->isVisible())
+    {
+        //Ignore the following keys when the completer is visible
+       switch (event->key()) {
+       case Qt::Key_Enter:
+       case Qt::Key_Return:
+       case Qt::Key_Escape:
+       case Qt::Key_Tab:
+       case Qt::Key_Backtab:
+            event->ignore();
+            return;
+       default:
+           break;
+       }
+    }
+
+    QTextEdit::keyPressEvent(event);
+
+    updateAutoCompleteList();
+
+    QTextCursor tc = textCursor();
+    tc.select(QTextCursor::WordUnderCursor);
+    QString prefix = tc.selectedText();
+    if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
+        return;
+
+    if (prefix != mpCompleter->completionPrefix()) {
+        mpCompleter->setCompletionPrefix(prefix);
+        mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
+    }
+    QRect cr = cursorRect();
+    cr.setWidth(mpCompleter->popup()->sizeHintForColumn(0)
+                + mpCompleter->popup()->verticalScrollBar()->sizeHint().width());
+    mpCompleter->complete(cr);
+}
+
+
+//! @brief Updates list of auto complete words
+void HcomEditor::updateAutoCompleteList()
+{
+    mpCompleter->setModel(new QStringListModel(gpTerminalWidget->mpHandler->getAutoCompleteWords(), mpCompleter));
+}
+
+
+void HcomEditor::insertCompletion(const QString& completion)
+{
+    if (mpCompleter->widget() != this)
+        return;
+    QTextCursor tc = textCursor();
+    int extra = completion.length() - mpCompleter->completionPrefix().length();
+    tc.movePosition(QTextCursor::Left);
+    tc.movePosition(QTextCursor::EndOfWord);
+    tc.insertText(completion.right(extra));
+    setTextCursor(tc);
 }
