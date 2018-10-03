@@ -292,6 +292,67 @@ void HcomEditor::keyPressEvent(QKeyEvent* event)
             }
         }
     }
+    else if(event->key() == Qt::Key_T && event->modifiers().testFlag(Qt::ControlModifier))     //Ctrl-T = block comment
+    {
+        textCursor().beginEditBlock();
+        QString text = textCursor().selection().toPlainText();
+        text.replace("\n", "\n//");
+        if(textCursor().atBlockStart())
+        {
+            text.prepend("//");
+        }
+        else
+        {
+            int pos = textCursor().position();
+            int stopPos = textCursor().anchor();
+            QTextCursor c;
+            c = textCursor();
+            c.setPosition(std::min(pos,stopPos));
+            setTextCursor(c);
+            moveCursor(QTextCursor::StartOfBlock);
+            insertPlainText("# ");
+
+            c = textCursor();
+            c.setPosition(pos+2);
+            c.setPosition(stopPos+2, QTextCursor::KeepAnchor);
+            setTextCursor(c);
+        }
+        textCursor().removeSelectedText();
+        insertPlainText(text);
+        textCursor().endEditBlock();
+    }
+    else if(event->key() == Qt::Key_U && event->modifiers().testFlag(Qt::ControlModifier))     //Ctrl-U = uncomment block
+    {
+        textCursor().beginEditBlock();
+        QString text = textCursor().selection().toPlainText();
+        text.replace("\n# ", "\n");
+        text.replace("\n#", "\n");
+
+        int pos = textCursor().position();
+        int stopPos = textCursor().anchor();
+        QTextCursor c;
+        c = textCursor();
+        c.setPosition(std::min(pos,stopPos));
+        setTextCursor(c);
+        moveCursor(QTextCursor::StartOfBlock);
+        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        int movement = 0;
+        if(textCursor().selection().toPlainText() == "//")
+        {
+            textCursor().removeSelectedText();
+            movement = 2;
+        }
+        c = textCursor();
+        c.setPosition(pos-movement);
+        c.setPosition(stopPos-movement, QTextCursor::KeepAnchor);
+        setTextCursor(c);
+
+        textCursor().removeSelectedText();
+        insertPlainText(text);
+
+        textCursor().endEditBlock();
+    }
     else
     {
         QTextEdit::keyPressEvent(event);
