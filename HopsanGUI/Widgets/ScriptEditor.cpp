@@ -48,6 +48,9 @@
 #include <QScrollBar>
 #include <QTextDocumentFragment>
 #include <QKeyEvent>
+#include <QPrinter>
+#include <QPainter>
+#include <QPrintDialog>
 #include <math.h>
 
 ScriptEditor::ScriptEditor(QFileInfo scriptFileInfo, QWidget *parent) : QWidget(parent)
@@ -195,7 +198,13 @@ void ScriptEditor::zoomOut()
 
 void ScriptEditor::print()
 {
-    //! @todo Implement
+    QPrinter printer;
+    printer.setColorMode(QPrinter::Color);
+    QPrintDialog *dialog = new QPrintDialog(&printer);
+    dialog->setWindowTitle("Print HCOM Script");
+    if (dialog->exec() != QDialog::Accepted)
+        return;
+    mpEditor->print(&printer);
 }
 
 HcomEditor::HcomEditor(QWidget* parent) : QTextEdit(parent)
