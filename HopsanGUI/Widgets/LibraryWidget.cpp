@@ -38,6 +38,8 @@
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QGridLayout>
+#include <QCompleter>
+#include <QStringListModel>
 
 //Hopsan includes
 #include "global.h"
@@ -94,6 +96,9 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     QHBoxLayout *pFilterLayout = new QHBoxLayout();
     pFilterLayout->addWidget(pFilterLabel);
     pFilterLayout->addWidget(mpFilterEdit);
+    mpFilterEdit->setCompleter(new QCompleter(mpFilterEdit));
+    mpFilterEdit->completer()->setCompletionMode(QCompleter::PopupCompletion);
+    mpFilterEdit->completer()->setCaseSensitivity(Qt::CaseInsensitive);
 
     QToolButton *pClearFilterButton = new QToolButton(this);
     pClearFilterButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
@@ -134,7 +139,7 @@ LibraryWidget::LibraryWidget(QWidget *parent)
 //    connect(pDualViewButton, SIGNAL(clicked()),    mpList,                 SLOT(show()));
 //    connect(pDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(clear()));
 //    connect(pHelpButton,     SIGNAL(clicked()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
-    connect(mpFilterEdit,   SIGNAL(textEdited(QString)), this, SLOT(update()));
+    connect(mpFilterEdit,   SIGNAL(textChanged(QString)), this, SLOT(update()));
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpTree,                  0,0,3,4);
@@ -532,6 +537,15 @@ void LibraryWidget::update()
             }
         }
     }
+
+    //Update auto completer in filter line edit
+    QStringList allDisplayNames;
+    for(const QString &typeName : gpLibraryHandler->getLoadedTypeNames())
+    {
+        ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
+        allDisplayNames << entry.pAppearance->getDisplayName();
+    }
+    mpFilterEdit->completer()->setModel(new QStringListModel(allDisplayNames, mpFilterEdit->completer()));
 }
 
 
