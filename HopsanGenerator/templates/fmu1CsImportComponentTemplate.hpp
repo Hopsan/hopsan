@@ -25,10 +25,11 @@
 #ifndef <<<headerguard>>>
 #define <<<headerguard>>>
 
-#include <math.h>
-#include <stdlib.h>
-#include <time.h>
-#include <stddef.h>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+#include <cstddef>
+#include <cstdio>
 #include <sstream>
 #include <iostream>
 
