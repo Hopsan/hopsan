@@ -11,18 +11,35 @@ icon: HopsanGUI/graphics/uiicons/hopsan.png
 grade: HOPSAN_SNAP_GRADE
 confinement: devmode
 
+passthrough:
+  layout:
+    /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libmvec_nonshared.a:
+      bind-file: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libmvec_nonshared.a
+      mode: 755
+    /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libc_nonshared.a:
+      bind-file: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libc_nonshared.a
+      mode: 755
+    /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libpthread_nonshared.a:
+      bind-file: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libpthread_nonshared.a
+      mode: 755
 apps:
   cli:
     command: bin/hopsancli
     plugs: [home]
+    environment:
+      CPATH: $SNAP/usr/include:$SNAP/usr/include/${SNAPCRAFT_ARCH_TRIPLET}
 
   gui:
     command: desktop-launch $SNAP/bin/hopsangui
     plugs: [home, x11, desktop, opengl, network]
+    environment:
+      CPATH: $SNAP/usr/include:$SNAP/usr/include/${SNAPCRAFT_ARCH_TRIPLET}
 
   holc:
     command: desktop-launch $SNAP/bin/holc
     plugs: [home, x11, desktop]
+    environment:
+      CPATH: $SNAP/usr/include:$SNAP/usr/include/${SNAPCRAFT_ARCH_TRIPLET}
 
   addresserver:
     command: bin/hopsanaddressserver
@@ -31,10 +48,14 @@ apps:
   server:
     command: bin/hopsanserver
     plugs: [home, network, network-bind]
+    environment:
+      CPATH: $SNAP/usr/include:$SNAP/usr/include/${SNAPCRAFT_ARCH_TRIPLET}
 
   serverworker:
     command: bin/hopsanserverworker
     plugs: [home, network, network-bind]
+    environment:
+      CPATH: $SNAP/usr/include:$SNAP/usr/include/${SNAPCRAFT_ARCH_TRIPLET}
 
   remoteclient:
     command: bin/hopsanremoteclient
@@ -46,6 +67,7 @@ apps:
 
 
 parts:
+
   hopsan:
     source: .
     plugin: qmake
@@ -53,8 +75,6 @@ parts:
     build-packages: [patchelf, unzip, cmake, libtool-bin, pkg-config, doxygen, graphviz, dvipng, inkscape, libzmq3-dev, python3-dev, libhdf5-dev, libmarkdown2-dev, qt5-default, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libqwt-qt5-dev]
     stage-packages: [libzmq5, libmarkdown2, libhdf5-10, libhdf5-cpp-11, libqt5opengl5, libqwt-qt5-6, libqt5xml5, libqt5webkit5, g++]
     override-build: |
-      export CC=${SNAPCRAFT_PART_INSTALL}/usr/bin/gcc
-      export CXX=${SNAPCRAFT_PART_INSTALL}/usr/bin/g++
       cd ../src
       sed -e "s|UnitTests||" -i HopsanNG.pro
       ./buildDebPackage/prepareSourceCode.sh $(pwd) $(pwd) HOPSAN_BASE_VERSION HOPSAN_RELEASE_REVISION HOPSAN_FULL_RELEASE_VERSION HOPSAN_DEVELOPMENT_RELEASE false
