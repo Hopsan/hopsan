@@ -597,18 +597,20 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
 }
 
 //! @brief Inserts a selected completion from autocompleter
-void TerminalConsole::insertCompletion(QString& completion)
+void TerminalConsole::insertCompletion(const QString& completion)
 {
-    if(completion.endsWith("()"))
-        completion.chop(1);
+    QString temp = completion;
+    if(temp.endsWith("()"))
+        temp.chop(1);
 
     if (mpCompleter->widget() != this)
         return;
+
     QTextCursor tc = textCursor();
-    int extra = completion.length() - mpCompleter->completionPrefix().length();
+    int extra = temp.length() - mpCompleter->completionPrefix().length();
     tc.movePosition(QTextCursor::Left);
     tc.movePosition(QTextCursor::EndOfWord);
-    tc.insertText(completion.right(extra));
+    tc.insertText(temp.right(extra));
     setTextCursor(tc);
 }
 
