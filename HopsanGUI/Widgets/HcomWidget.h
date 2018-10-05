@@ -112,7 +112,7 @@ protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
 private slots:
-    void insertCompletion(QString& completion);
+    void insertCompletion(const QString& completion);
     void updateAutoCompleteList();
 
 private:
