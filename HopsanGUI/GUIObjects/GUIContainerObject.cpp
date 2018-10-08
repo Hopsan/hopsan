@@ -1199,6 +1199,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
     if (pConnector->isDangling() && !pConnector->isBroken())
     {
         cancelCreatingConnector();
+
         return;
     }
 
@@ -2431,6 +2432,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
         mpTempConnector->getStartPort()->getParentModelObject()->forgetConnector(mpTempConnector);
         mIsCreatingConnector = false;
         mpModelWidget->getGraphicsView()->setIgnoreNextContextMenuEvent();
+        mpModelWidget->getGraphicsView()->setIgnoreNextMouseReleaseEvent();
         delete(mpTempConnector);
         gpHelpPopupWidget->hide();
     }
