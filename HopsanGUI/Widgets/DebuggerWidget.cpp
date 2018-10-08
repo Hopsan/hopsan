@@ -67,6 +67,7 @@ DebuggerWidget::DebuggerWidget(ModelWidget *pModel, QWidget *parent) :
     mpVariablesTab = new QWidget();
     mpComponentsList = new QListWidget(mpVariablesTab);
     mpPortsList = new QListWidget(mpVariablesTab);
+    mpPortsList->setSelectionMode(QListWidget::MultiSelection);
     mpVariablesList = new QListWidget(mpVariablesTab);
     mpVariablesList->setSelectionMode(QListWidget::MultiSelection);
     mpRemoveButton = new QPushButton(mpVariablesTab);
@@ -218,29 +219,51 @@ void DebuggerWidget::updateVariablesList(QString port)
 
 void DebuggerWidget::addVariable()
 {
-    if(mpPortsList->count() == 0 || mpVariablesList->count() == 0) return;
-
-    if(mpComponentsList->currentItem() == 0 || mpPortsList->currentItem() == 0 || mpVariablesList->selectedItems().isEmpty()) return;
+    if(mpComponentsList->currentItem() == 0 || mpPortsList->currentItem() == 0) return;
     QString component = mpComponentsList->currentItem()->text();
     QString port = mpPortsList->currentItem()->text();
     QList<QListWidgetItem*> items = mpVariablesList->selectedItems();
 
-    if(component.isEmpty() || port.isEmpty() || items.isEmpty()) return;
+    //List with full variable names to populate
+    QStringList variables;
 
-    for(int i=0; i<items.size(); ++i)
+
+    if(!component.isEmpty() && !port.isEmpty() && items.isEmpty())
     {
-        QString data = items[i]->text();
-        QString fullName = component+"#"+port+"#"+data;
+        //Case 1: No variable selected. Add all variables from selected ports.
+        QList<QListWidgetItem*> ports = mpPortsList->selectedItems();
 
-        if(mVariables.contains(fullName)) return;
+        for(int i=0; i<ports.size(); ++i)
+        {
+            port = ports[i]->text();
+            NodeInfo info(mpModel->getTopLevelSystemContainer()->getModelObject(component)->getPort(port)->getNodeType());
+            for(const QString &data : info.variableLabels)
+            {
+                variables.push_back(component+"#"+port+"#"+data);
+            }
+        }
+    }
+    else if(!component.isEmpty() && !port.isEmpty() && !items.isEmpty())
+    {
+        //Case 2: Items selected. Add selected items.
+        for(int i=0; i<items.size(); ++i)
+        {
+            variables.push_back(component+"#"+port+"#"+items[i]->text());
+        }
+    }
 
-        mVariables.append(fullName);
-        mpChoosenVariablesList->addItem(fullName);
+    //Add all selected variables to table
+    for(const QString &variable : variables)
+    {
+        if(mVariables.contains(variable)) continue;
+
+        mVariables.append(variable);
+        mpChoosenVariablesList->addItem(variable);
 
 
         mpTraceTable->insertColumn(0);
 
-        QTableWidgetItem *pItem = new QTableWidgetItem(fullName);
+        QTableWidgetItem *pItem = new QTableWidgetItem(variable);
         mpTraceTable->setHorizontalHeaderItem(0, pItem);
     }
 }
