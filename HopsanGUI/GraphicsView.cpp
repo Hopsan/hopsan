@@ -38,6 +38,10 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QDoubleSpinBox>
+#include <QCompleter>
+#include <QRect>
+#include <QLineEdit>
+#include <QStringListModel>
 
 #include "global.h"
 #include "common.h"
@@ -72,6 +76,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     setContainerPtr(mpParentModelWidget->getTopLevelSystemContainer());
 
     mIgnoreNextContextMenuEvent = false;
+    mIgnoreNextMouseReleaseEvent = false;
     mCtrlKeyPressed = false;
     mShiftKeyPressed = false;
     mLeftMouseButtonPressed = false;
@@ -89,6 +94,16 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     mIsoColor = QColor("white");
     mZoomFactor = 1.0;
 
+    mpAddComponentLineEdit = new QLineEdit(this);
+    mpAddComponentLineEdit->setCompleter(new QCompleter(mpAddComponentLineEdit));
+    mpAddComponentLineEdit->completer()->setCompletionMode(QCompleter::PopupCompletion);
+    mpAddComponentLineEdit->completer()->setCaseSensitivity(Qt::CaseInsensitive);
+#if QT_VERSION >= 0x050000
+    mpAddComponentLineEdit->completer()->setFilterMode(Qt::MatchContains);
+#endif
+    connect(mpAddComponentLineEdit->completer(), SIGNAL(activated(QString)), this, SLOT(insertComponentFromLineEdit()));
+    mpAddComponentLineEdit->hide();
+
     this->updateViewPort();
     this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
 }
@@ -97,6 +112,8 @@ GraphicsView::GraphicsView(ModelWidget *parent)
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
+    mpAddComponentLineEdit->hide();
+
     qDebug() << "GraphicsView::contextMenuEvent(), reason = " << event->reason();
     if(!mpContainerObject->isCreatingConnector() && !mIgnoreNextContextMenuEvent)
     {
@@ -122,6 +139,14 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
         }
     }
     mIgnoreNextContextMenuEvent = false;
+}
+
+void GraphicsView::insertComponentFromLineEdit()
+{
+    gpMessageHandler->addInfoMessage("Adding: "+mpAddComponentLineEdit->text());
+    mpContainerObject->addModelObject(mpAddComponentLineEdit->text(), mapToScene(mpAddComponentLineEdit->pos()));
+    mpAddComponentLineEdit->hide();
+    mpAddComponentLineEdit->clear();
 }
 
 
@@ -274,6 +299,11 @@ void GraphicsView::setIgnoreNextContextMenuEvent()
     mIgnoreNextContextMenuEvent = true;
 }
 
+void GraphicsView::setIgnoreNextMouseReleaseEvent()
+{
+    mIgnoreNextMouseReleaseEvent = true;
+}
+
 
 //! @brief Sets the zoom factor to specified value
 void GraphicsView::setZoomFactor(double zoomFactor)
@@ -398,6 +428,17 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     else if (event->key() == Qt::Key_Escape)
     {
         mpContainerObject->cancelCreatingConnector();
+        mpAddComponentLineEdit->hide();
+        mpAddComponentLineEdit->clear();
+    }
+    else if(event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
+    {
+        if(gpLibraryHandler->getLoadedTypeNames().contains(mpAddComponentLineEdit->text()))
+        {
+            insertComponentFromLineEdit();
+        }
+        mpAddComponentLineEdit->hide();
+        mpAddComponentLineEdit->clear();
     }
     else if (ctrlPressed && event->key() == Qt::Key_0)
     {
@@ -613,6 +654,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     {
         mpContainerObject->updateTempConnector(mapToScene(event->pos()));
     }
+
     QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -621,6 +663,13 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    if(!this->mpContainerObject->getSelectedModelObjectPtrs().isEmpty() ||
+       !this->mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() ||
+        this->mpContainerObject->isConnectorSelected())
+    {
+        mIgnoreNextMouseReleaseEvent = true;
+    }
+
     emit unHighlightAll();
 
     if(!(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked()))
@@ -636,7 +685,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         }
         else if(mCtrlKeyPressed)
         {
+            mpAddComponentLineEdit->hide();
+            mpAddComponentLineEdit->clear();
             this->setDragMode(ScrollHandDrag);
+            mIgnoreNextMouseReleaseEvent = true;
         }
         else
         {
@@ -660,6 +712,40 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
 void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
+    if(mIgnoreNextMouseReleaseEvent) {
+        QGraphicsView::mouseReleaseEvent(event);
+        mIgnoreNextMouseReleaseEvent = false;
+        return;
+    }
+    if(mpAddComponentLineEdit->isVisible())
+    {
+        mpAddComponentLineEdit->clear();
+        mpAddComponentLineEdit->hide();
+    }
+#if QT_VERSION >= 0x050000
+    else if(!mpContainerObject->isCreatingConnector() &&
+            mpContainerObject->getSelectedModelObjectPtrs().isEmpty() &&
+            mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() &&
+            !mpContainerObject->isConnectorSelected() &&
+            this->rubberBandRect().isEmpty())
+#else
+    else if(!mpContainerObject->isCreatingConnector() &&
+            mpContainerObject->getSelectedModelObjectPtrs().isEmpty() &&
+            mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() &&
+            !mpContainerObject->isConnectorSelected())  //We cannot check for rubber band selection on Qt4, not sure how to solve this
+#endif
+    {
+        QCursor cursor;
+        QPointF pos = mapFromGlobal(cursor.pos());
+        QRect tempRect(pos.x(), pos.y(),300,1);
+
+        QStringList typeNames = QStringList() << gpLibraryHandler->getLoadedTypeNames();
+        mpAddComponentLineEdit->completer()->setModel(new QStringListModel(typeNames,mpAddComponentLineEdit));
+        mpAddComponentLineEdit->setGeometry(pos.x(), pos.y(), 200,30);
+        mpAddComponentLineEdit->show();
+        mpAddComponentLineEdit->setFocus();
+    }
+
     bool createdUndoPost=false;
 
     Q_FOREACH(ModelObject* object, mpContainerObject->getSelectedModelObjectPtrs())

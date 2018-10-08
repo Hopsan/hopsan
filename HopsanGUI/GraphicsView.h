@@ -36,6 +36,7 @@
 
 #include <QMenu>
 #include <QGraphicsView>
+#include <QLineEdit>
 
 #include "common.h"
 #include "GraphicsViewPort.h"
@@ -62,6 +63,7 @@ public:
     bool isShiftKeyPressed();
     bool isLeftMouseButtonPressed();
     void setIgnoreNextContextMenuEvent();
+    void setIgnoreNextMouseReleaseEvent();
     void setZoomFactor(double zoomFactor);
     double getZoomFactor();
     void clearHighlights();
@@ -101,13 +103,18 @@ protected:
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 
+private slots:
+    void insertComponentFromLineEdit();
+
 private:
     QColor mIsoColor;
     bool mCtrlKeyPressed;
     bool mShiftKeyPressed;
     bool mLeftMouseButtonPressed;
     bool mIgnoreNextContextMenuEvent;
+    bool mIgnoreNextMouseReleaseEvent;
     double mZoomFactor;
+    QLineEdit *mpAddComponentLineEdit;
 
     ContainerObject *mpContainerObject;
 };
