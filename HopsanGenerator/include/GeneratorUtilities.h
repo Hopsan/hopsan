@@ -33,6 +33,8 @@
 #ifndef GENERATORUTILITIES_H
 #define GENERATORUTILITIES_H
 
+#include "GeneratorTypes.h"
+
 #include <QString>
 #include <QStringList>
 #include <QFile>
@@ -41,17 +43,49 @@
 
 class HopsanGeneratorBase;
 
-namespace hopsan {
-namespace os_strings {
-    constexpr auto win = "win";
-    constexpr auto win32 = "win32";
-    constexpr auto win64 = "win64";
-    constexpr auto apple = "apple";
-    constexpr auto Linux = "linux";
-}
-}
+class CompilerHandler
+{
+public:
+    using Compiler = BuildFlags::Compiler;
+    using Language = BuildFlags::Language;
+    enum class OutputType {Executable, StaticLibrary, SharedLibrary};
+
+    CompilerHandler() = default;
+    explicit CompilerHandler(const Language language);
+
+    void addCompilerFlag(QString cflag, const Compiler compiler=Compiler::Any);
+    void addLinkerFlag(QString lflag, const Compiler compiler=Compiler::Any);
+
+    void addIncludePath(QString ipath, const Compiler compiler=Compiler::Any);
+    void addLibraryPath(QString lpath, const Compiler compiler=Compiler::Any);
+    void addLinkLibrary(QString lib, const Compiler compiler=Compiler::Any);
+    void addDefinition(QString macroname, QString value, const Compiler compiler=Compiler::Any);
+    void addDefinition(QString macroname, const Compiler compiler=Compiler::Any);
+
+    void setLanguage(const Language language);
+    void setOutputFile(QString outputFile, const OutputType outputType);
+    void setSharedLibraryOutputFile(QString outputLibraryFileName);
+    void setSourceFiles(const QStringList& sourceFiles);
+
+    QString outputFile() const;
+    QStringList sourceFiles() const;
+    QStringList compilerFlags(const Compiler compiler=Compiler::Any) const;
+    QStringList linkerFlags(const Compiler compiler=Compiler::Any) const;
+    QString compileCommand(const Compiler compiler);
+
+private:
+    std::vector<BuildFlags> mBuildFlags;
+    QString mOutputFile;
+    QStringList mSourceFiles;
+    OutputType mOutputType;
+    Language mLanguage = Language::Cpp;
+};
+
 
 bool matchOSString(const QString& os);
+BuildFlags::Platform currentPlatform();
+QString sharedLibrarySuffix(const BuildFlags::Platform platform);
+
 
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 
