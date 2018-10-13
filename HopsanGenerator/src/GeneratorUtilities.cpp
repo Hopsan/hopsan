@@ -692,3 +692,176 @@ bool matchOSString(const QString &os)
     return false;
 #endif
 }
+
+QString sharedLibrarySuffix(const BuildFlags::Platform platform)
+{
+    switch (platform) {
+    case BuildFlags::Platform::Linux:
+        return hopsan::sharedlibrary_suffixes::so;
+    case BuildFlags::Platform::apple:
+        return hopsan::sharedlibrary_suffixes::dylib;
+    default:
+        return hopsan::sharedlibrary_suffixes::dll;
+    }
+}
+
+BuildFlags::Platform currentPlatform()
+{
+#if defined (_WIN64)
+    return BuildFlags::Platform::win64;
+#elif defined(_WIN32)
+    return BuildFlags::Platform::win32;
+#elif defined(__linux__)
+    return BuildFlags::Platform::Linux;
+#elif defined(__APPLE__)
+    return BuildFlags::Platform::apple;
+#else
+    return BuildFlags::Platform::notset;
+#endif
+
+}
+
+CompilerHandler::CompilerHandler(const CompilerHandler::Language language)
+{
+    setLanguage(language);
+}
+
+void CompilerHandler::addCompilerFlag(QString cflag, const Compiler compiler)
+{
+    if (mBuildFlags.empty() || (mBuildFlags.back().mCompiler != compiler)) {
+        mBuildFlags.emplace_back(compiler, QStringList(cflag), QStringList());
+    } else {
+        mBuildFlags.back().mCompilerFlags.append(cflag);
+    }
+}
+
+void CompilerHandler::addLinkerFlag(QString lflag, const Compiler compiler)
+{
+    if (mBuildFlags.empty() || (mBuildFlags.back().mCompiler != compiler)) {
+        mBuildFlags.emplace_back(compiler, QStringList(), QStringList(lflag));
+    } else {
+        mBuildFlags.back().mLinkerFlags.append(lflag);
+    }
+}
+
+void CompilerHandler::addIncludePath(QString ipath, const Compiler compiler)
+{
+    addCompilerFlag(QString("-I%1").arg(ipath), compiler);
+}
+
+void CompilerHandler::addLibraryPath(QString lpath, const Compiler compiler)
+{
+    QString lflag;
+    if (compiler == Compiler::MSVC) {
+//FIXME        lflag = QString("-L%1").arg(lpath);
+    } else {
+        lflag = QString("-L%1").arg(lpath);
+    }
+
+    addLinkerFlag(lflag, compiler);
+}
+
+void CompilerHandler::addLinkLibrary(QString lib, const Compiler compiler)
+{
+    QString lflag;
+    if (compiler == Compiler::MSVC) {
+//FIXME        lflag = QString("-L%1").arg(lpath);
+    } else {
+        lflag = QString("-l%1").arg(lib);
+    }
+
+    addLinkerFlag(lflag, compiler);
+}
+
+
+void CompilerHandler::addDefinition(QString macroname, QString value, const Compiler compiler)
+{
+    QString cflag;
+    if (compiler == Compiler::MSVC) {
+//FIXME
+    } else {
+        if (value.isEmpty()) {
+            cflag = QString("-D%1").arg(macroname);
+        } else {
+            cflag = QString("-D%1=%2").arg(macroname).arg(value);
+        }
+    }
+    addCompilerFlag(cflag, compiler);
+}
+
+void CompilerHandler::addDefinition(QString macroname, const CompilerHandler::Compiler compiler)
+{
+    addDefinition(macroname, {}, compiler);
+}
+
+void CompilerHandler::setLanguage(const CompilerHandler::Language language)
+{
+    mLanguage = language;
+}
+
+QString CompilerHandler::compileCommand(const Compiler compiler)
+{
+    const QStringList cflags = compilerFlags(compiler);
+    const QStringList lflags = linkerFlags(compiler);
+
+    const QString compilerString = BuildFlags::compilerString(compiler, mLanguage);
+    return QString("%1 %2 %3 %4 -o %5").arg(compilerString)
+                                       .arg(cflags.join(" "))
+                                       .arg(mSourceFiles.join(" "))
+                                       .arg(lflags.join(" "))
+                                       .arg(mOutputFile);
+}
+
+QStringList CompilerHandler::compilerFlags(const CompilerHandler::Compiler compiler) const
+{
+    QStringList cflags;
+    for (const auto& bf : mBuildFlags) {
+        if ( (bf.mCompiler == Compiler::Any) || (bf.mCompiler == compiler)  ) {
+            cflags.append(bf.mCompilerFlags);
+        }
+    }
+    return cflags;
+}
+
+QStringList CompilerHandler::linkerFlags(const CompilerHandler::Compiler compiler) const
+{
+    QStringList lflags;
+    for (const auto& bf : mBuildFlags) {
+        if ( (bf.mCompiler == Compiler::Any) || (bf.mCompiler == compiler)  ) {
+            lflags.append(bf.mLinkerFlags);
+        }
+    }
+    return lflags;
+}
+
+void CompilerHandler::setOutputFile(QString outputFile, const OutputType outputType)
+{
+    mOutputFile = outputFile;
+    mOutputType = outputType;
+}
+
+void CompilerHandler::setSharedLibraryOutputFile(QString outputLibraryFileName)
+{
+    const QString suffix = sharedLibrarySuffix(currentPlatform());
+    const QString extension = "."+suffix;
+    if (!outputLibraryFileName.endsWith(extension)) {
+        outputLibraryFileName.append(extension);
+    }
+    addLinkerFlag("-shared", Compiler::GCC);
+    setOutputFile(outputLibraryFileName, OutputType::SharedLibrary);
+}
+
+void CompilerHandler::setSourceFiles(const QStringList &sourceFiles)
+{
+    mSourceFiles = sourceFiles;
+}
+
+QString CompilerHandler::outputFile() const
+{
+    return mOutputFile;
+}
+
+QStringList CompilerHandler::sourceFiles() const
+{
+    return mSourceFiles;
+}

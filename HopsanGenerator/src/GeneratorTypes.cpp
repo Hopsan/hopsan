@@ -612,13 +612,40 @@ BuildFlags::BuildFlags(const QStringList &cflags, const QStringList &lflags) : m
 BuildFlags::BuildFlags(const BuildFlags::Platform platform, const QStringList &cflags, const QStringList &lflags)
     : mCompilerFlags(cflags), mLinkerFlags(lflags), mPlatform(platform) {}
 
-QString BuildFlags::platformString() const {
-    switch (mPlatform) {
-    case win : return hopsan::os_strings::win ;
-    case win32 : return hopsan::os_strings::win32 ;
-    case win64 : return hopsan::os_strings::win64 ;
-    case Linux : return hopsan::os_strings::Linux ;
-    case apple : return hopsan::os_strings::apple ;
+BuildFlags::BuildFlags(const BuildFlags::Compiler compiler, const QStringList &cflags, const QStringList &lflags)
+    : mCompilerFlags(cflags), mLinkerFlags(lflags), mCompiler(compiler) {}
+
+QString BuildFlags::platformString(BuildFlags::Platform platform) {
+    switch (platform) {
+    case Platform::win : return hopsan::os_strings::win ;
+    case Platform::win32 : return hopsan::os_strings::win32 ;
+    case Platform::win64 : return hopsan::os_strings::win64 ;
+    case Platform::Linux : return hopsan::os_strings::Linux ;
+    case Platform::apple : return hopsan::os_strings::apple ;
     default : return {} ;
     }
 }
+
+QString BuildFlags::compilerString(BuildFlags::Compiler compiler, Language language)
+{
+    switch (compiler) {
+    case Compiler::GCC  :
+        switch (language) {
+        case Language::C   : return hopsan::compiler_strings::gcc ;
+        case Language::Cpp : return hopsan::compiler_strings::gpp ;
+        }
+    case Compiler::Clang: return hopsan::compiler_strings::clang ;
+    case Compiler::MSVC : return hopsan::compiler_strings::msvc  ;
+    default: return {} ;
+    }
+}
+
+QString BuildFlags::platformString() const
+{
+    return platformString(mPlatform);
+}
+
+//QString BuildFlags::compilerString() const
+//{
+//    return compilerString(mCompiler);
+//}

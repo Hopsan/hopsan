@@ -28,28 +28,55 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
-//#include <QVector>
-
-#include "GeneratorUtilities.h"
-
 
 namespace hopsan {
+
+namespace os_strings {
+    constexpr auto win = "win";
+    constexpr auto win32 = "win32";
+    constexpr auto win64 = "win64";
+    constexpr auto apple = "apple";
+    constexpr auto Linux = "linux";
+}
+
+namespace compiler_strings {
+    constexpr auto gcc = "gcc";
+    constexpr auto gpp = "g++";
+    constexpr auto clang = "clang";
+    constexpr auto msvc = "cl";
+}
+
+namespace sharedlibrary_suffixes {
+    constexpr auto dll = "dll";
+    constexpr auto so = "so";
+    constexpr auto dylib = "dylib";
+}
+
 class ComponentSystem;
+
 }
 
 class BuildFlags
 {
 public:
-    enum Platform {notset, win, win32, win64, Linux, apple};
+    enum class Platform {notset, win, win32, win64, Linux, apple};
+    enum class Compiler {Any, GCC, Clang, MSVC};
+    enum class Language {C, Cpp};
+    static QString platformString(Platform platform);
+    static QString compilerString(Compiler compiler, Language language);
+
     QString platformString() const;
+    //QString compilerString() const;
 
     BuildFlags() = default;
     BuildFlags(const QStringList& cflags, const QStringList& lflags);
     BuildFlags(const Platform platform, const QStringList& cflags, const QStringList& lflags);
+    BuildFlags(const Compiler compiler, const QStringList& cflags, const QStringList& lflags);
 
     QStringList mCompilerFlags;
     QStringList mLinkerFlags;
-    Platform mPlatform = notset;
+    Platform mPlatform = Platform::notset;
+    Compiler mCompiler = Compiler::Any;
 };
 
 class ComponentLibrary
