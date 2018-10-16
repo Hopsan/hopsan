@@ -99,6 +99,9 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpFilterEdit->setCompleter(new QCompleter(mpFilterEdit));
     mpFilterEdit->completer()->setCompletionMode(QCompleter::PopupCompletion);
     mpFilterEdit->completer()->setCaseSensitivity(Qt::CaseInsensitive);
+#if QT_VERSION >= 0x050000
+    mpFilterEdit->completer()->setFilterMode(Qt::MatchContains);
+#endif
 
     QToolButton *pClearFilterButton = new QToolButton(this);
     pClearFilterButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
