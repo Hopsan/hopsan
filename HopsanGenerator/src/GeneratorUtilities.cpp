@@ -251,39 +251,41 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
         return false;
     }
 
-    QString c;
-    Q_FOREACH(const QString &file, ccFiles)
-        c.append(file+" ");
-    c.chop(1);
+    using Compiler = CompilerHandler::Compiler;
 
-    QString hopsanBinDir = pGenerator->getHopsanBinPath();
-    QString iflags = QString("-I\"%1\"").arg(pGenerator->getHopsanCoreIncludePath());
-    lflags += QString(" -L\"%1\" -l%2").arg(hopsanBinDir).arg("hopsancore" TO_STR(DEBUG_EXT))+" "+extraLFlags;
-
-    //! @todo setting rpath here is strange, as it will hardcode given path inte dll (so if you move it it wont work) /Peter
-    cflags += QString(" -Dhopsan=hopsan -fPIC -w -Wl,--rpath,\"%1\" -shared ").arg(libRootDir);
-    cflags += extraCFlags+" ";
-
-    // Modify if debug
-#ifdef DEBUGCOMPILING
+    CompilerHandler ch(CompilerHandler::Language::Cpp);
+    ch.addIncludePath(pGenerator->getHopsanCoreIncludePath());
+    ch.addCompilerFlag("-fPIC -w", Compiler::GCC);
+    //! @todo setting rpath here is strange, as it will hard-code given path into dll (so if you move it it wont work) /Peter
+    ch.addCompilerFlag(QString(R"(-Wl,--rpath,"%1")").arg(libRootDir), Compiler::GCC);
+    ch.addCompilerFlag(extraCFlags);
+    ch.addLibraryPath(pGenerator->getHopsanBinPath());
+#if defined(DEBUGCOMPILING)
     libFile+=dbg_ext;
-    cflags.prepend("-g -DDEBUGCOMPILING ");
+    ch.addCompilerFlag("-g", Compiler::GCC);
+    ch.addDefinition("DEBUGCOMPILING");
+    ch.addLinkLibrary("hopsancore_d");
 #else
-    cflags.prepend("-DRELEASECOMPILING ");
+    ch.addDefinition("RELEASECOMPILING");
+    ch.addLinkLibrary("hopsancore");
 #endif
+    ch.addLinkerFlag(extraLFlags);
 
-    pGenerator->printMessage("\nCalling compiler utility:");
-    pGenerator->printMessage("Path:     "+libRootDir);
-    pGenerator->printMessage("Output:   "+libFile);
-    pGenerator->printMessage("Sources:  "+c);
-    pGenerator->printMessage("Cflags:   "+cflags);
-    pGenerator->printMessage("Includes: "+iflags);
-    pGenerator->printMessage("Lflags:   "+lflags+"\n");
+    ch.setSourceFiles(ccFiles);
+    ch.setSharedLibraryOutputFile(libFile);
+
+    pGenerator->printMessage("\n");
+    pGenerator->printMessage("Calling compiler utility:");
+    pGenerator->printMessage("Work Directory: "+libRootDir);
+    pGenerator->printMessage("Output file:    "+ch.outputFile());
+    pGenerator->printMessage("Source files:   "+ch.sourceFiles().join(" "));
+    pGenerator->printMessage("Compiler flags: "+ch.compilerFlags(Compiler::GCC).join(" "));
+    pGenerator->printMessage("Linker flags:   "+ch.linkerFlags(Compiler::GCC).join(" "));
+    pGenerator->printMessage("\n");
 
     pGenerator->printMessage("Compiling please wait!");
     QString output;
-    QString gccPath = pGenerator->getCompilerPath();
-    bool success = compile(libRootDir, gccPath, libFile, c, iflags, cflags, lflags, output);
+    bool success = compile(libRootDir, pGenerator->getCompilerPath(), ch, Compiler::GCC, output);
     pGenerator->printMessage(output);
     return success;
 }
@@ -358,6 +360,77 @@ bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QStri
 
     QDir targetDir(wdPath);
     if(!targetDir.exists(o)) {
+        output.append("Compilation failed.");
+        return false;
+    }
+
+    output.append("Compilation successful.");
+    return true;
+}
+
+//! @brief Generate script and calls compiler with specified parameters
+//! @param[in] wdPath Absolute path to compilation work directory
+//! @param[in] compilerPath Path to the directory containing the compiler (Example: C:\mingw64\bin)
+//! @param[in] ch Compiler handler containing compiler and linker commands
+//! @param[in] compiler The compiler to use
+//! @param[out] output Reference to string where output messages are stored
+bool compile(QString wdPath, QString compilerPath, CompilerHandler& ch, CompilerHandler::Compiler compiler, QString &output)
+{
+    // Create compilation script file
+    QString batchScript = QString(
+R"(@echo off
+set PATH=%1;%PATH%
+@echo on
+if exist %2 (
+  del %2
+)
+%3
+)").arg(compilerPath).arg(ch.outputFile()).arg(ch.compileCommand(compiler));
+
+    QString shellScript = QString(
+R"(#!/bin/sh
+PATH=%1:${PATH}
+rm -f  %2
+%3
+)").arg(compilerPath).arg(ch.outputFile()).arg(ch.compileCommand(compiler));
+
+    QFile compileScript;
+#ifdef _WIN32
+    compileScript.setFileName(wdPath + "/compile.bat");
+    QString& rScript = batchScript;
+#else
+    compileScript.setFileName(wdPath + "/compile.sh");
+    QString& rScript = shellScript;
+#endif
+    if(!compileScript.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        output = QString("Could not open %1 for writing.").arg(compileScript.fileName());
+        return false;
+    }
+    QTextStream scriptStream(&compileScript);
+    scriptStream << rScript;
+    compileScript.close();
+
+    // Call compilation script file
+    QString stdOut,stdErr;
+    bool compiledOK = false;
+#ifdef _WIN32
+    compiledOK = (callProcess("cmd.exe", QStringList() << "/c" << "compile.bat", wdPath, 600, stdOut, stdErr) == 0);
+#else
+    compiledOK = (callProcess("/bin/sh", QStringList() << "compile.sh", wdPath, 600, stdOut, stdErr) == 0);
+#endif
+    output.append(stdOut);
+    output.append("\n");
+    output.append(stdErr);
+    output.append("\n");
+
+    if (!compiledOK) {
+        output.append("Compilation failed.");
+        return false;
+    }
+
+    QDir targetDir(wdPath);
+    if(!targetDir.exists(ch.outputFile())) {
         output.append("Compilation failed.");
         return false;
     }
