@@ -95,6 +95,7 @@ bool copyFile(const QString &source, const QString &target, QString &rErrorMessa
 
 bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QString extraCFlags="", QString extraLFlags="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);
+bool compile(QString wdPath, QString compilerPath, CompilerHandler& ch, CompilerHandler::Compiler compiler, QString &output);
 
 int callProcess(const QString &name, const QStringList &args, const QString &workingDirectory, const int timeout_s, QString &rStdOut, QString &rStdErr);
 
