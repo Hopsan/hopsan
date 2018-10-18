@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     Configuration.cpp \
     Utilities/XMLUtilities.cpp \
     Utilities/StringUtilities.cpp \
-    Widgets/TextEditor.cpp
+    Widgets/TextEditor.cpp \
+    Widgets/FindWidget.cpp
 
 HEADERS  += MainWindow.h \
     Widgets/ProjectFilesWidget.h \
@@ -55,7 +56,8 @@ HEADERS  += MainWindow.h \
     Configuration.h \
     Utilities/XMLUtilities.h \
     Utilities/StringUtilities.h \
-    Widgets/TextEditor.h
+    Widgets/TextEditor.h \
+    Widgets/FindWidget.h
 
 FORMS    +=
 

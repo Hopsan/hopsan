@@ -46,6 +46,8 @@ public:
 
 public slots:
     void update();
+    void findPrevious(QString text);
+    void findNext(QString text);
 
 signals:
     void textChanged();
