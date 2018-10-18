@@ -39,6 +39,7 @@
 #include "Widgets/ProjectFilesWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/EditorWidget.h"
+#include "Widgets/FindWidget.h"
 #include "Widgets/OptionsWidget.h"
 #include "Handlers/MessageHandler.h"
 #include "Handlers/FileHandler.h"
@@ -75,6 +76,8 @@ MainWindow::MainWindow(QWidget *pParent)
 
     //Create widgets
     mpEditorWidget = new EditorWidget(mpConfiguration, this);
+    mpFindWidget = new FindWidget(this);
+    mpFindWidget->setVisible(false);
     mpProjectFilesWidget = new ProjectFilesWidget(this);
     mpMessageWidget = new MessageWidget(this);
     mpOptionsWidget = new OptionsWidget(mpConfiguration, this);
@@ -83,7 +86,9 @@ MainWindow::MainWindow(QWidget *pParent)
     QWidget *pCentralWidget = new QWidget(this);
     QGridLayout *pCentralLayout = new QGridLayout(pCentralWidget);
     pCentralLayout->addWidget(mpEditorWidget,0,0);
+    pCentralLayout->addWidget(mpFindWidget,1,0);
     pCentralLayout->addWidget(mpOptionsWidget,0,0);
+    pCentralLayout->setRowStretch(0,1);
     mpOptionsWidget->setHidden(true);
     setCentralWidget(pCentralWidget);
     pFilesDockWidget->setWidget(mpProjectFilesWidget);
@@ -115,6 +120,8 @@ MainWindow::MainWindow(QWidget *pParent)
     pDebugAction->setShortcut(QKeySequence("Ctrl+D"));
     QAction *pReloadAction = new QAction("Reload Current File", this);
     QAction *pCloseAction = new QAction("Close HoLC", this);
+    QAction *pFindAction = new QAction("Find", this);
+    pFindAction->setShortcut(QKeySequence("Ctrl+F"));
 
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pNewAction);
@@ -145,9 +152,13 @@ MainWindow::MainWindow(QWidget *pParent)
     pFileMenu->addSeparator();
     pFileMenu->addAction(pCloseAction);
 
+    QMenu *pEditMenu = pMenuBar->addMenu(tr("Edit"));
+    pEditMenu->addAction(pFindAction);
+
     QMenu *pToolsMenu = pMenuBar->addMenu(tr("Tools"));
     pToolsMenu->addAction(pOptionsAction);
     pToolsMenu->addAction(pCompileAction);
+
 
     //Create handlers
     mpMessageHandler = new MessageHandler(mpMessageWidget);
@@ -160,22 +171,24 @@ MainWindow::MainWindow(QWidget *pParent)
     mpCreateComponentWizard->hide();
 
     //Setup connections
-    connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(updateText()));
-    connect(pOpenAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(loadLibraryFromXml()));
-    connect(pHistoryAction,                 SIGNAL(triggered()),        this,                       SLOT(showHistory()));
-    connect(pSaveAction,                    SIGNAL(triggered()),        mpFileHandler,              SLOT(saveToXml()));
-    connect(mpEditorWidget,                 SIGNAL(textChanged()),      mpFileHandler,              SLOT(setFileNotSaved()));
-    connect(pOptionsAction,                 SIGNAL(toggled(bool)),      mpOptionsWidget,            SLOT(setVisible(bool)));
-    connect(pOptionsAction,                 SIGNAL(toggled(bool)),      mpEditorWidget,             SLOT(setHidden(bool)));
-    connect(pCompileAction,                 SIGNAL(triggered()),        mpFileHandler,              SLOT(compileLibrary()));
-    connect(mpFileHandler,                  SIGNAL(fileOpened(bool)),   pOptionsAction,             SLOT(setChecked(bool)));
-    connect(pNewAction,                     SIGNAL(triggered()),        mpNewProjectDialog,         SLOT(show()));
-    connect(pAddComponentAction,            SIGNAL(triggered()),        mpCreateComponentWizard,    SLOT(open()));
-    connect(pAddComponentFromFileAction,    SIGNAL(triggered()),        mpFileHandler,              SLOT(addComponent()));
-    connect(pAddCafFromFileAction,          SIGNAL(triggered()),        mpFileHandler,              SLOT(addAppearanceFile()));
-    connect(pReloadAction,                  SIGNAL(triggered()),        mpFileHandler,              SLOT(reloadFile()));
-    connect(pCloseAction,                   SIGNAL(triggered()),        this,                       SLOT(close()));
-
+    connect(mpEditorWidget,                 SIGNAL(textChanged()),          mpFileHandler,              SLOT(updateText()));
+    connect(pOpenAction,                    SIGNAL(triggered()),            mpFileHandler,              SLOT(loadLibraryFromXml()));
+    connect(pHistoryAction,                 SIGNAL(triggered()),            this,                       SLOT(showHistory()));
+    connect(pSaveAction,                    SIGNAL(triggered()),            mpFileHandler,              SLOT(saveToXml()));
+    connect(mpEditorWidget,                 SIGNAL(textChanged()),          mpFileHandler,              SLOT(setFileNotSaved()));
+    connect(pOptionsAction,                 SIGNAL(toggled(bool)),          mpOptionsWidget,            SLOT(setVisible(bool)));
+    connect(pOptionsAction,                 SIGNAL(toggled(bool)),          mpEditorWidget,             SLOT(setHidden(bool)));
+    connect(pCompileAction,                 SIGNAL(triggered()),            mpFileHandler,              SLOT(compileLibrary()));
+    connect(mpFileHandler,                  SIGNAL(fileOpened(bool)),       pOptionsAction,             SLOT(setChecked(bool)));
+    connect(pNewAction,                     SIGNAL(triggered()),            mpNewProjectDialog,         SLOT(show()));
+    connect(pAddComponentAction,            SIGNAL(triggered()),            mpCreateComponentWizard,    SLOT(open()));
+    connect(pAddComponentFromFileAction,    SIGNAL(triggered()),            mpFileHandler,              SLOT(addComponent()));
+    connect(pAddCafFromFileAction,          SIGNAL(triggered()),            mpFileHandler,              SLOT(addAppearanceFile()));
+    connect(pReloadAction,                  SIGNAL(triggered()),            mpFileHandler,              SLOT(reloadFile()));
+    connect(pCloseAction,                   SIGNAL(triggered()),            this,                       SLOT(close()));
+    connect(pFindAction,                    SIGNAL(triggered()),            mpFindWidget,               SLOT(show()));
+    connect(mpFindWidget,                   SIGNAL(findPrevious(QString)),  mpEditorWidget,             SLOT(findPrevious(QString)));
+    connect(mpFindWidget,                   SIGNAL(findNext(QString)),      mpEditorWidget,             SLOT(findNext(QString)));
     //Load last session project (if exists)
     if(!mpConfiguration->getProjectPath().isEmpty())
     {
@@ -204,3 +217,4 @@ void MainWindow::showHistory()
         mpFileHandler->loadLibraryFromXml(pLib->text());
     }
 }
+

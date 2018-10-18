@@ -30,6 +30,7 @@
 class ProjectFilesWidget;
 class MessageWidget;
 class EditorWidget;
+class FindWidget;
 class MessageHandler;
 class FileHandler;
 class OptionsWidget;
@@ -54,6 +55,7 @@ private:
     ProjectFilesWidget *mpProjectFilesWidget;
     MessageWidget *mpMessageWidget;
     EditorWidget *mpEditorWidget;
+    FindWidget *mpFindWidget;
     OptionsWidget *mpOptionsWidget;
     NewProjectDialog *mpNewProjectDialog;
     CreateComponentWizard *mpCreateComponentWizard;

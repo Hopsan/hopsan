@@ -11,5 +11,6 @@
         <file>graphics/splash.png</file>
         <file>graphics/uiicons/Hopsan-AddCafFile.png</file>
         <file>graphics/uiicons/Hopsan-History.png</file>
+        <file>graphics/uiicons/Hopsan-Discard.png</file>
     </qresource>
 </RCC>

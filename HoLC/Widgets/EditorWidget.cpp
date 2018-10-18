@@ -105,3 +105,13 @@ void EditorWidget::update()
     }
     QWidget::update();
 }
+
+void EditorWidget::findPrevious(QString text)
+{
+    mpTextEdit->find(text,QTextDocument::FindBackward);
+}
+
+void EditorWidget::findNext(QString text)
+{
+    mpTextEdit->find(text);
+}
