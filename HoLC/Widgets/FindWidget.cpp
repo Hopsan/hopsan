@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QToolButton>
+#include <QCheckBox>
 
 FindWidget::FindWidget(QWidget* parent) :
     QWidget(parent)
@@ -18,6 +19,7 @@ FindWidget::FindWidget(QWidget* parent) :
     pFindPreviousButton->setShortcut(QKeySequence("Shift+F3"));
     QPushButton *pFindNextButton = new QPushButton("Find Next",this);
     pFindNextButton->setShortcut(QKeySequence("F3"));
+    mpCaseSensitivityCheckBox = new QCheckBox("Case Sensitive", this);
     QToolButton *pCloseButton = new QToolButton(this);
     pCloseButton->setIcon(QIcon(":graphics/uiicons/Hopsan-Discard.png"));
 
@@ -25,7 +27,8 @@ FindWidget::FindWidget(QWidget* parent) :
     pLayout->addWidget(mpFindLineEdit,0,1);
     pLayout->addWidget(pFindPreviousButton,0,2);
     pLayout->addWidget(pFindNextButton,0,3);
-    pLayout->addWidget(pCloseButton,0,4);
+    pLayout->addWidget(mpCaseSensitivityCheckBox,0,4);
+    pLayout->addWidget(pCloseButton,0,5);
     pLayout->setRowStretch(1,1);
 
     connect(pCloseButton, SIGNAL(clicked()),    this,   SLOT(hide()));
@@ -41,10 +44,16 @@ void FindWidget::setVisible(bool visible)
 
 void FindWidget::findPrevious()
 {
-    emit findPrevious(mpFindLineEdit->text());
+    QTextDocument::FindFlags flags;
+    flags.setFlag(QTextDocument::FindBackward, true);
+    flags.setFlag(QTextDocument::FindCaseSensitively, mpCaseSensitivityCheckBox->isChecked());
+    emit find(mpFindLineEdit->text(), flags);
 }
 
 void FindWidget::findNext()
 {
-    emit findNext(mpFindLineEdit->text());
+    QTextDocument::FindFlags flags;
+    flags.setFlag(QTextDocument::FindBackward, false);
+    flags.setFlag(QTextDocument::FindCaseSensitively, mpCaseSensitivityCheckBox->isChecked());
+    emit find(mpFindLineEdit->text(), flags);
 }

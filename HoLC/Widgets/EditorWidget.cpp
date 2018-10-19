@@ -106,12 +106,8 @@ void EditorWidget::update()
     QWidget::update();
 }
 
-void EditorWidget::findPrevious(QString text)
+void EditorWidget::find(QString text, QTextDocument::FindFlags flags)
 {
-    mpTextEdit->find(text,QTextDocument::FindBackward);
+    mpTextEdit->find(text,flags);
 }
 
-void EditorWidget::findNext(QString text)
-{
-    mpTextEdit->find(text);
-}
