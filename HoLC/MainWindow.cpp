@@ -187,8 +187,7 @@ MainWindow::MainWindow(QWidget *pParent)
     connect(pReloadAction,                  SIGNAL(triggered()),            mpFileHandler,              SLOT(reloadFile()));
     connect(pCloseAction,                   SIGNAL(triggered()),            this,                       SLOT(close()));
     connect(pFindAction,                    SIGNAL(triggered()),            mpFindWidget,               SLOT(show()));
-    connect(mpFindWidget,                   SIGNAL(findPrevious(QString)),  mpEditorWidget,             SLOT(findPrevious(QString)));
-    connect(mpFindWidget,                   SIGNAL(findNext(QString)),      mpEditorWidget,             SLOT(findNext(QString)));
+    connect(mpFindWidget,                   SIGNAL(find(QString,QTextDocument::FindFlags)),      mpEditorWidget,             SLOT(find(QString,QTextDocument::FindFlags)));
     //Load last session project (if exists)
     if(!mpConfiguration->getProjectPath().isEmpty())
     {

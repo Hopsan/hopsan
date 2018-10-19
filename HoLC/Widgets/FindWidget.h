@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QLineEdit>
+#include <QTextDocument>
+#include <QCheckBox>
 
 class FindWidget : public QWidget
 {
@@ -11,8 +13,7 @@ public:
     FindWidget(QWidget *parent = 0);
 
 signals:
-    void findPrevious(QString);
-    void findNext(QString);
+    void find(QString, QTextDocument::FindFlags);
 
 public slots:
     virtual void setVisible(bool visible);
@@ -23,6 +24,7 @@ private slots:
 
 private:
     QLineEdit *mpFindLineEdit;
+    QCheckBox *mpCaseSensitivityCheckBox;
 };
 
 #endif // FINDWIDGET_H

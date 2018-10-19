@@ -46,8 +46,7 @@ public:
 
 public slots:
     void update();
-    void findPrevious(QString text);
-    void findNext(QString text);
+    void find(QString text, QTextDocument::FindFlags);
 
 signals:
     void textChanged();
