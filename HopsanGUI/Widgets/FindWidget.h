@@ -27,27 +27,15 @@
 #ifndef FINDWIDGET_H
 #define FINDWIDGET_H
 
-#include <QDialog>
+#include <QWidget>
 #include <QString>
 #include <QPointer>
 #include <QLineEdit>
+#include <QComboBox>
+#include <QPushButton>
 
 // Forward declaration
 class ContainerObject;
-
-class FindHelper : public QWidget
-{
-    Q_OBJECT
-public:
-    FindHelper(QWidget *pParent);
-private:
-    QLineEdit *mpLineEdit;
-private slots:
-    void doFind();
-signals:
-    void find(QString name);
-};
-
 
 class FindWidget : public QWidget
 {
@@ -59,14 +47,22 @@ public:
 signals:
 
 public slots:
+    void find();
     void findComponent(const QString &rName, const bool centerView=true);
     void findAlias(const QString &rName, const bool centerView=true);
     void findSystemParameter(const QString &rName, const bool centerView=true);
     void findSystemParameter(const QStringList &rNames, const bool centerView=true);
     void findAny(const QString &rName);
 
+public slots:
+    virtual void setVisible(bool visible);
+    virtual void keyPressEvent(QKeyEvent *event);
+
 private:
     void clearHighlights();
+    QLineEdit *mpFindLineEdit;
+    QComboBox *mpFindWhatComboBox;
+    QPushButton *mpFindButton;
     QPointer<ContainerObject> mpContainer;
 
 };
