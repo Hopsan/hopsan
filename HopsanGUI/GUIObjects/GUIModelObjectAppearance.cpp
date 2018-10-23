@@ -118,6 +118,7 @@
 #define CAF_XGAIN "xgain"
 #define CAF_YGAIN "ygain"
 #define CAF_SWITCHABLE "switchable"
+#define CAF_MOMENTARY "momentary"
 #define CAF_INDICATOR "indicator"
 #define CAF_PORTNAME "portname"
 #define CAF_STARTX "startx"
@@ -1453,6 +1454,7 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
     if(!xmlSwitchable.isNull())
     {
         isSwitchable = true;
+        isMomentary = parseAttributeBool(xmlSwitchable, CAF_MOMENTARY, false);
         switchableOffValue = xmlSwitchable.attribute(CAF_OFFVALUE).toDouble();
         switchableOnValue = xmlSwitchable.attribute(CAF_ONVALUE).toDouble();
         switchablePort = xmlSwitchable.attribute(CAF_PORT);
@@ -1462,6 +1464,7 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
     else
     {
         isSwitchable = false;
+        isMomentary = false;
         switchableOffValue = 0;
         switchableOnValue = 0;
         switchablePort = QString();

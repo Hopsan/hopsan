@@ -14,8 +14,8 @@
    height="30"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="SignalAnimationSwitch_base.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="SignalAnimationSwitch_active.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -440,16 +440,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.9015104"
-     inkscape:cx="-22.473093"
-     inkscape:cy="-20.046692"
+     inkscape:zoom="1.0258388"
+     inkscape:cx="-214.85591"
+     inkscape:cy="-3.023633"
      inkscape:document-units="px"
      inkscape:current-layer="g3033"
      showgrid="false"
      inkscape:window-width="1600"
-     inkscape:window-height="832"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-height="1145"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -466,8 +466,10 @@
        enabled="true"
        empspacing="5"
        snapvisiblegridlinesonly="true"
-       originx="14.999999px"
-       originy="-14.999997px" />
+       originx="14.999999"
+       originy="-14.999997"
+       spacingx="1"
+       spacingy="1" />
   </sodipodi:namedview>
   <metadata
      id="metadata3341">
@@ -492,7 +494,7 @@
        transform="translate(9.6898041,1.7236023)">
       <text
          xml:space="preserve"
-         style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';fill:#000000;fill-opacity:1;stroke:none"
          x="211.31517"
          y="411.46545"
          id="text6808"><tspan
@@ -500,7 +502,7 @@
            id="tspan6810"
            x="211.31517"
            y="411.46545"
-           style="font-size:36px;fill:#ffffff;fill-opacity:1" /></text>
+           style="font-size:36px;line-height:1.25;fill:#ffffff;fill-opacity:1"> </tspan></text>
     </g>
     <g
        id="g3033"
@@ -522,7 +524,7 @@
          height="38.5"
          width="18.5"
          id="rect2819-9-4"
-         style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:1.50000000000000000;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+         style="fill:#64d970;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
       <rect
          rx="5"
          ry="5"

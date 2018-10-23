@@ -15,7 +15,7 @@
    id="svg3336"
    sodipodi:version="0.32"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
-   sodipodi:docname="SignalAnimationSwitch.svg"
+   sodipodi:docname="SignalAnimationMomentarySwitch.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -440,9 +440,9 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.0516777"
-     inkscape:cx="-188.74839"
-     inkscape:cy="-22.082284"
+     inkscape:zoom="11.313709"
+     inkscape:cx="28.178556"
+     inkscape:cy="16.750392"
      inkscape:document-units="px"
      inkscape:current-layer="g3033"
      showgrid="false"
@@ -525,6 +525,12 @@
          width="18.5"
          id="rect2819-9-4"
          style="fill:#d96464;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.50047243;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 220.36654,404.56977 -10.76891,-3.76736 h 18.03024 l -18.03024,-6.27569 h 18.03024 l -18.03024,-6.27571 h 18.03024 l -18.03024,-6.27472"
+         id="path1308-3"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccccc" />
       <rect
          rx="5"
          ry="5"
