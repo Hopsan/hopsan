@@ -1287,8 +1287,8 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     {
         pRotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
         pRotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
-        pFlipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+D)"));
-        pFlipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+F)"));
+        pFlipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+Shift+R)"));
+        pFlipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+Shift+E)"));
         pRotateRightAction->setEnabled(allowFullEditing);
         pRotateLeftAction->setEnabled(allowFullEditing);
         pFlipVerticalAction->setEnabled(allowFullEditing);

@@ -595,7 +595,7 @@ void MainWindow::createActions()
     connect(mpOpenDataExplorerAction, SIGNAL(triggered()), this, SLOT(openDataExplorerWidget()));
 
     mpOpenFindWidgetAction = new QAction(tr("&Find Widget"), this);
-    mpOpenFindWidgetAction->setShortcut(QKeySequence("Ctrl+Shift+f"));
+    mpOpenFindWidgetAction->setShortcut(QKeySequence("Ctrl+f"));
     mpOpenFindWidgetAction->setToolTip("Open the Find Widget (Ctrl+Shift+f)");
     connect(mpOpenFindWidgetAction, SIGNAL(triggered()), this, SLOT(openFindWidget()));
 
@@ -730,14 +730,14 @@ void MainWindow::createActions()
     connect(mpRotateRightAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpFlipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Flip Horizontal"), this);
-    mpFlipHorizontalAction->setText("Flip Horizontal (Ctrl+F)");
-    mpFlipHorizontalAction->setShortcut(QKeySequence("Ctrl+F"));
+    mpFlipHorizontalAction->setText("Flip Horizontal (Ctrl+Shift+E)");
+    mpFlipHorizontalAction->setShortcut(QKeySequence("Ctrl+Shift+E"));
     mHelpPopupTextMap.insert(mpFlipHorizontalAction, "Flip selected components horizontally.");
     connect(mpFlipHorizontalAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpFlipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Flip Vertical"), this);
-    mpFlipVerticalAction->setText("Flip Vertical (Ctrl+D");
-    mpFlipVerticalAction->setShortcut(QKeySequence("Ctrl+D"));
+    mpFlipVerticalAction->setText("Flip Vertical (Ctrl+Shift+R");
+    mpFlipVerticalAction->setShortcut(QKeySequence("Ctrl+Shift+R"));
     mHelpPopupTextMap.insert(mpFlipVerticalAction, "Flip selected components vertically.");
     connect(mpFlipVerticalAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
@@ -1554,7 +1554,7 @@ void MainWindow::openDataExplorerWidget()
 
 void MainWindow::openFindWidget()
 {
-    gpFindWidget->setVisible(true);
+    gpFindWidget->setVisible(!gpFindWidget->isVisible());
 }
 
 void MainWindow::revertModel()
