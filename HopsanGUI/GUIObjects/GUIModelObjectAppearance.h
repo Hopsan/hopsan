@@ -177,6 +177,7 @@ public:
 
     //Switchable
     bool isSwitchable;
+    bool isMomentary;
     double switchableOffValue;
     double switchableOnValue;
     QString switchablePort;

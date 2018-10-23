@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalAnimationSwitch.hpp" typename="SignalAnimationSwitch" displayname="Switch">
+    <modelobject sourcecode="SignalAnimationSwitch.hpp" typename="SignalAnimationSwitch" subtypename="SignalAnimationMomentarySwitch" displayname="Momentary Switch">
         <icons>
-            <icon scale="1" path="SignalAnimationSwitch.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalAnimationMomentarySwitch.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>
         <animation>
-            <icon userpath="SignalAnimationSwitch.svg"/>
+            <icon userpath="SignalAnimationMomentarySwitch.svg"/>
             <movable>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
                 <icon userpath="SignalAnimationSwitch_active.svg"/>
                 <data port="out" dataname="Value" idx="0"/>
                 <movement x="0" y="0" a="0" idx="0"/>
-                <switchable offvalue="0" onvalue="1" port="out" dataname="Value" momentary="false" hideicon="true"/>
+                <switchable offvalue="0" onvalue="1" port="out" dataname="Value" momentary="true" hideicon="true"/>
             </movable>
         </animation>
     </modelobject>

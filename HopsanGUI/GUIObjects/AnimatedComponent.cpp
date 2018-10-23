@@ -1059,6 +1059,35 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
+//! @brief Handles mouse release events on animated icons, used for momentary switchable movables
+void AnimatedIcon::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!mpAnimatedComponent->mpMovables.isEmpty())
+    {
+        int idx = mIdx;//mpAnimatedComponent->indexOfMovable(this);
+        if(idx < 0)
+        {
+            idx = 0;    //Not good, we assume there is only one movable and that it is the switch
+        }
+
+        ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
+        bool momentary = pData->movables[idx].isMomentary;
+        if(momentary)
+        {
+            double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->movables[mIdx].switchablePort, pData->movables[mIdx].switchableDataName);
+            double offValue = pData->movables[idx].switchableOffValue;
+            if(pData->movables[idx].hideIconOnSwitch)
+            {
+                mpAnimatedComponent->mpMovables[idx]->setVisible(false);
+            }
+            (*pNodeData) = offValue;
+        }
+    }
+
+    QGraphicsWidget::mouseReleaseEvent(event);
+}
+
+
 //! @brief Slot that rotates the icon
 //! @param [in] angle Angle to rotate (degrees)
 void AnimatedIcon::rotate(double angle, UndoStatusEnumT undoSettings)
