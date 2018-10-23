@@ -49,7 +49,7 @@ signals:
 };
 
 
-class FindWidget : public QDialog
+class FindWidget : public QWidget
 {
     Q_OBJECT
 public:
