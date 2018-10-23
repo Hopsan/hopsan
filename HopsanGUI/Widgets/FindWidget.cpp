@@ -36,64 +36,31 @@
 #include <QLabel>
 #include <QToolButton>
 #include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-
-
-FindHelper::FindHelper(QWidget *pParent) :
-    QWidget(pParent)
-{
-    mpLineEdit = new QLineEdit(this);
-
-    QToolButton *pClearButton = new QToolButton(this);
-    pClearButton->setIcon(QIcon(ICONPATH"Hopsan-Discard.png"));
-    pClearButton->setToolTip("Clear");
-    pClearButton->setMaximumWidth(24);
-
-    QToolButton *pFindButton = new QToolButton(this);
-    pFindButton->setToolTip("Find");
-    pFindButton->setIcon(QIcon(ICONPATH"Hopsan-Zoom.png"));
-
-    QHBoxLayout *pLayout = new QHBoxLayout(this);
-    pLayout->addWidget(pClearButton);
-    pLayout->addWidget(mpLineEdit);
-    pLayout->addWidget(pFindButton);
-
-    connect(pClearButton, SIGNAL(clicked()), mpLineEdit, SLOT(clear()));
-    connect(mpLineEdit, SIGNAL(returnPressed()), this, SLOT(doFind()));
-    connect(pFindButton, SIGNAL(clicked()), this, SLOT(doFind()));
-}
-
-void FindHelper::doFind()
-{
-    emit find(mpLineEdit->text());
-}
-
-
+#include <QComboBox>
+#include <QGridLayout>
 
 FindWidget::FindWidget(QWidget *parent) :
     QWidget(parent)
 {
-    FindHelper *pComponentFinder = new FindHelper(this);
-    FindHelper *pAliasFinder = new FindHelper(this);
-    FindHelper *pSystemparFinder = new FindHelper(this);
-    QPushButton *pCloseButton = new QPushButton("Close", this);
-    pCloseButton->setAutoDefault(false);
+    mpFindLineEdit = new QLineEdit(this);
+    mpFindWhatComboBox = new QComboBox(this);
+    mpFindWhatComboBox->addItem("Component");
+    mpFindWhatComboBox->addItem("System Parameter");
+    mpFindWhatComboBox->addItem("Alias");
+    mpFindButton = new QPushButton("Find", this);
+    mpFindButton->setShortcut(QKeySequence(Qt::Key_Enter));
+    QToolButton *pCloseButton = new QToolButton(this);
+    pCloseButton->setIcon(QIcon(":graphics/uiicons/Hopsan-Discard.png"));
 
-    QVBoxLayout *pLayout = new QVBoxLayout(this);
-    pLayout->addWidget(new QLabel("Find by name. Note! You can use wildcard matching: (? one any charachter), (* one or more any characters), ([...] specific characters)",this));
-    pLayout->addSpacing(10);
-    pLayout->addWidget(new QLabel("Find Component:", this));
-    pLayout->addWidget(pComponentFinder);
-    pLayout->addWidget(new QLabel("Find Variable Alias:", this));
-    pLayout->addWidget(pAliasFinder);
-    pLayout->addWidget(new QLabel("Find System Parameter:", this));
-    pLayout->addWidget(pSystemparFinder);
-    pLayout->addWidget(pCloseButton,0,Qt::AlignRight);
+    QGridLayout *pLayout = new QGridLayout(this);
+    pLayout->addWidget(new QLabel("Find: ", this),  0,0);
+    pLayout->addWidget(mpFindLineEdit,              0,1);
+    pLayout->addWidget(mpFindWhatComboBox,          0,2);
+    pLayout->addWidget(mpFindButton,                0,3);
+    pLayout->addWidget(pCloseButton,                0,4);
+    pLayout->setColumnStretch(1,1);
 
-    connect(pComponentFinder, SIGNAL(find(QString)), this, SLOT(findComponent(QString)));
-    connect(pAliasFinder, SIGNAL(find(QString)), this, SLOT(findAlias(QString)));
-    connect(pSystemparFinder, SIGNAL(find(QString)), this, SLOT(findSystemParameter(QString)));
+    connect(mpFindButton, SIGNAL(clicked()), this, SLOT(find()));
     connect(pCloseButton, SIGNAL(clicked()), this, SLOT(close()));
 
     resize(600, height());
@@ -103,6 +70,21 @@ FindWidget::FindWidget(QWidget *parent) :
 void FindWidget::setContainer(ContainerObject *pContainer)
 {
     mpContainer = pContainer;
+}
+
+void FindWidget::find()
+{
+    switch(mpFindWhatComboBox->currentIndex()) {
+    case 0: //Component
+        findComponent(mpFindLineEdit->text());
+        break;
+    case 1: //System Parameter
+        findSystemParameter(mpFindLineEdit->text());
+        break;
+    case 2: //Alias
+        findAlias(mpFindLineEdit->text());
+        break;
+    }
 }
 
 void FindWidget::findComponent(const QString &rName, const bool centerView)
@@ -248,6 +230,24 @@ void FindWidget::findSystemParameter(const QStringList &rNames, const bool cente
 void FindWidget::findAny(const QString &rName)
 {
     //Not yet implemented
+}
+
+void FindWidget::setVisible(bool visible)
+{
+    QWidget::setVisible(visible);
+    if(visible)
+    {
+        this->mpFindLineEdit->setFocus();
+    }
+}
+
+void FindWidget::keyPressEvent(QKeyEvent* event)
+{
+    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+    {
+        this->find();
+    }
+    QWidget::keyPressEvent(event);
 }
 
 void FindWidget::clearHighlights()
