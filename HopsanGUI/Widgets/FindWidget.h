@@ -33,6 +33,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QPushButton>
+#include <QCheckBox>
 
 // Forward declaration
 class ContainerObject;
@@ -48,10 +49,10 @@ signals:
 
 public slots:
     void find();
-    void findComponent(const QString &rName, const bool centerView=true);
-    void findAlias(const QString &rName, const bool centerView=true);
-    void findSystemParameter(const QString &rName, const bool centerView=true);
-    void findSystemParameter(const QStringList &rNames, const bool centerView=true);
+    void findComponent(const QString &rName, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
+    void findAlias(const QString &rName, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
+    void findSystemParameter(const QString &rName, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
+    void findSystemParameter(const QStringList &rNames, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
     void findAny(const QString &rName);
 
 public slots:
@@ -60,9 +61,12 @@ public slots:
 
 private:
     void clearHighlights();
-    QLineEdit *mpFindLineEdit;
-    QComboBox *mpFindWhatComboBox;
-    QPushButton *mpFindButton;
+    QLineEdit* mpFindLineEdit;
+    QComboBox* mpFindWhatComboBox;
+    QPushButton* mpFindButton;
+    QCheckBox* mpCaseSensitivityCheckBox;
+    QCheckBox* mpWildcardCheckBox;
+
     QPointer<ContainerObject> mpContainer;
 
 };

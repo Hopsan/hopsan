@@ -37,7 +37,8 @@
 #include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
-#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 FindWidget::FindWidget(QWidget *parent) :
     QWidget(parent)
@@ -50,16 +51,24 @@ FindWidget::FindWidget(QWidget *parent) :
     mpFindButton = new QPushButton("Find", this);
     mpFindButton->setShortcut(QKeySequence(Qt::Key_Enter));
     QToolButton *pCloseButton = new QToolButton(this);
+    mpCaseSensitivityCheckBox = new QCheckBox("Case Sensitive", this);
+    mpWildcardCheckBox = new QCheckBox("Match Wildcards (*)", this);
     pCloseButton->setIcon(QIcon(":graphics/uiicons/Hopsan-Discard.png"));
 
-    QGridLayout *pLayout = new QGridLayout(this);
-    pLayout->addWidget(new QLabel("Find: ", this),  0,0);
-    pLayout->addWidget(mpFindLineEdit,              0,1);
-    pLayout->addWidget(mpFindWhatComboBox,          0,2);
-    pLayout->addWidget(mpFindButton,                0,3);
-    pLayout->addWidget(pCloseButton,                0,4);
-    pLayout->setColumnStretch(1,1);
-
+    QVBoxLayout *pMainLayout = new QVBoxLayout(this);
+    QHBoxLayout *pSubLayout1 = new QHBoxLayout(this);
+    QHBoxLayout *pSubLayout2 = new QHBoxLayout(this);
+    pMainLayout->addLayout(pSubLayout1);
+    pMainLayout->addLayout(pSubLayout2);
+    pSubLayout1->addWidget(new QLabel("Find: ", this));
+    pSubLayout1->addWidget(mpFindLineEdit);
+    pSubLayout1->addWidget(mpFindWhatComboBox);
+    pSubLayout1->addWidget(mpFindButton);
+    pSubLayout1->addWidget(pCloseButton);
+    pSubLayout1->setStretch(1,1);
+    pSubLayout2->addWidget(mpCaseSensitivityCheckBox);
+    pSubLayout2->addWidget(mpWildcardCheckBox);
+    pSubLayout2->addWidget(new QWidget(this), 1);
     connect(mpFindButton, SIGNAL(clicked()), this, SLOT(find()));
     connect(pCloseButton, SIGNAL(clicked()), this, SLOT(close()));
 
@@ -74,20 +83,26 @@ void FindWidget::setContainer(ContainerObject *pContainer)
 
 void FindWidget::find()
 {
+    Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive;
+    if(mpCaseSensitivityCheckBox->isChecked())
+        caseSensitivity = Qt::CaseSensitive;
+
+    bool wildcard = mpWildcardCheckBox->isChecked();
+
     switch(mpFindWhatComboBox->currentIndex()) {
     case 0: //Component
-        findComponent(mpFindLineEdit->text());
+        findComponent(mpFindLineEdit->text(), true, caseSensitivity, wildcard);
         break;
     case 1: //System Parameter
-        findSystemParameter(mpFindLineEdit->text());
+        findSystemParameter(mpFindLineEdit->text(), true, caseSensitivity, wildcard);
         break;
     case 2: //Alias
-        findAlias(mpFindLineEdit->text());
+        findAlias(mpFindLineEdit->text(), true, caseSensitivity, wildcard);
         break;
     }
 }
 
-void FindWidget::findComponent(const QString &rName, const bool centerView)
+void FindWidget::findComponent(const QString &rName, const bool centerView, Qt::CaseSensitivity caseSensitivity, bool wildcard)
 {
     if (mpContainer)
     {
@@ -99,9 +114,18 @@ void FindWidget::findComponent(const QString &rName, const bool centerView)
         //!  @todo what about searching in subsystems
         foreach(QString comp, compNames)
         {
-            QRegExp re(rName, Qt::CaseInsensitive, QRegExp::Wildcard);
-            //if (comp.compare(rName, Qt::CaseInsensitive) == 0)
-            if (re.exactMatch(comp))
+            bool match;
+            if(wildcard)
+            {
+                QRegExp re(rName, caseSensitivity, QRegExp::Wildcard);
+                match = re.exactMatch(comp);
+            }
+            else
+            {
+                match = comp.contains(rName, caseSensitivity);
+            }
+
+            if (match)
             {
                 ModelObject *pMO = mpContainer->getModelObject(comp);
                 if (pMO)
@@ -122,7 +146,7 @@ void FindWidget::findComponent(const QString &rName, const bool centerView)
     }
 }
 
-void FindWidget::findAlias(const QString &rName, const bool centerView)
+void FindWidget::findAlias(const QString &rName, const bool centerView, Qt::CaseSensitivity caseSensitivity, bool wildcard)
 {
     if (mpContainer)
     {
@@ -134,9 +158,18 @@ void FindWidget::findAlias(const QString &rName, const bool centerView)
         //!  @todo what about searching in subsystems
         foreach(QString alias, aliasNames)
         {
-            QRegExp re(rName, Qt::CaseInsensitive, QRegExp::Wildcard);
-            //if (alias.compare(rName, Qt::CaseInsensitive) == 0)
-            if (re.exactMatch(alias))
+            bool match;
+            if(wildcard)
+            {
+                QRegExp re(rName, caseSensitivity, QRegExp::Wildcard);
+                match = re.exactMatch(alias);
+            }
+            else
+            {
+                match = alias.contains(rName, caseSensitivity);
+            }
+
+            if (match)
             {
                 QString fullName = mpContainer->getFullNameFromAlias(alias);
                 QString comp, port, var;
@@ -162,13 +195,13 @@ void FindWidget::findAlias(const QString &rName, const bool centerView)
     }
 }
 
-void FindWidget::findSystemParameter(const QString &rName, const bool centerView)
+void FindWidget::findSystemParameter(const QString &rName, const bool centerView, Qt::CaseSensitivity caseSensitivity, bool wildcard)
 {
     QStringList sl {rName};
-    findSystemParameter(sl, centerView);
+    findSystemParameter(sl, centerView, caseSensitivity, wildcard);
 }
 
-void FindWidget::findSystemParameter(const QStringList &rNames, const bool centerView)
+void FindWidget::findSystemParameter(const QStringList &rNames, const bool centerView, Qt::CaseSensitivity caseSensitivity, bool wildcard)
 {
     if (mpContainer)
     {
@@ -177,7 +210,7 @@ void FindWidget::findSystemParameter(const QStringList &rNames, const bool cente
         QList<QRegExp> res;
         for (auto &name : rNames)
         {
-            res.append(QRegExp(name, Qt::CaseInsensitive));
+            res.append(QRegExp(name, caseSensitivity, QRegExp::Wildcard));
         }
 
         QPointF mean;
@@ -197,14 +230,29 @@ void FindWidget::findSystemParameter(const QStringList &rNames, const bool cente
                 splitOnAny(expression,{"+","-","*","/","(",")","^"}, parts);
                 for (QString &part : parts)
                 {
-                    for (auto &re : res)
+                    if(wildcard)
                     {
-                        if (re.exactMatch(part))
+                        for (auto &re : res)
                         {
-                            hasPar = true;
-                            break;
+                            if (re.exactMatch(part))
+                            {
+                                hasPar = true;
+                                break;
+                            }
                         }
                     }
+                    else
+                    {
+                        for (auto &name : rNames)
+                        {
+                            if(part.contains(name, caseSensitivity))
+                            {
+                                hasPar = true;
+                                break;
+                            }
+                        }
+                    }
+
                     if (hasPar)
                     {
                         break;
