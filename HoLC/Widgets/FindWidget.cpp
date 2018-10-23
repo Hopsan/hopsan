@@ -45,15 +45,20 @@ void FindWidget::setVisible(bool visible)
 void FindWidget::findPrevious()
 {
     QTextDocument::FindFlags flags;
-    flags.setFlag(QTextDocument::FindBackward, true);
-    flags.setFlag(QTextDocument::FindCaseSensitively, mpCaseSensitivityCheckBox->isChecked());
+    flags |= QTextDocument::FindBackward;
+    if(mpCaseSensitivityCheckBox->isChecked())
+    {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
     emit find(mpFindLineEdit->text(), flags);
 }
 
 void FindWidget::findNext()
 {
     QTextDocument::FindFlags flags;
-    flags.setFlag(QTextDocument::FindBackward, false);
-    flags.setFlag(QTextDocument::FindCaseSensitively, mpCaseSensitivityCheckBox->isChecked());
+    if(mpCaseSensitivityCheckBox->isChecked())
+    {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
     emit find(mpFindLineEdit->text(), flags);
 }
