@@ -433,6 +433,7 @@ void MainWindow::initializeWorkspace()
 
     // Create the find widget
     gpFindWidget = new FindWidget(this);
+    mpCentralGridLayout->addWidget(gpFindWidget,5,0,1,4);
     gpFindWidget->hide();
 
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list

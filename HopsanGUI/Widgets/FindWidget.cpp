@@ -72,7 +72,7 @@ void FindHelper::doFind()
 
 
 FindWidget::FindWidget(QWidget *parent) :
-    QDialog(parent)
+    QWidget(parent)
 {
     FindHelper *pComponentFinder = new FindHelper(this);
     FindHelper *pAliasFinder = new FindHelper(this);
