@@ -71,8 +71,8 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
 {
     // Initialize variables
     mName="no_name_set_yet";
-    mpIcon = 0;
-    mpNameText = 0;
+    mpIcon = nullptr;
+    mpNameText = nullptr;
     mTextOffset = 5.0;
     mDragCopying = false;
     mNameTextAlwaysVisible = false;
@@ -81,7 +81,7 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
     mIsLocked = false;
 
     // Make a local copy of the appearance data (that can safely be modified if needed)
-    if (pAppearanceData != 0)
+    if (pAppearanceData != nullptr)
     {
         mModelObjectAppearance = *pAppearanceData;
         mName = mModelObjectAppearance.getDisplayName(); //Default name to the appearance data display name
@@ -114,7 +114,7 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
 
     // Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
-    if(mpParentContainerObject != 0)
+    if(mpParentContainerObject != nullptr)
     {
         connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setNameTextScale(double)));
 //        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
@@ -584,9 +584,11 @@ void ModelObject::redrawConnectors()
 
 void ModelObject::highlight()
 {
-    QGraphicsColorizeEffect *pEffect = new QGraphicsColorizeEffect(this);
+    QGraphicsColorizeEffect *pEffect = new QGraphicsColorizeEffect();
     pEffect->setColor(QColor("orangered"));
-    setGraphicsEffect(pEffect);
+    if (mpIcon != nullptr) {
+        mpIcon->setGraphicsEffect(pEffect);
+    }
     if (getParentContainerObject())
     {
         connect(getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(unHighlightAll()), this, SLOT(unHighlight()), Qt::UniqueConnection);
@@ -596,9 +598,8 @@ void ModelObject::highlight()
 
 void ModelObject::unHighlight()
 {
-    if(graphicsEffect())
-    {
-        graphicsEffect()->setEnabled(false);
+    if ((mpIcon != nullptr) && (mpIcon->graphicsEffect() != nullptr)) {
+        mpIcon->setGraphicsEffect(nullptr);
         disconnect(getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(unHighlightAll()), this, SLOT(unHighlight()));
     }
 }
@@ -616,11 +617,15 @@ void ModelObject::setDisabled(bool value)
     if(value) {
         QGraphicsColorizeEffect *pGrayEffect = new QGraphicsColorizeEffect();
         pGrayEffect->setColor(QColor("gray"));
-        this->setGraphicsEffect(pGrayEffect);
+        if (mpIcon != nullptr) {
+            mpIcon->setGraphicsEffect(pGrayEffect);
+        }
     }
     else
     {
-        this->setGraphicsEffect(nullptr);
+        if (mpIcon != nullptr) {
+            mpIcon->setGraphicsEffect(nullptr);
+        }
     }
 }
 
