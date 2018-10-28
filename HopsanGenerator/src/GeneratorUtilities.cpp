@@ -183,71 +183,23 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
 {
     pGenerator->printMessage("Writing compilation script...");
 
-    QStringList ccFiles;
-    QString libFile,dbg_ext,libRootDir, cflags, lflags;
+    ComponentLibrary cl;
+    QString libRootDir;
     if(QFileInfo(path).isFile())
     {
-        QFile xmlFile(path);
-        xmlFile.open(QFile::ReadOnly);
-
-        QDomDocument doc;
-        QDomElement rootElement = loadXMLDomDocument(xmlFile, doc, "hopsancomponentlibrary");
-
-        // Load lib info
-        QDomElement libElement = rootElement.firstChildElement("lib");
-
-        dbg_ext = libElement.attribute("debug_ext");
-        libFile = QString(LIBPREFIX)+libElement.text();
-
-        QDomElement bfElement = rootElement.firstChildElement("buildflags").firstChildElement();
-        while (!bfElement.isNull())
-        {
-            QString os = bfElement.attribute("os");
-            if (bfElement.tagName() == "cflags")
-            {
-                // Only add flag if os attribute match current os
-                if (os.isEmpty() || matchOSString(os))
-                {
-                    cflags.append(" "+bfElement.text());
-                }
-            }
-            else if (bfElement.tagName() == "lflags")
-            {
-                // Only add flag if os attribute match current os
-                if (os.isEmpty() || matchOSString(os))
-                {
-                    lflags.append(" "+bfElement.text());
-                }
-            }
-            //! @todo handle other elements such as includepath libpath libflag defineflag and such
-            bfElement = bfElement.nextSiblingElement();
-        }
-
-        QDomElement sourceElement = rootElement.firstChildElement("source");
-        while (!sourceElement.isNull())
-        {
-            ccFiles.append(sourceElement.text());
-            sourceElement = sourceElement.nextSiblingElement("source");
-        }
-
-        // If no cc files were specified then add at least the lib file
-        if (ccFiles.isEmpty())
-        {
-            ccFiles.append(libElement.text()+".cpp");
-        }
-
-        xmlFile.close();
+        cl.loadFromXML(path);
         libRootDir = QFileInfo(path).canonicalPath();
     }
     else if (QFileInfo(path).isDir())
     {
-        libFile = QString(LIBPREFIX)+QDir(path).dirName();
-        ccFiles = QDir(path).entryList(QStringList() << "*.cpp");
+        cl.mSourceFiles = QDir(path).entryList(QStringList() << "*.cpp");
+        cl.mSharedLibraryName = QDir(path).dirName();
+        cl.mSharedLibraryDebugExtension = "_d";
         libRootDir = path;
     }
     else
     {
-        pGenerator->printErrorMessage(path+" does not exist, is not component library file or is not a directory");
+        pGenerator->printErrorMessage(path+" does not exist! It is not component library file or a directory containing one");
         return false;
     }
 
@@ -261,7 +213,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addCompilerFlag(extraCFlags);
     ch.addLibraryPath(pGenerator->getHopsanBinPath());
 #if defined(DEBUGCOMPILING)
-    libFile+=dbg_ext;
+    cl.mSharedLibraryName += cl.mSharedLibraryDebugExtension;
     ch.addCompilerFlag("-g", Compiler::GCC);
     ch.addDefinition("DEBUGCOMPILING");
     ch.addLinkLibrary("hopsancore_d");
@@ -271,8 +223,8 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
 #endif
     ch.addLinkerFlag(extraLFlags);
 
-    ch.setSourceFiles(ccFiles);
-    ch.setSharedLibraryOutputFile(libFile);
+    ch.setSourceFiles(cl.mSourceFiles);
+    ch.setSharedLibraryOutputFile(LIBPREFIX+cl.mSharedLibraryName);
 
     pGenerator->printMessage("\n");
     pGenerator->printMessage("Calling compiler utility:");
