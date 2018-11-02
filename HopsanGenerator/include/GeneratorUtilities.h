@@ -34,6 +34,7 @@
 #define GENERATORUTILITIES_H
 
 #include "GeneratorTypes.h"
+#include "hopsangenerator_win32dll.h"
 
 #include <QString>
 #include <QStringList>
@@ -43,7 +44,7 @@
 
 class HopsanGeneratorBase;
 
-class CompilerHandler
+class HOPSANGENERATOR_DLLAPI CompilerHandler
 {
 public:
     using Compiler = BuildFlags::Compiler;

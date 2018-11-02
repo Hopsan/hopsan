@@ -25,6 +25,8 @@
 #ifndef GENERATORTYPES_H
 #define GENERATORTYPES_H
 
+#include "hopsangenerator_win32dll.h"
+
 #include <QString>
 #include <QStringList>
 #include <QList>
@@ -56,7 +58,7 @@ class ComponentSystem;
 
 }
 
-class BuildFlags
+class HOPSANGENERATOR_DLLAPI BuildFlags
 {
 public:
     enum class Platform {notset, win, win32, win64, Linux, apple};
@@ -79,7 +81,7 @@ public:
     Compiler mCompiler = Compiler::Any;
 };
 
-class ComponentLibrary
+class HOPSANGENERATOR_DLLAPI ComponentLibrary
 {
 public:
 
