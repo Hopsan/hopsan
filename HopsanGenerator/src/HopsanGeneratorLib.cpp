@@ -273,17 +273,17 @@ bool callLabViewSITGenerator(const char* outputPath, void* pHopsanSystem, const 
 
 
 //! @brief Calls the component library compile utility
-//! @param outputPath Path to library
+//! @param libraryPath Path to library
 //! @param extraCFlags Additional compile flags
 //! @param extraLFlags Additional linker flags
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param compilerPath Path to the compiler bin directory
 //! @param quiet Hide generator output
-bool callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
+bool callComponentLibraryCompiler(const char* libraryPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
 {
     auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    return compileComponentLibrary(outputPath, pGenerator.get(), extraCFlags, extraLFlags);
+    return compileComponentLibrary(libraryPath, pGenerator.get(), extraCFlags, extraLFlags);
 }
 
 bool callCheckComponentLibrary(const char* libraryXMLPath, messagehandler_t messageHandler, void* pMessageObject)

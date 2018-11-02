@@ -23,11 +23,15 @@
 -----------------------------------------------------------------------------*/
 
 #include <QtTest>
+#include <QVector>
+#include <QFileInfoList>
+
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
 #include "compiler_info.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "hopsangenerator.h"
+#include "GeneratorTypes.h"
 #include <assert.h>
 #include <iostream>
 
@@ -105,6 +109,15 @@ public:
     }
 
 private:
+    const std::string& compilerPathForThisArch() const
+    {
+#ifdef HOPSANCOMPILED64BIT
+        return gcc64Path;
+#else
+        return gcc32Path;
+#endif
+    }
+
     QString qcwd;
     std::string cwd;
     std::string hopsanRoot;
@@ -115,6 +128,47 @@ private:
     HopsanEssentials mHopsanCore;
 
 private Q_SLOTS:
+
+    void Generator_LibraryImport()
+    {
+        QFETCH(QString, libraryPath);
+
+        const std::string gccPath = compilerPathForThisArch();
+        constexpr auto cflags = "";
+        constexpr auto lflags = "";
+
+        bool compileOK = callComponentLibraryCompiler(qPrintable(libraryPath), cflags, lflags, hopsanRoot.c_str(), gccPath.c_str(), &generatorMessageCallback,
+                                                      nullptr);
+        QVERIFY2(compileOK, qPrintable(QString("Could not compile component library: %1").arg(libraryPath)));
+
+        ComponentLibrary cl;
+        cl.loadFromXML(libraryPath);
+        QFileInfo libFileInfo(libraryPath);
+        QString libfile = libFileInfo.absolutePath()+"/"+cl.mSharedLibraryName;
+#ifdef DEBUGCOMPILING
+        libfile.append(cl.mSharedLibraryDebugExtension);
+#endif
+        libfile.append(TO_STR(DLL_EXT));
+        //! @todo The core should be able to load xml
+        bool loadOK = mHopsanCore.loadExternalComponentLib(qPrintable(libfile));
+        QVERIFY2(loadOK, qPrintable(QString("Could not load component library: %1").arg(libraryPath)));
+    }
+
+    void Generator_LibraryImport_data()
+    {
+        QTest::addColumn<QString>("libraryPath");
+        const QString externalLibsPath = qcwd+"/../componentLibraries/";
+
+        QFileInfoList libs;
+        libs.append(externalLibsPath+"exampleComponentLib/exampleComponentLib.xml");
+        libs.append(externalLibsPath+"extensionLibrary/extensionLibrary.xml");
+
+        for (auto& lib : libs) {
+            QVERIFY2(lib.exists(), qPrintable(QString("File %1 does not exist").arg(lib.filePath())));
+            QTest::newRow(qPrintable(lib.fileName())) << lib.absoluteFilePath();
+        }
+    }
+
     void Generator_FMU_Export()
     {
         QFETCH(ComponentSystem*, system);
