@@ -130,7 +130,7 @@ public:
         mI = mI + mTimestep/mTt * (u-v);
 
         // Write output and remember error
-        (*mpOut) = v;
+        (*mpOut) = u;
     }
 };
 }
