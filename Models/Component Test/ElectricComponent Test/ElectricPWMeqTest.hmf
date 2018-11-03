@@ -89,8 +89,8 @@
         <parameters>
           <parameter unit="-" value="1" type="double" name="tfac::Value"/>
           <parameter unit="-" value="0" type="double" name="uel10::Value"/>
-          <parameter unit="ohm" value="0" type="double" name="resist0"/>
-          <parameter unit="ohm" value="10" type="double" name="resist1"/>
+          <parameter unit="Ohm" value="0" type="double" name="resist0"/>
+          <parameter unit="Ohm" value="10" type="double" name="resist1"/>
           <parameter unit="V" value="0.001" type="double" name="umin"/>
           <parameter unit="V" value="1000" type="double" name="umax"/>
         </parameters>

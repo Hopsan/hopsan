@@ -137,9 +137,9 @@ public:
 on)","",1.,&mptfac);
 
         //Add inputParammeters to the component
-            addInputVariable("resist0", "loss resistans (at 2)", "ohm", \
+            addInputVariable("resist0", "loss resistans (at 2)", "Ohm", \
 0.01,&mpresist0);
-            addInputVariable("resist1", "loss resistans (at 2)", "ohm", \
+            addInputVariable("resist1", "loss resistans (at 2)", "Ohm", \
 10.,&mpresist1);
             addInputVariable("umin", "minimum voltage difference", "V", \
 0.01,&mpumin);

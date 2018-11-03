@@ -157,7 +157,7 @@
       <component typename="ElectricIcontroller" name="I_Controller">
         <parameters>
           <parameter unit="-" value="0" type="double" name="iref::Value"/>
-          <parameter unit="ohm" value=".1" type="double" name="resist"/>
+          <parameter unit="Ohm" value=".1" type="double" name="resist"/>
           <parameter unit="rad/s" value="10" type="double" name="wf"/>
           <parameter unit="V" value="7" type="double" name="umin"/>
           <parameter unit="A" value="1000" type="double" name="imax"/>

@@ -138,7 +138,7 @@ public:
 (1/resistance)","A/V",0.,&mpiref);
 
         //Add inputParammeters to the component
-            addInputVariable("resist", "loss resistans (at 1)", "ohm", \
+            addInputVariable("resist", "loss resistans (at 1)", "Ohm", \
 0.01,&mpresist);
             addInputVariable("wf", "controller break frequency", "rad/s", \
 10.,&mpwf);

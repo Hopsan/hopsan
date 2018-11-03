@@ -385,7 +385,7 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"{", 
       RowBox[{
-      "resist", ",", ".01", ",", "double", ",", "\"\<ohm\>\"", ",", 
+      "resist", ",", ".01", ",", "double", ",", "\"\<Ohm\>\"", ",",
        "\"\<loss resistans (at 1)\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
