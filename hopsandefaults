@@ -224,6 +224,9 @@
             <unit name="min" scale="60"/>
         </quantity>
         <quantity name="Frequency" baseunit="rad/s">
+	    <unit name="deg/s" scale="pi/180"/>
+	    <unit name="rev/s" scale="2*pi"/>
+	    <unit name="rpm" scale="2*pi/60"/>
             <unit name="Hz" scale="2*pi"/>
             <unit name="kHz" scale="2*pi*1e3"/>
             <unit name="MHz" scale="2*pi*1e6"/>
@@ -231,11 +234,6 @@
         </quantity>
         <quantity name="Angle" baseunit="rad">
             <unit name="deg" scale="pi/180"/>
-        </quantity>
-        <quantity name="AngularVelocity" baseunit="rad/s">
-            <unit name="deg/s" scale="pi/180"/>
-            <unit name="rev/s" scale="2*pi"/>
-            <unit name="rpm" scale="2*pi/60"/>
         </quantity>
         <quantity name="Flow" baseunit="m^3/s">
             <unit name="l/min" scale="1/60*1e-3"/>

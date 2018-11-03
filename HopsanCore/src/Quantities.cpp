@@ -40,7 +40,6 @@ hopsan::QuantityRegister::QuantityRegister()
 
     registerQuantity("Torque", "Nm");
     registerQuantity("Angle", "rad");
-    registerQuantity("AngularVelocity", "rad/s");
 
     registerQuantity("Voltage", "V");
     registerQuantity("Current", "A");
@@ -65,6 +64,7 @@ hopsan::QuantityRegister::QuantityRegister()
 
     // Register quantity aliases
     registerQuantityAlias("Position", "Length");
+    registerQuantityAlias("Frequency", "AngularVelocity");
 }
 
 void hopsan::QuantityRegister::registerQuantity(const hopsan::HString &rQuantity, const hopsan::HString &rBaseUnit)
