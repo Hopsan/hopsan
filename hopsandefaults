@@ -288,6 +288,11 @@
           <unit name="hg" scale="0.01"/>
           <unit name="t" scale="1000"/>
         </quantity>
+        <quantity name="Resistance" baseunit="ohm">
+          <unit name="milliohm" scale="1e-3"/>
+          <unit name="kilohm" scale="1e3"/>
+          <unit name="megohm" scale="1e6"/>
+        </quantity>
     </unitsettings>
     <units>
     <!-- Note! The units tag is deprecated and should no longer be used   -->

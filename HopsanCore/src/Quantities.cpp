@@ -61,6 +61,8 @@ hopsan::QuantityRegister::QuantityRegister()
 
     registerQuantity("Temperature", "K");
 
+    registerQuantity("Resistance", "ohm");
+
     // Register quantity aliases
     registerQuantityAlias("Position", "Length");
 }

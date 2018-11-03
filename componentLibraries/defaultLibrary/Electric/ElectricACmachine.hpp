@@ -171,7 +171,7 @@ public:
 
         //Add inputParammeters to the component
             addInputVariable("Ke", "emf constant", "V s/rad", 0.13,&mpKe);
-            addInputVariable("Ra", "motor resistance", "Ohm", 0.04,&mpRa);
+            addInputVariable("Ra", "motor resistance", "Resistance", 0.04,&mpRa);
             addInputVariable("Tm0", "zero speed friction of motor", "Nm", \
 0.,&mpTm0);
             addInputVariable("wc", "Friction speed", "rad/s", 1.,&mpwc);

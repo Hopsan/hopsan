@@ -4634,7 +4634,7 @@
             <parameters>
               <parameter type="double" value="1" name="gearRatio#Value" unit=""/>
               <parameter type="double" value="0.07" name="Ke#Value" unit="V/rpm"/>
-              <parameter type="double" value="0.04" name="Ra#Value" unit="Ohm"/>
+              <parameter type="double" value="0.04" name="Ra#Value" unit="ohm"/>
               <parameter type="double" value="0" name="Tm0#Value" unit="Nm"/>
               <parameter type="double" value="1" name="wc#Value" unit="rad/s"/>
               <parameter type="double" value="0.0012" name="Bm#Value" unit="Ns/m"/>

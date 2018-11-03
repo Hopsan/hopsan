@@ -418,7 +418,7 @@
       <component typename="ElectricMotor" name="DC_Motor">
         <parameters>
           <parameter unit="V s/rad" value="0.13" type="double" name="Ke#Value"/>
-          <parameter unit="Ohm" value="0.04" type="double" name="Ra#Value"/>
+          <parameter unit="ohm" value="0.04" type="double" name="Ra#Value"/>
           <parameter unit="Nm" value="0" type="double" name="Tm0#Value"/>
           <parameter unit="rad/s" value="1" type="double" name="wc#Value"/>
           <parameter unit="Ns/m" value="0.0012" type="double" name="Bm#Value"/>
@@ -519,7 +519,7 @@
       <component typename="ElectricMotor" name="DC_Motor_1">
         <parameters>
           <parameter unit="V s/rad" value="0.13" type="double" name="Ke#Value"/>
-          <parameter unit="Ohm" value="0.04" type="double" name="Ra#Value"/>
+          <parameter unit="ohm" value="0.04" type="double" name="Ra#Value"/>
           <parameter unit="Nm" value="0" type="double" name="Tm0#Value"/>
           <parameter unit="rad/s" value="1" type="double" name="wc#Value"/>
           <parameter unit="Ns/m" value="0.0012" type="double" name="Bm#Value"/>
