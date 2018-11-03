@@ -47,7 +47,7 @@ private:
     bool mUseDeInput;
 
     // Constants
-    double mK,mTi,mTd,mTt,mUmax,mUmin;
+    double mK,mTi,mTd,mTt,mUmax,mUmin,mUoutmax,mUoutmin;
 
     // NodeData pointers
     double *mpErr, *mpDerr, *mpOut;
@@ -69,8 +69,10 @@ public:
         addConstant("Ti", "Integral time", "s", 1, mTi);
         addConstant("Tt", "Anti-windup tracking constant", "s", 1, mTt);
         addConstant("Td", "Derivative time", "s", 0, mTd);
-        addConstant("Umin", "", "", -1e100, mUmin);
-        addConstant("Umax", "", "", 1e100, mUmax);
+        addConstant("Umin", "Lower output for anti-windup", "", -1e100, mUmin);
+        addConstant("Umax", "Upper output for anti-windup", "", 1e100, mUmax);
+        addConstant("Uoutmin", "Minimum output limit", "", -1e100, mUoutmin);
+        addConstant("Uoutmax", "Maximum output limit", "", 1e100, mUoutmax);
     }
 
     void initialize()
@@ -85,7 +87,16 @@ public:
         {
             addWarningMessage("Tt is lower then Ti this is not correct!");
         }
+        if (mUmin > mUmax)
+        {
+            addErrorMessage("Umin must be <= Umax!");
+        }
+        if (mUoutmin > mUoutmax)
+        {
+            addErrorMessage("Uoutmin must be <= Uoutmax!");
+        }
     }
+
     void simulateOneTimestep()
     {
         double dErr;
@@ -109,27 +120,29 @@ public:
         mI = mI + mK * mTimestep/mTi * err;
 
         // Calculate control signal
-        const double v = mK*err + mI + mK*mTd/mTimestep * dErr;
+        double v = mK*err + mI + mK*mTd/mTimestep * dErr;
 
-        // Limit to Umin Umax for anti-windup correction
-        double u;
+        // Adjust integrator when anti-windup limits Umin or Umax are exceeded.
         if (v > mUmax)
         {
-            u = mUmax;
+            mI = mI + mTimestep/mTt * (mUmax-v);
         }
         else if (v < mUmin)
         {
-            u = mUmin;
+            mI = mI + mTimestep/mTt * (mUmin-v);
         }
-        else
+
+        // Apply controller output limits.
+        if (v > mUoutmax)
         {
-            u = v;
+            v = mUoutmax;
+        }
+        else if (v < mUoutmin)
+        {
+            v = mUoutmin;
         }
 
-        // Anti-windup I correction
-        mI = mI + mTimestep/mTt * (u-v);
-
-        // Write output and remember error
+        // Write output
         (*mpOut) = v;
     }
 };
