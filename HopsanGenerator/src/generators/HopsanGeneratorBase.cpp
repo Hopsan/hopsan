@@ -57,20 +57,22 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
+HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const CompilerSelection &compilerSelection, const QString &tempPath)
 {
     mHopsanRootPath = hopsanInstallPath;
     mHopsanCoreIncludePath = mHopsanRootPath+"/HopsanCore/include";
     mHopsanBinPath = mHopsanRootPath+"/bin";
 
-    if(!compilerPath.isEmpty())
+    mCompilerSelection = compilerSelection;
+
+    if(!mCompilerSelection.path.isEmpty())
     {
-        mCompilerPath = QFileInfo(compilerPath).absoluteFilePath();
+        mCompilerSelection.path = QFileInfo(mCompilerSelection.path).absoluteFilePath();
 #ifndef _WIN32
         // Add the last / here so that the compiler name can be directly appended to mCompilerPath.
         // If compilerPath is empty (compiler in PATH) then we do not want to check if a / should be added or not
         // when using this variable
-        mCompilerPath.append("/");
+        mCompilerSelection.path.append("/");
 #endif
     }
 
@@ -929,9 +931,9 @@ QString HopsanGeneratorBase::getHopsanRootPath() const
     return mHopsanRootPath;
 }
 
-QString HopsanGeneratorBase::getCompilerPath() const
+const CompilerSelection& HopsanGeneratorBase::getCompilerSelection() const
 {
-    return mCompilerPath;
+    return mCompilerSelection;
 }
 
 void HopsanGeneratorBase::setQuiet(bool quiet)

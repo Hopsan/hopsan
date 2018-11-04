@@ -207,37 +207,40 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
 
     CompilerHandler ch(CompilerHandler::Language::Cpp);
     ch.addIncludePath(pGenerator->getHopsanCoreIncludePath());
-    ch.addCompilerFlag("-fPIC -w", Compiler::GCC);
+    ch.addCompilerFlag("-fPIC -w", {Compiler::GCC, Compiler::Clang});
     //! @todo setting rpath here is strange, as it will hard-code given path into dll (so if you move it it wont work) /Peter
     ch.addCompilerFlag(QString(R"(-Wl,--rpath,"%1")").arg(libRootDir), Compiler::GCC);
     ch.addCompilerFlag(extraCFlags);
     ch.addLibraryPath(pGenerator->getHopsanBinPath());
 #if defined(DEBUGCOMPILING)
     cl.mSharedLibraryName += cl.mSharedLibraryDebugExtension;
-    ch.addCompilerFlag("-g", Compiler::GCC);
+    ch.addCompilerFlag("-g", {Compiler::GCC, Compiler::Clang});
     ch.addDefinition("DEBUGCOMPILING");
     ch.addLinkLibrary("hopsancore_d");
 #else
     ch.addDefinition("RELEASECOMPILING");
     ch.addLinkLibrary("hopsancore");
 #endif
+    ch.addLinkLibrary("c++", {Compiler::Clang});
     ch.addLinkerFlag(extraLFlags);
 
     ch.setSourceFiles(cl.mSourceFiles);
     ch.setSharedLibraryOutputFile(LIBPREFIX+cl.mSharedLibraryName);
+
+    const auto& compilerSelection = pGenerator->getCompilerSelection();
 
     pGenerator->printMessage("\n");
     pGenerator->printMessage("Calling compiler utility:");
     pGenerator->printMessage("Work Directory: "+libRootDir);
     pGenerator->printMessage("Output file:    "+ch.outputFile());
     pGenerator->printMessage("Source files:   "+ch.sourceFiles().join(" "));
-    pGenerator->printMessage("Compiler flags: "+ch.compilerFlags(Compiler::GCC).join(" "));
-    pGenerator->printMessage("Linker flags:   "+ch.linkerFlags(Compiler::GCC).join(" "));
+    pGenerator->printMessage("Compiler flags: "+ch.compilerFlags(compilerSelection.compiler).join(" "));
+    pGenerator->printMessage("Linker flags:   "+ch.linkerFlags(compilerSelection.compiler).join(" "));
     pGenerator->printMessage("\n");
 
     pGenerator->printMessage("Compiling please wait!");
     QString output;
-    bool success = compile(libRootDir, pGenerator->getCompilerPath(), ch, Compiler::GCC, output);
+    bool success = compile(libRootDir, compilerSelection.path, ch, compilerSelection.compiler, output);
     pGenerator->printMessage(output);
     return success;
 }
@@ -746,6 +749,18 @@ BuildFlags::Platform currentPlatform()
 
 }
 
+BuildFlags::Compiler defaultCompiler(const BuildFlags::Platform platform)
+{
+    switch (platform) {
+    case BuildFlags::Platform::Linux:
+        return BuildFlags::Compiler::GCC;
+    case BuildFlags::Platform::apple:
+        return BuildFlags::Compiler::Clang;
+    default:
+        return BuildFlags::Compiler::GCC;
+    }
+}
+
 CompilerHandler::CompilerHandler(const CompilerHandler::Language language)
 {
     setLanguage(language);
@@ -760,6 +775,13 @@ void CompilerHandler::addCompilerFlag(QString cflag, const Compiler compiler)
     }
 }
 
+void CompilerHandler::addCompilerFlag(QString cflag, const Compilers compilers)
+{
+    for (auto compiler : compilers) {
+        addCompilerFlag(cflag, compiler);
+    }
+}
+
 void CompilerHandler::addLinkerFlag(QString lflag, const Compiler compiler)
 {
     if (mBuildFlags.empty() || (mBuildFlags.back().mCompiler != compiler)) {
@@ -767,56 +789,68 @@ void CompilerHandler::addLinkerFlag(QString lflag, const Compiler compiler)
     } else {
         mBuildFlags.back().mLinkerFlags.append(lflag);
     }
+
 }
 
-void CompilerHandler::addIncludePath(QString ipath, const Compiler compiler)
+void CompilerHandler::addLinkerFlag(QString lflag, const Compilers compilers)
 {
-    addCompilerFlag(QString("-I%1").arg(ipath), compiler);
-}
-
-void CompilerHandler::addLibraryPath(QString lpath, const Compiler compiler)
-{
-    QString lflag;
-    if (compiler == Compiler::MSVC) {
-//FIXME        lflag = QString("-L%1").arg(lpath);
-    } else {
-        lflag = QString("-L%1").arg(lpath);
+    for (auto compiler : compilers) {
+        addLinkerFlag(lflag, compiler);
     }
-
-    addLinkerFlag(lflag, compiler);
 }
 
-void CompilerHandler::addLinkLibrary(QString lib, const Compiler compiler)
+void CompilerHandler::addIncludePath(QString ipath, const Compilers compilers)
 {
-    QString lflag;
-    if (compiler == Compiler::MSVC) {
+    addCompilerFlag(QString("-I%1").arg(ipath), compilers);
+}
+
+void CompilerHandler::addLibraryPath(QString lpath, const Compilers compilers)
+{
+    for (auto compiler : compilers) {
+        QString lflag;
+        if (compiler == Compiler::MSVC) {
 //FIXME        lflag = QString("-L%1").arg(lpath);
-    } else {
-        lflag = QString("-l%1").arg(lib);
-    }
-
-    addLinkerFlag(lflag, compiler);
-}
-
-
-void CompilerHandler::addDefinition(QString macroname, QString value, const Compiler compiler)
-{
-    QString cflag;
-    if (compiler == Compiler::MSVC) {
-//FIXME
-    } else {
-        if (value.isEmpty()) {
-            cflag = QString("-D%1").arg(macroname);
         } else {
-            cflag = QString("-D%1=%2").arg(macroname).arg(value);
+            lflag = QString("-L%1").arg(lpath);
         }
+        addLinkerFlag(lflag, compiler);
     }
-    addCompilerFlag(cflag, compiler);
 }
 
-void CompilerHandler::addDefinition(QString macroname, const CompilerHandler::Compiler compiler)
+void CompilerHandler::addLinkLibrary(QString lib, const Compilers compilers)
 {
-    addDefinition(macroname, {}, compiler);
+    for (auto compiler : compilers) {
+        QString lflag;
+        if (compiler == Compiler::MSVC) {
+//FIXME        lflag = QString("-L%1").arg(lpath);
+        } else {
+            lflag = QString("-l%1").arg(lib);
+        }
+        addLinkerFlag(lflag, compiler);
+    }
+}
+
+
+void CompilerHandler::addDefinition(QString macroname, QString value, const Compilers compilers)
+{
+    for (auto compiler : compilers) {
+        QString cflag;
+        if (compiler == Compiler::MSVC) {
+//FIXME
+        } else {
+            if (value.isEmpty()) {
+                cflag = QString("-D%1").arg(macroname);
+            } else {
+                cflag = QString("-D%1=%2").arg(macroname).arg(value);
+            }
+        }
+        addCompilerFlag(cflag, compiler);
+    }
+}
+
+void CompilerHandler::addDefinition(QString macroname, const Compilers compilers)
+{
+    addDefinition(macroname, {}, compilers);
 }
 
 void CompilerHandler::setLanguage(const CompilerHandler::Language language)
@@ -872,7 +906,7 @@ void CompilerHandler::setSharedLibraryOutputFile(QString outputLibraryFileName)
     if (!outputLibraryFileName.endsWith(extension)) {
         outputLibraryFileName.append(extension);
     }
-    addLinkerFlag("-shared", Compiler::GCC);
+    addLinkerFlag("-shared", {Compiler::GCC, Compiler::Clang});
     setOutputFile(outputLibraryFileName, OutputType::SharedLibrary);
 }
 

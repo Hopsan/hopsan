@@ -78,7 +78,7 @@ bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, mes
 //! @param[in] quiet Hide generator output
 bool callLibraryGenerator(const char*  outputPath, const char* const hppFiles[], const int numFiles, messagehandler_t messageHandler, void* pMessageObject)
 {
-    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase("", "", ""));
+    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase("", {}, ""));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
     QStringList tempList;
     for(int i=0; i<numFiles; ++i)
@@ -147,7 +147,8 @@ bool callCppGenerator(const char* hppPath, const char* compilerPath, bool compil
 
     if(compile)
     {
-        auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(hopsanInstallPath, compilerPath));
+        const auto cs = CompilerSelection(defaultCompiler(currentPlatform()), compilerPath);
+        auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(hopsanInstallPath, cs));
         pGenerator->setMessageHandler(messageHandler, pMessageObject);
         QFileInfo hp(hppPath);
         QString dir = hp.absolutePath()+"/";
@@ -281,7 +282,8 @@ bool callLabViewSITGenerator(const char* outputPath, void* pHopsanSystem, const 
 //! @param quiet Hide generator output
 bool callComponentLibraryCompiler(const char* libraryPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
 {
-    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(hopsanInstallPath, compilerPath));
+    const auto cs = CompilerSelection(defaultCompiler(currentPlatform()), compilerPath);
+    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(hopsanInstallPath, cs));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
     return compileComponentLibrary(libraryPath, pGenerator.get(), extraCFlags, extraLFlags);
 }
