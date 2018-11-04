@@ -144,16 +144,20 @@ void Node::setDataCharacteristics(const size_t id, const HString &rName, const H
     mDataDescriptions[id].varType = vartype;
     mDataDescriptions[id].userModifiableQuantity = false;
 
-    HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantityOrUnit);
+    // For now, don't use quantity aliases in data descriptions becuase these are unknown to GUI widgets.
+    // Widget unit lookups are perfomed by Configuration::getUnitScales() which uses a lookup table loaded
+    // from unitsettings in hopsanconfig.xml which lacks the alias info.
+    HString quantityOrUnit = gpInternalCoreQuantityRegister->lookupQuantityByAlias(rQuantityOrUnit);
+    HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(quantityOrUnit);
     // If bu empty then, rUnit was not a quantity
     if (bu.empty())
     {
-        mDataDescriptions[id].unit = rQuantityOrUnit;
+        mDataDescriptions[id].unit = quantityOrUnit;
     }
     // Else rUnit was actually a valid Quantity
     else
     {
-        mDataDescriptions[id].quantity = rQuantityOrUnit;
+        mDataDescriptions[id].quantity = quantityOrUnit;
         mDataDescriptions[id].unit = bu;
     }
 }

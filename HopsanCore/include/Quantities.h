@@ -46,6 +46,7 @@ public:
     void registerQuantity(const HString &rQuantity, const HString &rBaseUnit);
     void registerQuantityAlias(const HString &rQuantity, const HString &rAlias);
     HString lookupBaseUnit(const HString &rQuantity) const;
+    HString lookupQuantityByAlias(const HString &rAlias) const;
     bool haveQuantity(const HString &rQuantity) const;
 
 private:

@@ -30,7 +30,6 @@
 hopsan::QuantityRegister::QuantityRegister()
 {
     registerQuantity("Pressure", "Pa");
-    registerQuantityAlias("Pressure", "Stress");
     registerQuantity("Flow", "m^3/s");
 
     registerQuantity("Force", "N");
@@ -63,6 +62,7 @@ hopsan::QuantityRegister::QuantityRegister()
     registerQuantity("Resistance", "Ohm");
 
     // Register quantity aliases
+    registerQuantityAlias("Pressure", "Stress");
     registerQuantityAlias("Position", "Length");
     registerQuantityAlias("Frequency", "AngularVelocity");
 }
@@ -77,41 +77,30 @@ void hopsan::QuantityRegister::registerQuantityAlias(const hopsan::HString &rQua
     mQuantityAliases.insert(std::pair<HString, HString>(rAlias, rQuantity));
 }
 
+//! @brief Translates a quantity alias to it's original name or leave as if alias is not registred.
+//! @param [in] rAlias Quantity alias.
+//! @returns Quantity name or rAlias is not a registerd alias.
+hopsan::HString hopsan::QuantityRegister::lookupQuantityByAlias(const hopsan::HString &rAlias) const {
+    std::map<HString, HString>::const_iterator it = mQuantityAliases.find(rAlias);
+    return (it == mQuantityAliases.end()) ? rAlias : it->second;
+}
+
+//! @brief Lookup base unit for a quantity or quantity alias. Returns an empty string if quantity is not registerd.
+//! @param [in] rQuantity Quantity ir quantity alias.
+//! @returns Base unit or empty string.
 hopsan::HString hopsan::QuantityRegister::lookupBaseUnit(const hopsan::HString &rQuantity) const
 {
-    // First check if alias, then lookup actual quantity
-    std::map<HString, HString>::const_iterator it = mQuantityAliases.find(rQuantity);
-    if (it != mQuantityAliases.end())
-    {
-        it = mQuantity2BaseUnit.find(it->second);
-    }
-    // else lookup directly
-    else
-    {
-        it = mQuantity2BaseUnit.find(rQuantity);
-    }
-    // If quantity registered, then return its base unit
-    if (it != mQuantity2BaseUnit.end())
-    {
-        return it->second;
-    }
-    // else return empty string
-    return HString();
+    // Translate any quantity alias to its real name, then find base unit.
+    std::map<HString, HString>::const_iterator it = mQuantity2BaseUnit.find(lookupQuantityByAlias(rQuantity));
+    // Return base unit if found or empty string.
+    return (it == mQuantity2BaseUnit.end()) ? HString() : it->second;
 }
 
 bool hopsan::QuantityRegister::haveQuantity(const hopsan::HString &rQuantity) const
 {
-    // First check if alias, then lookup actual quantity
-    std::map<HString, HString>::const_iterator it = mQuantityAliases.find(rQuantity);
-    if (it != mQuantityAliases.end())
-    {
-        it = mQuantity2BaseUnit.find(it->second);
-    }
-    // else lookup directly
-    else
-    {
-        it = mQuantity2BaseUnit.find(rQuantity);
-    }
+    // Translate alias to real quantity, then check if it is registered.
+    std::map<HString, HString>::const_iterator it = mQuantity2BaseUnit.find(lookupQuantityByAlias(rQuantity));
+    // Return true if quantity exists (is registered).
     return (it != mQuantity2BaseUnit.end());
 }
 
