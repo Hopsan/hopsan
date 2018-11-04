@@ -49,19 +49,22 @@ class HOPSANGENERATOR_DLLAPI CompilerHandler
 public:
     using Compiler = BuildFlags::Compiler;
     using Language = BuildFlags::Language;
+    using Compilers = std::initializer_list<Compiler>;
     enum class OutputType {Executable, StaticLibrary, SharedLibrary};
 
     CompilerHandler() = default;
     explicit CompilerHandler(const Language language);
 
-    void addCompilerFlag(QString cflag, const Compiler compiler=Compiler::Any);
-    void addLinkerFlag(QString lflag, const Compiler compiler=Compiler::Any);
+    void addCompilerFlag(QString cflag, const Compiler compiler);
+    void addCompilerFlag(QString cflag, const Compilers compilers={Compiler::Any});
+    void addLinkerFlag(QString lflag, const Compiler compiler);
+    void addLinkerFlag(QString lflag, const Compilers compilers={Compiler::Any});
 
-    void addIncludePath(QString ipath, const Compiler compiler=Compiler::Any);
-    void addLibraryPath(QString lpath, const Compiler compiler=Compiler::Any);
-    void addLinkLibrary(QString lib, const Compiler compiler=Compiler::Any);
-    void addDefinition(QString macroname, QString value, const Compiler compiler=Compiler::Any);
-    void addDefinition(QString macroname, const Compiler compiler=Compiler::Any);
+    void addIncludePath(QString ipath, const Compilers compilers={Compiler::Any});
+    void addLibraryPath(QString lpath, const Compilers compilers={Compiler::Any});
+    void addLinkLibrary(QString lib, const Compilers compilers={Compiler::Any});
+    void addDefinition(QString macroname, QString value, const Compilers compilers={Compiler::Any});
+    void addDefinition(QString macroname, const Compilers compilers={Compiler::Any});
 
     void setLanguage(const Language language);
     void setOutputFile(QString outputFile, const OutputType outputType);
@@ -86,7 +89,7 @@ private:
 bool matchOSString(const QString& os);
 BuildFlags::Platform currentPlatform();
 QString sharedLibrarySuffix(const BuildFlags::Platform platform);
-
+BuildFlags::Compiler defaultCompiler(const BuildFlags::Platform platform);
 
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 

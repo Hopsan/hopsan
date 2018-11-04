@@ -31,7 +31,7 @@
 using namespace hopsan;
 
 HopsanLabViewGenerator::HopsanLabViewGenerator(const QString &hopsanInstallPath)
-    : HopsanGeneratorBase(hopsanInstallPath, "", "")
+    : HopsanGeneratorBase(hopsanInstallPath, {}, "")
 {
 
 }

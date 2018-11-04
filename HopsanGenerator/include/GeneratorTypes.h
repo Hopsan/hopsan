@@ -81,6 +81,16 @@ public:
     Compiler mCompiler = Compiler::Any;
 };
 
+class HOPSANGENERATOR_DLLAPI CompilerSelection
+{
+public:
+    CompilerSelection() = default;
+    CompilerSelection(const QString& p) : path(p) {}
+    CompilerSelection(const BuildFlags::Compiler c, const QString& p) : compiler(c), path(p) {}
+    BuildFlags::Compiler compiler = BuildFlags::Compiler::GCC;
+    QString path;
+};
+
 class HOPSANGENERATOR_DLLAPI ComponentLibrary
 {
 public:

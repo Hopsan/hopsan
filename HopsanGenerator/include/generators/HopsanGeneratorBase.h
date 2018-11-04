@@ -64,7 +64,7 @@ public:
     enum SolverT {NumericalIntegration, BilinearTransform};
     using MessageHandlerT = std::function<void(const char*, const char, void*)>;
 
-    HopsanGeneratorBase(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
+    HopsanGeneratorBase(const QString &hopsanInstallPath, const CompilerSelection &compilerSelection, const QString &tempPath="");
     virtual ~HopsanGeneratorBase();
 
     void setMessageHandler(MessageHandlerT messageHandler, void* pMessageObject=nullptr);
@@ -74,7 +74,7 @@ public:
     QString getHopsanRootPath() const;
     QString getHopsanCoreIncludePath() const;
     QString getHopsanBinPath() const;
-    QString getCompilerPath() const;
+    const CompilerSelection& getCompilerSelection() const;
 
     void setQuiet(bool quiet);
     void printMessage(const QString &msg, const QChar &type='I') const;
@@ -108,9 +108,9 @@ protected:
     QString mHopsanRootPath;
     QString mHopsanCoreIncludePath;
     QString mHopsanBinPath;
-    QString mCompilerPath;
     QString mTempPath;
     QString mOutputPath;
+    CompilerSelection mCompilerSelection;
 
 private:
     bool mShowMessages = true;

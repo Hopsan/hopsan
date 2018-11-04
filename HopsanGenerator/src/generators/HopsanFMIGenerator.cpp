@@ -1171,7 +1171,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSystem, const QStringList &externalLibraries, int version, bool x64)
 {
 #ifdef _WIN32
-    if(mCompilerPath.isEmpty())
+    if(mCompilerSelection.path.isEmpty())
     {
         printErrorMessage("Compiler path not specified.");
         return false;
@@ -1790,7 +1790,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
     compileBatchCStream << "@echo off\n";
-    compileBatchCStream << "PATH=" << mCompilerPath << ";%PATH%\n";
+    compileBatchCStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
     compileBatchCStream << "@echo on\n";
     compileBatchCStream << QString("gcc.exe -c fmu%1_model_cs.c -I\"%2/include\"").arg(vStr).arg(fmiLibDir) << "\n";
     compileCBatchFile.close();
@@ -1837,7 +1837,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
     compileCppBatchStream << "@echo off\n";
-    compileCppBatchStream << "PATH=" << mCompilerPath << ";%PATH%\n";
+    compileCppBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
     compileCppBatchStream << "@echo on\n";
     compileCppBatchStream << "g++ -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp";
     QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
@@ -1863,7 +1863,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mCompilerPath+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp";
+    compileCppBatchStream << mCompilerSelection.path+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp";
     QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
@@ -1930,7 +1930,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
     linkBatchStream << "@echo off\n";
-    linkBatchStream << "PATH=" << mCompilerPath << ";%PATH%\n";
+    linkBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
     linkBatchStream << "@echo on\n";
     linkBatchStream << "g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' " << "fmu"+vStr+"_model_cs.o";
     Q_FOREACH(const QString &objFile, objectFiles)
@@ -1952,7 +1952,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     }
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << mCompilerPath+"g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " << "fmu"+vStr+"_model_cs.o";
+    linkBatchStream << mCompilerSelection.path+"g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " << "fmu"+vStr+"_model_cs.o";
     Q_FOREACH(const QString &objFile, objectFiles)
     {
         linkBatchStream << " " << objFile;
