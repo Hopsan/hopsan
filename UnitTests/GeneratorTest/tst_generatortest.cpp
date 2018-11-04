@@ -44,33 +44,27 @@ const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
 const std::string defaultLibraryFilePath = "";
 #endif
 
-namespace {
-    void removeDir(QString path)
-    {
-        QDir dir;
-        dir.setPath(path);
-        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
-        {
-            if (info.isDir())
-            {
-                removeDir(info.absoluteFilePath());
-            }
-            else
-            {
-                QFile::remove(info.absoluteFilePath());
-            }
-        }
-        dir.rmdir(path);
-    }
+constexpr bool gAllwaysShowMessages = false;
+void generatorMessageCallback(const char* msg, const char type, void* pObject);
 
-    constexpr bool showmessages = false;
-    void generatorMessageCallback(const char* msg, const char type, void*)
+void removeDir(QString path)
+{
+    QDir dir;
+    dir.setPath(path);
+    Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
     {
-        if (showmessages) {
-            std::cout << "Type: " << type << " Message: " << msg << std::endl;
+        if (info.isDir())
+        {
+            removeDir(info.absoluteFilePath());
+        }
+        else
+        {
+            QFile::remove(info.absoluteFilePath());
         }
     }
+    dir.rmdir(path);
 }
+
 
 using namespace hopsan;
 
@@ -87,7 +81,45 @@ class GeneratorTests : public QObject
     Q_OBJECT
 
 public:
-    GeneratorTests()
+
+    const std::string& compilerPathForThisArch() const
+    {
+#ifdef HOPSANCOMPILED64BIT
+        return gcc64Path;
+#else
+        return gcc32Path;
+#endif
+    }
+
+    void addMessage(const QString& message)
+    {
+        messages.append(message);
+    }
+
+    void printMessages() const
+    {
+        std::cout << qPrintable(messages.join("\n")) << std::endl;
+    }
+
+    void clearMessages()
+    {
+        messages.clear();
+    }
+
+private:
+    QString qcwd;
+    std::string cwd;
+    std::string hopsanRoot;
+
+    std::string gcc32Path;
+    std::string gcc64Path;
+
+    QStringList messages;
+
+    HopsanEssentials mHopsanCore;
+
+private slots:
+    void initTestCase()
     {
         qcwd = QDir::currentPath();
         cwd = qcwd.toStdString();
@@ -108,26 +140,10 @@ public:
         }
     }
 
-private:
-    const std::string& compilerPathForThisArch() const
+    void init()
     {
-#ifdef HOPSANCOMPILED64BIT
-        return gcc64Path;
-#else
-        return gcc32Path;
-#endif
+        clearMessages();
     }
-
-    QString qcwd;
-    std::string cwd;
-    std::string hopsanRoot;
-
-    std::string gcc32Path;
-    std::string gcc64Path;
-
-    HopsanEssentials mHopsanCore;
-
-private Q_SLOTS:
 
     void Generator_LibraryImport()
     {
@@ -138,7 +154,10 @@ private Q_SLOTS:
         constexpr auto lflags = "";
 
         bool compileOK = callComponentLibraryCompiler(qPrintable(libraryPath), cflags, lflags, hopsanRoot.c_str(), gccPath.c_str(), &generatorMessageCallback,
-                                                      nullptr);
+                                                      this);
+        if (!compileOK) {
+            printMessages();
+        }
         QVERIFY2(compileOK, qPrintable(QString("Could not compile component library: %1").arg(libraryPath)));
 
         ComponentLibrary cl;
@@ -197,8 +216,11 @@ private Q_SLOTS:
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
         std::string outpath = cwd+"/fmu1_32/";
-        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(), 1, 32,
-                               &generatorMessageCallback);
+        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(),
+                                               1, 32, &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
 
         args << "-s" << testStopTime;
         args << "-l" << "2";
@@ -213,9 +235,13 @@ private Q_SLOTS:
                  "Failed to generate valid FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
 
         // Run FMUChecker for FMU 2.0 32-bit export
+        clearMessages();
         outpath = cwd+"/fmu2_32/";
-        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(), 2, 32,
-                               &generatorMessageCallback);
+        exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(),
+                                          2, 32, &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
 
         args.clear();
         args << "-s" << testStopTime;
@@ -234,8 +260,11 @@ private Q_SLOTS:
 #if defined (HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 64-bit export
         std::string outpath = cwd+"/fmu1_64/";
-        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(), 1, 64,
-                               &generatorMessageCallback);
+        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(),
+                                               1, 64, &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
 
         args.clear();
         args << "-s" << testStopTime;
@@ -251,9 +280,13 @@ private Q_SLOTS:
                  "Failed to generate valid FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
 
         // Run FMUChecker for FMU 2.0 64-bit export
+        clearMessages();
         outpath = cwd+"/fmu2_64/";
-        callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(), 2, 64,
-                               &generatorMessageCallback);
+        exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(),
+                                          2, 64, &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
 
         args.clear();
         args << "-s" << testStopTime;
@@ -309,8 +342,11 @@ private Q_SLOTS:
 
         //Generate S-function
         std::string outpath = cwd+"/simulink/";
-        callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, externalLibraries.data(), numExternalLibraries, false,
-                                    hopsanRoot.c_str(), &generatorMessageCallback);
+        bool exportOK = callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, externalLibraries.data(), numExternalLibraries, false,
+                                    hopsanRoot.c_str(), &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
 
         QDir coreDir(qcwd+"/simulink/HopsanCore");
         QVERIFY2(coreDir.exists() && !coreDir.entryList().isEmpty(),
@@ -344,7 +380,10 @@ private Q_SLOTS:
 
         //Generate S-function
         std::string outfile = cwd+"/labview/unittestmodel_export.cpp";
-        callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str(), &generatorMessageCallback);
+        bool exportOK = callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str(), &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
 
         QVERIFY2(QFile::exists(qcwd+"/labview/codegen.c"),
                  "Failed to generate LabVIEW files, all files not found.");
@@ -401,7 +440,10 @@ private Q_SLOTS:
 #else
         gccPath = gcc32Path;
 #endif
-        callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, nullptr, 0, true, hopsanRoot.c_str());
+/*        bool exportOK =*/ callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, 0, true, hopsanRoot.c_str());
+//        if (!exportOK) {
+//            printMessages();
+//        }
 
 //        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(TO_STR(DLL_EXT))).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");
@@ -550,6 +592,19 @@ private Q_SLOTS:
         }
     }
 };
+
+void generatorMessageCallback(const char* msg, const char type, void* pObject)
+{
+    auto message = QString("%1: %2").arg(type).arg(msg);
+    if (pObject != nullptr) {
+        auto pTestObject = static_cast<GeneratorTests*>(pObject);
+        pTestObject->addMessage(message);
+    }
+    if (gAllwaysShowMessages) {
+        std::cout << qPrintable(message) << std::endl;
+    }
+}
+
 
 QTEST_APPLESS_MAIN(GeneratorTests)
 
