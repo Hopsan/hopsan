@@ -54,7 +54,8 @@ hopsan::QuantityRegister::QuantityRegister()
 
     registerQuantity("Density", "kg/m^3");
 
-    registerQuantity("Frequency", "rad/s");
+    registerQuantity("Frequency", "Hz");
+    registerQuantity("AngularVelocity", "rad/s");
     registerQuantity("Time", "s");
 
     registerQuantity("Temperature", "K");
@@ -64,7 +65,7 @@ hopsan::QuantityRegister::QuantityRegister()
     // Register quantity aliases
     registerQuantityAlias("Pressure", "Stress");
     registerQuantityAlias("Position", "Length");
-    registerQuantityAlias("Frequency", "AngularVelocity");
+    //registerQuantityAlias("Frequency", "AngularVelocity");
 }
 
 void hopsan::QuantityRegister::registerQuantity(const hopsan::HString &rQuantity, const hopsan::HString &rBaseUnit)

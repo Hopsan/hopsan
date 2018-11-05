@@ -167,7 +167,7 @@ public:
         mpPel2=addPowerPort("Pel2","NodeElectric");
         mpPmr1=addPowerPort("Pmr1","NodeMechanicRotational");
         //Add inputVariables to the component
-            addInputVariable("freq","AC frequency","1/s",50,&mpfreq);
+            addInputVariable("freq","AC frequency","Hz",50,&mpfreq);
 
         //Add inputParammeters to the component
             addInputVariable("Ke", "emf constant", "V s/rad", 0.13,&mpKe);

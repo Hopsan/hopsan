@@ -223,7 +223,16 @@
             <unit name="ns" scale="1e-9"/>
             <unit name="min" scale="60"/>
         </quantity>
-        <quantity name="Frequency" baseunit="rad/s">
+        <quantity name="Frequency" baseunit="Hz">
+	    <unit name="deg/s" scale="1/360"/>
+	    <unit name="rad/s" scale="1/2/pi"/>
+	    <unit name="rev/s" scale="1"/>
+	    <unit name="rpm" scale="1/60"/>
+            <unit name="kHz" scale="1e3"/>
+            <unit name="MHz" scale="1e6"/>
+            <unit name="GHz" scale="1e9"/>
+        </quantity>
+	<quantity name="AngularVelocity" baseunit="rad/s">
 	    <unit name="deg/s" scale="pi/180"/>
 	    <unit name="rev/s" scale="2*pi"/>
 	    <unit name="rpm" scale="2*pi/60"/>

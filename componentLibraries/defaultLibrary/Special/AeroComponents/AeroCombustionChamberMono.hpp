@@ -180,7 +180,7 @@ public:
             addInputVariable("As", "min effective area", "m2", \
 0.00196,&mpAs);
             addInputVariable("Med", "Design exit Mach", "", 2.5,&mpMed);
-            addInputVariable("alpha", "Damp. factor", "1/s ", 0.3,&mpalpha);
+            addInputVariable("alpha", "Damp. factor", "Hz", 0.3,&mpalpha);
         //Add outputVariables to the component
             addOutputVariable("thrust","thrust","m3/s",0.,&mpthrust);
             addOutputVariable("Tc","cahmber temerature","K",273.,&mpTc);
