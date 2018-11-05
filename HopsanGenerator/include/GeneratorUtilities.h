@@ -48,8 +48,9 @@ class HOPSANGENERATOR_DLLAPI CompilerHandler
 {
 public:
     using Compiler = BuildFlags::Compiler;
-    using Language = BuildFlags::Language;
     using Compilers = std::initializer_list<Compiler>;
+    using Language = BuildFlags::Language;
+    enum class BuildType {Debug, Release};
     enum class OutputType {Executable, StaticLibrary, SharedLibrary};
 
     CompilerHandler() = default;
@@ -67,8 +68,7 @@ public:
     void addDefinition(QString macroname, const Compilers compilers={Compiler::Any});
 
     void setLanguage(const Language language);
-    void setOutputFile(QString outputFile, const OutputType outputType);
-    void setSharedLibraryOutputFile(QString outputLibraryFileName);
+    void setSharedLibraryOutputFile(QString outputLibraryFileName, const BuildType buildType);
     void setSourceFiles(const QStringList& sourceFiles);
 
     QString outputFile() const;
@@ -78,6 +78,8 @@ public:
     QString compileCommand(const Compiler compiler);
 
 private:
+    void setOutputFile(QString outputFile, const OutputType outputType);
+
     std::vector<BuildFlags> mBuildFlags;
     QString mOutputFile;
     QStringList mSourceFiles;

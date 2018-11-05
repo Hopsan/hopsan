@@ -212,9 +212,10 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addCompilerFlag(QString(R"(-Wl,--rpath,"%1")").arg(libRootDir), Compiler::GCC);
     ch.addCompilerFlag(extraCFlags);
     ch.addLibraryPath(pGenerator->getHopsanBinPath());
+    CompilerHandler::BuildType buildType = CompilerHandler::BuildType::Release;
 #if defined(DEBUGCOMPILING)
+    buildType = CompilerHandler::BuildType::Debug;
     cl.mSharedLibraryName += cl.mSharedLibraryDebugExtension;
-    ch.addCompilerFlag("-g", {Compiler::GCC, Compiler::Clang});
     ch.addDefinition("DEBUGCOMPILING");
     ch.addLinkLibrary("hopsancore_d");
 #else
@@ -225,7 +226,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addLinkerFlag(extraLFlags);
 
     ch.setSourceFiles(cl.mSourceFiles);
-    ch.setSharedLibraryOutputFile(LIBPREFIX+cl.mSharedLibraryName);
+    ch.setSharedLibraryOutputFile(LIBPREFIX+cl.mSharedLibraryName, buildType);
 
     const auto& compilerSelection = pGenerator->getCompilerSelection();
 
@@ -809,7 +810,7 @@ void CompilerHandler::addLibraryPath(QString lpath, const Compilers compilers)
     for (auto compiler : compilers) {
         QString lflag;
         if (compiler == Compiler::MSVC) {
-//FIXME        lflag = QString("-L%1").arg(lpath);
+            lflag = QString("-LIBPATH:%1").arg(lpath);
         } else {
             lflag = QString("-L%1").arg(lpath);
         }
@@ -822,7 +823,7 @@ void CompilerHandler::addLinkLibrary(QString lib, const Compilers compilers)
     for (auto compiler : compilers) {
         QString lflag;
         if (compiler == Compiler::MSVC) {
-//FIXME        lflag = QString("-L%1").arg(lpath);
+            lflag = lib;
         } else {
             lflag = QString("-l%1").arg(lib);
         }
@@ -835,14 +836,10 @@ void CompilerHandler::addDefinition(QString macroname, QString value, const Comp
 {
     for (auto compiler : compilers) {
         QString cflag;
-        if (compiler == Compiler::MSVC) {
-//FIXME
+        if (value.isEmpty()) {
+            cflag = QString("-D%1").arg(macroname);
         } else {
-            if (value.isEmpty()) {
-                cflag = QString("-D%1").arg(macroname);
-            } else {
-                cflag = QString("-D%1=%2").arg(macroname).arg(value);
-            }
+            cflag = QString("-D%1=%2").arg(macroname).arg(value);
         }
         addCompilerFlag(cflag, compiler);
     }
@@ -864,11 +861,19 @@ QString CompilerHandler::compileCommand(const Compiler compiler)
     const QStringList lflags = linkerFlags(compiler);
 
     const QString compilerString = BuildFlags::compilerString(compiler, mLanguage);
-    return QString("%1 %2 %3 %4 -o %5").arg(compilerString)
-                                       .arg(cflags.join(" "))
-                                       .arg(mSourceFiles.join(" "))
-                                       .arg(lflags.join(" "))
-                                       .arg(mOutputFile);
+    if (compiler == Compiler::MSVC) {
+        return QString("%1 %2 %3 %4 -Fe%5").arg(compilerString)
+                                           .arg(cflags.join(" "))
+                                           .arg(mSourceFiles.join(" "))
+                                           .arg(lflags.join(" "))
+                                           .arg(mOutputFile);
+    } else {
+        return QString("%1 %2 %3 %4 -o %5").arg(compilerString)
+                                           .arg(cflags.join(" "))
+                                           .arg(mSourceFiles.join(" "))
+                                           .arg(lflags.join(" "))
+                                           .arg(mOutputFile);
+    }
 }
 
 QStringList CompilerHandler::compilerFlags(const CompilerHandler::Compiler compiler) const
@@ -899,7 +904,7 @@ void CompilerHandler::setOutputFile(QString outputFile, const OutputType outputT
     mOutputType = outputType;
 }
 
-void CompilerHandler::setSharedLibraryOutputFile(QString outputLibraryFileName)
+void CompilerHandler::setSharedLibraryOutputFile(QString outputLibraryFileName, const BuildType buildType)
 {
     const QString suffix = sharedLibrarySuffix(currentPlatform());
     const QString extension = "."+suffix;
@@ -907,6 +912,15 @@ void CompilerHandler::setSharedLibraryOutputFile(QString outputLibraryFileName)
         outputLibraryFileName.append(extension);
     }
     addLinkerFlag("-shared", {Compiler::GCC, Compiler::Clang});
+    if (buildType == BuildType::Release) {
+        addLinkerFlag("-MD", Compiler::MSVC);
+        addLinkerFlag("-LD", Compiler::MSVC);
+    } else {
+        addCompilerFlag("-g", {Compiler::GCC, Compiler::Clang});
+        addLinkerFlag("-MDd", Compiler::MSVC);
+        addLinkerFlag("-LDd", Compiler::MSVC);
+    }
+
     setOutputFile(outputLibraryFileName, OutputType::SharedLibrary);
 }
 
