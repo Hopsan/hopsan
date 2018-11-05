@@ -1871,12 +1871,31 @@ bool ComponentSystem::checkModelBeforeSimulation()
                 break;
             }
 
-            // If a system parameter is used in the component, then erase it from the list
-            std::vector<HString>::iterator itp = std::find(unusedSysParNames.begin(), unusedSysParNames.end(), pCompParameters->at(p)->getValue());
-            if(itp != unusedSysParNames.end())
+            // If a system parameter is used in the component, then erase it from the list.
+            // To match only complete parameter names, prepend and append a space to the expression and replace operators by a space.
+            // Then find parameter names in expression.
+            HString expression = (" " + pCompParameters->at(p)->getValue() + " ")
+                    .replace("+", " ")
+                    .replace("-", " ")
+                    .replace("*", " ")
+                    .replace("/", " ")
+                    .replace("^", " ")
+                    .replace("(", " ")
+                    .replace(")", " ")
+                    .replace("<", " ")
+                    .replace(">", " ")
+                    .replace("|", " ")
+                    .replace("&", " ");
+            for(std::vector<HString>::iterator itp = unusedSysParNames.begin(); itp!=unusedSysParNames.end();)
             {
-                unusedSysParNames.erase(itp);
+                if (expression.find(" "+(*itp)+" ")!=std::string::npos)
+                {
+                    itp =  unusedSysParNames.erase(itp);
+                } else {
+                    ++itp;
+                }
             }
+
         }
 
         // Check parameters in system. Note! this will also evaluate the parameter strings, but that should be OK
