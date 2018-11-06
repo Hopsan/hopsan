@@ -26,8 +26,9 @@
 
 #include "Quantities.h"
 
+using namespace hopsan;
 
-hopsan::QuantityRegister::QuantityRegister()
+QuantityRegister::QuantityRegister()
 {
     registerQuantity("Pressure", "Pa");
     registerQuantity("Flow", "m^3/s");
@@ -82,19 +83,42 @@ void hopsan::QuantityRegister::registerQuantityAlias(const hopsan::HString &rQua
 //! @param [in] rAlias Quantity alias.
 //! @returns Quantity name or rAlias is not a registerd alias.
 hopsan::HString hopsan::QuantityRegister::lookupQuantityByAlias(const hopsan::HString &rAlias) const {
+    // @Todo: This should probably be made private. Currently keept public to translate aliases in nodes/ports so that GUI understands (does not handle aliases yet).
     std::map<HString, HString>::const_iterator it = mQuantityAliases.find(rAlias);
     return (it == mQuantityAliases.end()) ? rAlias : it->second;
 }
 
-//! @brief Lookup base unit for a quantity or quantity alias. Returns an empty string if quantity is not registerd.
-//! @param [in] rQuantity Quantity ir quantity alias.
-//! @returns Base unit or empty string.
-hopsan::HString hopsan::QuantityRegister::lookupBaseUnit(const hopsan::HString &rQuantity) const
+//! @brief Resolve quantity (or alias) and base unit from a string containing any
+//! of the two. Quantity alias is preserved if gives as input.
+//! Returns an empty string if neither quantity nor unit.
+//! In case multiple quantities uses the same base unit - they should not! - the first
+//! matching quantity for a unit will be returned.
+//! @param [in] A unit or quantity.
+//! @returns Pair <quantity, base unit>. Empty strings if no match is made.
+std::pair<HString,HString> QuantityRegister::resolveQuantityAndBaseUnit(const HString &rQuantityOrBaseUnit) const
 {
-    // Translate any quantity alias to its real name, then find base unit.
-    std::map<HString, HString>::const_iterator it = mQuantity2BaseUnit.find(lookupQuantityByAlias(rQuantity));
-    // Return base unit if found or empty string.
-    return (it == mQuantity2BaseUnit.end()) ? HString() : it->second;
+
+    std::pair<HString, HString> qAndBU ("", "");
+
+    std::map<HString, HString>::const_iterator it;
+    for (it=mQuantity2BaseUnit.begin(); it!=mQuantity2BaseUnit.end(); ++it)
+    {
+        // rQuantityOrBaseUnit is a base unit?
+        if ( it->second==rQuantityOrBaseUnit )
+        {
+            qAndBU.first = it->first;
+            qAndBU.second = rQuantityOrBaseUnit;
+            return qAndBU;
+        }
+        // rQuantityOrBaseUnit is a quantity or quantity alias?
+        if ( it->first==lookupQuantityByAlias(rQuantityOrBaseUnit) )
+        {
+            qAndBU.first = rQuantityOrBaseUnit;
+            qAndBU.second = it->second;
+            return qAndBU;
+        }
+    }
+    return qAndBU;
 }
 
 bool hopsan::QuantityRegister::haveQuantity(const hopsan::HString &rQuantity) const
@@ -112,18 +136,13 @@ bool hopsan::QuantityRegister::haveQuantity(const hopsan::HString &rQuantity) co
 //! @returns true if rQuantityOrUnit is a valid quantity else false
 bool hopsan::checkIfQuantityOrUnit(const hopsan::HString &rQuantityOrUnit, hopsan::HString &rQuantity, hopsan::HString &rUnitOrBaseUnit)
 {
-    rUnitOrBaseUnit = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantityOrUnit);
-    // rUnitOrQuantity is treated as a unit because no valid quantity has been specified
-    if (rUnitOrBaseUnit.empty())
-    {
-        rQuantity.clear();
+    std::pair<HString, HString> qAndBU = gpInternalCoreQuantityRegister->resolveQuantityAndBaseUnit(rQuantityOrUnit);
+    if (rQuantity.empty()) {
+        rQuantity.clear();;
         rUnitOrBaseUnit = rQuantityOrUnit;
         return false;
     }
-    // rUnitOrQuantity is actually a quantity, and bu is the corresponding base unit
-    else
-    {
-        rQuantity = rQuantityOrUnit;
-        return true;
-    }
+    rQuantity = qAndBU.first;
+    rUnitOrBaseUnit = qAndBU.second;
+    return true;
 }

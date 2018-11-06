@@ -570,26 +570,15 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 //! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const double defaultValue, double &rData)
 {
-    rData = defaultValue;
-    if (rUnit.empty())
+    pair<HString,HString> qAndBU = gpInternalCoreQuantityRegister->resolveQuantityAndBaseUnit(rQuantity);
+    HString q = qAndBU.first;
+    HString bu = qAndBU.second;
+    // Make sure unit correct, since we do not yet support non base units in core
+    if (bu != rUnit)
     {
-        HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantity);
-        registerParameter(rName, rDescription, rQuantity, bu, rData);
+        addErrorMessage(HString("Using non base units together with a quantity is not yet supported: "+bu+" != "+rUnit+" ("+rQuantity+")"));
     }
-    else if (!rQuantity.empty())
-    {
-        // Make sure unit correct, since we do not yet support non base units in core
-        HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantity);
-        if (bu != rUnit)
-        {
-            addErrorMessage(HString("Using non base units together with a quantity is not yet supported: "+bu+" != "+rUnit+" ("+rQuantity+")"));
-        }
-        registerParameter(rName, rDescription, rQuantity, rUnit, rData);
-    }
-    else
-    {
-        registerParameter(rName, rDescription, rQuantity, rUnit, rData);
-    }
+    registerParameter(rName, rDescription, q, bu, rData);
 }
 
 ///@{

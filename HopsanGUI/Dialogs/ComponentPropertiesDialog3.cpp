@@ -1683,9 +1683,16 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
                 {
                     QStringList pqs = gpConfig->getQuantitiesForUnit(rData.mUnit);
                     // Only allow listing in case we have one unique quantity match for base unit
-                    if (pqs.size() == 1)
+                    // @Todo: No fallback to first quantity in case of ambiguity but issue a warning?
+                    // Besides, quantities should probably be figured out at the initial creation of ports, nodes and parameters.
+                    // GUI shouldn't need to bother with guesses.
+                    if (pqs.size() > 0)
                     {
                         quantity = pqs.front();
+                        if (pqs.size() > 1)
+                        {
+                        // addDebugMessage("Ambigous quantities for unit " + rData.mUnit + ". Using " + quantity);
+                        }
                     }
                 }
             }

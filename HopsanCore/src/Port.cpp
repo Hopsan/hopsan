@@ -502,29 +502,19 @@ void Port::setSignalNodeQuantityOrUnit(const HString &rQuantityOrUnit)
 {
     //! @todo multiport version needed
 
-    // For now, don't use quantity aliases in data descriptions becuase these are unknown to GUI widgets.
+    // For now, don't use quantity aliases in data descriptions because these are unknown to GUI widgets.
     // Widget unit lookups are perfomed by Configuration::getUnitScales() which uses a lookup table loaded
     // from unitsettings in hopsanconfig.xml which lacks the alias info.
-    //HString quantityOrUnit = gpInternalCoreQuantityRegister->lookupQuantityByAlias(rQuantityOrUnit);
-    HString bu = gpInternalCoreQuantityRegister->lookupBaseUnit(rQuantityOrUnit);
-    // If this was not a quantity
-    if (bu.empty())
+    pair<HString,HString> qAndBU = gpInternalCoreQuantityRegister->resolveQuantityAndBaseUnit(rQuantityOrUnit);
+    HString q = qAndBU.first;
+    HString bu = gpInternalCoreQuantityRegister->lookupQuantityByAlias(qAndBU.second);
+
+    mpNode->setSignalQuantity(q, bu);
+    if (mpStartNode)
     {
-        mpNode->setSignalQuantity("", rQuantityOrUnit);
-        if (mpStartNode)
-        {
-            mpStartNode->setSignalQuantity("", rQuantityOrUnit);
-        }
+        mpStartNode->setSignalQuantity(q, bu);
     }
-    // If this was a quantity
-    else
-    {
-        mpNode->setSignalQuantity(rQuantityOrUnit, bu);
-        if (mpStartNode)
-        {
-            mpStartNode->setSignalQuantity(rQuantityOrUnit, bu);
-        }
-    }
+
 }
 
 void Port::setSignalNodeQuantityModifyable(bool tf)
