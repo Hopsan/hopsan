@@ -127,7 +127,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     pSpecialThanksHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pSpecialThanksText = new QLabel();
-    pSpecialThanksText->setText(tr("Atlas Copco\nThe Swedish Foundation for Strategic Research\n"));
+    pSpecialThanksText->setText(tr("Epiroc Rock Drills AB\nThe Swedish Foundation for Strategic Research\n"));
     pSpecialThanksText->setWordWrap(true);
     pSpecialThanksText->setAlignment(Qt::AlignCenter);
 
