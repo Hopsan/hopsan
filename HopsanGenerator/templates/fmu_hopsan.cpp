@@ -144,16 +144,19 @@ double hopsan_get_real(int vr)
 int hopsan_get_integer(int vr)
 {
     //Write code here
+    return -1;
 }
 
 int hopsan_get_boolean(int vr)
 {
     //Write code here
+    return false;
 }
 
 const char* hopsan_get_string(int vr)
 {
     //Write code here
+    return "";
 }
 
 void hopsan_set_real(int vr, double value)
