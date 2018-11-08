@@ -210,7 +210,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addCompilerFlag("-fPIC -w", {Compiler::GCC, Compiler::Clang});
     //! @todo setting rpath here is strange, as it will hard-code given path into dll (so if you move it it wont work) /Peter
     ch.addCompilerFlag(QString(R"(-Wl,--rpath,"%1")").arg(libRootDir), Compiler::GCC);
-    ch.addCompilerFlag(extraCFlags);
+
     ch.addLibraryPath(pGenerator->getHopsanBinPath());
     CompilerHandler::BuildType buildType = CompilerHandler::BuildType::Release;
 #if defined(DEBUGCOMPILING)
@@ -223,6 +223,9 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addLinkLibrary("hopsancore");
 #endif
     ch.addLinkLibrary("c++", {Compiler::Clang});
+
+    ch.addBuildFlags(cl.mBuildFlags);
+    ch.addCompilerFlag(extraCFlags);
     ch.addLinkerFlag(extraLFlags);
 
     ch.setSourceFiles(cl.mSourceFiles);
@@ -770,7 +773,7 @@ CompilerHandler::CompilerHandler(const CompilerHandler::Language language)
 void CompilerHandler::addCompilerFlag(QString cflag, const Compiler compiler)
 {
     if (mBuildFlags.empty() || (mBuildFlags.back().mCompiler != compiler)) {
-        mBuildFlags.emplace_back(compiler, QStringList(cflag), QStringList());
+        mBuildFlags.push_back(BuildFlags(compiler, QStringList(cflag), QStringList()));
     } else {
         mBuildFlags.back().mCompilerFlags.append(cflag);
     }
@@ -786,7 +789,7 @@ void CompilerHandler::addCompilerFlag(QString cflag, const Compilers compilers)
 void CompilerHandler::addLinkerFlag(QString lflag, const Compiler compiler)
 {
     if (mBuildFlags.empty() || (mBuildFlags.back().mCompiler != compiler)) {
-        mBuildFlags.emplace_back(compiler, QStringList(), QStringList(lflag));
+        mBuildFlags.push_back(BuildFlags(compiler, QStringList(), QStringList(lflag)));
     } else {
         mBuildFlags.back().mLinkerFlags.append(lflag);
     }
@@ -798,6 +801,11 @@ void CompilerHandler::addLinkerFlag(QString lflag, const Compilers compilers)
     for (auto compiler : compilers) {
         addLinkerFlag(lflag, compiler);
     }
+}
+
+void CompilerHandler::addBuildFlags(const QVector<BuildFlags> &flags)
+{
+    mBuildFlags += flags;
 }
 
 void CompilerHandler::addIncludePath(QString ipath, const Compilers compilers)

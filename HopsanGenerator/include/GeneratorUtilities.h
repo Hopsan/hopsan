@@ -41,6 +41,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDomElement>
+#include <QVector>
 
 class HopsanGeneratorBase;
 
@@ -61,6 +62,8 @@ public:
     void addLinkerFlag(QString lflag, const Compiler compiler);
     void addLinkerFlag(QString lflag, const Compilers compilers={Compiler::Any});
 
+    void addBuildFlags(const QVector<BuildFlags>& flags);
+
     void addIncludePath(QString ipath, const Compilers compilers={Compiler::Any});
     void addLibraryPath(QString lpath, const Compilers compilers={Compiler::Any});
     void addLinkLibrary(QString lib, const Compilers compilers={Compiler::Any});
@@ -80,7 +83,7 @@ public:
 private:
     void setOutputFile(QString outputFile, const OutputType outputType);
 
-    std::vector<BuildFlags> mBuildFlags;
+    QVector<BuildFlags> mBuildFlags;
     QString mOutputFile;
     QStringList mSourceFiles;
     OutputType mOutputType;
