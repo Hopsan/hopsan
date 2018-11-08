@@ -29,7 +29,7 @@
 
 #include <QString>
 #include <QStringList>
-#include <QList>
+#include <QVector>
 
 namespace hopsan {
 
@@ -65,6 +65,7 @@ public:
     enum class Compiler {Any, GCC, Clang, MSVC};
     enum class Language {C, Cpp};
     static QString platformString(Platform platform);
+    static Platform platformFromString(const QString& platformString);
     static QString compilerString(Compiler compiler, Language language);
 
     QString platformString() const;
@@ -104,7 +105,7 @@ public:
     QStringList mComponentCodeFiles;
     QStringList mComponentXMLFiles;
     QStringList mAuxFiles;
-    QList<BuildFlags> mBuildFlags;
+    QVector<BuildFlags> mBuildFlags;
 
     void clear();
     bool saveToXML(QString filepath) const;

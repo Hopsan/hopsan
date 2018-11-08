@@ -226,37 +226,53 @@ bool ComponentLibrary::loadFromXML(QString filepath)
     // Read contents
     while (reader.readNextStartElement())
     {
-        if (reader.name() == "id") {
+        const QStringRef elementName = reader.name();
+        if (elementName == "id") {
            mId = reader.readElementText();
         }
-        else if (reader.name() == "name") {
+        else if (elementName == "name") {
             mName = reader.readElementText();
         }
-        else if (reader.name() == "lib") {
+        else if (elementName == "lib") {
             mSharedLibraryDebugExtension = reader.attributes().value("debug_ext").toString();
             mSharedLibraryName = reader.readElementText();
         }
-        else if (reader.name() == "source") {
+        else if (elementName == "source") {
             mSourceFiles.append(reader.readElementText());
         }
-        else if (reader.name() == "component") {
+        else if (elementName == "component") {
             mComponentCodeFiles.append(reader.readElementText());
         }
-        else if (reader.name() == "componentxml" ||
-                 reader.name() == "hopsanobjectappearance" ||
-                 reader.name() == "caf") {
+        else if (elementName == "componentxml" ||
+                 elementName == "hopsanobjectappearance" ||
+                 elementName == "caf") {
             mComponentXMLFiles.append(reader.readElementText());
         }
-        else if (reader.name() == "auxiliary") {
+        else if (elementName == "auxiliary") {
             mAuxFiles.append(reader.readElementText());
         }
-        else if (reader.name() == "buildflags") {
-            //! @todo read build flags
-            reader.readElementText();
+        else if (elementName == "buildflags") {
+            while (reader.readNext()) {
+                if (reader.isEndElement() && reader.name() == "buildflags") {
+                    break;
+                } else if (reader.isStartElement()) {
+                    const auto platform = BuildFlags::platformFromString(reader.attributes().value("os").toString());
+                    if (reader.name() == "cflags") {
+                        QString cflags = reader.readElementText();
+                        mBuildFlags.append(BuildFlags(platform, cflags.split(" "), {}));
+                    } else if (reader.name() == "lflags") {
+                        QString lflags = reader.readElementText();
+                        mBuildFlags.append(BuildFlags(platform, {}, lflags.split(" ")));
+                    } else {
+                        // Discard to proceed
+                        reader.readElementText(QXmlStreamReader::SkipChildElements);
+                    }
+                }
+            }
         }
         else {
             // Discard to proceed
-            reader.readElementText();
+            reader.readElementText(QXmlStreamReader::SkipChildElements);
         }
     }
     file.close();
@@ -623,6 +639,23 @@ QString BuildFlags::platformString(BuildFlags::Platform platform) {
     case Platform::Linux : return hopsan::os_strings::Linux ;
     case Platform::apple : return hopsan::os_strings::apple ;
     default : return {} ;
+    }
+}
+
+BuildFlags::Platform BuildFlags::platformFromString(const QString &platformString)
+{
+    if (platformString == hopsan::os_strings::win64) {
+        return Platform::win64;
+    } else if (platformString == hopsan::os_strings::win32) {
+        return Platform::win32;
+    } else if (platformString == hopsan::os_strings::win) {
+        return Platform::win;
+    } else if (platformString == hopsan::os_strings::Linux) {
+        return Platform::Linux;
+    } else if (platformString == hopsan::os_strings::apple) {
+        return Platform::apple;
+    } else {
+        return Platform::notset;
     }
 }
 
