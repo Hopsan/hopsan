@@ -65,6 +65,16 @@ void removeDir(QString path)
     dir.rmdir(path);
 }
 
+QString getLibFile(const ComponentLibrary& cl) {
+    QFileInfo libXmlFi(cl.mLoadFilePath);
+    QString libfile = libXmlFi.absolutePath()+"/"+(TO_STR(DLL_PREFIX)+cl.mSharedLibraryName);
+#ifdef DEBUGCOMPILING
+    libfile.append(cl.mSharedLibraryDebugExtension);
+#endif
+    libfile.append(TO_STR(DLL_EXT));
+    return libfile;
+}
+
 
 using namespace hopsan;
 
@@ -162,12 +172,7 @@ private slots:
 
         ComponentLibrary cl;
         cl.loadFromXML(libraryPath);
-        QFileInfo libFileInfo(libraryPath);
-        QString libfile = libFileInfo.absolutePath()+"/"+cl.mSharedLibraryName;
-#ifdef DEBUGCOMPILING
-        libfile.append(cl.mSharedLibraryDebugExtension);
-#endif
-        libfile.append(TO_STR(DLL_EXT));
+        QString libfile = getLibFile(cl);
         //! @todo The core should be able to load xml
         bool loadOK = mHopsanCore.loadExternalComponentLib(qPrintable(libfile));
         QVERIFY2(loadOK, qPrintable(QString("Could not load component library: %1").arg(libraryPath)));
@@ -331,6 +336,53 @@ private slots:
 
         double start, stop;
         QTest::newRow("0") << mHopsanCore.loadHMFModelFile(modelpath.toStdString().c_str(),start,stop) << stop;
+    }
+
+    void Generator_FMU_Import()
+    {
+#if defined(__APPLE__)
+        QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
+#else
+        const std::string gccPath = compilerPathForThisArch();
+        std::string fmu1FilePath;
+        std::string fmu2FilePath;
+        std::string dst1, dst2;
+#if defined (HOPSANCOMPILED64BIT)
+        fmu1FilePath = cwd + "/fmu1_64/unittestmodel_export.fmu";
+        fmu2FilePath = cwd + "/fmu2_64/unittestmodel_export.fmu";
+        dst1 = cwd + "/import_fmu1_64";
+        dst2 = cwd + "/import_fmu2_64";
+#else
+        fmu1FilePath = cwd + "/fmu1_32/unittestmodel_export.fmu";
+        fmu2FilePath = cwd + "/fmu2_32/unittestmodel_export.fmu";
+        dst1 = cwd + "/import_fmu1_32";
+        dst2 = cwd + "/import_fmu2_32";
+#endif
+        bool importOK1 = callFmuImportGenerator(fmu1FilePath.c_str(), dst1.c_str(), hopsanRoot.c_str(),  gccPath.c_str(), &generatorMessageCallback, this);
+        if (!importOK1) {
+            printMessages();
+        }
+        QVERIFY2(importOK1, "Failed to import FMU1");
+
+        clearMessages();
+        bool importOK2 = callFmuImportGenerator(fmu2FilePath.c_str(), dst2.c_str(), hopsanRoot.c_str(),  gccPath.c_str(), &generatorMessageCallback, this);
+        if (!importOK2) {
+            printMessages();
+        }
+        QVERIFY2(importOK2, "Failed to import FMU2");
+
+        ComponentLibrary cl;
+        cl.loadFromXML((dst1+"/unittestmodel_export/unittestmodel_export_lib.xml").c_str());
+        QString libfile1 = getLibFile(cl);
+        bool loadOK1 = mHopsanCore.loadExternalComponentLib(qPrintable(libfile1));
+        QVERIFY2(loadOK1, "Failed to load imported FMU1");
+
+        mHopsanCore.unLoadExternalComponentLib(qPrintable(libfile1));
+        cl.loadFromXML((dst2+"/unittestmodel_export/unittestmodel_export_lib.xml").c_str());
+        QString libfile2 = getLibFile(cl);
+        bool loadOK2 = mHopsanCore.loadExternalComponentLib(qPrintable(libfile2));
+        QVERIFY2(loadOK2, "Failed to load imported FMU2");
+#endif
     }
 
     void Generator_Simulink_Export()
