@@ -590,8 +590,8 @@ void PlotCurve::setCurveDataUnitScale(const UnitConverter &rUS)
     {
         mCurveDataUnitScale = rUS;
 
-        // Clear the custom scale if it is one and we have a data unit
-        if (!getDataUnit().isEmpty() && mCurveDataUnitScale.isScaleOne())
+        // Clear the custom scale if it is (a custom scale) 1 (and not an actual quantity/unit scaled as 1) and we have a data unit
+        if (!getDataUnit().isEmpty() && (rUS.isScaleOne() && rUS.mUnit.isEmpty()))
         {
             resetCurveDataUnitScale();
         }
