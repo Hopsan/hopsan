@@ -55,6 +55,7 @@
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GeneratorUtils.h"
+#include "ModelHandler.h"
 
 //! @todo Ok don't know where I should put this, putting it here for now /Peter
 QString gHopsanCoreVersion = getHopsanCoreVersion();
@@ -782,7 +783,9 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                             typeNames.append(mItemToTypeNameMap.find(subItems[s]).value());
                         }
                     }
-                    if(!gpLibraryHandler->isTypeNamesOkToUnload(typeNames))
+                    if(pReply != pRecompileAction &&
+                       pReply != pReloadAction &&
+                       !gpLibraryHandler->isTypeNamesOkToUnload(typeNames))
                     {
                         return;
                     }
@@ -798,7 +801,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 // Handle reload
                 else if (pReply == pReloadAction && !typeNames.isEmpty())
                 {
-
+                    gpModelHandler->saveState();
                     ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
                     if (le.pLibrary)
                     {
@@ -812,10 +815,12 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                             gpLibraryHandler->loadLibrary(libPath);
                         }
                     }
+                    gpModelHandler->restoreState();
                 }
                 // Handle recompile
                 else if ((pReply == pRecompileAction) && !typeNames.isEmpty())
                 {
+                    gpModelHandler->saveState();
                     ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
                     if (le.pLibrary)
                     {
@@ -839,6 +844,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                             gpLibraryHandler->loadLibrary(libPath);
                         }
                     }
+                    gpModelHandler->restoreState();
                 }
                 // Handle check consistency
                 else if ((pReply == pCheckConsistenceAction) && !typeNames.isEmpty())

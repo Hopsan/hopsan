@@ -41,6 +41,7 @@
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
+#include "GraphicsViewPort.h"
 #include "GUIObjects/GUISystem.h"
 #include "MessageHandler.h"
 #include "MainWindow.h"
@@ -757,21 +758,19 @@ void ModelHandler::setToolBarSimulationTimeFromTab(ModelWidget *pModel)
 
 void ModelHandler::saveState()
 {
-    mStateInfoBackupList.clear();
-    mStateInfoHasChanged.clear();
-    mStateInfoHmfList.clear();
-    mStateInfoModels.clear();
-    mStateInfoTabNames.clear();
-    mStateInfoLogDataHandlersList.clear();
+    mStateInfoIndex = mCurrentIdx;
+    mStateInfoList.clear();
 
     while(!mModelPtrs.isEmpty())
     {
+        ModelStateInfo info;
         ModelWidget *pModel = getModel(0);
-        mStateInfoHmfList << pModel->getTopLevelSystemContainer()->getModelFileInfo().filePath();
-        mStateInfoHasChanged << !pModel->isSaved();
-        mStateInfoTabNames << gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(pModel));
+        info.modelFile = pModel->getTopLevelSystemContainer()->getModelFileInfo().filePath();
+        info.hasChanged = !pModel->isSaved();
+        info.tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(pModel));
         pModel->getTopLevelSystemContainer()->getLogDataHandler()->setParent(0);       //Make sure it is not removed when deleting the container object
-        mStateInfoLogDataHandlersList << pModel->getTopLevelSystemContainer()->getLogDataHandler();
+        info.logDataHandler = pModel->getTopLevelSystemContainer()->getLogDataHandler();
+        info.viewPort = pModel->getGraphicsView()->getViewPort();
         if(!pModel->isSaved())
         {
             //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
@@ -781,7 +780,7 @@ void ModelHandler::saveState()
             pModel->getTopLevelSystemContainer()->saveToDomElement(hmfRoot);
             QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
             fileNameWithoutHmf.chop(4);
-            mStateInfoBackupList << gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
+            info.backupFile = gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
             QFile xmlhmf(gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
             if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
             {
@@ -797,23 +796,26 @@ void ModelHandler::saveState()
         }
         else
         {
-            mStateInfoBackupList << "";
+            info.backupFile = "";
             closeModel(0);
             //pTab->close();
         }
+        mStateInfoList.append(info);
     }
 }
 
 void ModelHandler::restoreState()
 {
-    for(int i=0; i<mStateInfoHmfList.size(); ++i)
+    for(int i=0; i<mStateInfoList.size(); ++i)
     {
-        if(mStateInfoHasChanged[i])
+        ModelStateInfo info = mStateInfoList[i];
+
+        if(info.hasChanged)
         {
-            loadModel(mStateInfoBackupList[i]);
+            loadModel(info.backupFile);
             getCurrentModel()->hasChanged();
-            getCurrentTopLevelSystem()->setModelFile(mStateInfoHmfList[i]);
-            QString basePath = QFileInfo(mStateInfoHmfList[i]).absolutePath();
+            getCurrentTopLevelSystem()->setModelFile(info.modelFile);
+            QString basePath = QFileInfo(info.modelFile).absolutePath();
             QStringListIterator objIt(getCurrentTopLevelSystem()->getModelObjectNames());
 //            while (objIt.hasNext())
 //            {
@@ -822,20 +824,22 @@ void ModelHandler::restoreState()
         }
         else
         {
-            loadModel(mStateInfoHmfList[i]);
+            loadModel(info.modelFile);
         }
+        getCurrentModel()->getGraphicsView()->setViewPort(info.viewPort);
         if(mModelPtrs.size() < i+1)
         {
             addNewModel();
         }
         gpCentralTabWidget->setCurrentIndex(i+1);
         this->mCurrentIdx = i;
-        gpCentralTabWidget->setTabText(i+1, mStateInfoTabNames[i]);
+        gpCentralTabWidget->setTabText(i+1, info.tabName);
 
         //! @todo FIXA /Peter
 //        getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
 //        mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());
     }
+    this->setCurrentModel(mStateInfoIndex);
 }
 
 void ModelHandler::revertCurrentModel()
