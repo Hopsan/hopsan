@@ -38,6 +38,8 @@
 #include <QDomElement>
 #include <QAction>
 
+#include "GraphicsViewPort.h"
+
 class ModelWidget;
 class CentralTabWidget;
 class SystemContainer;
@@ -46,6 +48,19 @@ class LogDataHandler2;
 class SimulationThreadHandler;
 class DebuggerWidget;
 class ScriptEditor;
+
+class ModelStateInfo
+{
+public:
+    QString modelFile;
+    QString backupFile;
+    bool hasChanged;
+    QString tabName;
+    LogDataHandler2* logDataHandler;
+    QDomDocument model;
+    GraphicsViewPort viewPort;
+};
+
 
 class ModelHandler : public QObject
 {
@@ -128,12 +143,8 @@ private:
     int mNumberOfUntitledModels;
     int mNumberOfUntitledScripts;
 
-    QStringList mStateInfoHmfList;
-    QStringList mStateInfoBackupList;
-    QList<bool> mStateInfoHasChanged;
-    QStringList mStateInfoTabNames;
-    QList<LogDataHandler2*> mStateInfoLogDataHandlersList;
-    QList<QDomDocument> mStateInfoModels;
+    QList<ModelStateInfo> mStateInfoList;
+    int mStateInfoIndex;
 
     DebuggerWidget *mpDebugger;
 };
