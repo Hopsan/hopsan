@@ -27,24 +27,19 @@
 #ifndef DATAEXPLORER_H
 #define DATAEXPLORER_H
 
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QScrollArea>
-#include <QMap>
+#include <memory>
 #include <QDialog>
-#include <QPointer>
 
 //Forward declarations
 class LogDataHandler2;
-class GenerationItem;
+class DataExplorerPrivates;
 
 class DataExplorer : public QDialog
 {
     Q_OBJECT
 public:
-    explicit DataExplorer(QWidget *parent = 0);
-
-signals:
+    explicit DataExplorer(QWidget *parent = nullptr);
+    ~DataExplorer();
 
 public slots:
     void setLogdataHandler(LogDataHandler2 *pLogDataHandler);
@@ -52,21 +47,8 @@ public slots:
     void openImportDataDialog();
     void openExportDataDialog();
 
-private slots:
-    void refreshGenerationList();
-    void refreshDataList();
-    void removeSelectedGenerations();
-    void removeGeneration(int gen);
-    void toggleSelectAllGenerations();
-
 private:
-    QVector<int> gensFromSelected();
-    QPointer<LogDataHandler2> mpLogDataHandler;
-    QWidget *mpGenerationsListWidget;
-    QScrollArea *mpGenerationsScrollArea;
-    QMap<int, GenerationItem*> mGenerationItemMap;
-    bool mAllSelectedToggle;
-
+    std::unique_ptr<DataExplorerPrivates> mpPrivates;
 };
 
 #endif // DATAEXPLORER_H
