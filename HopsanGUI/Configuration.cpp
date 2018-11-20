@@ -961,31 +961,16 @@ QString Configuration::getDefaultUnit(const QString &rPhysicalQuantity) const
         return "";
 }
 
-
-//! @brief Returns a map with custom units (names and scale factor) for specified physical quantity
-//! @param[in] rPhysicalQuantity Name of the physical quantity (e.g. "Pressure" or "Velocity")
-//! @todo We should rewrite the code using this function to handle unitscale objects directly instead
-QMap<QString, double> Configuration::getUnitScales(const QString &rPhysicalQuantity)
-{
-    QMap<QString, double> dummy;
-    if(mUnitScales.contains(rPhysicalQuantity))
-    {
-        QMap<QString, UnitConverter> &rMap = mUnitScales.find(rPhysicalQuantity).value().customUnits;
-        QMap<QString, UnitConverter>::iterator it;
-        for (it=rMap.begin(); it!=rMap.end(); ++it)
-        {
-            dummy.insert(it.value().mUnit, it.value().scaleToDouble());
-        }
-    }
-    return dummy;
-}
-
+//! @brief Populates a list with custom units (names and scale factor) for specified physical quantity.
+//! @param[in] rQuantity Name of the physical quantity (e.g. "Pressure" or "Velocity").
+//! @param[out] rUnitScales A list of UnitConverter objects.
 void Configuration::getUnitScales(const QString &rQuantity, QList<UnitConverter> &rUnitScales)
 {
     QMap<QString, QuantityUnitScale>::iterator qit = mUnitScales.find(rQuantity);
     if (qit != mUnitScales.end())
     {
         rUnitScales = qit.value().customUnits.values();
+        std::sort(rUnitScales.begin(), rUnitScales.end(), UnitConverter::isScaleLesserThan);
     }
 }
 

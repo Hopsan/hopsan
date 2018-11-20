@@ -52,6 +52,7 @@ public:
     bool isOffsetEmpty() const;
     bool isScaleOne() const;
     bool isScaleMinusOne() const;
+    static bool isScaleLesserThan (const UnitConverter &lhs, const UnitConverter &rhs);
 
     void setScaleAndOffset(const double scale, const double offset=0.0);
     void setOnlyScaleAndOffset(const double scale, const double offset=0.0);
