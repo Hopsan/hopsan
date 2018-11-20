@@ -1110,9 +1110,10 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     pChangeUnitsMenu = menu.addMenu(QString("Change Units"));
     pResetUnitsMenu = menu.addMenu(QString("Reset Units"));
     QMap<QAction *, PlotCurve *> actionToCurveMap;
-    QMap<QString, double> unitMap;
+    QList<UnitConverter> unitScales;
     QList<PlotCurve *>::iterator itc;
-    QMap<QString, double>::iterator itu;
+    QList<UnitConverter>::iterator itu;
+
     for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
     {
         PlotCurve *pCurve = *itc;
@@ -1126,17 +1127,17 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
             QStringList pqs = gpConfig->getQuantitiesForUnit(pCurve->getDataUnit());
             if (pqs.size() == 1)
             {
-                unitMap = gpConfig->getUnitScales(pqs.first());
+                gpConfig->getUnitScales(pqs.first(), unitScales);
             }
         }
         else
         {
-            unitMap = gpConfig->getUnitScales(pCurve->getDataQuantity());
+            gpConfig->getUnitScales(pCurve->getDataQuantity(), unitScales);
         }
 
-        for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
+        for(itu=unitScales.begin(); itu!=unitScales.end(); ++itu)
         {
-            QAction *pTempAction = pTempChangeUnitMenu->addAction(itu.key());
+            QAction *pTempAction = pTempChangeUnitMenu->addAction((*itu).mUnit);
             actionToCurveMap.insert(pTempAction, pCurve);
         }
     }

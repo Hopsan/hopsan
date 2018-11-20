@@ -220,7 +220,6 @@ public:
     QString getDefaultUnit(const QString &rPhysicalQuantity) const;
     void setDefaultUnit(QString key, QString value);
     void addCustomUnit(QString quantity, QString unitname, QString scale, QString offset);
-    QMap<QString, double> getUnitScales(const QString &rPhysicalQuantity);
     void getUnitScales(const QString &rQuantity, QList<UnitConverter> &rUnitScales);
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;

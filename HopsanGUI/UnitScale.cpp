@@ -128,6 +128,11 @@ bool UnitConverter::isScaleMinusOne() const
     return ((mScale == "-1") || (mScale == "-1.0")) && mOffset.isEmpty();
 }
 
+bool UnitConverter::isScaleLesserThan (const UnitConverter &lhs, const UnitConverter &rhs)
+{
+    return (lhs.mScale.toDouble() < rhs.mScale.toDouble());
+}
+
 //! @brief Set the scale from a double
 //! @param [in] The scale value
 void UnitConverter::setScaleAndOffset(const double scale, const double offset)

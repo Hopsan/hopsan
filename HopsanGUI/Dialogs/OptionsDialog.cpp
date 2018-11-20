@@ -99,11 +99,13 @@ public:
         {
             defaultUnit = gpConfig->getBaseUnit(mQuantity);
         }
-        QMap<QString, double> unit_scales = gpConfig->getUnitScales(mQuantity);
-        QMap<QString, double>::iterator it;
-        for(it = unit_scales.begin(); it != unit_scales.end(); ++it)
+
+        QList<UnitConverter> unitScales;
+        gpConfig->getUnitScales(mQuantity, unitScales);
+        QList<UnitConverter>::iterator it;
+        for(it = unitScales.begin(); it != unitScales.end(); ++it)
         {
-            mpDefaultUnitComboBox->addItem(it.key());
+            mpDefaultUnitComboBox->addItem((*it).mUnit);
         }
         for(int i=0; i<mpDefaultUnitComboBox->count(); ++i)
         {
