@@ -1329,24 +1329,11 @@ void MainWindow::openModelByAction()
 //! @brief Shows help popup for the toolbar icon that is currently hovered by the mouse pointer
 void MainWindow::showToolBarHelpPopup()
 {
-    // Check all tool bars to see if an action is hovered by cursor
-    QCursor cursor;
-    QAction *pHoveredAction = mpSimToolBar->actionAt(mpSimToolBar->mapFromGlobal(cursor.pos()));
-    if(!pHoveredAction)
-        pHoveredAction = mpFileToolBar->actionAt(mpFileToolBar->mapFromGlobal(cursor.pos()));
-    if(!pHoveredAction)
-        pHoveredAction = mpConnectivityToolBar->actionAt(mpConnectivityToolBar->mapFromGlobal(cursor.pos()));
-    if(!pHoveredAction)
-        pHoveredAction = mpEditToolBar->actionAt(mpEditToolBar->mapFromGlobal(cursor.pos()));
-    if(!pHoveredAction)
-        pHoveredAction = mpToolsToolBar->actionAt(mpToolsToolBar->mapFromGlobal(cursor.pos()));
-    if(!pHoveredAction)
-        pHoveredAction = mpViewToolBar->actionAt(mpViewToolBar->mapFromGlobal(cursor.pos()));
-
-    // See if action exists in map, or if a line edit is hovered
-    if(mHelpPopupTextMap.contains(pHoveredAction))
+    QObject* senderObject = sender();
+    // See if action exists in map, or if a simulation time widget is hovered
+    if(mHelpPopupTextMap.contains(senderObject))
     {
-        gpHelpPopupWidget->showHelpPopupMessage(mHelpPopupTextMap.find(pHoveredAction).value());
+        gpHelpPopupWidget->showHelpPopupMessage(mHelpPopupTextMap.find(senderObject).value());
     }
     else if (mpSimulationTimeEdit->underMouse())
     {
