@@ -636,12 +636,14 @@ void ModelHandler::refreshMainWindowConnections()
     {
         gpMainWindow->mpToggleRemoteCoreSimAction->setChecked(pCurrentModel->getUseRemoteSimulationCore());
         gpMainWindow->mpDataExplorer->setLogdataHandler(pCurrentModel->getLogDataHandler());
+        gpMainWindow->mpImportDataFileAction->setEnabled(pCurrentModel->getLogDataHandler()!=nullptr);
         gpPlotWidget->setLogDataHandler(pCurrentModel->getLogDataHandler());
     }
     else
     {
         gpMainWindow->mpToggleRemoteCoreSimAction->setChecked(false);
         gpMainWindow->mpDataExplorer->setLogdataHandler(nullptr);
+        gpMainWindow->mpImportDataFileAction->setEnabled(false);
         if (gpPlotWidget)
         {
             gpPlotWidget->setLogDataHandler(nullptr);
