@@ -321,7 +321,7 @@ private:
 
     // Help popup
     HelpPopUpWidget *mpHelpPopup;
-    QMap<QAction*, QString> mHelpPopupTextMap;
+    QMap<QObject*, QString> mHelpPopupTextMap;
 };
 
 #endif // MAINWINDOW_H
