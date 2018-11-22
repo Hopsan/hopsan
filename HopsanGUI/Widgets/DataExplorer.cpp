@@ -88,7 +88,9 @@ public:
         connect(pSelectAllGensButton, SIGNAL(clicked()), this, SLOT(toggleSelectAllGenerations()));
 
         mpGenerationsScrollArea = new QScrollArea(mpParentWidget);
-        refreshGenerationList();
+
+        // This will initialize button states (to disabled)
+        setLogdataHandler(nullptr);
     }
 
     QVector<int> gensFromSelected()
@@ -107,12 +109,17 @@ public:
         if (mpLogDataHandler) {
             disconnect(mpLogDataHandler, nullptr, this, nullptr);
         }
-
         mpLogDataHandler = pLogDataHandler;
-        if (mpLogDataHandler) {
+
+        const bool haveLogDataHandler = mpLogDataHandler!=nullptr;
+        if (haveLogDataHandler) {
             connect(mpLogDataHandler, SIGNAL(dataAdded()), this, SLOT(refreshGenerationList()));
             connect(mpLogDataHandler, SIGNAL(dataRemoved()), this, SLOT(refreshGenerationList()));
         }
+        mpDeleteGenButton->setEnabled(haveLogDataHandler);
+        mpImportGenButton->setEnabled(haveLogDataHandler);
+        mpExportGenButton->setEnabled(haveLogDataHandler);
+
         refreshGenerationList();
     }
 
