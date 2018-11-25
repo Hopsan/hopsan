@@ -3,10 +3,6 @@ dbg_ext =
 win32:CONFIG(debug, debug|release):dbg_ext = _d
 unix:CONFIG(debug, debug|release):dbg_ext =
 
-# By default assume Python version 2
-PYTHONQT_PYVERSION=2
-export(PYTHONQT_PYVERSION)
-
 # Set hompath and libname
 pythonqt_home = $${PWD}/pythonqt
 pythonqt_lib = $${pythonqt_home}/lib
@@ -20,7 +16,7 @@ defineTest(have_local_pythonqt) {
 }
 
 defineTest(have_system_pythonqt) {
-  unix:system(ldconfig -p | grep -q lib$${libname}) {
+  packagesExist(PythonQt-Qt5-Python3) {
     return(true)
   }
   return(false)
@@ -44,12 +40,17 @@ have_local_pythonqt() {
     PYTHONQT_PYVERSION=3
     export(PYTHONQT_PYVERSION)
   } else {
+    PYTHONQT_PYVERSION=2
+    export(PYTHONQT_PYVERSION)
     LIBS *= -L$${pythonqt_lib} -l$${libname}$${dbg_ext}
   }
   # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
   QMAKE_RPATHDIR *= $${pythonqt_lib}
   message(Found local PythonQt)
 } else:have_system_pythonqt() {
-  LIBS += -l$${libname}
-  message(Found system ldconfig PythonQt)
+  CONFIG *= link_pkgconfig
+  PKGCONFIG *= PythonQt-Qt5-Python3
+  PYTHONQT_PYVERSION=3
+  export(PYTHONQT_PYVERSION)
+  message(Found system pkg-config PythonQt)
 }
