@@ -13,7 +13,6 @@ build:
 	# First build dependencies
 	cd Dependencies; ./setupFMILibrary.sh
 	cd Dependencies; ./setupKatex.sh
-	cd Dependencies; ./setupPythonQt.sh release 3 3.2
 
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild

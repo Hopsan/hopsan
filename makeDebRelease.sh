@@ -15,10 +15,8 @@ name=hopsan
 devversion=2.10.0
 
 # Pbuilder dists and archs
-debianDistArchArray=( stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
-debianDistArchSDArray=( stretch:amd64:qt5py3sd0 )
-ubuntuDistArchArray=( bionic:amd64:qt5py3 artful:amd64:qt5py3 artful:i386:qt5py3 zesty:amd64:qt5py27 zesty:i386:qt5py27 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
-ubuntuDistArchSDArray=( zesty:amd64:qt5py3sd0 )
+debianDistArchArray=( buster:amd64:qt5py3sysdeps buster:i386:qt5py3sysdeps stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
+ubuntuDistArchArray=( cosmic:amd64:qt5py3sysdeps bionic:amd64:qt5py3 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
 
 # Pbuilder mirrors
 ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
@@ -153,14 +151,6 @@ for i in "${debianDistArchArray[@]}"; do
 done
 for i in "${ubuntuDistArchArray[@]}"; do
   boolAskYNQuestion "Do you want to build, "$i"?" "n"
-  distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
-done
-for i in "${debianDistArchSDArray[@]}"; do
-  boolAskYNQuestion "Do you want to build (system deps), "$i"?" "n"
-  distArchArrayDo+=("$i"":""D"":""$boolYNQuestionAnswer")
-done
-for i in "${ubuntuDistArchSDArray[@]}"; do
-  boolAskYNQuestion "Do you want to build (system deps), "$i"?" "n"
   distArchArrayDo+=("$i"":""U"":""$boolYNQuestionAnswer")
 done
 

@@ -2,9 +2,9 @@ Source: hopsan
 Section: non-free/x11
 Priority: optional
 Maintainer: Peter Nordin <peter.nordin@liu.se>
-Build-Depends: fakeroot, debhelper (>= 8.0.0), patchelf, unzip, cmake, libtool-bin, automake, pkg-config, qt5-default, python3-dev, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libhdf5-dev, libqwt-qt5-dev, libmarkdown2-dev, libzmq3-dev
+Build-Depends: fakeroot, debhelper (>= 8.0.0), patchelf, unzip, cmake, libtool-bin, pkg-config, qt5-default, python3-dev, qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libhdf5-dev, libqwt-qt5-dev, libmarkdown2-dev, libzmq3-dev, libpythonqt-qt5-python3-dev
 Standards-Version: 3.9.2
-Homepage: http://www.iei.liu.se/flumes/system-simulation/hopsan
+Homepage: https://github.com/Hopsan/hopsan
 
 Package: hopsan
 Architecture: any

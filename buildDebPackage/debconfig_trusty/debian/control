@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Peter Nordin <peter.nordin@liu.se>
 Build-Depends: debhelper (>= 8.0.0), unzip, cmake, libtool, automake, pkg-config, python-dev (<< 3.0.0), libqt4-dev, libqtwebkit-dev, libqt4-opengl-dev, libhdf5-dev
 Standards-Version: 3.9.2
-Homepage: http://www.iei.liu.se/flumes/system-simulation/hopsan
+Homepage: https://github.com/Hopsan/hopsan
 
 Package: hopsan
 Architecture: any
