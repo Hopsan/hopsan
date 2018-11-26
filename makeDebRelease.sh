@@ -16,7 +16,7 @@ devversion=2.10.0
 
 # Pbuilder dists and archs
 debianDistArchArray=( buster:amd64:qt5py3sysdeps buster:i386:qt5py3sysdeps stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
-ubuntuDistArchArray=( cosmic:amd64:qt5py3sysdeps bionic:amd64:qt5py3 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
+ubuntuDistArchArray=( cosmic:amd64:qt5py3sysdeps cosmic:i386:qt5py3sysdeps bionic:amd64:qt5py3 bionic:i386:qt5py3 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
 
 # Pbuilder mirrors
 ubuntuMirror="http://se.archive.ubuntu.com/ubuntu/"
