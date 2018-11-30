@@ -9,7 +9,7 @@ description: |
 icon: HopsanGUI/graphics/uiicons/hopsan.png
 
 grade: HOPSAN_SNAP_GRADE
-confinement: devmode
+confinement: strict
 
 passthrough:
   layout:
