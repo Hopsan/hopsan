@@ -1988,7 +1988,12 @@ bool HopsanFMIGenerator::compressFiles(const QString &fmuStagePath, const QStrin
 #endif
     //! @todo Add OSX support
 
-    return compressedOK && assertFilesExist(fmuStagePath, fmuDestination);
+    if (!compressedOK) {
+        printErrorMessage("Failed to compress FMU");
+        return false;
+    }
+
+    return assertFilesExist(fmuStagePath, fmuDestination);
 }
 
 //bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
