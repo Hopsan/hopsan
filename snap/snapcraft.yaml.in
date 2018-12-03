@@ -22,6 +22,8 @@ passthrough:
     /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libpthread_nonshared.a:
       bind-file: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libpthread_nonshared.a
       mode: 755
+  license: (Apache-2.0 AND GPL-3.0)
+
 apps:
   cli:
     command: bin/hopsancli
