@@ -423,18 +423,8 @@ void AnimatedComponent::updateAnimation()
 
             double firstT = pTimeVar->first();
             double lastT = pTimeVar->last();
-            while(lastT-firstT > 3)
-            {
-                for(int i=0; i<vectors.size(); ++i)
-                {
-                    vectors[i]->chopAtBeginning();
-                }
-                firstT = pTimeVar->first();
-            }
         }
-
     }
-
 }
 
 
