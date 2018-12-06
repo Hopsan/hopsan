@@ -183,6 +183,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     //mpContainer->collectPlotData();
     mpPlotData = mpContainer->getLogDataHandler();
     mpPlayButton->setDisabled(mpPlotData->isEmpty());
+    mpPlayRealTimeButton->setDisabled(mpPlotData->isEmpty());
     mpRewindButton->setDisabled(mpPlotData->isEmpty());
 
     if(!mpPlotData->isEmpty() && !mpPlotData->getTimeVectorVariable(-1).isNull())
