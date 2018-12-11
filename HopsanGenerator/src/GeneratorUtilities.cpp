@@ -526,8 +526,8 @@ QStringList getHopsanCoreIncludePaths()
     includePaths << "HopsanCore/include" <<
                     "componentLibraries/defaultLibrary";
     includePaths << "HopsanCore/dependencies/rapidxml" <<
-                    "HopsanCore/dependencies/IndexingCSVParser" <<
-                    "HopsanCore/dependencies/libNumHop/include";
+                    "HopsanCore/dependencies/indexingcsvparser" <<
+                    "HopsanCore/dependencies/libnumhop/include";
     return includePaths;
 }
 
@@ -651,8 +651,8 @@ QStringList listHopsanCoreSourceFiles(const QString &hopsanInstallationPath)
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/src", "cpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "cc", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "cpp", allFiles);
-    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libNumHop/src", "cpp", allFiles);
-    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.cpp";
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libnumhop/src", "cpp", allFiles);
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/IndexingCSVParser.cpp";
 
     QDir rootDir(hopsanInstallationPath);
 
@@ -673,9 +673,9 @@ QStringList listHopsanCoreIncludeFiles(const QString &hopsanInstallationPath)
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "h", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "hpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/rapidxml", "hpp", allFiles);
-    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libNumHop/include", "h", allFiles);
-    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParser.h" <<
-                hopsanInstallationPath+"/HopsanCore/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp";
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libnumhop/include", "h", allFiles);
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/IndexingCSVParser.h" <<
+                hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/IndexingCSVParserImpl.hpp";
 
     QDir rootDir(hopsanInstallationPath);
 
