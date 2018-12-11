@@ -299,7 +299,7 @@ NumHopHelper::NumHopHelper()
     mpComponent = 0;
     mpPrivate = 0;
     mpPrivate = new NumHopHelperPrivate();
-    mpPrivate->mVarStorage.reserveVariable("pi", M_PI);
+    mpPrivate->mVarStorage.reserveNamedValue("pi", M_PI);
 }
 
 NumHopHelper::~NumHopHelper()
