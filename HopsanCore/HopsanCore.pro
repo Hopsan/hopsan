@@ -27,16 +27,16 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
 INCLUDEPATH *= $${PWD}/dependencies/rapidxml
-INCLUDEPATH *= $${PWD}/dependencies/IndexingCSVParser
+INCLUDEPATH *= $${PWD}/dependencies/indexingcsvparser
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set numHop paths, (compile in)
-INCLUDEPATH *= $${PWD}/dependencies/libNumHop/include
-SOURCES += $${PWD}/dependencies/libNumHop/src/Expression.cpp
-SOURCES += $${PWD}/dependencies/libNumHop/src/Helpfunctions.cpp
-SOURCES += $${PWD}/dependencies/libNumHop/src/VariableStorage.cpp
-HEADERS += $${PWD}/dependencies/libNumHop/include/numhop.h
+INCLUDEPATH *= $${PWD}/dependencies/libnumhop/include
+SOURCES += $${PWD}/dependencies/libnumhop/src/Expression.cpp
+SOURCES += $${PWD}/dependencies/libnumhop/src/Helpfunctions.cpp
+SOURCES += $${PWD}/dependencies/libnumhop/src/VariableStorage.cpp
+HEADERS += $${PWD}/dependencies/libnumhop/include/numhop.h
 #--------------------------------------------------------
 
 # -------------------------------------------------
@@ -139,7 +139,7 @@ SOURCES += \
     src/ComponentUtilities/HopsanPowerUser.cpp \
     src/ComponentUtilities/LookupTable.cpp \
     src/ComponentUtilities/PLOParser.cpp \
-    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
+    $${PWD}/dependencies/indexingcsvparser/IndexingCSVParser.cpp \
     src/Quantities.cpp \
     src/CoreUtilities/NumHopHelper.cpp \
     src/CoreUtilities/AliasHandler.cpp \
@@ -193,8 +193,8 @@ HEADERS += \
     include/Components/ModelicaComponent.hpp \
     include/ComponentUtilities/LookupTable.h \
     include/ComponentUtilities/PLOParser.h \
-    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.h \
-    $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParserImpl.hpp \
+    $${PWD}/dependencies/indexingcsvparser/IndexingCSVParser.h \
+    $${PWD}/dependencies/indexingcsvparser/IndexingCSVParserImpl.hpp \
     include/Quantities.h \
     include/NodeRWHelpfuncs.hpp \
     include/HopsanCoreVersion.h \

@@ -26,11 +26,11 @@
 [submodule "Dependencies/tclap"]
 	path = Dependencies/tclap
 	url = http://git.code.sf.net/p/tclap/code
-[submodule "HopsanCore/dependencies/IndexingCSVParser"]
-	path = HopsanCore/dependencies/IndexingCSVParser
+[submodule "HopsanCore/dependencies/indexingcsvparser"]
+	path = HopsanCore/dependencies/indexingcsvparser
 	url = https://github.com/peterNordin/IndexingCSVParser.git
-[submodule "HopsanCore/dependencies/libNumHop"]
-	path = HopsanCore/dependencies/libNumHop
+[submodule "HopsanCore/dependencies/libnumhop"]
+	path = HopsanCore/dependencies/libnumhop
 	url = https://github.com/peterNordin/libNumHop.git
 [submodule "Dependencies/tools"]
 	path = Dependencies/tools
