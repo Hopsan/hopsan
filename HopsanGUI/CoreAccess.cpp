@@ -1368,3 +1368,16 @@ double evalWithNumHop(const QString &rExpression)
     numhop.evalNumHopScript(rExpression.toStdString().c_str(), value, false, dummy);
     return value;
 }
+
+QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem)
+{
+    hopsan::NumHopHelper numhop;
+    numhop.setSystem(pCoreSystem->getCoreSystemPtr());
+    auto hnames = numhop.extractVariableNames(qPrintable(expression));
+    QStringList names;
+    names.reserve(hnames.size());
+    for (size_t i=0; i<hnames.size(); ++i) {
+        names.append(hnames[i].c_str());
+    }
+    return names;
+}

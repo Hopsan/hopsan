@@ -429,3 +429,18 @@ bool NumHopHelper::eval(double &rValue, bool doPrintOutput, HString &rOutput)
     return allOK;
 }
 
+HVector<HString> NumHopHelper::extractVariableNames(const HString &expression) const
+{
+    numhop::Expression e(expression.c_str(), numhop::UndefinedT);
+    std::set<std::string> variableNames;
+    e.extractValidVariableNames(mpPrivate->mVarStorage, variableNames);
+    HVector<HString> names;
+    names.resize(variableNames.size());
+    std::set<std::string>::iterator it;
+    size_t ctr=0;
+    for (it = variableNames.begin(); it != variableNames.end(); ++it) {
+        names[ctr] = it->c_str();
+        ++ctr;
+    }
+    return names;
+}
