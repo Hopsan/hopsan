@@ -388,8 +388,18 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
             QDomElement switchableElement = appendDomElement(movableElement, CAF_SWITCHABLE);
             switchableElement.setAttribute(CAF_DATANAME, m.switchableDataName);
             switchableElement.setAttribute(CAF_PORT, m.switchablePort);
+
             setQrealAttribute(switchableElement, CAF_ONVALUE, m.switchableOnValue);
             setQrealAttribute(switchableElement, CAF_OFFVALUE, m.switchableOffValue);
+
+            if(m.isMomentary)
+            {
+                switchableElement.setAttribute(CAF_MOMENTARY, HMF_TRUETAG);
+            }
+            else
+            {
+                switchableElement.setAttribute(CAF_MOMENTARY, HMF_FALSETAG);
+            }
 
             if(m.hideIconOnSwitch)
             {
