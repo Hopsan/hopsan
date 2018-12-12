@@ -115,6 +115,8 @@ private:
     bool mIgnoreNextMouseReleaseEvent;
     double mZoomFactor;
     QLineEdit *mpAddComponentLineEdit;
+    QStringList mTypeNames;
+    QStringList mDisplayNames;
 
     ContainerObject *mpContainerObject;
 };

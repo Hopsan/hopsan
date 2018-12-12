@@ -143,8 +143,13 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 
 void GraphicsView::insertComponentFromLineEdit()
 {
-    gpMessageHandler->addInfoMessage("Adding: "+mpAddComponentLineEdit->text());
-    mpContainerObject->addModelObject(mpAddComponentLineEdit->text(), mapToScene(mpAddComponentLineEdit->pos()));
+    QString displayName = mpAddComponentLineEdit->text();
+    if(!mDisplayNames.contains(displayName)) {
+        return;
+    }
+    QString typeName = mTypeNames[mDisplayNames.indexOf(displayName)];
+    gpMessageHandler->addInfoMessage("Adding: "+typeName);
+    mpContainerObject->addModelObject(typeName, mapToScene(mpAddComponentLineEdit->pos()));
     mpAddComponentLineEdit->hide();
     mpAddComponentLineEdit->clear();
 }
@@ -433,10 +438,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if(event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
     {
-        if(gpLibraryHandler->getLoadedTypeNames().contains(mpAddComponentLineEdit->text()))
-        {
-            insertComponentFromLineEdit();
-        }
+        insertComponentFromLineEdit();
         mpAddComponentLineEdit->hide();
         mpAddComponentLineEdit->clear();
     }
@@ -739,8 +741,19 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
         QPointF pos = mapFromGlobal(cursor.pos());
         QRect tempRect(pos.x(), pos.y(),300,1);
 
-        QStringList typeNames = QStringList() << gpLibraryHandler->getLoadedTypeNames();
-        mpAddComponentLineEdit->completer()->setModel(new QStringListModel(typeNames,mpAddComponentLineEdit));
+        // Update lists with type names and display names for quick-add component function
+        // (only if contents in library has changed)
+        if(mTypeNames.size() != gpLibraryHandler->getLoadedTypeNames().size()) {
+            mTypeNames.clear();
+            mDisplayNames.clear();
+            mTypeNames = gpLibraryHandler->getLoadedTypeNames();
+            for(const QString &typeName : mTypeNames)
+            {
+                ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
+                mDisplayNames << entry.pAppearance->getDisplayName();
+            }
+        }
+        mpAddComponentLineEdit->completer()->setModel(new QStringListModel(mDisplayNames,mpAddComponentLineEdit));
         mpAddComponentLineEdit->setGeometry(pos.x(), pos.y(), 200,30);
         mpAddComponentLineEdit->show();
         mpAddComponentLineEdit->setFocus();
