@@ -51,6 +51,8 @@ public:
     bool interpretNumHopScript(const HString &script, bool doPrintOutput, HString &rOutput);
     bool eval(double &rValue, bool doPrintOutput, HString &rOutput);
 
+    HVector<HString> extractVariableNames(const HString &expression) const;
+
 private:
     ComponentSystem *mpSystem;
     Component *mpComponent;

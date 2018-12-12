@@ -42,6 +42,7 @@
 //Forward declarations of HopsanGUI classes
 class LibraryWidget;
 class SystemContainer;
+class CoreSystemAccess;
 
 //Forward declaration of HopsanCore classes
 namespace hopsan {
@@ -94,6 +95,8 @@ public:
 };
 
 double evalWithNumHop(const QString &rExpression);
+
+QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem);
 
 
 class CoreParameterData

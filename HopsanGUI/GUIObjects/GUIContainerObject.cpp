@@ -1486,30 +1486,34 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
     appendCoordinateTag(*copyRoot, center.x(), center.y());
 
     // Copy components
+    const auto thisSystemsParameterNames = getParameterNames();
     QList<ModelObject *>::iterator it;
     for(it = mSelectedModelObjectsList.begin(); it!=mSelectedModelObjectsList.end(); ++it)
     {
         qDebug() << "Copying " << (*it)->getName();
         (*it)->saveToDomElement(*copyRoot, FullModel);
 
-//        QString str;
-//        QTextStream stream(&str);
-//        QDomNode node = *copyRoot;
-//        node.save(stream, 4);
-//        qDebug() << str;
-
-        QStringList parNames = (*it)->getParameterNames();
-        for(int n=0; n<parNames.size(); ++n)
+        QStringList componentParNames = (*it)->getParameterNames();
+        for(const QString& componentParName : componentParNames)
         {
-            if(getParameterNames().contains((*it)->getParameterValue(parNames[n])))
-            {
-                qDebug() << "Component depends on system parameter: " << (*it)->getParameterValue(parNames[n]);
-                CoreParameterData parData;
-                getParameter((*it)->getParameterValue(parNames[n]), parData);
-                QDomElement parElement = appendDomElement(*copyRoot, "parameter");
-                parElement.setAttribute("name", parData.mName);
-                parElement.setAttribute("value", parData.mValue);
-                parElement.setAttribute("type", parData.mType);
+            QString val = (*it)->getParameterValue(componentParName);
+            bool isNumber=false;
+            val.toDouble(&isNumber);
+            QStringList exprVariables;
+            if (!isNumber) {
+                exprVariables = getEmbeddedSriptVariableNames(val, getCoreSystemAccessPtr());
+            }
+
+            for (const auto& var : exprVariables) {
+                if(thisSystemsParameterNames.contains(var)) {
+                    CoreParameterData parData;
+                    getParameter(var, parData);
+                    QDomElement parElement = appendDomElement(*copyRoot, "parameter");
+                    parElement.setAttribute("name", parData.mName);
+                    parElement.setAttribute("value", parData.mValue);
+                    parElement.setAttribute("type", parData.mType);
+                    //! @todo copy all data
+                }
             }
         }
     }
