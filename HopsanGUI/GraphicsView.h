@@ -91,6 +91,7 @@ public slots:
     void print();
     void exportToPDF();
     void exportToPNG();
+    void hideAddComponentLineEdit();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
