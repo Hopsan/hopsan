@@ -66,6 +66,8 @@ class HydraulicCylinderC : public ComponentC
         double *mpP3_f, *mpP3_x, *mpP3_v, *mpP3_c, *mpP3_Zx, *mpP3_me;
         size_t mNumPorts1, mNumPorts2;
 
+        double *mpQLeak;
+
         //Ports
         Port *mpP1, *mpP2, *mpP3;
 
@@ -101,6 +103,8 @@ class HydraulicCylinderC : public ComponentC
             addInputVariable("B_p", "Viscous Friction", "Ns/m", 1000.0, &mpBp);
             addInputVariable("Beta_e", "Bulk Modulus", "Pa", 1000000000.0, &mpBetae);
             addInputVariable("c_leak", "Leakage Coefficient", "", 0.00000000001, &mpCLeak);
+
+            addOutputVariable("q_leak", "Internal Leakage Flow", "Flow", 0, &mpQLeak);
         }
 
 
@@ -342,6 +346,7 @@ class HydraulicCylinderC : public ComponentC
             }
             (*mpP3_c) = c3;
             (*mpP3_Zx) = Zx3;
+            (*mpQLeak) = qLeak;
         }
 
 
