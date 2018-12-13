@@ -720,7 +720,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
         hideAddComponentLineEdit();
     }
 #if QT_VERSION >= 0x050000
-    else if(!mpContainerObject->isCreatingConnector() &&
+    else if(event->button() == Qt::LeftButton && !mpContainerObject->isCreatingConnector() &&
             mpContainerObject->getSelectedModelObjectPtrs().isEmpty() &&
             mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() &&
             !mpContainerObject->isConnectorSelected() &&
