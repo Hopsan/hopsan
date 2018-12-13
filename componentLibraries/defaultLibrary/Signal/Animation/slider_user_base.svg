@@ -11,11 +11,11 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="30"
-   height="60"
+   height="120"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.48.2 r9819"
-   sodipodi:docname="slider_user.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="slider_user_base.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -76,9 +76,9 @@
        orient="auto"
        inkscape:stockid="TriangleOutL">
       <path
-         transform="scale(0.8,0.8)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
-         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         transform="scale(0.8)"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;marker-start:none"
+         d="M 5.77,0 -2.88,5 V -5 Z"
          id="path8118"
          inkscape:connector-curvature="0" />
     </marker>
@@ -134,7 +134,7 @@
        xlink:href="#linearGradient3162"
        id="linearGradient3017"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-7.6400022,8.3108904e-7)"
+       gradientTransform="translate(-7.6400022)"
        x1="32.359375"
        y1="39"
        x2="32.359375"
@@ -144,7 +144,7 @@
        xlink:href="#linearGradient3162"
        id="linearGradient3019"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-7.6400022,8.3108904e-7)"
+       gradientTransform="translate(-7.6400022)"
        x1="235.97212"
        y1="381.24805"
        x2="235.97275"
@@ -154,7 +154,7 @@
        xlink:href="#linearGradient3162"
        id="linearGradient3021"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-7.6400022,8.3108904e-7)"
+       gradientTransform="translate(-7.6400022)"
        x1="1"
        y1="20.109375"
        x2="30.400976"
@@ -164,7 +164,7 @@
        xlink:href="#linearGradient3162"
        id="linearGradient3023"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-7.6400022,8.3108904e-7)"
+       gradientTransform="translate(-7.6400022)"
        x1="267.55026"
        y1="400.41367"
        x2="235.97275"
@@ -311,15 +311,6 @@
        y2="21.813602" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4147"
-       id="linearGradient4153"
-       x1="203.61275"
-       y1="390.30429"
-       x2="233.61275"
-       y2="390.30429"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient4155-2"
        id="linearGradient4161-7"
        x1="208.61275"
@@ -351,13 +342,14 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4155"
-       id="linearGradient4298"
-       x1="208.61275"
+       xlink:href="#linearGradient4147"
+       id="linearGradient4153-2"
+       x1="203.61275"
        y1="390.30429"
-       x2="228.61275"
+       x2="233.61275"
        y2="390.30429"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1,0,0,2.025641,3e-6,-430.3121)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -370,15 +362,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.1033554"
-     inkscape:cx="-20.148773"
-     inkscape:cy="16.14234"
+     inkscape:cx="-53.170526"
+     inkscape:cy="16.142341"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="1176"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
      inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-y="27"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -394,7 +386,9 @@
        visible="true"
        enabled="true"
        empspacing="5"
-       snapvisiblegridlinesonly="true" />
+       snapvisiblegridlinesonly="true"
+       originx="2.8076172e-06"
+       originy="7.7148439e-07" />
   </sodipodi:namedview>
   <metadata
      id="metadata3341">
@@ -412,39 +406,39 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-203.61275,-360.30429)">
+     transform="translate(-203.61275,-300.30429)">
     <g
-       style="font-size:36px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       id="text2821"
-       transform="translate(9.6898041,1.7236023)">
+       style="font-style:normal;font-weight:normal;font-size:36px;font-family:'Bitstream Vera Sans';fill:#ffffff;fill-opacity:1;stroke:none"
+       id="text2821-2"
+       transform="translate(9.689803,1.7235979)">
       <text
          xml:space="preserve"
-         style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';fill:#000000;fill-opacity:1;stroke:none"
          x="211.31517"
          y="411.46545"
-         id="text6808"><tspan
+         id="text6808-7"><tspan
            sodipodi:role="line"
-           id="tspan6810"
+           id="tspan6810-0"
            x="211.31517"
            y="411.46545"
-           style="font-size:36px;fill:#ffffff;fill-opacity:1" /></text>
+           style="font-size:36px;line-height:1.25;fill:#ffffff;fill-opacity:1"> </tspan></text>
     </g>
     <rect
-       style="fill:url(#linearGradient4153);fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="rect2819"
+       style="fill:url(#linearGradient4153-2);fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2819-9"
        width="28.5"
-       height="58.5"
+       height="118.5"
        x="204.36275"
-       y="361.05429"
+       y="301.05429"
        ry="0"
        rx="0" />
     <rect
-       style="fill:url(#linearGradient4298);fill-opacity:1;stroke:#000000;stroke-width:1.50000000000000000;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="rect2819-7"
+       style="fill:#c1c1c1;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2819-5"
        width="18.5"
-       height="48.5"
+       height="108.5"
        x="209.36275"
-       y="366.05429"
+       y="306.05429"
        ry="0"
        rx="0" />
   </g>
