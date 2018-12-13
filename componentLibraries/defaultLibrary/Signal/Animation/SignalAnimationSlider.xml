@@ -5,6 +5,7 @@
             <icon scale="1" path="slider_user.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>
         <animation>
@@ -15,7 +16,7 @@
                 <movement x="0" y="37" a="0" idx="0"/>
                 <start x="6.5" y="6.5" a="0"/>
                 <transformorigin x="0" y="0"/>
-                <adjustable xgain="0" port="out" ygain="0.027027027" ymin="0" xmin="0" ymax="37" xmax="0" dataname="Value"/>
+                <adjustable xgain="0" port="in" ygain="0.027027027" ymin="0" xmin="0" ymax="37" xmax="0" dataname="Value"/>
             </movable>
         </animation>
     </modelobject>
