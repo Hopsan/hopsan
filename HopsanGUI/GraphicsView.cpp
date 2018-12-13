@@ -102,7 +102,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     mpAddComponentLineEdit->completer()->setFilterMode(Qt::MatchContains);
 #endif
     connect(mpAddComponentLineEdit->completer(), SIGNAL(activated(QString)), this, SLOT(insertComponentFromLineEdit()));
-    mpAddComponentLineEdit->hide();
+    hideAddComponentLineEdit();
 
     this->updateViewPort();
     this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
@@ -112,7 +112,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    mpAddComponentLineEdit->hide();
+    hideAddComponentLineEdit();
 
     qDebug() << "GraphicsView::contextMenuEvent(), reason = " << event->reason();
     if(!mpContainerObject->isCreatingConnector() && !mIgnoreNextContextMenuEvent)
@@ -150,8 +150,7 @@ void GraphicsView::insertComponentFromLineEdit()
     QString typeName = mTypeNames[mDisplayNames.indexOf(displayName)];
     gpMessageHandler->addInfoMessage("Adding: "+typeName);
     mpContainerObject->addModelObject(typeName, mapToScene(mpAddComponentLineEdit->pos()));
-    mpAddComponentLineEdit->hide();
-    mpAddComponentLineEdit->clear();
+    hideAddComponentLineEdit();
 }
 
 
@@ -433,14 +432,12 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     else if (event->key() == Qt::Key_Escape)
     {
         mpContainerObject->cancelCreatingConnector();
-        mpAddComponentLineEdit->hide();
-        mpAddComponentLineEdit->clear();
+        hideAddComponentLineEdit();
     }
     else if(event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
     {
         insertComponentFromLineEdit();
-        mpAddComponentLineEdit->hide();
-        mpAddComponentLineEdit->clear();
+        hideAddComponentLineEdit();
     }
     else if (ctrlPressed && event->key() == Qt::Key_0)
     {
@@ -687,8 +684,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         }
         else if(mCtrlKeyPressed)
         {
-            mpAddComponentLineEdit->hide();
-            mpAddComponentLineEdit->clear();
+            hideAddComponentLineEdit();
             this->setDragMode(ScrollHandDrag);
             mIgnoreNextMouseReleaseEvent = true;
         }
@@ -721,8 +717,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
     }
     if(mpAddComponentLineEdit->isVisible())
     {
-        mpAddComponentLineEdit->clear();
-        mpAddComponentLineEdit->hide();
+        hideAddComponentLineEdit();
     }
 #if QT_VERSION >= 0x050000
     else if(!mpContainerObject->isCreatingConnector() &&
@@ -957,6 +952,12 @@ void GraphicsView::exportToPNG()
             gpMessageHandler->addInfoMessage("Successfully exported PNG to: " +fileName);
         }
     }
+}
+
+void GraphicsView::hideAddComponentLineEdit()
+{
+    mpAddComponentLineEdit->hide();
+    mpAddComponentLineEdit->clear();
 }
 
 

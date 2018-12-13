@@ -271,6 +271,7 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
         if (event->button() == Qt::LeftButton && !pView->isCtrlKeyPressed())
         {
             getParentContainerObject()->createConnector(this);
+            pView->hideAddComponentLineEdit();
 
             //Avoid opening add component line edit after finishing connector
             pView->setIgnoreNextMouseReleaseEvent();
