@@ -137,6 +137,7 @@ private:
     void executeAddPlotCommand(const QString cmd);
     void executeAddPlotLeftAxisCommand(const QString cmd);
     void executeAddPlotRightAxisCommand(const QString cmd);
+    void executeChangeDiagramSizeCommand(const QString cmd);
     void executeChangeDiagramLimitsCommand(const QString cmd);
     void executeChangeDiagramLimitsYLCommand(const QString cmd);
     void executeChangeDiagramLimitsYRCommand(const QString cmd);

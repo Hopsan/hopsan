@@ -479,6 +479,15 @@ void HcomHandler::createCommands()
     adpvrCmd.group = "Plot Commands";
     mCmdList << adpvrCmd;
 
+    HcomCommand chdsCmd;
+    chdsCmd.cmd = "chds";
+    chdsCmd.description.append("Change diagram size (and position)");
+    chdsCmd.help.append(" Usage: chds [width] [height]\n");
+    chdsCmd.help.append(" Usage: chds [x] [y] [width] [height]\n");
+    chdsCmd.fnc = &HcomHandler::executeChangeDiagramSizeCommand;
+    chdsCmd.group = "Plot Commands";
+    mCmdList << chdsCmd;
+
     HcomCommand chdlCmd;
     chdlCmd.cmd = "chdl";
     chdlCmd.description.append("Change (and lock) diagram limits in the current plot");
@@ -1488,6 +1497,98 @@ void HcomHandler::executeAddPlotLeftAxisCommand(const QString cmd)
 void HcomHandler::executeAddPlotRightAxisCommand(const QString cmd)
 {
     changePlotVariables(cmd, 1, true);
+}
+
+
+//! @brief Execute function for "chds" command
+void HcomHandler::executeChangeDiagramSizeCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+
+    if (args.size() != 2 && args.size() != 4) {
+        HCOMERR("Wrong number of arguments in chds, should be 2 or 4");
+        return;
+    }
+
+    if (mpCurrentPlotWindow) {
+        bool ok;
+        if(args.size() == 4) {
+            evaluateExpression(args[0]);
+            if(mAnsType != Scalar) {
+                HCOMERR("Argument is not a scalar: "+args[0]);
+                return;
+            }
+            if(mAnsScalar < 0) {
+                HCOMERR("X position must be equal to or greater than zero");
+                return;
+            }
+            double x = mAnsScalar;
+
+            evaluateExpression(args[1]);
+            if(mAnsType != Scalar) {
+                HCOMERR("Argument is not a scalar: "+args[1]);
+                return;
+            }
+            if(mAnsScalar < 0) {
+                HCOMERR("Y position must be equal to or greater than zero");
+                return;
+            }
+            double y = mAnsScalar;
+
+            evaluateExpression(args[2]);
+            if(mAnsType != Scalar) {
+                HCOMERR("Argument is not a scalar: "+args[2]);
+                return;
+            }
+            if(mAnsScalar <= 0) {
+                HCOMERR("Width must be greater than zero");
+                return;
+            }
+            double w = mAnsScalar;
+
+            evaluateExpression(args[3]);
+            if(mAnsType != Scalar) {
+                HCOMERR("Argument is not a scalar: "+args[3]);
+                return;
+            }
+            if(mAnsScalar <= 0) {
+                HCOMERR("Height must be greater than zero");
+                return;
+            }
+            double h = mAnsScalar;
+
+            mpCurrentPlotWindow->move(x,y);
+            mpCurrentPlotWindow->resize(w,h);
+        }
+        else {
+            evaluateExpression(args[0]);
+            if(mAnsType != Scalar) {
+                HCOMERR("Argument is not a scalar: "+args[0]);
+                return;
+            }
+            if(mAnsScalar <= 0) {
+                HCOMERR("Width must be greater than zero");
+                return;
+            }
+            double w = mAnsScalar;
+
+            evaluateExpression(args[1]);
+            if(mAnsType != Scalar) {
+                HCOMERR("Argument is not a scalar: "+args[1]);
+                return;
+            }
+            if(mAnsScalar <= 0) {
+                HCOMERR("Height must be greater than zero");
+                return;
+            }
+            double h = mAnsScalar;
+
+            mpCurrentPlotWindow->resize(w,h);
+        }
+    }
+    else {
+        HCOMERR("No plot window is open");
+    }
 }
 
 //! @brief Execute function for "chdl" command
