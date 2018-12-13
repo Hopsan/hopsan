@@ -46,6 +46,10 @@ namespace hopsan {
     {
 
     private:
+        double* mpIn;
+        double* mpOut;
+        double mMin;
+        double mMax;
 
     public:
         static Component *Creator()
@@ -55,19 +59,22 @@ namespace hopsan {
 
         void configure()
         {
-            addOutputVariable("out", "", "");
+            addInputVariable("in", "Input signal (between 0 and 1)", "", 0, &mpIn);
+            addOutputVariable("out", "Output signal", "", 0, &mpOut);
+            addConstant("min", "Minimum input value", "", "", 0, mMin);
+            addConstant("max", "Minimum output value", "", "", 1, mMax);
         }
 
 
         void initialize()
         {
-
+            simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-
+            (*mpOut) = mMin + (mMax - mMin)*(*mpIn);
         }
     };
 }
