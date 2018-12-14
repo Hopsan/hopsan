@@ -156,7 +156,7 @@ public:
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     //Plot and simulation results methods
-    LogDataHandler2 *getLogDataHandler();
+    QSharedPointer<LogDataHandler2> getLogDataHandler();
 
     // Get the IDs of the component libraries that the components in this model come from
     QStringList getRequiredComponentLibraries() const;

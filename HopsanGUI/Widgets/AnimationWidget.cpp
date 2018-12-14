@@ -181,7 +181,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();
-    mpPlotData = mpContainer->getLogDataHandler();
+    mpPlotData = mpContainer->getLogDataHandler().data();
     mpPlayButton->setDisabled(mpPlotData->isEmpty());
     mpPlayRealTimeButton->setDisabled(mpPlotData->isEmpty());
     mpRewindButton->setDisabled(mpPlotData->isEmpty());

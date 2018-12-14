@@ -56,7 +56,7 @@ public:
     QString backupFile;
     bool hasChanged;
     QString tabName;
-    LogDataHandler2* logDataHandler;
+    QSharedPointer<LogDataHandler2> logDataHandler;
     QDomDocument model;
     GraphicsViewPort viewPort;
 };
@@ -81,7 +81,7 @@ public:
     SystemContainer *getCurrentTopLevelSystem();
     ContainerObject *getViewContainerObject(int idx);
     ContainerObject *getCurrentViewContainerObject();
-    LogDataHandler2 *getCurrentLogDataHandler();
+    QSharedPointer<LogDataHandler2> getCurrentLogDataHandler();
 
     int count() const;
 

@@ -322,7 +322,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     if(gpModelHandler->count() != 0)
     {
         //pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
-        pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
+        pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentLogDataHandler().data()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
     }
 
     pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");

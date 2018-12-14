@@ -83,7 +83,7 @@ public:
 
     //Get functions
     QGraphicsScene* getGraphicsScene();
-    LogDataHandler2 *getPlotDataPtr();
+    LogDataHandler2* getPlotDataPtr();
 
     int getIndex(); // returns the current position inside the time vector
     int getLastIndex();

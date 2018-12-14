@@ -5882,7 +5882,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     LogDataHandler2 *pLogDataHandler=0;
     if(mpModel && mpModel->getViewContainerObject())
     {
-        pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+        pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
     }
 
     if(isHcomFunctionCall("round", expr))
@@ -7814,7 +7814,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     if(!mpModel) { return; }
 
     // Get pointers to logdatahandler
-    LogDataHandler2 *pLogDataHandler = mpModel->getLogDataHandler();
+    LogDataHandler2* pLogDataHandler = mpModel->getLogDataHandler().data();
 
     // Parse and chop the desired generation
     int desiredGen = -3;
@@ -8263,7 +8263,7 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
 
         LogDataHandler2 *pLogDataHandler = 0;
         if(mpModel)
-             pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+             pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
 
         // Handle both scalars
         if (arg1IsDouble && arg2IsDouble)
@@ -8368,7 +8368,7 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
             pVar2 = mAnsVector;
         }
 
-        LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+        LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
 
         // Handle both scalars
         if (arg1IsDouble && arg2IsDouble)
@@ -8490,7 +8490,7 @@ void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
             pVar2 = mAnsVector;
         }
 
-        LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler();
+        LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
 
         // Handle both scalars
         if (arg1IsDouble && arg2IsDouble)

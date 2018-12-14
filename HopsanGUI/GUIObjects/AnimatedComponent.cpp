@@ -393,7 +393,7 @@ void AnimatedComponent::updateAnimation()
 
     if(mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
     {
-        LogDataHandler2 *pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler();
+        LogDataHandler2* pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler().data();
 
         QList<SharedVectorVariableT> vectors;
 
@@ -912,7 +912,7 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     //Open plot window if double-clicking on scope component
     if(mpAnimatedComponent->mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
     {
-        LogDataHandler2 *pHandler = mpAnimatedComponent->mpModelObject->getParentContainerObject()->getLogDataHandler();
+        LogDataHandler2* pHandler = mpAnimatedComponent->mpModelObject->getParentContainerObject()->getLogDataHandler().data();
         QString name = mpAnimatedComponent->mpModelObject->getName();
         PlotWindow *pPlotWindow = mpAnimatedComponent->mpPlotWindow;
 
