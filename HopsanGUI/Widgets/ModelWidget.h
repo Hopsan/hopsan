@@ -108,7 +108,8 @@ public:
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
     SimulationThreadHandler *getSimulationThreadHandler();
-    LogDataHandler2 *getLogDataHandler();
+    QSharedPointer<LogDataHandler2> getLogDataHandler();
+    void setLogDataHandler(QSharedPointer<LogDataHandler2> pHandler);
 
     ModelHandler *mpParentModelHandler;
     GraphicsView *mpGraphicsView;
@@ -162,7 +163,7 @@ private:
     QWidget *mpLockedSystemWarningWidget;
 
     SystemContainer *mpToplevelSystem=nullptr;
-    LogDataHandler2 *mpLogDataHandler;
+    QSharedPointer<LogDataHandler2> mpLogDataHandler;
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;
 #ifdef USEZMQ

@@ -3488,7 +3488,7 @@ QList<Connector *> ContainerObject::getSubConnectorPtrs()
 
 
 
-LogDataHandler2 *ContainerObject::getLogDataHandler()
+QSharedPointer<LogDataHandler2> ContainerObject::getLogDataHandler()
 {
     return mpModelWidget->getLogDataHandler();
     //return mpLogDataHandler;

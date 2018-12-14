@@ -81,7 +81,7 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
 {
     pModelWidget->setParent(gpCentralTabWidget);    //! @todo Should probably use ModelHandler as parent
 
-    connect(pModelWidget->getTopLevelSystemContainer()->getLogDataHandler(), SIGNAL(dataAddedFromModel(bool)), gpMainWindow->mpShowLossesAction, SLOT(setEnabled(bool)));
+    connect(pModelWidget->getTopLevelSystemContainer()->getLogDataHandler().data(), SIGNAL(dataAddedFromModel(bool)), gpMainWindow->mpShowLossesAction, SLOT(setEnabled(bool)));
 
     //connect(gpMainWindow->mpDebug2Action, SIGNAL(triggered()), pModelWidget, SLOT(generateModelicaCode()));
 
@@ -106,7 +106,7 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
     ModelWidget *pNewModelWidget = new ModelWidget(this,gpCentralTabWidget);    //! @todo Should probably use ModelHandler as parent
     pNewModelWidget->getTopLevelSystemContainer()->setName(modelName);
 
-    connect(pNewModelWidget->getTopLevelSystemContainer()->getLogDataHandler(), SIGNAL(dataAddedFromModel(bool)), gpMainWindow->mpShowLossesAction, SLOT(setEnabled(bool)));
+    connect(pNewModelWidget->getTopLevelSystemContainer()->getLogDataHandler().data(), SIGNAL(dataAddedFromModel(bool)), gpMainWindow->mpShowLossesAction, SLOT(setEnabled(bool)));
 
     addModelWidget(pNewModelWidget, modelName, hidden);
 
@@ -213,14 +213,14 @@ ContainerObject *ModelHandler::getCurrentViewContainerObject()
     return 0;
 }
 
-LogDataHandler2 *ModelHandler::getCurrentLogDataHandler()
+QSharedPointer<LogDataHandler2> ModelHandler::getCurrentLogDataHandler()
 {
     ModelWidget *pMW = getCurrentModel();
     if (pMW)
     {
         return pMW->getLogDataHandler();
     }
-    return 0;
+    return QSharedPointer<LogDataHandler2>(nullptr);
 }
 
 int ModelHandler::count() const
@@ -636,9 +636,9 @@ void ModelHandler::refreshMainWindowConnections()
     if (pCurrentModel)
     {
         gpMainWindow->mpToggleRemoteCoreSimAction->setChecked(pCurrentModel->getUseRemoteSimulationCore());
-        gpMainWindow->mpDataExplorer->setLogdataHandler(pCurrentModel->getLogDataHandler());
-        gpMainWindow->mpImportDataFileAction->setEnabled(pCurrentModel->getLogDataHandler()!=nullptr);
-        gpPlotWidget->setLogDataHandler(pCurrentModel->getLogDataHandler());
+        gpMainWindow->mpDataExplorer->setLogdataHandler(pCurrentModel->getLogDataHandler().data());
+        gpMainWindow->mpImportDataFileAction->setEnabled(pCurrentModel->getLogDataHandler().data() != nullptr);
+        gpPlotWidget->setLogDataHandler(pCurrentModel->getLogDataHandler().data());
     }
     else
     {
@@ -768,38 +768,30 @@ void ModelHandler::saveState()
         info.modelFile = pModel->getTopLevelSystemContainer()->getModelFileInfo().filePath();
         info.hasChanged = !pModel->isSaved();
         info.tabName = gpCentralTabWidget->tabText(gpCentralTabWidget->indexOf(pModel));
-        pModel->getTopLevelSystemContainer()->getLogDataHandler()->setParent(0);       //Make sure it is not removed when deleting the container object
         info.logDataHandler = pModel->getTopLevelSystemContainer()->getLogDataHandler();
         info.viewPort = pModel->getGraphicsView()->getViewPort();
-        if(!pModel->isSaved())
+
+        //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
+        //Save xml document
+        QDomDocument domDocument;
+        QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+        pModel->getTopLevelSystemContainer()->saveToDomElement(hmfRoot);
+        QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        info.backupFile = gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
+        QFile xmlhmf(gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
+        if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
-            //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
-                //Save xml document
-            QDomDocument domDocument;
-            QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-            pModel->getTopLevelSystemContainer()->saveToDomElement(hmfRoot);
-            QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
-            fileNameWithoutHmf.chop(4);
-            info.backupFile = gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
-            QFile xmlhmf(gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
-            if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-            {
-                return;
-            }
-            QTextStream out(&xmlhmf);
-            appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-            domDocument.save(out, XMLINDENTATION);
-            xmlhmf.close();
-            pModel->setSaved(true);
-            closeModel(0);
-            //pTab->close();
+            return;
         }
-        else
-        {
-            info.backupFile = "";
-            closeModel(0);
-            //pTab->close();
-        }
+        QTextStream out(&xmlhmf);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        domDocument.save(out, XMLINDENTATION);
+        xmlhmf.close();
+        pModel->setSaved(true);
+        closeModel(0);
+        //pTab->close();
+
         mStateInfoList.append(info);
     }
 }
@@ -810,22 +802,19 @@ void ModelHandler::restoreState()
     {
         ModelStateInfo info = mStateInfoList[i];
 
-        if(info.hasChanged)
-        {
-            loadModel(info.backupFile);
-            getCurrentModel()->hasChanged();
-            getCurrentTopLevelSystem()->setModelFile(info.modelFile);
-            QString basePath = QFileInfo(info.modelFile).absolutePath();
-            QStringListIterator objIt(getCurrentTopLevelSystem()->getModelObjectNames());
+        loadModel(info.backupFile);
+        getCurrentModel()->hasChanged();
+        getCurrentTopLevelSystem()->setModelFile(info.modelFile);
+//        QString basePath = QFileInfo(info.modelFile).absolutePath();
+//        QStringListIterator objIt(getCurrentTopLevelSystem()->getModelObjectNames());
 //            while (objIt.hasNext())
 //            {
 //                //getCurrentTopLevelSystem()->getModelObject(objIt.next())->getAppearanceData()->setBasePath(basePath);
 //            }
-        }
-        else
-        {
-            loadModel(info.modelFile);
-        }
+
+        getCurrentModel()->setLogDataHandler(info.logDataHandler);
+        info.logDataHandler.clear();
+
         getCurrentModel()->getGraphicsView()->setViewPort(info.viewPort);
         if(mModelPtrs.size() < i+1)
         {
@@ -840,6 +829,7 @@ void ModelHandler::restoreState()
 //        mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());
     }
     this->setCurrentModel(mStateInfoIndex);
+    mStateInfoList.clear();
 }
 
 void ModelHandler::revertCurrentModel()

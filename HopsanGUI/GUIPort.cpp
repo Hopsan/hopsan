@@ -349,7 +349,7 @@ void Port::openRightClickMenu(QPoint screenPos)
     // Now build plot menu
     QMap<QAction*, int> plotActions;
 
-    LogDataHandler2 *pLogHandler = mpParentModelObject->getParentContainerObject()->getLogDataHandler();
+    LogDataHandler2* pLogHandler = mpParentModelObject->getParentContainerObject()->getLogDataHandler().data();
     QList<SharedVectorVariableT> logVars;
     QString comp, port;
     if(getPortType() == QString("PowerMultiportType"))

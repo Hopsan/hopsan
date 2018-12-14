@@ -305,7 +305,7 @@ void HVCWidget::runHvcTest()
 
     // Get Log data handler for model
     int simuGen=-1;
-    LogDataHandler2 *pLogDataHandler = gpModelHandler->getCurrentLogDataHandler();
+    LogDataHandler2 *pLogDataHandler = gpModelHandler->getCurrentLogDataHandler().data();
 
     // Simulate the system
     if (gpModelHandler->getCurrentModel())

@@ -121,7 +121,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     mpGraphicsView  = new GraphicsView(this);
     //mpGraphicsView->setScene(mpToplevelSystem->getContainedScenePtr());
 
-    mpLogDataHandler = new LogDataHandler2(this);
+    mpLogDataHandler = QSharedPointer<LogDataHandler2>(new LogDataHandler2(this), &QObject::deleteLater);
 
     mpSimulationThreadHandler = new SimulationThreadHandler();
     setMessageHandler(gpMessageHandler);
@@ -175,7 +175,8 @@ ModelWidget::~ModelWidget()
     delete mpAnimationWidget;
     createOrDestroyToplevelSystem(false);
     mpSimulationThreadHandler->deleteLater();
-    mpLogDataHandler->deleteLater();
+    mpLogDataHandler->setParent(nullptr);
+    mpLogDataHandler.clear();
 }
 
 void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)
@@ -290,9 +291,16 @@ SimulationThreadHandler *ModelWidget::getSimulationThreadHandler()
     return mpSimulationThreadHandler;
 }
 
-LogDataHandler2 *ModelWidget::getLogDataHandler()
+QSharedPointer<LogDataHandler2> ModelWidget::getLogDataHandler()
 {
     return mpLogDataHandler;
+}
+
+void ModelWidget::setLogDataHandler(QSharedPointer<LogDataHandler2> pHandler)
+{
+    mpLogDataHandler->clear();
+    mpLogDataHandler = pHandler;
+    pHandler->setParentModel(this);
 }
 
 
@@ -1347,7 +1355,7 @@ void ModelWidget::simulateModelica()
     pTempModel->simulate_blocking();
 
     //Move all data from temporary model to actual model
-    mpToplevelSystem->getLogDataHandler()->takeOwnershipOfData(pTempSys->getLogDataHandler());
+    mpToplevelSystem->getLogDataHandler()->takeOwnershipOfData(pTempSys->getLogDataHandler().data());
 
     //Rename variables so that their component name and port names are converted for actual model
     QMapIterator<QString, QList<QStringList> > it2(modelicaModels);
