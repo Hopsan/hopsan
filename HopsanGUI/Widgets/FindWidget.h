@@ -37,14 +37,15 @@
 
 // Forward declaration
 class ContainerObject;
+class TextEditorWidget;
 
 class FindWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit FindWidget(QWidget *parent = 0);
-    void setContainer(ContainerObject *pContainer);
-
+    void setContainer(ContainerObject* pContainer);
+    void setTextEditor(TextEditorWidget* pEditor);
 signals:
 
 public slots:
@@ -66,8 +67,10 @@ private:
     QPushButton* mpFindButton;
     QCheckBox* mpCaseSensitivityCheckBox;
     QCheckBox* mpWildcardCheckBox;
+    QCheckBox* mpBackwardsCheckBox;
 
     QPointer<ContainerObject> mpContainer;
+    QPointer<TextEditorWidget> mpTextEditor;
 
 };
 

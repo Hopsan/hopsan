@@ -31,6 +31,7 @@
 #include "ModelWidget.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
+#include "Widgets/TextEditorWidget.h"
 
 #include <QLineEdit>
 #include <QLabel>
@@ -53,6 +54,7 @@ FindWidget::FindWidget(QWidget *parent) :
     QToolButton *pCloseButton = new QToolButton(this);
     mpCaseSensitivityCheckBox = new QCheckBox("Case Sensitive", this);
     mpWildcardCheckBox = new QCheckBox("Match Wildcards (*)", this);
+    mpBackwardsCheckBox = new QCheckBox("Search Backwards", this);
     pCloseButton->setIcon(QIcon(":graphics/uiicons/svg/Hopsan-Discard.svg"));
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
@@ -68,6 +70,7 @@ FindWidget::FindWidget(QWidget *parent) :
     pSubLayout1->setStretch(1,1);
     pSubLayout2->addWidget(mpCaseSensitivityCheckBox);
     pSubLayout2->addWidget(mpWildcardCheckBox);
+    pSubLayout2->addWidget(mpBackwardsCheckBox);
     pSubLayout2->addWidget(new QWidget(this), 1);
     connect(mpFindButton, SIGNAL(clicked()), this, SLOT(find()));
     connect(pCloseButton, SIGNAL(clicked()), this, SLOT(close()));
@@ -79,10 +82,35 @@ FindWidget::FindWidget(QWidget *parent) :
 void FindWidget::setContainer(ContainerObject *pContainer)
 {
     mpContainer = pContainer;
+    mpTextEditor = nullptr;
+    mpFindWhatComboBox->setVisible(true);
+    mpWildcardCheckBox->setVisible(true);
+    mpBackwardsCheckBox->setVisible(false);
+}
+
+void FindWidget::setTextEditor(TextEditorWidget *pEditor)
+{
+    mpTextEditor = pEditor;
+    mpContainer = nullptr;
+    mpFindWhatComboBox->setVisible(false);
+    mpWildcardCheckBox->setVisible(false);
+    mpBackwardsCheckBox->setVisible(true);
 }
 
 void FindWidget::find()
 {
+    if(mpTextEditor) {
+        QTextDocument::FindFlags flags;
+        if(mpCaseSensitivityCheckBox->isChecked()) {
+            flags |= QTextDocument::FindCaseSensitively;
+        }
+        if(mpBackwardsCheckBox->isChecked()) {
+            flags |= QTextDocument::FindBackward;
+        }
+
+        mpTextEditor->find(mpFindLineEdit->text(), flags);
+    }
+
     Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive;
     if(mpCaseSensitivityCheckBox->isChecked())
         caseSensitivity = Qt::CaseSensitive;
