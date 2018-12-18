@@ -107,6 +107,9 @@ public:
     QFileInfo getFileInfo() const { return mFileInfo; }
     bool isSaved() const { return mIsSaved; }
 
+public slots:
+    void  find(QString text, QTextDocument::FindFlags flags);
+
 protected:
     void wheelEvent(QWheelEvent* event);
 

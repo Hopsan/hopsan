@@ -89,6 +89,12 @@ TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum
     connect(mpEditor, SIGNAL(textChanged()), this, SLOT(hasChanged()));
 }
 
+void TextEditorWidget::find(QString text, QTextDocument::FindFlags flags)
+{
+    mpEditor->find(text,flags);
+}
+
+
 void TextEditorWidget::wheelEvent(QWheelEvent* event)
 {
 #if QT_VERSION >= 0x050000  //zoomIn() and zoomOut() not available in Qt4

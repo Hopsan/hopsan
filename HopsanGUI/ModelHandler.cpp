@@ -50,6 +50,7 @@
 #include "version_gui.h"
 #include "Widgets/DebuggerWidget.h"
 #include "MessageHandler.h"
+#include "Widgets/FindWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
@@ -673,10 +674,11 @@ void ModelHandler::refreshMainWindowConnections()
             gpLibraryWidget->setGfxType(pCurrentModel->getTopLevelSystemContainer()->getGfxType());
         }
     }
-    TextEditorWidget *pScriptEditor = qobject_cast<TextEditorWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
-    if(pScriptEditor)
+    TextEditorWidget *pTextEditor = qobject_cast<TextEditorWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
+    if(pTextEditor)
     {
-        connectMainWindowConnections(pScriptEditor);
+        connectMainWindowConnections(pTextEditor);
+        gpFindWidget->setTextEditor(pTextEditor);
     }
 
     emit modelChanged(pCurrentModel);

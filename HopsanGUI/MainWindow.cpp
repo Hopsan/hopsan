@@ -434,6 +434,7 @@ void MainWindow::initializeWorkspace()
     // Create the find widget
     gpFindWidget = new FindWidget(this);
     mpCentralGridLayout->addWidget(gpFindWidget,5,0,1,4);
+    gpFindWidget->setDisabled(true);
     gpFindWidget->hide();
 
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
@@ -1445,6 +1446,10 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToLabviewAction->setEnabled(modelTab);
     mpExportToSimulinkAction->setEnabled(modelTab);
     mpLoadModelParametersAction->setEnabled(modelTab);
+
+    if(gpFindWidget) {
+        gpFindWidget->setEnabled(modelTab || editorTab);
+    }
 }
 
 
