@@ -517,7 +517,7 @@ void MainWindow::createActions()
 
     mpNewScriptAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-NewScript.png"), tr("&New HCOM Script"), this);
     mpNewScriptAction->setToolTip(tr("Create HCOM Script File"));
-    connect(mpNewScriptAction, SIGNAL(triggered()), mpModelHandler, SLOT(newScriptFile()));
+    connect(mpNewScriptAction, SIGNAL(triggered()), mpModelHandler, SLOT(newTextFile()));
     connect(mpNewScriptAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpNewScriptAction, "Create a new HCOM script file.");
 

@@ -49,6 +49,7 @@ protected:
 
 public slots:
     void updateAutoCompleteList();
+
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();

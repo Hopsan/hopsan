@@ -51,13 +51,14 @@
 #include <QPrinter>
 #include <QPainter>
 #include <QPrintDialog>
+#include <QMimeData>
 #include <math.h>
 
 TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum highlighter, QWidget *parent) : QWidget(parent)
 {
     mFileInfo = scriptFileInfo;
 
-    mpEditor = new TextEditor(this);
+    mpEditor = new TextEditor(highlighter, this);
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     mpEditor->setFont(font);
@@ -78,7 +79,7 @@ TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum
             return;
         }
         mSavedText = scriptFile.readAll();
-        mpEditor->setText(mSavedText);
+        mpEditor->setPlainText(mSavedText);
         scriptFile.close();
     }
 
@@ -240,8 +241,21 @@ void TextEditorWidget::print()
     mpEditor->print(&printer);
 }
 
-TextEditor::TextEditor(QWidget* parent) : QTextEdit(parent)
+TextEditor::TextEditor(HighlighterTypeEnum language, QWidget* parent) : QPlainTextEdit(parent)
 {
+    mLanguage = language;
+
+    mpLineNumberArea = new LineNumberArea(this);
+
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+
+    updateLineNumberAreaWidth(0);
+    highlightCurrentLine();
+
+    setLineWrapMode(QPlainTextEdit::NoWrap);
+
     mpCompleter = new QCompleter(this);
     updateAutoCompleteList();
 
@@ -250,6 +264,91 @@ TextEditor::TextEditor(QWidget* parent) : QTextEdit(parent)
     mpCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     QObject::connect(mpCompleter, SIGNAL(activated(QString)),
                      this, SLOT(insertCompletion(QString)));
+}
+
+//! @brief Paint event for line number area
+void TextEditor::lineNumberAreaPaintEvent(QPaintEvent *pEvent)
+{
+    QPainter painter(mpLineNumberArea);
+    painter.fillRect(pEvent->rect(), QColor(240,240,240)/*Qt::lightGray*/);
+
+    QTextBlock block = firstVisibleBlock();
+    int blockNumber = block.blockNumber();
+    int top = int(blockBoundingGeometry(block).translated(contentOffset()).top());
+    int bottom = top + int(blockBoundingRect(block).height());
+
+    while (block.isValid() && top <= pEvent->rect().bottom())
+    {
+        if (block.isVisible() && bottom >= pEvent->rect().top())
+        {
+            QString number = QString::number(blockNumber + 1);
+            painter.setPen(Qt::black);
+            painter.drawText(0, top, mpLineNumberArea->width(), fontMetrics().height(), Qt::AlignRight, number);
+        }
+
+        block = block.next();
+        top = bottom;
+        bottom = top + (int) blockBoundingRect(block).height();
+        ++blockNumber;
+    }
+}
+
+//! @brief Computes and returns the width of the line number area
+int TextEditor::lineNumberAreaWidth()
+{
+    int digits = 1;
+    int max = qMax(1, blockCount());
+    while (max >= 10)
+    {
+        max /= 10;
+        ++digits;
+    }
+
+    int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
+
+    return space;
+}
+
+//! @brief Updates width of line number area
+void TextEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
+{
+    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+}
+
+
+//! @brief Highlights current line
+void TextEditor::highlightCurrentLine()
+{
+    QList<QTextEdit::ExtraSelection> extraSelections;
+
+    if (!isReadOnly())
+    {
+        QTextEdit::ExtraSelection selection;
+
+        QColor lineColor = QColor(Qt::yellow).lighter(160);
+
+        selection.format.setBackground(lineColor);
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.cursor = textCursor();
+        selection.cursor.clearSelection();
+        extraSelections.append(selection);
+    }
+
+    setExtraSelections(extraSelections);
+}
+
+
+
+//! @brief Update function for line number area
+void TextEditor::updateLineNumberArea(const QRect &rect, int dy)
+{
+    if (dy)
+        mpLineNumberArea->scroll(0, dy);
+    else
+        mpLineNumberArea->update(0, rect.y(), mpLineNumberArea->width(), rect.height());
+
+    if (rect.contains(viewport()->rect()))
+        updateLineNumberAreaWidth(0);
 }
 
 void TextEditor::keyPressEvent(QKeyEvent* event)
@@ -295,7 +394,24 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
             line.remove(0,1);
             newStr.append(" "); //Append one space to new line for each space on previous line, to keep indentation
         }
+        if(mLanguage == HighlighterTypeEnum::Cpp && line.startsWith("{"))
+        {
+            newStr.append("    ");  //Add an extra tab if previous line is a left bracket
+        }
         insertPlainText(newStr);
+    }
+    else if(event->key() == Qt::Key_Home)
+    {
+        if((event->modifiers().testFlag(Qt::ShiftModifier)))
+        {
+            moveCursor(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor); //Shift+home = select until start of line (Excluding whitespace at beginning)
+            moveCursor(QTextCursor::NextWord, QTextCursor::KeepAnchor);
+        }
+        else
+        {
+            moveCursor(QTextCursor::StartOfBlock);      //Home = move cursor to start of line, excluding initial whitespace
+            moveCursor(QTextCursor::NextWord);
+        }
     }
     else if(event->key() == Qt::Key_Tab)
     {
@@ -336,68 +452,104 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
     }
     else if(event->key() == Qt::Key_T && event->modifiers().testFlag(Qt::ControlModifier))     //Ctrl-T = block comment
     {
-        textCursor().beginEditBlock();
-        QString text = textCursor().selection().toPlainText();
-        text.replace("\n", "\n//");
-        if(textCursor().atBlockStart())
-        {
-            text.prepend("//");
+        if(mLanguage ==  HighlighterTypeEnum::Cpp) {
+            textCursor().beginEditBlock();
+            QString text = textCursor().selection().toPlainText();
+            text.replace("\n", "\n// ");
+            if(textCursor().atBlockStart()) {
+                text.prepend("// ");
+            }
+            else
+            {
+                int pos = textCursor().position();
+                int stopPos = textCursor().anchor();
+                QTextCursor c;
+                c = textCursor();
+                c.setPosition(std::min(pos,stopPos));
+                setTextCursor(c);
+                moveCursor(QTextCursor::StartOfBlock);
+                insertPlainText("// ");
+
+                c = textCursor();
+                c.setPosition(pos+2);
+                c.setPosition(stopPos+2, QTextCursor::KeepAnchor);
+                setTextCursor(c);
+            }
+            textCursor().removeSelectedText();
+            insertPlainText(text);
+            textCursor().endEditBlock();
         }
-        else
-        {
+        else if(mLanguage == HighlighterTypeEnum::Hcom) {
+            textCursor().beginEditBlock();
+            QString text = textCursor().selection().toPlainText();
+            text.replace("\n", "\n# ");
+            if(textCursor().atBlockStart()) {
+                text.prepend("# ");
+            }
+            else
+            {
+                int pos = textCursor().position();
+                int stopPos = textCursor().anchor();
+                QTextCursor c;
+                c = textCursor();
+                c.setPosition(std::min(pos,stopPos));
+                setTextCursor(c);
+                moveCursor(QTextCursor::StartOfBlock);
+                insertPlainText("# ");
+                c = textCursor();
+                c.setPosition(pos+2);
+                c.setPosition(stopPos+2, QTextCursor::KeepAnchor);
+                setTextCursor(c);
+            }
+            textCursor().removeSelectedText();
+            insertPlainText(text);
+            textCursor().endEditBlock();
+        }
+    }
+    else if(event->key() == Qt::Key_U && event->modifiers().testFlag(Qt::ControlModifier))     //Ctrl-U = uncomment block
+    {
+        if(mLanguage == HighlighterTypeEnum::Cpp) {
+            textCursor().beginEditBlock();
+            QString text = textCursor().selection().toPlainText();
+            text.replace("\n// ", "\n");
+            if(text.startsWith("// ")) {
+                text.remove(0,3);
+            }
             int pos = textCursor().position();
             int stopPos = textCursor().anchor();
             QTextCursor c;
             c = textCursor();
+            textCursor().removeSelectedText();
+            insertPlainText(text);
+
             c.setPosition(std::min(pos,stopPos));
             setTextCursor(c);
-            moveCursor(QTextCursor::StartOfBlock);
-            insertPlainText("# ");
 
+            textCursor().endEditBlock();
+        }
+        else if(mLanguage == HighlighterTypeEnum::Hcom) {
+            textCursor().beginEditBlock();
+            QString text = textCursor().selection().toPlainText();
+            text.replace("\n# ", "\n");
+            if(text.startsWith("# ")) {
+                text.remove(0,2);
+            }
+            int pos = textCursor().position();
+            int stopPos = textCursor().anchor();
+            QTextCursor c;
             c = textCursor();
-            c.setPosition(pos+2);
-            c.setPosition(stopPos+2, QTextCursor::KeepAnchor);
-            setTextCursor(c);
-        }
-        textCursor().removeSelectedText();
-        insertPlainText(text);
-        textCursor().endEditBlock();
-    }
-    else if(event->key() == Qt::Key_U && event->modifiers().testFlag(Qt::ControlModifier))     //Ctrl-U = uncomment block
-    {
-        textCursor().beginEditBlock();
-        QString text = textCursor().selection().toPlainText();
-        text.replace("\n# ", "\n");
-        text.replace("\n#", "\n");
-
-        int pos = textCursor().position();
-        int stopPos = textCursor().anchor();
-        QTextCursor c;
-        c = textCursor();
-        c.setPosition(std::min(pos,stopPos));
-        setTextCursor(c);
-        moveCursor(QTextCursor::StartOfBlock);
-        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-        moveCursor(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-        int movement = 0;
-        if(textCursor().selection().toPlainText() == "//")
-        {
             textCursor().removeSelectedText();
-            movement = 2;
+            insertPlainText(text);
+
+            c.setPosition(std::min(pos,stopPos));
+            setTextCursor(c);
+
+            textCursor().endEditBlock();
         }
-        c = textCursor();
-        c.setPosition(pos-movement);
-        c.setPosition(stopPos-movement, QTextCursor::KeepAnchor);
-        setTextCursor(c);
-
-        textCursor().removeSelectedText();
-        insertPlainText(text);
-
-        textCursor().endEditBlock();
     }
     else
     {
-        QTextEdit::keyPressEvent(event);
+        QPlainTextEdit::keyPressEvent(event);
 
         updateAutoCompleteList();
 
@@ -419,6 +571,21 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
 }
 
 
+void TextEditor::wheelEvent(QWheelEvent* event)
+{
+#if QT_VERSION >= 0x050000  //zoomIn() and zoomOut() not available in Qt4
+   if ((event->modifiers() == Qt::ControlModifier) && (event->delta() > 0))
+       zoomIn(2);
+   else if ((event->modifiers() == Qt::ControlModifier) && (event->delta() < 0))
+       zoomOut(2);
+   else
+       QPlainTextEdit::wheelEvent(event);
+#else
+   QPlainTextEdit::wheelEvent(event);
+#endif
+}
+
+
 //! @brief Updates list of auto complete words
 void TextEditor::updateAutoCompleteList()
 {
@@ -436,4 +603,24 @@ void TextEditor::insertCompletion(const QString& completion)
     tc.movePosition(QTextCursor::EndOfWord);
     tc.insertText(completion.right(extra));
     setTextCursor(tc);
+}
+
+
+//! @brief Resize event for text editor
+void TextEditor::resizeEvent(QResizeEvent *pEvent)
+{
+    QPlainTextEdit::resizeEvent(pEvent);
+
+    QRect cr = contentsRect();
+    mpLineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+}
+
+
+//! @brief Intercepts paste operations, to control what is pastable
+void TextEditor::insertFromMimeData(const QMimeData *pData)
+{
+    if(pData->hasText())
+    {
+        insertPlainText(pData->text());
+    }
 }
