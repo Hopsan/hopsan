@@ -86,15 +86,15 @@ public:
     int count() const;
 
     ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool detatched=false);
-    TextEditorWidget *loadScriptFile(QString scriptFileName);
+    TextEditorWidget *loadTextFile(QString scriptFileName);
     SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
     ModelWidget *addNewModel(QString modelName="Untitled", bool hidden=false);
     void loadModel();
     void loadModel(QAction *action);
-    void newScriptFile();
-    void loadScriptFile();
+    void newTextFile();
+    void loadTextFile();
     void loadModelParameters();
     bool closeModelByTabIndex(int tabIdx, bool force=false);
     bool closeModel(int idx, bool force=false);
@@ -138,7 +138,7 @@ private:
     void setToolBarSimulationTimeFromTab(ModelWidget *pModel);
 
     QList<ModelWidget*> mModelPtrs;
-    QList<TextEditorWidget*> mScriptEditors;
+    QList<TextEditorWidget*> mTextEditors;
     int mCurrentIdx;
     int mNumberOfUntitledModels;
     int mNumberOfUntitledScripts;

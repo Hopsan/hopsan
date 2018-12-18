@@ -38,6 +38,10 @@
 #include <QTextCharFormat>
 #include <QColor>
 
+enum class HighlighterTypeEnum {PlainText, XML, Cpp, Hcom, Modelica, Python};
+
+HighlighterTypeEnum highlighterForExtension(QString extension);
+
 class XmlHighlighter : public QSyntaxHighlighter
 {
 public:
@@ -107,19 +111,20 @@ private:
         QRegExp pattern;
         QTextCharFormat format;
     };
-    QVector<HighlightingRule> highlightingRules;
+    QVector<HighlightingRule> mHighlightingRules;
 
-    QRegExp commentStartExpression;
-    QRegExp commentEndExpression;
+    QRegExp mCommentStartExpression;
+    QRegExp mCommentEndExpression;
 
-    QTextCharFormat keywordFormat;
-    QTextCharFormat preProcessorFormat;
-    QTextCharFormat classFormat;
-    QTextCharFormat singleLineCommentFormat;
-    QTextCharFormat multiLineCommentFormat;
-    QTextCharFormat quotationFormat;
-    QTextCharFormat tagFormat;
-    QTextCharFormat functionFormat;
+    QTextCharFormat mKeywordFormat;
+    QTextCharFormat mHopsanKeywordFormat;
+    QTextCharFormat mPreProcessorFormat;
+    QTextCharFormat mClassFormat;
+    QTextCharFormat mSingleLineCommentFormat;
+    QTextCharFormat mMultiLineCommentFormat;
+    QTextCharFormat mQuotationFormat;
+    QTextCharFormat mTagFormat;
+    QTextCharFormat mFunctionFormat;
 };
 
 

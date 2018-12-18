@@ -249,27 +249,27 @@ void ModelHandler::loadModel()
 
 //! @brief Loads a HCOM script from a file and opens it in a new project tab.
 //! @see loadScriptFile(QString scriptFileName)
-void ModelHandler::loadScriptFile()
+void ModelHandler::loadTextFile()
 {
-    QStringList scriptFileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Script File"),
+    QStringList fileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Text File"),
                                                                 gpConfig->getStringSetting(CFG_LOADSCRIPTDIR),
-                                                                tr("HCOM Script Files (*.hcom)"));
-    for(const auto &scriptFileName : scriptFileNames)
+                                                                tr("HCOM Script Files (*.hcom);;C++ Header Files (*.hpp *.h);;C++ Source Files (*.cpp *.cc *.c);;XML files (*.xml);;Modelica files (*.mo);;Python Script Files (*.py);;All Supported Files (*.hcom *.hpp *.h *.cpp *.cc *.c *.xml *.mo *.py)"));
+    for(const auto &fileName : fileNames)
     {
-        QFileInfo scriptFileInfo = QFileInfo(scriptFileName);
+        QFileInfo fileInfo = QFileInfo(fileName);
 
         // Make sure file not already open
-        for(auto &editor : mScriptEditors)
+        for(auto &editor : mTextEditors)
         {
-            if(editor->getScriptFileInfo() == scriptFileInfo)
+            if(editor->getFileInfo() == fileInfo)
             {
-                QMessageBox::information(gpMainWindowWidget, tr("Error"), tr("Unable to load HCOM script. File is already open."));
+                QMessageBox::information(gpMainWindowWidget, tr("Error"), tr("Unable to load text file. File is already open."));
                 continue;
             }
         }
 
-        loadScriptFile(scriptFileName);
-        gpConfig->setStringSetting(CFG_LOADSCRIPTDIR, scriptFileInfo.absolutePath());
+        loadTextFile(fileName);
+        gpConfig->setStringSetting(CFG_LOADSCRIPTDIR, fileInfo.absolutePath());
     }
 }
 
@@ -284,12 +284,12 @@ void ModelHandler::loadModel(QAction *action)
 
 //! @brief Screates a new empty HCOM script and opens it in a new project tab
 //! @see loadScriptFile()
-void ModelHandler::newScriptFile()
+void ModelHandler::newTextFile()
 {
-    TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(), gpCentralTabWidget);
+    TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(), HighlighterTypeEnum::Hcom, gpCentralTabWidget);
     gpCentralTabWidget->addTab(pNewEditor, "HcomScript"+QString::number(mNumberOfUntitledScripts));
     gpCentralTabWidget->setCurrentWidget(pNewEditor);
-    mScriptEditors.append(pNewEditor);
+    mTextEditors.append(pNewEditor);
     mNumberOfUntitledScripts++;
 }
 
@@ -361,19 +361,20 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
 //! @param modelFileName is the path to the loaded file
 //! @see loadModel()
 //! @see saveModel(saveTarget saveAsFlag)
-TextEditorWidget *ModelHandler::loadScriptFile(QString scriptFileName)
+TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
 {
-    QFile scriptFile(scriptFileName);
-    if(!scriptFile.exists())
+    QFile file(fileName);
+    if(!file.exists())
     {
-        gpMessageHandler->addErrorMessage("File not found: " + scriptFile.fileName());
+        gpMessageHandler->addErrorMessage("File not found: " + file.fileName());
         return nullptr;
     }
-    QFileInfo scriptFileInfo(scriptFile);
-    TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(scriptFileName), gpCentralTabWidget);
-    gpCentralTabWidget->addTab(pNewEditor, scriptFileInfo.fileName());
+    QFileInfo fileInfo(file);
+
+    TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(fileName), highlighterForExtension(fileInfo.suffix()), gpCentralTabWidget);
+    gpCentralTabWidget->addTab(pNewEditor, fileInfo.fileName());
     gpCentralTabWidget->setCurrentWidget(pNewEditor);
-    mScriptEditors.append(pNewEditor);
+    mTextEditors.append(pNewEditor);
 
     return pNewEditor;
 }
@@ -391,11 +392,11 @@ bool ModelHandler::closeModelByTabIndex(int tabIdx, bool force)
     }
 
     //Also check script editors
-    for(auto &editor : mScriptEditors)
+    for(auto &editor : mTextEditors)
     {
         if(editor == gpCentralTabWidget->widget(tabIdx))
         {
-            return closeScript(mScriptEditors.indexOf(editor), force);
+            return closeScript(mTextEditors.indexOf(editor), force);
         }
     }
 
@@ -519,12 +520,12 @@ bool ModelHandler::closeModel(int idx, bool force)
 bool ModelHandler::closeScript(int idx, bool force)
 {
     // Only remove if we found the model by index
-    TextEditorWidget *pEditor = mScriptEditors[idx];
+    TextEditorWidget *pEditor = mTextEditors[idx];
     if(pEditor)
     {
         if (!pEditor->isSaved() && !force)
         {
-            QString modelName = pEditor->getScriptFileInfo().fileName();
+            QString modelName = pEditor->getFileInfo().fileName();
             QMessageBox msgBox;
             msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
             msgBox.setText(QString("Script file '").append(modelName).append("'  is not saved."));
@@ -568,7 +569,7 @@ bool ModelHandler::closeScript(int idx, bool force)
 
         // Remove and delete the script editor
         delete pEditor; //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgets before it has been deleted because of this. This behavior is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
-        mScriptEditors.removeAt(idx);
+        mTextEditors.removeAt(idx);
 
         // Refresh mainwindow sig/slot connections and button status to the new current model
         refreshMainWindowConnections();
@@ -626,7 +627,7 @@ void ModelHandler::refreshMainWindowConnections()
         disconnectMainWindowConnections(getModel(i));
         getViewContainerObject(i)->unmakeMainWindowConnectionsAndRefresh();
     }
-    for(TextEditorWidget *scriptEditor : mScriptEditors)
+    for(TextEditorWidget *scriptEditor : mTextEditors)
     {
         disconnectMainWindowConnections(scriptEditor);
     }

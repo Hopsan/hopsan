@@ -40,6 +40,7 @@
 #include <QCompleter>
 
 #include "common.h"
+#include "Utilities/HighlightingUtilities.h"
 
 class TextEditor : public QTextEdit
 {
@@ -64,9 +65,9 @@ class TextEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TextEditorWidget(QFileInfo file, QWidget *parent = nullptr);
+    explicit TextEditorWidget(QFileInfo file, HighlighterTypeEnum highlighter, QWidget *parent = nullptr);
 
-    QFileInfo getScriptFileInfo() const { return mFileInfo; }
+    QFileInfo getFileInfo() const { return mFileInfo; }
     bool isSaved() const { return mIsSaved; }
 
 protected:
@@ -75,10 +76,17 @@ protected:
 signals:
 
 private:
+    void setHighlighter(HighlighterTypeEnum highlighter);
+
     TextEditor *mpEditor;
     QFileInfo mFileInfo;
     bool mIsSaved = true;
     QString mSavedText;
+    HcomHighlighter *mpHcomHighlighter;
+    CppHighlighter *mpCppHighlighter;
+    XmlHighlighter *mpXmlHighlighter;
+    ModelicaHighlighter *mpModelicaHighlighter;
+    PythonHighlighter *mpPythonXmlHighlighter;
 
 public slots:
     void saveAs();
