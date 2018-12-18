@@ -35,31 +35,68 @@
 #define SCRIPTEDITOR_H
 
 #include <QWidget>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QFileInfo>
 #include <QCompleter>
 
 #include "common.h"
 #include "Utilities/HighlightingUtilities.h"
 
-class TextEditor : public QTextEdit
+
+class TextEditor : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    TextEditor(QWidget *parent = 0);
+    TextEditor(HighlighterTypeEnum language, QWidget *parent = 0);
+
+    void lineNumberAreaPaintEvent(QPaintEvent *pEvent);
+    int lineNumberAreaWidth();
 
 protected:
+    void resizeEvent(QResizeEvent *pEvent);
+    void insertFromMimeData(const QMimeData *pData);
     void keyPressEvent(QKeyEvent *event);
+    void wheelEvent(QWheelEvent* e);
 
 public slots:
     void updateAutoCompleteList();
 
 private slots:
+    void updateLineNumberAreaWidth(int newBlockCount);
+    void highlightCurrentLine();
+    void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString& completion);
 
 private:
+    HighlighterTypeEnum mLanguage;
+    QWidget *mpLineNumberArea;
     QCompleter *mpCompleter;
 };
+
+
+class LineNumberArea : public QWidget
+{
+public:
+    LineNumberArea(TextEditor *editor) : QWidget(editor)
+    {
+        mpTextEditor = editor;
+    }
+
+    QSize sizeHint() const
+    {
+        return QSize(mpTextEditor->lineNumberAreaWidth(), 0);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event)
+    {
+        mpTextEditor->lineNumberAreaPaintEvent(event);
+    }
+
+private:
+    TextEditor *mpTextEditor;
+};
+
 
 class TextEditorWidget : public QWidget
 {

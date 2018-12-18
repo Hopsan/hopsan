@@ -253,7 +253,7 @@ void ModelHandler::loadTextFile()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Text File"),
                                                                 gpConfig->getStringSetting(CFG_LOADSCRIPTDIR),
-                                                                tr("HCOM Script Files (*.hcom);;C++ Header Files (*.hpp *.h);;C++ Source Files (*.cpp *.cc *.c);;XML files (*.xml);;Modelica files (*.mo);;Python Script Files (*.py);;All Supported Files (*.hcom *.hpp *.h *.cpp *.cc *.c *.xml *.mo *.py)"));
+                                                                tr("All Supported Files (*.hcom *.hpp *.h *.cpp *.cc *.c *.xml *.mo *.py);;HCOM Script Files (*.hcom);;C++ Header Files (*.hpp *.h);;C++ Source Files (*.cpp *.cc *.c);;XML files (*.xml);;Modelica files (*.mo);;Python Script Files (*.py)"));
     for(const auto &fileName : fileNames)
     {
         QFileInfo fileInfo = QFileInfo(fileName);
