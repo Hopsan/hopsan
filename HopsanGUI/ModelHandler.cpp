@@ -55,7 +55,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/DataExplorer.h"
 #include "Widgets/PlotWidget2.h"
-#include "Widgets/ScriptEditor.h"
+#include "Widgets/TextEditorWidget.h"
 #include "Utilities/GUIUtilities.h"
 
 #ifdef USEZMQ
@@ -286,7 +286,7 @@ void ModelHandler::loadModel(QAction *action)
 //! @see loadScriptFile()
 void ModelHandler::newScriptFile()
 {
-    ScriptEditor *pNewEditor = new ScriptEditor(QFileInfo(), gpCentralTabWidget);
+    TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(), gpCentralTabWidget);
     gpCentralTabWidget->addTab(pNewEditor, "HcomScript"+QString::number(mNumberOfUntitledScripts));
     gpCentralTabWidget->setCurrentWidget(pNewEditor);
     mScriptEditors.append(pNewEditor);
@@ -361,7 +361,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
 //! @param modelFileName is the path to the loaded file
 //! @see loadModel()
 //! @see saveModel(saveTarget saveAsFlag)
-ScriptEditor *ModelHandler::loadScriptFile(QString scriptFileName)
+TextEditorWidget *ModelHandler::loadScriptFile(QString scriptFileName)
 {
     QFile scriptFile(scriptFileName);
     if(!scriptFile.exists())
@@ -370,7 +370,7 @@ ScriptEditor *ModelHandler::loadScriptFile(QString scriptFileName)
         return nullptr;
     }
     QFileInfo scriptFileInfo(scriptFile);
-    ScriptEditor *pNewEditor = new ScriptEditor(QFileInfo(scriptFileName), gpCentralTabWidget);
+    TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(scriptFileName), gpCentralTabWidget);
     gpCentralTabWidget->addTab(pNewEditor, scriptFileInfo.fileName());
     gpCentralTabWidget->setCurrentWidget(pNewEditor);
     mScriptEditors.append(pNewEditor);
@@ -519,7 +519,7 @@ bool ModelHandler::closeModel(int idx, bool force)
 bool ModelHandler::closeScript(int idx, bool force)
 {
     // Only remove if we found the model by index
-    ScriptEditor *pEditor = mScriptEditors[idx];
+    TextEditorWidget *pEditor = mScriptEditors[idx];
     if(pEditor)
     {
         if (!pEditor->isSaved() && !force)
@@ -626,7 +626,7 @@ void ModelHandler::refreshMainWindowConnections()
         disconnectMainWindowConnections(getModel(i));
         getViewContainerObject(i)->unmakeMainWindowConnectionsAndRefresh();
     }
-    for(ScriptEditor *scriptEditor : mScriptEditors)
+    for(TextEditorWidget *scriptEditor : mScriptEditors)
     {
         disconnectMainWindowConnections(scriptEditor);
     }
@@ -664,7 +664,7 @@ void ModelHandler::refreshMainWindowConnections()
             gpLibraryWidget->setGfxType(pCurrentModel->getTopLevelSystemContainer()->getGfxType());
         }
     }
-    ScriptEditor *pScriptEditor = qobject_cast<ScriptEditor*>(gpMainWindow->mpCentralTabs->currentWidget());
+    TextEditorWidget *pScriptEditor = qobject_cast<TextEditorWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
     if(pScriptEditor)
     {
         connectMainWindowConnections(pScriptEditor);
@@ -697,7 +697,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }
 
-void ModelHandler::disconnectMainWindowConnections(ScriptEditor* pScriptEditor)
+void ModelHandler::disconnectMainWindowConnections(TextEditorWidget* pScriptEditor)
 {
     //disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(saveAs()));
@@ -736,7 +736,7 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }
 
-void ModelHandler::connectMainWindowConnections(ScriptEditor* pScriptEditor)
+void ModelHandler::connectMainWindowConnections(TextEditorWidget* pScriptEditor)
 {
     connect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
     connect(gpMainWindow->mpSaveAsAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(saveAs()));

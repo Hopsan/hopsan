@@ -82,7 +82,7 @@
 #include "Widgets/DataExplorer.h"
 #include "Widgets/FindWidget.h"
 #include "Widgets/ModelicaEditor.h"
-#include "Widgets/ScriptEditor.h"
+#include "Widgets/TextEditorWidget.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -1391,7 +1391,7 @@ void MainWindow::updateToolBarsToNewTab()
     bool modelTab = modelOpen && pModel;
     bool logData = modelTab && pModel->getViewContainerObject()->getLogDataHandler();
 
-    ScriptEditor *pEditor = qobject_cast<ScriptEditor*>(mpCentralTabs->currentWidget());
+    TextEditorWidget *pEditor = qobject_cast<TextEditorWidget*>(mpCentralTabs->currentWidget());
     bool editorTab = (pEditor != nullptr);
 
     if(modelTab)
