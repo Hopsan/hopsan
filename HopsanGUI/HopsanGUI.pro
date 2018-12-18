@@ -308,7 +308,7 @@ SOURCES += main.cpp \
     Utilities/WebviewWrapper.cpp \
     GeneratorUtils.cpp \
     Dialogs/OptimizationScriptWizard.cpp \
-    Widgets/ScriptEditor.cpp
+    Widgets/TextEditorWidget.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -402,7 +402,7 @@ HEADERS += MainWindow.h \
     Utilities/WebviewWrapper.h \
     GeneratorUtils.h \
     Dialogs/OptimizationScriptWizard.h \
-    Widgets/ScriptEditor.h
+    Widgets/TextEditorWidget.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

@@ -41,11 +41,11 @@
 
 #include "common.h"
 
-class HcomEditor : public QTextEdit
+class TextEditor : public QTextEdit
 {
     Q_OBJECT
 public:
-    HcomEditor(QWidget *parent = 0);
+    TextEditor(QWidget *parent = 0);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -60,13 +60,13 @@ private:
     QCompleter *mpCompleter;
 };
 
-class ScriptEditor : public QWidget
+class TextEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ScriptEditor(QFileInfo file, QWidget *parent = nullptr);
+    explicit TextEditorWidget(QFileInfo file, QWidget *parent = nullptr);
 
-    QFileInfo getScriptFileInfo() const { return mScriptFileInfo; }
+    QFileInfo getScriptFileInfo() const { return mFileInfo; }
     bool isSaved() const { return mIsSaved; }
 
 protected:
@@ -75,8 +75,8 @@ protected:
 signals:
 
 private:
-    HcomEditor *mpEditor;
-    QFileInfo mScriptFileInfo;
+    TextEditor *mpEditor;
+    QFileInfo mFileInfo;
     bool mIsSaved = true;
     QString mSavedText;
 

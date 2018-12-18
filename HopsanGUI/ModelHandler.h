@@ -47,7 +47,7 @@ class ContainerObject;
 class LogDataHandler2;
 class SimulationThreadHandler;
 class DebuggerWidget;
-class ScriptEditor;
+class TextEditorWidget;
 
 class ModelStateInfo
 {
@@ -86,7 +86,7 @@ public:
     int count() const;
 
     ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool detatched=false);
-    ScriptEditor *loadScriptFile(QString scriptFileName);
+    TextEditorWidget *loadScriptFile(QString scriptFileName);
     SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
@@ -132,13 +132,13 @@ signals:
 private:
     void refreshMainWindowConnections();
     void disconnectMainWindowConnections(ModelWidget* pModel);
-    void disconnectMainWindowConnections(ScriptEditor *pScriptEditor);
+    void disconnectMainWindowConnections(TextEditorWidget *pScriptEditor);
     void connectMainWindowConnections(ModelWidget *pModel);
-    void connectMainWindowConnections(ScriptEditor *pScriptEditor);
+    void connectMainWindowConnections(TextEditorWidget *pScriptEditor);
     void setToolBarSimulationTimeFromTab(ModelWidget *pModel);
 
     QList<ModelWidget*> mModelPtrs;
-    QList<ScriptEditor*> mScriptEditors;
+    QList<TextEditorWidget*> mScriptEditors;
     int mCurrentIdx;
     int mNumberOfUntitledModels;
     int mNumberOfUntitledScripts;

@@ -32,7 +32,7 @@
 //!
 
 
-#include "ScriptEditor.h"
+#include "TextEditorWidget.h"
 #include "Utilities/HighlightingUtilities.h"
 #include "global.h"
 #include "Configuration.h"
@@ -53,23 +53,23 @@
 #include <QPrintDialog>
 #include <math.h>
 
-ScriptEditor::ScriptEditor(QFileInfo scriptFileInfo, QWidget *parent) : QWidget(parent)
+TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, QWidget *parent) : QWidget(parent)
 {
-    mScriptFileInfo = scriptFileInfo;
+    mFileInfo = scriptFileInfo;
 
-    mpEditor = new HcomEditor(this);
+    mpEditor = new TextEditor(this);
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     mpEditor->setFont(font);
 
     HcomHighlighter *pHighLighter = new HcomHighlighter(mpEditor->document());
 
-    if(mScriptFileInfo.exists())
+    if(mFileInfo.exists())
     {
-        QFile scriptFile(mScriptFileInfo.absoluteFilePath());
+        QFile scriptFile(mFileInfo.absoluteFilePath());
         if(!scriptFile.open(QFile::ReadOnly | QFile::Text))
         {
-            gpMessageHandler->addErrorMessage("Unable to read from HCOM script file: "+mScriptFileInfo.absoluteFilePath());
+            gpMessageHandler->addErrorMessage("Unable to read from text file: "+mFileInfo.absoluteFilePath());
             return;
         }
         mSavedText = scriptFile.readAll();
@@ -83,7 +83,7 @@ ScriptEditor::ScriptEditor(QFileInfo scriptFileInfo, QWidget *parent) : QWidget(
     connect(mpEditor, SIGNAL(textChanged()), this, SLOT(hasChanged()));
 }
 
-void ScriptEditor::wheelEvent(QWheelEvent* event)
+void TextEditorWidget::wheelEvent(QWheelEvent* event)
 {
 #if QT_VERSION >= 0x050000  //zoomIn() and zoomOut() not available in Qt4
    if ((event->modifiers() == Qt::ControlModifier) && (event->delta() > 0))
@@ -100,23 +100,23 @@ void ScriptEditor::wheelEvent(QWheelEvent* event)
 
 //! Saves the script tab to a model file.
 //! @param saveAsFlag tells whether or not an already existing file name shall be used
-void ScriptEditor::save(SaveTargetEnumT saveAsFlag)
+void TextEditorWidget::save(SaveTargetEnumT saveAsFlag)
 {
-    if(saveAsFlag == NewFile || !mScriptFileInfo.exists())
+    if(saveAsFlag == NewFile || !mFileInfo.exists())
     {
         QString filePath = QFileDialog::getSaveFileName(this,
                                                         tr("Save Script File"),
-                                                        mScriptFileInfo.filePath(),
-                                                        tr("Hopsan Script Files (*.hcom)"));
+                                                        mFileInfo.filePath(),
+                                                        tr("Hopsan Script Files (*.hcom);;C++ Header Files (*.hpp)"));
         if(filePath.isEmpty())     //Don't save anything if user presses cancel
         {
             return;
         }
-        mScriptFileInfo = QFileInfo(filePath);
+        mFileInfo = QFileInfo(filePath);
     }
 
-    QFile file(mScriptFileInfo.absoluteFilePath());
-    gpConfig->setStringSetting(CFG_LOADSCRIPTDIR, mScriptFileInfo.absolutePath());
+    QFile file(mFileInfo.absoluteFilePath());
+    gpConfig->setStringSetting(CFG_LOADSCRIPTDIR, mFileInfo.absolutePath());
 
     if(!file.open(QFile::WriteOnly | QFile::Text))
     {
@@ -127,12 +127,12 @@ void ScriptEditor::save(SaveTargetEnumT saveAsFlag)
     file.write(mpEditor->toPlainText().toUtf8());
     file.close();
 
-    gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(this), mScriptFileInfo.fileName());
+    gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(this), mFileInfo.fileName());
 
     mIsSaved = true;
 }
 
-void ScriptEditor::hasChanged()
+void TextEditorWidget::hasChanged()
 {
     mIsSaved = mpEditor->toPlainText() == mSavedText;
 
@@ -152,62 +152,62 @@ void ScriptEditor::hasChanged()
 
 //! Slot that saves current script to a new model file.
 //! @see saveModel(int index)
-void ScriptEditor::saveAs()
+void TextEditorWidget::saveAs()
 {
     save(NewFile);
 }
 
-void ScriptEditor::cut()
+void TextEditorWidget::cut()
 {
     mpEditor->cut();
 }
 
-void ScriptEditor::copy()
+void TextEditorWidget::copy()
 {
     mpEditor->copy();
 }
 
-void ScriptEditor::paste()
+void TextEditorWidget::paste()
 {
     mpEditor->paste();
 }
 
-void ScriptEditor::undo()
+void TextEditorWidget::undo()
 {
     mpEditor->undo();
 }
 
-void ScriptEditor::redo()
+void TextEditorWidget::redo()
 {
     mpEditor->redo();
 }
 
-void ScriptEditor::zoomIn()
+void TextEditorWidget::zoomIn()
 {
 #if QT_VERSION >= 0x050000
     mpEditor->zoomIn(2);
 #endif
 }
 
-void ScriptEditor::zoomOut()
+void TextEditorWidget::zoomOut()
 {
 #if QT_VERSION >= 0x050000
     mpEditor->zoomOut(2);
 #endif
 }
 
-void ScriptEditor::print()
+void TextEditorWidget::print()
 {
     QPrinter printer;
     printer.setColorMode(QPrinter::Color);
     QPrintDialog *dialog = new QPrintDialog(&printer);
-    dialog->setWindowTitle("Print HCOM Script");
+    dialog->setWindowTitle("Print text file");
     if (dialog->exec() != QDialog::Accepted)
         return;
     mpEditor->print(&printer);
 }
 
-HcomEditor::HcomEditor(QWidget* parent) : QTextEdit(parent)
+TextEditor::TextEditor(QWidget* parent) : QTextEdit(parent)
 {
     mpCompleter = new QCompleter(this);
     updateAutoCompleteList();
@@ -219,7 +219,7 @@ HcomEditor::HcomEditor(QWidget* parent) : QTextEdit(parent)
                      this, SLOT(insertCompletion(QString)));
 }
 
-void HcomEditor::keyPressEvent(QKeyEvent* event)
+void TextEditor::keyPressEvent(QKeyEvent* event)
 {
     if (mpCompleter->popup()->isVisible())
     {
@@ -387,13 +387,13 @@ void HcomEditor::keyPressEvent(QKeyEvent* event)
 
 
 //! @brief Updates list of auto complete words
-void HcomEditor::updateAutoCompleteList()
+void TextEditor::updateAutoCompleteList()
 {
     mpCompleter->setModel(new QStringListModel(gpTerminalWidget->mpHandler->getAutoCompleteWords(), mpCompleter));
 }
 
 
-void HcomEditor::insertCompletion(const QString& completion)
+void TextEditor::insertCompletion(const QString& completion)
 {
     if (mpCompleter->widget() != this)
         return;
