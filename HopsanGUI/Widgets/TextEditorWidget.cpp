@@ -595,7 +595,57 @@ void TextEditor::wheelEvent(QWheelEvent* event)
 //! @brief Updates list of auto complete words
 void TextEditor::updateAutoCompleteList()
 {
-    mpCompleter->setModel(new QStringListModel(gpTerminalWidget->mpHandler->getAutoCompleteWords(), mpCompleter));
+    if(mLanguage == HighlighterTypeEnum::Hcom) {
+        mpCompleter->setModel(new QStringListModel(gpTerminalWidget->mpHandler->getAutoCompleteWords(), mpCompleter));
+    }
+    else if(mLanguage == HighlighterTypeEnum::Cpp) {
+        QStringList lines = toPlainText().split("\n");
+
+        QStringList dataTypes = QStringList() << "double" << "int" << "SecondOrderTransferFunction" << "FirstOrderTransferFunction" << "Port";
+        QStringList functions = QStringList() << "addInputVariable" << "addOutputVariable" << "addConstant" << "addPowerPort" << "getSafeNodeDataPtr";
+
+        int bracketCounter=-1;
+
+        QStringList variables;
+        foreach(const QString &line, lines)
+        {
+            if(line.simplified().startsWith("class "))
+                bracketCounter = 0;
+
+            bracketCounter += line.count("{");
+            bracketCounter -= line.count("}");
+            if(bracketCounter != 1)
+                continue;
+
+            if(line.contains("()")) //Ignore functions
+                continue;
+
+            if(dataTypes.contains(line.simplified().section(" ",0,0)))
+            {
+                variables.append(line.simplified().split(","));
+            }
+        }
+        for(int v=0; v<variables.size(); ++v)
+        {
+            variables[v].remove("*");
+            variables[v].remove(";");
+            for(int d=0; d<dataTypes.size(); ++d)
+            {
+                variables[v].remove(dataTypes[d]+" ");
+            }
+            variables[v].remove(" ");
+            while(variables[v].contains("["))
+            {
+                variables[v].remove("["+variables[v].section("[",1,1).section("]",0,0)+"]");
+            }
+        }
+
+        QStringList allWords = QStringList() << dataTypes << functions << variables;
+        mpCompleter->setModel(new QStringListModel(allWords, mpCompleter));
+    }
+    else {
+        return; //No auto completer for XML/Modelica/Python yet
+    }
 }
 
 
