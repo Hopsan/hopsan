@@ -336,8 +336,14 @@ CppHighlighter::CppHighlighter(QTextDocument *parent)
 {
     HighlightingRule rule;
 
-    keywordFormat.setForeground(Qt::darkYellow);
-    keywordFormat.setFontWeight(QFont::Normal);
+    //mFunctionFormat.setFontWeight(75);
+    mFunctionFormat.setForeground(Qt::black);
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+    rule.format = mFunctionFormat;
+    mHighlightingRules.append(rule);
+
+    mKeywordFormat.setForeground(Qt::darkYellow);
+    mKeywordFormat.setFontWeight(QFont::Normal);
     QStringList keywordPatterns;
     keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
                     << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
@@ -348,60 +354,74 @@ CppHighlighter::CppHighlighter(QTextDocument *parent)
                     << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
                     << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
                     << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
-                    << "\\bvoid\\b" << "\\bvolatile\\b" << "\\busing\\b";
-    foreach (const QString &pattern, keywordPatterns) {
+                    << "\\bvoid\\b" << "\\bvolatile\\b" << "\\busing\\b"
+                    << "\\bbool\\b" << "\\bif\\b" << "\\belse\\b"
+                    << "\\bfor\\b" << "\\bforeach\\b" << "\\bwhile\\b"
+                    << "\\bswitch\\b" << "\\bcase\\b" << "\\bdefault\\b"
+                    << "\\bbreak\\b" << "\\breturn\\b" << "\\bif\\()";
+    foreach (const QString &pattern, keywordPatterns)
+    {
         rule.pattern = QRegExp(pattern);
-        rule.format = keywordFormat;
-        highlightingRules.append(rule);
+        rule.format = mKeywordFormat;
+        mHighlightingRules.append(rule);
     }
 
-    preProcessorFormat.setForeground(Qt::darkBlue);
-    preProcessorFormat.setFontWeight(QFont::Normal);
+    mHopsanKeywordFormat.setForeground(Qt::darkMagenta);
+    mHopsanKeywordFormat.setFontWeight(QFont::Normal);
+    QStringList hopsanKeywordPatterns;
+    hopsanKeywordPatterns << "\\bPort\\b" << "\\bFirstOrderTransferFunctionVariable\\b" << "\\bSecondOrderTransferFunctionVariable\\b"
+                          << "\\bFirstOrderTransferFunction\\b" << "\\bSecondOrderTransferFunction\\b"
+                          << "\\bFirstOrderFiler\\b" << "\\bSecondOrderFilter\\b";
+    foreach (const QString &pattern, hopsanKeywordPatterns)
+    {
+        rule.pattern = QRegExp(pattern);
+        rule.format = mHopsanKeywordFormat;
+        mHighlightingRules.append(rule);
+    }
+
+    mPreProcessorFormat.setForeground(Qt::darkBlue);
+    mPreProcessorFormat.setFontWeight(QFont::Normal);
     keywordPatterns.clear();
     keywordPatterns << "^#?\\binclude\\b" << "^#?\\bifdef\\b" << "^#?\\bifndef\\b"
                     << "^#?\\belseif\\b" << "^#?\\belse\\b" << "^#?\\bendif\\b";
-    foreach (const QString &pattern, keywordPatterns) {
+    foreach (const QString &pattern, keywordPatterns)
+    {
         rule.pattern = QRegExp(pattern);
-        rule.format = preProcessorFormat;
-        highlightingRules.append(rule);
+        rule.format = mPreProcessorFormat;
+        mHighlightingRules.append(rule);
     }
 
-    classFormat.setFontWeight(QFont::Bold);
-    classFormat.setForeground(Qt::darkMagenta);
-    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
-    rule.format = classFormat;
-    highlightingRules.append(rule);
+    //Make Qt classes purple, no real point in component libraries
+//    mClassFormat.setFontWeight(QFont::Bold);
+//    mClassFormat.setForeground(Qt::darkMagenta);
+//    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+//    rule.format = mClassFormat;
+//    mHighlightingRules.append(rule);
 
-    singleLineCommentFormat.setForeground(Qt::red);
+    mSingleLineCommentFormat.setForeground(Qt::gray);
     rule.pattern = QRegExp("//[^\n]*");
-    rule.format = singleLineCommentFormat;
-    highlightingRules.append(rule);
+    rule.format = mSingleLineCommentFormat;
+    mHighlightingRules.append(rule);
 
-    multiLineCommentFormat.setForeground(Qt::red);
+    mMultiLineCommentFormat.setForeground(Qt::gray);
 
-    quotationFormat.setForeground(Qt::darkGreen);
+    mQuotationFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegExp("<.*>");
-    rule.format = quotationFormat;
-    highlightingRules.append(rule);
+    rule.format = mQuotationFormat;
+    mHighlightingRules.append(rule);
 
-    tagFormat.setForeground(Qt::darkGreen);
+    mTagFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegExp("\".*\"");
-    rule.format = quotationFormat;
-    highlightingRules.append(rule);
+    rule.format = mQuotationFormat;
+    mHighlightingRules.append(rule);
 
-    functionFormat.setFontItalic(true);
-    functionFormat.setForeground(Qt::blue);
-    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
-    rule.format = functionFormat;
-    highlightingRules.append(rule);
-
-    commentStartExpression = QRegExp("/\\*");
-    commentEndExpression = QRegExp("\\*/");
+    mCommentStartExpression = QRegExp("/\\*");
+    mCommentEndExpression = QRegExp("\\*/");
 }
 
 void CppHighlighter::highlightBlock(const QString &text)
 {
-    foreach (const HighlightingRule &rule, highlightingRules) {
+    foreach (const HighlightingRule &rule, mHighlightingRules) {
         QRegExp expression(rule.pattern);
         int index = expression.indexIn(text);
         while (index >= 0) {
@@ -414,20 +434,20 @@ void CppHighlighter::highlightBlock(const QString &text)
 
     int startIndex = 0;
     if (previousBlockState() != 1)
-        startIndex = commentStartExpression.indexIn(text);
+        startIndex = mCommentStartExpression.indexIn(text);
 
     while (startIndex >= 0) {
-        int endIndex = commentEndExpression.indexIn(text, startIndex);
+        int endIndex = mCommentEndExpression.indexIn(text, startIndex);
         int commentLength;
         if (endIndex == -1) {
             setCurrentBlockState(1);
             commentLength = text.length() - startIndex;
         } else {
             commentLength = endIndex - startIndex
-                            + commentEndExpression.matchedLength();
+                    + mCommentEndExpression.matchedLength();
         }
-        setFormat(startIndex, commentLength, multiLineCommentFormat);
-        startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
+        setFormat(startIndex, commentLength, mMultiLineCommentFormat);
+        startIndex = mCommentStartExpression.indexIn(text, startIndex + commentLength);
     }
 }
 
@@ -648,3 +668,25 @@ void HcomHighlighter::highlightBlock(const QString &text)
 }
 
 
+
+HighlighterTypeEnum highlighterForExtension(QString extension)
+{
+    HighlighterTypeEnum highlighter = HighlighterTypeEnum::PlainText;
+    if(extension == "hcom") {
+        highlighter = HighlighterTypeEnum::Hcom;
+    }
+    else if(extension == "hpp" || extension == "h" || extension == "cpp" ||
+            extension == "cc" || extension == "c") {
+        highlighter = HighlighterTypeEnum::Cpp;
+    }
+    else if(extension == "xml" || extension == "hmf") {
+        highlighter =  HighlighterTypeEnum::XML;
+    }
+    else if(extension == "mo") {
+        highlighter = HighlighterTypeEnum::Modelica;
+    }
+    else if(extension == "py") {
+        highlighter = HighlighterTypeEnum::Python;
+    }
+    return highlighter;
+}

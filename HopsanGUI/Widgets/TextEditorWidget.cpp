@@ -53,7 +53,7 @@
 #include <QPrintDialog>
 #include <math.h>
 
-TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, QWidget *parent) : QWidget(parent)
+TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum highlighter, QWidget *parent) : QWidget(parent)
 {
     mFileInfo = scriptFileInfo;
 
@@ -62,7 +62,12 @@ TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, QWidget *parent) : 
     font.setStyleHint(QFont::TypeWriter);
     mpEditor->setFont(font);
 
-    HcomHighlighter *pHighLighter = new HcomHighlighter(mpEditor->document());
+    mpHcomHighlighter = new HcomHighlighter(nullptr);
+    mpXmlHighlighter = new XmlHighlighter(nullptr);
+    mpCppHighlighter = new CppHighlighter(nullptr);
+    mpModelicaHighlighter = new ModelicaHighlighter(nullptr);
+    mpPythonXmlHighlighter = new PythonHighlighter(nullptr);
+    setHighlighter(highlighter);
 
     if(mFileInfo.exists())
     {
@@ -95,6 +100,34 @@ void TextEditorWidget::wheelEvent(QWheelEvent* event)
 #else
    QWidget::wheelEvent(event);
 #endif
+}
+
+void TextEditorWidget::setHighlighter(HighlighterTypeEnum highlighter)
+{
+    mpHcomHighlighter->setDocument(nullptr);
+    mpCppHighlighter->setDocument(nullptr);
+    mpXmlHighlighter->setDocument(nullptr);
+    mpModelicaHighlighter->setDocument(nullptr);
+    mpPythonXmlHighlighter->setDocument(nullptr);
+    switch (highlighter) {
+        case HighlighterTypeEnum::Hcom:
+            mpHcomHighlighter->setDocument(mpEditor->document());
+            break;
+        case HighlighterTypeEnum::Cpp:
+            mpCppHighlighter->setDocument(mpEditor->document());
+            break;
+        case HighlighterTypeEnum::XML:
+            mpXmlHighlighter->setDocument(mpEditor->document());
+            break;
+        case HighlighterTypeEnum::Modelica:
+            mpModelicaHighlighter->setDocument(mpEditor->document());
+            break;
+        case HighlighterTypeEnum::Python:
+            mpPythonXmlHighlighter->setDocument(mpEditor->document());
+            break;
+        default:
+            break;
+    }
 }
 
 

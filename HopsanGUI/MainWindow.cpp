@@ -521,11 +521,11 @@ void MainWindow::createActions()
     connect(mpNewScriptAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpNewScriptAction, "Create a new HCOM script file.");
 
-    mpOpenScriptAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-OpenScript.png"), tr("&Open HCOM Script"), this);
-    mpOpenScriptAction->setToolTip(tr("Load HCOM Script File"));
-    connect(mpOpenScriptAction, SIGNAL(triggered()), mpModelHandler, SLOT(loadScriptFile()));
-    connect(mpOpenScriptAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-    mHelpPopupTextMap.insert(mpOpenScriptAction, "Open a HCOM script file.");
+    mpOpenTextFileAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-OpenScript.png"), tr("&Open Text File"), this);
+    mpOpenTextFileAction->setToolTip(tr("Load Text File"));
+    connect(mpOpenTextFileAction, SIGNAL(triggered()), mpModelHandler, SLOT(loadTextFile()));
+    connect(mpOpenTextFileAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpOpenTextFileAction, "Open a text file.");
 
     mpSaveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
     mpSaveAction->setShortcut(QKeySequence("Ctrl+s"));
@@ -984,7 +984,7 @@ void MainWindow::createMenus()
     mpFileMenu->addMenu(mpRecentMenu);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpNewScriptAction);
-    mpFileMenu->addAction(mpOpenScriptAction);
+    mpFileMenu->addAction(mpOpenTextFileAction);
     mpFileMenu->addAction(mpPrintAction);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpLoadLibsAction);
@@ -1085,7 +1085,7 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpSaveAction);
     mpFileToolBar->addAction(mpSaveAsAction);
     mpFileToolBar->addAction(mpNewScriptAction);
-    mpFileToolBar->addAction(mpOpenScriptAction);
+    mpFileToolBar->addAction(mpOpenTextFileAction);
     mpFileToolBar->addAction(mpPrintAction);
 
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
