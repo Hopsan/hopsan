@@ -1508,11 +1508,22 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
                 if(thisSystemsParameterNames.contains(var)) {
                     CoreParameterData parData;
                     getParameter(var, parData);
-                    QDomElement parElement = appendDomElement(*copyRoot, "parameter");
-                    parElement.setAttribute("name", parData.mName);
-                    parElement.setAttribute("value", parData.mValue);
-                    parElement.setAttribute("type", parData.mType);
-                    //! @todo copy all data
+                    QDomElement xmlParameter = appendDomElement(*copyRoot, HMF_PARAMETERTAG);
+                    xmlParameter.setAttribute(HMF_NAMETAG, parData.mName);
+                    xmlParameter.setAttribute(HMF_VALUETAG, parData.mValue);
+                    xmlParameter.setAttribute(HMF_TYPE, parData.mType);
+                    if (!parData.mQuantity.isEmpty())
+                    {
+                        xmlParameter.setAttribute(HMF_QUANTITY, parData.mQuantity);
+                    }
+                    if (!parData.mUnit.isEmpty())
+                    {
+                        xmlParameter.setAttribute(HMF_UNIT, parData.mUnit);
+                    }
+                    if (!parData.mDescription.isEmpty())
+                    {
+                        xmlParameter.setAttribute(HMF_DESCRIPTIONTAG, parData.mDescription);
+                    }
                 }
             }
         }
@@ -1688,15 +1699,18 @@ void ContainerObject::paste(CopyStack *xmlStack)
     }
 
         //Paste system parameters
-    QDomElement parElement = copyRoot->firstChildElement("parameter");
+    QDomElement parElement = copyRoot->firstChildElement(HMF_PARAMETERTAG);
     while(!parElement.isNull())
     {
-        QString name = parElement.attribute("name");
-        QString value = parElement.attribute("value");
-        QString type = parElement.attribute("type");
+        QString name = parElement.attribute(HMF_NAMETAG);
         if(!getParameterNames().contains(name))
         {
-            CoreParameterData parData = CoreParameterData(name, value, type);
+            QString value = parElement.attribute(HMF_VALUETAG);
+            QString type = parElement.attribute(HMF_TYPE);
+            QString quantityORunit = parElement.attribute(HMF_QUANTITY, parElement.attribute(HMF_UNIT));
+            QString description = parElement.attribute(HMF_DESCRIPTIONTAG);
+
+            CoreParameterData parData = CoreParameterData(name, value, type, quantityORunit, "", description);
             setOrAddParameter(parData);
         }
         parElement = parElement.nextSiblingElement("parameter");
