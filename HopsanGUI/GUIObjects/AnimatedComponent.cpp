@@ -54,15 +54,38 @@
 #include "PlotHandler.h"
 #include "PlotWindow.h"
 
+namespace {
+
+void updatePlotData(const QPointer<Port> &pPort, SharedVectorVariableT &pVariable) {
+    if (!pPort.isNull()) {
+        double data;
+        pPort->getLastNodeData("Value", data);
+        pVariable->append(data);
+    }
+};
+
+void updatePlotData(const SharedVectorVariableT &pLogData, const double time, SharedVectorVariableT &pVariable) {
+    if (!pLogData.isNull()) {
+        auto pTimeVector = pLogData->getSharedTimeOrFrequencyVector();
+        if (!pTimeVector.isNull()) {
+            int index = pTimeVector->lower_bound(time, true);
+            if (index >= 0) {
+                const double data = pLogData->peekData(index);
+                pVariable->append(data);
+            }
+        }
+    }
+};
+
+}
 
 //! @brief Constructor for the animated component class
 AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, AnimationWidget *parent)
-    : QObject(parent /*parent*/)
+    : QObject(parent)
 {
     //Set member pointer variables
     mpAnimationWidget = parent;
     mpModelObject = unanimatedComponent;
-    mpAnimationWidget = parent;
     mpData = new QList<QList<QVector<double> > >();
     mpNodeDataPtrs = new QList<QList<double *> >();
 
@@ -388,41 +411,6 @@ void AnimatedComponent::updateAnimation()
                 pos = mpMovables[m]->mapToItem(mpBase, portStartX, portStartY);
                 mPortPositions.insert(portName, pos);
             }
-        }
-    }
-
-    if(mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
-    {
-        LogDataHandler2* pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler().data();
-
-        QList<SharedVectorVariableT> vectors;
-
-        SharedVectorVariableT pTimeVar = pHandler->getVectorVariable(mpModelObject->getName()+"_time",-1);
-        if(!pTimeVar.isNull())
-        {
-            pTimeVar->append(mpAnimationWidget->getLastAnimationTime());
-            vectors << pTimeVar;
-
-            SharedVectorVariableT pVar;
-            foreach(const Port *pPort, QVector<Port*>() << mpModelObject->getPort("in")->getConnectedPorts() << mpModelObject->getPort("in_right")->getConnectedPorts() << mpModelObject->getPort("in_bottom"))
-            {
-                //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
-                QString fullName = makeFullVariableName(pPort->getParentModelObject()->getParentSystemNameHieararchy(), pPort->getParentModelObjectName(),
-                                                        pPort->getName(),"Value");
-                fullName.remove("#");
-                pVar = pHandler->getVectorVariable(fullName,-1);
-                if(pVar.isNull())
-                {
-                    continue;
-                }
-                double data;
-                pPort->getLastNodeData("Value", data);
-                pVar->append(data);
-                vectors << pVar;
-            }
-
-            double firstT = pTimeVar->first();
-            double lastT = pTimeVar->last();
         }
     }
 }
@@ -905,83 +893,14 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         AnimatedIconPropertiesDialog *pDialog = new AnimatedIconPropertiesDialog(mpAnimatedComponent, mpAnimatedComponent->indexOfMovable(this), gpMainWindowWidget);
         pDialog->exec();
-        delete(pDialog);
+        pDialog->deleteLater();
     }
 
-
-    //Open plot window if double-clicking on scope component
-    if(mpAnimatedComponent->mpModelObject->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME)
-    {
-        LogDataHandler2* pHandler = mpAnimatedComponent->mpModelObject->getParentContainerObject()->getLogDataHandler().data();
-        QString name = mpAnimatedComponent->mpModelObject->getName();
-        PlotWindow *pPlotWindow = mpAnimatedComponent->mpPlotWindow;
-
-        QString timeName = name+"_time";
-        SharedVectorVariableT pTimeVar = pHandler->getVectorVariable(timeName, -1);
-        if(pTimeVar.isNull())
-        {
-            pTimeVar = pHandler->defineNewVectorVariable(timeName);
-        }
-        pTimeVar->assignFrom(QVector<double>() << 0);
-
-
-        pPlotWindow = gpPlotHandler->createNewUniquePlotWindow(name);
-
-        foreach(const Port* pPort, mpAnimatedComponent->mpModelObject->getPort("in")->getConnectedPorts())
-        {
-            //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
-            QString fullName = makeFullVariableName(pPort->getParentModelObject()->getParentSystemNameHieararchy(), pPort->getParentModelObjectName(),
-                                                    pPort->getName(),"Value");
-            fullName.remove("#");
-            SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
-            if(pVar.isNull())
-            {
-                pVar = pHandler->defineNewVectorVariable(fullName);
-            }
-            pVar->assignFrom(QVector<double>() << 0);
-            pHandler->plotVariable(pPlotWindow, fullName, -1, QwtPlot::yLeft);
-        }
-        foreach(const Port* pPort, mpAnimatedComponent->mpModelObject->getPort("in_right")->getConnectedPorts())
-        {
-            //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
-            QString fullName = makeFullVariableName(pPort->getParentModelObject()->getParentSystemNameHieararchy(), pPort->getParentModelObjectName(),
-                                                    pPort->getName(),"Value");
-            fullName.remove("#");
-            SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
-            if(pVar.isNull())
-            {
-                pVar = pHandler->defineNewVectorVariable(fullName);
-            }
-            pVar->assignFrom(QVector<double>() << 0);
-            pHandler->plotVariable(pPlotWindow, fullName, -1, QwtPlot::yLeft);
-        }
-        if(mpAnimatedComponent->mpModelObject->getPort("in_bottom")->isConnected())
-        {
-            Port *pPort = mpAnimatedComponent->mpModelObject->getPort("in_bottom");
-            //! @todo should pregenerate the names instead of doing it every update (getSystemHierarchy need to be regenerateed every time)
-            QString fullName = makeFullVariableName(pPort->getParentModelObject()->getParentSystemNameHieararchy(), pPort->getParentModelObjectName(),
-                                                    pPort->getName(),"Value");
-            fullName.remove("#");
-            SharedVectorVariableT pVar = pHandler->getVectorVariable(fullName, -1);
-            if(pVar.isNull())
-            {
-                pVar = pHandler->defineNewVectorVariable(fullName);
-            }
-            pVar->assignFrom(QVector<double>() << 0);
-
-            gpPlotHandler->setPlotWindowXData(pPlotWindow, pVar, true);
-
-        }
-        else
-        {
-            gpPlotHandler->setPlotWindowXData(pPlotWindow, pTimeVar, true);
-        }
-
-
-
-        pPlotWindow->showNormal();
+    // Open plot window if double-clicking on scope component
+    auto pScope = qobject_cast<AnimatedScope*>(mpAnimatedComponent);
+    if (pScope) {
+        pScope->openPlotwindow();
     }
-
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
 }
@@ -1131,4 +1050,121 @@ void AnimatedIcon::flipHorizontal(UndoStatusEnumT undoSettings)
     {
         mIsFlipped = true;
     }
+}
+
+void AnimatedScope::openPlotwindow()
+{
+    if (!mpPlotWindow.isNull()) {
+        mpPlotWindow->show();
+        return;
+    }
+
+    LogDataHandler2* pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler().data();
+    const QString scopeName = mpModelObject->getName();
+
+    mpPlotWindow = gpPlotHandler->createNewUniquePlotWindow(scopeName);
+    mTimeData.clear();
+    mBottomData.clear();
+    mLeftDatas.clear();
+    mRightDatas.clear();
+
+    const QString timeName = scopeName+"_time";
+    mTimeData.animatedPlotData = pHandler->createOrphanVariable(timeName, VariableTypeT::VectorType);
+    mTimeData.animatedPlotData->assignFrom(QVector<double>() << mpAnimationWidget->getLastAnimationTime());
+
+    for(Port* pPort : mpModelObject->getPort("in")->getConnectedPorts()) {
+        QString fullName = makeFullVariableName(pPort->getParentModelObject()->getParentSystemNameHieararchy(), pPort->getParentModelObjectName(),
+                                                pPort->getName(),"Value");
+        auto pAnimPlotVariable = pHandler->createOrphanVariable(fullName, VariableTypeT::VectorType);
+        pAnimPlotVariable->assignFrom(QVector<double>() << 0);
+
+        gpPlotHandler->plotDataToWindow(mpPlotWindow, pAnimPlotVariable, QwtPlot::yLeft);
+
+        AnimatedPlotData animPlotData;
+        animPlotData.pModelObjectPort = pPort;
+        animPlotData.animatedPlotData = pAnimPlotVariable;
+        animPlotData.logData = pHandler->getVectorVariable(fullName, -1);
+        mLeftDatas.append(animPlotData);
+    }
+    for(Port* pPort : mpModelObject->getPort("in_right")->getConnectedPorts()) {
+        QString fullName = makeFullVariableName(pPort->getParentModelObject()->getParentSystemNameHieararchy(), pPort->getParentModelObjectName(),
+                                                pPort->getName(),"Value");
+        auto pAnimPlotVariable = pHandler->createOrphanVariable(fullName, VariableTypeT::VectorType);
+        pAnimPlotVariable->assignFrom(QVector<double>() << 0);
+
+        gpPlotHandler->plotDataToWindow(mpPlotWindow, pAnimPlotVariable, QwtPlot::yRight);
+
+        AnimatedPlotData animPlotData;
+        animPlotData.pModelObjectPort = pPort;
+        animPlotData.animatedPlotData = pAnimPlotVariable;
+        animPlotData.logData = pHandler->getVectorVariable(fullName, -1);
+        mRightDatas.append(animPlotData);
+    }
+
+    Port *pBottomPort = mpModelObject->getPort("in_bottom");
+    if(pBottomPort->isConnected()) {
+        QString fullName = makeFullVariableName(pBottomPort->getParentModelObject()->getParentSystemNameHieararchy(), pBottomPort->getParentModelObjectName(),
+                                                pBottomPort->getName(),"Value");
+        auto pAnimPlotVariable = pHandler->createOrphanVariable(fullName, VariableTypeT::VectorType);
+        pAnimPlotVariable->assignFrom(QVector<double>() << 0);
+
+        mpPlotWindow->setXData(pAnimPlotVariable, true);
+
+        AnimatedPlotData animPlotData;
+        animPlotData.pModelObjectPort = pBottomPort;
+        animPlotData.animatedPlotData = pAnimPlotVariable;
+        animPlotData.logData = pHandler->getVectorVariable(fullName, -1);
+        mBottomData = animPlotData;
+    }
+    else {
+        mpPlotWindow->setXData(mTimeData.animatedPlotData, true);
+    }
+
+    mpPlotWindow->showNormal();
+}
+
+void AnimatedScope::updatePlotwindow()
+{
+    if (mpPlotWindow) {
+
+        double currentTime = mpAnimationWidget->getLastAnimationTime();
+        if(!mTimeData.animatedPlotData.isNull()) {
+            mTimeData.animatedPlotData->append(currentTime);
+        }
+
+        // Handle real-time case
+        if (mpAnimationWidget->isRealTimeAnimation()) {
+            for(auto& animData : mLeftDatas) {
+                updatePlotData(animData.pModelObjectPort, animData.animatedPlotData);
+            }
+
+            for(auto& animData : mRightDatas) {
+                updatePlotData(animData.pModelObjectPort, animData.animatedPlotData);
+            }
+
+            if(!mBottomData.animatedPlotData.isNull()) {
+                updatePlotData(mBottomData.pModelObjectPort, mBottomData.animatedPlotData);
+            }
+        }
+        // Handle play-back case
+        else {
+            for(auto& animData : mLeftDatas) {
+                updatePlotData(animData.logData, currentTime, animData.animatedPlotData);
+            }
+
+            for(auto& animData : mRightDatas) {
+                updatePlotData(animData.logData, currentTime, animData.animatedPlotData);
+            }
+
+            if(!mBottomData.animatedPlotData.isNull()) {
+                updatePlotData(mBottomData.logData, currentTime, mBottomData.animatedPlotData);
+            }
+        }
+    }
+}
+
+void AnimatedScope::updateAnimation()
+{
+    AnimatedComponent::updateAnimation();
+    updatePlotwindow();
 }

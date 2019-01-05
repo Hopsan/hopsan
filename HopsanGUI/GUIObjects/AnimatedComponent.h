@@ -44,12 +44,14 @@
 
 #include "GUIObject.h"
 #include "GUIModelObjectAppearance.h"
+#include "LogVariable.h"
 
 class AnimationWidget;
 class AnimatedIcon;
 class ModelObject;
 class ModelObjectAppearance;
 class PlotWindow;
+class Port;
 
 class AnimatedComponent : public QObject
 {
@@ -61,7 +63,7 @@ public:
     AnimatedComponent(ModelObject* unanimatedComponent, AnimationWidget *parent);
 
     void draw();
-    void updateAnimation();
+    virtual void updateAnimation();
     ModelObjectAnimationData *getAnimationDataPtr();
     int indexOfMovable(AnimatedIcon *pMovable);
     QPointF getPortPos(QString portName);
@@ -71,7 +73,7 @@ public:
 private slots:
     void textEdited();
 
-private:
+protected:
     void setupAnimationBase(QString basePath);
     void setupAnimationMovable(int m);
     void limitMovables();
@@ -90,11 +92,39 @@ private:
 
     bool mIsDisplay;
     bool mIsNumericalInput;
-
-    PlotWindow *mpPlotWindow;
 };
 
+struct AnimatedPlotData
+{
+    QPointer<Port> pModelObjectPort;
+    SharedVectorVariableT animatedPlotData;
+    SharedVectorVariableT logData;
 
+    void clear()
+    {
+        pModelObjectPort.clear();
+        animatedPlotData.clear();
+        logData.clear();
+    }
+};
+
+class AnimatedScope : public AnimatedComponent
+{
+    Q_OBJECT
+    friend class AnimatedIcon;
+public:
+    AnimatedScope(ModelObject* unanimatedScope, AnimationWidget *parent) : AnimatedComponent(unanimatedScope, parent) {}
+    void openPlotwindow();
+    void updatePlotwindow();
+    void updateAnimation() override;
+protected:
+    QPointer<PlotWindow> mpPlotWindow;
+    AnimatedPlotData mTimeData;
+    AnimatedPlotData mBottomData;
+    QVector<AnimatedPlotData> mLeftDatas;
+    QVector<AnimatedPlotData> mRightDatas;
+
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 

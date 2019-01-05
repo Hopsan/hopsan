@@ -179,11 +179,8 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mHydraulicIntensityMin = mpAnimationData->hydraulicMinPressure;
     mHydraulicSpeed = mpAnimationData->flowSpeed;
 
-    //Collect plot data from container (for non-realtime animations)
-    //mpContainer->collectPlotData();
     mpPlotData = mpContainer->getLogDataHandler().data();
     mpPlayButton->setDisabled(mpPlotData->isEmpty());
-    mpPlayRealTimeButton->setDisabled(mpPlotData->isEmpty());
     mpRewindButton->setDisabled(mpPlotData->isEmpty());
 
     if(!mpPlotData->isEmpty() && !mpPlotData->getTimeVectorVariable(-1).isNull())
@@ -237,9 +234,15 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     }
 
     //Create animated components from components list
-    for(int g=0;g<mModelObjectsList.size();g++)
+    for(ModelObject* pMO : mModelObjectsList)
     {
-        AnimatedComponent *pAnimatedComponent = new AnimatedComponent(mModelObjectsList.at(g), this);
+        AnimatedComponent *pAnimatedComponent;
+        if (pMO->getTypeName() == HOPSANGUISCOPECOMPONENTTYPENAME) {
+            pAnimatedComponent = new AnimatedScope(pMO, this);
+        }
+        else {
+            pAnimatedComponent = new AnimatedComponent(pMO, this);
+        }
         mAnimatedComponentList.append(pAnimatedComponent);
     }
 
