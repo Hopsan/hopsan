@@ -188,6 +188,7 @@ public:
     void elementWiseEq(QVector<double> &rResult, const double value, const double eps) const;
     void elementWiseEq(QVector<double> &rResult, const SharedVectorVariableT pOther, const double eps) const;
     bool compare(SharedVectorVariableT pOther, const double eps) const;
+    int lower_bound(const double value, const bool assumeSorted=false) const;
 
     // Check out and return pointers to data (move to ram if necessary)
     QVector<double> *beginFullVectorOperation();
