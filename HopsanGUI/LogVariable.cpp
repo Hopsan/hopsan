@@ -40,6 +40,7 @@
 #include "MessageHandler.h"
 
 #include <limits>
+#include <algorithm>
 #include <QMessageBox>
 
 SharedVariableDescriptionT createTimeVariableDescription()
@@ -1069,6 +1070,40 @@ bool VectorVariable::compare(SharedVectorVariableT pOther, const double eps) con
         mpCachedDataVector->endFullVectorOperation(pThisData);
     }
     return isOK;
+}
+
+//! @brief Find index of first value higher or equal to given threshold
+//! @param[in] value The low value threshold
+//! @param[in] assumeSorted If the data is sorted use efficient search algorithm to find value else search from beginning
+//! @returns index of found value or -1 if value could not be found
+int VectorVariable::lower_bound(const double value, const bool assumeSorted) const
+{
+    int result = -1;
+    QVector<double> *pThisData = mpCachedDataVector->beginFullVectorOperation();
+    if (pThisData == nullptr) {
+        return result;
+    }
+
+    const QVector<double> &data = *pThisData;
+
+    if (assumeSorted) {
+        auto lower = std::lower_bound(std::begin(data), std::end(data), value);
+        if (lower != std::end(data)) {
+            result = static_cast<int>(std::distance(std::begin(data), lower));
+        }
+    }
+    else {
+        // Search from start to end until first match
+        for (int i=0; i<data.size(); ++i) {
+            if (data[i] >= value) {
+                result = i;
+                break;
+            }
+        }
+    }
+
+    mpCachedDataVector->endFullVectorOperation(pThisData);
+    return result;
 }
 
 QVector<double> *VectorVariable::beginFullVectorOperation()
