@@ -160,8 +160,8 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     this->setLayout(mpLayout);
 
     //Create the timer object
-    mpTimer = new QTimer(this);
-    mpTime = new QTime();
+    mpAnimationStepTrigger = new QTimer(this);
+    mpFpsAdjustClock = new QTime();
 
     //Set default values for animation variables
     mRealTime=true;
@@ -270,7 +270,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     connect(mpPlayButton,           SIGNAL(clicked()),          this,   SLOT(play()));
     connect(mpPlayRealTimeButton,   SIGNAL(clicked()),          this,   SLOT(playRT()));
     connect(mpPauseButton,          SIGNAL(clicked()),          this,   SLOT(pause()));
-    connect(mpStopButton,           SIGNAL(clicked()),          this,   SLOT(stop()));
+    connect(mpStopButton,           SIGNAL(clicked()),          this,   SLOT(stop_reset()));
     connect(mpCloseButton,          SIGNAL(pressed()),          gpModelHandler->getCurrentModel(), SLOT(closeAnimation()));
 
     //Define slider connections
@@ -280,15 +280,15 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     connect(mpSpeedSpinBox,         SIGNAL(valueChanged(double)), this, SLOT(changeSpeed(double)));
 
     //Connect timer with update function
-    connect(mpTimer,                SIGNAL(timeout()),          this,   SLOT(updateAnimation()));
+    connect(mpAnimationStepTrigger,                SIGNAL(timeout()),          this,   SLOT(updateAnimation()));
 }
 
 
 //! @brief Destructor for animation widget class
 AnimationWidget::~AnimationWidget()
 {
-    mpTimer->stop();
-    delete mpTime;
+    stop();
+    delete mpFpsAdjustClock;
 
     //Make sure any changes made in zoom and position are transfered back to original graphics view
     GraphicsView *pOrgView = mpContainer->mpModelWidget->getGraphicsView();
@@ -386,12 +386,10 @@ void AnimationWidget::openPreferencesDialog()
 
 
 //! @brief Slot that stops the animation
-void AnimationWidget::stop()
+void AnimationWidget::stop_reset()
 {
+    stop();
     mpTimeSlider->setValue(0);
-    mLastAnimationTime = 0.0;
-    mRealTime=false;
-    mpTimer->stop();
 }
 
 
@@ -408,7 +406,7 @@ void AnimationWidget::rewind()
 //! @brief Slot that pauses the animation
 void AnimationWidget::pause()
 {
-    mpTimer->stop();
+    mpAnimationStepTrigger->stop();
 }
 
 
@@ -416,22 +414,17 @@ void AnimationWidget::pause()
 void AnimationWidget::play()
 {
     mRealTime=false;
-    if(mSimulationSpeed == 0)
-    {
-        //Stop animation timer if speed is zero (it shouldn't be running for no reason)
-        mpTimer->stop();
+    // Stop animation timer if speed is zero (it shouldn't be running for no reason)
+    if(mSimulationSpeed == 0) {
+        mpAnimationStepTrigger->stop();
     }
-    else
-    {
-        //Start the timer with correct FPS, if it is not already started
-        if(!mpTimer->isActive())
-        {
-            mFps = 60;
-            mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000;
-            mpTimer->start(1000.0/double(mFps));  //Timer object uses milliseconds
-            mpTime->start();
-            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
-        }
+    // Start the timer with correct FPS, if it is not already started
+    else if (!mpAnimationStepTrigger->isActive()) {
+        mFps = 60;
+        mLastFpsAdjustTime = mpTimeDisplay->text().toDouble()*1000;
+        mpAnimationStepTrigger->start(1000.0/double(mFps));  //Timer object uses milliseconds
+        mpFpsAdjustClock->start();
+        //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
     }
 }
 
@@ -455,23 +448,19 @@ void AnimationWidget::playRT()
     mpTimeSlider->setValue(1);
     changeIndex(0);
 
-    if(mSimulationSpeed == 0)
-    {
-        //Stop animation timer if speed is zero (it shouldn't be running for no reason)
-        mpTimer->stop();
+    // Stop animation timer if speed is zero (it shouldn't be running for no reason)
+    if(mSimulationSpeed == 0) {
+        mpAnimationStepTrigger->stop();
     }
-    else
-    {
-        //Start the timer with correct FPS, if it is not already started
-        if(!mpTimer->isActive())
-        {
-            mFps = 60;
-            mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000;
-            mpTimer->start(1000.0/double(mFps));  //Timer object uses milliseconds
-            mpTime->start();
-            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
-        }
+    //Start the timer with correct FPS, if it is not already started
+    else if (!mpAnimationStepTrigger->isActive()) {
+        mFps = 60;
+        mLastFpsAdjustTime = mpTimeDisplay->text().toDouble()*1000;
+        mpAnimationStepTrigger->start(1000.0/double(mFps));  //Timer object uses milliseconds
+        mpFpsAdjustClock->start();
+        //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
     }
+
     //updateAnimationSpeed(1);
 }
 
@@ -509,7 +498,7 @@ void AnimationWidget::updateAnimationSpeed(const double speedScale)
     if(mSimulationSpeed == 0)
     {
         // Stop animation timer if speed is zero (it shouldn't be running for no reason)
-        mpTimer->stop();
+        mpAnimationStepTrigger->stop();
     }
 //    else
 //    {
@@ -550,47 +539,34 @@ void AnimationWidget::updateAnimation()
 
         //Update animated connectors and components
         updateMovables();
+
+        // Auto adjust fps
+        adjustFps();
     }
     // Not real-time simulation (and we have time data)
     else if(!mTimeValues.isEmpty())
     {
         //Calculate animation time (with limitations)
-        mCurrentAnimationTime = mLastAnimationTime+double(mSimulationSpeed)/mFps;
+        mCurrentAnimationTime = mLastAnimationTime+mSimulationSpeed/double(mFps);
         mCurrentAnimationTime = std::min(mTotalTime, std::max(0.0, mCurrentAnimationTime));
         mLastAnimationTime = mCurrentAnimationTime;
 
         //Calculate index for time slider (with limitations)
-        mIndex = mCurrentAnimationTime/mTotalTime*mnSamples;
-        mIndex = round(std::min(mTimeValues.size()-1, std::max(0, mIndex)));
+        mIndex = static_cast<int>(mnSamples*(mCurrentAnimationTime/mTotalTime));
+        mIndex = std::min(mTimeValues.size()-1, std::max(0, mIndex));
         mpTimeSlider->setValue(mIndex);
-        if(mIndex == mTimeValues.size()-1)
-        {
-            mLastAnimationTime = 0.0;
-            mRealTime=false;
-            mpTimer->stop();
-        }
-        //! @todo Crash on next line when mIndex = -1, this should not happen
         mpTimeDisplay->setText(QString::number(mTimeValues.at(mIndex)));
 
         //Update animated connectors and components
         updateMovables();
-    }
 
-    // Auto-adjust FPS
-    int dT = mpTime->elapsed();
-    if(dT > 100)    //Only do this every .1 seconds
-    {
-        if(mpTimeDisplay->text().toDouble()*1000-mLastTimeCheck < 0.95*dT)
-        {
-            mFps = qMax(10.0, mFps*0.8);    //Too slow, decrease FPS
+        // Detect if the end of playback has been reached
+        if(mIndex == mTimeValues.size()-1) {
+            stop();
         }
-        else
-        {
-            mFps = qMin(100.0, mFps*1.11);  //Not too slow, increase FPS slightly
+        else {
+            adjustFps();
         }
-        mpTimer->start(1000.0/double(mFps));                    //Set timer interval
-        mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000; //Store last check time
-        mpTime->restart();                                      //Restart speed check counter
     }
 }
 
@@ -654,6 +630,35 @@ void AnimationWidget::resetAllAnimationDataToDefault()
             pComp->getAnimationDataPtr()->movables[m].iconPath = iconPaths[m];
         }
     }
+}
+
+//! @brief Auto-adjust FPS
+void AnimationWidget::adjustFps()
+{
+    const double dT = mpFpsAdjustClock->elapsed();
+    // Only do this every .1 seconds
+    if(dT > 100)
+    {
+        const int currentTime_ms = static_cast<int>(mpTimeDisplay->text().toDouble()*1000.0);
+        if(currentTime_ms-mLastFpsAdjustTime < 0.95*dT)
+        {
+            mFps = qMax(10, int(mFps*0.8));    //Too slow, decrease FPS
+        }
+        else
+        {
+            mFps = qMin(100, int(mFps*1.11));  //Not too slow, increase FPS slightly
+        }
+        mpAnimationStepTrigger->start(static_cast<int>(1000.0/double(mFps)));  //Set timer interval
+        mLastFpsAdjustTime = currentTime_ms;                    //Store last check time
+        mpFpsAdjustClock->restart();                            //Restart speed check counter
+    }
+}
+
+void AnimationWidget::stop()
+{
+    mLastAnimationTime = 0.0;
+    mRealTime=false;
+    mpAnimationStepTrigger->stop();
 }
 
 
@@ -728,7 +733,7 @@ int AnimationWidget::getLastIndex()
 
  void AnimationWidget::closeEvent(QCloseEvent *event)
  {
-     this->stop();
+     this->stop_reset();
      //delete mpParent->mpCentralTabs->getCurrentTab()->mpAnimationWidget;
      event->accept();
  }
