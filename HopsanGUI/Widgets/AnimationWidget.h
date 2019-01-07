@@ -111,7 +111,7 @@ public:
     double mHydraulicSpeed;
 
 public slots:
-    void stop();
+    void stop_reset();
 
 private slots:
     void openPreferencesDialog();
@@ -125,6 +125,9 @@ private slots:
     void resetAllAnimationDataToDefault();
 
 private:
+    void adjustFps();
+    void stop();
+
     //Graphics scene
     QGraphicsScene *mpGraphicsScene;
 
@@ -148,9 +151,9 @@ private:
     QLineEdit* mpTimeDisplay;
 
     //Animation timer object
-    QTimer *mpTimer;
-    QTime *mpTime;
-    int mLastTimeCheck;
+    QTimer *mpAnimationStepTrigger;
+    QTime *mpFpsAdjustClock;
+    int mLastFpsAdjustTime;
 
     //Layout
     QGridLayout *mpLayout;

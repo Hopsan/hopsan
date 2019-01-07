@@ -224,7 +224,7 @@ void AnimatedComponent::updateAnimation()
                             data.append(*mpNodeDataPtrs->at(m).at(i));
                             if(!std::isfinite(data.last()))
                             {
-                                mpAnimationWidget->stop();
+                                mpAnimationWidget->stop_reset();
                                 gpMessageHandler->addErrorMessage("Encountered Inf or NaN value. Real-time animation aborted.");
                                 return;
                             }
