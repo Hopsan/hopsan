@@ -648,6 +648,8 @@ void TextEditor::updateAutoCompleteList()
                 variables[v].remove(dataTypes[d]+" ");
             }
             variables[v].remove(" ");
+
+            //Remove index brackets from array variables
             while(variables[v].contains("["))
             {
                 variables[v].remove("["+variables[v].section("[",1,1).section("]",0,0)+"]");
