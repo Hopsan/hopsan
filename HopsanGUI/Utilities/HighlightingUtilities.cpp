@@ -350,15 +350,15 @@ CppHighlighter::CppHighlighter(QTextDocument *parent)
                     << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
                     << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
                     << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
-                    << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
-                    << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
-                    << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
-                    << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
-                    << "\\bvoid\\b" << "\\bvolatile\\b" << "\\busing\\b"
-                    << "\\bbool\\b" << "\\bif\\b" << "\\belse\\b"
-                    << "\\bfor\\b" << "\\bforeach\\b" << "\\bwhile\\b"
+                    << "\\bshort\\b" << "\\bsigned\\b" << "\\bstatic\\b"
+                    << "\\bstruct\\b" << "\\btemplate\\b" << "\\btypedef\\b"
+                    << "\\btypename\\b" << "\\bunion\\b" << "\\bunsigned\\b"
+                    << "\\bvirtual\\b" << "\\bvoid\\b" << "\\bvolatile\\b"
+                    << "\\busing\\b" << "\\bbool\\b" << "\\bif\\b"
+                    << "\\belse\\b" << "\\bfor\\b" << "\\bwhile\\b"
                     << "\\bswitch\\b" << "\\bcase\\b" << "\\bdefault\\b"
-                    << "\\bbreak\\b" << "\\breturn\\b" << "\\bif\\()";
+                    << "\\bbreak\\b" << "\\breturn\\b" << "\\bif\\()"
+                    << "\\bconstexpr\\b";
     foreach (const QString &pattern, keywordPatterns)
     {
         rule.pattern = QRegExp(pattern);
