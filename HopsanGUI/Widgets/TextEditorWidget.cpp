@@ -355,15 +355,20 @@ void TextEditor::highlightCurrentLine()
 
 
 //! @brief Update function for line number area
+//! @param rect Rectangle to update
+//! @param dy Amount of pixels viewport is scrolled vertically
 void TextEditor::updateLineNumberArea(const QRect &rect, int dy)
 {
-    if (dy)
+    if(dy != 0) {
         mpLineNumberArea->scroll(0, dy);
-    else
+    }
+    else {
         mpLineNumberArea->update(0, rect.y(), mpLineNumberArea->width(), rect.height());
+    }
 
-    if (rect.contains(viewport()->rect()))
+    if (rect.contains(viewport()->rect())) {
         updateLineNumberAreaWidth(0);
+    }
 }
 
 void TextEditor::keyPressEvent(QKeyEvent* event)
