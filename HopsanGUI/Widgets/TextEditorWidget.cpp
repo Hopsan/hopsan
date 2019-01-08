@@ -89,6 +89,15 @@ TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum
     connect(mpEditor, SIGNAL(textChanged()), this, SLOT(hasChanged()));
 }
 
+TextEditorWidget::~TextEditorWidget()
+{
+    mpHcomHighlighter->deleteLater();
+    mpCppHighlighter->deleteLater();
+    mpXmlHighlighter->deleteLater();
+    mpModelicaHighlighter->deleteLater();
+    mpPythonXmlHighlighter->deleteLater();
+}
+
 void TextEditorWidget::find(QString text, QTextDocument::FindFlags flags)
 {
     mpEditor->find(text,flags);

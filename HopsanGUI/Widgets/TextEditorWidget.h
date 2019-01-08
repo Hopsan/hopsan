@@ -103,6 +103,7 @@ class TextEditorWidget : public QWidget
     Q_OBJECT
 public:
     explicit TextEditorWidget(QFileInfo file, HighlighterTypeEnum highlighter, QWidget *parent = nullptr);
+    ~TextEditorWidget();
 
     QFileInfo getFileInfo() const { return mFileInfo; }
     bool isSaved() const { return mIsSaved; }
