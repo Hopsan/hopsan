@@ -40,6 +40,7 @@
 #include "win32dll.h"
 #include <map>
 #include <list>
+#include <algorithm>
 
 namespace hopsan {
 

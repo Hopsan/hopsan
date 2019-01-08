@@ -34,6 +34,7 @@
 //#include <iostream>
 //#include <cassert>
 //#include <math.h>
+#include <algorithm>
 #include "ComponentUtilities/IntegratorLimited.h"
 
 using namespace hopsan;
