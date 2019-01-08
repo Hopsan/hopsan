@@ -371,7 +371,13 @@ CppHighlighter::CppHighlighter(QTextDocument *parent)
     QStringList hopsanKeywordPatterns;
     hopsanKeywordPatterns << "\\bPort\\b" << "\\bFirstOrderTransferFunctionVariable\\b" << "\\bSecondOrderTransferFunctionVariable\\b"
                           << "\\bFirstOrderTransferFunction\\b" << "\\bSecondOrderTransferFunction\\b"
-                          << "\\bFirstOrderFiler\\b" << "\\bSecondOrderFilter\\b";
+                          << "\\bFirstOrderFiler\\b" << "\\bSecondOrderFilter\\b" << "\\bDelay\\b"
+                          << "\\bIntegrator\\b" << "\\bIntegratorLimited\\b" << "\\bTurbulentFlowFunction\\b"
+                          << "\\bValveHysteresis\\b" << "\\bDoubleIntegratorWithDamping\\b" << "\\bDoubleIntegratorWithDampingAndCoulumbFriction\\b"
+                          << "\\bCSVParser\\b" << "\\bCSVParserNG\\b" << "\\bPLOParser\\b"
+                          << "\\bWhiteGaussianNoise\\b" << "\\bEquationSystemSolver\\b" << "\\bNumericalIntegrationSolver\\b"
+                          << "\\bLookupTable1D\\b" << "\\bLookupTable2D\\b" << "\\bLookupTable3D\\b";
+
     foreach (const QString &pattern, hopsanKeywordPatterns)
     {
         rule.pattern = QRegExp(pattern);
