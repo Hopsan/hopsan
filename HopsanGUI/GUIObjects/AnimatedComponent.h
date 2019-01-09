@@ -100,12 +100,7 @@ struct AnimatedPlotData
     SharedVectorVariableT animatedPlotData;
     SharedVectorVariableT logData;
 
-    void clear()
-    {
-        pModelObjectPort.clear();
-        animatedPlotData.clear();
-        logData.clear();
-    }
+    void clear();
 };
 
 class AnimatedScope : public AnimatedComponent
