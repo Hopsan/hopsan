@@ -1168,3 +1168,14 @@ void AnimatedScope::updateAnimation()
     AnimatedComponent::updateAnimation();
     updatePlotwindow();
 }
+
+void AnimatedPlotData::clear()
+{
+#if QT_VERSION >= 0x050000
+    pModelObjectPort.clear();
+#else
+    pModelObjectPort = QPointer<Port>();
+#endif
+    animatedPlotData.clear();
+    logData.clear();
+}
