@@ -11,14 +11,27 @@ a = 1
 # Multiple expressions on same line with ;
 b=2; c=3
 
-# Example on valid expression, supported operators are: = + - * / ^ (...)
+# Supported operators are:
+= + - * / ^ < > | & (...)
+
+# Example on valid expression
 a = (a + b)*c/a^c
 
 # Access a component parameter
 a = ComponentName.ParameterName
 
-# Assign the same way (a can be an expression)
+# Assign the same way (a can be a numeric expression, variable or value)
 ComponentName.ParameterName = a
+
+# Built-in math functions, a subset cmath.h, see  https://en.cppreference.com/w/cpp/header/cmath for details
+# Taking one argument
+abs acos asin atan ceil cos cosh exp floor log log10 sin sinh sqrt tan tanh
+
+# Taking two arguments
+atan2 pow fmod min max
+
+b = cos(pi/4)
+c = min(a, b)
 
 \endverbatim
 
@@ -29,7 +42,7 @@ You can set the known parameters and then automatically calculate start values a
 
 \verbatim
 
-# Global parameters 
+# Global parameters
 pi = 3.14159265358979
 
 Rod1Length=0.6
@@ -40,7 +53,7 @@ density = 7850
 
 StartPos = 0.1
 
-# Set and calculate default start values 
+# Set and calculate default start values
 
 Rod1.Length = Rod1Length
 Rod1.Area = (pi*Rod1Diameter^2)/4
