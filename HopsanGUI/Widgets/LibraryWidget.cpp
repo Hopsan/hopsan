@@ -714,12 +714,16 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QAction *pUnloadAllAction = contextMenu.addAction("Unload All External Libraries");
             QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
             QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
+            QAction *pEditXMLAction = contextMenu.addAction("Edit Component Appearance (XML)");
+            QAction *pEditCodeAction = contextMenu.addAction("Edit Source Code");
             QAction *pRecompileAction = contextMenu.addAction("Recompile");
             QAction *pReloadAction = contextMenu.addAction("Reload");
             QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
             pUnloadAllAction->setEnabled(false);
             pUnloadAction->setEnabled(false);
             pOpenFolderAction->setEnabled(false);
+            pEditXMLAction->setEnabled(false);
+            pEditCodeAction->setEnabled(false);
             pRecompileAction->setEnabled(false);
             pReloadAction->setEnabled(false);
             pCheckConsistenceAction->setEnabled(false);
@@ -744,6 +748,8 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             }
             if(item->text(0) != componentlibrary::roots::externalLibraries && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))
             {
+                pEditXMLAction->setEnabled(true);
+                pEditCodeAction->setEnabled(true);
                 pUnloadAction->setEnabled(true);
                 pRecompileAction->setEnabled(true);
                 pReloadAction->setEnabled(true);
@@ -863,6 +869,15 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             else if(pReply == pOpenFolderAction)
             {
                 QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath()));
+            }
+            else if(pReply == pEditXMLAction) {
+                QFileInfo xmlFile = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getXMLFile();
+                gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
+            }
+            else if(pReply == pEditCodeAction) {
+                QString basePath = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath();
+                QString sourceFile = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getSourceCodeFile();
+                gpModelHandler->loadTextFile(basePath+"/"+sourceFile);
             }
         }
     }
