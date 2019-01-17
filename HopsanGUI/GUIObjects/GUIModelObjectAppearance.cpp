@@ -820,6 +820,12 @@ QString ModelObjectAppearance::getBasePath() const
     return mBasePath;
 }
 
+//! @brief Get the component appearance XML file
+QFileInfo ModelObjectAppearance::getXMLFile() const
+{
+    return mXMLFile;
+}
+
 //! @brief Read the ModelObjectAppearance contents from an XML DOM Element
 void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
@@ -1202,6 +1208,12 @@ void ModelObjectAppearance::setBasePath(const QString path)
 {
     mBasePath = path;
     setRelativePathFromAbsolute(); //Reset relative path to new basepath
+}
+
+//! @brief Access method to set the component appearance XML file
+void ModelObjectAppearance::setXMLFile(const QFileInfo file)
+{
+    mXMLFile = file;
 }
 
 //! @brief Access method to manually set the BasePath relative UserIconPath

@@ -230,6 +230,7 @@ public:
     void setDisplayName(const QString name);
     void setHelpText(const QString text);
     void setBasePath(const QString path);
+    void setXMLFile(const QFileInfo file);
     void setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
     void setIconScale(const double scale, const GraphicsTypeEnumT gfxType);
 
@@ -246,6 +247,7 @@ public:
     const QMap<QString, QString> &getOverridedDefaultParameters() const;
     bool isParameterHidden(const QString &name) const;
     QString getBasePath() const;
+    QFileInfo getXMLFile() const;
     QString getFullAvailableIconPath(GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
     QIcon &getIcon(const GraphicsTypeEnumT gfxType);
@@ -299,6 +301,9 @@ private:
 
     //BaseDir for relative paths
     QString mBasePath;
+
+    //XML appearance file
+    QFileInfo mXMLFile;
 
     //Private help functions
     QDomElement addModelObjectRootElement(QDomElement parentDomElement);

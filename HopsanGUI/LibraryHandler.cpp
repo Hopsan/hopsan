@@ -630,6 +630,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file
                     SharedModelObjectAppearanceT pAppearanceData = SharedModelObjectAppearanceT(new ModelObjectAppearance);
                     pAppearanceData->setBasePath(QFileInfo(cafFile).absolutePath()+"/");
+                    pAppearanceData->setXMLFile(QFileInfo(cafFile));
                     pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
                     pAppearanceData->cacheIcons();
 
