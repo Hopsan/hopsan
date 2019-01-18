@@ -371,6 +371,14 @@ TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
     }
     QFileInfo fileInfo(file);
 
+    //Abort if file is already open
+    for(const auto& editor : mTextEditors) {
+        if(fileInfo == editor->getFileInfo()) {
+            gpMessageHandler->addErrorMessage("File is already open: "+fileInfo.absoluteFilePath());
+            return nullptr;
+        }
+    }
+
     TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(fileName), highlighterForExtension(fileInfo.suffix()), gpCentralTabWidget);
     gpCentralTabWidget->addTab(pNewEditor, fileInfo.fileName());
     gpCentralTabWidget->setCurrentWidget(pNewEditor);
