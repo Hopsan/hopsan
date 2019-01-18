@@ -785,7 +785,7 @@ void ModelHandler::saveState()
         QDomDocument domDocument;
         QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
         pModel->getTopLevelSystemContainer()->saveToDomElement(hmfRoot);
-        QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
+        QString fileNameWithoutHmf = pModel->getTopLevelSystemContainer()->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
         info.backupFile = gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
         QFile xmlhmf(gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
@@ -807,6 +807,7 @@ void ModelHandler::saveState()
 
 void ModelHandler::restoreState()
 {
+    int numTextTabs = gpCentralTabWidget->count();
     for(int i=0; i<mStateInfoList.size(); ++i)
     {
         ModelStateInfo info = mStateInfoList[i];
@@ -829,9 +830,9 @@ void ModelHandler::restoreState()
         {
             addNewModel();
         }
-        gpCentralTabWidget->setCurrentIndex(i+1);
-        this->mCurrentIdx = i;
-        gpCentralTabWidget->setTabText(i+1, info.tabName);
+        gpCentralTabWidget->setCurrentIndex(numTextTabs+i);
+        this->mCurrentIdx = numTextTabs+i;
+        gpCentralTabWidget->setTabText(numTextTabs+i, info.tabName);
 
         //! @todo FIXA /Peter
 //        getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
