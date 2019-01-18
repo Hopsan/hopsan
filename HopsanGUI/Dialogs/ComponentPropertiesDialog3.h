@@ -100,6 +100,7 @@ signals:
 protected slots:
     void okPressed();
     void applyPressed();
+    void openSourceCode();
     void editPortPos();
 #ifdef EXPERIMENTAL
     void copyToNewComponent();
@@ -119,7 +120,6 @@ private:
     QGridLayout* createNameAndTypeEdit();
     QDialogButtonBox* createOKButtonBox();
     QWidget* createHelpWidget();
-    QWidget* createSourcodeBrowser(QString &rFilePath);
     void createEditStuff();
 
     ModelObject *mpModelObject;
@@ -127,9 +127,6 @@ private:
     VariableTableWidget *mpVariableTableWidget;
     SystemProperties *mpSystemProperties=nullptr;
     bool mAllowEditing=false;
-
-    QTextEdit *mpSourceCodeTextEdit;
-    QComboBox *mpSolverComboBox;
 };
 
 // Help class declarations

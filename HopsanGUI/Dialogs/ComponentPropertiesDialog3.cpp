@@ -70,6 +70,7 @@
 #include "LibraryHandler.h"
 #include "Widgets/LibraryWidget.h"
 #include "MessageHandler.h"
+#include "ModelHandler.h"
 
 #ifdef USEDISCOUNT
 extern "C" {
@@ -259,6 +260,17 @@ void ComponentPropertiesDialog3::applyPressed()
     setVariableValues();
 }
 
+void ComponentPropertiesDialog3::openSourceCode()
+{
+    auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(mpModelObject->getTypeName());
+    QString basePath = appearance->getBasePath();
+    if(!basePath.isEmpty()) {
+        basePath.append("/");
+    }
+    QString fileName = appearance->getSourceCodeFile();
+    gpModelHandler->loadTextFile(basePath+fileName);
+}
+
 
 void ComponentPropertiesDialog3::editPortPos()
 {
@@ -425,6 +437,13 @@ QDialogButtonBox *ComponentPropertiesDialog3::createOKButtonBox()
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
     QPushButton *pApplyButton = new QPushButton(tr("&Apply"), this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal, this);
+    QString filePath = mpModelObject->getAppearanceData()->getSourceCodeFile();
+    if(!filePath.isEmpty())
+    {
+        QPushButton *pSourceCodeButton = new QPushButton(tr("&Source Code"), this);
+        pButtonBox->addButton(pSourceCodeButton, QDialogButtonBox::ActionRole);
+        connect(pSourceCodeButton, SIGNAL(clicked()), this, SLOT(openSourceCode()));
+    }
     pButtonBox->addButton(pApplyButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
@@ -434,6 +453,7 @@ QDialogButtonBox *ComponentPropertiesDialog3::createOKButtonBox()
     pApplyButton->setEnabled(mAllowEditing);
     pOkButton->setEnabled(mAllowEditing);
     pOkButton->setDefault(true);
+
     return pButtonBox;
 }
 
@@ -660,61 +680,6 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
     return 0;
 }
 
-QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
-{
-    rFilePath.prepend(mpModelObject->getAppearanceData()->getBasePath());
-    QFile file(rFilePath);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString code;
-    QTextStream t(&file);
-    code = t.readAll();
-    file.close();
-
-    mpSourceCodeTextEdit = new QTextEdit();
-    mpSourceCodeTextEdit->setReadOnly(false);
-    mpSourceCodeTextEdit->setText(code);
-    bool ismo=false;
-    if(rFilePath.endsWith(".hpp"))
-    {
-        CppHighlighter *pHighLighter = new CppHighlighter(mpSourceCodeTextEdit->document());
-        Q_UNUSED(pHighLighter);
-    }
-    else if(rFilePath.endsWith(".mo"))
-    {
-        ismo=true;
-        ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(mpSourceCodeTextEdit->document());
-        Q_UNUSED(pHighLighter);
-    }
-
-    QWidget *pTempWidget = new QWidget(this);
-    QVBoxLayout *pLayout = new QVBoxLayout(pTempWidget);
-    pLayout->addWidget(mpSourceCodeTextEdit);
-    mpSourceCodeTextEdit->setReadOnly(!(ismo && mAllowEditing));
-
-#ifdef EXPERIMENTAL
-    QLabel *pSolverLabel = new QLabel("Solver: ", this);
-    mpSolverComboBox = new QComboBox(this);
-    mpSolverComboBox->addItem("Numerical Integration");
-    mpSolverComboBox->addItem("Bilinear Transform");
-    QPushButton *pNewComponentButton = new QPushButton(tr("&Copy to new component"), this);
-    connect(pNewComponentButton, SIGNAL(clicked()), this, SLOT(copyToNewComponent()));
-    QPushButton *pRecompileButton = new QPushButton(tr("&Recompile"), this);
-    connect(pRecompileButton, SIGNAL(clicked()), this, SLOT(recompile()));
-    QHBoxLayout *pSolverLayout = new QHBoxLayout();
-    pSolverLayout->addWidget(pSolverLabel);
-    pSolverLayout->addWidget(mpSolverComboBox);
-    pSolverLayout->addWidget(new QWidget(this));
-    pSolverLayout->addWidget(pNewComponentButton);
-    pSolverLayout->addWidget(pRecompileButton);
-    pSolverLayout->setStretch(2,1);
-    pLayout->addLayout(pSolverLayout);
-
-    pRecompileButton->setEnabled(ismo && mAllowEditing);
-    mpSolverComboBox->setEnabled(ismo && mAllowEditing);
-#endif //EXPERIMENTAL
-
-    return pTempWidget;
-}
 
 QWidget *SystemProperties::createSystemSettings()
 {
@@ -973,18 +938,12 @@ void ComponentPropertiesDialog3::createEditStuff()
 
     // Add Code edit stuff, A new tab in a new widget will be created
     //------------------------------------------------------------------------------------------------------------------------------
-    QString filePath = mpModelObject->getAppearanceData()->getSourceCodeFile();
 
     QGridLayout *pMainLayout = new QGridLayout(this);
 
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(pPropertiesWidget, "Properties");
     pTabWidget->addTab(pHelpWidget, "Description");
-    if(!filePath.isEmpty())
-    {
-        QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
-        pTabWidget->addTab(pSourceBrowser, "Source Code");
-    }
 
     // Add tabs for subsystems
     if (mpModelObject->type() == SystemContainerType)
