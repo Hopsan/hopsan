@@ -55,6 +55,7 @@
 #include "global.h"
 #include "Utilities/XMLUtilities.h"
 #include "Dialogs/ComponentPropertiesDialog3.h"
+#include "ModelHandler.h"
 
 #include <cassert>
 
@@ -1330,6 +1331,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     pLockedAction->setChecked(mIsLocked);
 
     rMenu.addSeparator();
+    QAction *sourceCodeAction = rMenu.addAction(tr("Source Code"));
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
 
@@ -1343,6 +1345,16 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     if (selectedAction == parameterAction)
     {
         openPropertiesDialog();
+    }
+    else if(selectedAction == sourceCodeAction)
+    {
+        auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName());
+        QString basePath = appearance->getBasePath();
+        if(!basePath.isEmpty()) {
+            basePath.append("/");
+        }
+        QString fileName = appearance->getSourceCodeFile();
+        gpModelHandler->loadTextFile(basePath+fileName);
     }
     else if (selectedAction == pRotateRightAction)
     {
