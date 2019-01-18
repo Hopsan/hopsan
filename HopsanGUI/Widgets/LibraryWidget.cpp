@@ -875,9 +875,14 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
             }
             else if(pReply == pEditCodeAction) {
-                QString basePath = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath();
-                QString sourceFile = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getSourceCodeFile();
-                gpModelHandler->loadTextFile(basePath+"/"+sourceFile);
+                QString typeName = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getTypeName();
+                auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+                QString basePath = appearance->getBasePath();
+                if(!basePath.isEmpty()) {
+                    basePath.append("/");
+                }
+                QString sourceFile = appearance->getSourceCodeFile();
+                gpModelHandler->loadTextFile(basePath+sourceFile);
             }
         }
     }
