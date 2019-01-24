@@ -31,6 +31,64 @@
     Version History
 ******************************
 
+2.11.0 (2019-01-25)
+
+--- Enhancements ---
+
+- HopsanCore
+  - Add quantity Resistance with base unit Ohm instead of "ohm".
+    Also adds common unit scales to HopsanGUI.
+  - Add common math functions to embedded script (numhop), see users guide for details.
+    You can now write expression like "x=cos(y)" or "a=atan2(b,c+2)"
+
+- HopsanGenerator:
+  - Added generator for compiler commands that should work with both GCC and Clang.
+    This is only used for library import compilation right now. It will be extended to FMU exporting later.
+    This should enable custom library importing on MacOS from HopsanGUI (but this has not been tested).
+
+- HopsanGUI
+  - Built-in script editor for HCOM scripts.
+  - Improved auto-completer in HCOM terminal.
+  - Case insensitive auto-completer for filter function in component library widget.
+  - It is now possible to add trace variables from multiple selected ports in the "debugging" widget.
+  - Improved find widget Ctrl+F, it now behaves similarly as in other application.
+  - Units scales are now sorted by scale.
+  - Removing three second real-time plotting window limit.
+  - Made it possible to run real-time animation (and plotting) without needing a previous log data generation.
+  - Add "chds" Change diagram size (and position) HCOM command.
+  - Click anywhere on the workspace to quickly add new components. Write the name in the filter box.
+  - The HoLC text editor functionality has been merged into HopsanGUI to improve and simplify the code editing experience.
+  - Improved the save-state functionality so that it is possible to recompile libraries without first closing the models that are using them.
+    Together with the code editor improvements this simplifies component development.
+
+- HoLC:
+  - Short-key Ctrl+G for quickly compiling (G for generate).
+  - Zoom text with Ctrl+MouseWheel
+  - Improved auto-completer, automatically show auto-complete suggestions while user is typing.
+    Force-open auto-completer with Ctrl+Space
+  - Find widget in HoLC text editor, open with Ctrl+F
+
+
+--- Bug Fixes ---
+
+- HopsanGUI:
+  - Program crash after removal of disabled components.
+  - Incorrect "parameter not used" warning when parameter values are given by expressions.
+  - Plot unit selection does not allow a unit with scale one other than the base unit.
+  - Import button in data explorer is now disable when no model is open, to prevent import data from
+    going nowhere.
+  - Crash when double-clicking scope in real-time animation without an existing generation.
+  - Fix "real-time" plotting of play-back data. Now correct data index will be used instead of latest.
+  - System parameters in expressions are not added when copy-pasting components into a new system.
+
+--- Component Libraries ---
+
+  - New spring-loaded switch animation component.
+  - Add min and max limit parameters for animation slider component.
+  - Add controller output limits to SignalPID2.
+  - Add Hidden leakage flow port in CylinderC component.
+
+------------------------------------------------------------------------------------------------------------------------
 2.10.0 (2018-09-28)
 
 --- Important Changes ---
@@ -87,6 +145,7 @@
     the simulation may not behave as you expect.
 
 
+------------------------------------------------------------------------------------------------------------------------
 2.9.0 (2018-07-02)
 
 --- Important Changes ---
