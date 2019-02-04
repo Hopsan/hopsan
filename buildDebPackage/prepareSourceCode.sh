@@ -92,7 +92,14 @@ fi
 # Set splash screen version number
 sed "s|0\.0\.0|$base_version|g" -i HopsanGUI/graphics/splash.svg
 sed "s|20170000\.0000|$release_revision|g" -i HopsanGUI/graphics/splash.svg
-inkscape ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-png ./HopsanGUI/graphics/splash.png
+if [[ $(command -v inkscape > /dev/null) -eq 0 ]]; then
+  inkscape ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-png ./HopsanGUI/graphics/splash.png
+elif [[ $(command -v convert > /dev/null) -eq 0 ]]; then
+  echo Warning: Inkscape is not available, falling back to convert
+  convert -background white ./HopsanGUI/graphics/splash.svg ./HopsanGUI/graphics/splash.png
+else
+  echo Error: Neither Inkscape or convert can be used to generate splash screen
+fi
 
 # If selected, make changes to compile defaultLibrary into Hopsan Core
 # Deprecated, we should not do this anymore
