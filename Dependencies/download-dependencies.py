@@ -1,0 +1,262 @@
+#!/usr/bin/env python
+
+import argparse
+import hashlib
+import shutil
+import sys
+import os
+import stat
+import platform
+import tarfile
+import zipfile
+import xml.etree.ElementTree as ET
+if sys.version_info.major == 2:
+    import urllib
+else:
+    import urllib.request
+
+
+def match_platform(platform_name):
+    actual = platform.system().lower()
+    return platform_name == actual
+
+
+def file_name(path):
+    return os.path.basename(path)
+
+
+def hashsum_file(filepath, algorithm):
+    with open(filepath, 'rb') as fileobj:
+        hashobj = hashlib.new(algorithm)
+        hashobj.update(fileobj.read())
+        return hashobj.hexdigest()
+
+
+def verify_filehash(filepath, algorithm, hashsum):
+    return hashsum_file(filepath, algorithm) == hashsum
+
+
+def download(url, dst, hash_algo, expected_hashsum):
+    print('Info: Downloading '+url)
+    try:
+        if sys.version_info.major == 2:
+            tempfile, headers = urllib.urlretrieve(url)
+        else:
+            tempfile, headers = urllib.request.urlretrieve(url)
+        if verify_filehash(tempfile, hash_algo, expected_hashsum):
+            shutil.copy2(tempfile, dst)
+            os.chmod(dst, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH | stat.S_IWUSR | stat.S_IWGRP)
+            print('Info: Success downloading and verifying '+dst)
+            return True
+        else:
+            print(headers)
+            print('Error: The download failed, invalid checksum of resulting file')
+            # TODO delete tempfile
+    except Exception as the_exception:
+        print('Error: Could not download file due to connection error')
+        print(str(the_exception))
+    return False
+
+
+def clear_and_unpack(archive_file, dep_name):
+    codedir = dep_name+'-code'
+    builddir = dep_name+'-build'
+    installdir = dep_name
+
+    if os.path.exists(installdir):
+        print('Info: Removing existing directory ' + installdir)
+        shutil.rmtree(installdir)
+    if os.path.exists(builddir):
+        print('Info: Removing existing directory ' + builddir)
+        shutil.rmtree(builddir)
+    if os.path.exists(codedir):
+        print('Info: Removing existing directory ' + codedir)
+        shutil.rmtree(codedir)
+
+    print('Info: Unpacking '+archive_file)
+    if archive_file.endswith('.zip'):
+        with zipfile.ZipFile(archive_file) as zipf:
+            zipf.extractall(codedir)
+    else:
+        with tarfile.open(archive_file, 'r:*') as tarf:
+            tarf.extractall(codedir)
+
+    # Figure out the name of the unpacked root dir
+    root_dir_name = str()
+    for path, subdirs, files in os.walk(codedir):
+        if len(subdirs) == 1 and len(files) == 0:
+            root_dir_name = subdirs[0]
+        break
+
+    # Move all content from the root into codedir
+    root_path = os.path.join(codedir, root_dir_name)
+    for path, subdirs, files in os.walk(root_path):
+        for file in files:
+            shutil.move(os.path.join(root_path, file), codedir)
+        for subdir in subdirs:
+            shutil.move(os.path.join(root_path, subdir), codedir)
+        break
+    shutil.rmtree(root_path)
+
+
+def split_name_version(full_name):
+    name = str()
+    version = str()
+    parts = full_name.split(':')
+    if len(parts) >= 1:
+        name = parts[0]
+    if len(parts) >= 2:
+        version = parts[1]
+    return (name, version)
+
+
+class DependenciesXML:
+    def __init__(self, dependencies_xml_file):
+        tree = ET.parse(dependencies_xml_file)
+        self.root = tree.getroot()
+
+    def __get_version(self, dep_element):
+        if 'version' in dep_element.attrib:
+            return dep_element.attrib['version']
+        return str()
+
+    def __get_platform(self, releasefile_element):
+        if 'platform' in releasefile_element.attrib:
+            return releasefile_element.attrib['platform']
+        return str()
+
+    def __get_expected_hash(self, releasefile_element):
+        algos = ('md5', 'sha1', 'sha256')
+        for algo in algos:
+            if algo in releasefile_element.attrib:
+                return (algo, releasefile_element.attrib[algo])
+        return ('nohash', 'nohash')
+
+    def __match_choice(self, name, version, choices, allow_missing):
+        found_name = False
+        found_version = False
+        for choice in choices:
+            cname, cversion = split_name_version(choice)
+            if cname == name:
+                found_name = True
+            if cversion and cversion == version:
+                found_version = True
+        if found_name and found_version:
+            return True
+        elif not version and found_name:
+            return True
+        elif allow_missing and not found_name:
+            return True
+        return False
+
+    def __download_and_check_releasefile(self, dep_name, releasefile_element, force):
+        hash_algo, expected_hashsum = self.__get_expected_hash(releasefile_element)
+        for url_element in releasefile_element:
+            url = url_element.text
+            fname = file_name(url)
+            if dep_name not in fname.lower():
+                fname = dep_name + '-' + fname
+
+            do_download = True
+            if os.path.isfile(fname):
+                print('Info: File already exists '+fname)
+                if verify_filehash(fname, hash_algo, expected_hashsum):
+                    return (fname, False)
+                else:
+                    print('Warning: ' + hash_algo + ' missmatch in file ' + fname)
+                    print('Expected: ' + expected_hashsum)
+                    print('Actual: ' + hashsum_file(fname, hash_algo))
+                    do_download = force
+
+            if do_download:
+                isok = download(url, fname, hash_algo, expected_hashsum)
+                if isok:
+                    return (fname, True)
+
+        return ("", False)
+
+    def __get_dependencies_matching_choice(self, chosen_deps, download_all):
+        allready_added_names = list()
+        matching_dependencies = list()
+        for dep in self.root:
+            dep_name = dep.attrib['name']
+            dep_version = self.__get_version(dep)
+            found_match = self.__match_choice(dep_name, dep_version, chosen_deps, download_all)
+            if found_match and dep_name not in allready_added_names:
+                matching_dependencies.append(dep)
+                allready_added_names.append(dep_name)
+        return matching_dependencies
+
+    def get_dependencies_names(self):
+        names = list()
+        for dep in self.root:
+            dep_name = dep.attrib['name']
+            dep_version = self.__get_version(dep)
+            if dep_version:
+                dep_name = dep_name + ':' + dep_version
+            names.append(dep_name)
+        return names
+
+    def check_choices(self, choices):
+        for choice in choices:
+            found_names = list()
+            found = False
+            for full_name in self.get_dependencies_names():
+                dname, dversion = split_name_version(full_name)
+                cname, cversion = split_name_version(choice)
+                if dname == cname:
+                    found_names.append(full_name)
+                    if dversion == cversion:
+                        found = True
+                        break
+            if not found:
+                if len(found_names) > 0:
+                    print('Warning: '+choice+' does not match! '+'Alternatives are: '+' '.join(found_names))
+                else:
+                    print('Warning: '+choice+' does not match! There are no alternatives.')
+
+    def download_and_unpack_chosen_dependencies(self, choices, download_all,  force):
+        dependencies_to_download = self.__get_dependencies_matching_choice(choices, download_all)
+        for dep in dependencies_to_download:
+            dep_name = dep.attrib['name']
+            print('--------------------'+dep_name+'------------------------------')
+            files_matching_platform = list()
+            files_without_platform = list()
+            for releasefile in dep:
+                if releasefile.tag == 'releasefile':
+                    platform_restriction = self.__get_platform(releasefile)
+                    if match_platform(platform_restriction):
+                        files_matching_platform.append(releasefile)
+                    elif platform_restriction == "":
+                        files_without_platform.append(releasefile)
+            # If no file specified explicitly for this platform, use file with no platform specifier
+            if len(files_matching_platform) == 0:
+                files_matching_platform = files_without_platform
+
+            # Trigger the actual download and unpacking
+            for releasefile in files_matching_platform:
+                file_name, did_download = self.__download_and_check_releasefile(dep_name, releasefile,  force)
+                if did_download or file_name and not os.path.exists(dep_name+'-code') or file_name and force:
+                    clear_and_unpack(file_name, dep_name)
+
+
+if __name__ == "__main__":
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('--all',  dest='download_all', action='store_true',  help='Download all dependencies' )
+    argparser.add_argument('--list',  dest='list', action='store_true',  help='List available dependencies' )
+    argparser.add_argument('--force', dest='force', action='store_true',
+        help='Force download even if file exists, code, build and installation directories will be reset')
+
+    argparser.add_argument('dependency_name', nargs='*', action='append', type=str,
+                                             help='Space separated list of dependencies to download')
+
+    args = argparser.parse_args()
+    chosen_deps = args.dependency_name[0]
+
+    deps_xml = DependenciesXML('dependencies.xml')
+    if args.list:
+        names = deps_xml.get_dependencies_names()
+        for name in names:
+            print(name)
+    deps_xml.check_choices(chosen_deps)
+    deps_xml.download_and_unpack_chosen_dependencies(chosen_deps, args.download_all,  args.force)

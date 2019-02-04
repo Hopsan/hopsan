@@ -1,0 +1,103 @@
+<hopsandependencies>
+
+<!--
+  <dependency name="">
+    <releasefile sha256="" platform="windows">
+      <url>https://github.com/</url>
+      <url>https://backup</url>
+    </releasefile>
+    <releasefile sha256="">
+      <url>https://github.com/</url>
+    </releasefile>
+  </dependency>
+-->
+
+  <dependency name="discount">
+    <releasefile sha256="74fd1e3cc2b4eacf7325d3fd89df38b589db60d5dd0f4f14a0115f7da5e230a5">
+      <url>https://www.pell.portland.or.us/~orc/Code/discount/discount-2.2.4.tar.bz2</url>
+      <url>http://www.pell.portland.or.us/~orc/Code/discount/discount-2.2.4.tar.bz2</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="fmilibrary">
+    <releasefile sha256="4cc21f9e2c4114a6f4e303f82ca897ec9aa1eb6f7f09fef85979ea5fca309d9a">
+      <url>https://jmodelica.org/fmil/FMILibrary-2.0.3-src.zip</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="hdf5">
+    <releasefile md5="0e935ad66b47ca81be58ba7cbd002184" platform="windows">
+      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/CMake-hdf5-1.8.21.zip</url>
+    </releasefile>
+    <releasefile md5="46f0bb9366a63f5e9342ab46c436b7fd">
+      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/CMake-hdf5-1.8.21.tar.gz</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="katex">
+    <releasefile sha256="c02ddb78b8a767d0a1827a506fad7b41f813fae936abb4e0d96bfa69c615a391" platform="windows">
+      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.0/katex.zip</url>
+    </releasefile>
+    <releasefile sha256="9bfc41364e1288f7545bbc86f9fb56438862797d155c166f078dc23fde42ae9e">
+      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.0/katex.tar.gz</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="msgpack-c">
+    <releasefile sha256="8592d12e19ac3796889b8358bc8f78df9272e6aa7a9ea1834bafd68e4073549a">
+      <url>https://github.com/msgpack/msgpack-c/releases/download/cpp-3.1.1/msgpack-3.1.1.tar.gz</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="pythonqt" version="3.2">
+    <releasefile sha1="b85f2cf9a4e546a46dc416bb0e86759983384543">
+      <url>https://downloads.sourceforge.net/project/pythonqt/pythonqt/PythonQt-3.2/PythonQt3.2.zip</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="pythonqt" version="3.1">
+    <releasefile sha1="1f5800e2270d2e5e868b4c521b8dc699556d0da0">
+      <url>https://downloads.sourceforge.net/project/pythonqt/pythonqt/PythonQt-3.1/PythonQt3.1.zip</url>
+    </releasefile>
+  </dependency>
+
+    <dependency name="pythonqt" version="3.0">
+    <releasefile sha1="44823700eabacd8c735c2986b60f9ecc4eb5c7cf">
+      <url>https://downloads.sourceforge.net/project/pythonqt/pythonqt/PythonQt-3.0/PythonQt3.0.zip</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="qwt">
+    <releasefile sha1="f4915a93cd1beab230b81cb96fafa34aaac68ba0" platform="windows">
+      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.zip</url>
+    </releasefile>
+    <releasefile sha1="a1028cb0a33322920266fb183869023b8ed30394">
+      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.tar.bz2</url>
+    </releasefile>
+  </dependency>
+
+    <dependency name="tclap">
+    <releasefile sha1="4f124216dd6e6936f5af6372d921a6c51563f8fd">
+      <url>https://downloads.sourceforge.net/project/tclap/tclap-1.2.1.tar.gz</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="zeromq">
+    <releasefile sha1="fb6afc8c328e2a49928c44382761d95ac775190b" platform="windows">
+      <url>https://github.com/zeromq/libzmq/releases/download/v4.3.1/zeromq-4.3.1.zip</url>
+    </releasefile>
+    <releasefile sha1="6cce22d830eaf95feff7cab00744df13ad7ab7f3">
+      <url>https://github.com/zeromq/libzmq/releases/download/v4.3.1/zeromq-4.3.1.tar.gz</url>
+    </releasefile>
+  </dependency>
+
+  <dependency name="cppzmq">
+    <releasefile sha256="ee77e9e7bef2d3942edad4717d5ddd53e95b899757bc06c636e49ba42ef83eae" platform="windows">
+      <url>https://github.com/zeromq/cppzmq/archive/v4.3.0.zip</url>
+    </releasefile>
+    <releasefile sha256="27d1f56406ba94ee779e639203218820975cf68174f92fbeae0f645df0fcada4">
+      <url>https://github.com/zeromq/cppzmq/archive/v4.3.0.tar.gz</url>
+    </releasefile>
+  </dependency>
+
+</hopsandependencies>
