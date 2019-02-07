@@ -1,31 +1,3 @@
-[submodule "Dependencies/msgpack-c"]
-	path = Dependencies/msgpack-c
-	url = https://github.com/msgpack/msgpack-c.git
-[submodule "Dependencies/cppzmq"]
-	path = Dependencies/cppzmq
-	url = https://github.com/zeromq/cppzmq.git
-[submodule "Dependencies/zeromq_code"]
-	path = Dependencies/zeromq_code
-	url = https://github.com/zeromq/libzmq.git
-[submodule "Dependencies/discount_code"]
-	path = Dependencies/discount_code
-	url = https://github.com/Orc/discount.git
-[submodule "Dependencies/matio_code"]
-	path = Dependencies/matio_code
-	url = https://github.com/tbeu/matio.git
-[submodule "Dependencies/qwt_code"]
-	path = Dependencies/qwt_code
-	url = https://github.com/osakared/qwt.git
-	ignore = dirty
-[submodule "Dependencies/hdf5_code"]
-	path = Dependencies/hdf5_code
-	url = https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git
-[submodule "Dependencies/katex_code"]
-	path = Dependencies/katex_code
-	url = https://github.com/Khan/KaTeX.git
-[submodule "Dependencies/tclap"]
-	path = Dependencies/tclap
-	url = http://git.code.sf.net/p/tclap/code
 [submodule "HopsanCore/dependencies/indexingcsvparser"]
 	path = HopsanCore/dependencies/indexingcsvparser
 	url = https://github.com/peterNordin/IndexingCSVParser.git
