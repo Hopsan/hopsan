@@ -7,8 +7,8 @@ REM Author: Peter Nordin peter.nordin@liu.se
 setlocal
 set basedir=%~dp0
 set name=zeromq
-set codedir=%basedir%\%name%_code
-set builddir=%basedir%\%name%_build
+set codedir=%basedir%\%name%-code
+set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
 REM Setup PATH
@@ -31,10 +31,10 @@ REM mingw32-make test
 REM Now "install" cppzmq (header only), to the zmq install dir
 REM TODO in the future use cmake to install cppzmq, but that does not work right now since no "zeromq-config.cmake" file seem to be created.
 REM For now lets just copy the file
-set codedir=%basedir%\cppzmq
+set codedir=%basedir%\cppzmq-code
 set installdir=%installdir%\include\
 
-xcopy /Y %codedir%\zmq.hpp %installdir%
+xcopy /Y %codedir%\*.hpp %installdir%
 
 cd %basedir%
 echo.

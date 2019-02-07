@@ -9,8 +9,8 @@ zipname=FMILibrary-2.0.2
 zipfile=releases/${zipname}-src.zip
 
 name=FMILibrary
-codedir=${basedir}/${name}_code
-builddir=${basedir}/${name}_build
+codedir=${basedir}/${name}-code
+builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
 

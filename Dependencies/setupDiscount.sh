@@ -6,8 +6,8 @@
 
 basedir=`pwd`
 name=discount
-codedir=${basedir}/${name}_code
-builddir=${basedir}/${name}_build
+codedir=${basedir}/${name}-code
+builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
 # Copy code to build dir, not sure if out-of-source build is possible

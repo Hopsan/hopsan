@@ -7,8 +7,8 @@
 
 basedir=$(pwd)
 name=qwt
-codedir=${basedir}/${name}_code
-builddir=${basedir}/${name}_build
+codedir=${basedir}/${name}-code
+builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
 # Include general settings
@@ -21,7 +21,7 @@ source setHopsanBuildPaths.sh
 
 # Patch code
 cd $codedir
-patch --binary --forward -p1 < ../qwt-build.patch
+patch --binary --forward -p0 < ../qwt-build.patch
 
 mkdir -p $builddir
 cd $builddir

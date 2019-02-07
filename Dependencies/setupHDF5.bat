@@ -7,8 +7,8 @@ REM Author: Peter Nordin peter.nordin@liu.se
 setlocal
 set basedir=%~dp0
 set name=hdf5
-set codedir=%basedir%\%name%_code
-set builddir=%basedir%\%name%_build
+set codedir=%basedir%\%name%-code
+set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
 REM Setup PATH

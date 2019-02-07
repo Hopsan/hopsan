@@ -9,8 +9,8 @@ set basedir=%~dp0
 set name=FMILibrary
 set zipdir=%name%-2.0.2
 set zipfile=releases\%zipdir%-src.zip
-set codedir=%basedir%\%name%_code
-set builddir=%basedir%\%name%_build
+set codedir=%basedir%\%name%-code
+set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
 

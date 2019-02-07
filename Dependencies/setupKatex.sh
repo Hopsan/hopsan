@@ -1,14 +1,15 @@
 #!/bin/bash
-
-# Shell script to extract pre buikt files from katex release tag
-# Author: Peter Nordin peter.nordin@liu.se
+# Shell script to setup katex
 
 basedir=`pwd`
 name=katex
-codedir=${basedir}/${name}_code
-builddir=${basedir}/${name}_build
+codedir=${basedir}/${name}-code
+builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
-cp -a ${codedir}/dist ${installdir}
+if [[ -d ${installdir} ]]; then
+    rm -rf ${installdir}
+fi
+cp -a ${codedir} ${installdir}
 
 echo "setupKatex.sh done!"

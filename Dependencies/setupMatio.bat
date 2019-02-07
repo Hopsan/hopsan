@@ -11,7 +11,7 @@ REM Automatic code begins here
 
 echo.
 echo ======================
-echo Building 64-bit Discount
+echo Building 64-bit Matio
 echo ======================
 call setHopsanBuildPaths.bat
 

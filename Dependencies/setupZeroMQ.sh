@@ -6,8 +6,8 @@
 
 basedir=`pwd`
 name=zeromq
-codedir=${basedir}/${name}_code
-builddir=${basedir}/${name}_build
+codedir=${basedir}/${name}-code
+builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
 # Make and enter build dir
@@ -34,10 +34,10 @@ cd $basedir
 # Now "install" cppzmq (header only), to the zmq install dir
 # TODO in the future use cmake to install cppzmq, but that does not work right now since no "zeromq-config.cmake" file seem to be created.
 # For now lets just copy the file
-codedir=${basedir}/cppzmq
+codedir=${basedir}/cppzmq-code
 installdir=${installdir}/include/
 
-cp -a ${codedir}/zmq.hpp $installdir
+cp -a ${codedir}/*.hpp $installdir
 
 cd $basedir
 echo "setupZeroMQ.sh done!"

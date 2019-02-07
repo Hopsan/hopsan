@@ -7,8 +7,8 @@ REM Author: Peter Nordin peter.nordin@liu.se
 setlocal
 set basedir=%~dp0
 set name=qwt
-set codedir=%basedir%\%name%_code
-set builddir=%basedir%\%name%_build
+set codedir=%basedir%\%name%-code
+set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
 REM Setup paths
@@ -16,7 +16,7 @@ call setHopsanBuildPaths.bat
 
 REM Patch libQWT
 cd %codedir%
-patch.exe --forward -p1 < ..\qwt-build.patch
+patch.exe --forward -p0 < ..\qwt-build.patch
 
 REM Build
 mkdir %builddir%
