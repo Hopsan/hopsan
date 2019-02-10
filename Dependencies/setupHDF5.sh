@@ -3,12 +3,17 @@
 
 basedir=$(pwd)
 name=hdf5
-codedir=${basedir}/${name}_code
-builddir=${basedir}/${name}_build
+codedir=${basedir}/${name}-code
+builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
 # Include general settings
 source setHopsanBuildPaths.sh
+
+# Handle code sub dir
+cd $codedir
+cd hdf5-*
+codedir=$(pwd)
 
 mkdir -p $builddir
 cd $builddir

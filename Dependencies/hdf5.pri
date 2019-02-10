@@ -35,7 +35,7 @@ defineTest(have_hdf5) {
 
 have_local_hdf5() {
   INCLUDEPATH *= $${homedir}/include
-  LIBS *= -L$${libdir} -L$${bindir} -lhdf5-shared$${dbg_ext} -lhdf5_cpp-shared$${dbg_ext}
+  LIBS *= -L$${libdir} -L$${bindir} -lhdf5$${dbg_ext} -lhdf5_cpp$${dbg_ext}
   # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
   QMAKE_RPATHDIR *= $${libdir}
   QMAKE_RPATHDIR *= $${bindir}
