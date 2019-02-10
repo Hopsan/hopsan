@@ -30,7 +30,7 @@ copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../HopsanCore ${C
 copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../componentLibraries/defaultLibrary ${CMAKE_CURRENT_BINARY_DIR}/../../componentLibraries)
 
 # Copy FMILibrary to mimic installation
-copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/FMILibrary ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/fmilibrary ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies)
 
 # Copy FMUChecker and 7z to mimic installation
 copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/tools/FMUChecker ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies/tools)

@@ -1819,7 +1819,7 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
 bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, int version, bool x64) const
 {
     const QString vStr = QString::number(version);
-    const QString fmiLibDir=mHopsanRootPath+"/Dependencies/FMILibrary";
+    const QString fmiLibDir=mHopsanRootPath+"/Dependencies/fmilibrary";
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Compiling FMU source code");

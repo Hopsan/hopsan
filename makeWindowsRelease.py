@@ -50,7 +50,7 @@ mingwBins32   = ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwOptBins  = []
 mingwOptBins32  = ['libeay32.dll', 'ssleay32.dll']
 
-dependencyFiles = ['qwt/lib/qwt.dll', 'zeromq/bin/libzmq.dll', 'hdf5/bin/hdf5_cpp-shared.dll', 'hdf5/bin/hdf5-shared.dll', 'FMILibrary/lib/libfmilib_shared.dll',
+dependencyFiles = ['qwt/lib/qwt.dll', 'zeromq/bin/libzmq.dll', 'hdf5/bin/hdf5_cpp-shared.dll', 'hdf5/bin/hdf5-shared.dll', 'fmilibrary/lib/libfmilib_shared.dll',
                    'discount/lib/libmarkdown.dll']
 
 # -------------------- Setup End --------------------
@@ -747,7 +747,7 @@ def copyFiles():
     copyDirTo(r'Dependencies/katex',                gTemporaryBuildDir+r'/Dependencies')
 
     # Copy 3pdependency installations
-    if not copyDirTo(r'Dependencies/FMILibrary', gTemporaryBuildDir+r'/Dependencies'):
+    if not copyDirTo(r'Dependencies/fmilibrary', gTemporaryBuildDir+r'/Dependencies'):
         return False
 
     # Copy 7zip to temporary directory

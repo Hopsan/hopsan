@@ -1,4 +1,4 @@
-fmi_home = $${PWD}/FMILibrary
+fmi_home = $${PWD}/fmilibrary
 
 INCLUDEPATH *= $${fmi_home}/include
 LIBS *= -L$${fmi_home}/lib -lfmilib_shared

@@ -1,4 +1,4 @@
-set(fmi_home ${CMAKE_CURRENT_LIST_DIR}/FMILibrary)
+set(fmi_home ${CMAKE_CURRENT_LIST_DIR}/fmilibrary)
 
 add_library(fmilibrary SHARED IMPORTED)
 set_target_properties(fmilibrary PROPERTIES

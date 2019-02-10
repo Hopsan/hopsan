@@ -16,7 +16,7 @@ for /r "." %%a in (tst_*.exe) do (
 REM Run HopsanGUI built-in tests
 REM Assume libstd++ and Qt libraries are in PATH already, set PATH to find local dependencies
 set deps=%~dp0\Dependencies
-set PATH=%deps%\qwt\lib;%deps%\zeromq\bin;%deps%\hdf5\bin;%deps%\discount\lib;%deps%\FMILibrary\lib;%PATH%
+set PATH=%deps%\qwt\lib;%deps%\zeromq\bin;%deps%\hdf5\bin;%deps%\discount\bin;%deps%\fmilibrary\lib;%PATH%
 hopsangui.exe --test --platform offscreen
 if !errorlevel! neq 0 (
   echo HopsanGUI test FAILED

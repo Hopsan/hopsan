@@ -213,7 +213,7 @@ bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, con
     QFileInfo fmuImportRoot(QString("%1/%2").arg(targetPath).arg(fmuFileName));
     QFileInfo hppFileInfo(QDir(fmuImportRoot.absoluteFilePath()).relativeFilePath(hppFile));
 
-    const QString fmiLibraryDir=pGenerator->getHopsanRootPath()+"/Dependencies/FMILibrary";
+    const QString fmiLibraryDir=pGenerator->getHopsanRootPath()+"/Dependencies/fmilibrary";
 
     QStringList cflags, lflags;
     cflags << QString("-I\"%1\"").arg(fmiLibraryDir+"/include");

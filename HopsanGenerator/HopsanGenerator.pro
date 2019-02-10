@@ -27,7 +27,7 @@ include($${PWD}/../Dependencies/fmilibrary.pri)
 # (this is only necessary for dev builds, on release all DLLs will be copied anyway)
 # TODO: It would be better if this could be handled by the fmilibrary.pri somehow
 win32 {
-  src_file = $$quote($${PWD}/../Dependencies/FMILibrary/lib/libfmilib_shared.dll)
+  src_file = $$quote($${PWD}/../Dependencies/fmilibrary/lib/libfmilib_shared.dll)
   dst_dir = $$quote($${DESTDIR})
   # Replace slashes in paths with backslashes for Windows
   src_file ~= s,/,\\,g

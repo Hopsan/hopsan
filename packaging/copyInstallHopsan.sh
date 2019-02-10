@@ -69,11 +69,11 @@ install_dir  $srcDir/bin                                       $dstDir
 srcDeps=${srcDir}/Dependencies
 
 install_dir  ${srcDeps}/katex                                  $dstDir/Dependencies
-install_dir  ${srcDeps}/FMILibrary                             $dstDir/Dependencies
+install_dir  ${srcDeps}/fmilibrary                             $dstDir/Dependencies
 
 install_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
-install_dynamic_libs_if_exist  ${srcDeps}/FMILibrary/lib  libfmilib_shared  $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/fmilibrary/lib  libfmilib_shared  $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/discount/lib    libmarkdown       $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5*-shared   $dstDir/bin
 

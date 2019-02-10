@@ -1,30 +1,16 @@
 #!/bin/bash
 # $Id$
 
-# Shell script building HopsaGUI dependency Qwt automatically
+# Shell script building Hopsan dependency FMILibrary
 # Author: Peter Nordin peter.nordin@liu.se
 
-basedir=`pwd`
-zipname=FMILibrary-2.0.2
-zipfile=releases/${zipname}-src.zip
+basedir=$(pwd)
 
-name=FMILibrary
+name=fmilibrary
 codedir=${basedir}/${name}-code
 builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
-
-if [ -d $codedir ]; then
-    echo "$codedir Already exists, not replacing files!"
-else
-    if [ -f ${zipfile} ]; then
-        unzip -q ${zipfile}
-        mv ${zipname} ${codedir}
-    else
-        echo "Warning: ${zipfile} is missing, you need to download it"
-        exit 0
-    fi
-fi
 
 pushd ${codedir}
 patch -p0 --forward < ../fmilibrary-c99.patch
