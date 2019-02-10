@@ -1,0 +1,9 @@
+--- cmake/config.h.in	2019-02-10 22:14:16.826000000 +0100
++++ cmake/config.h.in.new	2019-02-10 22:13:51.064246000 +0100
+@@ -74,4 +74,6 @@
+ 
+ #define TABSTOP @TABSTOP@
+ 
++#define DESTRUCTOR __attribute__ ((destructor))
++
+ #endif /* _CONFIG_D */

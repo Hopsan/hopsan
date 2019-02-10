@@ -11,25 +11,19 @@ set codedir=%basedir%\%name%-code
 set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
-REM This path is needed for bash / posix compatibility inside the bash shell
-REM TODO it would be nice if we could auto generate the bash path from the windows install dir path
-set installdir_bash=../%name%
 
 call setHopsanBuildPaths.bat
-REM Make sure that the real msys is found first, TODO It would be better if we could tell the setupPaths script what msys environment to prefere
-set PATH=%msys_path%;%PATH%
 
-REM Copy code to build dir, not sure if out-of-source build is possible
+REM Apply build patch
+cd %codedir%
+patch.exe --forward -p0 < ..\discount-attribute.patch
+
+REM Configure with CMake and then build and install
 mkdir %builddir%
 cd %builddir%
-xcopy %codedir%\* . /Y
-
-REM Build with mingw patches
-
-REM The first patch was taken from https://github.com/Alexpux/MINGW-packages/tree/master/mingw-w64-discount
-REM It was however modified to grep for Msys instead of MINGW (from uname -a)
-bash.exe -c "patch -p0 < ../discount-mingw-building.patch; patch -p1 < ../discount-2.1.8-msys.patch; CC=gcc ./configure.sh --shared --prefix=%installdir_bash% --confdir=%installdir_bash%/etc; make -j8; make install"
-REM Note! We use msys make here as mingw32-make is to strict since 4.9.2
+cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%\cmake
+mingw32-make -j4
+mingw32-make install
 
 cd %basedir%
 echo.
