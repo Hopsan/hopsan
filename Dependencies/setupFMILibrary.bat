@@ -11,13 +11,7 @@ set codedir=%basedir%\%name%-code
 set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
-
-REM We dont want msys sh.exe in the PATH so we have clean it and set it manually
-set OLDPATH=%PATH%
-set OLDPATH=%OLDPATH:C:\Program Files (x86)\Git\usr\bin;=%
-set OLDPATH=%OLDPATH:C:\Program Files\Git\usr\bin;=%
 call setHopsanBuildPaths.bat
-set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
 
 REM build
 if exist %builddir% (
@@ -26,9 +20,9 @@ if exist %builddir% (
 )
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G "MinGW Makefiles" -DFMILIB_FMI_PLATFORM="win64" -DFMILIB_INSTALL_PREFIX=%installdir% %codedir%
-mingw32-make.exe -j8
-mingw32-make.exe install
+cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DFMILIB_FMI_PLATFORM="win64" -DFMILIB_INSTALL_PREFIX=%installdir% %codedir%
+mingw32-make.exe SHELL=cmd -j8
+mingw32-make.exe SHELL=cmd install
 
 cd %basedir%
 echo.

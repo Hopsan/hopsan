@@ -12,20 +12,14 @@ set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
 REM Setup PATH
-REM We don want msys sh.exe in the PATH so we have clean it and set it manually
-set OLDPATH=%PATH%
-set OLDPATH=%OLDPATH:C:\Program Files (x86)\Git\usr\bin;=%
-set OLDPATH=%OLDPATH:C:\Program Files\Git\usr\bin;=%
 call setHopsanBuildPaths.bat
-set PATH=%mingw_path%;%cmake_path%;%OLDPATH%
-PATH
+
 REM build
 mkdir %builddir%
 cd %builddir%
-REM bash.exe -c "./autogen.sh; ./configure --without-libsodium --host=x86_64-w64-mingw32; mingw32-make -j4"
-cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
-mingw32-make -j8
-mingw32-make install
+cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+mingw32-make SHELL=cmd -j8
+mingw32-make SHELL=cmd install
 REM mingw32-make test
 
 REM Now "install" cppzmq (header only), to the zmq install dir
