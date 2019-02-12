@@ -17,7 +17,9 @@ katex/
 katex-code/
 tclap-code/
 cppzmq-code/
+msgpack-c/
 msgpack-c-code/
+msgpack-c-build/
 *.zip
 *.tar.gz
 *.tar.bz2
