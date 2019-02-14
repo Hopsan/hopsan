@@ -49,24 +49,6 @@
     </releasefile>
   </dependency>
 
-  <dependency name="pythonqt" version="3.2">
-    <releasefile sha1="b85f2cf9a4e546a46dc416bb0e86759983384543">
-      <url>https://downloads.sourceforge.net/project/pythonqt/pythonqt/PythonQt-3.2/PythonQt3.2.zip</url>
-    </releasefile>
-  </dependency>
-
-  <dependency name="pythonqt" version="3.1">
-    <releasefile sha1="1f5800e2270d2e5e868b4c521b8dc699556d0da0">
-      <url>https://downloads.sourceforge.net/project/pythonqt/pythonqt/PythonQt-3.1/PythonQt3.1.zip</url>
-    </releasefile>
-  </dependency>
-
-    <dependency name="pythonqt" version="3.0">
-    <releasefile sha1="44823700eabacd8c735c2986b60f9ecc4eb5c7cf">
-      <url>https://downloads.sourceforge.net/project/pythonqt/pythonqt/PythonQt-3.0/PythonQt3.0.zip</url>
-    </releasefile>
-  </dependency>
-
   <dependency name="qwt">
     <releasefile sha1="f4915a93cd1beab230b81cb96fafa34aaac68ba0" platform="windows">
       <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.zip</url>

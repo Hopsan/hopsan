@@ -40,7 +40,7 @@ include($${PWD}/../Dependencies/qwt.pri)
 # Set the ZeroMQ paths
 include($${PWD}/../Dependencies/zeromq.pri)
 have_zeromq() {
-    DEFINES *= USEZMQ       #If ZMQ was found then lets build GUI with ZMQ / msgpack support
+    DEFINES *= USEZMQ
     !build_pass:message(Compiling HopsanGUI with ZeroMQ and msgpack support)
     include($${PWD}/../Dependencies/msgpack.pri)
 
