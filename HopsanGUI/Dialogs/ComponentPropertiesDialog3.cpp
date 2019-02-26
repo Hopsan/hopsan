@@ -252,6 +252,13 @@ void ComponentPropertiesDialog3::okPressed()
     }
 }
 
+void ComponentPropertiesDialog3::applyAndSimulatePressed()
+{
+    applyPressed();
+    mpModelObject->getParentContainerObject()->mpModelWidget->simulate_blocking();
+}
+
+
 void ComponentPropertiesDialog3::applyPressed()
 {
     setName();
@@ -436,6 +443,7 @@ QDialogButtonBox *ComponentPropertiesDialog3::createOKButtonBox()
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
     QPushButton *pApplyButton = new QPushButton(tr("&Apply"), this);
+    QPushButton *pApplyAndSimulateButton = new QPushButton(tr("Apply && &Simulate"), this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal, this);
     QString filePath = mpModelObject->getAppearanceData()->getSourceCodeFile();
     if(!filePath.isEmpty())
@@ -444,9 +452,11 @@ QDialogButtonBox *ComponentPropertiesDialog3::createOKButtonBox()
         pButtonBox->addButton(pSourceCodeButton, QDialogButtonBox::ActionRole);
         connect(pSourceCodeButton, SIGNAL(clicked()), this, SLOT(openSourceCode()));
     }
+    pButtonBox->addButton(pApplyAndSimulateButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pApplyButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pOkButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
+    connect(pApplyAndSimulateButton, SIGNAL(clicked()), this, SLOT(applyAndSimulatePressed()));
     connect(pApplyButton, SIGNAL(clicked()), this, SLOT(applyPressed()));
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
