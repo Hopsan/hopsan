@@ -50,7 +50,7 @@ namespace hopsan {
 class HOPSANCORE_DLLAPI CSVParserNG
 {
 public:
-    CSVParserNG(const char separator_char = ',');
+    CSVParserNG(const char separator_char = ',', size_t linesToSkip=0);
     ~CSVParserNG();
 
     bool openFile(const HString &rFilepath);

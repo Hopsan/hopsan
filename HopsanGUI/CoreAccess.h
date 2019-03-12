@@ -57,7 +57,7 @@ void initializaHopsanCore(QString logPath);
 class CoreCSVParserAccess
 {
 public:
-    CoreCSVParserAccess(QString file, QChar separator=',');
+    CoreCSVParserAccess(QString file, QChar separator=',', int linesToSkip=0);
     ~CoreCSVParserAccess();
     bool isOk();
     int getNumberOfRows();
