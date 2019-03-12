@@ -174,21 +174,25 @@ void WorkerDifferentialEvolution::setDifferentialWeight(double value)
 void WorkerDifferentialEvolution::getRandomIds(size_t notId, size_t &id1, size_t &id2, size_t &id3, size_t &id4)
 {
     id1 = mNumPoints * opsRand();
-    while(id1 == notId)
+    while(id1 == notId || id1 > mNumPoints-1)
     {
         id1 = mNumPoints * opsRand();
     }
     id2 = mNumPoints * opsRand();
-    while(id2 == notId || id2 == id1)
+    while(id2 == notId || id2 > mNumPoints-1 || id2 == id1)
     {
         id2 = mNumPoints * opsRand();
     }
     id3 = mNumPoints * opsRand();
-    while(id3 == notId || id3 == id1 || id3 == id2)
+    while(id3 == notId || id3 > mNumPoints-1 || id3 == id1 || id3 == id2)
     {
         id3 = mNumPoints * opsRand();
     }
     id4 = mNumParameters * opsRand();
+    while(id4 > mNumPoints-1)
+    {
+        id4 = mNumPoints * opsRand();
+    }
 }
 
 bool WorkerDifferentialEvolution::isCandidateFeasible(int id)
