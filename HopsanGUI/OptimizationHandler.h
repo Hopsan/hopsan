@@ -100,6 +100,7 @@ public:
     //Enums
     enum DataT{Integer, Double};
     enum AlgorithmT{NelderMead, ComplexRF, ComplexRFM, ComplexRFP, PSO, ParameterSweep, Uninitialized};
+    enum PointPlotContentT{AllPoints, Candidates};
 
     //Constructor
     OptimizationHandler(HcomHandler *pHandler);
@@ -150,7 +151,7 @@ protected slots:
 
 public slots:
     //! @note These are public because they are used in optimization message handler
-    void plotPoints();
+    void plotPoints(PointPlotContentT content=AllPoints);
     void updateOutputs();
     void plotParameters();
     void logAllPoints();
