@@ -89,6 +89,13 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 {
     if(mpWorker)
     {
+        if(mPlotPoints) {
+            PlotWindow *pParPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+            if(pParPlotWindow) {
+                pParPlotWindow->closeAllTabs();
+            }
+        }
+
         clearPlotVariables();
 
         mModelPath = modelPath;
@@ -756,14 +763,14 @@ bool OptimizationHandler::evaluateAllCandidates()
 }
 
 
-void OptimizationHandler::plotPoints()
+void OptimizationHandler::plotPoints(PointPlotContentT content)
 {
     if(!mPlotPoints || mpWorker->getNumberOfParameters() < 2)
     {
         return;
     }
 
-    for(size_t p=0; p<mpWorker->getNumberOfPoints(); ++p)
+    for(size_t p=0; p<mpWorker->getNumberOfPoints() && (content == AllPoints); ++p)
     {
 
         double x = mpWorker->getParameter(p,0);
@@ -798,6 +805,7 @@ void OptimizationHandler::plotPoints()
             pPlotArea->setAxisLimits(QwtPlot::yLeft, min1, max1);
             pPlotArea->setAxisLabel(QwtPlot::xBottom, "Optimization Parameter 0");
             pPlotArea->setAxisLabel(QwtPlot::yLeft, "Optimization Parameter 1");
+            pPlotArea->getCurves().last()->setLineSymbol("XCross");
         }
         else
         {
@@ -836,7 +844,7 @@ void OptimizationHandler::plotPoints()
             mpWorker->getParameterLimits(0, min0, max0);
             mpWorker->getParameterLimits(1, min1, max1);
 
-            auto pPlotWindow = gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0, QColor("red"));
+            auto pPlotWindow = gpPlotHandler->plotDataToWindow("parplot", mPointVars_x.last(), mPointVars_y.last(), 0, QColor("black"));
             auto pPlotArea = gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab()->getPlotArea();
             pPlotArea->setAxisLimits(QwtPlot::xBottom, min0, max0);
             pPlotArea->setAxisLimits(QwtPlot::yLeft, min1, max1);
@@ -847,6 +855,7 @@ void OptimizationHandler::plotPoints()
             {
                 pPlotCurve->setIncludeGenerationInTitle(false);
                 pPlotCurve->refreshCurveTitle();
+                pPlotCurve->setLineSymbol("XCross");
             }
         }
         else
@@ -862,15 +871,19 @@ void OptimizationHandler::plotPoints()
     if(pPlotWindow)
     {
         PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
-        for(int c=0; c<pTab->getCurves(0).size(); ++c)
+        for(int c=0; c<mpWorker->getNumberOfPoints(); ++c)
         {
             if(c == (int)mpWorker->getBestId())
             {
-                pTab->getCurves(0).at(c)->setLineSymbol("Star 1");
+                pTab->getCurves(0).at(c)->setLineColor(QColor("green"));
+            }
+            else if(c == (int)mpWorker->getWorstId())
+            {
+                pTab->getCurves(0).at(c)->setLineColor(QColor("red"));
             }
             else
             {
-                pTab->getCurves(0).at(c)->setLineSymbol("XCross");
+                pTab->getCurves(0).at(c)->setLineColor(QColor("blue"));
             }
         }
         pTab->update();
@@ -1440,13 +1453,13 @@ void OptimizationMessageHandler::objectiveChanged(size_t idx)
 
 void OptimizationMessageHandler::candidatesChanged()
 {
-    mpHandler->plotPoints();
+    mpHandler->plotPoints(OptimizationHandler::Candidates);
 }
 
 void OptimizationMessageHandler::candidateChanged(size_t idx)
 {
     Q_UNUSED(idx);
-    mpHandler->plotPoints();
+    mpHandler->plotPoints(OptimizationHandler::Candidates);
 }
 
 void OptimizationMessageHandler::abort()
