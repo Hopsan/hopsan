@@ -756,20 +756,45 @@ void LogDataHandler2::importFromCSV_AutoFormat(QString importFilePath)
     if (file.open(QFile::ReadOnly))
     {
         QTextStream ts(&file);
-        QStringList fields = ts.readLine().split(',');
-        if (!fields.isEmpty())
+        QStringList firstRow = ts.readLine().split(',');
+        QStringList firstColumn;
+        firstColumn.push_back(firstRow.first());
+        while(!ts.atEnd()) {
+            firstColumn.push_back(ts.readLine().split(',').first());
+        }
+        file.close();
+        if (!firstRow.isEmpty())
         {
-            bool ok;
-            fields.front().toDouble(&ok);
-            file.close();
-            if (ok)
-            {
-                // If Ok then a number in first spot, seems to be a plain value csv
-                importFromPlainColumnCsv(importFilePath);
+            bool columnWise = true;
+            bool hopsanCSV = false;
+            int linesToSkip = 0;
+            if(!isNumber(firstColumn.first()) && isNumber(firstColumn.last())) {
+                columnWise = true;
+                hopsanCSV = false;
+                while(!firstColumn.empty() && !isNumber(firstColumn.first())) {
+                    linesToSkip++;
+                    firstColumn.pop_front();
+                }
             }
-            else
+            else if(!isNumber(firstRow.first()) && isNumber(firstRow.last())) {
+                columnWise = false;
+                while(!firstRow.empty() && !isNumber(firstRow.first())) {
+                    linesToSkip++;
+                    firstRow.pop_front();
+                }
+                if(linesToSkip == 3) {
+                    hopsanCSV = true;
+                }
+            }
+
+            if (columnWise) {
+                importFromPlainColumnCsv(importFilePath, ',', linesToSkip);
+            }
+            else if (!columnWise && !hopsanCSV)
             {
-                // If NOT ok then likely text in first spot, seems to be a hopsan row csv file, or some other junk that will not work
+                //! @todo Implement
+            }
+            else {
                 importHopsanRowCSV(importFilePath);
             }
         }
@@ -881,7 +906,7 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
 }
 
 
-void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QChar separator, const int timecolumn)
+void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QChar separator, const int linesToSkip, const int timecolumn)
 {
     if(importFilePath.isEmpty())
     {
@@ -899,7 +924,18 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
     QFileInfo fileInfo(file);
     gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
 
-    CoreCSVParserAccess csvparser(importFilePath,separator);
+    QTextStream ts(&file);
+    QStringList names;
+    file.open(QFile::ReadOnly);
+    if(linesToSkip > 0) {
+        names = ts.readLine().split(separator);
+    }
+    for(auto& name : names) {
+        name.remove("\"");
+    }
+    file.close();
+
+    CoreCSVParserAccess csvparser(importFilePath,separator,linesToSkip);
 
     if(!csvparser.isOk())
     {
@@ -927,7 +963,12 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
         for (int i=1; i<data.size(); ++i)
         {
             SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-            pVarDesc->mDataName = "CSV"+QString::number(i);
+            if(!names.isEmpty()) {
+                pVarDesc->mDataName = names[i];
+            }
+            else {
+                pVarDesc->mDataName = "CSV"+QString::number(i);
+            }
             pNewData = insertTimeDomainVariable(pTimeVec, data[i], pVarDesc, fileInfo.absoluteFilePath());
         }
 
