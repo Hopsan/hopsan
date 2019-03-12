@@ -2370,6 +2370,25 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
     QFile file(path);
+    if(file.exists() && path.endsWith(".bat"))
+    {
+        QString cmd = "CMD.exe /C "+path;
+        args.removeFirst();
+        for(QString& arg : args) {
+            evaluateExpression(arg);
+            if(mAnsType == Scalar) {
+                cmd.append(" "+QString::number(mAnsScalar));
+            }
+            else {
+                cmd.append(" "+arg);
+            }
+        }
+        HCOMINFO("Launching "+file.fileName()+"...");
+        QDir::setCurrent(QFileInfo(path).absolutePath());
+        system(cmd.toStdString().c_str());
+        HCOMINFO(file.fileName()+" finished.");
+        return;
+    }
     if (!file.exists() && !path.endsWith(".hcom"))
     {
         file.setFileName(path+".hcom");
