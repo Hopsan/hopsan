@@ -37,10 +37,11 @@
 
 using namespace hopsan;
 
-CSVParserNG::CSVParserNG(const char separator_char)
+CSVParserNG::CSVParserNG(const char separator_char, size_t linesToSkip)
 {
     mpCsvParser = new indcsvp::IndexingCSVParser();
     mpCsvParser->setSeparatorChar(separator_char);
+    mpCsvParser->setNumLinesToSkip(linesToSkip);
 }
 
 CSVParserNG::~CSVParserNG()

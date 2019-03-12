@@ -1270,9 +1270,9 @@ QString getHopsanCoreVersion()
 }
 
 
-CoreCSVParserAccess::CoreCSVParserAccess(QString file, QChar separator)
+CoreCSVParserAccess::CoreCSVParserAccess(QString file, QChar separator, int linesToSkip)
 {
-    mpParser = new hopsan::CSVParserNG(separator.toLatin1());
+    mpParser = new hopsan::CSVParserNG(separator.toLatin1(), linesToSkip);
     bool openOK = mpParser->openFile(hopsan::HString(file.toStdString().c_str()));
     if (openOK)
     {
