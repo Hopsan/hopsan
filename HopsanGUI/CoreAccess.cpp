@@ -1330,6 +1330,22 @@ bool CoreCSVParserAccess::getColumn(int col, QVector<double> &rVector)
     }
 }
 
+bool CoreCSVParserAccess::getRow(int row, QVector<double> &rVector)
+{
+    if(mpParser)
+    {
+        std::vector<double> vec;
+        bool rc = mpParser->copyRow(row, vec);
+        rVector = QVector<double>::fromStdVector(vec);
+        return rc;
+    }
+    else
+    {
+        rVector = QVector<double>();
+        return false;
+    }
+}
+
 QString getHopsanCoreCompiler()
 {
     return QString::fromStdString(gHopsanCore.getCoreCompiler());
