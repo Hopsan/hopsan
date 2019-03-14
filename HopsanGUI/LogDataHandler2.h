@@ -63,7 +63,8 @@ public:
     void importFromPlo(QString importFilePath=QString());
     void importFromCSV_AutoFormat(QString importFilePath=QString());
     void importHopsanRowCSV(QString importFilePath=QString());
-    void importFromPlainColumnCsv(QString importFilePath=QString(), const QChar separator=',', const int startColumn=0, const int timecolumn=0);
+    void importFromPlainColumnCsv(QString importFilePath=QString(), const QChar separator=',', const int rowsToSkip=0, const int timecolumn=0);
+    void importFromPlainRowCsv(QString importFilePath=QString(), const QChar separator=',', const int columnsToSkip=0, const int timeRow=0);
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> datacolumns, QStringList datanames, QVector<int> timecolumns);
 
     void exportGenerationToPlo(const QString &rFilePath, int gen, const int version=-1) const;

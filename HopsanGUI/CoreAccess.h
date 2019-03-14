@@ -63,6 +63,7 @@ public:
     int getNumberOfRows();
     int getNumberOfColumns();
     bool getColumn(int col, QVector<double> &rVector);
+    bool getRow(int row, QVector<double> &rVector);
 private:
     hopsan::CSVParserNG *mpParser;
 };

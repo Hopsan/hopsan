@@ -804,7 +804,7 @@ void LogDataHandler2::importFromCSV_AutoFormat(QString importFilePath)
             }
             else if (!columnWise && !hopsanCSV)
             {
-                //! @todo Implement
+                importFromPlainRowCsv(importFilePath, ',', linesToSkip);
             }
             else {
                 importHopsanRowCSV(importFilePath);
@@ -918,11 +918,10 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
 }
 
 
-void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QChar separator, const int linesToSkip, const int timecolumn)
+void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QChar separator, const int rowsToSkip, const int timecolumn)
 {
     if(importFilePath.isEmpty())
     {
-
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
                                                        gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                                        tr("Comma-separated values files (*.csv)"));
@@ -939,7 +938,7 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
     QTextStream ts(&file);
     QStringList names;
     file.open(QFile::ReadOnly);
-    if(linesToSkip > 0) {
+    if(rowsToSkip > 0) {
         names = ts.readLine().split(separator);
     }
     for(auto& name : names) {
@@ -947,7 +946,7 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
     }
     file.close();
 
-    CoreCSVParserAccess csvparser(importFilePath,separator,linesToSkip);
+    CoreCSVParserAccess csvparser(importFilePath,separator,rowsToSkip);
 
     if(!csvparser.isOk())
     {
@@ -994,6 +993,108 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
 
     // Limit number of plot generations if there are too many
     limitPlotGenerations();
+}
+
+void LogDataHandler2::importFromPlainRowCsv(QString importFilePath, const QChar separator, const int columnsToSkip, const int timeRow)
+{
+    if(importFilePath.isEmpty())
+    {
+        importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
+                                                       gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                                                       tr("Comma-separated values files (*.csv)"));
+    }
+    if(importFilePath.isEmpty())
+    {
+        return;
+    }
+
+    QFile file(importFilePath);
+    QFileInfo fileInfo(file);
+    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
+
+    bool parseOk = true;
+
+    if (file.open(QFile::ReadOnly))
+    {
+        QStringList allNames, allAlias, allUnits;
+        QList< QVector<double> > allDatas;
+        int nDataValueElements = -1;
+        QTextStream contentStream(&file);
+        while (!contentStream.atEnd())
+        {
+            //! @todo this is not the most clever and speedy implementation
+            QStringList lineFields = contentStream.readLine().split(separator);
+            if (lineFields.size() > columnsToSkip)
+            {
+                // Read metadata
+                if(columnsToSkip > 0) {
+                    allNames.append(lineFields[0]);
+                }
+
+                allDatas.append(QVector<double>());
+                QVector<double> &data = allDatas.last();
+                if (nDataValueElements > -1)
+                {
+                    data.reserve(nDataValueElements);
+                }
+                for (int i=columnsToSkip; i<lineFields.size(); ++i)
+                {
+                    bool ok;
+                    data.append(lineFields[i].toDouble(&ok));
+                    if(!ok)
+                    {
+                        parseOk = false;
+                    }
+                }
+                nDataValueElements = data.size();
+            }
+        }
+
+        if (parseOk)
+        {
+            ++mCurrentGenerationNumber;
+
+            // Figure out time
+            SharedVectorVariableT pTimeVec;
+            //! @todo what if multiple subsystems with different time
+            if(timeRow > -1) {
+                pTimeVec = insertTimeVectorVariable(allDatas[timeRow], fileInfo.absoluteFilePath());
+            }
+
+            SharedVectorVariableT pNewData;
+            for (int i=0; i<allNames.size(); ++i)
+            {
+                // We already inserted time
+                if (i == timeRow)
+                {
+                    continue;
+                }
+
+                SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
+                if(allNames.size() > i) {
+                    pVarDesc->mDataName = allNames[i];
+                }
+
+                if(!pTimeVec.isNull()) {
+                    pNewData = insertTimeDomainVariable(pTimeVec, allDatas[i], pVarDesc, fileInfo.absoluteFilePath());
+                }
+                else {
+                    pNewData = insertCustomVectorVariable(allDatas[i], pVarDesc, fileInfo.absoluteFilePath());
+                }
+            }
+
+            if(pNewData)
+            {
+                mImportedGenerationsMap.insert(pNewData->getGeneration(), pNewData->getImportedFileName());
+            }
+
+            // Limit number of plot generations if there are too many
+            limitPlotGenerations();
+
+            emit dataAdded();
+        }
+    }
+    file.close();
 }
 
 
