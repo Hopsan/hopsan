@@ -756,11 +756,23 @@ void LogDataHandler2::importFromCSV_AutoFormat(QString importFilePath)
     if (file.open(QFile::ReadOnly))
     {
         QTextStream ts(&file);
-        QStringList firstRow = ts.readLine().split(',');
+        QString firstLine = ts.readLine();
+        if(firstLine.isEmpty()) {
+            gpMessageHandler->addErrorMessage("CSV file is empty: "+importFilePath);
+            return;
+        }
+        QStringList firstRow = firstLine.split(',');
+
         QStringList firstColumn;
         firstColumn.push_back(firstRow.first());
         while(!ts.atEnd()) {
-            firstColumn.push_back(ts.readLine().split(',').first());
+            QStringList row = ts.readLine().split(',');
+            if(row.isEmpty()) {
+                firstColumn.push_back(QString());
+            }
+            else {
+                firstColumn.push_back(row.first());
+            }
         }
         file.close();
         if (!firstRow.isEmpty())
