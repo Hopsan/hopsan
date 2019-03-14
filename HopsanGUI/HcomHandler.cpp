@@ -2370,9 +2370,15 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
     QFile file(path);
+#ifdef _WIN32
     if(file.exists() && path.endsWith(".bat"))
     {
         QString cmd = "CMD.exe /C "+path;
+#else //Mac or Linux
+    if(file.exists() && path.endsWith(".sh"))
+    {
+        QString cmd = "sh "+path;
+#endif
         args.removeFirst();
         for(QString& arg : args) {
             evaluateExpression(arg);
