@@ -975,7 +975,7 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
         for (int i=1; i<data.size(); ++i)
         {
             SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-            if(!names.isEmpty()) {
+            if (names.size() > i) {
                 pVarDesc->mDataName = names[i];
             }
             else {
