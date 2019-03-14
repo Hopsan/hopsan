@@ -4245,6 +4245,10 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
 
 void HcomHandler::executeLoadVariableCommand(const QString cmd)
 {
+    if(!mpModel) {
+        HCOMERR("Loading variables from file requires an open model.");
+        return;
+    }
     QStringList args = splitCommandArguments(cmd);
     if(args.size() < 1 || args.size() > 2)
     {
