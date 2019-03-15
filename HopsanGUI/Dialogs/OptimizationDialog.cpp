@@ -44,6 +44,7 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QHeaderView>
+#include <QTableWidget>
 
 //C++ includes
 #include <limits>
@@ -407,7 +408,6 @@ void OptimizationDialog::updateCoreProgressBars()
     if(!mCoreProgressBarsRecreated && mpTerminal->mpHandler->mpOptHandler->isRunning())
     {
         recreateCoreProgressBars();
-        mCoreProgressBarsRecreated = true;
     }
 
     for(int p=0; p<mCoreProgressBarPtrs.size(); ++p)
@@ -449,62 +449,37 @@ void OptimizationDialog::updateCoreProgressBars()
 //! @brief Recreates progress bars depending on number of models
 void OptimizationDialog::recreateCoreProgressBars()
 {
-    //Clear all previous stuff
-    QLayoutItem *item;
-    while((item = mpCoreProgressBarsLayout->takeAt(0)))
-    {
-        if (item->widget())
-        {
-            delete item->widget();
-        }
-        delete item;
+    if(mpTerminal->mpHandler->mpOptHandler->getAlgorithm() == Ops::Undefined) {
+        return;
     }
-    mCoreProgressBarPtrs.clear();
 
-    // Decide if we should show progress per particle or just current simulation
-    bool showProgressPerParticle = gpConfig->getUseMulticore() || gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION);
+    mCoreProgressBarsRecreated = true;
 
-    //Add new stuff depending on algorithm and number of threads
-    switch (mpTerminal->mpHandler->mpOptHandler->getAlgorithm())
-    {
-    case Ops::NelderMead :    //Complex-RF
-    case Ops::ComplexRF :    //Complex-RF
+    int nModels = mpTerminal->mpHandler->mpOptHandler->getOptVar("nmodels");
+
+    // Clear existing progress bars
+    while(!mCoreProgressBarPtrs.empty()) {
+        mCoreProgressBarPtrs.last()->deleteLater();
+        mCoreProgressBarPtrs.removeLast();
+    }
+
+    // Clear existing table
+    mpCoreProgressBarsTableWidget->clear();
+    mpCoreProgressBarsTableWidget->setRowCount(nModels+1);
+    mpCoreProgressBarsTableWidget->setColumnCount(2);
+
+    // Model progress bars
+    for(int r=0; r<nModels; ++r) {
         mCoreProgressBarPtrs.append(new QProgressBar(this));
-        mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
-        mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
-        break;
-    case Ops::ComplexRFP :    //Complex-RFP
-    case Ops::ParticleSwarm :    //Particle swarm
-    case Ops::DifferentialEvolution :    //Differential Evolution
-    case Ops::ParameterSweep :    //Parameter sweep
-    case Ops::Genetic:    //Genetic algorithm
-        if(showProgressPerParticle)
-        {
-            int nModels = mpTerminal->mpHandler->mpOptHandler->getOptVar("nmodels");
-            for(int n=0; n<nModels; ++n)
-            {
-                mCoreProgressBarPtrs.append(new QProgressBar(this));
-                mpCoreProgressBarsLayout->addWidget(new QLabel("Particle "+QString::number(n)+":", this), n, 0);
-                mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(), n, 1);
-            }
-        }
-        else
-        {
-            mCoreProgressBarPtrs.append(new QProgressBar(this));
-            mpCoreProgressBarsLayout->addWidget(new QLabel("Current simulation:", this),0,0);
-            mpCoreProgressBarsLayout->addWidget(mCoreProgressBarPtrs.last(),0,1);
-        }
-        break;
-    default:
-        break;
+        mpCoreProgressBarsTableWidget->setItem(r,0,new QTableWidgetItem("model"+QString::number(r)));
+        mpCoreProgressBarsTableWidget->setCellWidget(r,1,mCoreProgressBarPtrs.last());
     }
 
+    // Total progress bar
+    mpTotalProgressBar->deleteLater();
     mpTotalProgressBar = new QProgressBar(this);
-    mpCoreProgressBarsLayout->addWidget(new QLabel("Total: ", this),mCoreProgressBarPtrs.size(), 0);
-    mpCoreProgressBarsLayout->addWidget(mpTotalProgressBar, mCoreProgressBarPtrs.size(), 1);
-    mpCoreProgressBarsLayout->addWidget(new QWidget(this), mCoreProgressBarPtrs.size()+1, 0, 1, 2);
-    mpCoreProgressBarsLayout->setRowStretch(mCoreProgressBarPtrs.size()+1, 1);
-    return;
+    mpCoreProgressBarsTableWidget->setItem(mpCoreProgressBarsTableWidget->rowCount()-1,0,new QTableWidgetItem("total"));
+    mpCoreProgressBarsTableWidget->setCellWidget(mpCoreProgressBarsTableWidget->rowCount()-1,1,mpTotalProgressBar);
 }
 
 //! @brief Create or destroy parameter line edits to match number of optimization points
@@ -746,8 +721,11 @@ QWidget*OptimizationDialog::createRunWidget()
     mpParametersModel = new QStandardItemModel(this);
     mpParametersOutputTableView->setModel(mpParametersModel);
 
+    mpCoreProgressBarsTableWidget = new QTableWidget(this);
+    mpCoreProgressBarsTableWidget->horizontalHeader()->setStretchLastSection(true);
+
     pScrollAreaLayout->addWidget(mpParametersOutputTableView);
-    pScrollAreaLayout->addLayout(mpCoreProgressBarsLayout);
+    pScrollAreaLayout->addWidget(mpCoreProgressBarsTableWidget);
 
     mpTerminal = new TerminalWidget(this);
     mpTerminal->mpHandler->setAcceptsOptimizationCommands(true);
@@ -761,7 +739,6 @@ QWidget*OptimizationDialog::createRunWidget()
     pRunLayout->setRowStretch(4,2.6);
     pRunLayout->setColumnStretch(0,1);
     pRunLayout->setColumnMinimumWidth(1,400);
-    pRunLayout->addWidget(mpTotalProgressBar,           5,1,1,2);
 
     return pRunWidget;
 }

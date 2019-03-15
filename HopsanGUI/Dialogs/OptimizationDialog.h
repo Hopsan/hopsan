@@ -51,6 +51,7 @@
 #include <QFileInfo>
 #include <QStandardItemModel>
 #include <QTableView>
+#include <QTableWidget>
 
 #include "common.h"
 
@@ -110,7 +111,9 @@ private:
     QProgressBar *mpTotalProgressBar;
     QList<QPushButton *> mParametersApplyButtonPtrs;
     QStandardItemModel *mpParametersModel;
+    QStandardItemModel *mpCoreProgressBarsModel;
     QTableView *mpParametersOutputTableView;
+    QTableWidget *mpCoreProgressBarsTableWidget;
     QGridLayout *mpCoreProgressBarsLayout;
     TerminalWidget *mpTerminal;
     QLabel *mpModelNameLabel;
