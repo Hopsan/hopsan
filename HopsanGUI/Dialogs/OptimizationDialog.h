@@ -34,7 +34,7 @@
 #ifndef OPTIMIZATIONDIALOG_H
 #define OPTIMIZATIONDIALOG_H
 
-#include <QDialog>
+#include <QMainWindow>
 #include <QLabel>
 #include <QCheckBox>
 #include <QSpinBox>
@@ -49,6 +49,8 @@
 #include <QProgressBar>
 #include <QToolBar>
 #include <QFileInfo>
+#include <QStandardItemModel>
+#include <QTableView>
 
 #include "common.h"
 
@@ -58,7 +60,7 @@ class GUIMessageHandler;
 class OptimizationScriptWizard;
 
 
-class OptimizationDialog : public QDialog
+class OptimizationDialog : public QMainWindow
 {
   Q_OBJECT
 
@@ -106,9 +108,9 @@ private:
     //Run tab
     QList<QProgressBar*> mCoreProgressBarPtrs;
     QProgressBar *mpTotalProgressBar;
-    QGridLayout *mpParametersOutputTextEditsLayout;
-    QList<QLineEdit *> mParametersOutputLineEditPtrs;
     QList<QPushButton *> mParametersApplyButtonPtrs;
+    QStandardItemModel *mpParametersModel;
+    QTableView *mpParametersOutputTableView;
     QGridLayout *mpCoreProgressBarsLayout;
     TerminalWidget *mpTerminal;
     QLabel *mpModelNameLabel;
@@ -124,8 +126,6 @@ private:
     bool mCoreProgressBarsRecreated;
     bool mOutputDisabled=false;
     QVector<int> mParameterOutputIndexes;
-    const int mObjectiveColumnWidth = 12;
-    const int mParameterColumnWidth = 15;
 
     QFileInfo mScriptFileInfo;
     bool mScriptTextChanged = false;

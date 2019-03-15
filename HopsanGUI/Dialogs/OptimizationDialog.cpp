@@ -40,6 +40,10 @@
 #include <QTimer>
 #include <QScrollArea>
 #include <QToolBar>
+#include <QTableView>
+#include <QStandardItemModel>
+#include <QStandardItem>
+#include <QHeaderView>
 
 //C++ includes
 #include <limits>
@@ -69,15 +73,19 @@ class CentralTabWidget;
 
 //! @brief Constructor for optimization dialog
 OptimizationDialog::OptimizationDialog(QWidget *parent)
-  : QDialog(parent)
+  : QMainWindow(parent)
 {
     //Set the name and size of the main window
     this->resize(1024,768);
     this->setWindowTitle("Optimization");
     this->setPalette(gpConfig->getPalette());
 
+    // Central widget
+    QWidget *pCentralWidget = new QWidget(this);
+    this->setCentralWidget(pCentralWidget);
+
     // Main layout
-    QVBoxLayout *pLayout = new QVBoxLayout(this);
+    QVBoxLayout *pLayout = new QVBoxLayout(centralWidget());
 
     // Toolbar
     QToolBar *pToolBar = createToolBar();
@@ -112,72 +120,23 @@ void OptimizationDialog::updateParameterOutputs(const std::vector<double> &objec
 {
     if(mOutputDisabled || !this->isVisible()) return;
 
-    if(mParametersOutputLineEditPtrs.size() != (int)objectives.size())
-    {
+    if(mpParametersModel->rowCount() != values.size() || mpParametersModel->columnCount() != values[0].size()+2) {
         recreateParameterOutputLineEdits();
     }
 
-    mParameterOutputIndexes.clear();
-    mParameterOutputIndexes.append(bestId);
-    mParameterOutputIndexes.append(worstId);
-    if(bestId == worstId)
-    {
-        mParameterOutputIndexes.remove(0);
-    }
-    for(size_t i=0; i<values.size(); ++i)
-    {
-        if(!mParameterOutputIndexes.contains(i))
-        {
-            mParameterOutputIndexes.append(i);
+    for(int r=0; r<mpParametersModel->rowCount(); ++r) {
+        mpParametersModel->item(r,1)->setText(QString::number(objectives[r], 'g', 8));
+        for(int c=2; c<mpParametersModel->columnCount(); ++c) {
+            mpParametersModel->item(r,c)->setText(QString::number(values[r][c-2], 'g', 8));
         }
     }
 
-    for(int x=0; x<mParameterOutputIndexes.size(); ++x)
-    {
-        int i = mParameterOutputIndexes[x];
-        if(i >= (int)objectives.size()) continue;
-
-        QString output = "obj: ";
-        QString objStr;
-        //! @todo This is an error in the code, this must be solved, previous code assumed that i is in range of objects -> ASSERT failed in QVector
-        qDebug() << "objectives size: " << objectives.size() << " " << i;
-        if (i < (int)objectives.size())
-        {
-            objStr = QString::number(objectives[i], 'g', 8);
+    if(mpParametersOutputTableView->horizontalHeader()->isSortIndicatorShown()) {
+        int i = mpParametersOutputTableView->horizontalHeader()->sortIndicatorSection();
+        Qt::SortOrder order = mpParametersOutputTableView->horizontalHeader()->sortIndicatorOrder();
+        if(i < mpParametersModel->columnCount()) {
+            mpParametersOutputTableView->sortByColumn(i,order);
         }
-        else
-        {
-            mpMessageHandler->addErrorMessage("In code: updateParameterOutputs objectives.size() < i");
-            return;
-        }
-
-        while(objStr.size() < mObjectiveColumnWidth)
-        {
-            objStr.append(" ");
-        }
-        output.append(objStr);
-        output.append(" [ ");
-        for(size_t j=0; j<values[i].size(); ++j)
-        {
-            QString numStr = QString::number(values[i][j], 'g', 8);
-            numStr.append(",");
-            while(numStr.size() < mParameterColumnWidth)
-            {
-                numStr.append(" ");
-            }
-            output.append(numStr);
-        }
-        output.append("]");
-        QPalette palette;
-        if(i == bestId)
-            palette.setColor(QPalette::Text,Qt::darkGreen);
-        else if(i == worstId)
-            palette.setColor(QPalette::Text,Qt::darkRed);
-        else
-            palette.setColor(QPalette::Text,Qt::black);
-        mParametersOutputLineEditPtrs[x]->setPalette(palette);
-        mParametersOutputLineEditPtrs[x]->setText(output);
-        mParametersOutputLineEditPtrs[x]->setCursorPosition(0);
     }
 }
 
@@ -196,11 +155,6 @@ void OptimizationDialog::updateTotalProgressBar(double progress)
 void OptimizationDialog::setOptimizationFinished()
 {
     mpRunButton->setEnabled(true);
-
-    for(int i=0; i<mParametersApplyButtonPtrs.size(); ++i)
-    {
-        mParametersApplyButtonPtrs[i]->setEnabled(true);
-    }
 }
 
 
@@ -246,7 +200,7 @@ void OptimizationDialog::open()
         loadScriptFile(optSettings.mScriptFile);
     }
 
-    QDialog::show();
+    QMainWindow::show();
 }
 
 
@@ -277,7 +231,7 @@ void OptimizationDialog::close()
         }
     }
 
-    QDialog::accept();
+    QMainWindow::close();
 }
 
 
@@ -557,26 +511,34 @@ void OptimizationDialog::recreateCoreProgressBars()
 void OptimizationDialog::recreateParameterOutputLineEdits()
 {
     int nPoints = mpTerminal->mpHandler->mpOptHandler->getOptVar("npoints");
+    int nParams = mpTerminal->mpHandler->mpOptHandler->getOptVar("nparams");
 
-    QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
-    while(mParametersOutputLineEditPtrs.size() < nPoints)
+    while(!mParametersApplyButtonPtrs.empty()) {
+        mParametersApplyButtonPtrs.last()->deleteLater();
+        mParametersApplyButtonPtrs.removeLast();
+    }
+    while(mParametersApplyButtonPtrs.size() < nPoints)
     {
-        mParametersOutputLineEditPtrs.append(new QLineEdit(this));
-        mParametersOutputLineEditPtrs.last()->setFont(font);
         mParametersApplyButtonPtrs.append(new QPushButton("Apply", this));
-        mpParametersOutputTextEditsLayout->addWidget(mParametersApplyButtonPtrs.last(), mParametersOutputLineEditPtrs.size(), 0);
-        mpParametersOutputTextEditsLayout->addWidget(mParametersOutputLineEditPtrs.last(), mParametersOutputLineEditPtrs.size(), 1);
         connect(mParametersApplyButtonPtrs.last(), SIGNAL(clicked()), this, SLOT(applyParameters()));
     }
-    while(mParametersOutputLineEditPtrs.size() > nPoints)
-    {
-        mpParametersOutputTextEditsLayout->removeWidget(mParametersOutputLineEditPtrs.last());
-        mpParametersOutputTextEditsLayout->removeWidget(mParametersApplyButtonPtrs.last());
-        delete mParametersOutputLineEditPtrs.last();
-        delete mParametersApplyButtonPtrs.last();
-        mParametersOutputLineEditPtrs.removeLast();
-        mParametersApplyButtonPtrs.removeLast();
+
+    mpParametersModel->clear();
+    mpParametersModel->setColumnCount(nParams+2);
+    mpParametersModel->setRowCount(nPoints);
+    QStringList headings;
+    headings << "" << "obj";
+    for(int i=0; i<nParams; ++i) {
+        headings << "par"+QString::number(i);
+    }
+
+    mpParametersModel->setHorizontalHeaderLabels(headings);
+    for(int r=0; r<mpParametersModel->rowCount(); ++r) {
+        mpParametersOutputTableView->setIndexWidget(mpParametersModel->index(r,0), mParametersApplyButtonPtrs[r]);
+        for(int c=1; c<mpParametersModel->columnCount(); ++c) {
+            mpParametersModel->setItem(r,c,new QStandardItem(""));
+            mpParametersModel->item(r,c)->setText("");
+        }
     }
 }
 
@@ -584,13 +546,11 @@ void OptimizationDialog::recreateParameterOutputLineEdits()
 //! @brief Slot that applies the parameters in a point to the original model. Index of the point is determined by the sender of the signal.
 void OptimizationDialog::applyParameters()
 {
-    if(mParameterOutputIndexes.isEmpty())       //Just for safety, should not happen
-        return;
-
     QPushButton *pSender = qobject_cast<QPushButton*>(QObject::sender());
-    if(!pSender) return;
+    if(!pSender) {
+        return;
+    }
     int idx = mParametersApplyButtonPtrs.indexOf(pSender);
-    idx = mParameterOutputIndexes.at(idx);
 
     if(gpModelHandler->count() == 0 || !gpModelHandler->getCurrentModel())
     {
@@ -775,14 +735,19 @@ QWidget*OptimizationDialog::createRunWidget()
     pScrollAreaWidget->setPalette(gpConfig->getPalette());
     pScrollAreaWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QHBoxLayout *pScrollAreaLayout = new QHBoxLayout(pScrollAreaWidget);
-    mpParametersOutputTextEditsLayout = new QGridLayout();
-    pScrollAreaLayout->addLayout(mpParametersOutputTextEditsLayout);
-    pScrollAreaLayout->addLayout(mpCoreProgressBarsLayout);
     QScrollArea *pParametersOutputScrollArea = new QScrollArea(this);
     pParametersOutputScrollArea->setPalette(gpConfig->getPalette());
     pParametersOutputScrollArea->setWidget(pScrollAreaWidget);
     pParametersOutputScrollArea->setWidgetResizable(true);
     pParametersOutputScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    mpParametersOutputTableView = new QTableView(this);
+    mpParametersOutputTableView->setSortingEnabled(true);
+    mpParametersModel = new QStandardItemModel(this);
+    mpParametersOutputTableView->setModel(mpParametersModel);
+
+    pScrollAreaLayout->addWidget(mpParametersOutputTableView);
+    pScrollAreaLayout->addLayout(mpCoreProgressBarsLayout);
 
     mpTerminal = new TerminalWidget(this);
     mpTerminal->mpHandler->setAcceptsOptimizationCommands(true);
