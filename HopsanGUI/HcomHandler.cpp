@@ -2390,8 +2390,10 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
             }
         }
         HCOMINFO("Launching "+file.fileName()+"...");
-        QDir::setCurrent(QFileInfo(path).absolutePath());
+        QDir prevDir = QDir::current();
+        QDir::setCurrent(mPwd);
         system(cmd.toStdString().c_str());
+        QDir::setCurrent(prevDir.absolutePath());
         HCOMINFO(file.fileName()+" finished.");
         return;
     }
