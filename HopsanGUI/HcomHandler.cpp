@@ -2353,13 +2353,19 @@ void HcomHandler::executeHelpCommand(QString arg)
 void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() < 1)
+    if(args.size() < 1 || args.size() > 2)
     {
-        HCOMERR("Too few arguments.");
+        HCOMERR("Wrong number of arguments.");
         return;
     }
 
-    QString path = args[0];
+    QString interpreter;
+    if(args.size() > 1 && args[0].startsWith("-interpreter=")) {
+        interpreter = args[0];
+        interpreter.remove(0,13);
+    }
+
+    QString path = args.last();
     path.remove("\"");
     path.replace("\\","/");
     if(!path.contains("/"))
@@ -2371,13 +2377,25 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
     QFile file(path);
 #ifdef _WIN32
-    if(file.exists() && path.endsWith(".bat"))
+    if(file.exists() && (path.endsWith(".bat") || interpreter == "cmd"))
     {
-        QString cmd = "CMD.exe /C "+path;
+        QString cmd = path;
+        if(!interpreter.isEmpty()) {
+            cmd.prepend("CMD.exe /C "+interpreter+" ");
+        }
+        else {
+            cmd.prepend("CMD.exe /C ");
+        }
 #else //Mac or Linux
-    if(file.exists() && path.endsWith(".sh"))
+    if(file.exists() && (path.endsWith(".sh") || interpreter == "sh" || interpreter == "bash"))
     {
-        QString cmd = "sh "+path;
+        QString cmd = path;
+        if(!interpreter.isEmpty()) {
+            cmd.prepend(interpreter+" ");
+        }
+        else {
+            cmd.prepend("sh ");
+        }
 #endif
         args.removeFirst();
         for(QString& arg : args) {
