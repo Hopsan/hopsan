@@ -42,8 +42,11 @@ cd $builddir
 cmake -DFMILIB_INSTALL_PREFIX=${installdir} -Wno-dev ${codedir}
 
 # Build and install
-make -j4
-make install test
+make -j$(nproc)
+make install
+if [[ "$HOPSAN_BUILD_DEPENDENCIES_TEST" == "true" ]]; then
+  make test
+fi
 
 # Return to basedir
 cd $basedir

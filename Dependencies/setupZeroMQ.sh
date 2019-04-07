@@ -23,9 +23,11 @@ fi
 cmake ${zmq_cmake_args} -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
-make -j4
+make -j$(nproc)
 make install
-make test
+if [[ "$HOPSAN_BUILD_DEPENDENCIES_TEST" == "true" ]]; then
+  make test
+fi
 
 cd $basedir
 
