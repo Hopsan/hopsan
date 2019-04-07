@@ -3,7 +3,6 @@
     <settings>
         <librarystyle>0</librarystyle>
         <showpopuphelp>true</showpopuphelp>
-        <nativestylesheet>false</nativestylesheet>
         <backgroundcolor>#ffffff</backgroundcolor>
         <antialiasing>true</antialiasing>
         <invertwheel>false</invertwheel>
@@ -20,7 +19,7 @@
         <autobackup>true</autobackup>
         <autolimitgenerations>false</autolimitgenerations>
         <ploexportversion>2</ploexportversion>
-	<showhiddennodedatavariables>false</showhiddennodedatavariables>
+        <showhiddennodedatavariables>false</showhiddennodedatavariables>
         <loadmodeldir/>
         <plotgfximageformat>png</plotgfximageformat>
         <plotgfxdimensionsunit>px</plotgfxdimensionsunit>
@@ -30,9 +29,9 @@
         <plotgfxusescreensize>false</plotgfxusescreensize>
         <setpwdtomwd>false</setpwdtomwd>
         <plotwindowsontop>true</plotwindowsontop>
-		<remotehopsanaddress>localhost:23300</remotehopsanaddress>
-		<remotehopsandispatchaddress>localhost:23200</remotehopsandispatchaddress>
-		<useremotehopsandispatch>false</useremotehopsandispatch>
+        <remotehopsanaddress>localhost:23300</remotehopsanaddress>
+        <remotehopsandispatchaddress>localhost:23200</remotehopsandispatchaddress>
+        <useremotehopsandispatch>false</useremotehopsandispatch>
     </settings>
     <style>
         <penstyle width="1" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="Iso"/>
@@ -60,8 +59,8 @@
         <penstyle width="1.5" situation="Hover" capstyle="32" type="Signal" style="2" color="#8b0000" gfxtype="User"/>
         <penstyle width="1" situation="Primary" capstyle="32" type="Signal" style="2" color="#0000cc" gfxtype="User"/>
         <palette windowText="0,0,0" button="0,0,255" light="173,216,230" dark="0,0,139" mid="0,0,255" text="0,0,0" bright_text="128,128,128" base="244,247,251" window="226,231,237"/>
-		<font family="Calibri" size="9"/>
-		<stylesheet>
+        <font family="Calibri" size="9"/>
+        <stylesheet>
                         QPushButton 			{ border: 1px solid gray;               border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
                         QPushButton:pressed 		{ border: 2px solid rgb(70,70,150);     border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }
                         QPushButton:hover:pressed   	{ border: 2px solid rgb(70,70,150);     border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }

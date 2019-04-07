@@ -1366,7 +1366,11 @@ void Configuration::registerSettings()
     mBoolSettings.insert(CFG_SNAPPING, true);
     mBoolSettings.insert(CFG_INVERTWHEEL, false);
     mBoolSettings.insert(CFG_ANTIALIASING, true);
+#if defined(_WIN32)
     mBoolSettings.insert(CFG_NATIVESTYLESHEET, false);
+#else
+    mBoolSettings.insert(CFG_NATIVESTYLESHEET, true);
+#endif
     mBoolSettings.insert(CFG_SHOWPOPUPHELP, true);
     mBoolSettings.insert(CFG_MULTICORE, false);
     mBoolSettings.insert(CFG_PROGRESSBAR, true);
