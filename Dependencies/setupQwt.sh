@@ -33,7 +33,7 @@ fi
 ${HOPSAN_BUILD_QT_QMAKE} ${codedir}/qwt.pro -r -spec ${qwt_qmake_spec}
 
 # Build
-make -j4 -w
+make -j$(nproc) -w
 
 # Install
 make install
