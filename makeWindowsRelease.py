@@ -787,6 +787,9 @@ def copyFiles():
     
     # Copy "release notes" file to temporary directory
     git_export("Hopsan-release-notes.txt", gTemporaryBuildDir)
+
+    # Copy "README.md" file to temporary directory
+    git_export("README.md", gTemporaryBuildDir)
     
     # Copy documentation to temporary directory
     copyDirTo(r'doc\html', gTemporaryBuildDir+r'\doc')

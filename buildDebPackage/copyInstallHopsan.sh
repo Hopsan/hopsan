@@ -58,10 +58,11 @@ cp -a    ${srcDeps}/discount/lib/libmarkdown.so*           $dstDir/bin
 cp -a    ${srcDeps}/pythonqt/lib/libPythonQt*.so*          $dstDir/bin
 cp -a    ${srcDeps}/hdf5/lib/libhdf5*-shared.so*           $dstDir/bin
 
-# Copy additional files
+# Install additional files
 # =====================
-cp -a    $srcDir/hopsandefaults                            $dstDir
-cp -a    $srcDir/Hopsan-release-notes.txt                  $dstDir
+install -m664 -t $dstDir                                   $srcDir/hopsandefaults
+install -m664 -t $dstDir                                   $srcDir/Hopsan-release-notes.txt
+install -m664 -t $dstDir                                   $srcDir/README.md
 
 # Strip any runpaths to Dependencies directory
 # from ELF binaries. Note! ($ORIGIN/./) will remain.
