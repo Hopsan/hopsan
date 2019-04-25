@@ -7,9 +7,6 @@ Hopsan will be installed to /opt/hopsan
 A "shortcut" to HopsanGUI should end up under the Science, Engineering or Education category in your menu.
 HopsanCLI, HoLC, server executables and libraries can be found in /opt/hopsan/bin
 
-For questions about these .deb packages, contact:
-peter.nordin@liu.se
-
 ----------------------------------------
  What version to choose:
 ----------------------------------------
