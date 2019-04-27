@@ -154,7 +154,6 @@ The old one was previously available here: https://flumes.iei.liu.se/redmine/pro
 
 Hopsan is a cross-platform supported application and it should be possible to build
 on most GNU/Linux based distributions, Microsoft Windows (using MinGW) and Apple macOS.
-*macOS building is not supported out of the box yet.*
 
 **Note!** See the developer documentation for detailed instructions.
 https://flumes.iei.liu.se/hopsan/docs/latest/html/page_hopsandevelopment.html
@@ -187,3 +186,8 @@ For now, see the developer documentation linked above
 ## Build on a Microsoft Windows system
 TODO Write this  
 For now, see the developer documentation linked above
+
+## Build on a Apple macOS system
+There is no official build for macOS, but users have reported being able to build Hopsan manually.
+See https://github.com/Hopsan/hopsan/issues/1711 for details.
+Also Hopsan is build for macOS on Travis CI, see .travis.yml for build script.
