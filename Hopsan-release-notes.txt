@@ -31,11 +31,37 @@
     Version History
 ******************************
 
+2.11.5-flatpak (2019-04-30)
+
+--- Enhancements ---
+
+- This is a special release for the first Flatpak build
+
+- HopsanGUI:
+  - "Apply & simulate" button in component properties dialog. Will apply all settings and simulate the model without closing the dialog.
+  - Improved point plotting in Optimization
+  - Use tables instead of widgets in layouts for optimization dialog
+  - Launch batch/shell scripts from HCOM
+    Launch .bat and .sh files using exec function in HCOM.
+    Syntax: exec script.bat arg1 arg2 ...
+  - Improved csv import support:
+    Support import column csv with data names on first line
+    Support importing row csv (names in first column)
+    Auto-detect HopsanCLI csv format
+
+
+--- Bug Fixes ---
+
+- HopsanGUI:
+  - Importing plot data in HCOM fails if no model is open
+  - Fix out-of-range crash in DE optimization
+
+------------------------------------------------------------------------------------------------------------------------
 2.11.0 (2019-01-25)
 
 --- Enhancements ---
 
-- HopsanCore
+- HopsanCore:
   - Add quantity Resistance with base unit Ohm instead of "ohm".
     Also adds common unit scales to HopsanGUI.
   - Add common math functions to embedded script (numhop), see users guide for details.
@@ -46,7 +72,7 @@
     This is only used for library import compilation right now. It will be extended to FMU exporting later.
     This should enable custom library importing on MacOS from HopsanGUI (but this has not been tested).
 
-- HopsanGUI
+- HopsanGUI:
   - Built-in script editor for HCOM scripts.
   - Improved auto-completer in HCOM terminal.
   - Case insensitive auto-completer for filter function in component library widget.
