@@ -1567,7 +1567,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs)
 {
     QString versionStr = QString::number(version, 'f', 1);
-    QString today = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm");
+    QString dateAndTime = QDateTime::currentDateTime().toUTC().toString(Qt::ISODate);
     QString modelName = pSystem->getName().c_str();
 
     printMessage("Generating modelDescription.xml for FMI "+versionStr);
@@ -1589,7 +1589,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     rootElement.setAttribute("guid", guid);
     rootElement.setAttribute("description", "");
     rootElement.setAttribute("generationTool", "HopsanGenerator");
-    rootElement.setAttribute("generationDateAndTime", today);
+    rootElement.setAttribute("generationDateAndTime", dateAndTime);
     rootElement.setAttribute("numberOfEventIndicators", "0");
     domDocument.appendChild(rootElement);
 
