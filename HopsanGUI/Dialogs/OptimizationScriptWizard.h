@@ -148,6 +148,8 @@ private:
     QLineEdit *mpCPLineEdit;
     QLabel *mpMPLabel;
     QLineEdit *mpMPLineEdit;
+    QLabel *mpElitesLabel;
+    QLineEdit *mpElitesLineEdit;
     QLabel *mpNumModelsLabel;
     QLineEdit *mpNumModelsLineEdit;
     QLabel *mpMethodLabel;

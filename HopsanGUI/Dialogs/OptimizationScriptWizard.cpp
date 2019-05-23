@@ -169,6 +169,10 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemObject* pSystem, QWidge
     mpMPLineEdit = new QLineEdit("0.1", this);
     mpMPLineEdit->setValidator(new QDoubleValidator());
 
+    mpElitesLabel = new QLabel("Number of elites: ");
+    mpElitesLineEdit = new QLineEdit("4", this);
+    mpElitesLineEdit->setValidator(new QIntValidator());
+
     mpNumModelsLabel = new QLabel("Number of models: ");
     mpNumModelsLineEdit = new QLineEdit(QString::number(qMax(1,gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS))), this);
     mpNumModelsLineEdit->setValidator(new QIntValidator());
@@ -246,6 +250,8 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemObject* pSystem, QWidge
     pSettingsLayout->addWidget(mpCPLineEdit,           row++, 1);
     pSettingsLayout->addWidget(mpMPLabel,              row,   0);
     pSettingsLayout->addWidget(mpMPLineEdit,           row++, 1);
+    pSettingsLayout->addWidget(mpElitesLabel,              row,   0);
+    pSettingsLayout->addWidget(mpElitesLineEdit,           row++, 1);
     pSettingsLayout->addWidget(mpNumModelsLabel,       row,   0);
     pSettingsLayout->addWidget(mpNumModelsLineEdit,    row++, 1);
     pSettingsLayout->addWidget(mpMethodLabel,          row,   0);
@@ -627,6 +633,8 @@ void OptimizationScriptWizard::setAlgorithm(int i)
     mpCRLineEdit->setVisible(false);
     mpCPLabel->setVisible(false);
     mpCPLineEdit->setVisible(false);
+    mpElitesLabel->setVisible(false);
+    mpElitesLineEdit->setVisible(false);
     mpMPLabel->setVisible(false);
     mpMPLineEdit->setVisible(false);
     mpLengthLabel->setVisible(false);
@@ -704,6 +712,8 @@ void OptimizationScriptWizard::setAlgorithm(int i)
         mpCPLineEdit->setVisible(true);
         mpMPLabel->setVisible(true);
         mpMPLineEdit->setVisible(true);
+        mpElitesLabel->setVisible(true);
+        mpElitesLineEdit->setVisible(true);
     case Ops::ParameterSweep:
         break;
     default:
@@ -1172,6 +1182,7 @@ void OptimizationScriptWizard::generateGeneticScript()
 
     templateCode.replace("<<<cp>>>", mpCPLineEdit->text());
     templateCode.replace("<<<mp>>>", mpMPLineEdit->text());
+    templateCode.replace("<<<elites>>>", mpElitesLineEdit->text());
     templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
     templateCode.replace("<<<nmodels>>>", mpNumModelsLineEdit->text());
 
