@@ -36,6 +36,9 @@
 #include "OpsMessageHandler.h"
 #include <math.h>
 #include <random>
+#include <iostream>
+#include <algorithm>
+
 
 using namespace Ops;
 
@@ -71,30 +74,23 @@ void WorkerGenetic::run()
     mIterationCounter=0;
     for(; mIterationCounter<mnMaxIterations && !mpMessageHandler->aborted(); ++mIterationCounter)
     {
-        for(size_t i=0; i<mNumCandidates; i+=2) {
+        mCandidatePoints.clear();
+        std::vector<size_t> ids = getIdsSortedFromWorstToBest();
+        for(int i=0; i<mNumElites; ++i) {
+            mCandidatePoints.push_back(mPoints[ids.back()]);
+            ids.pop_back();
+        }
+        while(mCandidatePoints.size() < mNumPoints) {
             selectParents();
             crossOver();
         }
         mutate();
 
-        mpMessageHandler->candidatesChanged();
+        mPoints = mCandidatePoints;
+        mpMessageHandler->pointsChanged();
 
         //Evaluate objective values
-        mpEvaluator->evaluateAllCandidates();
-
-
-        for(size_t i=0; i<mNumPoints; ++i)
-        {
-            calculateBestAndWorstId();
-            int worst = getWorstId();
-            if(mCandidateObjectives[i] < mObjectives[worst])
-            {
-                mObjectives[worst] = mCandidateObjectives[i];
-                mPoints[worst] = mCandidatePoints[i];
-            }
-        }
-
-
+        mpEvaluator->evaluateAllPoints();
 
         mpMessageHandler->objectivesChanged();
 
@@ -147,66 +143,79 @@ void WorkerGenetic::setMutationProbability(double value)
     mMutationProbability = value;
 }
 
+//! @brief Set elites paremter
+void WorkerGenetic::setNumberOfElites(size_t value)
+{
+    mNumElites = value;
+}
+
 
 //! @brief Auxiliary function for selecting parents for crossover
 void WorkerGenetic::selectParents() {
-    double bestValue = std::numeric_limits<double>::max();
-    for(size_t i=0; i<mNumPoints; ++i) {
-        double value = mObjectives[i]*opsRand();
-        if(value < bestValue) {
-            mParent1 = i;
-            bestValue = value;
-        }
-    }
+    std::vector<size_t> sortedIds = getIdsSortedFromWorstToBest();
 
-    bestValue = std::numeric_limits<double>::max();
-    for(size_t i=0; i<mNumPoints; ++i) {
-        double value = mObjectives[i]*opsRand();
-        if(value < bestValue && i != mParent1) {
-            mParent2 = i;
-            bestValue = value;
-        }
+    // Select parent 1
+    std::vector<size_t> competitors;
+    competitors.push_back(size_t(opsRand()*(mNumPoints)));
+    competitors.push_back(size_t(opsRand()*(mNumPoints)));
+    while(competitors.size() < mObjectives.size()/3.0) {
+        competitors.push_back(size_t(opsRand()*(mNumPoints)));
     }
+    size_t bestCompetitor = *max_element(std::begin(competitors), std::end(competitors));
+    size_t bestId = sortedIds[bestCompetitor];
+    mParent1 = bestId;
+
+    // Select parent 2
+    competitors.clear();
+    competitors.push_back(size_t(opsRand()*(mNumPoints)));
+    competitors.push_back(size_t(opsRand()*(mNumPoints)));
+    while(competitors.size() < mObjectives.size()/3.0) {
+        competitors.push_back(size_t(opsRand()*(mNumPoints)));
+    }
+    bestCompetitor = *max_element(std::begin(competitors), std::end(competitors));
+    bestId = sortedIds[bestCompetitor];
+    mParent2 = bestId;
 }
 
 
 //! @brief Auxiliary function for perform crossover
 void WorkerGenetic::crossOver()
 {
-    for(size_t i=0; i<mNumParameters; ++i)
+    mCandidatePoints.push_back(mPoints[mParent1]);
+    mCandidatePoints.push_back(mPoints[mParent2]);
+    double doCrossOver = opsRand();
+    if(doCrossOver < mCrossoverProbability)
     {
-        double x1 = mPoints[mParent1][i];
-        double x2 = mPoints[mParent2][i];
 
-        double doCrossOver = opsRand();
-        if(doCrossOver > mCrossoverProbability)
+        for(size_t i=0; i<mNumParameters; ++i)
         {
-            mChild1[i] = x1;
-            mChild2[i] = x2;
-        }
-        else
-        {
+            double x1 = mPoints[mParent1][i];
+            double x2 = mPoints[mParent2][i];
+
             double mean = (x1+x2)/2.0;
-            double dev = fabs(x2-x1)/2.0;
+            double dev = fabs(x2-x1)/10.0;
 
-            mChild1[i] = gaussian(mean,dev,mParameterMin[i],mParameterMax[i]);
-            mChild2[i] = gaussian(mean,dev,mParameterMin[i],mParameterMax[i]);
+            mCandidatePoints[mCandidatePoints.size()-2][i] = gaussian(mean,dev,mParameterMin[i],mParameterMax[i]);
+            mCandidatePoints[mCandidatePoints.size()-1][i] = gaussian(mean,dev,mParameterMin[i],mParameterMax[i]);
         }
     }
-    mCandidatePoints[mParent1] = mChild1;
-    mCandidatePoints[mParent2] = mChild2;
 }
 
 
 //! @brief Auxiliary function for mutating children
 void WorkerGenetic::mutate()
 {
+    std::vector<size_t> sortedIds = getIdsSortedFromWorstToBest();
+    std::vector<size_t> eliteIds(sortedIds.end()-mNumElites, sortedIds.end());
     for(size_t i=0; i<mNumPoints; ++i) {
+        if(std::find(eliteIds.begin(),eliteIds.end(),i) != eliteIds.end()) {
+            continue;
+        }
         for(size_t j=0; j<mNumParameters; ++j) {
             double doMutation = opsRand();
             if(doMutation < mMutationProbability) {
                 double mean = mCandidatePoints[i][j];
-                double dev = (mParameterMax[j]-mParameterMin[j])/2.0;
+                double dev = (mParameterMax[j]-mParameterMin[j])/100.0;
                 mCandidatePoints[i][j] = gaussian(mean,dev,mParameterMin[j],mParameterMax[j]);
             }
         }

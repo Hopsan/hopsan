@@ -397,6 +397,8 @@ void OptimizationDialog::loadScriptFile(QString filePath)
     mpSystem->getOptimizationSettings(optSettings);
     optSettings.mScriptFile = mScriptFileInfo.absoluteFilePath();
     mpSystem->setOptimizationSettings(optSettings);
+
+    this->raise();
 }
 
 

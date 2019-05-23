@@ -636,6 +636,10 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
         {
             pWorker->setMutationProbability(value.toDouble());
         }
+        else if(var == "elites")
+        {
+            pWorker->setNumberOfElites(value.toInt());
+        }
     }
 }
 

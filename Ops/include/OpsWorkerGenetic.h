@@ -23,6 +23,7 @@ public:
 
   void setCrossoverProbability(double value);
   void setMutationProbability(double value);
+  void setNumberOfElites(size_t value);
 
 private:
   void selectParents();
@@ -35,6 +36,7 @@ private:
 
   double mCrossoverProbability = 0.2;
   double mMutationProbability = 0.1;
+  size_t mNumElites = 0;
   std::default_random_engine mRandomGenerator;
 };
 
