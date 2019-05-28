@@ -35,6 +35,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <cstring>
 
 #include "exe_utilities.h"
 
@@ -387,4 +388,79 @@ bool setParameter(string &rParName, string &rParValue, ComponentSystem *pSystem)
     }
 
     return true;
+}
+
+void printHelpText(ComponentSystem *pSystem)
+{
+    std::cout << "This is a stand-alone executable Hopsan model.\n";
+    std::cout << "Model name: " << pSystem->getName().c_str() << "\n";
+    std::cout << "\n";
+    std::cout << "Usage: " << pSystem->getName().c_str() << " [FLAG]\n";
+    std::cout << "Usage: " << pSystem->getName().c_str() << " [OPTIONS]\n";
+    std::cout << "\n";
+    std::cout << "Flags:\n";
+    std::cout << "  -h, --help            Display this help text\n";
+    std::cout << "  -p, --parameters      List all tunable model parameters\n";
+    std::cout << "\n";
+    std::cout << "Options (cannot be used together with flags):\n";
+    std::cout << "  start=[real]                Simulation start time\n";
+    std::cout << "  step=[real]                 Simulation step size\n";
+    std::cout << "  stop=[real]                 Simulation stop time\n";
+    std::cout << "  samples=[integer]           Number of log samples\n";
+    std::cout << "  results=full/final          Print full results or final results only\n";
+    std::cout << "  samples=[integer]           Number of log samples\n";
+    std::cout << "  transpose=true/false        Transpose to column-wise CSV file\n";
+    std::cout << "  descriptions=all/namesonly  Print names, alias and unit or only name\n";
+    std::cout << "  parameterfile=[filename]    Specify parameter input file\n";
+    std::cout << "\n";
+    std::cout << "Examples:\n";
+    std::cout << "  >> " << pSystem->getName().c_str() << " start=0 step=0.001 stop=3\n";
+    std::cout << "  >> " << pSystem->getName().c_str() << " samples=1000 transpose=true descriptions=namesonly\n";
+    std::cout << "  >> " << pSystem->getName().c_str() << " engine.rpm=2000 results=final\n";
+}
+
+void appendParameters(ComponentSystem *pSystem, std::vector<HString> &allParameters, HString prefix="")
+{
+    std::vector<HString> sysParameters;
+    pSystem->getParameterNames(sysParameters);
+    for(HString &par : sysParameters) {
+        std::string temp = prefix.c_str();
+        temp.append(pSystem->getName().c_str());
+        temp.append("#");
+        temp.append(par.c_str());
+        par = temp.c_str();
+    }
+    allParameters.insert(allParameters.end(), sysParameters.begin(), sysParameters.end());
+
+    for(Component *pComp : pSystem->getSubComponents()) {
+        if(pComp->isComponentSystem()) {
+            prefix.append(pComp->getName().c_str());
+            prefix.append("$");
+            appendParameters(reinterpret_cast<ComponentSystem*>(pComp), allParameters);
+        }
+        std::vector<HString> compParameters;
+        pComp->getParameterNames(compParameters);
+        for(HString &par : compParameters) {
+            std::string temp = prefix.c_str();
+            temp.append(pComp->getName().c_str());
+            temp.append("#");
+            temp.append(par.c_str());
+            par = temp.c_str();
+        }
+        allParameters.insert(allParameters.end(), compParameters.begin(), compParameters.end());
+    }
+}
+
+void printParameters(ComponentSystem *pSystem)
+{
+    std::vector<HString> allParameters;
+    appendParameters(pSystem, allParameters);
+    std::sort(allParameters.begin(), allParameters.end());
+
+    std::cout << "Model parameters:\n";
+    for(HString &par : allParameters) {
+        par.replace("$", ":");
+        par.replace("#", ".");
+        std::cout << "  " << par.c_str() << "\n";
+    }
 }

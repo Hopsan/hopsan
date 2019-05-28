@@ -45,5 +45,7 @@ void transposeCSVresults(const std::string &rFileName);
 void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentSystem* pSystem);
 bool startsWith(std::string str, std::string match);
 bool setParameter(std::string &rParName, std::string &rParValue, hopsan::ComponentSystem *pSystem);
+void printHelpText(hopsan::ComponentSystem *pSystem);
+void printParameters(hopsan::ComponentSystem *pSystem);
 
 #endif // MODELUTILITIES_H
