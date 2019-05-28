@@ -70,13 +70,6 @@ int main(int argc, char *argv[])
                 importParameterValuesFromCSV(value, spCoreComponentSystem);
             }
             else {
-                //Prepend system name of toplevel system
-                if(!startsWith(name, spCoreComponentSystem->getName().c_str())) {
-                    std::cout << "Prepending system name\n";
-                    name.insert(0,"$");
-                    name.insert(0,spCoreComponentSystem->getName().c_str());
-                    std::cout << "New name: " << name << "\n";
-                }
                 //Attempt to set parameter
                 if(!setParameter(name, value, spCoreComponentSystem)) {
                     std::cout << "Error: Unknown parameter: " << name << "\n";
