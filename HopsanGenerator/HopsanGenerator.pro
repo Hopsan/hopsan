@@ -87,7 +87,8 @@ SOURCES += \
     src/generators/HopsanFMIGenerator.cpp \
     src/generators/HopsanLabViewGenerator.cpp \
     src/GeneratorTypes.cpp \
-    src/generators/HopsanGeneratorBase.cpp
+    src/generators/HopsanGeneratorBase.cpp \
+    src/generators/HopsanExeGenerator.cpp
 
 HEADERS += \
     include/hopsangenerator_win32dll.h \
@@ -98,7 +99,8 @@ HEADERS += \
     include/generators/HopsanLabViewGenerator.h \
     include/GeneratorTypes.h \
     include/generators/HopsanGeneratorBase.h \
-    include/hopsangenerator.h
+    include/hopsangenerator.h \
+    include/generators/HopsanExeGenerator.h
 
 RESOURCES += \
     templates.qrc

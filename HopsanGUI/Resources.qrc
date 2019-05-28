@@ -40,6 +40,7 @@
         <file>graphics/porticons/SignalPortBiDirectional.svg</file>
         <file>graphics/porticons/SignalPort2D_read.svg</file>
         <file>graphics/porticons/SignalPort2D_write.svg</file>
+<<<<<<< HEAD
         <file>graphics/uiicons/svg/Hopsan-Configure.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Add.svg</file>
         <file>graphics/uiicons/svg/Hopsan-AlignX.svg</file>
@@ -150,6 +151,7 @@
         <file>graphics/liu-flumes.svg</file>
         <file>graphics/options.svg</file>
         <file>graphics/options-active.svg</file>
+        <file>graphics/uiicons/Hopsan-ExportExe.png</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="licenseNoticeGPLv3">../licenseNoticeGPLv3</file>

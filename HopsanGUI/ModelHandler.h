@@ -113,6 +113,8 @@ public slots:
     void exportCurrentModelToFMU2_32();
     void exportCurrentModelToFMU2_64();
     void exportCurrentModelToSimulink();
+    void exportCurrentModelToExe_32();
+    void exportCurrentModelToExe_64();
 
     void showLosses(bool show);
     void measureSimulationTime();

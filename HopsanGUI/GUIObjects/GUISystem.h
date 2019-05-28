@@ -152,6 +152,7 @@ public:
     void exportToFMU2_64();
     void exportToFMU(QString savePath, int version, ArchitectureEnumT arch);
     void exportToSimulink();
+    void exportToExecutableModel(QString savePath, ArchitectureEnumT arch);
 
     // Parameter methods
     QStringList getParameterNames();

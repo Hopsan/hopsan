@@ -40,6 +40,8 @@ public:
 
     bool generateToLabViewSIT(const QString& outputPath, hopsan::ComponentSystem *pSystem);
 
+    bool generateToExe(const QString& outputPath, hopsan::ComponentSystem *pSystem, const QStringList& externalLibraries, TargetArchitectureT architecture);
+
     bool generateFromCpp(const QString& hppFile, CompileT compile=CompileT::DoNotCompile);
 
     bool generateLibrary(const QString& outputPath, const QStringList& hppFiles);

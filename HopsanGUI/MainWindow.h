@@ -160,6 +160,8 @@ public:
     QAction *mpExportToFMU2_32Action;
     QAction *mpExportToFMU2_64Action;
     QAction *mpExportToLabviewAction;
+    QAction *mpExportToExe_32Action;
+    QAction *mpExportToExe_64Action;
     QAction *mpLoadModelParametersAction;
     QAction *mpCloseAction;
     QAction *mpUndoAction;
@@ -266,6 +268,7 @@ private:
     QAction *mpSimulateAction;
 
     QToolButton *mpExportToFMUMenuButton;
+    QToolButton *mpExportToExeMenuButton;
 
     // Dialogs
     OptionsDialog *mpOptionsDialog;
@@ -299,6 +302,7 @@ private:
     QMenu *mpImportMenu;
     QMenu *mpExportMenu;
     QMenu *mpExportToFMUMenu;
+    QMenu *mpExportToExeMenu;
     QMenu *mpPlotMenu;
     QMenu *mpRecentMenu;
     QMenu *mpHelpMenu;
