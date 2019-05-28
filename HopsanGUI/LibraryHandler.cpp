@@ -39,6 +39,7 @@
 #define XML_LIBRARY_LIB_DBGEXT "debug_ext"
 #define XML_LIBRARY_CAF "caf"
 #define XML_LIBRARY_SOURCE "source"
+#define XML_LIBRARY_EXTRA_SOURCE "extrasource"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -533,6 +534,14 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     {
                         pLibrary->sourceFiles.append(QFileInfo(file).canonicalPath()+"/"+sourceElement.text());
                         sourceElement = sourceElement.nextSiblingElement(QString(XML_LIBRARY_SOURCE));
+                    }
+
+                    // Read extra source files
+                    QDomElement extraSourceElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_EXTRA_SOURCE));
+                    while(!extraSourceElement.isNull())
+                    {
+                        pLibrary->sourceFiles.append(QFileInfo(file).canonicalPath()+"/"+extraSourceElement.text());
+                        extraSourceElement = extraSourceElement.nextSiblingElement(QString(XML_LIBRARY_EXTRA_SOURCE));
                     }
 
                     // Remember library (we do this here even if no DLL/SO files are loaded as we might load internal or "gui only" components

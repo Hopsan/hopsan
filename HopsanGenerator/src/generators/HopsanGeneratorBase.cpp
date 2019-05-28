@@ -1056,7 +1056,7 @@ bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) con
     return true;
 }
 
-bool HopsanGeneratorBase::copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries) const
+bool HopsanGeneratorBase::copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList *extraSourceFiles) const
 {
     QDir componentLibrariesDestinationPath;
     componentLibrariesDestinationPath.setPath(destinationPath);
@@ -1127,6 +1127,13 @@ void hopsan::register_extra_components(hopsan::ComponentFactory* pComponentFacto
             }
 
             QString generatorErrorMessage;
+            if(extraSourceFiles != nullptr) {
+                QStringList newSourceFiles = lib.mExtraSourceFiles;
+                for(int i=0; i<newSourceFiles.size(); ++i) {
+                    lib.mExtraSourceFiles[i] = QDir(libraryRootPath).filePath(lib.mExtraSourceFiles[i]);
+                }
+                extraSourceFiles->append(lib.mExtraSourceFiles);
+            }
             bool genOK = lib.generateRegistrationCode(libraryRootPath, externalLibraryIncludeCode, externalLibraryRegistrationCode, generatorErrorMessage);
             if (!genOK) {
                 printErrorMessage(QString("Failed to generate code for library %1, Error: %2").arg(libpath).arg(generatorErrorMessage));

@@ -40,6 +40,8 @@ public:
 private:
     bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &buildPath, const QMap<QString, QString> &replaceMap) const;
     bool compileAndLinkExe(const QString &buildPath, const QString &modelName, bool x64) const;
+
+    QStringList mExtraSourceFiles;
 };
 
 #endif // HOPSANEXEGENERATOR_H
