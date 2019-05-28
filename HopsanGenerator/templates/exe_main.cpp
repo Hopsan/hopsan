@@ -30,17 +30,11 @@ int main(int argc, char *argv[])
     SaveDescriptions descriptions = NameAliasUnit;
 
     //Instantiate model
-     std::cout << "Instantiating model... ";
-     spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
-     if(spCoreComponentSystem) {
- //        std::string rl = parseResourceLocation(resourceLocation);
- //        spCoreComponentSystem->addSearchPath(rl.c_str());
-         std::cout << "Success!\n";
-     }
-     else {
-         std::cout << "Failed!\n";
-         return 1;
-     }
+    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
+    if(!spCoreComponentSystem) {
+        std::cout << "Failed to instantiate model!\n";
+        return 1;
+    }
 
     //Parse arguments
     std::vector<std::string> arguments(argv, argv + argc);
