@@ -17,7 +17,6 @@ using namespace hopsan;
 static hopsan::ComponentSystem *spCoreComponentSystem = 0;
 hopsan::HopsanEssentials gHopsanCore;
 
-
 int main(int argc, char *argv[])
 {
     //Default values
@@ -84,6 +83,18 @@ int main(int argc, char *argv[])
                     return 1;
                 }
             }
+        }
+        else if("--help" == arg || "-h" == arg) {
+            printHelpText(spCoreComponentSystem);
+            return 0;
+        }
+        else if("--parameters" == arg || "-p" == arg) {
+            printParameters(spCoreComponentSystem);
+            return 0;
+        }
+        else {
+            std::cout << "Error: Unknown argument: " << arg << "\n";
+            return 1;
         }
     }
 
