@@ -307,7 +307,6 @@ bool setParameter(string &rParName, string &rParValue, ComponentSystem *pSystem)
     std::replace(rParName.begin(), rParName.end(), '.', '#');
 
     if(endsWith(rParName, "#y")) {
-        std::cout << "Replacing #y with #Value\n";
         rParName.erase(rParName.length()-2,2);
         rParName.append("#Value");
     };
@@ -338,9 +337,6 @@ bool setParameter(string &rParName, string &rParValue, ComponentSystem *pSystem)
             parameterName = nameVec[1]+"#"+nameVec[2];
         }
 
-        std::cout << "componentName = " << componentName << "\n";
-
-
         // Dig down subsystem hiearchy
         ComponentSystem *pParentSys = pSystem;
         for (size_t s=1; s<syshierarcy.size(); ++s) {
@@ -368,13 +364,11 @@ bool setParameter(string &rParName, string &rParValue, ComponentSystem *pSystem)
 
             if (pComp) {
                 bool ok = pComp->setParameterValue(parameterName.c_str(), rParValue.c_str());
-                std::cout << "Setting parameter: " << pComp->getName().c_str() << ", " << parameterName << " = " << rParValue << "\n";
+                std::cout << "Setting parameter: " << pComp->getName().c_str() << "." << parameterName << " = " << rParValue << "\n";
                 if (!ok) {
                     std::cout << "Failed!\n";
                     return false;
                 }
-                std::cout << "Success!\n";
-
             }
             else {
                 printErrorMessage("No component: " + componentName + " in system: " + pParentSys->getName().c_str() );
