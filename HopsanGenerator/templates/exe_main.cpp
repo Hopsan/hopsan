@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     }
 
     //Parse arguments
-    std::vector<std::string> arguments(argv, argv + argc);
+    std::vector<std::string> arguments(argv+1, argv + argc);
     for(std::string &arg : arguments) {
         if(arg.find("=") != std::string::npos) {
             std::string name = arg.substr(0, arg.find("="));
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
                 //Attempt to set parameter
                 if(!setParameter(name, value, spCoreComponentSystem)) {
                     std::cout << "Error: Unknown parameter: " << name << "\n";
-                    exit(1);
+                    return 1;
                 }
             }
         }
