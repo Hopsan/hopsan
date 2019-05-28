@@ -2103,6 +2103,7 @@ void SystemContainer::exportToExecutableModel(QString savePath, ArchitectureEnum
             qDebug() << saveDir.entryList();
             QMessageBox msgBox;
             msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+            msgBox.setWindowTitle("Warning");
             msgBox.setText(QString("Folder is not empty!"));
             msgBox.setInformativeText("Are you sure you want to export files here?");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
