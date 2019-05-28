@@ -98,7 +98,7 @@ protected:
 
     bool copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const;
     bool copyDefaultComponentCodeToDir(const QString &path) const;
-    bool copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries) const;
+    bool copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList *extraSourceFiles=nullptr) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     bool copyFile(const QString &source, const QString &target) const;
     bool copyDir(const QString &fromPath, const QString &toPath, const QList<QRegExp>& excludeRegExps) const;

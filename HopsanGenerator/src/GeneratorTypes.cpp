@@ -240,6 +240,9 @@ bool ComponentLibrary::loadFromXML(QString filepath)
         else if (elementName == "source") {
             mSourceFiles.append(reader.readElementText());
         }
+        else if (elementName == "extrasource") {
+            mExtraSourceFiles.append(reader.readElementText());
+        }
         else if (elementName == "component") {
             mComponentCodeFiles.append(reader.readElementText());
         }

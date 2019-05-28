@@ -100,6 +100,7 @@ public:
     QString mId;
     QString mName;
     QStringList mSourceFiles;
+    QStringList mExtraSourceFiles;
     QString mSharedLibraryName;
     QString mSharedLibraryDebugExtension;
     QStringList mComponentCodeFiles;
@@ -111,6 +112,7 @@ public:
     bool saveToXML(QString filepath) const;
     bool loadFromXML(QString filepath);
     bool generateRegistrationCode(const QString& libraryRootPath, QString& rIncludeCode, QString& rRegisterCode, QString& rGeneratorError) const;
+
     QStringList checkSourceXMLConsistency() const;
 };
 

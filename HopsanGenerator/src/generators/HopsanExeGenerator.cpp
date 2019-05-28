@@ -86,10 +86,12 @@ bool HopsanExeGenerator::generateToExe(QString savePath, ComponentSystem *pSyste
         printErrorMessage("Failed to copy default component library files.");
         return false;
     }
-    if(!copyExternalComponentCodeToDir(buildPath, externalLibraries)) {
+
+    if(!copyExternalComponentCodeToDir(buildPath, externalLibraries, &mExtraSourceFiles)) {
         printErrorMessage("Failed to export required external component library files.");
         return false;
     }
+    printMessage("Extra source files: "+mExtraSourceFiles.join(","));
 
     //------------------------------------------------------------------//
     //Copy source files from templates
@@ -258,7 +260,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mCompilerSelection.path+"g++ -pipe -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp";
+    compileCppBatchStream << mCompilerSelection.path+"g++ -pipe -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(buildPath) + listInternalLibrarySourceFiles(buildPath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
@@ -280,6 +282,10 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
 
     QStringList objectFiles;
     objectFiles << "exe_main.o" << "exe_utilities.o";
+    for(const QString& extraSrc : mExtraSourceFiles) {
+        QFileInfo extraObjFile(extraSrc);
+        objectFiles << extraObjFile.baseName()+".o";
+    }
     for(const QString &srcFile : srcFiles) {
         QFileInfo fi(srcFile);
         objectFiles << fi.baseName()+".o";
