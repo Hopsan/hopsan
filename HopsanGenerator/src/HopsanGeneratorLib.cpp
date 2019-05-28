@@ -35,6 +35,7 @@
 #include "generators/HopsanSimulinkGenerator.h"
 #include "generators/HopsanLabViewGenerator.h"
 #include "generators/HopsanFMIGenerator.h"
+#include "generators/HopsanExeGenerator.h"
 #include "GeneratorUtilities.h"
 #include "GeneratorTypes.h"
 
@@ -311,3 +312,27 @@ bool callCheckComponentLibrary(const char* libraryXMLPath, messagehandler_t mess
     }
     return differences.empty();
 }
+
+
+//! @brief Calls the executable model export generator
+//! @param[in] outputPath Path to export to
+//! @param[in] pSystem Pointer to system that shall be exported
+//! @param[in] externalLibraries C array with paths to external library xml files
+//! @param[in] numLibraries The number of elements in the C array
+//! @param[in] hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
+//! @param[in] compilerPath Path to the compiler binaries
+//! @param[in] architecture 32 or 64
+//! @param[in] quiet Hide generator output
+bool callExeExportGenerator(const char* outputPath, void* pHopsanSystem, const char* const externalLibraries[], const int numLibraries, const char* hopsanInstallPath, const char* compilerPath, int architecture, messagehandler_t messageHandler, void* pMessageObject)
+{
+    auto pGenerator = std::unique_ptr<HopsanExeGenerator>(new HopsanExeGenerator(hopsanInstallPath, compilerPath));
+    pGenerator->setMessageHandler(messageHandler, pMessageObject);
+    const bool isArchitecture64 = (architecture==64);
+    QStringList externalLibs;
+    for(int i=0; i<numLibraries; ++i)
+    {
+        externalLibs.append(externalLibraries[i]);
+    }
+    return pGenerator->generateToExe(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), externalLibs, isArchitecture64);
+}
+

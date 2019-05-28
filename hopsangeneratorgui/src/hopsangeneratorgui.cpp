@@ -434,6 +434,25 @@ bool HopsanGeneratorGUI::generateToLabViewSIT(const QString& outputPath, hopsan:
     return didOK;
 }
 
+bool HopsanGeneratorGUI::generateToExe(const QString &outputPath, hopsan::ComponentSystem *pSystem, const QStringList &externalLibraries, HopsanGeneratorGUI::TargetArchitectureT architecture)
+{
+    auto lw = mPrivates->createNewWidget();
+    loadGeneratorLibrary();
+
+    constexpr auto functionName = "callExeExportGenerator";
+    const auto outpath = outputPath.toStdString();
+    const auto& hopsanRoot = mPrivates->hopsanRoot;
+    const auto& compilerPath = mPrivates->compilerPath;
+    int arch =  (architecture == TargetArchitectureT::x64) ? 64 : 32;
+    CApiStringList extLibs(externalLibraries);
+    MessageForwarder forwarder(lw->widget());
+
+    using ExeExportFunction_t = bool(const char*, hopsan::ComponentSystem*, const char* const*, const int, const char*, const char*, int, MessageHandler_t, void*);
+    bool didOK = mPrivates->call<ExeExportFunction_t>(forwarder, functionName, outpath.c_str(), pSystem, extLibs.data(), extLibs.size(), hopsanRoot.c_str(), compilerPath.c_str(), arch, &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(didOK);
+    return didOK;
+}
+
 
 bool HopsanGeneratorGUI::generateFromCpp(const QString& hppFile, const CompileT compile)
 {

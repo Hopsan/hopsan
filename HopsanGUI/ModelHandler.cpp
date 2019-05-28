@@ -885,6 +885,16 @@ void ModelHandler::exportCurrentModelToSimulink()
     qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToSimulink();
 }
 
+void ModelHandler::exportCurrentModelToExe_32()
+{
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToExecutableModel("", ArchitectureEnumT::x86);
+}
+
+void ModelHandler::exportCurrentModelToExe_64()
+{
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToExecutableModel("", ArchitectureEnumT::x64);
+}
+
 void ModelHandler::showLosses(bool show)
 {
     qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->showLosses(show);

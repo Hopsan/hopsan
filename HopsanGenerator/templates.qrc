@@ -25,5 +25,8 @@
         <file>templates/fmu1_model_cs.c</file>
         <file>templates/fmu1_model_defines.h</file>
         <file>templates/library_template.xml</file>
+        <file>templates/exe_main.cpp</file>
+        <file>templates/exe_utilities.cpp</file>
+        <file>templates/exe_utilities.h</file>
     </qresource>
 </RCC>

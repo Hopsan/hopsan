@@ -2079,7 +2079,86 @@ void SystemContainer::exportToSimulink()
 //    delete(pMSVC2008RadioButton);
 //    delete(pMSVC2010RadioButton);
 //    delete(p32bitRadioButton);
-//    delete(p64bitRadioButton);
+    //    delete(p64bitRadioButton);
+}
+
+void SystemContainer::exportToExecutableModel(QString savePath, ArchitectureEnumT arch)
+{
+    if(savePath.isEmpty())
+    {
+        //Open file dialog and initialize the file stream
+        QDir fileDialogSaveDir;
+        savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Compile Executable Model"),
+                                                        gpConfig->getStringSetting(CFG_EXEEXPORTDIR),
+                                                        QFileDialog::ShowDirsOnly
+                                                        | QFileDialog::DontResolveSymlinks);
+        if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+        QDir saveDir;
+        saveDir.setPath(savePath);
+        gpConfig->setStringSetting(CFG_EXEEXPORTDIR, saveDir.absolutePath());
+        saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+        if(!saveDir.entryList().isEmpty())
+        {
+            qDebug() << saveDir.entryList();
+            QMessageBox msgBox;
+            msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+            msgBox.setText(QString("Folder is not empty!"));
+            msgBox.setInformativeText("Are you sure you want to export files here?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+
+            int answer = msgBox.exec();
+            if(answer == QMessageBox::No)
+            {
+                return;
+            }
+        }
+    }
+
+    QDir saveDir(savePath);
+    if(!saveDir.exists())
+    {
+        QDir().mkpath(savePath);
+    }
+    saveDir.setFilter(QDir::NoFilter);
+
+    if(!mpModelWidget->isSaved())
+    {
+        QMessageBox::information(gpMainWindowWidget, "tr(Model not saved)", "tr(Please save your model before compiling an executable model)");
+        return;
+    }
+
+    //Save model to hmf in export directory
+    mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
+
+    auto spGenerator = createDefaultExportGenerator();
+    spGenerator->setCompilerPath(gpConfig->getCompilerPath(arch));
+
+    HopsanGeneratorGUI::TargetArchitectureT garch;
+    if (arch == ArchitectureEnumT::x64)
+    {
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x64;
+    }
+    else
+    {
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x86;
+    }
+    auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
+    QStringList externalLibraries;
+    //! @todo an idea here is to always treat the default library as external, and export it as such (and never build it in by default), that would reduce special handling of the default library
+    //! @todo This code prevents nesting an external fmu inside an export, not sure if we need to support this
+    spGenerator->setAutoCloseWidgetsOnSuccess(true);
+    for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
+        const auto mainFile = pLib->getLibraryMainFilePath();
+        spGenerator->checkComponentLibrary(mainFile);
+        externalLibraries.append(pLib->getLibraryMainFilePath());
+    }
+    spGenerator->setAutoCloseWidgetsOnSuccess(false);
+    if (!spGenerator->generateToExe(savePath, pCoreSystem, externalLibraries, garch))
+    {
+        gpMessageHandler->addErrorMessage("Failed to compile executable model");
+    }
 }
 
 

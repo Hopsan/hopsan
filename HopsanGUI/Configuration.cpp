@@ -1333,6 +1333,7 @@ void Configuration::registerSettings()
     mStringSettings.insert(CFG_PLOTWINDOWDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_FMUIMPORTDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_FMUEXPORTDIR, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(CFG_EXEEXPORTDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_LABVIEWEXPORTDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_CUSTOMTEMPPATH, "");
     mStringSettings.insert(CFG_GCC64DIR, "");
