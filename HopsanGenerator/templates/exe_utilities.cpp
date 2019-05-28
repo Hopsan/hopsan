@@ -303,20 +303,28 @@ bool endsWith(std::string str, std::string match)
 
 bool setParameter(string &rParName, string &rParValue, ComponentSystem *pSystem)
 {
-    std::replace(rParName.begin(), rParName.end(), ':', '$');
-    std::replace(rParName.begin(), rParName.end(), '.', '#');
+    std::string parName = rParName;
 
-    if(endsWith(rParName, "#y")) {
-        rParName.erase(rParName.length()-2,2);
-        rParName.append("#Value");
+    //Replace '$' and '#' with ':' and '.'
+    //(note that both '$' and '|' are problematic in terminal arguments on Linux)
+    std::replace(parName.begin(), parName.end(), ':', '$');
+    std::replace(parName.begin(), parName.end(), '.', '#');
+
+    //Prepend system name of toplevel system
+    std::string systemName = pSystem->getName().c_str();
+    if(!startsWith(parName, systemName+"$")) {
+        parName.insert(0,systemName+"$");
+    }
+
+    //Convert to short variable names (i.e. "Value" => y")
+    if(endsWith(parName, "#y")) {
+        parName.erase(parName.length()-2,2);
+        parName.append("#Value");
     };
-
-
-
 
     std::vector<std::string> vec2, nameVec, syshierarcy;
     string componentName, parameterName;
-    splitStringOnDelimiter(rParName, '$', vec2);
+    splitStringOnDelimiter(parName, '$', vec2);
 
     // Last of vec2 will contain the rest of the name filed (comp and param name)
     int i;
