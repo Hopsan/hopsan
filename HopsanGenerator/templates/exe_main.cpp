@@ -4,6 +4,11 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <thread>
+#ifdef _WIN32
+#else
+#include <unistd.h>
+#endif
 
 #include "HopsanCore.h"
 #include "HopsanEssentials.h"
@@ -25,6 +30,7 @@ int main(int argc, char *argv[])
     double stepT = 0.001;
     double nSamples = 2048;
     bool transpose = false;
+    bool progress = true;
     SaveResults results = Full;
     SaveDescriptions descriptions = NameAliasUnit;
 
@@ -65,6 +71,9 @@ int main(int argc, char *argv[])
                 if(value == "namesonly") {
                     descriptions = NameOnly;
                 }
+            }
+            else if("progress" == name) {
+                progress = (value == "true");
             }
             else if("parameterfile" == name) {
                 importParameterValuesFromCSV(value, spCoreComponentSystem);
@@ -112,8 +121,37 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::cout << "Simulating model... ";
-    spCoreComponentSystem->simulate(stopT);;
+    std::cout << "Simulating model... " << std::flush;
+    std::thread simThread = std::thread(&hopsan::ComponentSystem::simulate,
+                                        spCoreComponentSystem,
+                                        stopT);
+
+    if(progress) {
+        double *pTime = spCoreComponentSystem->getTimePtr();
+        int lastProgress = 0;
+        int lastLength = 0;
+        while((*pTime) < stopT-stepT*0.5 && !spCoreComponentSystem->wasSimulationAborted()) {
+    #ifdef _WIN32
+            Sleep(100);
+    #else
+            usleep(100000);
+    #endif
+            int progress = 100.0*(*pTime)/stopT;
+            if(progress > lastProgress) {
+                std::string progressStr = std::to_string(progress)+"%";
+                for(int i=0; i<lastLength; ++i) {
+                    std::cout << "\b";
+                }
+                std::cout << progressStr << std::flush;
+                lastProgress = progress;
+                lastLength = progressStr.size();
+            }
+        }
+        for(int i=0; i<lastLength; ++i) {
+            std::cout << "\b";
+        }
+    }
+    simThread.join();
     std::cout << "Finished!\n";
 
     std::cout << "Finalizing model... ";
