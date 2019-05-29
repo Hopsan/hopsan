@@ -40,6 +40,54 @@
 
 enum SaveResults {Final, Full};
 enum SaveDescriptions {NameOnly, NameAliasUnit};
+
+class Options {
+public:
+    bool set(std::string &name, std::string &value) {
+        if("descriptions" == name) {
+            if(value == "namesonly") {
+                descriptions = NameOnly;
+            }
+        }
+        else if("progress" == name) {
+            progress = (value == "true");
+        }
+        else if(name == "start") {
+            startT = atof(value.c_str());
+        }
+        else if("stop" == name) {
+            stopT = atof(value.c_str());
+        }
+        else if("step" == name) {
+            stepT = atof(value.c_str());
+        }
+        else if("samples" == name) {
+            nSamples = atof(value.c_str());
+        }
+        else if("transpose" == name) {
+            transpose = (value == "true");
+        }
+        else if("results" == name) {
+            if(value == "final") {
+                results = Final;
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+
+    double startT = 0;
+    double stopT = 10;
+    double stepT = 0.001;
+    double nSamples = 2048;
+    bool transpose = false;
+    bool progress = true;
+    SaveResults results = Full;
+    SaveDescriptions descriptions = NameAliasUnit;
+};
+
 void saveResults(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany, const SaveDescriptions descriptions, std::string prefix="", std::ofstream *pFile=0);
 void transposeCSVresults(const std::string &rFileName);
 void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentSystem* pSystem);
@@ -47,5 +95,6 @@ bool startsWith(std::string str, std::string match);
 bool setParameter(std::string &rParName, std::string &rParValue, hopsan::ComponentSystem *pSystem);
 void printHelpText(hopsan::ComponentSystem *pSystem);
 void printParameters(hopsan::ComponentSystem *pSystem);
+void readConfigFile(std::string &filePath, Options &options);
 
 #endif // MODELUTILITIES_H

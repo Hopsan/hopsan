@@ -415,6 +415,7 @@ void printHelpText(ComponentSystem *pSystem)
     std::cout << "  descriptions=all/namesonly  Print names, alias and unit or only name\n";
     std::cout << "  progress=true/false         Enable or disable simulation progress output\n";
     std::cout << "  parameterfile=[filename]    Specify parameter input file\n";
+    std::cout << "  configfile=[filename]       Specify configuration file\n";
     std::cout << "\n";
     std::cout << "Examples:\n";
     std::cout << "  >> " << pSystem->getName().c_str() << " start=0 step=0.001 stop=3\n";
@@ -465,5 +466,23 @@ void printParameters(ComponentSystem *pSystem)
         par.replace("$", ":");
         par.replace("#", ".");
         std::cout << "  " << par.c_str() << "\n";
+    }
+}
+
+void readConfigFile(std::string &filePath, Options &options) {
+    std::ifstream file;
+    file.open(filePath.c_str());
+    if (file.is_open()) {
+        std::string line;
+        while (file.good()) {
+            getline(file, line);
+            std::string name = line.substr(0, line.find("="));
+            std::string value = line.substr(line.find("=")+1, line.size()-1);
+            options.set(name, value);
+        }
+    }
+    else {
+        std::cout << "Error: Unable to read config file: " << filePath << "\n";
+        exit(1);
     }
 }

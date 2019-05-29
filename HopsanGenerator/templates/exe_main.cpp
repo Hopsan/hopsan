@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <fstream>
 #include <string>
@@ -25,18 +26,10 @@ hopsan::HopsanEssentials gHopsanCore;
 
 int main(int argc, char *argv[])
 {
-    //Default values
-    double startT = 0;
-    double stopT = 10;
-    double stepT = 0.001;
-    double nSamples = 2048;
-    bool transpose = false;
-    bool progress = true;
-    SaveResults results = Full;
-    SaveDescriptions descriptions = NameAliasUnit;
+    Options options;
 
     //Instantiate model
-    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
+    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), options.startT, options.stopT);
     if(!spCoreComponentSystem) {
         std::cout << "Failed to instantiate model!\n";
         return 1;
@@ -48,38 +41,13 @@ int main(int argc, char *argv[])
         if(arg.find("=") != std::string::npos) {
             std::string name = arg.substr(0, arg.find("="));
             std::string value = arg.substr(arg.find("=")+1, arg.size()-1);
-            if(name == "start") {
-                startT = atof(value.c_str());
-            }
-            else if("stop" == name) {
-                stopT = atof(value.c_str());
-            }
-            else if("step" == name) {
-                stepT = atof(value.c_str());
-            }
-            else if("samples" == name) {
-                nSamples = atof(value.c_str());
-            }
-            else if("transpose" == name) {
-                transpose = (value == "true");
-            }
-            else if("results" == name) {
-                if(value == "final") {
-                    results = Final;
-                }
-            }
-            else if("descriptions" == name) {
-                if(value == "namesonly") {
-                    descriptions = NameOnly;
-                }
-            }
-            else if("progress" == name) {
-                progress = (value == "true");
-            }
-            else if("parameterfile" == name) {
+            if("parameterfile" == name) {
                 importParameterValuesFromCSV(value, spCoreComponentSystem);
             }
-            else {
+            else if("configfile" == name) {
+                readConfigFile(value, options);
+            }
+            else if(!options.set(name, value)){
                 //Attempt to set parameter
                 if(!setParameter(name, value, spCoreComponentSystem)) {
                     std::cout << "Error: Unknown parameter: " << name << "\n";
@@ -101,8 +69,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    spCoreComponentSystem->setDesiredTimestep(stepT);
-    spCoreComponentSystem->setNumLogSamples(nSamples);
+    spCoreComponentSystem->setDesiredTimestep(options.stepT);
+    spCoreComponentSystem->setNumLogSamples(options.nSamples);
 
     std::cout << "Checking model... ";
     if (spCoreComponentSystem->checkModelBeforeSimulation()) {
@@ -114,7 +82,7 @@ int main(int argc, char *argv[])
     }
 
     std::cout << "Initializing model... ";
-    if(spCoreComponentSystem->initialize(startT, stopT)) {
+    if(spCoreComponentSystem->initialize(options.startT, options.stopT)) {
         std::cout << "Success!\n";
     }
     else {
@@ -125,19 +93,19 @@ int main(int argc, char *argv[])
     std::cout << "Simulating model... " << std::flush;
     std::thread simThread = std::thread(&hopsan::ComponentSystem::simulate,
                                         spCoreComponentSystem,
-                                        stopT);
+                                        options.stopT);
 
-    if(progress) {
+    if(options.progress) {
         double *pTime = spCoreComponentSystem->getTimePtr();
         int lastProgress = 0;
         int lastLength = 0;
-        while((*pTime) < stopT-stepT*0.5 && !spCoreComponentSystem->wasSimulationAborted()) {
+        while((*pTime) < options.stopT-options.stepT*0.5 && !spCoreComponentSystem->wasSimulationAborted()) {
     #ifdef _WIN32
             Sleep(100);
     #else
             usleep(100000);
     #endif
-            int progress = 100.0*(*pTime)/stopT;
+            int progress = 100.0*((*pTime)-options.startT)/(options.stopT-options.startT);
             if(progress > lastProgress) {
                 std::string progressStr = std::to_string(progress)+"%";
                 for(int i=0; i<lastLength; ++i) {
@@ -160,10 +128,10 @@ int main(int argc, char *argv[])
     std::cout << "Finished!\n";
 
     std::cout << "Saving results... ";
-    saveResults(spCoreComponentSystem, "output.csv", results, descriptions, "");
+    saveResults(spCoreComponentSystem, "output.csv", options.results, options.descriptions, "");
     std::cout << "Finished!\n";
 
-    if(transpose) {
+    if(options.transpose) {
         std::cout << "Transposing results... ";
         transposeCSVresults("output.csv");
         std::cout << "Finished!\n";
