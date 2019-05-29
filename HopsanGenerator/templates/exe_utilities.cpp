@@ -413,6 +413,7 @@ void printHelpText(ComponentSystem *pSystem)
     std::cout << "  samples=[integer]           Number of log samples\n";
     std::cout << "  transpose=true/false        Transpose to column-wise CSV file\n";
     std::cout << "  descriptions=all/namesonly  Print names, alias and unit or only name\n";
+    std::cout << "  progress=true/false         Enable or disable simulation progress output\n";
     std::cout << "  parameterfile=[filename]    Specify parameter input file\n";
     std::cout << "\n";
     std::cout << "Examples:\n";
