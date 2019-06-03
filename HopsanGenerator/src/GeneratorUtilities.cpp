@@ -228,7 +228,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addCompilerFlag(extraCFlags);
     ch.addLinkerFlag(extraLFlags);
 
-    ch.setSourceFiles(cl.mSourceFiles);
+    ch.setSourceFiles(cl.mSourceFiles+cl.mExtraSourceFiles);
     ch.setSharedLibraryOutputFile(LIBPREFIX+cl.mSharedLibraryName, buildType);
 
     const auto& compilerSelection = pGenerator->getCompilerSelection();
