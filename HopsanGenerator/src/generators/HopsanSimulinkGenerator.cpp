@@ -71,7 +71,8 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         printErrorMessage("Failed to copy default component library files.");
         return false;
     }
-    if(!copyExternalComponentCodeToDir(savePath, externalLibraries)) {
+    QStringList extraSourceFiles;
+    if(!copyExternalComponentCodeToDir(savePath, externalLibraries, extraSourceFiles)) {
         printErrorMessage("Failed to export required external component library files.");
         return false;
     }
@@ -123,6 +124,10 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     }
     QStringList coreSourcefiles = listHopsanCoreSourceFiles(savePath)+listInternalLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &s, coreSourcefiles)
+    {
+        compileScriptStream << " " << s;
+    }
+    Q_FOREACH(const QString &s, extraSourceFiles)
     {
         compileScriptStream << " " << s;
     }

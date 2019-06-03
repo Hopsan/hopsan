@@ -1210,7 +1210,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
         printErrorMessage("Failed to copy default component library files.");
         return false;
     }
-    if(!copyExternalComponentCodeToDir(fmuBuildPath, externalLibraries)) {
+    if(!copyExternalComponentCodeToDir(fmuBuildPath, externalLibraries, mExtraSourceFiles)) {
         printErrorMessage("Failed to export required external component library files.");
         return false;
     }
@@ -1805,7 +1805,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     compileCppBatchStream << "@echo off\n";
     compileCppBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
     compileCppBatchStream << "@echo on\n";
-    compileCppBatchStream << "g++ -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp";
+    compileCppBatchStream << "g++ -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
@@ -1829,7 +1829,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mCompilerSelection.path+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp";
+    compileCppBatchStream << mCompilerSelection.path+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
@@ -1851,6 +1851,10 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
 
     QStringList objectFiles;
     objectFiles << "fmu_hopsan.o";
+    for(const QString& extraSrc : mExtraSourceFiles) {
+        QFileInfo extraObjFile(extraSrc);
+        objectFiles << extraObjFile.baseName()+".o";
+    }
     for(const QString &srcFile : srcFiles) {
         QFileInfo fi(srcFile);
         objectFiles << fi.baseName()+".o";
