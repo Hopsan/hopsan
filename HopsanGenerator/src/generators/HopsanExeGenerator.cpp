@@ -87,7 +87,7 @@ bool HopsanExeGenerator::generateToExe(QString savePath, ComponentSystem *pSyste
         return false;
     }
 
-    if(!copyExternalComponentCodeToDir(buildPath, externalLibraries, &mExtraSourceFiles)) {
+    if(!copyExternalComponentCodeToDir(buildPath, externalLibraries, mExtraSourceFiles)) {
         printErrorMessage("Failed to export required external component library files.");
         return false;
     }

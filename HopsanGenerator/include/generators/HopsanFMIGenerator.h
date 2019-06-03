@@ -58,6 +58,8 @@ private:
     void replaceNameSpace(const QString &savePath) const;
     bool compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, int version, bool x64) const;
     bool compressFiles(const QString &fmuStagePath, const QString &modelName) const;
+
+    QStringList mExtraSourceFiles;
 };
 
 #endif // HOPSANFMIGENERAETOR_H
