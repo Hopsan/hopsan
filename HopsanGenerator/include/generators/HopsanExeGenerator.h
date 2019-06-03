@@ -25,8 +25,6 @@
 #ifndef HOPSANEXEGENERATOR_H
 #define HOPSANEXEGENERATOR_H
 
-//#include <QMap>
-
 // Hopsan includes
 #include "HopsanGeneratorBase.h"
 
