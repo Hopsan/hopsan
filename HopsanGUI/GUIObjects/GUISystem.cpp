@@ -1486,7 +1486,7 @@ void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnu
 
     if(!mpModelWidget->isSaved())
     {
-        QMessageBox::information(gpMainWindowWidget, "tr(Model not saved)", "tr(Please save your model before exporting an FMU)");
+        QMessageBox::information(gpMainWindowWidget, tr("Model not saved"), tr("Please save your model before exporting an FMU"));
         return;
     }
 
@@ -2126,7 +2126,7 @@ void SystemContainer::exportToExecutableModel(QString savePath, ArchitectureEnum
 
     if(!mpModelWidget->isSaved())
     {
-        QMessageBox::information(gpMainWindowWidget, "tr(Model not saved)", "tr(Please save your model before compiling an executable model)");
+        QMessageBox::information(gpMainWindowWidget, tr("Model not saved"), tr("Please save your model before compiling an executable model"));
         return;
     }
 
