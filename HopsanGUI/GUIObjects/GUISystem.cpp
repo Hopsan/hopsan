@@ -1510,7 +1510,6 @@ void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnu
     QStringList externalLibraries;
     //! @todo an idea here is to always treat the default library as external, and export it as such (and never build it in by default), that would reduce special handling of the default library
     //! @todo This code prevents nesting an external fmu inside an export, not sure if we need to support this
-    spGenerator->setAutoCloseWidgetsOnSuccess(true);
     for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
         const auto mainFile = pLib->getLibraryMainFilePath();
         spGenerator->checkComponentLibrary(mainFile);
@@ -2149,7 +2148,6 @@ void SystemContainer::exportToExecutableModel(QString savePath, ArchitectureEnum
     QStringList externalLibraries;
     //! @todo an idea here is to always treat the default library as external, and export it as such (and never build it in by default), that would reduce special handling of the default library
     //! @todo This code prevents nesting an external fmu inside an export, not sure if we need to support this
-    spGenerator->setAutoCloseWidgetsOnSuccess(true);
     for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
         const auto mainFile = pLib->getLibraryMainFilePath();
         spGenerator->checkComponentLibrary(mainFile);
