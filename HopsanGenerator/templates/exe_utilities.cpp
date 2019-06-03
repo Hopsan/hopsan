@@ -402,6 +402,7 @@ void printHelpText(ComponentSystem *pSystem)
     std::cout << "\n";
     std::cout << "Flags:\n";
     std::cout << "  -h, --help            Display this help text\n";
+    std::cout << "  -s, --simulate        Run a simulation\n";
     std::cout << "  -p, --parameters      List all tunable model parameters\n";
     std::cout << "\n";
     std::cout << "Options (cannot be used together with flags):\n";
