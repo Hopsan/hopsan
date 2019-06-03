@@ -226,7 +226,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mCompilerSelection.path+"g++ -pipe -std=c++11 -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
+    compileCppBatchStream << mCompilerSelection.path+"g++ -pipe -std=c++11 -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(buildPath) + listInternalLibrarySourceFiles(buildPath);
     Q_FOREACH(const QString &srcFile, srcFiles)
     {
@@ -291,7 +291,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     linkBatchStream << "@echo off\n";
     linkBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
     linkBatchStream << "@echo on\n";
-    linkBatchStream << "g++ -w -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' ";
+    linkBatchStream << "g++ -w -static -static-libgcc";
     Q_FOREACH(const QString &objFile, objectFiles)
     {
         linkBatchStream << " " << objFile;
@@ -311,7 +311,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     }
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << mCompilerSelection.path+"g++ -pthread -fPIC -w -static-libgcc -Wl,--rpath,'$ORIGIN/.'";
+    linkBatchStream << mCompilerSelection.path+"g++ -pthread -w";
     Q_FOREACH(const QString &objFile, objectFiles)
     {
         linkBatchStream << " " << objFile;
