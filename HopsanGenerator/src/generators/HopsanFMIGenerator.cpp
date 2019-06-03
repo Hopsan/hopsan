@@ -1325,42 +1325,8 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     // Generate model file and export assets, replacing asset paths in model
     //------------------------------------------------------------------//
 
-    QDir resourceDir(fmuStagePath+"/resources/");
-    std::list<hopsan::HString> assets = pSystem->getModelAssets();
     QMap<QString, QString> assetsMap;
-    if (!assets.empty()) {
-        printMessage("Exporting model assets");
-    }
-    for (const auto& asset : assets) {
-        QFileInfo assetInfo(asset.c_str());
-        QString absSourcePath = pSystem->findFilePath(asset).c_str();
-        QString targetPath;
-        if (assetInfo.isAbsolute()) {
-            // For absolute windows paths, replace \ with /
-            targetPath = absSourcePath.replace(R"(\)", "/");
-            // For absolute windows paths, replace :/ with /
-            targetPath = absSourcePath.replace(":/", "/");
-            // For Unix paths remove leading /
-            if (targetPath.startsWith("/")) {
-                targetPath.remove(0,1);
-            }
-        } else {
-            // For relative windows paths, replace \ with /
-            targetPath = assetInfo.filePath().replace(R"(\)", "/");
-            // For relative paths, replace leading ../ with a number, to ensure uniqueness
-            int ctr=0;
-            while(targetPath.startsWith("../")) {
-                ++ctr;
-                targetPath.remove(0,3);
-            }
-            if(ctr>0) {
-                targetPath.prepend(QString("%1_").arg(ctr));
-            }
-        }
-        targetPath.prepend(fmuStagePath+"/resources/");
-        copyFile(absSourcePath, targetPath);
-        assetsMap.insert(asset.c_str(), resourceDir.relativeFilePath(targetPath));
-    }
+    copyModelAssetsToDir(fmuStagePath, pSystem, assetsMap);
 
     genOK = generateModelFile(pSystem, fmuBuildPath, assetsMap);
     if (!genOK) {
