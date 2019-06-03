@@ -59,6 +59,7 @@ hopsan::HopsanEssentials gHopsanCore;
 
 int main(int argc, char *argv[])
 {
+    bool simulationMode = false;
     Options options;
 
     //Instantiate model
@@ -96,10 +97,20 @@ int main(int argc, char *argv[])
             printParameters(spCoreComponentSystem);
             return 0;
         }
+        else if("--simulate" == arg || "-s" == arg) {
+            simulationMode = true;
+        }
         else {
             std::cout << "Error: Unknown argument: " << arg << "\n";
             return 1;
         }
+    }
+
+    if(!simulationMode) {
+        std::cout << "This is a stand-alone executable Hopsan model. Try '";
+        std::cout << spCoreComponentSystem->getName().c_str();
+        std::cout << " --help' for more information.\n";
+        return 0;
     }
 
     spCoreComponentSystem->setDesiredTimestep(options.stepT);
