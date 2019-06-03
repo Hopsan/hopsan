@@ -23,11 +23,11 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ModelUtilities.cpp
-//! @author FluMeS
-//! @date   2012-05-30
+//! @file   exe_utilities.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2019-06-03
 //!
-//! @brief Contains model specific helpfunctions for CLI
+//! @brief Contains model specific helpfunctions for executable models
 //!
 //$Id$
 
