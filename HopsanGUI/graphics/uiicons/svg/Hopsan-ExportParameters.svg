@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    enable-background="new"
    sodipodi:docname="Hopsan-ExportParameters.svg"
    inkscape:export-filename="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\uiicons\Hopsan-ExportSimulink.png"
@@ -849,15 +849,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.22627417"
-     inkscape:cx="-1411.2059"
+     inkscape:cx="-2032.134"
      inkscape:cy="-845.72875"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="1132"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -903,20 +903,30 @@
         </g>
       </g>
     </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       x="-936.9165"
+       y="667.87286"
+       id="text7065"><tspan
+         sodipodi:role="line"
+         id="tspan7063"
+         x="-936.9165"
+         y="667.87286"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:220px;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold'"
+         dy="0 0 -25">X =</tspan></text>
     <g
-       id="text3122"
-       style="font-size:39.50228119px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       transform="matrix(1.0125997,0,0,1.0125998,8.7544475,-70.666436)">
+       aria-label="X ="
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
+       id="text7065-0">
       <path
-         inkscape:connector-curvature="0"
-         id="path3131"
-         style="font-size:217.26255798px;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:29.62671089px;font-family:Arial;-inkscape-font-specification:Arial Bold"
-         d="m 82.123962,814.50897 53.148698,-81.1552 -48.162692,-74.36575 36.705492,0 31.18906,49.96614 30.55254,-49.96614 36.38724,0 -48.37487,75.53269 53.14871,79.98826 -37.87243,0 -34.4777,-53.78521 -34.58379,53.78521 z" />
+         d="m 173.66364,667.52218 51.48,81.84 h -39.16 l -30.8,-55.66 -30.58,55.66 H 86.323643 l 50.599997,-80.74 -48.839997,-79.64 h 39.159997 l 28.16,52.8 29.48,-52.8 h 38.28 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:220px;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold'"
+         id="path7085" />
       <path
-         inkscape:connector-curvature="0"
-         id="path3133"
-         style="font-size:217.26255798px;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:29.62671089px;font-family:Arial;-inkscape-font-specification:Arial Bold"
-         d="m 265.89252,727.94342 0,-27.36999 108.73736,0 0,27.36999 z m 0,47.10185 0,-27.47608 108.73736,0 0,27.47608 z" />
+         d="m 408.65114,633.94218 v 26.18 h -106.48 v -26.18 z m 0,52.8 v 26.18 h -106.48 v -26.18 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:220px;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold'"
+         id="path7087" />
     </g>
   </g>
   <g

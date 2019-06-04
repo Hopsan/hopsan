@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    enable-background="new"
    sodipodi:docname="Hopsan-ExportFmu.svg"
    inkscape:export-filename="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\uiicons\Hopsan-ExportFmu.png"
@@ -849,15 +849,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.16"
-     inkscape:cx="1784.6459"
+     inkscape:cx="656.5209"
      inkscape:cy="-315"
      inkscape:document-units="px"
      inkscape:current-layer="g5637"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="735"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -867,7 +867,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -909,17 +909,39 @@
       </g>
       <text
          xml:space="preserve"
-         style="font-size:39.50228119px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         x="-7.247108"
-         y="814.45593"
-         id="text3277"
-         sodipodi:linespacing="125%"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:0%;font-family:FreeSans;-inkscape-font-specification:FreeSans;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:14.81335545;stroke-miterlimit:4;stroke-dasharray:none"
+         x="-1077.1174"
+         y="580.86981"
+         id="text3277-3"
          transform="scale(1.0697012,0.93484048)"><tspan
            sodipodi:role="line"
-           id="tspan3279"
-           x="-7.247108"
-           y="814.45593"
-           style="font-size:217.26254272000000000px;font-weight:bold;-inkscape-font-specification:Sans Bold">FMU</tspan></text>
+           id="tspan3279-6"
+           x="-1077.1174"
+           y="580.86981"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold';stroke-width:14.81335545">FMU</tspan></text>
+      <g
+         aria-label="FMU"
+         transform="matrix(1.0697012,0,0,0.93484048,2.6409789,544.02818)"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:0%;font-family:FreeSans;-inkscape-font-specification:FreeSans;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:14.81335545;stroke-miterlimit:4;stroke-dasharray:none"
+         id="text3277-3-3"
+         inkscape:transform-center-x="81.25"
+         inkscape:transform-center-y="-543.75">
+        <path
+           d="m 32.54072,154.65993 v 68.22044 H -0.04866119 V 64.495977 H 111.18976 V 91.653795 H 32.54072 v 35.848315 h 69.30675 v 27.15782 z"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold';stroke-width:14.81335545"
+           id="path7108"
+           inkscape:connector-curvature="0" />
+        <path
+           d="M 170.02717,99.475247 V 222.88037 H 137.43779 V 64.495977 H 186.1046 L 214.78325,190.50825 242.59286,64.495977 h 49.10133 V 222.88037 H 259.10481 V 99.475247 L 231.07794,222.88037 h -32.58938 z"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold';stroke-width:14.81335545"
+           id="path7110"
+           inkscape:connector-curvature="0" />
+        <path
+           d="m 405.78758,226.35657 q -8.03872,1.52084 -16.72922,1.52084 -8.6905,0 -16.94648,-1.52084 -8.03871,-1.52084 -16.72921,-5.43156 -8.47324,-3.91073 -14.77386,-9.99408 -6.30061,-6.08335 -10.4286,-16.07743 -3.91073,-10.21134 -3.91073,-23.02983 V 64.495977 h 32.58939 V 171.82367 q 0,28.24413 30.19949,28.24413 30.19949,0 30.19949,-28.24413 V 64.495977 h 32.58938 V 171.82367 q 0,12.81849 -4.12798,23.02983 -3.91073,9.99408 -10.21134,16.07743 -6.30062,6.08335 -14.99112,9.99408 -8.47324,3.91072 -16.72921,5.43156 z"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold';stroke-width:14.81335545"
+           id="path7112"
+           inkscape:connector-curvature="0" />
+      </g>
     </g>
   </g>
   <g

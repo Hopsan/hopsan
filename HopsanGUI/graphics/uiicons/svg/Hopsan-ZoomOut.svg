@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="Hopsan-ZoomOut.svg"
    inkscape:export-filename="C:\Users\Robert\Documents\Jobbsaker\Hopsan-ZoomOut.png"
    inkscape:export-xdpi="90"
@@ -195,17 +195,22 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.25"
-     inkscape:cx="590.13985"
-     inkscape:cy="-106.35809"
+     inkscape:zoom="0.5"
+     inkscape:cx="217.73515"
+     inkscape:cy="-76.375005"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1680"
-     inkscape:window-height="954"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-height="986"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-global="false" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -214,7 +219,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -250,19 +255,29 @@
        transform="matrix(0.80604674,0.80604638,-0.80604674,0.80604638,163.78896,-223.84008)" />
     <text
        xml:space="preserve"
-       style="font-size:330px;font-style:normal;font-weight:normal;line-height:125%;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="319.8746"
-       y="482.401"
-       id="text4864"
-       sodipodi:linespacing="125%"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none"
+       x="-542.94641"
+       y="387.07913"
+       id="text4864-6"
        transform="scale(0.9999971,1.0000029)"
        inkscape:export-filename="C:\Users\Robert\Documents\Jobbsaker\Hopsan-ZoomOut.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         id="tspan4866"
-         x="319.8746"
-         y="482.401"
-         style="font-size:330px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Calibri;-inkscape-font-specification:Calibri">-</tspan></text>
+         id="tspan4866-2"
+         x="-542.94641"
+         y="387.07913"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:330px;line-height:125%;font-family:FreeSans;-inkscape-font-specification:FreeSans;text-align:start;writing-mode:lr-tb;text-anchor:start">-</tspan></text>
+    <g
+       aria-label="-"
+       transform="matrix(1.3520655,0,0,1.0000029,-140.87715,0)"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.86000407"
+       id="text4864-6-9">
+      <path
+         d="m 439.90641,388.2586 v 23.76 h -79.53 v -23.76 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:330px;line-height:125%;font-family:FreeSans;-inkscape-font-specification:FreeSans;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.86000407"
+         id="path6789"
+         inkscape:connector-curvature="0" />
+    </g>
   </g>
 </svg>

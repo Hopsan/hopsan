@@ -15,8 +15,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="Hopsan-Zoom100.svg"
-   inkscape:export-filename="C:\Users\Robert\Documents\Jobbsaker\Hopsan-Zoom100.png"
+   sodipodi:docname="Hopsan-Zoom.svg"
+   inkscape:export-filename="C:\Users\Robert\Documents\Jobbsaker\Hopsan-ZoomOut.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -195,16 +195,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.1767767"
-     inkscape:cx="2952.7307"
-     inkscape:cy="561.14342"
+     inkscape:zoom="0.25"
+     inkscape:cx="-127.86015"
+     inkscape:cy="-106.35809"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1043"
-     inkscape:window-x="1680"
-     inkscape:window-y="0"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -214,7 +214,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -248,37 +248,5 @@
        sodipodi:ry="126.42857"
        d="m 461.42857,150.71428 a 126.42857,126.42857 0 1 1 -252.85714,0 126.42857,126.42857 0 1 1 252.85714,0 z"
        transform="matrix(0.80604674,0.80604638,-0.80604674,0.80604638,163.78896,-223.84008)" />
-    <g
-       aria-label="100%"
-       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';fill:#000000;fill-opacity:1;stroke:none"
-       id="text4864">
-      <path
-         d="m 158.71094,408.32 h -23.8 V 395.3 q 25.76,0 30.38,-17.78 h 13.02 v 99.26 h -19.6 z"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:140px;line-height:125%;font-family:freesans;-inkscape-font-specification:'freesans Bold';text-align:start;writing-mode:lr-tb;text-anchor:start"
-         id="path6733" />
-      <path
-         d="m 258.34063,476.08 q -6.86,3.92 -16.8,3.92 -9.94,0 -16.8,-3.92 -6.86,-4.06 -10.64,-11.48 -3.64,-7.42 -5.18,-16.24 -1.54,-8.96 -1.54,-20.58 0,-25.34 7.7,-38.78 7.7,-13.58 26.46,-13.58 9.8,0 16.52,3.78 6.86,3.64 10.64,10.92 3.78,7.28 5.32,16.52 1.68,9.24 1.68,21.7 0,11.2 -1.54,20.02 -1.54,8.68 -5.18,16.24 -3.64,7.42 -10.64,11.48 z m -2.24,-48.16 q 0,-20.3 -3.78,-28.42 -3.64,-8.26 -10.78,-8.26 -7.84,0 -11.2,7.98 -3.36,7.84 -3.36,28.42 0,14.28 1.82,22.4 1.82,7.98 4.76,10.64 3.08,2.52 7.98,2.52 4.76,0 7.7,-2.52 3.08,-2.52 4.9,-10.5 1.96,-8.12 1.96,-22.26 z"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:140px;line-height:125%;font-family:freesans;-inkscape-font-specification:'freesans Bold';text-align:start;writing-mode:lr-tb;text-anchor:start"
-         id="path6735" />
-      <path
-         d="m 336.27031,476.08 q -6.86,3.92 -16.8,3.92 -9.94,0 -16.8,-3.92 -6.86,-4.06 -10.64,-11.48 -3.64,-7.42 -5.18,-16.24 -1.54,-8.96 -1.54,-20.58 0,-25.34 7.7,-38.78 7.7,-13.58 26.46,-13.58 9.8,0 16.52,3.78 6.86,3.64 10.64,10.92 3.78,7.28 5.32,16.52 1.68,9.24 1.68,21.7 0,11.2 -1.54,20.02 -1.54,8.68 -5.18,16.24 -3.64,7.42 -10.64,11.48 z m -2.24,-48.16 q 0,-20.3 -3.78,-28.42 -3.64,-8.26 -10.78,-8.26 -7.84,0 -11.2,7.98 -3.36,7.84 -3.36,28.42 0,14.28 1.82,22.4 1.82,7.98 4.76,10.64 3.08,2.52 7.98,2.52 4.76,0 7.7,-2.52 3.08,-2.52 4.9,-10.5 1.96,-8.12 1.96,-22.26 z"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:140px;line-height:125%;font-family:freesans;-inkscape-font-specification:'freesans Bold';text-align:start;writing-mode:lr-tb;text-anchor:start"
-         id="path6737" />
-      <path
-         d="m 388.02,378.64 q 10.78,0 18.2,7.56 7.56,7.42 7.56,18.2 0,10.22 -7.7,17.78 -7.56,7.42 -18.06,7.42 -10.64,0 -18.2,-7.42 -7.56,-7.56 -7.56,-18.06 0,-10.5 7.56,-17.92 7.56,-7.56 18.2,-7.56 z m 8.4,17.36 q -3.5,-3.5 -8.4,-3.5 -4.9,0 -8.4,3.5 -3.5,3.36 -3.5,8.12 0,4.9 3.5,8.4 3.5,3.36 8.4,3.36 4.9,0 8.4,-3.36 3.5,-3.5 3.5,-8.26 0,-4.9 -3.5,-8.26 z m 47.6,-18.48 h 10.64 l -55.3,102.06 h -10.78 z m 10.22,49.98 q 10.78,0 18.2,7.56 7.56,7.42 7.56,18.34 0,10.22 -7.7,17.78 -7.56,7.42 -18.06,7.42 -10.64,0 -18.2,-7.42 -7.56,-7.56 -7.56,-18.2 0,-10.5 7.56,-17.92 7.56,-7.56 18.2,-7.56 z m 8.4,17.36 q -3.5,-3.5 -8.4,-3.5 -4.9,0 -8.4,3.5 -3.5,3.36 -3.5,8.26 0,4.9 3.5,8.4 3.5,3.36 8.4,3.36 4.9,0 8.4,-3.36 3.5,-3.5 3.5,-8.26 0,-4.9 -3.5,-8.4 z"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:140px;line-height:125%;font-family:freesans;-inkscape-font-specification:'freesans Bold';text-align:start;writing-mode:lr-tb;text-anchor:start"
-         id="path6739" />
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none"
-       x="-595.01489"
-       y="-53.585987"
-       id="text4864-9"><tspan
-         sodipodi:role="line"
-         id="tspan4866-1"
-         x="-595.01489"
-         y="-53.585987"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:140px;line-height:125%;font-family:freesans;-inkscape-font-specification:'freesans Bold';text-align:start;writing-mode:lr-tb;text-anchor:start">100%</tspan></text>
   </g>
 </svg>
