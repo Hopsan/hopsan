@@ -158,12 +158,12 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpNewPlotButton = new QAction(this);
     mpNewPlotButton->setToolTip("Create New Plot");
-    mpNewPlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
+    mpNewPlotButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-NewPlot.svg"));
     connect(mpNewPlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpArrowButton = new QAction(this);
     mpArrowButton->setToolTip("Arrow (P)");
-    mpArrowButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pointer.png"));
+    mpArrowButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Pointer.svg"));
     mpArrowButton->setCheckable((true));
     mpArrowButton->setShortcut(QKeySequence("p"));
     //! @todo Check short cut if to confirm if there is a conflict or not
@@ -171,7 +171,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpLegendButton = new QAction(this);
     mpLegendButton->setToolTip("Legend (L)");
-    mpLegendButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotLegends.png"));
+    mpLegendButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowPlotLegends.svg"));
     //mpLegendButton->setCheckable((true));
     mpLegendButton->setShortcut(QKeySequence("p"));
     //! @todo Check short cut if to confirm if there is a conflict or not
@@ -179,26 +179,26 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpZoomButton = new QAction(this);
     mpZoomButton->setToolTip("Zoom (Z)");
-    mpZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom.png"));
+    mpZoomButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Zoom.svg"));
     mpZoomButton->setCheckable(true);
     mpZoomButton->setShortcut(QKeySequence("z"));
     connect(mpZoomButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpOriginalZoomButton = new QAction(this);
     mpOriginalZoomButton->setToolTip("Reset original Zoom");
-    mpOriginalZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"));
+    mpOriginalZoomButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Zoom100.svg"));
 
 
     mpPanButton = new QAction(this);
     mpPanButton->setToolTip("Pan (X)");
-    mpPanButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
+    mpPanButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Pan.svg"));
     mpPanButton->setCheckable(true);
     mpPanButton->setShortcut(QKeySequence("x"));
     connect(mpPanButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpSaveButton = new QAction(this);
     mpSaveButton->setToolTip("Save Plot Window Description File (.xml)");
-    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Save.svg"));
     mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
     connect(mpSaveButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mpSaveButton->setDisabled(true);
@@ -217,7 +217,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpImportButton = new QToolButton(mpToolBar);
     mpImportButton->setToolTip("Import Plot Data");
-    mpImportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ImportPlot.png"));
+    mpImportButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ImportPlot.svg"));
     mpImportButton->setMenu(mpImportMenu);
     mpImportButton->setPopupMode(QToolButton::InstantPopup);
     mpImportButton->setMouseTracking(true);
@@ -242,24 +242,24 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpExportButton = new QToolButton(mpToolBar);
     mpExportButton->setToolTip("Export Plot Tab");
-    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportPlot.png"));
+    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportPlot.svg"));
     mpExportButton->setMenu(mpExportMenu);
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
     mpExportButton->setMouseTracking(true);
 
     mpExportToGraphicsAction = new QAction("Export as Graphics", mpToolBar);
-    mpExportToGraphicsAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
+    mpExportToGraphicsAction->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportGfx.svg"));
     mpExportToGraphicsAction->setToolTip("Export to Graphics File");
 
     mpLoadFromXmlButton = new QAction(this);
     mpLoadFromXmlButton->setToolTip("Import Plot");
-    mpLoadFromXmlButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadFromXmlButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Open.svg"));
     connect(mpLoadFromXmlButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mpLoadFromXmlButton->setDisabled(true);
 
     mpGridButton = new QAction(this);
     mpGridButton->setToolTip("Show Grid (G)");
-    mpGridButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Grid.png"));
+    mpGridButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Grid.svg"));
     mpGridButton->setCheckable(true);
     mpGridButton->setChecked(true);
     mpGridButton->setShortcut(QKeySequence("g"));
@@ -267,46 +267,46 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpBackgroundColorButton = new QAction(this);
     mpBackgroundColorButton->setToolTip("Select Canvas Color (C)");
-    mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
+    mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-BackgroundColor.svg"));
     mpBackgroundColorButton->setShortcut(QKeySequence("c"));
     connect(mpBackgroundColorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpLocktheAxis = new QAction(this);
     mpLocktheAxis->setToolTip("Lock Axis");
-    mpLocktheAxis->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+    mpLocktheAxis->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-AxisScale.svg"));
     connect(mpLocktheAxis, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpToggleAxisLockButton = new QAction(this);
     mpToggleAxisLockButton->setToolTip("Lock Axis To Current Limits");
-    mpToggleAxisLockButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Lock.png"));
+    mpToggleAxisLockButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Lock.svg"));
     connect(mpToggleAxisLockButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpOpentimeScaleDialog = new QAction(this);
     mpOpentimeScaleDialog->setToolTip("Open Time-Scale Dialog");
-    mpOpentimeScaleDialog->setIcon(QIcon(QString(ICONPATH) + "Hopsan-AxisTimeScale.png"));
+    mpOpentimeScaleDialog->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-AxisTimeScale.svg"));
 
 
     mpNewWindowFromTabButton = new QAction(this);
     mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
-    mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-OpenTabInNewPlotWindow.png"));
+    mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-OpenTabInNewPlotWindow.svg"));
     connect(mpNewWindowFromTabButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpResetXVectorButton = new QAction(this);
     mpResetXVectorButton->setToolTip("Reset Time Vector");
-    mpResetXVectorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
+    mpResetXVectorButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ResetTimeVector.svg"));
     connect(mpResetXVectorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpBodePlotButton = new QAction(this);
     mpBodePlotButton->setToolTip("Transfer Function Analysis");
-    mpBodePlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-TransferFunctionAnalysis.png"));
+    mpBodePlotButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-TransferFunctionAnalysis.svg"));
     connect(mpBodePlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpAllGenerationsDown = new QAction(this);
-    mpAllGenerationsDown->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
+    mpAllGenerationsDown->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-StepLeft.svg"));
     mpAllGenerationsDown->setToolTip("Shift model curve generations down");
 
     mpAllGenerationsUp = new QAction(this);
-    mpAllGenerationsUp->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
+    mpAllGenerationsUp->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-StepRight.svg"));
     mpAllGenerationsUp->setToolTip("Shift model curve generations up");
 
     // Initialize the help message popup
@@ -326,7 +326,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     }
 
     pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
-    pLocalPlotWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowVariableList.png"));
+    pLocalPlotWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowPlotWindowVariableList.svg"));
     connect(pLocalPlotWidgetDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     // Setup CurveInfoBox stuff
@@ -341,7 +341,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpPlotCurveControlsDock->show();
 
     mpPlotCurveControlsDock->toggleViewAction()->setToolTip("Toggle Curve Controls");
-    mpPlotCurveControlsDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurveSettings.png"));
+    mpPlotCurveControlsDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowPlotWindowCurveSettings.svg"));
     connect(mpPlotCurveControlsDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     // Populate toolbar with actions

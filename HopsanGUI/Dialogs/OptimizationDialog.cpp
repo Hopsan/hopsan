@@ -610,38 +610,38 @@ QToolBar*OptimizationDialog::createToolBar()
 {
     QToolBar *pToolBar = new QToolBar(this);
     QToolButton *pNewScriptButton = new QToolButton(this);
-    pNewScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-New.png"));
+    pNewScriptButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-New.svg"));
     pNewScriptButton->setText("New Script Skeleton");
     pNewScriptButton->setToolTip("New Script Skeleton");
     pToolBar->addWidget(pNewScriptButton);
 
     QToolButton *pScriptWizardButton = new QToolButton(this);
-    pScriptWizardButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Wizard.png"));
+    pScriptWizardButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Wizard.svg"));
     pScriptWizardButton->setText("Script Wizard");
     pScriptWizardButton->setToolTip("Script Wizard");
     pToolBar->addWidget(pScriptWizardButton);
 
     QToolButton *pLoadScriptButton = new QToolButton(this);
-    pLoadScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    pLoadScriptButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Open.svg"));
     pLoadScriptButton->setText("Load Script File");
     pLoadScriptButton->setToolTip("Load Script File");
     pToolBar->addWidget(pLoadScriptButton);
 
     QToolButton *pSaveScriptButton = new QToolButton(this);
-    pSaveScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    pSaveScriptButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Save.svg"));
     pSaveScriptButton->setText("Save Script File");
     pSaveScriptButton->setToolTip("Save Script File");
     pToolBar->addWidget(pSaveScriptButton);
 
     QToolButton *pSaveAsScriptButton = new QToolButton(this);
-    pSaveAsScriptButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"));
+    pSaveAsScriptButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-SaveAs.svg"));
     pSaveAsScriptButton->setText("Save Script File As");
     pSaveAsScriptButton->setToolTip("Save Script File As");
     pToolBar->addWidget(pSaveAsScriptButton);
 
 
     mpRunButton = new QToolButton(this);
-    mpRunButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"));
+    mpRunButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Optimize.svg"));
     mpRunButton->setText("Start Optimization");
     mpRunButton->setToolTip("Start Optimization");
     pToolBar->addWidget(mpRunButton);
@@ -652,7 +652,7 @@ QToolBar*OptimizationDialog::createToolBar()
     pToolBar->addWidget(pSpacerWidget);
 
     QToolButton *pHelpButton = new QToolButton(this);
-    pHelpButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
+    pHelpButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Help.svg"));
     pHelpButton->setText("Show Context Help");
     pHelpButton->setToolTip("Show Context Help");
     pHelpButton->setObjectName("optimizationHelpButton");

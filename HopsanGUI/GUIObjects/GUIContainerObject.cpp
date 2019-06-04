@@ -3027,7 +3027,7 @@ void ContainerObject::showLosses(bool show)
 
     //Toolbar
     QAction *pHelpAction = new QAction("Show Context Help", this);
-    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Help.svg"));
     QToolBar *pToolBar = new QToolBar(mpLossesDialog);
     pToolBar->addAction(pHelpAction);
 
@@ -3280,7 +3280,7 @@ void ContainerObject::measureSimulationTime()
     QDialog *pDialog = new QDialog(gpMainWindowWidget);
     pDialog->setWindowTitle("Simulation Time Measurements");
     pDialog->setWindowModality(Qt::WindowModal);
-    pDialog->setWindowIcon(QIcon(QString(ICONPATH)+"Hopsan-MeasureSimulationTime.png"));
+    pDialog->setWindowIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-MeasureSimulationTime.svg"));
 
     QLabel *pDescriptionLabel = new QLabel("The simulation time for each component is measured as the average simulation time over specified number of time steps. Results may differ slightly each measurement due to external factors such as other processes on the computer.");
     pDescriptionLabel->setWordWrap(true);

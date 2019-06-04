@@ -208,7 +208,7 @@ PythonTerminalWidget::PythonTerminalWidget(QWidget *parent)
     mpScriptFileLineEdit = new QLineEdit();
 
     mpLoadScriptButton = new QToolButton(this);
-    mpLoadScriptButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
+    mpLoadScriptButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Open.svg"));
     mpLoadScriptButton->setToolTip("Load Script File");
     connect(mpLoadScriptButton, SIGNAL(clicked()), this, SLOT(loadPyScript()));
 

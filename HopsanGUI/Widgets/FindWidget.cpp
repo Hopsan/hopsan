@@ -53,7 +53,7 @@ FindWidget::FindWidget(QWidget *parent) :
     QToolButton *pCloseButton = new QToolButton(this);
     mpCaseSensitivityCheckBox = new QCheckBox("Case Sensitive", this);
     mpWildcardCheckBox = new QCheckBox("Match Wildcards (*)", this);
-    pCloseButton->setIcon(QIcon(":graphics/uiicons/Hopsan-Discard.png"));
+    pCloseButton->setIcon(QIcon(":graphics/uiicons/svg/Hopsan-Discard.svg"));
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
     QHBoxLayout *pSubLayout1 = new QHBoxLayout(this);

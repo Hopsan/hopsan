@@ -31,9 +31,9 @@ WebViewWrapper::WebViewWrapper(const bool useToolbar, QWidget *parent) : QWidget
     if (useToolbar)
     {
         QAction *pBackAction = mpPrivates->mpWebView->pageAction(QWebPage::Back);
-        pBackAction->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-StepLeft.png")));
+        pBackAction->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-StepLeft.svg")));
         QAction *pForwardAction = mpPrivates->mpWebView->pageAction(QWebPage::Forward);
-        pForwardAction->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-StepRight.png")));
+        pForwardAction->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-StepRight.svg")));
 
         QToolBar *pToolBar = new QToolBar(this);
         pToolBar->addAction(pBackAction);

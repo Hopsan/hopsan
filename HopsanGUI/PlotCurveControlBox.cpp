@@ -93,15 +93,15 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     QToolButton *pColorButton = new QToolButton(this);
     pColorButton->setToolTip("Select Line Color");
-    pColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LineColor.png"));
+    pColorButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-BackgroundColor.svg"));
 
     QToolButton *pFrequencyAnalysisButton = new QToolButton(this);
     pFrequencyAnalysisButton->setToolTip("Frequency Analysis");
-    pFrequencyAnalysisButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-FrequencyAnalysis.png"));
+    pFrequencyAnalysisButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-FrequencyAnalysis.svg"));
 
     QToolButton *pScaleButton = new QToolButton(this);
     pScaleButton->setToolTip("Scale Curve");
-    pScaleButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+    pScaleButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-AxisScale.svg"));
 
     QLabel *pSizeLabel = new QLabel(tr("Line Width: "));
     pSizeLabel->setAcceptDrops(false);
@@ -130,7 +130,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     QToolButton *pCloseButton = new QToolButton(this);
     pCloseButton->setToolTip("Remove Curve");
-    pCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
+    pCloseButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Discard.svg"));
 
     QLabel *pDummy = new QLabel("", this);
 
@@ -372,7 +372,7 @@ CustomXDataControl::CustomXDataControl(QWidget *pParent) :
     mpNameLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     mpResetXDataButton = new QToolButton(this);
     mpResetXDataButton->setToolTip("Reset XData");
-    mpResetXDataButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
+    mpResetXDataButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ResetTimeVector.svg"));
     updateInfo(0);
 
     pLayout->addWidget(mpXLabel);

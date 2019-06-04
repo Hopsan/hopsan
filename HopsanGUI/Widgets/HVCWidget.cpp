@@ -68,7 +68,7 @@ HVCWidget::HVCWidget(QWidget *parent) :
 {
     mpHvcOpenPathEdit = new QLineEdit();
     QPushButton *pBrowseButton = new QPushButton();
-    pBrowseButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
+    pBrowseButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Open.svg"));
 
     QHBoxLayout *pOpenFileHLayout = new QHBoxLayout();
     pOpenFileHLayout->addWidget(new QLabel("HVC: "));
