@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="Hopsan-ZoomIn.svg"
    inkscape:export-filename="C:\Users\Robert\Documents\Jobbsaker\Hopsan-Zoom100.png"
    inkscape:export-xdpi="90"
@@ -195,17 +195,20 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="-330.55511"
-     inkscape:cy="129.03708"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="44.85044"
+     inkscape:cy="477.03289"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1680"
-     inkscape:window-height="954"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-height="986"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-page="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -248,18 +251,27 @@
        sodipodi:ry="126.42857"
        d="m 461.42857,150.71428 a 126.42857,126.42857 0 1 1 -252.85714,0 126.42857,126.42857 0 1 1 252.85714,0 z"
        transform="matrix(0.80604674,0.80604638,-0.80604674,0.80604638,163.78896,-223.84008)" />
+    <g
+       aria-label="+"
+       transform="scale(0.9999971,1.0000029)"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';fill:#000000;fill-opacity:1;stroke:none"
+       id="text4864">
+      <path
+         d="m 480.0014,388.58861 v 23.1 h -68.31 v 68.31 h -23.1 v -68.31 h -68.31 v -23.1 h 68.31 v -68.31 h 23.1 v 68.31 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:330px;line-height:125%;font-family:FreeSans;-inkscape-font-specification:FreeSans;text-align:start;writing-mode:lr-tb;text-anchor:start"
+         id="path6760" />
+    </g>
     <text
        xml:space="preserve"
-       style="font-size:330px;font-style:normal;font-weight:normal;line-height:125%;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="312.1069"
-       y="482.401"
-       id="text4864"
-       sodipodi:linespacing="125%"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none"
+       x="-837.41003"
+       y="78.555809"
+       id="text4864-2"
        transform="scale(0.9999971,1.0000029)"><tspan
          sodipodi:role="line"
-         id="tspan4866"
-         x="312.1069"
-         y="482.401"
-         style="font-size:330px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Calibri;-inkscape-font-specification:Calibri">+</tspan></text>
+         id="tspan4866-7"
+         x="-837.41003"
+         y="78.555809"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:330px;line-height:125%;font-family:FreeSans;-inkscape-font-specification:FreeSans;text-align:start;writing-mode:lr-tb;text-anchor:start">+</tspan></text>
   </g>
 </svg>

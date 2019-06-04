@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    enable-background="new"
    sodipodi:docname="Hopsan-ExportSimulink.svg"
    inkscape:export-filename="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\uiicons\Hopsan-ExportSimulink.png"
@@ -849,15 +849,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.16"
-     inkscape:cx="290.8959"
+     inkscape:cx="-587.2291"
      inkscape:cy="-315"
      inkscape:document-units="px"
      inkscape:current-layer="g5637"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="735"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -867,7 +867,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -907,19 +907,44 @@
           </g>
         </g>
       </g>
+      <g
+         aria-label="S-fn"
+         transform="matrix(1.0697012,0,0,0.93484049,0,-9.0006125)"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+         id="text3277">
+        <path
+           d="m 153.89847,704.30382 h -30.41675 q -1.7381,-24.76793 -33.241172,-24.76793 -12.601228,0 -19.988154,5.43157 -7.386927,5.2143 -7.386927,14.12206 0,8.6905 6.300614,13.03575 6.300614,4.12799 23.681617,7.60419 l 24.767932,4.77978 q 21.94352,4.34525 31.93759,14.77385 9.99408,10.21134 9.99408,28.89592 0,24.11614 -17.16374,37.80368 -17.16374,13.47028 -47.797761,13.47028 -30.416756,0 -47.363235,-13.47028 Q 30.493349,792.51242 28.972511,767.0927 h 31.720331 q 0.86905,12.81849 9.994077,19.55363 9.125027,6.73514 25.63698,6.73514 14.773851,0 23.247091,-5.64883 8.6905,-5.64883 8.6905,-15.6429 0,-9.55956 -6.73514,-14.77386 -6.73513,-5.2143 -23.029825,-8.25597 l -22.16078,-4.34525 Q 52.219603,740.15214 42.008263,730.37533 31.796924,720.59851 31.796924,702.1312 q 0,-23.24709 15.642903,-35.84832 15.860166,-12.81849 44.321559,-12.81849 8.255974,0 15.860164,1.08631 7.82145,1.08631 16.51195,4.56251 8.69051,3.25894 14.99112,8.69051 6.30061,5.2143 10.4286,14.77385 4.34525,9.34229 4.34525,21.72625 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold'"
+           id="path7009"
+           inkscape:connector-curvature="0" />
+        <path
+           d="m 233.12122,740.15214 v 29.33045 h -59.09541 v -29.33045 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold'"
+           id="path7011"
+           inkscape:connector-curvature="0" />
+        <path
+           d="m 308.94244,699.52405 v 20.20541 h -18.03279 v 94.72647 H 260.4929 v -94.72647 h -16.51196 v -20.20541 h 16.51196 v -14.12207 q 0,-29.33044 29.98223,-29.33044 8.90776,0 17.381,0.65179 v 22.81256 q -3.91073,-0.65178 -8.6905,-0.65178 -8.25598,0 -8.25598,9.12502 v 11.51492 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold'"
+           id="path7013"
+           inkscape:connector-curvature="0" />
+        <path
+           d="m 329.74532,697.13416 h 30.41676 v 16.94648 q 12.60123,-18.90184 35.19653,-18.90184 18.68458,0 28.89592,10.64586 10.4286,10.64587 10.4286,29.98223 v 78.64904 h -30.41676 v -72.34842 q 0,-21.07447 -19.55362,-21.07447 -11.08039,0 -17.81553,6.30061 -6.73514,6.30062 -6.73514,16.72922 v 70.39306 h -30.41676 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold'"
+           id="path7015"
+           inkscape:connector-curvature="0" />
+      </g>
       <text
          xml:space="preserve"
-         style="font-size:39.50228119px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         x="20.282009"
-         y="814.45593"
-         id="text3277"
-         sodipodi:linespacing="125%"
-         transform="scale(1.0697012,0.93484049)"><tspan
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:14.81335545;stroke-miterlimit:4;stroke-dasharray:none"
+         x="-1831.1438"
+         y="279.73404"
+         id="text3277-9"
+         transform="scale(1.0697012,0.93484048)"><tspan
            sodipodi:role="line"
-           id="tspan3279"
-           x="20.282009"
-           y="814.45593"
-           style="font-size:217.26254272px;font-weight:bold;-inkscape-font-specification:Sans Bold">S-fn</tspan></text>
+           id="tspan3279-1"
+           x="-1831.1438"
+           y="279.73404"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold';stroke-width:14.81335545">S-fn</tspan></text>
     </g>
   </g>
   <g

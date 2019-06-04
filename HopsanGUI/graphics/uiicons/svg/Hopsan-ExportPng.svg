@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    enable-background="new"
    sodipodi:docname="Hopsan-ExportPng.svg"
    inkscape:export-filename="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\uiicons\Hopsan-ExportPng.png"
@@ -849,15 +849,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.16"
-     inkscape:cx="294.0209"
+     inkscape:cx="-834.1041"
      inkscape:cy="-315"
      inkscape:document-units="px"
      inkscape:current-layer="g5637"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="735"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -867,7 +867,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -907,19 +907,39 @@
           </g>
         </g>
       </g>
+      <g
+         aria-label="PNG"
+         transform="matrix(1.0697012,0,0,0.93484049,0,-8.5944057)"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:0%;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+         id="text3277">
+        <path
+           d="m 41.450247,757.96767 v 56.48826 H 8.8608656 V 656.07154 H 78.819404 q 24.767926,0 37.803686,12.60123 13.25301,12.60122 13.25301,36.5001 0,24.11615 -13.03575,38.45547 -13.03575,14.33933 -34.762007,14.33933 z m 0,-27.15782 h 30.416756 q 25.419718,0 25.419718,-23.68161 0,-12.16671 -6.300614,-18.03279 -6.083351,-5.86609 -19.119104,-5.86609 H 41.450247 Z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold'"
+           id="path6984"
+           inkscape:connector-curvature="0" />
+        <path
+           d="M 252.35446,814.45593 188.69654,704.95561 V 814.45593 H 156.10716 V 656.07154 h 33.45843 l 62.78887,107.76222 V 656.07154 h 32.58939 v 158.38439 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold'"
+           id="path6986"
+           inkscape:connector-curvature="0" />
+        <path
+           d="m 425.92686,706.25919 q -8.69051,-25.41972 -37.80369,-25.41972 -20.63994,0 -32.58938,14.55659 -11.73217,14.55659 -11.73217,40.19357 0,24.3334 12.60122,39.97631 12.81849,15.6429 32.58938,15.6429 3.04168,0 6.95241,-0.65179 4.12798,-0.86905 9.77681,-3.04167 5.64883,-2.38989 10.4286,-6.08335 4.77978,-3.69347 8.47324,-10.21134 3.69346,-6.73514 4.56251,-15.20838 h -36.06558 v -27.15782 h 63.44067 v 85.60144 h -19.55363 l -3.91073,-20.8572 q -9.12503,13.25301 -20.42268,19.33636 -11.29765,6.08336 -27.37508,6.08336 -32.15486,0 -53.22932,-23.46436 -20.85721,-23.46435 -20.85721,-59.52994 0,-36.93463 21.29173,-59.96446 21.29173,-23.02983 55.40195,-23.02983 28.67866,0 47.14597,14.33933 18.46732,14.33933 21.509,38.89 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold'"
+           id="path6988"
+           inkscape:connector-curvature="0" />
+      </g>
       <text
          xml:space="preserve"
-         style="font-size:39.50228119px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold"
-         x="-8.5201378"
-         y="814.45593"
-         id="text3277"
-         sodipodi:linespacing="125%"
-         transform="scale(1.0697012,0.93484049)"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:14.81335545;stroke-miterlimit:4;stroke-dasharray:none"
+         x="-1268.2947"
+         y="527.0578"
+         id="text3277-6"
+         transform="scale(1.0697012,0.93484048)"><tspan
            sodipodi:role="line"
-           id="tspan3279"
-           x="-8.5201378"
-           y="814.45593"
-           style="font-size:217.26254272px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial Bold">PNG</tspan></text>
+           id="tspan3279-2"
+           x="-1268.2947"
+           y="527.0578"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:freesans;-inkscape-font-specification:'freesans Bold';stroke-width:14.81335545">PNG</tspan></text>
     </g>
   </g>
   <g

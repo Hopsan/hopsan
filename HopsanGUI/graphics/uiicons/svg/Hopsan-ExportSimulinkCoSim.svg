@@ -14,9 +14,9 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    enable-background="new"
-   sodipodi:docname="Hopsan-ExportSimulink.svg"
+   sodipodi:docname="Hopsan-ExportSimulinkCoSim.svg"
    inkscape:export-filename="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\uiicons\Hopsan-ExportSimulink.png"
    inkscape:export-xdpi="4.8699999"
    inkscape:export-ydpi="4.8699999">
@@ -849,15 +849,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.32"
-     inkscape:cx="72.315282"
+     inkscape:cx="-488.62222"
      inkscape:cy="10.77426"
      inkscape:document-units="px"
      inkscape:current-layer="g5637"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="1135"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -867,7 +867,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -907,19 +907,40 @@
           </g>
         </g>
       </g>
+      <g
+         aria-label="S-co"
+         transform="scale(1.0697012,0.93484049)"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:0%;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+         id="text3277">
+        <path
+           d="M 126.26328,704.30382 H 95.846523 q -1.7381,-24.76793 -33.241169,-24.76793 -12.601227,0 -19.988154,5.43157 -7.386926,5.2143 -7.386926,14.12206 0,8.6905 6.300613,13.03575 6.300614,4.12799 23.681618,7.60419 l 24.767929,4.77978 q 21.943516,4.34525 31.937596,14.77385 9.99408,10.21134 9.99408,28.89592 0,24.11614 -17.16375,37.80368 -17.163737,13.47028 -47.797755,13.47028 -30.416756,0 -47.363234,-13.47028 Q 2.8581548,792.51242 1.337317,767.0927 h 31.720331 q 0.86905,12.81849 9.994077,19.55363 9.125027,6.73514 25.63698,6.73514 14.773853,0 23.247092,-5.64883 8.690503,-5.64883 8.690503,-15.6429 0,-9.55956 -6.73514,-14.77386 -6.735139,-5.2143 -23.029829,-8.25597 l -22.16078,-4.34525 Q 24.584409,740.15214 14.37307,730.37533 4.1617301,720.59851 4.1617301,702.1312 q 0,-23.24709 15.6429029,-35.84832 15.860166,-12.81849 44.321559,-12.81849 8.255976,0 15.860165,1.08631 7.821452,1.08631 16.511954,4.56251 8.690499,3.25894 14.991119,8.69051 6.30061,5.2143 10.4286,14.77385 4.34525,9.34229 4.34525,21.72625 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold'"
+           id="path6932" />
+        <path
+           d="m 205.48602,740.15214 v 29.33045 h -59.09541 v -29.33045 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold'"
+           id="path6934" />
+        <path
+           d="m 277.17926,719.72946 q -24.76793,0 -24.76793,38.45547 0,17.16374 6.51788,26.94056 6.73514,9.77681 18.25005,9.77681 8.90776,0 13.9048,-4.77977 4.99704,-4.99704 7.82145,-16.29469 h 29.11318 q -2.17262,21.07446 -16.07742,33.45843 -13.68754,12.1667 -34.97927,12.1667 -26.07151,0 -40.6281,-16.07743 -14.33933,-16.07743 -14.33933,-45.19061 0,-29.98223 14.55659,-46.49418 14.55659,-16.51195 40.84536,-16.51195 21.94352,0 35.4138,12.1667 13.68754,12.1667 15.20837,33.67569 h -29.11318 q -2.60715,-11.51491 -7.60418,-16.29469 -4.77978,-4.99704 -14.12207,-4.99704 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold'"
+           id="path6936" />
+        <path
+           d="m 401.14792,695.1788 q 27.59234,0 42.80072,16.72921 15.42564,16.51196 15.42564,46.27692 0,28.24413 -15.6429,44.75609 -15.6429,16.51195 -42.3662,16.51195 -27.15781,0 -42.58345,-16.51195 -15.42564,-16.72922 -15.42564,-45.62514 0,-28.89591 15.42564,-45.40787 15.42564,-16.72921 42.36619,-16.72921 z m 0.21726,24.55066 q -12.38396,0 -19.98815,10.42861 -7.60419,10.4286 -7.60419,27.15781 0,16.72922 7.60419,27.15782 7.60419,10.4286 19.98815,10.4286 12.16671,0 19.7709,-10.21134 7.82145,-10.4286 7.82145,-26.94055 0,-17.381 -7.60419,-27.59234 -7.38693,-10.42861 -19.98816,-10.42861 z"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold'"
+           id="path6938" />
+      </g>
       <text
          xml:space="preserve"
-         style="font-size:39.50228119px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         x="-7.3531847"
-         y="814.45593"
-         id="text3277"
-         sodipodi:linespacing="125%"
-         transform="scale(1.0697012,0.93484049)"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold';letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:14.81335545;stroke-miterlimit:4;stroke-dasharray:none"
+         x="-1156.7587"
+         y="483.41766"
+         id="text3277-7"
+         transform="scale(1.0697012,0.93484048)"><tspan
            sodipodi:role="line"
-           id="tspan3279"
-           x="-7.3531847"
-           y="814.45593"
-           style="font-size:217.26254272px;font-weight:bold;-inkscape-font-specification:Sans Bold">S-co</tspan></text>
+           id="tspan3279-5"
+           x="-1156.7587"
+           y="483.41766"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Bold';stroke-width:14.81335545">S-co</tspan></text>
     </g>
   </g>
   <g

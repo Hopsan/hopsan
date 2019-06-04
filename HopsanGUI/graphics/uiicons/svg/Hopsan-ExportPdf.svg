@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    enable-background="new"
    sodipodi:docname="Hopsan-ExportPdf.svg"
    inkscape:export-filename="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\uiicons\Hopsan-ExportPdf.png"
@@ -849,15 +849,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.16"
-     inkscape:cx="1037.7709"
+     inkscape:cx="159.6459"
      inkscape:cy="-315"
      inkscape:document-units="px"
      inkscape:current-layer="g5637"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="735"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -867,7 +867,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -907,19 +907,39 @@
           </g>
         </g>
       </g>
+      <g
+         aria-label="PDF"
+         transform="matrix(1.0697012,0,0,0.93484049,0,-4.3291772)"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;line-height:0%;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+         id="text3277">
+        <path
+           d="m 58.052585,757.96767 v 56.48826 H 25.463203 V 656.07154 h 69.958539 q 24.767928,0 37.803678,12.60123 13.25302,12.60122 13.25302,36.5001 0,24.11615 -13.03575,38.45547 -13.03576,14.33933 -34.76201,14.33933 z m 0,-27.15782 h 30.416756 q 25.419719,0 25.419719,-23.68161 0,-12.16671 -6.30062,-18.03279 -6.08335,-5.86609 -19.119099,-5.86609 H 58.052585 Z"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold'"
+           id="path7056"
+           inkscape:connector-curvature="0" />
+        <path
+           d="M 172.7095,814.45593 V 656.07154 h 61.91982 q 18.25005,0 29.98223,4.34525 11.94944,4.34525 19.98816,13.9048 19.33636,23.02983 19.33636,60.83351 0,38.23821 -19.33636,60.83352 -15.42565,18.46731 -49.97039,18.46731 z m 32.58938,-27.15782 h 29.33044 q 36.71737,0 36.71737,-51.92574 0,-52.14301 -36.71737,-52.14301 h -29.33044 z"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold'"
+           id="path7058"
+           inkscape:connector-curvature="0" />
+        <path
+           d="m 362.72934,746.23549 v 68.22044 H 330.13996 V 656.07154 h 111.23842 v 27.15782 h -78.64904 v 35.84832 h 69.30675 v 27.15781 z"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold'"
+           id="path7060"
+           inkscape:connector-curvature="0" />
+      </g>
       <text
          xml:space="preserve"
-         style="font-size:39.50228119px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         x="8.0822001"
-         y="814.45593"
-         id="text3277"
-         sodipodi:linespacing="125%"
-         transform="scale(1.0697012,0.93484049)"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:12px;line-height:0%;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold';letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:14.81335545;stroke-miterlimit:4;stroke-dasharray:none"
+         x="-1221.5411"
+         y="459.92368"
+         id="text3277-2"
+         transform="scale(1.0697012,0.93484048)"><tspan
            sodipodi:role="line"
-           id="tspan3279"
-           x="8.0822001"
-           y="814.45593"
-           style="font-size:217.26254272px;font-weight:bold;-inkscape-font-specification:Sans Bold">PDF</tspan></text>
+           id="tspan3279-7"
+           x="-1221.5411"
+           y="459.92368"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:217.26254272px;line-height:1.25;font-family:FreeSans;-inkscape-font-specification:'FreeSans Semi-Bold';stroke-width:14.81335545">PDF</tspan></text>
     </g>
   </g>
   <g

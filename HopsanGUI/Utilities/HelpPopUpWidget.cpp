@@ -36,6 +36,7 @@
 #include <QHBoxLayout>
 #include <QTimer>
 #include <QAction>
+#include <QSvgWidget>
 
 //Hopsan includes
 #include "HelpPopUpWidget.h"
@@ -51,9 +52,12 @@
 HelpPopUpWidget::HelpPopUpWidget(QWidget *pParent)
     : QWidget(pParent)
 {
-    QLabel *pIcon = new QLabel();
+
+    QSvgWidget *pIcon = new QSvgWidget();
     pIcon->setMouseTracking(true);
-    pIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
+    pIcon->load(QString(ICONPATH) + "svg/Hopsan-Info.svg");
+    pIcon->setFixedSize(24,24);
+
     mpHelpText = new QLabel();
     mpHelpText->setMouseTracking(true);
 
