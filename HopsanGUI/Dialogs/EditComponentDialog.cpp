@@ -112,13 +112,13 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language,
     QSize iconSize = QSize(24,24);
 
     mpLoadButton = new QToolButton(this);
-    mpLoadButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Open.svg"));
     mpLoadButton->setText(tr("&Open"));
     mpLoadButton->setToolTip(tr("&Open"));
     mpLoadButton->setIconSize(iconSize);
 
     mpSaveButton = new QToolButton(this);
-    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Save.svg"));
     mpSaveButton->setText(tr("&Save"));
     mpSaveButton->setToolTip(tr("&Save"));
     mpSaveButton->setIconSize(iconSize);

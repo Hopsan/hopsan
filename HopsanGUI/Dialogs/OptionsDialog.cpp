@@ -61,15 +61,15 @@ public:
         mQuantity = rQuantity;
         mpDefaultUnitComboBox = new QComboBox(this);
         QToolButton *pAddCustomUnitButton = new QToolButton(this);
-        pAddCustomUnitButton->setIcon(QIcon("://graphics/uiicons/Hopsan-Add.png"));
+        pAddCustomUnitButton->setIcon(QIcon("://graphics/uiicons/svg/Hopsan-Add.svg"));
         pAddCustomUnitButton->setFixedWidth(48);
         pAddCustomUnitButton->setToolTip("Add Custom "+mQuantity+" Unit");
         QToolButton *pRemoveCustomUnitButton = new QToolButton(this);
-        pRemoveCustomUnitButton->setIcon(QIcon("://graphics/uiicons/Hopsan-Discard.png"));
+        pRemoveCustomUnitButton->setIcon(QIcon("://graphics/uiicons/svg/Hopsan-Discard.svg"));
         pRemoveCustomUnitButton->setFixedWidth(48);
         pRemoveCustomUnitButton->setToolTip("Remove Custom "+mQuantity+" Unit");
         QToolButton *pShowCustomUnitsButton = new QToolButton(this);
-        pShowCustomUnitsButton->setIcon(QIcon("://graphics/uiicons/Hopsan-Zoom.png"));
+        pShowCustomUnitsButton->setIcon(QIcon("://graphics/uiicons/svg/Hopsan-Zoom.svg"));
         pShowCustomUnitsButton->setFixedWidth(48);
         pShowCustomUnitsButton->setToolTip("Show unit scales for "+mQuantity);
 
@@ -439,14 +439,14 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     QLabel *pCompiler32Label = new QLabel("32-bit GCC Compiler Path:");
     mpCompiler32LineEdit = new QLineEdit(this);
     QToolButton *pCompiler32Button = new QToolButton(this);
-    pCompiler32Button->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
+    pCompiler32Button->setIcon(QIcon(":graphics/uiicons/svg/Hopsan-Open.svg"));
     mpCompiler32WarningLabel = new QLabel(this);
     mpCompiler32WarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
 
     QLabel *pCompiler64Label = new QLabel("64-bit GCC Compiler Path:");
     mpCompiler64LineEdit = new QLineEdit(this);
     QToolButton *pCompiler64Button = new QToolButton(this);
-    pCompiler64Button->setIcon(QIcon(":graphics/uiicons/Hopsan-Open.png"));
+    pCompiler64Button->setIcon(QIcon(":graphics/uiicons/svg/Hopsan-Open.svg"));
     mpCompiler64WarningLabel = new QLabel(this);
     mpCompiler64WarningLabel->setText("<font color='red'>Warning! GCC compiler not found in specified location!</font>");
 

@@ -103,25 +103,25 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpTimeDisplay->setBaseSize(20,10);
 
     mpSettingsButton = new QToolButton(this);
-    mpSettingsButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Configure.png")));
+    mpSettingsButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Configure.svg")));
 
     mpStopButton = new QToolButton(this);
-    mpStopButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Stop.png")));
+    mpStopButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Stop.svg")));
 
     mpRewindButton = new QToolButton(this);
-    mpRewindButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Rewind.png")));
+    mpRewindButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Rewind.svg")));
 
     mpPauseButton = new QToolButton(this);
-    mpPauseButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Pause.png")));
+    mpPauseButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Pause.svg")));
 
     mpPlayButton = new QToolButton(this);
-    mpPlayButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Play.png")));
+    mpPlayButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Play.svg")));
 
     mpPlayRealTimeButton = new QToolButton(this);
-    mpPlayRealTimeButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-PlayRealTime.png")));
+    mpPlayRealTimeButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-PlayRealTime.svg")));
 
     mpCloseButton = new QToolButton(this);
-    mpCloseButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
+    mpCloseButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
 
     QLabel *pTimeLabel = new QLabel(" Time:", this);
     QLabel *pSpeedLabel = new QLabel(" Speed:", this);

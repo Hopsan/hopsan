@@ -174,7 +174,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(QWidget *parent)
 
     //Toolbar
     QAction *pHelpAction = new QAction("Show Context Help", this);
-    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Help.svg"));
     QToolBar *pToolBar = new QToolBar(this);
     pToolBar->addAction(pHelpAction);
 

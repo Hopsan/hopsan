@@ -105,7 +105,7 @@ LibraryWidget::LibraryWidget(QWidget *parent)
 #endif
 
     QToolButton *pClearFilterButton = new QToolButton(this);
-    pClearFilterButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
+    pClearFilterButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Discard.svg"));
     pFilterLayout->addWidget(pClearFilterButton);
     connect(pClearFilterButton, SIGNAL(clicked()), mpFilterEdit, SLOT(clear()));
     connect(pClearFilterButton, SIGNAL(clicked()), this, SLOT(update()));
@@ -113,17 +113,17 @@ LibraryWidget::LibraryWidget(QWidget *parent)
 //    QSize iconSize = QSize(24,24);  //Size of library icons
 
 //    QToolButton *pTreeViewButton = new QToolButton();
-//    pTreeViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryTreeView.png"));
+//    pTreeViewButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-LibraryTreeView.svg"));
 //    pTreeViewButton->setIconSize(iconSize);
 //    pTreeViewButton->setToolTip(tr("Single List View"));
 
 //    QToolButton *pDualViewButton = new QToolButton();
-//    pDualViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryDualView.png"));
+//    pDualViewButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-LibraryDualView.svg"));
 //    pDualViewButton->setIconSize(iconSize);
 //    pDualViewButton->setToolTip(tr("Dual List View"));
 
 //    QToolButton *pHelpButton = new QToolButton();
-//    pHelpButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
+//    pHelpButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Help.svg"));
 //    pHelpButton->setToolTip(tr("Open Context Help"));
 //    pHelpButton->setIconSize(iconSize);
 
@@ -259,11 +259,11 @@ void LibraryWidget::update()
                     pItem->setFont(0,boldFont);
                     if(folder == componentlibrary::roots::externalLibraries || folder == componentlibrary::roots::fmus)
                     {
-                        pItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
+                        pItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
                     }
                     else
                     {
-                        pItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
+                        pItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-Folder.svg"));
                     }
                     pItem->setText(0, folder);
                     pItem->setToolTip(0, folder);
@@ -296,9 +296,9 @@ void LibraryWidget::update()
                     while(pTopItem->parent())
                         pTopItem = pTopItem->parent();
                     if( pTopItem->text(0) == componentlibrary::roots::externalLibraries || pTopItem->text(0) == componentlibrary::roots::fmus)
-                        pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-FolderExternal.png"));
+                        pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
                     else
-                        pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
+                        pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-Folder.svg"));
                     pNewItem->setText(0, folder);
                     pNewItem->setToolTip(0, folder);
                     pItem->addChild(pNewItem);
@@ -417,7 +417,7 @@ void LibraryWidget::update()
     }
 
     QTreeWidgetItem *pModelicaComponentsItem = new QTreeWidgetItem();
-    pModelicaComponentsItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-FolderModelica.png"));
+    pModelicaComponentsItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-FolderModelica.svg"));
     pModelicaComponentsItem->setText(0, componentlibrary::roots::modelicaComponents);
     pModelicaComponentsItem->setFont(0,boldFont);
     mpTree->addTopLevelItem(pModelicaComponentsItem);
@@ -467,25 +467,25 @@ void LibraryWidget::update()
         //Append load external library items
         mpLoadLibraryItem = new QTreeWidgetItem();
         mpLoadLibraryItem->setText(0, "Load external library");
-        mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
         mpLoadLibraryItem->setToolTip(0, "Load external library");
         mpTree->addTopLevelItem(mpLoadLibraryItem);
 
         mpAddModelicaFileItem = new QTreeWidgetItem();
         mpAddModelicaFileItem->setText(0, "Load Modelica file");
-        mpAddModelicaFileItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaFileItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
         mpAddModelicaFileItem->setToolTip(0, "Load Modelica file");
         mpTree->addTopLevelItem(mpAddModelicaFileItem);
 
         mpLoadLibraryItemDual = new QTreeWidgetItem();
         mpLoadLibraryItemDual->setText(0, "Load external library");
-        mpLoadLibraryItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpLoadLibraryItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.svg"));
         mpLoadLibraryItemDual->setToolTip(0, "Load external library");
         mpDualTree->addTopLevelItem(mpLoadLibraryItemDual);
 
         mpAddModelicaFileItemDual = new QTreeWidgetItem();
         mpAddModelicaFileItemDual->setText(0, "Load Modelica file");
-        mpAddModelicaFileItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaFileItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.svg"));
         mpAddModelicaFileItemDual->setToolTip(0, "Load Modelica file");
         mpDualTree->addTopLevelItem(mpAddModelicaFileItemDual);
     }
@@ -499,7 +499,7 @@ void LibraryWidget::update()
         QTreeWidgetItem *pModelicaItem = new QTreeWidgetItem();
         pModelicaItem->setText(0, QFileInfo(path).fileName());
         pModelicaItem->setToolTip(0, path);
-        pModelicaItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-New.png"));
+        pModelicaItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-New.svg"));
         mItemToModelicaFileNameMap.insert(pModelicaItem, path);
         mpTree->addTopLevelItem(pModelicaItem);
     }

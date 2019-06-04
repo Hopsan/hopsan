@@ -344,7 +344,7 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWi
     //Tool bar
     QToolButton *pHelpButton = new QToolButton(this);
     pHelpButton->setToolTip(tr("Show context help"));
-    pHelpButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    pHelpButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Help.svg"));
     this->setButton(QWizard::HelpButton, pHelpButton);
     this->setOption(QWizard::HaveHelpButton);
     pHelpButton->setObjectName("optimizationHelpButton");
@@ -762,7 +762,7 @@ void OptimizationScriptWizard::updateChosenParameters(QTreeWidgetItem* item, int
         QLineEdit *pMaxLineEdit = new QLineEdit(max, this);
         pMaxLineEdit->setValidator(new QDoubleValidator());
         QToolButton *pRemoveButton = new QToolButton(this);
-        pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
+        pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Discard.svg"));
         pRemoveButton->setToolTip("Remove Parameter");
         connect(pRemoveButton, SIGNAL(clicked()), this, SLOT(removeParameter()));
 
@@ -1589,7 +1589,7 @@ void OptimizationScriptWizard::addObjectiveFunction(int idx, double weight, doub
     }
     mDataLineEditPtrs.append(dummyList);
     QToolButton *pRemoveButton = new QToolButton(this);
-    pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
+    pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Discard.svg"));
     pRemoveButton->setToolTip("Remove Function");
     pWeightLineEdit->setMaximumWidth(60);
     pNormLineEdit->setMaximumWidth(60);

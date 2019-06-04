@@ -1682,7 +1682,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
         }
 
         QToolButton *pResetButton =  new QToolButton(this);
-        pResetButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
+        pResetButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ResetDefault.svg"));
         pResetButton->setToolTip("Reset Default Value");
         pResetButton->setFixedSize(24,24);
         connect(pResetButton, SIGNAL(clicked()), this, SLOT(resetDefault()));
@@ -1691,7 +1691,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
         if(mVariableDataType != "conditional")
         {
             QToolButton *pSystemParameterToolButton = new QToolButton(this);
-            pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
+            pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-GlobalParameter.svg"));
             pSystemParameterToolButton->setToolTip("Map To System Parameter");
             pSystemParameterToolButton->setFixedSize(24,24);
             connect(pSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(createSysParameterSelectionMenu()));
@@ -2159,7 +2159,7 @@ QuantitySelectionWidget::QuantitySelectionWidget(const CoreVariameterDescription
 //        mQuantity = custQuant;
 
         QToolButton *pQuantitySelectionButton =  new QToolButton(this);
-        pQuantitySelectionButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
+        pQuantitySelectionButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-NewPlot.svg"));
         pQuantitySelectionButton->setToolTip("Select Custom Quantity");
         pQuantitySelectionButton->setFixedSize(24,24);
         connect(pQuantitySelectionButton, SIGNAL(clicked()), this, SLOT(createQuantitySelectionMenu()));

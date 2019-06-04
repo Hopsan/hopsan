@@ -71,25 +71,25 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
     mpAbortHCOMWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     QToolButton *pShowErrorMessagesButton = new QToolButton();
-    pShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowErrorMessages.png"));
+    pShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowErrorMessages.svg"));
     pShowErrorMessagesButton->setCheckable(true);
     pShowErrorMessagesButton->setChecked(true);
     pShowErrorMessagesButton->setToolTip("Show Error Messages");
 
     QToolButton *pShowWarningMessagesButton = new QToolButton();
-    pShowWarningMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowWarningMessages.png"));
+    pShowWarningMessagesButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowWarningMessages.svg"));
     pShowWarningMessagesButton->setCheckable(true);
     pShowWarningMessagesButton->setChecked(true);
     pShowWarningMessagesButton->setToolTip("Show Warning Messages");
 
     QToolButton *pShowInfoMessagesButton = new QToolButton();
-    pShowInfoMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowInfoMessages.png"));
+    pShowInfoMessagesButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowInfoMessages.svg"));
     pShowInfoMessagesButton->setCheckable(true);
     pShowInfoMessagesButton->setChecked(true);
     pShowInfoMessagesButton->setToolTip("Show Info Messages");
 
     QToolButton *pShowDebugMessagesButton = new QToolButton();
-    pShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDebugMessages.png"));
+    pShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowDebugMessages.svg"));
     pShowDebugMessagesButton->setCheckable(true);
     pShowDebugMessagesButton->setChecked(false);
     pShowDebugMessagesButton->setToolTip("Show Debug Messages");

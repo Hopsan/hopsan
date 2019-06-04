@@ -411,3 +411,5 @@ HEADERS += MainWindow.h \
 
 OTHER_FILES += \
     ../hopsandefaults
+
+DISTFILES +=
