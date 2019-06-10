@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>graphics/about.png</file>
-        <file>graphics/flumeslith.png</file>
         <file>graphics/splash.png</file>
         <file>graphics/porticons/HydraulicPort.svg</file>
         <file>graphics/porticons/MechanicPort.svg</file>
@@ -12,154 +10,36 @@
         <file>graphics/porticons/SignalPort_write.svg</file>
         <file>graphics/porticons/SystemPort.svg</file>
         <file>graphics/uiicons/hopsan.png</file>
-        <file>graphics/uiicons/Hopsan-BackgroundColor.png</file>
-        <file>graphics/uiicons/Hopsan-CenterView.png</file>
-        <file>graphics/uiicons/Hopsan-Configure.png</file>
-        <file>graphics/uiicons/Hopsan-Copy.png</file>
-        <file>graphics/uiicons/Hopsan-Cut.png</file>
-        <file>graphics/uiicons/Hopsan-Discard.png</file>
-        <file>graphics/uiicons/Hopsan-Favorite.png</file>
-        <file>graphics/uiicons/Hopsan-Grid.png</file>
-        <file>graphics/uiicons/Hopsan-HideNames.png</file>
-        <file>graphics/uiicons/Hopsan-HidePorts.png</file>
-        <file>graphics/uiicons/Hopsan-LineColor.png</file>
-        <file>graphics/uiicons/Hopsan-LoadGnuPlot.png</file>
-        <file>graphics/uiicons/Hopsan-New.png</file>
-        <file>graphics/uiicons/Hopsan-Open.png</file>
-        <file>graphics/uiicons/Hopsan-Options.png</file>
-        <file>graphics/uiicons/Hopsan-Pan.png</file>
-        <file>graphics/uiicons/Hopsan-Paste.png</file>
-        <file>graphics/uiicons/Hopsan-Plot.png</file>
-        <file>graphics/uiicons/Hopsan-Redo.png</file>
-        <file>graphics/uiicons/Hopsan-Save.png</file>
-        <file>graphics/uiicons/Hopsan-SaveAs.png</file>
-        <file>graphics/uiicons/Hopsan-SaveToGnuPlot.png</file>
-        <file>graphics/uiicons/Hopsan-SaveToPDF.png</file>
-        <file>graphics/uiicons/Hopsan-ShowDebugMessages.png</file>
-        <file>graphics/uiicons/Hopsan-ShowErrorMessages.png</file>
-        <file>graphics/uiicons/Hopsan-ShowInfoMessages.png</file>
-        <file>graphics/uiicons/Hopsan-ShowNames.png</file>
-        <file>graphics/uiicons/Hopsan-ShowPorts.png</file>
-        <file>graphics/uiicons/Hopsan-ShowWarningMessages.png</file>
-        <file>graphics/uiicons/Hopsan-Simulate.png</file>
-        <file>graphics/uiicons/Hopsan-StepLeft.png</file>
-        <file>graphics/uiicons/Hopsan-StepRight.png</file>
-        <file>graphics/uiicons/Hopsan-SystemParameter.png</file>
-        <file>graphics/uiicons/Hopsan-Undo.png</file>
-        <file>graphics/uiicons/Hopsan-Zoom.png</file>
-        <file>graphics/uiicons/Hopsan-Zoom100.png</file>
-        <file>graphics/uiicons/Hopsan-ZoomIn.png</file>
-        <file>graphics/uiicons/Hopsan-ZoomOut.png</file>
-        <file>graphics/lastsession.png</file>
-        <file>graphics/new.png</file>
-        <file>graphics/open.png</file>
-        <file>graphics/welcome.png</file>
-        <file>graphics/lastsessionactive.png</file>
-        <file>graphics/newactive.png</file>
-        <file>graphics/openactive.png</file>
-        <file>graphics/uiicons/Hopsan-AlignX.png</file>
-        <file>graphics/uiicons/Hopsan-AlignY.png</file>
-        <file>graphics/uiicons/Hopsan-FlipHorizontal.png</file>
-        <file>graphics/uiicons/Hopsan-FlipVertical.png</file>
-        <file>graphics/uiicons/Hopsan-RotateLeft.png</file>
-        <file>graphics/uiicons/Hopsan-RotateRight.png</file>
-        <file>graphics/uiicons/Hopsan-ToggleNames.png</file>
-        <file>graphics/uiicons/Hopsan-TogglePorts.png</file>
         <file>graphics/objecticons/missingcomponenticon.svg</file>
         <file>graphics/splash.svg</file>
-        <file>graphics/uiicons/Hopsan-ResetDefault.png</file>
-        <file>graphics/style-arrow-down.png</file>
-        <file>graphics/style-arrow-up.png</file>
-        <file>graphics/uiicons/Hopsan-ExportGfx.png</file>
-        <file>graphics/uiicons/Hopsan-ExportPlot.png</file>
-        <file>graphics/uiicons/Hopsan-NewPlot.png</file>
-        <file>graphics/uiicons/Hopsan-ResetTimeVector.png</file>
-        <file>graphics/uiicons/Hopsan-Info.png</file>
-        <file>graphics/uiicons/Hopsan-LibraryDualView.png</file>
-        <file>graphics/uiicons/Hopsan-LibraryTreeView.png</file>
-        <file>graphics/uiicons/Hopsan-Losses.png</file>
-        <file>graphics/uiicons/Hopsan-FrequencyAnalysis.png</file>
-        <file>graphics/uiicons/Hopsan-TransferFunctionAnalysis.png</file>
         <file>graphics/porticons/MultiPortOverlay.svg</file>
         <file>graphics/porticons/ElectricPort.svg</file>
         <file>graphics/porticons/PneumaticPort.svg</file>
-        <file>graphics/uiicons/Hopsan-ToggleSignal.png</file>
-        <file>graphics/uiicons/Hopsan-Export.png</file>
-        <file>graphics/uiicons/Hopsan-PlotCurveScale.png</file>
-        <file>graphics/uiicons/Hopsan-OpenTabInNewPlotWindow.png</file>
         <file>graphics/porticons/PortOverlayUnknown.svg</file>
         <file>graphics/objecticons/subsystemDefault.svg</file>
         <file>graphics/uiicons/hmf.ico</file>
-        <file>graphics/uiicons/Hopsan-Import.png</file>
-        <file>graphics/uiicons/Hopsan-LoadLibrary.png</file>
-        <file>graphics/uiicons/Hopsan-Optimize.png</file>
         <file>graphics/objecticons/missingcomponent.svg</file>
         <file>graphics/balls.png</file>
         <file>graphics/welcome_xmas.png</file>
-        <file>graphics/uiicons/Hopsan-SensitivityAnalysis.png</file>
-        <file>graphics/uiicons/Hopsan-ShowPlotLegends.png</file>
-        <file>graphics/uiicons/Hopsan-Add.png</file>
         <file>graphics/objecticons/generatedcomponenticon.svg</file>
         <file>graphics/welcome_newyear.png</file>
         <file>graphics/builtinCAF/hidden/missingComponent.xml</file>
         <file>graphics/builtinCAF/visible/Subsystem/subsystem.xml</file>
         <file>graphics/builtinCAF/visible/Subsystem/systemport.xml</file>
         <file>graphics/objecticons/containerport.svg</file>
-        <file>graphics/uiicons/Hopsan-Sub.png</file>
-        <file>graphics/uiicons/Hopsan-NewComponent.png</file>
-        <file>graphics/options.png</file>
-        <file>graphics/optionsactive.png</file>
-        <file>graphics/uiicons/Hopsan-Pause.png</file>
-        <file>graphics/uiicons/Hopsan-Play.png</file>
-        <file>graphics/uiicons/Hopsan-Stop.png</file>
-        <file>graphics/uiicons/Hopsan-Rewind.png</file>
-        <file>graphics/uiicons/Hopsan-Animation.png</file>
-        <file>graphics/uiicons/Hopsan-PlayRealTime.png</file>
-        <file>graphics/uiicons/Hopsan-MeasureSimulationTime.png</file>
-        <file>graphics/uiicons/Hopsan-Pointer.png</file>
-        <file>graphics/uiicons/Hopsan-Wizard.png</file>
-        <file>graphics/uiicons/Hopsan-Help.png</file>
         <file>graphics/objecticons/cppcomponent.svg</file>
         <file>graphics/objecticons/modelicacomponent.svg</file>
-        <file>graphics/uiicons/Hopsan-ImportFmu.png</file>
         <file>graphics/objecticons/fmucomponent.svg</file>
-        <file>graphics/uiicons/Hopsan-ExportFmu.png</file>
-        <file>graphics/uiicons/Hopsan-ExportSimulink.png</file>
-        <file>graphics/uiicons/Hopsan-ExportPdf.png</file>
-        <file>graphics/uiicons/Hopsan-ExportSimulinkCoSim.png</file>
-        <file>graphics/uiicons/Hopsan-ExportPng.png</file>
-        <file>graphics/uiicons/Hopsan-Script.png</file>
-        <file>graphics/uiicons/Hopsan-ShowPlotWindowCurveSettings.png</file>
-        <file>graphics/uiicons/Hopsan-ShowPlotWindowVariableList.png</file>
-        <file>graphics/uiicons/Hopsan-ExportParameters.png</file>
-        <file>graphics/uiicons/Hopsan-ExportSIT.png</file>
-        <file>graphics/uiicons/Hopsan-LoadModelParameters.png</file>
         <file>graphics/porticons/EmptyPort.svg</file>
-        <file>graphics/uiicons/Hopsan-Folder.png</file>
-        <file>graphics/uiicons/Hopsan-Print.png</file>
-        <file>graphics/uiicons/Hopsan-Success.png</file>
-        <file>graphics/uiicons/Hopsan-Debug.png</file>
-        <file>graphics/uiicons/Hopsan-ImportPlot.png</file>
-        <file>graphics/uiicons/Hopsan-Lock.png</file>
-        <file>graphics/uiicons/Hopsan-AxisTimeScale.png</file>
         <file>graphics/builtinCAF/hidden/builtin_hidden.xml</file>
         <file>graphics/builtinCAF/visible/builtin_visible.xml</file>
-        <file>graphics/uiicons/Hopsan-ShowHideDockAreas.png</file>
-        <file>graphics/uiicons/Hopsan-DistributeX.png</file>
-        <file>graphics/uiicons/Hopsan-DistributeY.png</file>
         <file>graphics/porticons/Mechanic2dPort.svg</file>
         <file>graphics/porticons/ModelicaPort.svg</file>
         <file>graphics/builtinCAF/visible/Subsystem/conditionalSubSystem.xml</file>
         <file>graphics/objecticons/conditionalSubsystemDefault.svg</file>
-        <file>graphics/uiicons/Hopsan-FolderExternal.png</file>
-        <file>graphics/uiicons/Hopsan-FolderModelica.png</file>
-        <file>graphics/uiicons/Hopsan-StopSimulation.png</file>
-        <file>graphics/uiicons/Hopsan-SimulateRemote.png</file>
         <file>graphics/porticons/SignalPortBiDirectional.svg</file>
         <file>graphics/porticons/SignalPort2D_read.svg</file>
         <file>graphics/porticons/SignalPort2D_write.svg</file>
-        <file>graphics/uiicons/Hopsan-OpenScript.png</file>
-        <file>graphics/uiicons/Hopsan-NewScript.png</file>
         <file>graphics/uiicons/svg/Hopsan-Configure.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Add.svg</file>
         <file>graphics/uiicons/svg/Hopsan-AlignX.svg</file>
