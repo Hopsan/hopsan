@@ -191,26 +191,17 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     this->setMouseTracking(true);
     this->setAttribute(Qt::WA_NoMousePropagation, false);
 
-    QLabel *pHeading = new QLabel(this);
-    QPixmap image;
+    QSvgWidget *pHeading = new QSvgWidget(this);
     QDate today = QDate::currentDate();
     if(today.month() == 12 && today.day() > 20 && today.day() < 31)
-        image.load(QString(GRAPHICSPATH) + "welcome_xmas.png");
+        pHeading->load(QString(GRAPHICSPATH) + "welcome_xmas.svg");
     else if((today.month() == 12 && today.day() == 31) || (today.month() == 1 && today.day() == 1))
-        image.load(QString(GRAPHICSPATH) + "welcome_newyear.png");
+        pHeading->load(QString(GRAPHICSPATH) + "welcome_newyear.svg");
     else
-        image.load(QString(GRAPHICSPATH) + "welcome.png");
-    pHeading->setPixmap(image);
-//    mpHeading->setText("Welcome to Hopsan!");
-//    QFont tempFont = mpHeading->font();
-//    tempFont.setPointSize(25);
-//    tempFont.setBold(true);
-//    mpHeading->setFont(tempFont);
-    //mpHeading->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    pHeading->setAlignment(Qt::AlignCenter);
+        pHeading->load(QString(GRAPHICSPATH) + "welcome.svg");
 
-    mpNewIcon = new QLabel(this);
-    mpNewIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "new.png"));
+    mpNewIcon = new QSvgWidget(QString(GRAPHICSPATH) + "new.svg", this);
+    mpNewIcon->setFixedSize(110,110);
     mpNewIcon->setMouseTracking(true);
     mpNewText = new QLabel("New Model", this);
     mpNewText->setAlignment(Qt::AlignCenter);
@@ -225,8 +216,8 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewFrame->setFixedSize(mFrameW,mFrameH);
     mpNewFrame->setLayout(pNewLayout);
 
-    mpLoadIcon = new QLabel(this);
-    mpLoadIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "open.png"));
+    mpLoadIcon = new QSvgWidget(QString(GRAPHICSPATH) + "open.svg", this);
+    mpLoadIcon->setFixedSize(110,110);
     mpLoadIcon->setMouseTracking(true);
     mpLoadText = new QLabel("Load Model", this);
     mpLoadText->setAlignment(Qt::AlignCenter);
@@ -241,8 +232,8 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadFrame->setFixedSize(mFrameW,mFrameH);
     mpLoadFrame->setLayout(pLoadLayout);
 
-    mpLastSessionIcon = new QLabel(this);
-    mpLastSessionIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
+    mpLastSessionIcon = new QSvgWidget(QString(GRAPHICSPATH) + "lastsession.svg", this);
+    mpLastSessionIcon->setFixedSize(110,110);
     mpLastSessionIcon->setMouseTracking(true);
     mpLastSessionIcon->setEnabled(!gpConfig->getLastSessionModels().empty());
     mpLastSessionText = new QLabel("Last Session", this);
@@ -328,8 +319,8 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
         }
     }
 
-    mpOptionsIcon = new QLabel(this);
-    mpOptionsIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "options.png"));
+    mpOptionsIcon = new QSvgWidget(QString(GRAPHICSPATH) + "options.svg", this);
+    mpOptionsIcon->setFixedSize(110,110);
     mpOptionsIcon->setMouseTracking(true);
     mpOptionsText = new QLabel("Options", this);
     mpOptionsText->setAlignment(Qt::AlignCenter);
@@ -489,34 +480,34 @@ void WelcomeWidget::updateHoverEffects()
     if(mpNewFrame->underMouse())
     {
         mpNewFrame->setFrameShape(QFrame::Panel);
-        mpNewIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "newactive.png"));
+        mpNewIcon->load(QString(GRAPHICSPATH) + "new-active.svg");
     }
     else
     {
         mpNewFrame->setFrameShape(QFrame::StyledPanel);
-        mpNewIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "new.png"));
+        mpNewIcon->load(QString(GRAPHICSPATH) + "new.svg");
     }
 
     if(mpLoadFrame->underMouse())
     {
         mpLoadFrame->setFrameShape(QFrame::Panel);
-        mpLoadIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "openactive.png"));
+        mpLoadIcon->load(QString(GRAPHICSPATH) + "open-active.svg");
     }
     else
     {
         mpLoadFrame->setFrameShape(QFrame::StyledPanel);
-        mpLoadIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "open.png"));
+        mpLoadIcon->load(QString(GRAPHICSPATH) + "open.svg");
     }
 
     if(mpLastSessionFrame->underMouse() && mpLastSessionIcon->isEnabled())
     {
         mpLastSessionFrame->setFrameShape(QFrame::Panel);
-        mpLastSessionIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsessionactive.png"));
+        mpLastSessionIcon->load(QString(GRAPHICSPATH) + "lastsession-active.svg");
     }
     else
     {
         mpLastSessionFrame->setFrameShape(QFrame::StyledPanel);
-        mpLastSessionIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
+        mpLastSessionIcon->load(QString(GRAPHICSPATH) + "lastsession.svg");
     }
 
     if(mpRecentFrame->underMouse() || mpRecentList->underMouse())
@@ -540,12 +531,12 @@ void WelcomeWidget::updateHoverEffects()
     if(mpOptionsFrame->underMouse())
     {
         mpOptionsFrame->setFrameShape(QFrame::Panel);
-        mpOptionsIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "optionsactive.png"));
+        mpOptionsIcon->load(QString(GRAPHICSPATH) + "options-active.svg");
     }
     else
     {
         mpOptionsFrame->setFrameShape(QFrame::StyledPanel);
-        mpOptionsIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "options.png"));
+        mpOptionsIcon->load(QString(GRAPHICSPATH) + "options.svg");
     }
 
     if(mpNewsFrame->underMouse())

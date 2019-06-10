@@ -36,6 +36,7 @@
 
 #include <QDialog>
 #include <QLabel>
+#include <QSvgWidget>
 
 class MainWindow;
 class QTimer;
@@ -56,7 +57,7 @@ public slots:
     void setDate();
 
 private:
-    QLabel *mpHopsanLogotype;
+    QSvgWidget *mpHopsanLogotype;
     int num;
     QString title;
     bool dateOk;

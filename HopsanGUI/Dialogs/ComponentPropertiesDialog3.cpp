@@ -2381,7 +2381,7 @@ void SystemProperties::clearLogData()
     QMessageBox existWarningBox(QMessageBox::Warning, "Warning","ALL log data in current model will be cleared. Continue?", 0, 0);
     existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
     existWarningBox.addButton("No", QMessageBox::RejectRole);
-    existWarningBox.setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+    existWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
     bool doIt = (existWarningBox.exec() == QMessageBox::AcceptRole);
 
     if(doIt)

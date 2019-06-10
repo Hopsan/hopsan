@@ -66,7 +66,7 @@ bool importFMU(const QString& fmuFilePath)
                                     QMessageBox::NoButton, gpMainWindowWidget);
         existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
         existWarningBox.addButton("No", QMessageBox::RejectRole);
-        existWarningBox.setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+        existWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
         bool doIt = (existWarningBox.exec() == QMessageBox::AcceptRole);
         if(doIt)
         {
