@@ -138,7 +138,7 @@ MainWindow::MainWindow(QWidget *parent)
 #else
     this->setWindowTitle(tr("Hopsan"));
 #endif
-    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+    this->setWindowIcon(QIcon(QString(QString(GRAPHICSPATH) + "hopsan-icon.svg")));
 
     // Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);

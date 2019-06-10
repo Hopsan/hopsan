@@ -56,7 +56,7 @@
 HelpDialog::HelpDialog(QWidget *parent)
     : QDialog(parent)
 {
-    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+    this->setWindowIcon(gpMainWindowWidget->windowIcon());
     this->setObjectName("HelpDialog");
     this->setWindowTitle("Hopsan User Guide");
     this->setMinimumSize(640, 480);

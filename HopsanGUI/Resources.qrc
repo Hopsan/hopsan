@@ -256,6 +256,20 @@
         <file>graphics/uiicons/svg/Hopsan-FolderExternal.svg</file>
         <file>graphics/uiicons/svg/Hopsan-FolderModelica.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Info.svg</file>
+        <file>graphics/hopsan-icon.svg</file>
+        <file>graphics/hopsan-logo.svg</file>
+        <file>graphics/lastsession.svg</file>
+        <file>graphics/lastsession-active.svg</file>
+        <file>graphics/open.svg</file>
+        <file>graphics/open-active.svg</file>
+        <file>graphics/new.svg</file>
+        <file>graphics/new-active.svg</file>
+        <file>graphics/welcome.svg</file>
+        <file>graphics/welcome_newyear.svg</file>
+        <file>graphics/welcome_xmas.svg</file>
+        <file>graphics/liu-flumes.svg</file>
+        <file>graphics/options.svg</file>
+        <file>graphics/options-active.svg</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="licenseNoticeGPLv3">../licenseNoticeGPLv3</file>

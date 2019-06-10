@@ -48,7 +48,7 @@
 DebuggerWidget::DebuggerWidget(ModelWidget *pModel, QWidget *parent) :
     QDialog(parent)
 {
-    this->setWindowIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Debug.svsg"));
+    this->setWindowIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Debug.svg"));
 
     mpModel = pModel;
 

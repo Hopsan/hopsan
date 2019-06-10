@@ -43,6 +43,7 @@
 #include <QVBoxLayout>
 #include <QNetworkAccessManager>
 #include <QUrl>
+#include <QSvgWidget>
 
 class WelcomeWidget : public QWidget
 {
@@ -57,15 +58,15 @@ protected:
 
 private:
     QFrame *mpNewFrame;
-    QLabel *mpNewIcon;
+    QSvgWidget *mpNewIcon;
     QLabel *mpNewText;
 
     QFrame *mpLoadFrame;
-    QLabel *mpLoadIcon;
+    QSvgWidget *mpLoadIcon;
     QLabel *mpLoadText;
 
     QFrame *mpLastSessionFrame;
-    QLabel *mpLastSessionIcon;
+    QSvgWidget *mpLastSessionIcon;
     QLabel *mpLastSessionText;
 
     QFrame *mpRecentFrame;
@@ -77,7 +78,7 @@ private:
     QLabel *mpExampleText;
 
     QFrame *mpOptionsFrame;
-    QLabel *mpOptionsIcon;
+    QSvgWidget *mpOptionsIcon;
     QLabel *mpOptionsText;
 
     QFrame *mpNewsFrame;

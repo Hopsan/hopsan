@@ -67,11 +67,9 @@ AboutDialog::AboutDialog(QWidget *parent)
     this->dateOk = true;
     connect(timer, SIGNAL(timeout()), this, SLOT(setDate()));
 
-    mpHopsanLogotype = new QLabel();
-    QPixmap image;
-    image.load(QString(GRAPHICSPATH) + "about.png");
-    mpHopsanLogotype->setPixmap(image);
-    mpHopsanLogotype->setAlignment(Qt::AlignCenter);
+    mpHopsanLogotype = new QSvgWidget();
+    mpHopsanLogotype->load(QString(GRAPHICSPATH) + "hopsan-logo.svg");
+    mpHopsanLogotype->setFixedSize(526,118);
 
 #ifdef HOPSANCOMPILED64BIT
     const QString arch = "64-bit";
@@ -117,7 +115,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     pContributorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContributorsText = new QLabel();
-    pContributorsText->setText(tr("Alessandro Dell'Amico, Ingo Staack, Isak Demir, Karl Pettersson, Mikael Axin, Paulo Teixeira, Petter Krus, Pratik Deshpande, Sheryar Khan, Viktor Larsson, Jason Nicholson, Katharina Baer\n"));
+    pContributorsText->setText(tr("Alessandro Dell'Amico, Ingo Staack, Isak Demir, Karl Pettersson, Mikael Axin, Paulo Teixeira, Petter Krus, Pratik Deshpande, Sheryar Khan, Viktor Larsson, Jason Nicholson, Katharina Baer"));
     pContributorsText->setWordWrap(true);
     pContributorsText->setAlignment(Qt::AlignCenter);
 
@@ -127,7 +125,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     pSpecialThanksHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pSpecialThanksText = new QLabel();
-    pSpecialThanksText->setText(tr("Epiroc Rock Drills AB\nThe Swedish Foundation for Strategic Research\n"));
+    pSpecialThanksText->setText(tr("Epiroc Rock Drills AB\nThe Swedish Foundation for Strategic Research"));
     pSpecialThanksText->setWordWrap(true);
     pSpecialThanksText->setAlignment(Qt::AlignCenter);
 
@@ -151,10 +149,8 @@ AboutDialog::AboutDialog(QWidget *parent)
     pContactText->setWordWrap(true);
     pContactText->setAlignment(Qt::AlignCenter);
 
-    QLabel *pLithFlumesLogotype = new QLabel();
-    QPixmap bottomimage;
-    bottomimage.load(QString(GRAPHICSPATH) + "flumeslith.png");
-    pLithFlumesLogotype->setPixmap(bottomimage);
+    QSvgWidget *pLithFlumesLogotype = new QSvgWidget(QString(GRAPHICSPATH) + "liu-flumes.svg");
+    pLithFlumesLogotype->setFixedSize(526,94);
 
     QPushButton *pOkButton = new QPushButton(tr("&Close"));
     pOkButton->setDefault(true);
@@ -247,9 +243,7 @@ void AboutDialog::update()
     if(num == Qt::Key_0+QDate::currentDate().dayOfYear() && timer->isActive())
         timer->stop();
 
-    QPixmap image;
-    image.load(QString(GRAPHICSPATH) + "about.png");
-    mpHopsanLogotype->setPixmap(image.scaled(454-300*qSin((num-QDate::currentDate().dayOfYear())*3.1415/Qt::Key_0), 110));
+    mpHopsanLogotype->load(QString(GRAPHICSPATH) + "hopsan-logo.svg");
 }
 
 
