@@ -1691,7 +1691,7 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
         if(mVariableDataType != "conditional")
         {
             QToolButton *pSystemParameterToolButton = new QToolButton(this);
-            pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-GlobalParameter.svg"));
+            pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-SystemParameters.svg"));
             pSystemParameterToolButton->setToolTip("Map To System Parameter");
             pSystemParameterToolButton->setFixedSize(24,24);
             connect(pSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(createSysParameterSelectionMenu()));

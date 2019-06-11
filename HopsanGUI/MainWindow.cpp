@@ -577,7 +577,7 @@ void MainWindow::createActions()
     mpDisableUndoAction->setCheckable(true);
     mpDisableUndoAction->setChecked(false);
 
-    mpOpenSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-GlobalParameter.svg"), tr("&System Parameters"), this);
+    mpOpenSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-SystemParameters.svg"), tr("&System Parameters"), this);
     mpOpenSystemParametersAction->setToolTip("System Parameters (Ctrl+Shift+Y)");
     mpOpenSystemParametersAction->setShortcut(tr("Ctrl+Shift+y"));
     mpOpenSystemParametersAction->setCheckable(true);

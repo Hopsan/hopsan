@@ -63,7 +63,7 @@
         <file>graphics/uiicons/svg/Hopsan-ExportSIT.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Favorite.svg</file>
         <file>graphics/uiicons/svg/Hopsan-FrequencyAnalysis.svg</file>
-        <file>graphics/uiicons/svg/Hopsan-GlobalParameter.svg</file>
+        <file>graphics/uiicons/svg/Hopsan-SystemParameters.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Help.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Import.svg</file>
         <file>graphics/uiicons/svg/Hopsan-ImportFmu.svg</file>
@@ -127,7 +127,7 @@
         <file>graphics/uiicons/svg/Hopsan-Pan.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Zoom.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Grid.svg</file>
-        <file>graphics/uiicons/svg/Hopsan-BackgroundColor.svg</file>
+        <file>graphics/uiicons/svg/Hopsan-SelectColor.svg</file>
         <file>graphics/uiicons/svg/Hopsan-ShowPlotLegends.svg</file>
         <file>graphics/uiicons/svg/Hopsan-OpenTabInNewPlotWindow.svg</file>
         <file>graphics/uiicons/svg/Hopsan-TransferFunctionAnalysis.svg</file>
