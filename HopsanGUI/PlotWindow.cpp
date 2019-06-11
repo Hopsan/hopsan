@@ -267,12 +267,12 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpBackgroundColorButton = new QAction(this);
     mpBackgroundColorButton->setToolTip("Select Canvas Color (C)");
-    mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-BackgroundColor.svg"));
+    mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-SelectColor.svg"));
     mpBackgroundColorButton->setShortcut(QKeySequence("c"));
     connect(mpBackgroundColorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpLocktheAxis = new QAction(this);
-    mpLocktheAxis->setToolTip("Lock Axis");
+    mpLocktheAxis->setToolTip("Set Axis Limits");
     mpLocktheAxis->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-AxisScale.svg"));
     connect(mpLocktheAxis, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 

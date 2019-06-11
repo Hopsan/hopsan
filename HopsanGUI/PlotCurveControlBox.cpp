@@ -93,7 +93,7 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
 
     QToolButton *pColorButton = new QToolButton(this);
     pColorButton->setToolTip("Select Line Color");
-    pColorButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-BackgroundColor.svg"));
+    pColorButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-SelectColor.svg"));
 
     QToolButton *pFrequencyAnalysisButton = new QToolButton(this);
     pFrequencyAnalysisButton->setToolTip("Frequency Analysis");
