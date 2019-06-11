@@ -805,11 +805,11 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpExportToSimulinkAction, "Export model to Simulink S-function.");
     connect(mpExportToSimulinkAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToExe_32Action = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportExe.png"), tr("Export to Executable Model (32-bit)"), this);
+    mpExportToExe_32Action = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportExe.svg"), tr("Export to Executable Model (32-bit)"), this);
     mHelpPopupTextMap.insert(mpExportToExe_32Action, "Export to Executable Model (32-bit).");
     connect(mpExportToExe_32Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpExportToExe_64Action = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportExe.png"), tr("Export to Executable Model (64-bit)"), this);
+    mpExportToExe_64Action = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportExe.svg"), tr("Export to Executable Model (64-bit)"), this);
     mHelpPopupTextMap.insert(mpExportToExe_64Action, "Export to Executable Model (64-bit).");
     connect(mpExportToExe_64Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
@@ -845,7 +845,7 @@ void MainWindow::createActions()
 #endif
 
     mpExportToExeMenu = new QMenu("Export to Executable Model");
-    mpExportToExeMenu->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportExe.png"));
+    mpExportToExeMenu->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportExe.svg"));
 #ifdef _WIN32
     mpExportToExeMenu->addAction(mpExportToExe_32Action);
     mpExportToExeMenu->addAction(mpExportToExe_64Action);
@@ -1127,7 +1127,7 @@ void MainWindow::createToolbars()
     mpExportToFMUMenuButton->setMenu(mpExportToFMUMenu);
     mpConnectivityToolBar->addWidget(mpExportToFMUMenuButton);
     mpExportToExeMenuButton = new QToolButton(this);
-    mpExportToExeMenuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportExe.png"));
+    mpExportToExeMenuButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportExe.svg"));
     mpExportToExeMenuButton->setPopupMode(QToolButton::InstantPopup);
     mpExportToExeMenuButton->setMouseTracking(true);
     mpExportToExeMenuButton->setMenu(mpExportToExeMenu);
