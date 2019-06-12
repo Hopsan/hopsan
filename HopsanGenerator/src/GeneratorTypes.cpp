@@ -135,6 +135,7 @@ bool ComponentLibrary::saveToXML(QString filepath) const
     };
 
     writeXmlFileList("<<<sources>>>", "source", mSourceFiles);
+    writeXmlFileList("<<<extrasources>>>", "extrasource", mExtraSourceFiles);
     writeXmlFileList("<<<components>>>", "component", mComponentCodeFiles);
     writeXmlFileList("<<<componentxmls>>>", "componentxml", mComponentXMLFiles);
     writeXmlFileList("<<<auxiliaryfiles>>>", "auxiliary", mAuxFiles);
