@@ -1648,54 +1648,6 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     return true;
 }
 
-bool HopsanFMIGenerator::generateModelFile(const ComponentSystem *pSystem, const QString &fmuBuildPath, const QMap<QString,QString>& replaceMap) const
-{
-    QString modelName = pSystem->getName().c_str();
-    QFile modelHppFile(fmuBuildPath + "/model.hpp");
-    QFile modelFile(fmuBuildPath + "/../" + modelName + ".hmf");
-
-    printMessage("Generating "+modelHppFile.fileName());
-
-    if (!modelFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        printErrorMessage(QString("Could not open %1 for reading.").arg(modelFile.fileName()));
-        return false;
-    }
-
-    QStringList modelLines;
-    while (!modelFile.atEnd())
-    {
-        QString line = modelFile.readLine();
-        line.chop(1);
-        for (auto it = replaceMap.begin(); it != replaceMap.end(); ++it) {
-            line.replace(it.key(), it.value());
-        }
-        line.replace(R"(")", R"(\")");
-        modelLines.append(line);
-    }
-    modelLines.last().append("\\n");
-    modelFile.close();
-
-
-    if(!modelHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage(QString("Failed to open %1 for writing.").arg(modelHppFile.fileName()));
-        return false;
-    }
-
-    QTextStream modelHppStream(&modelHppFile);
-    modelHppStream << "#include <vector>\n\n";
-    modelHppStream << "std::string getModelString()\n{\n";
-    modelHppStream << "    std::string model = ";
-    for(const QString& line : modelLines)
-    {
-        modelHppStream << "\""+line+"\"\n";
-    }
-    modelHppStream << "    ;\n\n";
-    modelHppStream << "    return model;\n}\n";
-    modelHppFile.close();
-    return true;
-}
 
 void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
 {

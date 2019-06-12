@@ -36,7 +36,6 @@ public:
     bool generateToExe(QString savePath, hopsan::ComponentSystem *pSystem, const QStringList &externalLibraries, bool x64);
 
 private:
-    bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &buildPath, const QMap<QString, QString> &replaceMap) const;
     bool compileAndLinkExe(const QString &buildPath, const QString &modelName, bool x64) const;
 
     QStringList mExtraSourceFiles;
