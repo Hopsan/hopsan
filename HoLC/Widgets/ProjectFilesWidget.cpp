@@ -67,7 +67,7 @@ QTreeWidgetItem *ProjectFilesWidget::addFile(const QSharedPointer<FileObject> pF
 {
     QTreeWidgetItem *pNewItem = new QTreeWidgetItem(0);
     pNewItem->setText(0,pFile->mFileInfo.fileName());
-    if(pFile->mType == FileObject::XML || pFile->mType == FileObject::Source)
+    if(pFile->mType == FileObject::XML || pFile->mType == FileObject::Source || pFile->mType == FileObject::ExtraSource)
     {
         mpProjectFilesTopLevelItem->addChild(pNewItem);
         mpProjectFilesTopLevelItem->setExpanded(true);

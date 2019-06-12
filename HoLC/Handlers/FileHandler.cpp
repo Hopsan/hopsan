@@ -436,10 +436,13 @@ void FileHandler::loadLibraryFromXml(const QString &path)
         if(!sourceElement.isNull())
         {
             mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(info.absolutePath()+"/"+sourceElement.text(), FileObject::Source)));
+            mLibraryMainCPPFile = mLibraryFiles.last()->mFileInfo.absoluteFilePath();
         }
-        // The first source file should be the main cpp file, this should then be the second in mLibraryFiles (first is main xml)
-        if (mLibraryFiles.size() > 1) {
-            mLibraryMainCPPFile = mLibraryFiles[1]->mFileInfo.absoluteFilePath();
+
+        QDomElement extraSourceElement = libRoot.firstChildElement("extrasource");
+        if(!extraSourceElement.isNull())
+        {
+            mLibraryFiles.append(QSharedPointer<FileObject>(new FileObject(info.absolutePath()+"/"+extraSourceElement.text(), FileObject::ExtraSource)));
         }
 
         QDomElement bfElement = libRoot.firstChildElement("buildflags");
@@ -573,6 +576,10 @@ void FileHandler::saveToXml(const QString &filePath)
         {
             fileElement = domDocument.createElement("source");
         }
+        if(mLibraryFiles[f]->mType == FileObject::ExtraSource)
+        {
+            fileElement = domDocument.createElement("extrasource");
+        }
         else if(mLibraryFiles[f]->mType == FileObject::Component)
         {
             fileElement = domDocument.createElement("component");
@@ -685,7 +692,7 @@ void FileHandler::compileLibrary()
         {
             path = pFile->mFileInfo.absolutePath();
         }
-        else if(pFile->mType == FileObject::Source)
+        else if(pFile->mType == FileObject::Source || pFile->mType == FileObject::ExtraSource)
         {
             sources.append(pFile->mFileInfo.absoluteFilePath());
         }
