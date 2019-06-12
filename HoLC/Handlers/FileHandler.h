@@ -97,7 +97,7 @@ private:
 class FileObject
 {
 public:
-    enum FileTypeEnum {XML, Source, Component, Auxiliary, CAF};
+    enum FileTypeEnum {XML, Source, ExtraSource, Component, Auxiliary, CAF};
 
     FileObject() = default;
     FileObject(const QString &path, FileTypeEnum type);
