@@ -641,7 +641,10 @@ void TextEditor::updateAutoCompleteList()
         }
         for(int v=0; v<variables.size(); ++v)
         {
+            variables[v] = variables[v].section("=",0,0);
             variables[v].remove("*");
+            variables[v].remove("&");
+            variables[v].remove("!");
             variables[v].remove(";");
             for(int d=0; d<dataTypes.size(); ++d)
             {
