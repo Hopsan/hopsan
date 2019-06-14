@@ -164,6 +164,9 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     //! @todo add support for entering cflags and lflags
     xmlCode.replace("<<<cflags>>>", "");
     xmlCode.replace("<<<lflags>>>", "");
+    xmlCode.replace("<<<includepaths>>>", "");
+    xmlCode.replace("<<<linkpaths>>>", "");
+    xmlCode.replace("<<<linklibraries>>>", "");
     xmlCode.replace("<<<sourcefile>>>", QFileInfo(sourceFile).fileName());
     replacePatternLine(xmlCode,"<<<components>>>",xmlCompString);
     replacePatternLine(xmlCode,"<<<auxiliary>>>","");
@@ -457,6 +460,24 @@ void FileHandler::loadLibraryFromXml(const QString &path)
             lflagsElement = lflagsElement.nextSiblingElement("lflags");
         }
 
+        QDomElement includePathElement = libRoot.firstChildElement("includepath");
+        while(!includePathElement.isNull()) {
+            mLibraryIncludePaths.append(includePathElement.text());
+            includePathElement = includePathElement.nextSiblingElement("includepath");
+        }
+
+        QDomElement linkPathElement = libRoot.firstChildElement("linkpath");
+        while(!linkPathElement.isNull()) {
+            mLibraryLinkPaths.append(linkPathElement.text());
+            linkPathElement = linkPathElement.nextSiblingElement("linkpath");
+        }
+
+        QDomElement linkLibraryElement = libRoot.firstChildElement("linklibrary");
+        while(!linkLibraryElement.isNull()) {
+            mLibraryLinkLibraries.append(linkLibraryElement.text());
+            linkLibraryElement = linkLibraryElement.nextSiblingElement("linklibrary");
+        }
+
         QDomElement compElement = libRoot.firstChildElement("component");
         while(!compElement.isNull())
         {
@@ -568,6 +589,24 @@ void FileHandler::saveToXml(const QString &filePath)
         bfElement.appendChild(flagsElement);
     }
     libRoot.appendChild(bfElement);
+
+    for(const QString includePath : mLibraryIncludePaths) {
+        QDomElement includePathElement = domDocument.createElement("includepath");
+        includePathElement.appendChild(domDocument.createTextNode(includePath));
+        libRoot.appendChild(includePathElement);
+    }
+
+    for(const QString linkPath : mLibraryLinkPaths) {
+        QDomElement linkPathElement = domDocument.createElement("linkpath");
+        linkPathElement.appendChild(domDocument.createTextNode(linkPath));
+        libRoot.appendChild(linkPathElement);
+    }
+
+    for(const QString linkLibrary : mLibraryLinkLibraries) {
+        QDomElement linkLibraryElement = domDocument.createElement("linklibrary");
+        linkLibraryElement.appendChild(domDocument.createTextNode(linkLibrary));
+        libRoot.appendChild(linkLibraryElement);
+    }
 
     for(int f=0; f<mLibraryFiles.size(); ++f)
     {
