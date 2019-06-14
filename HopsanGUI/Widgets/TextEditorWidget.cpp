@@ -636,7 +636,7 @@ void TextEditor::updateAutoCompleteList()
 
             if(dataTypes.contains(line.simplified().section(" ",0,0)))
             {
-                variables.append(line.simplified().split(","));
+                variables.append(line.section("//",0,0).simplified().split(","));
             }
         }
         for(int v=0; v<variables.size(); ++v)
