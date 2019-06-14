@@ -281,7 +281,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
 
     QDir outputDir = QFileInfo(outputExecutableFile).absoluteDir();
     outputDir.cdUp();
-#ifdef WIN32
+#ifdef _WIN32
     copyFile(outputExecutableFile, outputDir.absolutePath()+"/"+modelName+".exe");
 #else
     copyFile(outputExecutableFile, outputDir.absolutePath()+"/"+modelName);
