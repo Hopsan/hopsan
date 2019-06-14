@@ -98,7 +98,7 @@ protected:
 
     bool copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const;
     bool copyDefaultComponentCodeToDir(const QString &path) const;
-    bool copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList &extraSourceFiles) const;
+    bool copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList &rExtraSourceFiles) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     void copyModelAssetsToDir(const QString &path, hopsan::ComponentSystem *pSystem, QMap<QString, QString> &assetsMap) const;
     bool copyFile(const QString &source, const QString &target) const;
