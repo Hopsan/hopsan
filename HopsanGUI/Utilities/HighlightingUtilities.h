@@ -101,6 +101,7 @@ class CppHighlighter : public QSyntaxHighlighter
 
 public:
     CppHighlighter(QTextDocument *parent = 0);
+    static QStringList getHopsanKeywordPatterns();
 
 protected:
     void highlightBlock(const QString &text);
