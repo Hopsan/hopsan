@@ -48,7 +48,7 @@
 
 //Forward declarations
 class LibraryHandler;
-
+class ComponentLibrary;
 
 //! @brief Library widget class
 class LibraryWidget : public QWidget
@@ -93,7 +93,7 @@ private:
     //Maps between GUI objects and library contents
     QMap<QTreeWidgetItem *, QString> mItemToTypeNameMap;        //Map between component items and typenames
     QMap<QListWidgetItem *, QString> mListItemToTypeNameMap;    //Map between component items in dual view list and typenames
-    QMap<QTreeWidgetItem *, QStringList> mItemToLibFilesMap;    //Map between component items and libraries it might origin from
+    QMap<QTreeWidgetItem *, QSharedPointer<ComponentLibrary> > mItemToLibraryMap;    //Map between component items and libraries it might origin from
     QMap<QTreeWidgetItem *, QStringList> mFolderToContentsMap;  //Map between folders and typenames of sub-components, for updating list in dual view
     QMap<QTreeWidgetItem *, QString> mItemToModelicaFileNameMap;
 };

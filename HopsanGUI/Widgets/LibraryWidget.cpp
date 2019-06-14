@@ -320,6 +320,8 @@ void LibraryWidget::update()
         if(pItem)
         {
             pItem->addChild(pComponentItem);
+            mItemToLibraryMap[pItem] = entry.pLibrary;
+            mItemToLibraryMap[pComponentItem] = entry.pLibrary;
         }
         else
         {
@@ -875,14 +877,26 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
             }
             else if(pReply == pEditCodeAction) {
-                QString typeName = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getTypeName();
-                auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
-                QString basePath = appearance->getBasePath();
-                if(!basePath.isEmpty()) {
-                    basePath.append("/");
+                if(!mItemToTypeNameMap.contains(item)) {
+                    //Edit library source files
+                    SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
+                    if (pLibrary) {
+                        for(QString file : pLibrary->sourceFiles) {
+                            gpModelHandler->loadTextFile(file);
+                        }
+                    }
                 }
-                QString sourceFile = appearance->getSourceCodeFile();
-                gpModelHandler->loadTextFile(basePath+sourceFile);
+                else {
+                    //Edit component source file
+                    QString typeName = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getTypeName();
+                    auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+                    QString basePath = appearance->getBasePath();
+                    if(!basePath.isEmpty()) {
+                        basePath.append("/");
+                    }
+                    QString sourceFile = appearance->getSourceCodeFile();
+                    gpModelHandler->loadTextFile(basePath+sourceFile);
+                }
             }
         }
     }
