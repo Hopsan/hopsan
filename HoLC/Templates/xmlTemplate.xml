@@ -7,6 +7,9 @@
       <cflags><<<cflags>>></cflags>
       <lflags><<<lflags>>></lflags>
     </buildflags>
+    <<<includepaths>>>
+    <<<linkpaths>>>
+    <<<linklibraries>>>
     <source><<<sourcefile>>></source>
     <<<components>>>
     <<<auxiliary>>>

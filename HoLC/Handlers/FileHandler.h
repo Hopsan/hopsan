@@ -88,7 +88,11 @@ private:
     QString mLibraryMainXMLFile;
     QString mLibraryMainCPPFile;
     QVector<BuildFlags> mLibraryBuildFlags;
+    QStringList mLibraryIncludePaths;
+    QStringList mLibraryLinkPaths;
+    QStringList mLibraryLinkLibraries;
     QList<QSharedPointer<FileObject>> mLibraryFiles;
+
 
     QSharedPointer<FileObject> mpCurrentFile;
 };
