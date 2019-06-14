@@ -368,19 +368,11 @@ CppHighlighter::CppHighlighter(QTextDocument *parent)
 
     mHopsanKeywordFormat.setForeground(Qt::darkMagenta);
     mHopsanKeywordFormat.setFontWeight(QFont::Normal);
-    QStringList hopsanKeywordPatterns;
-    hopsanKeywordPatterns << "\\bPort\\b" << "\\bFirstOrderTransferFunctionVariable\\b" << "\\bSecondOrderTransferFunctionVariable\\b"
-                          << "\\bFirstOrderTransferFunction\\b" << "\\bSecondOrderTransferFunction\\b"
-                          << "\\bFirstOrderFiler\\b" << "\\bSecondOrderFilter\\b" << "\\bDelay\\b"
-                          << "\\bIntegrator\\b" << "\\bIntegratorLimited\\b" << "\\bTurbulentFlowFunction\\b"
-                          << "\\bValveHysteresis\\b" << "\\bDoubleIntegratorWithDamping\\b" << "\\bDoubleIntegratorWithDampingAndCoulumbFriction\\b"
-                          << "\\bCSVParser\\b" << "\\bCSVParserNG\\b" << "\\bPLOParser\\b"
-                          << "\\bWhiteGaussianNoise\\b" << "\\bEquationSystemSolver\\b" << "\\bNumericalIntegrationSolver\\b"
-                          << "\\bLookupTable1D\\b" << "\\bLookupTable2D\\b" << "\\bLookupTable3D\\b";
-
+    QStringList hopsanKeywordPatterns = getHopsanKeywordPatterns();
     foreach (const QString &pattern, hopsanKeywordPatterns)
     {
-        rule.pattern = QRegExp(pattern);
+        QString actualPattern = "\\b"+pattern+"\\b";
+        rule.pattern = QRegExp(actualPattern);
         rule.format = mHopsanKeywordFormat;
         mHighlightingRules.append(rule);
     }
@@ -455,6 +447,18 @@ void CppHighlighter::highlightBlock(const QString &text)
         setFormat(startIndex, commentLength, mMultiLineCommentFormat);
         startIndex = mCommentStartExpression.indexIn(text, startIndex + commentLength);
     }
+}
+
+QStringList CppHighlighter::getHopsanKeywordPatterns()
+{
+    return QStringList() << "Port" << "FirstOrderTransferFunctionVariable" << "SecondOrderTransferFunctionVariable"
+                         << "FirstOrderTransferFunction" << "SecondOrderTransferFunction"
+                         << "FirstOrderFiler" << "SecondOrderFilter" << "Delay"
+                         << "Integrator" << "IntegratorLimited" << "TurbulentFlowFunction"
+                         << "ValveHysteresis" << "DoubleIntegratorWithDamping" << "DoubleIntegratorWithDampingAndCoulumbFriction"
+                         << "CSVParser" << "CSVParserNG" << "PLOParser"
+                         << "WhiteGaussianNoise" << "EquationSystemSolver" << "NumericalIntegrationSolver"
+                         << "LookupTable1D" << "LookupTable2D" << "LookupTable3D";
 }
 
 

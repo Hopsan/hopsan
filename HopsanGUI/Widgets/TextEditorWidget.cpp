@@ -615,7 +615,7 @@ void TextEditor::updateAutoCompleteList()
     else if(mLanguage == HighlighterTypeEnum::Cpp) {
         QStringList lines = toPlainText().split("\n");
 
-        QStringList dataTypes = QStringList() << "size_t" << "double" << "int" << "SecondOrderTransferFunction" << "FirstOrderTransferFunction" << "Port";
+        QStringList dataTypes = QStringList() << "size_t" << "double" << "int" << CppHighlighter::getHopsanKeywordPatterns();
         QStringList functions = QStringList() << "addInputVariable" << "addOutputVariable" << "addConstant" << "addPowerPort" << "getSafeNodeDataPtr";
 
         int bracketCounter=-1;
