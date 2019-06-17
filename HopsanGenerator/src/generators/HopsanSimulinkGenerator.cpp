@@ -71,8 +71,8 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         printErrorMessage("Failed to copy default component library files.");
         return false;
     }
-    QStringList extraSourceFiles;
-    if(!copyExternalComponentCodeToDir(savePath, externalLibraries, extraSourceFiles)) {
+    QStringList extraSourceFiles, includePaths, linkPaths, linkLibraries;
+    if(!copyExternalComponentCodeToDir(savePath, externalLibraries, extraSourceFiles, includePaths, linkPaths, linkLibraries)) {
         printErrorMessage("Failed to export required external component library files.");
         return false;
     }
@@ -118,9 +118,11 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 #ifdef _WIN32
     compileScriptStream << " -DWIN32";      //!< @todo Not sure if this one is needed, the correct macro to check for is _WIN32
 #endif
-    Q_FOREACH(const QString &s, getHopsanCoreIncludePaths())
-    {
-        compileScriptStream << QString(" -I%1").arg(s);
+    for(const QString includePath : getHopsanCoreIncludePaths()) {
+        compileScriptStream << QString(" -I%1").arg(includePath);
+    }
+    for(const QString includePath : includePaths) {
+        compileScriptStream << QString(" -I%").arg(includePath);
     }
     QStringList coreSourcefiles = listHopsanCoreSourceFiles(savePath)+listInternalLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &s, coreSourcefiles)
@@ -133,9 +135,15 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     }
     compileScriptStream  << QString(" %1.cpp ").arg(name);
 #ifndef _WIN32
-    compileScriptStream << "-ldl ";
+    compileScriptStream << "-ldl";
 #endif
-    compileScriptLStream << QString("-output %1").arg(name);
+    for(const QString linkPath : linkPaths) {
+        compileScriptStream << " -L" << linkPath;
+    }
+    for(const QString linkLibrary : linkLibraries) {
+        compileScriptStream << " -l" << linkLibrary;
+    }
+    compileScriptLStream << QString(" -output %1").arg(name);
 
     compileScriptLStream << "disp('Finished.')";
 

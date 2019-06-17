@@ -39,6 +39,9 @@ private:
     bool compileAndLinkExe(const QString &buildPath, const QString &modelName, bool x64) const;
 
     QStringList mExtraSourceFiles;
+    QStringList mIncludePaths;
+    QStringList mLinkPaths;
+    QStringList mLinkLibraries;
 };
 
 #endif // HOPSANEXEGENERATOR_H

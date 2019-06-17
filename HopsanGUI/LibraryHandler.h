@@ -60,6 +60,9 @@ public:
     QString debugExtension;
     QString lflags;
     QString cflags;
+    QStringList includePaths;   //Include paths
+    QStringList linkPaths;      //Link paths
+    QStringList linkLibraries;           //External libraries to link against
     QString libFilePath;
     QStringList cafFiles;
     QStringList sourceFiles;

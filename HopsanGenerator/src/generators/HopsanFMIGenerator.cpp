@@ -1210,7 +1210,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
         printErrorMessage("Failed to copy default component library files.");
         return false;
     }
-    if(!copyExternalComponentCodeToDir(fmuBuildPath, externalLibraries, mExtraSourceFiles)) {
+    if(!copyExternalComponentCodeToDir(fmuBuildPath, externalLibraries, mExtraSourceFiles, mIncludePaths, mLinkPaths, mLinkLibraries)) {
         printErrorMessage("Failed to export required external component library files.");
         return false;
     }
@@ -1764,9 +1764,11 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
         compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
-    Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
-    {
-       compileCppBatchStream << QString(" -I\"%1\"").arg(incPath);
+    for(const QString includePath : getHopsanCoreIncludePaths()) {
+        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    for(const QString includePath : mIncludePaths) {
+        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
     }
     compileCppBatchFile.close();
 
@@ -1788,9 +1790,11 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
         compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
-    Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
-    {
-       compileCppBatchStream << QString(" -I\"%1\"").arg(incPath);
+    for(const QString includePath : getHopsanCoreIncludePaths()) {
+        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    for(const QString includePath : mIncludePaths) {
+        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
     }
     compileCppBatchFile.close();
 
@@ -1859,6 +1863,12 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     {
         linkBatchStream << " " << objFile;
     }
+    for(const QString linkPaths : mLinkPaths) {
+        linkBatchStream << " -L\"" << linkPaths << "\"";
+    }
+    for(const QString linkLibrary : mLinkLibraries) {
+        linkBatchStream << " -l" << linkLibrary;
+    }
     linkBatchStream << " -o \""+outputLibraryFile+"\"\n";
     linkBatchFile.close();
 
@@ -1878,6 +1888,12 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     Q_FOREACH(const QString &objFile, objectFiles)
     {
         linkBatchStream << " " << objFile;
+    }
+    for(const QString linkPaths : mLinkPaths) {
+        linkBatchStream << " -L\"" << linkPaths << "\"";
+    }
+    for(const QString linkLibrary : mLinkLibraries) {
+        linkBatchStream << " -l" << linkLibrary;
     }
     linkBatchStream << " -o \""+outputLibraryFile+"\"\n";
     linkBatchFile.close();

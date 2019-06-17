@@ -107,6 +107,9 @@ public:
     QStringList mComponentXMLFiles;
     QStringList mAuxFiles;
     QVector<BuildFlags> mBuildFlags;
+    QStringList mIncludePaths;
+    QStringList mLinkPaths;
+    QStringList mLinkLibraries;
 
     void clear();
     bool saveToXML(QString filepath) const;

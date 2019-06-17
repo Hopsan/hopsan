@@ -82,7 +82,7 @@ public:
     void printErrorMessage(const QString &msg) const;
 
     void compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
-    bool generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags=QStringList(), QStringList lflags=QStringList());
+    bool generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags=QStringList(), QStringList lflags=QStringList(), QStringList includePaths=QStringList(), QStringList linkPaths=QStringList(), QStringList linkLibraries=QStringList());
     bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
 
 protected:
@@ -98,7 +98,7 @@ protected:
 
     bool copyHopsanCoreSourceFilesToDir(const QString &tgtPath) const;
     bool copyDefaultComponentCodeToDir(const QString &path) const;
-    bool copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList &rExtraSourceFiles) const;
+    bool copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList &rExtraSourceFiles, QStringList &rIncludePaths, QStringList &rLinkPaths, QStringList &rLinkLibraries) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     void copyModelAssetsToDir(const QString &path, hopsan::ComponentSystem *pSystem, QMap<QString, QString> &assetsMap) const;
     bool copyFile(const QString &source, const QString &target) const;
