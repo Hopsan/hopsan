@@ -221,6 +221,30 @@ void LibraryWidget::update()
     QFont boldFont = qApp->font();
     boldFont.setBold(true);
 
+    //Make sure all libraries have a folder, even if they contain no components
+    QTreeWidgetItem *pExternalItem = new QTreeWidgetItem();
+    QTreeWidgetItem *pExternalDualItem = nullptr;
+    pExternalItem->setFont(0,boldFont);
+    pExternalItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
+    pExternalItem->setText(0, componentlibrary::roots::externalLibraries);
+    pExternalItem->setToolTip(0, componentlibrary::roots::externalLibraries);
+    mpTree->addTopLevelItem(pExternalItem);
+    pExternalDualItem = pExternalItem->clone();
+    mpDualTree->addTopLevelItem(pExternalDualItem);
+    for(auto lib : gpLibraryHandler->getLibraries(ExternalLib)) {
+        QTreeWidgetItem *pItem = new QTreeWidgetItem();
+        QTreeWidgetItem *pDualItem = nullptr;
+        pItem->setFont(0,boldFont);
+        pItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
+        pItem->setText(0, lib->name);
+        pItem->setToolTip(0, lib->name);
+        pExternalItem->addChild(pItem);
+        pDualItem = pItem->clone();
+        pExternalDualItem->addChild(pDualItem);
+        mItemToLibraryMap[pItem] = lib;
+        mItemToLibraryMap[pDualItem] = lib;
+    }
+
     for(const QString typeName : gpLibraryHandler->getLoadedTypeNames()) {
         ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
         if(entry.visibility == Hidden || !(entry.pAppearance->getDisplayName().toLower().contains(filter.toLower())))
@@ -381,7 +405,7 @@ void LibraryWidget::update()
         }
         ++itt;
     }
-    QTreeWidgetItem *pExternalItem = nullptr;
+    pExternalItem = nullptr;
     for(int t=0; t<mpTree->topLevelItemCount(); ++t)
     {
         if(mpTree->topLevelItem(t)->text(0) == componentlibrary::roots::externalLibraries)
@@ -741,141 +765,108 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
             while(!isComponentItem(pFirstSubComponentItem))
             {
-                pFirstSubComponentItem = pFirstSubComponentItem->child(0);
-                // If we cant find a subcomponentn then exit
-                if (pFirstSubComponentItem == nullptr)
-                {
-                    return;
+                if(nullptr == pFirstSubComponentItem) {
+                    break;
                 }
+                pFirstSubComponentItem = pFirstSubComponentItem->child(0);
             }
 
+            //Enable unload all only for top-level external libraries folder
             if(item->text(0) == componentlibrary::roots::externalLibraries)
             {
                 pUnloadAllAction->setEnabled(true);
             }
-            if(item->text(0) != componentlibrary::roots::externalLibraries && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))
+
+            //Enable external library actions (also for empty libraries)
+            if(item->text(0) != componentlibrary::roots::externalLibraries &&
+              (item->parent() != nullptr && item->parent()->text(0) == componentlibrary::roots::externalLibraries ||
+              (pFirstSubComponentItem != nullptr && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))))
             {
+                pRecompileAction->setEnabled(true);
                 pEditXMLAction->setEnabled(true);
                 pEditCodeAction->setEnabled(true);
                 pUnloadAction->setEnabled(true);
-                pRecompileAction->setEnabled(true);
                 pReloadAction->setEnabled(true);
                 pCheckConsistenceAction->setEnabled(true);
             }
 
-            if(item->text(0) != componentlibrary::roots::fmus && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus))
-            {
+            //Enable unloading of FMUs
+            if(pFirstSubComponentItem != nullptr &&
+               item->text(0) != componentlibrary::roots::fmus &&
+               gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus)) {
                 pUnloadAction->setEnabled(true);
             }
 
-            if(item != nullptr && isComponentItem(pFirstSubComponentItem))
-            {
+            if(item) {
                 pOpenFolderAction->setEnabled(true);
             }
-
 
             if(contextMenu.actions().isEmpty())
                 return;
 
+            // Execute pop-up menu
             QAction *pReply = contextMenu.exec(QCursor::pos());
 
-            if(pReply == pUnloadAllAction || pReply == pUnloadAction || pReply == pRecompileAction || pReply == pReloadAction || pReply == pCheckConsistenceAction)
-            {
-                if(isComponentItem(item))
-                {
-                    typeNames.append(mItemToTypeNameMap.find(item).value());
-                }
-                else
-                {
-                    QList<QTreeWidgetItem *> subItems;
-                    getAllSubTreeItems(item, subItems);
-                    for(int s=0; s<subItems.size(); ++s)
-                    {
-                        if(isComponentItem(subItems[s]))
-                        {
-                            typeNames.append(mItemToTypeNameMap.find(subItems[s]).value());
-                        }
-                    }
-                    if(pReply != pRecompileAction &&
-                       pReply != pReloadAction &&
-                       !gpLibraryHandler->isTypeNamesOkToUnload(typeNames))
-                    {
-                        return;
-                    }
-                }
-                // Handle unload
-                if (pReply == pUnloadAllAction || pReply == pUnloadAction)
-                {
-                    for(const QString &typeName : typeNames)
-                    {
-                        gpLibraryHandler->unloadLibraryByComponentType(typeName);
-                    }
-                }
-                // Handle reload
-                else if (pReply == pReloadAction && !typeNames.isEmpty())
-                {
-                    gpModelHandler->saveState();
-                    ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
-                    if (le.pLibrary)
-                    {
-                        // First unload the library
-                        QString libPath = le.pLibrary->xmlFilePath;
-                        bool rc = gpLibraryHandler->unloadLibraryByComponentType(typeNames.first());
-                        // NOTE! Now le and le.pLibrary is useless the pointer is dangling
-                        if (rc)
-                        {
-                            // Now reload the library
-                            gpLibraryHandler->loadLibrary(libPath);
-                        }
-                    }
-                    gpModelHandler->restoreState();
-                }
-                // Handle recompile
-                else if ((pReply == pRecompileAction) && !typeNames.isEmpty())
-                {
-                    gpModelHandler->saveState();
-                    ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
-                    if (le.pLibrary)
-                    {
-                        // First unload the library
-                        QString libPath = le.pLibrary->xmlFilePath;
-                        bool rc = gpLibraryHandler->unloadLibraryByComponentType(typeNames.first());
-                        // NOTE! Now le and le.pLibrary is useless the pointer is dangling
-                        if (rc)
-                        {
-                            // We use the core generator directly to avoid calling the save state code in the library handler it does not seem to be working so well
-                            // But since we only need to unload one particular library this should work
-                            //! @todo fix the problem with save state
-                            auto spGenerator = createDefaultImportGenerator();
-                            bool compiledOK = spGenerator->compileComponentLibrary(libPath);
-                            if (!compiledOK)
-                            {
-                                gpMessageHandler->addErrorMessage("Library compiler failed");
-                            }
-
-                            // Now reload the library
-                            gpLibraryHandler->loadLibrary(libPath);
-                        }
-                    }
-                    gpModelHandler->restoreState();
-                }
-                // Handle check consistency
-                else if ((pReply == pCheckConsistenceAction) && !typeNames.isEmpty())
-                {
-                    ComponentLibraryEntry le = gpLibraryHandler->getEntry(typeNames.first());
-                    if (le.pLibrary)
-                    {
-                        auto spGenerator = createDefaultGenerator(false);
-                        bool checkOK = spGenerator->checkComponentLibrary(le.pLibrary->xmlFilePath);
-                        if (!checkOK) {
-                            gpMessageHandler->addWarningMessage(QString("The library '%1' has inconsistent component registration, this may cause exported models to fail.").arg(le.pLibrary->xmlFilePath));
-                        }
-                    }
+            // Handle unload
+            if (pReply == pUnloadAction) {
+                gpLibraryHandler->unloadLibrary(mItemToLibraryMap[item]);
+            }
+            // Handle unload all
+            else if(pReply == pUnloadAllAction) {
+                QVector<SharedComponentLibraryPtrT> libs = gpLibraryHandler->getLibraries(ExternalLib);
+                for(SharedComponentLibraryPtrT pLib : libs) {
+                    gpLibraryHandler->unloadLibrary(pLib);
                 }
             }
-            else if(pReply == pOpenFolderAction)
-            {
-                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath()));
+            // Handle reload
+            else if (pReply == pReloadAction) {
+                gpModelHandler->saveState();
+                // First unload the library
+                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                QString libPath = pLib->xmlFilePath;
+                   if (gpLibraryHandler->unloadLibrary(pLib)) {
+                    // Now reload the library
+                    gpLibraryHandler->loadLibrary(libPath);
+                }
+                gpModelHandler->restoreState();
+            }
+            // Handle recompile
+            else if (pReply == pRecompileAction) {
+                gpModelHandler->saveState();
+                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                // First unload the library
+                QString libPath = pLib->xmlFilePath;
+                if (gpLibraryHandler->unloadLibrary(pLib)) {
+                    // We use the core generator directly to avoid calling the save state code in the library handler it does not seem to be working so well
+                    // But since we only need to unload one particular library this should work
+                    //! @todo fix the problem with save state
+                    auto spGenerator = createDefaultImportGenerator();
+                    if (!spGenerator->compileComponentLibrary(libPath)) {
+                        gpMessageHandler->addErrorMessage("Library compiler failed");
+                    }
+
+                    // Now reload the library
+                    gpLibraryHandler->loadLibrary(libPath);
+                }
+                gpModelHandler->restoreState();
+            }
+            // Handle check consistency
+            else if (pReply == pCheckConsistenceAction) {
+                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                auto spGenerator = createDefaultGenerator(false);
+                if (!spGenerator->checkComponentLibrary(pLib->xmlFilePath)) {
+                    gpMessageHandler->addWarningMessage(QString("The library '%1' has inconsistent component registration, this may cause exported models to fail.").arg(pLib->xmlFilePath));
+                }
+            }
+            else if(pReply == pOpenFolderAction) {
+                QString path;
+                if(pFirstSubComponentItem == nullptr) {
+                    path = QFileInfo(mItemToLibraryMap[item]->libFilePath).absolutePath();
+                }
+                else {
+                    path = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath();
+                }
+                QDesktopServices::openUrl(QUrl("file:///" + path));
             }
             else if(pReply == pEditXMLAction) {
                 if(!isComponentItem(item)) {

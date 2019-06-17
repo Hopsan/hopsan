@@ -96,11 +96,13 @@ public:
     void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
     bool unloadLibraryByComponentType(QString typeName);
     bool unloadLibraryFMU(QString fmuName);
+    bool unloadLibrary(SharedComponentLibraryPtrT pLibrary);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
     bool isLibraryLoaded(const QString &rLibraryXmlPath, const QString &rLibraryFilePath="") const;
     QStringList getLoadedLibraryNames() const;
     const SharedComponentLibraryPtrT getLibrary(const QString& id) const;
     const QVector<SharedComponentLibraryPtrT> getLibraries(const QStringList& ids, const LibraryTypeEnumT type=LibraryTypeEnumT::AnyLib) const;
+    const QVector<SharedComponentLibraryPtrT> getLibraries(const LibraryTypeEnumT type=LibraryTypeEnumT::AnyLib) const;
 
     void recompileLibrary(SharedComponentLibraryPtrT pLib, int solver=0, bool dontUnloadAndLoad=false);
 
@@ -124,7 +126,7 @@ signals:
     void contentsChanged();
 
 private:
-    bool unloadLibrary(SharedComponentLibraryPtrT pLibrary);
+
     bool loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
 
     // Library contents
