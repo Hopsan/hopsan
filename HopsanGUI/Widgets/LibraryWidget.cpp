@@ -716,7 +716,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QAction *pUnloadAllAction = contextMenu.addAction("Unload All External Libraries");
             QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
             QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
-            QAction *pEditXMLAction = contextMenu.addAction("Edit Component Appearance (XML)");
+            QAction *pEditXMLAction = contextMenu.addAction("Edit XML Description");
             QAction *pEditCodeAction = contextMenu.addAction("Edit Source Code");
             QAction *pRecompileAction = contextMenu.addAction("Recompile");
             QAction *pReloadAction = contextMenu.addAction("Reload");
@@ -873,8 +873,17 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath()));
             }
             else if(pReply == pEditXMLAction) {
-                QFileInfo xmlFile = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getXMLFile();
-                gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
+                if(!isComponentItem(item)) {
+                    //Edit library XML file
+                    SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
+                    if (pLibrary) {
+                        gpModelHandler->loadTextFile(pLibrary->xmlFilePath);
+                    }
+                }
+                else {
+                    QFileInfo xmlFile = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getXMLFile();
+                    gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
+                }
             }
             else if(pReply == pEditCodeAction) {
                 if(!isComponentItem(item)) {
