@@ -25,13 +25,6 @@
 #ifndef <<<uppertypename>>>_HPP_INCLUDED
 #define <<<uppertypename>>>_HPP_INCLUDED\n
 
-//*******************************************//
-//             *** WARNING ***               //
-//                                           //
-//         AUTO GENERATED COMPONENT!         //
-// ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-//*******************************************//
-
 #include <math.h>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
@@ -60,81 +53,38 @@ namespace hopsan {
         //Configure
         void configure()
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
-<<<regpar>>>
-
-<<<addports>>>
-
+            <<<regpar>>>
+            <<<addports>>>
             <<<confcode>>>
         }
         
         //Initialize
         void initialize()
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-            
             <<<initvars>>>
-
             <<<getdataptrs>>>
-
             <<<readinputs>>>
-
             <<<initcode>>>
-            
             <<<writeoutputs>>>
         }
 
         //Simulate one time step
         void simulateOneTimestep()
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-            
             <<<readinputs>>>
-            
             <<<simulatecode>>>
-
             <<<writeoutputs>>>
         }
 
         //Finalize
         void finalize()
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-           
             <<<finalcode>>>
         }
 
         //Finalize
         void deconfigure()
         {
-            //*******************************************//
-            //             *** WARNING ***               //
-            //                                           //
-            //         AUTO GENERATED COMPONENT!         //
-            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
-            //*******************************************//
-
             <<<deconfcode>>>
         }
 

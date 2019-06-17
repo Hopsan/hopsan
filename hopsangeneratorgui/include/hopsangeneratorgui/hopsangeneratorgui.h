@@ -49,6 +49,8 @@ public:
 
     bool checkComponentLibrary(const QString& libraryXMLPath);
 
+    bool addComponentToLibrary(const QString& libraryXmlPath, const QString& typeName, const QString& displayName);
+
     void printMessage(const QString& msg, const char type='I');
     void printErrorMessage(const QString& msg);
     void printWarningMessage(const QString& msg);

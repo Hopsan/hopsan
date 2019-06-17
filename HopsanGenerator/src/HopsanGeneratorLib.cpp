@@ -336,3 +336,64 @@ bool callExeExportGenerator(const char* outputPath, void* pHopsanSystem, const c
     return pGenerator->generateToExe(outputPath, static_cast<hopsan::ComponentSystem*>(pHopsanSystem), externalLibs, isArchitecture64);
 }
 
+
+//! @brief Adds a component to an existing library
+//! @param[in] libraryXmlPath Absolute path to library XML file
+//! @param[in] librarySourcePath Path to library CPP file relative to path for library XML file
+//! @param[in] typeName Typename for new component
+//! @param[in] displayName Display name for new component
+bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName, const char* displayName, messagehandler_t messageHandler, void* pMessageObject)
+{
+    QFileInfo xmlPath(libraryXmlPath);
+    QString cafPath = xmlPath.absoluteDir().absoluteFilePath(QString(typeName)+".xml");
+    QString hppPath = xmlPath.absoluteDir().absoluteFilePath(QString(typeName)+".hpp");
+
+    QString dummy;
+    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(dummy, dummy));
+    pGenerator->setMessageHandler(messageHandler, pMessageObject);
+
+    //Generate CAF file for new component
+    ComponentAppearanceSpecification cafSpec(typeName);
+    cafSpec.mDisplayName = displayName;
+    cafSpec.mSourceCode = QFileInfo(hppPath).fileName();
+    cafSpec.mRecompilable = true;
+    if(!pGenerator->generateCafFile(cafPath, cafSpec)) {
+        pGenerator->printErrorMessage("Failed to generate component appearance file.");
+        return false;
+    };
+
+    //Generate source file for new component
+    ComponentSpecification compSpec;
+    compSpec.typeName = typeName;
+    compSpec.displayName = displayName;
+    compSpec.cqsType = "S";   //Hard-coded for now
+    if(!pGenerator->generateComponentSourceFile(hppPath, compSpec)) {
+        pGenerator->printErrorMessage("Failed to generate component source file.");
+        return false;
+    };
+
+    //Load component library from XML
+    ComponentLibrary lib;
+    if(!lib.loadFromXML(xmlPath.absoluteFilePath())) {
+        pGenerator->printErrorMessage("Cannot open "+xmlPath.absoluteFilePath()+" for reading.");
+        return false;
+    }
+
+    //Add new component to library
+    lib.mComponentXMLFiles.append(QFileInfo(cafPath).fileName());
+    lib.mComponentCodeFiles.append(QFileInfo(hppPath).fileName());
+
+    //Write back component library to XML
+    if(!lib.saveToXML(xmlPath.absoluteFilePath())) {
+        pGenerator->printErrorMessage("Cannot open "+xmlPath.absoluteFilePath()+" for writing.");
+        return false;
+    }
+
+    //Generate main source file
+    if(!pGenerator->generateLibrarySourceFile(lib)) {
+        pGenerator->printErrorMessage("Failed to generate library source file.");
+        return false;
+    };
+
+    return true;
+}

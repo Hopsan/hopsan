@@ -52,7 +52,6 @@
 #include "Port.h"
 #include "HopsanCoreVersion.h"
 
-
 using namespace SymHop;
 using namespace hopsan;
 
@@ -187,7 +186,6 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
 
 
     //Declare node data pointers
-    QString dataPtrDeclarations = "        double ";
     portId=1;
     QStringList allVarNames;
     for(int i=0; i<comp.portNames.size(); ++i)
@@ -209,28 +207,32 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         }
         ++portId;
     }
+    QString dataPtrDeclarations;
     if(!allVarNames.isEmpty())
     {
+        dataPtrDeclarations = "        double ";
         dataPtrDeclarations.append("*mpND_"+allVarNames[0]);
         for(int i=1; i<allVarNames.size(); ++i)
         {
             dataPtrDeclarations.append(", *mpND_"+allVarNames[i]);
         }
+        dataPtrDeclarations.append(";\n");
     }
-    dataPtrDeclarations.append(";\n");
-
 
     //Declare ports
-    QString portDeclarations = "        Port ";
-    for(int i=0; i<comp.portNames.size(); ++i)
-    {
-        portDeclarations.append("*mp"+comp.portNames[i]);
-        if(i<comp.portNames.size()-1)
+    QString portDeclarations;
+    if(!comp.portNames.isEmpty()) {
+        portDeclarations = "        Port ";
+        for(int i=0; i<comp.portNames.size(); ++i)
         {
-            portDeclarations.append(", ");
+            portDeclarations.append("*mp"+comp.portNames[i]);
+            if(i<comp.portNames.size()-1)
+            {
+                portDeclarations.append(", ");
+            }
         }
+        portDeclarations.append(";\n");
     }
-    portDeclarations.append(";\n");
 
 
 //    //Initialize parameters
@@ -927,6 +929,73 @@ bool HopsanGeneratorBase::generateCafFile(QString &rPath, ComponentAppearanceSpe
     domDocument.save(out, 2);
     fmuCafFile.close();
 
+    return true;
+}
+
+bool HopsanGeneratorBase::generateComponentSourceFile(QString &path, ComponentSpecification &comp)
+{
+    QFile hppFile;
+    hppFile.setFileName(path);
+    if(!hppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Could not open "+QFileInfo(path).absoluteFilePath()+" for writing.");
+        return false;
+    }
+
+    QTextStream out(&hppFile);
+    out << generateSourceCodefromComponentSpec(comp);
+
+    hppFile.close();
+    return true;
+}
+
+bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
+{
+    if(lib.mSourceFiles.isEmpty()) {
+        printErrorMessage("No library source file specified in "+lib.mLoadFilePath);
+        return false;
+    }
+    QString srcPath = QFileInfo(lib.mLoadFilePath).absoluteDir().absoluteFilePath(lib.mSourceFiles.first());
+    QFile srcFile(srcPath);
+    if(!srcFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        printErrorMessage("Cannot open "+srcPath+" for writing.");
+        return false;
+    }
+
+    QString output;
+    output.append(QString("#include <iostream>\n"));
+    output.append(QString("#include \"ComponentEssentials.h\"\n"));
+    for(const QString srcFile : lib.mComponentCodeFiles) {
+        output.append("#include \""+srcFile+"\"\n");
+    }
+    output.append("\n");
+    output.append("using namespace hopsan;\n");
+    output.append("\n");
+    output.append("extern \"C\" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)\n");
+    output.append("{\n");
+    output.append("    std::cerr << \"Running register function in "+lib.mName+" dll\";\n");
+    output.append("\n");
+    output.append("    //Register Components\n");
+    output.append("\n");
+    for(const QString srcFile : lib.mComponentCodeFiles) {
+        QString typeName = QFileInfo(srcFile).baseName();
+        output.append("pComponentFactory->registerCreatorFunction(\""+typeName+"\", "+typeName+"::Creator);\n");
+    }
+    output.append("\n");
+    output.append("    //Register custom nodes (if any)\n");
+    output.append("    HOPSAN_UNUSED(pNodeFactory);\n");
+    output.append("}\n");
+    output.append("\n");
+    output.append("extern \"C\" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)\n");
+    output.append("{\n");
+    output.append("    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n");
+    output.append("    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n");
+    output.append("    pHopsanExternalLibInfo->libName = (char*)\"Epiroc_Rotational_Lib\";\n");
+    output.append("}\n");
+
+    QTextStream out(&srcFile);
+    out << output;
+    srcFile.close();
     return true;
 }
 

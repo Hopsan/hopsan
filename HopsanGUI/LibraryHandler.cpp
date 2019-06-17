@@ -48,6 +48,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 
+#include <iostream>
+
 //Hopsan includes
 #include "LibraryHandler.h"
 #include "global.h"
@@ -367,6 +369,22 @@ const QVector<SharedComponentLibraryPtrT> LibraryHandler::getLibraries(const Lib
     }
     return result;
 }
+
+void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, const QString &typeName, const QString &displayName)
+{
+    auto pGenerator = createDefaultGenerator(true);
+    pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, typeName, displayName);
+
+    gpModelHandler->saveState();
+    // First unload the library
+    QString libPath = pLibrary->xmlFilePath;
+    if (unloadLibrary(pLibrary)) {
+        // Now reload the library
+        loadLibrary(libPath);
+    }
+    gpModelHandler->restoreState();
+}
+
 
 //! @brief Unloads library by component type name
 //! @param typeName Type name of any component in the library
