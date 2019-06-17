@@ -221,8 +221,7 @@ void LibraryWidget::update()
     QFont boldFont = qApp->font();
     boldFont.setBold(true);
 
-    Q_FOREACH(const QString typeName, gpLibraryHandler->getLoadedTypeNames())
-    {
+    for(const QString typeName : gpLibraryHandler->getLoadedTypeNames()) {
         ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
         if(entry.visibility == Hidden || !(entry.pAppearance->getDisplayName().toLower().contains(filter.toLower())))
         {
@@ -317,6 +316,9 @@ void LibraryWidget::update()
         pComponentItem->setIcon(0, entry.pAppearance->getIcon(mGfxType));
         pComponentItem->setText(0, entry.pAppearance->getDisplayName());
         pComponentItem->setToolTip(0, entry.pAppearance->getDisplayName());
+        if(Disabled == entry.disabled) {
+            pComponentItem->setTextColor(0, QColor("red"));
+        }
         if(pItem)
         {
             pItem->addChild(pComponentItem);
@@ -557,35 +559,38 @@ void LibraryWidget::update()
 
 void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 {
+    qDebug() << "Item click on: " << item->text(0);
+
     Q_UNUSED(column)
     if(isComponentItem(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
+        if(gpLibraryHandler->getEntry(typeName).disabled == Enabled) {
+            QIcon icon;
+            if(typeName.startsWith(QString(MODELICATYPENAME)+"_"))
+            {
+                icon = item->icon(0);
+            }
+            else
+            {
+                SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+                QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
+                icon.addFile(iconPath,QSize(55,55));
+            }
 
-        QIcon icon;
-        if(typeName.startsWith(QString(MODELICATYPENAME)+"_"))
-        {
-            icon = item->icon(0);
+            //Create the mimedata (text with type name)
+            QMimeData *mimeData = new QMimeData;
+            mimeData->setText(typeName);
+
+            //Initiate the drag operation
+            QDrag *drag = new QDrag(this);
+            drag->setMimeData(mimeData);
+            drag->setPixmap(icon.pixmap(40,40));
+            drag->setHotSpot(QPoint(20, 20));
+            drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+            gpHelpPopupWidget->hide();
         }
-        else
-        {
-            SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
-            QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
-            icon.addFile(iconPath,QSize(55,55));
-        }
-
-        //Create the mimedata (text with type name)
-        QMimeData *mimeData = new QMimeData;
-        mimeData->setText(typeName);
-
-        //Initiate the drag operation
-        QDrag *drag = new QDrag(this);
-        drag->setMimeData(mimeData);
-        drag->setPixmap(icon.pixmap(40,40));
-        drag->setHotSpot(QPoint(20, 20));
-        drag->exec(Qt::CopyAction | Qt::MoveAction);
-
-        gpHelpPopupWidget->hide();
     }
     else if(mItemToModelicaFileNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
     {

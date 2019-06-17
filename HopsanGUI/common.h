@@ -90,6 +90,7 @@ enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue
 enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
 enum LibraryTypeEnumT {AnyLib, InternalLib, ExternalLib, FmuLib};
 enum HiddenVisibleEnumT {Hidden, Visible};
+enum EnabledDisabledEnumT {Enabled, Disabled};
 enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
 enum class ArchitectureEnumT {x86, x64};
 
