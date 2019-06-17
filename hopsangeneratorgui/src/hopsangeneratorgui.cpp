@@ -490,6 +490,7 @@ bool HopsanGeneratorGUI::generateLibrary(const QString& outputPath, const QStrin
     return didOK;
 }
 
+
 bool HopsanGeneratorGUI::compileComponentLibrary(const QString& libPath, const QString& extraCFlags,
                                                  const QString& extraLFlags)
 {
@@ -523,6 +524,28 @@ bool HopsanGeneratorGUI::checkComponentLibrary(const QString& libraryXMLPath)
     bool checkOK = mPrivates->call<CheckLibraryFunction_t>(forwarder, functionName, libpath.c_str(), &messageHandler, static_cast<void*>(&forwarder));
     lw->setDidSucceed(checkOK);
     return checkOK;
+}
+
+
+bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, const QString &typeName, const QString &displayName)
+{
+    auto lw = mPrivates->createNewWidget();
+    loadGeneratorLibrary();
+
+    constexpr auto functionName = "callAddComponentToLibrary";
+    const auto libpath = libraryXmlPath.toStdString();
+    MessageForwarder forwarder(lw->widget());
+    const auto xmlpath = libraryXmlPath.toStdString();
+    const auto typenamestr = typeName.toStdString();
+    const auto displayname = displayName.toStdString();
+
+    using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, MessageHandler_t, void*);
+    bool checkOK = mPrivates->call<AddComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), typenamestr.c_str(), displayname.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(checkOK);
+    return checkOK;
+
+
+
 }
 
 void HopsanGeneratorGUI::printMessage(const QString &msg, const char type)

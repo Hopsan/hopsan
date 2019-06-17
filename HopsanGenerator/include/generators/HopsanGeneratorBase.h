@@ -84,6 +84,8 @@ public:
     void compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
     bool generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags=QStringList(), QStringList lflags=QStringList(), QStringList includePaths=QStringList(), QStringList linkPaths=QStringList(), QStringList linkLibraries=QStringList());
     bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
+    bool generateComponentSourceFile(QString &path, ComponentSpecification &comp);
+    bool generateLibrarySourceFile(const ComponentLibrary &lib);
 
 protected:
     QString generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues=false) const;

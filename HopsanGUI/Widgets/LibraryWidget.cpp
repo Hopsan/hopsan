@@ -40,6 +40,7 @@
 #include <QGridLayout>
 #include <QCompleter>
 #include <QStringListModel>
+#include <QInputDialog>
 
 //Hopsan includes
 #include "global.h"
@@ -750,6 +751,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QAction *pRecompileAction = contextMenu.addAction("Recompile");
             QAction *pReloadAction = contextMenu.addAction("Reload");
             QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
+            QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
             pUnloadAllAction->setEnabled(false);
             pUnloadAction->setEnabled(false);
             pOpenFolderAction->setEnabled(false);
@@ -758,6 +760,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             pRecompileAction->setEnabled(false);
             pReloadAction->setEnabled(false);
             pCheckConsistenceAction->setEnabled(false);
+            pAddComponentAction->setEnabled(false);
 
             QTreeWidgetItem *pFirstSubComponentItem = item;
 
@@ -788,6 +791,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 pUnloadAction->setEnabled(true);
                 pReloadAction->setEnabled(true);
                 pCheckConsistenceAction->setEnabled(true);
+                pAddComponentAction->setEnabled(true);
             }
 
             //Enable unloading of FMUs
@@ -857,6 +861,11 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 if (!spGenerator->checkComponentLibrary(pLib->xmlFilePath)) {
                     gpMessageHandler->addWarningMessage(QString("The library '%1' has inconsistent component registration, this may cause exported models to fail.").arg(pLib->xmlFilePath));
                 }
+            }
+            else if(pReply == pAddComponentAction) {
+                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                QString typeName = QInputDialog::getText(this,"Add component","Type name: ");
+                gpLibraryHandler->addComponentToLibrary(pLib, typeName, typeName);
             }
             else if(pReply == pOpenFolderAction) {
                 QString path;

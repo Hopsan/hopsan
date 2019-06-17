@@ -104,6 +104,11 @@ public:
     const QVector<SharedComponentLibraryPtrT> getLibraries(const QStringList& ids, const LibraryTypeEnumT type=LibraryTypeEnumT::AnyLib) const;
     const QVector<SharedComponentLibraryPtrT> getLibraries(const LibraryTypeEnumT type=LibraryTypeEnumT::AnyLib) const;
 
+
+    void addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, const QString &typeName, const QString &displayName);
+    void generateCafFile(const QString &target, const QString &typeName, const QString &displayName, const QString &srcFile);
+    void generateMainSource(SharedComponentLibraryPtrT pLibrary);
+
     void recompileLibrary(SharedComponentLibraryPtrT pLib, int solver=0, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames() const;
@@ -113,6 +118,7 @@ public:
 
     void addReplacement(QString type1, QString type2);
     QStringList getReplacements(QString type);
+
 
 public slots:
     void importFmu();
