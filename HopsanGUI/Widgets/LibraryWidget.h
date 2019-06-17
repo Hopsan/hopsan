@@ -78,6 +78,7 @@ protected:
 private:
 
     void getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTreeWidgetItem *> &rSubItems);
+    bool isComponentItem(QTreeWidgetItem *item);
 
     //GUI Stuff
     QTreeWidget *mpTree;
