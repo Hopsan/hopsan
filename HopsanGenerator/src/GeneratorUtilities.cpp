@@ -207,11 +207,17 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
 
     CompilerHandler ch(CompilerHandler::Language::Cpp);
     ch.addIncludePath(pGenerator->getHopsanCoreIncludePath());
+    for(QString includePath : cl.mIncludePaths) {
+        ch.addIncludePath(includePath);
+    }
     ch.addCompilerFlag("-fPIC -w", {Compiler::GCC, Compiler::Clang});
     //! @todo setting rpath here is strange, as it will hard-code given path into dll (so if you move it it wont work) /Peter
     ch.addCompilerFlag(QString(R"(-Wl,--rpath,"%1")").arg(libRootDir), Compiler::GCC);
 
     ch.addLibraryPath(pGenerator->getHopsanBinPath());
+    for(QString linkPath : cl.mLinkPaths) {
+        ch.addLibraryPath(linkPath);
+    }
     CompilerHandler::BuildType buildType = CompilerHandler::BuildType::Release;
 #if defined(DEBUGCOMPILING)
     buildType = CompilerHandler::BuildType::Debug;
@@ -223,6 +229,9 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addLinkLibrary("hopsancore");
 #endif
     ch.addLinkLibrary("c++", {Compiler::Clang});
+    for(QString linkLibPath : cl.mLinkLibraries) {
+        ch.addIncludePath(linkLibPath);
+    }
 
     ch.addBuildFlags(cl.mBuildFlags);
     ch.addCompilerFlag(extraCFlags);
@@ -238,7 +247,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     pGenerator->printMessage("Work Directory: "+libRootDir);
     pGenerator->printMessage("Output file:    "+ch.outputFile());
     pGenerator->printMessage("Source files:   "+ch.sourceFiles().join(" "));
-    pGenerator->printMessage("Compiler flags: "+ch.compilerFlags(compilerSelection.compiler).join(" "));
+    pGenerator->printMessage("Compiler flags: "+ch.compilerFlags(compilerSelection.compiler).join(" ")+" ");
     pGenerator->printMessage("Linker flags:   "+ch.linkerFlags(compilerSelection.compiler).join(" "));
     pGenerator->printMessage("\n");
 

@@ -87,7 +87,7 @@ bool HopsanExeGenerator::generateToExe(QString savePath, ComponentSystem *pSyste
         return false;
     }
 
-    if(!copyExternalComponentCodeToDir(buildPath, externalLibraries, mExtraSourceFiles)) {
+    if(!copyExternalComponentCodeToDir(buildPath, externalLibraries, mExtraSourceFiles, mIncludePaths, mLinkPaths, mLinkLibraries)) {
         printErrorMessage("Failed to export required external component library files.");
         return false;
     }
@@ -160,9 +160,12 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
         compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
-    Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
+    for(const QString includePath : getHopsanCoreIncludePaths())
     {
-       compileCppBatchStream << QString(" -I\"%1\"").arg(incPath);
+       compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    for(const QString includePath : mIncludePaths) {
+        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
     }
     compileCppBatchFile.close();
 
@@ -184,9 +187,11 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
         compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
-    Q_FOREACH(const QString &incPath, getHopsanCoreIncludePaths())
-    {
-       compileCppBatchStream << QString(" -I\"%1\"").arg(incPath);
+    for(const QString includePath : getHopsanCoreIncludePaths()) {
+        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    for(const QString includePath : mIncludePaths) {
+        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
     }
     compileCppBatchFile.close();
 
@@ -248,6 +253,12 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
         linkBatchStream << " " << objFile;
     }
     linkBatchStream << " -o "+outputExecutableFile+"\n";
+    for(const QString linkPaths : mLinkPaths) {
+        linkBatchStream << " -L" << linkPaths;
+    }
+    for(const QString linkLibrary : mLinkLibraries) {
+        linkBatchStream << " -l" << linkLibrary;
+    }
     linkBatchFile.close();
 
     linkingOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + buildPath + " & link.bat");
@@ -267,7 +278,14 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     {
         linkBatchStream << " " << objFile;
     }
-    linkBatchStream << " -o "+outputExecutableFile+" -ldl\n";
+    for(const QString linkPaths : mLinkPaths) {
+        linkBatchStream << " -L" << linkPaths;
+    }
+    for(const QString linkLibrary : mLinkLibraries) {
+        linkBatchStream << " -l" << linkLibrary;
+    }
+    linkBatchStream << " -ldl";
+    linkBatchStream << " -o "+outputExecutableFile << "\n";
     linkBatchFile.close();
 
     linkingOK = callProcess("/bin/sh", QStringList() << "link.sh", buildPath);

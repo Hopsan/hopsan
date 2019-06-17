@@ -40,6 +40,9 @@
 #define XML_LIBRARY_CAF "caf"
 #define XML_LIBRARY_SOURCE "source"
 #define XML_LIBRARY_EXTRA_SOURCE "extrasource"
+#define XML_LIBRARY_INCLUDEPATH "includepath"
+#define XML_LIBRARY_LINKPATH "linkpath"
+#define XML_LIBRARY_LINKLIBRARY "linklibrary"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -526,6 +529,24 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         }
                         //! @todo handle other elements such as includepath libpath libflag defineflag and such
                         bfElement = bfElement.nextSiblingElement();
+                    }
+
+                    QDomElement includePathElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_INCLUDEPATH));
+                    while(!includePathElement.isNull()) {
+                        pLibrary->includePaths.append(includePathElement.text());
+                        includePathElement = includePathElement.nextSiblingElement(QString(XML_LIBRARY_INCLUDEPATH));
+                    }
+
+                    QDomElement linkPathElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_LINKPATH));
+                    while(!linkPathElement.isNull()) {
+                        pLibrary->linkPaths.append(linkPathElement.text());
+                        linkPathElement = linkPathElement.nextSiblingElement(QString(XML_LIBRARY_LINKPATH));
+                    }
+
+                    QDomElement linkLibraryElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_LINKLIBRARY));
+                    while(!linkLibraryElement.isNull()) {
+                        pLibrary->linkLibraries.append(linkLibraryElement.text());
+                        linkLibraryElement = linkLibraryElement.nextSiblingElement(QString(XML_LIBRARY_LINKLIBRARY));
                     }
 
                     // Read source files

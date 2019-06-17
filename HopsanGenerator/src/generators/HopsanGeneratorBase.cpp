@@ -732,7 +732,7 @@ void HopsanGeneratorBase::compileFromComponentSpecification(const QString &outpu
 //! @param[in] hppFiles Relative path to hpp files
 //! @param[in] cflags Compiler flags required for building the library
 //! @param[in] lflags Linker flags required for building the library
-bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags)
+bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags, QStringList includePaths, QStringList linkPaths, QStringList linkLibraries)
 {
     printMessage("Creating new component library...");
 
@@ -797,6 +797,9 @@ bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
     lib.mSharedLibraryDebugExtension = "_d";
     lib.mSourceFiles.append(libName+".cpp");
     lib.mBuildFlags.append(BuildFlags(cflags, lflags));
+    lib.mIncludePaths = includePaths;
+    lib.mLinkPaths = linkPaths;
+    lib.mLinkLibraries = linkLibraries;
 
     const QString libFilePath = dstPath+libName+"_lib.xml";
     bool saveOK = lib.saveToXML(libFilePath);
@@ -1061,7 +1064,7 @@ bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) con
 //! @param[in] destinationPath Path to copy to
 //! @param[in] externalLibraries List with paths to external component libraries
 //! @param[in,out] extraSourceFiles List with additional source files, which will not be copied (absolute paths are returned)
-bool HopsanGeneratorBase::copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList &rExtraSourceFiles) const
+bool HopsanGeneratorBase::copyExternalComponentCodeToDir(const QString &destinationPath, const QStringList &externalLibraries, QStringList &rExtraSourceFiles, QStringList &rIncludePaths, QStringList &rLinkPaths, QStringList &rLinkLibraries) const
 {
     QDir componentLibrariesDestinationPath;
     componentLibrariesDestinationPath.setPath(destinationPath);
@@ -1132,10 +1135,18 @@ void hopsan::register_extra_components(hopsan::ComponentFactory* pComponentFacto
             }
 
             QString generatorErrorMessage;
-            for(int i=0; i<lib.mExtraSourceFiles.size(); ++i) {
-                lib.mExtraSourceFiles[i] = QDir(libraryRootPath).filePath(lib.mExtraSourceFiles[i]);
+            for(const QString extraSourceFile : lib.mExtraSourceFiles) {
+                rExtraSourceFiles.append(QDir(libraryRootPath).filePath(extraSourceFile));
             }
-            rExtraSourceFiles.append(lib.mExtraSourceFiles);
+            for(const QString includePath : lib.mIncludePaths) {
+                rIncludePaths.append(QDir(libraryRootPath).filePath(includePath));
+            }
+            for(const QString linkPath : lib.mLinkPaths) {
+                rLinkPaths.append(QDir(libraryRootPath).filePath(linkPath));
+            }
+            for(const QString linkLibrary : lib.mLinkLibraries) {
+                rLinkLibraries.append(QDir(libraryRootPath).filePath(linkLibrary));
+            }
             bool genOK = lib.generateRegistrationCode(libraryRootPath, externalLibraryIncludeCode, externalLibraryRegistrationCode, generatorErrorMessage);
             if (!genOK) {
                 printErrorMessage(QString("Failed to generate code for library %1, Error: %2").arg(libpath).arg(generatorErrorMessage));

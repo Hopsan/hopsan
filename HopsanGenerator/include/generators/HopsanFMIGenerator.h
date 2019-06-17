@@ -59,6 +59,9 @@ private:
     bool compressFiles(const QString &fmuStagePath, const QString &modelName) const;
 
     QStringList mExtraSourceFiles;
+    QStringList mIncludePaths;
+    QStringList mLinkPaths;
+    QStringList mLinkLibraries;
 };
 
 #endif // HOPSANFMIGENERAETOR_H

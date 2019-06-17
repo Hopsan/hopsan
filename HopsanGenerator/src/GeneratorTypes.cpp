@@ -163,6 +163,10 @@ bool ComponentLibrary::saveToXML(QString filepath) const
     replacePattern("<<<cflags>>>", compilerFlagsXml, contents);
     replacePattern("<<<lflags>>>", linkerFlagsXml, contents);
 
+    writeXmlFileList("<<<includepaths>>>", "includepath", mIncludePaths);
+    writeXmlFileList("<<<linkpaths>>>", "linkpath", mLinkPaths);
+    writeXmlFileList("<<<linklibraries>>>", "linklibrary", mLinkLibraries);
+
     QFile outFile(filepath);
     if (outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
         QTextStream outStream(&outFile);
@@ -186,6 +190,9 @@ void ComponentLibrary::clear()
     mComponentXMLFiles.clear();
     mAuxFiles.clear();
     mBuildFlags.clear();
+    mIncludePaths.clear();
+    mLinkPaths.clear();
+    mLinkLibraries.clear();
 }
 
 bool ComponentLibrary::loadFromXML(QString filepath)
@@ -273,6 +280,15 @@ bool ComponentLibrary::loadFromXML(QString filepath)
                     }
                 }
             }
+        }
+        else if (elementName == "includepath") {
+            mIncludePaths.append(reader.readElementText());
+        }
+        else if (elementName == "linkpath") {
+            mLinkPaths.append(reader.readElementText());
+        }
+        else if (elementName == "linklibrary") {
+            mLinkLibraries.append(reader.readElementText());
         }
         else {
             // Discard to proceed
