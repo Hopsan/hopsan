@@ -558,7 +558,7 @@ void LibraryWidget::update()
 void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column)
-    if(mItemToTypeNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
+    if(isComponentItem(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
 
@@ -685,7 +685,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             if(pReply == pUnloadAction)
             {
                 QStringList typeNames;
-                if(mItemToTypeNameMap.contains(item))
+                if(isComponentItem(item))
                 {
                     typeNames.append(mItemToTypeNameMap.find(item).value());
                 }
@@ -734,7 +734,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
             QStringList typeNames;
 
-            while(!mItemToTypeNameMap.contains(pFirstSubComponentItem))
+            while(!isComponentItem(pFirstSubComponentItem))
             {
                 pFirstSubComponentItem = pFirstSubComponentItem->child(0);
                 // If we cant find a subcomponentn then exit
@@ -763,7 +763,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 pUnloadAction->setEnabled(true);
             }
 
-            if(item != nullptr && mItemToTypeNameMap.contains(pFirstSubComponentItem))
+            if(item != nullptr && isComponentItem(pFirstSubComponentItem))
             {
                 pOpenFolderAction->setEnabled(true);
             }
@@ -776,7 +776,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
             if(pReply == pUnloadAllAction || pReply == pUnloadAction || pReply == pRecompileAction || pReply == pReloadAction || pReply == pCheckConsistenceAction)
             {
-                if(mItemToTypeNameMap.contains(item))
+                if(isComponentItem(item))
                 {
                     typeNames.append(mItemToTypeNameMap.find(item).value());
                 }
@@ -786,7 +786,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     getAllSubTreeItems(item, subItems);
                     for(int s=0; s<subItems.size(); ++s)
                     {
-                        if(mItemToTypeNameMap.contains(subItems[s]))
+                        if(isComponentItem(subItems[s]))
                         {
                             typeNames.append(mItemToTypeNameMap.find(subItems[s]).value());
                         }
@@ -877,7 +877,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
             }
             else if(pReply == pEditCodeAction) {
-                if(!mItemToTypeNameMap.contains(item)) {
+                if(!isComponentItem(item)) {
                     //Edit library source files
                     SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
                     if (pLibrary) {
@@ -952,4 +952,9 @@ void LibraryWidget::getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTree
     {
         getAllSubTreeItems(pParentItem->child(c), rSubItems);
     }
+}
+
+bool LibraryWidget::isComponentItem(QTreeWidgetItem *item)
+{
+    return mItemToTypeNameMap.contains(item);
 }
