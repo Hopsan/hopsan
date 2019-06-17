@@ -401,6 +401,12 @@ bool LibraryHandler::unloadLibrary(SharedComponentLibraryPtrT pLibrary)
         core.unLoadComponentLib(pLibrary->libFilePath);
 
         //Remove all unloaded components from library
+        QMutableMapIterator<QString, ComponentLibraryEntry> it(mLibraryEntries);
+        while (it.hasNext()) {
+            it.next();
+            if (it.value().pLibrary == pLibrary)
+                it.remove();
+        }
         for(int c=0; c<components.size(); ++c)
         {
             mLibraryEntries.remove(components[c]);
@@ -431,7 +437,6 @@ bool LibraryHandler::unloadLibrary(SharedComponentLibraryPtrT pLibrary)
 bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
 {
     CoreLibraryAccess coreAccess;
-    bool loadedSomething=false;
 
     QFileInfo libraryMainFileInfo;
     bool isXmlLib=false;
@@ -588,25 +593,18 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                                 {
                                     // Still no success, recompilation failed. Ignore and go on.
                                     gpMessageHandler->addErrorMessage("Failed to load recompiled library!");
-                                    mLoadedLibraries.pop_back(); //Discard library
+                                    //mLoadedLibraries.pop_back(); //Discard library
                                 }
                                 else
                                 {
                                     // Successful loading after recompilation
                                     gpMessageHandler->addInfoMessage("Success loading recompiled library!");
-                                    loadedSomething = true;
                                 }
                             }
                             else
                             {
                                 gpMessageHandler->addWarningMessage("No compiler path set, will not try to recompile the library!");
-                                mLoadedLibraries.pop_back(); //Discard library
                             }
-                        }
-                        else
-                        {
-                            // Successful loading
-                            loadedSomething = true;
                         }
                     }
                 }
@@ -614,17 +612,20 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 {
                     gpMessageHandler->addErrorMessage(QString("The specified XML file does not have Hopsan library root element. Expected: %1, Found: %2, In: %3")
                                                       .arg(XML_LIBRARY).arg(xmlRoot.tagName()).arg(libraryMainFileInfo.canonicalFilePath()));
+                    return false;
                 }
             }
             else
             {
                 gpMessageHandler->addErrorMessage(QString("Could not parse File: %1, Error: %2, Line: %3, Column: %4. Is it a Library XML file?")
                                                   .arg(libraryMainFileInfo.canonicalFilePath()).arg(errorStr).arg(errorLine).arg(errorColumn));
+                return false;
             }
         }
         else
         {
             gpMessageHandler->addErrorMessage(QString("Could not open (read) Library XML file: %1").arg(libraryMainFileInfo.canonicalFilePath()));
+            return false;
         }
         file.close();
     }
@@ -728,27 +729,29 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
 
                     // Verify appearance data loaded from caf file
-                    bool success = true;
+                    bool existsInCore = false;
                     const QString typeName = pAppearanceData->getTypeName();
                     // Do not check in case it is a Subsystem or SystemPort
                     if( !((typeName==HOPSANGUISYSTEMTYPENAME) || (typeName==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (typeName==HOPSANGUICONTAINERPORTTYPENAME)) )
                     {
                         //! @todo maybe they should be reserved in hopsan core instead, then we could aske the core if the exist
                         // Check so that there is such a component available in the Core, or if the component points to an external model file
-                        success = coreAccess.hasComponent(typeName) || !pAppearanceData->getHmfFile().isEmpty();
-                        if(!success)
+                        existsInCore = coreAccess.hasComponent(typeName) || !pAppearanceData->getHmfFile().isEmpty();
+                        if(!existsInCore)
                         {
                             gpMessageHandler->addWarningMessage("Failed to load component of type: "+pAppearanceData->getFullTypeName(), "failedtoloadcomp");
-                            continue;
                         }
                     }
 
                     // Success, add component to library
-                    if (success)
+                    if (true)
                     {
                         auto pLibraryBeingLoaded = mLoadedLibraries.last();
 
                         ComponentLibraryEntry newEntry;
+                        if(!existsInCore) {
+                            newEntry.disabled = Disabled;
+                        }
                         newEntry.pLibrary = pLibraryBeingLoaded;
 
                         // Store appearance data
@@ -806,7 +809,6 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         if(!mLibraryEntries.contains(fullTypeName))
                         {
                             mLibraryEntries.insert(fullTypeName, newEntry);
-                            loadedSomething = true;
                             if(gpSplash)
                             {
                                 gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
@@ -843,19 +845,13 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
 
     gpMessageHandler->collectHopsanCoreMessages();
 
-    if(loadedSomething)
+
+    if(type != InternalLib)
     {
-        if(type != InternalLib)
-        {
-            gpConfig->addUserLib(pLibrary->getLibraryMainFilePath(), type);
-        }
-        emit contentsChanged();
+        gpConfig->addUserLib(pLibrary->getLibraryMainFilePath(), type);
     }
-    else
-    {
-        gpConfig->removeUserLib(pLibrary->getLibraryMainFilePath());
-    }
-    return loadedSomething;
+    emit contentsChanged();
+    return true;
 }
 
 bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)
