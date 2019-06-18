@@ -810,7 +810,7 @@ void CompilerHandler::addBuildFlags(const QVector<BuildFlags> &flags)
 
 void CompilerHandler::addIncludePath(QString ipath, const Compilers compilers)
 {
-    addCompilerFlag(QString("-I%1").arg(ipath), compilers);
+    addCompilerFlag(QString(R"(-I"%1")").arg(ipath), compilers);
 }
 
 void CompilerHandler::addLibraryPath(QString lpath, const Compilers compilers)
@@ -818,9 +818,9 @@ void CompilerHandler::addLibraryPath(QString lpath, const Compilers compilers)
     for (auto compiler : compilers) {
         QString lflag;
         if (compiler == Compiler::MSVC) {
-            lflag = QString("-LIBPATH:%1").arg(lpath);
+            lflag = QString(R"(-LIBPATH:"%1")").arg(lpath);
         } else {
-            lflag = QString("-L%1").arg(lpath);
+            lflag = QString(R"(-L"%1")").arg(lpath);
         }
         addLinkerFlag(lflag, compiler);
     }
