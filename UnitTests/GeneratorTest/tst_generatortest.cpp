@@ -220,7 +220,7 @@ private slots:
 
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
-        std::string outpath = cwd+"/fmu1_32/";
+        std::string outpath = cwd+"/fmu1 32/";
         bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(),
                                                1, 32, &generatorMessageCallback, this);
         if (!exportOK) {
@@ -230,7 +230,7 @@ private slots:
         args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << qcwd+"/fmu1_32/unittestmodel_export.fmu";
+        args << qcwd+"/fmu1 32/unittestmodel_export.fmu";
         p.start(fmuChecker32, args);
         p.waitForFinished();
 
@@ -241,7 +241,7 @@ private slots:
 
         // Run FMUChecker for FMU 2.0 32-bit export
         clearMessages();
-        outpath = cwd+"/fmu2_32/";
+        outpath = cwd+"/fmu2 32/";
         exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(),
                                           2, 32, &generatorMessageCallback, this);
         if (!exportOK) {
@@ -252,7 +252,7 @@ private slots:
         args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << qcwd+"/fmu2_32/unittestmodel_export.fmu";
+        args << qcwd+"/fmu2 32/unittestmodel_export.fmu";
         p.start(fmuChecker32, args);
         p.waitForFinished();
 
@@ -264,7 +264,7 @@ private slots:
 
 #if defined (HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 64-bit export
-        std::string outpath = cwd+"/fmu1_64/";
+        std::string outpath = cwd+"/fmu1 64/";
         bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(),
                                                1, 64, &generatorMessageCallback, this);
         if (!exportOK) {
@@ -275,7 +275,7 @@ private slots:
         args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << qcwd+"/fmu1_64/unittestmodel_export.fmu";
+        args << qcwd+"/fmu1 64/unittestmodel_export.fmu";
         p.start(fmuChecker64, args);
         p.waitForFinished();
 
@@ -286,7 +286,7 @@ private slots:
 
         // Run FMUChecker for FMU 2.0 64-bit export
         clearMessages();
-        outpath = cwd+"/fmu2_64/";
+        outpath = cwd+"/fmu2 64/";
         exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(),
                                           2, 64, &generatorMessageCallback, this);
         if (!exportOK) {
@@ -297,7 +297,7 @@ private slots:
         args << "-s" << testStopTime;
         args << "-l" << "2";
         args << "-o" << "log.txt";
-        args << qcwd+"/fmu2_64/unittestmodel_export.fmu";
+        args << qcwd+"/fmu2 64/unittestmodel_export.fmu";
         p.start(fmuChecker64, args);
         p.waitForFinished();
 
@@ -317,21 +317,21 @@ private slots:
         QFile file(modelpath);
 
 #if !defined (HOPSANCOMPILED64BIT)
-        removeDir(QDir::currentPath()+"/fmu1_32/");
-        removeDir(QDir::currentPath()+"/fmu2_32/");
-        QDir().mkpath(QDir::currentPath()+"/fmu1_32/");
-        QDir().mkpath(QDir::currentPath()+"/fmu2_32/");
-        file.copy(QDir::currentPath()+"/fmu1_32/unittestmodel_export.hmf");
-        file.copy(QDir::currentPath()+"/fmu2_32/unittestmodel_export.hmf");
+        removeDir(QDir::currentPath()+"/fmu1 32/");
+        removeDir(QDir::currentPath()+"/fmu2 32/");
+        QDir().mkpath(QDir::currentPath()+"/fmu1 32/");
+        QDir().mkpath(QDir::currentPath()+"/fmu2 32/");
+        file.copy(QDir::currentPath()+"/fmu1 32/unittestmodel_export.hmf");
+        file.copy(QDir::currentPath()+"/fmu2 32/unittestmodel_export.hmf");
 #endif
 
 #if defined (HOPSANCOMPILED64BIT)
-        removeDir(QDir::currentPath()+"/fmu1_64/");
-        removeDir(QDir::currentPath()+"/fmu2_64/");
-        QDir().mkpath(QDir::currentPath()+"/fmu1_64/");
-        QDir().mkpath(QDir::currentPath()+"/fmu2_64/");
-        file.copy(QDir::currentPath()+"/fmu1_64/unittestmodel_export.hmf");
-        file.copy(QDir::currentPath()+"/fmu2_64/unittestmodel_export.hmf");
+        removeDir(QDir::currentPath()+"/fmu1 64/");
+        removeDir(QDir::currentPath()+"/fmu2 64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu1 64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu2 64/");
+        file.copy(QDir::currentPath()+"/fmu1 64/unittestmodel_export.hmf");
+        file.copy(QDir::currentPath()+"/fmu2 64/unittestmodel_export.hmf");
 #endif
 
         double start, stop;
@@ -348,15 +348,15 @@ private slots:
         std::string fmu2FilePath;
         std::string dst1, dst2;
 #if defined (HOPSANCOMPILED64BIT)
-        fmu1FilePath = cwd + "/fmu1_64/unittestmodel_export.fmu";
-        fmu2FilePath = cwd + "/fmu2_64/unittestmodel_export.fmu";
-        dst1 = cwd + "/import_fmu1_64";
-        dst2 = cwd + "/import_fmu2_64";
+        fmu1FilePath = cwd + "/fmu1 64/unittestmodel_export.fmu";
+        fmu2FilePath = cwd + "/fmu2 64/unittestmodel_export.fmu";
+        dst1 = cwd + "/import_fmu1 64";
+        dst2 = cwd + "/import_fmu2 64";
 #else
-        fmu1FilePath = cwd + "/fmu1_32/unittestmodel_export.fmu";
-        fmu2FilePath = cwd + "/fmu2_32/unittestmodel_export.fmu";
-        dst1 = cwd + "/import_fmu1_32";
-        dst2 = cwd + "/import_fmu2_32";
+        fmu1FilePath = cwd + "/fmu1 32/unittestmodel_export.fmu";
+        fmu2FilePath = cwd + "/fmu2 32/unittestmodel_export.fmu";
+        dst1 = cwd + "/import_fmu1 32";
+        dst2 = cwd + "/import_fmu2 32";
 #endif
         bool importOK1 = callFmuImportGenerator(fmu1FilePath.c_str(), dst1.c_str(), hopsanRoot.c_str(),  gccPath.c_str(), &generatorMessageCallback, this);
         if (!importOK1) {
