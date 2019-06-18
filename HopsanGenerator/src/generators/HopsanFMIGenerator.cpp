@@ -1806,7 +1806,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     }
     //Write the compilation script file
     QTextStream compileBatchCStream(&compileCBatchFile);
-    compileBatchCStream << QString("gcc -fPIC -c fmu%1_model_cs.c -I%2/include").arg(vStr).arg(fmiLibDir)<< "\n";
+    compileBatchCStream << QString("gcc -fPIC -c fmu%1_model_cs.c -I\"%2/include\"").arg(vStr).arg(fmiLibDir)<< "\n";
     compileCBatchFile.close();
 
     cCompileOK = callProcess("/bin/sh", QStringList() << "compileC.sh", fmuBuildPath);
@@ -1937,7 +1937,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     {
         linkBatchStream << " " << objFile;
     }
-    linkBatchStream << " -o "+outputLibraryFile+"\n";
+    linkBatchStream << " -o \""+outputLibraryFile+"\"\n";
     linkBatchFile.close();
 
     linkingOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & link.bat");
@@ -1957,7 +1957,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     {
         linkBatchStream << " " << objFile;
     }
-    linkBatchStream << " -o "+outputLibraryFile+"\n";
+    linkBatchStream << " -o \""+outputLibraryFile+"\"\n";
     linkBatchFile.close();
 
     linkingOK = callProcess("/bin/sh", QStringList() << "link.sh", fmuBuildPath);
