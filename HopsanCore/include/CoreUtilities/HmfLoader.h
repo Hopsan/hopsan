@@ -36,7 +36,6 @@
 
 
 #include <vector>
-#include <ctype.h>
 #include "HopsanTypes.h"
 #include "win32dll.h"
 
@@ -57,7 +56,7 @@ ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials*
 ComponentSystem* loadHopsanModel(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
 ComponentSystem* loadHopsanModel(const char* xmlStr, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModel(char* xmlStr, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
-void loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem);
+void loadHopsanParameterFile(const HString &filePath, HopsanCoreMessageHandler *pMessageHandler, ComponentSystem *pSystem);
 
 }
 

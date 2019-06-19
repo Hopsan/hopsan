@@ -36,6 +36,7 @@
 #include <cstring>
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "ComponentUtilities/num2string.hpp"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
 #include "HopsanCoreVersion.h"
@@ -895,17 +896,16 @@ ComponentSystem* hopsan::loadHopsanModel(char* xmlStr, HopsanEssentials* pHopsan
 
 
 
-//! @brief This function is used to load a HMF file.
-//! @param [in] filePath The name (path) of the HMF file
-//! @param [out] rStartTime A reference to the starttime variable
-//! @param [out] rStopTime A reference to the stoptime variable
-//! @returns A pointer to the rootsystem of the loaded model
-void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
+//! @brief This function is used to load a Hopsan Parameter File (HPF).
+//! @param [in] filePath The file path to the HPF file
+//! @param [in] pMessageHandler The Hopsan Core message handler
+//! @param [in] pSystem The top-level system in the model to load parameters for
+void hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessageHandler *pMessageHandler, ComponentSystem *pSystem)
 {
-    addCoreLogMessage("hopsan::loadHopsanParameterFile("+rFilePath+")");
+    addCoreLogMessage("hopsan::loadHopsanParameterFile("+filePath+")");
     try
     {
-        rapidxml::file<> hmfFile(rFilePath.c_str());
+        rapidxml::file<> hmfFile(filePath.c_str());
 
         rapidxml::xml_document<> doc;
         doc.parse<0>(hmfFile.data());
@@ -952,35 +952,25 @@ void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials*
                     }
                 }
 
-
-                pSystem->loadParameters(parMap);
-                return;
-               // loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
-
+                size_t numUpdated = pSystem->loadParameters(parMap);
+                pMessageHandler->addInfoMessage("Updated: "+to_hstring(numUpdated)+" parameters from File: "+filePath);
             }
             else
             {
                 addCoreLogMessage("hopsan::loadHopsanParameterFile(): No system found in file.");
-                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has no system to load");
+                pMessageHandler->addErrorMessage(filePath+" Has no system to load");
             }
         }
         else
         {
             addCoreLogMessage("hopsan::loadHopsanParameterFile(): Wrong root tag name.");
-            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has wrong root tag name: "+pRootNode->name());
-            cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
+            pMessageHandler->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
         }
     }
     catch(std::exception &e)
     {
         addCoreLogMessage("hopsan::loadHopsanParameterFile(): Unable to open file.");
-        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+rFilePath);
-        cout << "Could not open file, throws: " << e.what() << endl;
+        pMessageHandler->addErrorMessage("Could not open file: "+filePath);
     }
-
-    addCoreLogMessage("hopsan::loadHopsanParameterFile(): Failed.");
-
-    // We failed, return 0 ptr
-    return;
 }
 
