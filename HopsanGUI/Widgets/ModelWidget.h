@@ -122,6 +122,7 @@ public slots:
     void save();
     void saveAs();
     void exportModelParameters();
+    void importModelParameters(QString parameterFile="");
     void exportSimulationStates();
     void handleSystemLock(bool isExternal, bool hasLocalLock);
     void lockModelEditingFull(bool lock);

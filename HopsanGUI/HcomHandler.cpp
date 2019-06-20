@@ -4407,7 +4407,7 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
 
-    qobject_cast<SystemContainer*>(mpModel->getViewContainerObject())->loadParameterFile(path);
+    mpModel->importModelParameters(path);
 }
 
 
