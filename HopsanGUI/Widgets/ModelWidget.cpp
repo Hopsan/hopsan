@@ -748,6 +748,11 @@ void ModelWidget::exportModelParameters()
     saveModel(NewFile, ParametersOnly);
 }
 
+void ModelWidget::importModelParameters(QString parameterFile)
+{
+    mpToplevelSystem->loadParameterFile(parameterFile);
+}
+
 void ModelWidget::exportSimulationStates()
 {
     QString fileName = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Simulation State to File"), "", tr("Binary file (*.dat)"));

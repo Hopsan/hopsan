@@ -2173,26 +2173,20 @@ void SystemContainer::setModelFileInfo(QFile &rFile, const QString relModelPath)
     }
 }
 
-
-void SystemContainer::loadParameterFile(const QString &path)
+void SystemContainer::loadParameterFile(QString parameterFile)
 {
-    qDebug() << "loadParameterFile()";
-    QString parameterFileName = path;
-    if(path.isEmpty())
-    {
-        parameterFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
-                                                             gpConfig->getStringSetting(CFG_LOADMODELDIR),
-                                                             tr("Hopsan Parameter Files (*.hpf *.xml)"));
+    if(parameterFile.isEmpty()) {
+        parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
+                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     tr("Hopsan Parameter Files (*.hpf *.xml)"));
     }
 
-    if(!parameterFileName.isEmpty())
-    {
-        mpCoreSystemAccess->loadParameterFile(parameterFileName);
-        QFileInfo fileInfo = QFileInfo(parameterFileName);
-        gpConfig->setStringSetting(CFG_LOADMODELDIR, fileInfo.absolutePath());
+    if(!parameterFile.isEmpty()) {
+        getCoreSystemAccessPtr()->loadParameterFile(parameterFile);
+        gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
     }
+    emit checkMessages();
 }
-
 
 
 //! @brief Function to set the time step of the current system

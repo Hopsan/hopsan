@@ -297,7 +297,10 @@ void ModelHandler::newTextFile()
 
 void ModelHandler::loadModelParameters()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->loadParameterFile();
+    auto pModel = getCurrentModel();
+    if (pModel) {
+        pModel->importModelParameters();
+    }
 }
 
 
