@@ -942,7 +942,7 @@ void HcomHandler::createCommands()
 
     HcomCommand sapaCmd;
     sapaCmd.cmd = "sapa";
-    sapaCmd.description.append("Saves parameter set to .XML");
+    sapaCmd.description.append("Saves model parameter set to .XML");
     sapaCmd.help.append(" Usage: sapa [filepath]");
     sapaCmd.fnc = &HcomHandler::executeSaveParametersCommand;
     sapaCmd.group = "Parameter Commands";
@@ -950,7 +950,7 @@ void HcomHandler::createCommands()
 
     HcomCommand repaCmd;
     repaCmd.cmd = "repa";
-    repaCmd.description.append("Loads parameters from .XML");
+    repaCmd.description.append("Loads model parameters from .XML");
     repaCmd.help.append(" Usage: repa [filepath]");
     repaCmd.fnc = &HcomHandler::executeLoadParametersCommand;
     repaCmd.group = "Parameter Commands";
@@ -4369,9 +4369,9 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
 void HcomHandler::executeSaveParametersCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() > 1)
+    if(args.size() != 1)
     {
-        HCOMERR("Wrong numer of arguments.");
+        HCOMERR("Wrong number of arguments");
         return;
     }
     QString path = args[0];
@@ -4391,9 +4391,9 @@ void HcomHandler::executeSaveParametersCommand(const QString cmd)
 void HcomHandler::executeLoadParametersCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() > 1)
+    if(args.size() != 1)
     {
-        HCOMERR("Wrong numer of arguments.");
+        HCOMERR("Wrong number of arguments.");
         return;
     }
     QString path = args[0];
