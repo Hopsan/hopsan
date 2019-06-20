@@ -49,7 +49,11 @@ public:
 
     bool checkComponentLibrary(const QString& libraryXMLPath);
 
-    bool addComponentToLibrary(const QString& libraryXmlPath, const QString& typeName, const QString& displayName);
+    bool addComponentToLibrary(const QString &libraryXmlPath, const QString &typeName, const QString &displayName, const QString &cqsType,
+                               const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
+                               const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,
+                               const QStringList &outputNames, const QStringList &outputDescriptions, const QStringList &outputUnits,
+                               const QStringList &portNames, const QStringList &portDescriptions, const QStringList &portTypes, const QList<bool> &portsRequired);
 
     void printMessage(const QString& msg, const char type='I');
     void printErrorMessage(const QString& msg);

@@ -44,6 +44,10 @@ constexpr auto fmus = "FMUs";
 #include <QDir>
 #include <QMap>
 #include <QSharedPointer>
+#include <QTableWidget>
+#include <QDialog>
+#include <QToolButton>
+#include <QComboBox>
 
 //Hopsan includes
 #include "common.h"
@@ -73,6 +77,29 @@ public:
 };
 typedef QSharedPointer<ComponentLibrary> SharedComponentLibraryPtrT;
 
+class ComponentSpecification
+{
+public:
+    QString typeName;
+    QString displayName;
+    QString cqsType;
+    QStringList constantNames;
+    QStringList constantDescriptions;
+    QStringList constantUnits;
+    QStringList constantInits;
+    QStringList inputNames;
+    QStringList inputDescriptions;
+    QStringList inputUnits;
+    QStringList inputInits;
+    QStringList outputNames;
+    QStringList outputDescriptions;
+    QStringList outputUnits;
+    QStringList portNames;
+    QStringList portDescriptions;
+    QStringList portTypes;
+    QList<bool> portsRequired;
+};
+
 //! @brief Represents an object (most likely a component) that has been loaded
 class ComponentLibraryEntry
 {
@@ -85,6 +112,43 @@ public:
     HiddenVisibleEnumT visibility=Hidden;       //!< Visible or hidden in library widget
     QStringList displayPath;                    //!< The display path in the library widget
     EnabledDisabledEnumT disabled=Enabled;      //!< Is component enabled or disabled?
+};
+
+class NewComponentDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    NewComponentDialog(QWidget *parent);
+
+    ComponentSpecification getSpecification();
+
+private slots:
+    void addConstantRow();
+    void addInputVariableRow();
+    void addOutputVariableRow();
+    void addPortRow();
+
+    void removeConstantRow();
+    void removeInputVariableRow();
+    void removeOutputVariableRow();
+    void removePortRow();
+private:
+    void addLabelItem(QTableWidget *pTable, int r, int c, QString text);
+    void addInputItem(QTableWidget *pTable, int r, int c);
+    void adjustTableSize(QTableWidget *pTable);
+
+    QTableWidget *mpGeneralTable;
+    QTableWidget *mpConstantsTable;
+    QTableWidget *mpInputVariablesTable;
+    QTableWidget *mpOutputVariablesTable;
+    QTableWidget *mpPortsTable;
+
+    QComboBox *mpCqsTypeComboBox;
+
+    QVector<QToolButton*> mRemoveConstantToolButtons;
+    QVector<QToolButton*> mRemoveInputVariableToolButtons;
+    QVector<QToolButton*> mRemoveOutputVariableToolButtons;
+    QVector<QToolButton*> mRemovePortToolButtons;
 };
 
 class LibraryHandler : public QObject
@@ -105,7 +169,8 @@ public:
     const QVector<SharedComponentLibraryPtrT> getLibraries(const LibraryTypeEnumT type=LibraryTypeEnumT::AnyLib) const;
 
 
-    void addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, const QString &typeName, const QString &displayName);
+    void openCreateComponentDialog();
+    void addComponentToLibrary(SharedComponentLibraryPtrT pLibrary);
     void generateCafFile(const QString &target, const QString &typeName, const QString &displayName, const QString &srcFile);
     void generateMainSource(SharedComponentLibraryPtrT pLibrary);
 

@@ -864,8 +864,8 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             }
             else if(pReply == pAddComponentAction) {
                 SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
-                QString typeName = QInputDialog::getText(this,"Add component","Type name: ");
-                gpLibraryHandler->addComponentToLibrary(pLib, typeName, typeName);
+                //QString typeName = QInputDialog::getText(this,"Add component","Type name: ");
+                gpLibraryHandler->addComponentToLibrary(pLib);
             }
             else if(pReply == pOpenFolderAction) {
                 QString path;
