@@ -116,9 +116,8 @@ namespace hopsan {
         void loadStartValuesFromSimulation();
         void evaluateParametersRecursively();
 
-        // Parameter loading
-        void loadParameters(const HString &rFilePath);
-        size_t loadParameters(const SetParametersMapT &rParameterMap);
+        // Parameter value loading
+        size_t loadParameterValues(const HString &rFilePath);
 
         // NumHop script
         bool evaluateNumHopScriptRecursively();

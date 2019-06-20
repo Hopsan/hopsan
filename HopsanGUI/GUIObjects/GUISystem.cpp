@@ -2104,7 +2104,10 @@ void SystemContainer::loadParameterFile(QString parameterFile)
     }
 
     if(!parameterFile.isEmpty()) {
-        getCoreSystemAccessPtr()->loadParameterFile(parameterFile);
+        auto numChanged = getCoreSystemAccessPtr()->loadParameterFile(parameterFile);
+        if (numChanged > 0) {
+            mpModelWidget->hasChanged();
+        }
         gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
     }
     emit checkMessages();

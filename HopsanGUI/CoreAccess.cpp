@@ -786,9 +786,9 @@ QStringList CoreSystemAccess::getParameterNames(QString componentName)
 }
 
 
-void CoreSystemAccess::loadParameterFile(QString fileName)
+size_t CoreSystemAccess::loadParameterFile(QString fileName)
 {
-    mpCoreComponentSystem->loadParameters(fileName.toStdString().c_str());
+    return mpCoreComponentSystem->loadParameterValues(fileName.toStdString().c_str());
 }
 
 

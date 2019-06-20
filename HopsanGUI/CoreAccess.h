@@ -259,7 +259,7 @@ public:
     QString renameSystemPort(QString oldname, QString newname);
 
     // System Parameter Functions
-    void loadParameterFile(QString fileName);
+    size_t loadParameterFile(QString fileName);
     QStringList getSystemParameterNames();
     void getSystemParameters(QVector<CoreParameterData> &rParameterDataVec);
     void getSystemParameter(const QString name, CoreParameterData &rParameterData);
