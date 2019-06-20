@@ -41,6 +41,7 @@
 
 #include <QFileInfo>
 #include <QDir>
+
 #include <memory>
 
 namespace hopsan {
@@ -342,7 +343,23 @@ bool callExeExportGenerator(const char* outputPath, void* pHopsanSystem, const c
 //! @param[in] librarySourcePath Path to library CPP file relative to path for library XML file
 //! @param[in] typeName Typename for new component
 //! @param[in] displayName Display name for new component
-bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName, const char* displayName, messagehandler_t messageHandler, void* pMessageObject)
+bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName, const char* displayName, const char* cqsType,
+                               const char* const constantNames[], const int numConstantNames,
+                               const char* const constantDescriptions[], const int numConstantDescriptions,
+                               const char* const constantUnits[], const int numConstantUnits,
+                               const char* const constantInits[], const int numConstantInits,
+                               const char* const inputNames[], const int numInputNames,
+                               const char* const inputDescriptions[], const int numInputDescriptions,
+                               const char* const inputUnits[], const int numInputUnits,
+                               const char* const inputInits[], const int numInputInits,
+                               const char* const outputNames[], const int numOutputNames,
+                               const char* const outputDescriptions[], const int numOutputDescriptions,
+                               const char* const outputUnits[], const int numOutputUnits,
+                               const char* const portNames[], const int numPortNames,
+                               const char* const portDescriptions[], const int numPortDescriptions,
+                               const char* const portTypes[], const int numPortTypes,
+                               const int portsRequired[], const int numPortsRequired,
+                               messagehandler_t messageHandler, void* pMessageObject)
 {
     QFileInfo xmlPath(libraryXmlPath);
     QString cafPath = xmlPath.absoluteDir().absoluteFilePath(QString(typeName)+".xml");
@@ -366,7 +383,62 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
     ComponentSpecification compSpec;
     compSpec.typeName = typeName;
     compSpec.displayName = displayName;
-    compSpec.cqsType = "S";   //Hard-coded for now
+    compSpec.cqsType = cqsType;
+    for(int i=0; i<numConstantNames; ++i) {
+        compSpec.parDisplayNames.append(constantNames[i]);
+        compSpec.parNames.append("m"+QString(constantNames[i]));
+    }
+    for(int i=0; i<numConstantDescriptions; ++i) {
+        compSpec.parDescriptions.append(constantDescriptions[i]);
+    }
+    for(int i=0; i<numConstantUnits; ++i) {
+        compSpec.parUnits.append(constantUnits[i]);
+    }
+    for(int i=0; i<numConstantInits; ++i) {
+        compSpec.parInits.append(constantInits[i]);
+    }
+    for(int i=0; i<numInputNames; ++i) {
+        compSpec.portNames.append(inputNames[i]);
+        compSpec.portTypes.append("ReadPort");
+        compSpec.portNodeTypes.append("NodeSignal");
+        compSpec.portNotReq.append(true);
+    }
+    for(int i=0; i<numInputDescriptions; ++i) {
+        //compSpec.portDescriptions.append(inputDescriptions[i]); //Not yet implemented
+    }
+    for(int i=0; i<numInputUnits; ++i) {
+        //compSpec.portUnits.append(inputUnits[i]);   //Not yet implemented
+    }
+    for(int i=0; i<numInputInits; ++i) {
+        compSpec.portDefaults.append(inputInits[i]);
+    }
+    for(int i=0; i<numOutputNames; ++i) {
+        compSpec.portNames.append(outputNames[i]);
+        compSpec.portTypes.append("WritePort");
+        compSpec.portNodeTypes.append("NodeSignal");
+        compSpec.portNotReq.append(true);
+    }
+    for(int i=0; i<numOutputDescriptions; ++i) {
+        //compSpec.portDescriptions.append(outputDescriptions[i]); //Not yet implemented
+    }
+    for(int i=0; i<numOutputUnits; ++i) {
+        //compSpec.portUnits.append(outputUnits[i]);   //Not yet implemented
+    }
+    for(int i=0; i<numPortNames; ++i) {
+        compSpec.portNames.append(portNames[i]);
+        compSpec.portTypes.append("PowerPort");
+        compSpec.portDefaults.append("");
+    }
+
+    for(int i=0; i<numPortTypes; ++i) {
+        compSpec.portNodeTypes.append(portTypes[i]);
+    }
+    for(int i=0; i<numPortDescriptions; ++i) {
+        //compSpec.portDescriptions.append(outputDescriptions[i]); //Not yet implemented
+    }
+    for(int i=0; i<numPortsRequired; ++i) {
+        compSpec.portNotReq.append(!portsRequired[i]);
+    }
     if(!pGenerator->generateComponentSourceFile(hppPath, compSpec)) {
         pGenerator->printErrorMessage("Failed to generate component source file.");
         return false;

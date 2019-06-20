@@ -47,6 +47,18 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QTableWidget>
+#include <QToolButton>
+#include <QLabel>
+#include <QHeaderView>
+#include <QSizePolicy>
+#include <QComboBox>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QDialogButtonBox>
+#include <QCheckBox>
+#include <QApplication>
 
 #include <iostream>
 
@@ -370,10 +382,394 @@ const QVector<SharedComponentLibraryPtrT> LibraryHandler::getLibraries(const Lib
     return result;
 }
 
-void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, const QString &typeName, const QString &displayName)
+NewComponentDialog::NewComponentDialog(QWidget *parent)
+    : QDialog(parent)
 {
+    this->setWindowTitle("Add Component");
+    this->resize(1024,500);
+
+    QScrollArea *pScrollArea = new QScrollArea(this);
+    QWidget *pScrollWidget = new QWidget(this);
+    QVBoxLayout *pLayout = new QVBoxLayout(pScrollWidget);
+    pScrollArea->setWidgetResizable(true);
+    pScrollArea->setWidget(pScrollWidget);
+
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+    connect(pButtonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(pButtonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+    QVBoxLayout *pMainLayout = new QVBoxLayout(this);
+    pMainLayout->addWidget(pScrollArea);
+    pMainLayout->addWidget(pButtonBox);
+
+    // General settings
+
+    QLabel *pGeneralLabel = new QLabel("General settings");
+    pLayout->addWidget(pGeneralLabel);
+    QFont boldFont = pGeneralLabel->font();
+    boldFont.setBold(true);
+    pGeneralLabel->setFont(boldFont);
+
+    setStyleSheet("QTableWidget {background-color: transparent;}");
+    mpGeneralTable = new QTableWidget(this);
+    mpGeneralTable->setColumnCount(2);
+    mpGeneralTable->setRowCount(3);
+    mpGeneralTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mpGeneralTable->verticalHeader()->setVisible(false);
+    mpGeneralTable->horizontalHeader()->setVisible(false);
+    mpGeneralTable->setFrameStyle(QFrame::NoFrame);
+    mpGeneralTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    pLayout->addWidget(mpGeneralTable);
+    addLabelItem(mpGeneralTable,0,0,"Type name:");
+    addLabelItem(mpGeneralTable,1,0,"Display name:");
+    addLabelItem(mpGeneralTable,2,0,"CQS type:");
+    addInputItem(mpGeneralTable,0,1);
+    addInputItem(mpGeneralTable,1,1);
+    mpCqsTypeComboBox = new QComboBox(this);
+    mpCqsTypeComboBox->addItems(QStringList() << "S (signal)" << "Q (resistive)" << "C (capacitive)");
+    mpGeneralTable->setCellWidget(2,1,mpCqsTypeComboBox);
+
+    //Constants
+
+    QHBoxLayout *pConstantsHeadingLayout = new QHBoxLayout();
+    pLayout->addLayout(pConstantsHeadingLayout);
+
+    QLabel *pConstantsLabel = new QLabel("Constant parameters");
+    pConstantsLabel->setFont(boldFont);
+    pConstantsHeadingLayout->addWidget(pConstantsLabel);
+
+    QToolButton *pAddConstantToolButton = new QToolButton(this);
+    pAddConstantToolButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
+    connect(pAddConstantToolButton, SIGNAL(clicked(bool)), this, SLOT(addConstantRow()));
+    pConstantsHeadingLayout->addWidget(pAddConstantToolButton);
+    pConstantsHeadingLayout->setStretch(1,1);
+
+    mpConstantsTable = new QTableWidget(this);
+    mpConstantsTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mpConstantsTable->verticalHeader()->setVisible(false);
+    mpConstantsTable->horizontalHeader()->setVisible(false);
+    mpConstantsTable->setFrameStyle(QFrame::NoFrame);
+    pLayout->addWidget(mpConstantsTable);
+    mpConstantsTable->setColumnCount(5);
+    mpConstantsTable->setRowCount(1);
+    mpConstantsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    mpConstantsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    mpConstantsTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    mpConstantsTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    mpConstantsTable->verticalScrollBar()->setDisabled(true);
+    addLabelItem(mpConstantsTable,0,0,"");
+    addLabelItem(mpConstantsTable,0,1,"Name:");
+    addLabelItem(mpConstantsTable,0,2,"Description:");
+    addLabelItem(mpConstantsTable,0,3,"Unit:");
+    addLabelItem(mpConstantsTable,0,4,"Default value:");
+    mpConstantsTable->horizontalHeader()->setMinimumSectionSize(1);
+    mpConstantsTable->setColumnWidth(0,mpConstantsTable->rowHeight(0));
+    mpConstantsTable->hide();
+
+    // Input variables
+
+    QHBoxLayout *pInputVariablesHeadingLayout = new QHBoxLayout();
+    pLayout->addLayout(pInputVariablesHeadingLayout);
+
+    QLabel *pInputVariablesLabel = new QLabel("Input variables");
+    pInputVariablesLabel->setFont(boldFont);
+    pInputVariablesHeadingLayout->addWidget(pInputVariablesLabel);
+
+    QToolButton *pAddInputVariableToolButton = new QToolButton(this);
+    pAddInputVariableToolButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
+    connect(pAddInputVariableToolButton, SIGNAL(clicked(bool)), this, SLOT(addInputVariableRow()));
+    pInputVariablesHeadingLayout->addWidget(pAddInputVariableToolButton);
+    pInputVariablesHeadingLayout->setStretch(1,1);
+
+    mpInputVariablesTable = new QTableWidget(this);
+    mpInputVariablesTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mpInputVariablesTable->verticalHeader()->setVisible(false);
+    mpInputVariablesTable->horizontalHeader()->setVisible(false);
+    mpInputVariablesTable->setFrameStyle(QFrame::NoFrame);
+    pLayout->addWidget(mpInputVariablesTable);
+    mpInputVariablesTable->setColumnCount(5);
+    mpInputVariablesTable->setRowCount(1);
+    mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    mpInputVariablesTable->verticalScrollBar()->setDisabled(true);
+    addLabelItem(mpInputVariablesTable,0,0,"");
+    addLabelItem(mpInputVariablesTable,0,1,"Name:");
+    addLabelItem(mpInputVariablesTable,0,2,"Description:");
+    addLabelItem(mpInputVariablesTable,0,3,"Unit:");
+    addLabelItem(mpInputVariablesTable,0,4,"Default value:");
+    mpInputVariablesTable->horizontalHeader()->setMinimumSectionSize(1);
+    mpInputVariablesTable->setColumnWidth(0,mpInputVariablesTable->rowHeight(0));
+    mpInputVariablesTable->hide();
+
+    // Output variables
+
+    QHBoxLayout *pOutputVariablesHeadingLayout = new QHBoxLayout();
+    pLayout->addLayout(pOutputVariablesHeadingLayout);
+
+    QLabel *pOutputVariablesLabel = new QLabel("Output variables");
+    pOutputVariablesLabel->setFont(boldFont);
+    pOutputVariablesHeadingLayout->addWidget(pOutputVariablesLabel);
+
+    QToolButton *pAddOutputVariableToolButton = new QToolButton(this);
+    pAddOutputVariableToolButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
+    connect(pAddOutputVariableToolButton, SIGNAL(clicked(bool)), this, SLOT(addOutputVariableRow()));
+    pOutputVariablesHeadingLayout->addWidget(pAddOutputVariableToolButton);
+    pOutputVariablesHeadingLayout->setStretch(1,1);
+
+    mpOutputVariablesTable = new QTableWidget(this);
+    mpOutputVariablesTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mpOutputVariablesTable->verticalHeader()->setVisible(false);
+    mpOutputVariablesTable->horizontalHeader()->setVisible(false);
+    mpOutputVariablesTable->horizontalHeader()->setStretchLastSection(false);
+    mpOutputVariablesTable->setFrameStyle(QFrame::NoFrame);
+    pLayout->addWidget(mpOutputVariablesTable);
+    mpOutputVariablesTable->setColumnCount(4);
+    mpOutputVariablesTable->setRowCount(1);
+    mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    mpOutputVariablesTable->verticalScrollBar()->setDisabled(true);
+    addLabelItem(mpOutputVariablesTable,0,0,"");
+    addLabelItem(mpOutputVariablesTable,0,1,"Name:");
+    addLabelItem(mpOutputVariablesTable,0,2,"Description:");
+    addLabelItem(mpOutputVariablesTable,0,3,"Unit:");
+    mpOutputVariablesTable->horizontalHeader()->setMinimumSectionSize(1);
+    mpOutputVariablesTable->setColumnWidth(0,mpOutputVariablesTable->rowHeight(0));
+    mpOutputVariablesTable->hide();
+
+    // Power ports
+
+    QHBoxLayout *pPortsHeadingLayout = new QHBoxLayout();
+    pLayout->addLayout(pPortsHeadingLayout);
+
+    QLabel *pPortsLabel = new QLabel("Power ports");
+    pPortsLabel->setFont(boldFont);
+    pPortsHeadingLayout->addWidget(pPortsLabel);
+
+    QToolButton *pAddPortToolButton = new QToolButton(this);
+    pAddPortToolButton->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
+    connect(pAddPortToolButton, SIGNAL(clicked(bool)), this, SLOT(addPortRow()));
+    pPortsHeadingLayout->addWidget(pAddPortToolButton);
+    pPortsHeadingLayout->setStretch(1,1);
+
+    mpPortsTable = new QTableWidget(this);
+    mpPortsTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mpPortsTable->verticalHeader()->setVisible(false);
+    mpPortsTable->horizontalHeader()->setVisible(false);
+    mpPortsTable->horizontalHeader()->setStretchLastSection(false);
+    mpPortsTable->setFrameStyle(QFrame::NoFrame);
+    pLayout->addWidget(mpPortsTable);
+    mpPortsTable->setColumnCount(5);
+    mpPortsTable->setRowCount(1);
+    mpPortsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    mpPortsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    mpPortsTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    mpPortsTable->verticalScrollBar()->setDisabled(true);
+    addLabelItem(mpPortsTable,0,0,"");
+    addLabelItem(mpPortsTable,0,1,"Name:");
+    addLabelItem(mpPortsTable,0,2,"Desription:");
+    addLabelItem(mpPortsTable,0,3,"Node type:");
+    addLabelItem(mpPortsTable,0,4,"Required:");
+    mpPortsTable->horizontalHeader()->setMinimumSectionSize(1);
+    mpPortsTable->setColumnWidth(0,mpPortsTable->rowHeight(0));
+    mpPortsTable->hide();
+
+    pLayout->addWidget(new QWidget(this));
+    pLayout->setStretch(pLayout->count()-1,1);
+}
+
+
+ComponentSpecification NewComponentDialog::getSpecification()
+{
+    ComponentSpecification spec;
+    spec.typeName = mpGeneralTable->item(0,1)->text();
+    spec.displayName= mpGeneralTable->item(1,1)->text();
+    int cqsNum = qobject_cast<QComboBox*>(mpGeneralTable->cellWidget(2,1))->currentIndex();
+    switch(cqsNum)
+    {
+        case 0:
+            spec.cqsType = "S";
+            break;
+        case 1:
+            spec.cqsType = "Q";
+            break;
+        default:
+            spec.cqsType = "C";
+    }
+    for(int r=1; r<mpConstantsTable->rowCount(); ++r) {
+        spec.constantNames.append(mpConstantsTable->item(r,1)->text());
+        spec.constantDescriptions.append(mpConstantsTable->item(r,2)->text());
+        spec.constantUnits.append(mpConstantsTable->item(r,3)->text());
+        spec.constantInits.append(mpConstantsTable->item(r,4)->text());
+    }
+    for(int r=1; r<mpInputVariablesTable->rowCount(); ++r) {
+        spec.inputNames.append(mpInputVariablesTable->item(r,1)->text());
+        spec.inputDescriptions.append(mpInputVariablesTable->item(r,2)->text());
+        spec.inputUnits.append(mpInputVariablesTable->item(r,3)->text());
+        spec.inputInits.append(mpInputVariablesTable->item(r,4)->text());
+    }
+    for(int r=1; r<mpOutputVariablesTable->rowCount(); ++r) {
+        spec.outputNames.append(mpOutputVariablesTable->item(r,1)->text());
+        spec.outputDescriptions.append(mpOutputVariablesTable->item(r,2)->text());
+        spec.outputUnits.append(mpOutputVariablesTable->item(r,3)->text());
+    }
+    for(int r=1; r<mpPortsTable->rowCount(); ++r) {
+        spec.portNames.append(mpPortsTable->item(r,1)->text());
+        spec.portDescriptions.append(mpPortsTable->item(r,2)->text());
+        spec.portTypes.append(qobject_cast<QComboBox*>(mpPortsTable->cellWidget(r,3))->currentText());
+        spec.portsRequired.append(qobject_cast<QCheckBox*>(mpPortsTable->cellWidget(r,4))->isChecked());
+    }
+
+    return spec;
+}
+
+
+void NewComponentDialog::addConstantRow()
+{
+    int row = mpConstantsTable->rowCount();
+    mpConstantsTable->insertRow(row);
+    addInputItem(mpConstantsTable,row,1);
+    addInputItem(mpConstantsTable,row,2);
+    addInputItem(mpConstantsTable,row,3);
+    addInputItem(mpConstantsTable,row,4);
+    while(mRemoveConstantToolButtons.size() < row) {
+        mRemoveConstantToolButtons.push_back(new QToolButton(this));
+        mRemoveConstantToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
+        connect(mRemoveConstantToolButtons.last(), SIGNAL(clicked(bool)), this, SLOT(removeConstantRow()));
+    }
+    mpConstantsTable->setCellWidget(row,0,mRemoveConstantToolButtons.at(row-1));
+    adjustTableSize(mpConstantsTable);
+    mpConstantsTable->setVisible(true);
+}
+
+void NewComponentDialog::addInputVariableRow()
+{
+    int row = mpInputVariablesTable->rowCount();
+    mpInputVariablesTable->insertRow(row);
+    addInputItem(mpInputVariablesTable,row,1);
+    addInputItem(mpInputVariablesTable,row,2);
+    addInputItem(mpInputVariablesTable,row,3);
+    addInputItem(mpInputVariablesTable,row,4);
+    while(mRemoveInputVariableToolButtons.size() < row) {
+        mRemoveInputVariableToolButtons.push_back(new QToolButton(this));
+        mRemoveInputVariableToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
+        connect(mRemoveInputVariableToolButtons.last(), SIGNAL(clicked(bool)), this, SLOT(removeInputVariableRow()));
+    }
+    mpInputVariablesTable->setCellWidget(row,0,mRemoveInputVariableToolButtons.at(row-1));
+    adjustTableSize(mpInputVariablesTable);
+    mpInputVariablesTable->setVisible(true);
+}
+
+void NewComponentDialog::addOutputVariableRow()
+{
+    int row = mpOutputVariablesTable->rowCount();
+    mpOutputVariablesTable->insertRow(row);
+    addInputItem(mpOutputVariablesTable,row,1);
+    addInputItem(mpOutputVariablesTable,row,2);
+    addInputItem(mpOutputVariablesTable,row,3);
+    while(mRemoveOutputVariableToolButtons.size() < row) {
+        mRemoveOutputVariableToolButtons.push_back(new QToolButton(this));
+        mRemoveOutputVariableToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
+        connect(mRemoveOutputVariableToolButtons.last(), SIGNAL(clicked(bool)), this, SLOT(removeOutputVariableRow()));
+    }
+    mpOutputVariablesTable->setCellWidget(row,0,mRemoveOutputVariableToolButtons.at(row-1));
+    adjustTableSize(mpOutputVariablesTable);
+    mpOutputVariablesTable->setVisible(true);
+}
+
+void NewComponentDialog::addPortRow()
+{
+    int row = mpPortsTable->rowCount();
+    mpPortsTable->insertRow(row);
+    QComboBox *pTypeComboBox = new QComboBox(this);
+    QStringList nodeTypes;
+    NodeInfo::getNodeTypes(nodeTypes);
+    pTypeComboBox->addItems(nodeTypes);
+    addInputItem(mpPortsTable,row,1);
+    addInputItem(mpPortsTable,row,2);
+    mpPortsTable->setCellWidget(row,3,pTypeComboBox);
+    QCheckBox *pRequiredCheckBox = new QCheckBox(this);
+    pRequiredCheckBox->setChecked(true);
+    mpPortsTable->setCellWidget(row,4,pRequiredCheckBox);
+    while(mRemovePortToolButtons.size() < row) {
+        mRemovePortToolButtons.push_back(new QToolButton(this));
+        mRemovePortToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
+        connect(mRemovePortToolButtons.last(), SIGNAL(clicked(bool)), this, SLOT(removePortRow()));
+    }
+    mpPortsTable->setCellWidget(row,0,mRemovePortToolButtons.at(row-1));
+    adjustTableSize(mpPortsTable);
+    mpPortsTable->setVisible(true);
+}
+
+void NewComponentDialog::removeConstantRow()
+{
+    QToolButton *pSender = qobject_cast<QToolButton*>(sender());
+    int i = mRemoveConstantToolButtons.indexOf(pSender);
+    mpConstantsTable->removeRow(i+1);
+    mRemoveConstantToolButtons.removeAt(i);
+    adjustTableSize(mpConstantsTable);
+    mpConstantsTable->setVisible(mpConstantsTable->rowCount() > 1);
+}
+
+void NewComponentDialog::removeInputVariableRow()
+{
+    QToolButton *pSender = qobject_cast<QToolButton*>(sender());
+    int i = mRemoveInputVariableToolButtons.indexOf(pSender);
+    mpInputVariablesTable->removeRow(i+1);
+    mRemoveInputVariableToolButtons.removeAt(i);
+    adjustTableSize(mpInputVariablesTable);
+    mpInputVariablesTable->setVisible(mpInputVariablesTable->rowCount() > 1);
+}
+
+void NewComponentDialog::removeOutputVariableRow()
+{
+    QToolButton *pSender = qobject_cast<QToolButton*>(sender());
+    int i = mRemoveOutputVariableToolButtons.indexOf(pSender);
+    mpOutputVariablesTable->removeRow(i+1);
+    mRemoveOutputVariableToolButtons.removeAt(i);
+    adjustTableSize(mpOutputVariablesTable);
+    mpOutputVariablesTable->setVisible(mpOutputVariablesTable->rowCount() > 1);
+}
+
+void NewComponentDialog::removePortRow()
+{
+    QToolButton *pSender = qobject_cast<QToolButton*>(sender());
+    int i = mRemovePortToolButtons.indexOf(pSender);
+    mpPortsTable->cellWidget(i+1,3)->deleteLater();   //Delete combo box
+    mpPortsTable->cellWidget(i+1,4)->deleteLater();   //Delete check box
+    mpPortsTable->removeRow(i+1);
+    mRemovePortToolButtons.removeAt(i);
+    adjustTableSize(mpPortsTable);
+    mpPortsTable->setVisible(mpPortsTable->rowCount() > 1);
+
+}
+
+void NewComponentDialog::adjustTableSize(QTableWidget *pTable)
+{
+    int size = 0;
+    for(int r=0; r<pTable->rowCount(); ++r) {
+        size += pTable->rowHeight(r);
+    }
+    pTable->setFixedHeight(size);
+}
+
+void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary)
+{
+    NewComponentDialog *pDialog = new NewComponentDialog(gpMainWindowWidget);
+    if(pDialog->exec() == QDialog::Rejected) {
+        return;
+    }
+
+    ComponentSpecification spec = pDialog->getSpecification();
+
     auto pGenerator = createDefaultGenerator(true);
-    pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, typeName, displayName);
+    pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, spec.typeName, spec.displayName, spec.cqsType,
+                                      spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
+                                      spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
+                                      spec.outputNames, spec.outputDescriptions, spec.outputUnits,
+                                      spec.portNames, spec.portDescriptions, spec.portTypes, spec.portsRequired);
 
     gpModelHandler->saveState();
     // First unload the library
@@ -383,6 +779,8 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
         loadLibrary(libPath);
     }
     gpModelHandler->restoreState();
+
+    gpModelHandler->loadTextFile(QFileInfo(pLibrary->getLibraryMainFilePath()).absoluteDir().filePath(getEntry(spec.typeName).pAppearance->getSourceCodeFile()));
 }
 
 
@@ -887,6 +1285,20 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     }
     emit contentsChanged();
     return true;
+}
+
+void NewComponentDialog::addLabelItem(QTableWidget *pTable, int r, int c, QString text)
+{
+    pTable->setItem(r,c,new QTableWidgetItem(text));
+    QFont labelFont = pTable->item(r,c)->font();
+    labelFont.setBold(true);
+    pTable->item(r,c)->setFlags(pTable->item(r,c)->flags() ^ Qt::ItemIsSelectable ^ Qt::ItemIsEditable);
+    pTable->item(r,c)->setBackgroundColor(QColor(161,224,228));
+}
+
+void NewComponentDialog::addInputItem(QTableWidget *pTable, int r, int c)
+{
+    pTable->setItem(r,c,new QTableWidgetItem());
 }
 
 bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)

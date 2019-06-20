@@ -8,6 +8,10 @@
 #include <QPointer>
 #include <QEventLoop>
 #include <QDialog>
+#include <QTableWidget>
+#include <QLabel>
+#include <QDebug>
+#include <QToolButton>
 #include <future>
 
 
@@ -527,7 +531,11 @@ bool HopsanGeneratorGUI::checkComponentLibrary(const QString& libraryXMLPath)
 }
 
 
-bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, const QString &typeName, const QString &displayName)
+bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, const QString &typeName, const QString &displayName, const QString &cqsType,
+                                               const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
+                                               const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,
+                                               const QStringList &outputNames, const QStringList &outputDescriptions, const QStringList &outputUnits,
+                                               const QStringList &portNames, const QStringList &portDescriptions, const QStringList &portTypes, const QList<bool> &portsRequired)
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
@@ -538,9 +546,33 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
     const auto xmlpath = libraryXmlPath.toStdString();
     const auto typenamestr = typeName.toStdString();
     const auto displayname = displayName.toStdString();
+    const auto cqstype = cqsType.toStdString();
+    CApiStringList constantnames(constantNames);
+    CApiStringList constantdescriptions(constantDescriptions);
+    CApiStringList constantunits(constantUnits);
+    CApiStringList constantinits(constantInits);
+    CApiStringList inputnames(inputNames);
+    CApiStringList inputdescriptions(inputDescriptions);
+    CApiStringList inputunits(inputUnits);
+    CApiStringList inputinits(inputInits);
+    CApiStringList outputnames(outputNames);
+    CApiStringList outputdescriptions(outputDescriptions);
+    CApiStringList outputunits(outputUnits);
+    CApiStringList portnames(portNames);
+    CApiStringList portdescriptions(portDescriptions);
+    CApiStringList porttypes(portTypes);
+    std::vector<int> portsrequired;
+    for(const bool req : portsRequired.toVector()) {
+        portsrequired.push_back(req);
+    }
 
-    using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, MessageHandler_t, void*);
-    bool checkOK = mPrivates->call<AddComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), typenamestr.c_str(), displayname.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, const char*, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const int[], size_t, MessageHandler_t, void*);
+    bool checkOK = mPrivates->call<AddComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), typenamestr.c_str(), displayname.c_str(), cqstype.c_str(),
+                                                                    constantnames.data(), constantnames.size(), constantdescriptions.data(), constantdescriptions.size(), constantunits.data(), constantunits.size(), constantinits.data(), constantinits.size(),
+                                                                    inputnames.data(), inputnames.size(), inputdescriptions.data(), inputdescriptions.size(), inputunits.data(), inputunits.size(), inputinits.data(), inputinits.size(),
+                                                                    outputnames.data(), outputnames.size(), outputdescriptions.data(), outputdescriptions.size(), outputunits.data(), outputunits.size(),
+                                                                    portnames.data(), portnames.size(), portdescriptions.data(), portdescriptions.size(), porttypes.data(), porttypes.size(), portsrequired.data(), portsrequired.size(),
+                                                                    &messageHandler, static_cast<void*>(&forwarder));
     lw->setDidSucceed(checkOK);
     return checkOK;
 
