@@ -2084,50 +2084,10 @@ void ComponentSystem::evaluateParametersRecursively()
 
 //! @brief Loads parameters from a file
 //! @param[in] rFilePath The file to load from
-void ComponentSystem::loadParameters(const HString &rFilePath)
+//! @return Number of changed parameters
+size_t ComponentSystem::loadParameterValues(const HString &rFilePath)
 {
-    loadHopsanParameterFile(rFilePath, getHopsanEssentials()->getCoreMessageHandler(), this);
-}
-
-//! @brief Loads parameters from a map
-//! @param[in] rParameterMap The map to load from
-//! @return Number of updated parameters
-size_t ComponentSystem::loadParameters(const SetParametersMapT &rParameterMap)
-{
-    size_t numUpdated=0;
-    std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > >::const_iterator it;
-    for(it=rParameterMap.begin(); it!=rParameterMap.end(); ++it)
-    {
-        // First try to get the component
-        Component *pComponent = this->getSubComponent(it->first);
-        if(pComponent)
-        {
-            // Now set each parameter name,value pair
-            const std::vector<HString> &parNames = it->second.first;
-            const std::vector<HString> &parValues = it->second.second;
-            for(size_t i=0; i<parNames.size(); ++i)
-            {
-                const HString &name = parNames[i];
-                const HString &newValue = parValues[i];
-
-                HString currentValue;
-                pComponent->getParameterValue(name, currentValue);
-                if (newValue != currentValue) {
-                    bool setOK = pComponent->setParameterValue(name, newValue);
-                    if (setOK) {
-                        HString message = "Parameter: "+name+" in Component: "+pComponent->getName()+" was updated from "+currentValue+" to "+newValue;
-                        addInfoMessage(message, "ParameterUpdated");
-                        ++numUpdated;
-                    }
-                    else {
-                        HString message = "Parameter: "+name+" in Component: "+pComponent->getName()+" could not be updated";
-                        addWarningMessage(message, "ParameterUpdated");
-                    }
-                }
-            }
-        }
-    }
-    return numUpdated;
+    return loadHopsanParameterFile(rFilePath, getHopsanEssentials()->getCoreMessageHandler(), this);
 }
 
 //! @brief Recurse through the model system hierarchy and evaluate all system-level numhop scripts

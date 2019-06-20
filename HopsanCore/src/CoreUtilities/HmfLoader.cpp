@@ -364,6 +364,114 @@ void updateRenamedParameter(rapidxml::xml_node<> *pNode, const string &rComponen
         }
     }
 }
+
+
+size_t loadValuesFromHopsanParameterFile(rapidxml::xml_node<> *pComponentNode, Component *pComponent)
+{
+    size_t numUpdated = 0;
+    try {
+        if (pComponentNode != 0) {
+            bool typenameMatch = (pComponent->getTypeName() == readStringAttribute(pComponentNode, "typename").c_str()) &&
+                    (pComponent->getSubTypeName() == readStringAttribute(pComponentNode, "subtypename").c_str());
+            if (typenameMatch) {
+                rapidxml::xml_node<> *pParameters = pComponentNode->first_node("parameters");
+                if (pParameters != 0) {
+                    rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
+                    while (pParameter != 0) {
+
+                        const HString name = readStringAttribute(pParameter, "name", "").c_str();
+                        const HString newValue = readStringAttribute(pParameter, "value", "").c_str();
+
+                        HString currentValue;
+                        pComponent->getParameterValue(name, currentValue);
+                        if (newValue != currentValue) {
+                            bool setOK = pComponent->setParameterValue(name, newValue);
+                            if (setOK) {
+                                HString message = "Parameter: "+name+" was updated from "+currentValue+" to "+newValue;
+                                pComponent->addInfoMessage(message, "ParameterUpdated");
+                                ++numUpdated;
+                            }
+                            else {
+                                HString message = "Parameter: "+name+" could not be updated";
+                                pComponent->addWarningMessage(message, "ParameterUpdated");
+                            }
+                        }
+
+                        pParameter = pParameter->next_sibling("parameter");
+                    }
+                }
+            }
+            else {
+                addCoreLogMessage("hopsan::loadHopsanParameterFile(): Component type mismatch.");
+                pComponent->addErrorMessage("Component type mismatch when loading parameter values.");
+            }
+        }
+    }
+    catch(std::exception &e) {
+        const HString msg = HString("hopsan::loadFromHopsanParameterFile(): Error reading file: ")+e.what();
+        addCoreLogMessage(msg);
+        pComponent->addErrorMessage(msg);
+    }
+    return numUpdated;
+}
+
+size_t loadValuesFromHopsanParameterFile(rapidxml::xml_node<> *pSystemNode, ComponentSystem *pSystem)
+{
+    size_t numUpdated = 0;
+    try {
+        if (pSystemNode != 0) {
+            bool typenameMatch = (pSystem->getTypeName() == readStringAttribute(pSystemNode, "typename").c_str()) &&
+                    (pSystem->getSubTypeName() == readStringAttribute(pSystemNode, "subtypename").c_str());
+            if (typenameMatch) {
+                // Load systems own parameters
+                numUpdated += loadValuesFromHopsanParameterFile(pSystemNode, static_cast<Component*>(pSystem));
+
+                // Load contained components and subsystems recursively
+                rapidxml::xml_node<> *pXmlObjects = pSystemNode->first_node("objects");
+                if (pXmlObjects) {
+                    rapidxml::xml_node<> *pXmlComponentOrSystem = pXmlObjects->first_node();
+                    while (pXmlComponentOrSystem != 0) {
+                        HString name = readStringAttribute(pXmlComponentOrSystem, "name", "").c_str();
+
+                        if (strcmp(pXmlComponentOrSystem->name(), "system") == 0) {
+                            ComponentSystem* pSubSystem = pSystem->getSubComponentSystem(name);
+                            if (pSubSystem) {
+                                numUpdated += loadValuesFromHopsanParameterFile(pXmlComponentOrSystem, pSubSystem);
+                            }
+                            else {
+                                addCoreLogMessage("hopsan::loadHopsanParameterFile(): Subsystem not found: "+name);
+                                pSystem->addErrorMessage("Subsystem not found: "+name);
+                            }
+                        }
+                        else {
+                            Component* pSubComponent = pSystem->getSubComponent(name);
+                            if (pSubComponent) {
+                                numUpdated += loadValuesFromHopsanParameterFile(pXmlComponentOrSystem, pSubComponent);
+                            }
+                            else {
+                                addCoreLogMessage("hopsan::loadHopsanParameterFile(): Subcomponent not found: "+name);
+                                pSystem->addErrorMessage("Subcomponent not found: "+name);
+                            }
+                        }
+
+                        pXmlComponentOrSystem = pXmlComponentOrSystem->next_sibling();
+                    }
+                }
+            }
+            else {
+                addCoreLogMessage("hopsan::loadHopsanParameterFile(): System type mismatch.");
+                pSystem->addErrorMessage("System type mismatch when loading parameter values.");
+            }
+        }
+    }
+    catch(std::exception &e) {
+        const HString msg = HString("hopsan::loadFromHopsanParameterFile(): Error reading file: ")+e.what();
+        addCoreLogMessage(msg);
+        pSystem->addErrorMessage(msg);
+    }
+    return numUpdated;
+}
+
 }
 
 
@@ -385,7 +493,7 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
         pSystem->addComponent(pComp);
 
         // Load parameters
-        //! @todo should be able to load parameters and system parmaeters with same help function
+        //! @todo should be able to load parameters and system parameters with same help function
         rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
         if (pParams)
         {
@@ -541,7 +649,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     rapidxml::xml_node<> *pLogSettingsNode = pSysNode->first_node("simulationlogsettings");
     pSystem->setLogStartTime(readDoubleAttribute(pLogSettingsNode, "starttime", pSystem->getLogStartTime()));
     pSystem->setNumLogSamples(readIntAttribute(pLogSettingsNode, "numsamples", pSystem->getNumLogSamples()));
-    //! @deprecated 20131002 keep this old way of loading for a whild for backwards compatibility
+    //! @deprecated 20131002 keep this old way of loading for a while for backwards compatibility
     if(hasAttribute(pSysNode,  "logsamples"))
     {
         pSystem->setNumLogSamples(readIntAttribute(pSysNode, "logsamples", pSystem->getNumLogSamples()));
@@ -900,8 +1008,10 @@ ComponentSystem* hopsan::loadHopsanModel(char* xmlStr, HopsanEssentials* pHopsan
 //! @param [in] filePath The file path to the HPF file
 //! @param [in] pMessageHandler The Hopsan Core message handler
 //! @param [in] pSystem The top-level system in the model to load parameters for
-void hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessageHandler *pMessageHandler, ComponentSystem *pSystem)
+//! @return Number of changed parameters
+size_t hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessageHandler *pMessageHandler, ComponentSystem *pSystem)
 {
+    size_t numUpdated = 0;
     addCoreLogMessage("hopsan::loadHopsanParameterFile("+filePath+")");
     try
     {
@@ -913,64 +1023,27 @@ void hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessageH
         rapidxml::xml_node<> *pRootNode = doc.first_node();
 
         //Check for correct root node name
-        if (strcmp(pRootNode->name(), "hopsanparameterfile")==0)
-        {
+        if (strcmp(pRootNode->name(), "hopsanparameterfile")==0) {
             rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
-            if (pSysNode != 0)
-            {
-                ComponentSystem::SetParametersMapT parMap;
-
-                //Load contents
-                rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");
-                if (pObjects)
-                {
-                    rapidxml::xml_node<> *pComponent = pObjects->first_node("component");
-                    while (pComponent != 0)
-                    {
-                        HString name = readStringAttribute(pComponent, "name", "").c_str();
-
-                        std::vector<HString> parameterNames;
-                        std::vector<HString> parameterValues;
-                        rapidxml::xml_node<> *pParameters = pComponent->first_node("parameters");
-                        if (pParameters != 0)
-                        {
-                            rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
-                            while (pParameter != 0)
-                            {
-                                parameterNames.push_back(readStringAttribute(pParameter, "name", "").c_str());
-                                parameterValues.push_back(readStringAttribute(pParameter, "value", "").c_str());
-                                pParameter = pParameter->next_sibling();
-                            }
-                        }
-
-                        std::pair<std::vector<HString>, std::vector<HString> > parameters;
-                        parameters = std::pair<std::vector<HString>, std::vector<HString> >(parameterNames, parameterValues);
-
-                        parMap.insert(std::pair<HString, std::pair<std::vector<HString>, std::vector<HString> > >(name, parameters));
-
-                        pComponent = pComponent->next_sibling();
-                    }
-                }
-
-                size_t numUpdated = pSystem->loadParameters(parMap);
+            if (pSysNode != 0) {
+                numUpdated = loadValuesFromHopsanParameterFile(pSysNode, pSystem);
                 pMessageHandler->addInfoMessage("Updated: "+to_hstring(numUpdated)+" parameters from File: "+filePath);
             }
-            else
-            {
+            else {
                 addCoreLogMessage("hopsan::loadHopsanParameterFile(): No system found in file.");
                 pMessageHandler->addErrorMessage(filePath+" Has no system to load");
             }
         }
-        else
-        {
+        else {
             addCoreLogMessage("hopsan::loadHopsanParameterFile(): Wrong root tag name.");
             pMessageHandler->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
         }
     }
     catch(std::exception &e)
     {
-        addCoreLogMessage("hopsan::loadHopsanParameterFile(): Unable to open file.");
-        pMessageHandler->addErrorMessage("Could not open file: "+filePath);
+        addCoreLogMessage(HString("hopsan::loadHopsanParameterFile(): Unable to open file: ")+e.what());
+        pMessageHandler->addErrorMessage(HString("Exception: ")+e.what()+", Could not open file: "+filePath);
     }
+    return numUpdated;
 }
 
