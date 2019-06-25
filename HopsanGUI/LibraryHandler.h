@@ -123,6 +123,8 @@ public:
     ComponentSpecification getSpecification();
 
 private slots:
+    void validate();
+
     void addConstantRow();
     void addInputVariableRow();
     void addOutputVariableRow();

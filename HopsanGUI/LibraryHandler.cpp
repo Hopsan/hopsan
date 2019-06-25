@@ -395,7 +395,7 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     pScrollArea->setWidget(pScrollWidget);
 
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-    connect(pButtonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(pButtonBox, SIGNAL(accepted()), this, SLOT(validate()));
     connect(pButtonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
@@ -624,6 +624,89 @@ ComponentSpecification NewComponentDialog::getSpecification()
 
     return spec;
 }
+
+
+void NewComponentDialog::validate()
+{
+    bool error=false;
+    QBrush defaultBrush = mpGeneralTable->item(1,1)->background();
+    QBrush errorBrush(QColor(255,0,0,150));
+
+    //Clear all seletions (to make any errors visible)
+    mpGeneralTable->clearSelection();
+    mpConstantsTable->clearSelection();
+    mpInputVariablesTable->clearSelection();
+    mpOutputVariablesTable->clearSelection();
+    mpPortsTable->clearSelection();
+
+    //Reset background colors
+    mpGeneralTable->item(0,1)->setBackground(defaultBrush);
+    for(int r=1; r<mpConstantsTable->rowCount(); ++r) {
+        mpConstantsTable->item(r,1)->setBackground(defaultBrush);
+        mpConstantsTable->item(r,4)->setBackground(defaultBrush);
+    }
+    for(int r=1; r<mpInputVariablesTable->rowCount(); ++r) {
+        mpInputVariablesTable->item(r,1)->setBackground(defaultBrush);
+        mpInputVariablesTable->item(r,4)->setBackground(defaultBrush);
+    }
+    for(int r=1; r<mpOutputVariablesTable->rowCount(); ++r) {
+        mpOutputVariablesTable->item(r,1)->setBackground(defaultBrush);
+    }
+    for(int r=1; r<mpPortsTable->rowCount(); ++r) {
+        mpPortsTable->item(r,1)->setBackground(defaultBrush);
+    }
+
+    //Validate type name
+    ComponentSpecification spec = getSpecification();
+    if(!spec.typeName.front().isLetter()) {
+        gpMessageHandler->addErrorMessage("Type name must begin with a letter.");
+        mpGeneralTable->item(0,1)->setBackground(errorBrush);
+        error=true;
+    }
+
+    //Make sure all variable names are unique
+    QStringList allNames = spec.constantNames+spec.inputNames+spec.outputNames+spec.portNames;
+    for(const QString name : allNames) {
+        if(allNames.count(name) > 1) {
+            gpMessageHandler->addErrorMessage("Each variable and port name must be unique.");
+            QList<QTableWidgetItem*> items = mpConstantsTable->findItems(name, Qt::MatchExactly);
+            items += mpInputVariablesTable->findItems(name, Qt::MatchExactly);
+            items += mpOutputVariablesTable->findItems(name, Qt::MatchExactly);
+            items += mpPortsTable->findItems(name, Qt::MatchExactly);
+            for(QTableWidgetItem *item : items) {
+                if(item->column() == 1) {
+                    item->setBackground(errorBrush);
+                }
+            }
+            error=true;
+        }
+    }
+
+    mpConstantsTable->selectColumn(4);
+    mpInputVariablesTable->selectColumn(4);
+    QList<QTableWidgetItem*> items = mpConstantsTable->selectedItems()+mpInputVariablesTable->selectedItems();
+    mpConstantsTable->clearSelection();
+    mpInputVariablesTable->clearSelection();
+    for(QTableWidgetItem* pItem : items) {
+        if(pItem->row() == 0) {
+            continue;   //Ignore title row
+        }
+        bool isNumerical;
+        pItem->text().toDouble(&isNumerical);
+        if(!isNumerical) {
+            gpMessageHandler->addErrorMessage("Initial values must be numerical");
+            pItem->setBackground(errorBrush);
+            error = true;
+        }
+    }
+
+    if(error) {
+        return;
+    }
+
+    QDialog::accept();
+}
+
 
 
 void NewComponentDialog::addConstantRow()
