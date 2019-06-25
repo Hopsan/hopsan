@@ -59,6 +59,9 @@
 #include <QDialogButtonBox>
 #include <QCheckBox>
 #include <QApplication>
+#include <QInputDialog>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include <iostream>
 
@@ -75,6 +78,7 @@
 #include "Dialogs/EditComponentDialog.h"
 #include "GUIObjects/GUISystem.h"
 #include "GeneratorUtils.h"
+#include "Utilities/GUIUtilities.h"
 
 //! @brief Helpfunction to create full typename from type and subtype
 //! @returns The full typename type|subtype, or type is subtype was empty
@@ -836,6 +840,36 @@ void NewComponentDialog::adjustTableSize(QTableWidget *pTable)
         size += pTable->rowHeight(r);
     }
     pTable->setFixedHeight(size);
+}
+
+void LibraryHandler::createNewLibrary() {
+    QString libName = QInputDialog::getText(gpMainWindowWidget, "Create New Library", "Select library name:");
+    if(!isNameValid(libName)) {
+        gpMessageHandler->addErrorMessage("Invalid library name!");
+        return;
+    }
+    if(!libName.isEmpty()) {
+        QString libDirPath = QFileDialog::getExistingDirectory(gpMainWindowWidget, "Choose Library Directory", gpConfig->getStringSetting(CFG_EXTERNALLIBDIR));
+        QDir libDir(libDirPath);
+        if(libDir.entryList(QDir::AllDirs).contains(libName)) {
+            QMessageBox existWarningBox(QMessageBox::Warning, "Warning", "Directory already contains a sub-folder with specified type name. Do you want to create new library here anyway?", 0, 0);
+            existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
+            existWarningBox.addButton("No", QMessageBox::RejectRole);
+            existWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+            if(existWarningBox.exec() != QMessageBox::AcceptRole) {
+                return;
+            }
+        }
+        if(!libDir.mkdir(libName)) {
+            gpMessageHandler->addErrorMessage("Unable to create subdirectory \""+libName+"\" in directory \""+libDir.absolutePath()+"\"");
+            return;
+        }
+        libDir.cd(libName);
+        auto pGenerator = createDefaultGenerator(true);
+        pGenerator->generateLibrary(libDir.absolutePath(), QStringList());
+
+        loadLibrary(libDir.absoluteFilePath(libName+"_lib.xml"));
+    }
 }
 
 void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary)

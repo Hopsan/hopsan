@@ -752,6 +752,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QAction *pReloadAction = contextMenu.addAction("Reload");
             QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
             QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
+            QAction *pNewLibraryAction = contextMenu.addAction("Create New Library");
             pUnloadAllAction->setEnabled(false);
             pUnloadAction->setEnabled(false);
             pOpenFolderAction->setEnabled(false);
@@ -761,6 +762,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             pReloadAction->setEnabled(false);
             pCheckConsistenceAction->setEnabled(false);
             pAddComponentAction->setEnabled(false);
+            pNewLibraryAction->setEnabled(false);
 
             QTreeWidgetItem *pFirstSubComponentItem = item;
 
@@ -778,6 +780,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             if(item->text(0) == componentlibrary::roots::externalLibraries)
             {
                 pUnloadAllAction->setEnabled(true);
+                pNewLibraryAction->setEnabled(true);
             }
 
             //Enable external library actions (also for empty libraries)
@@ -911,6 +914,9 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     QString sourceFile = appearance->getSourceCodeFile();
                     gpModelHandler->loadTextFile(basePath+sourceFile);
                 }
+            }
+            else if(pReply == pNewLibraryAction) {
+                gpLibraryHandler->createNewLibrary();
             }
         }
     }
