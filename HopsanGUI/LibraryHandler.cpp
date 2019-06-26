@@ -43,6 +43,7 @@
 #define XML_LIBRARY_INCLUDEPATH "includepath"
 #define XML_LIBRARY_LINKPATH "linkpath"
 #define XML_LIBRARY_LINKLIBRARY "linklibrary"
+#define XML_COMPONENT_XML "componentxml"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -1046,6 +1047,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 QDomElement xmlRoot = domDocument.documentElement();
                 if(xmlRoot.tagName() == QString(XML_LIBRARY))
                 {
+                    pLibrary->version = xmlRoot.attribute("version");
                     // Read name of library
                     pLibrary->name = xmlRoot.firstChildElement(XML_LIBRARY_NAME).text();
                     if (pLibrary->name.isEmpty()) {
@@ -1141,6 +1143,16 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         extraSourceElement = extraSourceElement.nextSiblingElement(QString(XML_LIBRARY_EXTRA_SOURCE));
                     }
 
+                    // Read components
+                    if(pLibrary->version == "0.3") {
+                        QDomElement cafElement = xmlRoot.firstChildElement(QString(XML_COMPONENT_XML));
+                        while(!cafElement.isNull()) {
+                            pLibrary->cafFiles.append(libraryRootDir.absoluteFilePath(cafElement.text()));
+                            cafElement = cafElement.nextSiblingElement(QString(XML_COMPONENT_XML));
+                        }
+                        qDebug() << "CAF files: " << pLibrary->cafFiles;
+                    }
+
                     // Remember library (we do this here even if no DLL/SO files are loaded as we might load internal or "gui only" components
                     mLoadedLibraries.append(pLibrary);
 
@@ -1205,29 +1217,62 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
     // Recurse sub directories and find all xml caf files
-    libraryRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-    libraryRootDir.setNameFilters(QStringList() << "*.xml");
-    QDirIterator it(libraryRootDir, QDirIterator::Subdirectories);
-    bool foundCafFiles = false;
-    while(it.hasNext())
-    {
-        //Read from the xml file
-        QFile cafFile(it.next());
-        QFileInfo cafFileInfo(cafFile);
-
-        //Iterate over all xml files in folder and subfolders
-        if(cafFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    if(pLibrary->version != "0.3") {
+        libraryRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+        libraryRootDir.setNameFilters(QStringList() << "*.xml");
+        QDirIterator it(libraryRootDir, QDirIterator::Subdirectories);
+        bool foundCafFiles = false;
+        while(it.hasNext())
         {
+            //Read from the xml file
+            QFile cafFile(it.next());
+            QFileInfo cafFileInfo(cafFile);
+
+            //Iterate over all xml files in folder and subfolders
+            if(cafFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                QDomDocument domDocument;
+                QString errorStr;
+                int errorLine, errorColumn;
+                if(domDocument.setContent(&cafFile, false, &errorStr, &errorLine, &errorColumn))
+                {
+                    QDomElement cafRoot = domDocument.documentElement();
+                    if(cafRoot.tagName() == QString(CAF_ROOT))
+                    {
+                        pLibrary->cafFiles.append(cafFileInfo.absoluteFilePath());
+
+
+                    }
+                }
+                else
+                {
+                    gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not parse file: %1, Error: %2, Line: %3, Column: %4. Is it a component XML file?")
+                                                      .arg(cafFileInfo.canonicalFilePath()).arg(errorStr).arg(errorLine).arg(errorColumn));
+                }
+            }
+            else
+            {
+                gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not open (read) file: %1").arg(cafFileInfo.canonicalFilePath()));
+            }
+            cafFile.close();
+        }
+    }
+
+    if (pLibrary->cafFiles.isEmpty()) {
+        gpMessageHandler->addWarningMessage(QString("Did not find any component XML files when loading library: %1").arg(pLibrary->getLibraryMainFilePath()));
+    }
+
+    for(const QString cafFileName : pLibrary->cafFiles) {
+        QFile cafFile(cafFileName);
+        QFileInfo cafFileInfo(cafFileName);
+
+        if(cafFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QDomDocument domDocument;
             QString errorStr;
             int errorLine, errorColumn;
-            if(domDocument.setContent(&cafFile, false, &errorStr, &errorLine, &errorColumn))
-            {
+            if(domDocument.setContent(&cafFile, false, &errorStr, &errorLine, &errorColumn)) {
                 QDomElement cafRoot = domDocument.documentElement();
-                if(cafRoot.tagName() == QString(CAF_ROOT))
-                {
-                    foundCafFiles = true;
-
+                if(cafRoot.tagName() == QString(CAF_ROOT))  {
                     //Read appearance data from the caf xml file, begin with the first
                     QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file
                     SharedModelObjectAppearanceT pAppearanceData = SharedModelObjectAppearanceT(new ModelObjectAppearance);
@@ -1239,11 +1284,9 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     // Check CAF version, and ask user if they want to update to latest version
                     QString caf_version = cafRoot.attribute(CAF_VERSION);
 
-                    if (caf_version < CAF_VERSIONNUM)
-                    {
+                    if (caf_version < CAF_VERSIONNUM) {
                         bool doSave=false;
-                        if (mUpConvertAllCAF==UndecidedToAll)
-                        {
+                        if (mUpConvertAllCAF==UndecidedToAll) {
                             QMessageBox questionBox(gpMainWindowWidget);
                             QString text;
                             QTextStream ts(&text);
@@ -1260,34 +1303,28 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             QPushButton* pYesToAll = questionBox.addButton(QMessageBox::YesToAll);
                             QPushButton* pNoToAll = questionBox.addButton(QMessageBox::NoToAll);
                             questionBox.setDefaultButton(QMessageBox::No);
-                            if(gpSplash)
-                            {
+                            if(gpSplash) {
                                 gpSplash->close();
                             }
                             questionBox.exec();
                             QAbstractButton* pClickedButton = questionBox.clickedButton();
 
-                            if ( (pClickedButton == pYes) || (pClickedButton == pYesToAll) )
-                            {
+                            if ( (pClickedButton == pYes) || (pClickedButton == pYesToAll) ) {
                                 doSave = true;
                             }
 
-                            if (pClickedButton == pYesToAll)
-                            {
+                            if (pClickedButton == pYesToAll) {
                                 mUpConvertAllCAF = YesToAll;
                             }
-                            else if (pClickedButton == pNoToAll)
-                            {
+                            else if (pClickedButton == pNoToAll) {
                                 mUpConvertAllCAF = NoToAll;
                             }
                         }
-                        else if (mUpConvertAllCAF==YesToAll)
-                        {
+                        else if (mUpConvertAllCAF==YesToAll) {
                             doSave = true;
                         }
 
-                        if (doSave)
-                        {
+                        if (doSave) {
                             // Make backup of original file
                             QFileInfo newBakFile(mUpdateXmlBackupDir.absolutePath());
                             QDir dir;
@@ -1303,20 +1340,17 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     bool existsInCore = false;
                     const QString typeName = pAppearanceData->getTypeName();
                     // Do not check in case it is a Subsystem or SystemPort
-                    if( !((typeName==HOPSANGUISYSTEMTYPENAME) || (typeName==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (typeName==HOPSANGUICONTAINERPORTTYPENAME)) )
-                    {
+                    if( !((typeName==HOPSANGUISYSTEMTYPENAME) || (typeName==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (typeName==HOPSANGUICONTAINERPORTTYPENAME)) ) {
                         //! @todo maybe they should be reserved in hopsan core instead, then we could aske the core if the exist
                         // Check so that there is such a component available in the Core, or if the component points to an external model file
                         existsInCore = coreAccess.hasComponent(typeName) || !pAppearanceData->getHmfFile().isEmpty();
-                        if(!existsInCore)
-                        {
+                        if(!existsInCore) {
                             gpMessageHandler->addWarningMessage("Failed to load component of type: "+pAppearanceData->getFullTypeName(), "failedtoloadcomp");
                         }
                     }
 
                     // Success, add component to library
-                    if (true)
-                    {
+                    if (true) {
                         auto pLibraryBeingLoaded = mLoadedLibraries.last();
 
                         ComponentLibraryEntry newEntry;
@@ -1330,18 +1364,15 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         QString subTypeName = pAppearanceData->getSubTypeName();
                         QString fullTypeName = makeFullTypeString(newEntry.pAppearance->getTypeName(), subTypeName);
 
-                        if (!subTypeName.isEmpty())
-                        {
+                        if (!subTypeName.isEmpty()) {
                             // Find what library this component depend on (main component type) and make sure that library knows bout this dependency
                             QString libPath;
                             coreAccess.getLibPathForComponent(pAppearanceData->getTypeName(), libPath);
-                            if( !libPath.isEmpty() )
-                            {
-                                for(int l=0; l<mLoadedLibraries.size(); ++l)
-                                {
-                                    if( mLoadedLibraries[l]->libFilePath == libPath )
+                            if( !libPath.isEmpty() ) {
+                                for(SharedComponentLibraryPtrT pLib : mLoadedLibraries) {
+                                    if( pLib->libFilePath == libPath )
                                     {
-                                        mLoadedLibraries[l]->guiOnlyComponents.append(fullTypeName);
+                                        pLib->guiOnlyComponents.append(fullTypeName);
                                         break;
                                     }
                                 }
@@ -1351,9 +1382,6 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             pLibraryBeingLoaded->guiOnlyComponents.append(fullTypeName);
                         }
 
-                        // Make this library remember this entrys appearance file path
-                        pLibraryBeingLoaded->cafFiles.append(cafFileInfo.canonicalFilePath());
-
                         // Calculate path to show in library
                         QString relDir = QDir(libraryMainFileInfo.canonicalPath()).relativeFilePath(cafFileInfo.canonicalFilePath());
                         newEntry.displayPath = relDir.split("/");
@@ -1362,13 +1390,11 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         if (libName.isEmpty()) {
                             libName = libraryRootDir.dirName();
                         }
-                        if(type == ExternalLib)
-                        {
+                        if(type == ExternalLib) {
                             newEntry.displayPath.prepend(libName);
                             newEntry.displayPath.prepend(componentlibrary::roots::externalLibraries);
                         }
-                        else if(type == FmuLib)
-                        {
+                        else if(type == FmuLib) {
                             newEntry.displayPath.prepend(libName);
                             newEntry.displayPath.prepend(componentlibrary::roots::fmus);
                         }
@@ -1377,16 +1403,13 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         newEntry.visibility = visibility;
 
                         // Store new entry, but only if it does not already exist
-                        if(!mLibraryEntries.contains(fullTypeName))
-                        {
+                        if(!mLibraryEntries.contains(fullTypeName)) {
                             mLibraryEntries.insert(fullTypeName, newEntry);
-                            if(gpSplash)
-                            {
+                            if(gpSplash) {
                                 gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
                             }
                         }
-                        else
-                        {
+                        else {
                             const auto& existingEntery = mLibraryEntries[fullTypeName];
                             gpMessageHandler->addWarningMessage(QString("A component with type name '%1' was already registered by library '%2'. Ignoring version in library '%3'.")
                                                                 .arg(fullTypeName)
@@ -1408,12 +1431,6 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
         }
         cafFile.close();
     }
-
-    if (!foundCafFiles)
-    {
-        gpMessageHandler->addWarningMessage(QString("Did not find any component XML files when loading library: %1").arg(pLibrary->getLibraryMainFilePath()));
-    }
-
     gpMessageHandler->collectHopsanCoreMessages();
 
 

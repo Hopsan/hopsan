@@ -58,6 +58,7 @@ class ComponentLibrary
 {
 public:
     QString id;
+    QString version;
     QString name;
     QString loadPath;
     QString xmlFilePath;
