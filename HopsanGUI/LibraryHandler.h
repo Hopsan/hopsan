@@ -173,6 +173,7 @@ public:
     void openCreateComponentDialog();
     void createNewLibrary();
     void addComponentToLibrary(SharedComponentLibraryPtrT pLibrary);
+    void removeComponentFromLibrary(const QString &typeName, SharedComponentLibraryPtrT pLibrary, DeleteOrKeepFilesEnumT deleteOrKeepFiles);
     void generateCafFile(const QString &target, const QString &typeName, const QString &displayName, const QString &srcFile);
     void generateMainSource(SharedComponentLibraryPtrT pLibrary);
 

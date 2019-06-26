@@ -901,6 +901,27 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary)
 }
 
 
+void LibraryHandler::removeComponentFromLibrary(const QString &typeName, SharedComponentLibraryPtrT pLibrary, DeleteOrKeepFilesEnumT deleteOrKeepFiles)
+{
+    ComponentLibraryEntry entry = getEntry(typeName);
+
+    auto pGenerator = createDefaultGenerator(true);
+    QString cafPath = entry.pAppearance->getXMLFile().absoluteFilePath();
+    QString hppPath = QDir(entry.pAppearance->getBasePath()).absoluteFilePath(entry.pAppearance->getSourceCodeFile());
+    bool deleteFiles = (DeleteFiles == deleteOrKeepFiles);
+    pGenerator->removeComponentFromLibrary(pLibrary->xmlFilePath, cafPath, hppPath, deleteFiles);
+
+    gpModelHandler->saveState();
+    // First unload the library
+    QString libPath = pLibrary->xmlFilePath;
+    if (unloadLibrary(pLibrary)) {
+        // Now reload the library
+        loadLibrary(libPath);
+    }
+    gpModelHandler->restoreState();
+}
+
+
 //! @brief Unloads library by component type name
 //! @param typeName Type name of any component in the library
 bool LibraryHandler::unloadLibraryByComponentType(QString typeName)

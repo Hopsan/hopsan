@@ -575,9 +575,25 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
                                                                     &messageHandler, static_cast<void*>(&forwarder));
     lw->setDidSucceed(checkOK);
     return checkOK;
+}
 
+bool HopsanGeneratorGUI::removeComponentFromLibrary(const QString &libraryXmlPath, const QString &cafPath, const QString &hppPath, bool deleteFiles)
+{
 
+    auto lw = mPrivates->createNewWidget();
+    loadGeneratorLibrary();
 
+    constexpr auto functionName = "callRemoveComponentFromLibrary";
+    const auto libpath = libraryXmlPath.toStdString();
+    MessageForwarder forwarder(lw->widget());
+    const auto xmlpath = libraryXmlPath.toStdString();
+    const auto cafpath = cafPath.toStdString();
+    const auto hpppath = hppPath.toStdString();
+
+    using RemoveComponentFromLibraryFunction_t = bool(const char*, const char*, const char*, bool, MessageHandler_t, void*);
+    bool checkOK = mPrivates->call<RemoveComponentFromLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), cafpath.c_str(), hpppath.c_str(), deleteFiles, &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(checkOK);
+    return checkOK;
 }
 
 void HopsanGeneratorGUI::printMessage(const QString &msg, const char type)

@@ -469,3 +469,49 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
 
     return true;
 }
+
+
+
+//! @brief Removes a component from a component library
+//! @param[in] libraryXmlPath Absolute path to library XML file
+//! @param[in] cafPath Path to component description file
+//! @param[in] hppPath Path to component source file
+//! @param[in] deleteFiles Flag for deleting actual files
+bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafPath, const char* hppPath, bool deleteFiles, messagehandler_t messageHandler, void* pMessageObject)
+{
+    QFileInfo xmlPath(libraryXmlPath);
+
+    QString dummy;
+    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(dummy, dummy));
+    pGenerator->setMessageHandler(messageHandler, pMessageObject);
+
+    //Load component library from XML
+    ComponentLibrary lib;
+    if(!lib.loadFromXML(xmlPath.absoluteFilePath())) {
+        pGenerator->printErrorMessage("Cannot open "+xmlPath.absoluteFilePath()+" for reading.");
+        return false;
+    }
+
+    //Add new component to library
+    lib.mComponentXMLFiles.removeAll(QFileInfo(cafPath).fileName());
+    lib.mComponentCodeFiles.removeAll(QFileInfo(hppPath).fileName());
+
+    //Write back component library to XML
+    if(!lib.saveToXML(xmlPath.absoluteFilePath())) {
+        pGenerator->printErrorMessage("Cannot open "+xmlPath.absoluteFilePath()+" for writing.");
+        return false;
+    }
+
+    //Generate main source file
+    if(!pGenerator->generateLibrarySourceFile(lib)) {
+        pGenerator->printErrorMessage("Failed to generate library source file.");
+        return false;
+    };
+
+    if(deleteFiles) {
+        QFile::remove(cafPath);
+        QFile::remove(hppPath);
+    }
+
+    return true;
+}

@@ -41,6 +41,8 @@
 #include <QCompleter>
 #include <QStringListModel>
 #include <QInputDialog>
+#include <QMessageBox>
+#include <QCheckBox>
 
 //Hopsan includes
 #include "global.h"
@@ -753,6 +755,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
             QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
             QAction *pNewLibraryAction = contextMenu.addAction("Create New Library");
+            QAction *pRemoveComponentAction = contextMenu.addAction("Remove component");
             pUnloadAllAction->setEnabled(false);
             pUnloadAction->setEnabled(false);
             pOpenFolderAction->setEnabled(false);
@@ -763,6 +766,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             pCheckConsistenceAction->setEnabled(false);
             pAddComponentAction->setEnabled(false);
             pNewLibraryAction->setEnabled(false);
+            pRemoveComponentAction->setEnabled(false);
 
             QTreeWidgetItem *pFirstSubComponentItem = item;
 
@@ -806,6 +810,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
             if(item) {
                 pOpenFolderAction->setEnabled(true);
+            }
+
+            if(isComponentItem(item) && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries)) {
+                pRemoveComponentAction->setEnabled(true);
             }
 
             if(contextMenu.actions().isEmpty())
@@ -917,6 +925,27 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             }
             else if(pReply == pNewLibraryAction) {
                 gpLibraryHandler->createNewLibrary();
+            }
+            else if(pReply == pRemoveComponentAction) {
+                QString typeName = mItemToTypeNameMap.find(item).value();
+                SharedComponentLibraryPtrT pLibrary = gpLibraryHandler->getEntry(typeName).pLibrary;
+                QMessageBox *pMessageBox = new QMessageBox();
+                pMessageBox->setWindowTitle("Warning");
+                pMessageBox->setIcon(QMessageBox::Icon::Question);
+                pMessageBox->setText("Are you sure you want to remove component \""+typeName+"\" from library \""+pLibrary->name+"\"?");
+                pMessageBox->addButton(QMessageBox::Ok);
+                pMessageBox->addButton(QMessageBox::Cancel);
+                pMessageBox->setDefaultButton(QMessageBox::Cancel);
+                QCheckBox *pRemoveFilesCheckBox = new QCheckBox("Delete actual files");
+                pRemoveFilesCheckBox->setChecked(false);
+                pMessageBox->setCheckBox(pRemoveFilesCheckBox);
+                if(QMessageBox::Ok == pMessageBox->exec()) {
+                    DeleteOrKeepFilesEnumT deleteOrKeepFiles = KeepFiles;
+                    if(pRemoveFilesCheckBox->isChecked()) {
+                        deleteOrKeepFiles = DeleteFiles;
+                    }
+                    gpLibraryHandler->removeComponentFromLibrary(typeName, pLibrary, deleteOrKeepFiles);
+                }
             }
         }
     }
