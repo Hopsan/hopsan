@@ -93,6 +93,7 @@ enum HiddenVisibleEnumT {Hidden, Visible};
 enum EnabledDisabledEnumT {Enabled, Disabled};
 enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
 enum class ArchitectureEnumT {x86, x64};
+enum DeleteOrKeepFilesEnumT {KeepFiles, DeleteFiles};
 
 extern const char* getHopsanGUIBuildTime();
 

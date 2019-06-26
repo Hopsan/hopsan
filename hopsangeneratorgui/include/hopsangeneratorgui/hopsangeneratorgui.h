@@ -55,6 +55,8 @@ public:
                                const QStringList &outputNames, const QStringList &outputDescriptions, const QStringList &outputUnits,
                                const QStringList &portNames, const QStringList &portDescriptions, const QStringList &portTypes, const QList<bool> &portsRequired);
 
+    bool removeComponentFromLibrary(const QString &libraryXmlPath, const QString &cafPath, const QString &hppPath, bool deleteFiles);
+
     void printMessage(const QString& msg, const char type='I');
     void printErrorMessage(const QString& msg);
     void printWarningMessage(const QString& msg);
