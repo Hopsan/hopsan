@@ -23,7 +23,7 @@
 -----------------------------------------------------------------------------*/
 
 #ifndef <<<uppertypename>>>_HPP_INCLUDED
-#define <<<uppertypename>>>_HPP_INCLUDED\n
+#define <<<uppertypename>>>_HPP_INCLUDED
 
 #include <math.h>
 #include "ComponentEssentials.h"

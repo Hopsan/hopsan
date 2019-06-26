@@ -754,6 +754,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QAction *pReloadAction = contextMenu.addAction("Reload");
             QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
             QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
+            QAction *pExistingComponentAction = contextMenu.addAction("Add Existing Component");
             QAction *pNewLibraryAction = contextMenu.addAction("Create New Library");
             QAction *pRemoveComponentAction = contextMenu.addAction("Remove component");
             pUnloadAllAction->setEnabled(false);
@@ -765,6 +766,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             pReloadAction->setEnabled(false);
             pCheckConsistenceAction->setEnabled(false);
             pAddComponentAction->setEnabled(false);
+            pExistingComponentAction->setEnabled(false);
             pNewLibraryAction->setEnabled(false);
             pRemoveComponentAction->setEnabled(false);
 
@@ -799,6 +801,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 pReloadAction->setEnabled(true);
                 pCheckConsistenceAction->setEnabled(true);
                 pAddComponentAction->setEnabled(true);
+                pExistingComponentAction->setEnabled(true);
             }
 
             //Enable unloading of FMUs
@@ -875,8 +878,11 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             }
             else if(pReply == pAddComponentAction) {
                 SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
-                //QString typeName = QInputDialog::getText(this,"Add component","Type name: ");
-                gpLibraryHandler->addComponentToLibrary(pLib);
+                gpLibraryHandler->addComponentToLibrary(pLib, NewFile);
+            }
+            else if(pReply == pExistingComponentAction) {
+                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                gpLibraryHandler->addComponentToLibrary(pLib, ExistingFile);
             }
             else if(pReply == pOpenFolderAction) {
                 QString path;

@@ -31,6 +31,8 @@ extern "C" {
 
     HOPSANGENERATOR_DLLAPI bool callAddComponentToLibrary(const char* libraryXMLPath, const char* typeName, const char* displayName, const char* cqsType, const char * const constantNames[], const int numConstantNames, const char * const constantDisplayNames[], const int numConstantDisplayNames, const char * const constantUnits[], const int numConstantUnits, const char * const constantInits[], const int numConstantInits, const char * const inputNames[], const int numInputNames, const char * const inputDescriptions[], const int numInputDescriptions, const char * const inputUnits[], const int numInputUnits, const char * const inputInits[], const int numInputInits, const char * const outputNames[], const int numOutputNames, const char * const outputDescriptions[], const int numOutputDescriptions, const char * const outputUnits[], const int numOutputUnits, const char * const portNames[], const int numPortNames, const char * const portDescriptions[], const int numPortDescriptions, const char * const portTypes[], const int numPortTypes, const int portsRequired[], const int numPortsRequired, messagehandler_t messageHandler=0, void* pMessageObject=0);
 
+    HOPSANGENERATOR_DLLAPI bool callAddExistingComponentToLibrary(const char* libraryXMLPath, const char* cafPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
+
     HOPSANGENERATOR_DLLAPI bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafPath, const char *hppPath, bool deleteFiles, messagehandler_t messageHandler, void *pMessageObject);
 }
 

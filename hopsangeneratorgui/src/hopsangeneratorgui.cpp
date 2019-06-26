@@ -531,6 +531,24 @@ bool HopsanGeneratorGUI::checkComponentLibrary(const QString& libraryXMLPath)
 }
 
 
+bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, const QString &cafPath)
+{
+    auto lw = mPrivates->createNewWidget();
+    loadGeneratorLibrary();
+
+    constexpr auto functionName = "callAddExistingComponentToLibrary";
+    const auto libpath = libraryXmlPath.toStdString();
+    MessageForwarder forwarder(lw->widget());
+    const auto xmlpath = libraryXmlPath.toStdString();
+    const auto cafpath = cafPath.toStdString();
+
+    using AddExistingComponentToLibraryFunction_t = bool(const char*, const char*, MessageHandler_t, void*);
+    bool checkOK = mPrivates->call<AddExistingComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), cafpath.c_str(), &messageHandler, static_cast<void*>(&forwarder));
+    lw->setDidSucceed(checkOK);
+    return checkOK;
+}
+
+
 bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, const QString &typeName, const QString &displayName, const QString &cqsType,
                                                const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
                                                const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,
