@@ -49,6 +49,8 @@ public:
 
     bool checkComponentLibrary(const QString& libraryXMLPath);
 
+    bool addComponentToLibrary(const QString &libraryXmlPath, const QString &cafPath);
+
     bool addComponentToLibrary(const QString &libraryXmlPath, const QString &typeName, const QString &displayName, const QString &cqsType,
                                const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
                                const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,

@@ -873,22 +873,33 @@ void LibraryHandler::createNewLibrary() {
     }
 }
 
-void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary)
+void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, SaveTargetEnumT newOrExisting)
 {
-    NewComponentDialog *pDialog = new NewComponentDialog(gpMainWindowWidget);
-    if(pDialog->exec() == QDialog::Rejected) {
-        return;
-    }
-
-    ComponentSpecification spec = pDialog->getSpecification();
-
     auto pGenerator = createDefaultGenerator(true);
-    pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, spec.typeName, spec.displayName, spec.cqsType,
-                                      spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
-                                      spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
-                                      spec.outputNames, spec.outputDescriptions, spec.outputUnits,
-                                      spec.portNames, spec.portDescriptions, spec.portTypes, spec.portsRequired);
+    ComponentSpecification spec;
+    if(newOrExisting == NewFile) {
+        NewComponentDialog *pDialog = new NewComponentDialog(gpMainWindowWidget);
+        if(pDialog->exec() == QDialog::Rejected) {
+            return;
+        }
 
+        spec = pDialog->getSpecification();
+        pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, spec.typeName, spec.displayName, spec.cqsType,
+                                          spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
+                                          spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
+                                          spec.outputNames, spec.outputDescriptions, spec.outputUnits,
+                                          spec.portNames, spec.portDescriptions, spec.portTypes, spec.portsRequired);
+    }
+    else {  //ExistingFile
+        QString libPath = QFileInfo(pLibrary->xmlFilePath).absolutePath();
+        QString cafFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, "Add Existing Component", libPath, "XML files (*.xml)");
+        QString cafPath = QFileInfo(cafFileName).absolutePath();
+        if(!cafPath.startsWith(libPath)) {
+            gpMessageHandler->addErrorMessage("Can only add component files inside library folder or a sub-directory");
+            return;
+        }
+        pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, cafFileName);
+    }
     gpModelHandler->saveState();
     // First unload the library
     QString libPath = pLibrary->xmlFilePath;
@@ -898,7 +909,9 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary)
     }
     gpModelHandler->restoreState();
 
-    gpModelHandler->loadTextFile(QFileInfo(pLibrary->getLibraryMainFilePath()).absoluteDir().filePath(getEntry(spec.typeName).pAppearance->getSourceCodeFile()));
+    if(newOrExisting == NewFile) {
+        gpModelHandler->loadTextFile(QFileInfo(pLibrary->getLibraryMainFilePath()).absoluteDir().filePath(getEntry(spec.typeName).pAppearance->getSourceCodeFile()));
+    }
 }
 
 

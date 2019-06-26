@@ -471,6 +471,70 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
 }
 
 
+//! @brief Adds a component to an existing library
+//! @param[in] libraryXmlPath Absolute path to library XML file
+//! @param[in] librarySourcePath Path to library CPP file relative to path for library XML file
+//! @param[in] typeName Typename for new component
+//! @param[in] displayName Display name for new component
+bool callAddExistingComponentToLibrary(const char* libraryXmlPath, const char* cafPath, messagehandler_t messageHandler, void* pMessageObject)
+{
+    QFileInfo libFileInfo(libraryXmlPath);
+    QFileInfo cafFileInfo(cafPath);
+
+    QString dummy;
+    auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(dummy, dummy));
+    pGenerator->setMessageHandler(messageHandler, pMessageObject);
+
+    //Load component library from XML
+    ComponentLibrary lib;
+    if(!lib.loadFromXML(libraryXmlPath)) {
+        pGenerator->printErrorMessage("Cannot open "+cafFileInfo.absoluteFilePath()+" for reading.");
+        return false;
+    }
+
+    //Read CAF XML and extract source file (.hpp)
+    QFile cafFile(cafPath);
+    QDomDocument cafDomDocument;
+    QDomElement cafRootElement;
+    cafRootElement = loadXMLDomDocument(cafFile,cafDomDocument,"hopsanobjectappearance");
+    if(QDomElement() == cafRootElement) {
+        pGenerator->printErrorMessage("Unable to parse XML file: "+QString(cafPath));
+        return false;
+    }
+    QDomElement modelObjectElement = cafRootElement.firstChildElement("modelobject");
+    if(modelObjectElement.isNull()) {
+        pGenerator->printErrorMessage("Unable to parse XML file: "+QString(cafPath)+" (cannot find \"modelobject\" element)");
+        return false;
+    }
+    QString hppFileName = modelObjectElement.attribute("sourcecode");
+    if(hppFileName.isEmpty()) {
+        pGenerator->printErrorMessage("Source code not specified in component XML file.");
+        return false;
+    }
+    QString hppPath = cafFileInfo.absoluteDir().filePath(hppFileName);
+    QFileInfo hppFileInfo(hppPath);
+
+    //Add new component to library
+    lib.mComponentXMLFiles.append(libFileInfo.absoluteDir().relativeFilePath(cafFileInfo.fileName()));
+    lib.mComponentCodeFiles.append(libFileInfo.absoluteDir().relativeFilePath(hppFileInfo.fileName()));
+
+    //Write back component library to XML
+    if(!lib.saveToXML(libFileInfo.absoluteFilePath())) {
+        pGenerator->printErrorMessage("Cannot open "+libFileInfo.absoluteFilePath()+" for writing.");
+        return false;
+    }
+
+    //Generate main source file
+    if(!pGenerator->generateLibrarySourceFile(lib)) {
+        pGenerator->printErrorMessage("Failed to generate library source file.");
+        return false;
+    };
+
+    return true;
+}
+
+
+
 
 //! @brief Removes a component from a component library
 //! @param[in] libraryXmlPath Absolute path to library XML file
