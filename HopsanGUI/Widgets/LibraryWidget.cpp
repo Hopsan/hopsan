@@ -242,6 +242,7 @@ void LibraryWidget::update()
         pItem->setText(0, lib->name);
         pItem->setToolTip(0, lib->name);
         pExternalItem->addChild(pItem);
+        pExternalItem->sortChildren(0,Qt::AscendingOrder);
         pDualItem = pItem->clone();
         pExternalDualItem->addChild(pDualItem);
         mItemToLibraryMap[pItem] = lib;
