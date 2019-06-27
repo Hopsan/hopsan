@@ -169,7 +169,9 @@ void LibraryWidget::update()
     pExternalItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
     pExternalItem->setText(0, componentlibrary::roots::externalLibraries);
     pExternalItem->setToolTip(0, componentlibrary::roots::externalLibraries);
-    mpTree->addTopLevelItem(pExternalItem);
+    if(filter.isEmpty()) {
+        mpTree->addTopLevelItem(pExternalItem);
+    }
     for(auto lib : gpLibraryHandler->getLibraries(ExternalLib)) {
         QTreeWidgetItem *pItem = new QTreeWidgetItem();
         pItem->setFont(0,boldFont);
@@ -321,7 +323,9 @@ void LibraryWidget::update()
     pModelicaComponentsItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-FolderModelica.svg"));
     pModelicaComponentsItem->setText(0, componentlibrary::roots::modelicaComponents);
     pModelicaComponentsItem->setFont(0,boldFont);
-    mpTree->addTopLevelItem(pModelicaComponentsItem);
+    if(filter.isEmpty()) {
+        mpTree->addTopLevelItem(pModelicaComponentsItem);
+    }
     foreach(const QString &model, gpModelicaLibrary->getModelNames())
     {
         QTreeWidgetItem *pModelicaComponentItem = new QTreeWidgetItem();
@@ -390,7 +394,9 @@ void LibraryWidget::update()
         pModelicaItem->setToolTip(0, path);
         pModelicaItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-New.svg"));
         mItemToModelicaFileNameMap.insert(pModelicaItem, path);
-        mpTree->addTopLevelItem(pModelicaItem);
+        if(filter.isEmpty() || (pModelicaItem->text(0).toLower().contains(filter.toLower()))) {
+            mpTree->addTopLevelItem(pModelicaItem);
+        }
     }
 
     //Expand previously expanded folders
