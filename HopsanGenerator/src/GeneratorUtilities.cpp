@@ -230,7 +230,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
 #endif
     ch.addLinkLibrary("c++", {Compiler::Clang});
     for(QString linkLibPath : cl.mLinkLibraries) {
-        ch.addIncludePath(linkLibPath);
+        ch.addLinkLibrary(linkLibPath);
     }
 
     ch.addBuildFlags(cl.mBuildFlags);
