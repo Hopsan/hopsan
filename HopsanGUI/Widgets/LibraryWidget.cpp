@@ -517,29 +517,33 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
         QMenu contextMenu;
         QAction *pUnloadAllAction = contextMenu.addAction("Unload All External Libraries");
+        QAction *pNewLibraryAction = contextMenu.addAction("Create New Library");
+        contextMenu.addSeparator();
+        QAction *pRecompileAction = contextMenu.addAction("Recompile");
+        QAction *pReloadAction = contextMenu.addAction("Reload");
         QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
+        QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
+        contextMenu.addSeparator();
+        QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
+        QAction *pExistingComponentAction = contextMenu.addAction("Add Existing Component");
+        QAction *pRemoveComponentAction = contextMenu.addAction("Remove component");
+        contextMenu.addSeparator();
         QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
         QAction *pEditXMLAction = contextMenu.addAction("Edit XML Description");
         QAction *pEditCodeAction = contextMenu.addAction("Edit Source Code");
-        QAction *pRecompileAction = contextMenu.addAction("Recompile");
-        QAction *pReloadAction = contextMenu.addAction("Reload");
-        QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
-        QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
-        QAction *pExistingComponentAction = contextMenu.addAction("Add Existing Component");
-        QAction *pNewLibraryAction = contextMenu.addAction("Create New Library");
-        QAction *pRemoveComponentAction = contextMenu.addAction("Remove component");
-        pUnloadAllAction->setEnabled(false);
-        pUnloadAction->setEnabled(false);
-        pOpenFolderAction->setEnabled(false);
-        pEditXMLAction->setEnabled(false);
-        pEditCodeAction->setEnabled(false);
-        pRecompileAction->setEnabled(false);
-        pReloadAction->setEnabled(false);
-        pCheckConsistenceAction->setEnabled(false);
-        pAddComponentAction->setEnabled(false);
-        pExistingComponentAction->setEnabled(false);
-        pNewLibraryAction->setEnabled(false);
-        pRemoveComponentAction->setEnabled(false);
+
+        pUnloadAllAction->setVisible(false);
+        pUnloadAction->setVisible(false);
+        pOpenFolderAction->setVisible(false);
+        pEditXMLAction->setVisible(false);
+        pEditCodeAction->setVisible(false);
+        pRecompileAction->setVisible(false);
+        pReloadAction->setVisible(false);
+        pCheckConsistenceAction->setVisible(false);
+        pAddComponentAction->setVisible(false);
+        pExistingComponentAction->setVisible(false);
+        pNewLibraryAction->setVisible(false);
+        pRemoveComponentAction->setVisible(false);
 
         QTreeWidgetItem *pFirstSubComponentItem = item;
 
@@ -556,8 +560,8 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         //Enable unload all only for top-level external libraries folder
         if(item->text(0) == componentlibrary::roots::externalLibraries)
         {
-            pUnloadAllAction->setEnabled(true);
-            pNewLibraryAction->setEnabled(true);
+            pUnloadAllAction->setVisible(true);
+            pNewLibraryAction->setVisible(true);
         }
 
         //Enable external library actions (also for empty libraries)
@@ -565,29 +569,32 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 (item->parent() != nullptr && item->parent()->text(0) == componentlibrary::roots::externalLibraries ||
                  (pFirstSubComponentItem != nullptr && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))))
         {
-            pRecompileAction->setEnabled(true);
-            pEditXMLAction->setEnabled(true);
-            pEditCodeAction->setEnabled(true);
-            pUnloadAction->setEnabled(true);
-            pReloadAction->setEnabled(true);
-            pCheckConsistenceAction->setEnabled(true);
-            pAddComponentAction->setEnabled(true);
-            pExistingComponentAction->setEnabled(true);
+            pRecompileAction->setVisible(true);
+            pEditXMLAction->setVisible(true);
+            pEditCodeAction->setVisible(true);
+            pUnloadAction->setVisible(true);
+            pReloadAction->setVisible(true);
+            pCheckConsistenceAction->setVisible(true);
+            pAddComponentAction->setVisible(true);
+            pExistingComponentAction->setVisible(true);
         }
 
         //Enable unloading of FMUs
         if(pFirstSubComponentItem != nullptr &&
                 item->text(0) != componentlibrary::roots::fmus &&
                 gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus)) {
-            pUnloadAction->setEnabled(true);
+            pUnloadAction->setVisible(true);
         }
 
-        if(item) {
-            pOpenFolderAction->setEnabled(true);
+        if(item &&
+           item->text(0) != componentlibrary::roots::externalLibraries &&
+           item->text(0) != componentlibrary::roots::fmus &&
+           item->text(0) != componentlibrary::roots::modelicaComponents) {
+            pOpenFolderAction->setVisible(true);
         }
 
         if(isComponentItem(item) && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries)) {
-            pRemoveComponentAction->setEnabled(true);
+            pRemoveComponentAction->setVisible(true);
         }
 
         if(contextMenu.actions().isEmpty())
