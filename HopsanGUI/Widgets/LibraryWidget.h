@@ -68,35 +68,24 @@ public slots:
 
 private slots:
     void handleItemClick(QTreeWidgetItem* item, int column);
-    void handleItemClick(QListWidgetItem* item);
-    void handleItemEntered(QListWidgetItem* item);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
 
-
 private:
-
     void getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTreeWidgetItem *> &rSubItems);
     bool isComponentItem(QTreeWidgetItem *item);
     QTreeWidgetItem *getLibraryItem(QSharedPointer<ComponentLibrary> pLibrary);
 
     //GUI Stuff
     QTreeWidget *mpTree;
-    QTreeWidget *mpDualTree;
-    QListWidget *mpList;
     QTreeWidgetItem *mpLoadLibraryItem;
     QTreeWidgetItem *mpAddModelicaFileItem;
-    QTreeWidgetItem *mpLoadLibraryItemDual;
-    QTreeWidgetItem *mpAddModelicaFileItemDual;
-    QLabel *mpComponentNameLabel;
     QLineEdit *mpFilterEdit;
 
     //Maps between GUI objects and library contents
     QMap<QTreeWidgetItem *, QString> mItemToTypeNameMap;        //Map between component items and typenames
-    QMap<QListWidgetItem *, QString> mListItemToTypeNameMap;    //Map between component items in dual view list and typenames
     QMap<QTreeWidgetItem *, QSharedPointer<ComponentLibrary> > mItemToLibraryMap;    //Map between component items and libraries it might origin from
-    QMap<QTreeWidgetItem *, QStringList> mFolderToContentsMap;  //Map between folders and typenames of sub-components, for updating list in dual view
     QMap<QTreeWidgetItem *, QString> mItemToModelicaFileNameMap;
 };
 
