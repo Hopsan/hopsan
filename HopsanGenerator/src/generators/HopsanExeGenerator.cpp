@@ -252,9 +252,9 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     {
         linkBatchStream << " " << objFile;
     }
-    linkBatchStream << " -o "+outputExecutableFile+"\n";
-    for(const QString linkPaths : mLinkPaths) {
-        linkBatchStream << " -L" << linkPaths;
+    linkBatchStream << " -o \""+outputExecutableFile+"\"\n";
+    for(const QString linkPath : mLinkPaths) {
+        linkBatchStream << " -L\"" << linkPath << "\"";
     }
     for(const QString linkLibrary : mLinkLibraries) {
         linkBatchStream << " -l" << linkLibrary;
@@ -279,13 +279,13 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
         linkBatchStream << " " << objFile;
     }
     for(const QString linkPaths : mLinkPaths) {
-        linkBatchStream << " -L" << linkPaths;
+        linkBatchStream << " -L\"" << linkPaths << "\"";
     }
     for(const QString linkLibrary : mLinkLibraries) {
         linkBatchStream << " -l" << linkLibrary;
     }
     linkBatchStream << " -ldl";
-    linkBatchStream << " -o "+outputExecutableFile << "\n";
+    linkBatchStream << " -o \""+outputExecutableFile << "\"\n";
     linkBatchFile.close();
 
     linkingOK = callProcess("/bin/sh", QStringList() << "link.sh", buildPath);
