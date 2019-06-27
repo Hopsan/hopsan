@@ -39,6 +39,7 @@
 #include <QCheckBox>
 #include <QTextEdit>
 #include <QCompleter>
+#include <QTimer>
 
 #include "MessageHandler.h"
 
@@ -114,6 +115,7 @@ protected:
 private slots:
     void insertCompletion(const QString& completion);
     void updateAutoCompleteList();
+    void updateBackgroundColor();
 
 private:
     //Output
@@ -153,6 +155,9 @@ private:
     bool mShowDebugMessages;
 
     QCompleter *mpCompleter;
+
+    QTimer mColorTimer;
+    int mColor=0;
 };
 
 #endif // HCOMWIDGET_H

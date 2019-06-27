@@ -239,6 +239,8 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     mpCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     QObject::connect(mpCompleter, SIGNAL(activated(QString)),
                      this, SLOT(insertCompletion(QString)));
+
+    connect(&mColorTimer, SIGNAL(timeout()), this, SLOT(updateBackgroundColor()));
 }
 
 
@@ -363,6 +365,11 @@ void TerminalConsole::printMessage(const GUIMessage &rMessage, bool timeStamp, b
 
         // Reset default color
         setOutputColor(UndefinedMessageType);
+
+        if(Error == rMessage.mType) {
+            mColor = 100;               //Start red fading color
+            mColorTimer.start(6);
+        }
     }
 }
 
@@ -618,6 +625,15 @@ void TerminalConsole::insertCompletion(const QString& completion)
 void TerminalConsole::updateAutoCompleteList()
 {
     mpCompleter->setModel(new QStringListModel(mpTerminal->mpHandler->getAutoCompleteWords(), mpCompleter));
+}
+
+void TerminalConsole::updateBackgroundColor()
+{
+    mColor++;
+    this->setStyleSheet(this->styleSheet()+"background: rgba(255, "+QString::number(mColor)+", "+QString::number(mColor)+", 255);");
+    if(mColor >= 255) {
+        mColorTimer.stop(); //Stop timer when color is back to original
+    }
 }
 
 
