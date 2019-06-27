@@ -78,23 +78,6 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpTree->setColumnCount(1);
     mpTree->setVisible(treeView);
 
-    mpDualTree = new QTreeWidget(this);
-    mpDualTree->setMouseTracking(true);
-    mpDualTree->setHeaderHidden(true);
-    mpDualTree->setColumnCount(1);
-    mpDualTree->setHidden(treeView);
-
-    mpList = new QListWidget(this);
-    mpList->setMouseTracking(true);
-    mpList->setViewMode(QListView::IconMode);
-    mpList->setResizeMode(QListView::Adjust);
-    mpList->setIconSize(QSize(48,48));
-    mpList->setGridSize(QSize(53,53));
-    mpList->setHidden(treeView);
-
-    mpComponentNameLabel = new QLabel(this);
-    mpComponentNameLabel->setHidden(treeView);
-
     QLabel *pFilterLabel = new QLabel("Filter:",this);
     mpFilterEdit = new QLineEdit(this);
     QHBoxLayout *pFilterLayout = new QHBoxLayout();
@@ -113,51 +96,13 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     connect(pClearFilterButton, SIGNAL(clicked()), mpFilterEdit, SLOT(clear()));
     connect(pClearFilterButton, SIGNAL(clicked()), this, SLOT(update()));
 
-//    QSize iconSize = QSize(24,24);  //Size of library icons
-
-//    QToolButton *pTreeViewButton = new QToolButton();
-//    pTreeViewButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-LibraryTreeView.svg"));
-//    pTreeViewButton->setIconSize(iconSize);
-//    pTreeViewButton->setToolTip(tr("Single List View"));
-
-//    QToolButton *pDualViewButton = new QToolButton();
-//    pDualViewButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-LibraryDualView.svg"));
-//    pDualViewButton->setIconSize(iconSize);
-//    pDualViewButton->setToolTip(tr("Dual List View"));
-
-//    QToolButton *pHelpButton = new QToolButton();
-//    pHelpButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Help.svg"));
-//    pHelpButton->setToolTip(tr("Open Context Help"));
-//    pHelpButton->setIconSize(iconSize);
-
     connect(gpLibraryHandler, SIGNAL(contentsChanged()), this, SLOT(update()));
     connect(mpTree,     SIGNAL(itemPressed(QTreeWidgetItem*,int)),  this,                   SLOT(handleItemClick(QTreeWidgetItem*,int)));
-    connect(mpDualTree, SIGNAL(itemEntered(QTreeWidgetItem*,int)),  mpComponentNameLabel,   SLOT(clear()));
-    connect(mpDualTree, SIGNAL(itemPressed(QTreeWidgetItem*,int)),  this,                   SLOT(handleItemClick(QTreeWidgetItem*,int)));
-    connect(mpList,     SIGNAL(itemPressed(QListWidgetItem*)),      this,                   SLOT(handleItemClick(QListWidgetItem*)));
-    connect(mpList,     SIGNAL(itemEntered(QListWidgetItem*)),      this,                   SLOT(handleItemEntered(QListWidgetItem*)));
-//    connect(pTreeViewButton, SIGNAL(clicked()),    mpTree,                 SLOT(show()));
-//    connect(pTreeViewButton, SIGNAL(clicked()),    mpDualTree,             SLOT(hide()));
-//    connect(pTreeViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(hide()));
-//    connect(pTreeViewButton, SIGNAL(clicked()),    mpList,                 SLOT(hide()));
-//    connect(pDualViewButton, SIGNAL(clicked()),    mpTree,                 SLOT(hide()));
-//    connect(pDualViewButton, SIGNAL(clicked()),    mpDualTree,             SLOT(show()));
-//    connect(pDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(show()));
-//    connect(pDualViewButton, SIGNAL(clicked()),    mpList,                 SLOT(show()));
-//    connect(pDualViewButton, SIGNAL(clicked()),    mpComponentNameLabel,   SLOT(clear()));
-//    connect(pHelpButton,     SIGNAL(clicked()),    gpHelpPopupWidget,           SLOT(openContextHelp()));
     connect(mpFilterEdit,   SIGNAL(textChanged(QString)), this, SLOT(update()));
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpTree,                  0,0,3,4);
-    pLayout->addWidget(mpDualTree,              0,0,1,4);
-    pLayout->addWidget(mpComponentNameLabel,    1,0,1,4);
-    pLayout->addWidget(mpList,                  2,0,1,4);
     pLayout->addLayout(pFilterLayout,           3,0,1,4);
-//    pLayout->addWidget(pTreeViewButton,        4,0);
-//    pLayout->addWidget(pDualViewButton,        4,1);
-//    pLayout->addWidget(new QWidget(this),       4,2);
-//    pLayout->addWidget(pHelpButton,            4,3);
     pLayout->setColumnStretch(2,1);
     this->setLayout(pLayout);
 
@@ -212,41 +157,28 @@ void LibraryWidget::update()
 
     QString filter = mpFilterEdit->text();
 
-    mpList->clear();
-    mListItemToTypeNameMap.clear();
-
     mpTree->clear();
-    mpDualTree->clear();
-    mpList->clear();
     mItemToTypeNameMap.clear();
-    mFolderToContentsMap.clear();
 
     QFont boldFont = qApp->font();
     boldFont.setBold(true);
 
     //Make sure all libraries have a folder, even if they contain no components
     QTreeWidgetItem *pExternalItem = new QTreeWidgetItem();
-    QTreeWidgetItem *pExternalDualItem = nullptr;
     pExternalItem->setFont(0,boldFont);
     pExternalItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
     pExternalItem->setText(0, componentlibrary::roots::externalLibraries);
     pExternalItem->setToolTip(0, componentlibrary::roots::externalLibraries);
     mpTree->addTopLevelItem(pExternalItem);
-    pExternalDualItem = pExternalItem->clone();
-    mpDualTree->addTopLevelItem(pExternalDualItem);
     for(auto lib : gpLibraryHandler->getLibraries(ExternalLib)) {
         QTreeWidgetItem *pItem = new QTreeWidgetItem();
-        QTreeWidgetItem *pDualItem = nullptr;
         pItem->setFont(0,boldFont);
         pItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
         pItem->setText(0, lib->name);
         pItem->setToolTip(0, lib->name);
         pExternalItem->addChild(pItem);
         pExternalItem->sortChildren(0,Qt::AscendingOrder);
-        pDualItem = pItem->clone();
-        pExternalDualItem->addChild(pDualItem);
         mItemToLibraryMap[pItem] = lib;
-        mItemToLibraryMap[pDualItem] = lib;
     }
 
     for(const QString typeName : gpLibraryHandler->getLoadedTypeNames()) {
@@ -263,7 +195,6 @@ void LibraryWidget::update()
         }
 
         QTreeWidgetItem *pItem = nullptr;
-        QTreeWidgetItem *pDualItem = nullptr;
         while(!path.isEmpty())
         {
             QString folder = path.first();
@@ -275,7 +206,6 @@ void LibraryWidget::update()
                     if(mpTree->topLevelItem(i)->text(0) == folder)
                     {
                         pItem = mpTree->topLevelItem(i);
-                        pDualItem = mpDualTree->topLevelItem(i);
                         break;
                     }
                 }
@@ -295,10 +225,6 @@ void LibraryWidget::update()
                     pItem->setText(0, folder);
                     pItem->setToolTip(0, folder);
                     mpTree->addTopLevelItem(pItem);
-
-                    //Duplicate folder to dual view
-                    pDualItem = pItem->clone();
-                    mpDualTree->addTopLevelItem(pDualItem);
                 }
             }
             else
@@ -309,7 +235,6 @@ void LibraryWidget::update()
                     if(pItem->child(i)->text(0) == folder)
                     {
                         pItem = pItem->child(i);
-                        pDualItem = pDualItem->child(i);
                         exists=true;
                         break;
                     }
@@ -330,11 +255,6 @@ void LibraryWidget::update()
                     pNewItem->setToolTip(0, folder);
                     pItem->addChild(pNewItem);
                     pItem = pNewItem;
-
-                    //Duplicate folder to dual view
-                    QTreeWidgetItem *pDualNewItem = pNewItem->clone();
-                    pDualItem->addChild(pDualNewItem);
-                    pDualItem = pDualNewItem;
                 }
             }
         }
@@ -358,44 +278,6 @@ void LibraryWidget::update()
             mpTree->addTopLevelItem(pComponentItem);
         }
         mItemToTypeNameMap.insert(pComponentItem, typeName);
-
-        //Register component to dual view
-        if(!mFolderToContentsMap.contains(pDualItem))
-        {
-            mFolderToContentsMap.insert(pDualItem, QStringList() << typeName);
-        }
-        else
-        {
-            QStringList list = mFolderToContentsMap.find(pDualItem).value();
-            list << typeName;
-            mFolderToContentsMap.insert(pDualItem, list);
-        }
-
-        while(pDualItem && pDualItem->parent())
-        {
-            pDualItem = pDualItem->parent();
-            if(!mFolderToContentsMap.contains(pDualItem))
-            {
-                mFolderToContentsMap.insert(pDualItem, QStringList() << typeName);
-            }
-            else
-            {
-                QStringList list = mFolderToContentsMap.find(pDualItem).value();
-                list << typeName;
-                mFolderToContentsMap.insert(pDualItem, list);
-            }
-        }
-
-        if(!filter.isEmpty())
-        {
-            SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
-            QListWidgetItem *tempItem = new QListWidgetItem();
-            tempItem->setIcon(/*QIcon(pAppearance->getFullAvailableIconPath())*/pAppearance->getIcon(mGfxType));
-            tempItem->setToolTip(pAppearance->getDisplayName());
-            mListItemToTypeNameMap.insert(tempItem, typeName);
-            tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-            mpList->addItem(tempItem);
-        }
     }
 
     //Sort trees, and make sure external libraries are shown at the bottom
@@ -425,19 +307,6 @@ void LibraryWidget::update()
         pExternalItem->setExpanded(true);
     }
     pExternalItem = nullptr;
-    for(int t=0; t<mpDualTree->topLevelItemCount(); ++t)
-    {
-        if(mpDualTree->topLevelItem(t)->text(0) == componentlibrary::roots::externalLibraries)
-        {
-            pExternalItem = mpDualTree->takeTopLevelItem(t);
-            break;
-        }
-    }
-    mpDualTree->sortItems(0, Qt::AscendingOrder);
-    if(pExternalItem)
-    {
-        mpDualTree->insertTopLevelItem(mpDualTree->topLevelItemCount(),pExternalItem);
-    }
     QTreeWidgetItemIterator itt2(mpTree);
     while(*itt2)
     {
@@ -508,18 +377,6 @@ void LibraryWidget::update()
         mpAddModelicaFileItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
         mpAddModelicaFileItem->setToolTip(0, "Load Modelica file");
         mpTree->addTopLevelItem(mpAddModelicaFileItem);
-
-        mpLoadLibraryItemDual = new QTreeWidgetItem();
-        mpLoadLibraryItemDual->setText(0, "Load external library");
-        mpLoadLibraryItemDual->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
-        mpLoadLibraryItemDual->setToolTip(0, "Load external library");
-        mpDualTree->addTopLevelItem(mpLoadLibraryItemDual);
-
-        mpAddModelicaFileItemDual = new QTreeWidgetItem();
-        mpAddModelicaFileItemDual->setText(0, "Load Modelica file");
-        mpAddModelicaFileItemDual->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
-        mpAddModelicaFileItemDual->setToolTip(0, "Load Modelica file");
-        mpDualTree->addTopLevelItem(mpAddModelicaFileItemDual);
     }
 
     //Append Modelica files
@@ -535,19 +392,6 @@ void LibraryWidget::update()
         mItemToModelicaFileNameMap.insert(pModelicaItem, path);
         mpTree->addTopLevelItem(pModelicaItem);
     }
-
-    if(!filter.isEmpty())
-    {
-        mpDualTree->setFixedSize(0,0);
-        //mpDualTree->hide();
-    }
-    else
-    {
-        //mpDualTree->setFixedSize(100,100);
-        mpDualTree->setMaximumSize(5000,5000);
-        mpDualTree->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    }
-
 
     //Expand previously expanded folders
     foreach(const QStringList &list, expandedItems)
@@ -630,31 +474,12 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
 
     }
-    else if(mFolderToContentsMap.contains(item))
-    {
-        QStringList typeNames = mFolderToContentsMap.find(item).value();
-
-        mpList->clear();
-        mListItemToTypeNameMap.clear();
-
-        //Populate list widget with components
-        for(int i=0; i<typeNames.size(); ++i)
-        {
-            SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeNames[i]);
-            QListWidgetItem *tempItem = new QListWidgetItem();
-            tempItem->setIcon(QIcon(pAppearance->getFullAvailableIconPath()));
-            tempItem->setToolTip(pAppearance->getDisplayName());
-            mListItemToTypeNameMap.insert(tempItem, typeNames[i]);
-            tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-            mpList->addItem(tempItem);
-        }
-    }
-    else if((item == mpLoadLibraryItem || item == mpLoadLibraryItemDual) && qApp->mouseButtons() == Qt::LeftButton)
+    else if((item == mpLoadLibraryItem) && qApp->mouseButtons() == Qt::LeftButton)
     {
         gpLibraryHandler->loadLibrary();
         return;
     }
-    else if((item == mpAddModelicaFileItem || item == mpAddModelicaFileItemDual) && qApp->mouseButtons() == Qt::LeftButton)
+    else if((item == mpAddModelicaFileItem) && qApp->mouseButtons() == Qt::LeftButton)
     {
         //gpLibraryHandler->createNewModelicaComponent();
         gpModelicaLibrary->loadModelicaFile();
@@ -664,8 +489,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
     if(qApp->mouseButtons() == Qt::RightButton)
     {
         //Ignore right-click for load library and add modelica file items
-        if(item == mpLoadLibraryItem || item == mpLoadLibraryItemDual ||
-           item == mpAddModelicaFileItem || item == mpAddModelicaFileItemDual)
+        if(item == mpLoadLibraryItem || item == mpAddModelicaFileItem)
         {
             return;
         }
@@ -685,330 +509,232 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             return;
         }
 
-        if(mpList->isVisible())     //Dual view mode
+        QMenu contextMenu;
+        QAction *pUnloadAllAction = contextMenu.addAction("Unload All External Libraries");
+        QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
+        QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
+        QAction *pEditXMLAction = contextMenu.addAction("Edit XML Description");
+        QAction *pEditCodeAction = contextMenu.addAction("Edit Source Code");
+        QAction *pRecompileAction = contextMenu.addAction("Recompile");
+        QAction *pReloadAction = contextMenu.addAction("Reload");
+        QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
+        QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
+        QAction *pExistingComponentAction = contextMenu.addAction("Add Existing Component");
+        QAction *pNewLibraryAction = contextMenu.addAction("Create New Library");
+        QAction *pRemoveComponentAction = contextMenu.addAction("Remove component");
+        pUnloadAllAction->setEnabled(false);
+        pUnloadAction->setEnabled(false);
+        pOpenFolderAction->setEnabled(false);
+        pEditXMLAction->setEnabled(false);
+        pEditCodeAction->setEnabled(false);
+        pRecompileAction->setEnabled(false);
+        pReloadAction->setEnabled(false);
+        pCheckConsistenceAction->setEnabled(false);
+        pAddComponentAction->setEnabled(false);
+        pExistingComponentAction->setEnabled(false);
+        pNewLibraryAction->setEnabled(false);
+        pRemoveComponentAction->setEnabled(false);
+
+        QTreeWidgetItem *pFirstSubComponentItem = item;
+
+        QStringList typeNames;
+
+        while(!isComponentItem(pFirstSubComponentItem))
         {
-            QMenu contextMenu;
-            QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
-            QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
-            pUnloadAction->setEnabled(false);
-            pOpenFolderAction->setEnabled(false);
-
-            QListWidgetItem *pFirstSubComponentItem = mpList->item(0);
-            QString typeName;
-            if(pFirstSubComponentItem)
-            {
-                typeName = mListItemToTypeNameMap.find(pFirstSubComponentItem).value();
+            if(nullptr == pFirstSubComponentItem) {
+                break;
             }
+            pFirstSubComponentItem = pFirstSubComponentItem->child(0);
+        }
 
-            if(item->text(0) != componentlibrary::roots::externalLibraries && gpLibraryHandler->getEntry(typeName).displayPath.startsWith(componentlibrary::roots::externalLibraries))
-            {
-                pUnloadAction->setEnabled(true);
-            }
+        //Enable unload all only for top-level external libraries folder
+        if(item->text(0) == componentlibrary::roots::externalLibraries)
+        {
+            pUnloadAllAction->setEnabled(true);
+            pNewLibraryAction->setEnabled(true);
+        }
 
-            if(item != nullptr && !typeName.isEmpty())
-            {
-                pOpenFolderAction->setEnabled(true);
-            }
+        //Enable external library actions (also for empty libraries)
+        if(item->text(0) != componentlibrary::roots::externalLibraries &&
+                (item->parent() != nullptr && item->parent()->text(0) == componentlibrary::roots::externalLibraries ||
+                 (pFirstSubComponentItem != nullptr && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))))
+        {
+            pRecompileAction->setEnabled(true);
+            pEditXMLAction->setEnabled(true);
+            pEditCodeAction->setEnabled(true);
+            pUnloadAction->setEnabled(true);
+            pReloadAction->setEnabled(true);
+            pCheckConsistenceAction->setEnabled(true);
+            pAddComponentAction->setEnabled(true);
+            pExistingComponentAction->setEnabled(true);
+        }
 
-            if(contextMenu.actions().isEmpty())
-                return;
+        //Enable unloading of FMUs
+        if(pFirstSubComponentItem != nullptr &&
+                item->text(0) != componentlibrary::roots::fmus &&
+                gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus)) {
+            pUnloadAction->setEnabled(true);
+        }
 
-            QAction *pReply = contextMenu.exec(QCursor::pos());
+        if(item) {
+            pOpenFolderAction->setEnabled(true);
+        }
 
-            if(pReply == pUnloadAction)
-            {
-                QStringList typeNames;
-                if(isComponentItem(item))
-                {
-                    typeNames.append(mItemToTypeNameMap.find(item).value());
-                }
-                else
-                {
-                    for(int c=0; c<mpList->count(); ++c)
-                    {
-                        typeNames.append(mListItemToTypeNameMap.find(mpList->item(c)).value());
-                    }
-                    if(!gpLibraryHandler->isTypeNamesOkToUnload(typeNames))
-                    {
-                        return;
-                    }
-                }
-                for(const QString &typeName : typeNames)
-                {
-                    gpLibraryHandler->unloadLibraryByComponentType(typeName);
-                }
-            }
-            else if(pReply == pOpenFolderAction)
-            {
-                QDesktopServices::openUrl(QUrl("file:///" + gpLibraryHandler->getModelObjectAppearancePtr(typeName)->getBasePath()));
+        if(isComponentItem(item) && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries)) {
+            pRemoveComponentAction->setEnabled(true);
+        }
+
+        if(contextMenu.actions().isEmpty())
+            return;
+
+        // Execute pop-up menu
+        QAction *pReply = contextMenu.exec(QCursor::pos());
+
+        // Handle unload
+        if (pReply == pUnloadAction) {
+            gpLibraryHandler->unloadLibrary(mItemToLibraryMap[item]);
+        }
+        // Handle unload all
+        else if(pReply == pUnloadAllAction) {
+            QVector<SharedComponentLibraryPtrT> libs = gpLibraryHandler->getLibraries(ExternalLib);
+            for(SharedComponentLibraryPtrT pLib : libs) {
+                gpLibraryHandler->unloadLibrary(pLib);
             }
         }
-        else        //Tree view mode
-        {
-            QMenu contextMenu;
-            QAction *pUnloadAllAction = contextMenu.addAction("Unload All External Libraries");
-            QAction *pUnloadAction = contextMenu.addAction("Unload External Library");
-            QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
-            QAction *pEditXMLAction = contextMenu.addAction("Edit XML Description");
-            QAction *pEditCodeAction = contextMenu.addAction("Edit Source Code");
-            QAction *pRecompileAction = contextMenu.addAction("Recompile");
-            QAction *pReloadAction = contextMenu.addAction("Reload");
-            QAction *pCheckConsistenceAction = contextMenu.addAction("Check source/XML consistency");
-            QAction *pAddComponentAction = contextMenu.addAction("Add New Component");
-            QAction *pExistingComponentAction = contextMenu.addAction("Add Existing Component");
-            QAction *pNewLibraryAction = contextMenu.addAction("Create New Library");
-            QAction *pRemoveComponentAction = contextMenu.addAction("Remove component");
-            pUnloadAllAction->setEnabled(false);
-            pUnloadAction->setEnabled(false);
-            pOpenFolderAction->setEnabled(false);
-            pEditXMLAction->setEnabled(false);
-            pEditCodeAction->setEnabled(false);
-            pRecompileAction->setEnabled(false);
-            pReloadAction->setEnabled(false);
-            pCheckConsistenceAction->setEnabled(false);
-            pAddComponentAction->setEnabled(false);
-            pExistingComponentAction->setEnabled(false);
-            pNewLibraryAction->setEnabled(false);
-            pRemoveComponentAction->setEnabled(false);
-
-            QTreeWidgetItem *pFirstSubComponentItem = item;
-
-            QStringList typeNames;
-
-            while(!isComponentItem(pFirstSubComponentItem))
-            {
-                if(nullptr == pFirstSubComponentItem) {
-                    break;
+        // Handle reload
+        else if (pReply == pReloadAction) {
+            gpModelHandler->saveState();
+            // First unload the library
+            SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+            bool expanded = getLibraryItem(pLib)->isExpanded();
+            QString libPath = pLib->xmlFilePath;
+            if (gpLibraryHandler->unloadLibrary(pLib)) {
+                // Now reload the library
+                gpLibraryHandler->loadLibrary(libPath);
+            }
+            gpModelHandler->restoreState();
+            getLibraryItem(pLib)->setExpanded(expanded);
+        }
+        // Handle recompile
+        else if (pReply == pRecompileAction) {
+            gpModelHandler->saveState();
+            SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+            bool expanded = getLibraryItem(pLib)->isExpanded();
+            // First unload the library
+            QString libPath = pLib->xmlFilePath;
+            if (gpLibraryHandler->unloadLibrary(pLib)) {
+                // We use the core generator directly to avoid calling the save state code in the library handler it does not seem to be working so well
+                // But since we only need to unload one particular library this should work
+                //! @todo fix the problem with save state
+                auto spGenerator = createDefaultImportGenerator();
+                if (!spGenerator->compileComponentLibrary(libPath)) {
+                    gpMessageHandler->addErrorMessage("Library compiler failed");
                 }
-                pFirstSubComponentItem = pFirstSubComponentItem->child(0);
+
+                // Now reload the library
+                gpLibraryHandler->loadLibrary(libPath);
             }
-
-            //Enable unload all only for top-level external libraries folder
-            if(item->text(0) == componentlibrary::roots::externalLibraries)
-            {
-                pUnloadAllAction->setEnabled(true);
-                pNewLibraryAction->setEnabled(true);
+            gpModelHandler->restoreState();
+            getLibraryItem(pLib)->setExpanded(expanded);
+        }
+        // Handle check consistency
+        else if (pReply == pCheckConsistenceAction) {
+            SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+            auto spGenerator = createDefaultGenerator(false);
+            if (!spGenerator->checkComponentLibrary(pLib->xmlFilePath)) {
+                gpMessageHandler->addWarningMessage(QString("The library '%1' has inconsistent component registration, this may cause exported models to fail.").arg(pLib->xmlFilePath));
             }
+        }
+        else if(pReply == pAddComponentAction) {
+            SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+            bool expanded = getLibraryItem(pLib)->isExpanded();
+            gpLibraryHandler->addComponentToLibrary(pLib, NewFile);
+            QTreeWidgetItemIterator it(mpTree);
+            getLibraryItem(pLib)->setExpanded(expanded);
 
-            //Enable external library actions (also for empty libraries)
-            if(item->text(0) != componentlibrary::roots::externalLibraries &&
-              (item->parent() != nullptr && item->parent()->text(0) == componentlibrary::roots::externalLibraries ||
-              (pFirstSubComponentItem != nullptr && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))))
-            {
-                pRecompileAction->setEnabled(true);
-                pEditXMLAction->setEnabled(true);
-                pEditCodeAction->setEnabled(true);
-                pUnloadAction->setEnabled(true);
-                pReloadAction->setEnabled(true);
-                pCheckConsistenceAction->setEnabled(true);
-                pAddComponentAction->setEnabled(true);
-                pExistingComponentAction->setEnabled(true);
+
+        }
+        else if(pReply == pExistingComponentAction) {
+            SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+            bool expanded = getLibraryItem(pLib)->isExpanded();
+            gpLibraryHandler->addComponentToLibrary(pLib, ExistingFile);
+            getLibraryItem(pLib)->setExpanded(expanded);
+        }
+        else if(pReply == pOpenFolderAction) {
+            QString path;
+            if(pFirstSubComponentItem == nullptr) {
+                path = QFileInfo(mItemToLibraryMap[item]->libFilePath).absolutePath();
             }
-
-            //Enable unloading of FMUs
-            if(pFirstSubComponentItem != nullptr &&
-               item->text(0) != componentlibrary::roots::fmus &&
-               gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus)) {
-                pUnloadAction->setEnabled(true);
+            else {
+                path = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath();
             }
-
-            if(item) {
-                pOpenFolderAction->setEnabled(true);
-            }
-
-            if(isComponentItem(item) && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries)) {
-                pRemoveComponentAction->setEnabled(true);
-            }
-
-            if(contextMenu.actions().isEmpty())
-                return;
-
-            // Execute pop-up menu
-            QAction *pReply = contextMenu.exec(QCursor::pos());
-
-            // Handle unload
-            if (pReply == pUnloadAction) {
-                gpLibraryHandler->unloadLibrary(mItemToLibraryMap[item]);
-            }
-            // Handle unload all
-            else if(pReply == pUnloadAllAction) {
-                QVector<SharedComponentLibraryPtrT> libs = gpLibraryHandler->getLibraries(ExternalLib);
-                for(SharedComponentLibraryPtrT pLib : libs) {
-                    gpLibraryHandler->unloadLibrary(pLib);
+            QDesktopServices::openUrl(QUrl("file:///" + path));
+        }
+        else if(pReply == pEditXMLAction) {
+            if(!isComponentItem(item)) {
+                //Edit library XML file
+                SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
+                if (pLibrary) {
+                    gpModelHandler->loadTextFile(pLibrary->xmlFilePath);
                 }
             }
-            // Handle reload
-            else if (pReply == pReloadAction) {
-                gpModelHandler->saveState();
-                // First unload the library
-                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
-                bool expanded = getLibraryItem(pLib)->isExpanded();
-                QString libPath = pLib->xmlFilePath;
-                   if (gpLibraryHandler->unloadLibrary(pLib)) {
-                    // Now reload the library
-                    gpLibraryHandler->loadLibrary(libPath);
-                }
-                gpModelHandler->restoreState();
-                getLibraryItem(pLib)->setExpanded(expanded);
+            else {
+                QFileInfo xmlFile = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getXMLFile();
+                gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
             }
-            // Handle recompile
-            else if (pReply == pRecompileAction) {
-                gpModelHandler->saveState();
-                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
-                bool expanded = getLibraryItem(pLib)->isExpanded();
-                // First unload the library
-                QString libPath = pLib->xmlFilePath;
-                if (gpLibraryHandler->unloadLibrary(pLib)) {
-                    // We use the core generator directly to avoid calling the save state code in the library handler it does not seem to be working so well
-                    // But since we only need to unload one particular library this should work
-                    //! @todo fix the problem with save state
-                    auto spGenerator = createDefaultImportGenerator();
-                    if (!spGenerator->compileComponentLibrary(libPath)) {
-                        gpMessageHandler->addErrorMessage("Library compiler failed");
-                    }
-
-                    // Now reload the library
-                    gpLibraryHandler->loadLibrary(libPath);
-                }
-                gpModelHandler->restoreState();
-                getLibraryItem(pLib)->setExpanded(expanded);
-            }
-            // Handle check consistency
-            else if (pReply == pCheckConsistenceAction) {
-                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
-                auto spGenerator = createDefaultGenerator(false);
-                if (!spGenerator->checkComponentLibrary(pLib->xmlFilePath)) {
-                    gpMessageHandler->addWarningMessage(QString("The library '%1' has inconsistent component registration, this may cause exported models to fail.").arg(pLib->xmlFilePath));
-                }
-            }
-            else if(pReply == pAddComponentAction) {
-                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
-                bool expanded = getLibraryItem(pLib)->isExpanded();
-                gpLibraryHandler->addComponentToLibrary(pLib, NewFile);
-                QTreeWidgetItemIterator it(mpTree);
-                getLibraryItem(pLib)->setExpanded(expanded);
-
-
-            }
-            else if(pReply == pExistingComponentAction) {
-                SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
-                bool expanded = getLibraryItem(pLib)->isExpanded();
-                gpLibraryHandler->addComponentToLibrary(pLib, ExistingFile);
-                getLibraryItem(pLib)->setExpanded(expanded);
-            }
-            else if(pReply == pOpenFolderAction) {
-                QString path;
-                if(pFirstSubComponentItem == nullptr) {
-                    path = QFileInfo(mItemToLibraryMap[item]->libFilePath).absolutePath();
-                }
-                else {
-                    path = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getBasePath();
-                }
-                QDesktopServices::openUrl(QUrl("file:///" + path));
-            }
-            else if(pReply == pEditXMLAction) {
-                if(!isComponentItem(item)) {
-                    //Edit library XML file
-                    SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
-                    if (pLibrary) {
-                        gpModelHandler->loadTextFile(pLibrary->xmlFilePath);
+        }
+        else if(pReply == pEditCodeAction) {
+            if(!isComponentItem(item)) {
+                //Edit library source files
+                SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
+                if (pLibrary) {
+                    for(QString file : pLibrary->sourceFiles) {
+                        gpModelHandler->loadTextFile(file);
                     }
                 }
-                else {
-                    QFileInfo xmlFile = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getXMLFile();
-                    gpModelHandler->loadTextFile(xmlFile.absoluteFilePath());
-                }
             }
-            else if(pReply == pEditCodeAction) {
-                if(!isComponentItem(item)) {
-                    //Edit library source files
-                    SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
-                    if (pLibrary) {
-                        for(QString file : pLibrary->sourceFiles) {
-                            gpModelHandler->loadTextFile(file);
-                        }
-                    }
+            else {
+                //Edit component source file
+                QString typeName = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getTypeName();
+                auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+                QString basePath = appearance->getBasePath();
+                if(!basePath.isEmpty()) {
+                    basePath.append("/");
                 }
-                else {
-                    //Edit component source file
-                    QString typeName = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(pFirstSubComponentItem).value())->getTypeName();
-                    auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
-                    QString basePath = appearance->getBasePath();
-                    if(!basePath.isEmpty()) {
-                        basePath.append("/");
-                    }
-                    QString sourceFile = appearance->getSourceCodeFile();
-                    gpModelHandler->loadTextFile(basePath+sourceFile);
-                }
+                QString sourceFile = appearance->getSourceCodeFile();
+                gpModelHandler->loadTextFile(basePath+sourceFile);
             }
-            else if(pReply == pNewLibraryAction) {
-                gpLibraryHandler->createNewLibrary();
-            }
-            else if(pReply == pRemoveComponentAction) {
-                QString typeName = mItemToTypeNameMap.find(item).value();
-                SharedComponentLibraryPtrT pLibrary = gpLibraryHandler->getEntry(typeName).pLibrary;
-                QMessageBox *pMessageBox = new QMessageBox();
-                pMessageBox->setWindowTitle("Warning");
-                pMessageBox->setIcon(QMessageBox::Icon::Question);
-                pMessageBox->setText("Are you sure you want to remove component \""+typeName+"\" from library \""+pLibrary->name+"\"?");
-                pMessageBox->addButton(QMessageBox::Ok);
-                pMessageBox->addButton(QMessageBox::Cancel);
-                pMessageBox->setDefaultButton(QMessageBox::Cancel);
-                QCheckBox *pRemoveFilesCheckBox = new QCheckBox("Delete actual files");
-                pRemoveFilesCheckBox->setChecked(false);
-                pMessageBox->setCheckBox(pRemoveFilesCheckBox);
-                if(QMessageBox::Ok == pMessageBox->exec()) {
-                    DeleteOrKeepFilesEnumT deleteOrKeepFiles = KeepFiles;
-                    if(pRemoveFilesCheckBox->isChecked()) {
-                        deleteOrKeepFiles = DeleteFiles;
-                    }
-                    gpLibraryHandler->removeComponentFromLibrary(typeName, pLibrary, deleteOrKeepFiles);
+        }
+        else if(pReply == pNewLibraryAction) {
+            gpLibraryHandler->createNewLibrary();
+        }
+        else if(pReply == pRemoveComponentAction) {
+            QString typeName = mItemToTypeNameMap.find(item).value();
+            SharedComponentLibraryPtrT pLibrary = gpLibraryHandler->getEntry(typeName).pLibrary;
+            QMessageBox *pMessageBox = new QMessageBox();
+            pMessageBox->setWindowTitle("Warning");
+            pMessageBox->setIcon(QMessageBox::Icon::Question);
+            pMessageBox->setText("Are you sure you want to remove component \""+typeName+"\" from library \""+pLibrary->name+"\"?");
+            pMessageBox->addButton(QMessageBox::Ok);
+            pMessageBox->addButton(QMessageBox::Cancel);
+            pMessageBox->setDefaultButton(QMessageBox::Cancel);
+            QCheckBox *pRemoveFilesCheckBox = new QCheckBox("Delete actual files");
+            pRemoveFilesCheckBox->setChecked(false);
+            pMessageBox->setCheckBox(pRemoveFilesCheckBox);
+            if(QMessageBox::Ok == pMessageBox->exec()) {
+                DeleteOrKeepFilesEnumT deleteOrKeepFiles = KeepFiles;
+                if(pRemoveFilesCheckBox->isChecked()) {
+                    deleteOrKeepFiles = DeleteFiles;
                 }
+                gpLibraryHandler->removeComponentFromLibrary(typeName, pLibrary, deleteOrKeepFiles);
             }
         }
     }
-}
-
-
-void LibraryWidget::handleItemClick(QListWidgetItem *item)
-{
-    if(mListItemToTypeNameMap.contains(item) && qApp->mouseButtons() == Qt::LeftButton)
-    {
-        QString typeName = mListItemToTypeNameMap.find(item).value();
-        SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
-        QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
-        QIcon icon;
-        icon.addFile(iconPath,QSize(55,55));
-
-        //Create the mimedata (text with type name)
-        QMimeData *mimeData = new QMimeData;
-        mimeData->setText(typeName);
-
-        //Initiate the drag operation
-        QDrag *drag = new QDrag(this);
-        drag->setMimeData(mimeData);
-        drag->setPixmap(icon.pixmap(40,40));
-        drag->setHotSpot(QPoint(20, 20));
-        drag->exec(Qt::CopyAction | Qt::MoveAction);
-
-        gpHelpPopupWidget->hide();
-    }
-}
-
-void LibraryWidget::handleItemEntered(QListWidgetItem *item)
-{
-    QString componentName = item->toolTip();
-    mpComponentNameLabel->setMaximumWidth(this->width());
-    mpComponentNameLabel->setMinimumHeight(mpComponentNameLabel->height());
-    mpComponentNameLabel->setFont(QFont(qApp->font().family(), std::min(10.0, .9*this->width()/(0.615*componentName.size()))));
-    mpComponentNameLabel->setText(componentName);
-    qDebug() << "Hovering: " << item->text() << ", " << item->toolTip();
 }
 
 
 void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    mpComponentNameLabel->clear();
     QWidget::mouseMoveEvent(event);
 }
 
