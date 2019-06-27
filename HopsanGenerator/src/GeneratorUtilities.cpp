@@ -247,7 +247,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     pGenerator->printMessage("Work Directory: "+libRootDir);
     pGenerator->printMessage("Output file:    "+ch.outputFile());
     pGenerator->printMessage("Source files:   "+ch.sourceFiles().join(" "));
-    pGenerator->printMessage("Compiler flags: "+ch.compilerFlags(compilerSelection.compiler).join(" ")+" ");
+    pGenerator->printMessage("Compiler flags: "+ch.compilerFlags(compilerSelection.compiler).join(" "));
     pGenerator->printMessage("Linker flags:   "+ch.linkerFlags(compilerSelection.compiler).join(" "));
     pGenerator->printMessage("\n");
 
