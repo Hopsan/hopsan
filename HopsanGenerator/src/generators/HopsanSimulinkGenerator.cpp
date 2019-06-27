@@ -119,10 +119,10 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     compileScriptStream << " -DWIN32";      //!< @todo Not sure if this one is needed, the correct macro to check for is _WIN32
 #endif
     for(const QString includePath : getHopsanCoreIncludePaths()) {
-        compileScriptStream << QString(" -I%1").arg(includePath);
+        compileScriptStream << QString(" -I\"%1\"").arg(includePath);
     }
     for(const QString includePath : includePaths) {
-        compileScriptStream << QString(" -I%").arg(includePath);
+        compileScriptStream << QString(" -I\"%1\"").arg(includePath);
     }
     QStringList coreSourcefiles = listHopsanCoreSourceFiles(savePath)+listInternalLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &s, coreSourcefiles)
@@ -138,7 +138,7 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     compileScriptStream << "-ldl";
 #endif
     for(const QString linkPath : linkPaths) {
-        compileScriptStream << " -L" << linkPath;
+        compileScriptStream << " -L\"" << linkPath << "\"";
     }
     for(const QString linkLibrary : linkLibraries) {
         compileScriptStream << " -l" << linkLibrary;
