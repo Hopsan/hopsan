@@ -265,17 +265,17 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
             }
             if(comp.portTypes[i] == "ReadPort")
             {
-                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
+                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portUnits[i]+"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
             }
             else if(comp.portTypes[i] == "WritePort")
             {
-                addPorts.append("            addOutputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
+                addPorts.append("            addOutputVariable(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portUnits[i]+"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
             }
         }
         else
         {
             addPorts.append("            mp"+comp.portNames[i]+" = add"+comp.portTypes[i]
-                      +"(\""+comp.portNames[i]+"\", \""+comp.portNodeTypes[i]+"\"");
+                      +"(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portNodeTypes[i]+"\"");
             if(comp.portNotReq[i])
             {
                 addPorts.append(", Port::NotRequired);\n");

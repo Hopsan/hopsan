@@ -937,6 +937,8 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int i=0; i<ports.size(); ++i)
     {
         comp.portNames << ports[i].name;
+        comp.portDescriptions << ports[i].description;
+        comp.portUnits << ports[i].unit;
         comp.portNodeTypes << ports[i].nodetype;
         comp.portTypes << ports[i].porttype;
         comp.portNotReq << ports[i].notrequired;
@@ -1617,6 +1619,8 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     for(int i=0; i<ports.size(); ++i)
     {
         comp.portNames << ports[i].name;
+        comp.portDescriptions << ports[i].description;
+        comp.portUnits << ports[i].unit;
         comp.portNodeTypes << ports[i].nodetype;
         comp.portTypes << ports[i].porttype;
         comp.portNotReq << ports[i].notrequired;

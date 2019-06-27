@@ -358,13 +358,15 @@ QStringList ComponentLibrary::checkSourceXMLConsistency() const
     return differences;
 }
 
-PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue)
+PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue, QString description, QString unit)
 {
     this->porttype = porttype;
     this->nodetype = nodetype;
     this->name = name;
     this->notrequired = notrequired;
     this->defaultvalue = defaultvalue;
+    this->description = description;
+    this->unit = unit;
 }
 
 

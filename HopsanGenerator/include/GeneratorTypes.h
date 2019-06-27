@@ -164,10 +164,12 @@ public:
 class PortSpecification
 {
 public:
-    PortSpecification(QString porttype = "ReadPortType", QString nodetype = "NodeSignal", QString name = QString(), bool notrequired=false, QString defaultvalue=QString());
+    PortSpecification(QString porttype = "ReadPortType", QString nodetype = "NodeSignal", QString name = QString(), bool notrequired=false, QString defaultvalue=QString(), QString description = QString(), QString unit = QString());
     QString porttype;
     QString nodetype;
     QString name;
+    QString description;
+    QString unit;
     bool notrequired;
     QString defaultvalue;
 };
@@ -227,6 +229,8 @@ public:
     QStringList varTypes;
     QStringList varInits;
     QStringList portNames;
+    QStringList portDescriptions;
+    QStringList portUnits;
     QStringList portTypes;
     QStringList portNodeTypes;
     QStringList portDefaults;
