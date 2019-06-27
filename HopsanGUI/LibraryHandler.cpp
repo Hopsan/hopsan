@@ -530,16 +530,18 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     mpOutputVariablesTable->horizontalHeader()->setStretchLastSection(false);
     mpOutputVariablesTable->setFrameStyle(QFrame::NoFrame);
     pLayout->addWidget(mpOutputVariablesTable);
-    mpOutputVariablesTable->setColumnCount(4);
+    mpOutputVariablesTable->setColumnCount(5);
     mpOutputVariablesTable->setRowCount(1);
     mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
     mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
     mpOutputVariablesTable->verticalScrollBar()->setDisabled(true);
     addLabelItem(mpOutputVariablesTable,0,0,"");
     addLabelItem(mpOutputVariablesTable,0,1,"Name:");
     addLabelItem(mpOutputVariablesTable,0,2,"Description:");
     addLabelItem(mpOutputVariablesTable,0,3,"Unit:");
+    addLabelItem(mpOutputVariablesTable,0,4,"Default value:");
     mpOutputVariablesTable->horizontalHeader()->setMinimumSectionSize(1);
     mpOutputVariablesTable->setColumnWidth(0,mpOutputVariablesTable->rowHeight(0));
     mpOutputVariablesTable->hide();
@@ -619,6 +621,7 @@ ComponentSpecification NewComponentDialog::getSpecification()
         spec.outputNames.append(mpOutputVariablesTable->item(r,1)->text());
         spec.outputDescriptions.append(mpOutputVariablesTable->item(r,2)->text());
         spec.outputUnits.append(mpOutputVariablesTable->item(r,3)->text());
+        spec.outputInits.append(mpOutputVariablesTable->item(r,4)->text());
     }
     for(int r=1; r<mpPortsTable->rowCount(); ++r) {
         spec.portNames.append(mpPortsTable->item(r,1)->text());
@@ -656,6 +659,7 @@ void NewComponentDialog::validate()
     }
     for(int r=1; r<mpOutputVariablesTable->rowCount(); ++r) {
         mpOutputVariablesTable->item(r,1)->setBackground(defaultBrush);
+        mpOutputVariablesTable->item(r,4)->setBackground(defaultBrush);
     }
     for(int r=1; r<mpPortsTable->rowCount(); ++r) {
         mpPortsTable->item(r,1)->setBackground(defaultBrush);
@@ -689,9 +693,11 @@ void NewComponentDialog::validate()
 
     mpConstantsTable->selectColumn(4);
     mpInputVariablesTable->selectColumn(4);
-    QList<QTableWidgetItem*> items = mpConstantsTable->selectedItems()+mpInputVariablesTable->selectedItems();
+    mpOutputVariablesTable->selectColumn(4);
+    QList<QTableWidgetItem*> items = mpConstantsTable->selectedItems()+mpInputVariablesTable->selectedItems()+mpOutputVariablesTable->selectedItems();
     mpConstantsTable->clearSelection();
     mpInputVariablesTable->clearSelection();
+    mpOutputVariablesTable->clearSelection();
     for(QTableWidgetItem* pItem : items) {
         if(pItem->row() == 0) {
             continue;   //Ignore title row
@@ -757,6 +763,7 @@ void NewComponentDialog::addOutputVariableRow()
     addInputItem(mpOutputVariablesTable,row,1);
     addInputItem(mpOutputVariablesTable,row,2);
     addInputItem(mpOutputVariablesTable,row,3);
+    addInputItem(mpOutputVariablesTable,row,4);
     while(mRemoveOutputVariableToolButtons.size() < row) {
         mRemoveOutputVariableToolButtons.push_back(new QToolButton(this));
         mRemoveOutputVariableToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
@@ -895,7 +902,7 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
         pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, spec.typeName, spec.displayName, spec.cqsType,
                                           spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
                                           spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
-                                          spec.outputNames, spec.outputDescriptions, spec.outputUnits,
+                                          spec.outputNames, spec.outputDescriptions, spec.outputUnits, spec.outputInits,
                                           spec.portNames, spec.portDescriptions, spec.portTypes, spec.portsRequired);
     }
     else {  //ExistingFile

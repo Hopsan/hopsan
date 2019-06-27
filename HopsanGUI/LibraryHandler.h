@@ -95,6 +95,7 @@ public:
     QStringList outputNames;
     QStringList outputDescriptions;
     QStringList outputUnits;
+    QStringList outputInits;
     QStringList portNames;
     QStringList portDescriptions;
     QStringList portTypes;

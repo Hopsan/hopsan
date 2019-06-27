@@ -355,6 +355,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
                                const char* const outputNames[], const int numOutputNames,
                                const char* const outputDescriptions[], const int numOutputDescriptions,
                                const char* const outputUnits[], const int numOutputUnits,
+                               const char* const outputInits[], const int numOutputInits,
                                const char* const portNames[], const int numPortNames,
                                const char* const portDescriptions[], const int numPortDescriptions,
                                const char* const portTypes[], const int numPortTypes,
@@ -417,7 +418,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
         compSpec.portTypes.append("WritePort");
         compSpec.portNodeTypes.append("NodeSignal");
         compSpec.portNotReq.append(true);
-        compSpec.portDefaults.append("");
+        compSpec.portDefaults.append(outputInits[i]);
     }
     for(int i=0; i<numOutputDescriptions; ++i) {
         compSpec.portDescriptions.append(outputDescriptions[i]);
