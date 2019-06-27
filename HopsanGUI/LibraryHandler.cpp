@@ -884,6 +884,14 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
         }
 
         spec = pDialog->getSpecification();
+
+        //Check if component with type name already exists
+        ComponentLibraryEntry entry = getEntry(spec.typeName);
+        if(entry.isValid()) {
+            gpMessageHandler->addErrorMessage("Component with type name \""+spec.typeName+"\" already exist in library \""+entry.pLibrary->name+"\"");
+            return;
+        }
+
         pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, spec.typeName, spec.displayName, spec.cqsType,
                                           spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
                                           spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
