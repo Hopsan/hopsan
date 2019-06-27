@@ -404,10 +404,10 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
         compSpec.portNotReq.append(true);
     }
     for(int i=0; i<numInputDescriptions; ++i) {
-        //compSpec.portDescriptions.append(inputDescriptions[i]); //Not yet implemented
+        compSpec.portDescriptions.append(inputDescriptions[i]);
     }
     for(int i=0; i<numInputUnits; ++i) {
-        //compSpec.portUnits.append(inputUnits[i]);   //Not yet implemented
+        compSpec.portUnits.append(inputUnits[i]);
     }
     for(int i=0; i<numInputInits; ++i) {
         compSpec.portDefaults.append(inputInits[i]);
@@ -417,24 +417,26 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
         compSpec.portTypes.append("WritePort");
         compSpec.portNodeTypes.append("NodeSignal");
         compSpec.portNotReq.append(true);
+        compSpec.portDefaults.append("");
     }
     for(int i=0; i<numOutputDescriptions; ++i) {
-        //compSpec.portDescriptions.append(outputDescriptions[i]); //Not yet implemented
+        compSpec.portDescriptions.append(outputDescriptions[i]);
     }
     for(int i=0; i<numOutputUnits; ++i) {
-        //compSpec.portUnits.append(outputUnits[i]);   //Not yet implemented
+        compSpec.portUnits.append(outputUnits[i]);
     }
     for(int i=0; i<numPortNames; ++i) {
         compSpec.portNames.append(portNames[i]);
         compSpec.portTypes.append("PowerPort");
         compSpec.portDefaults.append("");
+        compSpec.portUnits.append("");
     }
 
     for(int i=0; i<numPortTypes; ++i) {
         compSpec.portNodeTypes.append(portTypes[i]);
     }
     for(int i=0; i<numPortDescriptions; ++i) {
-        //compSpec.portDescriptions.append(outputDescriptions[i]); //Not yet implemented
+        compSpec.portDescriptions.append(portDescriptions[i]); //Not yet implemented
     }
     for(int i=0; i<numPortsRequired; ++i) {
         compSpec.portNotReq.append(!portsRequired[i]);
