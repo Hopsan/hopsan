@@ -79,6 +79,7 @@ private:
 
     void getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTreeWidgetItem *> &rSubItems);
     bool isComponentItem(QTreeWidgetItem *item);
+    QTreeWidgetItem *getLibraryItem(QSharedPointer<ComponentLibrary> pLibrary);
 
     //GUI Stuff
     QTreeWidget *mpTree;

@@ -842,17 +842,20 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 gpModelHandler->saveState();
                 // First unload the library
                 SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                bool expanded = getLibraryItem(pLib)->isExpanded();
                 QString libPath = pLib->xmlFilePath;
                    if (gpLibraryHandler->unloadLibrary(pLib)) {
                     // Now reload the library
                     gpLibraryHandler->loadLibrary(libPath);
                 }
                 gpModelHandler->restoreState();
+                getLibraryItem(pLib)->setExpanded(expanded);
             }
             // Handle recompile
             else if (pReply == pRecompileAction) {
                 gpModelHandler->saveState();
                 SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                bool expanded = getLibraryItem(pLib)->isExpanded();
                 // First unload the library
                 QString libPath = pLib->xmlFilePath;
                 if (gpLibraryHandler->unloadLibrary(pLib)) {
@@ -868,6 +871,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     gpLibraryHandler->loadLibrary(libPath);
                 }
                 gpModelHandler->restoreState();
+                getLibraryItem(pLib)->setExpanded(expanded);
             }
             // Handle check consistency
             else if (pReply == pCheckConsistenceAction) {
@@ -879,11 +883,18 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             }
             else if(pReply == pAddComponentAction) {
                 SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                bool expanded = getLibraryItem(pLib)->isExpanded();
                 gpLibraryHandler->addComponentToLibrary(pLib, NewFile);
+                QTreeWidgetItemIterator it(mpTree);
+                getLibraryItem(pLib)->setExpanded(expanded);
+
+
             }
             else if(pReply == pExistingComponentAction) {
                 SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+                bool expanded = getLibraryItem(pLib)->isExpanded();
                 gpLibraryHandler->addComponentToLibrary(pLib, ExistingFile);
+                getLibraryItem(pLib)->setExpanded(expanded);
             }
             else if(pReply == pOpenFolderAction) {
                 QString path;
@@ -1013,4 +1024,15 @@ void LibraryWidget::getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTree
 bool LibraryWidget::isComponentItem(QTreeWidgetItem *item)
 {
     return mItemToTypeNameMap.contains(item);
+}
+
+QTreeWidgetItem *LibraryWidget::getLibraryItem(QSharedPointer<ComponentLibrary> pLibrary)
+{
+    QTreeWidgetItemIterator it(mpTree);
+    while (*it) {
+        if ((*it)->text(0) == pLibrary->name && (*it)->parent()->text(0) == componentlibrary::roots::externalLibraries) {
+            return (*it);
+        }
+        ++it;
+    }
 }
