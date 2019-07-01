@@ -40,7 +40,7 @@ namespace hopsan {
 
     //!
     //! @brief
-    //! @ingroup MechanicalComponents
+    //! @ingroup InterfaceComponents
     //!
     class PneumaticInterfaceC : public ComponentC
     {
