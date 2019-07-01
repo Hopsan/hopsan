@@ -667,7 +667,7 @@ void NewComponentDialog::validate()
 
     //Validate type name
     ComponentSpecification spec = getSpecification();
-    if(!spec.typeName.front().isLetter()) {
+    if(!spec.typeName.at(0).isLetter()) {
         gpMessageHandler->addErrorMessage("Type name must begin with a letter.");
         mpGeneralTable->item(0,1)->setBackground(errorBrush);
         error=true;
