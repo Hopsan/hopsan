@@ -257,7 +257,7 @@ public:
 class InterfacePortSpec
 {
 public:
-    enum InterfaceTypesEnumT {Input, Output, MechanicC, MechanicQ, MechanicRotationalC, MechanicRotationalQ, HydraulicC, HydraulicQ, ElectricC, ElectricQ, PneumaticC, PneumaticQ};
+    enum InterfaceTypesEnumT {Input, Output, MechanicC, MechanicQ, MechanicRotationalC, MechanicRotationalQ, HydraulicC, HydraulicQ, ElectricC, ElectricQ, PneumaticC, PneumaticQ, PetriNetC, PetriNetQ};
 
     InterfacePortSpec(InterfaceTypesEnumT type, QString component, QString port, QStringList path);
 

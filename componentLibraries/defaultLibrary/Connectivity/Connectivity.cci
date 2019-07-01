@@ -33,5 +33,7 @@ pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceC",Mechan
 pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceQ",MechanicRotationalInterfaceQ::Creator);
 pComponentFactory->registerCreatorFunction("PneumaticInterfaceC",PneumaticInterfaceC::Creator);
 pComponentFactory->registerCreatorFunction("PneumaticInterfaceQ",PneumaticInterfaceQ::Creator);
+pComponentFactory->registerCreatorFunction("PetriNetInterfaceC",PetriNetInterfaceC::Creator);
+pComponentFactory->registerCreatorFunction("PetriNetInterfaceQ",PetriNetInterfaceQ::Creator);
 pComponentFactory->registerCreatorFunction("SignalInputInterface",SignalInputInterface::Creator);
 pComponentFactory->registerCreatorFunction("SignalOutputInterface",SignalOutputInterface::Creator);

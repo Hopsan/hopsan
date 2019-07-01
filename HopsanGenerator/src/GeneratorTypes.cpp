@@ -555,6 +555,22 @@ InterfacePortSpec::InterfacePortSpec(InterfaceTypesEnumT type, QString component
         outputDataIds   << gni.qVariableIds;
         break;
     }
+    case InterfacePortSpec::PetriNetQ:
+    {
+        inputDataNames  << "s";
+        inputDataIds << 0;
+        outputDataNames << "q";
+        outputDataIds << 1;
+        break;
+    }
+    case InterfacePortSpec::PetriNetC:
+    {
+        inputDataNames  << "q";
+        inputDataIds << 1;
+        outputDataNames << "s";
+        outputDataIds << 0;
+        break;
+    }
     default:
         break;
     }
@@ -632,6 +648,14 @@ void getInterfaces(QList<InterfacePortSpec> &interfaces, hopsan::ComponentSystem
         else if(typeName == "ElectricInterfaceC")
         {
             interfaces.append(InterfacePortSpec(InterfacePortSpec::ElectricC, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "PetriNetInterfaceQ")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::PetriNetQ, names[i].c_str(), "P1", path));
+        }
+        else if(typeName == "PetriNetInterfaceC")
+        {
+            interfaces.append(InterfacePortSpec(InterfacePortSpec::PetriNetC, names[i].c_str(), "P1", path));
         }
         else if(typeName == "Subsystem")
         {

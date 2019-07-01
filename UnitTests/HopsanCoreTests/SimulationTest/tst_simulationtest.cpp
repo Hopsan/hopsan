@@ -191,9 +191,11 @@ private Q_SLOTS:
         QTest::newRow("69") << HString("PneumaticInterfaceQ");
         QTest::newRow("70") << HString("ElectricInterfaceC");
         QTest::newRow("71") << HString("ElectricInterfaceQ");
-        QTest::newRow("72") << HString("SignalInputInterface");
-        QTest::newRow("73") << HString("SignalOutputInterface");
-        QTest::newRow("74") << HString("SignalAnimationSwitch");
+        QTest::newRow("72") << HString("PetriNetInterfaceC");
+        QTest::newRow("73") << HString("PetriNetInterfaceQ");
+        QTest::newRow("74") << HString("SignalInputInterface");
+        QTest::newRow("75") << HString("SignalOutputInterface");
+        QTest::newRow("76") << HString("SignalAnimationSwitch");
         //! @todo Add all non-signal and non-connectivity components here
     }
 
@@ -215,6 +217,7 @@ private Q_SLOTS:
         QTest::newRow("3") << HString("NodeElectric");
         QTest::newRow("4") << HString("NodeMechanic");
         QTest::newRow("5") << HString("NodeMechanicRotational");
+        QTest::newRow("6") << HString("NodePetriNet");
     }
 
     void Load_System()

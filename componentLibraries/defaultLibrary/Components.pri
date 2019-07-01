@@ -14,6 +14,8 @@ HEADERS +=  \
  $${PWD}/Connectivity/MechanicRotationalInterfaceQ.hpp \ 
  $${PWD}/Connectivity/PneumaticInterfaceC.hpp \ 
  $${PWD}/Connectivity/PneumaticInterfaceQ.hpp \ 
+ $${PWD}/Connectivity/PetriNetInterfaceC.hpp \
+ $${PWD}/Connectivity/PetriNetInterfaceQ.hpp \
  $${PWD}/Connectivity/SignalInputInterface.hpp \ 
  $${PWD}/Connectivity/SignalOutputInterface.hpp \ 
  $${PWD}/Electric/Electric.h \ 

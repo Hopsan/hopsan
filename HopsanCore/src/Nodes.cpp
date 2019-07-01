@@ -58,7 +58,10 @@
 
 //! @defgroup NodeMechanic2D NodeMechanic2D
 //! @ingroup Nodes
-//!
+
+//! @defgroup NodePetriNet NodePetriNet
+//! @ingroup Nodes
+
 //! @defgroup NodeEmpty NodeEmpty
 //! @ingroup Nodes
 
@@ -82,6 +85,7 @@ void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
     pNodeFactory->registerCreatorFunction("NodeElectric", NodeElectric::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeMechanic2D", NodeMechanic2D::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeModelica", NodeModelica::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodePetriNet", NodePetriNet::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeEmpty", NodeEmpty::CreatorFunction);
 }
 
