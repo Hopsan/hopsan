@@ -479,7 +479,6 @@ public:
     //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodePetriNet
     enum DataIndexEnumT {State, Flow, DataLength};
-    enum DataIndexEnumOldT {STATE, FLOW};
     static Node* CreatorFunction() {return new NodePetriNet;}
 
 private:
