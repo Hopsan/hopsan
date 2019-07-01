@@ -102,6 +102,7 @@ namespace hopsan {
             //Declare local variables
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3;
             double dpe, ble, gamma, c1a, c2a, ct, q1a, q2a, q1leak, q2leak;
+            double prevA3;
 
             double dm = (*mpDm);
             double Bm = (*mpBm);
@@ -116,6 +117,7 @@ namespace hopsan {
             Zc2 = (*mpND_Zc2);
             c3 = (*mpND_c3);
             Zx3 = (*mpND_Zx3);
+            prevA3 = (*mpND_a3);
 
             //Motor equations
             limitValue(eps, -1, 1);
@@ -139,20 +141,17 @@ namespace hopsan {
 
             //Cavitation Check
             bool cav=false;
-            if (p1 < 0.0)
-            {
+            if (p1 < 0.0) {
                 c1 = 0.0;
                 Zc1 = 0;
                 cav = true;
             }
-            if (p2 < 0.0)
-            {
+            if (p2 < 0.0) {
                 c2 = 0.0;
                 Zc2 = 0;
                 cav = true;
             }
-            if(cav)
-            {
+            if(cav) {
                 ble = Bm + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
                 gamma = 1 / (clm * (Zc1 + Zc2) + 1);
                 c1a = (clm * Zc2 + 1) * gamma * c1 + clm * gamma * Zc1 * c2;
@@ -167,21 +166,21 @@ namespace hopsan {
                 p1 = c1a + gamma * Zc1 * q1a;
                 p2 = c2a + gamma * Zc2 * q2a;
 
-                if(p1<=0)
-                {
+                if(p1<=0) {
                     p1 = 0;
                     q1a = std::max(q1a, 0.0);
                     w3 = std::min(w3, 0.0);
                 }
-                if(p2<=0)
-                {
+                if(p2<=0) {
                     p2 = 0;
                     q1a = std::min(q1a, 0.0);
                     w3 = std::max(w3, 0.0);
                 }
-                if(p1>0 && p2>0)
-                {
+                if(w3 > 0) {
                     a3 = mIntegrator.valueSecond();     //Only change a3 if w3 was not limited due to cavitation
+                }
+                else {
+                    a3 = prevA3;
                 }
                 mIntegrator.initializeValues(ct/J, a3, w3);
                 q2a = -q1a;
