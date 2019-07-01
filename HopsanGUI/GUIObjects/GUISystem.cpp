@@ -671,7 +671,7 @@ void SystemContainer::saveOptimizationSettingsToDomElement(QDomElement &rDomElem
     appendDomValueNode(XMLsetting, HMF_PARTOL, mOptSettings.mPartol);
     appendDomBooleanNode(XMLsetting, HMF_PLOT, mOptSettings.mPlot);
     appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mSavecsv);
-    appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mFinalEval);
+    appendDomBooleanNode(XMLsetting, HMF_FINALEVAL, mOptSettings.mFinalEval);
 
     //Parameters
     appendDomBooleanNode(XMLsetting, HMF_LOGPAR, mOptSettings.mlogPar);
