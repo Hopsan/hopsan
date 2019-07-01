@@ -41,7 +41,7 @@ namespace hopsan {
 
     //!
     //! @brief
-    //! @ingroup MechanicalComponents
+    //! @ingroup InterfaceComponents
     //!
     class MechanicRotationalInterfaceQ : public ComponentQ
     {
