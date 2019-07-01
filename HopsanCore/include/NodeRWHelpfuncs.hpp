@@ -532,6 +532,43 @@ inline void getMechanicPortNodeDataPointers(Port *pPort, MechanicNodeDataPointer
     rPointers.pMe  = pPort->getNodeDataPtr(NodeMechanic::EquivalentMass, 0);
 }
 
+// ---------------------------------------------------------------------
+// Petri Net Node Access
+// ---------------------------------------------------------------------
+
+class PetriNetNodeDataPointerStructT
+{
+public:
+    double *pS;
+    double *pQ;
+
+    inline double s() const
+    {
+        return *pS;
+    }
+
+    inline double q() const
+    {
+        return *pQ;
+    }
+
+    inline double &rs()
+    {
+        return *pS;
+    }
+
+    inline double &rq()
+    {
+        return *pQ;
+    }
+};
+
+inline void getPetriNetPortNodeDataPointers(Port *pPort, PetriNetNodeDataPointerStructT &rPointers)
+{
+    rPointers.pS  = pPort->getNodeDataPtr(NodePetriNet::State, 0);
+    rPointers.pQ  = pPort->getNodeDataPtr(NodePetriNet::Flow, 0);
+}
+
 }
 
 #endif // NODERWHELPFUNCS_HPP

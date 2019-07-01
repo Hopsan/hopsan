@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="PetriNetInterfaceC.hpp" typename="PetriNetInterfaceC" displayname="Petri Net Interface of C-type">
+        <icons>
+            <icon scale="1" path="PetriNetInterfaceC.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="PetriNetInterfaceC.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

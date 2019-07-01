@@ -1318,6 +1318,16 @@ void HopsanGeneratorBase::getNodeAndCqTypeFromInterfaceComponent(const QString &
         nodeType = "NodeElectric";
         cqType = "q";
     }
+    else if(compType == "PetriNetInterfaceC")
+    {
+        nodeType = "NodePetriNet";
+        cqType = "c";
+    }
+    else if(compType == "PetriNetInterfaceQ")
+    {
+        nodeType = "NodePetriNet";
+        cqType = "q";
+    }
 }
 
 bool HopsanGeneratorBase::generateModelFile(const ComponentSystem *pSystem, const QString &buildPath, const QMap<QString, QString> &replaceMap) const

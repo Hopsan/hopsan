@@ -1261,7 +1261,7 @@ NodeInfo::NodeInfo(QString nodeType)
 void NodeInfo::getNodeTypes(QStringList &nodeTypes)
 {
     //! @todo this should not be hardcoded
-    nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
+    nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric" << "NodePetriNet";
 }
 
 QString getHopsanCoreVersion()

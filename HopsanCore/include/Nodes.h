@@ -471,6 +471,27 @@ private:
 };
 
 
+//! @brief A petri net node
+//! @ingroup NodePetriNet
+class NodePetriNet : public Node
+{
+public:
+    //! @brief The data variable indexes, DataLength is used internally
+    //! @ingroup NodePetriNet
+    enum DataIndexEnumT {State, Flow, DataLength};
+    enum DataIndexEnumOldT {STATE, FLOW};
+    static Node* CreatorFunction() {return new NodePetriNet;}
+
+private:
+    NodePetriNet() : Node(DataLength)
+    {
+        setNiceName("petrinet");
+        setDataCharacteristics(State, "State", "s", "-", IntensityType);
+        setDataCharacteristics(Flow, "Flow", "q", "-", FlowType);
+    }
+};
+
+
 class NodeEmpty : public Node
 {
 public:
