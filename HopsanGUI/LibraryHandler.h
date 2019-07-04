@@ -161,7 +161,7 @@ class LibraryHandler : public QObject
 public:
     LibraryHandler(QObject *parent=nullptr);
 
-    void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
+    void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible, RecompileEnumT recompile=Recompile);
     bool unloadLibraryByComponentType(QString typeName);
     bool unloadLibraryFMU(QString fmuName);
     bool unloadLibrary(SharedComponentLibraryPtrT pLibrary);
@@ -202,7 +202,7 @@ signals:
 
 private:
 
-    bool loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible);
+    bool loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible, RecompileEnumT recompile=Recompile);
 
     // Library contents
     QList<SharedComponentLibraryPtrT> mLoadedLibraries;

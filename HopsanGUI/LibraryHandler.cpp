@@ -190,7 +190,7 @@ void LibraryHandler::createNewModelicaComponent()
 //! @param loadPath Path to .xml file (or folder)
 //! @param type Specifies whether library is internal or external
 //! @param visibility Specifies whether library is visible or invisible
-void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
+void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, HiddenVisibleEnumT visibility, RecompileEnumT recompile)
 {
     QFileInfo libraryLoadPathInfo(loadPath);
     QDir libraryLoadPathRootDir;
@@ -303,7 +303,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
             pLib->loadPath = loadPath;
             pLib->xmlFilePath = xmlFile;
             pLib->type = type;
-            if (loadLibrary(pLib, type, visibility))
+            if (loadLibrary(pLib, type, visibility, recompile))
             {
                 loadedSomething = true;
             }
@@ -920,7 +920,7 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
     QString libPath = pLibrary->xmlFilePath;
     if (unloadLibrary(pLibrary)) {
         // Now reload the library
-        loadLibrary(libPath);
+        loadLibrary(libPath,ExternalLib,Visible,NoRecompile);
     }
     gpModelHandler->restoreState();
 
@@ -945,7 +945,7 @@ void LibraryHandler::removeComponentFromLibrary(const QString &typeName, SharedC
     QString libPath = pLibrary->xmlFilePath;
     if (unloadLibrary(pLibrary)) {
         // Now reload the library
-        loadLibrary(libPath);
+        loadLibrary(libPath,ExternalLib,Visible,NoRecompile);
     }
     gpModelHandler->restoreState();
 }
@@ -1034,7 +1034,7 @@ bool LibraryHandler::unloadLibrary(SharedComponentLibraryPtrT pLibrary)
     return false;
 }
 
-bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type, HiddenVisibleEnumT visibility)
+bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTypeEnumT type, HiddenVisibleEnumT visibility, RecompileEnumT recompile)
 {
     CoreLibraryAccess coreAccess;
 
@@ -1187,7 +1187,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     // Try to load specified compiled library "plugin" file (if available)
                     if(!pLibrary->libFilePath.isEmpty())
                     {
-                        if(!coreAccess.loadComponentLib(pLibrary->libFilePath))
+                        if(!coreAccess.loadComponentLib(pLibrary->libFilePath) && (recompile == Recompile))
                         {
                             // Failed to load
                             gpMessageHandler->collectHopsanCoreMessages();
