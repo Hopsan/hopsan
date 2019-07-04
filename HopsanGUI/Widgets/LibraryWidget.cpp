@@ -623,7 +623,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             QString libPath = pLib->xmlFilePath;
             if (gpLibraryHandler->unloadLibrary(pLib)) {
                 // Now reload the library
-                gpLibraryHandler->loadLibrary(libPath);
+                gpLibraryHandler->loadLibrary(libPath,ExternalLib,Visible,NoRecompile);
             }
             gpModelHandler->restoreState();
             getLibraryItem(pLib)->setExpanded(expanded);
