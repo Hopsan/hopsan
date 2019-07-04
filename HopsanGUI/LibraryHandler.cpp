@@ -1365,7 +1365,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
 
                     // Verify appearance data loaded from caf file
-                    bool existsInCore = false;
+                    bool existsInCore = true;
                     const QString typeName = pAppearanceData->getTypeName();
                     // Do not check in case it is a Subsystem or SystemPort
                     if( !((typeName==HOPSANGUISYSTEMTYPENAME) || (typeName==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (typeName==HOPSANGUICONTAINERPORTTYPENAME)) ) {
