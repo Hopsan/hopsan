@@ -41,9 +41,12 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QDebug>
-#include <complex>
 #include <QDomElement>
 #include <QTime>
+#include <complex>
+#include <functional>
+
+class GUIMessageHandler;
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
@@ -118,9 +121,9 @@ inline double rad2deg(const double rad)
 }
 
 //! @brief Converts a string to Integer returning true if success
-//!@param[in] rString The string to convert
-//!@param[out] rIntValue The value of the converted int
-//!@returns True if conversion was successful
+//! @param[in] rString The string to convert
+//! @param[out] rIntValue The value of the converted int
+//! @returns True if conversion was successful
 inline bool toInt(const QString &rString, int &rIntValue)
 {
     bool isOK=false;
@@ -159,5 +162,7 @@ private:
     void print(const QString &text);
     TextOutput mTextOutput;
 };
+
+bool saveXmlFile(QString xmlFilePath, GUIMessageHandler* pMessageHandler, std::function<QDomDocument()> saveFunction);
 
 #endif // GUIUTILITIES_H

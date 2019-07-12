@@ -1139,3 +1139,31 @@ void extractSections(const QString str, const QChar c, QStringList &rSplit, QLis
     }
     rSplit.append(str.mid(start,len));
 }
+
+bool saveXmlFile(QString xmlFilePath, GUIMessageHandler *pMessageHandler, std::function<QDomDocument()> saveFunction)
+{
+    TicToc tt;
+    QFile xmlFile(xmlFilePath);
+    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        pMessageHandler->addErrorMessage("Could not open the file: "+xmlFile.fileName()+" for writing.");
+        return false;
+    }
+    const int open_ms = tt.toc();
+
+    tt.tic();
+    QTextStream out(&xmlFile);
+    QDomDocument doc = saveFunction();
+    doc.save(out, XMLINDENTATION);
+    const double save_ms = tt.toc();
+
+    tt.tic();
+    xmlFile.close();
+    const int close_ms = tt.toc();
+
+    const double total_s = (open_ms+save_ms+close_ms)*1.0e-3;
+    const double save_s = save_ms*1.0e-3;
+    const double size_mb = xmlFile.size() * 1.0e-6;
+    pMessageHandler->addDebugMessage(QString("Saving file: %1 took %2 s at %3 MB/s. Opening: %4 ms, Closing: %5 ms")
+                                     .arg(xmlFilePath).arg(total_s).arg(size_mb/save_s).arg(open_ms).arg(close_ms));
+    return true;
+}
