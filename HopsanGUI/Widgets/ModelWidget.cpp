@@ -750,7 +750,7 @@ void ModelWidget::exportModelParameters()
 
 void ModelWidget::importModelParameters(QString parameterFile)
 {
-    mpToplevelSystem->loadParameterFile(parameterFile);
+    mpToplevelSystem->loadParameterValuesFromFile(parameterFile);
 }
 
 void ModelWidget::exportSimulationStates()
