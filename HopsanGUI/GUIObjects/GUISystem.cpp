@@ -318,10 +318,13 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     //bool allowLimitedEditing = (!isLocallyLocked() && (getModelLockLevel() <= LimitedLock));
 
     QMenu menu;
+    QAction *enterAction = menu.addAction(tr("Enter Subsystem"));
+    menu.addSeparator();
+
     QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
     QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
     QAction *saveAsComponentAction = menu.addAction(tr("Save As Component"));
-    QAction *enterAction = menu.addAction(tr("Enter Subsystem"));
+    QAction *saveParameterValuesAction = menu.addAction(tr("Save parameter values to file"));
     loadAction->setEnabled(allowFullEditing);
     if(!mModelFileInfo.filePath().isEmpty())
     {
@@ -540,6 +543,10 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         this->setIconPath(orgIconPath, UserGraphics, Relative);
 
         QFile::remove(getModelFilePath()+"/"+iconFileName);
+    }
+    else if (pAction == saveParameterValuesAction)
+    {
+        this->saveParameterValuesToFile();
     }
     else if (pAction == enterAction)
     {
@@ -1389,7 +1396,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
     }
     else
     {
-        gpMessageHandler->addErrorMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
+        gpMessageHandler->addErrorMessage("A system you tried to load is tagged as an external system, but the ContainerSystem load function only loads embedded systems");
     }
 }
 
@@ -1398,12 +1405,12 @@ void SystemContainer::exportToLabView()
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(gpMainWindowWidget, tr("Export to LabVIEW/SIT"),
-                                  "This will create source code for a LabVIEW/SIT DLL-file from current model. The  HopsanCore source code is included but you will neee Visual Studio 2003 to compile it.\nContinue?",
+                                  "This will create source code for a LabVIEW/SIT DLL-file from current model. The  HopsanCore source code is included but you will need Visual Studio 2003 to compile it.\nContinue?",
                                   QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::No)
         return;
 
-    //Open file dialog and initialize the file stream
+    //Open file dialogue and initialize the file stream
     QString filePath;
     filePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Export Project to HopsanRT Wrapper Code"),
                                             gpConfig->getStringSetting(CFG_LABVIEWEXPORTDIR),
@@ -1447,7 +1454,7 @@ void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnu
 {
     if(savePath.isEmpty())
     {
-        //Open file dialog and initialize the file stream
+        //Open file dialogue and initialize the file stream
         QDir fileDialogSaveDir;
         savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
                                                         gpConfig->getStringSetting(CFG_FMUEXPORTDIR),
@@ -1486,7 +1493,7 @@ void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnu
 
     if(!mpModelWidget->isSaved())
     {
-        QMessageBox::information(gpMainWindowWidget, "tr(Model not saved)", "tr(Please save your model before exporting an FMU)");
+        QMessageBox::information(gpMainWindowWidget, tr("Model not saved"), tr("Please save your model before exporting an FMU"));
         return;
     }
 
@@ -1525,7 +1532,7 @@ void SystemContainer::exportToFMU(QString savePath, int version, ArchitectureEnu
 
 //void SystemContainer::exportToFMU()
 //{
-//    //Open file dialog and initialize the file stream
+//    //Open file dialogue and initialize the file stream
 //    QDir fileDialogSaveDir;
 //    QString savePath;
 //    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
@@ -2027,7 +2034,7 @@ void SystemContainer::exportToSimulink()
     }
 
 
-        //Open file dialog and initialize the file stream
+        //Open file dialogue and initialize the file stream
     QString savePath;
     savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
                                                     gpConfig->getStringSetting(CFG_SIMULINKEXPORTDIR),
@@ -2095,7 +2102,7 @@ void SystemContainer::setModelFileInfo(QFile &rFile, const QString relModelPath)
     }
 }
 
-void SystemContainer::loadParameterFile(QString parameterFile)
+void SystemContainer::loadParameterValuesFromFile(QString parameterFile)
 {
     if(parameterFile.isEmpty()) {
         parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
@@ -2111,6 +2118,29 @@ void SystemContainer::loadParameterFile(QString parameterFile)
         gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
     }
     emit checkMessages();
+}
+
+void SystemContainer::saveParameterValuesToFile(QString parameterFile)
+{
+    if (parameterFile.isEmpty()) {
+        parameterFile = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Parameter Value File"),
+                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     tr("Hopsan Parameter Files (*.hpf)"));
+    }
+    if(parameterFile.isEmpty()) {
+        return;
+    }
+
+    auto saveFunction = [this]() -> QDomDocument {
+        QDomDocument domDocument;
+        QDomElement rootElement = domDocument.createElement(HPF_ROOTTAG);
+        domDocument.appendChild(rootElement);
+        this->saveToDomElement(rootElement, SaveContentsEnumT::ParametersOnly);
+        appendRootXMLProcessingInstruction(domDocument);
+        return domDocument;
+    };
+
+    saveXmlFile(parameterFile, gpMessageHandler, saveFunction);
 }
 
 
@@ -2170,7 +2200,7 @@ void SystemContainer::setLogStartTime(const double logStartT)
 
 OptimizationSettings::OptimizationSettings()
 {
-    //Defaulf values
+    // Default values
     mScriptFile = QString();
     mNiter=100;
     mNsearchp=8;
