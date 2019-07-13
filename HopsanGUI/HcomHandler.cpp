@@ -198,6 +198,17 @@ inline bool isString(const QString &expr)
     return (expr.startsWith('"') && expr.endsWith('"'));
 }
 
+SystemContainer* searchIntoSubsystem(SystemContainer* pRootSystem, const QStringList& systemNames) {
+    auto pSystem = pRootSystem;
+    for (const QString &sysname : systemNames) {
+        pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+        if (!pSystem) {
+            break;
+        }
+    }
+    return pSystem;
+}
+
 //----------------------------------------------------------------------------------
 
 class LongShortNameConverter
@@ -942,16 +953,22 @@ void HcomHandler::createCommands()
 
     HcomCommand sapaCmd;
     sapaCmd.cmd = "sapa";
-    sapaCmd.description.append("Saves model parameter set to .XML");
-    sapaCmd.help.append(" Usage: sapa [filepath]");
+    sapaCmd.description.append("Save model parameter values to XML file (.hpf");
+    sapaCmd.help.append(" Usage: sapa [filepath]\n");
+    sapaCmd.help.append(" Usage: sapa [filepath] [componentname]\n");
+    sapaCmd.help.append(" Usage: sapa [filepath] [-c]\n"
+                        "  Flag -c for current visible system");
     sapaCmd.fnc = &HcomHandler::executeSaveParametersCommand;
     sapaCmd.group = "Parameter Commands";
     mCmdList << sapaCmd;
 
     HcomCommand repaCmd;
     repaCmd.cmd = "repa";
-    repaCmd.description.append("Loads model parameters from .XML");
-    repaCmd.help.append(" Usage: repa [filepath]");
+    repaCmd.description.append("Load model parameters values from XML file (.hpf)");
+    repaCmd.help.append(" Usage: repa [filepath]\n");
+    repaCmd.help.append(" Usage: repa [filepath] [componentname]\n");
+    repaCmd.help.append(" Usage: repa [filepath] [-c] \n"
+                        "  Flag -c for current visible system");
     repaCmd.fnc = &HcomHandler::executeLoadParametersCommand;
     repaCmd.group = "Parameter Commands";
     mCmdList << repaCmd;
@@ -2207,7 +2224,7 @@ void HcomHandler::executeHelpCommand(QString arg)
     if(arg.isEmpty())
     {
         HCOMPRINT("-------------------------------------------------------------------------");
-        HCOMPRINT(" Hopsan HCOM Terminal v0.1");
+        HCOMPRINT(" Hopsan HCOM Terminal");
         QString commands;
         int n=0;
         QStringList groups;
@@ -3414,15 +3431,7 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
         }
 
         // Search into subsystem
-        for (QString &sysname : sysnames)
-        {
-            pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
-            if (!pSystem)
-            {
-                break;
-            }
-        }
-
+        pSystem = searchIntoSubsystem(pSystem, sysnames);
         if (pSystem)
         {
             // Get component
@@ -4369,12 +4378,12 @@ void HcomHandler::executeLoadVariableCommand(const QString cmd)
 void HcomHandler::executeSaveParametersCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() != 1)
+    if(args.size() < 1 || args.size() > 2)
     {
         HCOMERR("Wrong number of arguments");
         return;
     }
-    QString path = args[0];
+    QString path = args.first();
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -4385,18 +4394,51 @@ void HcomHandler::executeSaveParametersCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
 
-    mpModel->saveTo(path, ParametersOnly);
+    if (args.size() > 1) {
+        if (args.last() == "-c") {
+            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            if (pSystem) {
+                pSystem->saveParameterValuesToFile(path);
+            }
+            else {
+                HCOMERR("Current view is not a system");
+            }
+        }
+        else {
+            QString sysOrCompFullName = args.last();
+            toLongDataNames(sysOrCompFullName);
+            QStringList systemHierarchy;
+            QString sysOrCompName;
+            splitFullComponentName(sysOrCompFullName, systemHierarchy, sysOrCompName);
+            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            pSystem = searchIntoSubsystem(pSystem, systemHierarchy);
+            if (pSystem) {
+                ModelObject* pModelObject = pSystem->getModelObject(sysOrCompName);
+                if (pModelObject) {
+                    if (pModelObject->type() == SystemContainerType) {
+                        qobject_cast<SystemContainer*>(pModelObject)->saveParameterValuesToFile(path);
+                    }
+                }
+                else {
+                    HCOMERR("No such component found");
+                }
+            }
+        }
+    }
+    else {
+        mpModel->saveTo(path, ParametersOnly);
+    }
 }
 
 void HcomHandler::executeLoadParametersCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() != 1)
+    if(args.size() < 1 || args.size() > 2)
     {
-        HCOMERR("Wrong number of arguments.");
+        HCOMERR("Wrong number of arguments");
         return;
     }
-    QString path = args[0];
+    QString path = args.first();
     path.remove("\"");
     if(!path.contains("/"))
     {
@@ -4407,7 +4449,40 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
 
-    mpModel->importModelParameters(path);
+    if (args.size() > 1) {
+        if (args.last() == "-c") {
+            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            if (pSystem) {
+                pSystem->loadParameterValuesFromFile(path);
+            }
+            else {
+                HCOMERR("Current view is not a system");
+            }
+        }
+        else {
+            QString sysOrCompFullName = args.last();
+            toLongDataNames(sysOrCompFullName);
+            QStringList systemHierarchy;
+            QString sysOrCompName;
+            splitFullComponentName(sysOrCompFullName, systemHierarchy, sysOrCompName);
+            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            pSystem = searchIntoSubsystem(pSystem, systemHierarchy);
+            if (pSystem) {
+                ModelObject* pModelObject = pSystem->getModelObject(sysOrCompName);
+                if (pModelObject) {
+                    if (pModelObject->type() == SystemContainerType) {
+                        qobject_cast<SystemContainer*>(pModelObject)->loadParameterValuesFromFile(path);
+                    }
+                }
+                else {
+                    HCOMERR("No such component found");
+                }
+            }
+        }
+    }
+    else {
+       mpModel->importModelParameters(path);
+    }
 }
 
 
