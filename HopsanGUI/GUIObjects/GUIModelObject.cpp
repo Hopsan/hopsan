@@ -991,16 +991,10 @@ bool ModelObject::getCustomParameterUnitScale(QString name, UnitConverter &rUs)
 
 void ModelObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    if (contents == FullModel)
-    {
-        QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
-        saveCoreDataToDomElement(xmlObject);
+    QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
+    saveCoreDataToDomElement(xmlObject, contents);
+    if (contents == FullModel) {
         saveGuiDataToDomElement(xmlObject);
-    }
-    else
-    {
-        QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
-        saveCoreDataToDomElement(xmlObject, contents);
     }
 }
 
@@ -1013,14 +1007,13 @@ void ModelObject::setModelFileInfo(QFile &rFile, const QString relModelPath)
 
 void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    if(contents==FullModel)
-    {
-        rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
-        rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
-    }
+    rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
+    rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
     rDomElement.setAttribute(HMF_NAMETAG, getName());
-    rDomElement.setAttribute(HMF_CQSTYPE, getTypeCQS());
-    rDomElement.setAttribute(HMF_DISABLEDTAG, bool2str(isDisabled()));
+    if(contents==FullModel) {
+        rDomElement.setAttribute(HMF_CQSTYPE, getTypeCQS());
+        rDomElement.setAttribute(HMF_DISABLEDTAG, bool2str(isDisabled()));
+    }
 }
 
 QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)

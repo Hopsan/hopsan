@@ -244,7 +244,7 @@ QString SystemContainer::getHmfTagName() const
 //! @param[in] rDomElement The DOM Element to save to
 void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    ModelObject::saveCoreDataToDomElement(rDomElement);
+    ModelObject::saveCoreDataToDomElement(rDomElement, contents);
 
     if (mLoadType == "EXTERNAL" && contents == FullModel)
     {
@@ -986,6 +986,7 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
         ModelObjectMapT::iterator it;
         for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
         {
+            // TODO dont save containerports if parameters only
             it.value()->saveToDomElement(xmlObjects, contents);
             if(tempComponentPtrs.contains(it.value()))
             {

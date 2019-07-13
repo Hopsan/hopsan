@@ -345,7 +345,7 @@ void Component::setVisible(bool visible)
 //! @param[in] rDomElement The dom element to save to
 void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    ModelObject::saveCoreDataToDomElement(rDomElement);
+    ModelObject::saveCoreDataToDomElement(rDomElement, contents);
 
     //Save parameters (also core related)
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
