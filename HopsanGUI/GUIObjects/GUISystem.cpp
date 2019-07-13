@@ -324,7 +324,9 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
     QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
     QAction *saveAsComponentAction = menu.addAction(tr("Save As Component"));
+    menu.addSeparator();
     QAction *saveParameterValuesAction = menu.addAction(tr("Save parameter values to file"));
+    QAction *loadParameterValuesAction = menu.addAction(tr("Load parameter values from file"));
     loadAction->setEnabled(allowFullEditing);
     if(!mModelFileInfo.filePath().isEmpty())
     {
@@ -547,6 +549,10 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     else if (pAction == saveParameterValuesAction)
     {
         this->saveParameterValuesToFile();
+    }
+    else if (pAction == loadParameterValuesAction)
+    {
+        this->loadParameterValuesFromFile();
     }
     else if (pAction == enterAction)
     {
