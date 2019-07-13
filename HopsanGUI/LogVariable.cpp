@@ -162,6 +162,13 @@ bool splitFullVariableName(const QString &rFullName, QStringList &rSystemHierarc
     return false;
 }
 
+bool splitFullComponentName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName)
+{
+    QString dummy1, dummy2;
+    // Note! here we abuse splitFullVariableName, the rVarName return parameter is actually the variable name in this case.
+    return splitFullVariableName(rFullName, rSystemHierarchy, dummy1, dummy2, rCompName);
+}
+
 //! @todo this should not be here, maybe in some global place
 bool splitFullParameterName(const QString &rFullName, QStringList &rSystemHierarchy, QString &rCompName, QString &rParamName)
 {
