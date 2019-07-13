@@ -431,26 +431,31 @@ size_t loadValuesFromHopsanParameterFile(rapidxml::xml_node<> *pSystemNode, Comp
                 if (pXmlObjects) {
                     rapidxml::xml_node<> *pXmlComponentOrSystem = pXmlObjects->first_node();
                     while (pXmlComponentOrSystem != 0) {
-                        HString name = readStringAttribute(pXmlComponentOrSystem, "name", "").c_str();
+                        char* elementName = pXmlComponentOrSystem->name();
+                        // Ignore non system or components, eg. systemports or any user added data
+                        if (strcmp(elementName, "component")==0 || strcmp(elementName, "system")==0) {
 
-                        if (strcmp(pXmlComponentOrSystem->name(), "system") == 0) {
-                            ComponentSystem* pSubSystem = pSystem->getSubComponentSystem(name);
-                            if (pSubSystem) {
-                                numUpdated += loadValuesFromHopsanParameterFile(pXmlComponentOrSystem, pSubSystem);
+                            HString name = readStringAttribute(pXmlComponentOrSystem, "name", "").c_str();
+
+                            if (strcmp(pXmlComponentOrSystem->name(), "system") == 0) {
+                                ComponentSystem* pSubSystem = pSystem->getSubComponentSystem(name);
+                                if (pSubSystem) {
+                                    numUpdated += loadValuesFromHopsanParameterFile(pXmlComponentOrSystem, pSubSystem);
+                                }
+                                else {
+                                    addCoreLogMessage("hopsan::loadHopsanParameterFile(): Subsystem not found: "+name);
+                                    pSystem->addErrorMessage("Subsystem not found: "+name);
+                                }
                             }
                             else {
-                                addCoreLogMessage("hopsan::loadHopsanParameterFile(): Subsystem not found: "+name);
-                                pSystem->addErrorMessage("Subsystem not found: "+name);
-                            }
-                        }
-                        else {
-                            Component* pSubComponent = pSystem->getSubComponent(name);
-                            if (pSubComponent) {
-                                numUpdated += loadValuesFromHopsanParameterFile(pXmlComponentOrSystem, pSubComponent);
-                            }
-                            else {
-                                addCoreLogMessage("hopsan::loadHopsanParameterFile(): Subcomponent not found: "+name);
-                                pSystem->addErrorMessage("Subcomponent not found: "+name);
+                                Component* pSubComponent = pSystem->getSubComponent(name);
+                                if (pSubComponent) {
+                                    numUpdated += loadValuesFromHopsanParameterFile(pXmlComponentOrSystem, pSubComponent);
+                                }
+                                else {
+                                    addCoreLogMessage("hopsan::loadHopsanParameterFile(): Subcomponent not found: "+name);
+                                    pSystem->addErrorMessage("Subcomponent not found: "+name);
+                                }
                             }
                         }
 

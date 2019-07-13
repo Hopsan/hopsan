@@ -82,7 +82,7 @@ enum ConnectorGeometryEnumT {Vertical, Horizontal, Diagonal};
 enum RenameRestrictionEnumT {Unrestricted, CoreRenameOnly};
 enum UndoStatusEnumT {NoUndo, Undo};
 enum SaveTargetEnumT {ExistingFile, NewFile};
-enum SaveContentsEnumT {FullModel, ParametersOnly, CurrentContainerOnly};
+enum SaveContentsEnumT {FullModel, ParametersOnly};
 enum ConnectorStyleEnumT {PowerConnectorStyle, SignalConnectorStyle, BrokenConnectorStyle, UndefinedConnectorStyle};
 enum ContainerChildrenZValuesEnumT {WidgetZValue, ConnectorZValue, ModelobjectZValue, HoveredConnectorZValue, HoveredModelobjectZValue, BrokenConnectorZValue};
 enum ModelObjectZValuesEnumT {PortZValue, SelectionboxZValue, HoveredPortZValue, LossesDisplayZValue};
