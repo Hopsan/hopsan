@@ -33,6 +33,7 @@
 
 //Qt includes
 #include <QDrag>
+#include <QFileDialog>
 
 //Hopsan includes
 #include "global.h"
@@ -290,6 +291,32 @@ bool Component::setStartValue(QString portName, QString variable, QString sysPar
     return mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), dataName, sysParName);
 }
 
+void Component::loadParameterValuesFromFile(QString parameterFile)
+{
+    if(parameterFile.isEmpty()) {
+        parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
+                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     tr("Hopsan Parameter Files (*.hpf *.xml)"));
+    }
+
+    if(!parameterFile.isEmpty()) {
+        size_t numChanged = 0;
+        auto pCore = mpParentContainerObject->getCoreSystemAccessPtr();
+        if (pCore) {
+            numChanged = pCore->loadParameterFile(getName(), parameterFile);
+        }
+        if (numChanged > 0) {
+            mpParentContainerObject->mpModelWidget->hasChanged();
+        }
+        gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
+    }
+#if QT_VERSION_MAJOR < 5
+    QMetaObject::invokeMethod(mpParentContainerObject,"checkMessages");
+#else
+    emit mpParentContainerObject->checkMessages();
+#endif
+}
+
 
 
 //! @brief Help function to create ports in the component when it is created
@@ -337,6 +364,24 @@ void Component::setVisible(bool visible)
     for(int i=0; i<mPortListPtrs.size(); ++i)
     {
         mPortListPtrs.at(i)->showIfNotConnected(mpParentContainerObject->areSubComponentPortsShown());
+    }
+}
+
+void Component::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    //! @todo might move this to a ModelObjectWithParamters class ,to avoid duplication in SystemContainer (or put it in ModelObject with a condition)
+    QMenu menu;
+    QAction *saveParameterValuesAction = menu.addAction(tr("Save parameter values to file"));
+    QAction *loadParameterValuesAction = menu.addAction(tr("Load parameter values from file"));
+
+    QAction *pAction = this->buildBaseContextMenu(menu, event);
+    if (pAction == saveParameterValuesAction)
+    {
+        this->saveParameterValuesToFile();
+    }
+    else if (pAction == loadParameterValuesAction)
+    {
+        this->loadParameterValuesFromFile();
     }
 }
 

@@ -953,7 +953,7 @@ void HcomHandler::createCommands()
 
     HcomCommand sapaCmd;
     sapaCmd.cmd = "sapa";
-    sapaCmd.description.append("Save model parameter values to XML file (.hpf");
+    sapaCmd.description.append("Save model or component parameter values to XML file (.hpf");
     sapaCmd.help.append(" Usage: sapa [filepath]\n");
     sapaCmd.help.append(" Usage: sapa [filepath] [componentname]\n");
     sapaCmd.help.append(" Usage: sapa [filepath] [-c]\n"
@@ -964,7 +964,7 @@ void HcomHandler::createCommands()
 
     HcomCommand repaCmd;
     repaCmd.cmd = "repa";
-    repaCmd.description.append("Load model parameters values from XML file (.hpf)");
+    repaCmd.description.append("Load model or component parameters values from XML file (.hpf)");
     repaCmd.help.append(" Usage: repa [filepath]\n");
     repaCmd.help.append(" Usage: repa [filepath] [componentname]\n");
     repaCmd.help.append(" Usage: repa [filepath] [-c] \n"
@@ -4415,9 +4415,7 @@ void HcomHandler::executeSaveParametersCommand(const QString cmd)
             if (pSystem) {
                 ModelObject* pModelObject = pSystem->getModelObject(sysOrCompName);
                 if (pModelObject) {
-                    if (pModelObject->type() == SystemContainerType) {
-                        qobject_cast<SystemContainer*>(pModelObject)->saveParameterValuesToFile(path);
-                    }
+                    pModelObject->saveParameterValuesToFile(path);
                 }
                 else {
                     HCOMERR("No such component found");
@@ -4470,9 +4468,7 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
             if (pSystem) {
                 ModelObject* pModelObject = pSystem->getModelObject(sysOrCompName);
                 if (pModelObject) {
-                    if (pModelObject->type() == SystemContainerType) {
-                        qobject_cast<SystemContainer*>(pModelObject)->loadParameterValuesFromFile(path);
-                    }
+                    pModelObject->loadParameterValuesFromFile(path);
                 }
                 else {
                     HCOMERR("No such component found");

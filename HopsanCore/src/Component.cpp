@@ -39,6 +39,7 @@
 #include "Component.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/HmfLoader.h"
 #include "Port.h"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
@@ -235,6 +236,14 @@ std::list<HString> Component::getModelAssets() const
         }
     }
     return assets;
+}
+
+//! @brief Loads parameters from a file
+//! @param[in] rFilePath The file to load from
+//! @return Number of changed parameters
+size_t hopsan::Component::loadParameterValues(const hopsan::HString &rFilePath)
+{
+    return loadHopsanParameterFile(rFilePath, getHopsanEssentials()->getCoreMessageHandler(), this);
 }
 
 

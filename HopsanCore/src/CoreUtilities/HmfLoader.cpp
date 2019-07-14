@@ -1014,7 +1014,7 @@ ComponentSystem* hopsan::loadHopsanModel(char* xmlStr, HopsanEssentials* pHopsan
 //! @param [in] pMessageHandler The Hopsan Core message handler
 //! @param [in] pSystem The top-level system in the model to load parameters for
 //! @return Number of changed parameters
-size_t hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessageHandler *pMessageHandler, ComponentSystem *pSystem)
+size_t hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessageHandler *pMessageHandler, Component *pComponentOrSystem)
 {
     size_t numUpdated = 0;
     addCoreLogMessage("hopsan::loadHopsanParameterFile("+filePath+")");
@@ -1029,15 +1029,30 @@ size_t hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessag
 
         //Check for correct root node name
         if (strcmp(pRootNode->name(), "hopsanparameterfile")==0) {
-            rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
-            if (pSysNode != 0) {
-                numUpdated = loadValuesFromHopsanParameterFile(pSysNode, pSystem);
-                pMessageHandler->addInfoMessage("Updated: "+to_hstring(numUpdated)+" parameters from File: "+filePath);
+
+            if (pComponentOrSystem->isComponentSystem()) {
+                rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
+                if (pSysNode != 0) {
+                    ComponentSystem* pSystem = dynamic_cast<ComponentSystem*>(pComponentOrSystem);
+                    numUpdated = loadValuesFromHopsanParameterFile(pSysNode, pSystem);
+                }
+                else {
+                    addCoreLogMessage("hopsan::loadHopsanParameterFile(): No system element found in file.");
+                    pMessageHandler->addErrorMessage(filePath+" Has no system element to load");
+                }
             }
             else {
-                addCoreLogMessage("hopsan::loadHopsanParameterFile(): No system found in file.");
-                pMessageHandler->addErrorMessage(filePath+" Has no system to load");
+                rapidxml::xml_node<> *pComponentNode = pRootNode->first_node("component");
+                if (pComponentNode != 0) {
+                    numUpdated = loadValuesFromHopsanParameterFile(pComponentNode, pComponentOrSystem);
+                }
+                else {
+                    addCoreLogMessage("hopsan::loadHopsanParameterFile(): No component element found in file.");
+                    pMessageHandler->addErrorMessage(filePath+" Has no system element to load");
+                }
             }
+            pMessageHandler->addInfoMessage("Updated: "+to_hstring(numUpdated)+" parameters from File: "+filePath);
+
         }
         else {
             addCoreLogMessage("hopsan::loadHopsanParameterFile(): Wrong root tag name.");

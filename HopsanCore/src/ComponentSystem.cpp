@@ -2087,6 +2087,8 @@ void ComponentSystem::evaluateParametersRecursively()
 //! @return Number of changed parameters
 size_t ComponentSystem::loadParameterValues(const HString &rFilePath)
 {
+    // Note! Even though this implementation is identical to the one in Component::loadParameterValues,
+    //       this on is needed to ensure that the 'this' pointer points to a ComponentSystem
     return loadHopsanParameterFile(rFilePath, getHopsanEssentials()->getCoreMessageHandler(), this);
 }
 

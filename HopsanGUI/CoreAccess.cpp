@@ -791,6 +791,15 @@ size_t CoreSystemAccess::loadParameterFile(QString fileName)
     return mpCoreComponentSystem->loadParameterValues(fileName.toStdString().c_str());
 }
 
+size_t CoreSystemAccess::loadParameterFile(QString componentName, QString fileName)
+{
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(qPrintable(componentName));
+    if (pComp!=0) {
+        return pComp->loadParameterValues(qPrintable(fileName));
+    }
+    return 0;
+}
+
 
 QStringList CoreSystemAccess::getSystemParameterNames()
 {

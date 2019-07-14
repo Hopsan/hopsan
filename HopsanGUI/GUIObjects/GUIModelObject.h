@@ -106,6 +106,9 @@ public:
 
     virtual void openPropertiesDialog();
 
+    void saveParameterValuesToFile(QString parameterFile = {});
+    virtual void loadParameterValuesFromFile(QString parameterFile = {});
+
     // VariableAlias method
     //! @todo parameters and port variables should be more similar in the future, so that we do not need handle them separately
     virtual QMap<QString, QString> getVariableAliases(const QString &rPortName="") const;

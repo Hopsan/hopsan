@@ -666,6 +666,34 @@ void ModelObject::openPropertiesDialog()
     }
 }
 
+void ModelObject::saveParameterValuesToFile(QString parameterFile)
+{
+    if (parameterFile.isEmpty()) {
+        parameterFile = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Parameter Value File"),
+                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     tr("Hopsan Parameter Files (*.hpf)"));
+    }
+    if(parameterFile.isEmpty()) {
+        return;
+    }
+
+    auto saveFunction = [this]() -> QDomDocument {
+            QDomDocument domDocument;
+            QDomElement rootElement = domDocument.createElement(HPF_ROOTTAG);
+            domDocument.appendChild(rootElement);
+            this->saveToDomElement(rootElement, SaveContentsEnumT::ParametersOnly);
+            appendRootXMLProcessingInstruction(domDocument);
+            return domDocument;
+    };
+
+    saveXmlFile(parameterFile, gpMessageHandler, saveFunction);
+}
+
+void ModelObject::loadParameterValuesFromFile(QString parameterFile)
+{
+    Q_UNUSED(parameterFile);
+    // Nothing by default
+}
 
 bool ModelObject::isLossesDisplayVisible()
 {
@@ -1277,7 +1305,6 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     bool allowLimitedEditing = (!isLocallyLocked() && (getModelLockLevel() <= LimitedLock));
     rMenu.addSeparator();
 
-    QAction *pExportComponentParam = 0;//rMenu.addAction(tr("Export Component Parameters"));
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
     QAction *pLockedAction=0;
     QAction *pDisabledAction=0;
@@ -1294,7 +1321,6 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         pFlipHorizontalAction->setEnabled(allowFullEditing);
     }
 
-    //QStringList replacements = this->getAppearanceData()->getReplacementObjects();
     QStringList replacements = gpLibraryHandler->getReplacements(this->getTypeName());
     qDebug() << "Replacements = " << replacements;
     QList<QAction *> replaceActionList;
@@ -1355,24 +1381,6 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         this->rotate90cw();
-    }
-    else if (selectedAction == pExportComponentParam)
-    {
-//        QVector<CoreParameterData> paramDataVector;
-//        this->getParameters(paramDataVector);
-//        for(int i=0; i<paramDataVector.size(); ++i)
-//        {
-//            //mvParameterLayoutPtrs.push_back(new ParameterSettingsLayout(paramDataVector[i], mpContainerObject));
-//        }
-//        QDomDocument doc;
-
-//        QFile File("fitxer");
-//        if ( File.open( QIODevice::WriteOnly ) )
-//        {
-//            QTextStream TextStream(&File);
-//            TextStream << doc.toString(paramDataVector) ;
-//            File.close();
-//        }
     }
     else if (selectedAction == pRotateLeftAction)
     {
