@@ -59,6 +59,8 @@ public:
     bool setParameterValue(QString name, QString value, bool force=0);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 
+    void loadParameterValuesFromFile(QString parameterFile = {}) override;
+
     QString getTypeName() const override;
     QString getTypeCQS();
 
@@ -71,6 +73,8 @@ private slots:
     virtual void setVisible(bool visible);
 
 protected:
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+
     void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

@@ -338,7 +338,6 @@ void SystemContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         saveAsComponentAction->setDisabled(true);
     }
 
-    //qDebug() << "ContainerObject::contextMenuEvent";
     QAction *pAction = this->buildBaseContextMenu(menu, event);
     if (pAction == loadAction)
     {
@@ -2126,30 +2125,6 @@ void SystemContainer::loadParameterValuesFromFile(QString parameterFile)
     }
     emit checkMessages();
 }
-
-void SystemContainer::saveParameterValuesToFile(QString parameterFile)
-{
-    if (parameterFile.isEmpty()) {
-        parameterFile = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Parameter Value File"),
-                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
-                                                     tr("Hopsan Parameter Files (*.hpf)"));
-    }
-    if(parameterFile.isEmpty()) {
-        return;
-    }
-
-    auto saveFunction = [this]() -> QDomDocument {
-        QDomDocument domDocument;
-        QDomElement rootElement = domDocument.createElement(HPF_ROOTTAG);
-        domDocument.appendChild(rootElement);
-        this->saveToDomElement(rootElement, SaveContentsEnumT::ParametersOnly);
-        appendRootXMLProcessingInstruction(domDocument);
-        return domDocument;
-    };
-
-    saveXmlFile(parameterFile, gpMessageHandler, saveFunction);
-}
-
 
 //! @brief Function to set the time step of the current system
 void SystemContainer::setTimeStep(const double timeStep)

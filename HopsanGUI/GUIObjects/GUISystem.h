@@ -144,8 +144,7 @@ public:
     void loadFromDomElement(QDomElement domElement);
     void setModelFileInfo(QFile &rFile, const QString relModelPath="");
 
-    void loadParameterValuesFromFile(QString parameterFile = {});
-    void saveParameterValuesToFile(QString parameterFile = {});
+    void loadParameterValuesFromFile(QString parameterFile = {}) override;
 
     void exportToLabView();
     void exportToFMU1_32();

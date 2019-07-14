@@ -260,6 +260,7 @@ public:
 
     // System Parameter Functions
     size_t loadParameterFile(QString fileName);
+    size_t loadParameterFile(QString componentName, QString fileName);
     QStringList getSystemParameterNames();
     void getSystemParameters(QVector<CoreParameterData> &rParameterDataVec);
     void getSystemParameter(const QString name, CoreParameterData &rParameterData);

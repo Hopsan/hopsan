@@ -147,6 +147,7 @@ public:
     // Variables and Parameters
     const std::vector<VariameterDescription>* getVariameters();
     virtual std::list<HString> getModelAssets() const;
+    virtual size_t loadParameterValues(const HString &rFilePath);
 
     //! @todo clean this mess up /Peter
     void registerConditionalParameter(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rValue);
