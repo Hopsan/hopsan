@@ -1277,7 +1277,6 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     bool allowLimitedEditing = (!isLocallyLocked() && (getModelLockLevel() <= LimitedLock));
     rMenu.addSeparator();
 
-    QAction *pShowNameAction = rMenu.addAction(tr("Always show name"));
     QAction *pExportComponentParam = 0;//rMenu.addAction(tr("Export Component Parameters"));
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
     QAction *pLockedAction=0;
@@ -1288,6 +1287,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         pRotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
         pFlipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+Shift+R)"));
         pFlipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+Shift+E)"));
+        rMenu.addSeparator();
         pRotateRightAction->setEnabled(allowFullEditing);
         pRotateLeftAction->setEnabled(allowFullEditing);
         pFlipVerticalAction->setEnabled(allowFullEditing);
@@ -1311,6 +1311,8 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         }
         replaceMenu->setEnabled(allowFullEditing);
     }
+
+    QAction *pShowNameAction = rMenu.addAction(tr("Always show name"));
     pShowNameAction->setCheckable(true);
     pShowNameAction->setChecked(mNameTextAlwaysVisible);
     pShowNameAction->setEnabled(allowLimitedEditing);
