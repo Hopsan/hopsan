@@ -189,9 +189,9 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 {
                     //cout << "port: " << p << " of: " << ports.size() << endl;
                     Port *pPort = ports[p];
-                    if (!pPort->isLoggingEnabled())
+                    // Ignore ports that have logging disabled when saving full data
+                    if ((howMany == SaveResults::Full) && !pPort->isLoggingEnabled())
                     {
-                        // Ignore ports that have logging disabled
                         continue;
                     }
                     const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
