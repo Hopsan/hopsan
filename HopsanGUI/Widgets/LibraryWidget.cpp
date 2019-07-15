@@ -479,13 +479,13 @@ void LibraryWidget::update()
 
         mpLoadLibraryItemDual = new QTreeWidgetItem();
         mpLoadLibraryItemDual->setText(0, "Load external library");
-        mpLoadLibraryItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.svg"));
+        mpLoadLibraryItemDual->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
         mpLoadLibraryItemDual->setToolTip(0, "Load external library");
         mpDualTree->addTopLevelItem(mpLoadLibraryItemDual);
 
         mpAddModelicaFileItemDual = new QTreeWidgetItem();
         mpAddModelicaFileItemDual->setText(0, "Load Modelica file");
-        mpAddModelicaFileItemDual->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.svg"));
+        mpAddModelicaFileItemDual->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
         mpAddModelicaFileItemDual->setToolTip(0, "Load Modelica file");
         mpDualTree->addTopLevelItem(mpAddModelicaFileItemDual);
     }

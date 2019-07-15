@@ -298,15 +298,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.0875"
-     inkscape:cx="-4337.9332"
+     inkscape:cx="-5652.2189"
      inkscape:cy="1241.6604"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="986"
+     inkscape:window-width="1920"
+     inkscape:window-height="1021"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true">
@@ -329,32 +329,17 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-572.36218)"
-     style="opacity:0.21527776;display:inline">
-    <image
-       y="602.36218"
-       x="25.714294"
-       id="image2826"
-       height="450"
-       width="428.57141"
-       xlink:href="file:///C:/Users/Robert/Documents/Jobbsaker/Subversion/Hopsan/trunk/HOPSAN++/HopsanGUI/componentData/hydraulic/valves/inkscape_pasted_image_20100530_113922.png"
-       style="stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none" />
-  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Layer"
      style="display:inline;opacity:1">
     <rect
-       style="fill:url(#linearGradient3645);fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient5400);stroke-width:15;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:url(#linearGradient3645);fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient5400);stroke-width:15;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2831"
        width="418.34851"
        height="440.75998"
@@ -362,23 +347,25 @@
        y="34.240021"
        ry="25.53652" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient5410);stroke-width:16.17733192;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="display:inline;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient5410);stroke-width:16.17733192;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2831-9"
        width="264.21512"
        height="325.42755"
        x="235.39243"
        y="-402.71378"
        ry="25.548065"
-       transform="matrix(0,1,-1,0,0,0)" />
+       transform="rotate(90)" />
     <path
-       style="fill:none;stroke:url(#linearGradient5408);stroke-width:15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 65.966397,475 333.781493,0"
-       id="path5222" />
+       style="fill:none;stroke:url(#linearGradient5408);stroke-width:15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 65.966397,475 H 399.74789"
+       id="path5222"
+       inkscape:connector-curvature="0" />
     <path
-       style="fill:url(#linearGradient4811);fill-opacity:1;stroke:url(#linearGradient4813);stroke-width:15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-       d="m 127.621,36.050723 4.7e-4,116.421047 c 1e-4,24.83825 25,25 25,25 l 174.758,0 c 0,0 25,0.60422 25,-25 l 4.7e-4,-117.4312 -224.75894,1.010153 z"
+       style="display:inline;fill:url(#linearGradient4811);fill-opacity:1;stroke:url(#linearGradient4813);stroke-width:15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 127.621,36.050723 4.7e-4,116.421047 c 1e-4,24.83825 25,25 25,25 h 174.758 c 0,0 25,0.60422 25,-25 l 4.7e-4,-117.4312 z"
        id="path5390-1"
-       sodipodi:nodetypes="ccccccc" />
+       sodipodi:nodetypes="ccccccc"
+       inkscape:connector-curvature="0" />
     <rect
        style="fill:#2a2a2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect5392"

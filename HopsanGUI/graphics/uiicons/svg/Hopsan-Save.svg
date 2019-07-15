@@ -14,7 +14,7 @@
    height="480"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    enable-background="new"
    sodipodi:docname="Hopsan-Save.svg"
    inkscape:export-filename="C:\Users\Robert\Documents\Jobbsaker\Hopsan-Save.png"
@@ -279,26 +279,28 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="365.05302"
+     inkscape:cx="200.76731"
      inkscape:cy="338.93549"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="954"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1021"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true">
     <sodipodi:guide
        orientation="0,1"
        position="427.04199,420.22346"
-       id="guide4889" />
+       id="guide4889"
+       inkscape:locked="false" />
     <sodipodi:guide
        orientation="1,0"
        position="377.16571,2.7779195"
-       id="guide4891" />
+       id="guide4891"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -312,21 +314,6 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-572.36218)"
-     style="opacity:0.21527776;display:inline">
-    <image
-       y="602.36218"
-       x="25.714294"
-       id="image2826"
-       height="450"
-       width="428.57141"
-       xlink:href="file:///C:/Users/Robert/Documents/Jobbsaker/Subversion/Hopsan/trunk/HOPSAN++/HopsanGUI/componentData/hydraulic/valves/inkscape_pasted_image_20100530_113922.png"
-       style="stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none" />
-  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
