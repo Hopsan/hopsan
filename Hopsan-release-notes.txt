@@ -30,7 +30,45 @@
 ******************************
     Version History
 ******************************
+2.12.0 (2019-07-15)
 
+--- Enhancements ---
+
+- HopsanCore:
+  - Added petri net node type
+
+- HopsanGUI:
+  - Various text editor improvements
+  - Enable saving and loading parameter sets to file (.hpf) for the entire model, sub-systems as well as individual components.
+    Right click a component or subsytem to save or load parameter value sets.
+    The HCOM sapa and repa commands have also been updated.
+  
+- HopsanCLI:
+  - Made the --logonly command line argument affect only --resultsFullCSV output. 
+    --resultsFinalCSV will still include the final values from all ports.
+    The purpose of --logonly is to reduce data amount for long simulations or optimizations with multiple iterations, but 
+    the --resultsFinalCSV data is not very large and having access to final values for ports that were not logged may be useful.
+  
+- HopsanGenerator:
+  -Export model to black-box executable
+
+--- Bug Fixes ---
+
+- HopsanCore:
+  - Fixed loading of parameter value sets for entire systems (including subsystems)
+
+- HopsanGUI:
+  - Fixed wrong XML tag when saving optimization settings
+
+- HopsanGenerator:
+  - Format of generationDateAndTime in exported FMU is not valid
+  - Unable to recompile libraries when Hopsan installation path contains spaces
+  
+--- Component Libraries ---
+
+- Corrected cavitation check for Q-type pumps
+    
+------------------------------------------------------------------------------------------------------------------------
 2.11.5-flatpak (2019-04-30)
 
 --- Enhancements ---
