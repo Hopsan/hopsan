@@ -8,13 +8,13 @@ All available commands are listed below.
 \section simulationcommands Simulation Commands
 
 \subsection sim sim
- Simulates current model (or all open models)
-  Usage: sim
-  Usage: sim all
-  Usage: sim -loadstate file
-  Usage: sim -loadsv file
-   -loadsv will load start values from a saved simulation state file
-   -loadstate will do the same but also offset the simulation time
+Simulates current model (or all open models)<br>
+ Usage: sim<br>
+ Usage: sim all<br>
+ Usage: sim -loadstate file<br>
+ Usage: sim -loadsv file<br>
+  -loadsv will load start values from a saved simulation state file<br>
+  -loadstate will do the same but also offset the simulation time
 
 \subsection chss chss
 Change simulation settings<br>
@@ -41,6 +41,7 @@ Change plot variables in current plot<br>
   Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
   Color (c): red, darkblue, lightgreen...<br>
   Thickness (t): Thickness of line (integer value)<br>
+  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...<br>
 <br>
  Example:<br>
   \>\> chpv Pump.P1.p -r Pump.P1.q{2,blue,2}
@@ -55,6 +56,7 @@ Add plot variables in current plot<br>
   Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
   Color (c): red, darkblue, lightgreen...<br>
   Thickness (t): Thickness of line (integer value)<br>
+  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...<br>
 <br>
  Example:<br>
   \>\> adpv Pump.P1.p -r Pump.P1.q{2,blue,2}
@@ -67,6 +69,7 @@ Adds plot variables on left axis in current plot<br>
   Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
   Color (c): red, darkblue, lightgreen...<br>
   Thickness (t): Thickness of line (integer value)<br>
+  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...<br>
 <br>
  Example:<br>
   \>\> adpvl Pump.P1.p Pump.P1.q{2,blue,2}
@@ -79,9 +82,16 @@ Adds plot variables on right axis in current plot<br>
   Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
   Color (c): red, darkblue, lightgreen...<br>
   Thickness (t): Thickness of line (integer value)<br>
+  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...<br>
 <br>
  Example:<br>
   \>\> adpvl Pump.P1.p Pump.P1.q{2,blue,2}
+
+\subsection chds chds
+Change diagram size (and position)<br>
+ Usage: chds [width] [height]<br>
+ Usage: chds [x] [y] [width] [height]<br>
+
 
 \subsection chdl chdl
 Change (and lock) diagram limits in the current plot<br>
@@ -144,16 +154,18 @@ Changes plot variables on left axis in current plot<br>
   Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
   Color (c): red, darkblue, lightgreen...<br>
   Thickness (t): Thickness of line (integer value)<br>
+  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...<br>
 <br>
  Example:<br>
   \>\> chpvl Pump.P1.p Pump.P1.q{2,blue,2}
 
 \subsection chpvr chpvr
 Changes plot variables on right axis in current plot<br>
- Usage: chpvr [var1{s,c,t} var2{s,c,t} ... ] Line appearance (optional):<br>
+ Usage: chpvr [var1{s,c,t} var2{s,c,t,y} ... ] Line appearance (optional):<br>
   Style (s): 1 = solid, 2 = dotted, 3 = dashed, 4 = dash-dotted<br>
   Color (c): red, darkblue, lightgreen...<br>
   Thickness (t): Thickness of line (integer value)<br>
+  Symbol (y): 1 = cross, 2 = ellipse, 3=xcross, 4=triangle...<br>
 <br>
  Example:<br>
   \>\> chpvr Pump.P1.p Pump.P1.q{2,blue,2}
@@ -166,21 +178,30 @@ Changes xdata plot variable in current plot<br>
 \subsection chto chto
 Change time plot offset for the current or specified generation<br>
  Usage: chto [offset] [generation]<br>
- Time offset should be given in seconds<br>
+ Time offset should be given in the unit selected as the default time unit<br>
  The generation specifier is optional, you can use c,a,*,h,l specifiers
 
 \subsection dito dito
 Display time plot offset of specified generation<br>
- Usage: dito [generation]
+ Usage: dito [generation]<br>
+ Time offset will be shown in the chose default time unit<br>
+ The "ans" variable will be offset in seconds (the base unit)
 
 \subsection sapl sapl
 Save log variables to file. Filename suffix determins format<br>
  Usage: sapl [filepath] [-flags] [variables]<br>
-  Flags (optional):   -csv    Force CSV format   -plo    Force PLO format   -h5     Force H5 (HDF5) format
+  Flags (optional):<br>
+   -csv    Force CSV format<br>
+   -plo    Force PLO format<br>
+   -h5     Force H5 (HDF5) format
 
 \subsection repl repl
-Loads plot files from .CSV or .PLO<br>
- Usage: repl [filepath]
+Loads plot files from .csv or .plo<br>
+ Usage: repl [-flags] [filepath]<br>
+  Flags (optional):<br>
+   -csv    Force CSV (, or ;) format<br>
+   -ssp    Force CSV (space separated) format<br>
+   -plo    Force PLO format
 
 \subsection bode bode
 Creates a bode plot from specified curves<br>
@@ -210,7 +231,12 @@ Locks or unlocks x-axis in current plot window<br>
 
 \subsection dipa dipa
 Display parameter value<br>
- Usage: dipa [parameter]
+ Usage: dipa<br>
+ Usage: dipa [parameter]<br>
+ Usage: dipa [parameter] [condition]<br>
+<br>
+ Example: Display all parameters starting with "Mass" and a value greater than 10:<br>
+ \>\> dipa Mass* >10
 
 \subsection adpa adpa
 Add (system) parameter<br>
@@ -221,12 +247,18 @@ Change parameter value<br>
  Usage: chpa [parameter] [value]
 
 \subsection sapa sapa
-Saves parameter set to .XML<br>
- Usage: sapa [filepath]
+Save model or component parameter values to XML file (.hpf<br>
+ Usage: sapa [filepath]<br>
+ Usage: sapa [filepath] [componentname]<br>
+ Usage: sapa [filepath] [-c]<br>
+  Flag -c for current visible system
 
 \subsection repa repa
-Loads parameters from .XML<br>
- Usage: repa [filepath]
+Load model or component parameters values from XML file (.hpf)<br>
+ Usage: repa [filepath]<br>
+ Usage: repa [filepath] [componentname]<br>
+ Usage: repa [filepath] [-c] <br>
+  Flag -c for current visible system
 
 \section filecommands File Commands
 
@@ -237,6 +269,17 @@ Executes a script file<br>
 \subsection wrhi wrhi
 Writes history to file<br>
  Usage: wrhi [filepath]
+
+\subsection wrtf wrtf
+Writes text string to file<br>
+ Usage: wrtf [-flag] [filepath] ["string"]<br>
+  Flags (optional):<br>
+   -a Append at end of file<br>
+   -e Erase existing contents before writing<br>
+  Variables can be written by putting them in dollar signs.<br>
+  Example:<br>
+   \>\> wrtf -a output.txt "x=$x$"<br>
+
 
 \subsection pwd pwd
 Displays present working directory<br>
@@ -252,9 +295,14 @@ Changes present working directory<br>
  Usage: cd [directory]<br>
  Usage: cd -mwd        Switch to current model working directory
 
+\subsection mkdir mkdir
+Creates directory and all parent directories<br>
+ Path may be relative or absolute and must be contained withing quotes " " if it contains spaces<br>
+ Usage: mkdir [path]
+
 \subsection ls ls
 List files in current directory<br>
- Usage: ls [no arguments]
+ Usage: ls Usage: ls [wildcard]
 
 \subsection edit edit
 Open file in external editor<br>
@@ -295,6 +343,10 @@ Set quantity on specified variable(s)<br>
 Toggle invert plot of specified variable<br>
  Usage: ivpv [variable]
 
+\subsection sepl sepl
+Set plot label<br>
+ Usage: sepl [variable] [label]
+
 \subsection dlog dlog
 Disables logging in specified ports<br>
  Usage: dlog [ports]
@@ -308,6 +360,10 @@ Enables logging in specified ports<br>
 \subsection load load
 Loads a model file<br>
  Usage: load [filepath]
+
+\subsection revert revert
+Revert the current model<br>
+ Usage: revert
 
 \subsection loadr loadr
 Loads most recent model file<br>
@@ -343,6 +399,10 @@ Adds a new component to current model<br>
 Connect components in current model<br>
  Usage: coco [comp1] [port1] [comp2] [port2]
 
+\subsection unco unco
+List unconnected ports in current model<br>
+ Usage: unco [wildcard]
+
 \subsection crmo crmo
 Creates a new model<br>
  Usage: crmo [no arguments]
@@ -361,28 +421,25 @@ Usage: info [variable]
 Exits the program<br>
  Usage: exit [no arguments]
 
-\subsection wrtf wrtf
-Writes text string to file<br>
- Usage: wrtf [-flag] [filepath] ["string"]<br>
-  Flags (optional):<br>
-   -a Append at end of file<br>
-   -e Erase existing contents before writing<br>
-  Variables can be written by putting them in dollar signs.<br>
-  Example:<br>
-   \>\> wrtf -a output.txt "x=$x$"<br>
-
-
 \subsection print print
 Prints arguments on the screen<br>
  Usage: print [-flag] ["string"]<br>
+ Usage: print [-flag] [expression]<br>
   Flags (optional):<br>
    -i Info message<br>
    -w Warning message<br>
    -e Error message<br>
-  Variables can be printed by putting them in dollar signs.<br>
+  Variables can be included in strings by putting them in dollar signs.<br>
   Example:<br>
    \>\> print -w "x=$x$"<br>
    Warning: x=12
+
+\subsection eval eval
+Evaluate string expression<br>
+ Usage: eval ["expression"]<br>
+  Variable evaluation can be included by putting them within dollar signs<br>
+  Example:<br>
+   \>\> eval "chpv Gain$i$.out.y"
 
 \subsection set set
 Sets Hopsan preferences<br>
@@ -416,7 +473,7 @@ Shows current Hopsan preferences<br>
 
 \subsection close close
 Closes current model<br>
- Usage: close [no arguments]
+ Usage: close Usage: close all
 
 \subsection fmu fmu
 Exports current model to Functional Mockup Unit (FMU)<br>
@@ -456,6 +513,10 @@ Usage: abs(vector)
 Calculate average value of vector<br>
 Usage: aver(vector)
 
+\subsection ceil ceil()
+Rounds the value of each vector element to the smallest integer larger than the value<br>
+Usage: ceil(vector)
+
 \subsection ddt ddt()
 Differentiates vector with respect to time (or to custom vector)<br>
 Usage: ddt(vector)<br>
@@ -484,6 +545,10 @@ Usage: fft(vector)<br>
 Usage: fft(vector, power[true/false])<br>
 Usage: fft(vector, timevector)<br>
 Usage: fft(vector, timevector, power[true/false])
+
+\subsection floor floor()
+Rounds the value of each vector element to the largest integer smaller than the value<br>
+Usage: floor(vector)
 
 \subsection gt gt()
 Index-wise greater than check between vectors and/or scalars (equivalent to ">" operator)<br>
@@ -529,6 +594,10 @@ Usage:max(vector)
 Returns the element-wise maximum values of x and y vectors<br>
 Usage: maxof(x,y)
 
+\subsection maxpar maxpar()
+Returns the maximum value of specified parameter for specified component type<br>
+Usage: maxpar(type,par)
+
 \subsection min min()
 Calculate minimum value of vector<br>
 Usage: min(vector)
@@ -536,6 +605,10 @@ Usage: min(vector)
 \subsection minof minof()
 Returns the element-wise minimum values of x and y vectors<br>
 Usage: minof(x,y)
+
+\subsection minpar minpar()
+Returns the minimum value of specified parameter for specified component type<br>
+Usage: minpar(type,par)
 
 \subsection obj obj()
 Returns optimization objective function value with specified index<br>
@@ -561,6 +634,10 @@ Usage: peek(vector, idx)
 Generates a random value between 0 and 1<br>
 Usage: rand()
 
+\subsection round round()
+Rounds the value of each vector element to closest integer value<br>
+Usage: round(vector)
+
 \subsection size size()
 Calculate the size of a vector<br>
 Usage: size(vector)
@@ -572,6 +649,10 @@ Converts variable to time domain.Usage: y = td(x)<br>
 \subsection time time()
 Returns last simulation time<br>
 Usage: time()
+
+\subsection vector vector()
+Create a vector with specified values<br>
+Usage: vector(1,2,3,4,5,6,...)
 
 \subsection x x()
 Returns the X-vector of the specified variable.<br>
