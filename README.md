@@ -48,17 +48,20 @@ The GUI applications are released under the copyleft **GNU General Public Licens
 
 ## Download and Installation
 
-### Windows and Deb Packages
+### Windows
 
 You can find official releases and development snapshots at:  
 https://flumes.iei.liu.se/hopsan/files/releases
 
-#### Windows
 The Windows version comes packaged as either an installer or as portable zip that you can use if you do not have permission to install software on your computer. You can also choose if you want the compiler included for importing and exporting component libraries and models.
 
 If you choose the zip version, no start menu entry for Hopsan will be added, instead go into the bin directory and double-click hopsangui.exe to start.
 
-#### Deb Packages
+### Ubuntu and Debian Packages
+
+You can find official releases and development snapshots at:  
+https://flumes.iei.liu.se/hopsan/files/releases
+
 Deb packages are built for the current Ubuntu and Debian releases.
 You should be able to install them by opening them in you package manager, but if that does not work, try to install it manually using.
 ```
@@ -68,10 +71,37 @@ In this case you will also need to install dependencies manually, dpkg will tell
 Use "apt-get install" to install them.
 
 
-### Flatpak
-https://www.flathub.org
+### Snapcraft
+If your GNU/Linux distribution supports Snap packages you can install Hopsan from the "Snap Store"  
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/hopsan)  
+https://snapcraft.io/hopsan  
 
-If your GNU/Linux distribution supports Flatpak you can install Hopsan from flathub
+or from the terminal:
+```
+snap install hopsan
+```
+Application menu entries for HopsanGUI and HoLC will be added but to start the command line applications use a command like:
+```
+hopsan.addresserver
+hopsan.cli
+hopsan.gui
+hopsan.holc
+hopsan.remoteclient
+hopsan.server
+hopsan.servermonitor
+```
+**Known issues:**  
+
+* Hopsan currently looks like old software due to not inheriting the desktop theme properly, you can go into Options and enable "Native style sheet" to make it look slightly better.
+* The Hopsan snap runs in confinement. If the log cache runs out of storage space, you can change temp directory under Options->Plotting, but due to the confinement you do not have many locations to choose from. This may cause problems if you are low on disk space.
+
+
+### Flatpak
+If your GNU/Linux distribution supports Flatpak you can install Hopsan from Flathub  
+<a href='https://flathub.org/apps/details/com.github.hopsan.Hopsan'><img width='186' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.svg'/></a>  
+https://flathub.org/apps/details/com.github.hopsan.Hopsan  
+
+or from a terminal:
 ```
 flatpak install flathub com.github.hopsan.Hopsan
 ```
@@ -97,28 +127,6 @@ flatpak run --command=hopsancli --devel com.github.hopsan.Hopsan [arguments]
 
 * The Hopsan flatpak runs in confinement and the default log cache storage is in /tmp/Hopsan (inside the container). If the log cache runs out of storage space, you can change temp directory under Options->Plotting, but due to the confinement you do not have many locations to choose from. This may cause problems if you are low on disk space.
 
-
-### Snapcraft
-https://snapcraft.io
-
-If your GNU/Linux distribution supports Snap packages you can install Hopsan from the "Snapstore"
-```
-snap install hopsan
-```
-Application menu entries for HopsanGUI and HoLC will be added but to start the command line applications use a command like:
-```
-hopsan.addresserver
-hopsan.cli
-hopsan.gui
-hopsan.holc
-hopsan.remoteclient
-hopsan.server
-hopsan.servermonitor
-```
-**Known issues:**  
-
-* Hopsan currently looks like old software due to not inheriting the desktop theme properly, you can go into Options and enable "Native style sheet" to make it look slightly better.
-* The Hopsan snap runs in confinement. If the log cache runs out of storage space, you can change temp directory under Options->Plotting, but due to the confinement you do not have many locations to choose from. This may cause problems if you are low on disk space.
 
 
 ## Documentation
