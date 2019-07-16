@@ -15,7 +15,7 @@ name=hopsan
 devversion=2.12.0
 
 # Pbuilder dists and archs
-debianDistArchArray=( buster:amd64:qt5py3sysdeps buster:i386:qt5py3sysdeps stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
+debianDistArchArray=( buster:amd64:buster buster:i386:buster stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
 ubuntuDistArchArray=( disco:amd64:qt5py3sysdeps disco:i386:qt5py3sysdeps cosmic:amd64:qt5py3sysdeps cosmic:i386:qt5py3sysdeps bionic:amd64:qt5py3 bionic:i386:qt5py3 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
 
 # Pbuilder mirrors

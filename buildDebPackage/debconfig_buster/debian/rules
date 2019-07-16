@@ -1,0 +1,69 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+SHELL := /bin/bash
+export QT_SELECT=5
+
+build:
+	dh_testdir
+
+	# First build dependencies
+	cd Dependencies; ./setupFMILibrary.sh
+	cd Dependencies; ./setupKatex.sh
+	cd Dependencies; ./setupPythonQt.sh release 3 3.2
+
+	# Now build Hopsan using qmake
+	mkdir -p hopsanShadowBuild
+	source Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
+	make -j4 -C hopsanShadowBuild
+
+clean:
+	dh_testdir
+	rm -rf hopsanShadowBuild
+	dh_clean
+
+install:
+	dh_testdir
+	dh_prep
+	dh_installdirs
+	buildDebPackage/fixPythonShebang.sh ./ 3
+	buildDebPackage/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
+
+
+# Arch and indep Build targets
+build-arch:	build
+build-indep:
+# We have nothing special to do by default.
+
+# Build architecture-independent files here.
+binary-indep:
+# We have nothing special to do by default.
+
+# Build architecture-dependent files here.
+binary-arch:	build install
+	dh_testdir
+#        dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_install buildDebPackage/HopsanGUI.desktop usr/share/applications/
+	dh_install HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
+	dh_install buildDebPackage/HoLC.desktop usr/share/applications/
+	dh_install HoLC/graphics/uiicons/holc-icon192x192.png usr/share/icons/hicolor/192x192/apps/
+#        dh_installexamples
+#        dh_installman
+#        dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+#	dh_shlibdeps --exclude=PythonQt --exclude=qwt
+	dh_shlibdeps -l/opt/hopsan/bin
+	dh_gencontrol
+#        dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build build-arch build-indep clean binary-indep binary-arch binary install
