@@ -50,7 +50,7 @@ fi
 
 
 # Prepare snapcraft file
-cp snap/snapcraft.yaml.in snap/snapcraft.yaml
+cp snap/local/snapcraft.yaml.in snap/snapcraft.yaml
 sed "s|HOPSAN_FULL_RELEASE_VERSION|${fullversionname}|" -i snap/snapcraft.yaml
 sed "s|HOPSAN_BASE_VERSION|${baseversion}|" -i snap/snapcraft.yaml
 sed "s|HOPSAN_RELEASE_REVISION|${releaserevision}|" -i snap/snapcraft.yaml
