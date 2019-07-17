@@ -15,7 +15,7 @@ boolAskYNQuestion()
     fi
   elif [ "$ans" = "y" ]; then
     boolYNQuestionAnswer=true
-  else 
+  else
     boolYNQuestionAnswer=false
   fi
 }
@@ -63,15 +63,8 @@ else
 fi
 
 echo Done preparing snapcraft.yaml
-echo
-echo Copying icons
-# Consider stage/prime
-cp HopsanGUI/graphics/uiicons/hopsan.png snap/gui
-cp HopsanGUI/graphics/uiicons/hopsan128x128.png snap/gui
-cp HoLC/graphics/uiicons/holc-icon192x192.png snap/gui
-echo
 
-echo Now manually build the snap \(snapcraft cleanbuild\) and then upload the snap
+echo Now build the snap,  \(snapcraft snap\) or \(snapcraft snap --use-lxd\) and then upload the snap
 echo If you are building in a container, make sure that "git status --ignored" was clean before you ran this script!
 echo Then build with \(snapcraft snap\)
 echo
