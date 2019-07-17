@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=HopsanGUI
-Comment=The Hopsan simulation program
-Icon=${SNAP}/meta/gui/hopsan128x128.png
-Exec=hopsan.gui
-Path=${SNAP}/bin
-Categories=Science;Engineering;Education;

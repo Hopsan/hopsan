@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=HopsanGUI
+Comment=Hopsan GUI application
+Icon=hopsan128x128
+Exec=/opt/hopsan/bin/hopsangui
+Path=/opt/hopsan/bin
+Categories=Science;Engineering;Education;
