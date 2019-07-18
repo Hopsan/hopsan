@@ -72,9 +72,10 @@ Use "apt-get install" to install them.
 
 
 ### Snapcraft
-If your GNU/Linux distribution supports Snap packages you can install Hopsan from the "Snap Store"  
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/hopsan)  
 https://snapcraft.io/hopsan  
+If your GNU/Linux distribution supports Snap packages you can install Hopsan from the "Snap Store"  
+[![Hopsan](https://snapcraft.io/hopsan/badge.svg)](https://snapcraft.io/hopsan)  
+
 
 or from the terminal:
 ```
@@ -97,9 +98,9 @@ hopsan.servermonitor
 
 
 ### Flatpak
-If your GNU/Linux distribution supports Flatpak you can install Hopsan from Flathub  
-<a href='https://flathub.org/apps/details/com.github.hopsan.Hopsan'><img width='186' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.svg'/></a>  
 https://flathub.org/apps/details/com.github.hopsan.Hopsan  
+If your GNU/Linux distribution supports Flatpak you can install Hopsan from Flathub  
+<a href='https://flathub.org/apps/details/com.github.hopsan.Hopsan'><img width='186' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.svg'/></a>
 
 or from a terminal:
 ```
