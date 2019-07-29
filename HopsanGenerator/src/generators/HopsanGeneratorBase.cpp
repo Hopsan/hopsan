@@ -68,13 +68,33 @@ HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const
     if(!mCompilerSelection.path.isEmpty())
     {
         mCompilerSelection.path = QFileInfo(mCompilerSelection.path).absoluteFilePath();
-#ifndef _WIN32
+#if not defined(_WIN32)
         // Add the last / here so that the compiler name can be directly appended to mCompilerPath.
         // If compilerPath is empty (compiler in PATH) then we do not want to check if a / should be added or not
         // when using this variable
         mCompilerSelection.path.append("/");
 #endif
     }
+
+#if not defined(_WIN32)
+    // Special hack for SNAP package version,
+    // if we are inside a SNAP then overwrite compiler selection with the bundled compiler
+    QString snapGCCPath="INVALID_PATH";
+#if QT_VERSION < 0x051000
+    QByteArray snapEnv = qgetenv("SNAP");
+    if (!snapEnv.isNull()) {
+        snapGCCPath = QString(snapEnv)+"/usr/bin/";
+    }
+#else
+    if (qEnvironmentVariableIsSet("SNAP")) {
+        snapGCCPath = qEnvironmentVariable("SNAP")+"/usr/bin/";
+    }
+#endif
+    if (QFile::exists(snapGCCPath+"g++")) {
+        mCompilerSelection.path = snapGCCPath;
+    }
+#endif
+
 
     if(!tempPath.isEmpty())
     {
