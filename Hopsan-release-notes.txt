@@ -30,6 +30,20 @@
 ******************************
     Version History
 ******************************
+2.12.1-snap (2019-07-29)
+
+This is a special release for the snap version of Hopsan.
+
+--- Enhancements ---
+
+- The snap now uses the base snap core18 (Ubuntu 18.04) and includes improvements for desktop theme support.
+  The hopsan.gui and hopsan.holc applications should no longer look like "old software".
+  Unfortunately dark themes are not yet working well, but this is a problem for all variants of Hopsan.
+
+- Hopsan (snap version) will overwrite the compiler path so that the internal snap bundled version of the compiler
+  is used automatically.
+
+------------------------------------------------------------------------------------------------------------------------
 2.12.0 (2019-07-15)
 
 --- Enhancements ---
@@ -42,13 +56,13 @@
   - Enable saving and loading parameter sets to file (.hpf) for the entire model, sub-systems as well as individual components.
     Right click a component or subsytem to save or load parameter value sets.
     The HCOM sapa and repa commands have also been updated.
-  
+
 - HopsanCLI:
-  - Made the --logonly command line argument affect only --resultsFullCSV output. 
+  - Made the --logonly command line argument affect only --resultsFullCSV output.
     --resultsFinalCSV will still include the final values from all ports.
-    The purpose of --logonly is to reduce data amount for long simulations or optimizations with multiple iterations, but 
+    The purpose of --logonly is to reduce data amount for long simulations or optimizations with multiple iterations, but
     the --resultsFinalCSV data is not very large and having access to final values for ports that were not logged may be useful.
-  
+
 - HopsanGenerator:
   -Export model to black-box executable
 
@@ -63,11 +77,11 @@
 - HopsanGenerator:
   - Format of generationDateAndTime in exported FMU is not valid
   - Unable to recompile libraries when Hopsan installation path contains spaces
-  
+
 --- Component Libraries ---
 
 - Corrected cavitation check for Q-type pumps
-    
+
 ------------------------------------------------------------------------------------------------------------------------
 2.11.5-flatpak (2019-04-30)
 
