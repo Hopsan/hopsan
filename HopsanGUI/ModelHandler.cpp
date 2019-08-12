@@ -375,8 +375,8 @@ TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
     //Abort if file is already open
     for(const auto& editor : mTextEditors) {
         if(fileInfo == editor->getFileInfo()) {
-            gpMessageHandler->addErrorMessage("File is already open: "+fileInfo.absoluteFilePath());
-            return nullptr;
+            gpCentralTabWidget->setCurrentWidget(editor);
+            return editor;
         }
     }
 
