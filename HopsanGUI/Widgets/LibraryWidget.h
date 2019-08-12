@@ -68,6 +68,7 @@ public slots:
 
 private slots:
     void handleItemClick(QTreeWidgetItem* item, int column);
+    void handleItemDoubleClick(QTreeWidgetItem* item, int column);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);

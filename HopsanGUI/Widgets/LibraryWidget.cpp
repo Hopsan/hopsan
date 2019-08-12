@@ -99,6 +99,7 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     connect(gpLibraryHandler, SIGNAL(contentsChanged()), this, SLOT(update()));
     connect(mpTree,     SIGNAL(itemPressed(QTreeWidgetItem*,int)),  this,                   SLOT(handleItemClick(QTreeWidgetItem*,int)));
     connect(mpFilterEdit,   SIGNAL(textChanged(QString)), this, SLOT(update()));
+    connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(handleItemDoubleClick(QTreeWidgetItem*,int)));
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpTree,                  0,0,3,4);
@@ -750,6 +751,25 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 #endif
                 gpLibraryHandler->removeComponentFromLibrary(typeName, pLibrary, deleteOrKeepFiles);
             }
+        }
+    }
+}
+
+void LibraryWidget::handleItemDoubleClick(QTreeWidgetItem *item, int column)
+{
+    if(item != nullptr &&
+        mItemToTypeNameMap.contains(item) &&
+        gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))
+    {
+        //Edit component source file
+        auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(item).value());
+        if(appearance != nullptr) {
+            QString basePath = appearance->getBasePath();
+            if(!basePath.isEmpty()) {
+                basePath.append("/");
+            }
+            QString sourceFile = appearance->getSourceCodeFile();
+            gpModelHandler->loadTextFile(basePath+sourceFile);
         }
     }
 }
