@@ -62,6 +62,8 @@ TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     mpEditor->setFont(font);
+    QFontMetrics metrics(font);
+    mpEditor->setTabStopWidth(4*metrics.width(' '));
 
     mpHcomHighlighter = new HcomHighlighter(nullptr);
     mpXmlHighlighter = new XmlHighlighter(nullptr);
