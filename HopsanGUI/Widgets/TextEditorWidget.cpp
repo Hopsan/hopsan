@@ -100,6 +100,11 @@ TextEditorWidget::~TextEditorWidget()
     mpPythonXmlHighlighter->deleteLater();
 }
 
+QString TextEditorWidget::getSelectedText()
+{
+    return mpEditor->textCursor().selectedText();
+}
+
 void TextEditorWidget::find(QString text, QTextDocument::FindFlags flags)
 {
     mpEditor->find(text,flags);

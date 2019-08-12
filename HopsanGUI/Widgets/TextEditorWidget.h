@@ -107,6 +107,7 @@ public:
 
     QFileInfo getFileInfo() const { return mFileInfo; }
     bool isSaved() const { return mIsSaved; }
+    QString getSelectedText();
 
 public slots:
     void  find(QString text, QTextDocument::FindFlags flags);
