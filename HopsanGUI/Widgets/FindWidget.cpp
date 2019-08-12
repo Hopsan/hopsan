@@ -32,6 +32,8 @@
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/TextEditorWidget.h"
+#include "ModelHandler.h"
+#include "global.h"
 
 #include <QLineEdit>
 #include <QLabel>
@@ -310,6 +312,15 @@ void FindWidget::findAny(const QString &rName)
 
 void FindWidget::setVisible(bool visible)
 {
+    //If text is selected in current editor, update it in find widget
+    if(mpTextEditor) {
+        QString selection = mpTextEditor->getSelectedText();
+        if(!selection.contains("\u2029") && mpFindLineEdit->text() != selection && !selection.isEmpty()) {
+            mpFindLineEdit->setText(selection);
+            visible = true;
+        }
+    }
+
     QWidget::setVisible(visible);
     if(visible)
     {
