@@ -419,11 +419,15 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     mpGeneralTable = new QTableWidget(this);
     mpGeneralTable->setColumnCount(2);
     mpGeneralTable->setRowCount(3);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpGeneralTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+#endif
     mpGeneralTable->verticalHeader()->setVisible(false);
     mpGeneralTable->horizontalHeader()->setVisible(false);
     mpGeneralTable->setFrameStyle(QFrame::NoFrame);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpGeneralTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+#endif
     pLayout->addWidget(mpGeneralTable);
     addLabelItem(mpGeneralTable,0,0,"Type name:");
     addLabelItem(mpGeneralTable,1,0,"Display name:");
@@ -450,17 +454,21 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     pConstantsHeadingLayout->setStretch(1,1);
 
     mpConstantsTable = new QTableWidget(this);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpConstantsTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+#endif
     mpConstantsTable->verticalHeader()->setVisible(false);
     mpConstantsTable->horizontalHeader()->setVisible(false);
     mpConstantsTable->setFrameStyle(QFrame::NoFrame);
     pLayout->addWidget(mpConstantsTable);
     mpConstantsTable->setColumnCount(5);
     mpConstantsTable->setRowCount(1);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpConstantsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     mpConstantsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
     mpConstantsTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     mpConstantsTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+#endif
     mpConstantsTable->verticalScrollBar()->setDisabled(true);
     addLabelItem(mpConstantsTable,0,0,"");
     addLabelItem(mpConstantsTable,0,1,"Name:");
@@ -487,17 +495,21 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     pInputVariablesHeadingLayout->setStretch(1,1);
 
     mpInputVariablesTable = new QTableWidget(this);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpInputVariablesTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+#endif
     mpInputVariablesTable->verticalHeader()->setVisible(false);
     mpInputVariablesTable->horizontalHeader()->setVisible(false);
     mpInputVariablesTable->setFrameStyle(QFrame::NoFrame);
     pLayout->addWidget(mpInputVariablesTable);
     mpInputVariablesTable->setColumnCount(5);
     mpInputVariablesTable->setRowCount(1);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
     mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     mpInputVariablesTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+#endif
     mpInputVariablesTable->verticalScrollBar()->setDisabled(true);
     addLabelItem(mpInputVariablesTable,0,0,"");
     addLabelItem(mpInputVariablesTable,0,1,"Name:");
@@ -524,7 +536,9 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     pOutputVariablesHeadingLayout->setStretch(1,1);
 
     mpOutputVariablesTable = new QTableWidget(this);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpOutputVariablesTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+#endif
     mpOutputVariablesTable->verticalHeader()->setVisible(false);
     mpOutputVariablesTable->horizontalHeader()->setVisible(false);
     mpOutputVariablesTable->horizontalHeader()->setStretchLastSection(false);
@@ -532,10 +546,12 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     pLayout->addWidget(mpOutputVariablesTable);
     mpOutputVariablesTable->setColumnCount(5);
     mpOutputVariablesTable->setRowCount(1);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
     mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     mpOutputVariablesTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+#endif
     mpOutputVariablesTable->verticalScrollBar()->setDisabled(true);
     addLabelItem(mpOutputVariablesTable,0,0,"");
     addLabelItem(mpOutputVariablesTable,0,1,"Name:");
@@ -562,7 +578,9 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     pPortsHeadingLayout->setStretch(1,1);
 
     mpPortsTable = new QTableWidget(this);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpPortsTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+#endif
     mpPortsTable->verticalHeader()->setVisible(false);
     mpPortsTable->horizontalHeader()->setVisible(false);
     mpPortsTable->horizontalHeader()->setStretchLastSection(false);
@@ -570,9 +588,11 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     pLayout->addWidget(mpPortsTable);
     mpPortsTable->setColumnCount(5);
     mpPortsTable->setRowCount(1);
+#if QT_VERSION >= 0x050000  //not available in Qt4
     mpPortsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     mpPortsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
     mpPortsTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+#endif
     mpPortsTable->verticalScrollBar()->setDisabled(true);
     addLabelItem(mpPortsTable,0,0,"");
     addLabelItem(mpPortsTable,0,1,"Name:");
@@ -803,7 +823,7 @@ void NewComponentDialog::removeConstantRow()
     QToolButton *pSender = qobject_cast<QToolButton*>(sender());
     int i = mRemoveConstantToolButtons.indexOf(pSender);
     mpConstantsTable->removeRow(i+1);
-    mRemoveConstantToolButtons.removeAt(i);
+    mRemoveConstantToolButtons.remove(i);
     adjustTableSize(mpConstantsTable);
     mpConstantsTable->setVisible(mpConstantsTable->rowCount() > 1);
 }
@@ -813,7 +833,7 @@ void NewComponentDialog::removeInputVariableRow()
     QToolButton *pSender = qobject_cast<QToolButton*>(sender());
     int i = mRemoveInputVariableToolButtons.indexOf(pSender);
     mpInputVariablesTable->removeRow(i+1);
-    mRemoveInputVariableToolButtons.removeAt(i);
+    mRemoveInputVariableToolButtons.remove(i);
     adjustTableSize(mpInputVariablesTable);
     mpInputVariablesTable->setVisible(mpInputVariablesTable->rowCount() > 1);
 }
@@ -823,7 +843,7 @@ void NewComponentDialog::removeOutputVariableRow()
     QToolButton *pSender = qobject_cast<QToolButton*>(sender());
     int i = mRemoveOutputVariableToolButtons.indexOf(pSender);
     mpOutputVariablesTable->removeRow(i+1);
-    mRemoveOutputVariableToolButtons.removeAt(i);
+    mRemoveOutputVariableToolButtons.remove(i);
     adjustTableSize(mpOutputVariablesTable);
     mpOutputVariablesTable->setVisible(mpOutputVariablesTable->rowCount() > 1);
 }
@@ -835,7 +855,7 @@ void NewComponentDialog::removePortRow()
     mpPortsTable->cellWidget(i+1,3)->deleteLater();   //Delete combo box
     mpPortsTable->cellWidget(i+1,4)->deleteLater();   //Delete check box
     mpPortsTable->removeRow(i+1);
-    mRemovePortToolButtons.removeAt(i);
+    mRemovePortToolButtons.remove(i);
     adjustTableSize(mpPortsTable);
     mpPortsTable->setVisible(mpPortsTable->rowCount() > 1);
 

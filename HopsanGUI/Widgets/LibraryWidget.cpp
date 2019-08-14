@@ -731,14 +731,18 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             pMessageBox->addButton(QMessageBox::Ok);
             pMessageBox->addButton(QMessageBox::Cancel);
             pMessageBox->setDefaultButton(QMessageBox::Cancel);
+#if QT_VERSION >= 0x050000  //Message boxes cannot have a check box in Qt4
             QCheckBox *pRemoveFilesCheckBox = new QCheckBox("Delete actual files");
             pRemoveFilesCheckBox->setChecked(false);
             pMessageBox->setCheckBox(pRemoveFilesCheckBox);
+#endif
             if(QMessageBox::Ok == pMessageBox->exec()) {
                 DeleteOrKeepFilesEnumT deleteOrKeepFiles = KeepFiles;
+#if QT_VERSION >= 0x050000
                 if(pRemoveFilesCheckBox->isChecked()) {
                     deleteOrKeepFiles = DeleteFiles;
                 }
+#endif
                 gpLibraryHandler->removeComponentFromLibrary(typeName, pLibrary, deleteOrKeepFiles);
             }
         }
