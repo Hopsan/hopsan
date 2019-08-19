@@ -113,7 +113,7 @@ public:
     SharedComponentLibraryPtrT pLibrary;        //!< What library the object belongs to
     HiddenVisibleEnumT visibility=Hidden;       //!< Visible or hidden in library widget
     QStringList displayPath;                    //!< The display path in the library widget
-    EnabledDisabledEnumT disabled=Enabled;      //!< Is component enabled or disabled?
+    EnabledDisabledEnumT state=Enabled;      //!< Is component enabled or disabled?
 };
 
 class NewComponentDialog : public QDialog

@@ -1405,7 +1405,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
 
                     ComponentLibraryEntry newEntry;
                     if(!existsInCore) {
-                        newEntry.disabled = Disabled;
+                        newEntry.state = Disabled;
                     }
                     newEntry.pLibrary = pLibraryBeingLoaded;
 

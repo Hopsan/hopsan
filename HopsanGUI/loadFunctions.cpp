@@ -287,7 +287,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
     bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
 
     const SharedModelObjectAppearanceT pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(type, subtype);
-    if (pAppearanceData && gpLibraryHandler->getEntry(type).disabled != Disabled)
+    if (pAppearanceData && gpLibraryHandler->getEntry(type).state != Disabled)
     {
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
 
