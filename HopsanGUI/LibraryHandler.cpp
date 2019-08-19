@@ -692,6 +692,11 @@ void NewComponentDialog::validate()
         mpGeneralTable->item(0,1)->setBackground(errorBrush);
         error=true;
     }
+    if(!isNameValid(spec.typeName)) {
+        gpMessageHandler->addErrorMessage("Type name can only contain letters, numbers and underscores.");
+        mpGeneralTable->item(0,1)->setBackground(errorBrush);
+        error=true;
+    }
 
     //Make sure all variable names are unique
     QStringList allNames = spec.constantNames+spec.inputNames+spec.outputNames+spec.portNames;
