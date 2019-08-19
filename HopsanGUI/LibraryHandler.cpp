@@ -1229,7 +1229,6 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                                 {
                                     // Still no success, recompilation failed. Ignore and go on.
                                     gpMessageHandler->addErrorMessage("Failed to load recompiled library!");
-                                    //mLoadedLibraries.pop_back(); //Discard library
                                 }
                                 else
                                 {
