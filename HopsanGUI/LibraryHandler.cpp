@@ -1401,74 +1401,72 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         }
                     }
 
-                    // Success, add component to library
-                    if (true) {
-                        auto pLibraryBeingLoaded = mLoadedLibraries.last();
+                    auto pLibraryBeingLoaded = mLoadedLibraries.last();
 
-                        ComponentLibraryEntry newEntry;
-                        if(!existsInCore) {
-                            newEntry.disabled = Disabled;
-                        }
-                        newEntry.pLibrary = pLibraryBeingLoaded;
+                    ComponentLibraryEntry newEntry;
+                    if(!existsInCore) {
+                        newEntry.disabled = Disabled;
+                    }
+                    newEntry.pLibrary = pLibraryBeingLoaded;
 
-                        // Store appearance data
-                        newEntry.pAppearance = pAppearanceData;
-                        QString subTypeName = pAppearanceData->getSubTypeName();
-                        QString fullTypeName = makeFullTypeString(newEntry.pAppearance->getTypeName(), subTypeName);
+                    // Store appearance data
+                    newEntry.pAppearance = pAppearanceData;
+                    QString subTypeName = pAppearanceData->getSubTypeName();
+                    QString fullTypeName = makeFullTypeString(newEntry.pAppearance->getTypeName(), subTypeName);
 
-                        if (!subTypeName.isEmpty()) {
-                            // Find what library this component depend on (main component type) and make sure that library knows bout this dependency
-                            QString libPath;
-                            coreAccess.getLibPathForComponent(pAppearanceData->getTypeName(), libPath);
-                            if( !libPath.isEmpty() ) {
-                                for(SharedComponentLibraryPtrT pLib : mLoadedLibraries) {
-                                    if( pLib->libFilePath == libPath )
-                                    {
-                                        pLib->guiOnlyComponents.append(fullTypeName);
-                                        break;
-                                    }
+                    if (!subTypeName.isEmpty()) {
+                        // Find what library this component depend on (main component type) and make sure that library knows bout this dependency
+                        QString libPath;
+                        coreAccess.getLibPathForComponent(pAppearanceData->getTypeName(), libPath);
+                        if( !libPath.isEmpty() ) {
+                            for(SharedComponentLibraryPtrT pLib : mLoadedLibraries) {
+                                if( pLib->libFilePath == libPath )
+                                {
+                                    pLib->guiOnlyComponents.append(fullTypeName);
+                                    break;
                                 }
                             }
-
-                            // Make this library remember this entry as a gui only component
-                            pLibraryBeingLoaded->guiOnlyComponents.append(fullTypeName);
                         }
 
-                        // Calculate path to show in library
-                        QString relDir = QDir(libraryMainFileInfo.canonicalPath()).relativeFilePath(cafFileInfo.canonicalFilePath());
-                        newEntry.displayPath = relDir.split("/");
-                        newEntry.displayPath.removeLast();
-                        QString libName = newEntry.pLibrary->name;
-                        if (libName.isEmpty()) {
-                            libName = libraryRootDir.dirName();
-                        }
-                        if(type == ExternalLib) {
-                            newEntry.displayPath.prepend(libName);
-                            newEntry.displayPath.prepend(componentlibrary::roots::externalLibraries);
-                        }
-                        else if(type == FmuLib) {
-                            newEntry.displayPath.prepend(libName);
-                            newEntry.displayPath.prepend(componentlibrary::roots::fmus);
-                        }
+                        // Make this library remember this entry as a gui only component
+                        pLibraryBeingLoaded->guiOnlyComponents.append(fullTypeName);
+                    }
 
-                        // Store visibility
-                        newEntry.visibility = visibility;
+                    // Calculate path to show in library
+                    QString relDir = QDir(libraryMainFileInfo.canonicalPath()).relativeFilePath(cafFileInfo.canonicalFilePath());
+                    newEntry.displayPath = relDir.split("/");
+                    newEntry.displayPath.removeLast();
+                    QString libName = newEntry.pLibrary->name;
+                    if (libName.isEmpty()) {
+                        libName = libraryRootDir.dirName();
+                    }
+                    if(type == ExternalLib) {
+                        newEntry.displayPath.prepend(libName);
+                        newEntry.displayPath.prepend(componentlibrary::roots::externalLibraries);
+                    }
+                    else if(type == FmuLib) {
+                        newEntry.displayPath.prepend(libName);
+                        newEntry.displayPath.prepend(componentlibrary::roots::fmus);
+                    }
 
-                        // Store new entry, but only if it does not already exist
-                        if(!mLibraryEntries.contains(fullTypeName)) {
-                            mLibraryEntries.insert(fullTypeName, newEntry);
-                            if(gpSplash) {
-                                gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
-                            }
-                        }
-                        else {
-                            const auto& existingEntery = mLibraryEntries[fullTypeName];
-                            gpMessageHandler->addWarningMessage(QString("A component with type name '%1' was already registered by library '%2'. Ignoring version in library '%3'.")
-                                                                .arg(fullTypeName)
-                                                                .arg(existingEntery.pLibrary ? existingEntery.pLibrary->name : "Unknown")
-                                                                .arg(newEntry.pLibrary ? newEntry.pLibrary->name : "Unknown"));
+                    // Store visibility
+                    newEntry.visibility = visibility;
+
+                    // Store new entry, but only if it does not already exist
+                    if(!mLibraryEntries.contains(fullTypeName)) {
+                        mLibraryEntries.insert(fullTypeName, newEntry);
+                        if(gpSplash) {
+                            gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
                         }
                     }
+                    else {
+                        const auto& existingEntery = mLibraryEntries[fullTypeName];
+                        gpMessageHandler->addWarningMessage(QString("A component with type name '%1' was already registered by library '%2'. Ignoring version in library '%3'.")
+                                                            .arg(fullTypeName)
+                                                            .arg(existingEntery.pLibrary ? existingEntery.pLibrary->name : "Unknown")
+                                                            .arg(newEntry.pLibrary ? newEntry.pLibrary->name : "Unknown"));
+                    }
+
                 }
             }
             else
