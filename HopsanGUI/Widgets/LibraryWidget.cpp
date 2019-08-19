@@ -266,7 +266,7 @@ void LibraryWidget::update()
         pComponentItem->setIcon(0, entry.pAppearance->getIcon(mGfxType));
         pComponentItem->setText(0, entry.pAppearance->getDisplayName());
         pComponentItem->setToolTip(0, entry.pAppearance->getDisplayName());
-        if(Disabled == entry.disabled) {
+        if(Disabled == entry.state) {
             pComponentItem->setTextColor(0, QColor("red"));
         }
         if(pItem)
@@ -443,7 +443,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
     if(isComponentItem(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
     {
         QString typeName = mItemToTypeNameMap.find(item).value();
-        if(gpLibraryHandler->getEntry(typeName).disabled == Enabled) {
+        if(gpLibraryHandler->getEntry(typeName).state == Enabled) {
             QIcon icon;
             if(typeName.startsWith(QString(MODELICATYPENAME)+"_"))
             {
