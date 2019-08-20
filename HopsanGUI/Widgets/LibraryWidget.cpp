@@ -704,7 +704,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         else if(pReply == pEditCodeAction) {
             if(!isComponentItem(item)) {
                 //Edit library source files
-                SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
+                const SharedComponentLibraryPtrT pLibrary = mItemToLibraryMap[item];
                 if (pLibrary) {
                     for(QString file : pLibrary->sourceFiles) {
                         gpModelHandler->loadTextFile(file);
