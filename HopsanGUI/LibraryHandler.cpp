@@ -687,12 +687,17 @@ void NewComponentDialog::validate()
 
     //Validate type name
     ComponentSpecification spec = getSpecification();
-    if(!spec.typeName.at(0).isLetter()) {
+    if(spec.typeName.isEmpty()) {
+        gpMessageHandler->addErrorMessage("Please enter a type name.");
+        mpGeneralTable->item(0,1)->setBackground(errorBrush);
+        error=true;
+    }
+    else if(!spec.typeName.at(0).isLetter()) {
         gpMessageHandler->addErrorMessage("Type name must begin with a letter.");
         mpGeneralTable->item(0,1)->setBackground(errorBrush);
         error=true;
     }
-    if(!isNameValid(spec.typeName)) {
+    else if(!isNameValid(spec.typeName)) {
         gpMessageHandler->addErrorMessage("Type name can only contain letters, numbers and underscores.");
         mpGeneralTable->item(0,1)->setBackground(errorBrush);
         error=true;
