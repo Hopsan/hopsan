@@ -973,13 +973,10 @@ bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
     output.append("\n");
     output.append("extern \"C\" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)\n");
     output.append("{\n");
-    output.append("    std::cerr << \"Running register function in "+lib.mName+" dll\";\n");
-    output.append("\n");
     output.append("    //Register Components\n");
-    output.append("\n");
     for(const QString srcFile : lib.mComponentCodeFiles) {
         QString typeName = QFileInfo(srcFile).baseName();
-        output.append("pComponentFactory->registerCreatorFunction(\""+typeName+"\", "+typeName+"::Creator);\n");
+        output.append("    pComponentFactory->registerCreatorFunction(\""+typeName+"\", "+typeName+"::Creator);\n");
     }
     output.append("\n");
     output.append("    //Register custom nodes (if any)\n");
@@ -990,7 +987,7 @@ bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
     output.append("{\n");
     output.append("    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n");
     output.append("    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n");
-    output.append("    pHopsanExternalLibInfo->libName = (char*)\"Epiroc_Rotational_Lib\";\n");
+    output.append("    pHopsanExternalLibInfo->libName = (char*)\""+lib.mName+"\";\n");
     output.append("}\n");
 
     QTextStream out(&srcFile);
