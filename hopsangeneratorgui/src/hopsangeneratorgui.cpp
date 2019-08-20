@@ -549,7 +549,7 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
 }
 
 
-bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, const QString &typeName, const QString &displayName, const QString &cqsType,
+bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, const QString targetPath, const QString &typeName, const QString &displayName, const QString &cqsType,
                                                const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
                                                const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,
                                                const QStringList &outputNames, const QStringList &outputDescriptions, const QStringList &outputUnits, const QStringList &outputInits,
@@ -559,7 +559,7 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
     loadGeneratorLibrary();
 
     constexpr auto functionName = "callAddComponentToLibrary";
-    const auto libpath = libraryXmlPath.toStdString();
+    const auto targetpath = targetPath.toStdString();
     MessageForwarder forwarder(lw->widget());
     const auto xmlpath = libraryXmlPath.toStdString();
     const auto typenamestr = typeName.toStdString();
@@ -585,8 +585,8 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
         portsrequired.push_back(req);
     }
 
-    using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, const char*, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const int[], size_t, MessageHandler_t, void*);
-    bool checkOK = mPrivates->call<AddComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), typenamestr.c_str(), displayname.c_str(), cqstype.c_str(),
+    using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, const char*, const char*, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const int[], size_t, MessageHandler_t, void*);
+    bool checkOK = mPrivates->call<AddComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), targetpath.c_str(), typenamestr.c_str(), displayname.c_str(), cqstype.c_str(),
                                                                     constantnames.data(), constantnames.size(), constantdescriptions.data(), constantdescriptions.size(), constantunits.data(), constantunits.size(), constantinits.data(), constantinits.size(),
                                                                     inputnames.data(), inputnames.size(), inputdescriptions.data(), inputdescriptions.size(), inputunits.data(), inputunits.size(), inputinits.data(), inputinits.size(),
                                                                     outputnames.data(), outputnames.size(), outputdescriptions.data(), outputdescriptions.size(), outputunits.data(), outputunits.size(), outputinits.data(), outputinits.size(),

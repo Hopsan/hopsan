@@ -660,8 +660,13 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         }
         else if(pReply == pAddComponentAction) {
             SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+            QStringList folders;
+            while(item->parent() != nullptr && item->parent()->text(0) != componentlibrary::roots::externalLibraries) {
+                folders.prepend(item->text(0));
+                item = item->parent();
+            }
             bool expanded = getLibraryItem(pLib)->isExpanded();
-            gpLibraryHandler->addComponentToLibrary(pLib, NewFile);
+            gpLibraryHandler->addComponentToLibrary(pLib, NewFile, folders);
             QTreeWidgetItemIterator it(mpTree);
             getLibraryItem(pLib)->setExpanded(expanded);
 

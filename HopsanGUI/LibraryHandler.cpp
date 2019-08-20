@@ -910,7 +910,7 @@ void LibraryHandler::createNewLibrary() {
     }
 }
 
-void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, SaveTargetEnumT newOrExisting)
+void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, SaveTargetEnumT newOrExisting, QStringList folders)
 {
     auto pGenerator = createDefaultGenerator(true);
     ComponentSpecification spec;
@@ -929,7 +929,8 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
             return;
         }
 
-        pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, spec.typeName, spec.displayName, spec.cqsType,
+        QString targetPath = QFileInfo(pLibrary->xmlFilePath).absolutePath()+"/"+folders.join("/");
+        pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, targetPath, spec.typeName, spec.displayName, spec.cqsType,
                                           spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
                                           spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
                                           spec.outputNames, spec.outputDescriptions, spec.outputUnits, spec.outputInits,
@@ -955,7 +956,9 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
     gpModelHandler->restoreState();
 
     if(newOrExisting == NewFile) {
-        gpModelHandler->loadTextFile(QFileInfo(pLibrary->getLibraryMainFilePath()).absoluteDir().filePath(getEntry(spec.typeName).pAppearance->getSourceCodeFile()));
+        QString path =QFileInfo(pLibrary->getLibraryMainFilePath()).absolutePath()+"/"+folders.join("/");
+        ComponentLibraryEntry entry = getEntry(spec.typeName);
+        gpModelHandler->loadTextFile(QDir(path).filePath(entry.pAppearance->getSourceCodeFile()));
     }
 }
 
