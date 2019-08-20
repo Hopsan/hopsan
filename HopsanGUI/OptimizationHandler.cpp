@@ -191,7 +191,7 @@ void OptimizationHandler::initModels(ModelWidget *pModel, int nModels, QString &
     QString originalModelBasePath = pModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
     while(mModelPtrs.size() < nModels)
     {
-        auto pNewModel = gpModelHandler->loadModel(modelPath, true, true);
+        auto pNewModel = gpModelHandler->loadModel(modelPath, ModelHandler::IgnoreAlreadyOpen | ModelHandler::Detatched);
         // Add base path from original model as search path, for components that load files with relative paths
         pNewModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(originalModelBasePath);
         addModel(pNewModel);
@@ -1335,7 +1335,7 @@ void OptimizationHandler::reInitialize(int nModels)
 
     while(mModelPtrs.size() < nModels)
     {
-        addModel(gpModelHandler->loadModel(mModelPath, true, true));
+        addModel(gpModelHandler->loadModel(mModelPath, ModelHandler::IgnoreAlreadyOpen | ModelHandler::Detatched));
 
         //Make sure logging is disabled/enabled for same ports as in original model
         CoreSystemAccess *pCore = mModelPtrs.first()->getTopLevelSystemContainer()->getCoreSystemAccessPtr();

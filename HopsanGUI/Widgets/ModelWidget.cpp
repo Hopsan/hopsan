@@ -1254,7 +1254,7 @@ void ModelWidget::simulateModelica()
     gpMessageHandler->addInfoMessage("Creating temporary simulation model...");
 
     //Create new hidden temporary model
-    ModelWidget *pTempModel = mpParentModelHandler->addNewModel("TempModel", true);
+    ModelWidget *pTempModel = mpParentModelHandler->addNewModel("TempModel", ModelHandler::Detatched);
     SystemContainer *pTempSys = pTempModel->getTopLevelSystemContainer();
 
     //Add all non-Modelica components

@@ -933,7 +933,7 @@ bool SensitivityAnalysisEvaluator::init()
     mModelPtrs.clear();
     for(int i=0; i<mNumParallelModels; ++i)
     {
-        mModelPtrs.append(gpModelHandler->loadModel(savePath, true, true));
+        mModelPtrs.append(gpModelHandler->loadModel(savePath, ModelHandler::IgnoreAlreadyOpen | ModelHandler::Detatched));
     }
 
     // Add base path from original model as search path, for components that load files with relative paths
