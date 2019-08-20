@@ -343,7 +343,7 @@ bool callExeExportGenerator(const char* outputPath, void* pHopsanSystem, const c
 //! @param[in] librarySourcePath Path to library CPP file relative to path for library XML file
 //! @param[in] typeName Typename for new component
 //! @param[in] displayName Display name for new component
-bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName, const char* displayName, const char* cqsType,
+bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPath, const char* typeName, const char* displayName, const char* cqsType,
                                const char* const constantNames[], const int numConstantNames,
                                const char* const constantDescriptions[], const int numConstantDescriptions,
                                const char* const constantUnits[], const int numConstantUnits,
@@ -363,8 +363,8 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
                                messagehandler_t messageHandler, void* pMessageObject)
 {
     QFileInfo xmlPath(libraryXmlPath);
-    QString cafPath = xmlPath.absoluteDir().absoluteFilePath(QString(typeName)+".xml");
-    QString hppPath = xmlPath.absoluteDir().absoluteFilePath(QString(typeName)+".hpp");
+    QString cafPath = QDir(targetPath).absoluteFilePath(QString(typeName)+".xml");
+    QString hppPath = QDir(targetPath).absoluteFilePath(QString(typeName)+".hpp");
 
     QString dummy;
     auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(dummy, dummy));
@@ -455,7 +455,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* typeName,
     }
 
     //Add new component to library
-    lib.mComponentXMLFiles.append(QFileInfo(cafPath).fileName());
+    lib.mComponentXMLFiles.append(QDir(xmlPath.absolutePath()).relativeFilePath(QFileInfo(cafPath).absoluteFilePath()));
     lib.mComponentCodeFiles.append(QFileInfo(hppPath).fileName());
 
     //Write back component library to XML
