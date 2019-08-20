@@ -300,7 +300,7 @@ void HVCWidget::clearContents()
 void HVCWidget::runHvcTest()
 {
     // First load the model
-    gpModelHandler->loadModel(mModelFilePath, true);
+    gpModelHandler->loadModel(mModelFilePath, ModelHandler::IgnoreAlreadyOpen);
     // Switch to that tab
 
     // Get Log data handler for model

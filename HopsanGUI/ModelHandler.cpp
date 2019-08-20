@@ -78,7 +78,7 @@ ModelHandler::ModelHandler(QObject *parent)
     connect(this, SIGNAL(checkMessages()),      gpMessageHandler,    SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 }
 
-void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name, bool detatched)
+void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name, LoadOptions options)
 {
     pModelWidget->setParent(gpCentralTabWidget);    //! @todo Should probably use ModelHandler as parent
 
@@ -86,8 +86,8 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
 
     //connect(gpMainWindow->mpDebug2Action, SIGNAL(triggered()), pModelWidget, SLOT(generateModelicaCode()));
 
-    // If the Modelwidget should not be hidden then add it as a tab and switch to that tab
-    if(!detatched)
+    // If the Modelwidget should not be detatched then add it as a tab and switch to that tab
+    if(!options.testFlag(Detatched))
     {
         mModelPtrs.append(pModelWidget);
         mCurrentIdx = mModelPtrs.size()-1;
@@ -100,7 +100,7 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
 
 //! @brief Adds a ModelWidget object (a new tab) to itself.
 //! @see closeModel(int index)
-ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
+ModelWidget *ModelHandler::addNewModel(QString modelName, LoadOptions options)
 {
     modelName.append(QString::number(mNumberOfUntitledModels));
 
@@ -109,7 +109,7 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
 
     connect(pNewModelWidget->getTopLevelSystemContainer()->getLogDataHandler().data(), SIGNAL(dataAddedFromModel(bool)), gpMainWindow->mpShowLossesAction, SLOT(setEnabled(bool)));
 
-    addModelWidget(pNewModelWidget, modelName, hidden);
+    addModelWidget(pNewModelWidget, modelName, options);
 
     pNewModelWidget->setSaved(true);
     mNumberOfUntitledModels += 1;
@@ -308,20 +308,18 @@ void ModelHandler::loadModelParameters()
 //! @param modelFileName is the path to the loaded file
 //! @see loadModel()
 //! @see saveModel(saveTarget saveAsFlag)
-ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen, bool detatched)
+ModelWidget *ModelHandler::loadModel(QString modelFileName, LoadOptions options)
 {
     //! @todo maybe  write utility function that opens file, checks existence and sets fileinfo
     QFile modelFile(modelFileName);   //Create a QFile object
-    if(!modelFile.exists())
-    {
+    if(!modelFile.exists()) {
         gpMessageHandler->addErrorMessage("File not found: " + modelFile.fileName());
         return 0;
     }
     QFileInfo modelFileInfo(modelFile);
 
     // Make sure file not already open
-    if(!ignoreAlreadyOpen)
-    {
+    if(!options.testFlag(IgnoreAlreadyOpen)) {
         for(int t=0; t!=mModelPtrs.size(); ++t)
         {
             if(this->getTopLevelSystem(t)->getModelFileInfo().filePath() == modelFileInfo.filePath() && gpCentralTabWidget->indexOf(mModelPtrs[t]) > -1)
@@ -336,20 +334,19 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     connect(pNewModel->getSimulationThreadHandler(), SIGNAL(startSimulation()), gpMainWindow, SLOT(hideSimulateButton()));
     connect(pNewModel->getSimulationThreadHandler(), SIGNAL(done(bool)), gpMainWindow, SLOT(showSimulateButton()));
 
-    if(!detatched)
-    {
+    if(!options.testFlag(Detatched)) {
         gpMessageHandler->addInfoMessage("Loading model: "+modelFileInfo.absoluteFilePath());
     }
 
-   addModelWidget(pNewModel, modelFileInfo.baseName(), detatched);
+   addModelWidget(pNewModel, modelFileInfo.baseName(), options);
    bool loadOK = pNewModel->loadModel(modelFile);
-   if (loadOK)
-   {
+   if (loadOK) {
        emit newModelWidgetAdded();
-       if(!detatched)
-       {
+       if(!options.testFlag(Detatched)) {
            emit modelChanged(pNewModel);
-           gpConfig->addRecentModel(modelFileInfo.filePath());
+           if(!options.testFlag(DontAddToRecentModels)) {
+                gpConfig->addRecentModel(modelFileInfo.filePath());
+           }
        }
        return pNewModel;
    }
@@ -817,7 +814,7 @@ void ModelHandler::restoreState()
     {
         ModelStateInfo info = mStateInfoList[i];
 
-        loadModel(info.backupFile);
+        loadModel(info.backupFile, DontAddToRecentModels);
         getCurrentModel()->hasChanged();
         getCurrentTopLevelSystem()->setModelFile(info.modelFile);
 //        QString basePath = QFileInfo(info.modelFile).absolutePath();

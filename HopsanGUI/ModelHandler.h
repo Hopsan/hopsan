@@ -66,9 +66,17 @@ class ModelHandler : public QObject
 {
     Q_OBJECT
 public:
+    enum LoadOption {
+        NoLoadOptions = 0x0,
+        IgnoreAlreadyOpen = 0x1,
+        Detatched = 0x2,
+        DontAddToRecentModels = 0x4
+    };
+    Q_DECLARE_FLAGS(LoadOptions, LoadOption)
+
     ModelHandler(QObject *parent=0);
 
-    void addModelWidget(ModelWidget *pModelWidget, const QString &name, bool detatched=false);
+    void addModelWidget(ModelWidget *pModelWidget, const QString &name, ModelHandler::LoadOptions options=NoLoadOptions);
 
     void setCurrentModel(int idx);
     void setCurrentModel(ModelWidget *pWidget);
@@ -85,12 +93,12 @@ public:
 
     int count() const;
 
-    ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool detatched=false);
+    ModelWidget *loadModel(QString modelFileName, ModelHandler::LoadOptions options=NoLoadOptions);
     TextEditorWidget *loadTextFile(QString scriptFileName);
     SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
-    ModelWidget *addNewModel(QString modelName="Untitled", bool hidden=false);
+    ModelWidget *addNewModel(QString modelName="Untitled", ModelHandler::LoadOptions options=NoLoadOptions);
     void loadModel();
     void loadModel(QAction *action);
     void newTextFile();
@@ -150,5 +158,7 @@ private:
 
     DebuggerWidget *mpDebugger;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(ModelHandler::LoadOptions)
 
 #endif // MODELHANDLER_H
