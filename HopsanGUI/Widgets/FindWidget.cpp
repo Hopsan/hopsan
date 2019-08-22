@@ -53,10 +53,13 @@ FindWidget::FindWidget(QWidget *parent) :
     mpFindWhatComboBox->addItem("Alias");
     mpFindButton = new QPushButton("Find", this);
     mpFindButton->setShortcut(QKeySequence(Qt::Key_Enter));
+    mpPreviousButton = new QPushButton("Find Previous", this);
+    mpPreviousButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Enter));
+    mpNextButton = new QPushButton("Find Next", this);
+    mpNextButton->setShortcut(QKeySequence(Qt::Key_Enter));
     QToolButton *pCloseButton = new QToolButton(this);
     mpCaseSensitivityCheckBox = new QCheckBox("Case Sensitive", this);
     mpWildcardCheckBox = new QCheckBox("Match Wildcards (*)", this);
-    mpBackwardsCheckBox = new QCheckBox("Search Backwards", this);
     pCloseButton->setIcon(QIcon(":graphics/uiicons/svg/Hopsan-Discard.svg"));
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
@@ -68,13 +71,16 @@ FindWidget::FindWidget(QWidget *parent) :
     pSubLayout1->addWidget(mpFindLineEdit);
     pSubLayout1->addWidget(mpFindWhatComboBox);
     pSubLayout1->addWidget(mpFindButton);
+    pSubLayout1->addWidget(mpPreviousButton);
+    pSubLayout1->addWidget(mpNextButton);
     pSubLayout1->addWidget(pCloseButton);
     pSubLayout1->setStretch(1,1);
     pSubLayout2->addWidget(mpCaseSensitivityCheckBox);
     pSubLayout2->addWidget(mpWildcardCheckBox);
-    pSubLayout2->addWidget(mpBackwardsCheckBox);
     pSubLayout2->addWidget(new QWidget(this), 1);
-    connect(mpFindButton, SIGNAL(clicked()), this, SLOT(find()));
+    connect(mpFindButton, SIGNAL(clicked()), this, SLOT(findInContainer()));
+    connect(mpPreviousButton, SIGNAL(clicked()), this, SLOT(findPrevious()));
+    connect(mpNextButton, SIGNAL(clicked()), this, SLOT(findNext()));
     connect(pCloseButton, SIGNAL(clicked()), this, SLOT(close()));
 
     resize(600, height());
@@ -87,7 +93,9 @@ void FindWidget::setContainer(ContainerObject *pContainer)
     mpTextEditor = nullptr;
     mpFindWhatComboBox->setVisible(true);
     mpWildcardCheckBox->setVisible(true);
-    mpBackwardsCheckBox->setVisible(false);
+    mpPreviousButton->setVisible(false);
+    mpNextButton->setVisible(false);
+    mpFindButton->setVisible(true);
 }
 
 void FindWidget::setTextEditor(TextEditorWidget *pEditor)
@@ -96,23 +104,32 @@ void FindWidget::setTextEditor(TextEditorWidget *pEditor)
     mpContainer = nullptr;
     mpFindWhatComboBox->setVisible(false);
     mpWildcardCheckBox->setVisible(false);
-    mpBackwardsCheckBox->setVisible(true);
+    mpPreviousButton->setVisible(true);
+    mpNextButton->setVisible(true);
+    mpFindButton->setVisible(false);
 }
 
-void FindWidget::find()
+void FindWidget::findPrevious()
 {
-    if(mpTextEditor) {
-        QTextDocument::FindFlags flags;
-        if(mpCaseSensitivityCheckBox->isChecked()) {
-            flags |= QTextDocument::FindCaseSensitively;
-        }
-        if(mpBackwardsCheckBox->isChecked()) {
-            flags |= QTextDocument::FindBackward;
-        }
-
-        mpTextEditor->find(mpFindLineEdit->text(), flags);
+    QTextDocument::FindFlags flags;
+    flags |= QTextDocument::FindBackward;
+    if(mpCaseSensitivityCheckBox->isChecked()) {
+        flags |= QTextDocument::FindCaseSensitively;
     }
+    mpTextEditor->find(mpFindLineEdit->text(), flags);
+}
 
+void FindWidget::findNext()
+{
+    QTextDocument::FindFlags flags;
+    if(mpCaseSensitivityCheckBox->isChecked()) {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+    mpTextEditor->find(mpFindLineEdit->text(), flags);
+}
+
+void FindWidget::findInContainer()
+{
     Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive;
     if(mpCaseSensitivityCheckBox->isChecked())
         caseSensitivity = Qt::CaseSensitive;
@@ -332,7 +349,7 @@ void FindWidget::keyPressEvent(QKeyEvent* event)
 {
     if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
     {
-        this->find();
+        this->findInContainer();
     }
     QWidget::keyPressEvent(event);
 }

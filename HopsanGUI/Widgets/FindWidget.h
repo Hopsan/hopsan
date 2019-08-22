@@ -49,7 +49,9 @@ public:
 signals:
 
 public slots:
-    void find();
+    void findPrevious();
+    void findNext();
+    void findInContainer();
     void findComponent(const QString &rName, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
     void findAlias(const QString &rName, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
     void findSystemParameter(const QString &rName, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
@@ -67,7 +69,8 @@ private:
     QPushButton* mpFindButton;
     QCheckBox* mpCaseSensitivityCheckBox;
     QCheckBox* mpWildcardCheckBox;
-    QCheckBox* mpBackwardsCheckBox;
+    QPushButton *mpPreviousButton;
+    QPushButton *mpNextButton;
 
     QPointer<ContainerObject> mpContainer;
     QPointer<TextEditorWidget> mpTextEditor;
