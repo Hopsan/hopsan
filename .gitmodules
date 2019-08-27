@@ -1,43 +1,57 @@
 [submodule "Dependencies/msgpack-c"]
 	path = Dependencies/msgpack-c
 	url = https://github.com/msgpack/msgpack-c.git
+	shallow = true
 [submodule "Dependencies/cppzmq"]
 	path = Dependencies/cppzmq
 	url = https://github.com/zeromq/cppzmq.git
+	shallow = true
 [submodule "Dependencies/zeromq_code"]
 	path = Dependencies/zeromq_code
 	url = https://github.com/zeromq/libzmq.git
+	shallow = true
 [submodule "Dependencies/discount_code"]
 	path = Dependencies/discount_code
 	url = https://github.com/Orc/discount.git
+	shallow = true
 [submodule "Dependencies/matio_code"]
 	path = Dependencies/matio_code
 	url = https://github.com/tbeu/matio.git
+	shallow = true
 [submodule "Dependencies/qwt_code"]
 	path = Dependencies/qwt_code
 	url = https://github.com/osakared/qwt.git
 	ignore = dirty
+	shallow = true
 [submodule "Dependencies/hdf5_code"]
 	path = Dependencies/hdf5_code
 	url = https://bitbucket.hdfgroup.org/scm/hdffv/hdf5.git
+	shallow = true
 [submodule "Dependencies/katex_code"]
 	path = Dependencies/katex_code
 	url = https://github.com/Khan/KaTeX.git
+	shallow = true
 [submodule "Dependencies/tclap"]
 	path = Dependencies/tclap
 	url = http://git.code.sf.net/p/tclap/code
+	shallow = true
 [submodule "HopsanCore/dependencies/indexingcsvparser"]
 	path = HopsanCore/dependencies/indexingcsvparser
 	url = https://github.com/peterNordin/IndexingCSVParser.git
+	shallow = false
 [submodule "HopsanCore/dependencies/libnumhop"]
 	path = HopsanCore/dependencies/libnumhop
 	url = https://github.com/peterNordin/libNumHop.git
+	shallow = false
 [submodule "Dependencies/tools"]
 	path = Dependencies/tools
 	url = https://github.com/Hopsan/hopsan_deps_tools.git
+	shallow = true
 [submodule "Dependencies/git-archive-all"]
 	path = Dependencies/git-archive-all
 	url = https://github.com/Kentzo/git-archive-all.git
+	shallow = true
 [submodule "Dependencies/releases"]
 	path = Dependencies/releases
 	url = https://github.com/Hopsan/hopsan_deps_releases.git
+	shallow = true
