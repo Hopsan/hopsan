@@ -1,9 +1,28 @@
 #!/bin/bash
-# $Id$
 
 # Shell script for copying "Installing" the necessary files from a pre-build hopsan root dir
 # The root dir is assumed to have been exported from svn
 # Author: Peter Nordin peter.nordin@liu.se
+
+function copy_dynamic_libs_if_exist {
+  local src_dir=$1
+  local libname=$2
+  local dst_dir=$3
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    local lib_suffix=.dylib
+  else
+    local lib_suffix=.so
+  fi
+
+  if [[ ! -d ${dst_dir} ]]; then
+    echo Error: Destination directory ${dst_dir} does not exist
+  fi
+
+  if [[ -d ${src_dir} && -d ${dst_dir} ]]; then
+    # TODO find files and install with specified permissions instead
+    cp -a ${src_dir}/${libname}${lib_suffix}* ${dst_dir}
+  fi
+}
 
 E_BADARGS=65
 if [ $# -lt 2 ]; then
@@ -51,12 +70,12 @@ mkdir -p                                                   $dstDir/Dependencies
 cp -a    ${srcDeps}/katex                                  $dstDir/Dependencies
 cp -a    ${srcDeps}/FMILibrary                             $dstDir/Dependencies
 
-cp -a    ${srcDeps}/qwt/lib/libqwt.so*                     $dstDir/bin
-cp -a    ${srcDeps}/zeromq/lib/libzmq.so*                  $dstDir/bin
-cp -a    ${srcDeps}/FMILibrary/lib/libfmilib_shared.so     $dstDir/bin
-cp -a    ${srcDeps}/discount/lib/libmarkdown.so*           $dstDir/bin
-cp -a    ${srcDeps}/pythonqt/lib/libPythonQt*.so*          $dstDir/bin
-cp -a    ${srcDeps}/hdf5/lib/libhdf5*-shared.so*           $dstDir/bin
+copy_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dstDir/bin
+copy_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
+copy_dynamic_libs_if_exist  ${srcDeps}/FMILibrary/lib  libfmilib_shared  $dstDir/bin
+copy_dynamic_libs_if_exist  ${srcDeps}/discount/lib    libmarkdown       $dstDir/bin
+copy_dynamic_libs_if_exist  ${srcDeps}/pythonqt/lib    libPythonQt*      $dstDir/bin
+copy_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5*-shared   $dstDir/bin
 
 # Install additional files
 # =====================

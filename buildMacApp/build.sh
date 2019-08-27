@@ -11,7 +11,11 @@
 
 buildRoot="buildMacApp/"
 name="hopsan"
-version=0.7.
+baseversion=2.12.0
+releaserevision=20190827.1035 # TODO use getGitInfoScript
+fullversionname=${baseversion}.${releaserevision}
+doDevRelease=true
+doBuildInComponents=false
 
 # If arg 1 is --debug then set for debug build
 if [ "$1" == "--debug" ]; then
@@ -28,7 +32,9 @@ DEPLOY="-always-overwrite -verbose=3"
 fi
 
 cd $buildRoot
-./prepareSourceCode.sh ../  stage $version true false
+HOPSAN_CODE=$(pwd)/../
+STAGE_DIR=$(pwd)/stage
+../buildDebPackage/prepareSourceCode.sh ${HOPSAN_CODE} ${STAGE_DIR} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
 cd ..
 
 qmake $QMAKE_OPTIONS
@@ -38,6 +44,8 @@ cd bin
 
 macdeployqt HopsanGUI$LIBTAG.app $DEPLOY
 
+# TODO Use ../buildDebPackage/copyInstallHopsan.sh
+
 cp -prfX libhopsancore$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prfX libhopsangenerator$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prfX libsymhop$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
@@ -45,36 +53,28 @@ cp -prfX libsymhop$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prfX ../Dependencies/qwt-6.1.2/lib/libqwt.6.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/HopsanCore/include
-mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/MSVC2008_x86
-mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/MSVC2010_x86
-mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/MSVC2008_x64
-mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/MSVC2010_x64
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/autoLibs
-cp -prfX ../componentLibraries/defaultLibrary/libdefaultcomponentlibrary$LIBTAG.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
-cp -prfX ../componentLibraries/exampleComponentLib/[HMSeh]* HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib/
+cp -prfX ${STAGE_DIR}/componentLibraries/defaultLibrary/libdefaultcomponentlibrary$LIBTAG.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
+cp -prfX ${STAGE_DIR}/componentLibraries/exampleComponentLib/[HMSeh]* HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib/
 
-cp -prfX ../Hopsan-release-notes.txt HopsanGUI$LIBTAG.app/Contents/Resources/
-cp -prfX ../hopsandefaults HopsanGUI$LIBTAG.app/Contents/Resources/
-cp -prfX ../licenseHeader HopsanGUI$LIBTAG.app/Contents/Resources/
+cp -prfX ${STAGE_DIR}/Hopsan-release-notes.txt HopsanGUI$LIBTAG.app/Contents/Resources/
+cp -prfX ${STAGE_DIR}/hopsandefaults HopsanGUI$LIBTAG.app/Contents/Resources/
+cp -prfX ${STAGE_DIR}/licenseHeader HopsanGUI$LIBTAG.app/Contents/Resources/
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/Models
-cp -prfX ../Models/[BEC]* HopsanGUI$LIBTAG.app/Contents/Resources/Models/
+cp -prfX ${STAGE_DIR}/Models/[BEC]* HopsanGUI$LIBTAG.app/Contents/Resources/Models/
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/Scripts
-cp -prfX ../Scripts/[HOp]* HopsanGUI$LIBTAG.app/Contents/Resources/Scripts/
+cp -prfX ${STAGE_DIR}/Scripts/[HOp]* HopsanGUI$LIBTAG.app/Contents/Resources/Scripts/
 
-cp -prfX ../$buildRoot/stage/HopsanCore HopsanGUI$LIBTAG.app/Contents/Resources/
-cp -prfX ../$buildRoot/stage/ThirdParty HopsanGUI$LIBTAG.app/Contents/Resources/
+cp -prfX ${STAGE_DIR}/HopsanCore HopsanGUI$LIBTAG.app/Contents/Resources/
 
-cp -prfX ../$buildRoot/stage/componentLibraries/defaultLibrary/* HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
+cp -prfX ${STAGE_DIR}/componentLibraries/defaultLibrary/* HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/defaultLibrary/
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/doc/user
-cp -prfX ../$buildRoot/stage/doc/user/html HopsanGUI$LIBTAG.app/Contents/Resources/doc/user
+cp -prfX ${STAGE_DIR}/doc/user/html HopsanGUI$LIBTAG.app/Contents/Resources/doc/user
 
 cd ..
-
-#rm -fr $buildRoot/stage
-
