@@ -38,6 +38,11 @@ readonly release_revision="$4"
 readonly full_version_string="$5"
 readonly doDevRelease="$6"
 readonly doBuildInComponents="$7"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  inkscape_cmd="/Applications/Inkscape.app/Contents/MacOS/Inkscape"
+else
+  inkscape_cmd=inkscape
+fi
 
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI revision numbers and hashes
@@ -92,8 +97,8 @@ fi
 # Set splash screen version number
 sed "s|0\.0\.0|$base_version|g" -i HopsanGUI/graphics/splash.svg
 sed "s|20170000\.0000|$release_revision|g" -i HopsanGUI/graphics/splash.svg
-if [[ $(command -v inkscape > /dev/null) -eq 0 ]]; then
-  inkscape ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-png ./HopsanGUI/graphics/splash.png
+if [[ $(command -v ${inkscape_cmd} > /dev/null) -eq 0 ]]; then
+  ${inkscape_cmd} ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-png ./HopsanGUI/graphics/splash.png
 elif [[ $(command -v convert > /dev/null) -eq 0 ]]; then
   echo Warning: Inkscape is not available, falling back to convert
   convert -background white ./HopsanGUI/graphics/splash.svg ./HopsanGUI/graphics/splash.png

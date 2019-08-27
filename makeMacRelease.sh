@@ -9,7 +9,7 @@
 #$Id$                                                                                                                   
 #  
 
-rm -fr ../trunk/bin/*
+rm -fr bin/*
 
 # Building Dependencies
 
@@ -35,4 +35,3 @@ echo DEBUG built
 
 du -sh ./bin/HopsanGUI.app
 du -sh ./bin/HopsanGUI_d.app
-
