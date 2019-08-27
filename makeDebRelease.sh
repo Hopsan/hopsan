@@ -196,13 +196,14 @@ packagesrcfile=${packagedir}.tar.gz
 # Prepare source code
 #
 set -e
-srcExportDir=${outputDir}/hopsanSrcExport_${fullversionname}
-./prepareSourceCode.sh $(pwd)/../  ${srcExportDir} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
+hopsancode_dir=$(pwd)/../
+stage_dir=${outputDir}/hopsanStage_${fullversionname}
+./prepareSourceCode.sh ${hopsancode_dir}  ${stage_dir} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
 
-pushd $srcExportDir
+pushd $stage_dir
 tar -czf $packageorigsrcfile *
 popd
-mv ${srcExportDir}/${packageorigsrcfile} .
+mv ${stage_dir}/${packageorigsrcfile} .
 set +e
 
 # -----------------------------------------------------------------------------

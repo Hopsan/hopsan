@@ -27,13 +27,13 @@ git_export_all()
 E_BADARGS=65
 if [ $# -lt 7 ]; then
   echo "Error: To few input arguments!"
-  echo "Usage: `basename $0` {src_hopsan_root dst_directory base_version release_revision full_version_string doDevRelease doBuildInComponents}"
+  echo "Usage: `basename $0` {hopsancode_root stage_directory base_version release_revision full_version_string doDevRelease doBuildInComponents}"
   exit $E_BADARGS
 fi
 
-readonly src_hopsan_root="$1"
-readonly dst_directory="$2"
-readonly base_version="$3"
+readonly hopsancode_root="$1"
+readonly stage_directory="$2"
+readonly base_version_or_tag="$3"
 readonly release_revision="$4"
 readonly full_version_string="$5"
 readonly doDevRelease="$6"
@@ -44,33 +44,56 @@ else
   inkscape_cmd=inkscape
 fi
 
+giturl_regex='(https)://.*(.git)'
+if [[ ${hopsancode_root} =~ ${giturl_regex} ]]; then
+  readonly base_version=$(echo ${base_version_or_tag} | sed 's/[^0-9\.]//g')
+  readonly code_git_dir=${stage_directory}
+else
+  readonly base_version=${base_version_or_tag}
+  readonly code_git_dir=${hopsancode_root}
+fi
+
+echo base_Version $base_version
+echo stage_directory $stage_directory
+
+# -----------------------------------------------------------------------------
+# Clone or export source code for a clean build, unless src and dst directories are the same
+#
+if [[ ${hopsancode_root} =~ ${giturl_regex} ]]; then
+  echo Cloning from ${hopsancode_root} into ${stage_directory}
+  rm -rf ${stage_directory}
+  git clone -b ${base_version_or_tag} --depth 1 ${hopsancode_root} ${stage_directory}
+  pushd ${stage_directory}
+  git submodule update --init --recommend-shallow
+  popd
+  if [[ $? -ne 0 ]]; then
+    echo Error: Failed to clone from git
+    exit 1
+  fi
+elif [[ ${hopsancode_root} == ${stage_directory} ]]; then
+  echo Source code and stage directory are the same. Not exporting code! Building in source code directory!
+else
+  echo Exporting $hopsancode_root to $stage_directory for preparation
+  rm -rf ${stage_directory}
+  git_export_all ${hopsancode_root} ${stage_directory}
+fi
+
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI revision numbers and hashes
 #
-cd ${src_hopsan_root}/HopsanCore; corecommitdt=$(../getGitInfo.sh date.time .); cd $OLDPWD
-cd ${src_hopsan_root}/HopsanCore; corecommithash=$(../getGitInfo.sh shorthash .); cd $OLDPWD
-cd ${src_hopsan_root}/HopsanGUI; guicommitdt=$(../getGitInfo.sh date.time .); cd $OLDPWD
-cd ${src_hopsan_root}/HopsanCLI; clicommitdt=$(../getGitInfo.sh date.time .); cd $OLDPWD
+pushd ${code_git_dir}/HopsanCore; corecommitdt=$(../getGitInfo.sh date.time .); popd
+pushd ${code_git_dir}/HopsanCore; corecommithash=$(../getGitInfo.sh shorthash .); popd
+pushd ${code_git_dir}/HopsanGUI; guicommitdt=$(../getGitInfo.sh date.time .); popd
+pushd ${code_git_dir}/HopsanCLI; clicommitdt=$(../getGitInfo.sh date.time .); popd
 echo "Core_CDT: ${corecommitdt}, GUI_CDT: ${guicommitdt}, CLI_CDT: ${clicommitdt}"
-
-# -----------------------------------------------------------------------------
-# Export source code for a clean build, unless src and dst directories are the same 
-#
-if [[ ${src_hopsan_root} = ${dst_directory} ]]; then
-  echo "Source and destination are the same. Not exporting!"
-else
-  echo "Exporting $src_hopsan_root to $dst_directory for preparation"
-  rm -rf ${dst_directory}
-  git_export_all ${src_hopsan_root} ${dst_directory}
-fi
 
 # -----------------------------------------------------------------------------
 # Prepare files in destination directory
 #
-cd ${dst_directory}
+pushd ${stage_directory}
 
 # Generate default library files
-cd componentLibraries/defaultLibrary; ./generateLibraryFiles.py .; cd $OLDPWD
+pushd componentLibraries/defaultLibrary; ./generateLibraryFiles.py .; popd
 
 # Set the Core Gui and CLI rev numbers, hashes and release version for this release
 sed "s|#define HOPSANCORE_COMMIT_HASH .*|#define HOPSANCORE_COMMIT_HASH ${corecommithash}|g" -i HopsanCore/include/HopsanCoreGitVersion.h
