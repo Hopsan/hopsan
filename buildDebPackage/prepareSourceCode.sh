@@ -4,91 +4,37 @@
 # Shell script for preparing the Hopsan source code before RELEASE build
 # Author: Peter Nordin peter.nordin@liu.se
 
-git_export_all()
-{
-  set -e
-  local src=$1
-  local dst=$2
-  local tarfile=hopsan_git_export.tar
-  echo "Exporting from git: ${src} to ${dst}"
-  mkdir -p ${dst}
-  pushd ${src}
-  ${src_hopsan_root}/Dependencies/git-archive-all/git_archive_all.py ${tarfile}
-  popd
-  mv ${src}/${tarfile} ${dst}
-  pushd ${dst}
-  tar -xf ${tarfile} --strip-components=1
-  rm ${tarfile}
-  popd
-  set +e
-}
-
-
 E_BADARGS=65
 if [ $# -lt 7 ]; then
   echo "Error: To few input arguments!"
-  echo "Usage: `basename $0` {hopsancode_root stage_directory base_version release_revision full_version_string doDevRelease doBuildInComponents}"
+  echo "Usage: $(basename $0) {hopsancode_root stage_directory base_version release_revision full_version_string doDevRelease doBuildInComponents}"
   exit $E_BADARGS
 fi
 
 readonly hopsancode_root="$1"
 readonly stage_directory="$2"
-readonly base_version_or_tag="$3"
+readonly base_version="$3"
 readonly release_revision="$4"
 readonly full_version_string="$5"
-readonly doDevRelease="$6"
-readonly doBuildInComponents="$7"
+readonly doDevRelease=$6
+readonly doBuildInComponents=$7
 if [[ "$OSTYPE" == "darwin"* ]]; then
   inkscape_cmd="/Applications/Inkscape.app/Contents/MacOS/Inkscape"
 else
   inkscape_cmd=inkscape
 fi
 
-giturl_regex='(https)://.*(.git)'
-if [[ ${hopsancode_root} =~ ${giturl_regex} ]]; then
-  readonly base_version=$(echo ${base_version_or_tag} | sed 's/[^0-9\.]//g')
-  readonly code_git_dir=${stage_directory}
-else
-  readonly base_version=${base_version_or_tag}
-  readonly code_git_dir=${hopsancode_root}
-fi
-
-echo base_Version $base_version
-echo stage_directory $stage_directory
-
-# -----------------------------------------------------------------------------
-# Clone or export source code for a clean build, unless src and dst directories are the same
-#
-if [[ ${hopsancode_root} =~ ${giturl_regex} ]]; then
-  echo Cloning from ${hopsancode_root} into ${stage_directory}
-  rm -rf ${stage_directory}
-  git clone -b ${base_version_or_tag} --depth 1 ${hopsancode_root} ${stage_directory}
-  pushd ${stage_directory}
-  git submodule update --init --recommend-shallow
-  popd
-  if [[ $? -ne 0 ]]; then
-    echo Error: Failed to clone from git
-    exit 1
-  fi
-elif [[ ${hopsancode_root} == ${stage_directory} ]]; then
-  echo Source code and stage directory are the same. Not exporting code! Building in source code directory!
-else
-  echo Exporting $hopsancode_root to $stage_directory for preparation
-  rm -rf ${stage_directory}
-  git_export_all ${hopsancode_root} ${stage_directory}
-fi
-
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI revision numbers and hashes
 #
-pushd ${code_git_dir}/HopsanCore; corecommitdt=$(../getGitInfo.sh date.time .); popd
-pushd ${code_git_dir}/HopsanCore; corecommithash=$(../getGitInfo.sh shorthash .); popd
-pushd ${code_git_dir}/HopsanGUI; guicommitdt=$(../getGitInfo.sh date.time .); popd
-pushd ${code_git_dir}/HopsanCLI; clicommitdt=$(../getGitInfo.sh date.time .); popd
-echo "Core_CDT: ${corecommitdt}, GUI_CDT: ${guicommitdt}, CLI_CDT: ${clicommitdt}"
+pushd ${hopsancode_root}/HopsanCore; corecommitdt=$(../getGitInfo.sh date.time .);   popd
+pushd ${hopsancode_root}/HopsanCore; corecommithash=$(../getGitInfo.sh shorthash .); popd
+pushd ${hopsancode_root}/HopsanGUI;  guicommitdt=$(../getGitInfo.sh date.time .);    popd
+pushd ${hopsancode_root}/HopsanCLI;  clicommitdt=$(../getGitInfo.sh date.time .);    popd
+echo Core_CDT: ${corecommitdt}, GUI_CDT: ${guicommitdt}, CLI_CDT: ${clicommitdt}
 
 # -----------------------------------------------------------------------------
-# Prepare files in destination directory
+# Prepare files in stage directory
 #
 pushd ${stage_directory}
 
@@ -104,7 +50,7 @@ sed "s|#define HOPSANCLI_COMMIT_TIMESTAMP .*|#define HOPSANCLI_COMMIT_TIMESTAMP 
 sed "s|#define HOPSANRELEASEVERSION .*|#define HOPSANRELEASEVERSION \"${full_version_string}\"|g" -i HopsanGUI/version_gui.h
 
 # Handle official release preparation
-if [[ $doDevRelease = "false" ]]; then
+if [[ $doDevRelease == false ]]; then
   # Overwrite version numbers for official release so that allcomponents show the same version
   sed "s|#define HOPSANCOREVERSION .*|#define HOPSANCOREVERSION \"${full_version_string}\"|g" -i HopsanCore/include/HopsanCoreVersion.h
   sed "s|#define HOPSANGUIVERSION .*|#define HOPSANGUIVERSION \"${full_version_string}\"|g" -i HopsanGUI/version_gui.h
@@ -131,7 +77,7 @@ fi
 
 # If selected, make changes to compile defaultLibrary into Hopsan Core
 # Deprecated, we should not do this anymore
-if [[ "$doBuildInComponents" = "true" ]]; then
+if [[ $doBuildInComponents == true ]]; then
   sed 's|.*DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS|DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS|g' -i Common.prf
   sed 's|#INTERNALCOMPLIB.CPP#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\|g' -i HopsanCore/HopsanCore.pro
   sed '/.*<lib>.*/d' -i componentLibraries/defaultLibrary/defaultComponentLibrary.xml
