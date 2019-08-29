@@ -34,6 +34,7 @@
 //Qt includes
 #include <QDrag>
 #include <QFileDialog>
+#include <QGraphicsSceneContextMenuEvent>
 
 //Hopsan includes
 #include "global.h"
@@ -369,6 +370,10 @@ void Component::setVisible(bool visible)
 
 void Component::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
+    // This will prevent context menus from appearing automatically - they are started manually from mouse release event.
+    if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
+        return;
+
     //! @todo might move this to a ModelObjectWithParamters class ,to avoid duplication in SystemContainer (or put it in ModelObject with a condition)
     QMenu menu;
     QAction *saveParameterValuesAction = menu.addAction(tr("Save parameter values to file"));
