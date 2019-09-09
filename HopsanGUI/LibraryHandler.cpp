@@ -757,7 +757,7 @@ void NewComponentDialog::addConstantRow()
     addInputItem(mpConstantsTable,row,1);
     addInputItem(mpConstantsTable,row,2);
     addInputItem(mpConstantsTable,row,3);
-    addInputItem(mpConstantsTable,row,4);
+    addInputItem(mpConstantsTable,row,4,"0");
     while(mRemoveConstantToolButtons.size() < row) {
         mRemoveConstantToolButtons.push_back(new QToolButton(this));
         mRemoveConstantToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
@@ -775,7 +775,7 @@ void NewComponentDialog::addInputVariableRow()
     addInputItem(mpInputVariablesTable,row,1);
     addInputItem(mpInputVariablesTable,row,2);
     addInputItem(mpInputVariablesTable,row,3);
-    addInputItem(mpInputVariablesTable,row,4);
+    addInputItem(mpInputVariablesTable,row,4,"0");
     while(mRemoveInputVariableToolButtons.size() < row) {
         mRemoveInputVariableToolButtons.push_back(new QToolButton(this));
         mRemoveInputVariableToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
@@ -793,7 +793,7 @@ void NewComponentDialog::addOutputVariableRow()
     addInputItem(mpOutputVariablesTable,row,1);
     addInputItem(mpOutputVariablesTable,row,2);
     addInputItem(mpOutputVariablesTable,row,3);
-    addInputItem(mpOutputVariablesTable,row,4);
+    addInputItem(mpOutputVariablesTable,row,4,"0");
     while(mRemoveOutputVariableToolButtons.size() < row) {
         mRemoveOutputVariableToolButtons.push_back(new QToolButton(this));
         mRemoveOutputVariableToolButtons.last()->setIcon(QIcon(QString(ICONPATH)+"svg/Hopsan-Discard.svg"));
@@ -1508,9 +1508,9 @@ void NewComponentDialog::addLabelItem(QTableWidget *pTable, int r, int c, QStrin
     pTable->item(r,c)->setBackgroundColor(QColor(161,224,228));
 }
 
-void NewComponentDialog::addInputItem(QTableWidget *pTable, int r, int c)
+void NewComponentDialog::addInputItem(QTableWidget *pTable, int r, int c, QString defaultValue)
 {
-    pTable->setItem(r,c,new QTableWidgetItem());
+    pTable->setItem(r,c,new QTableWidgetItem(defaultValue));
 }
 
 bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)

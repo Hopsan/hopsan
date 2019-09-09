@@ -138,7 +138,7 @@ private slots:
     void removePortRow();
 private:
     void addLabelItem(QTableWidget *pTable, int r, int c, QString text);
-    void addInputItem(QTableWidget *pTable, int r, int c);
+    void addInputItem(QTableWidget *pTable, int r, int c, QString defaultValue=QString());
     void adjustTableSize(QTableWidget *pTable);
 
     QTableWidget *mpGeneralTable;
