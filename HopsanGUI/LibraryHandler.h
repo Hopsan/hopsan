@@ -212,6 +212,8 @@ private:
     // Auto update appearance files
     YesNoToAllEnumT mUpConvertAllCAF;
     QDir mUpdateXmlBackupDir;
+
+    NewComponentDialog *mpDialog;
 };
 
 #endif // LIBRARYHANDLER_H
