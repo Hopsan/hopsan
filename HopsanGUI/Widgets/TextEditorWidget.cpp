@@ -607,6 +607,35 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
             textCursor().endEditBlock();
         }
     }
+    else if(event->key() == Qt::Key_ParenLeft)
+    {
+        if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
+        {
+            auto cursor = textCursor();
+            QString text = cursor.selection().toPlainText();
+            text.prepend("(");
+            text.append(")");
+            cursor.beginEditBlock();
+            insertPlainText(text);
+            cursor.endEditBlock();
+            cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, text.length());
+            this->setTextCursor(cursor);
+        }
+        else {
+            auto cursor = textCursor();
+            int pos = cursor.position();
+            QChar next = this->toPlainText().at(pos);
+            cursor.beginEditBlock();
+            if(next.isSpace() || next == '\n') {
+                insertPlainText("()");
+            }
+            else {
+                insertPlainText("(");
+            }
+            cursor.endEditBlock();
+            setTextCursor(cursor);
+        }
+    }
     else
     {
         QPlainTextEdit::keyPressEvent(event);
