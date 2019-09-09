@@ -399,17 +399,47 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
     //Replace tabs with four whitespaces
     if(event->key() == Qt::Key_Backtab)    //Shift+tab, remove spaces to the left until next tab stop (or as many spaces as possible)
     {
-        QString line = this->textCursor().block().text().toLatin1();
-        int pos = textCursor().positionInBlock();
-        while(pos > 0 && line.at(pos-1) == ' ')
+        if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
         {
-            this->textCursor().deletePreviousChar();
-            line = this->textCursor().block().text().toLatin1();
-            pos = textCursor().positionInBlock();
-            if(pos%2 == 0)
-            {
-                break;
+            auto cursor = textCursor();
+            QString text = cursor.selection().toPlainText();
+            if(text.startsWith(" ")) {
+                text.remove(0,1);
             }
+            if(text.startsWith(" ")) {
+                text.remove(0,1);
+            }
+            text.replace("\n ","\n");
+            text.replace("\n ","\n");
+            cursor.beginEditBlock();
+            insertPlainText(text);
+            cursor.endEditBlock();
+            cursor.setPosition(cursor.position()-text.length(),QTextCursor::KeepAnchor);
+            this->setTextCursor(cursor);
+        }
+        else
+        {
+            auto cursor = this->textCursor();
+            cursor.select(QTextCursor::LineUnderCursor);
+            this->setTextCursor(cursor);
+            QString text = cursor.selection().toPlainText();
+            if(text.startsWith(" ")) {
+                text.remove(0,1);
+            }
+            if(text.startsWith(" ")) {
+                text.remove(0,1);
+            }
+            int nSpaces = 0;
+            while(text[nSpaces] == " ") {
+                ++nSpaces;
+            }
+            cursor.beginEditBlock();
+            insertPlainText(text);
+            cursor.endEditBlock();
+            cursor.clearSelection();
+            cursor.movePosition(QTextCursor::StartOfLine);
+            cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, nSpaces);
+            this->setTextCursor(cursor);
         }
     }
     else if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
@@ -444,13 +474,16 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
     {
         if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
         {
-            QString text = textCursor().selection().toPlainText();
+            auto cursor = textCursor();
+            QString text = cursor.selection().toPlainText();
             text.replace("\n", "\n  ");
             text.prepend("  ");
-            textCursor().beginEditBlock();
-            textCursor().removeSelectedText();
+            cursor.beginEditBlock();
+            cursor.removeSelectedText();
             insertPlainText(text);
-            textCursor().endEditBlock();
+            cursor.endEditBlock();
+            cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, text.length());
+            this->setTextCursor(cursor);
         }
         else
         {
