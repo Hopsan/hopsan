@@ -40,9 +40,14 @@ namespace hopsan {
     class <<<typename>>> : public Component<<<cqstype>>>
     {
     private:                         // Private section
-<<<vardecl>>>
-<<<dataptrdecl>>>
-<<<portdecl>>>
+        //Declare local variables
+        <<<vardecl>>>
+
+        //Declare data pointer variables
+        <<<dataptrdecl>>>
+
+        //Declare ports
+        <<<portdecl>>>
 
     public:                              //Public section
         static Component *Creator()
@@ -53,41 +58,63 @@ namespace hopsan {
         //Configure
         void configure()
         {
+            //Register constants
             <<<regpar>>>
+
+            //Add ports
             <<<addports>>>
+
+            //Configuration code
             <<<confcode>>>
         }
         
         //Initialize
         void initialize()
         {
+            //Initialize variables
             <<<initvars>>>
+
+            //Get data pointers
             <<<getdataptrs>>>
+
+            //Read input variables
             <<<readinputs>>>
+
+            //Initialization code
             <<<initcode>>>
+
+            //Write output variables
             <<<writeoutputs>>>
         }
 
         //Simulate one time step
         void simulateOneTimestep()
         {
+            //Read input variables
             <<<readinputs>>>
+
+            //Simulation code
             <<<simulatecode>>>
+
+            //Write output variables
             <<<writeoutputs>>>
         }
 
         //Finalize
         void finalize()
         {
+            //Finalize code
             <<<finalcode>>>
         }
 
         //Finalize
         void deconfigure()
         {
+            //Deconfigure code
             <<<deconfcode>>>
         }
 
+        //Auxiliary functions
         <<<auxiliaryfunctions>>>
     };
 }
