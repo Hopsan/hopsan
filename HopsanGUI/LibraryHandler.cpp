@@ -102,7 +102,7 @@ LibraryHandler::LibraryHandler(QObject *parent)
 {
     mUpConvertAllCAF = UndecidedToAll;
 
-
+    mpDialog = new NewComponentDialog(gpMainWindowWidget);
 }
 
 void LibraryHandler::loadLibrary()
@@ -915,12 +915,11 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
     auto pGenerator = createDefaultGenerator(true);
     ComponentSpecification spec;
     if(newOrExisting == NewFile) {
-        NewComponentDialog *pDialog = new NewComponentDialog(gpMainWindowWidget);
-        if(pDialog->exec() == QDialog::Rejected) {
+        if(mpDialog->exec() == QDialog::Rejected) {
             return;
         }
 
-        spec = pDialog->getSpecification();
+        spec = mpDialog->getSpecification();
 
         //Check if component with type name already exists
         ComponentLibraryEntry entry = getEntry(spec.typeName);
