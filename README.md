@@ -51,7 +51,11 @@ The GUI applications are released under the copyleft **GNU General Public Licens
 ### Windows
 
 You can find official releases and development snapshots at:  
-https://flumes.iei.liu.se/hopsan/files/releases
+https://flumes.iei.liu.se/hopsan/files/releases  
+Backup: https://www.dropbox.com/sh/27t75dg86lcgfz2/AACdU9-oRh8K6IFkBOdh7Wqca?dl=0
+
+You can verify your download checksums here:  
+https://github.com/Hopsan/release_shasum
 
 The Windows version comes packaged as either an installer or as portable zip that you can use if you do not have permission to install software on your computer. You can also choose if you want the compiler included for importing and exporting component libraries and models.
 
@@ -60,7 +64,11 @@ If you choose the zip version, no start menu entry for Hopsan will be added, ins
 ### Ubuntu and Debian Packages
 
 You can find official releases and development snapshots at:  
-https://flumes.iei.liu.se/hopsan/files/releases
+https://flumes.iei.liu.se/hopsan/files/releases  
+Backup: https://www.dropbox.com/sh/27t75dg86lcgfz2/AACdU9-oRh8K6IFkBOdh7Wqca?dl=0
+
+You can verify your download checksums here:  
+https://github.com/Hopsan/release_shasum
 
 Deb packages are built for the current Ubuntu and Debian releases.
 You should be able to install them by opening them in you package manager, but if that does not work, try to install it manually using.
