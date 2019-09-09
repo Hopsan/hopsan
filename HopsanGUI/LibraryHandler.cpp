@@ -702,6 +702,12 @@ void NewComponentDialog::validate()
         mpGeneralTable->item(0,1)->setBackground(errorBrush);
         error=true;
     }
+    auto entry = gpLibraryHandler->getEntry(spec.typeName);
+    if(entry.isValid()) {
+        gpMessageHandler->addErrorMessage("Component with type name \""+spec.typeName+"\" already exist in library \""+entry.pLibrary->name+"\".");
+        mpGeneralTable->item(0,1)->setBackground(errorBrush);
+        error=true;
+    }
 
     //Make sure all variable names are unique
     QStringList allNames = spec.constantNames+spec.inputNames+spec.outputNames+spec.portNames;
@@ -920,13 +926,6 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
         }
 
         spec = mpDialog->getSpecification();
-
-        //Check if component with type name already exists
-        ComponentLibraryEntry entry = getEntry(spec.typeName);
-        if(entry.isValid()) {
-            gpMessageHandler->addErrorMessage("Component with type name \""+spec.typeName+"\" already exist in library \""+entry.pLibrary->name+"\"");
-            return;
-        }
 
         QString targetPath = QFileInfo(pLibrary->xmlFilePath).absolutePath()+"/"+folders.join("/");
         pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, targetPath, spec.typeName, spec.displayName, spec.cqsType,
