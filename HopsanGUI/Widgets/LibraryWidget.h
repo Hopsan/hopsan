@@ -80,6 +80,7 @@ private:
 
     //GUI Stuff
     QTreeWidget *mpTree;
+    QTreeWidgetItem *mpCreateExternalLibraryItem;
     QTreeWidgetItem *mpLoadLibraryItem;
     QTreeWidgetItem *mpAddModelicaFileItem;
     QLineEdit *mpFilterEdit;
