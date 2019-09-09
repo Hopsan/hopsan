@@ -148,17 +148,26 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString varDeclarations;
     for(int i=0; i<comp.parNames.size(); ++i)
     {
-        varDeclarations.append("        double "+comp.parNames[i]+";\n");
+        if(!varDeclarations.isEmpty()) {
+            varDeclarations.append("        ");
+        }
+        varDeclarations.append("double "+comp.parNames[i]+";\n");
     }
     for(int i=0; i<comp.varNames.size(); ++i)
     {
-        varDeclarations.append("        "+comp.varTypes[i]+" "+comp.varNames[i]+";\n");
+        if(!varDeclarations.isEmpty()) {
+            varDeclarations.append("        ");
+        }
+        varDeclarations.append(comp.varTypes[i]+" "+comp.varNames[i]+";\n");
         if(comp.varTypes[i] == "double" && !comp.varNames[i].contains("]"))
             varDeclarations.append("        "+comp.varTypes[i]+" *mpOUTPUT_"+comp.varNames[i]+";\n");
     }
     for(int i=0; i<comp.utilities.size(); ++i)
     {
-        varDeclarations.append("        "+comp.utilities[i]+" "+comp.utilityNames[i]+";\n");
+        if(!varDeclarations.isEmpty()) {
+            varDeclarations.append("        ");
+        }
+        varDeclarations.append(comp.utilities[i]+" "+comp.utilityNames[i]+";\n");
     }
     int portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
@@ -175,13 +184,21 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         for(int v=0; v<varNames.size(); ++v)
         {
             QString varName;
-            if(comp.portNodeTypes[i] == "NodeSignal")
+            if(comp.portNodeTypes[i] == "NodeSignal") {
                 varName = varNames[v];
-            else
+            }
+            else {
                 varName = varNames[v] + QString::number(portId);
-            varDeclarations.append("        double "+varName+";\n");
+            }
+            if(!varDeclarations.isEmpty()) {
+                varDeclarations.append("        ");
+            }
+            varDeclarations.append("double "+varName+";\n");
         }
         ++portId;
+    }
+    if(varDeclarations.endsWith("\n")) {
+        varDeclarations.chop(1);
     }
 
 
@@ -210,7 +227,10 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString dataPtrDeclarations;
     if(!allVarNames.isEmpty())
     {
-        dataPtrDeclarations = "        double ";
+        if(!dataPtrDeclarations.isEmpty()) {
+            dataPtrDeclarations.append("        ");
+        }
+        dataPtrDeclarations = "double ";
         dataPtrDeclarations.append("*mpND_"+allVarNames[0]);
         for(int i=1; i<allVarNames.size(); ++i)
         {
@@ -218,11 +238,17 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         }
         dataPtrDeclarations.append(";\n");
     }
+    if(dataPtrDeclarations.endsWith("\n")) {
+        dataPtrDeclarations.chop(1);
+    }
 
     //Declare ports
     QString portDeclarations;
     if(!comp.portNames.isEmpty()) {
-        portDeclarations = "        Port ";
+        if(!portDeclarations.isEmpty()) {
+            portDeclarations.append("        ");
+        }
+        portDeclarations = "Port ";
         for(int i=0; i<comp.portNames.size(); ++i)
         {
             portDeclarations.append("*mp"+comp.portNames[i]);
@@ -232,6 +258,9 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
             }
         }
         portDeclarations.append(";\n");
+    }
+    if(portDeclarations.endsWith("\n")) {
+        portDeclarations.chop(1);
     }
 
 
@@ -247,8 +276,14 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString registerParameters;
     for(int i=0; i<comp.parNames.size(); ++i)
     {
-        registerParameters.append("            addConstant(\""+comp.parDisplayNames[i]+"\", \""
+        if(!registerParameters.isEmpty()) {
+            registerParameters.append("            ");
+        }
+        registerParameters.append("addConstant(\""+comp.parDisplayNames[i]+"\", \""
                   +comp.parDescriptions[i]+"\", \""+comp.parUnits[i]+"\", "+comp.parInits[i]+", "+comp.parNames[i]+");\n");
+    }
+    if(registerParameters.endsWith("\n")) {
+        registerParameters.chop(1);
     }
 
 
@@ -256,6 +291,9 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString addPorts;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
+        if(!addPorts.isEmpty()) {
+            addPorts.append("            ");
+        }
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
             QString init = comp.portDefaults[i];
@@ -265,16 +303,16 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
             }
             if(comp.portTypes[i] == "ReadPort")
             {
-                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portUnits[i]+"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
+                addPorts.append("addInputVariable(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portUnits[i]+"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
             }
             else if(comp.portTypes[i] == "WritePort")
             {
-                addPorts.append("            addOutputVariable(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portUnits[i]+"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
+                addPorts.append("addOutputVariable(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portUnits[i]+"\", "+init+", &mpND_"+comp.portNames[i]+"__y);\n");
             }
         }
         else
         {
-            addPorts.append("            mp"+comp.portNames[i]+" = add"+comp.portTypes[i]
+            addPorts.append("mp"+comp.portNames[i]+" = add"+comp.portTypes[i]
                       +"(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portNodeTypes[i]+"\"");
             if(comp.portNotReq[i])
             {
@@ -288,8 +326,14 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     }
     for(int i=0; i<comp.varNames.size(); ++i)
     {
+        if(!addPorts.isEmpty()) {
+            addPorts.append("            ");
+        }
         if(comp.varTypes[i] == "double" && !comp.varNames[i].contains("]"))
-            addPorts.append("            addOutputVariable(\""+comp.varNames[i]+"\", \"\", \"\", 0, &mpOUTPUT_"+comp.varNames[i]+");\n");
+            addPorts.append("addOutputVariable(\""+comp.varNames[i]+"\", \"\", \"\", 0, &mpOUTPUT_"+comp.varNames[i]+");\n");
+    }
+    if(addPorts.endsWith("\n")) {
+        addPorts.chop(1);
     }
 
 
@@ -299,8 +343,14 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     {
         if(!comp.varInits[i].isEmpty())
         {
-            initializeVariables.append("            "+comp.varNames[i]+" = "+comp.varInits[i]+";\n");
+            if(!initializeVariables.isEmpty()) {
+                initializeVariables.append("            ");
+            }
+            initializeVariables.append(comp.varNames[i]+" = "+comp.varInits[i]+";\n");
         }
+    }
+    if(initializeVariables.endsWith("\n")) {
+        initializeVariables.chop(1);
     }
 
     //Get data pointers
@@ -319,11 +369,16 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         for(int v=0; v<varNames.size(); ++v)
         {
             QString varName;
-            if(comp.portNodeTypes[i] == "NodeSignal")
+            if(comp.portNodeTypes[i] == "NodeSignal") {
                 varName = varNames[v];
-            else
+            }
+            else {
                 varName = varNames[v]+QString::number(portId);
-            getDataPtrs.append("            mpND_"+varName+" = getSafeNodeDataPtr(mp"+comp.portNames[i]+", "+comp.portNodeTypes[i]+"::"+varLabels[v]);
+            }
+            if(!getDataPtrs.isEmpty()) {
+                getDataPtrs.append("            ");
+            }
+            getDataPtrs.append("mpND_"+varName+" = getSafeNodeDataPtr(mp"+comp.portNames[i]+", "+comp.portNodeTypes[i]+"::"+varLabels[v]);
             if(comp.portNotReq[i])
             {
                 getDataPtrs.append(", "+comp.portDefaults[i]);
@@ -331,6 +386,9 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
             getDataPtrs.append(");\n");
         }
         ++portId;
+    }
+    if(getDataPtrs.endsWith("\n")) {
+        getDataPtrs.chop(1);
     }
 
 
@@ -352,13 +410,21 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         for(int v=0; v<varNames.size(); ++v)
         {
             QString varName;
-            if(comp.portNodeTypes[i] == "NodeSignal")
+            if(comp.portNodeTypes[i] == "NodeSignal") {
                 varName = varNames[v];
-            else
+            }
+            else {
                 varName = varNames[v] + QString::number(portId);
-            readInputs.append("            "+varName+" = (*mpND_"+varName+");\n");
+            }
+            if(!readInputs.isEmpty()) {
+                readInputs.append("            ");
+            }
+            readInputs.append(varName+" = (*mpND_"+varName+");\n");
         }
         ++portId;
+    }
+    if(readInputs.endsWith("\n")) {
+        readInputs.chop(1);
     }
 
 
@@ -366,14 +432,26 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString confCode;
     for(int i=0; i<comp.confEquations.size(); ++i)
     {
-        confCode.append("            "+comp.confEquations[i]+"\n");
+        if(!confCode.isEmpty()) {
+            confCode.append("            ");
+        }
+        confCode.append(comp.confEquations[i]+"\n");
+    }
+    if(confCode.endsWith("\n")) {
+        confCode.chop(1);
     }
 
     //Initialize code
     QString initCode;
     for(int i=0; i<comp.initEquations.size(); ++i)
     {
-        initCode.append("            "+comp.initEquations[i]+"\n");
+        if(!initCode.isEmpty()) {
+            initCode.append("            ");
+        }
+        initCode.append(comp.initEquations[i]+"\n");
+    }
+    if(initCode.endsWith("\n")) {
+        initCode.chop(1);
     }
 
 
@@ -398,18 +476,30 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         for(int v=0; v<varNames.size(); ++v)
         {
             QString varName;
-            if(comp.portNodeTypes[i] == "NodeSignal")
+            if(comp.portNodeTypes[i] == "NodeSignal") {
                 varName = varNames[v];
-            else
+            }
+            else {
                 varName = varNames[v] + QString::number(portId);
-            writeOutputs.append("            (*mpND_"+varName+") = "+varName+";\n");
+            }
+            if(!writeOutputs.isEmpty()) {
+                writeOutputs.append("            ");
+            }
+            writeOutputs.append("(*mpND_"+varName+") = "+varName+";\n");
         }
         ++portId;
     }
     for(int i=0; i<comp.varNames.size(); ++i)
     {
-        if(comp.varTypes[i] == "double" && !comp.varNames[i].contains("]"))
-            writeOutputs.append("            (*mpOUTPUT_"+comp.varNames[i]+") = "+comp.varNames[i]+";\n");
+        if(comp.varTypes[i] == "double" && !comp.varNames[i].contains("]")) {
+            if(!writeOutputs.isEmpty()) {
+                writeOutputs.append("            ");
+            }
+            writeOutputs.append("(*mpOUTPUT_"+comp.varNames[i]+") = "+comp.varNames[i]+";\n");
+        }
+    }
+    if(writeOutputs.endsWith("\n")) {
+        writeOutputs.chop(1);
     }
 
     QString writeStartValues = "";
@@ -423,7 +513,13 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString simCode;
     for(int i=0; i<comp.simEquations.size(); ++i)
     {
-        simCode.append("            "+comp.simEquations[i]+"\n");
+        if(!simCode.isEmpty()) {
+            simCode.append("            ");
+        }
+        simCode.append(comp.simEquations[i]+"\n");
+    }
+    if(simCode.endsWith("\n")) {
+        simCode.chop(1);
     }
 
 
@@ -431,7 +527,13 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString finalCode;
     for(int i=0; i<comp.finalEquations.size(); ++i)
     {
-        finalCode.append("            "+comp.finalEquations[i]+"\n");
+        if(!finalCode.isEmpty()) {
+            finalCode.append("            ");
+        }
+        finalCode.append(comp.finalEquations[i]+"\n");
+    }
+    if(finalCode.endsWith("\n")) {
+        finalCode.chop(1);
     }
 
 
@@ -439,7 +541,13 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString deconfCode;
     for(int i=0; i<comp.deconfEquations.size(); ++i)
     {
-        deconfCode.append("            "+comp.deconfEquations[i]+"\n");
+        if(!deconfCode.isEmpty()) {
+            deconfCode.append("            ");
+        }
+        deconfCode.append(comp.deconfEquations[i]+"\n");
+    }
+    if(deconfCode.endsWith("\n")) {
+        deconfCode.chop(1);
     }
 
 
@@ -447,7 +555,13 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     QString auxiliaryFunctions;
     for(int i=0; i<comp.auxiliaryFunctions.size(); ++i)
     {
+        if(!auxiliaryFunctions.isEmpty()) {
+            auxiliaryFunctions.append("        ");
+        }
         auxiliaryFunctions.append("        "+comp.auxiliaryFunctions[i]+"\n");
+    }
+    if(auxiliaryFunctions.endsWith("\n")) {
+        auxiliaryFunctions.chop(1);
     }
 
 
