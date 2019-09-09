@@ -152,6 +152,7 @@
         <file>graphics/options-active.svg</file>
         <file>graphics/uiicons/svg/Hopsan-ExportExe.svg</file>
         <file>graphics/porticons/PetrinetPort.svg</file>
+        <file>graphics/uiicons/svg/Hopsan-Modelica.svg</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="licenseNoticeGPLv3">../licenseNoticeGPLv3</file>

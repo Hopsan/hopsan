@@ -370,16 +370,27 @@ void LibraryWidget::update()
 
     if(filter.isEmpty())
     {
+        mpCreateExternalLibraryItem = new QTreeWidgetItem();
+        mpCreateExternalLibraryItem->setText(0, "Create external library");
+        QFont font = mpCreateExternalLibraryItem->font(0);
+        font.setItalic(true);
+        mpCreateExternalLibraryItem->setFont(0,font);
+        mpCreateExternalLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
+        mpCreateExternalLibraryItem->setToolTip(0, "Create external library");
+        mpTree->addTopLevelItem(mpCreateExternalLibraryItem);
+
         //Append load external library items
         mpLoadLibraryItem = new QTreeWidgetItem();
         mpLoadLibraryItem->setText(0, "Load external library");
-        mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
+        mpLoadLibraryItem->setFont(0, font);
+        mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-LoadLibrary.svg"));
         mpLoadLibraryItem->setToolTip(0, "Load external library");
         mpTree->addTopLevelItem(mpLoadLibraryItem);
 
         mpAddModelicaFileItem = new QTreeWidgetItem();
         mpAddModelicaFileItem->setText(0, "Load Modelica file");
-        mpAddModelicaFileItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Add.svg"));
+        mpAddModelicaFileItem->setFont(0, font);
+        mpAddModelicaFileItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Modelica.svg"));
         mpAddModelicaFileItem->setToolTip(0, "Load Modelica file");
         mpTree->addTopLevelItem(mpAddModelicaFileItem);
     }
@@ -441,17 +452,14 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
     qDebug() << "Item click on: " << item->text(0);
 
     Q_UNUSED(column)
-    if(isComponentItem(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
-    {
+    if(isComponentItem(item) && qApp->mouseButtons().testFlag(Qt::LeftButton)) {
         QString typeName = mItemToTypeNameMap.find(item).value();
         if(gpLibraryHandler->getEntry(typeName).state == Enabled) {
             QIcon icon;
-            if(typeName.startsWith(QString(MODELICATYPENAME)+"_"))
-            {
+            if(typeName.startsWith(QString(MODELICATYPENAME)+"_")) {
                 icon = item->icon(0);
             }
-            else
-            {
+            else {
                 SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
                 QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
                 icon.addFile(iconPath,QSize(55,55));
@@ -471,8 +479,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             gpHelpPopupWidget->hide();
         }
     }
-    else if(mItemToModelicaFileNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton))
-    {
+    else if(mItemToModelicaFileNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton)) {
         QString filePath = mItemToModelicaFileNameMap.find(item).value();
         qDebug() << "Opening: " << filePath;
 
@@ -481,36 +488,34 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
 
     }
-    else if((item == mpLoadLibraryItem) && qApp->mouseButtons() == Qt::LeftButton)
-    {
+    else if((item == mpCreateExternalLibraryItem) && qApp->mouseButtons() == Qt::LeftButton) {
+        gpLibraryHandler->createNewLibrary();
+        return;
+    }
+    else if((item == mpLoadLibraryItem) && qApp->mouseButtons() == Qt::LeftButton) {
         gpLibraryHandler->loadLibrary();
         return;
     }
-    else if((item == mpAddModelicaFileItem) && qApp->mouseButtons() == Qt::LeftButton)
-    {
+    else if((item == mpAddModelicaFileItem) && qApp->mouseButtons() == Qt::LeftButton) {
         //gpLibraryHandler->createNewModelicaComponent();
         gpModelicaLibrary->loadModelicaFile();
         return;
     }
 
-    if(qApp->mouseButtons() == Qt::RightButton)
-    {
+    if(qApp->mouseButtons() == Qt::RightButton) {
         //Ignore right-click for load library and add modelica file items
-        if(item == mpLoadLibraryItem || item == mpAddModelicaFileItem)
-        {
+        if(item == mpLoadLibraryItem || item == mpAddModelicaFileItem) {
             return;
         }
 
         //Context menu for Modelica file items
-        if(mItemToModelicaFileNameMap.keys().contains(item))
-        {
+        if(mItemToModelicaFileNameMap.keys().contains(item)) {
             QMenu contextMenu;
             QAction *pUnloadAction = contextMenu.addAction("Unload Modelica File");
 
             QAction *pSelectedAction = contextMenu.exec(QCursor::pos());
 
-            if(pSelectedAction == pUnloadAction)
-            {
+            if(pSelectedAction == pUnloadAction) {
                 gpModelicaLibrary->unloadModelicaFile(mItemToModelicaFileNameMap.find(item).value());
             }
             return;
@@ -550,8 +555,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
         QStringList typeNames;
 
-        while(!isComponentItem(pFirstSubComponentItem))
-        {
+        while(!isComponentItem(pFirstSubComponentItem)) {
             if(nullptr == pFirstSubComponentItem) {
                 break;
             }
@@ -559,8 +563,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         }
 
         //Enable unload all only for top-level external libraries folder
-        if(item->text(0) == componentlibrary::roots::externalLibraries)
-        {
+        if(item->text(0) == componentlibrary::roots::externalLibraries) {
             pUnloadAllAction->setVisible(true);
             pNewLibraryAction->setVisible(true);
         }
