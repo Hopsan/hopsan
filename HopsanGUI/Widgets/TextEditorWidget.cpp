@@ -399,16 +399,49 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
     //Replace tabs with four whitespaces
     if(event->key() == Qt::Key_Backtab)    //Shift+tab, remove spaces to the left until next tab stop (or as many spaces as possible)
     {
+        int anchorPos = textCursor().anchor();
+        int cursorPos = textCursor().position();
         if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
         {
             auto cursor = textCursor();
+            int startPos = qMin(cursor.anchor(), cursor.position());
+            QString allText = this->toPlainText();
+
+            //Remove space at beginning of first selected line (even if beginning is not selected)
+            for(int i=startPos; i>=0; --i) {
+                if(i == 0 && allText.size() > 2 && allText.startsWith("  ")) {  //Two spaces at beginning of document
+                    allText.remove(i,2);
+                    this->setPlainText(allText);
+                    cursor.setPosition(anchorPos-2, QTextCursor::MoveAnchor);
+                    cursor.setPosition(cursorPos-2, QTextCursor::KeepAnchor);
+                    break;
+                }
+                else if(i == 0 && allText.size() > 1 && allText.startsWith(" ")) {  //One space at beginning of document
+                    allText.remove(i,1);
+                    this->setPlainText(allText);
+                    cursor.setPosition(anchorPos-1, QTextCursor::MoveAnchor);
+                    cursor.setPosition(cursorPos-1, QTextCursor::KeepAnchor);
+                    break;
+                }
+                else if(i<allText.size()-2 && allText.mid(i,3) == "\n  ") { //Two spaces at beginning of first line of selection
+                    allText.remove(i+1,2);
+                    this->setPlainText(allText);
+                    cursor.setPosition(anchorPos-2, QTextCursor::MoveAnchor);
+                    cursor.setPosition(cursorPos-2, QTextCursor::KeepAnchor);
+                    break;
+                }
+                else if(i<allText.size()-1 && allText.mid(i,2) == "\n ") {  //One spaces at beginning of first line of seleciton
+                    allText.remove(i+1,1);
+                    this->setPlainText(allText);
+                    cursor.setPosition(anchorPos-1, QTextCursor::MoveAnchor);
+                    cursor.setPosition(cursorPos-1, QTextCursor::KeepAnchor);
+                    break;
+                }
+            }
+            this->setTextCursor(cursor);
+
+            //Remove at most two spaces at beginning of each line in the selection
             QString text = cursor.selection().toPlainText();
-            if(text.startsWith(" ")) {
-                text.remove(0,1);
-            }
-            if(text.startsWith(" ")) {
-                text.remove(0,1);
-            }
             text.replace("\n ","\n");
             text.replace("\n ","\n");
             cursor.beginEditBlock();
@@ -423,6 +456,7 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
             cursor.select(QTextCursor::LineUnderCursor);
             this->setTextCursor(cursor);
             QString text = cursor.selection().toPlainText();
+
             if(text.startsWith(" ")) {
                 text.remove(0,1);
             }
@@ -430,7 +464,7 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
                 text.remove(0,1);
             }
             int nSpaces = 0;
-            while(text[nSpaces] == " ") {
+            while(text[nSpaces] == ' ') {
                 ++nSpaces;
             }
             cursor.beginEditBlock();
@@ -472,12 +506,34 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
     }
     else if(event->key() == Qt::Key_Tab)
     {
+        int anchorPos = textCursor().anchor();
+        int cursorPos = textCursor().position();
         if(textCursor().anchor() != textCursor().position())    //Selection exists, indent whole selection
         {
             auto cursor = textCursor();
             QString text = cursor.selection().toPlainText();
+            QString allText = this->toPlainText();
+            int startPos = qMin(cursor.anchor(), cursor.position());
+
+            //Insert spaces at beginning of each new line in selection
             text.replace("\n", "\n  ");
-            text.prepend("  ");
+
+            //Insert spaces at beginning of first line of selection (even if beginning is not selected)
+            for(int i=startPos; i>=0; --i) {
+                if(i == 0) {        //Selection is on first line, prepend two spaces to document
+                    allText.insert(i, "  ");
+                    break;
+                }
+                else if(allText.at(i) == '\n') {    //Selection is not on first line, prepend two spaces to the line
+                    allText.insert(i+1, "  ");
+                    break;
+                }
+            }
+            this->setPlainText(allText);
+            cursor.setPosition(anchorPos+2, QTextCursor::MoveAnchor);
+            cursor.setPosition(cursorPos+2, QTextCursor::KeepAnchor);
+            this->setTextCursor(cursor);
+
             cursor.beginEditBlock();
             cursor.removeSelectedText();
             insertPlainText(text);
