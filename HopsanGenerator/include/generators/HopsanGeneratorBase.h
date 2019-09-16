@@ -62,6 +62,7 @@ class HOPSANGENERATOR_DLLAPI HopsanGeneratorBase
 {
 public:
     enum SolverT {NumericalIntegration, BilinearTransform};
+    enum TargetLanguageT {Cpp, Modelica};
     using MessageHandlerT = std::function<void(const char*, const char, void*)>;
 
     HopsanGeneratorBase(const QString &hopsanInstallPath, const CompilerSelection &compilerSelection, const QString &tempPath="");
@@ -84,10 +85,11 @@ public:
     void compileFromComponentSpecification(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false, const QString customSourceFile="");
     bool generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags=QStringList(), QStringList lflags=QStringList(), QStringList includePaths=QStringList(), QStringList linkPaths=QStringList(), QStringList linkLibraries=QStringList());
     bool generateCafFile(QString &rPath, ComponentAppearanceSpecification &rCafSpec);
-    bool generateComponentSourceFile(QString &path, ComponentSpecification &comp);
+    bool generateComponentSourceFile(QString &path, ComponentSpecification &comp, TargetLanguageT target=Cpp);
     bool generateLibrarySourceFile(const ComponentLibrary &lib);
 
 protected:
+    QString generateModelicaCodeFromComponentSpec(ComponentSpecification comp) const;
     QString generateSourceCodefromComponentSpec(ComponentSpecification comp, bool overwriteStartValues=false) const;
     bool generateOrUpdateComponentAppearanceFile(QString path, ComponentSpecification comp, QString sourceFile=QString());
 

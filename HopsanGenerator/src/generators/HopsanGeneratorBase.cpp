@@ -245,21 +245,22 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     //Declare ports
     QString portDeclarations;
     if(!comp.portNames.isEmpty()) {
-        if(!portDeclarations.isEmpty()) {
-            portDeclarations.append("        ");
-        }
-        portDeclarations = "Port ";
+        portDeclarations.append("        Port ");
+        bool portFound=false;
         for(int i=0; i<comp.portNames.size(); ++i)
         {
             if(comp.portNodeTypes[i] != "NodeSignal") {
                 portDeclarations.append("*mp"+comp.portNames[i]+", ");
+                portFound = true;
             }
         }
-        portDeclarations.chop(2);   //Remove trailing comma
-        portDeclarations.append(";\n");
-    }
-    if(portDeclarations.endsWith("\n")) {
-        portDeclarations.chop(1);
+        if(portFound) { //At least one port to declare
+            portDeclarations.chop(2);   //Remove trailing comma
+            portDeclarations.append(";");
+        }
+        else {  //No ports to declare
+            portDeclarations.clear();
+        }
     }
 
 
@@ -1049,20 +1050,25 @@ bool HopsanGeneratorBase::generateCafFile(QString &rPath, ComponentAppearanceSpe
     return true;
 }
 
-bool HopsanGeneratorBase::generateComponentSourceFile(QString &path, ComponentSpecification &comp)
+bool HopsanGeneratorBase::generateComponentSourceFile(QString &path, ComponentSpecification &comp, TargetLanguageT target)
 {
-    QFile hppFile;
-    hppFile.setFileName(path);
-    if(!hppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    QFile sourceFile;
+    sourceFile.setFileName(path);
+    if(!sourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Could not open "+QFileInfo(path).absoluteFilePath()+" for writing.");
         return false;
     }
 
-    QTextStream out(&hppFile);
-    out << generateSourceCodefromComponentSpec(comp);
+    QTextStream out(&sourceFile);
+    if(target == Cpp) {
+        out << generateSourceCodefromComponentSpec(comp);
+    }
+    else if(target == Modelica) {
+        out << generateModelicaCodeFromComponentSpec(comp);
+    }
 
-    hppFile.close();
+    sourceFile.close();
     return true;
 }
 
@@ -1111,6 +1117,69 @@ bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
     out << output;
     srcFile.close();
     return true;
+}
+
+QString HopsanGeneratorBase::generateModelicaCodeFromComponentSpec(ComponentSpecification comp) const
+{
+    QString output;
+    QTextStream outStream(&output);
+    QString indent = "    "; //Hard-coded for now
+
+    outStream << "model " << comp.typeName << " \"" << comp.displayName << "\"\n";
+    outStream << indent << "annotation(hopsanCqsType = \"" << comp.cqsType << "\")\n";
+    outStream << "\n";
+    for(int p=0; p<comp.portNodeTypes.size(); ++p) {
+        QString nodeType = comp.portNodeTypes[p];
+        if(nodeType == "NodeSignal" && comp.portTypes[p] == "ReadPort") {
+            nodeType.append("In");
+        }
+        else if(nodeType == "NodeSignal" && comp.portTypes[p] == "WritePort") {
+            nodeType.append("Out");
+        }
+        outStream << indent << nodeType << " " << comp.portNames[p] << ";\n";
+    }
+    outStream << "\n";
+    for(int p=0; p<comp.parNames.size(); ++p) {
+        outStream << indent << "parameter Real " << comp.parNames[p] << "(unit=\"" << comp.parUnits[p] << "\")=" << comp.parInits[p] << "\n";
+    }
+    outStream << "\n";
+    for(int v=0; v<comp.varNames.size(); ++v) {
+        QString varType = comp.varTypes[v];
+        if("double" == varType) {
+            varType = "Real";   //Might need more transformations here
+        }
+        outStream << indent << varType << " " << comp.varNames[v] << "(start=" << comp.varInits[v] << ");\n";
+    }
+    outStream << "\n";
+    outStream << "equation\n";
+    outStream << indent << "\n";
+    outStream << "algorithm\n";
+    outStream << indent << "\n";
+    outStream << "end " << comp.typeName << ";\n";
+
+//              equation
+//              der(vv)/omega/omega + vv*delta/omega + xv = P1.p-p_ref;
+//              vv = der(xv);
+
+//              algorithm
+//              if(xv < 0) xv = 0;
+//              if(xv <= 0) vv = 0;
+//              if(xv > xv_max) xv = xv_max;
+//              if(xv >= xv_max) vv = 0;
+
+//              P2.q = Cq*w*xv*sqrt(2/rho*abs(P1.p-P2.p))*sign(P1.p-P2.p);
+//              P1.q = -P2.q;
+
+//              P1.p = P1.c + P1.Zc*P1.q;
+//              P2.p = P2.c + P2.Zc*P2.q;
+
+//              debug1 = xv;
+//              debug2 = vv;
+
+//              end ModelicaPRV;
+
+
+    return output;
 }
 
 
