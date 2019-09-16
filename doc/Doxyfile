@@ -1149,7 +1149,7 @@ HTML_EXTRA_STYLESHEET  = hopsan.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       =
+HTML_EXTRA_FILES       = graphics/mainwindow.png graphics/graphics/library.png graphics/graphics/tfanalysis_icon.png graphics/fft_icon.png graphics/sensitivity_icon.png graphics/sensitivity_dialog.png graphics/sensitivity_plot.png graphics/optimization_icon.png graphics/ports.png graphics/node.png graphics/systemparameters_icon.png graphics/configuration_icon.png graphics/simulate_icon.png graphics/plot_icon.png graphics/favoritevariable_icon.png graphics/toggleplotvariables_icon.png graphics/plotresettimevector_icon.png graphics/zoomplot_icon.png graphics/panplot_icon.png graphics/saveplot_icon.png graphics/loadplot_icon.png graphics/exportplot_icon.png graphics/exportplotgfx_icon.png graphics/toggleplotcurvecontrolpanel_icon.png graphics/export_simulink_icon.png graphics/export_fmu_icon.png graphics/import_fmu_icon.png graphics/energylosses_icon.png graphics/energylosses_model1.png graphics/energylosses_barplot1.png graphics/energylosses_model2.png graphics/energylosses_barplot2.png graphics/tlm.png graphics/cq.png graphics/animation_icon.png
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to

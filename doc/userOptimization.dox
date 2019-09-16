@@ -78,7 +78,7 @@ Sixth International Symposium on Micromachine and Human Science, Nagoya, Japan. 
 
 2.	Click the 'Optimization' icon. It is found in the simulation toolbar, next to the simulate button. It can also be reached from the menus.
 
-\htmlimagerightcaption{../graphics/optimization_icon.png, Open Optimization Dialog}
+\htmlimagerightcaption{optimization_icon.png, Open Optimization Dialog}
 \image latex "optimization_icon.png" "Open Optimization Dialog"
 
 3.	Select general settings. Specify number of iterations, number of search points, reflection coefficient, randomization and forgetting factor and tolerances for convergence. Also choose whether to plot each iteration (will slow down optimization). In the example we choose 100 iterations, 4 search points, reflection coefficient of 1.3, randomization factor of 0.3, and a forgetting factor of 0. For tolerance values we use default settings.
