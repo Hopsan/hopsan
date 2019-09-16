@@ -648,6 +648,26 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     gpMessageHandler->addErrorMessage("Library compiler failed");
                 }
 
+                //Generate C++ code from Modelica if source files are Modelica code
+                for(const QString &caf : pLib->cafFiles)
+                {
+                    QFile cafFile(caf);
+                    cafFile.open(QFile::ReadOnly);
+                    QString code = cafFile.readAll();
+                    cafFile.close();
+                    QString path;
+                    QString sourceFile = code.section("sourcecode=\"",1,1).section("\"",0,0);
+                    path = QFileInfo(cafFile).path();
+                    if(sourceFile.endsWith(".mo"))
+                    {
+                        if (!spGenerator->generateFromModelica(path+"/"+sourceFile, 0,
+                                                               HopsanGeneratorGUI::CompileT::DoNotCompile))
+                        {
+                            gpMessageHandler->addErrorMessage("Failed to import Modelica");
+                        }
+                    }
+                }
+
                 // Now reload the library
                 gpLibraryHandler->loadLibrary(libPath);
             }

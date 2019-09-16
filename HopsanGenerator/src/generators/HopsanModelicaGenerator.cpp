@@ -1322,7 +1322,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         QString num = QString::number(i+1);
         if(ports[i].porttype == "ReadPort")
         {
-            knowns.append(Expression(ports[i].name+"__y"));
+            knowns.append(Expression(ports[i].name));
             logStream << knowns.last().toString() << "\n";
         }
         else if(ports[i].porttype == "PowerPort" && cqsType == "C")
@@ -1778,7 +1778,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         QStringList varNames;
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
-            varNames << comp.portNames[i]+"__y";
+            varNames << comp.portNames[i];
         }
         else
         {
@@ -1787,12 +1787,11 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
 
         for(int v=0; v<varNames.size(); ++v)
         {
-            QString varName;
             if(comp.portNodeTypes[i] == "NodeSignal")
-                varName = varNames[v];
-            else
-                varName = varNames[v] + QString::number(portId);
-            comp.auxiliaryFunctions.append("    "+varName+" = (*mpND_"+varName+");");
+                comp.auxiliaryFunctions.append("    "+varNames[v]+" = (*mp"+varNames[v]+");");
+            else {
+                comp.auxiliaryFunctions.append("    "+varNames[v]+QString::number(portId)+" = (*mpP"+QString::number(portId)+"_"+varNames[v]+");");
+            }
         }
         ++portId;
     }
