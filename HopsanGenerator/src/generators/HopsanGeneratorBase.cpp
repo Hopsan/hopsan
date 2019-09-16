@@ -252,13 +252,10 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         for(int i=0; i<comp.portNames.size(); ++i)
         {
             if(comp.portNodeTypes[i] != "NodeSignal") {
-                portDeclarations.append("*mp"+comp.portNames[i]);
-                if(i<comp.portNames.size()-1)
-                {
-                    portDeclarations.append(", ");
-                }
+                portDeclarations.append("*mp"+comp.portNames[i]+", ");
             }
         }
+        portDeclarations.chop(2);   //Remove trailing comma
         portDeclarations.append(";\n");
     }
     if(portDeclarations.endsWith("\n")) {
@@ -315,7 +312,7 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         else
         {
             addPorts.append("mp"+comp.portNames[i]+" = add"+comp.portTypes[i]
-                      +"(\""+comp.portNames[i]+"\", \""+comp.portDescriptions[i]+"\", \""+comp.portNodeTypes[i]+"\"");
+                      +"(\""+comp.portNames[i]+"\", \""+comp.portNodeTypes[i]+"\"");
             if(comp.portNotReq[i])
             {
                 addPorts.append(", Port::NotRequired);\n");
