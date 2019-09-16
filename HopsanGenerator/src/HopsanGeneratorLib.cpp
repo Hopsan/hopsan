@@ -360,11 +360,17 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
                                const char* const portDescriptions[], const int numPortDescriptions,
                                const char* const portTypes[], const int numPortTypes,
                                const int portsRequired[], const int numPortsRequired,
-                               messagehandler_t messageHandler, void* pMessageObject)
+                               bool modelica, messagehandler_t messageHandler, void* pMessageObject)
 {
     QFileInfo xmlPath(libraryXmlPath);
     QString cafPath = QDir(targetPath).absoluteFilePath(QString(typeName)+".xml");
-    QString hppPath = QDir(targetPath).absoluteFilePath(QString(typeName)+".hpp");
+    QString sourcePath;
+    if(modelica) {
+        sourcePath = QDir(targetPath).absoluteFilePath(QString(typeName)+".mo");
+    }
+    else {
+        sourcePath = QDir(targetPath).absoluteFilePath(QString(typeName)+".hpp");
+    }
 
     QString dummy;
     auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(dummy, dummy));
@@ -373,7 +379,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     //Generate CAF file for new component
     ComponentAppearanceSpecification cafSpec(typeName);
     cafSpec.mDisplayName = displayName;
-    cafSpec.mSourceCode = QFileInfo(hppPath).fileName();
+    cafSpec.mSourceCode = QFileInfo(sourcePath).fileName();
     cafSpec.mRecompilable = true;
     if(!pGenerator->generateCafFile(cafPath, cafSpec)) {
         pGenerator->printErrorMessage("Failed to generate component appearance file.");
@@ -442,7 +448,11 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     for(int i=0; i<numPortsRequired; ++i) {
         compSpec.portNotReq.append(!portsRequired[i]);
     }
-    if(!pGenerator->generateComponentSourceFile(hppPath, compSpec)) {
+    HopsanGeneratorBase::TargetLanguageT target = HopsanGeneratorBase::Cpp;
+    if(modelica) {
+        target = HopsanGeneratorBase::Modelica;
+    }
+    if(!pGenerator->generateComponentSourceFile(sourcePath, compSpec, target)) {
         pGenerator->printErrorMessage("Failed to generate component source file.");
         return false;
     };
@@ -456,7 +466,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
 
     //Add new component to library
     lib.mComponentXMLFiles.append(QDir(xmlPath.absolutePath()).relativeFilePath(QFileInfo(cafPath).absoluteFilePath()));
-    lib.mComponentCodeFiles.append(QFileInfo(hppPath).fileName());
+    lib.mComponentCodeFiles.append(QFileInfo(sourcePath).fileName().replace(".mo", ".hpp"));
 
     //Write back component library to XML
     if(!lib.saveToXML(xmlPath.absoluteFilePath())) {

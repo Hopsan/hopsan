@@ -644,9 +644,6 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 // But since we only need to unload one particular library this should work
                 //! @todo fix the problem with save state
                 auto spGenerator = createDefaultImportGenerator();
-                if (!spGenerator->compileComponentLibrary(libPath)) {
-                    gpMessageHandler->addErrorMessage("Library compiler failed");
-                }
 
                 //Generate C++ code from Modelica if source files are Modelica code
                 for(const QString &caf : pLib->cafFiles)
@@ -666,6 +663,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                             gpMessageHandler->addErrorMessage("Failed to import Modelica");
                         }
                     }
+                }
+
+                if (!spGenerator->compileComponentLibrary(libPath)) {
+                    gpMessageHandler->addErrorMessage("Library compiler failed");
                 }
 
                 // Now reload the library

@@ -63,7 +63,7 @@ class HOPSANGENERATOR_DLLAPI BuildFlags
 public:
     enum class Platform {notset, win, win32, win64, Linux, apple};
     enum class Compiler {Any, GCC, Clang, MSVC};
-    enum class Language {C, Cpp};
+    enum class Language {C, Cpp, Modelica};
     static QString platformString(Platform platform);
     static Platform platformFromString(const QString& platformString);
     static QString compilerString(Compiler compiler, Language language);

@@ -584,14 +584,15 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
     for(const bool req : portsRequired.toVector()) {
         portsrequired.push_back(req);
     }
+    bool modelica = true;
 
-    using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, const char*, const char*, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const int[], size_t, MessageHandler_t, void*);
+    using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, const char*, const char*, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const int[], size_t, bool, MessageHandler_t, void*);
     bool checkOK = mPrivates->call<AddComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), targetpath.c_str(), typenamestr.c_str(), displayname.c_str(), cqstype.c_str(),
                                                                     constantnames.data(), constantnames.size(), constantdescriptions.data(), constantdescriptions.size(), constantunits.data(), constantunits.size(), constantinits.data(), constantinits.size(),
                                                                     inputnames.data(), inputnames.size(), inputdescriptions.data(), inputdescriptions.size(), inputunits.data(), inputunits.size(), inputinits.data(), inputinits.size(),
                                                                     outputnames.data(), outputnames.size(), outputdescriptions.data(), outputdescriptions.size(), outputunits.data(), outputunits.size(), outputinits.data(), outputinits.size(),
                                                                     portnames.data(), portnames.size(), portdescriptions.data(), portdescriptions.size(), porttypes.data(), porttypes.size(), portsrequired.data(), portsrequired.size(),
-                                                                    &messageHandler, static_cast<void*>(&forwarder));
+                                                                    modelica, &messageHandler, static_cast<void*>(&forwarder));
     lw->setDidSucceed(checkOK);
     return checkOK;
 }

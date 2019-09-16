@@ -1790,7 +1790,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
             if(comp.portNodeTypes[i] == "NodeSignal")
                 comp.auxiliaryFunctions.append("    "+varNames[v]+" = (*mp"+varNames[v]+");");
             else {
-                comp.auxiliaryFunctions.append("    "+varNames[v]+QString::number(portId)+" = (*mpP"+QString::number(portId)+"_"+varNames[v]+");");
+                comp.auxiliaryFunctions.append("    "+varNames[v]+QString::number(portId)+" = (*mp"+comp.portNames[i]+"_"+varNames[v]+");");
             }
         }
         ++portId;
