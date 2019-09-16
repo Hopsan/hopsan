@@ -29,7 +29,7 @@ First of all we must have a model to export. In this example, we want to export 
 
 Next step is to export the files. Click the "Export" button and select Simulink Source Files.
 
-\htmlimagerightcaption{../graphics/export_simulink_icon.png, Export to S-function}
+\htmlimagerightcaption{export_simulink_icon.png, Export to S-function}
 \image latex "export_simulink_icon.png" "Export to S-function"
 
 A dialog appears, where you can choose version of Visual C++ and if you want 32-bit or 64-bit architecture. These settings should be chosen so that they match your version of Matlab. It is also possible to disable port graphics, for portability with older versions of Simulink. Use this setting only if Matlab gives an error message ending with "called mdlSetNumInputPorts more than once". 
@@ -59,7 +59,7 @@ The Functional Mock-up Interface is an open interface for communication between 
 \section export-fmu Exporting a Functional Mock-up Unit
 Hopsan models can be exported to FMUs by clicking on the Export to FMU button. Then choose an empty folder. All required files will be exported, compiled and compressed. Model inputs and outputs can be specified by using interface components.
 
-\htmlimagerightcaption{../graphics/export_fmu_icon.png, Export to FMU}
+\htmlimagerightcaption{export_fmu_icon.png, Export to FMU}
 \image latex "export_fmu_icon.png" "Export to FMU"
 
 \subsection export-fmu-prerequisites Prerequisites
@@ -68,7 +68,7 @@ Hopsan models can be exported to FMUs by clicking on the Export to FMU button. T
 \section import-fmu Importing a Functional Mock-up Unit
 FMUs from other programs (or from Hopsan itself) can be imported by clicking on the import from FMU icon. If all goes well they will appear as components in the component library. 
 
-\htmlimagerightcaption{../graphics/import_fmu_icon.png, Import from FMU}
+\htmlimagerightcaption{import_fmu_icon.png, Import from FMU}
 \image latex "import_fmu_icon.png" "Import from FMU"
 
 \subsection export-fmu-prerequisites Prerequisites

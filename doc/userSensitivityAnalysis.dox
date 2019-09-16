@@ -10,7 +10,7 @@ Hopsan can perform Monte Carlo-based sensitivity analysis. This means many simul
 
 2.	Click the 'Sensitivity Analysis' icon. It is found in the simulation tool bar. It can also be accessed from the menus.
 
-\htmlimagerightcaption{../graphics/sensitivity_icon.png, Open Sensitivity Analysis Dialog}
+\htmlimagerightcaption{sensitivity_icon.png, Open Sensitivity Analysis Dialog}
 \image latex "sensitivity_icon.png" "Open Sensitivity Analysis Dialog"
 
 
@@ -18,12 +18,12 @@ Hopsan can perform Monte Carlo-based sensitivity analysis. This means many simul
 
 4.  Choose which output variables. In this example, we want to know how the step response of the position servo is affected when damping is uncertain. The dialog should now look similar to this:
 
-\htmllinkimage{../graphics/sensitivity_dialog.png, 500}
+\htmllinkimage{sensitivity_dialog.png, 500}
 \image latex "sensitivity_dialog.png" "Sensitivity Analysis settings dialog"
 
 5.  Now press the "Start Analysis" button. The model will be simulated 99 times with randomized damping parameters. When done, the results from all simulations will be plotted in one graph:
 
-\htmllinkimage{../graphics/sensitivity_plot.png, 500}
+\htmllinkimage{sensitivity_plot.png, 500}
 \image latex "sensitivity_plot.png" "Sensitivity Analysis results"
 
 
