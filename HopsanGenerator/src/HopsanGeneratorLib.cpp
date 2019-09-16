@@ -381,6 +381,18 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     cafSpec.mDisplayName = displayName;
     cafSpec.mSourceCode = QFileInfo(sourcePath).fileName();
     cafSpec.mRecompilable = true;
+    for(int p=0; p<numPortNames; ++p) {
+        double x = (p+1.0)/((double)numPortNames+1.0);
+        cafSpec.addPort(portNames[p], x,0,270);
+    }
+    for(int i=0; i<numInputNames; ++i) {
+        double y = (i+1.0)/((double)numInputNames+1.0);
+        cafSpec.addPort(inputNames[i], 0,y,180);
+    }
+    for(int i=0; i<numOutputNames; ++i) {
+        double y = (i+1.0)/((double)numOutputNames+1.0);
+        cafSpec.addPort(outputNames[i], 1,y,0);
+    }
     if(!pGenerator->generateCafFile(cafPath, cafSpec)) {
         pGenerator->printErrorMessage("Failed to generate component appearance file.");
         return false;
