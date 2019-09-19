@@ -418,7 +418,7 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     setStyleSheet("QTableWidget {background-color: transparent;}");
     mpGeneralTable = new QTableWidget(this);
     mpGeneralTable->setColumnCount(2);
-    mpGeneralTable->setRowCount(3);
+    mpGeneralTable->setRowCount(4);
 #if QT_VERSION >= 0x050000  //not available in Qt4
     mpGeneralTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 #endif
@@ -432,11 +432,15 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     addLabelItem(mpGeneralTable,0,0,"Type name:");
     addLabelItem(mpGeneralTable,1,0,"Display name:");
     addLabelItem(mpGeneralTable,2,0,"CQS type:");
+    addLabelItem(mpGeneralTable,3,0,"Language:");
     addInputItem(mpGeneralTable,0,1);
     addInputItem(mpGeneralTable,1,1);
     mpCqsTypeComboBox = new QComboBox(this);
     mpCqsTypeComboBox->addItems(QStringList() << "S (signal)" << "Q (resistive)" << "C (capacitive)");
     mpGeneralTable->setCellWidget(2,1,mpCqsTypeComboBox);
+    mpLanguageComboBox = new QComboBox(this);
+    mpLanguageComboBox->addItems(QStringList() << "C++" << "Modelica");
+    mpGeneralTable->setCellWidget(3,1,mpLanguageComboBox);
 
     //Constants
 
@@ -625,6 +629,8 @@ ComponentSpecification NewComponentDialog::getSpecification()
         default:
             spec.cqsType = "C";
     }
+    int language = qobject_cast<QComboBox*>(mpGeneralTable->cellWidget(3,1))->currentIndex();
+    spec.modelica = (1 == language);
     for(int r=1; r<mpConstantsTable->rowCount(); ++r) {
         spec.constantNames.append(mpConstantsTable->item(r,1)->text());
         spec.constantDescriptions.append(mpConstantsTable->item(r,2)->text());
@@ -932,7 +938,7 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
                                           spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
                                           spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
                                           spec.outputNames, spec.outputDescriptions, spec.outputUnits, spec.outputInits,
-                                          spec.portNames, spec.portDescriptions, spec.portTypes, spec.portsRequired);
+                                          spec.portNames, spec.portDescriptions, spec.portTypes, spec.portsRequired, spec.modelica);
     }
     else {  //ExistingFile
         QString libPath = QFileInfo(pLibrary->xmlFilePath).absolutePath();

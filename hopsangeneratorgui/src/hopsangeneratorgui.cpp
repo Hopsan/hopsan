@@ -553,7 +553,7 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
                                                const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
                                                const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,
                                                const QStringList &outputNames, const QStringList &outputDescriptions, const QStringList &outputUnits, const QStringList &outputInits,
-                                               const QStringList &portNames, const QStringList &portDescriptions, const QStringList &portTypes, const QList<bool> &portsRequired)
+                                               const QStringList &portNames, const QStringList &portDescriptions, const QStringList &portTypes, const QList<bool> &portsRequired, bool modelica)
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
@@ -584,7 +584,6 @@ bool HopsanGeneratorGUI::addComponentToLibrary(const QString &libraryXmlPath, co
     for(const bool req : portsRequired.toVector()) {
         portsrequired.push_back(req);
     }
-    bool modelica = true;
 
     using AddComponentToLibraryFunction_t = bool(const char*, const char*, const char*, const char*, const char*, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const char* const*, size_t, const int[], size_t, bool, MessageHandler_t, void*);
     bool checkOK = mPrivates->call<AddComponentToLibraryFunction_t>(forwarder, functionName, xmlpath.c_str(), targetpath.c_str(), typenamestr.c_str(), displayname.c_str(), cqstype.c_str(),

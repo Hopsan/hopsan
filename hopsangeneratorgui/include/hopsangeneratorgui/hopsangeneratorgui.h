@@ -55,7 +55,7 @@ public:
                                const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
                                const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,
                                const QStringList &outputNames, const QStringList &outputDescriptions, const QStringList &outputUnits, const QStringList &outputInits,
-                               const QStringList &portNames, const QStringList &portDescriptions, const QStringList &portTypes, const QList<bool> &portsRequired);
+                               const QStringList &portNames, const QStringList &portDescriptions, const QStringList &portTypes, const QList<bool> &portsRequired, bool modelica);
 
     bool removeComponentFromLibrary(const QString &libraryXmlPath, const QString &cafPath, const QString &hppPath, bool deleteFiles);
 

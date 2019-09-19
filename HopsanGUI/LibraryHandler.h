@@ -100,6 +100,7 @@ public:
     QStringList portDescriptions;
     QStringList portTypes;
     QList<bool> portsRequired;
+    bool modelica;
 };
 
 //! @brief Represents an object (most likely a component) that has been loaded
@@ -147,7 +148,7 @@ private:
     QTableWidget *mpOutputVariablesTable;
     QTableWidget *mpPortsTable;
 
-    QComboBox *mpCqsTypeComboBox;
+    QComboBox *mpCqsTypeComboBox, *mpLanguageComboBox;
 
     QVector<QToolButton*> mRemoveConstantToolButtons;
     QVector<QToolButton*> mRemoveInputVariableToolButtons;
