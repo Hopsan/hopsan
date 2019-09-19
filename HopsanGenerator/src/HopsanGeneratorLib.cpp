@@ -405,7 +405,12 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     compSpec.cqsType = cqsType;
     for(int i=0; i<numConstantNames; ++i) {
         compSpec.parDisplayNames.append(constantNames[i]);
-        compSpec.parNames.append("m"+QString(constantNames[i]));
+        if(modelica) {
+            compSpec.parNames.append(QString(constantNames[i]));
+        }
+        else {
+            compSpec.parNames.append("m"+QString(constantNames[i]));
+        }
     }
     for(int i=0; i<numConstantDescriptions; ++i) {
         compSpec.parDescriptions.append(constantDescriptions[i]);
