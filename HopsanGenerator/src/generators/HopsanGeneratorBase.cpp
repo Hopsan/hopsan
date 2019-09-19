@@ -1152,6 +1152,27 @@ QString HopsanGeneratorBase::generateModelicaCodeFromComponentSpec(ComponentSpec
     }
     outStream << "\n";
     outStream << "equation\n";
+    outStream << indent << "// TLM equations\n";
+    for(int p=0; p<comp.portNodeTypes.size(); ++p) {
+        QString portName = comp.portNames[p];
+        QString nodeType = comp.portNodeTypes[p];
+        if(nodeType == "NodeHydraulic") {
+            outStream << indent << portName+".p = "+portName+".c + "+portName+".Zc*"+portName+".q;\n";
+        }
+        else if(nodeType == "NodeMechanic") {
+            outStream << indent << portName+".f = "+portName+".c + "+portName+".Zc*"+portName+".v;\n";
+        }
+        else if(nodeType == "NodeMechanicRotational") {
+            outStream << indent << portName+".T = "+portName+".c + "+portName+".Zc*"+portName+".w;\n";
+        }
+        else if(nodeType == "NodeElectric") {
+            outStream << indent << portName+".U = "+portName+".c + "+portName+".Zc*"+portName+".I;\n";
+        }
+        else if(nodeType == "NodePneumatic") {
+            outStream << indent << portName+".p = "+portName+".c + "+portName+".Zc*"+portName+".Qdot;\n";
+        }
+    }
+
     outStream << indent << "\n";
     outStream << "algorithm\n";
     outStream << indent << "\n";
