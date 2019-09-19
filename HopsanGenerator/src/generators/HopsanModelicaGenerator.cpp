@@ -177,7 +177,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
     bool finalAlgorithmPart = false;    //Are we in the final "algorithms" part?
     for(int l=0; l<lines.size(); ++l)
     {
-        if(lines[l].startsWith("//")) continue;
+        if(lines[l].trimmed().startsWith("//")) continue;
         if(!initAlgorithmPart && !preAlgorithmPart && !equationPart && !finalAlgorithmPart)
         {
             //qDebug() << l << " - not in algorithms or equations";
@@ -425,19 +425,10 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
             for(int i=0; i<portNames.size(); ++i)
             {
                 QString temp = portNames.at(i)+".";
-                while(equations.last().contains(temp))
+                while(!equations.isEmpty() && equations.last().contains(temp))
                 {
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
-//                        int idx = equations.last().indexOf(temp)+temp.size()-1;
-//                        if(portList.at(i).porttype == "WritePort")
-//                        {
-//                            equations.last().remove(idx, 4);
-//                        }
-//                        else if(portList.at(i).porttype == "ReadPort")
-//                        {
-//                            equations.last().remove(idx, 3);
-//                        }
                         equations.last().replace(".","__");
                     }
                     else
@@ -451,7 +442,9 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     }
                 }
             }
-            equations.last().chop(1);
+            if(!equations.isEmpty()) {
+                equations.last().chop(1);
+            }
         }
         else if(finalAlgorithmPart)
         {
