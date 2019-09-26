@@ -10,6 +10,13 @@ set PATH=C:\Program Files\gs\gs9.21\bin;C:\Program Files (x86)\gs\gs9.21\bin;%PA
 set PATH=C:\Program Files\gs\gs9.22\bin;C:\Program Files (x86)\gs\gs9.22\bin;%PATH% 
 set PATH=C:\Program Files (x86)\Graphviz2.38\bin;%PATH%
 
+REM Modify Doxygen scripts to copy all graphics files to HTML directory
+cd doc
+echo Calling PS
+PowerShell.exe ./copyGraphics.ps1
+echo Finished
+cd ..
+
 where /q gswin32c.exe
 if ERRORLEVEL 1 (
   echo Error: gswin32c.exe could not be found
