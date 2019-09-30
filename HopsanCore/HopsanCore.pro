@@ -27,7 +27,7 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
 INCLUDEPATH *= $${PWD}/dependencies/rapidxml
-INCLUDEPATH *= $${PWD}/dependencies/indexingcsvparser
+INCLUDEPATH *= $${PWD}/dependencies/indexingcsvparser/include
 #--------------------------------------------------------
 
 #--------------------------------------------------------
@@ -139,7 +139,7 @@ SOURCES += \
     src/ComponentUtilities/HopsanPowerUser.cpp \
     src/ComponentUtilities/LookupTable.cpp \
     src/ComponentUtilities/PLOParser.cpp \
-    $${PWD}/dependencies/indexingcsvparser/IndexingCSVParser.cpp \
+    $${PWD}/dependencies/indexingcsvparser/src/indexingcsvparser.cpp \
     src/Quantities.cpp \
     src/CoreUtilities/NumHopHelper.cpp \
     src/CoreUtilities/AliasHandler.cpp \
@@ -193,8 +193,7 @@ HEADERS += \
     include/Components/ModelicaComponent.hpp \
     include/ComponentUtilities/LookupTable.h \
     include/ComponentUtilities/PLOParser.h \
-    $${PWD}/dependencies/indexingcsvparser/IndexingCSVParser.h \
-    $${PWD}/dependencies/indexingcsvparser/IndexingCSVParserImpl.hpp \
+    $${PWD}/dependencies/indexingcsvparser/include/indexingcsvparser/indexingcsvparser.h \
     include/Quantities.h \
     include/NodeRWHelpfuncs.hpp \
     include/HopsanCoreVersion.h \
@@ -204,12 +203,3 @@ HEADERS += \
     include/CoreUtilities/AliasHandler.h \
     include/CoreUtilities/SimulationHandler.h \
     include/CoreUtilities/SaveRestoreSimulationPoint.h
-
-
-
-
-
-
-
-
-
