@@ -31,7 +31,7 @@
 //$Id$
 
 #define INDCSVP_REPLACEDECIMALCOMMA
-#include "IndexingCSVParser.h"
+#include "indexingcsvparser/indexingcsvparser.h"
 
 #include "ComponentUtilities/CSVParser.h"
 
