@@ -12,31 +12,31 @@ include(dependencies/indexingcsvparser.cmake)
 include(dependencies/rapidxml.cmake)
 
 # Find HopsanCore source code
-file(GLOB_RECURSE HopsanCore_srcfiles src/*.cpp)
-file(GLOB_RECURSE HopsanCore_incfiles include/*.h include/*.hpp)
+file(GLOB_RECURSE hopsancore_srcfiles src/*.cpp)
+file(GLOB_RECURSE hopsancore_headerfiles include/*.h include/*.hpp)
 
 # Create HospanCore library target and add source code files
-add_library(HopsanCore SHARED ${HopsanCore_srcfiles})
-add_libnumhop_src(HopsanCore)
-add_indexingcsvparser_src(HopsanCore)
-add_rapidxml_src(HopsanCore)
+add_library(hopsancore SHARED ${hopsancore_srcfiles} ${hopsancore_headerfiles})
+add_libnumhop_src(hopsancore)
+add_indexingcsvparser_src(hopsancore)
+add_rapidxml_src(hopsancore)
 
 # Set compiler definitions
 if(WIN32)
-  target_compile_definitions(HopsanCore PRIVATE HOPSANCORE_DLLEXPORT)
+  target_compile_definitions(hopsancore PRIVATE HOPSANCORE_DLLEXPORT)
 endif()
-target_compile_definitions(HopsanCore PRIVATE HOPSANCORE_WRITELOG)
+target_compile_definitions(hopsancore PRIVATE HOPSANCORE_WRITELOG)
 
 # Set include directories
-target_include_directories(HopsanCore PUBLIC
+target_include_directories(hopsancore PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
 # Set system link dependencies
-target_link_libraries(HopsanCore Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(hopsancore Threads::Threads ${CMAKE_DL_LIBS})
 
 # Set HopsanCore installation destinations
-install(TARGETS HopsanCore
+install(TARGETS hopsancore
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
 )

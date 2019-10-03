@@ -5,12 +5,12 @@ set(CMAKE_DEBUG_POSTFIX _d)
 
 file(GLOB_RECURSE ops_srcfiles src/*.cpp )
 
-add_library(Ops SHARED ${ops_srcfiles})
-target_include_directories(Ops PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+add_library(ops SHARED ${ops_srcfiles})
+target_include_directories(ops PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-install(TARGETS Ops
+install(TARGETS ops
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
 )
