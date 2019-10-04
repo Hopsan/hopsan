@@ -31,7 +31,11 @@
 
 #include "ComponentUtilities/LookupTable.h"
 
+#ifndef TEST_DATA_ROOT
 const QString relpath = "../UnitTests/HopsanCoreTests/LookupTableTest/";
+#else
+const QString relpath = TEST_DATA_ROOT;
+#endif
 
 class Point3DF
 {

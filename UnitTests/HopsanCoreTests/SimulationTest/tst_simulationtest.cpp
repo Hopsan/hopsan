@@ -29,11 +29,17 @@
 #include "CoreUtilities/HmfLoader.h"
 #include <assert.h>
 
-#define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
+#ifndef DEFAULT_LIBRARY_ROOT
+#define DEFAULT_LIBRARY_ROOT "../componentLibraries/defaultLibrary"
+#endif
+
+#ifndef TEST_DATA_ROOT
+#define TEST_DATA_ROOT "../UnitTests/HopsanCoreTests/SimulationTest/"
+#endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
 #define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) "." TO_STR(SHAREDLIB_SUFFIX)
-const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
+const std::string defaultLibraryFilePath = DEFAULT_LIBRARY_ROOT "/" DEFAULTLIBFILE;
 #else
 const std::string defaultLibraryFilePath = "";
 #endif
@@ -51,13 +57,16 @@ class SimulationTests : public QObject
 {
     Q_OBJECT
 
-public:
-    SimulationTests()
-    {
-        if (!defaultLibraryFilePath.empty())
-        {
-            mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
-        }
+private:
+    HopsanEssentials mHopsanCore;
+    ComponentSystem *mpSystemFromText;
+    ComponentSystem *mpSystemFromFile;
+
+private Q_SLOTS:
+    void initTestCase() {
+        bool did_load = mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        QVERIFY2(did_load, qPrintable(QString("Could not load default component library: ")+QString::fromStdString(defaultLibraryFilePath)));
+
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 "<hopsanmodelfile hmfversion=\"0.4\" hopsanguiversion=\"0.6.0\" hopsancoreversion=\"0.6.0\">"
                 "  <system logsamples=\"2048\" typename=\"Subsystem\" name=\"unittestmodel\">"
@@ -97,15 +106,11 @@ public:
 
         double startT, stopT;
         mpSystemFromText = mHopsanCore.loadHMFModel(xmlStr, startT, stopT);
-        mpSystemFromFile = mHopsanCore.loadHMFModelFile("../Models/unittestmodel.hmf",startT,stopT);
+        QVERIFY2(mpSystemFromText, "Could not load system from hmf text");
+        mpSystemFromFile = mHopsanCore.loadHMFModelFile(TEST_DATA_ROOT "unittestmodel.hmf",startT,stopT);
+        QVERIFY2(mpSystemFromText, "Could not load system from " TEST_DATA_ROOT "unittestmodel.hmf");
     }
 
-private:
-    HopsanEssentials mHopsanCore;
-    ComponentSystem *mpSystemFromText;
-    ComponentSystem *mpSystemFromFile;
-
-private Q_SLOTS:
     void HopsanCore_Create_Component()
     {
         QFETCH(HString, typeName);
