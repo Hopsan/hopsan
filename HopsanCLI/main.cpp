@@ -64,13 +64,15 @@
 #include "OpsWorkerGenetic.h"
 #endif
 
-// If debug extension has not already been defined then define it to prevent compilation error
-#ifndef DEBUG_EXT
- #define DEBUG_EXT
+#ifndef DEFAULT_LIBRARY_ROOT
+#define DEFAULT_LIBRARY_ROOT "../componentLibraries/defaultLibrary"
 #endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-constexpr auto default_library = "../componentLibraries/defaultLibrary/" TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) "." TO_STR(SHAREDLIB_SUFFIX);
+#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(HOPSAN_DEBUG_POSTFIX) "." TO_STR(SHAREDLIB_SUFFIX)
+const std::string default_library = DEFAULT_LIBRARY_ROOT "/" DEFAULTLIBFILE;
+#else
+const std::string default_library = "";
 #endif
 
 using namespace std;

@@ -204,7 +204,7 @@ void MainWindow::createContents()
     QString archtext="HopsanGUI 32-bit, ";
 #endif
     QString debugtext;
-#ifdef DEBUGCOMPILING
+#ifdef HOPSAN_BUILD_TYPE_DEBUG
     debugtext=" (Compiled in debug mode)";
 #endif
     gpMessageHandler->addInfoMessage(archtext+"Version: "+QString(HOPSANGUIVERSION)+debugtext);

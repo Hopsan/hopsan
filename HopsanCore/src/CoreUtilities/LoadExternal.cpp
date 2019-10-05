@@ -208,10 +208,10 @@ bool LoadExternal::load(const HString &rLibpath)
     }
 
     //Now check if we are compiled against correct debug release version
-    if ( strcmp(externalLibInfo.libCompiledDebugRelease, DEBUGRELEASECOMPILED) != 0 )
+    if ( strcmp(externalLibInfo.libCompiledDebugRelease, HOPSAN_BUILD_TYPE_STR) != 0 )
     {
         stringstream ss;
-        ss << "ExternalLib: " << rLibpath.c_str() << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << DEBUGRELEASECOMPILED << ", You may run into problems!";
+        ss << "ExternalLib: " << rLibpath.c_str() << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << HOPSAN_BUILD_TYPE_STR << ", You may run into problems!";
         mpMessageHandler->addWarningMessage(ss.str().c_str());
         //isCorrectVersion = false;
     }

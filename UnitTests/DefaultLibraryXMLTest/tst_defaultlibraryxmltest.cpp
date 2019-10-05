@@ -32,11 +32,13 @@
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
 
-#define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
+#ifndef DEFAULT_LIBRARY_ROOT
+#define DEFAULT_LIBRARY_ROOT "../componentLibraries/defaultLibrary"
+#endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTLIBFILE TO_STR(DLL_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(DLL_EXT)
-const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
+#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(HOPSAN_DEBUG_POSTFIX) "." TO_STR(SHAREDLIB_SUFFIX)
+const std::string defaultLibraryFilePath = DEFAULT_LIBRARY_ROOT "/" DEFAULTLIBFILE;
 #else
 const std::string defaultLibraryFilePath = "";
 #endif
@@ -130,8 +132,8 @@ void DefaultLibraryXMLTest::initTestCase()
     mAllXMLFiles.clear();
 
     // Loop through all subdirs, to find all XML files, and store them in a list
-    QDir libRoot(DEFAULTLIBPATH);
-    QVERIFY2(libRoot.exists(), QString("Libroot: %1 could not be found!").arg(DEFAULTLIBPATH).toStdString().c_str());
+    QDir libRoot(DEFAULT_LIBRARY_ROOT);
+    QVERIFY2(libRoot.exists(), QString("Libroot: %1 could not be found!").arg(defaultLibraryFilePath.c_str()).toStdString().c_str());
     recurseCollectXMLFiles(libRoot);
 
     if (!defaultLibraryFilePath.empty())

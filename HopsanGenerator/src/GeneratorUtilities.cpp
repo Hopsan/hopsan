@@ -219,13 +219,13 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
         ch.addLibraryPath(linkPath);
     }
     CompilerHandler::BuildType buildType = CompilerHandler::BuildType::Release;
-#if defined(DEBUGCOMPILING)
+#if defined(HOPSAN_BUILD_TYPE_DEBUG)
     buildType = CompilerHandler::BuildType::Debug;
     cl.mSharedLibraryName += cl.mSharedLibraryDebugExtension;
-    ch.addDefinition("DEBUGCOMPILING");
+    ch.addDefinition("HOPSAN_BUILD_TYPE_DEBUG");
     ch.addLinkLibrary("hopsancore_d");
 #else
-    ch.addDefinition("RELEASECOMPILING");
+    ch.addDefinition("HOPSAN_BUILD_TYPE_RELEASE");
     ch.addLinkLibrary("hopsancore");
 #endif
     ch.addLinkLibrary("c++", {Compiler::Clang});

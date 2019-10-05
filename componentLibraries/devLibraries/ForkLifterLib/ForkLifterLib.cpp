@@ -47,5 +47,5 @@ extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExterna
     pHopsanExternalLibInfo->libName = (char*)"ForkLifterLib";
 
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
-    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
+    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)HOPSAN_BUILD_TYPE_STR;
 }

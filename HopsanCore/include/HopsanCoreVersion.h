@@ -37,13 +37,23 @@
 #define HOPSANCOREVERSION HOPSANBASEVERSION "." TO_STR(HOPSANCORE_COMMIT_TIMESTAMP)
 #define HOPSANCOREMODELFILEVERSION "0.4"
 
-#ifdef DEBUGCOMPILING
+// Check DEBUGCOMPILING and RELEASECOMPILING for backward compatibility
+// Set DEBUGRELEASECOMPILED for backward compatibility
+#if defined(HOPSAN_BUILD_TYPE_DEBUG) || defined(DEBUGCOMPILING)
  #define DEBUGRELEASECOMPILED "DEBUG"
-#elif defined  RELEASECOMPILING
+ #define HOPSAN_BUILD_TYPE_STR "DEBUG"
+ #if not defined(HOPSAN_DEBUG_POSTFIX)
+   #define HOPSAN_DEBUG_POSTFIX _d
+ #endif
+#elif defined(HOPSAN_BUILD_TYPE_RELEASE) ||  defined(RELEASECOMPILING)
  #define DEBUGRELEASECOMPILED "RELEASE"
+ #define HOPSAN_BUILD_TYPE_STR "RELEASE"
+ #define HOPSAN_DEBUG_POSTFIX
 #else
- //#warning You must specify Debug or Release compiling by defining DEBUGCOMPILING or RELEASECOMPILING
+ //#warning You must specify Debug or Release compiling by defining HOPSAN_BUILD_TYPE_DEBUG or HOPSAN_BUILD_TYPE_RELEASE
  #define DEBUGRELEASECOMPILED "UNDEFINED"
+ #define HOPSAN_BUILD_TYPE_STR "UNDEFINED"
+ #define HOPSAN_DEBUG_POSTFIX
 #endif
 
 // Include compiler info macros

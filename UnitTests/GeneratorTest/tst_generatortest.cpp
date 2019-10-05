@@ -35,11 +35,13 @@
 #include <assert.h>
 #include <iostream>
 
-#define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
+#ifndef DEFAULT_LIBRARY_ROOT
+#define DEFAULT_LIBRARY_ROOT "../componentLibraries/defaultLibrary"
+#endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) TO_STR(SHAREDLIB_SUFFIX)
-const std::string defaultLibraryFilePath = DEFAULTLIBPATH "/" DEFAULTLIBFILE;
+#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(HOPSAN_DEBUG_POSTFIX) "." TO_STR(SHAREDLIB_SUFFIX)
+const std::string defaultLibraryFilePath = DEFAULT_LIBRARY_ROOT "/" DEFAULTLIBFILE;
 #else
 const std::string defaultLibraryFilePath = "";
 #endif
@@ -68,7 +70,7 @@ void removeDir(QString path)
 QString getLibFile(const ComponentLibrary& cl) {
     QFileInfo libXmlFi(cl.mLoadFilePath);
     QString libfile = libXmlFi.absolutePath()+"/"+(TO_STR(SHAREDLIB_PREFIX)+cl.mSharedLibraryName);
-#ifdef DEBUGCOMPILING
+#ifdef HOPSAN_BUILD_TYPE_DEBUG
     libfile.append(cl.mSharedLibraryDebugExtension);
 #endif
     libfile.append("." TO_STR(SHAREDLIB_SUFFIX));

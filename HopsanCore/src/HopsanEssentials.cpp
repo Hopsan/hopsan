@@ -213,7 +213,7 @@ bool HopsanEssentials::isCore64Bit() const
 
 bool HopsanEssentials::isCoreDebugCompiled() const
 {
-#ifdef DEBUGCOMPILING
+#ifdef HOPSAN_BUILD_TYPE_DEBUG
     return true;
 #else
     return false;

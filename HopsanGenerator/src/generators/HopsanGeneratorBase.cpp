@@ -791,7 +791,7 @@ void HopsanGeneratorBase::compileFromComponentSpecification(const QString &outpu
     ccLibStream << "{\n";
     ccLibStream << "    pHopsanExternalLibInfo->libName = (char*)\"HopsanGeneratedComponent_"+comp.typeName+"\";\n";
     ccLibStream << "    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n";
-    ccLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n";
+    ccLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)HOPSAN_BUILD_TYPE_STR;\n";
     ccLibStream << "}\n";
     ccLibFile.close();
 
@@ -923,7 +923,7 @@ bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QString libName, Q
     ccLibStream << "{\n";
     ccLibStream << "    pHopsanExternalLibInfo->libName = (char*)\"" << libName << "\";\n";
     ccLibStream << "    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n";
-    ccLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n";
+    ccLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)HOPSAN_BUILD_TYPE_STR;\n";
     ccLibStream << "}\n";
     ccLibFile.close();
 
@@ -1109,7 +1109,7 @@ bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
     output.append("extern \"C\" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)\n");
     output.append("{\n");
     output.append("    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n");
-    output.append("    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n");
+    output.append("    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)HOPSAN_BUILD_TYPE_STR;\n");
     output.append("    pHopsanExternalLibInfo->libName = (char*)\""+lib.mName+"\";\n");
     output.append("}\n");
 

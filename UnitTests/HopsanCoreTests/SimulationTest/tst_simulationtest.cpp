@@ -24,7 +24,7 @@
 
 #include <QtTest>
 #include "HopsanEssentials.h"
-#include "HopsanCoreMacros.h"
+#include "HopsanCoreVersion.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/HmfLoader.h"
 #include <assert.h>
@@ -38,7 +38,7 @@
 #endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(DEBUG_EXT) "." TO_STR(SHAREDLIB_SUFFIX)
+#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(HOPSAN_DEBUG_POSTFIX) "." TO_STR(SHAREDLIB_SUFFIX)
 const std::string defaultLibraryFilePath = DEFAULT_LIBRARY_ROOT "/" DEFAULTLIBFILE;
 #else
 const std::string defaultLibraryFilePath = "";

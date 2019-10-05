@@ -21,7 +21,7 @@
 #define SHAREDLIB_PREFIX "lib"
 #endif
 
-#ifdef DEBUGCOMPILING
+#ifdef HOPSAN_BUILD_TYPE_DEBUG
 #define DEBUG_SUFFIX "_d"
 #else
 #define DEBUG_SUFFIX ""

@@ -72,6 +72,6 @@ extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExterna
 
     // Leave these two lines as they are
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
-    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
+    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)HOPSAN_BUILD_TYPE_STR;
 
 }

@@ -1,14 +1,14 @@
 #Determine debug extension, and debug output on/off
 CONFIG(debug, debug|release) {
     DEBUG_EXT = _d
-    DEFINES *= DEBUGCOMPILING
+    DEFINES *= HOPSAN_BUILD_TYPE_DEBUG
 } else {
     DEBUG_EXT =
     DEFINES *= QT_NO_DEBUG_OUTPUT
-    DEFINES *= RELEASECOMPILING
+    DEFINES *= HOPSAN_BUILD_TYPE_RELEASE
 }
 #Add a defined value with the debug extension (that can be used in the code)
-DEFINES *= DEBUG_EXT=$${DEBUG_EXT}
+DEFINES *= HOPSAN_DEBUG_POSTFIX=$${DEBUG_EXT}
 
 # Set optimization flags
 # Og = optimization that does not interfere with debugging

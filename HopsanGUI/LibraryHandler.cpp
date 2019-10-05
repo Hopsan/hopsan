@@ -1161,7 +1161,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     {
                         pLibrary->debugExtension = libElement.attribute(XML_LIBRARY_LIB_DBGEXT,"");
                         pLibrary->libFilePath = libraryMainFileInfo.canonicalPath()+"/"+QString(LIBPREFIX)+libElement.text();
-#ifdef DEBUGCOMPILING
+#ifdef HOPSAN_BUILD_TYPE_DEBUG
                         pLibrary->libFilePath += pLibrary->debugExtension;
 #endif
                         pLibrary->libFilePath += QString(LIBEXT);
