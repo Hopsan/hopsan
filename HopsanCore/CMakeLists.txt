@@ -26,6 +26,11 @@ if(WIN32)
   target_compile_definitions(hopsancore PRIVATE HOPSANCORE_DLLEXPORT)
 endif()
 target_compile_definitions(hopsancore PRIVATE HOPSANCORE_WRITELOG)
+if(CMAKE_BUILD_TYPE EQUAL "Debug")
+  target_compile_definitions(hopsancore PUBLIC HOPSAN_BUILD_TYPE_DEBUG)
+else()
+  target_compile_definitions(hopsancore PUBLIC HOPSAN_BUILD_TYPE_RELEASE)
+endif()
 
 # Set include directories
 target_include_directories(hopsancore PUBLIC
