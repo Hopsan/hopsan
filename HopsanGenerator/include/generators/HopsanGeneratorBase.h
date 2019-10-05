@@ -75,6 +75,7 @@ public:
     QString getHopsanRootPath() const;
     QString getHopsanCoreIncludePath() const;
     QString getHopsanBinPath() const;
+    QString getHopsanLibPath() const;
     const CompilerSelection& getCompilerSelection() const;
 
     void setQuiet(bool quiet);
@@ -112,8 +113,6 @@ protected:
     bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &buildPath, const QMap<QString,QString>& replaceMap) const;
 
     QString mHopsanRootPath;
-    QString mHopsanCoreIncludePath;
-    QString mHopsanBinPath;
     QString mTempPath;
     QString mOutputPath;
     CompilerSelection mCompilerSelection;

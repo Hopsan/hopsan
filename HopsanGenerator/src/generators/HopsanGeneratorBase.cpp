@@ -59,9 +59,6 @@ using namespace hopsan;
 HopsanGeneratorBase::HopsanGeneratorBase(const QString &hopsanInstallPath, const CompilerSelection &compilerSelection, const QString &tempPath)
 {
     mHopsanRootPath = hopsanInstallPath;
-    mHopsanCoreIncludePath = mHopsanRootPath+"/HopsanCore/include";
-    mHopsanBinPath = mHopsanRootPath+"/bin";
-
     mCompilerSelection = compilerSelection;
 
     if(!mCompilerSelection.path.isEmpty())
@@ -1191,13 +1188,18 @@ void HopsanGeneratorBase::setOutputPath(const QString &path)
 
 QString HopsanGeneratorBase::getHopsanCoreIncludePath() const
 {
-    return mHopsanCoreIncludePath;
+    return mHopsanRootPath+"/HopsanCore/include";
 }
 
 
 QString HopsanGeneratorBase::getHopsanBinPath() const
 {
-    return mHopsanBinPath;
+    return mHopsanRootPath+"/bin";
+}
+
+QString HopsanGeneratorBase::getHopsanLibPath() const
+{
+    return mHopsanRootPath+"/lib";
 }
 
 QString HopsanGeneratorBase::getHopsanRootPath() const

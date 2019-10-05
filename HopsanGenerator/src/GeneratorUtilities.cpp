@@ -215,6 +215,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addCompilerFlag(QString(R"(-Wl,--rpath,"%1")").arg(libRootDir), Compiler::GCC);
 
     ch.addLibraryPath(pGenerator->getHopsanBinPath());
+    ch.addLibraryPath(pGenerator->getHopsanLibPath());
     for(QString linkPath : cl.mLinkPaths) {
         ch.addLibraryPath(linkPath);
     }

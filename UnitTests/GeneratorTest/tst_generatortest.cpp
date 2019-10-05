@@ -27,7 +27,7 @@
 #include <QFileInfoList>
 
 #include "HopsanEssentials.h"
-#include "HopsanCoreMacros.h"
+#include "HopsanCoreVersion.h"
 #include "compiler_info.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "hopsangenerator.h"
@@ -37,6 +37,18 @@
 
 #ifndef DEFAULT_LIBRARY_ROOT
 #define DEFAULT_LIBRARY_ROOT "../componentLibraries/defaultLibrary"
+#endif
+
+#ifndef EXTERNAL_LIBRARIES_ROOT
+#define EXTERNAL_LIBRARIES_ROOT "../componentLibraries"
+#endif
+
+#ifndef TEST_DATA_ROOT
+#define TEST_DATA_ROOT "../UnitTests/GeneratorTest"
+#endif
+
+#ifndef HOPSAN_INSTALL_ROOT
+#define HOPSAN_INSTALL_ROOT ".."
 #endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
@@ -130,7 +142,8 @@ public:
  private:
     QString qcwd;
     std::string cwd;
-    std::string hopsanRoot;
+    std::string mHopsanInstallRoot;
+    QString mTestDataRoot;
 
     std::string gcc32Path;
     std::string gcc64Path;
@@ -144,7 +157,21 @@ private slots:
     {
         qcwd = QDir::currentPath();
         cwd = qcwd.toStdString();
-        hopsanRoot = cwd+"/../";
+        if (QDir::isRelativePath(HOPSAN_INSTALL_ROOT)) {
+            mHopsanInstallRoot = cwd + "/" HOPSAN_INSTALL_ROOT;
+        }
+        else {
+            mHopsanInstallRoot = HOPSAN_INSTALL_ROOT;
+        }
+
+        if (QDir::isRelativePath(TEST_DATA_ROOT)) {
+            mTestDataRoot = qcwd + "/" TEST_DATA_ROOT;
+        }
+        else {
+            mTestDataRoot = TEST_DATA_ROOT;
+        }
+
+
 
 #ifdef _WIN32
         //! @todo do not hard-code these
@@ -155,10 +182,11 @@ private slots:
         gcc64Path="";
 #endif
 
-        if (!defaultLibraryFilePath.empty())
-        {
-            mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        bool did_load = mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        if (!did_load) {
+            printCoreMessages();
         }
+        QVERIFY2(did_load, "Could not load default component library");
     }
 
     void init()
@@ -174,7 +202,7 @@ private slots:
         constexpr auto cflags = "";
         constexpr auto lflags = "";
 
-        bool compileOK = callComponentLibraryCompiler(qPrintable(libraryPath), cflags, lflags, hopsanRoot.c_str(), gccPath.c_str(), &generatorMessageCallback,
+        bool compileOK = callComponentLibraryCompiler(qPrintable(libraryPath), cflags, lflags, mHopsanInstallRoot.c_str(), gccPath.c_str(), &generatorMessageCallback,
                                                       this);
         if (!compileOK) {
             printMessages();
@@ -195,11 +223,11 @@ private slots:
     void Generator_LibraryImport_data()
     {
         QTest::addColumn<QString>("libraryPath");
-        const QString externalLibsPath = qcwd+"/../componentLibraries/";
+        const QString externalLibsPath = EXTERNAL_LIBRARIES_ROOT;
 
         QFileInfoList libs;
-        libs.append(externalLibsPath+"exampleComponentLib/exampleComponentLib.xml");
-        libs.append(externalLibsPath+"extensionLibrary/extensionLibrary.xml");
+        libs.append(externalLibsPath+"/exampleComponentLib/exampleComponentLib.xml");
+        libs.append(externalLibsPath+"/extensionLibrary/extensionLibrary.xml");
 
         for (auto& lib : libs) {
             QVERIFY2(lib.exists(), qPrintable(QString("File %1 does not exist").arg(lib.filePath())));
@@ -214,7 +242,7 @@ private slots:
 #if defined(__APPLE__)
         QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
 #else
-        const QString fmuCheckPath=QDir::cleanPath(qcwd+"/../Dependencies/tools/FMUChecker");
+        const QString fmuCheckPath=QDir::cleanPath(QString::fromStdString(mHopsanInstallRoot+"/Dependencies/tools/FMUChecker"));
 
 #ifdef _WIN32
         QString fmuChecker32 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win32.exe");
@@ -235,7 +263,7 @@ private slots:
 #if !defined(HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 32-bit export
         std::string outpath = cwd+"/fmu1 32/";
-        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(),
+        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, mHopsanInstallRoot.c_str(),  gcc32Path.c_str(),
                                                1, 32, &generatorMessageCallback, this);
         if (!exportOK) {
             printMessages();
@@ -256,11 +284,13 @@ private slots:
         // Run FMUChecker for FMU 2.0 32-bit export
         clearMessages();
         outpath = cwd+"/fmu2 32/";
-        exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(),
+        exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, mHopsanInstallRoot.c_str(),  gcc32Path.c_str(),
                                           2, 32, &generatorMessageCallback, this);
         if (!exportOK) {
             printMessages();
         }
+
+        QVERIFY2(QFile::exists(fmuChecker32), qPrintable(QString("FMUChecker is not installed in the expected location: %1").arg(fmuChecker32)));
 
         args.clear();
         args << "-s" << testStopTime;
@@ -279,11 +309,13 @@ private slots:
 #if defined (HOPSANCOMPILED64BIT)
         // Run FMUChecker for FMU 1.0 64-bit export
         std::string outpath = cwd+"/fmu1 64/";
-        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(),
+        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, mHopsanInstallRoot.c_str(),  gcc64Path.c_str(),
                                                1, 64, &generatorMessageCallback, this);
         if (!exportOK) {
             printMessages();
         }
+
+        QVERIFY2(QFile::exists(fmuChecker64), qPrintable(QString("FMUChecker is not installed in the expected location: %1").arg(fmuChecker64)));
 
         args.clear();
         args << "-s" << testStopTime;
@@ -301,7 +333,7 @@ private slots:
         // Run FMUChecker for FMU 2.0 64-bit export
         clearMessages();
         outpath = cwd+"/fmu2 64/";
-        exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc64Path.c_str(),
+        exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, mHopsanInstallRoot.c_str(),  gcc64Path.c_str(),
                                           2, 64, &generatorMessageCallback, this);
         if (!exportOK) {
             printMessages();
@@ -327,7 +359,7 @@ private slots:
     {
         QTest::addColumn<ComponentSystem*>("system");
         QTest::addColumn<double>("modelstoptime");
-        QString modelpath=qcwd+"/../Models/unittestmodel_export.hmf";
+        QString modelpath = mTestDataRoot + "/unittestmodel_export.hmf";
         QFile file(modelpath);
 
 #if !defined (HOPSANCOMPILED64BIT)
@@ -372,14 +404,14 @@ private slots:
         dst1 = cwd + "/import_fmu1 32";
         dst2 = cwd + "/import_fmu2 32";
 #endif
-        bool importOK1 = callFmuImportGenerator(fmu1FilePath.c_str(), dst1.c_str(), hopsanRoot.c_str(),  gccPath.c_str(), &generatorMessageCallback, this);
+        bool importOK1 = callFmuImportGenerator(fmu1FilePath.c_str(), dst1.c_str(), mHopsanInstallRoot.c_str(),  gccPath.c_str(), &generatorMessageCallback, this);
         if (!importOK1) {
             printMessages();
         }
         QVERIFY2(importOK1, "Failed to import FMU1");
 
         clearMessages();
-        bool importOK2 = callFmuImportGenerator(fmu2FilePath.c_str(), dst2.c_str(), hopsanRoot.c_str(),  gccPath.c_str(), &generatorMessageCallback, this);
+        bool importOK2 = callFmuImportGenerator(fmu2FilePath.c_str(), dst2.c_str(), mHopsanInstallRoot.c_str(),  gccPath.c_str(), &generatorMessageCallback, this);
         if (!importOK2) {
             printMessages();
         }
@@ -409,7 +441,7 @@ private slots:
         //Generate S-function
         std::string outpath = cwd+"/simulink/";
         bool exportOK = callSimulinkExportGenerator(outpath.c_str(), "unittestmodel_export.hmf", system, externalLibraries.data(), numExternalLibraries, false,
-                                    hopsanRoot.c_str(), &generatorMessageCallback, this);
+                                    mHopsanInstallRoot.c_str(), &generatorMessageCallback, this);
         if (!exportOK) {
             printMessages();
         }
@@ -432,7 +464,7 @@ private slots:
     {
         QTest::addColumn<ComponentSystem*>("system");
         double start, stop;
-        QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
+        QString path = mTestDataRoot + "/unittestmodel_export.hmf";
         removeDir(QDir::currentPath()+"/simulink/");
         QDir().mkpath(QDir::currentPath()+"/simulink/");
         QFile file(path);
@@ -446,7 +478,7 @@ private slots:
 
         //Generate S-function
         std::string outfile = cwd+"/labview/unittestmodel_export.cpp";
-        bool exportOK = callLabViewSITGenerator(outfile.c_str(), system, hopsanRoot.c_str(), &generatorMessageCallback, this);
+        bool exportOK = callLabViewSITGenerator(outfile.c_str(), system, mHopsanInstallRoot.c_str(), &generatorMessageCallback, this);
         if (!exportOK) {
             printMessages();
         }
@@ -482,7 +514,7 @@ private slots:
     {
         QTest::addColumn<ComponentSystem*>("system");
         double start, stop;
-        QString path = QDir::currentPath()+"/../Models/unittestmodel_export.hmf";
+        QString path = mTestDataRoot + "/unittestmodel_export.hmf";
         removeDir(QDir::currentPath()+"/labview/");
         QDir().mkpath(QDir::currentPath()+"/labview/");
         QTest::newRow("0") << mHopsanCore.loadHMFModelFile(path.toStdString().c_str(),start,stop);
@@ -506,7 +538,7 @@ private slots:
 #else
         gccPath = gcc32Path;
 #endif
-/*        bool exportOK =*/ callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, 0, true, hopsanRoot.c_str());
+/*        bool exportOK =*/ callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, 0, true, mHopsanInstallRoot.c_str());
 //        if (!exportOK) {
 //            printMessages();
 //        }
@@ -563,7 +595,7 @@ private slots:
         std::vector<char*> externalLibraries;
         constexpr int numExternalLibraries = 0;
 
-        bool exportOK = callExeExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(), ai32_64, &generatorMessageCallback, this);
+        bool exportOK = callExeExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, mHopsanInstallRoot.c_str(),  gcc32Path.c_str(), ai32_64, &generatorMessageCallback, this);
         if (!exportOK) {
             printMessages();
         }
@@ -589,7 +621,7 @@ private slots:
     void Generator_Exe_Export_data()
     {
         QTest::addColumn<ComponentSystem*>("system");
-        QString originalModelPath=qcwd+"/../Models/unittestmodel_export.hmf";
+        QString originalModelPath=mTestDataRoot+"/unittestmodel_export.hmf";
         QFile originalModelFile(originalModelPath);
 
         QString outPath = qcwd+"/exe 32";
