@@ -30,7 +30,7 @@
 #include <QtXml>
 #include <QFileInfo>
 #include "HopsanEssentials.h"
-#include "HopsanCoreMacros.h"
+#include "HopsanCoreVersion.h"
 
 #ifndef DEFAULT_LIBRARY_ROOT
 #define DEFAULT_LIBRARY_ROOT "../componentLibraries/defaultLibrary"

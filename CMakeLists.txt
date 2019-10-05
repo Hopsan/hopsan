@@ -7,8 +7,8 @@ message(WARNING "Hopsan CMake support is still experimental. Only the core libra
 enable_testing()
 
 add_subdirectory(HopsanCore)
-add_subdirectory(UnitTests/HopsanCoreTests)
 add_subdirectory(componentLibraries)
 add_subdirectory(HopsanCLI)
 #add_subdirectory(HopsanGenerator)
 add_subdirectory(Ops)
+add_subdirectory(UnitTests)
