@@ -10,6 +10,3 @@
 [submodule "Dependencies/git-archive-all"]
 	path = Dependencies/git-archive-all
 	url = https://github.com/Kentzo/git-archive-all.git
-[submodule "Dependencies/releases"]
-	path = Dependencies/releases
-	url = https://github.com/Hopsan/hopsan_deps_releases.git
