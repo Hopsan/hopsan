@@ -19,6 +19,10 @@ jobs:
       env:
         - QT_SELECT=qt5
         - HOPSAN_BUILD_QMAKE_SPEC=linux-g++
+      install:
+        - cd Dependencies
+        - ./download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap
+        - cd ..
     - os: osx
       compiler: clang
       env:
@@ -28,6 +32,9 @@ jobs:
         - brew install qt
         - brew link --force qt
         - which qmake
+        - cd Dependencies
+        - ./download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap
+        - cd ..
 
 # Build steps
 script:
@@ -39,7 +46,9 @@ script:
   - ./setupFMILibrary.sh
   - ./setupQwt.sh
   - ./setupZeroMQ.sh
+  - ./setupMsgpack.sh
   - ./setupKatex.sh
+  - ./setupTclap.sh
   - cd ..
   - mkdir -p build
   - cd build

@@ -66,10 +66,17 @@ jobs:
         shell: bash
         run: mkdir hopsan-build
 
+      - name: Download dependencies
+        shell: bash
+        working-directory: Dependencies
+        run: ./download-dependencies.py fmilibrary tclap
+
       - name: Build dependencies
         shell: bash
         working-directory: Dependencies
-        run: ./setupFMILibrary.sh
+        run: |
+          ./setupFMILibrary.sh
+          ./setupTclap.sh
 
       - name: Configure
         working-directory: hopsan-build
