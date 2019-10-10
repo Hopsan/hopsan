@@ -34,6 +34,12 @@
 #include "indexingcsvparser/indexingcsvparser.h"
 
 #include "ComponentUtilities/CSVParser.h"
+#include <fstream>
+
+#ifdef _WIN32
+#include "windows.h"
+#endif
+
 
 using namespace hopsan;
 
@@ -50,6 +56,33 @@ CSVParserNG::~CSVParserNG()
     delete mpCsvParser;
 }
 
+bool CSVParserNG::openText(HString text)
+{
+    char tempFileBuffer[L_tmpnam ];
+#ifdef _WIN32
+    char tempPathBuffer[MAX_PATH];
+    tmpnam(tempFileBuffer);
+    DWORD len = GetTempPathA(MAX_PATH, tempPathBuffer);
+    mTmpFileName.setString(tempPathBuffer, len);
+    mTmpFileName.append(tempFileBuffer);
+#else
+    tmpnam(tempFileBuffer);
+    mTmpFileName.setString(tempFileBuffer);
+#endif
+
+    try {
+        std::ofstream tmpFile;
+        tmpFile.open(mTmpFileName.c_str(), std::ofstream::out | std::ofstream::app);
+        tmpFile << text.c_str();
+        tmpFile.close();
+    } catch (std::exception& e) {
+        mErrorString = e.what();
+        return false;
+    }
+
+    return openFile(mTmpFileName.c_str());
+}
+
 bool CSVParserNG::openFile(const HString &rFilepath)
 {
     return mpCsvParser->openFile(rFilepath.c_str());
@@ -58,6 +91,10 @@ bool CSVParserNG::openFile(const HString &rFilepath)
 void CSVParserNG::closeFile()
 {
     mpCsvParser->closeFile();
+    if (!mTmpFileName.empty()) {
+        remove(mTmpFileName.c_str());
+        mTmpFileName.clear();
+    }
 }
 
 void CSVParserNG::setFieldSeparator(const char sep)

@@ -123,6 +123,11 @@ inline HString operator+(HString lhs, const char rhs)
   return lhs;
 }
 
+class HOPSANCORE_DLLAPI HTextBlock : public HString
+{
+
+};
+
 
 template<typename T>
 class HVector

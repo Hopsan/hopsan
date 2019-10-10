@@ -52,8 +52,10 @@ namespace hopsan {
         double *mpInRow, *mpInCol, *mpInPlane, *mpOut;
 
         bool mReloadCSV;
-        HString mDataCurveFileName;
-        CSVParserNG mDataFile;
+        bool mUseTextInput;
+        HString mFileName;
+        HTextBlock mTextInput;
+        CSVParserNG mCSVParser;
         LookupTable3D mLookupTable;
 
     public:
@@ -69,36 +71,47 @@ namespace hopsan {
             addInputVariable("plane", "", "", 0.0, &mpInPlane);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mFileName);
+            addConstant("text", "Text input (instead of file)", mTextInput);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
         }
 
 
         void initialize()
         {
+            mUseTextInput = !mTextInput.empty();
+
             if ( mLookupTable.isEmpty() || mReloadCSV )
             {
                 bool isOK=false;
                 mLookupTable.clear();
 
-                isOK = mDataFile.openFile(findFilePath(mDataCurveFileName));
+                if (mUseTextInput) {
+                    isOK = mCSVParser.openText(mTextInput);
+                }
+                else {
+                    isOK = mCSVParser.openFile(findFilePath(mFileName));
+                }
+
                 if (isOK)
                 {
-                    mDataFile.indexFile();
+                    mCSVParser.indexFile();
                     isOK = true;
                 }
                 if(!isOK)
                 {
-                    addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mDataFile.getErrorString());
+                    HString msg = mUseTextInput ? "Unable to initialize CSV parser"+mCSVParser.getErrorString() :
+                                                  "Unable to initialize CSV file: "+mFileName+", "+mCSVParser.getErrorString();
+                    addErrorMessage(msg);
                     stopSimulation();
-                    mDataFile.closeFile();
+                    mCSVParser.closeFile();
                     return;
                 }
                 else
                 {
                     // Make sure that selected data vector is in range
-                    const size_t nDataCols = mDataFile.getNumDataCols();
-                    if ( !mDataFile.allRowsHaveSameNumCols() || nDataCols != 4 )
+                    const size_t nDataCols = mCSVParser.getNumDataCols();
+                    if ( !mCSVParser.allRowsHaveSameNumCols() || nDataCols != 4 )
                     {
                         addErrorMessage(HString("Wrong number of data columns: ")+to_hstring(nDataCols)+" != 4");
                         stopSimulation();
@@ -106,10 +119,14 @@ namespace hopsan {
                     }
 
                     std::vector<long int> rowscols;
-                    isOK = mDataFile.copyRow(mDataFile.getNumDataRows()-1,rowscols);
+                    isOK = mCSVParser.copyRow(mCSVParser.getNumDataRows()-1,rowscols);
                     if (!isOK)
                     {
-                        addErrorMessage("Could not parse the number of rows and columns (last line) from CSV file: "+mDataCurveFileName);
+                        HString msg = "Could not parse the number of rows, columns and planes (last line)";
+                        if (!mUseTextInput) {
+                            msg.append(" from CSV file: "+mFileName);
+                        }
+                        addErrorMessage(msg);
                         stopSimulation();
                         return;
                     }
@@ -119,14 +136,14 @@ namespace hopsan {
                     size_t nPlanes = rowscols[2];
 
                     // Copy row and column index vectors (ignoring the final row with nRows and nCols)
-                    isOK = mDataFile.copyEveryNthFromColumn(0, nCols*nPlanes, mLookupTable.getIndexDataRef(0));
-                    isOK = isOK && mDataFile.copyEveryNthFromColumnRange(1, 0, nCols*nPlanes, nPlanes, mLookupTable.getIndexDataRef(1));
-                    isOK = isOK && mDataFile.copyRangeFromColumn(2, 0, nPlanes, mLookupTable.getIndexDataRef(2));
+                    isOK = mCSVParser.copyEveryNthFromColumn(0, nCols*nPlanes, mLookupTable.getIndexDataRef(0));
+                    isOK = isOK && mCSVParser.copyEveryNthFromColumnRange(1, 0, nCols*nPlanes, nPlanes, mLookupTable.getIndexDataRef(1));
+                    isOK = isOK && mCSVParser.copyRangeFromColumn(2, 0, nPlanes, mLookupTable.getIndexDataRef(2));
                     if (!isOK)
                     {
                         addErrorMessage("Could not parse one or all of the csv index columns");
                         stopSimulation();
-                        mDataFile.closeFile();
+                        mCSVParser.closeFile();
                         return;
                     }
 
@@ -137,17 +154,17 @@ namespace hopsan {
                     }
 
                     // Copy values
-                    isOK = mDataFile.copyRangeFromColumn(3, 0, mDataFile.getNumDataRows()-1, mLookupTable.getValueDataRef());
+                    isOK = mCSVParser.copyRangeFromColumn(3, 0, mCSVParser.getNumDataRows()-1, mLookupTable.getValueDataRef());
                     if (!isOK)
                     {
                         addErrorMessage("Could not parse the csv value column");
                         stopSimulation();
-                        mDataFile.closeFile();
+                        mCSVParser.closeFile();
                         return;
                     }
 
                     // Now the data is in the lookup table and we can throw away the csv data to conserve memory
-                    mDataFile.closeFile();
+                    mCSVParser.closeFile();
 
                     // Make sure the correct number of rows and columns are available
                     if ( (nRows != mLookupTable.getDimSize(0)) ||
@@ -170,7 +187,11 @@ namespace hopsan {
                     isOK = mLookupTable.isDataOK();
                     if(!isOK)
                     {
-                        addErrorMessage("The LookupTable data is not OK after reading from file: "+mDataCurveFileName);
+                        HString msg = "The LookupTable data is not OK";
+                        if (!mUseTextInput) {
+                            msg.append(" after reading from file: "+mFileName);
+                        }
+                        addErrorMessage(msg);
                         if (!mLookupTable.isDataSizeOK())
                         {
                             addErrorMessage("Something is wrong with the size of the index or data vectors");
@@ -194,4 +215,4 @@ namespace hopsan {
     };
 }
 
-#endif // SIGNALLOOKUPTABLE2D_HPP_INCLUDED
+#endif // SIGNALLOOKUPTABLE3D_HPP_INCLUDED
