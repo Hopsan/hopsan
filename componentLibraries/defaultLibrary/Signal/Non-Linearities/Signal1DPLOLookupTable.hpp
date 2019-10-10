@@ -53,8 +53,10 @@ namespace hopsan {
 
         HString mInDataName, mOutDataName;
         bool mReloadPLO;
-        HString mDataCurveFileName;
-        PLOParser mDataFile;
+        bool mUseTextInput;
+        HString mPloFileName;
+        HTextBlock mTextInput;
+        PLOParser mPLOParser;
         LookupTable1D mLookupTable;
 
     public:
@@ -68,7 +70,8 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpIn);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mPloFileName);
+            addConstant("text", "Text input (instead of file)", mTextInput);
             addConstant("invar", "Name of input variable (in file)", "", "Time", mInDataName);
             addConstant("outvar", "Name of output variable (in file)", "", "Data", mOutDataName);
             addConstant("reload","Reload plo file in initialize", "", true, mReloadPLO);
@@ -77,15 +80,19 @@ namespace hopsan {
 
         void initialize()
         {
+            mUseTextInput = !mTextInput.empty();
+
             if ( mLookupTable.isEmpty() || mReloadPLO )
             {
                 bool isOK=false;
                 mLookupTable.clear();
 
-                isOK = mDataFile.readFile(findFilePath(mDataCurveFileName));
+                isOK = mPLOParser.readFile(findFilePath(mPloFileName));
                 if(!isOK)
                 {
-                    addErrorMessage("Unable to initialize PLO file: "+mDataCurveFileName+", "+mDataFile.getErrorString());
+                    HString msg = mUseTextInput ? "Unable to initialize PLO parser"+mPLOParser.getErrorString() :
+                                                  "Unable to initialize PLO file: "+mPloFileName+", "+mPLOParser.getErrorString();
+                    addErrorMessage(msg);
                     stopSimulation();
                     return;
                 }
@@ -93,8 +100,8 @@ namespace hopsan {
                 {
                     // Make sure that selected data vectors are in range
                     int inId, outId;
-                    inId = mDataFile.getColIdxForDataName(mInDataName);
-                    outId = mDataFile.getColIdxForDataName(mOutDataName);
+                    inId = mPLOParser.getColIdxForDataName(mInDataName);
+                    outId = mPLOParser.getColIdxForDataName(mOutDataName);
 
                     if ( inId < 0 || outId < 0 )
                     {
@@ -105,10 +112,10 @@ namespace hopsan {
                         return;
                     }
 
-                    mDataFile.copyColumn(inId, mLookupTable.getIndexDataRef());
-                    mDataFile.copyColumn(outId, mLookupTable.getValueDataRef());
+                    mPLOParser.copyColumn(inId, mLookupTable.getIndexDataRef());
+                    mPLOParser.copyColumn(outId, mLookupTable.getValueDataRef());
                     // Now the data is in the lookuptable and we can throw away the plo data to conserve memory
-                    mDataFile.clearData();
+                    mPLOParser.clearData();
 
                     // Make sure strictly increasing (no sorting will be done if that is already the case)
                     mLookupTable.sortIncreasing();
@@ -117,7 +124,11 @@ namespace hopsan {
                     isOK = mLookupTable.isDataOK();
                     if(!isOK)
                     {
-                        addErrorMessage("The LookupTable data is not OK after reading from file: "+mDataCurveFileName);
+                        HString msg = "The LookupTable data is not OK";
+                        if (!mUseTextInput) {
+                            msg.append(" after reading from file: "+mPloFileName);
+                        }
+                        addErrorMessage(msg);
                         if (!mLookupTable.isDataSizeOK())
                         {
                             addErrorMessage("Something is wrong with the size of the index or data vectors");

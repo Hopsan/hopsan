@@ -1814,7 +1814,7 @@ void ParameterValueSelectionWidget::resetDefault()
     if(mpModelObject && mpValueEdit)
     {
         QString defaultText = mpModelObject->getDefaultParameterValue(mVariablePortDataName);
-        if(!defaultText.isEmpty() || mVariableDataType=="string")
+        if(!defaultText.isEmpty() || mVariableDataType=="string" || mVariableDataType=="textblock")
         {
             mpValueEdit->setText(defaultText);
             setDefaultValueTextStyle();

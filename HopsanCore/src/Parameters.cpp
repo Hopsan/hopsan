@@ -205,7 +205,7 @@ bool ParameterEvaluator::refreshParameterValueText()
                 ss << "false";
             }
         }
-        else if(mType=="string")
+        else if(mType=="string" || mType=="textblock")
         {
             ss << *static_cast<string*>(mpData);
         }
@@ -236,7 +236,7 @@ bool ParameterEvaluator::evaluate(HString &rResult)
         return false;
     }
 
-    if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="conditional")))
+    if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="textblock") || (mType=="conditional")))
     {
         mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
     }
@@ -260,13 +260,13 @@ bool ParameterEvaluator::evaluate(HString &rResult)
 //        doCheckOthers = !strippedValue.isBool();
         doCheckOthers = !mParameterValue.isBool();
     }
-    else if (mType=="string")
+    else if ((mType=="string") || (mType=="textblock"))
     {
         doCheckOthers = true;
     }
 
     // Check parent system parameters
-    if (doCheckOthers && (mType=="string" || mType=="integer" || mType=="bool") )
+    if (doCheckOthers && (mType=="string" || mType=="integer" || mType=="bool" || mType=="textblock") )
     {
         if(!mpParentParameters->evaluateInSystemParent(mParameterValue,  evaluatedParameterValue, mType))
         {
@@ -385,7 +385,7 @@ bool ParameterEvaluator::evaluate(HString &rResult)
             success = false;
         }
     }
-    else if(mType=="string")
+    else if(mType=="string" || mType=="textblock")
     {
         // If a data pointer has been set, then write evaluated value to data variable
         if(mpData)

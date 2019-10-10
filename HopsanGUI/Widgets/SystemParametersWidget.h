@@ -55,6 +55,7 @@ public:
         addItem("integer");
         addItem("bool");
         addItem("string");
+        addItem("textblock");
     }
 };
 

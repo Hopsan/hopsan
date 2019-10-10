@@ -53,6 +53,7 @@ public:
     CSVParserNG(const char separator_char = ',', size_t linesToSkip=0);
     ~CSVParserNG();
 
+    bool openText(HString text);
     bool openFile(const HString &rFilepath);
     void closeFile();
 
@@ -77,6 +78,7 @@ public:
 protected:
     indcsvp::IndexingCSVParser *mpCsvParser;
     HString mErrorString;
+    HString mTmpFileName;
     bool mConvertDecimalSeparator;
 };
 

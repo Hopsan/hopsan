@@ -736,7 +736,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
         }
         return true;
     }
-    else if (type == "string")
+    else if (type == "string" || type == "textblock")
     {
         return true;
     }

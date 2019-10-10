@@ -53,9 +53,11 @@ namespace hopsan {
 
         int mInDataId, mOutDataId;
         bool mReloadCSV;
-        HString mDataCurveFileName;
+        bool mUseTextInput;
+        HString mFileName;
+        HTextBlock mTextInput;
         HString mSeparatorChar;
-        CSVParserNG mDataFile;
+        CSVParserNG mCSVParser;
         LookupTable1D mLookupTable;
 
     public:
@@ -66,10 +68,13 @@ namespace hopsan {
 
         void configure()
         {
+            mUseTextInput = false;
+
             addInputVariable("in", "", "", 0.0, &mpIn);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mFileName);
+            addConstant("text", "Text input (instead of file)", mTextInput);
             addConstant("csvsep", "csv separator character", "", HString(","), mSeparatorChar);
             addConstant("inid", "csv file index column (0-based index)", "", 0, mInDataId);
             addConstant("outid", "csv file value column (0-based index)", "", 1, mOutDataId);
@@ -79,18 +84,26 @@ namespace hopsan {
 
         void initialize()
         {
+            mUseTextInput = !mTextInput.empty();
+
             if ( mLookupTable.isEmpty() || mReloadCSV )
             {
                 bool isOK=false;
                 mLookupTable.clear();
 
-                isOK = mDataFile.openFile(findFilePath(mDataCurveFileName));
+                if (mUseTextInput) {
+                    isOK = mCSVParser.openText(mTextInput);
+                }
+                else {
+                    isOK = mCSVParser.openFile(findFilePath(mFileName));
+                }
+
                 if (isOK)
                 {
                     if (mSeparatorChar.size() == 1)
                     {
-                        mDataFile.setFieldSeparator(mSeparatorChar[0]);
-                        mDataFile.indexFile();
+                        mCSVParser.setFieldSeparator(mSeparatorChar[0]);
+                        mCSVParser.indexFile();
                         isOK = true;
                     }
                     else
@@ -101,30 +114,32 @@ namespace hopsan {
                 }
                 if(!isOK)
                 {
-                    addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mDataFile.getErrorString());
+                    HString msg = mUseTextInput ? "Unable to initialize CSV parser"+mCSVParser.getErrorString() :
+                                                  "Unable to initialize CSV file: "+mFileName+", "+mCSVParser.getErrorString();
+                    addErrorMessage(msg);
                     stopSimulation();
-                    mDataFile.closeFile();
+                    mCSVParser.closeFile();
                     return;
                 }
                 else
                 {
                     // Make sure that selected data vector is in range
                     size_t minCols, maxCols;
-                    mDataFile.getMinMaxNumCols(minCols, maxCols);
+                    mCSVParser.getMinMaxNumCols(minCols, maxCols);
                     if ( mInDataId >= int(maxCols) || mOutDataId >= int(maxCols) )
                     {
                         HString ss;
                         ss = "inid: "+to_hstring(mInDataId)+" or outid:"+to_hstring(mOutDataId)+" is out of range!";
                         addErrorMessage(ss);
                         stopSimulation();
-                        mDataFile.closeFile();
+                        mCSVParser.closeFile();
                         return;
                     }
 
-                    isOK = mDataFile.copyColumn(mInDataId, mLookupTable.getIndexDataRef());
-                    isOK = isOK && mDataFile.copyColumn(mOutDataId, mLookupTable.getValueDataRef());
+                    isOK = mCSVParser.copyColumn(mInDataId, mLookupTable.getIndexDataRef());
+                    isOK = isOK && mCSVParser.copyColumn(mOutDataId, mLookupTable.getValueDataRef());
                     // Now the data is in the lookuptable and we can close the csv file and clear the index
-                    mDataFile.closeFile();
+                    mCSVParser.closeFile();
 
                     if (!isOK)
                     {
@@ -140,7 +155,11 @@ namespace hopsan {
                     isOK = mLookupTable.isDataOK();
                     if(!isOK)
                     {
-                        addErrorMessage("The LookupTable data is not OK after reading from file: "+mDataCurveFileName);
+                        HString msg = "The LookupTable data is not OK";
+                        if (!mUseTextInput) {
+                            msg.append(" after reading from file: "+mFileName);
+                        }
+                        addErrorMessage(msg);
                         if (!mLookupTable.isDataSizeOK())
                         {
                             addErrorMessage("Something is wrong with the size of the index or data vectors");
