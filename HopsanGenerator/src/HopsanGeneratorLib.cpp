@@ -483,7 +483,12 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
 
     //Add new component to library
     lib.mComponentXMLFiles.append(QDir(xmlPath.absolutePath()).relativeFilePath(QFileInfo(cafPath).absoluteFilePath()));
-    lib.mComponentCodeFiles.append(QFileInfo(sourcePath).fileName().replace(".mo", ".hpp"));
+    QString moFileName = QFileInfo(sourcePath).fileName();
+    if(moFileName.endsWith(".hpp")) {
+        moFileName.chop(4);
+    }
+    moFileName.append(".mo");
+    lib.mComponentCodeFiles.append(moFileName);
 
     //Write back component library to XML
     if(!lib.saveToXML(xmlPath.absoluteFilePath())) {
