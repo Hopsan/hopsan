@@ -1178,28 +1178,6 @@ QString HopsanGeneratorBase::generateModelicaCodeFromComponentSpec(ComponentSpec
     outStream << indent << "\n";
     outStream << "end " << comp.typeName << ";\n";
 
-//              equation
-//              der(vv)/omega/omega + vv*delta/omega + xv = P1.p-p_ref;
-//              vv = der(xv);
-
-//              algorithm
-//              if(xv < 0) xv = 0;
-//              if(xv <= 0) vv = 0;
-//              if(xv > xv_max) xv = xv_max;
-//              if(xv >= xv_max) vv = 0;
-
-//              P2.q = Cq*w*xv*sqrt(2/rho*abs(P1.p-P2.p))*sign(P1.p-P2.p);
-//              P1.q = -P2.q;
-
-//              P1.p = P1.c + P1.Zc*P1.q;
-//              P2.p = P2.c + P2.Zc*P2.q;
-
-//              debug1 = xv;
-//              debug2 = vv;
-
-//              end ModelicaPRV;
-
-
     return output;
 }
 
