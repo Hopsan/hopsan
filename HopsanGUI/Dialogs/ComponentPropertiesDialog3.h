@@ -270,6 +270,8 @@ private slots:
     void setConditionalValue(const int idx);
     void resetDefault();
     void createSysParameterSelectionMenu();
+    void openValueEditDialog();
+
 private:
     QString mVariableDataType, mVariablePortDataName, mVariablePortName;
     QLineEdit *mpValueEdit;

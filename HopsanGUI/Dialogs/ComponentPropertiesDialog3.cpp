@@ -46,6 +46,7 @@
 #include <QGroupBox>
 #include <QToolButton>
 #include <QFileDialog>
+#include <QTextEdit>
 
 
 //Hopsan includes
@@ -96,7 +97,7 @@ class ValueEdit : public QLineEdit
 {
     Q_OBJECT
 public:
-    ValueEdit(QWidget * parent = 0) :
+    ValueEdit(QWidget * parent = nullptr) :
         QLineEdit(parent)
     { }
 
@@ -687,7 +688,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         pHelpScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         return pHelpScrollArea;
     }
-    return 0;
+    return nullptr;
 }
 
 
@@ -1236,7 +1237,7 @@ bool VariableTableWidget::setStartValues()
                 // If we fail to set the parameter, then warning box
                 else
                 {
-                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(previousValue));
+                    QMessageBox::critical(nullptr, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'. Resetting old value '%3'!").arg(value).arg(name).arg(previousValue));
                 }
             }
 
@@ -1493,7 +1494,7 @@ void VariableTableWidget::createSeparatorRow(const int row, const QString &rName
 {
     insertRow(row);
 
-    QTableWidgetItem *pItem, *pItem2=0;
+    QTableWidgetItem *pItem, *pItem2=nullptr;
     pItem = new QTableWidgetItem(rName);
     pItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
@@ -1569,9 +1570,9 @@ void TableWidgetTotalSize::setMaxVisibleRows(const int maxRows)
 ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariameterDescription &rData, VariableTableWidget::VariameterTypEnumT type, ModelObject *pModelObject, QWidget *pParent) :
     QWidget(pParent)
 {
-    mpValueEdit = 0;
-    mpConditionalValueComboBox = 0;
-    mpUnitSelectionWidget = 0;
+    mpValueEdit = nullptr;
+    mpConditionalValueComboBox = nullptr;
+    mpUnitSelectionWidget = nullptr;
     mDefaultUnitScale.setOnlyScaleAndOffset(1);
     mpModelObject = pModelObject;
     mVariameterType = type;
@@ -1681,6 +1682,16 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             }
         }
 
+        if (rData.mDataType == "textblock") {
+            QToolButton *pEditButton =  new QToolButton(this);
+            pEditButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Script.svg"));
+            pEditButton->setToolTip("Edit");
+            pEditButton->setFixedSize(24,24);
+            connect(pEditButton, SIGNAL(clicked()), this, SLOT(openValueEditDialog()));
+            pLayout->addWidget(pEditButton);
+            mpValueEdit->setReadOnly(true);
+        }
+
         QToolButton *pResetButton =  new QToolButton(this);
         pResetButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ResetDefault.svg"));
         pResetButton->setToolTip("Reset Default Value");
@@ -1747,7 +1758,7 @@ UnitSelectionWidget *ParameterValueSelectionWidget::getUnitSelectionWidget()
 
 bool ParameterValueSelectionWidget::isValueDisabled() const
 {
-    return (mpValueEdit == 0);
+    return (mpValueEdit == nullptr);
 }
 
 QLineEdit *ParameterValueSelectionWidget::getValueEditPtr() const
@@ -1861,6 +1872,28 @@ void ParameterValueSelectionWidget::createSysParameterSelectionMenu()
     {
         mpValueEdit->setText(parNameString);
         refreshValueTextStyle();
+    }
+}
+
+void ParameterValueSelectionWidget::openValueEditDialog()
+{
+    auto pTexteditorDialog = new QDialog(gpMainWindowWidget);
+    pTexteditorDialog->setWindowTitle(QString("Edit %1").arg(mVariablePortDataName));
+    auto pLayout = new QGridLayout(pTexteditorDialog);
+    auto pTexteditor = new QTextEdit(pTexteditorDialog);
+    pTexteditor->setWordWrapMode(QTextOption::NoWrap);
+    pTexteditor->setPlainText(mpValueEdit->text());
+    auto pButtonBox = new QDialogButtonBox(pTexteditorDialog);
+    pButtonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(pButtonBox, SIGNAL(accepted()), pTexteditorDialog, SLOT(accept()));
+    connect(pButtonBox, SIGNAL(rejected()), pTexteditorDialog, SLOT(reject()));
+
+    pLayout->addWidget(pTexteditor, 0, 0, 1, 2);
+    pLayout->addWidget(pButtonBox,  1, 1, 1, 1, Qt::AlignRight);
+
+    auto rc = pTexteditorDialog->exec();
+    if (rc == QDialog::Accepted) {
+        mpValueEdit->setText(pTexteditor->toPlainText());
     }
 }
 
@@ -2018,7 +2051,7 @@ void HideShowPortWidget::hideShowPort(const bool doShow)
 UnitSelectionWidget::UnitSelectionWidget(const QString &rQuantity, QWidget *pParent) :
     QWidget(pParent)
 {
-    mpUnitComboBox = 0;
+    mpUnitComboBox = nullptr;
     mQuantity = rQuantity;
     mBaseUnitIndex = -1;
 
@@ -2378,7 +2411,7 @@ void SystemProperties::browseScript()
 
 void SystemProperties::clearLogData()
 {
-    QMessageBox existWarningBox(QMessageBox::Warning, "Warning","ALL log data in current model will be cleared. Continue?", 0, 0);
+    QMessageBox existWarningBox(QMessageBox::Warning, "Warning","ALL log data in current model will be cleared. Continue?", nullptr, nullptr);
     existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
     existWarningBox.addButton("No", QMessageBox::RejectRole);
     existWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
