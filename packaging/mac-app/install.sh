@@ -19,4 +19,4 @@ mkdir -p $HOME/Documents/Hopsan/Models
 mkdir -p $HOME/Documents/Hopsan/Scripts
 mkdir -p $HOME/Documents/Hopsan/import/FMU
 
-cp -prf $APPDIR/Contents/Resources/hopsandefaults $HOME/Library/Preferences/Hopsan/
+cp -prf $APPDIR/Contents/Resources/hopsan-default-configuration.xml $HOME/Library/Preferences/Hopsan/

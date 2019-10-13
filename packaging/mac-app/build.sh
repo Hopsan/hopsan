@@ -61,7 +61,7 @@ cp -prfX ${STAGE_DIR}/componentLibraries/defaultLibrary/libdefaultcomponentlibra
 cp -prfX ${STAGE_DIR}/componentLibraries/exampleComponentLib/[HMSeh]* HopsanGUI$LIBTAG.app/Contents/Frameworks/componentLibraries/exampleComponentLib/
 
 cp -prfX ${STAGE_DIR}/Hopsan-release-notes.txt HopsanGUI$LIBTAG.app/Contents/Resources/
-cp -prfX ${STAGE_DIR}/hopsandefaults HopsanGUI$LIBTAG.app/Contents/Resources/
+cp -prfX ${STAGE_DIR}/hopsan-default-configuration.xml HopsanGUI$LIBTAG.app/Contents/Resources/
 cp -prfX ${STAGE_DIR}/licenseHeader HopsanGUI$LIBTAG.app/Contents/Resources/
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/Models

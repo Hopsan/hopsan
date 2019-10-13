@@ -321,7 +321,7 @@ void Configuration::saveToXml()
 //! @brief Updates all settings from hopsanconfig.xml
 void Configuration::loadFromXml()
 {
-    // Read from hopsandefaults.xml
+    // Read from default configuration
     loadDefaultsFromXml();
 
     // Read from hopsanconfig.xml
@@ -419,11 +419,10 @@ void Configuration::loadFromXml()
 
 void Configuration::loadDefaultsFromXml()
 {
-    //Read from hopsandefaults.xml
 #ifdef Q_OS_OSX
-    QFile file(gpDesktopHandler->getResourcesPath() + "hopsandefaults");
+    QFile file(gpDesktopHandler->getResourcesPath() + "hopsan-default-configuration.xml");
 #else
-    QFile file(gpDesktopHandler->getMainPath() + "hopsandefaults");
+    QFile file(gpDesktopHandler->getMainPath() + "hopsan-default-configuration.xml");
 #endif
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -438,7 +437,7 @@ void Configuration::loadDefaultsFromXml()
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
         QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
-                                 gpMainWindowWidget->tr("hopsandefaults: Parse error at line %1, column %2:\n%3")
+                                 gpMainWindowWidget->tr("hopsan-default-configuration.xml: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
                                  .arg(errorStr));

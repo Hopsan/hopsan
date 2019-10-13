@@ -779,8 +779,8 @@ def copyFiles():
     # Export "Scripts" folder to temporary directory
     git_export(r'Scripts', gTemporaryBuildDir)
 
-    # Copy "hopsandefaults" file to temporary directory
-    git_export("hopsandefaults", gTemporaryBuildDir)
+    # Copy "hopsan-default-configuration.xml" file to temporary directory
+    git_export("hopsan-default-configuration.xml", gTemporaryBuildDir)
 
     # Copy "release notes" file to temporary directory
     git_export("Hopsan-release-notes.txt", gTemporaryBuildDir)
