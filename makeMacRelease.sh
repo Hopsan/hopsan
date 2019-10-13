@@ -23,13 +23,13 @@ cd ..
 
 # Building for RELEASE
 
-. ./buildMacApp/build.sh --release
+. ./packaging/mac-app/build.sh --release
 
 echo RELEASE built
 
 # Building for DEBUG
 
-. ./buildMacApp/build.sh --debug
+. ./packaging/mac-app/build.sh --debug
 
 echo DEBUG built
 
