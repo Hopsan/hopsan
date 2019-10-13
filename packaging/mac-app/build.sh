@@ -9,7 +9,7 @@
 #$Id$                                                                                                                   
 #  
 
-buildRoot="buildMacApp/"
+buildRoot="packaging/mac-app/"
 name="hopsan"
 baseversion=2.12.0
 releaserevision=20190827.1035 # TODO use getGitInfoScript
@@ -32,9 +32,9 @@ DEPLOY="-always-overwrite -verbose=3"
 fi
 
 cd $buildRoot
-HOPSAN_CODE=$(pwd)/../
+HOPSAN_CODE=$(pwd)/../../
 STAGE_DIR=$(pwd)/stage
-../packaging/prepareSourceCode.sh ${HOPSAN_CODE} ${STAGE_DIR} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
+../prepareSourceCode.sh ${HOPSAN_CODE} ${STAGE_DIR} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
 cd ..
 
 qmake $QMAKE_OPTIONS
@@ -44,7 +44,7 @@ cd bin
 
 macdeployqt HopsanGUI$LIBTAG.app $DEPLOY
 
-# TODO Use ../packaging/copyInstallHopsan.sh
+# TODO Use ../copyInstallHopsan.sh
 
 cp -prfX libhopsancore$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prfX libhopsangenerator$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
