@@ -1,7 +1,5 @@
 @echo off
 REM Windows batch script wrapper around the writeGitVersionHeader.sh bash script
-REM Author: Peter Nordin
-REM Date:   2017-02-07
 
 set filepath="%~1"
 set name="%~2"
