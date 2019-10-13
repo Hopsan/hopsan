@@ -3,7 +3,7 @@
 
 #define MyAppName "Hopsan"
 #define MyAppPublisher "Linköping University"
-#define MyAppURL "http://www.iei.liu.se/flumes/hopsan"
+#define MyAppURL "https://liu.se/en/research/hopsan"
 #define MyAppExeName "hopsangui.exe"
 
 [Setup]
@@ -22,7 +22,7 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputBaseFilename=Hopsan-{#MyAppVersion}-win32-installer
-SetupIconFile=HopsanGUI\hopsan.ico
+SetupIconFile=..\..\HopsanGUI\hopsan.ico
 Compression=lzma2
 SolidCompression=yes
 WizardImageFile="installation_large.bmp"
@@ -30,7 +30,7 @@ WizardSmallImageFile="installation_small.bmp"
 WizardImageStretch=yes
 ChangesAssociations=yes
 UninstallDisplayName={#MyAppName}
-UninstallDisplayIcon=HopsanGUI\hopsan.ico
+UninstallDisplayIcon=..\..\HopsanGUI\hopsan.ico
 DirExistsWarning=yes
 
 [Languages]
@@ -47,7 +47,7 @@ UserGuide=User &Guide
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 Name: "associatehmf"; Description: "Associate .hmf files with Hopsan"; Flags: dontinheritcheck
-                                   
+
 [InstallDelete]
 Type: filesandordirs; Name: "{app}"
 
@@ -56,7 +56,7 @@ Type: filesandordirs; Name: "{app}"
 Name: "{userdocs}\Hopsan"
 Name: "{userdocs}\Hopsan\Models"
 Name: "{userdocs}\Hopsan\Scripts"
-                           
+
 [Files]
 ;Hopsan files
 Source: "{#MyFilesSource}\*";          DestDir: "{app}";     Flags: ignoreversion recursesubdirs createallsubdirs uninsremovereadonly;   Attribs: readonly

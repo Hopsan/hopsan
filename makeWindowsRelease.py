@@ -1,5 +1,3 @@
-# $Id$
-
 import subprocess
 import os
 import ctypes
@@ -155,7 +153,7 @@ def findFileInDirTree(root_dir, file_name):
             if file_name == filename:
                 return True
     return False
-	
+
 
 def askYesNoQuestion(msg):
     # Returns true on yes
@@ -206,7 +204,7 @@ def prepend_append_line_with_pattern(filepath, re_pattern, prepend_text, append_
     with open(filepath, 'r+') as f:
         for line in f:
             if re.search(re_pattern, line) is not None:
-                new_line = line;    
+                new_line = line;
                 new_line = prepend_text + new_line
                 new_line = new_line[:-1] + append_text
                 data += new_line + '\n'
@@ -254,7 +252,7 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None, allow_dirty=True):
     if repo_root != repo_dir and src_rel_root != '.':
         print('Exporting "'+src+'", a member of submodule '+os.path.relpath(repo_root,repo_dir))
         return git_export(src_rel_root, dst_dir, repo_dir=os.path.abspath(repo_root), allow_dirty=allow_dirty )
-        
+
     if is_git_submodule(rel_src_dir):
         print('Exporting submodule "'+rel_src_dir+'" to "'+dst_dir+'"')
     else:
@@ -289,7 +287,7 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None, allow_dirty=True):
             print(stdout)
             print(stderr)
             was_stashed_ok = False
-        else:    
+        else:
             if stdout != '':
                 # Remove newline from stdout containing the commit hash
                 commit_hash = stdout[:-1]
@@ -298,7 +296,7 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None, allow_dirty=True):
         # Cleanup
         shutil.rmtree(temp_dir)
         return False
-        
+
 
     if src_is_file:
         src_dir, src_file = os.path.split(src_bash)
@@ -323,7 +321,7 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None, allow_dirty=True):
         print('Failed with return code: '+str(p.returncode))
         print(stdout)
         print(stderr)
-    else:    
+    else:
         tf = tarfile.open(temp_file_path)
         tf.extractall(path=dst)
         tf.close()
@@ -341,7 +339,7 @@ def git_export(rel_src_dir, dst_dir, repo_dir=None, allow_dirty=True):
                     if not git_export(currdir, currdirdst, repo_dir=None, allow_dirty=allow_dirty):
                         was_export_ok = False
                         break
-    
+
     return was_export_ok
 
 def copy_file(src, dst):
@@ -352,7 +350,7 @@ def copy_file(src, dst):
 
 
 def mkdirs(path):
-    try: 
+    try:
         os.makedirs(path)
     except OSError:
         if not os.path.isdir(path):
@@ -467,7 +465,7 @@ def move_backup(src, dst):
 
 def makeMSVCOutDirName(version, arch):
     return "MSVC"+version+"_"+arch
-    
+
 
 def verifyPaths():
     print "Verifying and selecting path variables..."
@@ -481,18 +479,17 @@ def verifyPaths():
     global qmakeDir
 
     isOk = True
-   
+
     #Check if Qt path exists
     qtDir = selectPathFromList(qmakeDir, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
     if qtDir == "":
         isOk = False
-        
 
-    #Check if qtcreator path exist  
+    #Check if qtcreator path exist
     creatorDir = selectPathFromList(qtcreatorDirList, "Qt Creator could not be found in one of the expected locations.", "Found Qt Creator!")
     if creatorDir == "":
         isOk = False
-        
+
     jomDir = creatorDir+r'\bin'
     qmakeDir = qmakeDir
 
@@ -505,12 +502,12 @@ def verifyPaths():
     msvc2010Path = selectPathFromList(msvc2010DirList, "Microsoft Windows SDK 7.1 (MSVC2010) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.1 (MSVC2010)!")
     #if msvc2010Path == "":
     #    isOk = False
-    
+
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
     innoDir = selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
     if innoDir == "":
-        isOk = False  
-            
+        isOk = False
+
     #Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
     inkscapeDir = selectPathFromList(inkscapeDirList, "Inkscape is not installed in expected place.", "Found Inkscape!")
     if inkscapeDir == "":
@@ -523,7 +520,7 @@ def verifyPaths():
     gs_dir = selectPathFromList(gsDirList, "Ghostscript 32-bit is not installed in expected place.", "Found Ghostscript!")
     if not findFileInDirTree(gs_dir, 'gswin32.exe'):
         printError('You must install the 32-bit version of Ghostscipt, Doxygen is apparently hard-coded for that version')
-    
+
     if isOk:
         printSuccess("Verification of path variables.")
 
@@ -533,7 +530,7 @@ def verifyPaths():
 def askForVersion():
     dodevrelease = False
     version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')
-    if version == '': 
+    if version == '':
         dodevrelease = True
 
     # Get date and time stamp of last commit used instead of "revision number"
@@ -548,11 +545,11 @@ def askForVersion():
 
 def msvcCompile(msvcVersion, architecture, msvcpath):
     print "Compiling HopsanCore with Microsoft Visual Studio "+msvcVersion+" "+architecture+"..."
-    
+
     if msvcpath == "":
         print(r'Error: msvcpath not set!')
         return False
-    
+
     # Remove previous files
     callDel(hopsanDir+r'\bin\hopsancore*.*')
 
@@ -560,7 +557,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     hopsanBuildDir = hopsanDir+r'\HopsanCore_bd'
     callRd(hopsanBuildDir)
     mkdirs(hopsanBuildDir)
-      
+
     # Create compilation script and compile
     os.chdir(hopsanDir)
     # Generate compile script, setup compiler and compile
@@ -585,7 +582,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     # Compile
     os.system("compileWithMSVC.bat")
     #printDebug(os.environ["PATH"])
-    
+
     #Remove build directory
     callRd(hopsanBuildDir)
 
@@ -601,7 +598,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     move(hopsanDirBin+r'\hopsancore.dll', targetDir)
     move(hopsanDirBin+r'\hopsancore.lib', targetDir)
     move(hopsanDirBin+r'\hopsancore.exp', targetDir)
-    
+
     return True
 
 
@@ -629,7 +626,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 
     # Set the release version definition
     replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION .*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
-    
+
     # Set splash screen version and revision number
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.0\.0', versionnumber)
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'20170000\.0000', revisionnumber)
@@ -670,10 +667,10 @@ def buildRelease():
         callRd(hopsanBinDir+makeMSVCOutDirName("2008", "x64"))
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x86"))
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x64"))
-    
+
     # Make sure the MinGW compilation uses the HOPSANCORE_WRITELOG define, so that log file is enabled
     replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= HOPSANCORE_WRITELOG', 'DEFINES *= HOPSANCORE_WRITELOG')
-     
+
     # ========================================================
     #  BUILD WITH MINGW32
     # ========================================================
@@ -688,7 +685,7 @@ def buildRelease():
     hopsanBuildDir = hopsanDir+r'\HopsanNG_bd'
     callRd(hopsanBuildDir)
     mkdirs(hopsanBuildDir)
-    
+
     # Generate compile script, setup compiler and compile
     mkspec = "win32-g++"
     f = open('compileWithMinGW.bat', 'w')
@@ -700,36 +697,36 @@ def buildRelease():
     f.write(r'mingw32-make.exe -j4'+"\n")
     #f.write("pause\n")
     f.close()
-    
-    os.chdir(hopsanBuildDir)    
+
+    os.chdir(hopsanBuildDir)
     os.system(r'..\compileWithMinGW.bat')
 
     if not fileExists(hopsanDir+r'\bin\hopsancore.dll') or not fileExists(hopsanDir+r'\bin\hopsangui.exe') or not fileExists(hopsanDir+r'\bin\hopsancli.exe'):
         printError("Failed to build Hopsan with MinGW.")
         return False
-  
+
     printSuccess("Compilation using MinGW")
     return True
-    
+
 
 def runValidation():
     print "Running validation tests"
     os.chdir(hopsanDir)
     return subprocess.call("runValidationTests.bat nopause") == 0
-    
-    
+
+
 def copyFiles():
 
     # Make sure we are in the hopsan root
     os.chdir(hopsanDir)
-    
+
     # Create a temporary release directory
     mkdirs(gTemporaryBuildDir)
     if not pathExists(gTemporaryBuildDir):
         printError("Failed to create temporary directory")
         return False
 
-    # Create directories    
+    # Create directories
     mkdirs(gTemporaryBuildDir+'/Models')
     mkdirs(gTemporaryBuildDir+'/componentLibraries')
     mkdirs(gTemporaryBuildDir+'/doc')
@@ -758,7 +755,7 @@ def copyFiles():
 
     # Export "Example Models" SVN directory to temporary directory
     git_export(r'Models\Example Models', gTemporaryBuildDir+r'\Models')
-    
+
     # Export "Test Models" SVN directory to temporary directory
     git_export(r'Models\Component Test', gTemporaryBuildDir+r'\Models')
 
@@ -767,7 +764,7 @@ def copyFiles():
 
     # Export defaultLibrary" SVN directory to temporary directory
     git_export(r'componentLibraries\defaultLibrary', gTemporaryBuildDir+r'\componentLibraries')
-    
+
     # Export "exampleComponentLib" SVN directory to temporary directory
     git_export(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries')
     copyFileToDir('componentLibraries/exampleComponentLib', 'exampleComponentLib.dll', gTemporaryBuildDir+r'\componentLibraries\exampleComponentLib')
@@ -778,19 +775,19 @@ def copyFiles():
 
     # Export "autoLibs" SVN directory to temporary directory
     git_export(r'componentLibraries\autoLibs', gTemporaryBuildDir+r'\componentLibraries')
-   
+
     # Export "Scripts" folder to temporary directory
     git_export(r'Scripts', gTemporaryBuildDir)
 
     # Copy "hopsandefaults" file to temporary directory
     git_export("hopsandefaults", gTemporaryBuildDir)
-    
+
     # Copy "release notes" file to temporary directory
     git_export("Hopsan-release-notes.txt", gTemporaryBuildDir)
 
     # Copy "README.md" file to temporary directory
     git_export("README.md", gTemporaryBuildDir)
-    
+
     # Copy documentation to temporary directory
     copyDirTo(r'doc\html', gTemporaryBuildDir+r'\doc')
     copyDirTo(r'doc\graphics', gTemporaryBuildDir+r'\doc')
@@ -816,7 +813,7 @@ def createZipInstaller(zipFile, outputDir):
 def createInnoInstaller(exeFileName, innoArch, outputDir):
     exeFile=exeFileName+'.exe'
     print 'Generating install executable: '+exeFile+'...'
-    innocmd=r' /o"'+outputDir+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+gFullVersion+r'" /dMyArchitecture="'+innoArch+r'" /dMyFilesSource="'+gTemporaryBuildDir+r'" HopsanReleaseInnoSetupScript.iss'
+    innocmd=r' /o"'+outputDir+r'" /f"'+exeFileName+r'" /dMyAppVersion="'+gFullVersion+r'" /dMyArchitecture="'+innoArch+r'" /dMyFilesSource="'+gTemporaryBuildDir+r'" packaging/windows/HopsanReleaseInnoSetupScript.iss'
     #print innocmd
     callEXE(innoDir+r'\iscc.exe', innocmd)
     if not fileExists(outputDir+'/'+exeFile):
@@ -825,8 +822,7 @@ def createInnoInstaller(exeFileName, innoArch, outputDir):
     printSuccess('Generated install executable: '+exeFile)
     return True
 
-    
-    
+
 def createInstallFiles():
 
     # Make sure we are in the hopsan root
@@ -848,7 +844,7 @@ def createInstallFiles():
     # Create zip package
     if not createZipInstaller(zipFile, hopsanDirOutput):
         return False
-        
+
     # Execute Inno compile script
     if not createInnoInstaller(exeFileName, innoArch, hopsanDirOutput):
         return False
@@ -872,7 +868,7 @@ def createInstallFiles():
 
     # Copy release notes to output directory
     copy_file('Hopsan-release-notes.txt', hopsanDirOutput)
-    
+
     return True
 
 
@@ -883,7 +879,7 @@ def createCleanOutputDirectory():
         hopsanDirOutput=hopsanDir+r'\output64'
     else:
         hopsanDirOutput=hopsanDir+r'\output'
-    
+
     # Clear old output folder
     callRd(hopsanDirOutput)
     if pathExists(hopsanDirOutput):
@@ -911,12 +907,12 @@ def renameBinFolder():
     if pathExists(hopsan_bindir):
         printError("Could not move the bin folder to temporary backup before build.")
         return False
-        
+
     # Create clean bin directory
     mkdirs(hopsan_bindir)
     return True
-    
-        
+
+
 def cleanUp():
     print "Cleaning up..."
     #Remove temporary output directory
@@ -946,7 +942,7 @@ def extractHopsanBuildPath(arch, path_name):
     else:
         return 'Failed to run setHopsanBuildPaths.bat script'
     return path_name+' path Not Found!'
-    
+
 #################################
 # Execution of file begins here #
 #################################
@@ -1071,9 +1067,9 @@ if success:
     if not runValidation() and pauseOnFailValidation:
         printWarning("Compilation script failed in model validation.")
         askYesNoQuestion("Press enter to continue!")
-        
+
 if success:
     cleanUp()
-    printSuccess("Compilation script finished successfully.")    
+    printSuccess("Compilation script finished successfully.")
 
 raw_input("Press any key to continue...")
