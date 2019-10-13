@@ -128,7 +128,7 @@ parts:
     override-build: |
       cd ../src
       sed -e "s|UnitTests||" -i HopsanNG.pro
-      ./buildDebPackage/prepareSourceCode.sh $(pwd) $(pwd) HOPSAN_BASE_VERSION HOPSAN_RELEASE_REVISION HOPSAN_FULL_RELEASE_VERSION HOPSAN_DEVELOPMENT_RELEASE false
+      ./packaging/prepareSourceCode.sh $(pwd) $(pwd) HOPSAN_BASE_VERSION HOPSAN_RELEASE_REVISION HOPSAN_FULL_RELEASE_VERSION HOPSAN_DEVELOPMENT_RELEASE false
       cd Dependencies
       ./setupFMILibrary.sh
       ./setupKatex.sh
@@ -136,7 +136,7 @@ parts:
       #./setupPythonQt.sh release 3 3.2
       snapcraftctl build
 
-      ./buildDebPackage/copyInstallHopsan.sh $(pwd)/../src ${SNAPCRAFT_PART_INSTALL}
+      ./packaging/copyInstallHopsan.sh $(pwd)/../src ${SNAPCRAFT_PART_INSTALL}
       install -Dm644 -t $SNAPCRAFT_PART_INSTALL/usr/share/icons/hicolor/128x128/apps HopsanGUI/graphics/uiicons/hopsan128x128.png
       install -Dm644 -t $SNAPCRAFT_PART_INSTALL/usr/share/icons/hicolor/192x192/apps HoLC/graphics/uiicons/holc-icon192x192.png
       install -Dm644 -t $SNAPCRAFT_PART_INSTALL/usr/share/applications HopsanGUI/HopsanGUI.desktop

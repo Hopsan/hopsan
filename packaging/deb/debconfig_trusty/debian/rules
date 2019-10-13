@@ -5,7 +5,7 @@
 #export DH_VERBOSE=1
 
 SHELL := /bin/bash
-export QT_SELECT=5
+export QT_SELECT=4
 
 build:
 	dh_testdir
@@ -16,11 +16,11 @@ build:
 	cd Dependencies; ./setupQwt.sh
 	cd Dependencies; ./setupZeroMQ.sh
 	cd Dependencies; ./setupKatex.sh
-	cd Dependencies; ./setupPythonQt.sh release 3 3.2
+	cd Dependencies; ./setupPythonQt.sh release 2.7 3.0
 
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
-	source Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
+	source ./Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
 	make -j4 -C hopsanShadowBuild
 
 clean:
@@ -32,8 +32,8 @@ install:
 	dh_testdir
 	dh_prep
 	dh_installdirs
-	buildDebPackage/fixPythonShebang.sh ./ 3
-	buildDebPackage/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
+	packaging/fixPythonShebang.sh ./ 2
+	packaging/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
 
 
 # Arch and indep Build targets
@@ -51,9 +51,9 @@ binary-arch:	build install
 #        dh_testroot
 	dh_installchangelogs
 	dh_installdocs
-	dh_install buildDebPackage/HopsanGUI.desktop usr/share/applications/
+	dh_install packaging/HopsanGUI.desktop usr/share/applications/
 	dh_install HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
-	dh_install buildDebPackage/HoLC.desktop usr/share/applications/
+	dh_install packaging/HoLC.desktop usr/share/applications/
 	dh_install HoLC/graphics/uiicons/holc-icon192x192.png usr/share/icons/hicolor/192x192/apps/
 #        dh_installexamples
 #        dh_installman

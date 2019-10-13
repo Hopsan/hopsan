@@ -235,7 +235,7 @@ fi
 # Prepare source code inside stage directory and package it into original source package
 #
 set -e
-${stage_directory}/buildDebPackage/prepareSourceCode.sh ${hopsancode_gitdir} ${stage_directory} \
+${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitdir} ${stage_directory} \
                                                         ${baseversion} ${releaserevision} ${fullversionname} \
                                                         ${doDevRelease} ${doBuildInComponents}
 set +e
@@ -265,7 +265,7 @@ for i in "${distArchArrayDo[@]}"; do
     echo "==========================="
     sleep 1
 
-    readonly debian_conf_root=${stage_directory}/buildDebPackage
+    readonly debian_conf_root=${stage_directory}/packaging/deb
     builDSCFile ${debian_conf_root} $package_dirname $packageorigsrcfile $conf $doUsePythonQt $outputfile_basename
 
     doCreateUpdatePbuilderBaseTGZ=true
