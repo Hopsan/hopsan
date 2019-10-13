@@ -410,6 +410,6 @@ HEADERS += MainWindow.h \
     }
 
 OTHER_FILES += \
-    ../hopsandefaults
+    ../hopsan-default-configuration.xml
 
 DISTFILES +=

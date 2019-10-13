@@ -79,7 +79,7 @@ copy_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5*-shared   $dstDir
 
 # Install additional files
 # =====================
-install -m664 -t $dstDir                                   $srcDir/hopsandefaults
+install -m664 -t $dstDir                                   $srcDir/hopsan-default-configuration.xml
 install -m664 -t $dstDir                                   $srcDir/Hopsan-release-notes.txt
 install -m664 -t $dstDir                                   $srcDir/README.md
 
