@@ -34,7 +34,7 @@ fi
 cd $buildRoot
 HOPSAN_CODE=$(pwd)/../
 STAGE_DIR=$(pwd)/stage
-../buildDebPackage/prepareSourceCode.sh ${HOPSAN_CODE} ${STAGE_DIR} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
+../packaging/prepareSourceCode.sh ${HOPSAN_CODE} ${STAGE_DIR} ${baseversion} ${releaserevision} ${fullversionname} ${doDevRelease} ${doBuildInComponents}
 cd ..
 
 qmake $QMAKE_OPTIONS
@@ -44,7 +44,7 @@ cd bin
 
 macdeployqt HopsanGUI$LIBTAG.app $DEPLOY
 
-# TODO Use ../buildDebPackage/copyInstallHopsan.sh
+# TODO Use ../packaging/copyInstallHopsan.sh
 
 cp -prfX libhopsancore$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prfX libhopsangenerator$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/

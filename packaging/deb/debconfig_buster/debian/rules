@@ -13,6 +13,7 @@ build:
 	# First build dependencies
 	cd Dependencies; ./setupFMILibrary.sh
 	cd Dependencies; ./setupKatex.sh
+	cd Dependencies; ./setupPythonQt.sh release 3 3.2
 
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
@@ -28,8 +29,8 @@ install:
 	dh_testdir
 	dh_prep
 	dh_installdirs
-	buildDebPackage/fixPythonShebang.sh ./ 3
-	buildDebPackage/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
+	packaging/fixPythonShebang.sh ./ 3
+	packaging/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
 
 
 # Arch and indep Build targets
@@ -47,9 +48,9 @@ binary-arch:	build install
 #        dh_testroot
 	dh_installchangelogs
 	dh_installdocs
-	dh_install buildDebPackage/HopsanGUI.desktop usr/share/applications/
+	dh_install packaging/HopsanGUI.desktop usr/share/applications/
 	dh_install HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
-	dh_install buildDebPackage/HoLC.desktop usr/share/applications/
+	dh_install packaging/HoLC.desktop usr/share/applications/
 	dh_install HoLC/graphics/uiicons/holc-icon192x192.png usr/share/icons/hicolor/192x192/apps/
 #        dh_installexamples
 #        dh_installman
