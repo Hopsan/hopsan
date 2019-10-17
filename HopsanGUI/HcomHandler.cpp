@@ -2370,7 +2370,7 @@ void HcomHandler::executeHelpCommand(QString arg)
 void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() < 1 || args.size() > 2)
+    if(args.size() < 1)
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -2380,9 +2380,10 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     if(args.size() > 1 && args[0].startsWith("-interpreter=")) {
         interpreter = args[0];
         interpreter.remove(0,13);
+        args.removeFirst();
     }
 
-    QString path = args.last();
+    QString path = args[0];
     path.remove("\"");
     path.replace("\\","/");
     if(!path.contains("/"))
