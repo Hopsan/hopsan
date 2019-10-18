@@ -5,16 +5,20 @@
             <icon scale="1" path="SignalNDLookupTable.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <text>The input is a text file with comma separated values, a .csv file. The supported formats are " decimal '.' and separator ',' " or " decimal ',' and separator ';' ".
-            Data must be stored in at least two columns of equal number of rows in the CSV file. The input and output column indexes can be selected.
-            Example for 5 samples of two different data values and a common index column:
-            i1, d1, v1
-            i2, d2, v2
-            i3, d3, v3
-            i4, d4, v4
-            i5, d5, v5
-The index value vectors has to be strictly increasing, if this is not the case, it will be automatically sorted. Duplicate values in the input data vectors are not allowed.
-One blank (empty) line must be present at the end of the data file.</text>
+            <text>The expected input is text with data vectors in columns separated by a unique character. The default nummeric text formats is to use decimal '.' and separator ',' but other separator characters are supported. For locales that use decimal ',' use the separator ';'.
+
+            Data must be stored in at least two columns of equal number of rows. The input and output column indexes can be selected. The index value vector has to be strictly increasing, if this is not the case, it will be automatically sorted. Duplicate values in the input data vectors are not allowed. Linear interpolation is used to find values between indexed data.
+
+            If the data begins with one or multiple meta data rows, these can be skipped by specifying the number of lines or a comment character.
+
+            Example:
+            # Index, Data1, Data2
+                1.0,  0.01,    10
+                3.0,  0.10,    20
+                4.0,  1.00,    30
+                6.5,    10,    40
+                  8,    20,    50
+            </text>
         </help>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
