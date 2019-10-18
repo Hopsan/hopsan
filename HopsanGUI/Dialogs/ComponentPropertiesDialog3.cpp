@@ -1888,8 +1888,15 @@ void ParameterValueSelectionWidget::openValueEditDialog()
     connect(pButtonBox, SIGNAL(accepted()), pTexteditorDialog, SLOT(accept()));
     connect(pButtonBox, SIGNAL(rejected()), pTexteditorDialog, SLOT(reject()));
 
+    auto *pHelpText = new QLabel(mpModelObject->getHelpText(), pTexteditorDialog);
+    pHelpText->setWordWrap(true);
+
     pLayout->addWidget(pTexteditor, 0, 0, 1, 2);
-    pLayout->addWidget(pButtonBox,  1, 1, 1, 1, Qt::AlignRight);
+    pLayout->addWidget(pHelpText, 0, 2, 1, 1, Qt::AlignRight);
+    pLayout->addWidget(pButtonBox, 1, 0, 1, 3, Qt::AlignRight);
+
+    pTexteditor->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred));
+    pHelpText->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred));
 
     auto rc = pTexteditorDialog->exec();
     if (rc == QDialog::Accepted) {
