@@ -51,12 +51,13 @@ namespace hopsan {
     private:
         double *mpIn, *mpOut;
 
-        int mInDataId, mOutDataId;
+        int mInDataId, mOutDataId, mNumLinesToSkip;
         bool mReloadCSV;
         bool mUseTextInput;
         HString mFileName;
         HTextBlock mTextInput;
         HString mSeparatorChar;
+        HString mCommentChar;
         CSVParserNG mCSVParser;
         LookupTable1D mLookupTable;
 
@@ -78,6 +79,8 @@ namespace hopsan {
             addConstant("csvsep", "csv separator character", "", HString(","), mSeparatorChar);
             addConstant("inid", "csv file index column (0-based index)", "", 0, mInDataId);
             addConstant("outid", "csv file value column (0-based index)", "", 1, mOutDataId);
+            addConstant("numlineskip", "The number of lines to skip (from the top)", "", 0, mNumLinesToSkip);
+            addConstant("comment", "Skip initial lines starting with character", "", "", mCommentChar);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
         }
 
@@ -100,21 +103,33 @@ namespace hopsan {
 
                 if (isOK)
                 {
-                    if (mSeparatorChar.size() == 1)
-                    {
-                        mCSVParser.setFieldSeparator(mSeparatorChar[0]);
-                        mCSVParser.indexFile();
-                        isOK = true;
+                    mNumLinesToSkip = std::max(mNumLinesToSkip, 0);
+                    if (!mCommentChar.empty()) {
+                        if (mCommentChar.size()>1) {
+                            addErrorMessage("Comment character must be one character");
+                            isOK = false;
+                        }
+                        else {
+                            mCSVParser.setCommentChar(mCommentChar[0]);
+                        }
                     }
-                    else
-                    {
-                        addErrorMessage("Separator character must be ONE character");
-                        isOK = false;
+
+                    if(isOK) {
+                        if (mSeparatorChar.size() == 1) {
+                            mCSVParser.setLinesToSkip(mNumLinesToSkip);
+                            mCSVParser.setFieldSeparator(mSeparatorChar[0]);
+                            mCSVParser.indexFile();
+                            isOK = true;
+                        }
+                        else {
+                            addErrorMessage("Separator character must be ONE character");
+                            isOK = false;
+                        }
                     }
                 }
                 if(!isOK)
                 {
-                    HString msg = mUseTextInput ? "Unable to initialize CSV parser"+mCSVParser.getErrorString() :
+                    HString msg = mUseTextInput ? "Unable to initialize CSV parser: "+mCSVParser.getErrorString() :
                                                   "Unable to initialize CSV file: "+mFileName+", "+mCSVParser.getErrorString();
                     addErrorMessage(msg);
                     stopSimulation();

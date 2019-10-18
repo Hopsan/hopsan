@@ -90,7 +90,7 @@ namespace hopsan {
                 isOK = mPLOParser.readFile(findFilePath(mPloFileName));
                 if(!isOK)
                 {
-                    HString msg = mUseTextInput ? "Unable to initialize PLO parser"+mPLOParser.getErrorString() :
+                    HString msg = mUseTextInput ? "Unable to initialize PLO parser: "+mPLOParser.getErrorString() :
                                                   "Unable to initialize PLO file: "+mPloFileName+", "+mPLOParser.getErrorString();
                     addErrorMessage(msg);
                     stopSimulation();

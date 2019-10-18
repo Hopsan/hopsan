@@ -57,6 +57,8 @@ public:
     bool openFile(const HString &rFilepath);
     void closeFile();
 
+    void setCommentChar(char commentChar);
+    void setLinesToSkip(size_t linesToSkip);
     void setFieldSeparator(const char sep);
     char autoSetFieldSeparator(std::vector<char> &rAlternatives);
 

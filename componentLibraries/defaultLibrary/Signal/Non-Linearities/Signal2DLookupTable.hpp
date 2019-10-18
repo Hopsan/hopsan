@@ -51,9 +51,11 @@ namespace hopsan {
     private:
         double *mpInRow, *mpInCol, *mpOut;
 
+        int mNumLinesToSkip;
         bool mReloadCSV;
         bool mUseTextInput;
         HString mFileName;
+        HString mCommentChar;
         HTextBlock mTextInput;
         CSVParserNG mCSVParser;
         LookupTable2D mLookupTable;
@@ -72,6 +74,8 @@ namespace hopsan {
 
             addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mFileName);
             addConstant("text", "Text input (instead of file)", mTextInput);
+            addConstant("numlineskip", "The number of lines to skip (from the top)", "", 0, mNumLinesToSkip);
+            addConstant("comment", "Skip initial lines starting with character", "", "", mCommentChar);
             addConstant("reload","Reload csv file in initialize", "", true, mReloadCSV);
         }
 
@@ -90,6 +94,17 @@ namespace hopsan {
                 }
                 else {
                     isOK = mCSVParser.openFile(findFilePath(mFileName));
+                }
+
+                mNumLinesToSkip = std::max(mNumLinesToSkip, 0);
+                if (!mCommentChar.empty()) {
+                    if (mCommentChar.size()>1) {
+                        addErrorMessage("Comment character must be one character");
+                        isOK = false;
+                    }
+                    else {
+                        mCSVParser.setCommentChar(mCommentChar[0]);
+                    }
                 }
 
                 if (isOK)

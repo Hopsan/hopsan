@@ -6,12 +6,16 @@
         </icons>
         <help>
             <text>
-            The input is a text file with comma separated values, a .csv file. The supported formats are " decimal '.' and separator ',' " or " decimal ',' and separator ';' ".
+            The expected input is text separated by a unique character. The default nummeric text formats is to use decimal '.' and separator ',' but other separator characters are supported.
 
             The lookup table index data must be in grid format.
-            Data must be stored in four columns in the CSV file in the following format: "row_idx_values,column_idx_values,plane_index_values,data_values".
+            Data must be stored in four columns in the following format: "row_idx_values,column_idx_values,plane_index_values,data_values".
             Row, column and plane index value vectors can be floating point decimal values.
             The last value line should consist of "nR = The number of index rows", "nC = The number of index columns", "nP = The number of index planes" and 0 (a dummy value)
+
+            The index value vectors have to be strictly increasing. Duplicate values in the index data vectors are not allowed. Linear interpolation is used to find values between indexed data.
+
+            If the data begins with one or multiple meta data rows, these can be skipped by specifying the number of lines or a comment character.
 
             Example for 2x2x2 matrix where (nR=2, nC=2, nP=2):
             r1, c1, p1, v111
@@ -23,9 +27,7 @@
             r2, c2, p1, v221
             r2, c2, p2, v222
             nR, nC, nP, 0
-
-            The index value vectors have to be strictly increasing, if this is not the case, they will be automatically sorted. Duplicate values in the index data vectors are not allowed.
-            One blank (empty) line must be present at the end of the data file.</text>
+            </text>
         </help>
         <ports>
             <port x="0" y="0" a="180" name="row"/>

@@ -97,6 +97,16 @@ void CSVParserNG::closeFile()
     }
 }
 
+void CSVParserNG::setCommentChar(char commentChar)
+{
+    mpCsvParser->setCommentChar(commentChar);
+}
+
+void CSVParserNG::setLinesToSkip(size_t linesToSkip)
+{
+    mpCsvParser->setNumLinesToSkip(linesToSkip);
+}
+
 void CSVParserNG::setFieldSeparator(const char sep)
 {
     mpCsvParser->setSeparatorChar(sep);
