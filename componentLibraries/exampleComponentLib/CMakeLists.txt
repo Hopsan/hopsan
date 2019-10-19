@@ -5,9 +5,9 @@ set(CMAKE_DEBUG_POSTFIX _d)
 
 set(targetname examplecomponentlibrary)
 
-file(GLOB_RECURSE headerfiles *.h *.hpp)
+file(GLOB_RECURSE component_files *.h *.hpp *.cci)
 
-add_library(${targetname} SHARED exampleComponentLib.cpp ${headerfiles})
+add_library(${targetname} SHARED exampleComponentLib.cpp ${component_files})
 target_include_directories(${targetname} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
@@ -17,3 +17,19 @@ install(TARGETS ${targetname}
   RUNTIME DESTINATION componentLibraries/exampleComponentLib
   LIBRARY DESTINATION componentLibraries/exampleComponentLib
 )
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/ DESTINATION componentLibraries/exampleComponentLib
+  FILES_MATCHING
+  PATTERN "*.cpp"
+  PATTERN "*.h *"
+  PATTERN "*.hpp"
+  PATTERN "*.cci"
+  PATTERN "*.xml"
+  PATTERN "*.nb"
+  PATTERN "*.py"
+  PATTERN "*.bat"
+  PATTERN "*.sh"
+  PATTERN "*.csv"
+  PATTERN "*.txt"
+  PATTERN "*.md"
+  PATTERN "*.hmf"
+  PATTERN "LICENSE")
