@@ -356,7 +356,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
         return false;
     }
 
-    QString headerGuard = fmuName.toUpper()+"_HPP_INCLUDED";
+    QString headerGuard = "FMU_"+fmuName.toUpper()+"_HPP_INCLUDED";
     QString className = "FMU_"+fmuName;
     // Lets default FMUs to signal components unless a HopsanTLM port specification xml is present
     QString classParent = "ComponentSignal";
@@ -793,7 +793,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         return false;
     }
 
-    QString headerGuard = fmuName.toUpper()+"_HPP_INCLUDED";
+    QString headerGuard = "FMU_"+fmuName.toUpper()+"_HPP_INCLUDED";
     QString className = "FMU_"+fmuName;
     // Lets default FMUs to signal components unless a HopsanTLM port specification xml is present
     QString classParent = "ComponentSignal";
