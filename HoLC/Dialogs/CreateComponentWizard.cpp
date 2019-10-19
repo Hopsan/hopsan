@@ -541,7 +541,7 @@ void CreateComponentWizard::generate()
     compTemplateFile.close();
 
 
-    QString headerGuard = typeName.toUpper()+"_HPP_INCLUDED";
+    QString headerGuard = "HEADER_"+typeName.toUpper()+"_INCLUDED";
     QString memberVariableCode;
     QString localVariableCode;
     QString addConstantsCode;
