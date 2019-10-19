@@ -1,7 +1,7 @@
 @ECHO OFF
 REM $Id$
 
-REM Bat script to setup build paths for Hopsan and dependencies 
+REM Bat script to setup build paths for Hopsan and dependencies
 REM Author: Peter Nordin peter.nordin@liu.se
 REM Argument %1 should be arch: x86 or x64
 
@@ -45,7 +45,7 @@ if defined ProgramFiles(x86) (
 	REM Lookup tools paths for 64-bit Windows
 	echo 64bit Windows detected, expecting 64-bit tools, but checking for 32-bit anyway
 	if exist "%ProgramFiles(x86)%\CMake\bin" (
-		set "cmake_path=%ProgramFiles(x86)%\CMake\bin" 
+		set "cmake_path=%ProgramFiles(x86)%\CMake\bin"
 	) else (
 		set "cmake_path=%ProgramW6432%\CMake\bin"
 	)
@@ -54,7 +54,7 @@ if defined ProgramFiles(x86) (
 	) else (
 		set "doxygen_path=%ProgramW6432%\doxygen\bin"
 	)
-	REM Assume official "Git for Windows" 
+	REM Assume official "Git for Windows"
 	if exist "%ProgramFiles(x86)%\Git\bin" (
 		set "git_path=%ProgramFiles(x86)%\Git\bin"
 		set "gitmsys_path=%ProgramFiles(x86)%\Git\usr\bin"
