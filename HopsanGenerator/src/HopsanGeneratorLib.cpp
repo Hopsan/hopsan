@@ -64,7 +64,9 @@ bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, mes
         QString dir = mofile.absolutePath()+"/";
         QString typeName = mofile.baseName();
         QStringList hppFiles {typeName+".hpp"};
-        bool genLibraryOK = pGenerator->generateNewLibrary(dir, hppFiles);
+        QString libName = QDir(dir).dirName();
+        //! @todo Is my use of {libName+".xml"} correct here for modelica generator usage ?
+        bool genLibraryOK = pGenerator->generateNewLibrary(dir, libName, hppFiles, {libName+".xml"});
         if (!genLibraryOK) {
             return false;
         }
@@ -87,7 +89,10 @@ bool callLibraryGenerator(const char*  outputPath, const char* const hppFiles[],
     {
         tempList.append(hppFiles[i]);
     }
-    return pGenerator->generateNewLibrary(outputPath, tempList);
+    QString libName = QDir(outputPath).dirName();
+    //! @todo what about caf files? It seems that this code is only called from HopsanGUI to generate a new empty library right now, it is also in a block of EXPERIMENTAL code in the component properties dialog
+    //! @todo The for now this works since its only called to create a new empty library, but the callLibraryGenerator should take the caf files as input also
+    return pGenerator->generateNewLibrary(outputPath, libName, tempList);
 }
 
 
@@ -156,7 +161,10 @@ bool callCppGenerator(const char* hppPath, const char* compilerPath, bool compil
         QString dir = hp.absolutePath()+"/";
         QString typeName = hp.baseName();
         QStringList hppFiles {typeName+".hpp"};
-        bool genLibraryOK = pGenerator->generateNewLibrary(dir, hppFiles);
+        QString libName = QDir(dir).dirName();
+        //! @todo what about caf files, this code seems to be called ONLY from EXPERIMENTAL code in LibraryHandler (create new component) and Component Properties dialog.
+        //! @todo This code is not used unless EXPERIMENTAL is defined, maybe it can be removed
+        bool genLibraryOK = pGenerator->generateNewLibrary(dir, libName, hppFiles);
         if (!genLibraryOK) {
             return false;
         }
@@ -201,7 +209,8 @@ bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, con
 
     // Generate the component library files
     QStringList hppFiles {hppFileInfo.filePath()};
-    bool genOK = pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), hppFiles , cflags, lflags);
+    QString libName = QDir(fmuImportRoot.canonicalFilePath()).dirName();
+    bool genOK = pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), libName, hppFiles, {libName+".xml"}, cflags, lflags);
     if (!genOK) {
         pGenerator->printErrorMessage("Failed to generate FMU import library");
         return false;

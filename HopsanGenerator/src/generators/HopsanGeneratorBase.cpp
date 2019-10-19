@@ -872,7 +872,7 @@ void HopsanGeneratorBase::compileFromComponentSpecification(const QString &outpu
 //! @param[in] hppFiles Relative path to hpp files
 //! @param[in] cflags Compiler flags required for building the library
 //! @param[in] lflags Linker flags required for building the library
-bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFiles, QStringList cflags, QStringList lflags, QStringList includePaths, QStringList linkPaths, QStringList linkLibraries)
+bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QString libName, QStringList hppFiles, QStringList cafFiles, QStringList cflags, QStringList lflags, QStringList includePaths, QStringList linkPaths, QStringList linkLibraries)
 {
     printMessage("Creating new component library...");
 
@@ -882,7 +882,6 @@ bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
         dstPath.append("/");
     }
 
-    QString libName = QDir(dstPath).dirName();
     const QString libID = QUuid::createUuid().toString().remove('{').remove('}');
 
     QStringList typeNames;
@@ -940,6 +939,7 @@ bool HopsanGeneratorBase::generateNewLibrary(QString dstPath, QStringList hppFil
     lib.mIncludePaths = includePaths;
     lib.mLinkPaths = linkPaths;
     lib.mLinkLibraries = linkLibraries;
+    lib.mComponentXMLFiles = cafFiles;
 
     const QString libFilePath = dstPath+libName+"_lib.xml";
     bool saveOK = lib.saveToXML(libFilePath);

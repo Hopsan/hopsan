@@ -81,6 +81,8 @@
 #include "GeneratorUtils.h"
 #include "Utilities/GUIUtilities.h"
 
+namespace  {
+
 //! @brief Helpfunction to create full typename from type and subtype
 //! @returns The full typename type|subtype, or type is subtype was empty
 QString makeFullTypeString(const QString &rType, const QString &rSubType)
@@ -93,6 +95,13 @@ QString makeFullTypeString(const QString &rType, const QString &rSubType)
     {
        return rType+"|"+rSubType;
     }
+}
+
+//! @ brief Float comparisson of version numbers
+bool libraryFormatVersionLessThen(double libraryFormatVersion, double referenceValue) {
+    const auto diff = referenceValue - libraryFormatVersion;
+    return (diff > 0) || ((diff < 0) && (fabs(diff) < 0.01));
+}
 }
 
 
@@ -717,7 +726,7 @@ void NewComponentDialog::validate()
 
     //Make sure all variable names are unique
     QStringList allNames = spec.constantNames+spec.inputNames+spec.outputNames+spec.portNames;
-    for(const QString name : allNames) {
+    for(const QString& name : allNames) {
         if(allNames.count(name) > 1) {
             gpMessageHandler->addErrorMessage("Each variable and port name must be unique.");
             QList<QTableWidgetItem*> items = mpConstantsTable->findItems(name, Qt::MatchExactly);
@@ -902,7 +911,7 @@ void LibraryHandler::createNewLibrary() {
         QString libDirPath = QFileDialog::getExistingDirectory(gpMainWindowWidget, "Choose Library Directory", gpConfig->getStringSetting(CFG_EXTERNALLIBDIR));
         QDir libDir(libDirPath);
         if(libDir.entryList(QDir::AllDirs).contains(libName)) {
-            QMessageBox existWarningBox(QMessageBox::Warning, "Warning", "Directory already contains a sub-folder with specified type name. Do you want to create new library here anyway?", 0, 0);
+            QMessageBox existWarningBox(QMessageBox::Warning, "Warning", "Directory already contains a sub-folder with specified type name. Do you want to create new library here anyway?", nullptr, nullptr);
             existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
             existWarningBox.addButton("No", QMessageBox::RejectRole);
             existWarningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
@@ -1209,7 +1218,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
 
                     // Read components
-                    if(pLibrary->version == "0.3") {
+                    if(!libraryFormatVersionLessThen(pLibrary->version.toDouble(), 0.3)) {
                         QDomElement cafElement = xmlRoot.firstChildElement(QString(XML_COMPONENT_XML));
                         while(!cafElement.isNull()) {
                             pLibrary->cafFiles.append(libraryRootDir.absoluteFilePath(cafElement.text()));
@@ -1281,11 +1290,11 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
     mUpdateXmlBackupDir.setPath(gpDesktopHandler->getBackupPath() + "updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
     // Recurse sub directories and find all xml caf files
-    if(pLibrary->version != "0.3") {
+    //! @todo why not search allways, and in >=0.3 case warn if we find caf files that were not in the library XML ? In case someone write these xml files by hand
+    if(libraryFormatVersionLessThen(pLibrary->version.toDouble(), 0.3)) {
         libraryRootDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
         libraryRootDir.setNameFilters(QStringList() << "*.xml");
         QDirIterator it(libraryRootDir, QDirIterator::Subdirectories);
-        bool foundCafFiles = false;
         while(it.hasNext())
         {
             //Read from the xml file
@@ -1304,8 +1313,6 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     if(cafRoot.tagName() == QString(CAF_ROOT))
                     {
                         pLibrary->cafFiles.append(cafFileInfo.absoluteFilePath());
-
-
                     }
                 }
                 else
@@ -1326,7 +1333,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
         gpMessageHandler->addWarningMessage(QString("Did not find any component XML files when loading library: %1").arg(pLibrary->getLibraryMainFilePath()));
     }
 
-    for(const QString cafFileName : pLibrary->cafFiles) {
+    for(const QString& cafFileName : pLibrary->cafFiles) {
         QFile cafFile(cafFileName);
         QFileInfo cafFileInfo(cafFileName);
 
