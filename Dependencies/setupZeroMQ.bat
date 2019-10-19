@@ -1,7 +1,7 @@
 @ECHO OFF
 REM $Id$
 
-REM Bat script building ZeroMQ and unpacking messagepack automatically 
+REM Bat script building ZeroMQ and unpacking messagepack automatically
 REM Author: Peter Nordin peter.nordin@liu.se
 
 setlocal
@@ -24,7 +24,7 @@ mkdir %builddir%
 cd %builddir%
 REM bash.exe -c "./autogen.sh; ./configure --without-libsodium --host=x86_64-w64-mingw32; mingw32-make -j4"
 cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
-mingw32-make -j4
+mingw32-make -j8
 mingw32-make install
 REM mingw32-make test
 

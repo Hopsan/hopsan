@@ -16,7 +16,7 @@ echo ======================
 call setHopsanBuildPaths.bat
 
 cd %dirname%
-bash.exe -c "patch -p1 < ../matio-1.5.2.patch; autoreconf -i --force; LT_LDFLAGS=-no-undefined ./configure --without-zlib; mingw32-make.exe -j4"
+bash.exe -c "patch -p1 < ../matio-1.5.2.patch; autoreconf -i --force; LT_LDFLAGS=-no-undefined ./configure --without-zlib; mingw32-make.exe -j8"
 
 echo.
 echo setupMatio.bat done

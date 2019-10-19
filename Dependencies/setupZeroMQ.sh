@@ -23,7 +23,7 @@ fi
 cmake ${zmq_cmake_args} -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
-make -j$(nproc)
+make -j$(getconf _NPROCESSORS_ONLN)
 make install
 if [[ "$HOPSAN_BUILD_DEPENDENCIES_TEST" == "true" ]]; then
   make test

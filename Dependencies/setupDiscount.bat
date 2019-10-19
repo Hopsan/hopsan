@@ -28,7 +28,7 @@ REM Build with mingw patches
 
 REM The first patch was taken from https://github.com/Alexpux/MINGW-packages/tree/master/mingw-w64-discount
 REM It was however modified to grep for Msys instead of MINGW (from uname -a)
-bash.exe -c "patch -p0 < ../discount-mingw-building.patch; patch -p1 < ../discount-2.1.8-msys.patch; CC=gcc ./configure.sh --shared --prefix=%installdir_bash% --confdir=%installdir_bash%/etc; make -j4; make install"
+bash.exe -c "patch -p0 < ../discount-mingw-building.patch; patch -p1 < ../discount-2.1.8-msys.patch; CC=gcc ./configure.sh --shared --prefix=%installdir_bash% --confdir=%installdir_bash%/etc; make -j8; make install"
 REM Note! We use msys make here as mingw32-make is to strict since 4.9.2
 
 cd %basedir%

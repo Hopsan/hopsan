@@ -22,7 +22,7 @@ chmod u+x ./configure.sh
 sed -e 's/ldconfig "$1"/ldconfig -C .\/ld.so.cache "$1"/' -i librarian.sh
 
 # Build
-make -j$(nproc) -w
+make -j$(getconf _NPROCESSORS_ONLN) -w
 
 # Install
 make install

@@ -23,7 +23,7 @@ mkdir %builddir%
 cd %builddir%
 
 qmake %codedir%\qwt.pro -r -spec win32-g++
-mingw32-make -j4
+mingw32-make -j8
 mingw32-make install
 
 cd %basedir%

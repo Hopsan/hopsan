@@ -21,7 +21,7 @@ build:
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
 	source ./Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
-	make -j4 -C hopsanShadowBuild
+	make -j8 -C hopsanShadowBuild
 
 clean:
 	dh_testdir

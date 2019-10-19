@@ -67,7 +67,7 @@ mkdir -p $builddir
 cd $builddir
 
 ${HOPSAN_BUILD_QT_QMAKE} ${codedir}/PythonQt.pro -r -spec linux-g++
-make -j4 -w
+make -j$(getconf _NPROCESSORS_ONLN) -w
 
 # Install manually since PythonQt code does not have install target configured
 mkdir -p ${installdir}/include
