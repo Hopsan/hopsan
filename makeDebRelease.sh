@@ -16,8 +16,14 @@ name=hopsan
 devversion=2.12.0
 
 # Pbuilder dists and archs
-debianDistArchArray=( buster:amd64:buster buster:i386:buster stretch:amd64:qt5py27 stretch:i386:qt5py27 jessie:amd64:qt5py27 jessie:i386:qt5py27 )
-ubuntuDistArchArray=( eoan:amd64:qt5py3sysdeps eoan:i386:qt5py3sysdeps disco:amd64:qt5py3sysdeps disco:i386:qt5py3sysdeps bionic:amd64:qt5py3 bionic:i386:qt5py3 xenial:amd64:qt5py27 xenial:i386:qt5py27 trusty:amd64:trusty trusty:i386:trusty )
+debianDistArchArray=( buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster \
+                      stretch:amd64:qt5py27        stretch:i386:qt5py27 \
+                      jessie:amd64:qt5py27_jessie  jessie:i386:qt5py27_jessie )
+ubuntuDistArchArray=( eoan:amd64:qt5py3_2          eoan:i386:qt5py3_2 \
+                      disco:amd64:qt5py3_2         disco:i386:qt5py3_2 \
+                      bionic:amd64:qt5py3_1        bionic:i386:qt5py3_1 \
+                      xenial:amd64:qt5py27         xenial:i386:qt5py27 \
+                      trusty:amd64:trusty          trusty:i386:trusty )
 
 # Pbuilder mirrors
 ubuntuMirror=http://se.archive.ubuntu.com/ubuntu/
@@ -87,6 +93,7 @@ function builDSCFile {
 
   echo ---------------------------------
   echo Build dsc package:
+  echo ---------------------------------
   echo Source file: $packageorigsrcfile
   echo Packagedir : $packagedir
   echo Output name: $outputbasename
@@ -102,8 +109,13 @@ function builDSCFile {
   # Copy package configuration
   # TODO Use install
   mkdir -p ${packagedir}
-  cp -a ${confdir}/debconfig_base/debian $packagedir
-  cp -a ${confdir}/debconfig_${config}/debian $packagedir
+  if [[ -d ${confdir}/debconfig_${config} ]]; then
+      # Use old packaging method
+      cp -a ${confdir}/debconfig_base/debian ${packagedir}
+      cp -a ${confdir}/debconfig_${config}/debian ${packagedir}
+  else
+      cp -a ${confdir}/${config}/debian ${packagedir}
+  fi
 
   # Check if we should remove PythonQt if it should not be used
   if [[ $usepythonqt == false ]]; then
@@ -248,6 +260,7 @@ tar -czf ${packageorigsrcfile} -C ${stage_directory} .
 # -----------------------------------------------------------------------------
 # Now build DEB package
 #
+readonly debian_conf_root=${stage_directory}/packaging/deb
 buildStatusArray=()
 for i in "${distArchArrayDo[@]}"; do
   # Split input into array to extract data
@@ -265,7 +278,6 @@ for i in "${distArchArrayDo[@]}"; do
     echo "==========================="
     sleep 1
 
-    readonly debian_conf_root=${stage_directory}/packaging/deb
     builDSCFile ${debian_conf_root} $package_dirname $packageorigsrcfile $conf $doUsePythonQt $outputfile_basename
 
     doCreateUpdatePbuilderBaseTGZ=true
@@ -295,7 +307,13 @@ for i in "${distArchArrayDo[@]}"; do
 
     # Extract build dependencies from control file
     # Installs them once and for all to avoid wasting time on every build
-    extraPackages=$(grep Build-Depends ${debian_conf_root}/debconfig_${conf}/debian/control | sed -e 's/Build-Depends://' -e 's/[(][^)]*[)]//g' -e 's/\,//g')
+    if [[ -d ${debian_conf_root}/debconfig_${conf} ]]; then
+        # Use old method
+        debconf_path=${debian_conf_root}/debconfig_${conf}
+    else
+        debconf_path=${debian_conf_root}/${conf}
+    fi
+    extraPackages=$(echo $(cat ${debconf_path}/debian/control | sed -e '/Build-Depends/,/Standards-Version/!d' -e 's/Build-Depends://' -e '/Standards-Version.*/d' -e 's/[(][^)]*[)]//g' -e 's/\,//g'))
     #echo $extraPackages
 
     # Remove file if it is corrupt

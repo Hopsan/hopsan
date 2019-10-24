@@ -1,0 +1,38 @@
+Source: hopsan
+Maintainer: Peter Nordin <jpn.peter@gmail.com>
+Section: contrib/science
+Priority: optional
+Build-Depends: cmake,
+               debhelper (>= 11~),
+               fakeroot,
+               libhdf5-dev,
+               libmarkdown2-dev,
+               libpythonqt-qt5-python3-dev,
+               libqt5opengl5-dev,
+               libqt5svg5-dev,
+               libqt5webkit5-dev,
+               libqwt-qt5-dev,
+               libtool-bin,
+               libzmq3-dev,
+               ninja-build,
+               patchelf,
+               pkg-config,
+               python3-dev,
+               qt5-default,
+               qtbase5-dev,
+               qtbase5-private-dev,
+               unzip
+Standards-Version: 3.9.8
+Homepage: https://github.com/Hopsan/hopsan
+
+Package: hopsan
+Architecture: any
+Depends: python3,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: This is a free simulation environment for fluid and mechatronic systems.
+ Hopsan is developed at Linköping University. Although originally
+ developed for simulation of fluid power systems, it has also been adopted
+ for other domains such as electric power, flight dynamics and vehicle
+ dynamics. It uses bi-directional delay lines (or transmission line elements,
+ TLM) to connect different components.
