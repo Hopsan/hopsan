@@ -1,27 +1,34 @@
 #!/bin/bash
+# Shell script for installing the intended files from a pre-build hopsan root directory
 
-# Shell script for copying "Installing" the necessary files from a pre-build hopsan root dir
-# The root dir is assumed to have been exported from svn
-# Author: Peter Nordin peter.nordin@liu.se
-
-function copy_dynamic_libs_if_exist {
-  local src_dir=$1
+function install_dynamic_libs_if_exist {
+  local src_dir="$1"
   local libname=$2
-  local dst_dir=$3
+  local dst_dir="$3"
   if [[ "$OSTYPE" == "darwin"* ]]; then
     local lib_suffix=.dylib
   else
     local lib_suffix=.so
   fi
 
-  if [[ ! -d ${dst_dir} ]]; then
+  if [[ -d "${dst_dir}" ]]; then
+      if [[ -d "${src_dir}" ]]; then
+          # TODO find files
+          cp -a "${src_dir}"/${libname}${lib_suffix}* "${dst_dir}"
+          chmod u=rw,go=r "${dst_dir}/"${libname}${lib_suffix}*
+      fi
+  else
     echo Error: Destination directory ${dst_dir} does not exist
   fi
+}
 
-  if [[ -d ${src_dir} && -d ${dst_dir} ]]; then
-    # TODO find files and install with specified permissions instead
-    cp -a ${src_dir}/${libname}${lib_suffix}* ${dst_dir}
-  fi
+function install_dir {
+    src_dir="$1"
+    dst_dir="$2"
+    mkdir -p "${dst_dir}"
+    cp -a "${src_dir}" "${dst_dir}"
+    find "${dst_dir}" -name ".git*" -exec rm {} \;
+    chmod -R u+rwX,go-w+rX "${dst_dir}"
 }
 
 E_BADARGS=65
@@ -33,55 +40,49 @@ fi
 
 srcDir=${1%/}
 dstDir=${2%/}
-echo "Copy installing Hopsan from $srcDir to $dstDir"
+echo "Installing Hopsan from $srcDir to $dstDir"
 
 # Copy whole directories
 # ======================
-mkdir -p                                                   $dstDir/HopsanCore
-cp -a    $srcDir/HopsanCore/include                        $dstDir/HopsanCore
-cp -a    $srcDir/HopsanCore/src                            $dstDir/HopsanCore
-cp -a    $srcDir/HopsanCore/dependencies                   $dstDir/HopsanCore
+install_dir  $srcDir/HopsanCore/include                        $dstDir/HopsanCore
+install_dir  $srcDir/HopsanCore/src                            $dstDir/HopsanCore
+install_dir  $srcDir/HopsanCore/dependencies                   $dstDir/HopsanCore
 
-mkdir -p                                                   $dstDir/componentLibraries
-cp -a    $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries
-cp -a    $srcDir/componentLibraries/exampleComponentLib    $dstDir/componentLibraries
-cp -a    $srcDir/componentLibraries/extensionLibrary       $dstDir/componentLibraries
-cp -a    $srcDir/componentLibraries/autoLibs               $dstDir/componentLibraries
+install_dir  $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries
+install_dir  $srcDir/componentLibraries/exampleComponentLib    $dstDir/componentLibraries
+install_dir  $srcDir/componentLibraries/extensionLibrary       $dstDir/componentLibraries
+install_dir  $srcDir/componentLibraries/autoLibs               $dstDir/componentLibraries
 
-mkdir -p                                                   $dstDir/Models
-cp -a    $srcDir/Models/Example\ Models                    $dstDir/Models
-cp -a    $srcDir/Models/Component\ Test                    $dstDir/Models
+install_dir  $srcDir/Models/Example\ Models                    $dstDir/Models
+install_dir  $srcDir/Models/Component\ Test                    $dstDir/Models
 
-mkdir -p                                                   $dstDir/doc
-cp -a    $srcDir/doc/html                                  $dstDir/doc
-cp -a    $srcDir/doc/graphics                              $dstDir/doc
+install_dir  $srcDir/doc/html                                  $dstDir/doc
 
-cp -a    $srcDir/Scripts                                   $dstDir
+install_dir  $srcDir/Scripts                                   $dstDir
 
 # Copy compiled libs and exec files
 # =================================
-cp -a    $srcDir/bin                                       $dstDir
+install_dir  $srcDir/bin                                       $dstDir
 
 # Copy dependencies files
 # =======================
 srcDeps=${srcDir}/Dependencies
 
-mkdir -p                                                   $dstDir/Dependencies
-cp -a    ${srcDeps}/katex                                  $dstDir/Dependencies
-cp -a    ${srcDeps}/FMILibrary                             $dstDir/Dependencies
+install_dir  ${srcDeps}/katex                                  $dstDir/Dependencies
+install_dir  ${srcDeps}/FMILibrary                             $dstDir/Dependencies
 
-copy_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dstDir/bin
-copy_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
-copy_dynamic_libs_if_exist  ${srcDeps}/FMILibrary/lib  libfmilib_shared  $dstDir/bin
-copy_dynamic_libs_if_exist  ${srcDeps}/discount/lib    libmarkdown       $dstDir/bin
-copy_dynamic_libs_if_exist  ${srcDeps}/pythonqt/lib    libPythonQt*      $dstDir/bin
-copy_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5*-shared   $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/FMILibrary/lib  libfmilib_shared  $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/discount/lib    libmarkdown       $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/pythonqt/lib    libPythonQt*      $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5*-shared   $dstDir/bin
 
 # Install additional files
 # =====================
-install -m664 -t $dstDir                                   $srcDir/hopsan-default-configuration.xml
-install -m664 -t $dstDir                                   $srcDir/Hopsan-release-notes.txt
-install -m664 -t $dstDir                                   $srcDir/README.md
+install -m644 -t $dstDir                                   $srcDir/hopsan-default-configuration.xml
+install -m644 -t $dstDir                                   $srcDir/Hopsan-release-notes.txt
+install -m644 -t $dstDir                                   $srcDir/README.md
 
 # Strip any runpaths to Dependencies directory
 # from ELF binaries. Note! ($ORIGIN/./) will remain.
