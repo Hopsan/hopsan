@@ -88,8 +88,7 @@ function builDSCFile {
   local -r packagedir="$2"
   local -r packageorigsrcfile="$3"
   local -r config="$4"
-  local -r usepythonqt="$5"
-  local -r outputbasename="$6"
+  local -r outputbasename="$5"
 
   echo ---------------------------------
   echo Build dsc package:
@@ -99,7 +98,6 @@ function builDSCFile {
   echo Output name: $outputbasename
   echo Confdir    : $confdir
   echo Config     : $config
-  echo With Python: $doUsePythonQt
   echo ---------------------------------
 
 
@@ -107,7 +105,6 @@ function builDSCFile {
   rm -rf ${packagedir}
 
   # Copy package configuration
-  # TODO Use install
   mkdir -p ${packagedir}
   if [[ -d ${confdir}/debconfig_${config} ]]; then
       # Use old packaging method
@@ -115,11 +112,6 @@ function builDSCFile {
       cp -a ${confdir}/debconfig_${config}/debian ${packagedir}
   else
       cp -a ${confdir}/${config}/debian ${packagedir}
-  fi
-
-  # Check if we should remove PythonQt if it should not be used
-  if [[ $usepythonqt == false ]]; then
-    sed "/setupPythonQt.sh/d" -i "${packagedir}"/debian/rules
   fi
 
   # Copy "unpack" prepared source files to this dir
@@ -166,10 +158,6 @@ boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" n
 readonly doBuildInComponents=${boolYNQuestionAnswer}
 
 echo
-boolAskYNQuestion "Do you want to build with PythonQt and python support?" y
-readonly doUsePythonQt=${boolYNQuestionAnswer}
-
-echo
 distArchArrayDo=()
 for i in "${debianDistArchArray[@]}"; do
   boolAskYNQuestion "Do you want to build, $i?" n
@@ -187,7 +175,6 @@ echo Release baseversion number: $baseversion
 echo Release revision number: $releaserevision
 echo Release version name: $fullversionname
 echo Built in components: $doBuildInComponents
-echo Using PythonQt: $doUsePythonQt
 printf "%s\n" "${distArchArrayDo[@]}"
 echo ---------------------------------------
 boolAskYNQuestion "Is this OK?" n
@@ -278,7 +265,7 @@ for i in "${distArchArrayDo[@]}"; do
     echo "==========================="
     sleep 1
 
-    builDSCFile ${debian_conf_root} $package_dirname $packageorigsrcfile $conf $doUsePythonQt $outputfile_basename
+    builDSCFile ${debian_conf_root} $package_dirname $packageorigsrcfile $conf $outputfile_basename
 
     doCreateUpdatePbuilderBaseTGZ=true
     basetgzFile=${pbuilderWorkDir}/${dist}${arch}.tgz
