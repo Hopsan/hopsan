@@ -48,6 +48,23 @@ namespace hopsan {
 class ComponentSystem;
 }
 
+namespace {
+QString toHppFilename(QString filename) {
+    if (filename.endsWith(".mo")) {
+        filename.chop(3);
+        filename.append(".hpp");
+    }
+    return filename;
+}
+QString toMoFilename(QString filename) {
+    if (filename.endsWith(".hpp")) {
+        filename.chop(4);
+        filename.append(".mo");
+    }
+    return filename;
+}
+}
+
 //! @brief Calls the Modelica generator
 //! @param moFilePath Path to the modelica file (also output directory)
 //! @param compilerPath Path to compiler bin directory
@@ -405,7 +422,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     if(!pGenerator->generateCafFile(cafPath, cafSpec)) {
         pGenerator->printErrorMessage("Failed to generate component appearance file.");
         return false;
-    };
+    }
 
     //Generate source file for new component
     ComponentSpecification compSpec;
@@ -481,7 +498,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     if(!pGenerator->generateComponentSourceFile(sourcePath, compSpec, target)) {
         pGenerator->printErrorMessage("Failed to generate component source file.");
         return false;
-    };
+    }
 
     //Load component library from XML
     ComponentLibrary lib;
@@ -492,12 +509,11 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
 
     //Add new component to library
     lib.mComponentXMLFiles.append(QDir(xmlPath.absolutePath()).relativeFilePath(QFileInfo(cafPath).absoluteFilePath()));
-    QString moFileName = QFileInfo(sourcePath).fileName();
-    if(moFileName.endsWith(".hpp")) {
-        moFileName.chop(4);
+    const QString relativeSourcePath = QDir(xmlPath.absolutePath()).relativeFilePath(QFileInfo((sourcePath)).absoluteFilePath());
+    lib.mComponentCodeFiles.append(toHppFilename(relativeSourcePath));
+    if (modelica) {
+        lib.mAuxFiles.append(relativeSourcePath);
     }
-    moFileName.append(".mo");
-    lib.mComponentCodeFiles.append(moFileName);
 
     //Write back component library to XML
     if(!lib.saveToXML(xmlPath.absoluteFilePath())) {
@@ -509,7 +525,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     if(!pGenerator->generateLibrarySourceFile(lib)) {
         pGenerator->printErrorMessage("Failed to generate library source file.");
         return false;
-    };
+    }
 
     return true;
 }
@@ -550,17 +566,21 @@ bool callAddExistingComponentToLibrary(const char* libraryXmlPath, const char* c
         pGenerator->printErrorMessage("Unable to parse XML file: "+QString(cafPath)+" (cannot find \"modelobject\" element)");
         return false;
     }
-    QString hppFileName = modelObjectElement.attribute("sourcecode");
-    if(hppFileName.isEmpty()) {
+    QString sourceFile = modelObjectElement.attribute("sourcecode");
+    if(sourceFile.isEmpty()) {
         pGenerator->printErrorMessage("Source code not specified in component XML file.");
         return false;
     }
-    QString hppPath = cafFileInfo.absoluteDir().filePath(hppFileName);
-    QFileInfo hppFileInfo(hppPath);
+    QString sourcePath = cafFileInfo.absoluteDir().absoluteFilePath(sourceFile);
+    QFileInfo sourceFileInfo(sourcePath);
 
     //Add new component to library
-    lib.mComponentXMLFiles.append(libFileInfo.absoluteDir().relativeFilePath(cafFileInfo.fileName()));
-    lib.mComponentCodeFiles.append(libFileInfo.absoluteDir().relativeFilePath(hppFileInfo.fileName()));
+    lib.mComponentXMLFiles.append(libFileInfo.absoluteDir().relativeFilePath(cafFileInfo.absoluteFilePath()));
+    const QString relativeSourcePath = libFileInfo.absoluteDir().relativeFilePath(sourceFileInfo.absoluteFilePath());
+    lib.mComponentCodeFiles.append(toHppFilename(relativeSourcePath));
+    if (relativeSourcePath.endsWith(".mo")) {
+        lib.mAuxFiles.append(relativeSourcePath);
+    }
 
     //Write back component library to XML
     if(!lib.saveToXML(libFileInfo.absoluteFilePath())) {
@@ -572,7 +592,7 @@ bool callAddExistingComponentToLibrary(const char* libraryXmlPath, const char* c
     if(!pGenerator->generateLibrarySourceFile(lib)) {
         pGenerator->printErrorMessage("Failed to generate library source file.");
         return false;
-    };
+    }
 
     return true;
 }
@@ -583,11 +603,12 @@ bool callAddExistingComponentToLibrary(const char* libraryXmlPath, const char* c
 //! @brief Removes a component from a component library
 //! @param[in] libraryXmlPath Absolute path to library XML file
 //! @param[in] cafPath Path to component description file
-//! @param[in] hppPath Path to component source file
+//! @param[in] sourceCodePath Path to component source file
 //! @param[in] deleteFiles Flag for deleting actual files
-bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafPath, const char* hppPath, bool deleteFiles, messagehandler_t messageHandler, void* pMessageObject)
+bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafPath, const char* sourceCodePath, bool deleteFiles, messagehandler_t messageHandler, void* pMessageObject)
 {
     QFileInfo xmlPath(libraryXmlPath);
+    QDir xmlRootDir = QFileInfo(libraryXmlPath).absoluteDir();
 
     QString dummy;
     auto pGenerator = std::unique_ptr<HopsanGeneratorBase>(new HopsanGeneratorBase(dummy, dummy));
@@ -600,9 +621,14 @@ bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafP
         return false;
     }
 
-    //Add new component to library
-    lib.mComponentXMLFiles.removeAll(QFileInfo(cafPath).fileName());
-    lib.mComponentCodeFiles.removeAll(QFileInfo(hppPath).fileName());
+    //Remove component from library
+    const QString relativeCafFile = xmlRootDir.relativeFilePath(cafPath);
+    lib.mComponentXMLFiles.removeAll(relativeCafFile);
+    const QString relativeSourceFile = xmlRootDir.relativeFilePath(sourceCodePath);
+    lib.mComponentCodeFiles.removeAll(toHppFilename(relativeSourceFile));
+    if (QFile::exists(toMoFilename(sourceCodePath))) {
+        lib.mAuxFiles.removeAll(toMoFilename(relativeSourceFile));
+    }
 
     //Write back component library to XML
     if(!lib.saveToXML(xmlPath.absoluteFilePath())) {
@@ -614,11 +640,11 @@ bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafP
     if(!pGenerator->generateLibrarySourceFile(lib)) {
         pGenerator->printErrorMessage("Failed to generate library source file.");
         return false;
-    };
+    }
 
     if(deleteFiles) {
         QFile::remove(cafPath);
-        QFile::remove(hppPath);
+        QFile::remove(sourceCodePath);
     }
 
     return true;

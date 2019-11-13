@@ -1088,7 +1088,7 @@ bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
     QString output;
     output.append(QString("#include <iostream>\n"));
     output.append(QString("#include \"ComponentEssentials.h\"\n"));
-    for(const QString srcFile : lib.mComponentCodeFiles) {
+    for(const QString& srcFile : lib.mComponentCodeFiles) {
         output.append("#include \""+srcFile+"\"\n");
     }
     output.append("\n");
@@ -1097,7 +1097,7 @@ bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
     output.append("extern \"C\" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)\n");
     output.append("{\n");
     output.append("    //Register Components\n");
-    for(const QString srcFile : lib.mComponentCodeFiles) {
+    for(const QString& srcFile : lib.mComponentCodeFiles) {
         QString typeName = QFileInfo(srcFile).baseName();
         output.append("    pComponentFactory->registerCreatorFunction(\""+typeName+"\", "+typeName+"::Creator);\n");
     }

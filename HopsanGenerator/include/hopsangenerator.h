@@ -33,7 +33,7 @@ extern "C" {
 
     HOPSANGENERATOR_DLLAPI bool callAddExistingComponentToLibrary(const char* libraryXMLPath, const char* cafPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
 
-    HOPSANGENERATOR_DLLAPI bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafPath, const char *hppPath, bool deleteFiles, messagehandler_t messageHandler, void *pMessageObject);
+    HOPSANGENERATOR_DLLAPI bool callRemoveComponentFromLibrary(const char* libraryXmlPath, const char* cafPath, const char *sourceCodePath, bool deleteFiles, messagehandler_t messageHandler, void *pMessageObject);
 }
 
 #endif // HOPSANGENERATOR_H
