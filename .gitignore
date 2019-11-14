@@ -3,6 +3,7 @@ bin/
 HopsanNG_bd/
 output64/
 output/
+output_deb/
 *.pro.user*
 *~
 *.o
