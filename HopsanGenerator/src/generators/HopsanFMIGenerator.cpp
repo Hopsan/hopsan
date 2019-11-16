@@ -1326,7 +1326,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     //------------------------------------------------------------------//
 
     QMap<QString, QString> assetsMap;
-    copyModelAssetsToDir(fmuStagePath, pSystem, assetsMap);
+    copyModelAssetsToDir(fmuStagePath+"/resources", pSystem, assetsMap);
 
     genOK = generateModelFile(pSystem, fmuBuildPath, assetsMap);
     if (!genOK) {

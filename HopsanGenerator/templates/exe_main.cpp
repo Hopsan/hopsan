@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
         std::cout << "Failed to instantiate model!\n";
         return 1;
     }
+    const HString modelName = spCoreComponentSystem->getName();
+    spCoreComponentSystem->addSearchPath(modelName+"-resources");
 
     //Parse arguments
     std::vector<std::string> arguments(argv+1, argv + argc);

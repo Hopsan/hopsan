@@ -110,7 +110,7 @@ bool HopsanExeGenerator::generateToExe(QString savePath, ComponentSystem *pSyste
     //------------------------------------------------------------------//
 
     QMap<QString, QString> assetsMap;
-    copyModelAssetsToDir(buildPath, pSystem, assetsMap);
+    copyModelAssetsToDir(savePath+"/"+modelName+"-resources", pSystem, assetsMap);
 
     bool genOK = generateModelFile(pSystem, buildPath, assetsMap);
     if (!genOK) {
