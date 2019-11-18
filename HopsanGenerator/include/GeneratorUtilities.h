@@ -101,6 +101,9 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 bool removeDir(QString path);
 bool copyDir(const QString &fromPath, QString toPath,  const QList<QRegExp> &excludeRegExps, QString &rErrorMessage);
 bool copyFile(const QString &source, const QString &target, QString &rErrorMessage);
+void setRW_RW_RW_FilePermissions(const QString& filePath);
+void setRW_RW_RW_FilePermissions(const QStringList& filePaths);
+void setRWXRWXRW_FilePermissions(const QString& filePath);
 
 bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QString extraCFlags="", QString extraLFlags="");
 bool compile(QString wdPath, QString gccPath, QString o, QString srcFiles, QString inclPaths, QString cflags, QString lflags, QString &output);

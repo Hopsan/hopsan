@@ -1323,9 +1323,7 @@ bool HopsanGeneratorBase::copyDefaultComponentCodeToDir(const QString &path) con
     for (const auto& suffix : {"hpp", "h", "cc", "cpp"}) {
         findAllFilesInFolderAndSubFolders(saveDir.path(), suffix, allFiles);
     }
-    for(const QString& file : allFiles) {
-        QFile::setPermissions(file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
-    }
+    setRW_RW_RW_FilePermissions(allFiles);
 
     return true;
 }
@@ -1401,21 +1399,19 @@ void hopsan::register_extra_components(hopsan::ComponentFactory* pComponentFacto
             for (const auto& suffix : {"hpp", "h", "cc", "cpp"}) {
                 findAllFilesInFolderAndSubFolders(libDestinationPath.path(), suffix, allFiles);
             }
-            for(const QString& file : allFiles) {
-                QFile::setPermissions(file, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
-            }
+            setRW_RW_RW_FilePermissions(allFiles);
 
             QString generatorErrorMessage;
-            for(const QString extraSourceFile : lib.mExtraSourceFiles) {
+            for(const QString& extraSourceFile : lib.mExtraSourceFiles) {
                 rExtraSourceFiles.append(QDir(libraryRootPath).filePath(extraSourceFile));
             }
-            for(const QString includePath : lib.mIncludePaths) {
+            for(const QString& includePath : lib.mIncludePaths) {
                 rIncludePaths.append(QDir(libraryRootPath).filePath(includePath));
             }
-            for(const QString linkPath : lib.mLinkPaths) {
+            for(const QString& linkPath : lib.mLinkPaths) {
                 rLinkPaths.append(QDir(libraryRootPath).filePath(linkPath));
             }
-            for(const QString linkLibrary : lib.mLinkLibraries) {
+            for(const QString& linkLibrary : lib.mLinkLibraries) {
                 rLinkLibraries.append(QDir(libraryRootPath).filePath(linkLibrary));
             }
             bool genOK = lib.generateRegistrationCode(libraryRootPath, externalLibraryIncludeCode, externalLibraryRegistrationCode, generatorErrorMessage);
@@ -1687,6 +1683,7 @@ void HopsanGeneratorBase::copyModelAssetsToDir(const QString &tgtDirPath, hopsan
         targetAssetPath.prepend(tgtDirPath+"/");
 
         copyFile(absSourceAssetPath, targetAssetPath);
+        setRW_RW_RW_FilePermissions(targetAssetPath);
 
         QString newRelativeAssetPath = targetDir.relativeFilePath(targetAssetPath);
         assetsMap.insert(asset.c_str(), newRelativeAssetPath);

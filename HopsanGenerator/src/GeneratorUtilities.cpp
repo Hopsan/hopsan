@@ -954,3 +954,31 @@ QStringList CompilerHandler::sourceFiles() const
 {
     return mSourceFiles;
 }
+
+void setRW_RW_RW_FilePermissions(const QString &filePath) {
+#if defined(_WIN32)
+    QFile::setPermissions(filePath, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser | QFile::ReadOther | QFile::WriteOther);
+#else
+    QFile::setPermissions(filePath, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther);
+#endif
+}
+
+void setRW_RW_RW_FilePermissions(const QStringList &filePaths)
+{
+    for (const QString& filePath : filePaths) {
+        setRW_RW_RW_FilePermissions(filePath);
+    }
+}
+
+void setRWXRWXRW_FilePermissions(const QString &filePath)
+{
+#if defined(_WIN32)
+    QFile::setPermissions(filePath, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                          QFile::ReadOther | QFile::WriteOther | QFile::ExeOther |
+                          QFile::ReadUser | QFile::WriteUser | QFile::ExeUser);
+#else
+    QFile::setPermissions(filePath, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                          QFile::ReadGroup | QFile::WriteGroup | QFile::ExeGroup |
+                          QFile::ReadOther | QFile::ExeOther);
+#endif
+}

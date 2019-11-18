@@ -187,10 +187,10 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
         compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
-    for(const QString includePath : getHopsanCoreIncludePaths()) {
+    for(const QString& includePath : getHopsanCoreIncludePaths()) {
         compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
     }
-    for(const QString includePath : mIncludePaths) {
+    for(const QString& includePath : mIncludePaths) {
         compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
     }
     compileCppBatchFile.close();
@@ -278,10 +278,10 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     {
         linkBatchStream << " " << objFile;
     }
-    for(const QString linkPaths : mLinkPaths) {
+    for(const QString& linkPaths : mLinkPaths) {
         linkBatchStream << " -L\"" << linkPaths << "\"";
     }
-    for(const QString linkLibrary : mLinkLibraries) {
+    for(const QString& linkLibrary : mLinkLibraries) {
         linkBatchStream << " -l" << linkLibrary;
     }
     linkBatchStream << " -ldl";
@@ -300,10 +300,12 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     QDir outputDir = QFileInfo(outputExecutableFile).absoluteDir();
     outputDir.cdUp();
 #ifdef _WIN32
-    copyFile(outputExecutableFile, outputDir.absolutePath()+"/"+modelName+".exe");
+    QString targetFilePath = outputDir.absolutePath()+"/"+modelName+".exe";
 #else
-    copyFile(outputExecutableFile, outputDir.absolutePath()+"/"+modelName);
+    QString targetFilePath = outputDir.absolutePath()+"/"+modelName;
 #endif
+    copyFile(outputExecutableFile, targetFilePath);
+    setRWXRWXRW_FilePermissions(targetFilePath);
 
     return assertFilesExist("", QStringList() << outputExecutableFile);
 }
