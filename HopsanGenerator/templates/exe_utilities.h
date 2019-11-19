@@ -96,5 +96,6 @@ bool setParameter(std::string &rParName, std::string &rParValue, hopsan::Compone
 void printHelpText(hopsan::ComponentSystem *pSystem);
 void printParameters(hopsan::ComponentSystem *pSystem);
 void readConfigFile(std::string &filePath, Options &options);
+void printWaitingMessages(hopsan::HopsanEssentials& hopsanCore, bool printDebug, bool silent);
 
 #endif // MODELUTILITIES_H

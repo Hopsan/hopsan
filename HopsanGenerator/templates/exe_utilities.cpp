@@ -487,3 +487,23 @@ void readConfigFile(std::string &filePath, Options &options) {
         exit(1);
     }
 }
+
+//! @brief Prints all waiting messages
+//! @param[in] printDebug Should debug messages also be printed
+void printWaitingMessages(hopsan::HopsanEssentials& hopsanCore, bool printDebug, bool silent)
+{
+    if(silent) return;
+
+    hopsan::HString msg, type, tag;
+    while (hopsanCore.checkMessage() > 0) {
+        hopsanCore.getMessage(msg,type,tag);
+        if (type == "debug") {
+            if (printDebug) {
+                cout << msg.c_str() << endl;
+            }
+        }
+        else {
+            cout << msg.c_str() << endl;
+        }
+    }
+}

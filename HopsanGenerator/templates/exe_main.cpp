@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), options.startT, options.stopT);
     if(!spCoreComponentSystem) {
         std::cout << "Failed to instantiate model!\n";
+        printWaitingMessages(gHopsanCore, false, false);
         return 1;
     }
     const HString modelName = spCoreComponentSystem->getName();
@@ -124,6 +125,7 @@ int main(int argc, char *argv[])
     }
     else {
         std::cout << "Failed!\n";
+        printWaitingMessages(gHopsanCore, false, false);
         return 1;
     }
 
@@ -133,6 +135,7 @@ int main(int argc, char *argv[])
     }
     else {
         std::cout << "Failed!\n";
+        printWaitingMessages(gHopsanCore, false, false);
         return 1;
     }
 
