@@ -524,6 +524,73 @@ private slots:
         QTest::newRow("0") << std::string(moCode) << std::string("MyLaminarOrifice");
     }
 
+    void Generator_Exe_Export()
+    {
+        QFETCH(ComponentSystem*, system);
+#if defined(__APPLE__)
+        QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
+#else
+
+        QString suffix;
+        QString outDir = "/exe 32";
+        std::string compilerPath = gcc32Path;
+        int ai32_64 = 32;
+#if defined (HOPSANCOMPILED64BIT)
+        outDir =  "/exe 64";
+        compilerPath = gcc64Path;
+        ai32_64 = 64;
+#endif
+
+#if defined(_WIN32)
+        suffix = ".exe";
+#endif
+
+        std::string outpath = cwd+outDir.toStdString();
+        std::vector<char*> externalLibraries;
+        constexpr int numExternalLibraries = 0;
+
+        bool exportOK = callExeExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, hopsanRoot.c_str(),  gcc32Path.c_str(), ai32_64, &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
+
+        QStringList args;
+        QProcess p;
+
+        args << "-s";
+        p.setWorkingDirectory(outpath.c_str());
+        p.start(QString::fromStdString(outpath)+"/unittestmodel_export"+suffix, args);
+        p.waitForFinished();
+
+        if (p.exitCode() != 0) {
+            std::cout << "stdout: " << std::endl << QString(p.readAllStandardOutput()).toStdString() << std::endl;
+            std::cout << "stderr: " << std::endl << QString(p.readAllStandardError()).toStdString() << std::endl;
+        }
+
+        QVERIFY2(p.exitStatus() == QProcess::NormalExit, "The generated EXE crashed");
+        QVERIFY2(p.exitCode() == 0, "The generated EXE failed simulation.");
+#endif
+    }
+
+    void Generator_Exe_Export_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QString originalModelPath=qcwd+"/../Models/unittestmodel_export.hmf";
+        QFile originalModelFile(originalModelPath);
+
+        QString outPath = qcwd+"/exe 32";
+#if defined (HOPSANCOMPILED64BIT)
+        outPath = qcwd+"/exe 64";
+#endif
+
+        removeDir(outPath);
+        QDir().mkpath(outPath);
+        originalModelFile.copy(outPath+"/unittestmodel_export.hmf");
+
+        double start, stop;
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(originalModelPath.toStdString().c_str(), start, stop);
+    }
+
     void examineCode(QString code, QStringList &errors)
     {
         QStringList lines = code.split("\n");
