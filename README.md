@@ -50,34 +50,25 @@ The GUI applications are released under the copyleft **GNU General Public Licens
 
 ### Windows
 
-You can find official releases and development snapshots at:  
-https://flumes.iei.liu.se/hopsan/files/releases  
-Backup: https://www.dropbox.com/sh/27t75dg86lcgfz2/AACdU9-oRh8K6IFkBOdh7Wqca?dl=0
+You can download official release packages from  
+https://github.com/Hopsan/hopsan/releases
 
-You can verify your download checksums here:  
-https://github.com/Hopsan/release_shasum
-
-The Windows version comes packaged as either an installer or as portable zip that you can use if you do not have permission to install software on your computer. You can also choose if you want the compiler included for importing and exporting component libraries and models.
+The Windows version is packaged as a installer or as a portable zip that you can use if you do not have permission to install software on your computer.
+You can also choose if you want the compiler included for importing and exporting component libraries and models.
 
 If you choose the zip version, no start menu entry for Hopsan will be added, instead go into the bin directory and double-click hopsangui.exe to start.
 
 ### Ubuntu and Debian Packages
 
-You can find official releases and development snapshots at:  
-https://flumes.iei.liu.se/hopsan/files/releases  
-Backup: https://www.dropbox.com/sh/27t75dg86lcgfz2/AACdU9-oRh8K6IFkBOdh7Wqca?dl=0
-
-You can verify your download checksums here:  
-https://github.com/Hopsan/release_shasum
+You can download official release packages from  
+https://github.com/Hopsan/hopsan/releases
 
 Deb packages are built for the current Ubuntu and Debian releases.
 You should be able to install them by opening them in you package manager, but if that does not work, try to install it manually using.
 ```
-dpkg -i hopsanPackageName
+apt install ./hopsanPackageName
 ```
-In this case you will also need to install dependencies manually, dpkg will tell you what you need.
-Use "apt-get install" to install them.
-
+Note that you must specify the package name as a path, otherwise apt will search for the package in the repository.
 
 ### Snapcraft
 https://snapcraft.io/hopsan  
@@ -101,7 +92,6 @@ hopsan.servermonitor
 ```
 **Known issues:**  
 
-* Hopsan currently looks like old software due to not inheriting the desktop theme properly, you can go into Options and enable "Native style sheet" to make it look slightly better.
 * The Hopsan snap runs in confinement. If the log cache runs out of storage space, you can change temp directory under Options->Plotting, but due to the confinement you do not have many locations to choose from. This may cause problems if you are low on disk space.
 
 
@@ -137,10 +127,9 @@ flatpak run --command=hopsancli --devel com.github.hopsan.Hopsan [arguments]
 * The Hopsan flatpak runs in confinement and the default log cache storage is in /tmp/Hopsan (inside the container). If the log cache runs out of storage space, you can change temp directory under Options->Plotting, but due to the confinement you do not have many locations to choose from. This may cause problems if you are low on disk space.
 
 
-
 ## Documentation
 
-https://flumes.iei.liu.se/hopsan/docs/latest/html
+https://hopsan.github.io/documentation
 
 ## Issue Tracker and Questions
 If you want to report an issue, make a feature request or have a question, please create a new issue in the issue tracker.  
@@ -150,22 +139,7 @@ https://github.com/Hopsan/hopsan/issues
 ## Links
 
 https://github.com/Hopsan  
-https://liu.se/en/research/hopsan  
-https://flumes.iei.liu.se/hopsan
-
-## Migration Notice
-
-In may 2017 the Hopsan source code was migrated from subversion to git(hub).
-To reduce the repository size, the revision history was thoroughly pruned.
-The old repository should still be accessible (read only) at:
-
-**Repository URL:** https://flumes.iei.liu.se/svn/hopsan
-
-**Username:** anonymous  
-**Password:** hut6Opoj
-
-In late February 2018, the issue tracker was also moved to GitHub.  
-The old one was previously available here: https://flumes.iei.liu.se/redmine/projects/hopsan
+https://liu.se/en/research/hopsan
 
 # Build Instructions
 
@@ -173,7 +147,7 @@ Hopsan is a cross-platform supported application and it should be possible to bu
 on most GNU/Linux based distributions, Microsoft Windows (using MinGW) and Apple macOS.
 
 **Note!** See the developer documentation for detailed instructions.
-https://flumes.iei.liu.se/hopsan/docs/latest/html/page_hopsandevelopment.html
+https://hopsan.github.io/documentation/page_hopsandevelopment.html
 
 ## Cloning the Source Code
 To get the source code clone it including dependencies using the following commands.
