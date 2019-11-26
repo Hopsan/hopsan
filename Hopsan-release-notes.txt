@@ -30,6 +30,37 @@
 ******************************
     Version History
 ******************************
+2.13.0 (2019-11-26)
+
+--- Enhancements ---
+
+- HopsanGUI:
+  - Improved library and code generation / development capabilities in HopsanGUI. It is now the preferred choice for library development.
+    HoLC is deprecated and will not see further development or updates.
+  - Libraries can now include Modelica .mo files (a subset is supported), and the corresponding c++ Hopsan components will be auto generated
+
+--- Bug Fixes ---
+
+- HopsanGUI:
+  - Fixed drag-copying with right mouse button
+  - Fix bug in arguments check for exec HCOM command
+  
+- HopsanGenerator:
+  - Prevent generating header guards starting with digits (would fail for models whose name starts with a number)
+  - Fix model assets export for stand-alone exe-export. Assets will be stored in a directory called modelname-resources
+    This directory must accompany the exe file if it is moved.
+  - Set better default permission for exported files, rw_rw_rw_ for code and rwxrwxr_x for executable files
+  
+--- Component Libraries ---
+
+  - Lookup table components now have the option to add internal csv data as a parameter, this makes it easier to quickly
+    create simple lookup tables without having to deal with external files
+  - Lookup tables no support reading values from white-space padded columns
+    Example:  1.0,  2.0,  3.0
+             10  , 20  , 30  
+  
+
+------------------------------------------------------------------------------------------------------------------------
 2.12.1-snap (2019-07-29)
 
 This is a special release for the snap version of Hopsan.
