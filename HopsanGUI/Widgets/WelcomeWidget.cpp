@@ -818,7 +818,18 @@ void WelcomeWidget::launchAutoUpdate()
     mpAUDownloadDialog->setMinimumWidth(300);
     mpAUDownloadDialog->setValue(0);
 
-    mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(mAutoUpdateFileLink));
+    auto request = QNetworkRequest(mAutoUpdateFileLink);
+#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
+    mpAUDownloadStatus = pNetworkManager->get(request);
+    QVariant redirection = mpAUDownloadStatus->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    const auto redirectionUrl = redirection.toUrl();
+    if(!redirectionUrl.isEmpty()) {
+        mpAUDownloadStatus = pNetworkManager->get(QNetworkRequest(redirectionUrl));
+    }
+#else
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    mpAUDownloadStatus = pNetworkManager->get(request);
+#endif
     connect(mpAUDownloadStatus, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateDownloadProgressBar(qint64, qint64)));
     connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadStatus, SLOT(abort()));
     connect(mpAUDownloadDialog, SIGNAL(canceled()), mpAUDownloadDialog, SLOT(close()));
