@@ -566,7 +566,7 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     }
 
 
-    QFile compTemplateFile(":templates/generalComponentTemplate.hpp");
+    QFile compTemplateFile(":/templates/generalComponentTemplate.hpp");
     if(!compTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open generalComponentTemplate.hpp for writing.");

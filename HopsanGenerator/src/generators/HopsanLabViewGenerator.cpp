@@ -85,7 +85,7 @@ bool HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Writing model.h...");
 
-    QFile modelHeaderTemplateFile(":templates/labviewModelTemplate.h");
+    QFile modelHeaderTemplateFile(":/templates/labviewModelTemplate.h");
     if(!modelHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewModelTemplate.h for reading.");
@@ -109,7 +109,7 @@ bool HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Writing codegen.c...");
 
-    QFile codegenSourceTemplateFile(":templates/labviewCodegenTemplate.c");
+    QFile codegenSourceTemplateFile(":/templates/labviewCodegenTemplate.c");
     if(!codegenSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewCodegenTemplate.c for reading.");
@@ -133,7 +133,7 @@ bool HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Writing SIT_API.h...");
 
-    QFile apiHeaderTemplateFile(":templates/labviewApiTemplate.h");
+    QFile apiHeaderTemplateFile(":/templates/labviewApiTemplate.h");
     if(!apiHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewApiTemplate.h for reading.");
@@ -157,7 +157,7 @@ bool HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Writing HOW_TO_COMPILE.txt...");
 
-    QFile howToTemplateFile(":templates/labviewHowToTemplate.txt");
+    QFile howToTemplateFile(":/templates/labviewHowToTemplate.txt");
     if(!howToTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open labviewHowToTemplate.txt for reading.");
@@ -231,8 +231,9 @@ bool HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Writing " + fileInfo.fileName());
 
-    QFile wrapperTemplateFile(":templates/labviewWrapperTemplate.cpp");
-    assert(wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QFile wrapperTemplateFile(":/templates/labviewWrapperTemplate.cpp");
+    bool opened = wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    assert(opened);
     QString wrapperCode;
     QTextStream t(&wrapperTemplateFile);
     wrapperCode = t.readAll();
@@ -591,7 +592,7 @@ bool HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Copying hopsanrt-wrapper.h");
 
-    QFile wrapperTemplateHeaderFile(":templates/labviewWrapperTemplate.h");
+    QFile wrapperTemplateHeaderFile(":/templates/labviewWrapperTemplate.h");
     wrapperTemplateHeaderFile.copy(fileInfo.absoluteDir().path()+"/hopsanrt-wrapper.h");
 
 

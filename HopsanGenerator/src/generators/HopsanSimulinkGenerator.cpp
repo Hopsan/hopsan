@@ -222,8 +222,9 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
     printMessage("Writing "+name+".cpp...");
 
-    QFile wrapperTemplateFile(":templates/simulinkWrapperTemplate.cpp");
-    assert(wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QFile wrapperTemplateFile(":/templates/simulinkWrapperTemplate.cpp");
+    bool opened = wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    assert(opened);
     QString wrapperCode;
     QTextStream t2(&wrapperTemplateFile);
     wrapperCode = t2.readAll();
@@ -611,8 +612,9 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     //How to access dialog parameters:
     //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
 
-    QFile wrapperTemplateFile(":templates/simulinkCoSimWrapperTemplate.cpp");
-    assert(wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QFile wrapperTemplateFile(":/templates/simulinkCoSimWrapperTemplate.cpp");
+    bool opened = wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    assert(opened);
     QString wrapperCode;
     QTextStream t(&wrapperTemplateFile);
     wrapperCode = t.readAll();
@@ -717,8 +719,9 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
         wrapperReplace6 = "    mexCallMATLAB(0, 0, 0, 0, \""+name+"PortLabels\");                              //Run the port label script";
     }
 
-    QFile socketDeclarationTemplateFile(":templates/simulinkSocketDeclarationTemplate.cpp");
-    assert(socketDeclarationTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QFile socketDeclarationTemplateFile(":/templates/simulinkSocketDeclarationTemplate.cpp");
+    opened = socketDeclarationTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    assert(opened);
     QString socketDeclarationCode;
     QTextStream t2(&socketDeclarationTemplateFile);
     socketDeclarationCode = t2.readAll();

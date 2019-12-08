@@ -343,8 +343,9 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     //Generate HPP file
     QFile fmuComponentTemplateFile;
-    fmuComponentTemplateFile.setFileName(":templates/fmu1CsImportComponentTemplate.hpp");
-    assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    fmuComponentTemplateFile.setFileName(":/templates/fmu1CsImportComponentTemplate.hpp");
+    bool opened = fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    assert(opened);
     QString fmuComponentCode;
     QTextStream t2(&fmuComponentTemplateFile);
     fmuComponentCode = t2.readAll();
@@ -773,11 +774,11 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QFile fmuComponentTemplateFile;
     if(fmuKind == fmi2_fmu_kind_me)
     {
-        fmuComponentTemplateFile.setFileName(":templates/fmu2MeImportComponentTemplate.hpp");
+        fmuComponentTemplateFile.setFileName(":/templates/fmu2MeImportComponentTemplate.hpp");
     }
     else
     {
-        fmuComponentTemplateFile.setFileName(":templates/fmu2CsImportComponentTemplate.hpp");
+        fmuComponentTemplateFile.setFileName(":/templates/fmu2CsImportComponentTemplate.hpp");
     }
     QString fmuComponentCode;
     if(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -1246,7 +1247,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     QFile fmuModelDefinesHeaderFile(fmuBuildPath+"/"+fmuModelDefinesH);
     printMessage("Generating "+fmuModelDefinesHeaderFile.fileName());
 
-    QString fmuModelDefinesHeaderCode = readTextFromFile(":templates/"+fmuModelDefinesH);
+    QString fmuModelDefinesHeaderCode = readTextFromFile(":/templates/"+fmuModelDefinesH);
     if(fmuModelDefinesHeaderCode.isEmpty())
     {
         printErrorMessage("Unable to read template code for "+fmuModelDefinesH);
@@ -1279,7 +1280,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     QFile fmuHopsanSourceFile(fmuBuildPath+"/fmu_hopsan.cpp");
     printMessage("Generating "+fmuHopsanSourceFile.fileName());
 
-    QString fmuHopsanSourceCode = readTextFromFile(":templates/fmu_hopsan.cpp");
+    QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu_hopsan.cpp");
     if(fmuHopsanSourceCode.isEmpty())
     {
         printErrorMessage("Unable to read template code for fmu_hopsan.cpp");
