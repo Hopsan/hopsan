@@ -133,13 +133,13 @@ void DefaultLibraryXMLTest::initTestCase()
 
     // Loop through all subdirs, to find all XML files, and store them in a list
     QDir libRoot(DEFAULT_LIBRARY_ROOT);
-    QVERIFY2(libRoot.exists(), QString("Libroot: %1 could not be found!").arg(defaultLibraryFilePath.c_str()).toStdString().c_str());
+    QVERIFY2(libRoot.exists(), qPrintable(QString("Libroot: %1 could not be found!").arg(libRoot.absolutePath())));
     recurseCollectXMLFiles(libRoot);
 
     if (!defaultLibraryFilePath.empty())
     {
         bool loadOK = mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
-        QVERIFY2(loadOK, "Could not load the default component library file");
+        QVERIFY2(loadOK, qPrintable(QString("Could not load the default component library file: %1").arg(defaultLibraryFilePath.c_str())));
     }
 }
 
