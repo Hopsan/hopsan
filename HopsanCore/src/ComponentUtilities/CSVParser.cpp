@@ -34,7 +34,7 @@
 #include "indexingcsvparser/indexingcsvparser.h"
 
 #include "ComponentUtilities/CSVParser.h"
-#include <fstream>
+#include <cstdlib>
 
 #ifdef _WIN32
 #include "windows.h"
@@ -58,29 +58,37 @@ CSVParserNG::~CSVParserNG()
 
 bool CSVParserNG::openText(HString text)
 {
-    char tempFileBuffer[L_tmpnam ];
-#ifdef _WIN32
-    char tempPathBuffer[MAX_PATH];
-    tmpnam(tempFileBuffer);
-    DWORD len = GetTempPathA(MAX_PATH, tempPathBuffer);
-    mTmpFileName.setString(tempPathBuffer, len);
-    mTmpFileName.append(tempFileBuffer);
-#else
-    tmpnam(tempFileBuffer);
-    mTmpFileName.setString(tempFileBuffer);
-#endif
-
-    try {
-        std::ofstream tmpFile;
-        tmpFile.open(mTmpFileName.c_str(), std::ofstream::out | std::ofstream::app);
-        tmpFile << text.c_str();
-        tmpFile.close();
-    } catch (std::exception& e) {
-        mErrorString = e.what();
+#if defined(_WIN32)
+    char tmpfilebuff[L_tmpnam];
+    errno_t rc = tmpnam_s(tmpfilebuff, L_tmpnam);
+    if (rc != 0) {
+        mErrorString = "Could not create temporary file name";
         return false;
     }
 
-    return openFile(mTmpFileName.c_str());
+    char tempdirbuff[MAX_PATH+1];
+    GetTempPathA(MAX_PATH+1, tempdirbuff);
+    HString tmpfilename = HString(tempdirbuff)+tmpfilebuff;
+    FILE* pTempfile = fopen(tmpfilename.c_str(), "w+b");
+#else
+    char tmpfilebuff[18] {"hopsan-csv-XXXXXX"};
+    int fd = mkstemp(tmpfilebuff);
+    HString tmpfilename(tmpfilebuff);
+    if (fd == -1) {
+        mErrorString = "Could not create temporary file";
+        return false;
+    }
+    FILE* pTempfile = fdopen(fd, "r+b");
+#endif
+
+    if (pTempfile == 0) {
+        mErrorString = HString("Could not open temporary file: ")+tmpfilename+" for writing";
+        return false;
+    }
+    fwrite(text.c_str(), sizeof(char), text.size(), pTempfile);
+    rewind(pTempfile);
+
+    return takeOwnershipOfFile(pTempfile);
 }
 
 bool CSVParserNG::openFile(const HString &rFilepath)
@@ -88,13 +96,15 @@ bool CSVParserNG::openFile(const HString &rFilepath)
     return mpCsvParser->openFile(rFilepath.c_str());
 }
 
+bool CSVParserNG::takeOwnershipOfFile(FILE* pFile)
+{
+    mpCsvParser->takeOwnershipOfFile(pFile);
+    return true;
+}
+
 void CSVParserNG::closeFile()
 {
     mpCsvParser->closeFile();
-    if (!mTmpFileName.empty()) {
-        remove(mTmpFileName.c_str());
-        mTmpFileName.clear();
-    }
 }
 
 void CSVParserNG::setCommentChar(char commentChar)

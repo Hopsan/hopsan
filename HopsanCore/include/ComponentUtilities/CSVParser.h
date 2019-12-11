@@ -35,6 +35,7 @@
 
 #include "win32dll.h"
 #include <vector>
+#include <cstdio>
 #include "HopsanTypes.h"
 
 // Forward declaration
@@ -55,6 +56,7 @@ public:
 
     bool openText(HString text);
     bool openFile(const HString &rFilepath);
+    bool takeOwnershipOfFile(FILE* pFile);
     void closeFile();
 
     void setCommentChar(char commentChar);
@@ -80,7 +82,6 @@ public:
 protected:
     indcsvp::IndexingCSVParser *mpCsvParser;
     HString mErrorString;
-    HString mTmpFileName;
     bool mConvertDecimalSeparator;
 };
 
