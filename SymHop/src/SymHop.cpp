@@ -858,6 +858,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables, functions, &ok1)); }
             else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables, functions, &ok1)); }
             else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "round") { retval = round(mArguments[0].evaluate(variables, functions, &ok1)); }
             else if(mFunction == "sign")
             {
                 if(mArguments[0].evaluate(variables, functions, &ok1) >= 0.0)
