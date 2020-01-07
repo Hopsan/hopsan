@@ -129,8 +129,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpTimeSlider = new QSlider(Qt::Horizontal);
 
     mpSpeedSpinBox = new QDoubleSpinBox(this);
-    mpSpeedSpinBox->setMinimum(-20.0);
-    mpSpeedSpinBox->setMaximum(20.0);
+    mpSpeedSpinBox->setRange(std::numeric_limits<double>::lowest(),std::numeric_limits<double>::max());
     mpSpeedSpinBox->setDecimals(5);
     mpSpeedSpinBox->setSingleStep(0.01);
     mpSpeedSpinBox->setValue(1.0);
@@ -433,6 +432,10 @@ void AnimationWidget::play()
 //! @todo The plot data object in container should perhaps be cleared of these generations
 void AnimationWidget::playRT()
 {
+    if(mpSpeedSpinBox->value() < 0) {
+        gpMessageHandler->addErrorMessage("Cannot play real-time animation with negative speed");
+        return;
+    }
     if(!mpContainer->getCoreSystemAccessPtr()->isSimulationOk())
     {
         gpMessageHandler->addErrorMessage("Could not start real-time animation, model is not OK");
