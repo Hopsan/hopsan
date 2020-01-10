@@ -10,43 +10,28 @@ target_compile_definitions(${test_name} PRIVATE
     TEST_DATA_ROOT=\"${CMAKE_CURRENT_LIST_DIR}/\"
     DEFAULT_LIBRARY_ROOT=\"${CMAKE_CURRENT_BINARY_DIR}/../../componentLibraries/defaultLibrary/\"
     EXTERNAL_LIBRARIES_ROOT=\"${CMAKE_CURRENT_LIST_DIR}/../../componentLibraries\"
-    HOPSAN_INSTALL_ROOT=\"${CMAKE_CURRENT_BINARY_DIR}/../..\")
+    HOPSAN_INSTALL_ROOT=\"${CMAKE_CURRENT_BINARY_DIR}/../../\")
 target_link_libraries(${test_name} hopsangenerator Qt5::Test)
 add_test(NAME ${test_name} COMMAND ${test_name})
 
+# Copy runtime requirement dll's to run directory
+if (WIN32)
+    include(${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/fmilibrary.cmake)
+    copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> ${CMAKE_CURRENT_BINARY_DIR})
+    copy_file_after_build(${test_name} $<TARGET_FILE:hopsangenerator> ${CMAKE_CURRENT_BINARY_DIR})
+    copy_file_after_build(${test_name} $<TARGET_FILE:fmilibrary> ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
 # Copy compiled hopsancore and source code to mimic installation
-add_custom_command(
-    TARGET tst_generatortest
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/../../bin"
-    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:hopsancore>" "${CMAKE_CURRENT_BINARY_DIR}/../../bin"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/../../HopsanCore" "${CMAKE_CURRENT_BINARY_DIR}/../../HopsanCore"
-)
+copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> ${CMAKE_CURRENT_BINARY_DIR}/../../bin)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../HopsanCore ${CMAKE_CURRENT_BINARY_DIR}/../../)
 
 # Copy default library source code to mimic installation
-set(rel_default_lib ../../componentLibraries/defaultLibrary)
-add_custom_command(
-    TARGET tst_generatortest
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/${rel_default_lib}" "${CMAKE_CURRENT_BINARY_DIR}/${rel_default_lib}"
-)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../componentLibraries/defaultLibrary ${CMAKE_CURRENT_BINARY_DIR}/../../componentLibraries)
 
 # Copy FMILibrary to mimic installation
-set(rel_dependencies ../../Dependencies)
-set(rel_fmilibrary ../../Dependencies/FMILibrary)
-add_custom_command(
-    TARGET tst_generatortest
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/${rel_dependencies}"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/${rel_fmilibrary}" "${CMAKE_CURRENT_BINARY_DIR}/${rel_fmilibrary}"
-)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/FMILibrary ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies)
 
-# Copy FMUChecker to mimic installation
-set(rel_tools ../../Dependencies/tools)
-set(rel_fmuchecker ../../Dependencies/tools/FMUChecker)
-add_custom_command(
-    TARGET tst_generatortest
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/${rel_tools}"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/${rel_fmuchecker}" "${CMAKE_CURRENT_BINARY_DIR}/${rel_fmuchecker}"
-)
+# Copy FMUChecker and 7z to mimic installation
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/tools/FMUChecker ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies/tools)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/tools/7z ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies/tools)

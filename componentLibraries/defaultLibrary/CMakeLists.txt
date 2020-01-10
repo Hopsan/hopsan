@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 project(DefaultComponentLibrary)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_DEBUG_POSTFIX _d)
+if(WIN32)
+  set(CMAKE_SHARED_LIBRARY_PREFIX "")
+endif()
 
 
 file(GLOB_RECURSE component_files *.cpp *.cci *.h *.hpp)

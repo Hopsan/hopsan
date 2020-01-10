@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 project(Ops)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_DEBUG_POSTFIX _d)
+if(WIN32)
+  set(CMAKE_SHARED_LIBRARY_PREFIX "")
+endif()
 
 file(GLOB_RECURSE ops_srcfiles src/*.cpp )
 

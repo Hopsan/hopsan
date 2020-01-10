@@ -11,3 +11,7 @@ target_compile_definitions(${test_name} PRIVATE
   TEST_DATA_ROOT=\"${CMAKE_CURRENT_LIST_DIR}/\")
 target_link_libraries(${test_name} hopsancore Qt5::Test)
 add_test(${test_name} ${test_name})
+
+if (WIN32)
+    copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> ${CMAKE_CURRENT_BINARY_DIR})
+endif()
