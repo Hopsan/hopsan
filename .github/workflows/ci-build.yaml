@@ -1,0 +1,87 @@
+name: ghactions-ci-build
+on: [push, pull_request]
+
+#jobs:
+  #cmake-msvc2019:
+    #timeout-minutes: 20
+    #runs-on: windows-2019
+
+    #steps:
+
+    #- name: Install Qt
+      #uses: jurplel/install-qt-action@v2.2.1
+
+    #- name: Checkout
+      #uses: actions/checkout@v2
+      #with:
+        #fetch-depth: 10
+
+    #- name: Submodule update
+      #shell: cmd
+      #run: git submodule update --init
+
+    #- name: Create build dir
+      #shell: cmd
+      #run: mkdir hopsan-build
+
+    #- name: Build dependencies
+      #shell: cmd
+      #working-directory: Dependencies
+      #run: setupFMILibrary.bat ----------------- THIS DOES NOT WORK YET
+
+    #- name: Configure
+      #working-directory: hopsan-build
+      #shell: cmd
+      #run: cmake -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" ..
+
+    #- name: Build
+      #working-directory: hopsan-build
+      #shell: cmd
+      #run: cmake --build . --config Release --parallel 4
+
+    #- name: Test
+      #working-directory: hopsan-build
+      #shell: cmd
+      #run: ctest --output-on-failure
+
+jobs:
+  cmake-ubuntu:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.2.1
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 10
+
+      - name: Submodule update
+        shell: bash
+        run: git submodule update --init
+
+      - name: Create build dir
+        shell: bash
+        run: mkdir hopsan-build
+
+      - name: Build dependencies
+        shell: bash
+        working-directory: Dependencies
+        run: ./setupFMILibrary.sh
+
+      - name: Configure
+        working-directory: hopsan-build
+        shell: bash
+        run: cmake -DCMAKE_BUILD_TYPE=Release ..
+
+      - name: Build
+        working-directory: hopsan-build
+        shell: bash
+        run: cmake --build . --config Release --parallel 4
+
+      - name: Test
+        working-directory: hopsan-build
+        shell: bash
+        run: ctest --output-on-failure --parallel 2

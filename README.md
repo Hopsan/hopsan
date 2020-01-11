@@ -1,6 +1,6 @@
 # Hopsan
 
-[![Build Status](https://travis-ci.org/Hopsan/hopsan.svg?branch=master)](https://travis-ci.org/Hopsan/hopsan) [![Build status](https://ci.appveyor.com/api/projects/status/ouf883yvoel0djgn/branch/master?svg=true)](https://ci.appveyor.com/project/peterNordin/hopsan/branch/master)
+![](https://github.com/Hopsan/hopsan/workflows/ghactions-ci-build/badge.svg) [![Build Status](https://travis-ci.org/Hopsan/hopsan.svg?branch=master)](https://travis-ci.org/Hopsan/hopsan) [![Build status](https://ci.appveyor.com/api/projects/status/ouf883yvoel0djgn/branch/master?svg=true)](https://ci.appveyor.com/project/peterNordin/hopsan/branch/master)
 
 Hopsan is a free open-source multi-domain system simulation tool developed at the division of Fluid and mechatronic systems at Linkoping university.
 
