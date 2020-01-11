@@ -32,6 +32,10 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define MODEL_IDENTIFIER FMU_CS_MODEL_IDENTIFIER
 
 #ifdef _WIN32
+// Undefine DLLExport from FMI1/fmiFunctions.h, since it may be incorrectly defined in the MinGW case
+#ifdef DllExport
+#undef DllExport
+#endif
 #define DllExport __declspec(dllexport)
 #endif
 

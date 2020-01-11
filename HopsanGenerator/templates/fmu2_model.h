@@ -20,9 +20,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI2/fmi2Functions.h>
 
 #include "fmu2_model_defines.h"
-#ifndef FMI2_Export
-	#define FMI2_Export DllExport
-#endif
 typedef struct {
 	/*************** FMI ME 2.0 ****************/
 	fmi2Real					states			[N_STATES];
