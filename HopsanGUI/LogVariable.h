@@ -175,6 +175,15 @@ public:
     QVector<double> floorOfData() const;
     QVector<double> ceilOfData() const;
     QVector<double> absOfData() const;
+    QVector<double> sinOfData() const;
+    QVector<double> cosOfData() const;
+    QVector<double> tanOfData() const;
+    QVector<double> asinOfData() const;
+    QVector<double> acosOfData() const;
+    QVector<double> atanOfData() const;
+    QVector<double> expOfData() const;
+    QVector<double> sqrtOfData() const;
+    QVector<double> logOfData() const;
     double averageOfData() const;
     double minOfData(int &rIdx) const;
     double minOfData() const;

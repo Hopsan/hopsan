@@ -7003,6 +7003,219 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         mAnsType = Undefined;
         return;
     }
+    else if(desiredType != Scalar && isHcomFunctionCall("sin", expr))
+    {
+        QString argStr = expr.mid(4, expr.size()-5).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qSin(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData) {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Sin%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->sinOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("cos", expr))
+    {
+        QString argStr = expr.mid(4, expr.size()-5).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qCos(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData) {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Cos%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->cosOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("tan", expr))
+    {
+        QString argStr = expr.mid(4, expr.size()-5).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qTan(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData) {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Tan%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->tanOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("asin", expr))
+    {
+        QString argStr = expr.mid(5, expr.size()-6).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qAsin(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Asin%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->asinOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("acos", expr))
+    {
+        QString argStr = expr.mid(5, expr.size()-6).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qAcos(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Acos%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->acosOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("atan", expr))
+    {
+        QString argStr = expr.mid(5, expr.size()-6).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qAtan(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Atan%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->atanOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("exp", expr))
+    {
+        QString argStr = expr.mid(4, expr.size()-5).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qExp(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Exp%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->expOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("log", expr))
+    {
+        QString argStr = expr.mid(4, expr.size()-5).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qLn(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Log%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->logOfData());
+            return;
+        }
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("sqrt", expr))
+    {
+        QString argStr = expr.mid(5, expr.size()-6).trimmed();
+        SharedVectorVariableT pData = getLogVariable(argStr);
+        if(!pData) {
+            evaluateExpression(argStr);
+
+            if(mAnsType == HcomHandler::DataVector) {
+                pData = mAnsVector;
+            }
+            else if (mAnsType == HcomHandler::Scalar) {
+                mAnsScalar = qSqrt(mAnsScalar);
+                return;
+            }
+        }
+
+        if(pData)
+        {
+            mAnsType = HcomHandler::DataVector;
+            mAnsVector = pLogDataHandler->createOrphanVariable(QString("Sqrt%1").arg(pData->getSmartName()), pData->getVariableType());
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData->sqrtOfData());
+            return;
+        }
+    }
     else if(desiredType != Scalar && expr.count("<")==1 /*&& getLogVariable(expr.section("<",0,0))*/)
     {
         QStringList args = expr.split('<');
