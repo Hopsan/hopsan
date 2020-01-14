@@ -175,6 +175,7 @@ public:
     double maxOfData() const;
     void minMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const;
     bool positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int &rMinIdx, int &rMaxIdx) const;
+    double rmsOfData() const;
     void elementWiseGt(QVector<double> &rResult, const double threshold) const;
     void elementWiseGt(QVector<double> &rResult, const SharedVectorVariableT pOther) const;
     void elementWiseLt(QVector<double> &rResult, const double threshold) const;

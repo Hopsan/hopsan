@@ -364,6 +364,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)","Usage: ddt(vector)\nUsage: ddt(vector, timevector)");
     registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)", "Usage: int(vector)\nUsage: int(vector, timevector)");
     registerInternalFunction("fft", "Generates frequency spectrum plot from vector","Usage: fft(vector)\nUsage: fft(vector, power[true/false])\nUsage: fft(vector, timevector)\nUsage: fft(vector, timevector, power[true/false])");
+    registerInternalFunction("rms", "Computes the root mean square of given vector","Usage: rms(vector)");
     registerInternalFunction("gt", "Index-wise greater than check between vectors and/or scalars (equivalent to \">\" operator)","Usage: gt(varName, threshold)\nUsage: gt(var1, var2)");
     registerInternalFunction("lt", "Index-wise less than check between vectors and/or scalars  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)\nUsage: lt(var1,var2)");
     registerInternalFunction("eq", "Index-wise fuzzy equal check between vectors and/or scalars  (equivalent to \"==\" operator)","Usage: eq(varName, threshold, eps)\nUsage: eq(var1, var2, eps)");
@@ -6589,6 +6590,31 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, type, windowingFunction, minTime, maxTime);
         }
         return;
+    }
+    else if(isHcomFunctionCall("rms", expr))
+    {
+        QString args = expr.mid(4, expr.size()-5);
+        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
+        if(splitArgs.size() != 1) {
+            HCOMERR("Wrong number of arguments provided for rms function.\n"+mLocalFunctionDescriptions.find("fft").value().second);
+            mAnsType = Undefined;
+            return;
+        }
+        mAnsType = Scalar;
+        const QString varName = args.section(",",0,0).trimmed();
+        evaluateExpression(varName, DataVector);
+        SharedVectorVariableT pVar = mAnsVector;
+        if (mAnsType == DataVector) {
+            mAnsType = Scalar;
+            mAnsScalar = pVar->rmsOfData();
+            return;
+        }
+        else
+        {
+            HCOMERR(QString("Variable: %1 was not found!").arg(varName));
+            mAnsType = Undefined;
+            return;
+        }
     }
     //else if(desiredType != Scalar && (expr.startsWith("greaterThan(") || expr.startsWith("gt(")) && expr.endsWith(")"))
     else if(desiredType != Scalar && (isHcomFunctionCall("greaterThan", expr) || isHcomFunctionCall("gt", expr)) )

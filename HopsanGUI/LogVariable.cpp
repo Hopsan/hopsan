@@ -1349,6 +1349,20 @@ bool VectorVariable::positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int
     return ((rMinIdx > -1) && (rMaxIdx>-1));
 }
 
+double VectorVariable::rmsOfData() const
+{
+    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
+    double rms;
+    for (int i=0; i<pData->size(); ++i)
+    {
+        rms += (*pData)[i]*(*pData)[i];
+    }
+    rms /= pData->size();
+    rms = sqrt(rms);
+    mpCachedDataVector->endFullVectorOperation(pData);
+    return rms;
+}
+
 void VectorVariable::preventAutoRemoval()
 {
     mAllowAutoRemove = false;
