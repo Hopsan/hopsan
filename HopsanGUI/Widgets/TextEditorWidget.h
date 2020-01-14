@@ -71,6 +71,7 @@ private:
     HighlighterTypeEnum mLanguage;
     QWidget *mpLineNumberArea;
     QCompleter *mpCompleter;
+    QStringList mAllCompletionWords;
 };
 
 

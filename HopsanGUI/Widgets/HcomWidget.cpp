@@ -565,6 +565,12 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
             if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
                 return;
 
+            if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) &&
+               (mpTerminal->mpHandler->getAutoCompleteWords().contains(prefix,Qt::CaseInsensitive) ||
+               mpTerminal->mpHandler->getAutoCompleteWords().contains(prefix+" ",Qt::CaseInsensitive))) {
+                return;
+            }
+
             if (prefix != mpCompleter->completionPrefix()) {
                 mpCompleter->setCompletionPrefix(prefix);
                 mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
