@@ -93,6 +93,7 @@ public:
     QString getWorkingDirectory() const;
 
     bool hasFunction(const QString &func) const;
+    QString getFunctionName(QString expression) const;
     void getFunctionCode(QString funcName, QStringList &funcCode);
     bool isAborted() const;
     double getVar(const QString &var) const;
@@ -102,6 +103,11 @@ public:
 
     void evaluateExpression(QString expr, VariableType desiredType=Undefined);
     double evaluateScalarExpression(QString expr, bool &rIsOK);
+    typedef double (*ScalarMathFunction_t)(double);
+    typedef QVector<double> (VectorVariable::*VectorMathFunction_t)() const;
+    typedef QPair<ScalarMathFunction_t, VectorMathFunction_t> FuncPair_t;
+    typedef QMap<QString, FuncPair_t> FuncMap_t;
+    void invokeSingleArgumentFunction(QString funcName, QString argStr, ScalarMathFunction_t f1, VectorMathFunction_t f2);
 
     void setAcceptsOptimizationCommands(const bool value);
     bool getAcceptsOptimizationCommands() const;
