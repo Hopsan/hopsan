@@ -704,6 +704,16 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
         if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
             return;
 
+        if(event->key() == Qt::Key_Up || event->key() == Qt::Key_Down || event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
+            return;
+        }
+
+        if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) &&
+           (mAllCompletionWords.contains(prefix,Qt::CaseInsensitive) ||
+           mAllCompletionWords.contains(prefix+" ",Qt::CaseInsensitive))) {
+            return;
+        }
+
         if (prefix != mpCompleter->completionPrefix()) {
             mpCompleter->setCompletionPrefix(prefix);
             mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
@@ -784,8 +794,8 @@ void TextEditor::updateAutoCompleteList()
             }
         }
 
-        QStringList allWords = QStringList() << dataTypes << functions << variables;
-        mpCompleter->setModel(new QStringListModel(allWords, mpCompleter));
+        mAllCompletionWords = QStringList() << dataTypes << functions << variables;
+        mpCompleter->setModel(new QStringListModel(mAllCompletionWords, mpCompleter));
     }
     else {
         return; //No auto completer for XML/Modelica/Python yet
