@@ -6040,9 +6040,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
         }
-
-        if(pData)
-        {
+        if(pData) {
             mAnsType = HcomHandler::DataVector;
             LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
             mAnsVector = pLogDataHandler->createOrphanVariable(QString(funcName+"%1").arg(pData->getSmartName()), pData->getVariableType());
@@ -8104,10 +8102,9 @@ bool HcomHandler::hasFunction(const QString &func) const
 }
 
 QString HcomHandler::getFunctionName(QString expression) const {
-    if(expression.contains("(") && expression.contains(")") &&
-       expression.indexOf("(") < expression.indexOf(")") &&
-       !expression.startsWith("(")) {
-            return expression.left(expression.indexOf("("));
+    QString funcName = expression.left(expression.indexOf("("));
+    if(expression.contains("(") && isHcomFunctionCall(funcName, expression)) {
+        return funcName;
     }
     return QString();
 }
