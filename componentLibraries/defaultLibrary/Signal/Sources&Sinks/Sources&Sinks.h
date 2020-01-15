@@ -37,3 +37,4 @@
 #include "SignalStepExponentialDelay.hpp"
 #include "SignalTime.hpp"
 #include "SignalTimestep.hpp"
+#include "SignalLogger.hpp"

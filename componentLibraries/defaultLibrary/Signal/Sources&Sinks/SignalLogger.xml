@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalLogger.hpp" typename="SignalLogger" displayname="Logger">
+        <icons>
+            <icon scale="1" path="SignalLogger.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <help>
+            <text>This component logs connected input variables to an external file.</text>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

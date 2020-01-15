@@ -314,6 +314,7 @@ HEADERS +=  \
  $${PWD}/Signal/SignalRouting/SignalRouting.h \ 
  $${PWD}/Signal/SignalRouting/SignalTripleRoute.hpp \ 
  $${PWD}/Signal/Sources&Sinks/SignalConstant.hpp \ 
+ $${PWD}/Signal/Sources&Sinks/SignalLogger.hpp \
  $${PWD}/Signal/Sources&Sinks/SignalNoiseGenerator.hpp \ 
  $${PWD}/Signal/Sources&Sinks/SignalPulse.hpp \ 
  $${PWD}/Signal/Sources&Sinks/SignalPulseWave.hpp \ 
