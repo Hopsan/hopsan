@@ -1219,7 +1219,10 @@ bool VectorVariable::positiveNonZeroMinMaxOfData(double &rMin, double &rMax, int
 double VectorVariable::rmsOfData() const
 {
     QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    double rms;
+    if(pData->isEmpty()) {
+        return 0;
+    }
+    double rms = 0;
     for (int i=0; i<pData->size(); ++i)
     {
         rms += (*pData)[i]*(*pData)[i];

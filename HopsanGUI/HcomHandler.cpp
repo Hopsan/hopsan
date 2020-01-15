@@ -363,7 +363,10 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("lp1", "Applies low-pass filter of first degree to vector","Usage: lp1(vector, frequency)\nUsage: lp1(vector, timevector, frequency)");
     registerInternalFunction("ddt", "Differentiates vector with respect to time (or to custom vector)","Usage: ddt(vector)\nUsage: ddt(vector, timevector)");
     registerInternalFunction("int", "Integrates vector with respect to time (or to custom vector)", "Usage: int(vector)\nUsage: int(vector, timevector)");
-    registerInternalFunction("fft", "Generates frequency spectrum plot from vector","Usage: fft(vector)\nUsage: fft(vector, power[true/false])\nUsage: fft(vector, timevector)\nUsage: fft(vector, timevector, power[true/false])");
+    registerInternalFunction("fft", "Generates frequency spectrum plot from vector (deprecated)","Usage: fft(vector, [type]([power]/energy/rms), [windowing]([rectangular]/flattop/hann), [min], [max])\nUsage: fft(vector, [timevector], [type]([power]/energy/rms), [windowing]([rectangular]/flattop/hann), [min], [max])");
+    registerInternalFunction("esd", "Generates energy spectral density from vector","Usage: esd(vector, [timevector], [windowing]([rectangular]/flattop/hann), [mintime], [maxtime])\n");
+    registerInternalFunction("psd", "Generates power spectral density from vector","Usage: psd(vector, [timevector], [windowing]([rectangular]/flattop/hann), [mintime], [maxtime])\n");
+    registerInternalFunction("rmsd", "Generates root mean square spectral density from vector","Usage: rmsd(vector, [timevector], [windowing]([rectangular]/flattop/hann), [mintime], [maxtime])\n");
     registerInternalFunction("rms", "Computes the root mean square of given vector","Usage: rms(vector)");
     registerInternalFunction("gt", "Index-wise greater than check between vectors and/or scalars (equivalent to \">\" operator)","Usage: gt(varName, threshold)\nUsage: gt(var1, var2)");
     registerInternalFunction("lt", "Index-wise less than check between vectors and/or scalars  (equivalent to \"<\" operator)","Usage: lt(varName, threshold)\nUsage: lt(var1,var2)");
@@ -6440,17 +6443,17 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         mAnsType = Undefined;
     }
-    else if(desiredType != Scalar && isHcomFunctionCall("fft", expr))
-    {
+    else if(desiredType != Scalar && isHcomFunctionCall("fft", expr)) {
+        HCOMWARN("This function is deprecated and might be removed in the future. Use esd(), psd() or rmsd() instead.");
+
         QString argStr = expr.mid(4, expr.size()-5);
         QStringList args = SymHop::Expression::splitWithRespectToParentheses(argStr,',');
         for(int a=0; a<args.size(); ++a) {
             args[a] = args[a].trimmed();
         }
-
         QString dataVecArg;
         QString timeVecArg;
-        QString typeArg;
+        QString typeArg = "power";  //default value
         QString windowingFuncArg;
         QString minTimeArg;
         QString maxTimeArg;
@@ -6466,12 +6469,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
         }
         if(args.size()>2) {
-          if(!timeVecArg.isEmpty()) {
-            typeArg = args[2];
-          }
-          else {
-            windowingFuncArg = args[2];
-          }
+            if(!timeVecArg.isEmpty()) {
+                typeArg = args[2];
+            }
+            else {
+                windowingFuncArg = args[2];
+            }
         }
         if(args.size() > 3) {
             if(!timeVecArg.isEmpty()) {
@@ -6490,116 +6493,153 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
         }
         if(args.size() > 5) {
-          maxTimeArg = args[5];
+            maxTimeArg = args[5];
         }
 
-        //Fetch data vector
-        evaluateExpression(dataVecArg, DataVector);
-        SharedVectorVariableT pDataVar = mAnsVector;
-        if (mAnsType != DataVector)
-        {
-            HCOMERR(QString("Variable: %1 was not found!").arg(dataVecArg));
+
+        QString funcName = "psd";
+        if(typeArg == "energy") {
+            funcName = "esd";
+        }
+        else if(typeArg == "rms") {
+            funcName = "rmsd";
+        }
+
+        QString timeVecName = timeVecArg;
+        if(timeVecArg.isEmpty()) {
+            //Data vector
+            evaluateExpression(dataVecArg, DataVector);
+            if(mAnsType != DataVector) {
+                HCOMERR(QString("Variable: %1 was not found!").arg(dataVecArg));
+                mAnsType = Undefined;
+                return;
+            }
+            SharedVectorVariableT pVar = mAnsVector;
+            timeVecName = pVar->getSharedTimeOrFrequencyVector()->getFullVariableName();
+        }
+
+        //Call other functions based on arguments to this (deprecated) function
+        if(windowingFuncArg.isEmpty()) {
+            evaluateExpression(funcName+"("+dataVecArg+","+timeVecName+")");
+        }
+        else if(!windowingFuncArg.isEmpty() && maxTimeArg.isEmpty()) {
+            evaluateExpression(funcName+"("+dataVecArg+","+timeVecName+","+windowingFuncArg+")");
+        }
+        else if(!minTimeArg.isEmpty() && maxTimeArg.isEmpty()) {
+            evaluateExpression(funcName+"("+dataVecArg+","+timeVecName+","+windowingFuncArg+","+minTimeArg+")");
+        }
+        else {
+            evaluateExpression(funcName+"("+dataVecArg+","+timeVecName+","+windowingFuncArg+","+minTimeArg+","+maxTimeArg+")");
+        }
+        return;
+    }
+    else if(desiredType != Scalar && (isHcomFunctionCall("esd", expr) || isHcomFunctionCall("psd", expr) || isHcomFunctionCall("rmsd", expr)))
+    {
+        QStringList splitArgs = extractFunctionCallExpressionArguments(expr);
+        if(splitArgs.size() < 1 || splitArgs.size() > 5) {
+            QString funcName = getFunctionName(expr);
+            HCOMERR("Wrong number of arguments provided for "+funcName+" function.\n"+mLocalFunctionDescriptions.find(funcName).value().second);
             mAnsType = Undefined;
             return;
         }
 
-        //Fetch time vector
-        SharedVectorVariableT pTimeVar;
-        if(timeVecArg.isEmpty())
-        {
-            pTimeVar = pDataVar->getSharedTimeOrFrequencyVector();
-        }
-        else
-        {
-            evaluateExpression(timeVecArg, DataVector);
-            pTimeVar = mAnsVector;
-            if (mAnsType != DataVector)
-            {
-                HCOMERR(QString("Variable: %1 was not found!").arg(timeVecArg));
-                mAnsType = Undefined;
-                return;
-            }
-        }
-
-        //Parse power spectrum argument
+        //Parse power spectrum type
         FrequencySpectrumEnumT type;
-        if("power" == typeArg) {
+        if(isHcomFunctionCall("psd", expr)) {
             type = PowerSpectrum;
         }
-        else if("energy" == typeArg) {
+        else if(isHcomFunctionCall("esd", expr)) {
             type = EnergySpectrum;
         }
-        else if("rms" == typeArg) {
+        else if(isHcomFunctionCall("rmsd", expr)) {
             type = RMSSpectrum;
         }
 
-        //Parse windowing function argument
-        WindowingFunctionEnumT windowingFunction;
-        if(!windowingFuncArg.isEmpty()) {
-            if(windowingFuncArg.toLower() == "hann") {
-                windowingFunction = HannWindow;
-            }
-            else if(windowingFuncArg.toLower() == "rectangular") {
-                windowingFunction = RectangularWindow;
-            }
-            else if(windowingFuncArg.toLower() == "flattop") {
-                windowingFunction = FlatTopWindow;
-            }
-            else {
-                HCOMERR("Unknown windowing function: "+windowingFuncArg);
-                mAnsType = Undefined;
-                return;
-            }
+        //Data vector
+        int i=0;
+        const QString varName = splitArgs[i].trimmed();
+        evaluateExpression(varName, DataVector);
+        if(mAnsType != DataVector) {
+            HCOMERR(QString("Variable: %1 was not found!").arg(varName));
+            mAnsType = Undefined;
+            return;
         }
+        SharedVectorVariableT pVar = mAnsVector;
+        ++i;
 
-        //Parse window min and max time arguments
-        double minTime, maxTime;
-        if(!minTimeArg.isEmpty()) {
-            if(maxTimeArg.isEmpty()) {
-                HCOMERR("Maximum time for windowing is required when minimum time is specified");
-                mAnsType = Undefined;
-                return;
+        //Time vector
+        SharedVectorVariableT pTimeVar;
+        if(splitArgs.size() > i) {
+            QString arg2 = splitArgs[i].trimmed();
+            evaluateExpression(arg2, DataVector);
+            if(mAnsType == DataVector) {
+                ++i;
+                pTimeVar = mAnsVector;
             }
-            bool ok;
-            minTime = getNumber(minTimeArg, &ok);
-            if(!ok) {
-                HCOMERR("Unknown time limit: "+minTimeArg);
-                mAnsType = Undefined;
-                return;
-            }
-            maxTime = getNumber(maxTimeArg, &ok);
-            if(!ok) {
-                HCOMERR("Unknown time limit: "+maxTimeArg);
-                mAnsType = Undefined;
-                return;
-            }
-        }
-
-        if(typeArg.isEmpty()) {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, PowerSpectrum);
-        }
-        else if(windowingFuncArg.isEmpty()) {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, type);
-        }
-        else if(minTimeArg.isEmpty()) {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, type, windowingFunction);
         }
         else {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, type, windowingFunction, minTime, maxTime);
+            pTimeVar = pVar->getSharedTimeOrFrequencyVector();
         }
+
+
+
+        //Parse windowing function argument
+        WindowingFunctionEnumT windowingFunction = RectangularWindow;
+        if(splitArgs.size() > i) {
+            if(splitArgs[i].toLower() == "hann") {
+                windowingFunction = HannWindow;
+                ++i;
+            }
+            else if(splitArgs[i].toLower() == "rectangular") {
+                windowingFunction = RectangularWindow;
+                ++i;
+            }
+            else if(splitArgs[i].toLower() == "flattop") {
+                windowingFunction = FlatTopWindow;
+                ++i;
+            }
+        }
+
+        double minTime=-std::numeric_limits<double>::max();
+        double maxTime=std::numeric_limits<double>::max();
+
+        if(splitArgs.size() > i+1) {
+            bool ok;
+            minTime = getNumber(splitArgs[i], &ok);
+            if(!ok) {
+                HCOMERR("Unknown minimum time limit: "+splitArgs[i]);
+                mAnsType = Undefined;
+                return;
+            }
+            maxTime = getNumber(splitArgs[i+1], &ok);
+            if(!ok) {
+                HCOMERR("Unknown maximum time limit: "+splitArgs[i+1]);
+                mAnsType = Undefined;
+                return;
+            }
+            i+=2;
+        }
+
+        if(splitArgs.size() > i) {
+            HCOMERR("Unknown argument: "+splitArgs[i]);
+            mAnsType = Undefined;
+            return;
+        }
+
+        mAnsType = DataVector;
+        mAnsVector = pVar->toFrequencySpectrum(pTimeVar, type, windowingFunction, minTime, maxTime);
         return;
     }
     else if(isHcomFunctionCall("rms", expr))
     {
-        QString args = expr.mid(4, expr.size()-5);
-        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
+        QStringList splitArgs = extractFunctionCallExpressionArguments(expr);
         if(splitArgs.size() != 1) {
-            HCOMERR("Wrong number of arguments provided for rms function.\n"+mLocalFunctionDescriptions.find("fft").value().second);
+            HCOMERR("Wrong number of arguments provided for rms function.\n"+mLocalFunctionDescriptions.find("rms").value().second);
             mAnsType = Undefined;
             return;
         }
         mAnsType = Scalar;
-        const QString varName = args.section(",",0,0).trimmed();
+        const QString varName = splitArgs[0].trimmed();
         evaluateExpression(varName, DataVector);
         SharedVectorVariableT pVar = mAnsVector;
         if (mAnsType == DataVector) {
