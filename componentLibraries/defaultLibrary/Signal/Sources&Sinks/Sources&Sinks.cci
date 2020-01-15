@@ -37,3 +37,4 @@ pComponentFactory->registerCreatorFunction("SignalStep",SignalStep::Creator);
 pComponentFactory->registerCreatorFunction("SignalStepExponentialDelay",SignalStepExponentialDelay::Creator);
 pComponentFactory->registerCreatorFunction("SignalTime",SignalTime::Creator);
 pComponentFactory->registerCreatorFunction("SignalTimestep",SignalTimestep::Creator);
+pComponentFactory->registerCreatorFunction("SignalLogger",SignalLogger::Creator);
