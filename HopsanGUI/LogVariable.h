@@ -150,6 +150,7 @@ public:
     int getGeneration() const;
     virtual bool isImported() const;
     virtual QString getImportedFileName() const;
+    CachableDataVector *getCachedDataVector();
 
     // Data plot scaling
     bool isPlotInverted() const;
@@ -171,19 +172,6 @@ public:
     bool indexInRange(const int idx) const;
     double peekData(const int index, QString &rErr) const;
     double peekData(const int idx) const;
-    QVector<double> roundOfData() const;
-    QVector<double> floorOfData() const;
-    QVector<double> ceilOfData() const;
-    QVector<double> absOfData() const;
-    QVector<double> sinOfData() const;
-    QVector<double> cosOfData() const;
-    QVector<double> tanOfData() const;
-    QVector<double> asinOfData() const;
-    QVector<double> acosOfData() const;
-    QVector<double> atanOfData() const;
-    QVector<double> expOfData() const;
-    QVector<double> sqrtOfData() const;
-    QVector<double> logOfData() const;
     double averageOfData() const;
     double minOfData(int &rIdx) const;
     double minOfData() const;
@@ -388,5 +376,17 @@ SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int g
 double pokeVariable(SharedVectorVariableT a, const int index, const double value);
 double peekVariable(SharedVectorVariableT a, const int b);
 
+template<typename Function>
+QVector<double> invokeMathFunctionOnData(VectorVariable *pVector, Function func)
+{
+    QVector<double> *pData = pVector->getCachedDataVector()->beginFullVectorOperation();
+    QVector<double> retdata(pData->size());
+    for (int i=0; i<pData->size(); ++i)
+    {
+        retdata[i] = func((*pData)[i]);
+    }
+    pVector->getCachedDataVector()->endFullVectorOperation(pData);
+    return retdata;
+}
 
 #endif // LOGVARIABLE_H
