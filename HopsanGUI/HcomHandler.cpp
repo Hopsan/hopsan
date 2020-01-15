@@ -6041,7 +6041,6 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         if(pData) {
             mAnsType = HcomHandler::DataVector;
-            LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
             mAnsVector = pLogDataHandler->createOrphanVariable(QString(funcName+"%1").arg(pData->getSmartName()), pData->getVariableType());
             mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), invokeMathFunctionOnData(pData.data(),func));
             return;
