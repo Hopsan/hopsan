@@ -104,10 +104,8 @@ public:
     void evaluateExpression(QString expr, VariableType desiredType=Undefined);
     double evaluateScalarExpression(QString expr, bool &rIsOK);
     typedef double (*ScalarMathFunction_t)(double);
-    typedef QVector<double> (VectorVariable::*VectorMathFunction_t)() const;
-    typedef QPair<ScalarMathFunction_t, VectorMathFunction_t> FuncPair_t;
-    typedef QMap<QString, FuncPair_t> FuncMap_t;
-    void invokeSingleArgumentFunction(QString funcName, QString argStr, ScalarMathFunction_t f1, VectorMathFunction_t f2);
+    typedef QMap<QString, ScalarMathFunction_t> FuncMap_t;
+    void invokeSingleArgumentFunction(QString funcName, QString argStr, ScalarMathFunction_t f1);
 
     void setAcceptsOptimizationCommands(const bool value);
     bool getAcceptsOptimizationCommands() const;

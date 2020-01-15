@@ -457,6 +457,11 @@ QString VectorVariable::getImportedFileName() const
     return QString();
 }
 
+CachableDataVector *VectorVariable::getCachedDataVector()
+{
+    return mpCachedDataVector;
+}
+
 bool VectorVariable::isPlotInverted() const
 {
     return mpVariableDescription->mInvertData;
@@ -1726,161 +1731,6 @@ double VectorVariable::peekData(const int idx) const
     return val;
 }
 
-QVector<double> VectorVariable::roundOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> rounddata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        rounddata[i] = qRound((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return rounddata;
-}
-
-QVector<double> VectorVariable::floorOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> floordata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        floordata[i] = qFloor((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return floordata;
-}
-
-QVector<double> VectorVariable::ceilOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> ceildata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        ceildata[i] = qCeil((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return ceildata;
-}
-
-QVector<double> VectorVariable::absOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> absdata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        absdata[i] = qAbs((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return absdata;
-}
-
-QVector<double> VectorVariable::sinOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> sindata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        sindata[i] = qSin((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return sindata;
-}
-
-QVector<double> VectorVariable::cosOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> cosdata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        cosdata[i] = qCos((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return cosdata;
-}
-
-QVector<double> VectorVariable::tanOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> tandata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        tandata[i] = qTan((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return tandata;
-}
-
-QVector<double> VectorVariable::asinOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> asindata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        asindata[i] = qAsin((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return asindata;
-}
-
-QVector<double> VectorVariable::acosOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> acosdata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        acosdata[i] = qAcos((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return acosdata;
-}
-
-QVector<double> VectorVariable::atanOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> atandata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        atandata[i] = qAtan((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return atandata;
-}
-
-QVector<double> VectorVariable::expOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> expdata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        expdata[i] = qExp((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return expdata;
-}
-
-QVector<double> VectorVariable::logOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> logdata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        logdata[i] = qLn((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return logdata;
-}
-
-QVector<double> VectorVariable::sqrtOfData() const
-{
-    QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> sqrtdata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        sqrtdata[i] = qSqrt((*pData)[i]);
-    }
-    mpCachedDataVector->endFullVectorOperation(pData);
-    return sqrtdata;
-}
 
 ////! @brief Returns the custom plot scale or 1 if not plotscale set.
 //double VectorVariable::getPlotScale() const
@@ -2463,3 +2313,4 @@ QString makeFullParameterName(const QStringList &rSystemHierarchy, const QString
 
     return fullname;
 }
+
