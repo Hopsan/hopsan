@@ -236,6 +236,19 @@ public:
     QPointer<LogDataHandler2> getLogDataHandler();
     const QPointer<LogDataHandler2> getLogDataHandler() const;
 
+    template<typename Function>
+    QVector<double> invokeMathFunctionOnData(Function func)
+    {
+        QVector<double> *pData = mpCachedDataVector->beginFullVectorOperation();
+        QVector<double> retdata(pData->size());
+        for (int i=0; i<pData->size(); ++i)
+        {
+            retdata[i] = func((*pData)[i]);
+        }
+        mpCachedDataVector->endFullVectorOperation(pData);
+        return retdata;
+    }
+
 public slots:
 //    void setPlotScale(double scale);
 //    void setPlotOffset(double offset);
@@ -375,18 +388,5 @@ SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int g
 
 double pokeVariable(SharedVectorVariableT a, const int index, const double value);
 double peekVariable(SharedVectorVariableT a, const int b);
-
-template<typename Function>
-QVector<double> invokeMathFunctionOnData(VectorVariable *pVector, Function func)
-{
-    QVector<double> *pData = pVector->getCachedDataVector()->beginFullVectorOperation();
-    QVector<double> retdata(pData->size());
-    for (int i=0; i<pData->size(); ++i)
-    {
-        retdata[i] = func((*pData)[i]);
-    }
-    pVector->getCachedDataVector()->endFullVectorOperation(pData);
-    return retdata;
-}
 
 #endif // LOGVARIABLE_H
