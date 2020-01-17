@@ -496,12 +496,17 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
         if((event->modifiers().testFlag(Qt::ShiftModifier)))
         {
             moveCursor(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor); //Shift+home = select until start of line (Excluding whitespace at beginning)
-            moveCursor(QTextCursor::NextWord, QTextCursor::KeepAnchor);
+            if(this->textCursor().selection().toPlainText().startsWith(" ")) {
+                moveCursor(QTextCursor::NextWord, QTextCursor::KeepAnchor);
+            }
         }
         else
         {
             moveCursor(QTextCursor::StartOfBlock);      //Home = move cursor to start of line, excluding initial whitespace
-            moveCursor(QTextCursor::NextWord);
+            QString line = this->textCursor().block().text().toLatin1();
+            if(this->textCursor().block().text().startsWith(" ")) {
+                moveCursor(QTextCursor::NextWord);
+            }
         }
     }
     else if(event->key() == Qt::Key_Tab)
