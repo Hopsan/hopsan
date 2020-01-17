@@ -457,11 +457,6 @@ QString VectorVariable::getImportedFileName() const
     return QString();
 }
 
-CachableDataVector *VectorVariable::getCachedDataVector()
-{
-    return mpCachedDataVector;
-}
-
 bool VectorVariable::isPlotInverted() const
 {
     return mpVariableDescription->mInvertData;
