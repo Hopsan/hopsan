@@ -150,7 +150,6 @@ public:
     int getGeneration() const;
     virtual bool isImported() const;
     virtual QString getImportedFileName() const;
-    CachableDataVector *getCachedDataVector();
 
     // Data plot scaling
     bool isPlotInverted() const;
