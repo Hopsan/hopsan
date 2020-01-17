@@ -105,7 +105,6 @@ public:
     double evaluateScalarExpression(QString expr, bool &rIsOK);
     typedef double (*ScalarMathFunction_t)(double);
     typedef QMap<QString, ScalarMathFunction_t> FuncMap_t;
-    void invokeSingleArgumentFunction(QString funcName, QString argStr, ScalarMathFunction_t f1);
 
     void setAcceptsOptimizationCommands(const bool value);
     bool getAcceptsOptimizationCommands() const;
