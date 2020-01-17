@@ -6042,7 +6042,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         if(pData) {
             mAnsType = HcomHandler::DataVector;
             mAnsVector = pLogDataHandler->createOrphanVariable(QString(funcName+"%1").arg(pData->getSmartName()), pData->getVariableType());
-            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), invokeMathFunctionOnData(pData.data(),func));
+            mAnsVector->assignFrom(pData->getSharedTimeOrFrequencyVector(), pData.data()->invokeMathFunctionOnData(func));
             return;
         }
     }
