@@ -632,19 +632,42 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
         if(mLanguage == HighlighterTypeEnum::Cpp) {
             textCursor().beginEditBlock();
             QString text = textCursor().selection().toPlainText();
-            text.replace("\n// ", "\n");
-            if(text.startsWith("// ")) {
-                text.remove(0,3);
+            if(text.isEmpty()) {
+                int pos = textCursor().position();
+                QString line = textCursor().block().text();
+                if(line.trimmed().startsWith("// ")) {
+                    line.remove(line.indexOf("// "),3);
+                    auto cursor = this->textCursor();
+                    cursor.select(QTextCursor::LineUnderCursor);
+                    this->setTextCursor(cursor);
+                    textCursor().insertText(line);
+                    textCursor().setPosition(pos-3);
+                }
+                else if(line.trimmed().startsWith("//")) {
+                    line.remove(line.indexOf("//"),2);
+                    auto cursor = this->textCursor();
+                    cursor.select(QTextCursor::LineUnderCursor);
+                    this->setTextCursor(cursor);
+                    textCursor().select(QTextCursor::LineUnderCursor);
+                    textCursor().insertText(line);
+                    textCursor().setPosition(pos-2);
+                }
             }
-            int pos = textCursor().position();
-            int stopPos = textCursor().anchor();
-            QTextCursor c;
-            c = textCursor();
-            textCursor().removeSelectedText();
-            insertPlainText(text);
+            else {
+                text.replace("\n// ", "\n");
+                if(text.startsWith("// ")) {
+                    text.remove(0,3);
+                }
+                int pos = textCursor().position();
+                int stopPos = textCursor().anchor();
+                QTextCursor c;
+                c = textCursor();
+                textCursor().removeSelectedText();
+                insertPlainText(text);
 
-            c.setPosition(std::min(pos,stopPos));
-            setTextCursor(c);
+                c.setPosition(std::min(pos,stopPos));
+                setTextCursor(c);
+            }
 
             textCursor().endEditBlock();
         }
