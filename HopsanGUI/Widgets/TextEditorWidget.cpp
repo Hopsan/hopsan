@@ -503,7 +503,6 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
         else
         {
             moveCursor(QTextCursor::StartOfBlock);      //Home = move cursor to start of line, excluding initial whitespace
-            QString line = this->textCursor().block().text().toLatin1();
             if(this->textCursor().block().text().startsWith(" ")) {
                 moveCursor(QTextCursor::NextWord);
             }
