@@ -40,6 +40,8 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "HcomHandler.h"
 #include "Widgets/HcomWidget.h"
+#include "ModelHandler.h"
+#include "ModelWidget.h"
 
 #include <QGridLayout>
 #include <QFileDialog>
@@ -211,6 +213,12 @@ void TextEditorWidget::hasChanged()
 void TextEditorWidget::saveAs()
 {
     save(NewFile);
+}
+
+void TextEditorWidget::saveAndRun()
+{
+    save(ExistingFile);
+    gpTerminalWidget->mpConsole->getHandler()->executeCommand("exec "+mFileInfo.absoluteFilePath());
 }
 
 void TextEditorWidget::cut()

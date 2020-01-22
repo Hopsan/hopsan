@@ -133,6 +133,7 @@ private:
 
 public slots:
     void saveAs();
+    void saveAndRun();
     void cut();
     void copy();
     void paste();

@@ -711,6 +711,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
 void ModelHandler::disconnectMainWindowConnections(TextEditorWidget* pScriptEditor)
 {
     //disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
+    disconnect(gpMainWindow->mpSaveAndRunAction,  SIGNAL(triggered()),    pScriptEditor,  SLOT(saveAndRun()));
     disconnect(gpMainWindow->mpSaveAsAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(saveAs()));
     disconnect(gpMainWindow->mpCutAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(cut()));
     disconnect(gpMainWindow->mpCopyAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(copy()));
@@ -750,6 +751,7 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
 void ModelHandler::connectMainWindowConnections(TextEditorWidget* pScriptEditor)
 {
     connect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
+    connect(gpMainWindow->mpSaveAndRunAction, SIGNAL(triggered()),    pScriptEditor, SLOT(saveAndRun()));
     connect(gpMainWindow->mpSaveAsAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(saveAs()));
     connect(gpMainWindow->mpCutAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(cut()));
     connect(gpMainWindow->mpCopyAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(copy()));
