@@ -540,6 +540,12 @@ void MainWindow::createActions()
     connect(mpSaveAsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     mHelpPopupTextMap.insert(mpSaveAsAction, "Save current model as new file.");
 
+    mpSaveAndRunAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-SaveAndRun.svg"), tr("&Save As"), this);
+    mpSaveAndRunAction->setShortcut(QKeySequence("F5"));
+    mpSaveAndRunAction->setToolTip(tr("Save And Execute Script (F5)"));
+    connect(mpSaveAndRunAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpSaveAndRunAction, "Save and execute current script.");
+
     mpExportSimulationStateAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportParameters.pvg"), tr("&Export Simulation State"), this);
     mpExportSimulationStateAction->setToolTip(tr("Export simulation state"));
 
@@ -1005,6 +1011,7 @@ void MainWindow::createMenus()
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpNewScriptAction);
     mpFileMenu->addAction(mpOpenTextFileAction);
+    mpFileMenu->addAction(mpSaveAndRunAction);
     mpFileMenu->addAction(mpPrintAction);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpLoadLibsAction);
@@ -1107,6 +1114,7 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpSaveAsAction);
     mpFileToolBar->addAction(mpNewScriptAction);
     mpFileToolBar->addAction(mpOpenTextFileAction);
+    mpFileToolBar->addAction(mpSaveAndRunAction);
     mpFileToolBar->addAction(mpPrintAction);
 
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
@@ -1434,6 +1442,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToExeMenuButton->setEnabled(modelTab);
     mpExportToExeMenu->setEnabled(modelTab);
     mpSaveAsAction->setEnabled(modelTab || editorTab);
+    mpSaveAndRunAction->setEnabled(editorTab && pEditor->getFileInfo().suffix() == "hcom");
     mpExportSimulationStateAction->setEnabled(modelTab);
     mpExportModelParametersAction->setEnabled(modelTab);
     mpCutAction->setEnabled(modelTab || editorTab);
