@@ -731,7 +731,8 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
         if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
             return;
 
-        if(event->key() == Qt::Key_Up || event->key() == Qt::Key_Down || event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
+        QList<int> ignoreKeys = { Qt::Key_Up, Qt::Key_Down, Qt::Key_Left, Qt::Key_Right, Qt::Key_F5, Qt::Key_Control};
+        if(ignoreKeys.contains(event->key())) {
             return;
         }
 
