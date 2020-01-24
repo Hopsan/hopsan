@@ -1158,7 +1158,9 @@ QString Expression::toString() const
         {
             ret.append(mArguments[i].toString()+",");
         }
-        ret.chop(1);
+        if(!mArguments.isEmpty()) {
+            ret.chop(1);
+        }
         ret.append(")");
     }
     else if(this->isEquation())
