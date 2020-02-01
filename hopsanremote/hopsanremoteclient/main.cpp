@@ -40,6 +40,8 @@ using namespace std;
 
 static int s_interrupted = 0;
 #ifdef _WIN32
+#include <windows.h>
+
 BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
 {
     // what to do here?
