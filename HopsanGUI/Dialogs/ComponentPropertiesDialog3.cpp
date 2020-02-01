@@ -508,10 +508,13 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                 {
                     // Generate html from markdown
                     MMIOT *doc = mkd_in(inFile, 0);
-                    markdown(doc, outFile, MKD_TABSTOP);
-                    fclose(outFile);
+                    int rc = markdown(doc, outFile, MKD_TABSTOP);
+                    if (rc == -1) {
+                        // If rc == 0 then mkd_cleanup has already ben run on doc
+                        mkd_cleanup(doc);
+                    }
                     fclose(inFile);
-                    mkd_cleanup(doc);
+                    fclose(outFile);
 
                     // Now parse the html file for equations and images
                     QFile htmlFile(htmlFilePath);
