@@ -17,7 +17,7 @@ REM build
 mkdir %builddir%
 cd %builddir%
 cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
-mingw32-make SHELL=cmd -j4
+mingw32-make SHELL=cmd -j8
 mingw32-make SHELL=cmd install
 REM mingw32-make test
 

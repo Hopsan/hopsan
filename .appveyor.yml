@@ -12,6 +12,8 @@ install:
   - download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap
   - cd ..
 build_script:
+# Remove sh.exe from PATH so that CMake works
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
   - PATH
   - cd Dependencies
   - setupDiscount.bat

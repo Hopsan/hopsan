@@ -54,12 +54,12 @@ if defined ProgramFiles(x86) (
 	) else (
 		set "doxygen_path=%ProgramW6432%\doxygen\bin"
 	)
-	REM Assume official "Git for Windows"
-	if exist "%ProgramFiles(x86)%\Git\bin" (
-		set "git_path=%ProgramFiles(x86)%\Git\bin"
+	REM Assume official "Git for Windows" 
+	if exist "%ProgramFiles(x86)%\Git\cmd" (
+		set "git_path=%ProgramFiles(x86)%\Git\cmd"
 		set "gitmsys_path=%ProgramFiles(x86)%\Git\usr\bin"
 	) else (
-		set "git_path=%ProgramW6432%\Git\bin"
+		set "git_path=%ProgramW6432%\Git\cmd"
 		set "gitmsys_path=%ProgramW6432%\Git\usr\bin"
 	)
 ) else (
@@ -68,7 +68,7 @@ if defined ProgramFiles(x86) (
 	set "cmake_path=%ProgramFiles%\CMake\bin"
 	set "doxygen_path=%ProgramFiles%\doxygen\bin"
 	REM Assume official "Git for Windows"
-	set "git_path=%ProgramFiles%\Git\bin"
+	set "git_path=%ProgramFiles%\Git\cmd"
 	set "gitmsys_path=%ProgramFiles%\Git\usr\bin"
 )
 
@@ -81,24 +81,20 @@ if not "%HOPSAN_BUILD_MINGW_HOME%" == "" (
 	set "mingw_path=%HOPSAN_BUILD_MINGW_HOME%\bin"
 )
 
+set hopsan_build_paths=%mingw_path%;%qmake_path%;%git_path%;%cmake_path%;%doxygen_path%
+
 REM Echo expected paths
 echo cmake_path:   %cmake_path%
 echo doxygen_path: %doxygen_path%
-echo msys_path:    %msys_path%
 echo mingw_path:   %mingw_path%
 echo qmake_path:   %qmake_path%
 echo git_path:     %git_path%
-echo gitmsys_path: %gitmsys_path%
-
-REM Avoid duplicate msys in path, add msys if it is available, else add msys shipped with Git for Windows"
-if exist "%msys_path%" (
-	set "msys_to_path=%msys_path%"
-) else (
-	set "msys_to_path=%gitmsys_path%"
-)
-
+echo gitmsys_path: %gitmsys_path% (This one is added to PATH_WITH_MSYS)
+echo msys_path:    %msys_path%    (This one is not added to PATH_WITH_MSYS automatically)
 echo.
 
-set PATH=%mingw_path%;%qmake_path%;%git_path%;%cmake_path%;%doxygen_path%;%msys_to_path%;%PATH%
+set PATH_WITHOUT_MSYS=%hopsan_build_paths%;%PATH%
+set PATH_WITH_MSYS=%hopsan_build_paths%;%gitmsys_path%;%PATH%
+set PATH=%PATH_WITHOUT_MSYS%
 
 :eof

@@ -13,6 +13,7 @@ set installdir=%basedir%\%name%
 
 REM Setup paths
 call setHopsanBuildPaths.bat
+set PATH=%PATH_WITH_MSYS%
 
 REM Patch libQWT
 cd %codedir%
