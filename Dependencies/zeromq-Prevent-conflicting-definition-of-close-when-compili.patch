@@ -1,0 +1,29 @@
+From 77c29fc61a12f6a3bef93094beecbcb9ae0829e1 Mon Sep 17 00:00:00 2001
+From: Peter Nordin <jpn.peter@gmail.com>
+Date: Fri, 31 Jan 2020 20:42:55 +0100
+Subject: Prevent conflicting definition of close when compiling with MinGW-w64
+
+---
+ tests/testutil.hpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tests/testutil.hpp b/tests/testutil.hpp
+index 5050a9f4..4931f121 100644
+--- a/tests/testutil.hpp
++++ b/tests/testutil.hpp
+@@ -64,7 +64,12 @@
+ #include <winsock2.h>
+ #include <ws2tcpip.h>
+ #include <stdexcept>
++#ifdef __MINGW32__
++#include <io.h>
++#else
+ #define close closesocket
++#endif
++
+ typedef int socket_size_t;
+ inline const char *as_setsockopt_opt_t (const void *opt)
+ {
+-- 
+2.25.0.windows.1
+
