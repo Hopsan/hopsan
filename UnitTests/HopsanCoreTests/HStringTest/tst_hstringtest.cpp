@@ -448,6 +448,26 @@ private Q_SLOTS:
         QTest::newRow("5") << HString("alpha") << HString(" ") << false;
     }
 
+    void HString_StartsWith()
+    {
+        QFETCH(HString, String);
+        QFETCH(HString, testString);
+        QFETCH(bool, Result);
+        HString failmsg("Failure! startsWith produced wrong result for "+String+", "+testString);
+        QVERIFY2(String.startsWith(testString) == Result, failmsg.c_str());
+
+    }
+    void HString_StartsWith_data()
+    {
+        QTest::addColumn<HString>("String");
+        QTest::addColumn<HString>("testString");
+        QTest::addColumn<bool>("Result");
+        QTest::newRow("hopsan,hop") << HString("hopsan") << HString("hop") << true;
+        QTest::newRow("hopsan,san") << HString("hopsan") << HString("san") << false;
+        QTest::newRow("empty,empty") << HString("") << HString("") << true;
+        QTest::newRow("hopsan,empty") << HString("hopsan") << HString("") << true;
+        QTest::newRow("empty,hopsan") << HString("") << HString("hopsan") << false;
+    }
 };
 
 QTEST_APPLESS_MAIN(HStringTests)
