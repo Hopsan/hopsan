@@ -415,6 +415,30 @@ private Q_SLOTS:
         QTest::newRow("7") << HString("kaka") << 1 << HString("kaka");
     }
 
+    void HString_compare()
+    {
+        QFETCH(HString, str1);
+        QFETCH(HString, str2);
+        QFETCH(bool, issameornot);
+
+        QVERIFY(str1.compare(str2) == issameornot);
+        QVERIFY(str1.compare(str2.c_str()) == issameornot);
+
+    }
+
+    void HString_compare_data()
+    {
+        QTest::addColumn<HString>("str1");
+        QTest::addColumn<HString>("str2");
+        QTest::addColumn<bool>("issameornot");
+
+        QTest::newRow("1") << HString("alpha") << HString("alpha") << true;
+        QTest::newRow("2") << HString("alpha") << HString("beta") << false;
+        QTest::newRow("3") << HString("") << HString("") << true;
+        QTest::newRow("4") << HString("") << HString(" ") << false;
+        QTest::newRow("5") << HString("alpha") << HString(" ") << false;
+    }
+
 };
 
 QTEST_APPLESS_MAIN(HStringTests)

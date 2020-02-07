@@ -209,30 +209,29 @@ bool HString::empty() const
 //! @returns True if same, else False
 bool HString::compare(const char *other) const
 {
-    if (strlen(other) != size())
+    if (mSize == strlen(other))
     {
-        return false;
+        if (mSize == 0) {
+            return true;
+        }
+        else {
+            return (strcmp(mpDataBuffer,other) == 0);
+        }
     }
-    else
-    {
-        return (strcmp(mpDataBuffer,other) == 0);
-    }
+    return false;
 }
 
 bool HString::compare(const HString &rOther) const
 {
-    if (mSize != rOther.size())
-    {
-        return false;
+    if (mSize == rOther.size()) {
+        if (mSize == 0) {
+            return true;
+        }
+        else {
+            return (strcmp(mpDataBuffer, rOther.c_str()) == 0);
+        }
     }
-    else if ( (mSize == rOther.size()) && (mSize == 0) )
-    {
-        return true;
-    }
-    else
-    {
-        return (strcmp(mpDataBuffer, rOther.c_str()) == 0);
-    }
+    return false;
 }
 
 //! @brief Check if the string can be interpreted as a number
