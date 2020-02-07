@@ -228,6 +228,26 @@ public:
         return mpDataArray[i];
     }
 
+    const T& last() const
+    {
+        return  mpDataArray[mSize-1];
+    }
+
+    T& last()
+    {
+        return  mpDataArray[mSize-1];
+    }
+
+    const T& first() const
+    {
+        return  mpDataArray[0];
+    }
+
+    T& first()
+    {
+        return  mpDataArray[0];
+    }
+
     //! @brief Returns the number of elements in the array
     //! @returns Number of elements in the array
     size_t size() const

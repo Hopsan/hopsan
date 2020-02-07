@@ -36,17 +36,31 @@ class HVectorTest : public QObject
 {
     Q_OBJECT
 
-public:
-    HVectorTest();
-
-private Q_SLOTS:
+private slots:
     void sizeTest();
     void sizeTest_data();
-};
 
-HVectorTest::HVectorTest()
-{
-}
+    void first() {
+        HVector<int> vec;
+        vec.append(1);
+        QVERIFY(vec.first() == 1);
+        vec.append(2);
+        QVERIFY(vec.first() == 1);
+    }
+
+    void last() {
+        HVector<int> vec;
+        vec.append(1);
+        QVERIFY(vec.last() == 1);
+        QVERIFY(vec.first() == vec.last());
+        vec.append(2);
+        QVERIFY(vec.last() == 2);
+        vec.append(3);
+        QVERIFY(vec.last() == 3);
+        vec.resize(2);
+        QVERIFY(vec.last() == 2);
+    }
+};
 
 void HVectorTest::sizeTest()
 {
