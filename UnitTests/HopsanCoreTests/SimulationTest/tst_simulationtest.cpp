@@ -23,11 +23,18 @@
 -----------------------------------------------------------------------------*/
 
 #include <QtTest>
+
+#if __cplusplus < 201103L
+#define nullptr 0
+#endif
+
 #include "HopsanEssentials.h"
 #include "HopsanCoreVersion.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/HmfLoader.h"
+
 #include <assert.h>
+#include <algorithm>
 
 #ifndef DEFAULT_LIBRARY_ROOT
 #define DEFAULT_LIBRARY_ROOT "../componentLibraries/defaultLibrary"
@@ -59,10 +66,10 @@ class SimulationTests : public QObject
 
 private:
     HopsanEssentials mHopsanCore;
-    ComponentSystem *mpSystemFromText;
-    ComponentSystem *mpSystemFromFile;
+    ComponentSystem *mpSystemFromText = nullptr;
+    ComponentSystem *mpSystemFromFile = nullptr;
 
-private Q_SLOTS:
+private slots:
     void initTestCase() {
         bool did_load = mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
         QVERIFY2(did_load, qPrintable(QString("Could not load default component library: ")+QString::fromStdString(defaultLibraryFilePath)));
@@ -320,6 +327,243 @@ private Q_SLOTS:
         QTest::newRow("1") << mpSystemFromFile;
     }
 
+    void System_GetAndEval_Parameter()
+    {
+        QFETCH(HString, subSystemName);
+        QFETCH(HString, paramName);
+        QFETCH(bool, expectHasParameter);
+        QFETCH(bool, expectEvalOK);
+        QFETCH(HString, expectedParamValue);
+        QFETCH(double, expectedDValue);
+
+        ComponentSystem* pEvalSystem = mpSystemFromFile;
+        if (!subSystemName.empty()) {
+            HVector<HString> nameParts = subSystemName.split('$');
+            for (size_t i=0; i < nameParts.size(); ++i) {
+                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
+            }
+        }
+        QVERIFY(pEvalSystem != nullptr);
+
+        QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
+        HString actualValue;
+        pEvalSystem->getParameterValue(paramName, actualValue);
+        QVERIFY(actualValue.compare(expectedParamValue));
+        bool evalOK;
+        double actualDValue = pEvalSystem->evaluateDoubleParameter(paramName, evalOK);
+        QVERIFY(evalOK == expectEvalOK);
+        QVERIFY(expectedDValue == actualDValue);
+    }
+
+    void System_GetAndEval_Parameter_data()
+    {
+        QTest::addColumn<HString>("subSystemName");
+        QTest::addColumn<HString>("paramName");
+        QTest::addColumn<bool>("expectHasParameter");
+        QTest::addColumn<bool>("expectEvalOK");
+        QTest::addColumn<HString>("expectedParamValue");
+        QTest::addColumn<double>("expectedDValue");
+
+        const HString mainsystem = "";
+        const HString subsystem = "Subsystem";
+        const HString subsubsystem = "Subsystem$Subsubsystem";
+
+        HString evalSystem, paramName, expectedParamValue;
+        double expectedDValue;
+        bool expectEvalOK, expectHasParameter;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_a";
+        expectHasParameter = true;
+        expectedParamValue = "sub_a";
+        expectedDValue = 1.0;
+        expectEvalOK = true;
+        QTest::newRow("0") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        evalSystem = subsystem;
+        paramName = "sub_a";
+        expectHasParameter = true;
+        expectedParamValue = "main_a";
+        expectedDValue = 1.0;
+        expectEvalOK = true;
+        QTest::newRow("1") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        evalSystem = mainsystem;
+        paramName = "main_a";
+        expectHasParameter = true;
+        expectedParamValue = "1";
+        expectedDValue = 1.0;
+        expectEvalOK = true;
+        QTest::newRow("2") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_b";
+        expectHasParameter = true;
+        expectedParamValue = "sub_b";
+        expectedDValue = 2.0;
+        expectEvalOK = true;
+        QTest::newRow("3") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        evalSystem = subsystem;
+        paramName = "sub_b";
+        expectHasParameter = true;
+        expectedParamValue = "2";
+        expectedDValue = 2.0;
+        expectEvalOK = true;
+        QTest::newRow("4") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        // subsub_c is a system parameter whose value is an expression of the two parent variables
+        evalSystem = subsubsystem;
+        paramName = "subsub_c";
+        expectHasParameter = true;
+        expectedParamValue = "sub_a+sub_b";
+        expectedDValue = 3.0;
+        expectEvalOK = true;
+        QTest::newRow("5") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        // subsub_d is a system parameter whose value is an expression of the two other variable in this system
+        evalSystem = subsubsystem;
+        paramName = "subsub_d";
+        expectHasParameter = true;
+        expectedParamValue = "subsub_a+subsub_b";
+        expectedDValue = 3.0;
+        expectEvalOK = true;
+        QTest::newRow("6") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        // subsub_e is a system parameter whose value is an expression of one other variable in this system and one of the grandparent
+        evalSystem = subsubsystem;
+        paramName = "subsub_e";
+        expectHasParameter = true;
+        expectedParamValue = "main_a+subsub_b";
+        expectedDValue = 3.0;
+        expectEvalOK = true;
+        QTest::newRow("7") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        // main_a does not exist in subsystem but can still be evaluated as it exists in parent
+        evalSystem = subsystem;
+        paramName = "main_a";
+        expectHasParameter = false;
+        expectedParamValue = "";
+        expectedDValue = 1.0;
+        expectEvalOK = true;
+        QTest::newRow("8") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        // main_a does not exist in subsubsystem but can still be evaluated as it exists in parents parent
+        evalSystem = subsubsystem;
+        paramName = "main_a";
+        expectHasParameter = false;
+        expectedParamValue = "";
+        expectedDValue = 1.0;
+        expectEvalOK = true;
+        QTest::newRow("9") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+        // Make sure that the correct shadow_param is choosen
+        evalSystem = subsystem;
+        paramName = "shadow_param";
+        expectHasParameter = true;
+        expectedParamValue = "2";
+        expectedDValue = 2.0;
+        expectEvalOK = true;
+        QTest::newRow("10") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+        evalSystem = mainsystem;
+        expectedParamValue = "1";
+        expectedDValue = 1;
+        QTest::newRow("11") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
+
+    }
+
+    void System_NumHop_GetAndEval_Parameter()
+    {
+        QFETCH(HString, subSystemName);
+        QFETCH(HString, script);
+        QFETCH(bool, expectedNumhopEvalOK);
+        QFETCH(HString, expectedValue);
+
+        ComponentSystem* pEvalSystem = mpSystemFromFile;
+        if (!subSystemName.empty()) {
+            HVector<HString> nameParts = subSystemName.split('$');
+            for (size_t i=0; i < nameParts.size(); ++i) {
+                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
+            }
+        }
+        QVERIFY(pEvalSystem != nullptr);
+
+        HString eval_output;
+        bool numhopEvalOK = pEvalSystem->runNumHopScript(script, true, eval_output);
+        QVERIFY2(numhopEvalOK == expectedNumhopEvalOK, eval_output.c_str());
+        if (numhopEvalOK) {
+            Component* pTestConstant = pEvalSystem->getSubComponent("TestConstant");
+            QVERIFY(pTestConstant != nullptr);
+            HString value;
+            bool evalOK = pTestConstant->evaluateParameter("y#Value", value, "double");
+            QVERIFY(evalOK);
+            QVERIFY(value == expectedValue);
+        }
+    }
+
+    void System_NumHop_GetAndEval_Parameter_data()
+    {
+        QTest::addColumn<HString>("subSystemName");
+        QTest::addColumn<HString>("script");
+        QTest::addColumn<bool>("expectedNumhopEvalOK");
+        QTest::addColumn<HString>("expectedValue");
+
+        const HString mainsystem = "";
+        const HString subsystem = "Subsystem";
+
+        HString evalSystem, script, expectedValue;
+        bool expectEvalOK;
+
+        HString expected_apa_value;
+        mpSystemFromFile->getParameterValue("apa", expected_apa_value);
+
+
+        // NumHop can use system parameters in this system directly,
+        evalSystem = mainsystem;
+        script = "TestConstant.y = apa";
+        expectEvalOK = true;
+        expectedValue = expected_apa_value;
+        QTest::newRow("0") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // NumHop can use system parameters in this system directly, even if one of them points to a value in the current systems parent system
+        evalSystem = subsystem;
+        script = "TestConstant.y = sub_a + sub_b";
+        expectEvalOK = true;
+        expectedValue = "3";
+        QTest::newRow("1") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // NumHop can not use variable values in parent system directly (if this is a system component)
+        // This works for ordinary parameter expression evaluation but has not been implemented in the numhop helper for systems, there is a todo note about doing that though
+        evalSystem = subsystem;
+        script = "TestConstant.y = main_a + sub_b";
+        expectEvalOK = false;
+        expectedValue = "";
+        QTest::newRow("2") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Evaluate system parameters from a subcomponent (that is a subsystem) together with an ordinary component
+        evalSystem = mainsystem;
+        script = "TestConstant.y = Subsystem.sub_a + Subsystem.sub_b + TestGain.k";
+        expectEvalOK = true;
+        expectedValue = "4";
+        QTest::newRow("3") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Evaluate system parameter together with an ordinary component parameter, when the parameters have the same name
+        // This does not work, because you can give them the same name exatly, in the system case # separator is OK but in the component name, the separator must be . for some reson
+        // Under the hood . and # should be treeted equally, but this is not the case, but this is an edge-case
+        evalSystem = subsystem;
+        script = "TestConstant.y = Add.in2 + in1#Value";
+        expectEvalOK = false;
+        expectedValue = "1";
+        QTest::newRow("4") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Evaluate system parameters in current and sub system when they ahve the same name
+        evalSystem = mainsystem;
+        script = "TestConstant.y = Subsystem.shadow_param + shadow_param";
+        expectEvalOK = true;
+        expectedValue = "3";
+        QTest::newRow("5") << evalSystem << script << expectEvalOK << expectedValue;
+    }
+
     void System_Add_And_Remove_Component()
     {
         QFETCH(ComponentSystem*, system);
@@ -548,6 +792,59 @@ private Q_SLOTS:
         QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("y_0#Value");
         QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("y_A#Value");
         QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("t_step#Value");
+    }
+
+    void Component_GetAndEval_Parameter()
+    {
+        QFETCH(HString, compName);
+        QFETCH(HString, paramName);
+        QFETCH(HString, expectedValue);
+        QFETCH(HString, expectedEvaluatedValue);
+
+        HVector<HString> compNameParts = compName.split('$');
+        ComponentSystem* pEvalSystem = mpSystemFromFile;
+        for (size_t i=0; i < std::max(compNameParts.size(), static_cast<size_t>(1)) - 1; ++i) {
+            pEvalSystem = pEvalSystem->getSubComponentSystem(compNameParts[i]);
+        }
+        Component* pComponent = pEvalSystem->getSubComponent(compNameParts.last());
+        QVERIFY2(pComponent != nullptr, "Could not get component");
+
+        QVERIFY(pComponent->hasParameter(paramName));
+        HString actualValue;
+        pComponent->getParameterValue(paramName, actualValue);
+        QVERIFY(actualValue == expectedValue);
+        pComponent->evaluateParameter(paramName, actualValue, "double");
+        QVERIFY(actualValue == expectedEvaluatedValue);
+    }
+
+    void Component_GetAndEval_Parameter_data()
+    {
+        QTest::addColumn<HString>("compName");
+        QTest::addColumn<HString>("paramName");
+        QTest::addColumn<HString>("expectedValue");
+        QTest::addColumn<HString>("expectedEvaluatedValue");
+
+        // When a numhop script is used as a parameter value inside an ordinary component, it can lookup parent system variables (Also ones that depend on valus from parents parent)
+        QTest::newRow("0") << HString("Subsystem$Gain") << HString("k#Value") << HString("sub_b+sub_a") << HString("3");
+        // When a numhop script is used as a parameter value inside an ordinary component, it can lookup parent system variables and even use parents parent parameters directly
+        QTest::newRow("1") << HString("Subsystem$Gain_1") << HString("k#Value") << HString("sub_b+main_a") << HString("3");
+
+        // Make sure that parameter in2 can use self.in1, which is points to a system parameter, in an expression
+        QTest::newRow("2") << HString("Subsystem$Subsubsystem$Add") << HString("in1#Value") << HString("subsub_a") << HString("1");
+        QTest::newRow("3") << HString("Subsystem$Subsubsystem$Add") << HString("in2#Value") << HString("in1.Value+1") << HString("2");
+
+        // Test various combinations of using system parameters taht are expressions
+        QTest::newRow("4") << HString("Subsystem$Subsubsystem$Gain_1") << HString("k#Value") << HString("subsub_c") << HString("3");
+        QTest::newRow("5") << HString("Subsystem$Subsubsystem$Gain_2") << HString("k#Value") << HString("subsub_d") << HString("3");
+        QTest::newRow("6") << HString("Subsystem$Subsubsystem$Gain_3") << HString("k#Value") << HString("subsub_e") << HString("3");
+
+        // Test that the correct in.value is choosen in Add, the one in the component and not the one in the system
+        QTest::newRow("7") << HString("Subsystem$Add") << HString("in2#Value") << HString("in1.Value") << HString("0");
+        QTest::newRow("8") << HString("Subsystem") << HString("in1#Value") << HString("1") << HString("1");
+
+        // Test that the correct shadow_parm is choosen in ShadowParamGain, when that parameter also exists in the grand parent system
+        QTest::newRow("9") << HString("Subsystem$ShadowParamGain") << HString("k#Value") << HString("shadow_param") << HString("2");
+        QTest::newRow("9") << HString("Subsystem") << HString("shadow_param") << HString("2") << HString("2");
     }
 
     void Component_Get_CQS()
