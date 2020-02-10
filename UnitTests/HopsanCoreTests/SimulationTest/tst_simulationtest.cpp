@@ -391,11 +391,15 @@ private slots:
         QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
         HString actualValue;
         pEvalSystem->getParameterValue(paramName, actualValue);
-        QVERIFY(actualValue.compare(expectedParamValue));
-        bool evalOK;
-        double actualDValue = pEvalSystem->evaluateDoubleParameter(paramName, evalOK);
+        QVERIFY2(actualValue.compare(expectedParamValue), (actualValue+"!="+expectedParamValue).c_str());
+        bool evalOK = pEvalSystem->evaluateParameter(paramName, actualValue, "double");
         QVERIFY(evalOK == expectEvalOK);
-        QVERIFY(expectedDValue == actualDValue);
+        if (evalOK) {
+          bool toDoubleOK;
+          double actualDValue = actualValue.toDouble(&toDoubleOK);
+          QVERIFY(toDoubleOK);
+          QVERIFY(expectedDValue == actualDValue);
+        }
     }
 
     void System_GetAndEval_Parameter_data()
@@ -468,7 +472,7 @@ private slots:
         evalSystem = subsubsystem;
         paramName = "subsub_d";
         expectHasParameter = true;
-        expectedParamValue = "subsub_a+subsub_b";
+        expectedParamValue = "self.subsub_a+self.subsub_b";
         expectedDValue = 3.0;
         expectEvalOK = true;
         QTest::newRow("6") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
@@ -477,27 +481,27 @@ private slots:
         evalSystem = subsubsystem;
         paramName = "subsub_e";
         expectHasParameter = true;
-        expectedParamValue = "main_a+subsub_b";
+        expectedParamValue = "main_a+self.subsub_b";
         expectedDValue = 3.0;
         expectEvalOK = true;
         QTest::newRow("7") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
 
-        // main_a does not exist in subsystem but can still be evaluated as it exists in parent
+        // main_a does not exist in subsystem and can not be evaluated by this component directly
         evalSystem = subsystem;
         paramName = "main_a";
         expectHasParameter = false;
         expectedParamValue = "";
         expectedDValue = 1.0;
-        expectEvalOK = true;
+        expectEvalOK = false;
         QTest::newRow("8") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
 
-        // main_a does not exist in subsubsystem but can still be evaluated as it exists in parents parent
+        // main_a does not exist in subsubsystem and can not be evaluated by this component directly
         evalSystem = subsubsystem;
         paramName = "main_a";
         expectHasParameter = false;
         expectedParamValue = "";
         expectedDValue = 1.0;
-        expectEvalOK = true;
+        expectEvalOK = false;
         QTest::newRow("9") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
 
         // Make sure that the correct shadow_param is choosen
@@ -817,14 +821,14 @@ private slots:
 
         // NumHop can use system parameters in this system directly,
         evalSystem = mainsystem;
-        script = "TestConstant.y = apa";
+        script = "TestConstant.y = self.apa";
         expectEvalOK = true;
         expectedValue = expected_apa_value;
         QTest::newRow("0") << evalSystem << script << expectEvalOK << expectedValue;
 
         // NumHop can use system parameters in this system directly, even if one of them points to a value in the current systems parent system
         evalSystem = subsystem;
-        script = "TestConstant.y = sub_a + sub_b";
+        script = "TestConstant.y = self.sub_a + self.sub_b";
         expectEvalOK = true;
         expectedValue = "3";
         QTest::newRow("1") << evalSystem << script << expectEvalOK << expectedValue;
@@ -853,9 +857,9 @@ private slots:
         expectedValue = "1";
         QTest::newRow("4") << evalSystem << script << expectEvalOK << expectedValue;
 
-        // Evaluate system parameters in current and sub system when they ahve the same name
+        // Evaluate system parameters in current and sub system when they have the same name
         evalSystem = mainsystem;
-        script = "TestConstant.y = Subsystem.shadow_param * shadow_param";
+        script = "TestConstant.y = Subsystem.shadow_param * self.shadow_param";
         expectEvalOK = true;
         expectedValue = "-2";
         QTest::newRow("5") << evalSystem << script << expectEvalOK << expectedValue;
@@ -1137,7 +1141,7 @@ private slots:
 
         // Make sure that parameter in2 can use self.in1, which is points to a system parameter, in an expression
         QTest::newRow("2") << HString("Subsystem$Subsubsystem$Add") << HString("in1#Value") << HString("double") << HString("subsub_a") << HString("1");
-        QTest::newRow("3") << HString("Subsystem$Subsubsystem$Add") << HString("in2#Value") << HString("double") << HString("in1.Value+1") << HString("2");
+        QTest::newRow("3") << HString("Subsystem$Subsubsystem$Add") << HString("in2#Value") << HString("double") << HString("self.in1.Value+1") << HString("2");
 
         // Test various combinations of using system parameters taht are expressions
         QTest::newRow("4") << HString("Subsystem$Subsubsystem$Gain_1") << HString("k#Value") << HString("double") << HString("subsub_c") << HString("3");
@@ -1145,7 +1149,7 @@ private slots:
         QTest::newRow("6") << HString("Subsystem$Subsubsystem$Gain_3") << HString("k#Value") << HString("double") << HString("subsub_e") << HString("3");
 
         // Test that the correct in.value is choosen in Add, the one in the component and not the one in the system
-        QTest::newRow("7") << HString("Subsystem$Add") << HString("in2#Value") << HString("double") << HString("in1.Value") << HString("0");
+        QTest::newRow("7") << HString("Subsystem$Add") << HString("in2#Value") << HString("double") << HString("self.in1.Value") << HString("0");
         QTest::newRow("8") << HString("Subsystem") << HString("in1#Value") << HString("double") << HString("1") << HString("1");
 
         // Test that the correct shadow_parm is choosen in ShadowParamGain, when that parameter also exists in the grand parent system
