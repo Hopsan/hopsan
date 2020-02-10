@@ -231,14 +231,14 @@ bool ParameterEvaluator::evaluate(HString &rResult)
     ++mDepthCounter;
     if (mDepthCounter > 500)
     {
-        mpParentParameters->getParentComponent()->addErrorMessage("You seem to be stuck in a parameter evaluation loop (aborting): " + mParameterName);
+        mpParentParameters->getComponent()->addErrorMessage("You seem to be stuck in a parameter evaluation loop (aborting): " + mParameterName);
         mDepthCounter = 0;
         return false;
     }
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="textblock") || (mType=="conditional")))
     {
-        mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
+        mpParentParameters->getComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
     }
 
     bool success = true;
@@ -267,7 +267,8 @@ bool ParameterEvaluator::evaluate(HString &rResult)
         // Strip + or - from name in case we want to take a negative value of a system parameter
         HString signPrefix, parameterValueWithoutSign;
         splitSignPrefix(mParameterValue, signPrefix, parameterValueWithoutSign);
-        if(mpParentParameters->evaluateInSystemParent(parameterValueWithoutSign,  evaluatedParameterValue, mType)) {
+        const HString& possibleNameInParentSystem = parameterValueWithoutSign;
+        if(mpParentParameters->evaluateInSystemParent(possibleNameInParentSystem,  evaluatedParameterValue, mType)) {
             resolveSignPrefix(signPrefix);
             evaluatedParameterValue = signPrefix + evaluatedParameterValue;
         }
@@ -476,9 +477,9 @@ void ParameterEvaluator::splitSignPrefix(const HString &rString, HString &rPrefi
 
 //! @brief Constructor
 //! @param [in] pParentComponent A pointer to the Component that contains the Parameters
-ParameterEvaluatorHandler::ParameterEvaluatorHandler(Component* pParentComponent)
+ParameterEvaluatorHandler::ParameterEvaluatorHandler(Component* pComponent)
 {
-    mParentComponent = pParentComponent;
+    mComponent = pComponent;
 }
 
 //! @brief Destructor
@@ -740,12 +741,12 @@ bool ParameterEvaluatorHandler::refreshParameterValueText(const HString &rParame
 bool ParameterEvaluatorHandler::evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
     // Try one of our system parent component parameters
-    if(mParentComponent && mParentComponent->isComponentSystem()) {
-        return mParentComponent->evaluateParameter(rName, rEvaluatedParameterValue, rType);
+    if(mComponent && mComponent->isComponentSystem()) {
+        return mComponent->evaluateParameter(rName, rEvaluatedParameterValue, rType);
     }
-    else if(mParentComponent && mParentComponent->getSystemParent())
+    else if(mComponent && mComponent->getSystemParent())
     {
-        return mParentComponent->getSystemParent()->evaluateParameter(rName, rEvaluatedParameterValue , rType);
+        return mComponent->getSystemParent()->evaluateParameter(rName, rEvaluatedParameterValue , rType);
     }
     return false;
 }
@@ -754,7 +755,7 @@ bool ParameterEvaluatorHandler::evaluateParameterExpression(const HString &rExpr
 {
     //! @todo waste of time recreating the helper every time, should reuse one that always exists
     NumHopHelper nh;
-    nh.setComponent(mParentComponent);
+    nh.setComponent(mComponent);
     HString dummy;
     double value;
     bool evalOK = nh.evalNumHopScript(rExpression.c_str(), value, false,dummy);
@@ -805,8 +806,8 @@ bool ParameterEvaluatorHandler::checkParameters(HString &rErrParName)
 }
 
 
-Component *ParameterEvaluatorHandler::getParentComponent() const
+Component *ParameterEvaluatorHandler::getComponent() const
 {
-    return this->mParentComponent;
+    return mComponent;
 }
 

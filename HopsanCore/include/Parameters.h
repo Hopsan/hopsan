@@ -88,7 +88,7 @@ protected:
 class HOPSANCORE_DLLAPI ParameterEvaluatorHandler
 {
 public:
-    ParameterEvaluatorHandler(Component* parentComponent);
+    ParameterEvaluatorHandler(Component* pComponent);
     ~ParameterEvaluatorHandler();
 
     bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
@@ -117,10 +117,10 @@ public:
     bool hasParameter(const HString &rName) const;
     bool checkParameters(HString &rErrParName);
 
-    Component *getParentComponent() const;
+    Component *getComponent() const;
 
 protected:
-    Component* mParentComponent;
+    Component* mComponent;
     std::vector<ParameterEvaluator*> mParameters;
     std::vector<ParameterEvaluator*> mParametersNeedEvaluation; //! @todo Use this vector to ensure parameters are valid at simulation time e.g. if a used system parameter is deleted before simulation
 };
