@@ -742,10 +742,7 @@ bool ParameterEvaluatorHandler::refreshParameterValueText(const HString &rParame
 bool ParameterEvaluatorHandler::evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
     // Try one of our system parent component parameters
-    if(mComponent && mComponent->isComponentSystem()) {
-        return mComponent->evaluateParameter(rName, rEvaluatedParameterValue, rType);
-    }
-    else if(mComponent && mComponent->getSystemParent())
+    if(mComponent && mComponent->getSystemParent())
     {
         return mComponent->getSystemParent()->evaluateParameter(rName, rEvaluatedParameterValue , rType);
     }

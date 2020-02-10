@@ -163,7 +163,6 @@ public:
     bool checkParameters(HString &errParName);
     void evaluateParameters();
     bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
-    double evaluateDoubleParameter(const HString &rName, bool &rEvalOK);
 
     // Start values
     void setDefaultStartValue(Port* pPort, const size_t idx, const double value);
