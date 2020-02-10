@@ -444,3 +444,23 @@ HVector<HString> NumHopHelper::extractVariableNames(const HString &expression) c
     }
     return names;
 }
+
+HVector<HString> NumHopHelper::extractNamedValues(const HString &expression)
+{
+    numhop::Expression e(expression.c_str(), numhop::UndefinedT);
+    std::set<std::string> namedValues;
+    e.extractNamedValues(namedValues);
+    std::set<std::string>::iterator it;
+    HVector<HString> output;
+    for (it= namedValues.begin(); it != namedValues.end(); ++it) {
+        output.append(it->c_str());
+    }
+    return output;
+}
+
+HString NumHopHelper::replaceNamedValue(const HString& expression, const HString &oldName, const HString &newName)
+{
+    numhop::Expression e(expression.c_str(), numhop::UndefinedT);
+    e.replaceNamedValue(oldName.c_str(), newName.c_str());
+    return e.print().c_str();
+}

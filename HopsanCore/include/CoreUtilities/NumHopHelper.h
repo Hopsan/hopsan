@@ -52,6 +52,8 @@ public:
     bool eval(double &rValue, bool doPrintOutput, HString &rOutput);
 
     HVector<HString> extractVariableNames(const HString &expression) const;
+    static HVector<HString> extractNamedValues(const HString &expression);
+    static HString replaceNamedValue(const HString& expression, const HString &oldName, const HString& newName);
 
 private:
     ComponentSystem *mpSystem;

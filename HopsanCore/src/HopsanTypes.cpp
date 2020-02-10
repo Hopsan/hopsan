@@ -59,6 +59,14 @@ HString::HString(const char *str, const size_t len)
     setString(str, len);
 }
 
+HString::HString(char c)
+{
+    mpDataBuffer=0;
+    mSize=0;
+    append(c);
+
+}
+
 //! @brief This constructor is used to catch mistakes made by Hospan component developers
 HString::HString(const int value)
 {

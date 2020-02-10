@@ -132,7 +132,7 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
 //! @return true if success, otherwise false
 //!
 //! This function is used by Parameters
-bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation)
+bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation, bool force)
 {
     bool success=false;
 
@@ -140,17 +140,18 @@ bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvalu
     mParameterValue = rValue;
     HString evalResult = rValue;
     success = evaluate(evalResult);
-    if(!success)
+    if(!success && !force)
     {
         mParameterValue = oldValue;
     }
-    if(rValue != evalResult)
-    {
-        *ppNeedEvaluation = this;
-    }
-    else
-    {
-        *ppNeedEvaluation = 0;
+
+    if (ppNeedEvaluation) {
+        if(rValue != evalResult) {
+            *ppNeedEvaluation = this;
+        }
+        else {
+            *ppNeedEvaluation = 0;
+        }
     }
 
     return success;

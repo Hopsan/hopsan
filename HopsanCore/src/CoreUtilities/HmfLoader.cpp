@@ -36,6 +36,7 @@
 #include <cstring>
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/NumHopHelper.h"
 #include "ComponentUtilities/num2string.hpp"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
@@ -477,6 +478,38 @@ size_t loadValuesFromHopsanParameterFile(rapidxml::xml_node<> *pSystemNode, Comp
     return numUpdated;
 }
 
+//! @brief Go through all parameter values an prepend self# to parameter names in expressions if they point to a local parameter
+void autoPrependSelfToParameterExpressions(Component* pComponent) {
+
+    std::vector<HString> localParameterNames;
+    pComponent->getParameterNames(localParameterNames);
+    const std::vector<ParameterEvaluator*> *pParameters = pComponent->getParametersVectorPtr();
+    for (size_t i=0; i<pParameters->size(); ++i) {
+        ParameterEvaluator* pParameter = (*pParameters)[i];
+        // Only double parameters can have expressions
+        if ((pParameter->getType() == "double") && !pParameter->getValue().isNummeric()) {
+            HString parameterValueExpression = pParameter->getValue();
+            // Extract all named values from the parameter expression
+            HVector<HString> namedValues = NumHopHelper::extractNamedValues(parameterValueExpression);
+            bool needReplaceParameterValue = false;
+            for (size_t j=0; j<namedValues.size(); ++j) {
+                HString fixedNamedValue = namedValues[j];
+                fixedNamedValue.replace('.', '#'); // Replace . with # since you can not enter # in parameter input dialog (since is a separator char that can not be in given names)
+                // If a named value from the expression exists as a parameter name in the current component, prepend self. to the name
+                if (std::find(localParameterNames.begin(), localParameterNames.end(), fixedNamedValue) != localParameterNames.end()) {
+                    parameterValueExpression = NumHopHelper::replaceNamedValue(parameterValueExpression, namedValues[j], "self."+namedValues[j]);
+                    needReplaceParameterValue = true;
+                }
+            }
+            // If any parameter name was changed, then set the new parameter value expression
+            if (needReplaceParameterValue) {
+                const bool force = true;
+                pParameter->setParameterValue(parameterValueExpression, 0, force);
+            }
+        }
+    }
+}
+
 }
 
 
@@ -502,10 +535,11 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
         rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
         if (pParams)
         {
+            const HString coreVersionOfModelFile = readStringAttribute(pComponentNode->document()->first_node(), "hopsancoreversion").c_str();
             rapidxml::xml_node<> *pParam = pParams->first_node("parameter");
             while (pParam != 0)
             {
-                updateOldModelFileParameter(pParam, readStringAttribute(pComponentNode->document()->first_node(), "hopsancoreversion").c_str());
+                updateOldModelFileParameter(pParam, coreVersionOfModelFile);
 
                 HString paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN").c_str();
                 HString val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN").c_str();
@@ -528,6 +562,10 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
                 }
 
                 pParam = pParam->next_sibling("parameter");
+            }
+
+            if (isVersionAGreaterThanB("2.14.0", coreVersionOfModelFile)) {
+                autoPrependSelfToParameterExpressions(pComp);
             }
         }
 
@@ -585,10 +623,11 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
     rapidxml::xml_node<> *pParameters = pSysNode->first_node("parameters");
     if (pParameters)
     {
+        const HString coreVersionOfModelFile = readStringAttribute(pSysNode->document()->first_node(), "hopsancoreversion").c_str();
         rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
         while (pParameter != 0)
         {
-            updateOldModelFileParameter(pParameter, readStringAttribute(pSysNode->document()->first_node(), "hopsancoreversion").c_str());
+            updateOldModelFileParameter(pParameter, coreVersionOfModelFile);
 
             string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
             string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
@@ -606,6 +645,10 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
             }
 
             pParameter = pParameter->next_sibling("parameter");
+        }
+
+        if (isVersionAGreaterThanB("2.14.0", coreVersionOfModelFile)) {
+            autoPrependSelfToParameterExpressions(pSystem);
         }
     }
 }
