@@ -145,6 +145,17 @@ public:
                     return value;
                 }
             }
+            // This seems to be a system parameter, recurse upwards in the model hierarcy until we find the parameter (or not)
+            else if(parts.size() == 1) {
+                ComponentSystem* pSystemParent = mpSystem->getSystemParent();
+                while (pSystemParent) {
+                    value = evaluateDoubleParameter(pSystemParent, parts[0], rFound);
+                    if (rFound) {
+                        break;
+                    }
+                    pSystemParent = pSystemParent->getSystemParent();
+                }
+            }
         }
         rFound = false;
         return -1;
@@ -258,11 +269,16 @@ public:
         {
             value = evaluateDoubleParameter(mpComponent, parts[1]+"#"+parts[2], evalOK);
         }
-        // This seems to be a system parameter
+        // This seems to be a system parameter, recurse upwards in the model hierarcy until we find the parameter (or not)
         else if(parts.size() == 1) {
             mpComponent->getParameterValue(parts[0], valstring);
-            if (mpComponent->getSystemParent()) {
-                value = evaluateDoubleParameter(mpComponent->getSystemParent(), parts[0], evalOK);
+            ComponentSystem* pSystemParent = mpComponent->getSystemParent();
+            while (pSystemParent) {
+                value = evaluateDoubleParameter(pSystemParent, parts[0], evalOK);
+                if (evalOK) {
+                    break;
+                }
+                pSystemParent = pSystemParent->getSystemParent();
             }
         }
 
