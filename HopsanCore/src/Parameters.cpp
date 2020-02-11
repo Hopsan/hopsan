@@ -62,7 +62,8 @@ using namespace std;
 //! @param [in] rType The type of the parameter e.g. double
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
-ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParentParameters)
+ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
+                                       const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParameterEvalHandler)
 {
     mDepthCounter=0;
     mParameterName = rName;
@@ -73,7 +74,7 @@ ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rVal
     mUnit = rUnit;
 
     mpData = pDataPtr;
-    mpParentParameters = pParentParameters;
+    mpParameterEvaluatorHandler = pParameterEvalHandler;
     evaluate();
 }
 
@@ -232,14 +233,14 @@ bool ParameterEvaluator::evaluate(HString &rResult)
     ++mDepthCounter;
     if (mDepthCounter > 500)
     {
-        mpParentParameters->getComponent()->addErrorMessage("You seem to be stuck in a parameter evaluation loop (aborting): " + mParameterName);
+        mpParameterEvaluatorHandler->getComponent()->addErrorMessage("You seem to be stuck in a parameter evaluation loop (aborting): " + mParameterName);
         mDepthCounter = 0;
         return false;
     }
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="textblock") || (mType=="conditional")))
     {
-        mpParentParameters->getComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
+        mpParameterEvaluatorHandler->getComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
     }
 
     bool success = true;
@@ -269,7 +270,7 @@ bool ParameterEvaluator::evaluate(HString &rResult)
         HString signPrefix, parameterValueWithoutSign;
         splitSignPrefix(mParameterValue, signPrefix, parameterValueWithoutSign);
         const HString& possibleNameInParentSystem = parameterValueWithoutSign;
-        if(mpParentParameters->evaluateInSystemParent(possibleNameInParentSystem,  evaluatedParameterValue, mType)) {
+        if(mpParameterEvaluatorHandler->evaluateInSystemParent(possibleNameInParentSystem,  evaluatedParameterValue, mType)) {
             resolveSignPrefix(signPrefix);
             evaluatedParameterValue = signPrefix + evaluatedParameterValue;
         }
@@ -278,14 +279,14 @@ bool ParameterEvaluator::evaluate(HString &rResult)
         }
     }
     else if (doCheckOthers && (mType=="string" || mType=="textblock" || mType=="bool")) {
-        if(!mpParentParameters->evaluateInSystemParent(mParameterValue,  evaluatedParameterValue, mType)) {
+        if(!mpParameterEvaluatorHandler->evaluateInSystemParent(mParameterValue,  evaluatedParameterValue, mType)) {
             evaluatedParameterValue = mParameterValue;
         }
     }
     // Use numhop expression evaluation for doubles
     else if (doCheckOthers)
     {
-        if (!mpParentParameters->evaluateParameterExpression(mParameterValue, evaluatedParameterValue))
+        if (!mpParameterEvaluatorHandler->evaluateParameterExpression(mParameterValue, evaluatedParameterValue))
         {
             evaluatedParameterValue = mParameterValue;
         }
@@ -701,7 +702,7 @@ bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HS
 //! @param [out] rEvaluatedParameterValue The result of the evaluation
 //! @param [in] rType The type of how the parameter should be interpreted
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::evaluateInLocalComponent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
+bool ParameterEvaluatorHandler::evaluateInComponent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
     bool success = false;
     for(size_t i = 0; i < mParameters.size(); ++i)

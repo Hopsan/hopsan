@@ -145,7 +145,7 @@ void Component::evaluateParameters()
 
 bool Component::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
-    return mpParameters->evaluateInLocalComponent(rName, rEvaluatedParameterValue, rType);
+    return mpParameters->evaluateInComponent(rName, rEvaluatedParameterValue, rType);
 }
 
 

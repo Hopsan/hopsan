@@ -48,7 +48,7 @@ class HOPSANCORE_DLLAPI ParameterEvaluator
     friend class ParameterEvaluatorHandler;
 public:
     ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
-                       const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* parentParameters=0);
+                       const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* pParameterEvalHandler=0);
 
     bool setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation=0, bool force=false);
     bool setParameter(const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
@@ -80,7 +80,7 @@ protected:
     HString mType;
     void* mpData;
     size_t mDepthCounter;
-    ParameterEvaluatorHandler* mpParentParameters;
+    ParameterEvaluatorHandler* mpParameterEvaluatorHandler;
     std::vector<HString> mConditions;
 };
 
@@ -107,10 +107,10 @@ public:
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
     void* getParameterDataPtr(const HString &rName);
 
-    bool evaluateInLocalComponent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
-    bool evaluateParameters();
     bool refreshParameterValueText(const HString &rParameterName);
 
+    bool evaluateParameters();
+    bool evaluateInComponent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
     bool evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
     bool evaluateParameterExpression(const HString &rExpression, HString &rEvaluatedParameterValue);
 
