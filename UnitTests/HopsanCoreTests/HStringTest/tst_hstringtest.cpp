@@ -277,27 +277,36 @@ private Q_SLOTS:
 
     void HString_isBool()
     {
+        bool convertOK;
         QFETCH(HString, str);
-        QFETCH(bool, isbool);
-        QVERIFY2(str.isBool() == isbool, (HString("isBool produced the wrong result for: ")+str).c_str());
+        QFETCH(bool, expectedIsBool);
+        QFETCH(bool, expectConvertOK);
+        QFETCH(bool, expectedValue);
+
+        QVERIFY(str.isBool() == expectedIsBool);
+        QVERIFY(str.toBool(&convertOK) == expectedValue);
+        QVERIFY(convertOK == expectConvertOK);
     }
     void HString_isBool_data()
     {
         QTest::addColumn<HString>("str");
-        QTest::addColumn<bool>("isbool");
+        QTest::addColumn<bool>("expectedIsBool");
+        QTest::addColumn<bool>("expectConvertOK");
+        QTest::addColumn<bool>("expectedValue");
 
-        QTest::newRow("0")      << HString("0") << true;
-        QTest::newRow("+0")     << HString("+0") << false;
-        QTest::newRow("-0")     << HString("-0") << false;
-        QTest::newRow("1")      << HString("1") << true;
-        QTest::newRow("+1")     << HString("+1") << false;
-        QTest::newRow("-1")     << HString("-1") << false;
-        QTest::newRow("true")   << HString("true") << true;
-        QTest::newRow(" true")  << HString(" true") << false;
-        QTest::newRow("True")   << HString("True") << false;
-        QTest::newRow("false")  << HString("false") << true;
-        QTest::newRow("false ") << HString("false ") << false;
-        QTest::newRow("False")  << HString("False") << false;
+        QTest::newRow("0")      << HString("0") << true << true << false;
+        QTest::newRow("1")      << HString("1") << true << true << true;
+        QTest::newRow("true")   << HString("true") << true << true << true;
+        QTest::newRow("false")  << HString("false") << true << true << false;
+
+        QTest::newRow("+0")     << HString("+0") << false << false << false;
+        QTest::newRow("-0")     << HString("-0") << false << false << false;
+        QTest::newRow("+1")     << HString("+1") << false << false << false;
+        QTest::newRow("-1")     << HString("-1") << false << false << false;
+        QTest::newRow(" true")  << HString(" true") << false << false << false;
+        QTest::newRow("True")   << HString("True") << false << false << false;
+        QTest::newRow("false ") << HString("false ") << false << false << false;
+        QTest::newRow("False")  << HString("False") << false << false << false;
     }
 
     void HString_toDouble()

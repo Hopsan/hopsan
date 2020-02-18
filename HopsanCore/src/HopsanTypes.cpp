@@ -288,6 +288,15 @@ long int HString::toLongInt(bool *isOK) const
     }
 }
 
+bool HString::toBool(bool *isOK) const
+{
+    *isOK = isBool();
+    if (compare("true") || compare("1")) {
+        return true;
+    }
+    return false;
+}
+
 size_t HString::find_first_of(const char c, size_t pos) const
 {
     return find(c,pos);
