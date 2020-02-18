@@ -469,8 +469,82 @@ private slots:
         expectedParamValue = "1";
         expectedDValue = 1;
         QTest::newRow("11") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
-
     }
+
+    void System_GetAndEval_Int_Parameter()
+    {
+        QFETCH(HString, subSystemName);
+        QFETCH(HString, paramName);
+        QFETCH(bool, expectHasParameter);
+        QFETCH(bool, expectEvalOK);
+        QFETCH(HString, expectedParamValue);
+        QFETCH(int, expectedIValue);
+
+        ComponentSystem* pEvalSystem = mpSystemFromFile;
+        if (!subSystemName.empty()) {
+            HVector<HString> nameParts = subSystemName.split('$');
+            for (size_t i=0; i < nameParts.size(); ++i) {
+                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
+            }
+        }
+        QVERIFY(pEvalSystem != nullptr);
+
+        QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
+        HString actualValue;
+        pEvalSystem->getParameterValue(paramName, actualValue);
+        QVERIFY(actualValue.compare(expectedParamValue));
+        bool evalOK = pEvalSystem->evaluateParameter(paramName, actualValue, "integer");
+        QVERIFY(evalOK == expectEvalOK);
+        bool numEvelOK;
+        int actualIValue = actualValue.toLongInt(&numEvelOK);
+        QVERIFY(numEvelOK == true);
+        QVERIFY(expectedIValue == actualIValue);
+    }
+
+    void System_GetAndEval_Int_Parameter_data()
+    {
+        QTest::addColumn<HString>("subSystemName");
+        QTest::addColumn<HString>("paramName");
+        QTest::addColumn<bool>("expectHasParameter");
+        QTest::addColumn<bool>("expectEvalOK");
+        QTest::addColumn<HString>("expectedParamValue");
+        QTest::addColumn<int>("expectedIValue");
+
+        const HString mainsystem = "";
+        const HString subsystem = "Subsystem";
+        const HString subsubsystem = "Subsystem$Subsubsystem";
+
+        HString evalSystem, paramName, expectedParamValue;
+        int expectedIValue;
+        bool expectEvalOK, expectHasParameter;
+
+
+        // Evaluate integer parameter recursively
+        evalSystem = subsystem;
+        paramName = "sub_int_a";
+        expectHasParameter = true;
+        expectedParamValue = "main_int_a";
+        expectedIValue = 1;
+        expectEvalOK = true;
+        QTest::newRow("1") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedIValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_int_a";
+        expectHasParameter = true;
+        expectedParamValue = "sub_int_a";
+        expectedIValue = 1;
+        expectEvalOK = true;
+        QTest::newRow("2") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedIValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_int_b";
+        expectHasParameter = true;
+        expectedParamValue = "sub_int_b";
+        expectedIValue = 2;
+        expectEvalOK = true;
+        QTest::newRow("3") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedIValue;
+    }
+
 
     void System_NumHop_GetAndEval_Parameter()
     {
