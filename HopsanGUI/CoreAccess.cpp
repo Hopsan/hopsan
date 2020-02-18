@@ -48,6 +48,7 @@
 #include "ComponentSystem.h"
 #include "ComponentUtilities/CSVParser.h"
 #include "CoreUtilities/NumHopHelper.h"
+#include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/SaveRestoreSimulationPoint.h"
 #include "compiler_info.h"
 
@@ -1405,4 +1406,24 @@ QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemA
         names.append(hnames[i].c_str());
     }
     return names;
+}
+
+void prependSelfToParameterExpresions(CoreSystemAccess *pCoreSystem)
+{
+    std::function<void(hopsan::ComponentSystem*)> processSystem;
+    processSystem = [&processSystem](hopsan::ComponentSystem* pSystem) {
+        hopsan::autoPrependSelfToParameterExpressions(pSystem);
+        auto childComponents = pSystem->getSubComponents();
+        for (auto pChild : childComponents) {
+            hopsan::autoPrependSelfToParameterExpressions(pChild);
+            if (pChild->isComponentSystem()) {
+                processSystem(dynamic_cast<hopsan::ComponentSystem*>(pChild));
+            }
+        }
+    };
+
+    auto pTopSystem = pCoreSystem->getCoreSystemPtr();
+    if (pTopSystem != nullptr) {
+        processSystem(pTopSystem);
+    }
 }

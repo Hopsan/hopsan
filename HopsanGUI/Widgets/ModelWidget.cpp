@@ -1742,6 +1742,12 @@ bool ModelWidget::loadModel(QFile &rModelFile)
             compLib = compLib.nextSiblingElement("componentlibrary");
         }
 
+        // Upconvert adding self. to parameter names
+        if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") < "2.14.0") {
+            prependSelfToParameterExpresions(mpToplevelSystem->getCoreSystemAccessPtr());
+        }
+
+
         setSaved(true);
         mpToplevelSystem->setUndoEnabled(true, true);
         return true;

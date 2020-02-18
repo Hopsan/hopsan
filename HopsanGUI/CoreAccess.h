@@ -99,6 +99,8 @@ double evalWithNumHop(const QString &rExpression);
 
 QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem);
 
+void prependSelfToParameterExpresions(CoreSystemAccess* pCoreSystem);
+
 
 class CoreParameterData
 {

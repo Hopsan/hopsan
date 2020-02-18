@@ -53,6 +53,8 @@ int HOPSANCORE_DLLAPI getMinorVersion(const HString& version);
 bool HOPSANCORE_DLLAPI isVersionAGreaterThanB(const HString& versionA, const HString& versionB);
 int HOPSANCORE_DLLAPI compareHopsanVersions(const HString& versionA, const HString& versionB);
 
+void HOPSANCORE_DLLAPI autoPrependSelfToParameterExpressions(Component* pComponent);
+
 ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModel(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
 ComponentSystem* loadHopsanModel(const char* xmlStr, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);

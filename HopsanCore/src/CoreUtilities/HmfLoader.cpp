@@ -478,8 +478,10 @@ size_t loadValuesFromHopsanParameterFile(rapidxml::xml_node<> *pSystemNode, Comp
     return numUpdated;
 }
 
+}
+
 //! @brief Go through all parameter values an prepend self# to parameter names in expressions if they point to a local parameter
-void autoPrependSelfToParameterExpressions(Component* pComponent) {
+void hopsan::autoPrependSelfToParameterExpressions(Component* pComponent) {
 
     std::vector<HString> localParameterNames;
     pComponent->getParameterNames(localParameterNames);
@@ -508,8 +510,6 @@ void autoPrependSelfToParameterExpressions(Component* pComponent) {
             }
         }
     }
-}
-
 }
 
 
