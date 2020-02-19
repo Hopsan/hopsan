@@ -242,22 +242,17 @@ bool ParameterEvaluator::evaluate(HString &rResult)
     }
 
     bool success = true;
-    HString evaluatedParameterValue, prefix, strippedValue;
-
-    // Strip + or - from name in case we want to take a negative value of a system parameter
-//    splitSignPrefix(mParameterValue, prefix, strippedValue);
+    HString evaluatedParameterValue;
 
     // Determine if we should look for parameter among other parameters and system parameters
     bool doCheckOthers=false;
     //! @todo handle conditional also
     if (mType=="double" || mType=="integer")
     {
-//        doCheckOthers = !strippedValue.isNummeric();
         doCheckOthers = !mParameterValue.isNummeric();
     }
     else if (mType=="bool")
     {
-//        doCheckOthers = !strippedValue.isBool();
         doCheckOthers = !mParameterValue.isBool();
     }
     else if ((mType=="string") || (mType=="textblock"))
@@ -266,14 +261,26 @@ bool ParameterEvaluator::evaluate(HString &rResult)
     }
 
     // Check parent system parameters
-    if (doCheckOthers && (mType=="string" || mType=="integer" || mType=="bool" || mType=="textblock") )
+    //! @todo Use numhop to evaluate integer and bool expressions, possibly by converting to double and back
+    if (doCheckOthers && (mType=="integer"))
     {
-        if(!mpParentParameters->evaluateInSystemParent(mParameterValue,  evaluatedParameterValue, mType))
-        {
+        // Strip + or - from name in case we want to take a negative value of a system parameter
+        HString signPrefix, parameterValueWithoutSign;
+        splitSignPrefix(mParameterValue, signPrefix, parameterValueWithoutSign);
+        if(mpParentParameters->evaluateInSystemParent(parameterValueWithoutSign,  evaluatedParameterValue, mType)) {
+            resolveSignPrefix(signPrefix);
+            evaluatedParameterValue = signPrefix + evaluatedParameterValue;
+        }
+        else {
             evaluatedParameterValue = mParameterValue;
         }
     }
-    // Need expression evaluation for doubles
+    else if (doCheckOthers && (mType=="string" || mType=="textblock" || mType=="bool")) {
+        if(!mpParentParameters->evaluateInSystemParent(mParameterValue,  evaluatedParameterValue, mType)) {
+            evaluatedParameterValue = mParameterValue;
+        }
+    }
+    // Use numhop expression evaluation for doubles
     else if (doCheckOthers)
     {
         if (!mpParentParameters->evaluateParameterExpression(mParameterValue, evaluatedParameterValue))
@@ -285,20 +292,6 @@ bool ParameterEvaluator::evaluate(HString &rResult)
     {
         evaluatedParameterValue = mParameterValue;
     }
-//    // First check if this parameter value is in fact the name of one of the other parameters or system parameter
-//    if( doCheckOthers && mpParentParameters->evaluateParameter(strippedValue, evaluatedParameterValue, mType, this) )
-//    {
-//        // Make sure sign is sane
-//        splitSignPrefix(prefix + evaluatedParameterValue, prefix, strippedValue);
-//        resolveSignPrefix(prefix);
-//        evaluatedParameterValue = prefix + strippedValue;
-//    }
-//    else
-//    {
-//        // If not then the value is actually the value, resolve sign prefix to make it sane
-//        resolveSignPrefix(prefix);
-//        evaluatedParameterValue = prefix + strippedValue;
-//    }
 
     // Now try to evaluate the actual parameter value based on type
     if(mType=="double")

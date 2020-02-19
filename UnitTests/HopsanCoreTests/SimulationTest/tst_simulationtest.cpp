@@ -312,19 +312,62 @@ private slots:
 
     void System_Set_Parameter()
     {
-        QFETCH(ComponentSystem*, system);
+        QFETCH(HString, subSystemName);
+        QFETCH(HString, paramName);
+        QFETCH(HString, paramType);
+        QFETCH(HString, paramValue);
+        QFETCH(HString, expectedEvaluatedParamValue);
 
-        system->setParameterValue("apa", "12");
-        HString value;
-        system->getParameterValue("apa", value);
-        QVERIFY2(value.compare("12"), "Failed to set system parameter.");
+        ComponentSystem* pEvalSystem = mpSystemFromFile;
+        if (!subSystemName.empty()) {
+            HVector<HString> nameParts = subSystemName.split('$');
+            for (size_t i=0; i < nameParts.size(); ++i) {
+                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
+            }
+        }
+        QVERIFY(pEvalSystem != nullptr);
+
+        pEvalSystem->setParameterValue(paramName, paramValue);
+        HString actualValue;
+        pEvalSystem->getParameterValue(paramName, actualValue);
+        QVERIFY2(actualValue.compare(paramValue), (actualValue + " != " + paramValue).c_str());
+        pEvalSystem->evaluateParameter(paramName, actualValue, paramType);
+        QVERIFY2(actualValue.compare(expectedEvaluatedParamValue), (actualValue+" != "+expectedEvaluatedParamValue).c_str());
     }
 
     void System_Set_Parameter_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
+        QTest::addColumn<HString>("subSystemName");
+        QTest::addColumn<HString>("paramName");
+        QTest::addColumn<HString>("paramType");
+        QTest::addColumn<HString>("paramValue");
+        QTest::addColumn<HString>("expectedEvaluatedParamValue");
+
+        const HString mainsystem = "";
+        const HString subsystem = "Subsystem";
+        const HString subsubsystem = "Subsystem$Subsubsystem";
+
+        HString evalSystem, paramName, paramType, paramValue, expectedEvaluatedParamValue;
+
+        evalSystem = mainsystem;
+        paramName = "apa";
+        paramType = "double";
+        paramValue = "12";
+        expectedEvaluatedParamValue = "12";
+        QTest::newRow("0") << evalSystem << paramName << paramType << paramValue << expectedEvaluatedParamValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_int_a";
+        paramType = "integer";
+        paramValue = "-sub_int_a";
+        expectedEvaluatedParamValue = "-1";
+        QTest::newRow("1") << evalSystem << paramName << paramType << paramValue << expectedEvaluatedParamValue;
+        // --- RESET ---
+        //! @todo make it so that tests do not pollute each other
+        paramValue = "sub_int_a";
+        expectedEvaluatedParamValue = "1";
+        QTest::newRow("1reset") << evalSystem << paramName << paramType << paramValue << expectedEvaluatedParamValue;
+        // ---
     }
 
     void System_GetAndEval_Parameter()
