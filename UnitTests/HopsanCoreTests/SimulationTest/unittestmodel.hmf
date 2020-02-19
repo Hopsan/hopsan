@@ -19,13 +19,20 @@
       <parameter type="double" name="shadow_param" value="1"/>
       <parameter type="integer" name="main_int_a" value="1"/>
       <parameter type="bool" name="main_bool_a" value="true"/>
+      <parameter type="string" name="main_string_a" value="string_a"/>
+      <parameter type="textblock" name="main_textblock_a" value="textblock_a"/>
+      <parameter type="textblock" name="main_textblock_b" value="INVALID"/>
+      <parameter type="string" name="main_string_b" value="INVALID"/>
+      <parameter type="integer" name="main_int_b" value="-1"/>
+      <parameter type="bool" name="main_bool_b" value="true"/>
+      <parameter type="double" name="main_b" value="-1"/>
     </parameters>
     <aliases/>
     <hopsangui>
       <pose y="0" flipped="false" a="0" x="0"/>
       <nametext visible="0" position="0"/>
       <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100" disabled="false"/>
-      <viewport y="2385.5" zoom="1" x="2234.5"/>
+      <viewport y="2378.5" zoom="1" x="2280"/>
       <ports hidden="1"/>
       <names hidden="0"/>
       <graphics type="user"/>
@@ -98,13 +105,17 @@
           <parameter type="integer" name="sub_int_b" value="2"/>
           <parameter type="bool" name="sub_bool_a" value="main_bool_a"/>
           <parameter type="bool" name="sub_bool_b" value="false"/>
+          <parameter type="string" name="sub_string_a" value="main_string_a"/>
+          <parameter type="textblock" name="sub_textblock_a" value="main_textblock_a"/>
+          <parameter type="string" name="sub_string_b" value="string_b"/>
+          <parameter type="textblock" name="sub_textblock_b" value="textblock_b"/>
         </parameters>
         <aliases/>
         <hopsangui>
           <pose y="2310" flipped="false" a="0" x="2378"/>
           <nametext visible="0" position="0"/>
           <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100" disabled="false"/>
-          <viewport y="2116" zoom="1" x="2285.5"/>
+          <viewport y="2072" zoom="1" x="2283.5"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
@@ -200,13 +211,17 @@
               <parameter type="integer" name="subsub_int_b" value="sub_int_b"/>
               <parameter type="bool" name="subsub_bool_a" value="sub_bool_a"/>
               <parameter type="bool" name="subsub_bool_b" value="sub_bool_b"/>
+              <parameter type="string" name="subsub_string_a" value="sub_string_a"/>
+              <parameter type="string" name="subsub_string_b" value="sub_string_b"/>
+              <parameter type="textblock" name="subsub_textblock_a" value="sub_textblock_a"/>
+              <parameter type="textblock" name="subsub_textblock_b" value="sub_textblock_b"/>
             </parameters>
             <aliases/>
             <hopsangui>
               <pose y="2298" flipped="false" a="0" x="2380"/>
               <nametext visible="0" position="0"/>
               <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100" disabled="false"/>
-              <viewport y="2200" zoom="1" x="2164.5"/>
+              <viewport y="2225" zoom="1" x="2163.5"/>
               <ports hidden="1"/>
               <names hidden="1"/>
               <graphics type="user"/>
@@ -641,7 +656,7 @@
             <hopsangui>
               <pose y="1934.000000" x="2103.000000"/>
               <textobject fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test when local variable and system variable with same name exists&#xa;In this case in1.value and in1#value" reflow="1"/>
-              <size height="130.000000" width="555.000000"/>
+              <size height="130.000000" width="557.000000"/>
               <line visible="1" style="solidline" width="2" color="#556b2f"/>
             </hopsangui>
           </textboxwidget>
