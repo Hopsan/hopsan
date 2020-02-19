@@ -1049,6 +1049,7 @@ private slots:
     {
         QFETCH(HString, compName);
         QFETCH(HString, paramName);
+        QFETCH(HString, paramType);
         QFETCH(HString, expectedValue);
         QFETCH(HString, expectedEvaluatedValue);
 
@@ -1063,8 +1064,8 @@ private slots:
         QVERIFY(pComponent->hasParameter(paramName));
         HString actualValue;
         pComponent->getParameterValue(paramName, actualValue);
-        QVERIFY(actualValue == expectedValue);
-        pComponent->evaluateParameter(paramName, actualValue, "double");
+        QVERIFY2(actualValue == expectedValue, (actualValue + " != " + expectedValue).c_str());
+        pComponent->evaluateParameter(paramName, actualValue, paramType);
         QVERIFY(actualValue == expectedEvaluatedValue);
     }
 
@@ -1072,30 +1073,37 @@ private slots:
     {
         QTest::addColumn<HString>("compName");
         QTest::addColumn<HString>("paramName");
+        QTest::addColumn<HString>("paramType");
         QTest::addColumn<HString>("expectedValue");
         QTest::addColumn<HString>("expectedEvaluatedValue");
 
         // When a numhop script is used as a parameter value inside an ordinary component, it can lookup parent system variables (Also ones that depend on valus from parents parent)
-        QTest::newRow("0") << HString("Subsystem$Gain") << HString("k#Value") << HString("sub_b+sub_a") << HString("3");
+        QTest::newRow("0") << HString("Subsystem$Gain") << HString("k#Value") << HString("double") << HString("sub_b+sub_a") << HString("3");
         // When a numhop script is used as a parameter value inside an ordinary component, it can lookup parent system variables and even use parents parent parameters directly
-        QTest::newRow("1") << HString("Subsystem$Gain_1") << HString("k#Value") << HString("sub_b+main_a") << HString("3");
+        QTest::newRow("1") << HString("Subsystem$Gain_1") << HString("k#Value") << HString("double") << HString("sub_b+main_a") << HString("3");
 
         // Make sure that parameter in2 can use self.in1, which is points to a system parameter, in an expression
-        QTest::newRow("2") << HString("Subsystem$Subsubsystem$Add") << HString("in1#Value") << HString("subsub_a") << HString("1");
-        QTest::newRow("3") << HString("Subsystem$Subsubsystem$Add") << HString("in2#Value") << HString("in1.Value+1") << HString("2");
+        QTest::newRow("2") << HString("Subsystem$Subsubsystem$Add") << HString("in1#Value") << HString("double") << HString("subsub_a") << HString("1");
+        QTest::newRow("3") << HString("Subsystem$Subsubsystem$Add") << HString("in2#Value") << HString("double") << HString("in1.Value+1") << HString("2");
 
         // Test various combinations of using system parameters taht are expressions
-        QTest::newRow("4") << HString("Subsystem$Subsubsystem$Gain_1") << HString("k#Value") << HString("subsub_c") << HString("3");
-        QTest::newRow("5") << HString("Subsystem$Subsubsystem$Gain_2") << HString("k#Value") << HString("subsub_d") << HString("3");
-        QTest::newRow("6") << HString("Subsystem$Subsubsystem$Gain_3") << HString("k#Value") << HString("subsub_e") << HString("3");
+        QTest::newRow("4") << HString("Subsystem$Subsubsystem$Gain_1") << HString("k#Value") << HString("double") << HString("subsub_c") << HString("3");
+        QTest::newRow("5") << HString("Subsystem$Subsubsystem$Gain_2") << HString("k#Value") << HString("double") << HString("subsub_d") << HString("3");
+        QTest::newRow("6") << HString("Subsystem$Subsubsystem$Gain_3") << HString("k#Value") << HString("double") << HString("subsub_e") << HString("3");
 
         // Test that the correct in.value is choosen in Add, the one in the component and not the one in the system
-        QTest::newRow("7") << HString("Subsystem$Add") << HString("in2#Value") << HString("in1.Value") << HString("0");
-        QTest::newRow("8") << HString("Subsystem") << HString("in1#Value") << HString("1") << HString("1");
+        QTest::newRow("7") << HString("Subsystem$Add") << HString("in2#Value") << HString("double") << HString("in1.Value") << HString("0");
+        QTest::newRow("8") << HString("Subsystem") << HString("in1#Value") << HString("double") << HString("1") << HString("1");
 
         // Test that the correct shadow_parm is choosen in ShadowParamGain, when that parameter also exists in the grand parent system
-        QTest::newRow("9") << HString("Subsystem$ShadowParamGain") << HString("k#Value") << HString("shadow_param") << HString("2");
-        QTest::newRow("9") << HString("Subsystem") << HString("shadow_param") << HString("2") << HString("2");
+        QTest::newRow("9") << HString("Subsystem$ShadowParamGain") << HString("k#Value") << HString("double") << HString("shadow_param") << HString("2");
+        QTest::newRow("10") << HString("Subsystem") << HString("shadow_param") << HString("double") << HString("2") << HString("2");
+
+        // Test that int,bool,string,textblock system parameter can be evaluated
+        QTest::newRow("11") << HString("Subsystem$Subsubsystem$1DLookupTable") << HString("text") << HString("textblock") << HString("subsub_lookup_textblock") << HString("1, 1\n2, 2");
+        QTest::newRow("12") << HString("Subsystem$Subsubsystem$1DLookupTable") << HString("inid") << HString("integer") << HString("subsub_lookup_inid") << HString("0");
+        QTest::newRow("13") << HString("Subsystem$Subsubsystem$1DLookupTable") << HString("comment") << HString("string") << HString("subsub_lookup_comment") << HString("#");
+        QTest::newRow("14") << HString("Subsystem$Subsubsystem$1DLookupTable") << HString("reload") << HString("bool") << HString("subsub_lookup_reload") << HString("true");
     }
 
     void Component_Get_CQS()

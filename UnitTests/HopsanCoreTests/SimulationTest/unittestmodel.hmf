@@ -32,7 +32,7 @@
       <pose y="0" flipped="false" a="0" x="0"/>
       <nametext visible="0" position="0"/>
       <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100" disabled="false"/>
-      <viewport y="2378.5" zoom="1" x="2280"/>
+      <viewport y="2371.5" zoom="1" x="2278"/>
       <ports hidden="1"/>
       <names hidden="0"/>
       <graphics type="user"/>
@@ -115,7 +115,7 @@
           <pose y="2310" flipped="false" a="0" x="2378"/>
           <nametext visible="0" position="0"/>
           <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100" disabled="false"/>
-          <viewport y="2072" zoom="1" x="2283.5"/>
+          <viewport y="2028" zoom="1" x="2281"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
@@ -215,13 +215,17 @@
               <parameter type="string" name="subsub_string_b" value="sub_string_b"/>
               <parameter type="textblock" name="subsub_textblock_a" value="sub_textblock_a"/>
               <parameter type="textblock" name="subsub_textblock_b" value="sub_textblock_b"/>
+              <parameter type="textblock" name="subsub_lookup_textblock" value="1, 1&#xa;2, 2"/>
+              <parameter type="integer" name="subsub_lookup_inid" value="0"/>
+              <parameter type="string" name="subsub_lookup_comment" value="#"/>
+              <parameter type="bool" name="subsub_lookup_reload" value="true"/>
             </parameters>
             <aliases/>
             <hopsangui>
               <pose y="2298" flipped="false" a="0" x="2380"/>
               <nametext visible="0" position="0"/>
               <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100" disabled="false"/>
-              <viewport y="2225" zoom="1" x="2163.5"/>
+              <viewport y="2245" zoom="1" x="2183"/>
               <ports hidden="1"/>
               <names hidden="1"/>
               <graphics type="user"/>
@@ -417,6 +421,33 @@
                   <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100"/>
                   <hopsanobjectappearance version="0.3">
                     <modelobject displayname="Gain_1" typename="SignalGain">
+                      <ports/>
+                    </modelobject>
+                  </hopsanobjectappearance>
+                </hopsangui>
+              </component>
+              <component locked="false" cqstype="S" subtypename="" disabled="false" typename="Signal1DLookupTable" name="1DLookupTable">
+                <parameters>
+                  <parameter type="double" unit="" name="in#Value" value="0"/>
+                  <parameter type="string" unit="" name="filename" value="FilePath"/>
+                  <parameter type="textblock" unit="" name="text" value="subsub_lookup_textblock"/>
+                  <parameter type="string" unit="" name="csvsep" value=","/>
+                  <parameter type="integer" unit="" name="inid" value="subsub_lookup_inid"/>
+                  <parameter type="integer" unit="" name="outid" value="1"/>
+                  <parameter type="integer" unit="" name="numlineskip" value="0"/>
+                  <parameter type="string" unit="" name="comment" value="subsub_lookup_comment"/>
+                  <parameter type="bool" unit="" name="reload" value="subsub_lookup_reload"/>
+                </parameters>
+                <ports>
+                  <port nodetype="NodeSignal" porttype="ReadPortType" name="in"/>
+                  <port nodetype="NodeSignal" porttype="WritePortType" name="out"/>
+                </ports>
+                <hopsangui>
+                  <pose y="2245" flipped="false" a="0" x="2288"/>
+                  <nametext visible="0" position="0"/>
+                  <animation hydraulicmaxpressure="20000000" hydraulicminpressure="0" flowspeed="100"/>
+                  <hopsanobjectappearance version="0.3">
+                    <modelobject displayname="1DLookupTable" typename="Signal1DLookupTable">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
@@ -656,7 +687,7 @@
             <hopsangui>
               <pose y="1934.000000" x="2103.000000"/>
               <textobject fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test when local variable and system variable with same name exists&#xa;In this case in1.value and in1#value" reflow="1"/>
-              <size height="130.000000" width="557.000000"/>
+              <size height="130.000000" width="559.000000"/>
               <line visible="1" style="solidline" width="2" color="#556b2f"/>
             </hopsangui>
           </textboxwidget>
