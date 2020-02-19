@@ -1,5 +1,5 @@
 name: ghactions-ci-build
-on: [push, pull_request]
+on: [pull_request]
 
 #jobs:
   #cmake-msvc2019:
@@ -51,7 +51,8 @@ jobs:
 
     steps:
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: ouuan/install-qt-action@v2.3.1
+        # jurplel/install-qt-action@v2
 
       - name: Checkout
         uses: actions/checkout@v2
