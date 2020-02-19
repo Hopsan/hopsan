@@ -42,6 +42,19 @@
 #include "FindWidget.h"
 #include "Configuration.h"
 
+namespace {
+
+//! @brief Get all  system parameter names for this system, parents and grand parents.
+QStringList getAllAccessibleSystemParameterNames(ContainerObject* pThisSystem) {
+    QStringList parameterNames = pThisSystem->getParameterNames();
+    if ( !pThisSystem->isTopLevelContainer() ) {
+        parameterNames += getAllAccessibleSystemParameterNames(pThisSystem->getParentContainerObject());
+    }
+    return parameterNames;
+}
+
+}
+
 
 QWidget *ParamTypeComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -246,9 +259,9 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
 
     bool isOk;
     QString errorString;
-    QStringList stringList;
+    QStringList allAccessibleSystemParameterNames = getAllAccessibleSystemParameterNames(mpContainerObject);
 
-    isOk = verifyParameterValue(rParameterData.mValue, rParameterData.mType, stringList, errorString);
+    isOk = verifyParameterValue(rParameterData.mValue, rParameterData.mType, allAccessibleSystemParameterNames, errorString);
     if (!isOk)
     {
         QMessageBox::critical(0, "Error", errorString);
