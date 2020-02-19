@@ -466,8 +466,8 @@ private slots:
         expectEvalOK = true;
         QTest::newRow("10") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
         evalSystem = mainsystem;
-        expectedParamValue = "1";
-        expectedDValue = 1;
+        expectedParamValue = "-1";
+        expectedDValue = -1;
         QTest::newRow("11") << evalSystem << paramName << expectHasParameter << expectEvalOK << expectedParamValue << expectedDValue;
     }
 
@@ -730,6 +730,9 @@ private slots:
         QFETCH(bool, expectedNumhopEvalOK);
         QFETCH(HString, expectedValue);
 
+        // Initialize to evaulate internal numhop script
+        QVERIFY(mpSystemFromFile->initialize(0, 10));
+
         ComponentSystem* pEvalSystem = mpSystemFromFile;
         if (!subSystemName.empty()) {
             HVector<HString> nameParts = subSystemName.split('$');
@@ -748,7 +751,7 @@ private slots:
             HString value;
             bool evalOK = pTestConstant->evaluateParameter("y#Value", value, "double");
             QVERIFY(evalOK);
-            QVERIFY(value == expectedValue);
+            QVERIFY2(value == expectedValue, (value+" != "+expectedValue).c_str());
         }
     }
 
@@ -809,10 +812,17 @@ private slots:
 
         // Evaluate system parameters in current and sub system when they ahve the same name
         evalSystem = mainsystem;
-        script = "TestConstant.y = Subsystem.shadow_param + shadow_param";
+        script = "TestConstant.y = Subsystem.shadow_param * shadow_param";
         expectEvalOK = true;
-        expectedValue = "3";
+        expectedValue = "-2";
         QTest::newRow("5") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Verrify that the embedded numhop script in Subsystem has been run and correctly evaulated
+        evalSystem = subsystem;
+        script = "TestConstant.y = NumhopSetValue.y";
+        expectEvalOK = true;
+        expectedValue = "6";
+        QTest::newRow("6") << evalSystem << script << expectEvalOK << expectedValue;
     }
 
     void System_Add_And_Remove_Component()
