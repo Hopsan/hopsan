@@ -996,6 +996,7 @@ private slots:
     void System_Simulate()
     {
         QFETCH(ComponentSystem*, system);
+        QVERIFY(system->initialize(0, 10.0));
         system->simulate(10.0);
         QVERIFY2(system->getLogTimeVector()->size() == 1024, "Failed to simulate system!");
         QVERIFY2(system->getNumActuallyLoggedSamples() == 1024, "Failed to simulate system!");
@@ -1011,6 +1012,7 @@ private slots:
     void System_Simulate_Multicore()
     {
         QFETCH(ComponentSystem*, system);
+        QVERIFY(system->initialize(0, 10.0));
         system->simulateMultiThreaded(0, 10.0);
         QVERIFY2(system->getLogTimeVector()->size() == 1024, "Failed to simulate system!");
         QVERIFY2(system->getNumActuallyLoggedSamples() == 1024, "Failed to simulate system!");
