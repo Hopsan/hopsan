@@ -123,6 +123,7 @@ namespace hopsan {
         bool evaluateNumHopScriptRecursively();
         bool runNumHopScript(const HString &rScript, bool printOutput, HString &rOutput);
         void setNumHopScript(const HString &rScript);
+        HString getNumHopScript() const;
 
         // Initialize and simulate
         bool checkModelBeforeSimulation();

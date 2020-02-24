@@ -2160,6 +2160,11 @@ void ComponentSystem::setNumHopScript(const HString &rScript)
     mNumHopScript = rScript;
 }
 
+HString ComponentSystem::getNumHopScript() const
+{
+    return mNumHopScript;
+}
+
 
 //! @brief Initializes a system and all its contained components before a simulation.
 //! Also allocates log data memory.

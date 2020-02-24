@@ -500,20 +500,39 @@ HVector<HString> NumHopHelper::extractVariableNames(const HString &expression) c
 
 HVector<HString> NumHopHelper::extractNamedValues(const HString &expression)
 {
-    numhop::Expression e(expression.c_str(), numhop::UndefinedT);
-    std::set<std::string> namedValues;
-    e.extractNamedValues(namedValues);
-    std::set<std::string>::iterator it;
+    list<string> expressions;
+    numhop::extractExpressionRows(expression.c_str(), '#', expressions);
+
     HVector<HString> output;
-    for (it= namedValues.begin(); it != namedValues.end(); ++it) {
-        output.append(it->c_str());
+    list<string>::iterator eit;
+    for (eit = expressions.begin(); eit != expressions.end(); ++eit) {
+        numhop::Expression e(eit->c_str(), numhop::UndefinedT);
+        std::set<std::string> namedValues;
+        e.extractNamedValues(namedValues);
+        std::set<std::string>::iterator it;
+        for (it= namedValues.begin(); it != namedValues.end(); ++it) {
+            output.append(it->c_str());
+        }
     }
     return output;
 }
 
 HString NumHopHelper::replaceNamedValue(const HString& expression, const HString &oldName, const HString &newName)
 {
-    numhop::Expression e(expression.c_str(), numhop::UndefinedT);
-    e.replaceNamedValue(oldName.c_str(), newName.c_str());
-    return e.print().c_str();
+    list<string> expressions;
+    numhop::extractExpressionRows(expression.c_str(), '#', expressions);
+
+    HString output;
+    list<string>::iterator eit;
+
+    for (eit = expressions.begin(); eit != expressions.end(); ++eit) {
+        numhop::Expression e(eit->c_str(), numhop::UndefinedT);
+        e.replaceNamedValue(oldName.c_str(), newName.c_str());
+        output.append(e.print().c_str());
+        // For multi-line scripts, append line breaks
+        if (expressions.size() > 1) {
+            output.append("\n");
+        }
+    }
+    return output;
 }

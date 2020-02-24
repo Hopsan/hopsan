@@ -512,6 +512,31 @@ void hopsan::autoPrependSelfToParameterExpressions(Component* pComponent) {
     }
 }
 
+//! @brief Go through all script lines and prepend self# to namd values in expressions if they point to a local system parameter
+//! @note This function will destory the formating of the script
+void hopsan::autoPrependSelfToEmbeddedInitScript(ComponentSystem* pSystem) {
+
+    std::vector<HString> localParameterNames;
+    pSystem->getParameterNames(localParameterNames);
+    HString script = pSystem->getNumHopScript();
+    // Extract all named values from the script
+    HVector<HString> namedValues = NumHopHelper::extractNamedValues(script);
+    bool needReplaceScript = false;
+    for (size_t j=0; j<namedValues.size(); ++j) {
+        HString fixedNamedValue = namedValues[j];
+        fixedNamedValue.replace('.', '#'); // Replace . with # since you can not enter # in parameter input dialog (since is a separator char that can not be in given names)
+        // If a named value from the expression exists as a parameter name in the current component, prepend self. to the name
+        if (std::find(localParameterNames.begin(), localParameterNames.end(), fixedNamedValue) != localParameterNames.end()) {
+            script = NumHopHelper::replaceNamedValue(script, namedValues[j], "self."+namedValues[j]);
+            needReplaceScript = true;
+        }
+    }
+    // If any named value was changed, then set the new script
+    if (needReplaceScript) {
+        pSystem->setNumHopScript(script);
+    }
+}
+
 
 //! @brief This help function loads a component
 void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem, HopsanEssentials *pHopsanEssentials)
@@ -804,6 +829,12 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     if (pAliases)
     {
         loadAliases(pAliases, pSystem);
+    }
+
+    const HString coreVersionOfModelFile = readStringAttribute(pSysNode->document()->first_node(), "hopsancoreversion").c_str();
+    if (isVersionAGreaterThanB("2.14.0", coreVersionOfModelFile)) {
+        // Note! This will destory the formating of the script, but for load-only core simualtion that is OK
+        autoPrependSelfToEmbeddedInitScript(pSystem);
     }
 }
 
