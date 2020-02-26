@@ -1408,7 +1408,7 @@ QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemA
     return names;
 }
 
-void prependSelfToParameterExpresions(CoreSystemAccess *pCoreSystem)
+void prependSelfToParameterExpressions(ContainerObject *pTopLevelGUISystem)
 {
     std::function<void(hopsan::ComponentSystem*)> processSystem;
     processSystem = [&processSystem](hopsan::ComponentSystem* pSystem) {
@@ -1422,8 +1422,37 @@ void prependSelfToParameterExpresions(CoreSystemAccess *pCoreSystem)
         }
     };
 
-    auto pTopSystem = pCoreSystem->getCoreSystemPtr();
+    auto pTopSystem = pTopLevelGUISystem->getCoreSystemAccessPtr()->getCoreSystemPtr();
     if (pTopSystem != nullptr) {
         processSystem(pTopSystem);
     }
+}
+
+QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem)
+{
+    QString output;
+    QString topLevelSystemName = pTopLevelGUISystem->getName();
+
+    std::function<void(ContainerObject*)> processSystem;
+    processSystem = [&processSystem, &output, topLevelSystemName](ContainerObject *pGUISystem) {
+
+        QString fullSystemName = topLevelSystemName + "." + pGUISystem->getSystemNameHieararchy().join(".");
+
+        hopsan::HVector<hopsan::HString> namedValues = hopsan::findValuesNeedingPrependSelfInEmbeddedInitScript(pGUISystem->getCoreSystemAccessPtr()->getCoreSystemPtr());
+        if (!namedValues.empty()) {
+            output.append("\nYou need to change the following embedded script (NumHop) variables in system: "+fullSystemName+"\n");
+        }
+        for (size_t i=0; i<namedValues.size(); ++i) {
+            output.append(("    "+namedValues[i]+" -> self."+namedValues[i]+"\n").c_str());
+        }
+        auto childObjects = pGUISystem->getModelObjects();
+        for (auto pChild : childObjects) {
+            if (pChild->type() == SystemContainerType) {
+                processSystem(qobject_cast<SystemContainer*>(pChild));
+            }
+        }
+    };
+
+    processSystem(pTopLevelGUISystem);
+    return output;
 }

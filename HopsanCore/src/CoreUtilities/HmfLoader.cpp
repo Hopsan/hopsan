@@ -512,24 +512,37 @@ void hopsan::autoPrependSelfToParameterExpressions(Component* pComponent) {
     }
 }
 
-//! @brief Go through all script lines and prepend self# to namd values in expressions if they point to a local system parameter
-//! @note This function will destory the formating of the script
-void hopsan::autoPrependSelfToEmbeddedInitScript(ComponentSystem* pSystem) {
-
+//! @brief Go through all script lines and find the named values that need to prepend self. if they point to a local system parameter
+HVector<HString> hopsan::findValuesNeedingPrependSelfInEmbeddedInitScript(ComponentSystem *pSystem)
+{
+    HVector<HString> output;
     std::vector<HString> localParameterNames;
     pSystem->getParameterNames(localParameterNames);
     HString script = pSystem->getNumHopScript();
     // Extract all named values from the script
     HVector<HString> namedValues = NumHopHelper::extractNamedValues(script);
-    bool needReplaceScript = false;
     for (size_t j=0; j<namedValues.size(); ++j) {
         HString fixedNamedValue = namedValues[j];
         fixedNamedValue.replace('.', '#'); // Replace . with # since you can not enter # in parameter input dialog (since is a separator char that can not be in given names)
         // If a named value from the expression exists as a parameter name in the current component, prepend self. to the name
         if (std::find(localParameterNames.begin(), localParameterNames.end(), fixedNamedValue) != localParameterNames.end()) {
-            script = NumHopHelper::replaceNamedValue(script, namedValues[j], "self."+namedValues[j]);
-            needReplaceScript = true;
+            output.append(namedValues[j]);
         }
+    }
+    return output;
+}
+
+//! @brief Go through all script lines and prepend self. to namd values in expressions if they point to a local system parameter
+//! @note This function will destory the formating of the script
+void hopsan::autoPrependSelfToEmbeddedInitScript(ComponentSystem* pSystem) {
+
+    HString script = pSystem->getNumHopScript();
+    HVector<HString> namedValues = findValuesNeedingPrependSelfInEmbeddedInitScript(pSystem);
+
+    bool needReplaceScript = false;
+    for (size_t j=0; j<namedValues.size(); ++j) {
+        script = NumHopHelper::replaceNamedValue(script, namedValues[j], "self."+namedValues[j]);
+        needReplaceScript = true;
     }
     // If any named value was changed, then set the new script
     if (needReplaceScript) {
@@ -1140,4 +1153,3 @@ size_t hopsan::loadHopsanParameterFile(const HString &filePath, HopsanCoreMessag
     }
     return numUpdated;
 }
-

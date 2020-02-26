@@ -42,6 +42,7 @@
 //Forward declarations of HopsanGUI classes
 class LibraryWidget;
 class SystemContainer;
+class ContainerObject;
 class CoreSystemAccess;
 
 //Forward declaration of HopsanCore classes
@@ -99,7 +100,8 @@ double evalWithNumHop(const QString &rExpression);
 
 QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem);
 
-void prependSelfToParameterExpresions(CoreSystemAccess* pCoreSystem);
+void prependSelfToParameterExpressions(ContainerObject* pTopLevelGUISystem);
+QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem);
 
 
 class CoreParameterData

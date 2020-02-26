@@ -54,6 +54,7 @@ bool HOPSANCORE_DLLAPI isVersionAGreaterThanB(const HString& versionA, const HSt
 int HOPSANCORE_DLLAPI compareHopsanVersions(const HString& versionA, const HString& versionB);
 
 void HOPSANCORE_DLLAPI autoPrependSelfToParameterExpressions(Component* pComponent);
+HVector<HString> HOPSANCORE_DLLAPI findValuesNeedingPrependSelfInEmbeddedInitScript(ComponentSystem* pSystem);
 void HOPSANCORE_DLLAPI autoPrependSelfToEmbeddedInitScript(ComponentSystem* pSystem);
 
 ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);

@@ -39,6 +39,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QInputDialog>
+#include <QMessageBox>
 
 
 //Hopsan includes
@@ -1744,7 +1745,15 @@ bool ModelWidget::loadModel(QFile &rModelFile)
 
         // Upconvert adding self. to parameter names
         if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") < "2.14.0") {
-            prependSelfToParameterExpresions(mpToplevelSystem->getCoreSystemAccessPtr());
+            prependSelfToParameterExpressions(mpToplevelSystem);
+            QString neededChanges = checkPrependSelfToEmbeddedScripts(mpToplevelSystem);
+            if (!neededChanges.isEmpty()) {
+                mpMessageHandler->addWarningMessage(neededChanges);
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Model updates needed");
+                msgBox.setText(neededChanges);
+                msgBox.exec();
+            }
         }
 
 
