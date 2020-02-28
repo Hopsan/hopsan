@@ -111,7 +111,7 @@ public:
 
     bool evaluateParameters();
     bool evaluateInComponent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
-    bool evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
+    bool evaluateRecursivelyInSystemParents(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType);
     bool evaluateParameterExpression(const HString &rExpression, HString &rEvaluatedParameterValue);
 
     bool hasParameter(const HString &rName) const;

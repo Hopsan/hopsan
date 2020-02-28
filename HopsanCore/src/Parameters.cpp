@@ -269,8 +269,14 @@ bool ParameterEvaluator::evaluate(HString &rResult)
         // Strip + or - from name in case we want to take a negative value of a system parameter
         HString signPrefix, parameterValueWithoutSign;
         splitSignPrefix(mParameterValue, signPrefix, parameterValueWithoutSign);
-        const HString& possibleNameInParentSystem = parameterValueWithoutSign;
-        if(mpParameterEvaluatorHandler->evaluateInSystemParent(possibleNameInParentSystem,  evaluatedParameterValue, mType)) {
+        const HString& possibleNameOfOtherParameter = parameterValueWithoutSign;
+        const bool isSelfParameter = possibleNameOfOtherParameter.startsWith("self.");
+
+        if (isSelfParameter && mpParameterEvaluatorHandler->evaluateInComponent(possibleNameOfOtherParameter.substr(5), evaluatedParameterValue, mType)) {
+            resolveSignPrefix(signPrefix);
+            evaluatedParameterValue = signPrefix + evaluatedParameterValue;
+        }
+        else if(mpParameterEvaluatorHandler->evaluateRecursivelyInSystemParents(possibleNameOfOtherParameter,  evaluatedParameterValue, mType)) {
             resolveSignPrefix(signPrefix);
             evaluatedParameterValue = signPrefix + evaluatedParameterValue;
         }
@@ -279,15 +285,27 @@ bool ParameterEvaluator::evaluate(HString &rResult)
         }
     }
     else if (doCheckOthers && (mType=="string" || mType=="textblock" || mType=="bool")) {
-        if(!mpParameterEvaluatorHandler->evaluateInSystemParent(mParameterValue,  evaluatedParameterValue, mType)) {
+
+        const HString& possibleNameOfOtherParameter = mParameterValue;
+        const bool isSelfParameter = possibleNameOfOtherParameter.startsWith("self.");
+
+        if (isSelfParameter && mpParameterEvaluatorHandler->evaluateInComponent(possibleNameOfOtherParameter.substr(5), evaluatedParameterValue, mType)) {
+            //evaluatedParameterValue = evaluatedParameterValue; No point is self assignment,  but comment left here for clarity
+        }
+        else if(mpParameterEvaluatorHandler->evaluateRecursivelyInSystemParents(possibleNameOfOtherParameter,  evaluatedParameterValue, mType)) {
+            //evaluatedParameterValue = evaluatedParameterValue;  No point is self assignment, but comment left here for clarity
+        }
+        else {
             evaluatedParameterValue = mParameterValue;
         }
     }
     // Use numhop expression evaluation for doubles
     else if (doCheckOthers)
     {
-        if (!mpParameterEvaluatorHandler->evaluateParameterExpression(mParameterValue, evaluatedParameterValue))
-        {
+        if (mpParameterEvaluatorHandler->evaluateParameterExpression(mParameterValue, evaluatedParameterValue)) {
+            //evaluatedParameterValue = evaluatedParameterValue;  No point is self assignment, but comment left here for clarity
+        }
+        else {
             evaluatedParameterValue = mParameterValue;
         }
     }
@@ -740,14 +758,18 @@ bool ParameterEvaluatorHandler::refreshParameterValueText(const HString &rParame
     return false;
 }
 
-bool ParameterEvaluatorHandler::evaluateInSystemParent(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
+bool ParameterEvaluatorHandler::evaluateRecursivelyInSystemParents(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType)
 {
-    // Try one of our system parent component parameters
-    if(mComponent && mComponent->getSystemParent())
-    {
-        return mComponent->getSystemParent()->evaluateParameter(rName, rEvaluatedParameterValue , rType);
+    bool evalOK = false;
+    ComponentSystem* pParentSystem = mComponent ? mComponent->getSystemParent() : 0;
+    while (pParentSystem) {
+        evalOK = pParentSystem->evaluateParameter(rName, rEvaluatedParameterValue , rType);
+        if (evalOK) {
+            break;
+        }
+        pParentSystem = pParentSystem->getSystemParent();
     }
-    return false;
+    return evalOK;
 }
 
 bool ParameterEvaluatorHandler::evaluateParameterExpression(const HString &rExpression, HString &rEvaluatedParameterValue)
