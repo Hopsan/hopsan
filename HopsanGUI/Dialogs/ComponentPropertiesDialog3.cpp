@@ -204,10 +204,11 @@ bool VariableTableWidget::cleanAndVerifyParameterValue(QString &rValue, const QS
 {
     //! @todo I think CORE should handle all of this stuff
     QString tempVal = rValue;
-    QStringList sysParamNames = mpModelObject->getParentContainerObject()->getParameterNames();
+    QStringList selfParameterNames = mpModelObject->getParameterNames();
+    QStringList allAccessibleParentSystemParamNames = getAllAccessibleSystemParameterNames(mpModelObject->getParentContainerObject());
     QString error;
 
-    if(verifyParameterValue(tempVal, type, sysParamNames, error))
+    if(verifyParameterValue(tempVal, type, selfParameterNames, allAccessibleParentSystemParamNames, error))
     {
         // Set corrected text
         rValue = tempVal;

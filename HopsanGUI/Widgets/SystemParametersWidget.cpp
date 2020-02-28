@@ -44,13 +44,12 @@
 
 namespace {
 
-//! @brief Get all  system parameter names for this system, parents and grand parents.
-QStringList getAllAccessibleSystemParameterNames(ContainerObject* pThisSystem) {
-    QStringList parameterNames = pThisSystem->getParameterNames();
-    if ( !pThisSystem->isTopLevelContainer() ) {
-        parameterNames += getAllAccessibleSystemParameterNames(pThisSystem->getParentContainerObject());
+QStringList getAllAccesibleParentAndGrandparentSystemParameterNames(ContainerObject* pThisSystem) {
+    QStringList output;
+    if (!pThisSystem->isTopLevelContainer()) {
+        output = getAllAccessibleSystemParameterNames(pThisSystem->getParentContainerObject());
     }
-    return parameterNames;
+    return output;
 }
 
 }
@@ -259,9 +258,10 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
 
     bool isOk;
     QString errorString;
-    QStringList allAccessibleSystemParameterNames = getAllAccessibleSystemParameterNames(mpContainerObject);
+    QStringList thisSystemParameterNames = mpContainerObject->getParameterNames();
+    QStringList allAccessibleParentSystemParameterNames = getAllAccesibleParentAndGrandparentSystemParameterNames(mpContainerObject);
 
-    isOk = verifyParameterValue(rParameterData.mValue, rParameterData.mType, allAccessibleSystemParameterNames, errorString);
+    isOk = verifyParameterValue(rParameterData.mValue, rParameterData.mType, thisSystemParameterNames, allAccessibleParentSystemParameterNames, errorString);
     if (!isOk)
     {
         QMessageBox::critical(0, "Error", errorString);

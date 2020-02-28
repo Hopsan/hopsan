@@ -47,6 +47,7 @@
 #include <functional>
 
 class GUIMessageHandler;
+class ContainerObject;
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
@@ -73,7 +74,10 @@ void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
 double uniformDistribution(double min, double max);
-bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString);
+
+bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSelfParameterNames, const QStringList &rSysParNames, QString &rErrorString);
+QStringList getAllAccessibleSystemParameterNames(ContainerObject* pSystem);
+
 double findSmallestValueGreaterThanZero(QVector<double> data);
 void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split);
 void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit);

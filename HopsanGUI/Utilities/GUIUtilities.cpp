@@ -31,6 +31,8 @@
 //!
 //$Id$
 
+#include "GUIUtilities.h"
+
 #ifdef Q_OS_OSX
 #include <utility>
 #else
@@ -50,7 +52,7 @@
 #endif
 
 #include "../global.h"
-#include "GUIUtilities.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -623,7 +625,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
 }
 
 //! @todo this should be handled by CORE
-bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString)
+bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSelfParameterNames, const QStringList &rSysParNames, QString &rErrorString)
 {
     //Strip trailing and leading spaces
     stripLTSpaces(rValue);
@@ -644,8 +646,11 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
         rValue.remove(0,1);
     }
 
-    if(rSysParNames.contains(rValue))
-    {
+    if (rValue.startsWith("self.") && rSelfParameterNames.contains(rValue.mid(5))) {
+        rValue.prepend(initialSign);
+        return true;
+    }
+    else if(rSysParNames.contains(rValue)) {
         rValue.prepend(initialSign);
         return true;
     }
@@ -665,7 +670,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
         rValue.prepend(initialSign);
         if(!onlyNumbers)
         {
-            rErrorString = QString("Invalid [integer] parameter value \"%1\". Only numbers or the name of a system parameter is allowed.").arg(rValue);
+            rErrorString = QString("Invalid [integer] parameter value \"%1\". Only numbers, self.parameter_name or the name of a system parameter is allowed.").arg(rValue);
         }
 
         return onlyNumbers;
@@ -685,7 +690,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
         rValue.prepend(initialSign);
         if(!onlyNumbers)
         {
-            rErrorString = QString("Invalid [integer] parameter value \"%1\". Only numbers or the name of a system parameter is allowed.").arg(rValue);
+            rErrorString = QString("Invalid [conditional] parameter value \"%1\". Only numbers are allowed.").arg(rValue);
         }
 
         return onlyNumbers;
@@ -694,7 +699,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
     {
         if ((rValue != "true") && (rValue != "false"))
         {
-            rErrorString = QString("Invalid [bool] parameter value \"%1\". Only \"true\" or \"false\" or the name of a system parameter is allowed.").arg(rValue);
+            rErrorString = QString("Invalid [bool] parameter value \"%1\". Only \"true\" or \"false\", self.parameter_name or the name of a system parameter is allowed.").arg(rValue);
             return false;
         }
         return true;
@@ -1129,4 +1134,13 @@ bool saveXmlFile(QString xmlFilePath, GUIMessageHandler *pMessageHandler, std::f
     pMessageHandler->addDebugMessage(QString("Saving file: %1 took %2 s at %3 MB/s. Opening: %4 ms, Closing: %5 ms")
                                      .arg(xmlFilePath).arg(total_s).arg(size_mb/save_s).arg(open_ms).arg(close_ms));
     return true;
+}
+
+//! @brief Get all system parameter names for provided system its parent and grand parents
+QStringList getAllAccessibleSystemParameterNames(ContainerObject *pSystem) {
+    QStringList parameterNames = pSystem->getParameterNames();
+    if ( !pSystem->isTopLevelContainer() ) {
+        parameterNames += getAllAccessibleSystemParameterNames(pSystem->getParentContainerObject());
+    }
+    return parameterNames;
 }
