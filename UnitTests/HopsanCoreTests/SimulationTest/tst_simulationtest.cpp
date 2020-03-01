@@ -1163,6 +1163,17 @@ private slots:
         QTest::newRow("12") << HString("Subsystem$Subsubsystem$1DLookupTable") << HString("inid") << HString("integer") << HString("subsub_lookup_inid") << HString("0");
         QTest::newRow("13") << HString("Subsystem$Subsubsystem$1DLookupTable") << HString("comment") << HString("string") << HString("subsub_lookup_comment") << HString("#");
         QTest::newRow("14") << HString("Subsystem$Subsubsystem$1DLookupTable") << HString("reload") << HString("bool") << HString("subsub_lookup_reload") << HString("true");
+
+        // Test that int,bool,string,textblock system parameter can be recursively evaluated
+        QTest::newRow("15") << HString("Subsystem$Subsubsystem$1DLookupTable_2") << HString("text") << HString("textblock") << HString("main_lookup_textblock") << HString("1, 1\n2, 2");
+        QTest::newRow("16") << HString("Subsystem$Subsubsystem$1DLookupTable_2") << HString("inid") << HString("integer") << HString("main_lookup_inid") << HString("1");
+        QTest::newRow("17") << HString("Subsystem$Subsubsystem$1DLookupTable_2") << HString("comment") << HString("string") << HString("main_lookup_comment") << HString("#");
+        QTest::newRow("18") << HString("Subsystem$Subsubsystem$1DLookupTable_2") << HString("reload") << HString("bool") << HString("main_lookup_reload") << HString("true");
+
+        // Test that int and string parameter can be self. evaluated
+        //! @todo need test for textblock and bool as well, but hav no componetns with two of those (may need to write a test component)
+        QTest::newRow("19") << HString("Subsystem$Subsubsystem$1DLookupTable_1") << HString("outid") << HString("integer") << HString("self.numlineskip") << HString("1");
+        QTest::newRow("20") << HString("Subsystem$Subsubsystem$1DLookupTable_1") << HString("comment") << HString("string") << HString("self.filename") << HString("K");
     }
 
     void Component_Get_CQS()

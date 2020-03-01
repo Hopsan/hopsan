@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsancoreversion="2.12.0.20170101.0001" hopsanguiversion="2.12.0.20200222.1953">
+<hopsanmodelfile hopsanguiversion="2.12.0.20200222.1953" hmfversion="0.4" hopsancoreversion="2.12.0.20170101.0001">
   <requirements>
     <componentlibrary>
       <id>59c07d33-554f-49d3-a163-a928823d4380</id>
@@ -10,40 +10,44 @@
       <name>HopsanInternals</name>
     </componentlibrary>
   </requirements>
-  <system name="unittestmodel" typename="Subsystem" subtypename="" cqstype="UndefinedCQSType" disabled="false" locked="false">
-    <simulationtime inherit_timestep="true" stop="10" timestep="0.001" start="0"/>
+  <system name="unittestmodel" locked="false" disabled="false" cqstype="UndefinedCQSType" subtypename="" typename="Subsystem">
+    <simulationtime timestep="0.001" inherit_timestep="true" start="0" stop="10"/>
     <simulationlogsettings starttime="0" numsamples="2048"/>
     <parameters>
-      <parameter name="apa" value="7" type="double"/>
-      <parameter name="main_a" value="1" type="double"/>
-      <parameter name="shadow_param" value="-1" type="double"/>
-      <parameter name="main_int_a" value="1" type="integer"/>
-      <parameter name="main_bool_a" value="true" type="bool"/>
-      <parameter name="main_string_a" value="string_a" type="string"/>
-      <parameter name="main_textblock_a" value="textblock_a" type="textblock"/>
-      <parameter name="main_textblock_b" value="INVALID" type="textblock"/>
-      <parameter name="main_string_b" value="INVALID" type="string"/>
-      <parameter name="main_int_b" value="-1" type="integer"/>
-      <parameter name="main_bool_b" value="true" type="bool"/>
-      <parameter name="main_b" value="-1" type="double"/>
+      <parameter name="apa" type="double" value="7"/>
+      <parameter name="main_a" type="double" value="1"/>
+      <parameter name="shadow_param" type="double" value="-1"/>
+      <parameter name="main_int_a" type="integer" value="1"/>
+      <parameter name="main_bool_a" type="bool" value="true"/>
+      <parameter name="main_string_a" type="string" value="string_a"/>
+      <parameter name="main_textblock_a" type="textblock" value="textblock_a"/>
+      <parameter name="main_textblock_b" type="textblock" value="INVALID"/>
+      <parameter name="main_string_b" type="string" value="INVALID"/>
+      <parameter name="main_int_b" type="integer" value="-1"/>
+      <parameter name="main_bool_b" type="bool" value="true"/>
+      <parameter name="main_b" type="double" value="-1"/>
+      <parameter name="main_lookup_textblock" type="textblock" value="1, 1&#xa;2, 2"/>
+      <parameter name="main_lookup_inid" type="integer" value="1"/>
+      <parameter name="main_lookup_comment" type="string" value="#"/>
+      <parameter name="main_lookup_reload" type="bool" value="true"/>
     </parameters>
     <aliases/>
     <hopsangui>
-      <pose x="0" a="0" flipped="false" y="0"/>
-      <nametext position="0" visible="0"/>
-      <animation hydraulicminpressure="0" disabled="false" hydraulicmaxpressure="20000000" flowspeed="100"/>
-      <viewport x="2283.5" zoom="1" y="2336.5"/>
+      <pose x="0" y="0" a="0" flipped="false"/>
+      <nametext visible="0" position="0"/>
+      <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0" disabled="false"/>
+      <viewport x="2326" y="2405.5" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="0"/>
       <graphics type="user"/>
       <scriptfile path=""/>
       <hopsanobjectappearance version="0.3">
-        <modelobject typename="Subsystem" displayname="unittestmodel">
+        <modelobject displayname="unittestmodel" typename="Subsystem">
           <icons>
             <icon type="defaultmissing" path="subsystemDefault.svg"/>
           </icons>
           <ports/>
-          <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+          <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
         </modelobject>
       </hopsanobjectappearance>
       <optimization>
@@ -72,70 +76,70 @@
       </senstivitityanalysis>
     </hopsangui>
     <objects>
-      <component name="TestGain" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
+      <component name="TestConstant" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalConstant">
         <parameters>
-          <parameter name="in#Value" value="0" unit="" type="double"/>
-          <parameter name="k#Value" value="1" unit="" type="double"/>
+          <parameter name="y#Value" type="double" value="1" unit=""/>
         </parameters>
         <ports>
-          <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
+          <port name="y" nodetype="NodeSignal" porttype="WritePortType"/>
+        </ports>
+        <hopsangui>
+          <pose x="2160" y="2310" a="0" flipped="false"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject displayname="TestConstant" typename="SignalConstant">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component name="TestGain" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
+        <parameters>
+          <parameter name="in#Value" type="double" value="0" unit=""/>
+          <parameter name="k#Value" type="double" value="1" unit=""/>
+        </parameters>
+        <ports>
+          <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
           <port name="k" nodetype="NodeSignal"/>
-          <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
         </ports>
         <hopsangui>
-          <pose x="2408" a="0" flipped="false" y="2494"/>
-          <nametext position="0" visible="0"/>
-          <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+          <pose x="2408" y="2494" a="0" flipped="false"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
           <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalGain" displayname="TestGain">
+            <modelobject displayname="TestGain" typename="SignalGain">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component name="TestConstant" typename="SignalConstant" subtypename="" cqstype="S" disabled="false" locked="false">
+      <component name="TestStep" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalStep">
         <parameters>
-          <parameter name="y#Value" value="1" unit="" type="double"/>
+          <parameter name="y_0#Value" type="double" value="-5" unit=""/>
+          <parameter name="y_A#Value" type="double" value="5" unit=""/>
+          <parameter name="t_step#Value" type="double" value="apa" unit="s"/>
         </parameters>
         <ports>
-          <port name="y" porttype="WritePortType" nodetype="NodeSignal"/>
-        </ports>
-        <hopsangui>
-          <pose x="2160" a="0" flipped="false" y="2310"/>
-          <nametext position="0" visible="0"/>
-          <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalConstant" displayname="TestConstant">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component name="TestStep" typename="SignalStep" subtypename="" cqstype="S" disabled="false" locked="false">
-        <parameters>
-          <parameter name="y_0#Value" value="-5" unit="" type="double"/>
-          <parameter name="y_A#Value" value="5" unit="" type="double"/>
-          <parameter name="t_step#Value" value="apa" unit="s" type="double"/>
-        </parameters>
-        <ports>
-          <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+          <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
           <port name="y_0" nodetype="NodeSignal"/>
           <port name="y_A" nodetype="NodeSignal"/>
           <port name="t_step" nodetype="NodeSignal"/>
         </ports>
         <hopsangui>
-          <pose x="2320" a="0" flipped="false" y="2494"/>
-          <nametext position="0" visible="0"/>
-          <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+          <pose x="2320" y="2494" a="0" flipped="false"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
           <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalStep" displayname="TestStep">
+            <modelobject displayname="TestStep" typename="SignalStep">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <system name="Subsystem" typename="Subsystem" subtypename="" cqstype="S" disabled="false" locked="false">
-        <simulationtime inherit_timestep="true" stop="10" timestep="0.001" start="0"/>
+      <system name="Subsystem" locked="false" disabled="false" cqstype="S" subtypename="" typename="Subsystem">
+        <simulationtime timestep="0.001" inherit_timestep="true" start="0" stop="10"/>
         <simulationlogsettings starttime="0" numsamples="2048"/>
         <numhopscript># Comment line
 NumhopSetValue.y = sub_a;  NumhopSetValue.y = sub_b
@@ -143,39 +147,39 @@ NumhopSetValue.y = sub_a;  NumhopSetValue.y = sub_b
 # Actual test expression
 NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
         <parameters>
-          <parameter name="sub_a" value="main_a" type="double"/>
-          <parameter name="sub_b" value="2" type="double"/>
-          <parameter name="in1#Value" value="1" description="This is a deliberate complication, adding in1#Value as the name of a system parameter" type="double"/>
-          <parameter name="shadow_param" value="2" type="double"/>
-          <parameter name="sub_int_a" value="main_int_a" type="integer"/>
-          <parameter name="sub_int_b" value="2" type="integer"/>
-          <parameter name="sub_bool_a" value="main_bool_a" type="bool"/>
-          <parameter name="sub_bool_b" value="false" type="bool"/>
-          <parameter name="sub_string_a" value="main_string_a" type="string"/>
-          <parameter name="sub_textblock_a" value="main_textblock_a" type="textblock"/>
-          <parameter name="sub_string_b" value="string_b" type="string"/>
-          <parameter name="sub_textblock_b" value="textblock_b" type="textblock"/>
+          <parameter name="sub_a" type="double" value="main_a"/>
+          <parameter name="sub_b" type="double" value="2"/>
+          <parameter name="in1#Value" type="double" description="This is a deliberate complication, adding in1#Value as the name of a system parameter" value="1"/>
+          <parameter name="shadow_param" type="double" value="2"/>
+          <parameter name="sub_int_a" type="integer" value="main_int_a"/>
+          <parameter name="sub_int_b" type="integer" value="2"/>
+          <parameter name="sub_bool_a" type="bool" value="main_bool_a"/>
+          <parameter name="sub_bool_b" type="bool" value="false"/>
+          <parameter name="sub_string_a" type="string" value="main_string_a"/>
+          <parameter name="sub_textblock_a" type="textblock" value="main_textblock_a"/>
+          <parameter name="sub_string_b" type="string" value="string_b"/>
+          <parameter name="sub_textblock_b" type="textblock" value="textblock_b"/>
         </parameters>
         <aliases/>
         <hopsangui>
-          <pose x="2378" a="0" flipped="false" y="2310"/>
-          <nametext position="0" visible="0"/>
-          <animation hydraulicminpressure="0" disabled="false" hydraulicmaxpressure="20000000" flowspeed="100"/>
-          <viewport x="2348.5" zoom="1" y="2058.5"/>
+          <pose x="2378" y="2310" a="0" flipped="false"/>
+          <nametext visible="0" position="0"/>
+          <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0" disabled="false"/>
+          <viewport x="2427" y="1970.5" zoom="1"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
           <scriptfile path=""/>
           <hopsanobjectappearance version="0.3">
-            <modelobject typename="Subsystem" displayname="Subsystem">
+            <modelobject displayname="Subsystem" typename="Subsystem">
               <icons>
                 <icon type="defaultmissing" path="subsystemDefault.svg"/>
               </icons>
               <ports>
-                <port autoplaced="true" name="SubPortOut" x="1" a="0" enabled="true" y="0.5"/>
-                <port autoplaced="true" name="SubPortIn" x="0" a="180" enabled="true" y="0.5"/>
+                <port name="SubPortOut" autoplaced="true" x="1" y="0.5" a="0" enabled="true"/>
+                <port name="SubPortIn" autoplaced="true" x="0" y="0.5" a="180" enabled="true"/>
               </ports>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
             </modelobject>
           </hopsanobjectappearance>
           <optimization>
@@ -204,183 +208,94 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
           </senstivitityanalysis>
         </hopsangui>
         <objects>
-          <systemport name="SubPortOut" typename="HopsanGUIContainerPort" subtypename="" cqstype="hasNoCqsType" disabled="false" locked="false">
+          <component name="TestConstant" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalConstant">
+            <parameters>
+              <parameter name="y#Value" type="double" value="1" unit=""/>
+            </parameters>
+            <ports>
+              <port name="y" nodetype="NodeSignal" porttype="WritePortType"/>
+            </ports>
             <hopsangui>
-              <pose x="2820" a="0" flipped="false" y="2298"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+              <pose x="2340" y="2154" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject displayname="TestConstant" typename="SignalConstant">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component name="Gain" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
+            <parameters>
+              <parameter name="in#Value" type="double" value="0" unit=""/>
+              <parameter name="k#Value" type="double" value="sub_b+sub_a" unit=""/>
+            </parameters>
+            <ports>
+              <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+              <port name="k" nodetype="NodeSignal"/>
+              <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+            </ports>
+            <hopsangui>
+              <pose x="2427" y="2154" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject displayname="Gain" typename="SignalGain">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <systemport name="SubPortOut" locked="false" disabled="false" cqstype="hasNoCqsType" subtypename="" typename="HopsanGUIContainerPort">
+            <hopsangui>
+              <pose x="2820" y="2298" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
             </hopsangui>
           </systemport>
-          <component name="ShadowParamGain" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
-            <parameters>
-              <parameter name="in#Value" value="0" unit="" type="double"/>
-              <parameter name="k#Value" value="shadow_param" unit="" type="double"/>
-            </parameters>
-            <ports>
-              <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
-              <port name="k" nodetype="NodeSignal"/>
-              <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
-            </ports>
-            <hopsangui>
-              <pose x="2583" a="0" flipped="false" y="2170"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-              <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalGain" displayname="ShadowParamGain">
-                  <ports/>
-                </modelobject>
-              </hopsanobjectappearance>
-            </hopsangui>
-          </component>
-          <component name="TestConstant" typename="SignalConstant" subtypename="" cqstype="S" disabled="false" locked="false">
-            <parameters>
-              <parameter name="y#Value" value="1" unit="" type="double"/>
-            </parameters>
-            <ports>
-              <port name="y" porttype="WritePortType" nodetype="NodeSignal"/>
-            </ports>
-            <hopsangui>
-              <pose x="2340" a="0" flipped="false" y="2154"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-              <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalConstant" displayname="TestConstant">
-                  <ports/>
-                </modelobject>
-              </hopsanobjectappearance>
-            </hopsangui>
-          </component>
-          <component name="Gain" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
-            <parameters>
-              <parameter name="in#Value" value="0" unit="" type="double"/>
-              <parameter name="k#Value" value="sub_b+sub_a" unit="" type="double"/>
-            </parameters>
-            <ports>
-              <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
-              <port name="k" nodetype="NodeSignal"/>
-              <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
-            </ports>
-            <hopsangui>
-              <pose x="2427" a="0" flipped="false" y="2154"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-              <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalGain" displayname="Gain">
-                  <ports/>
-                </modelobject>
-              </hopsanobjectappearance>
-            </hopsangui>
-          </component>
-          <systemport name="SubPortIn" typename="HopsanGUIContainerPort" subtypename="" cqstype="hasNoCqsType" disabled="false" locked="false">
-            <hopsangui>
-              <pose x="1925" a="0" flipped="false" y="2298"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-            </hopsangui>
-          </systemport>
-          <component name="Stop_simulation" typename="SignalStopSimulation" subtypename="" cqstype="S" disabled="false" locked="false">
-            <parameters>
-              <parameter name="in#Value" value="0" unit="" type="double"/>
-              <parameter name="message" value="" unit="" type="string"/>
-            </parameters>
-            <ports>
-              <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
-            </ports>
-            <hopsangui>
-              <pose x="2438" a="0" flipped="false" y="2029"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-              <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalStopSimulation" displayname="Stop_simulation">
-                  <ports/>
-                </modelobject>
-              </hopsanobjectappearance>
-            </hopsangui>
-          </component>
-          <component name="Add" typename="SignalAdd" subtypename="" cqstype="S" disabled="false" locked="false">
-            <parameters>
-              <parameter name="in1#Value" value="0" unit="" type="double"/>
-              <parameter name="in2#Value" value="self.in1.Value" unit="" type="double"/>
-            </parameters>
-            <ports>
-              <port name="in1" porttype="ReadPortType" nodetype="NodeSignal"/>
-              <port name="in2" porttype="ReadPortType" nodetype="NodeSignal"/>
-              <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
-            </ports>
-            <hopsangui>
-              <pose x="2274" a="0" flipped="false" y="2029"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-              <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalAdd" displayname="Add">
-                  <ports/>
-                </modelobject>
-              </hopsanobjectappearance>
-            </hopsangui>
-          </component>
-          <component name="Greater_Than_Comparer" typename="SignalGreaterThan" subtypename="" cqstype="S" disabled="false" locked="false">
-            <parameters>
-              <parameter name="in#Value" value="0" unit="" type="double"/>
-              <parameter name="x_limit#Value" value="0.5" unit="" type="double"/>
-            </parameters>
-            <ports>
-              <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
-              <port name="x_limit" nodetype="NodeSignal"/>
-              <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
-            </ports>
-            <hopsangui>
-              <pose x="2342" a="0" flipped="false" y="2029"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-              <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalGreaterThan" displayname="Greater_Than_Comparer">
-                  <ports/>
-                </modelobject>
-              </hopsanobjectappearance>
-            </hopsangui>
-          </component>
-          <system name="Subsubsystem" typename="Subsystem" subtypename="" cqstype="S" disabled="false" locked="false">
-            <simulationtime inherit_timestep="true" stop="10" timestep="0.001" start="0"/>
+          <system name="Subsubsystem" locked="false" disabled="false" cqstype="S" subtypename="" typename="Subsystem">
+            <simulationtime timestep="0.001" inherit_timestep="true" start="0" stop="10"/>
             <simulationlogsettings starttime="0" numsamples="2048"/>
             <parameters>
-              <parameter name="subsub_a" value="sub_a" type="double"/>
-              <parameter name="subsub_b" value="sub_b" type="double"/>
-              <parameter name="subsub_c" value="sub_a+sub_b" type="double"/>
-              <parameter name="subsub_d" value="self.subsub_a+self.subsub_b" type="double"/>
-              <parameter name="subsub_e" value="main_a+self.subsub_b" type="double"/>
-              <parameter name="subsub_int_a" value="sub_int_a" type="integer"/>
-              <parameter name="subsub_int_b" value="sub_int_b" type="integer"/>
-              <parameter name="subsub_bool_a" value="sub_bool_a" type="bool"/>
-              <parameter name="subsub_bool_b" value="sub_bool_b" type="bool"/>
-              <parameter name="subsub_string_a" value="sub_string_a" type="string"/>
-              <parameter name="subsub_string_b" value="sub_string_b" type="string"/>
-              <parameter name="subsub_textblock_a" value="sub_textblock_a" type="textblock"/>
-              <parameter name="subsub_textblock_b" value="sub_textblock_b" type="textblock"/>
-              <parameter name="subsub_lookup_textblock" value="1, 1&#xa;2, 2" type="textblock"/>
-              <parameter name="subsub_lookup_inid" value="0" type="integer"/>
-              <parameter name="subsub_lookup_comment" value="#" type="string"/>
-              <parameter name="subsub_lookup_reload" value="true" type="bool"/>
+              <parameter name="subsub_a" type="double" value="sub_a"/>
+              <parameter name="subsub_b" type="double" value="sub_b"/>
+              <parameter name="subsub_c" type="double" value="sub_a+sub_b"/>
+              <parameter name="subsub_d" type="double" value="self.subsub_a+self.subsub_b"/>
+              <parameter name="subsub_e" type="double" value="main_a+self.subsub_b"/>
+              <parameter name="subsub_int_a" type="integer" value="sub_int_a"/>
+              <parameter name="subsub_int_b" type="integer" value="sub_int_b"/>
+              <parameter name="subsub_bool_a" type="bool" value="sub_bool_a"/>
+              <parameter name="subsub_bool_b" type="bool" value="sub_bool_b"/>
+              <parameter name="subsub_string_a" type="string" value="sub_string_a"/>
+              <parameter name="subsub_string_b" type="string" value="sub_string_b"/>
+              <parameter name="subsub_textblock_a" type="textblock" value="sub_textblock_a"/>
+              <parameter name="subsub_textblock_b" type="textblock" value="sub_textblock_b"/>
+              <parameter name="subsub_lookup_textblock" type="textblock" value="1, 1&#xa;2, 2"/>
+              <parameter name="subsub_lookup_inid" type="integer" value="0"/>
+              <parameter name="subsub_lookup_comment" type="string" value="#"/>
+              <parameter name="subsub_lookup_reload" type="bool" value="true"/>
             </parameters>
             <aliases/>
             <hopsangui>
-              <pose x="2380" a="0" flipped="false" y="2298"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" disabled="false" hydraulicmaxpressure="20000000" flowspeed="100"/>
-              <viewport x="2207.5" zoom="1" y="2181.5"/>
+              <pose x="2380" y="2298" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0" disabled="false"/>
+              <viewport x="2037" y="2189.5" zoom="1"/>
               <ports hidden="1"/>
               <names hidden="1"/>
               <graphics type="user"/>
               <scriptfile path=""/>
               <hopsanobjectappearance version="0.3">
-                <modelobject typename="Subsystem" displayname="Subsubsystem">
+                <modelobject displayname="Subsubsystem" typename="Subsystem">
                   <icons>
                     <icon type="defaultmissing" path="subsystemDefault.svg"/>
                   </icons>
                   <ports>
-                    <port autoplaced="true" name="SubsubPortOut" x="1" a="0" enabled="true" y="0.5"/>
-                    <port autoplaced="true" name="SubsubPortIn" x="0" a="180" enabled="true" y="0.5"/>
+                    <port name="SubsubPortOut" autoplaced="true" x="1" y="0.5" a="0" enabled="true"/>
+                    <port name="SubsubPortIn" autoplaced="true" x="0" y="0.5" a="180" enabled="true"/>
                   </ports>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                 </modelobject>
               </hopsanobjectappearance>
               <optimization>
@@ -409,245 +324,288 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
               </senstivitityanalysis>
             </hopsangui>
             <objects>
-              <component name="1DLookupTable_1" typename="Signal1DLookupTable" subtypename="" cqstype="S" disabled="false" locked="false">
+              <component name="TestConstant" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalConstant">
                 <parameters>
-                  <parameter name="in#Value" value="0" unit="" type="double"/>
-                  <parameter name="filename" value="K" unit="" type="string"/>
-                  <parameter name="text" value="Skip this line&#xa;K1,2,3,4&#xa;1,2&#xa;2,3&#xa;4,5&#xa;6,7" unit="" type="textblock"/>
-                  <parameter name="csvsep" value="," unit="" type="string"/>
-                  <parameter name="inid" value="0" unit="" type="integer"/>
-                  <parameter name="outid" value="self.numlineskip" unit="" type="integer"/>
-                  <parameter name="numlineskip" value="1" unit="" type="integer"/>
-                  <parameter name="comment" value="self.filename" unit="" type="string"/>
-                  <parameter name="reload" value="true" unit="" type="bool"/>
+                  <parameter name="y#Value" type="double" value="1" unit=""/>
                 </parameters>
                 <ports>
-                  <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+                  <port name="y" nodetype="NodeSignal" porttype="WritePortType"/>
                 </ports>
                 <hopsangui>
-                  <pose x="1725" a="0" flipped="false" y="2307"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="1942" y="2141" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                   <hopsanobjectappearance version="0.3">
-                    <modelobject typename="Signal1DLookupTable" displayname="1DLookupTable_1">
+                    <modelobject displayname="TestConstant" typename="SignalConstant">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
                 </hopsangui>
               </component>
-              <component name="Gain_2" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
+              <component name="Add_1" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalAdd">
                 <parameters>
-                  <parameter name="in#Value" value="0" unit="" type="double"/>
-                  <parameter name="k#Value" value="subsub_d" unit="" type="double"/>
+                  <parameter name="in1#Value" type="double" value="subsub_a" unit=""/>
+                  <parameter name="in2#Value" type="double" value="1" unit=""/>
                 </parameters>
                 <ports>
-                  <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
+                  <port name="in1" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="in2" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+                </ports>
+                <hopsangui>
+                  <pose x="2182" y="2395" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+                  <hopsanobjectappearance version="0.3">
+                    <modelobject displayname="Add_1" typename="SignalAdd">
+                      <ports/>
+                    </modelobject>
+                  </hopsanobjectappearance>
+                </hopsangui>
+              </component>
+              <component name="Gain" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
+                <parameters>
+                  <parameter name="in#Value" type="double" value="0" unit=""/>
+                  <parameter name="k#Value" type="double" value="subsub_c" unit=""/>
+                </parameters>
+                <ports>
+                  <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
                   <port name="k" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
                 </ports>
                 <hopsangui>
-                  <pose x="2057.333333" a="0" flipped="false" y="2141"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="2136" y="2395" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                   <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalGain" displayname="Gain_2">
+                    <modelobject displayname="Gain" typename="SignalGain">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
                 </hopsangui>
               </component>
-              <component name="TestConstant" typename="SignalConstant" subtypename="" cqstype="S" disabled="false" locked="false">
+              <component name="Gain_3" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
                 <parameters>
-                  <parameter name="y#Value" value="1" unit="" type="double"/>
+                  <parameter name="in#Value" type="double" value="0" unit=""/>
+                  <parameter name="k#Value" type="double" value="subsub_e" unit=""/>
                 </parameters>
                 <ports>
-                  <port name="y" porttype="WritePortType" nodetype="NodeSignal"/>
-                </ports>
-                <hopsangui>
-                  <pose x="1942" a="0" flipped="false" y="2141"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-                  <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalConstant" displayname="TestConstant">
-                      <ports/>
-                    </modelobject>
-                  </hopsanobjectappearance>
-                </hopsangui>
-              </component>
-              <component name="Gain" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
-                <parameters>
-                  <parameter name="in#Value" value="0" unit="" type="double"/>
-                  <parameter name="k#Value" value="subsub_c" unit="" type="double"/>
-                </parameters>
-                <ports>
-                  <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
+                  <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
                   <port name="k" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
                 </ports>
                 <hopsangui>
-                  <pose x="2136" a="0" flipped="false" y="2395"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="2115" y="2141" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                   <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalGain" displayname="Gain">
+                    <modelobject displayname="Gain_3" typename="SignalGain">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
                 </hopsangui>
               </component>
-              <systemport name="SubsubPortOut" typename="HopsanGUIContainerPort" subtypename="" cqstype="hasNoCqsType" disabled="false" locked="false">
-                <hopsangui>
-                  <pose x="2329" a="0" flipped="false" y="2395"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-                </hopsangui>
-              </systemport>
-              <component name="Gain_3" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
-                <parameters>
-                  <parameter name="in#Value" value="0" unit="" type="double"/>
-                  <parameter name="k#Value" value="subsub_e" unit="" type="double"/>
-                </parameters>
-                <ports>
-                  <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
-                  <port name="k" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
-                </ports>
-                <hopsangui>
-                  <pose x="2115" a="0" flipped="false" y="2141"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-                  <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalGain" displayname="Gain_3">
-                      <ports/>
-                    </modelobject>
-                  </hopsanobjectappearance>
-                </hopsangui>
-              </component>
-              <component name="Add" typename="SignalAdd" subtypename="" cqstype="S" disabled="false" locked="false">
-                <parameters>
-                  <parameter name="in1#Value" value="subsub_a" unit="" type="double"/>
-                  <parameter name="in2#Value" value="self.in1.Value+1" unit="" type="double"/>
-                </parameters>
-                <ports>
-                  <port name="in1" porttype="ReadPortType" nodetype="NodeSignal"/>
-                  <port name="in2" porttype="ReadPortType" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
-                </ports>
-                <hopsangui>
-                  <pose x="2088" a="0" flipped="false" y="2395"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-                  <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalAdd" displayname="Add">
-                      <ports/>
-                    </modelobject>
-                  </hopsanobjectappearance>
-                </hopsangui>
-              </component>
-              <component name="Time" typename="SignalTime" subtypename="" cqstype="S" disabled="false" locked="false">
+              <component name="Time_1" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalTime">
                 <parameters/>
                 <ports>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
                 </ports>
                 <hopsangui>
-                  <pose x="1645" a="0" flipped="false" y="2307"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="2271" y="2249" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                   <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalTime" displayname="Time">
+                    <modelobject displayname="Time_1" typename="SignalTime">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
                 </hopsangui>
               </component>
-              <component name="1DLookupTable" typename="Signal1DLookupTable" subtypename="" cqstype="S" disabled="false" locked="false">
-                <parameters>
-                  <parameter name="in#Value" value="0" unit="" type="double"/>
-                  <parameter name="filename" value="FilePath" unit="" type="string"/>
-                  <parameter name="text" value="subsub_lookup_textblock" unit="" type="textblock"/>
-                  <parameter name="csvsep" value="," unit="" type="string"/>
-                  <parameter name="inid" value="subsub_lookup_inid" unit="" type="integer"/>
-                  <parameter name="outid" value="1" unit="" type="integer"/>
-                  <parameter name="numlineskip" value="0" unit="" type="integer"/>
-                  <parameter name="comment" value="subsub_lookup_comment" unit="" type="string"/>
-                  <parameter name="reload" value="subsub_lookup_reload" unit="" type="bool"/>
-                </parameters>
-                <ports>
-                  <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
-                </ports>
+              <systemport name="SubsubPortOut" locked="false" disabled="false" cqstype="hasNoCqsType" subtypename="" typename="HopsanGUIContainerPort">
                 <hopsangui>
-                  <pose x="2356" a="0" flipped="false" y="2249"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
-                  <hopsanobjectappearance version="0.3">
-                    <modelobject typename="Signal1DLookupTable" displayname="1DLookupTable">
-                      <ports/>
-                    </modelobject>
-                  </hopsanobjectappearance>
-                </hopsangui>
-              </component>
-              <systemport name="SubsubPortIn" typename="HopsanGUIContainerPort" subtypename="" cqstype="hasNoCqsType" disabled="false" locked="false">
-                <hopsangui>
-                  <pose x="1465" a="0" flipped="false" y="2349"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="2329" y="2395" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                 </hopsangui>
               </systemport>
-              <component name="Time_1" typename="SignalTime" subtypename="" cqstype="S" disabled="false" locked="false">
+              <systemport name="SubsubPortIn" locked="false" disabled="false" cqstype="hasNoCqsType" subtypename="" typename="HopsanGUIContainerPort">
+                <hopsangui>
+                  <pose x="1465" y="2349" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+                </hopsangui>
+              </systemport>
+              <component name="Time" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalTime">
                 <parameters/>
                 <ports>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
                 </ports>
                 <hopsangui>
-                  <pose x="2271" a="0" flipped="false" y="2249"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="1645" y="2307" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                   <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalTime" displayname="Time_1">
+                    <modelobject displayname="Time" typename="SignalTime">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
                 </hopsangui>
               </component>
-              <component name="Gain_1" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
+              <component name="1DLookupTable_1" locked="false" disabled="false" cqstype="S" subtypename="" typename="Signal1DLookupTable">
                 <parameters>
-                  <parameter name="in#Value" value="0" unit="" type="double"/>
-                  <parameter name="k#Value" value="subsub_c" unit="" type="double"/>
+                  <parameter name="in#Value" type="double" value="0" unit=""/>
+                  <parameter name="filename" type="string" value="K" unit=""/>
+                  <parameter name="text" type="textblock" value="Skip this line&#xa;K1,2,3,4&#xa;1,2&#xa;2,3&#xa;4,5&#xa;6,7" unit=""/>
+                  <parameter name="csvsep" type="string" value="," unit=""/>
+                  <parameter name="inid" type="integer" value="0" unit=""/>
+                  <parameter name="outid" type="integer" value="self.numlineskip" unit=""/>
+                  <parameter name="numlineskip" type="integer" value="main_lookup_inid" unit=""/>
+                  <parameter name="comment" type="string" value="self.filename" unit=""/>
+                  <parameter name="reload" type="bool" value="true" unit=""/>
                 </parameters>
                 <ports>
-                  <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
+                  <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+                </ports>
+                <hopsangui>
+                  <pose x="1725" y="2307" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+                  <hopsanobjectappearance version="0.3">
+                    <modelobject displayname="1DLookupTable_1" typename="Signal1DLookupTable">
+                      <ports/>
+                    </modelobject>
+                  </hopsanobjectappearance>
+                </hopsangui>
+              </component>
+              <component name="Gain_2" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
+                <parameters>
+                  <parameter name="in#Value" type="double" value="0" unit=""/>
+                  <parameter name="k#Value" type="double" value="subsub_d" unit=""/>
+                </parameters>
+                <ports>
+                  <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
                   <port name="k" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
                 </ports>
                 <hopsangui>
-                  <pose x="1999.666667" a="0" flipped="false" y="2141"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="2057.333333" y="2141" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                   <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalGain" displayname="Gain_1">
+                    <modelobject displayname="Gain_2" typename="SignalGain">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
                 </hopsangui>
               </component>
-              <component name="Add_1" typename="SignalAdd" subtypename="" cqstype="S" disabled="false" locked="false">
+              <component name="1DLookupTable_2" locked="false" disabled="false" cqstype="S" subtypename="" typename="Signal1DLookupTable">
                 <parameters>
-                  <parameter name="in1#Value" value="subsub_a" unit="" type="double"/>
-                  <parameter name="in2#Value" value="1" unit="" type="double"/>
+                  <parameter name="in#Value" type="double" value="0" unit=""/>
+                  <parameter name="filename" type="string" value="FilePath" unit=""/>
+                  <parameter name="text" type="textblock" value="main_lookup_textblock" unit=""/>
+                  <parameter name="csvsep" type="string" value="," unit=""/>
+                  <parameter name="inid" type="integer" value="main_lookup_inid" unit=""/>
+                  <parameter name="outid" type="integer" value="0" unit=""/>
+                  <parameter name="numlineskip" type="integer" value="0" unit=""/>
+                  <parameter name="comment" type="string" value="main_lookup_comment" unit=""/>
+                  <parameter name="reload" type="bool" value="main_lookup_reload" unit=""/>
                 </parameters>
                 <ports>
-                  <port name="in1" porttype="ReadPortType" nodetype="NodeSignal"/>
-                  <port name="in2" porttype="ReadPortType" nodetype="NodeSignal"/>
-                  <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+                  <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
                 </ports>
                 <hopsangui>
-                  <pose x="2182" a="0" flipped="false" y="2395"/>
-                  <nametext position="0" visible="0"/>
-                  <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+                  <pose x="2376" y="2031" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
                   <hopsanobjectappearance version="0.3">
-                    <modelobject typename="SignalAdd" displayname="Add_1">
+                    <modelobject displayname="1DLookupTable_2" typename="Signal1DLookupTable">
+                      <ports/>
+                    </modelobject>
+                  </hopsanobjectappearance>
+                </hopsangui>
+              </component>
+              <component name="Gain_1" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
+                <parameters>
+                  <parameter name="in#Value" type="double" value="0" unit=""/>
+                  <parameter name="k#Value" type="double" value="subsub_c" unit=""/>
+                </parameters>
+                <ports>
+                  <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="k" nodetype="NodeSignal"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+                </ports>
+                <hopsangui>
+                  <pose x="1999.666667" y="2141" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+                  <hopsanobjectappearance version="0.3">
+                    <modelobject displayname="Gain_1" typename="SignalGain">
+                      <ports/>
+                    </modelobject>
+                  </hopsanobjectappearance>
+                </hopsangui>
+              </component>
+              <component name="1DLookupTable" locked="false" disabled="false" cqstype="S" subtypename="" typename="Signal1DLookupTable">
+                <parameters>
+                  <parameter name="in#Value" type="double" value="0" unit=""/>
+                  <parameter name="filename" type="string" value="FilePath" unit=""/>
+                  <parameter name="text" type="textblock" value="subsub_lookup_textblock" unit=""/>
+                  <parameter name="csvsep" type="string" value="," unit=""/>
+                  <parameter name="inid" type="integer" value="subsub_lookup_inid" unit=""/>
+                  <parameter name="outid" type="integer" value="1" unit=""/>
+                  <parameter name="numlineskip" type="integer" value="0" unit=""/>
+                  <parameter name="comment" type="string" value="subsub_lookup_comment" unit=""/>
+                  <parameter name="reload" type="bool" value="subsub_lookup_reload" unit=""/>
+                </parameters>
+                <ports>
+                  <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+                </ports>
+                <hopsangui>
+                  <pose x="2356" y="2249" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+                  <hopsanobjectappearance version="0.3">
+                    <modelobject displayname="1DLookupTable" typename="Signal1DLookupTable">
+                      <ports/>
+                    </modelobject>
+                  </hopsanobjectappearance>
+                </hopsangui>
+              </component>
+              <component name="Add" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalAdd">
+                <parameters>
+                  <parameter name="in1#Value" type="double" value="subsub_a" unit=""/>
+                  <parameter name="in2#Value" type="double" value="self.in1.Value+1" unit=""/>
+                </parameters>
+                <ports>
+                  <port name="in1" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="in2" nodetype="NodeSignal" porttype="ReadPortType"/>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+                </ports>
+                <hopsangui>
+                  <pose x="2088" y="2395" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+                  <hopsanobjectappearance version="0.3">
+                    <modelobject displayname="Add" typename="SignalAdd">
+                      <ports/>
+                    </modelobject>
+                  </hopsanobjectappearance>
+                </hopsangui>
+              </component>
+              <component name="Time_2" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalTime">
+                <parameters/>
+                <ports>
+                  <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+                </ports>
+                <hopsangui>
+                  <pose x="2283.5" y="2031" a="0" flipped="false"/>
+                  <nametext visible="0" position="0"/>
+                  <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+                  <hopsanobjectappearance version="0.3">
+                    <modelobject displayname="Time_2" typename="SignalTime">
                       <ports/>
                     </modelobject>
                   </hopsanobjectappearance>
@@ -656,38 +614,46 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
               <textboxwidget>
                 <hopsangui>
                   <pose x="2239.000000" y="2183.000000"/>
-                  <textobject fontcolor="#556b2f" text="Test lookup of system parametrs for int bool string and textblock" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" reflow="1"/>
-                  <size height="100.000000" width="493.000000"/>
-                  <line style="solidline" color="#556b2f" visible="1" width="2"/>
+                  <textobject reflow="1" fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test lookup of system parameters for int, bool, string, and textblock"/>
+                  <size width="503.000000" height="100.000000"/>
+                  <line style="solidline" width="2" visible="1" color="#556b2f"/>
                 </hopsangui>
               </textboxwidget>
               <textboxwidget>
                 <hopsangui>
                   <pose x="1250.500000" y="0.000000"/>
-                  <textobject fontcolor="#556b2f" text="Test lookup of system parametrs for int bool string and textblock" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" reflow="1"/>
-                  <size height="100.000000" width="495.000000"/>
-                  <line style="solidline" color="#556b2f" visible="1" width="2"/>
+                  <textobject reflow="1" fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test lookup of system parametrs for int bool string and textblock"/>
+                  <size width="501.000000" height="100.000000"/>
+                  <line style="solidline" width="2" visible="1" color="#556b2f"/>
                 </hopsangui>
               </textboxwidget>
               <textboxwidget>
                 <hopsangui>
                   <pose x="1273.500000" y="0.000000"/>
-                  <textobject fontcolor="#556b2f" text="Test lookup of system parametrs for int bool string and textblock" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" reflow="1"/>
-                  <size height="100.000000" width="495.000000"/>
-                  <line style="solidline" color="#556b2f" visible="1" width="2"/>
+                  <textobject reflow="1" fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test lookup of system parametrs for int bool string and textblock"/>
+                  <size width="501.000000" height="100.000000"/>
+                  <line style="solidline" width="2" visible="1" color="#556b2f"/>
                 </hopsangui>
               </textboxwidget>
               <textboxwidget>
                 <hopsangui>
                   <pose x="1616.000000" y="2240.000000"/>
-                  <textobject fontcolor="#556b2f" text="Test using self. for int and string parameters" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" reflow="1"/>
-                  <size height="100.000000" width="336.000000"/>
-                  <line style="solidline" color="#556b2f" visible="1" width="2"/>
+                  <textobject reflow="1" fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test using self. for int and string parameters"/>
+                  <size width="342.000000" height="100.000000"/>
+                  <line style="solidline" width="2" visible="1" color="#556b2f"/>
+                </hopsangui>
+              </textboxwidget>
+              <textboxwidget>
+                <hopsangui>
+                  <pose x="2143.000000" y="1966.000000"/>
+                  <textobject reflow="1" fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test lookup of system parameters for int, bool, string and text block from grandparent system"/>
+                  <size width="685.000000" height="100.000000"/>
+                  <line style="solidline" width="2" visible="1" color="#556b2f"/>
                 </hopsangui>
               </textboxwidget>
             </objects>
             <connections>
-              <connect endcomponent="Gain" startcomponent="Add" endport="in" startport="out">
+              <connect endcomponent="Gain" startport="out" endport="in" startcomponent="Add">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="2100.50000000000000000000" y="2395.00000000000000000000"/>
@@ -703,7 +669,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="Add_1" startcomponent="Gain" endport="in1" startport="out">
+              <connect endcomponent="Add_1" startport="out" endport="in1" startcomponent="Gain">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="2148.50000000000000000000" y="2395.00000000000000000000"/>
@@ -719,7 +685,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="Add_1" startcomponent="SubsubPortIn" endport="in2" startport="SubsubPortIn">
+              <connect endcomponent="Add_1" startport="SubsubPortIn" endport="in2" startcomponent="SubsubPortIn">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="1465.00000000000000000000" y="2349.00000000000000000000"/>
@@ -733,7 +699,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="SubsubPortOut" startcomponent="Add_1" endport="SubsubPortOut" startport="out">
+              <connect endcomponent="SubsubPortOut" startport="out" endport="SubsubPortOut" startcomponent="Add_1">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="2194.50000000000000000000" y="2395.00000000000000000000"/>
@@ -749,7 +715,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="Gain_1" startcomponent="TestConstant" endport="in" startport="y">
+              <connect endcomponent="Gain_1" startport="y" endport="in" startcomponent="TestConstant">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="1954.50000000000000000000" y="2141.00000000000000000000"/>
@@ -765,7 +731,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="Gain_2" startcomponent="Gain_1" endport="in" startport="out">
+              <connect endcomponent="Gain_2" startport="out" endport="in" startcomponent="Gain_1">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="2012.16666699999996126280" y="2141.00000000000000000000"/>
@@ -781,7 +747,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="Gain_3" startcomponent="Gain_2" endport="in" startport="out">
+              <connect endcomponent="Gain_3" startport="out" endport="in" startcomponent="Gain_2">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="2069.83333300000003873720" y="2141.00000000000000000000"/>
@@ -797,7 +763,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="1DLookupTable_1" startcomponent="Time" endport="in" startport="out">
+              <connect endcomponent="1DLookupTable_1" startport="out" endport="in" startcomponent="Time">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="1657.50000000000000000000" y="2307.00000000000000000000"/>
@@ -813,7 +779,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
-              <connect endcomponent="1DLookupTable" startcomponent="Time_1" endport="in" startport="out">
+              <connect endcomponent="1DLookupTable" startport="out" endport="in" startcomponent="Time_1">
                 <hopsangui>
                   <coordinates>
                     <coordinate x="2283.50000000000000000000" y="2249.00000000000000000000"/>
@@ -829,42 +795,147 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
                   <style>solid</style>
                 </hopsangui>
               </connect>
+              <connect endcomponent="1DLookupTable_2" startport="out" endport="in" startcomponent="Time_2">
+                <hopsangui>
+                  <coordinates>
+                    <coordinate x="2296.00000000000000000000" y="2031.00000000000000000000"/>
+                    <coordinate x="2313.50000000000000000000" y="2031.00000000000000000000"/>
+                    <coordinate x="2313.50000000000000000000" y="2031.00000000000000000000"/>
+                    <coordinate x="2356.00000000000000000000" y="2031.00000000000000000000"/>
+                  </coordinates>
+                  <geometries>
+                    <geometry>vertical</geometry>
+                    <geometry>horizontal</geometry>
+                    <geometry>vertical</geometry>
+                  </geometries>
+                  <style>solid</style>
+                </hopsangui>
+              </connect>
             </connections>
           </system>
-          <component name="Gain_1" typename="SignalGain" subtypename="" cqstype="S" disabled="false" locked="false">
+          <component name="ShadowParamGain" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
             <parameters>
-              <parameter name="in#Value" value="0" unit="" type="double"/>
-              <parameter name="k#Value" value="sub_b+main_a" unit="" type="double"/>
+              <parameter name="in#Value" type="double" value="0" unit=""/>
+              <parameter name="k#Value" type="double" value="shadow_param" unit=""/>
             </parameters>
             <ports>
-              <port name="in" porttype="ReadPortType" nodetype="NodeSignal"/>
+              <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
               <port name="k" nodetype="NodeSignal"/>
-              <port name="out" porttype="WritePortType" nodetype="NodeSignal"/>
+              <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
             </ports>
             <hopsangui>
-              <pose x="2427" a="0" flipped="false" y="2203.5"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+              <pose x="2583" y="2170" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
               <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalGain" displayname="Gain_1">
+                <modelobject displayname="ShadowParamGain" typename="SignalGain">
                   <ports/>
                 </modelobject>
               </hopsanobjectappearance>
             </hopsangui>
           </component>
-          <component name="NumhopSetValue" typename="SignalConstant" subtypename="" cqstype="S" disabled="false" locked="false">
+          <component name="Greater_Than_Comparer" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGreaterThan">
             <parameters>
-              <parameter name="y#Value" value="0" unit="" type="double"/>
+              <parameter name="in#Value" type="double" value="0" unit=""/>
+              <parameter name="x_limit#Value" type="double" value="0.5" unit=""/>
             </parameters>
             <ports>
-              <port name="y" porttype="WritePortType" nodetype="NodeSignal"/>
+              <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+              <port name="x_limit" nodetype="NodeSignal"/>
+              <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
             </ports>
             <hopsangui>
-              <pose x="2106" a="0" flipped="false" y="2157"/>
-              <nametext position="0" visible="0"/>
-              <animation hydraulicminpressure="0" hydraulicmaxpressure="20000000" flowspeed="100"/>
+              <pose x="2342" y="2029" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
               <hopsanobjectappearance version="0.3">
-                <modelobject typename="SignalConstant" displayname="NumhopSetValue">
+                <modelobject displayname="Greater_Than_Comparer" typename="SignalGreaterThan">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component name="Stop_simulation" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalStopSimulation">
+            <parameters>
+              <parameter name="in#Value" type="double" value="0" unit=""/>
+              <parameter name="message" type="string" value="" unit=""/>
+            </parameters>
+            <ports>
+              <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+            </ports>
+            <hopsangui>
+              <pose x="2438" y="2029" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject displayname="Stop_simulation" typename="SignalStopSimulation">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <systemport name="SubPortIn" locked="false" disabled="false" cqstype="hasNoCqsType" subtypename="" typename="HopsanGUIContainerPort">
+            <hopsangui>
+              <pose x="1925" y="2298" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+            </hopsangui>
+          </systemport>
+          <component name="Gain_1" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalGain">
+            <parameters>
+              <parameter name="in#Value" type="double" value="0" unit=""/>
+              <parameter name="k#Value" type="double" value="sub_b+main_a" unit=""/>
+            </parameters>
+            <ports>
+              <port name="in" nodetype="NodeSignal" porttype="ReadPortType"/>
+              <port name="k" nodetype="NodeSignal"/>
+              <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+            </ports>
+            <hopsangui>
+              <pose x="2427" y="2203.5" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject displayname="Gain_1" typename="SignalGain">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component name="NumhopSetValue" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalConstant">
+            <parameters>
+              <parameter name="y#Value" type="double" value="0" unit=""/>
+            </parameters>
+            <ports>
+              <port name="y" nodetype="NodeSignal" porttype="WritePortType"/>
+            </ports>
+            <hopsangui>
+              <pose x="2106" y="2157" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject displayname="NumhopSetValue" typename="SignalConstant">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component name="Add" locked="false" disabled="false" cqstype="S" subtypename="" typename="SignalAdd">
+            <parameters>
+              <parameter name="in1#Value" type="double" value="0" unit=""/>
+              <parameter name="in2#Value" type="double" value="self.in1.Value" unit=""/>
+            </parameters>
+            <ports>
+              <port name="in1" nodetype="NodeSignal" porttype="ReadPortType"/>
+              <port name="in2" nodetype="NodeSignal" porttype="ReadPortType"/>
+              <port name="out" nodetype="NodeSignal" porttype="WritePortType"/>
+            </ports>
+            <hopsangui>
+              <pose x="2274" y="2029" a="0" flipped="false"/>
+              <nametext visible="0" position="0"/>
+              <animation flowspeed="100" hydraulicmaxpressure="20000000" hydraulicminpressure="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject displayname="Add" typename="SignalAdd">
                   <ports/>
                 </modelobject>
               </hopsanobjectappearance>
@@ -873,14 +944,14 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
           <textboxwidget>
             <hopsangui>
               <pose x="2103.000000" y="1934.000000"/>
-              <textobject fontcolor="#556b2f" text="Test when local variable and system variable with same name exists&#xa;In this case in1.value and in1#value" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" reflow="1"/>
-              <size height="130.000000" width="571.000000"/>
-              <line style="solidline" color="#556b2f" visible="1" width="2"/>
+              <textobject reflow="1" fontcolor="#556b2f" font="Noto Sans,12,-1,0,50,0,0,0,0,0,Regular" text="Test when local variable and system variable with same name exists&#xa;In this case in1.value and in1#value"/>
+              <size width="577.000000" height="130.000000"/>
+              <line style="solidline" width="2" visible="1" color="#556b2f"/>
             </hopsangui>
           </textboxwidget>
         </objects>
         <connections>
-          <connect endcomponent="Subsubsystem" startcomponent="SubPortIn" endport="SubsubPortIn" startport="SubPortIn">
+          <connect endcomponent="Subsubsystem" startport="SubPortIn" endport="SubsubPortIn" startcomponent="SubPortIn">
             <hopsangui>
               <coordinates>
                 <coordinate x="1925.00000000000000000000" y="2298.00000000000000000000"/>
@@ -896,7 +967,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
               <style>solid</style>
             </hopsangui>
           </connect>
-          <connect endcomponent="SubPortOut" startcomponent="Subsubsystem" endport="SubPortOut" startport="SubsubPortOut">
+          <connect endcomponent="SubPortOut" startport="SubsubPortOut" endport="SubPortOut" startcomponent="Subsubsystem">
             <hopsangui>
               <coordinates>
                 <coordinate x="2425.00000000000000000000" y="2298.00000000000000000000"/>
@@ -912,7 +983,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
               <style>solid</style>
             </hopsangui>
           </connect>
-          <connect endcomponent="TestConstant" startcomponent="Gain" endport="y" startport="in">
+          <connect endcomponent="TestConstant" startport="in" endport="y" startcomponent="Gain">
             <hopsangui>
               <coordinates>
                 <coordinate x="2414.50000000000000000000" y="2154.00000000000000000000"/>
@@ -928,7 +999,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
               <style>solid</style>
             </hopsangui>
           </connect>
-          <connect endcomponent="TestConstant" startcomponent="Gain_1" endport="y" startport="in">
+          <connect endcomponent="TestConstant" startport="in" endport="y" startcomponent="Gain_1">
             <hopsangui>
               <coordinates>
                 <coordinate x="2414.50000000000000000000" y="2203.50000000000000000000"/>
@@ -944,7 +1015,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
               <style>solid</style>
             </hopsangui>
           </connect>
-          <connect endcomponent="Add" startcomponent="Greater_Than_Comparer" endport="out" startport="in">
+          <connect endcomponent="Add" startport="in" endport="out" startcomponent="Greater_Than_Comparer">
             <hopsangui>
               <coordinates>
                 <coordinate x="2329.50000000000000000000" y="2029.00000000000000000000"/>
@@ -960,7 +1031,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
               <style>solid</style>
             </hopsangui>
           </connect>
-          <connect endcomponent="Stop_simulation" startcomponent="Greater_Than_Comparer" endport="in" startport="out">
+          <connect endcomponent="Stop_simulation" startport="out" endport="in" startcomponent="Greater_Than_Comparer">
             <hopsangui>
               <coordinates>
                 <coordinate x="2354.50000000000000000000" y="2029.00000000000000000000"/>
@@ -980,7 +1051,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
       </system>
     </objects>
     <connections>
-      <connect endcomponent="TestGain" startcomponent="TestStep" endport="in" startport="out">
+      <connect endcomponent="TestGain" startport="out" endport="in" startcomponent="TestStep">
         <hopsangui>
           <coordinates>
             <coordinate x="2332.50000000000000000000" y="2494.00000000000000000000"/>
@@ -992,7 +1063,7 @@ NumhopSetValue.y = (sub_a + sub_b ) * ShadowParamGain.k</numhopscript>
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endcomponent="Subsystem" startcomponent="TestConstant" endport="SubPortIn" startport="y">
+      <connect endcomponent="Subsystem" startport="y" endport="SubPortIn" startcomponent="TestConstant">
         <hopsangui>
           <coordinates>
             <coordinate x="2172.50000000000000000000" y="2310.00000000000000000000"/>
