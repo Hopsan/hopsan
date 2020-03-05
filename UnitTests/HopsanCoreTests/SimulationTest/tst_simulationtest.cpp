@@ -54,68 +54,76 @@ const std::string defaultLibraryFilePath = "";
 using namespace hopsan;
 
 Q_DECLARE_METATYPE(bool)
-Q_DECLARE_METATYPE(ComponentSystem*)
+Q_DECLARE_METATYPE(HString)
 Q_DECLARE_METATYPE(Component*)
 Q_DECLARE_METATYPE(Port*)
-Q_DECLARE_METATYPE(HString)
 Q_DECLARE_METATYPE(Node*)
+
 
 class SimulationTests : public QObject
 {
     Q_OBJECT
 
 private:
+
+    void getComponent(const HString& fullCompName, Component** ppComponent) {
+        HVector<HString> nameParts = fullCompName.split('.');
+        QVERIFY(nameParts.size() >= 1);
+
+        // Seek into subsystems
+        ComponentSystem* pEvalSystem = mpSystemFromFile;
+        Component* pComp = nullptr;
+        HVector<HString> compNameParts = nameParts.first().split('$');
+        for (size_t i=0; i < compNameParts.size(); ++i) {
+            pComp = pEvalSystem->getSubComponent(compNameParts[i]);
+            if (pComp->isComponentSystem()) {
+                pEvalSystem = dynamic_cast<ComponentSystem*>(pComp);
+            }
+        }
+        QVERIFY(pComp);
+        *ppComponent = pComp;
+    }
+
+    void getSystem(const HString& fullSystemCompName, ComponentSystem** ppSystem) {
+        if (fullSystemCompName.empty()) {
+            return;
+        }
+        Component* pComp = nullptr;
+        getComponent(fullSystemCompName, &pComp);
+        QVERIFY(pComp->isComponentSystem());
+        *ppSystem = dynamic_cast<ComponentSystem*>(pComp);
+    }
+
+    void getPort(const HString& fullPortName, Port** ppPort) {
+        Component* pComp;
+        getComponent(fullPortName, &pComp);
+
+        HVector<HString> parts = fullPortName.split('.');
+        QVERIFY(parts.size() >= 2);
+
+        Port* pPort = pComp->getPort(parts.last());
+        QVERIFY(pPort);
+        *ppPort = pPort;
+    }
+
+
     HopsanEssentials mHopsanCore;
-    ComponentSystem *mpSystemFromText = nullptr;
+
     ComponentSystem *mpSystemFromFile = nullptr;
 
+
 private slots:
-    void initTestCase() {
+    void init() {
         bool did_load = mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
         QVERIFY2(did_load, qPrintable(QString("Could not load default component library: ")+QString::fromStdString(defaultLibraryFilePath)));
 
-        const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                "<hopsanmodelfile hmfversion=\"0.4\" hopsanguiversion=\"0.6.0\" hopsancoreversion=\"0.6.0\">"
-                "  <system logsamples=\"2048\" typename=\"Subsystem\" name=\"unittestmodel\">"
-                "    <simulationtime stop=\"10\" timestep=\"0.001\" start=\"0\" inherit_timestep=\"true\"/>"
-                "    <parameters>"
-                "      <parameter unit=\"\" value=\"7\" type=\"double\" name=\"apa\"/>"
-                "    </parameters>"
-                "    <aliases/>"
-                "    <objects>"
-                "      <component typename=\"SignalStep\" name=\"TestStep\">"
-                "        <parameters>"
-                "          <parameter unit=\"-\" value=\"-5\" type=\"double\" name=\"y_0#Value\"/>"
-                "          <parameter unit=\"-\" value=\"5\" type=\"double\" name=\"y_A#Value\"/>"
-                "          <parameter unit=\"-\" value=\"apa\" type=\"double\" name=\"t_step#Value\"/>"
-                "        </parameters>"
-                "        <ports>"
-                "          <port nodetype=\"NodeSignal\" name=\"out\"/>"
-                "        </ports>"
-                "      </component>"
-                "      <component typename=\"SignalGain\" name=\"TestGain\">"
-                "        <parameters>"
-                "          <parameter unit=\"-\" value=\"0\" type=\"double\" name=\"in_bottom#Value\"/>"
-                "        </parameters>"
-                "        <ports>"
-                "          <port nodetype=\"NodeSignal\" name=\"in_right\"/>"
-                "          <port nodetype=\"NodeSignal\" name=\"in\"/>"
-                "          <port nodetype=\"NodeSignal\" name=\"in_bottom\"/>"
-                "        </ports>"
-                "      </component>"
-                "    </objects>"
-                "    <connections>"
-                "      <connect endport=\"in\" endcomponent=\"TestGain\" startport=\"out\" startcomponent=\"TestStep\"/>"
-                "    </connections>"
-                "  </system>"
-                "</hopsanmodelfile>"
-                "";
-
         double startT, stopT;
-        mpSystemFromText = mHopsanCore.loadHMFModel(xmlStr, startT, stopT);
-        QVERIFY2(mpSystemFromText, "Could not load system from hmf text");
         mpSystemFromFile = mHopsanCore.loadHMFModelFile(TEST_DATA_ROOT "unittestmodel.hmf",startT,stopT);
-        QVERIFY2(mpSystemFromText, "Could not load system from " TEST_DATA_ROOT "unittestmodel.hmf");
+        QVERIFY2(mpSystemFromFile, "Could not load system from " TEST_DATA_ROOT "unittestmodel.hmf");
+    }
+
+    void cleanup() {
+        mHopsanCore.removeComponent(mpSystemFromFile);
     }
 
     void HopsanCore_Create_Component()
@@ -213,8 +221,8 @@ private slots:
 
     void HopsanCore_Create_Node()
     {
-        QFETCH(HString, typeName);
-        Node *pNode = mHopsanCore.createNode(typeName);
+        QFETCH(QString, typeName);
+        Node *pNode = mHopsanCore.createNode(qPrintable(typeName));
         bool ok = pNode;
         QVERIFY2(ok, "Failed to create node!");
         mHopsanCore.removeNode(pNode);
@@ -222,92 +230,72 @@ private slots:
 
     void HopsanCore_Create_Node_data()
     {
-        QTest::addColumn<HString>("typeName");
-        QTest::newRow("0") << HString("NodeSignal");
-        QTest::newRow("1") << HString("NodeHydraulic");
-        QTest::newRow("2") << HString("NodePneumatic");
-        QTest::newRow("3") << HString("NodeElectric");
-        QTest::newRow("4") << HString("NodeMechanic");
-        QTest::newRow("5") << HString("NodeMechanicRotational");
-        QTest::newRow("6") << HString("NodePetriNet");
-    }
-
-    void Load_System()
-    {
-        QFETCH(ComponentSystem*, system);
-        QVERIFY2(system != 0,"Failed to load system!");
-    }
-
-    void Load_System_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
-    }
-
-    void Load_System_Parameter()
-    {
-        QFETCH(ComponentSystem*, system);
-        QVERIFY2(system->hasParameter("apa"), "Failed to load system parameter!");
-        QVERIFY2(system->getParameter("apa")->getValue().compare("7"), "Failed to load system parameter value!");
-    }
-
-    void Load_System_Parameter_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
+        QTest::addColumn<QString>("typeName");
+        QTest::newRow("0") << "NodeSignal";
+        QTest::newRow("1") << "NodeHydraulic";
+        QTest::newRow("2") << "NodePneumatic";
+        QTest::newRow("3") << "NodeElectric";
+        QTest::newRow("4") << "NodeMechanic";
+        QTest::newRow("5") << "NodeMechanicRotational";
+        QTest::newRow("6") << "NodePetriNet";
     }
 
     void Load_Component()
     {
-        QFETCH(ComponentSystem*, system);
-        QFETCH(HString, name);
-        QVERIFY2(system->haveSubComponent(name), "Failed to load sub component!");
+        QFETCH(QString, name);
+        QVERIFY2(mpSystemFromFile->haveSubComponent(qPrintable(name)), "Failed to load sub component!");
     }
 
     void Load_Component_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::addColumn<HString>("name");
-        QTest::newRow("0") << mpSystemFromText << HString("TestStep");
-        QTest::newRow("1") << mpSystemFromText << HString("TestGain");
-        QTest::newRow("2") << mpSystemFromFile << HString("TestStep");
-        QTest::newRow("3") << mpSystemFromFile << HString("TestGain");
+        QTest::addColumn<QString>("name");
+        QTest::newRow("2") << "TestStep";
+        QTest::newRow("3") << "TestGain";
     }
 
     void Load_Connect()
     {
-        QFETCH(ComponentSystem*, system);
-        Component *pStep = system->getSubComponent("TestStep");
-        Component *pScope = system->getSubComponent("TestGain");
-        QVERIFY2(pStep->getPort("out")->isConnectedTo(pScope->getPort("in")), "Failed to load connection!");
+        QFETCH(QString, port1);
+        QFETCH(QString, port2);
+        Port *pPort1, *pPort2;
+        getPort(qPrintable(port1), &pPort1);
+        getPort(qPrintable(port2), &pPort2);
+        QVERIFY2(pPort1->isConnectedTo(pPort2), "Failed to load connection!");
     }
 
     void Load_Connect_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
+        QTest::addColumn<QString>("port1");
+        QTest::addColumn<QString>("port2");
+
+        QTest::newRow("1") << "TestStep.out" << "TestGain.in";
     }
 
     void Load_Parameter()
     {
-        QFETCH(Component*, comp);
-        HString parVal;
-        comp->getParameterValue("y_0#Value", parVal);
-        QVERIFY2(parVal.compare("-5"), "Failed to load sub component parameter value!");
-        comp->getParameterValue("y_A#Value", parVal);
-        QVERIFY2(parVal.compare("5"),"Failed to load sub component parameter value!");
-        comp->getParameterValue("t_step#Value", parVal);
-        QVERIFY2(parVal.compare("apa"), "Failed to load sub component parameter value (system parameter)!");
+        QFETCH(QString, compName);
+        QFETCH(QString, paramName);
+        QFETCH(QString, expectedParamValue);
+        HString hCompName(qPrintable(compName));
+        HString hParamName(qPrintable(paramName));
+        HString hExpectedParamValue(qPrintable(expectedParamValue));
+        Component* pComp;
+        getComponent(hCompName, &pComp);
+
+        HString actualParamVal;
+        pComp->getParameterValue(hParamName, actualParamVal);
+        QVERIFY2(actualParamVal.compare(hExpectedParamValue), "Failed to load sub component parameter value!");
+
     }
 
     void Load_Parameter_data()
     {
-        QTest::addColumn<Component*>("comp");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep");
-        QTest::newRow("1") << mpSystemFromFile->getSubComponent("TestStep");
+        QTest::addColumn<QString>("compName");
+        QTest::addColumn<QString>("paramName");
+        QTest::addColumn<QString>("expectedParamValue");
+        QTest::newRow("1") << "TestStep" << "y_0#Value" << "-5";
+        QTest::newRow("2") << "TestStep" << "y_A#Value" << "5";
+        QTest::newRow("3") << "TestStep" << "t_step#Value" << "apa";
     }
 
     void System_Set_Parameter()
@@ -319,13 +307,7 @@ private slots:
         QFETCH(HString, expectedEvaluatedParamValue);
 
         ComponentSystem* pEvalSystem = mpSystemFromFile;
-        if (!subSystemName.empty()) {
-            HVector<HString> nameParts = subSystemName.split('$');
-            for (size_t i=0; i < nameParts.size(); ++i) {
-                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
-            }
-        }
-        QVERIFY(pEvalSystem != nullptr);
+        getSystem(subSystemName, &pEvalSystem);
 
         pEvalSystem->setParameterValue(paramName, paramValue);
         HString actualValue;
@@ -362,12 +344,6 @@ private slots:
         paramValue = "-sub_int_a";
         expectedEvaluatedParamValue = "-1";
         QTest::newRow("1") << evalSystem << paramName << paramType << paramValue << expectedEvaluatedParamValue;
-        // --- RESET ---
-        //! @todo make it so that tests do not pollute each other
-        paramValue = "sub_int_a";
-        expectedEvaluatedParamValue = "1";
-        QTest::newRow("1reset") << evalSystem << paramName << paramType << paramValue << expectedEvaluatedParamValue;
-        // ---
     }
 
     void System_GetAndEval_Parameter()
@@ -380,13 +356,7 @@ private slots:
         QFETCH(double, expectedDValue);
 
         ComponentSystem* pEvalSystem = mpSystemFromFile;
-        if (!subSystemName.empty()) {
-            HVector<HString> nameParts = subSystemName.split('$');
-            for (size_t i=0; i < nameParts.size(); ++i) {
-                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
-            }
-        }
-        QVERIFY(pEvalSystem != nullptr);
+        getSystem(subSystemName, &pEvalSystem);
 
         QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
         HString actualValue;
@@ -528,13 +498,7 @@ private slots:
         QFETCH(int, expectedIValue);
 
         ComponentSystem* pEvalSystem = mpSystemFromFile;
-        if (!subSystemName.empty()) {
-            HVector<HString> nameParts = subSystemName.split('$');
-            for (size_t i=0; i < nameParts.size(); ++i) {
-                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
-            }
-        }
-        QVERIFY(pEvalSystem != nullptr);
+        getSystem(subSystemName, &pEvalSystem);
 
         QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
         HString actualValue;
@@ -602,13 +566,7 @@ private slots:
         QFETCH(bool, expectedBValue);
 
         ComponentSystem* pEvalSystem = mpSystemFromFile;
-        if (!subSystemName.empty()) {
-            HVector<HString> nameParts = subSystemName.split('$');
-            for (size_t i=0; i < nameParts.size(); ++i) {
-                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
-            }
-        }
-        QVERIFY(pEvalSystem != nullptr);
+        getSystem(subSystemName, &pEvalSystem);
 
         QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
         HString actualValue;
@@ -678,13 +636,7 @@ private slots:
 
 
         ComponentSystem* pEvalSystem = mpSystemFromFile;
-        if (!subSystemName.empty()) {
-            HVector<HString> nameParts = subSystemName.split('$');
-            for (size_t i=0; i < nameParts.size(); ++i) {
-                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
-            }
-        }
-        QVERIFY(pEvalSystem != nullptr);
+        getSystem(subSystemName, &pEvalSystem);
 
         QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
         HString actualValue;
@@ -781,13 +733,7 @@ private slots:
         QVERIFY(mpSystemFromFile->initialize(0, 10));
 
         ComponentSystem* pEvalSystem = mpSystemFromFile;
-        if (!subSystemName.empty()) {
-            HVector<HString> nameParts = subSystemName.split('$');
-            for (size_t i=0; i < nameParts.size(); ++i) {
-                pEvalSystem = pEvalSystem->getSubComponentSystem(nameParts[i]);
-            }
-        }
-        QVERIFY(pEvalSystem != nullptr);
+        getSystem(subSystemName, &pEvalSystem);
 
         HString eval_output;
         bool numhopEvalOK = pEvalSystem->runNumHopScript(script, true, eval_output);
@@ -815,15 +761,11 @@ private slots:
         HString evalSystem, script, expectedValue;
         bool expectEvalOK;
 
-        HString expected_apa_value;
-        mpSystemFromFile->getParameterValue("apa", expected_apa_value);
-
-
         // NumHop can use system parameters in this system directly,
         evalSystem = mainsystem;
         script = "TestConstant.y = self.apa";
         expectEvalOK = true;
-        expectedValue = expected_apa_value;
+        expectedValue = "7";
         QTest::newRow("0") << evalSystem << script << expectEvalOK << expectedValue;
 
         // NumHop can use system parameters in this system directly, even if one of them points to a value in the current systems parent system
@@ -874,234 +816,216 @@ private slots:
 
     void System_Add_And_Remove_Component()
     {
-        QFETCH(ComponentSystem*, system);
         Component *pComp = mHopsanCore.createComponent("SignalSink");
         pComp->setName("AddComponentTest");
-        system->addComponent(pComp);
-        QVERIFY2(system->haveSubComponent("AddComponentTest"), "Failed to add component to system.");
-        system->removeSubComponent("AddComponentTest");
-        QVERIFY2(!system->haveSubComponent("AddComponentTest"), "Failed to remove component from system.");
+        mpSystemFromFile->addComponent(pComp);
+        QVERIFY2(mpSystemFromFile->haveSubComponent("AddComponentTest"), "Failed to add component to system.");
+        mpSystemFromFile->removeSubComponent("AddComponentTest");
+        QVERIFY2(!mpSystemFromFile->haveSubComponent("AddComponentTest"), "Failed to remove component from system.");
         mHopsanCore.removeComponent(pComp);
-    }
-
-    void System_Add_And_Remove_Component_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
     }
 
     void System_Rename_Component()
     {
-        QFETCH(ComponentSystem*, system);
-        QFETCH(HString, comp);
+        QFETCH(HString, compname);
+        QFETCH(HString, new_compname);
 
-        Component *pComp = system->getSubComponent(comp);
-        system->renameSubComponent(comp, "gris");
-        QVERIFY2(pComp->getName().compare("gris"), "Failed to rename sub component.");
-        system->renameSubComponent("gris", comp);
-        QVERIFY2(pComp->getName().compare(comp), "Failed to rename sub component.");
+        Component *pComp = mpSystemFromFile->getSubComponent(compname);
+        mpSystemFromFile->renameSubComponent(compname, new_compname);
+        QVERIFY2(pComp->getName().compare(new_compname), "Failed to rename sub component.");
+        mpSystemFromFile->renameSubComponent(new_compname, compname);
+        QVERIFY2(pComp->getName().compare(compname), "Failed to rename sub component back.");
     }
 
     void System_Rename_Component_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::addColumn<HString>("comp");
-        QTest::newRow("0") << mpSystemFromText << HString("TestStep");
+        QTest::addColumn<HString>("compname");
+        QTest::addColumn<HString>("new_compname");
+        QTest::newRow("0") << HString("TestStep") << HString("NewName");
     }
 
     void System_Disconnect_Connect()
     {
-        QFETCH(ComponentSystem*, system);
-        QFETCH(HString, comp1);
-        QFETCH(HString, port1);
-        QFETCH(HString, comp2);
-        QFETCH(HString, port2);
+        QFETCH(QString, fullPortName1);
+        QFETCH(QString, fullPortName2);
 
-        system->disconnect(comp1,port1,comp2,port2);
-        QVERIFY2(!system->getSubComponent(comp1)->getPort(port1)->isConnectedTo(system->getSubComponent(comp2)->getPort(port2)), "Failed to disconnect ports.");
-        system->connect(comp1,port1,comp2,port2);
-        QVERIFY2(system->getSubComponent(comp1)->getPort(port1)->isConnectedTo(system->getSubComponent(comp2)->getPort(port2)), "Failed to disconnect ports.");
+        Port *pPort1, *pPort2;
+        getPort(qPrintable(fullPortName1), &pPort1);
+        getPort(qPrintable(fullPortName2), &pPort2);
+
+        HString comp1 = qPrintable(fullPortName1.split(".")[0]);
+        HString port1 = qPrintable(fullPortName1.split(".")[1]);
+        HString comp2 = qPrintable(fullPortName2.split(".")[0]);
+        HString port2 = qPrintable(fullPortName2.split(".")[1]);
+
+        mpSystemFromFile->disconnect(comp1,port1,comp2,port2);
+        QVERIFY2(!pPort1->isConnectedTo(pPort2), "Failed to disconnect ports.");
+        mpSystemFromFile->connect(comp1,port1,comp2,port2);
+        QVERIFY2(pPort1->isConnectedTo(pPort2), "Failed to disconnect ports.");
     }
 
     void System_Disconnect_Connect_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::addColumn<HString>("comp1");
-        QTest::addColumn<HString>("port1");
-        QTest::addColumn<HString>("comp2");
-        QTest::addColumn<HString>("port2");
-        QTest::newRow("0") << mpSystemFromText << HString("TestStep") << HString("out") << HString("TestGain") << HString("in");
+        QTest::addColumn<QString>("fullPortName1");
+        QTest::addColumn<QString>("fullPortName2");
+        QTest::newRow("0") << "TestStep.out" << "TestGain.in";
     }
 
     void System_Get_Set_Timestep()
     {
-        QFETCH(ComponentSystem*, system);
+        QFETCH(double, timestep);
 
-        system->setDesiredTimestep(0.005);
-        QVERIFY2(system->getDesiredTimeStep() == 0.005, "Failed to get or set time step.");
+        mpSystemFromFile->setDesiredTimestep(timestep);
+        QVERIFY2(mpSystemFromFile->getDesiredTimeStep() == timestep, "Failed to get or set time step.");
     }
 
     void System_Get_Set_Timestep_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
+        QTest::addColumn<double>("timestep");
+        QTest::newRow("0") << 0.005;
     }
 
     void System_Inherit_Timestep()
     {
-        QFETCH(ComponentSystem*, system);
+        QFETCH(bool, inheritTimestep);
 
-        system->setInheritTimestep(true);
-        QVERIFY2(system->doesInheritTimestep(), "Failed to set inherit time step.");
-        system->setInheritTimestep(false);
+        mpSystemFromFile->setInheritTimestep(inheritTimestep);
+        QVERIFY2(mpSystemFromFile->doesInheritTimestep() == inheritTimestep, "Failed to set inherit time step.");
     }
 
     void System_Inherit_Timestep_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
+        QTest::addColumn<bool>("inheritTimestep");
+        QTest::newRow("true") << true;
+        QTest::newRow("false") << false;
     }
 
     void System_Num_Log_Samples()
     {
         //! @todo Also test his by running a simulation
-        QFETCH(ComponentSystem*, system);
+        QFETCH(size_t, numLogsamples);
 
-        system->setNumLogSamples(1337);
-        QVERIFY2(system->getNumLogSamples() == 1337, "Failed to get or set number of log samples.");
+        mpSystemFromFile->setNumLogSamples(numLogsamples);
+        QVERIFY2(mpSystemFromFile->getNumLogSamples() == numLogsamples, "Failed to get or set number of log samples.");
     }
 
     void System_Num_Log_Samples_data()
     {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
+        QTest::addColumn<size_t>("numLogsamples");
+        QTest::newRow("0") << static_cast<size_t>(1337);
     }
 
     void System_Initialize()
     {
-        QFETCH(ComponentSystem*, system);
-        system->setDesiredTimestep(0.001);
-        system->setNumLogSamples(1024);
-        QVERIFY2(system->initialize(0,10), "Failed to initialize system!");
-    }
-
-    void System_Initialize_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
+        mpSystemFromFile->setDesiredTimestep(0.001);
+        mpSystemFromFile->setNumLogSamples(1024);
+        QVERIFY2(mpSystemFromFile->initialize(0,10), "Failed to initialize system!");
     }
 
     void System_Simulate()
     {
-        QFETCH(ComponentSystem*, system);
-        QVERIFY(system->initialize(0, 10.0));
-        system->simulate(10.0);
-        QVERIFY2(system->getLogTimeVector()->size() == 1024, "Failed to simulate system!");
-        QVERIFY2(system->getNumActuallyLoggedSamples() == 1024, "Failed to simulate system!");
-    }
-
-    void System_Simulate_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
+        QVERIFY(mpSystemFromFile->initialize(0, 10.0));
+        mpSystemFromFile->simulate(10.0);
+        QVERIFY2(mpSystemFromFile->getLogTimeVector()->size() == 2048, "Failed to simulate system!");
+        QVERIFY2(mpSystemFromFile->getNumActuallyLoggedSamples() == 2048, "Failed to simulate system!");
     }
 
     void System_Simulate_Multicore()
     {
-        QFETCH(ComponentSystem*, system);
-        QVERIFY(system->initialize(0, 10.0));
-        system->simulateMultiThreaded(0, 10.0);
-        QVERIFY2(system->getLogTimeVector()->size() == 1024, "Failed to simulate system!");
-        QVERIFY2(system->getNumActuallyLoggedSamples() == 1024, "Failed to simulate system!");
+        QVERIFY(mpSystemFromFile->initialize(0, 10.0));
+        mpSystemFromFile->simulateMultiThreaded(0, 10.0);
+        QVERIFY2(mpSystemFromFile->getLogTimeVector()->size() == 2048, "Failed to simulate system!");
+        QVERIFY2(mpSystemFromFile->getNumActuallyLoggedSamples() == 2048, "Failed to simulate system!");
 
-        std::vector<double> multiResults1 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(0);
-        std::vector<double> multiResults2 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(511);
-        std::vector<double> multiResults3 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(1023);
-        system->simulate(10.0);
-        std::vector<double> singleResults1 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(0);
-        std::vector<double> singleResults2 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(511);
-        std::vector<double> singleResults3 = system->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(1023);
+        std::vector<double> multiResults1 = mpSystemFromFile->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(0);
+        std::vector<double> multiResults2 = mpSystemFromFile->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(511);
+        std::vector<double> multiResults3 = mpSystemFromFile->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(1023);
+        mpSystemFromFile->simulate(10.0);
+        std::vector<double> singleResults1 = mpSystemFromFile->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(0);
+        std::vector<double> singleResults2 = mpSystemFromFile->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(511);
+        std::vector<double> singleResults3 = mpSystemFromFile->getSubComponent("TestStep")->getPort("out")->getLogDataVectorPtr()->at(1023);
         QVERIFY2(multiResults1 == singleResults1, "Single-threaded and multi-threaded simulation gave different results!");
         QVERIFY2(multiResults2 == singleResults2, "Single-threaded and multi-threaded simulation gave different results!");
         QVERIFY2(multiResults3 == singleResults3, "Single-threaded and multi-threaded simulation gave different results!");
     }
 
-    void System_Simulate_Multicore_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
-    }
-
     void Component_Set_Parameter()
     {
-        QFETCH(Component*, comp);
-        QFETCH(HString, parName);
-        QFETCH(HString, parVal);
+        QFETCH(QString, compName);
+        QFETCH(QString, parName);
+        QFETCH(QString, parVal);
 
+        Component* pComp = mpSystemFromFile->getSubComponent(qPrintable(compName));
+        QVERIFY(pComp);
+        pComp->setParameterValue(qPrintable(parName), qPrintable(parVal));
         HString value;
-        comp->setParameterValue(parName, parVal);
-        comp->getParameterValue(parName, value);
-        QVERIFY2(value.compare(parVal), "Failed to set parameter value.");
+        pComp->getParameterValue(qPrintable(parName), value);
+        QVERIFY2(value.compare(qPrintable(parVal)), "Failed to set parameter value.");
     }
 
     void Component_Set_Parameter_data()
     {
-        QTest::addColumn<Component*>("comp");
-        QTest::addColumn<HString>("parName");
-        QTest::addColumn<HString>("parVal");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("y_0#Value") << HString("4");
-        QTest::newRow("1") << mpSystemFromText->getSubComponent("TestStep") << HString("y_0#Value") << HString("apa");
+        QTest::addColumn<QString>("compName");
+        QTest::addColumn<QString>("parName");
+        QTest::addColumn<QString>("parVal");
+        QTest::newRow("0") << "TestStep" << "y_0#Value" << "4";
+        QTest::newRow("1") << "TestStep" << "y_0#Value" << "apa";
     }
 
     void Component_Get_Name()
     {
-        QFETCH(Component*, comp);
-        QFETCH(HString, name);
+        QFETCH(QString, compName);
+        HString hCompName = qPrintable(compName);
 
-        QVERIFY2(comp->getName().compare(name), "Failed to get component name.");
+        Component* pComp = mpSystemFromFile->getSubComponent(hCompName);
+        QVERIFY(pComp);
+        QVERIFY2(pComp->getName().compare(hCompName), "Failed to get component name.");
     }
 
     void Component_Get_Name_data()
     {
-        QTest::addColumn<Component*>("comp");
-        QTest::addColumn<HString>("name");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("TestStep");
-        QTest::newRow("1") << mpSystemFromText->getSubComponent("TestGain") << HString("TestGain");
+        QTest::addColumn<QString>("compName");
+        QTest::newRow("0") << "TestStep";
+        QTest::newRow("1") << "TestGain";
     }
 
     void Component_Get_Typename()
     {
-        QFETCH(Component*, comp);
-        QFETCH(HString, typeName);
-        QVERIFY2(comp->getTypeName().compare(typeName), "Failed to get component type name.");
+        QFETCH(QString, compName);
+        QFETCH(QString, expectedTypeName);
+        Component* pComp = mpSystemFromFile->getSubComponent(qPrintable(compName));
+        QVERIFY(pComp);
+        QVERIFY2(pComp->getTypeName().compare(qPrintable(expectedTypeName)), "Failed to get component type name.");
     }
 
     void Component_Get_Typename_data()
     {
-        QTest::addColumn<Component*>("comp");
-        QTest::addColumn<HString>("typeName");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("SignalStep");
-        QTest::newRow("1") << mpSystemFromText->getSubComponent("TestGain") << HString("SignalGain");
+        QTest::addColumn<QString>("compName");
+        QTest::addColumn<QString>("expectedTypeName");
+        QTest::newRow("0") << "TestStep" << "SignalStep";
+        QTest::newRow("1") << "TestGain" << "SignalGain";
     }
 
     void Component_Has_Parameter()
     {
-        QFETCH(Component*, comp);
-        QFETCH(HString, parName);
-        QVERIFY2(comp->hasParameter(parName), "Failed in hasParameter()!");
+        QFETCH(QString, compName);
+        QFETCH(QString, parName);
+        QFETCH(bool, expectHasParameter);
+
+        Component* pComp = mpSystemFromFile->getSubComponent(qPrintable(compName));
+        QVERIFY(pComp);
+        QVERIFY(pComp->hasParameter(qPrintable(parName)) == expectHasParameter);
     }
 
     void Component_Has_Parameter_data()
     {
-        QTest::addColumn<Component*>("comp");
-        QTest::addColumn<HString>("parName");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("y_0#Value");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("y_A#Value");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep") << HString("t_step#Value");
+        QTest::addColumn<QString>("compName");
+        QTest::addColumn<QString>("parName");
+        QTest::addColumn<bool>("expectHasParameter");
+        QTest::newRow("0") << "TestStep" << "y_0#Value" << true;
+        QTest::newRow("1") << "TestStep" << "y_A#Value" << true;
+        QTest::newRow("2") << "TestStep" << "t_step#Value"  << true;
+        QTest::newRow("3") << "TestStep" << "t_step#Value2"  << false;
     }
 
     void Component_GetAndEval_Parameter()
@@ -1112,13 +1036,8 @@ private slots:
         QFETCH(HString, expectedValue);
         QFETCH(HString, expectedEvaluatedValue);
 
-        HVector<HString> compNameParts = compName.split('$');
-        ComponentSystem* pEvalSystem = mpSystemFromFile;
-        for (size_t i=0; i < std::max(compNameParts.size(), static_cast<size_t>(1)) - 1; ++i) {
-            pEvalSystem = pEvalSystem->getSubComponentSystem(compNameParts[i]);
-        }
-        Component* pComponent = pEvalSystem->getSubComponent(compNameParts.last());
-        QVERIFY2(pComponent != nullptr, "Could not get component");
+        Component* pComponent;
+        getComponent(compName, &pComponent);
 
         QVERIFY(pComponent->hasParameter(paramName));
         HString actualValue;
@@ -1201,51 +1120,62 @@ private slots:
 
     void Port_Get_Name()
     {
-        QFETCH(Port*, port);
-        QFETCH(HString, name);
+        QFETCH(QString, compName);
+        QFETCH(QString, portName);
 
-        QVERIFY2(port->getName().compare(name), "Failed to get port name.");
+        Component* pComp = mpSystemFromFile->getSubComponent(qPrintable(compName));
+        QVERIFY(pComp);
+        Port* pPort = pComp->getPort(qPrintable(portName));
+        QVERIFY(pPort);
+
+        QVERIFY2(pPort->getName().compare(qPrintable(portName)), "Failed to get port name.");
     }
 
     void Port_Get_Name_data()
     {
-        QTest::addColumn<Port*>("port");
-        QTest::addColumn<HString>("name");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep")->getPort("out") << HString("out");
-        QTest::newRow("1") << mpSystemFromText->getSubComponent("TestGain")->getPort("in") << HString("in");
+        QTest::addColumn<QString>("compName");
+        QTest::addColumn<QString>("portName");
+        QTest::newRow("0") << "TestStep" << "out";
+        QTest::newRow("1") << "TestGain" << "in";
     }
 
     void Port_Get_Connected_Ports()
     {
-        QFETCH(Port*, port);
-        QFETCH(Port*, otherport);
+        QFETCH(QString, fullPortName1);
+        QFETCH(QString, fullPortName2);
 
-        QVERIFY2(port->getConnectedPorts().size() == 1, "Failed, getConnectedPorts return wrong number of ports.");
-        QVERIFY2(port->getConnectedPorts()[0] == otherport, "Failed to get connected ports.");
+        Port *pPort1, *pPort2;
+        getPort(qPrintable(fullPortName1), &pPort1);
+        getPort(qPrintable(fullPortName2), &pPort2);
+
+        QVERIFY2(pPort1->getConnectedPorts().size() == 1, "Failed, getConnectedPorts return wrong number of ports.");
+        QVERIFY2(pPort1->getConnectedPorts()[0] == pPort2, "Failed to get connected ports.");
     }
 
     void Port_Get_Connected_Ports_data()
     {
-        QTest::addColumn<Port*>("port");
-        QTest::addColumn<Port*>("otherport");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep")->getPort("out") <<
-                              mpSystemFromText->getSubComponent("TestGain")->getPort("in");
-        QTest::newRow("1") << mpSystemFromText->getSubComponent("TestGain")->getPort("in") <<
-                              mpSystemFromText->getSubComponent("TestStep")->getPort("out");
+        QTest::addColumn<QString>("fullPortName1");
+        QTest::addColumn<QString>("fullPortName2");
+        QTest::newRow("0") << "TestStep.out" << "TestGain.in";
+        QTest::newRow("1") << "TestGain.in"  << "TestStep.out";
     }
 
     void Port_Get_Component_Name()
     {
-        QFETCH(Port*, port);
-        QFETCH(HString, compName);
-        QVERIFY2(port->getComponentName().compare(compName), "Failed to get component name in port.");
+        QFETCH(QString, compName);
+        QFETCH(QString, portName);
+
+        Port* pPort;
+        getPort(qPrintable(compName+"."+portName), &pPort);
+
+        QVERIFY2(pPort->getComponentName().compare(qPrintable(compName)), "Failed to get component name in port.");
     }
 
     void Port_Get_Component_Name_data()
     {
-        QTest::addColumn<Port*>("port");
-        QTest::addColumn<HString>("compName");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep")->getPort("out") << HString("TestStep");
+        QTest::addColumn<QString>("compName");
+        QTest::addColumn<QString>("portName");
+        QTest::newRow("0") << "TestStep" << "out";
     }
 
     void Port_Is_Multiport()
@@ -1282,16 +1212,24 @@ private slots:
 
     void Node_Get_Write_Port_Component_Pointer()
     {
-        QFETCH(Node*, node);
-        QFETCH(Component*, comp);
-        QVERIFY2(node->getWritePortComponentPtr() == comp, "Failed to get write port component from node.");
+        QFETCH(QString, fullPortName);
+        QFETCH(QString, fullCompName);
+
+        Port *pPort;
+        getPort(qPrintable(fullPortName), &pPort);
+        Component* pWriteComp = pPort->getNodePtr()->getWritePortComponentPtr();
+
+        Component *pComp;
+        getComponent(qPrintable(fullCompName), &pComp);
+
+        QVERIFY2(pWriteComp == pComp, "Failed to get write port component from node.");
     }
 
     void Node_Get_Write_Port_Component_Pointer_data()
     {
-        QTest::addColumn<Node*>("node");
-        QTest::addColumn<Component*>("comp");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestGain")->getPort("in")->getNodePtr() << mpSystemFromText->getSubComponent("TestStep");
+        QTest::addColumn<QString>("fullPortName");
+        QTest::addColumn<QString>("fullCompName");
+        QTest::newRow("0") << "TestGain.in" << "TestStep";
     }
 
     void Version_Utilities()
