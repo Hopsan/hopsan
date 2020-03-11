@@ -48,7 +48,7 @@ double evaluateDoubleParameter(Component* pComponent, const HString &rName, bool
 
 }
 
-class HopsanParameterAccess :  public numhop::ExternalVariableStorage
+class HopsanParameterAccessBase :  public numhop::ExternalVariableStorage
 {
 public:
     bool setRegistered(const HString &name, double value)
@@ -83,7 +83,7 @@ protected:
     std::map<HString, double*> mRegisteredDataPtrs;
 };
 
-class HopsanSystemAccess : public HopsanParameterAccess
+class HopsanSystemAccess : public HopsanParameterAccessBase
 {
 public:
     HopsanSystemAccess(ComponentSystem *pSystem)
@@ -94,13 +94,9 @@ public:
     double externalValue(string name, bool &rFound) const
     {
         HString hname = name.c_str();
-        vector<HString> parts;
-        splitString(hname, '.', parts);
+        HVector<HString> parts = hname.split('.');
 
-        bool isSelfValue = false;
-        if (!parts.empty() && parts.front() == "self") {
-            isSelfValue = true;
-        }
+        const bool isSelfValue = (!parts.empty() && parts.first() == "self");
 
         // First check if the name represents a system parameter in this system
         if (isSelfValue) {
@@ -164,26 +160,20 @@ public:
     bool setExternalValue(string name, double value)
     {
         HString hname = name.c_str();
-        vector<HString> parts;
-        splitString(hname, '.', parts);
+        HVector<HString> parts = hname.split('.');
 
-        bool isSelfValue = false;
-        if (!parts.empty() && parts.front() == "self") {
-            isSelfValue = true;
-        }
+        const bool isSelfValue = (!parts.empty() && parts.first() == "self");
 
         // First check if the name represents a system parameter in this system
         if (isSelfValue) {
-            if (mpSystem->hasParameter(parts[1]))
+            if ((parts.size() == 2) && mpSystem->hasParameter(parts[1]))
             {
-                if (parts.size() == 2) {
-                    return mpSystem->setParameterValue(parts[1], to_hstring(value));
-                }
+                return mpSystem->setParameterValue(parts[1], to_hstring(value));
             }
         }
         else
         {
-            vector<HString> parts;
+            HVector<HString> parts;
             if (mpSystem->getAliasHandler().hasAlias(hname))
             {
                 parts.resize(3);
@@ -191,7 +181,7 @@ public:
             }
             else
             {
-                splitString(hname, '.', parts);
+                parts = hname.split('.');
             }
 
             // Now try to find the component/port/variable
@@ -225,7 +215,7 @@ private:
     ComponentSystem *mpSystem;
 };
 
-class HopsanComponentAccess : public HopsanParameterAccess
+class HopsanComponentAccess : public HopsanParameterAccessBase
 {
 public:
     HopsanComponentAccess(Component *pComponent)
@@ -245,33 +235,29 @@ public:
         }
 
         double value=-1;
-        HString valstring;
-        vector<HString> parts;
-        splitString(hname, '.', parts);
+        HVector<HString> parts = hname.split('.');
 
-        bool isSelfValue = false;
-        if (!parts.empty() && parts.front() == "self") {
-            isSelfValue = true;
-        }
+        const bool isSelfValue = (!parts.empty() && parts.first() == "self");
 
         bool evalOK=false;
         // Check if this is a local constant
         if (isSelfValue && (parts.size() == 2))
         {
-            mpComponent->getParameterValue(parts[1], valstring);
-            // The value!=parts[1] is a hack to avoid infinite recursion when the value of the parameter is the same as the parameter name
-            if (!valstring.empty() && valstring!=parts[1]) {
-                value = evaluateDoubleParameter(mpComponent, parts[1], evalOK);
+            HString paramName = parts[1];
+            // If not found, then try to add "Value", in case user is lazy and have not specified it for input or output start values
+            if (!mpComponent->hasParameter(paramName)) {
+                paramName = parts[1]+"#Value";
             }
+            value = evaluateDoubleParameter(mpComponent, paramName, evalOK);
         }
         // Check if this is a local port.value pair
         else if (isSelfValue && (parts.size() == 3))
         {
-            value = evaluateDoubleParameter(mpComponent, parts[1]+"#"+parts[2], evalOK);
+            HString paramName = parts[1]+"#"+parts[2];
+            value = evaluateDoubleParameter(mpComponent, paramName, evalOK);
         }
         // This seems to be a system parameter, recurse upwards in the model hierarcy until we find the parameter (or not)
         else if(parts.size() == 1) {
-            mpComponent->getParameterValue(parts[0], valstring);
             ComponentSystem* pSystemParent = mpComponent->getSystemParent();
             while (pSystemParent) {
                 value = evaluateDoubleParameter(pSystemParent, parts[0], evalOK);
@@ -296,35 +282,27 @@ public:
             return true;
         }
 
-        vector<HString> parts;
-        splitString(hname, '.', parts);
+        HVector<HString> parts = hname.split('.');
 
-        bool isSelfValue = false;
-        if (!parts.empty() && parts.front() == "self") {
-            isSelfValue = true;
-        }
+        const bool isSelfValue = (!parts.empty() && parts.first() == "self");
 
-        // Check if this is a local constant, or system parameter
-        bool didSet = false;
+        // Handle if this is a local constant, or InputVariable where user was lazy and did not add .Value
         if (isSelfValue && parts.size() == 2)
         {
             //! @todo speed this up by not looking every time (use data pointer)
-            didSet = mpComponent->setParameterValue(parts[1], to_hstring(value));
-
-            //! @todo we should not be able to set a system parameter from inside a component, but we should not allow setting an internal variable with the same name
-            // Try system parameter
-//            if (!didSet && mpComponent->getSystemParent() && mpComponent->getSystemParent()->hasParameter(parts[0]))
-//            {
-//                didSet= mpComponent->getSystemParent()->setParameterValue(parts[0], to_hstring(value));
-//            }
+            bool rc = mpComponent->setParameterValue(parts[1], to_hstring(value));
+            if (!rc) {
+                rc = mpComponent->setParameterValue(parts[1]+"#Value", to_hstring(value));
+            }
+            return rc;
         }
-        // Check if this is a local port.value pair
+        // Handle if this is a local port.data pair or explicit InputVariable.Value
         else if (isSelfValue && parts.size() == 3)
         {
-            didSet = mpComponent->setParameterValue(parts[1]+"#"+parts[2], to_hstring(value));
+            return mpComponent->setParameterValue(parts[1]+"#"+parts[2], to_hstring(value));
         }
 
-        return didSet;
+        return false;
     }
 
 private:
@@ -338,7 +316,7 @@ class NumHopHelperPrivate
 public:
     NumHopHelperPrivate() : mpHopsanAccess(0) {}
     numhop::VariableStorage mVarStorage;
-    HopsanParameterAccess *mpHopsanAccess;
+    HopsanParameterAccessBase *mpHopsanAccess;
     std::list<numhop::Expression> mExpressions;
 };
 

@@ -368,7 +368,7 @@ private slots:
           bool toDoubleOK;
           double actualDValue = actualValue.toDouble(&toDoubleOK);
           QVERIFY(toDoubleOK);
-          QVERIFY(expectedDValue == actualDValue);
+          QCOMPARE(expectedDValue, actualDValue);
         }
     }
 
@@ -507,9 +507,9 @@ private slots:
         bool evalOK = pEvalSystem->evaluateParameter(paramName, actualValue, "integer");
         QVERIFY(evalOK == expectEvalOK);
         bool numEvelOK;
-        int actualIValue = actualValue.toLongInt(&numEvelOK);
+        auto actualIValue = static_cast<int>(actualValue.toLongInt(&numEvelOK));
         QVERIFY(numEvelOK == true);
-        QVERIFY(expectedIValue == actualIValue);
+        QCOMPARE(expectedIValue, actualIValue);
     }
 
     void System_GetAndEval_Int_Parameter_data()
@@ -791,8 +791,9 @@ private slots:
         QTest::newRow("3") << evalSystem << script << expectEvalOK << expectedValue;
 
         // Evaluate system parameter together with an ordinary component parameter, when the parameters have the same name
-        // This does not work, because you can give them the same name exatly, in the system case # separator is OK but in the component name, the separator must be . for some reson
+        // This does not work, because you cant give them the same name exatly, in the system case # separator is OK but in the component name, the separator must be . for some reson
         // Under the hood . and # should be treeted equally, but this is not the case, but this is an edge-case
+        //! @todo Remove possibility to name system paremters wiht # in the name
         evalSystem = subsystem;
         script = "TestConstant.y = Add.in2 + in1#Value";
         expectEvalOK = false;
@@ -812,6 +813,51 @@ private slots:
         expectEvalOK = true;
         expectedValue = "6";
         QTest::newRow("6") << evalSystem << script << expectEvalOK << expectedValue;
+        // Test the same thing but explicitly add .Value for assignment and getting the value
+        evalSystem = subsystem;
+        script = "TestConstant.y.Value = NumhopSetValue.y.Value";
+        expectEvalOK = true;
+        expectedValue = "6";
+        QTest::newRow("7") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Test assigning same value using explicit .Value
+        evalSystem = subsystem;
+        script = "TestConstant.y.Value = TestConstant.y";
+        expectEvalOK = true;
+        expectedValue = "1";
+        QTest::newRow("8") << evalSystem << script << expectEvalOK << expectedValue;
+        evalSystem = subsystem;
+        script = "TestConstant.y = TestConstant.y.Value";
+        expectEvalOK = true;
+        expectedValue = "1";
+        QTest::newRow("9") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Test assign and read Powerport start value
+        evalSystem = mainsystem;
+        script = "TestPressureSource.p = 5; TestTank.P1.Flow = TestPressureSource.p; TestConstant.y = TestTank.P1.Flow ";
+        expectEvalOK = true;
+        expectedValue = "5";
+        QTest::newRow("10") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Test self variable assign
+        evalSystem = mainsystem;
+        script = "self.apa = 5; TestConstant.y = self.apa ";
+        expectEvalOK = true;
+        expectedValue = "5";
+        QTest::newRow("11") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Test numhop assign with incomplete name (in this case a local variable self will be created)
+        evalSystem = mainsystem;
+        script = "self = 123; TestConstant.y = self";
+        expectEvalOK = true;
+        expectedValue = "123";
+        QTest::newRow("12") << evalSystem << script << expectEvalOK << expectedValue;
+
+        // Test numhop assign with incomplete name, parameter name missing
+        script = "self. = 123";
+        expectEvalOK = false;
+        expectedValue = "-";
+        QTest::newRow("13") << evalSystem << script << expectEvalOK << expectedValue;
     }
 
     void System_Add_And_Remove_Component()
@@ -849,7 +895,7 @@ private slots:
         QFETCH(QString, fullPortName1);
         QFETCH(QString, fullPortName2);
 
-        Port *pPort1, *pPort2;
+        Port *pPort1 = nullptr, *pPort2 = nullptr;
         getPort(qPrintable(fullPortName1), &pPort1);
         getPort(qPrintable(fullPortName2), &pPort2);
 
@@ -876,7 +922,7 @@ private slots:
         QFETCH(double, timestep);
 
         mpSystemFromFile->setDesiredTimestep(timestep);
-        QVERIFY2(mpSystemFromFile->getDesiredTimeStep() == timestep, "Failed to get or set time step.");
+        QCOMPARE(mpSystemFromFile->getDesiredTimeStep(), timestep);
     }
 
     void System_Get_Set_Timestep_data()
@@ -954,13 +1000,33 @@ private slots:
         QFETCH(QString, compName);
         QFETCH(QString, parName);
         QFETCH(QString, parVal);
+        QFETCH(bool, expectSuccess);
+        QFETCH(QString, expectedEvaluatedParameterValue);
 
-        Component* pComp = mpSystemFromFile->getSubComponent(qPrintable(compName));
-        QVERIFY(pComp);
-        pComp->setParameterValue(qPrintable(parName), qPrintable(parVal));
-        HString value;
-        pComp->getParameterValue(qPrintable(parName), value);
-        QVERIFY2(value.compare(qPrintable(parVal)), "Failed to set parameter value.");
+        Component* pComp = nullptr;
+        getComponent(qPrintable(compName), &pComp);
+
+        const HString hParName = qPrintable(parName);
+        const HString hParVal = qPrintable(parVal);
+
+        HString previousValue, actualValue;
+        pComp->getParameterValue(hParName, previousValue);
+
+        pComp->setParameterValue(hParName, hParVal);
+
+        pComp->getParameterValue(hParName, actualValue);
+        bool hasChangedParameterValue = actualValue.compare(hParVal);
+        QVERIFY(hasChangedParameterValue == expectSuccess);
+        if (!hasChangedParameterValue) {
+            QVERIFY(actualValue == previousValue);
+        }
+        else {
+            HString evaluatedValue;
+            pComp->evaluateParameter(hParName, evaluatedValue, "double");
+            bool convertOK;
+            QCOMPARE(evaluatedValue.toDouble(&convertOK), expectedEvaluatedParameterValue.toDouble());
+            QVERIFY(convertOK);
+        }
     }
 
     void Component_Set_Parameter_data()
@@ -968,8 +1034,40 @@ private slots:
         QTest::addColumn<QString>("compName");
         QTest::addColumn<QString>("parName");
         QTest::addColumn<QString>("parVal");
-        QTest::newRow("0") << "TestStep" << "y_0#Value" << "4";
-        QTest::newRow("1") << "TestStep" << "y_0#Value" << "apa";
+        QTest::addColumn<bool>("expectSuccess");
+        QTest::addColumn<QString>("expectedEvaluatedParameterValue");
+
+        // Test set ordinary value, and system parameter names
+        QTest::newRow("0") << "TestStep" << "y_0#Value" << "4" << true << "4";
+        QTest::newRow("1") << "TestStep" << "y_0#Value" << "apa" << true << "7";
+        QTest::newRow("2") << "TestStep" << "y_0#Value" << "sysparThatDoesNotExist" << false << "-";
+        // Test setting signal value with and without explicitly using .Value
+        QTest::newRow("3") << "TestGain" << "k#Value" << "self.in.Value" << true << "0";
+        QTest::newRow("4") << "TestGain" << "k#Value" << "self.in" << true << "0";
+        // Expect failure of self assignment when setting signal value with and without explicitly using .Value
+        QTest::newRow("5") << "TestGain" << "k#Value" << "self.k.Value" << false << "-";
+        QTest::newRow("6") << "TestGain" << "k#Value" << "self.k" << false << "-";
+        // Test settings start values in Hydraulic TLM port
+        QTest::newRow("7") << "TestVolume" << "P1#Pressure" << "42" << true << "42";
+        QTest::newRow("8") << "TestVolume" << "P1#Pressure" << "apa" << true << "7";
+        QTest::newRow("9") << "TestVolume" << "P1#Pressure" << "sysparThatDoesNotExist" << false << "-";
+        QTest::newRow("10") << "TestVolume" << "P1#Pressure" << "self.P2.Flow" << true << "0.001";
+        QTest::newRow("11") << "TestVolume" << "P1#Pressure" << "self.P1.Pressure" << false << "-";
+        QTest::newRow("12") << "TestVolume" << "P1#Pressure" << "self.P2" << false << "-";
+        QTest::newRow("13") << "TestVolume" << "P1#Pressure" << "self.alpha" << true << "0.1";
+        QTest::newRow("14") << "TestVolume" << "P1#Pressure" << "self.alpha.Value" << true << "0.1";
+        QTest::newRow("15") << "TestVolume" << "P1#Pressure" << "self.alpha.DataTheDoesNotExist" << false << "-";
+        QTest::newRow("16") << "TestVolume" << "P1#Pressure" << "self.P2.DataTheDoesNotExist" << false << "-";
+        // Test that looping parameter is not working
+        QTest::newRow("16") << "TestVolume" << "P2#Pressure" << "self.P1.Pressure" << false << "-";
+        // Ensure that we can set a "multi-line" script in an expression
+        QTest::newRow("17") << "TestVolume" << "P2#Pressure" << "a=5; b=a*2; b" << true << "10";
+        // Ensure that we can assign an other parameter in an expression, this is really odd, but I see no point in preventing it
+        QTest::newRow("18") << "TestVolume" << "P2#Pressure" << "self.V = 5" << true << "5";
+        QTest::newRow("19") << "TestVolume" << "P2#Pressure" << "self.V = 5; 6" << true << "6";
+        QTest::newRow("20") << "TestVolume" << "P2#Pressure" << "6; self.V = 4" << true << "4";
+        QTest::newRow("21") << "TestVolume" << "P2#Pressure" << "self.alpha.Value = 4" << true << "4";
+        QTest::newRow("22") << "TestVolume" << "P2#Pressure" << "self.alpha = 4" << true << "4";
     }
 
     void Component_Get_Name()
@@ -1036,7 +1134,7 @@ private slots:
         QFETCH(HString, expectedValue);
         QFETCH(HString, expectedEvaluatedValue);
 
-        Component* pComponent;
+        Component* pComponent = nullptr;
         getComponent(compName, &pComponent);
 
         QVERIFY(pComponent->hasParameter(paramName));
@@ -1144,7 +1242,7 @@ private slots:
         QFETCH(QString, fullPortName1);
         QFETCH(QString, fullPortName2);
 
-        Port *pPort1, *pPort2;
+        Port *pPort1 = nullptr, *pPort2 = nullptr;
         getPort(qPrintable(fullPortName1), &pPort1);
         getPort(qPrintable(fullPortName2), &pPort2);
 
@@ -1165,7 +1263,7 @@ private slots:
         QFETCH(QString, compName);
         QFETCH(QString, portName);
 
-        Port* pPort;
+        Port* pPort = nullptr;
         getPort(qPrintable(compName+"."+portName), &pPort);
 
         QVERIFY2(pPort->getComponentName().compare(qPrintable(compName)), "Failed to get component name in port.");
@@ -1189,7 +1287,7 @@ private slots:
     {
         QTest::addColumn<Port*>("port");
         QTest::addColumn<bool>("multi");
-        Component *pComp;
+        Component *pComp = nullptr;
 
         pComp = mHopsanCore.createComponent("SignalGain");
         QTest::newRow("0") << pComp->getPort("in") << false;
@@ -1215,11 +1313,11 @@ private slots:
         QFETCH(QString, fullPortName);
         QFETCH(QString, fullCompName);
 
-        Port *pPort;
+        Port *pPort = nullptr;
         getPort(qPrintable(fullPortName), &pPort);
         Component* pWriteComp = pPort->getNodePtr()->getWritePortComponentPtr();
 
-        Component *pComp;
+        Component *pComp = nullptr;
         getComponent(qPrintable(fullCompName), &pComp);
 
         QVERIFY2(pWriteComp == pComp, "Failed to get write port component from node.");

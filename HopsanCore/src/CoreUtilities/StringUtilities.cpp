@@ -97,6 +97,7 @@ hopsan::HString hopsan::santizeName(const HString &rName)
     return name;
 }
 
+//! @deprecated Use HString::split(char delim) instead
 void hopsan::splitString(const HString &rString, const char delim, std::vector<HString> &rParts)
 {
     rParts.clear();
