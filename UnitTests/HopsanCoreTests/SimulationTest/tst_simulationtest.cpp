@@ -24,10 +24,6 @@
 
 #include <QtTest>
 
-#if __cplusplus < 201103L
-#define nullptr 0
-#endif
-
 #include "HopsanEssentials.h"
 #include "HopsanCoreVersion.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
