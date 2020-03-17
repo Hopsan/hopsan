@@ -10,8 +10,7 @@ TARGET = hopsangui
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
-QT += svg xml
-QT += core gui network
+QT += core gui network svg xml testlib
 CONFIG -= app_bundle
 
 isEqual(QT_MAJOR_VERSION, 5){
@@ -404,7 +403,8 @@ HEADERS += MainWindow.h \
     Utilities/WebviewWrapper.h \
     GeneratorUtils.h \
     Dialogs/OptimizationScriptWizard.h \
-    Widgets/TextEditorWidget.h
+    Widgets/TextEditorWidget.h \
+    HcomTest.hpp
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp
