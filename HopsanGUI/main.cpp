@@ -51,21 +51,29 @@
 #include "Widgets/HcomWidget.h"
 #include "HcomHandler.h"
 #include "Dialogs/LicenseDialog.h"
+#include "CoreAccess.h"
+#include "BuiltinTests.h"
 
 // Declare global pointers
-MainWindow* gpMainWindow = 0;
-QWidget *gpMainWindowWidget = 0;
 Configuration *gpConfig = 0;
 DesktopHandler *gpDesktopHandler = 0;
 CopyStack *gpCopyStack = 0;
-QSplashScreen *gpSplash = 0;
 GUIMessageHandler *gpMessageHandler = 0;
+
+MainWindow* gpMainWindow = 0;
+QWidget *gpMainWindowWidget = 0;
+QSplashScreen *gpSplash = 0;
+
+// Define global CoreVersion string
+QString gHopsanCoreVersion = getHopsanCoreVersion();
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    qRegisterMetaType<GUIMessage>("GUIMessage");
+    // Init application
+    int applicationReturnCode = 0;
+    QApplication app(argc, argv);
 
+    // Ensure C locale is used
     // Forcing numeric locale to C only using QLocale::setDefault() does not seem to help
     std::setlocale(LC_NUMERIC, "C");                // Set default C locale
     std::locale::global(std::locale::classic());    // Set default C++ locale (should also set default C locale)
@@ -81,75 +89,108 @@ int main(int argc, char *argv[])
     qDebug() << "C++ locale name: " << std::locale().name().c_str();
     qDebug() << "QLocale is: " << QLocale().name() << " " << " Decimal point: " << QLocale().decimalPoint();
 
-    // Create the mainwindow
-    MainWindow mainwindow;
-    gpMainWindow = &mainwindow;
-    gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
+    // Regsiter special types for signal/slots
+    qRegisterMetaType<GUIMessage>("GUIMessage");
 
-    // Create the splash screen
-    QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
-    gpSplash = new QSplashScreen(&mainwindow, pixmap/*, Qt::WindowStaysOnTopHint*/);
-    //! @todo We need to delete it somehow, but still be able to check if it has been deleted or not (perhaps a QPointer will work)
-    //gpSplash->setAttribute(Qt::WA_DeleteOnClose);
-    gpSplash->showMessage("Starting Hopsan...");
-    gpSplash->show();
+    // Create gloabl objects and set global pointers
+    DesktopHandler gDesktopHandler;
+    gDesktopHandler.setupPaths();
+    gpDesktopHandler = &gDesktopHandler;
+    Configuration gConfig;
+    gpConfig = &gConfig;
+    CopyStack gCopyStack;
+    gpCopyStack = &gCopyStack;
+    GUIMessageHandler gMessageHandler;
+    gpMessageHandler = &gMessageHandler;
 
-    // Create/set global objects
-    gpDesktopHandler = new DesktopHandler();
-    gpDesktopHandler->setupPaths();
-    gpConfig = new Configuration();
-    gpCopyStack = new CopyStack();
-    gpMessageHandler = new GUIMessageHandler();
-
-    gpConfig->connect(gpConfig, SIGNAL(recentModelsListChanged()), gpMainWindow, SLOT(updateRecentList()));
-
-    //Create contents in MainWindow
-    mainwindow.createContents();
-
-    // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
-    gpDesktopHandler->checkLogCacheForOldFiles();
-
-    // Show main window and initialize workspace
-    //QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
-    mainwindow.initializeWorkspace();
-    mainwindow.showMaximized();
-
-    // Process any received messages
-    gpMessageHandler->startPublish();
-
-    // Show license dialog
-    if (gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP))
-    {
-        (new LicenseDialog(gpMainWindowWidget))->show();
-        // Note! it will delete on close automatically
-    }
-
-    // Read command line arguments, search for hcom scripts, ignore everything else
+    // Read command line arguments
     //! @todo maybe use TCLAP here
-    QStringList args = a.arguments();
+    bool runApplication = true;
+    QString cmdLineHcomScript;
+    QStringList args = app.arguments();
     for(QString &arg : args)
     {
-        if(arg.endsWith(".hcom"))
+        if (arg.startsWith("-h") || arg.startsWith("--help")) {
+            QString msg =
+R"(HopsanGUI
+Arguments:
+    -h, --help:          Show this help message
+    -v, --version:       Show HopsanGUI version
+    --test:              Run build-in test cases
+    path/to/script.hcom: Execute hcom script
+)";
+            qInfo() << qUtf8Printable(msg);
+            runApplication = false;
+        }
+        else if (arg == "-v" || (arg == "--version")) {
+            qInfo() << qUtf8Printable(QString("HopsanCore: %1\nHopsanGUI : %2").arg(gHopsanCoreVersion).arg(HOPSANGUIVERSION));
+            runApplication = false;
+        }
+        else if (arg == "--test") {
+            applicationReturnCode = runBuiltInTests();
+            runApplication = false;
+        }
+        else if(arg.endsWith(".hcom"))
         {
             QFileInfo fi(arg);
             if (fi.isRelative())
             {
                 arg = gpDesktopHandler->getExecPath()+"/"+arg;
             }
-            gpTerminalWidget->mpHandler->executeCommand("exec "+arg);
+            cmdLineHcomScript = arg;
+        }
+        else if (!arg.contains("/hopsangui") && !arg.contains("hopsangui.exe") )
+        {
+            qWarning() << qUtf8Printable(QString("Unhandled argument: %1").arg(arg));
         }
     }
 
-    // Execute application
-    int rc = a.exec();
+    if (runApplication) {
 
-    // Delete global objects after program execution is finished
-    delete gpCopyStack;
-    delete gpDesktopHandler;
-    delete gpConfig;
+        // Create the mainwindow
+        MainWindow mainwindow;
+        gpMainWindow = &mainwindow;
+        gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
 
-    // Return application return code
-    return rc;
+        // Create the splash screen
+        QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
+        gpSplash = new QSplashScreen(&mainwindow, pixmap/*, Qt::WindowStaysOnTopHint*/);
+        //! @todo We need to delete it somehow, but still be able to check if it has been deleted or not (perhaps a QPointer will work)
+        //gpSplash->setAttribute(Qt::WA_DeleteOnClose);
+        gpSplash->showMessage("Starting Hopsan...");
+        gpSplash->show();
+
+        gpConfig->connect(gpConfig, SIGNAL(recentModelsListChanged()), gpMainWindow, SLOT(updateRecentList()));
+
+        //Create contents in MainWindow
+        mainwindow.createContents();
+
+        // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
+        gpDesktopHandler->checkLogCacheForOldFiles();
+
+        // Show main window and initialize workspace
+        //QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
+        mainwindow.initializeWorkspace();
+        mainwindow.showMaximized();
+
+        // Process any received messages
+        gpMessageHandler->startPublish();
+
+        // Show license dialog
+        if (gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP))
+        {
+            (new LicenseDialog(gpMainWindowWidget))->show();
+            // Note! it will delete on close automatically
+        }
+
+        // Execute application
+        if (!cmdLineHcomScript.isEmpty()) {
+            gpTerminalWidget->mpHandler->executeCommand("exec "+cmdLineHcomScript);
+        }
+        applicationReturnCode = app.exec();
+    }
+
+    return applicationReturnCode;
 }
 
 

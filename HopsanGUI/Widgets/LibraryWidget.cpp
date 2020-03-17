@@ -60,9 +60,6 @@
 #include "GeneratorUtils.h"
 #include "ModelHandler.h"
 
-//! @todo Ok don't know where I should put this, putting it here for now /Peter
-QString gHopsanCoreVersion = getHopsanCoreVersion();
-
 LibraryWidget::LibraryWidget(QWidget *parent)
         :   QWidget(parent)
 {

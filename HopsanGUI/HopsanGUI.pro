@@ -222,6 +222,7 @@ RC_FILE = HOPSANGUI.rc
 # Project files
 # -------------------------------------------------
 SOURCES += main.cpp \
+    BuiltinTests.cpp \
     MainWindow.cpp \
     Widgets/ProjectTabWidget.cpp \
     GUIConnector.cpp \
@@ -311,6 +312,7 @@ SOURCES += main.cpp \
     Widgets/TextEditorWidget.cpp
 
 HEADERS += MainWindow.h \
+    BuiltinTests.h \
     Widgets/ProjectTabWidget.h \
     GUIConnector.h \
     GUIPort.h \
