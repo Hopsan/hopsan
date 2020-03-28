@@ -35,7 +35,6 @@
 #define GLOBAL_H
 
 #include <QString>
-#include <QSplashScreen>
 
 // Forward declaration of global objects
 // Note! If you want to use one of these pointers the actual header for that class need to be included in your cpp file as well
@@ -74,7 +73,6 @@ extern QWidget *gpMainWindowWidget;
 extern Configuration *gpConfig;
 extern DesktopHandler *gpDesktopHandler;
 extern CopyStack *gpCopyStack;
-extern QSplashScreen *gpSplash;
 extern GUIMessageHandler *gpMessageHandler;
 
 // Global object pointers that are children to main window

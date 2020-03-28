@@ -231,6 +231,7 @@ public slots:
 
 signals:
     void simulateKeyPressed();
+    void showSplashScreenMessage(QString);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);

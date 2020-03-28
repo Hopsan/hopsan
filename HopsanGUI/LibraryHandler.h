@@ -200,6 +200,8 @@ public slots:
 
 signals:
     void contentsChanged();
+    void showSplashScreenMessage(QString);
+    void closeSplashScreen();
 
 private:
 

@@ -1374,9 +1374,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             QPushButton* pYesToAll = questionBox.addButton(QMessageBox::YesToAll);
                             QPushButton* pNoToAll = questionBox.addButton(QMessageBox::NoToAll);
                             questionBox.setDefaultButton(QMessageBox::No);
-                            if(gpSplash) {
-                                gpSplash->close();
-                            }
+                            emit closeSplashScreen();
                             questionBox.exec();
                             QAbstractButton* pClickedButton = questionBox.clickedButton();
 
@@ -1474,9 +1472,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     // Store new entry, but only if it does not already exist
                     if(!mLibraryEntries.contains(fullTypeName)) {
                         mLibraryEntries.insert(fullTypeName, newEntry);
-                        if(gpSplash) {
-                            gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
-                        }
+                        emit showSplashScreenMessage("Loaded component: " + pAppearanceData->getTypeName());
                     }
                     else {
                         const auto& existingEntery = mLibraryEntries[fullTypeName];

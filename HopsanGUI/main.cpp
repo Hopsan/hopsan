@@ -53,6 +53,7 @@
 #include "Dialogs/LicenseDialog.h"
 #include "CoreAccess.h"
 #include "BuiltinTests.h"
+#include "LibraryHandler.h"
 
 // Declare global pointers
 Configuration *gpConfig = 0;
@@ -62,7 +63,6 @@ GUIMessageHandler *gpMessageHandler = 0;
 
 MainWindow* gpMainWindow = 0;
 QWidget *gpMainWindowWidget = 0;
-QSplashScreen *gpSplash = 0;
 
 // Define global CoreVersion string
 QString gHopsanCoreVersion = getHopsanCoreVersion();
@@ -103,9 +103,16 @@ int main(int argc, char *argv[])
     GUIMessageHandler gMessageHandler;
     gpMessageHandler = &gMessageHandler;
 
+    // Create the mainwindow
+    MainWindow mainwindow;
+    gpMainWindow = &mainwindow;
+    gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
+    mainwindow.createContents();
+
     // Read command line arguments
     //! @todo maybe use TCLAP here
     bool runApplication = true;
+    bool runTests = false;
     QString cmdLineHcomScript;
     QStringList args = app.arguments();
     for(QString &arg : args)
@@ -121,14 +128,16 @@ Arguments:
 )";
             qInfo() << qUtf8Printable(msg);
             runApplication = false;
+            return applicationReturnCode;
         }
         else if (arg == "-v" || (arg == "--version")) {
             qInfo() << qUtf8Printable(QString("HopsanCore: %1\nHopsanGUI : %2").arg(gHopsanCoreVersion).arg(HOPSANGUIVERSION));
             runApplication = false;
+            return applicationReturnCode;
         }
         else if (arg == "--test") {
-            applicationReturnCode = runBuiltInTests();
             runApplication = false;
+            runTests = true;
         }
         else if(arg.endsWith(".hcom"))
         {
@@ -139,38 +148,35 @@ Arguments:
             }
             cmdLineHcomScript = arg;
         }
+        // Depending on platform and how hopsangui is launched, the first argument may be the program name
+        // do not warn in this case
         else if (!arg.contains("/hopsangui") && !arg.contains("hopsangui.exe") )
         {
             qWarning() << qUtf8Printable(QString("Unhandled argument: %1").arg(arg));
         }
     }
 
+    // Create the splash screen
+    QSplashScreen splash(&mainwindow, QPixmap(QString(GRAPHICSPATH) + "splash.png")/*, Qt::WindowStaysOnTopHint*/);
     if (runApplication) {
+        QObject::connect(gpMainWindow, SIGNAL(showSplashScreenMessage(QString)), &splash, SLOT(showMessage(QString)));
+        QObject::connect(gpLibraryHandler, SIGNAL(showSplashScreenMessage(QString)), &splash, SLOT(showMessage(QString)));
+        QObject::connect(gpLibraryHandler, SIGNAL(closeSplashScreen()), &splash, SLOT(close()));
+        splash.showMessage("Starting Hopsan...");
+        splash.show();
+        QTimer::singleShot(4000, &splash, SLOT(close())); // If initialize gets stuck for some reason, make sure splash screen is closed eventually
+    }
 
-        // Create the mainwindow
-        MainWindow mainwindow;
-        gpMainWindow = &mainwindow;
-        gpMainWindowWidget = static_cast<QWidget*>(&mainwindow);
+    // Create contents in MainWindow
+    mainwindow.initializeWorkspace();
+    QTimer::singleShot(1000, &splash, SLOT(close()));
 
-        // Create the splash screen
-        QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
-        gpSplash = new QSplashScreen(&mainwindow, pixmap/*, Qt::WindowStaysOnTopHint*/);
-        //! @todo We need to delete it somehow, but still be able to check if it has been deleted or not (perhaps a QPointer will work)
-        //gpSplash->setAttribute(Qt::WA_DeleteOnClose);
-        gpSplash->showMessage("Starting Hopsan...");
-        gpSplash->show();
-
+    if (runApplication) {
         gpConfig->connect(gpConfig, SIGNAL(recentModelsListChanged()), gpMainWindow, SLOT(updateRecentList()));
-
-        //Create contents in MainWindow
-        mainwindow.createContents();
 
         // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
         gpDesktopHandler->checkLogCacheForOldFiles();
 
-        // Show main window and initialize workspace
-        //QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
-        mainwindow.initializeWorkspace();
         mainwindow.showMaximized();
 
         // Process any received messages
@@ -188,6 +194,9 @@ Arguments:
             gpTerminalWidget->mpHandler->executeCommand("exec "+cmdLineHcomScript);
         }
         applicationReturnCode = app.exec();
+    }
+    else if (runTests) {
+        applicationReturnCode = runBuiltInTests();
     }
 
     return applicationReturnCode;

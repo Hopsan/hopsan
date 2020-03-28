@@ -210,11 +210,11 @@ void MainWindow::createContents()
     gpMessageHandler->addInfoMessage(archtext+"Version: "+QString(HOPSANGUIVERSION)+debugtext);
 
     //Load configuration from settings file
-    gpSplash->showMessage("Loading configuration...");
+    emit showSplashScreenMessage("Loading configuration...");
     gpConfig->loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
     initializaHopsanCore(gpConfig->getStringSetting(cfg::paths::corelogfile));
 
-    gpSplash->showMessage("Initializing GUI...");
+    emit showSplashScreenMessage("Initializing GUI...");
 
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
@@ -362,11 +362,8 @@ void MainWindow::createContents()
 
     mpWelcomeWidget = 0;
 
-    // Trigger splashscreen close in one second
-    QTimer::singleShot(3000, gpSplash, SLOT(close()));
-
     mpWelcomeWidget = new WelcomeWidget(this);
-    mpCentralTabs->addTab(mpWelcomeWidget, "Welcome");
+    mpCentralTabs->addTab(mpWelcomeWidget, "Start");
     mpCentralTabs->setTabNotClosable(0);
 
     this->updateRecentList();
@@ -387,7 +384,7 @@ void MainWindow::createContents()
 //! All startup events that does not involve creating the main window and its widgets/dialogs belongs here.
 void MainWindow::initializeWorkspace()
 {
-    gpSplash->showMessage("Loading component libraries...");
+    emit showSplashScreenMessage("Loading component libraries...");
 
     // Load HopsanGui built in secret components
     gpLibraryHandler->loadLibrary(QString(BUILTINCAFPATH) + "hidden/builtin_hidden.xml", InternalLib, Hidden);
@@ -423,7 +420,7 @@ void MainWindow::initializeWorkspace()
     QList<LibraryTypeEnumT> userLibTypes = gpConfig->getUserLibTypes();
     for(int i=0; i<qMin(userLibs.size(), userLibTypes.size()); ++i)
     {
-        gpSplash->showMessage("Loading library: "+userLibs[i]+"...");
+        emit showSplashScreenMessage("Loading library: "+userLibs[i]+"...");
         gpLibraryHandler->loadLibrary(userLibs[i], userLibTypes[i]);
     }
 
@@ -450,9 +447,7 @@ void MainWindow::initializeWorkspace()
 
     mpLibraryWidget->adjustSize();
 
-    gpSplash->showMessage("Finished!");
-
-    QTimer::singleShot(1000, gpSplash, SLOT(close()));
+    emit showSplashScreenMessage("Finished!");
 }
 
 
