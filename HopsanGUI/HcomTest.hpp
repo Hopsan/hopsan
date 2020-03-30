@@ -73,16 +73,18 @@ private slots:
         mpHcom->evaluateExpression("step.y_0.y");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 43);
-        mpHcom->evaluateExpression("step.y_0"); //<- This is not valid in HCOM, must specify .y or .Value
-        QCOMPARE(mpHcom->mAnsType, HcomHandler::Wildcard);
-        QCOMPARE(mpHcom->mAnsWildcard, "step.y_0");
+        mpHcom->evaluateExpression("step.y_0"); //<- Evaluate using short name without explicit .y or .Value
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 43);
         mpHcom->evaluateExpression("step.y_A.y"); // t_A should point to self.y_0.Value
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 43);
         mpHcom->executeCommand("chpa step.y_A.y \"self.y_0\""); // Set without explicit self.y_0.Value
-        mpHcom->evaluateExpression("step.y_A.y"); // t_A should point to self.y_0 <- But this is not valid in HCOM
+        mpHcom->executeCommand("chpa step.y_0.y 44"); // Set with explicit .Value
+        //mpHcom->executeCommand("chpa step.y_0 44"); // Set without explicit .Value <- This will maybe be added in the future
+        mpHcom->evaluateExpression("step.y_A.y"); // t_A should point to self.y_0
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
-        QCOMPARE(mpHcom->mAnsScalar, nan(""));
+        QCOMPARE(mpHcom->mAnsScalar, 44);
     }
 
 

@@ -76,7 +76,7 @@
 #include <cmath>
 
 
-#define HCOMPRINT(text) mpConsole->print(text);
+#define HCOMPRINT(text) mpConsole->print(text)
 #define HCOMINFO(text) mpConsole->printInfoMessage(text,"",false)
 #define HCOMWARN(text) mpConsole->printWarningMessage(text,"",false)
 #define HCOMERR(text) mpConsole->printErrorMessage(text,"",false)
@@ -209,6 +209,26 @@ SystemContainer* searchIntoSubsystem(SystemContainer* pRootSystem, const QString
         }
     }
     return pSystem;
+}
+
+//! @brief HelpFunction that will look for paramName#Value if paramName is not found, paramName will be updated if found
+//! @param[in] pModelObject The model object that should contain the parameter
+//! @param[in,out] rParameterName The parameter name
+//! @returns true if found
+bool findParameterEvenIfValueNotSpecified(ModelObject *pModelObject, QString &rParamName) {
+    QString tmpParamName = rParamName;
+    if (pModelObject) {
+        if (pModelObject->hasParameter(tmpParamName)) {
+            return true;
+        } else {
+            tmpParamName = rParamName+"#Value";
+        }
+        if (pModelObject->hasParameter(tmpParamName)) {
+            rParamName = tmpParamName;
+            return true;
+        }
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------------
@@ -7778,8 +7798,10 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
             pMO = pContainer;
         }
 
+
+
         // If we have component then try to find the actual parameter, by actual name
-        if (pMO && pMO->hasParameter(parName))
+        if (findParameterEvenIfValueNotSpecified(pMO, parName))
         {
             CoreParameterData par;
             pMO->getParameter(parName, par);
@@ -7787,7 +7809,7 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
             if(par.mValue.startsWith("self."))
             {
                 QString otherPar = par.mValue.remove(0,5);
-                return getParameterValue(compName+"."+otherPar);
+                return getParameterValue(compName+"."+otherPar, rParameterType);
             }
             return par.mValue;
         }
