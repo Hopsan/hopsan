@@ -4951,7 +4951,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
     }
 
     QPointF pos = QPointF(xPos, yPos);
-    Component *pObj = qobject_cast<Component*>(mpModel->getViewContainerObject()->addModelObject(typeName, pos, rot));
+    ModelObject *pObj = mpModel->getViewContainerObject()->addModelObject(typeName, pos, rot);
     if(!pObj)
     {
         HCOMERR("Failed to add new component. Incorrect typename?");
