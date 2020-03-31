@@ -7791,18 +7791,14 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
         }
 
         ModelObject *pMO = nullptr;
-        // Handle ordinary component
-        if (!compName.isEmpty())
-        {
-            pMO = pContainer->getModelObject(compName);
-        }
         // Handle system parameter
-        else
-        {
+        if (compName.isEmpty() || compName == "self") {
             pMO = pContainer;
         }
-
-
+        // Handle ordinary component
+        else {
+            pMO = pContainer->getModelObject(compName);
+        }
 
         // If we have component then try to find the actual parameter, by actual name
         if (findParameterEvenIfValueNotSpecified(pMO, parName))
