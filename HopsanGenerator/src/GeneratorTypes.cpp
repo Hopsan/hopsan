@@ -27,6 +27,7 @@
 
 #include "HopsanEssentials.h"
 #include "Port.h"
+#include "Parameters.h"
 
 #include <QDir>
 #include <QFile>
@@ -728,3 +729,30 @@ QString BuildFlags::platformString() const
 //{
 //    return compilerString(mCompiler);
 //}
+
+void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentSystem *pSystem)
+{
+    for(hopsan::ParameterEvaluator *par : (*pSystem->getParametersVectorPtr())) {
+        ParameterSpecification spec;
+        if(par->getType() == "double") {
+            spec.type = "Real";
+        }
+        else if(par->getType() == "integer") {
+            spec.type = "Integer";
+        }
+        else if(par->getType() == "bool") {
+            spec.type = "Boolean";
+        }
+        else if(par->getType() == "string") {
+            spec.type = "String";
+        }
+        else {
+            continue;
+        }
+        spec.name = par->getName().c_str();
+        spec.displayName = par->getName().c_str();
+        spec.init = par->getValue().c_str();
+        spec.description = par->getDescription().c_str();
+        parameters.append(spec);
+    }
+}
