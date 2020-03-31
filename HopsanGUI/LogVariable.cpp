@@ -2134,6 +2134,7 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
 
     // Create the output variables for bode diagram
     SharedVectorVariableT pFrequencyVar = createFreeFrequencyVectorVariabel(freq);
+    pFrequencyVar->multData(M_PI*2);
 
     SharedVariableDescriptionT pGainDesc(new VariableDescription());
     pGainDesc->mDataName = "Magnitude";
