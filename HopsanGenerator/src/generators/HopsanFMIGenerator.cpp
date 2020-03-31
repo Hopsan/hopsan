@@ -1292,12 +1292,12 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     QList<InterfacePortSpec> interfacePortSpecs;
     QStringList path = QStringList();
     getInterfaces(interfacePortSpecs, pSystem, path);
-    foreach(const InterfacePortSpec &portSpec, interfacePortSpecs)
+    for(const auto &portSpec : interfacePortSpecs)
     {
-        foreach(const InterfaceVarSpec &varSpec, portSpec.vars)
+        for(const auto &varSpec : portSpec.vars)
         {
             QString temp = QString("dataPtrs[%1] = spCoreComponentSystem").arg(vr);
-            foreach(const QString &subsystem, portSpec.path)
+            for(const auto &subsystem : portSpec.path)
             {
                 temp.append(QString("->getSubComponentSystem(\"%1\")").arg(subsystem));
             }
@@ -1310,6 +1310,31 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
     fmuHopsanSourceCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
 
+    QList<ParameterSpecification> parSpecs;
+    getParameters(parSpecs, pSystem);
+    QString addParametersToMap;
+    for(const auto &parSpec : parSpecs) {
+        QString dataType;
+        if(parSpec.type == "Real") {
+            addParametersToMap.append(QString("realParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));").arg(vr).arg(parSpec.name.toStdString().c_str()));
+        }
+        else if(parSpec.type == "Integer") {
+            addParametersToMap.append(QString("intParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));").arg(vr).arg(parSpec.name));
+        }
+        else if(parSpec.type == "Boolean") {
+            addParametersToMap.append(QString("boolParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));").arg(vr).arg(parSpec.name));
+        }
+        else if(parSpec.type == "String") {
+            addParametersToMap.append(QString("stringParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));").arg(vr).arg(parSpec.name));
+        }
+        else {
+            continue;   //Illegal data type, should never happen
+        }
+        QString temp = QString("dataPtrs[%1] = static_cast<%2*>(spCoreComponentSystem->getParameterDataPtr(\"%3\"));").arg(vr).arg(dataType).arg(parSpec.name);
+        setDataPtrsString.append(temp);
+        ++vr;
+    }
+    fmuHopsanSourceCode.replace("<<<addparameterstomap>>>", addParametersToMap);
     if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
     {
         writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
@@ -1618,6 +1643,29 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         }
     }
 
+    QList<ParameterSpecification> parameterSpecs;
+    getParameters(parameterSpecs, pSystem);
+
+    for(const auto &parSpec : parameterSpecs)
+    {
+        QDomElement varElement = domDocument.createElement("ScalarVariable");
+        varElement.setAttribute("name", parSpec.name);
+        varElement.setAttribute("valueReference", (unsigned int)vr);
+        varElement.setAttribute("causality", "parameter");
+        varElement.setAttribute("initial","exact");
+        varElement.setAttribute("variability", "fixed");
+        varElement.setAttribute("description", parSpec.description);
+        QDomElement dataElement = domDocument.createElement(parSpec.type);
+        dataElement.setAttribute("start", parSpec.init);   //! @todo Support start values
+        if(version == 1)
+        {
+            dataElement.setAttribute("fixed", "false");
+        }
+        varElement.appendChild(dataElement);
+        varsElement.appendChild(varElement);
+        ++vr;
+    }
+
     if(version == 1)
     {
         QDomElement implElement = domDocument.createElement("Implementation");
@@ -1657,8 +1705,8 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
     int random = rand() % 1000000000;
     QString randomString = QString::number(random);
     QString nameSpace = "HopsanFMU"+randomString;
-    QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::" << "namespace hopsan{" << "(hopsan::" << "<hopsan::";
-    QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{" << "("+nameSpace+"::" << "<"+nameSpace+"::";
+    QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::" << "namespace hopsan{" << "(hopsan::" << "<hopsan::" << ",hopsan::";
+    QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{" << "("+nameSpace+"::" << "<"+nameSpace+"::" << ","+nameSpace+"::";
 
     QStringList srcFiles = listHopsanCoreSourceFiles(savePath)+listInternalLibrarySourceFiles(savePath);
     Q_FOREACH(const QString &file, srcFiles)

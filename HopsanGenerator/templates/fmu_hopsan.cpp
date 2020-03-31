@@ -25,9 +25,11 @@
 #include "fmu_hopsan.h"
 #include "HopsanCore.h"
 #include "HopsanEssentials.h"
+#include "HopsanTypes.h"
 #include <string>
 #include "model.hpp"
 #include <cassert>
+#include <iostream>
 
 namespace {
 
@@ -37,6 +39,11 @@ static std::vector<std::string> sComponentNames;
 hopsan::HopsanEssentials gHopsanCore;
 
 double *dataPtrs[<<<nports>>>];
+
+std::map<int,hopsan::HString> realParametersMap;
+std::map<int,hopsan::HString> intParametersMap;
+std::map<int,hopsan::HString> boolParametersMap;
+std::map<int,hopsan::HString> stringParametersMap;
 
 std::string parseResourceLocation(std::string uri)
 {
@@ -84,6 +91,9 @@ int hopsan_instantiate(const char *resourceLocation)
 
         // Get pointers to I/O data variables
         <<<setdataptrs>>>
+
+        //Populate parameter name maps
+        <<<addparameterstomap>>>
 
         // Initialize system
         spCoreComponentSystem->setDesiredTimestep(<<<timestep>>>);
@@ -138,45 +148,84 @@ void hopsan_get_message(hopsan_message_callback_t message_callback, void* userSt
 
 double hopsan_get_real(int vr)
 {
-    return (*dataPtrs[vr]);
+    if(vr < sizeof(dataPtrs)/sizeof(double*)) {
+        return (*dataPtrs[vr]);
+    }
+    if(realParametersMap.count(vr)) {
+        hopsan::HString value;
+        spCoreComponentSystem->getParameterValue(realParametersMap[vr],value);
+        bool ok;
+        return value.toDouble(&ok);
+    }
+    return 0;
 }
 
 int hopsan_get_integer(int vr)
 {
-    //Write code here
+    if(intParametersMap.count(vr)) {
+        hopsan::HString value;
+        spCoreComponentSystem->getParameterValue(intParametersMap[vr],value);
+        bool ok;
+        return value.toLongInt(&ok);
+    }
     return -1;
 }
 
 int hopsan_get_boolean(int vr)
 {
-    //Write code here
+    if(boolParametersMap.count(vr)) {
+        hopsan::HString value;
+        spCoreComponentSystem->getParameterValue(boolParametersMap[vr],value);
+        bool ok;
+        return value.toBool(&ok);
+    }
     return false;
 }
 
 const char* hopsan_get_string(int vr)
 {
-    //Write code here
+    if(stringParametersMap.count(vr)) {
+        hopsan::HString value;
+        spCoreComponentSystem->getParameterValue(stringParametersMap[vr],value);
+        bool ok;
+        return value.c_str();
+    }
     return "";
 }
 
 void hopsan_set_real(int vr, double value)
 {
-    (*dataPtrs[vr]) = value;
+    if(vr < sizeof(dataPtrs)/sizeof(double*)) {
+        (*dataPtrs[vr]) = value;
+    }
+    else if(realParametersMap.count(vr)) {
+        spCoreComponentSystem->setParameterValue(realParametersMap[vr], hopsan::HString(std::to_string(value).c_str()));
+    }
 }
 
 void hopsan_set_integer(int vr, int value)
 {
-    //Write code here
+    if(intParametersMap.count(vr)) {
+        spCoreComponentSystem->setParameterValue(intParametersMap[vr], hopsan::HString(std::to_string(value).c_str()));
+    }
 }
 
 void hopsan_set_boolean(int vr, int value)
 {
-    //Write code here
+    if(realParametersMap.count(vr)) {
+        hopsan::HString hvalue = "true";
+        if(hvalue != 0) {
+            hvalue = "false";
+        }
+        spCoreComponentSystem->setParameterValue(boolParametersMap[vr], hvalue);
+    }
 }
 
 void hopsan_set_string(int vr, const char* value)
 {
-    //Write code here
+    if(realParametersMap.count(vr)) {
+        spCoreComponentSystem->setParameterValue(boolParametersMap[vr], value);
+    }
 }
 
 }

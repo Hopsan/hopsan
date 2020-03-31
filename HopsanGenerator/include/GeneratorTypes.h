@@ -200,6 +200,7 @@ public:
     QString description;
     QString unit;
     QString init;
+    QString type;
 };
 
 class VariableSpecification
@@ -274,5 +275,6 @@ public:
 };
 
 void getInterfaces(QList<InterfacePortSpec> &interfaces, hopsan::ComponentSystem *pSystem, QStringList &path);
+void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentSystem *pSystem);
 
 #endif // GENERATORTYPES_H
