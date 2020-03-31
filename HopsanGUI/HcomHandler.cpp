@@ -7748,6 +7748,10 @@ void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringLi
         sparname = makeFullParameterName(sysnames, "", sparname);
         toShortDataNames(sparname);
         rParameters.append(sparname);
+        // This is quite a hack, but also add self.parName variant for own system parameter names
+        if (sysnames.isEmpty()) {
+            rParameters.append("self."+sparname);
+        }
     }
 }
 
