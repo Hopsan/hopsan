@@ -135,6 +135,10 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mpMultiThreadPrivates = new ComponentSystemMultiThreadPrivates;
     mpNumHopHelper = 0;
 
+    // Prevent creation of components, system parameters and system ports anmed "self"
+    // that would collide with embedded scripts
+    reserveUniqueName("self", UniqueReservedNameType);
+
     // Set default (disabled) values for log data
     disableLog();
 }
