@@ -63,9 +63,21 @@ private slots:
         QCOMPARE(mpHcom->mAnsScalar, 42);
 
         mpHcom->evaluateExpression("self.syspar");
-        QCOMPARE(mpHcom->mAnsType, HcomHandler::Wildcard);
-        QCOMPARE(mpHcom->mAnsWildcard, "self.syspar");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 42);
 
+        mpHcom->executeCommand("self.syspar+1");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 43);
+
+        mpHcom->executeCommand("self.syspar = self.syspar+1");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 43);
+        mpHcom->executeCommand("syspar");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 43);
+
+        mpHcom->executeCommand("chpa self.syspar 42");
         mpHcom->evaluateExpression("step.t_step.y");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 42);
