@@ -53,7 +53,7 @@ SharedVariableDescriptionT createTimeVariableDescription()
 }
 
 
-SharedVariableDescriptionT createFrequencyVariableDescription()
+SharedVariableDescriptionT  createFrequencyVariableDescription()
 {
     SharedVariableDescriptionT pVarDesc(new VariableDescription());
     pVarDesc->mDataName = FREQUENCYVARIABLENAME;
