@@ -51,8 +51,7 @@ jobs:
 
     steps:
       - name: Install Qt
-        uses: ouuan/install-qt-action@v2.3.1
-        # jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v2
 
       - name: Checkout
         uses: actions/checkout@v2
