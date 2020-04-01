@@ -1172,6 +1172,14 @@ void HcomHandler::createCommands()
     bodeCmd.group = "Plot Commands";
     mCmdList << bodeCmd;
 
+    HcomCommand nyquistCmd;
+    nyquistCmd.cmd = "nyquist";
+    nyquistCmd.description.append("Creates a Nyquist plot from specified curves");
+    nyquistCmd.help.append(" Usage: nyquist [invar] [outvar]");
+    nyquistCmd.fnc = &HcomHandler::executeNyquistCommand;
+    nyquistCmd.group = "Plot Commands";
+    mCmdList << nyquistCmd;
+
     HcomCommand optCmd;
     optCmd.cmd = "opt";
     optCmd.description.append("Initialize an optimization");
@@ -5194,6 +5202,33 @@ void HcomHandler::executeBodeCommand(const QString cmd)
     pWindow->closeAllTabs();
     pWindow->createBodePlot(pData1, pData2, fMax);
 }
+
+
+//! @brief Execute function for "nyquist" command
+void HcomHandler::executeNyquistCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    if(args.size() != 2)
+    {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+
+    QString var1 = args[0];
+    QString var2 = args[1];
+    SharedVectorVariableT pData1 = getLogVariable(var1);
+    SharedVectorVariableT pData2 = getLogVariable(var2);
+    if(!pData1 || !pData2)
+    {
+        HCOMERR("Data variable not found.");
+        return;
+    }
+
+    PlotWindow *pWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Nyquist plot");
+    pWindow->closeAllTabs();
+    pWindow->createBodePlot(pData1, pData2, 0, false, true);
+}
+
 
 
 //! @brief Execute function for "opt" command
