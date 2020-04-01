@@ -1467,6 +1467,15 @@ void PlotTab::openCreateBodePlotDialog()
         pSliderLayout->addWidget(pMaxFrequencyValue);
         pSliderLayout->addWidget(pMaxFrequencyUnit);
 
+        QCheckBox *pBodeCheckBox = new QCheckBox("Create Bode Plot", pBodeDialog);
+        QCheckBox *pNyquistCheckBox = new QCheckBox("Create Nyquist Plot", pBodeDialog);
+        pBodeCheckBox->setChecked(true);
+        pNyquistCheckBox->setChecked(false);
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencySlider, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyLabel, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyValue, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyUnit, SLOT(setEnabled(bool)));
+
         QPushButton *pCancelButton = new QPushButton("Cancel");
         QPushButton *pNextButton = new QPushButton("Go!");
 
@@ -1477,13 +1486,16 @@ void PlotTab::openCreateBodePlotDialog()
         pToolBar->addAction(pHelpAction);
 
         QGridLayout *pBodeDialogLayout = new QGridLayout;
-        pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 3);
-        pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 3);
-        pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 3);
-        pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 3);
-        pBodeDialogLayout->addWidget(pToolBar, 4, 0, 1, 1);
-        pBodeDialogLayout->addWidget(pCancelButton, 4, 1, 1, 1);
-        pBodeDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
+        int row=0;
+        pBodeDialogLayout->addWidget(pInputGroupBox,        row++, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pOutputGroupBox,       row++, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pMaxFrequencyLabel,    row++, 0, 1, 3);
+        pBodeDialogLayout->addLayout(pSliderLayout,         row++, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pBodeCheckBox,         row++, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pNyquistCheckBox,      row++, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pToolBar,              row,   0, 1, 1);
+        pBodeDialogLayout->addWidget(pCancelButton,         row,   1, 1, 1);
+        pBodeDialogLayout->addWidget(pNextButton,           row,   2, 1, 1);
 
         pBodeDialog->setLayout(pBodeDialogLayout);
         pBodeDialog->setPalette(gpConfig->getPalette());
@@ -1524,7 +1536,7 @@ void PlotTab::openCreateBodePlotDialog()
             }
             else
             {
-                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), pMaxFrequencySlider->value()/(2*M_PI));
+                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), pMaxFrequencySlider->value()/(2*M_PI), pBodeCheckBox->isChecked(), pNyquistCheckBox->isChecked());
             }
         }
     }
