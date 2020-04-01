@@ -103,6 +103,7 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent ( QContextMenuEvent * event );
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
 private slots:
     void insertComponentFromLineEdit();

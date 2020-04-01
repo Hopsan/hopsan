@@ -141,6 +141,46 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
     mIgnoreNextContextMenuEvent = false;
 }
 
+void GraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+#if QT_VERSION >= 0x050000
+    if(event->button() == Qt::LeftButton && !mpContainerObject->isCreatingConnector() &&
+            mpContainerObject->getSelectedModelObjectPtrs().isEmpty() &&
+            mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() &&
+            !mpContainerObject->isConnectorSelected() &&
+            this->rubberBandRect().isEmpty())
+#else
+    if(!mpContainerObject->isCreatingConnector() &&
+            mpContainerObject->getSelectedModelObjectPtrs().isEmpty() &&
+            mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() &&
+            !mpContainerObject->isConnectorSelected())  //We cannot check for rubber band selection on Qt4, not sure how to solve this
+#endif
+    {
+        QCursor cursor;
+        QPointF pos = mapFromGlobal(cursor.pos());
+        QRect tempRect(pos.x(), pos.y(),300,1);
+
+        // Update lists with type names and display names for quick-add component function
+        // (only if contents in library has changed)
+        if(mTypeNames.size() != gpLibraryHandler->getLoadedTypeNames().size()) {
+            mTypeNames.clear();
+            mDisplayNames.clear();
+            mTypeNames = gpLibraryHandler->getLoadedTypeNames();
+            for(const QString &typeName : mTypeNames)
+            {
+                ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
+                mDisplayNames << entry.pAppearance->getDisplayName();
+            }
+        }
+        mpAddComponentLineEdit->completer()->setModel(new QStringListModel(mDisplayNames,mpAddComponentLineEdit));
+        mpAddComponentLineEdit->setGeometry(pos.x(), pos.y(), 200,30);
+        mpAddComponentLineEdit->show();
+        mpAddComponentLineEdit->setFocus();
+
+        this->setIgnoreNextMouseReleaseEvent();
+    }
+}
+
 void GraphicsView::insertComponentFromLineEdit()
 {
     QString displayName = mpAddComponentLineEdit->text();
@@ -718,40 +758,6 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
     if(mpAddComponentLineEdit->isVisible())
     {
         hideAddComponentLineEdit();
-    }
-#if QT_VERSION >= 0x050000
-    else if(event->button() == Qt::LeftButton && !mpContainerObject->isCreatingConnector() &&
-            mpContainerObject->getSelectedModelObjectPtrs().isEmpty() &&
-            mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() &&
-            !mpContainerObject->isConnectorSelected() &&
-            this->rubberBandRect().isEmpty())
-#else
-    else if(!mpContainerObject->isCreatingConnector() &&
-            mpContainerObject->getSelectedModelObjectPtrs().isEmpty() &&
-            mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() &&
-            !mpContainerObject->isConnectorSelected())  //We cannot check for rubber band selection on Qt4, not sure how to solve this
-#endif
-    {
-        QCursor cursor;
-        QPointF pos = mapFromGlobal(cursor.pos());
-        QRect tempRect(pos.x(), pos.y(),300,1);
-
-        // Update lists with type names and display names for quick-add component function
-        // (only if contents in library has changed)
-        if(mTypeNames.size() != gpLibraryHandler->getLoadedTypeNames().size()) {
-            mTypeNames.clear();
-            mDisplayNames.clear();
-            mTypeNames = gpLibraryHandler->getLoadedTypeNames();
-            for(const QString &typeName : mTypeNames)
-            {
-                ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
-                mDisplayNames << entry.pAppearance->getDisplayName();
-            }
-        }
-        mpAddComponentLineEdit->completer()->setModel(new QStringListModel(mDisplayNames,mpAddComponentLineEdit));
-        mpAddComponentLineEdit->setGeometry(pos.x(), pos.y(), 200,30);
-        mpAddComponentLineEdit->show();
-        mpAddComponentLineEdit->setFocus();
     }
 
     bool createdUndoPost=false;
