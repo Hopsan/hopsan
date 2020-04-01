@@ -962,72 +962,76 @@ void PlotWindow::createPlotWindowFromTab()
 
 
 //! @todo should not run code on non bodeplot tabs
-void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax)
+void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax, bool bode, bool nyquist)
 {
     SharedVectorVariableT pNyquist, pNyquistInv, pGain, pPhase;
     createBodeVariables(var1, var2, Fmax, pNyquist, pNyquistInv, pGain, pPhase);
 
     // Nyquist plot
-    PlotTab *pNyquistTab = addPlotTab("Nyquist Plot");
-    PlotCurveStyle blueStyle;
-    blueStyle.color = QColor("Blue");
-    pNyquistTab->addCurve(new PlotCurve(pNyquist, QwtPlot::yLeft, NyquistType), blueStyle);
-    pNyquistTab->addCurve(new PlotCurve(pNyquistInv, QwtPlot::yLeft, NyquistType), blueStyle);
+    if(nyquist) {
+        PlotTab *pNyquistTab = addPlotTab("Nyquist Plot");
+        PlotCurveStyle blueStyle;
+        blueStyle.color = QColor("Blue");
+        pNyquistTab->addCurve(new PlotCurve(pNyquist, QwtPlot::yLeft, NyquistType), blueStyle);
+        pNyquistTab->addCurve(new PlotCurve(pNyquistInv, QwtPlot::yLeft, NyquistType), blueStyle);
+    }
 
     // Bode plot
-    PlotTab *pBodeTab = addPlotTab("Bode Diagram", BodePlotType);
-    PlotCurve *pGainCurve = new PlotCurve(pGain, QwtPlot::yLeft, BodeGainType);
-    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->addCurve(pGainCurve);
-    pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
+    if(bode) {
+        PlotTab *pBodeTab = addPlotTab("Bode Diagram", BodePlotType);
+        PlotCurve *pGainCurve = new PlotCurve(pGain, QwtPlot::yLeft, BodeGainType);
+        pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->addCurve(pGainCurve);
+        pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
 
-    PlotCurve *pPhaseCurve = new PlotCurve(pPhase, QwtPlot::yLeft, BodePhaseType);
-    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve);
-    pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->setBottomAxisLogarithmic(true);
+        PlotCurve *pPhaseCurve = new PlotCurve(pPhase, QwtPlot::yLeft, BodePhaseType);
+        pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve);
+        pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->setBottomAxisLogarithmic(true);
 
-    pBodeTab->rescaleAxesToCurves();
+        pBodeTab->rescaleAxesToCurves();
 
-    // Add a curve marker at the amplitude margin
-    for(int i=1; i<pPhase->getDataSize(); ++i)
-    {
-        //! @todo a find crossing(s) function in variable should be nice
-        if( (pPhase->peekData(i)<-180) && (pPhase->peekData(i-1)>-180) )
+        // Add a curve marker at the amplitude margin
+        for(int i=1; i<pPhase->getDataSize(); ++i)
         {
-            pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve,
-                                                                            pGain->getSharedTimeOrFrequencyVector()->peekData(i), pGain->peekData(i),
-                                                                            QString("Gain Margin = %1 dB").arg(-pGain->peekData(i)),
+            //! @todo a find crossing(s) function in variable should be nice
+            if( (pPhase->peekData(i)<-180) && (pPhase->peekData(i-1)>-180) )
+            {
+                pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve,
+                                                                                pGain->getSharedTimeOrFrequencyVector()->peekData(i), pGain->peekData(i),
+                                                                                QString("Gain Margin = %1 dB").arg(-pGain->peekData(i)),
+                                                                                false);
+                break;
+            }
+        }
+
+        // Add a curve marker at the phase margin
+        for(int i=1; i<pGain->getDataSize(); ++i)
+        {
+            //! @todo a find crossing(s) function in variable should be nice
+            if( (pGain->peekData(i)<-0) && (pGain->peekData(i-1)>-0) )
+            {
+                pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve,
+                                                                            pPhase->getSharedTimeOrFrequencyVector()->peekData(i), pPhase->peekData(i),
+                                                                            QString("Phase Margin = %1").arg(180.0+pPhase->peekData(i))+trUtf8("°"),
                                                                             false);
-            break;
+                break;
+            }
         }
-    }
 
-    // Add a curve marker at the phase margin
-    for(int i=1; i<pGain->getDataSize(); ++i)
-    {
-        //! @todo a find crossing(s) function in variable should be nice
-        if( (pGain->peekData(i)<-0) && (pGain->peekData(i-1)>-0) )
+        //! @todo this should not happen here
+        SharedVectorVariableT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVectorVariable("bodegain");
+        if(gainVar.isNull())
         {
-            pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve,
-                                                                        pPhase->getSharedTimeOrFrequencyVector()->peekData(i), pPhase->peekData(i),
-                                                                        QString("Phase Margin = %1").arg(180.0+pPhase->peekData(i))+trUtf8("°"),
-                                                                        false);
-            break;
+            gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);
         }
-    }
+        gainVar.data()->assignFrom(pGain);
 
-    //! @todo this should not happen here
-    SharedVectorVariableT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVectorVariable("bodegain");
-    if(gainVar.isNull())
-    {
-        gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);
+        SharedVectorVariableT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVectorVariable("bodephase");
+        if(phaseVar.isNull())
+        {
+            phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);
+        }
+        phaseVar.data()->assignFrom(pPhase);
     }
-    gainVar.data()->assignFrom(pGain);
-
-    SharedVectorVariableT phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVectorVariable("bodephase");
-    if(phaseVar.isNull())
-    {
-        phaseVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getVectorVariable("bodegain",-1);
-    }
-    phaseVar.data()->assignFrom(pPhase);
 }
 
 void PlotWindow::showHelpPopupMessage(const QString &rMessage)

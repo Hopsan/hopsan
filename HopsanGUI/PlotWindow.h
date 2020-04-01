@@ -81,7 +81,7 @@ public:
     PlotTab *getCurrentPlotTab();
     PlotTabWidget *getPlotTabWidget(); //!< @todo should this really be needed
 
-    void createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax);
+    void createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax, bool bode=true, bool nyquist=false);
 
     void showHelpPopupMessage(const QString &rMessage);
 
