@@ -74,7 +74,7 @@ public:
      {
         // Add inputVariables ports to the component
         mpPthetain=addInputVariable("thetain","Angle", "rad", 0, &mpIn_theta);
-        mpPwin=addInputVariable("omega","Angular Velocity", "rad/s", 0, &mpIn_w);
+        mpPwin=addInputVariable("omega","Angular Velocity", "AngularVelocity", 0, &mpIn_w);
 
         // Add ports to the component
         mpPmr1=addPowerPort("Pmr1","NodeMechanicRotational");

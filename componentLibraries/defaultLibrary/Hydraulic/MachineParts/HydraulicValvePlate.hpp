@@ -83,7 +83,7 @@ namespace hopsan {
             addInputVariable("theta_1", "Angle 1", "deg", 6, &mpTh1);
             addInputVariable("theta_2", "Angle 2", "deg", 90, &mpTh2);
             addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
-            addInputVariable("movement", "Movement", "rad/s", 160, &mpMovement);
+            addInputVariable("movement", "Movement", "AngularVelocity", 160, &mpMovement);
             addOutputVariable("DEBUG1", "DEBUG1", "");
             addOutputVariable("DEBUG2", "DEBUG1", "");
             addOutputVariable("DEBUG3", "DEBUG1", "");
