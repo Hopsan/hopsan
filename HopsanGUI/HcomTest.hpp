@@ -58,11 +58,11 @@ private slots:
     void testParameterCommands() {
         createTestModel();
 
-        mpHcom->evaluateExpression("syspar");
+        mpHcom->executeCommand("syspar");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 42);
 
-        mpHcom->evaluateExpression("self.syspar");
+        mpHcom->executeCommand("self.syspar");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 42);
 
@@ -78,23 +78,23 @@ private slots:
         QCOMPARE(mpHcom->mAnsScalar, 43);
 
         mpHcom->executeCommand("chpa self.syspar 42");
-        mpHcom->evaluateExpression("step.t_step.y");
+        mpHcom->executeCommand("step.t_step.y");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 42);
 
-        mpHcom->evaluateExpression("step.y_0.y");
+        mpHcom->executeCommand("step.y_0.y");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 43);
-        mpHcom->evaluateExpression("step.y_0"); //<- Evaluate using short name without explicit .y or .Value
+        mpHcom->executeCommand("step.y_0"); //<- Evaluate using short name without explicit .y or .Value
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 43);
-        mpHcom->evaluateExpression("step.y_A.y"); // t_A should point to self.y_0.Value
+        mpHcom->executeCommand("step.y_A.y"); // t_A should point to self.y_0.Value
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 43);
         mpHcom->executeCommand("chpa step.y_A.y \"self.y_0\""); // Set without explicit self.y_0.Value
         mpHcom->executeCommand("chpa step.y_0.y 44"); // Set with explicit .Value
         //mpHcom->executeCommand("chpa step.y_0 44"); // Set without explicit .Value <- This will maybe be added in the future
-        mpHcom->evaluateExpression("step.y_A.y"); // t_A should point to self.y_0
+        mpHcom->executeCommand("step.y_A.y"); // t_A should point to self.y_0
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 44);
     }
