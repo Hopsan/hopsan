@@ -1449,10 +1449,10 @@ void PlotTab::openCreateBodePlotDialog()
     {
         const double dataSize = pTimeVector->getDataSize()+1;
         const double stopTime = pTimeVector->last();
-        const double maxFreq = dataSize/stopTime/2;
+        const double maxFreq = dataSize/stopTime/2*M_PI*2;
         QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
         QLabel *pMaxFrequencyValue = new QLabel();
-        QLabel *pMaxFrequencyUnit = new QLabel("Hz");
+        QLabel *pMaxFrequencyUnit = new QLabel("rad/s");
         QSlider *pMaxFrequencySlider;
         pMaxFrequencyValue->setNum(maxFreq);
         pMaxFrequencySlider = new QSlider(this);
@@ -1524,7 +1524,7 @@ void PlotTab::openCreateBodePlotDialog()
             }
             else
             {
-                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), pMaxFrequencySlider->value());
+                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), pMaxFrequencySlider->value()/(2*M_PI));
             }
         }
     }

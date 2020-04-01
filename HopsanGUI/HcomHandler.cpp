@@ -5167,7 +5167,7 @@ void HcomHandler::executeBodeCommand(const QString cmd)
     int fMax = 500;
     if(args.size() > 2)
     {
-        fMax = args[2].toInt(); //!< @todo parse check needed
+        fMax = args[2].toInt()/(2*M_PI); //!< @todo parse check needed
     }
 
     PlotWindow *pWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot");
