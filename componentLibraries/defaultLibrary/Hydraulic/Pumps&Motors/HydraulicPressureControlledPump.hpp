@@ -73,13 +73,13 @@ namespace hopsan {
             mpPREF = addPowerPort("PREF", "NodeHydraulic", "", Port::NotRequired);
 
             addOutputVariable("eps", "NodeSignal", "", 1.0, &mpEps);
-            addOutputVariable("a", "NodeSignal", "rad", 0, &mpA);
+            addOutputVariable("a", "NodeSignal", "Angle", 0, &mpA);
             addInputVariable("p_dif", "Reference pressure difference", "Pa", 1000000, &mpPdif);
-            addInputVariable("omega_p", "Pump movement", "rad/s", 125, &mpMovement);
+            addInputVariable("omega_p", "Pump movement", "AngularVelocity", 125, &mpMovement);
             addInputVariable("q_max", "Nominal maximal flow (at 125 rad/s)", "m^3/s", 0.00125, &mpQmax);
             addInputVariable("l_p", "Regulator inductance at nominal pressure", "", 70000000, &mpLp);
             addInputVariable("r_p", "Static characteristic at nominal pressure", "", 1000000000, &mpRp);
-            addInputVariable("omega_p1", "Lead frequency of regulator", "rad/s", 200, &mpWp1);
+            addInputVariable("omega_p1", "Lead frequency of regulator", "AngularVelocity", 200, &mpWp1);
             addInputVariable("C_lp", "Leakage coefficient of pump", "", 0.000000000001, &mpClp);
             addInputVariable("tao_v", "Time constant of control valve", "s", 0.001, &mpTaov);
             addInputVariable("t_p", "Time from min to full displacement", "s", 0.15, &mpTp);
