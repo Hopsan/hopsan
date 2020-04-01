@@ -30,6 +30,7 @@
 #include "model.hpp"
 #include <cassert>
 #include <iostream>
+#include <sstream>
 
 namespace {
 
@@ -199,14 +200,18 @@ void hopsan_set_real(int vr, double value)
         (*dataPtrs[vr]) = value;
     }
     else if(realParametersMap.count(vr)) {
-        spCoreComponentSystem->setParameterValue(realParametersMap[vr], hopsan::HString(std::to_string(value).c_str()));
+        std::ostringstream ss;
+        ss << value;
+        spCoreComponentSystem->setParameterValue(realParametersMap[vr], hopsan::HString(ss.str().c_str()));
     }
 }
 
 void hopsan_set_integer(int vr, int value)
 {
     if(intParametersMap.count(vr)) {
-        spCoreComponentSystem->setParameterValue(intParametersMap[vr], hopsan::HString(std::to_string(value).c_str()));
+        std::ostringstream ss;
+        ss << value;
+        spCoreComponentSystem->setParameterValue(intParametersMap[vr], hopsan::HString(ss.str().c_str()));
     }
 }
 
