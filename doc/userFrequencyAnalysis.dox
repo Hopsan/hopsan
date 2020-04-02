@@ -3,21 +3,21 @@
 
 Hopsan has built-in tools for Nyquist diagrams, Bode plots and frequency spectrum.
 
-\section Transfer Function Analysis
+\section Bode and Nyquist plots
 
-Transfer function analysis will generate Nyquist diagrams and bode plots. It is accessed from the toolbar in the plot window. To use this you need to define two curves, representing the input and the output signal. Add these curves to the same plot tab and then press the Transfer Function Analysis button.
+Bode and Nyquist plots can be generated from the "Transfer Function Analysis" icon in the toolbar in the plot window. To use this the current plot tab must contain two curves, representing the input and the output signal.
 
 \htmlimagerightcaption{tfanalysis_icon.png, Transfer Function Analysis}
 \image latex "tfanalysis_icon.png" "Transfer Function Analysis"
 
 
-A dialog will appear, where input signal and output signal can be selected. It is also possible to limit the frequency range. This is useful because numerical problems often occurs at high frequencies. When clicking "Go", two new plot tabs appear. The first shows the Nyquist diagram, and the second the Bode plot.
+A dialog will appear, where input signal and output signal can be selected. It is also possible to limit the frequency range. This is useful because numerical problems often occurs at high frequencies. You can also choose whether you want to create a Bode plot, a Nyquist plot or both. When clicking "Go", a new plot tab will appear for each generated plot.
 
 \subsection tfahints Hints
 - Use log samples that equal 2^n, e.g. 1024, 2048, 4096 and so on.
 - As input signal to the system, use a step with exponential delay or a pulse. Both input and output signal must begin and end at the same value.
 - Do not excite the system too much. Most systems are non-linear, and must be investigated around a working point.
-- Smaller time steps will improve results, especially if number of log samples are increased as well.
+- A larger number of samples will improve results, especially if number of log samples are increased as well.
 
 
 
