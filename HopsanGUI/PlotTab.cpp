@@ -1401,7 +1401,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
 
 void PlotTab::showFrequencyAnalysisHelp()
 {
-    gpHelpPopupWidget->openContextHelp("userFrequencyAnalysis.html");
+    gpHelpPopupWidget->openContextHelp("userFrequencyAnalysisPage.html");
 }
 
 void PlotTab::openCreateBodePlotDialog()
