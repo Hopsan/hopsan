@@ -179,6 +179,8 @@ void GraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 
         this->setIgnoreNextMouseReleaseEvent();
     }
+
+    QGraphicsView::mouseDoubleClickEvent(event);
 }
 
 void GraphicsView::insertComponentFromLineEdit()
