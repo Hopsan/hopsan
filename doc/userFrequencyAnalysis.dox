@@ -17,7 +17,7 @@ A dialog will appear, where input signal and output signal can be selected. It i
 - Use log samples that equal 2^n, e.g. 1024, 2048, 4096 and so on.
 - As input signal to the system, use a step with exponential delay or a pulse. Both input and output signal must begin and end at the same value.
 - Do not excite the system too much. Most systems are non-linear, and must be investigated around a working point.
-- A larger number of samples will improve results, especially if number of log samples are increased as well.
+- A larger number of log samples will improve the results.
 
 
 
