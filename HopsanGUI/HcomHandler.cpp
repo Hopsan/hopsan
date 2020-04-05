@@ -151,22 +151,22 @@ int getNumberOfCommandArguments(const QString &rArgs)
     return splitCommandArguments(rArgs).size();
 }
 
-QStringList extractFunctionCallExpressionArguments(QString call)
+//! @brief Extract everything between the first ( and last )
+QStringList extractFunctionCallExpressionArguments(const QString& functionCallExpression)
 {
     QStringList args;
-    int s = call.indexOf('(');
+    int s = functionCallExpression.indexOf('(');
     if (s>=0)
     {
-        int e = call.lastIndexOf(')');
+        int e = functionCallExpression.lastIndexOf(')');
         if (e>=0)
         {
-            // This assumes that last ) is in the end
-            QString argString = call.mid(s+1, call.size()-(s+2));
+            QString argString = functionCallExpression.mid(s+1, e-s-1);
             splitRespectingQuotationsAndParanthesis(argString, ',', args);
         }
     }
 
-    // Make sure we remove unnecessary leading and trailing spaces
+    // Remove unnecessary leading and trailing spaces for each arg
     for(int i=0; i<args.size(); ++i)
     {
         args[i] = args[i].trimmed();
