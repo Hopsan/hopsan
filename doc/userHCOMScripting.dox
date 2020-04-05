@@ -3,7 +3,68 @@
 HCOM is the built-in scripting language in Hopsan. It can control most parts of the program, either from the terminal widget or through external script files. 
 Use the \c help command to list all available commands or \c help \c \<command\> to get help for a specific command.<br>
 
-All available commands are listed below. 
+\section controlflow Control Flow
+
+When HCOM scripts are loaded from a file, multi-line control flow can be used
+
+\subsection ifstatements If statements
+You can use if statements, with one optional else clause.
+
+    if( condition_expression )
+      .
+      .
+    [else]
+      .
+      .
+    endif
+
+Example:
+Assign b = 1 if a is greater then 4, else assign b = 0
+
+    a = 5
+    if( a > 4 )
+      b = 1
+    else
+      b = 0
+    endif
+
+\subsection whileloops While loops
+You can use a while loop to repeat an expression until the condition is fulfilled
+
+    while (condition)
+      .
+      .
+    repeat
+
+Example:
+Loop an expression five times, in this case summing the five first elements from a data vector
+
+    sum = 0
+    i = 0
+    while (i < 5)
+      sum = sum + peek(data_vector, i)
+      i = i+1
+    repeat
+
+\subsection foreachloops Foreach loops
+You can use foreach to loop over multiple plot variables matching a filter_pattern
+Each resolved plot variable name will end up in the loop variable 'var'.
+Use $var to resolve the matched plot variable name
+Note! This function only works with plot variables right now
+
+    foreach var filter_pattern
+      .
+      .
+    endforeach
+
+Example:
+Take the sum of the average value from all plot variables matching the pattern Step*.out.y
+
+    sum = 0
+    foreach v Step*.out.y
+      sum = sum + aver($v)
+    endforeach
+
 
 \section simulationcommands Simulation Commands
 
