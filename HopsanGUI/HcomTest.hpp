@@ -15,11 +15,15 @@ private:
     void createTestModel() {
         mpHcom->executeCommand("crmo");
         mpHcom->executeCommand("adco SignalStep step -a 100 100 0");
+        mpHcom->executeCommand("adco SignalStep step2 -a 200 200 0");
         mpHcom->executeCommand("adpa syspar 42");
         mpHcom->executeCommand("chpa step.y_0.y 43");
+        mpHcom->executeCommand("chpa step2.y_0.y 43");
+        mpHcom->executeCommand("chpa step2.y_A.y 0");
         mpHcom->executeCommand("chpa step.t_step.y syspar");
         mpHcom->executeCommand("chpa step.y_A.y \"self.y_0.Value\"");
-        mpHcom->executeCommand("adco Subsystem subsystem -a 150 150 0"); //! @todo Cant enter system with commands so cant do more with it now
+        //mpHcom->executeCommand("adco Subsystem subsystem -a 150 150 0"); //! @todo Cant enter system with commands so cant do more with it now
+        mpHcom->executeCommand("sim");
     }
 
 private slots:
@@ -95,6 +99,64 @@ private slots:
         mpHcom->executeCommand("chpa step.y_0.y 44"); // Set with explicit .Value
         //mpHcom->executeCommand("chpa step.y_0 44"); // Set without explicit .Value <- This will maybe be added in the future
         mpHcom->executeCommand("step.y_A.y"); // t_A should point to self.y_0
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 44.0);
+    }
+
+    void testControlFlowIf() {
+        QString script = R"(
+                if (a > 4)
+                  b = 1
+                else
+                  b = 0
+                endif
+                )";
+
+        mpHcom->executeCommand("a = 5");
+        bool abort=false;
+        QStringList lines = script.split("\n");
+        mpHcom->runScriptCommands(lines, &abort);
+        mpHcom->executeCommand("b");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 1.0);
+
+        mpHcom->executeCommand("a = 3");
+        abort=false;
+        lines = script.split("\n");
+        mpHcom->runScriptCommands(lines, &abort);
+        mpHcom->executeCommand("b");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 0.0);
+    }
+
+    void testControlFlowForeach() {
+        //! @todo  Make foreach work with paramters and script variables, and a list of values
+        QString script = R"(
+                sum = 0
+                foreach v step*.out.y
+                  sum = sum + aver($v)
+                endforeach
+                )";
+        bool abort=false;
+        QStringList lines = script.split("\n");
+        mpHcom->runScriptCommands(lines, &abort);
+        mpHcom->executeCommand("sum");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 86.0);
+    }
+
+    void testControlFlowWhile() {
+        QString script = R"(
+                val = 2
+                sum = 0
+                while( sum < step2.y_0.y) # Short version step2.y_0 does not work here, need to fix
+                  sum = sum + val
+                repeat
+                )";
+        bool abort=false;
+        QStringList lines = script.split("\n");
+        mpHcom->runScriptCommands(lines, &abort);
+        mpHcom->executeCommand("sum");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 44.0);
     }
