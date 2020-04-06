@@ -1655,6 +1655,9 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         varElement.setAttribute("description", parSpec.description);
         QDomElement dataElement = domDocument.createElement(parSpec.type);
         dataElement.setAttribute("start", parSpec.init);   //! @todo Support start values
+        if(!parSpec.unit.isEmpty()) {
+            dataElement.setAttribute("unit", parSpec.unit);
+        }
         if(version == 1)
         {
             dataElement.setAttribute("fixed", "false");
