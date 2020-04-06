@@ -149,7 +149,7 @@ void hopsan_get_message(hopsan_message_callback_t message_callback, void* userSt
 
 double hopsan_get_real(int vr)
 {
-    if(vr < sizeof(dataPtrs)/sizeof(double*)) {
+    if(vr < <<<nports>>>) {
         return (*dataPtrs[vr]);
     }
     if(realParametersMap.count(vr)) {
@@ -196,7 +196,7 @@ const char* hopsan_get_string(int vr)
 
 void hopsan_set_real(int vr, double value)
 {
-    if(vr < sizeof(dataPtrs)/sizeof(double*)) {
+    if(vr < <<<nports>>>) {
         (*dataPtrs[vr]) = value;
     }
     else if(realParametersMap.count(vr)) {
