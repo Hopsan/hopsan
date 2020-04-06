@@ -1330,8 +1330,6 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
         else {
             continue;   //Illegal data type, should never happen
         }
-        QString temp = QString("dataPtrs[%1] = static_cast<%2*>(spCoreComponentSystem->getParameterDataPtr(\"%3\"));").arg(vr).arg(dataType).arg(parSpec.name);
-        setDataPtrsString.append(temp);
         ++vr;
     }
     fmuHopsanSourceCode.replace("<<<addparameterstomap>>>", addParametersToMap);
