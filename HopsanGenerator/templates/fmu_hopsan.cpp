@@ -158,7 +158,7 @@ double hopsan_get_real(int vr)
         bool ok;
         return value.toDouble(&ok);
     }
-    return 0;
+    return -1;
 }
 
 int hopsan_get_integer(int vr)
