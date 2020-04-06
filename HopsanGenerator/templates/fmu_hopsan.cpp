@@ -29,8 +29,7 @@
 #include <string>
 #include "model.hpp"
 #include <cassert>
-#include <iostream>
-#include <sstream>
+#include "ComponentUtilities/num2string.hpp"
 
 namespace {
 
@@ -200,9 +199,7 @@ void hopsan_set_real(int vr, double value)
         (*dataPtrs[vr]) = value;
     }
     else if(realParametersMap.count(vr)) {
-        std::ostringstream ss;
-        ss << value;
-        spCoreComponentSystem->setParameterValue(realParametersMap[vr], hopsan::HString(ss.str().c_str()));
+        spCoreComponentSystem->setParameterValue(realParametersMap[vr], to_hstring(value));
     }
 }
 
