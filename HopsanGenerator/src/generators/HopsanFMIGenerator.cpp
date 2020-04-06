@@ -1296,7 +1296,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     {
         for(const auto &varSpec : portSpec.vars)
         {
-            QString temp = QString("dataPtrs[%1] = spCoreComponentSystem").arg(vr);
+            QString temp = QString("        dataPtrs[%1] = spCoreComponentSystem").arg(vr);
             for(const auto &subsystem : portSpec.path)
             {
                 temp.append(QString("->getSubComponentSystem(\"%1\")").arg(subsystem));
@@ -1316,16 +1316,16 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     for(const auto &parSpec : parSpecs) {
         QString dataType;
         if(parSpec.type == "Real") {
-            addParametersToMap.append(QString("realParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));").arg(vr).arg(parSpec.name.toStdString().c_str()));
+            addParametersToMap.append(QString("        realParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name.toStdString().c_str()));
         }
         else if(parSpec.type == "Integer") {
-            addParametersToMap.append(QString("intParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));").arg(vr).arg(parSpec.name));
+            addParametersToMap.append(QString("        intParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
         }
         else if(parSpec.type == "Boolean") {
-            addParametersToMap.append(QString("boolParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));").arg(vr).arg(parSpec.name));
+            addParametersToMap.append(QString("        boolParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
         }
         else if(parSpec.type == "String") {
-            addParametersToMap.append(QString("stringParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));").arg(vr).arg(parSpec.name));
+            addParametersToMap.append(QString("        stringParametersMap.insert(std::pair<int,std::string>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
         }
         else {
             continue;   //Illegal data type, should never happen

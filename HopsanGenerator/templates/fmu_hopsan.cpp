@@ -91,10 +91,10 @@ int hopsan_instantiate(const char *resourceLocation)
         spCoreComponentSystem->addSearchPath(rl.c_str());
 
         // Get pointers to I/O data variables
-        <<<setdataptrs>>>
+<<<setdataptrs>>>
 
         //Populate parameter name maps
-        <<<addparameterstomap>>>
+<<<addparameterstomap>>>
 
         // Initialize system
         spCoreComponentSystem->setDesiredTimestep(<<<timestep>>>);
