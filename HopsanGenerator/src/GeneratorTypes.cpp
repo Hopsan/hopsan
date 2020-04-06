@@ -759,6 +759,7 @@ void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentS
         spec.displayName = par->getName().c_str();
         spec.init = par->getValue().c_str();
         spec.description = par->getDescription().c_str();
+        spec.unit = par->getUnit().c_str();
         parameters.append(spec);
     }
 }
