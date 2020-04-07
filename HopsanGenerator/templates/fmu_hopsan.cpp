@@ -214,7 +214,7 @@ void hopsan_set_integer(int vr, int value)
 
 void hopsan_set_boolean(int vr, int value)
 {
-    if(realParametersMap.count(vr)) {
+    if(boolParametersMap.count(vr)) {
         hopsan::HString hvalue = "true";
         if(hvalue != 0) {
             hvalue = "false";
@@ -225,8 +225,8 @@ void hopsan_set_boolean(int vr, int value)
 
 void hopsan_set_string(int vr, const char* value)
 {
-    if(realParametersMap.count(vr)) {
-        spCoreComponentSystem->setParameterValue(boolParametersMap[vr], value);
+    if(stringParametersMap.count(vr)) {
+        spCoreComponentSystem->setParameterValue(stringParametersMap[vr], value);
     }
 }
 
