@@ -401,7 +401,10 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
         {
             addConstants.append("        ");
         }
-        addConstants.append("addConstant(\""+parNames.at(i)+"\", \"\", \"\", 0, "+parVars.at(i)+");\n");
+
+        fmi1_import_variable_t *pVar = fmi1_import_get_variable_by_name(fmu, parNames.at(i).toStdString().c_str());
+        double startValue = fmi1_import_get_real_variable_start(fmi1_import_get_variable_as_real(pVar));
+        addConstants.append("addConstant(\""+parNames.at(i)+"\", \"\", \"\", "+QString::number(startValue)+", "+parVars.at(i)+");\n");
     }
 
     QString addInputs;
@@ -1649,9 +1652,16 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         QDomElement varElement = domDocument.createElement("ScalarVariable");
         varElement.setAttribute("name", parSpec.name);
         varElement.setAttribute("valueReference", (unsigned int)vr);
-        varElement.setAttribute("causality", "parameter");
-        varElement.setAttribute("initial","exact");
-        varElement.setAttribute("variability", "fixed");
+        if(version == 2)
+        {
+            varElement.setAttribute("causality", "parameter");
+            varElement.setAttribute("initial","exact");
+            varElement.setAttribute("variability", "fixed");
+        }
+        else if(version == 1) {
+            varElement.setAttribute("causality", "input");
+            varElement.setAttribute("variability", "parameter");
+        }
         varElement.setAttribute("description", parSpec.description);
         QDomElement dataElement = domDocument.createElement(parSpec.type);
         dataElement.setAttribute("start", parSpec.init);   //! @todo Support start values

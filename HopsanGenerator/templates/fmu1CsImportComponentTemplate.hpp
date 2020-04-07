@@ -180,6 +180,14 @@ public:
             return;
         }
 
+        //Set parameters
+        fmi1_value_reference_t vr;
+        double value;
+>>>setpars>>>        vr = <<<vr>>>;
+        value = <<<var>>>;
+        fmistatus = fmi1_import_set_real(fmu, &vr, 1, &value);
+        <<<setpars<<<
+
         //Enter initialization mode
         fmistatus = fmi1_import_initialize_slave(fmu, mTime, fmi1_false, 10);
         if(fmistatus != fmi1_status_ok)
@@ -188,13 +196,6 @@ public:
             stopSimulation();
             return; 
         }
-
-          //Set parameters
-          fmi1_value_reference_t vr;
->>>setpars>>>        vr = <<<vr>>>;
-        double value = <<<var>>>;
-        fmistatus = fmi1_import_set_real(fmu, &vr, 1, &value);
-        <<<setpars<<<
     }
 
 
