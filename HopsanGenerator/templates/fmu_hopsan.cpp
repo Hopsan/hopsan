@@ -206,9 +206,7 @@ void hopsan_set_real(int vr, double value)
 void hopsan_set_integer(int vr, int value)
 {
     if(intParametersMap.count(vr)) {
-        std::ostringstream ss;
-        ss << value;
-        spCoreComponentSystem->setParameterValue(intParametersMap[vr], hopsan::HString(ss.str().c_str()));
+        spCoreComponentSystem->setParameterValue(intParametersMap[vr], to_hstring(value));
     }
 }
 
