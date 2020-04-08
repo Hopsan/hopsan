@@ -55,7 +55,7 @@
 #include <QAction>
 #include <QMouseEvent>
 
-
+namespace {
 const double DoubleMax = std::numeric_limits<double>::max();
 
 
@@ -83,6 +83,35 @@ public:
     QString mLabel;
 };
 
+UnitConverter lookupUnitConverter(const QString& dataQuantity, const QString& newUnit, const QString& currentUnit) {
+    UnitConverter us;
+    // For varaibles without quantity, try to lookup, but only unique quantities
+    if (dataQuantity.isEmpty())
+    {
+        // Only set the new unit if it represents the same physical quantity as the current unit
+        QStringList pqs = gpConfig->getQuantitiesForUnit(newUnit);
+        QStringList pqsOrg = gpConfig->getQuantitiesForUnit(currentUnit);
+        if ( !(pqs.isEmpty() || pqsOrg.isEmpty()) )
+        {
+            if (pqs.front() == pqsOrg.front())
+            {
+                gpConfig->getUnitScale(pqs.first(), newUnit, us);
+            }
+        }
+    }
+    // If quantity known then make sure that unit is actually a valid unit for that quantity
+    else
+    {
+        // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
+        if (gpConfig->hasUnitScale(dataQuantity, newUnit))
+        {
+            gpConfig->getUnitScale(dataQuantity, newUnit, us);
+        }
+    }
+    return us;
+}
+
+}
 
 //! @brief Constructor for plot curves.
 //! @param pData A shared pointer to the data to plot
@@ -91,7 +120,7 @@ public:
 PlotCurve::PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, const HopsanPlotCurveTypeEnumT curveType)
     : QObject(), QwtPlotCurve()
 {
-    mpParentPlotArea = 0;
+    mpParentPlotArea = nullptr;
     mHaveCustomData = false;
     mShowVsSamples = false;
     mData = data;
@@ -101,7 +130,7 @@ PlotCurve::PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, cons
     mCurveExtraDataScale = 1.0;
     mCurveExtraDataOffset = 0.0;
 
-    mpCurveSymbol = 0;
+    mpCurveSymbol = nullptr;
     mCurveSymbolSize = 8;
     mIsActive = false;
     mIncludeGenInTitle = true;
@@ -550,33 +579,9 @@ bool PlotCurve::autoIncrementModelSourceGeneration()
 void PlotCurve::setCurveDataUnitScale(const QString &rUnit)
 {
     QString dataQuantity = getDataQuantity();
-
-    // For varaibles without quantity, try to lookup, but only unique quantities
-    if (dataQuantity.isEmpty())
-    {
-        // Only set the new unit if it represents the same physical quantity as the current unit
-        QStringList pqs = gpConfig->getQuantitiesForUnit(rUnit);
-        QStringList pqsOrg = gpConfig->getQuantitiesForUnit(getDataUnit());
-        if ( !(pqs.isEmpty() || pqsOrg.isEmpty()) )
-        {
-            if (pqs.front() == pqsOrg.front())
-            {
-                UnitConverter us;
-                gpConfig->getUnitScale(pqs.first(), rUnit, us);
-                setCurveDataUnitScale(us);
-            }
-        }
-    }
-    // If quantity known then make sure that unit is actually a valid unit for that quantity
-    else
-    {
-        // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
-        if (gpConfig->hasUnitScale(dataQuantity,rUnit))
-        {
-            UnitConverter us;
-            gpConfig->getUnitScale(dataQuantity, rUnit, us);
-            setCurveDataUnitScale(us);
-        }
+    UnitConverter us = lookupUnitConverter(dataQuantity, rUnit, getDataUnit());
+    if (!us.isEmpty()) {
+        setCurveDataUnitScale(us);
     }
 }
 
@@ -728,10 +733,38 @@ void PlotCurve::resetCurveCustomXDataUnitScale()
     mpParentPlotArea->replot();
 }
 
-void PlotCurve::setCurveTFUnitScale(UnitConverter us)
+void PlotCurve::setCurveTFUnitScale(const UnitConverter &us)
 {
-    mCurveTFUnitScale = us;
+    if (us.isEmpty()) {
+        resetCurveTFUnitScale();
+    }
+    else {
+        mCurveTFUnitScale = us;
+        updateCurve();
+        //! @todo shouldn't these be triggered by signal in update curve?
+        mpParentPlotArea->replot();
+    }
+}
+
+void PlotCurve::setCurveTFUnitScale(const QString &unit)
+{
+    auto pTof = getSharedTimeOrFrequencyVariable();
+    if (pTof) {
+        QString dataQuantity = pTof->getDataQuantity();
+        UnitConverter us = lookupUnitConverter(dataQuantity, unit, pTof->getDataUnit());
+        if (!us.isEmpty()) {
+            setCurveTFUnitScale(us);
+        }
+    }
+}
+
+void PlotCurve::resetCurveTFUnitScale()
+{
+    mCurveTFUnitScale.clear();
     updateCurve();
+
+    //! @todo shouldn't these be triggered by signal in update curve?
+    mpParentPlotArea->replot();
 }
 
 UnitConverter PlotCurve::getCurveTFUnitScale() const

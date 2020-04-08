@@ -88,7 +88,7 @@ class HopQwtPlot : public QwtPlot
 {
     Q_OBJECT
 public:
-    explicit HopQwtPlot(QWidget *pParent=0) : QwtPlot(pParent) {}
+    explicit HopQwtPlot(QWidget *pParent=nullptr) : QwtPlot(pParent) {}
 public slots:
     void replot();
 signals:

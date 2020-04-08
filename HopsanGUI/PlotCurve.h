@@ -133,7 +133,9 @@ public:
     QString getCurrentXPlotUnit() const;
 
     UnitConverter getCurveTFUnitScale() const;
-    void setCurveTFUnitScale(UnitConverter us);
+    void setCurveTFUnitScale(const UnitConverter &us);
+    void setCurveTFUnitScale(const QString& unit);
+    void resetCurveTFUnitScale();
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);

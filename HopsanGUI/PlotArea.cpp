@@ -80,7 +80,7 @@ inline int limitGen(int gen, int min, int max)
 class RectanglePainterWidget : public QWidget
 {
 public:
-    RectanglePainterWidget(QWidget *parent=0);
+    RectanglePainterWidget(QWidget *parent=nullptr);
     void createRect(int x, int y, int w, int h);
     void clearRect();
 
@@ -474,7 +474,7 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
 
     pCurve->detach();
     mPlotCurves.removeAll(pCurve);
-    pCurve->mpParentPlotArea = 0;
+    pCurve->mpParentPlotArea = nullptr;
     pCurve->disconnect();
     delete pCurve;
 
@@ -681,7 +681,7 @@ void PlotArea::setActivePlotCurve(PlotCurve *pCurve)
         }
     }
     // Mark active the one
-    if (pCurve!=0)
+    if (pCurve!=nullptr)
     {
         pCurve->markActive(true);
     }
@@ -1092,11 +1092,11 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     QMenu *pResetUnitsMenu;
     QMenu *pInsertMarkerMenu;
 
-    QAction *pSetRightAxisLogarithmic = 0;
-    QAction *pSetLeftAxisLogarithmic = 0;
-    QAction *pSetBottomAxisLogarithmic = 0;
-    QAction *pSetBottomAxisShowSamples = 0;
-    QAction *pSetUserDefinedAxisLabels = 0;
+    QAction *pSetRightAxisLogarithmic = nullptr;
+    QAction *pSetLeftAxisLogarithmic = nullptr;
+    QAction *pSetBottomAxisLogarithmic = nullptr;
+    QAction *pSetBottomAxisShowSamples = nullptr;
+    QAction *pSetUserDefinedAxisLabels = nullptr;
 
     pYAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     pYAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
@@ -1109,17 +1109,19 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     // Create menu and actions for changing units
     pChangeUnitsMenu = menu.addMenu(QString("Change Units"));
     pResetUnitsMenu = menu.addMenu(QString("Reset Units"));
-    QMap<QAction *, PlotCurve *> actionToCurveMap;
-    QList<UnitConverter> unitScales;
+    QMap<QAction *, PlotCurve *> dataActionToCurveMap;
+    QMap<QAction *, QVector<PlotCurve *>> timeorfreqActionToCurveMap;
     QList<PlotCurve *>::iterator itc;
     QList<UnitConverter>::iterator itu;
 
+    QMap<VectorVariable*, QVector<PlotCurve*>> unique_time_or_frequency_variables_curve_map;
     for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
     {
         PlotCurve *pCurve = *itc;
+        QList<UnitConverter> unitScales;
 
         QAction *pTempResetUnitAction = pResetUnitsMenu->addAction(pCurve->getCurveName());
-        actionToCurveMap.insert(pTempResetUnitAction, pCurve);
+        dataActionToCurveMap.insert(pTempResetUnitAction, pCurve);
 
         QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu(pCurve->getCurveName());
         if (pCurve->getDataQuantity().isEmpty())
@@ -1138,7 +1140,47 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         for(itu=unitScales.begin(); itu!=unitScales.end(); ++itu)
         {
             QAction *pTempAction = pTempChangeUnitMenu->addAction((*itu).mUnit);
-            actionToCurveMap.insert(pTempAction, pCurve);
+            dataActionToCurveMap.insert(pTempAction, pCurve);
+        }
+
+        auto tf = pCurve->getSharedTimeOrFrequencyVariable();
+        unique_time_or_frequency_variables_curve_map[tf.data()].append(pCurve);
+    }
+
+    // Create change unit enteries for time or frequency data
+    for (const auto& curveList : unique_time_or_frequency_variables_curve_map) {
+
+        auto pFirstCurve = curveList.first();
+
+        QList<UnitConverter> unitScales;
+        QString dataName = pFirstCurve->getSharedTimeOrFrequencyVariable()->getDataName();
+        QString dataQuantity = pFirstCurve->getSharedTimeOrFrequencyVariable()->getDataQuantity();
+
+        QAction *pTempResetUnitAction = pResetUnitsMenu->addAction(dataName);
+        for (const auto& pCurve : curveList) {
+            timeorfreqActionToCurveMap[pTempResetUnitAction].append(pCurve);
+        }
+
+        QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu(dataName);
+        if (dataQuantity.isEmpty())
+        {
+            QStringList pqs = gpConfig->getQuantitiesForUnit(pFirstCurve->getSharedTimeOrFrequencyVariable()->getDataUnit());
+            if (pqs.size() == 1)
+            {
+                gpConfig->getUnitScales(pqs.first(), unitScales);
+            }
+        }
+        else
+        {
+            gpConfig->getUnitScales(dataQuantity, unitScales);
+        }
+
+        for(itu=unitScales.begin(); itu!=unitScales.end(); ++itu)
+        {
+            QAction *pTempAction = pTempChangeUnitMenu->addAction((*itu).mUnit);
+            for (const auto& pCurve : curveList) {
+                timeorfreqActionToCurveMap[pTempAction].append(pCurve);
+            }
         }
     }
 
@@ -1173,7 +1215,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
     {
         QAction *pTempAction = pInsertMarkerMenu->addAction((*itc)->getCurveName());
-        actionToCurveMap.insert(pTempAction, (*itc));
+        dataActionToCurveMap.insert(pTempAction, (*itc));
     }
 
 
@@ -1186,7 +1228,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     // ----- User has selected something -----  //
 
     // Check if user did not click on a menu item
-    if(pSelectedAction == 0)
+    if(pSelectedAction == nullptr)
     {
         return;
     }
@@ -1195,14 +1237,35 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     // Change unit on selected curve
     if(pSelectedAction->parentWidget()->parentWidget() == pChangeUnitsMenu)
     {
-        actionToCurveMap.find(pSelectedAction).value()->setCurveDataUnitScale(pSelectedAction->text());
+        auto it = dataActionToCurveMap.find(pSelectedAction);
+        if (it != dataActionToCurveMap.end()) {
+            it.value()->setCurveDataUnitScale(pSelectedAction->text());
+        }
+
+        auto lit = timeorfreqActionToCurveMap.find(pSelectedAction);
+        if (lit != timeorfreqActionToCurveMap.end()) {
+            for (auto pCurve : *lit) {
+                pCurve->setCurveTFUnitScale(pSelectedAction->text());
+            }
+        }
     }
 
     // Reset unit on selected curve
     if(pSelectedAction->parentWidget() == pResetUnitsMenu)
     {
-        actionToCurveMap.find(pSelectedAction).value()->resetCurveDataUnitScale();
-        actionToCurveMap.find(pSelectedAction).value()->setCurveExtraDataScaleAndOffset(1,0);
+        auto it = dataActionToCurveMap.find(pSelectedAction);
+        if (it != dataActionToCurveMap.end()) {
+            it.value()->resetCurveDataUnitScale();
+            it.value()->setCurveExtraDataScaleAndOffset(1,0);
+        }
+
+        auto lit = timeorfreqActionToCurveMap.find(pSelectedAction);
+        if (lit != timeorfreqActionToCurveMap.end()) {
+            for (auto pCurve : *lit) {
+                pCurve->resetCurveTFUnitScale();
+                //pCurve->setCurveExtraDataScaleAndOffset(1,0);
+            }
+        }
     }
 
 
@@ -1276,7 +1339,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     // Insert curve marker
     if(pSelectedAction->parentWidget() == pInsertMarkerMenu)
     {
-        insertMarker(actionToCurveMap.find(pSelectedAction).value(), event->pos());
+        insertMarker(dataActionToCurveMap.find(pSelectedAction).value(), event->pos());
     }
 
 
