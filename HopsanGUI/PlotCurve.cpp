@@ -286,7 +286,7 @@ QString PlotCurve::getCurrentPlotUnit() const
 QString PlotCurve::getCurrentXPlotUnit() const
 {
     //QString localScale = QString::number(mCurveExtraDataScale);
-    UnitConverter us = getCurveXDataUnitScale();
+    UnitConverter us = getCurveCustomXDataUnitScale();
     if (!us.isEmpty())
     {
 //        if (localScale != "1")
@@ -635,12 +635,12 @@ void PlotCurve::resetCurveDataUnitScale()
     mpParentPlotArea->replot();
 }
 
-bool PlotCurve::hasCurveXDataUnitScale() const
+bool PlotCurve::hasCurveCustomXDataUnitScale() const
 {
-    return !mCurveXDataUnitScale.isEmpty();
+    return !mCurveCustomXDataUnitScale.isEmpty();
 }
 
-void PlotCurve::setCurveXDataUnitScale(const QString &rUnit)
+void PlotCurve::setCurveCustomXDataUnitScale(const QString &rUnit)
 {
     if (mCustomXdata)
     {
@@ -657,7 +657,7 @@ void PlotCurve::setCurveXDataUnitScale(const QString &rUnit)
                 {
                     UnitConverter us;
                     gpConfig->getUnitScale(pqs.first(), rUnit, us);
-                    setCurveXDataUnitScale(us);
+                    setCurveCustomXDataUnitScale(us);
                 }
             }
         }
@@ -669,26 +669,26 @@ void PlotCurve::setCurveXDataUnitScale(const QString &rUnit)
             {
                 UnitConverter us;
                 gpConfig->getUnitScale(xDataQuantity, rUnit, us);
-                setCurveXDataUnitScale(us);
+                setCurveCustomXDataUnitScale(us);
             }
         }
     }
 }
 
-void PlotCurve::setCurveXDataUnitScale(const UnitConverter &rUS)
+void PlotCurve::setCurveCustomXDataUnitScale(const UnitConverter &rUS)
 {
     if (rUS.isEmpty())
     {
-        resetCurveXDataUnitScale();
+        resetCurveCustomXDataUnitScale();
     }
     else
     {
-        mCurveXDataUnitScale = rUS;
+        mCurveCustomXDataUnitScale = rUS;
 
         // Clear the custom scale if it is one and we have a data unit
-        if (!mCustomXdata->getDataUnit().isEmpty() && mCurveXDataUnitScale.isScaleOne())
+        if (!mCustomXdata->getDataUnit().isEmpty() && mCurveCustomXDataUnitScale.isScaleOne())
         {
-            resetCurveXDataUnitScale();
+            resetCurveCustomXDataUnitScale();
         }
         else
         {
@@ -699,10 +699,10 @@ void PlotCurve::setCurveXDataUnitScale(const UnitConverter &rUS)
     }
 }
 
-const UnitConverter PlotCurve::getCurveXDataUnitScale() const
+const UnitConverter PlotCurve::getCurveCustomXDataUnitScale() const
 {
     // If we do not have a custom unit scale
-    if (mCurveXDataUnitScale.isEmpty())
+    if (mCurveCustomXDataUnitScale.isEmpty())
     {
         // If custom x-data has an original unit then return that as a unit scale with scaling 1.0
         if ( mCustomXdata && !mCustomXdata->getDataUnit().isEmpty() )
@@ -715,13 +715,13 @@ const UnitConverter PlotCurve::getCurveXDataUnitScale() const
     // Return the custom unit scale
     else
     {
-        return mCurveXDataUnitScale;
+        return mCurveCustomXDataUnitScale;
     }
 }
 
-void PlotCurve::resetCurveXDataUnitScale()
+void PlotCurve::resetCurveCustomXDataUnitScale()
 {
-    mCurveXDataUnitScale.clear();
+    mCurveCustomXDataUnitScale.clear();
     updateCurve();
 
     //! @todo shouldn't these be triggered by signal in update curve?
@@ -1140,8 +1140,8 @@ void PlotCurve::updateCurve()
             {
                 direction = -1;
             }
-            const double xScale = direction/mCurveXDataUnitScale.scaleToDouble(1.0);
-            const double xBaseOffset = mCustomXdata->getPlotOffset()-mCurveXDataUnitScale.offsetToDouble();
+            const double xScale = direction/mCurveCustomXDataUnitScale.scaleToDouble(1.0);
+            const double xBaseOffset = mCustomXdata->getPlotOffset()-mCurveCustomXDataUnitScale.offsetToDouble();
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
                 tempX[i] = (tempX[i]+xBaseOffset)*xScale;

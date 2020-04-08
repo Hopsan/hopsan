@@ -121,11 +121,11 @@ public:
     const UnitConverter getCurveDataUnitScale() const;
     void resetCurveDataUnitScale();
 
-    bool hasCurveXDataUnitScale() const;
-    void setCurveXDataUnitScale(const QString &rUnit);
-    void setCurveXDataUnitScale(const UnitConverter &rUS);
-    const UnitConverter getCurveXDataUnitScale() const;
-    void resetCurveXDataUnitScale();
+    bool hasCurveCustomXDataUnitScale() const;
+    void setCurveCustomXDataUnitScale(const QString &rUnit);
+    void setCurveCustomXDataUnitScale(const UnitConverter &rUS);
+    const UnitConverter getCurveCustomXDataUnitScale() const;
+    void resetCurveCustomXDataUnitScale();
 
     void setCurveExtraDataScaleAndOffset(const double scale, const double offset);
 
@@ -203,7 +203,7 @@ private:
     bool mShowVsSamples;
 
     // Curve scale
-    UnitConverter mCurveXDataUnitScale;
+    UnitConverter mCurveCustomXDataUnitScale;
     UnitConverter mCurveDataUnitScale;
     UnitConverter mCurveTFUnitScale;
     double mCurveExtraDataScale;

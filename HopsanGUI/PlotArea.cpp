@@ -2401,7 +2401,7 @@ void PlotArea::determineCurveXDataUnitScale(PlotCurve *pCurve)
         {
             UnitConverter us;
             gpConfig->getUnitScale(xDataQuantity, desiredDefaultUnit, us);
-            pCurve->setCurveXDataUnitScale(us);
+            pCurve->setCurveCustomXDataUnitScale(us);
         }
 
         // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
@@ -2431,7 +2431,7 @@ void PlotArea::determineCurveXDataUnitScale(PlotCurve *pCurve)
             // but only if it is different from the current unit, (we do not want a custom curve scale 1)
             if( !customUnit.isEmpty()  && (customUnit != pCurve->getCurrentXPlotUnit()) )
             {
-                pCurve->setCurveXDataUnitScale(customUnit);
+                pCurve->setCurveCustomXDataUnitScale(customUnit);
             }
         }
     }
