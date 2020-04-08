@@ -113,6 +113,17 @@ typedef struct
     QString fmuVr;
     QString description;
     QString unit;
+    fmi1_base_type_enu_t dataType;
+    fmi1_import_variable_t *pFmiVariable;
+} hopsan_fmi1_import_variable_t;
+
+typedef struct
+{
+    QString name;
+    QString variableName;
+    QString fmuVr;
+    QString description;
+    QString unit;
     fmi2_base_type_enu_t dataType;
     fmi2_import_variable_t *pFmiVariable;
 }hopsan_fmi_import_variable_t;
@@ -279,7 +290,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     }
 
     //Declare lists for parameters, input variables and output variables
-    QStringList parNames, parVars, parRefs;
+    QList<hopsan_fmi1_import_variable_t> pars;
     QStringList inputNames, inputVars, inputRefs;
     QStringList outputNames, outputVars, outputRefs;
 
@@ -293,12 +304,18 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
         fmi1_variability_enu_t variability = fmi1_import_get_variability(pVar);
         fmi1_base_type_enu_t type = fmi1_import_get_variable_base_type(pVar);
         fmi1_value_reference_t vr = fmi1_import_get_variable_vr(pVar);
+        QString description = fmi1_import_get_variable_description(pVar);
         name = toValidHopsanVarName(name);
         if(causality == fmi1_causality_enu_input && variability == fmi1_variability_enu_parameter)
         {
-            parNames.append(name);
-            parVars.append("m"+name);
-            parRefs.append(QString::number(vr));
+            hopsan_fmi1_import_variable_t par;
+            par.name = name;
+            par.variableName = "m"+name;
+            par.fmuVr = QString::number(vr);
+            par.dataType = type;
+            par.description = description;
+            par.pFmiVariable = pVar;
+            pars.append(par);
         }
         if(causality == fmi1_causality_enu_input && variability != fmi1_variability_enu_parameter)
         {
@@ -363,18 +380,24 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     QString classParent = "ComponentSignal";
 
     QString localVars;
-    if(!parVars.isEmpty())
+    if(!pars.isEmpty())
     {
-        localVars.append("double ");
-        foreach(const QString &varName, parVars)
+        for(const auto &par : pars)
         {
-            localVars.append(varName+", ");
+            if(par.dataType == fmi1_base_type_real) {
+                localVars.append("double ");
+            }
+            else if(par.dataType == fmi1_base_type_int) {
+                localVars.append("int ");
+            }
+            else if(par.dataType == fmi1_base_type_bool) {
+                localVars.append("bool ");
+            }
+            else if(par.dataType == fmi1_base_type_str) {
+                localVars.append("HString ");
+            }
+            localVars.append(par.variableName+";\n");
         }
-        if(localVars.endsWith(", "))
-        {
-            localVars.chop(2);
-        }
-        localVars.append(";\n");
     }
     if(!inputVars.isEmpty()  || !outputVars.isEmpty())
     {
@@ -395,16 +418,34 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     }
 
     QString addConstants;
-    for(int i=0; i<parNames.size(); ++i)
+    for(const auto &par : pars)
     {
-        if(i!=0)
-        {
-            addConstants.append("        ");
-        }
+        addConstants.append("        ");
 
-        fmi1_import_variable_t *pVar = fmi1_import_get_variable_by_name(fmu, parNames.at(i).toStdString().c_str());
-        double startValue = fmi1_import_get_real_variable_start(fmi1_import_get_variable_as_real(pVar));
-        addConstants.append("addConstant(\""+parNames.at(i)+"\", \"\", \"\", "+QString::number(startValue)+", "+parVars.at(i)+");\n");
+        QString startValueStr;
+        if(par.dataType == fmi1_base_type_real) {
+            double startValue = fmi1_import_get_real_variable_start(fmi1_import_get_variable_as_real(par.pFmiVariable));
+            startValueStr = QString::number(startValue);
+        }
+        else if(par.dataType == fmi1_base_type_int) {
+            int startValue = fmi1_import_get_integer_variable_start(fmi1_import_get_variable_as_integer(par.pFmiVariable));
+            startValueStr = QString::number(startValue);
+        }
+        else if(par.dataType == fmi1_base_type_bool) {
+            bool startValue = fmi1_import_get_boolean_variable_start(fmi1_import_get_variable_as_boolean(par.pFmiVariable));
+            if(startValue) {
+                startValueStr = "true";
+            }
+            else {
+                startValueStr == "false";
+            }
+        }
+        else if(par.dataType == fmi1_base_type_str) {
+            startValueStr = fmi1_import_get_string_variable_start(fmi1_import_get_variable_as_string(par.pFmiVariable));
+            startValueStr.append("\"");
+            startValueStr.prepend("\"");
+        }
+        addConstants.append("addConstant(\""+par.name+"\", \"\", \"\", "+startValueStr+", "+par.variableName+");\n");
     }
 
     QString addInputs;
@@ -429,11 +470,11 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     QString setPars;
     QString temp = extractTaggedSection(fmuComponentCode, "setpars");
-    for(int i=0; i<parNames.size(); ++i)
+    for(const auto &par : pars)
     {
         QString tempVar = temp;
-        tempVar.replace("<<<vr>>>", parRefs.at(i));
-        tempVar.replace("<<<var>>>", parVars.at(i));
+        tempVar.replace("<<<vr>>>", par.fmuVr);
+        tempVar.replace("<<<var>>>", par.fmuVr);
         setPars.append(tempVar+"\n");
     }
 
@@ -1647,7 +1688,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     QList<ParameterSpecification> parameterSpecs;
     getParameters(parameterSpecs, pSystem);
 
-    for(const auto &parSpec : parameterSpecs)
+    for(auto &parSpec : parameterSpecs)
     {
         QDomElement varElement = domDocument.createElement("ScalarVariable");
         varElement.setAttribute("name", parSpec.name);
