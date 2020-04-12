@@ -474,7 +474,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     {
         QString tempVar = temp;
         tempVar.replace("<<<vr>>>", par.fmuVr);
-        tempVar.replace("<<<var>>>", par.fmuVr);
+        tempVar.replace("<<<var>>>", par.variableName);
         setPars.append(tempVar+"\n");
     }
 
