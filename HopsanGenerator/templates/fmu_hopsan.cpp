@@ -30,6 +30,7 @@
 #include "model.hpp"
 #include <cassert>
 #include "ComponentUtilities/num2string.hpp"
+#include <map>
 
 namespace {
 
