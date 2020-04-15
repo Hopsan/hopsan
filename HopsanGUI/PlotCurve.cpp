@@ -381,24 +381,41 @@ QVector<double> PlotCurve::getVariableDataCopy() const
     return mData->getDataVectorCopy();
 }
 
-//! @brief Returns the minimum and maximum value of the curve (for values higher then 0)
+//! @brief Returns the minimum (values higher then 0) and maximum value of the curve y-values (with unit scale applied)
 //! @details values <= 0 are ignored
 bool PlotCurve::minMaxPositiveNonZeroYValues(double &rMin, double &rMax)
 {
     int imax, imin;
-    return mData->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+    bool rv = mData->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+    if (!mCurveDataUnitScale.isEmpty()) {
+        rMin = mCurveDataUnitScale.convertFromBase(rMin);
+        rMax = mCurveDataUnitScale.convertFromBase(rMax);
+    }
+    return rv;
 }
 
+//! @brief Returns the minimum (values higher then 0) and maximum value of the curve x-values (with unit scale applied)
+//! @details values <= 0 are ignored
 bool PlotCurve::minMaxPositiveNonZeroXValues(double &rMin, double &rMax)
 {
     int imax, imin;
     if (mCustomXdata)
     {
-        return mCustomXdata->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+        bool rv =  mCustomXdata->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+        if (!mCurveCustomXDataUnitScale.isEmpty()) {
+            rMin = mCurveCustomXDataUnitScale.convertFromBase(rMin);
+            rMax = mCurveCustomXDataUnitScale.convertFromBase(rMax);
+        }
+        return rv;
     }
     else if (mData->getSharedTimeOrFrequencyVector())
     {
-        return mData->getSharedTimeOrFrequencyVector()->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+        bool rv = mData->getSharedTimeOrFrequencyVector()->positiveNonZeroMinMaxOfData(rMin, rMax, imin, imax);
+        if (!mCurveTFUnitScale.isEmpty()) {
+            rMin = mCurveTFUnitScale.convertFromBase(rMin);
+            rMax = mCurveTFUnitScale.convertFromBase(rMax);
+        }
+        return rv;
     }
     else
     {
