@@ -39,9 +39,13 @@
 class UnitConverter
 {
 public:
+    static bool isScaleLesserThan (const UnitConverter &lhs, const UnitConverter &rhs);
+    enum ConverterExpression {Expression};
+
     UnitConverter();
     UnitConverter(const QString &rUnit, const double scale, const double offset=0);
-    UnitConverter(const QString &rQuantity, const QString &rUnit, const QString &rScale, const QString &rOffset/*=""*/);
+    UnitConverter(const QString &rQuantity, const QString &rUnit, const QString &rScale, const QString &rOffset);
+    UnitConverter(ConverterExpression, const QString &quantity, const QString &unit, const QString &toBaseExpression, const QString& fromBaseExpression);
     void clear();
 
     double scaleToDouble(const double defaultValue=1.0) const;
@@ -52,7 +56,7 @@ public:
     bool isOffsetEmpty() const;
     bool isScaleOne() const;
     bool isScaleMinusOne() const;
-    static bool isScaleLesserThan (const UnitConverter &lhs, const UnitConverter &rhs);
+    bool isExpression() const;
 
     void setScaleAndOffset(const double scale, const double offset=0.0);
     void setOnlyScaleAndOffset(const double scale, const double offset=0.0);
@@ -69,5 +73,7 @@ public:
     QString mUnit;
     QString mScale;
     QString mOffset;
+    QString mToBaseExpression;
+    QString mFromBaseExpression;
 };
 #endif // UNITSCALE_H

@@ -120,6 +120,8 @@
 #define CFG_CUSTOMUNIT "customunit"
 #define CFG_SCALE "scale"
 #define CFG_OFFSET "offset"
+#define CFG_FROMBASEEXPR "frombaseexpr"
+#define CFG_TOBBASEEXPR "tobaseexpr"
 
 #define CFG_PYTHON "python"
 #define CFG_HCOM "hcom"

@@ -63,6 +63,9 @@ hopsan::QuantityRegister::QuantityRegister()
 
     registerQuantity("Resistance", "ohm");
 
+    // This is a fake quantity for scaling between absolute and dB values
+    registerQuantity("Magnitude", "");
+
     // Register quantity aliases
     registerQuantityAlias("Position", "Length");
 }

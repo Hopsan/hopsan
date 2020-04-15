@@ -712,6 +712,8 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
         while (!xmlUnitscale.isNull())
         {
             QString unitname = xmlUnitscale.attribute(CFG_NAME);
+            QString fromBaseToUnitExpr = xmlUnitscale.attribute(CFG_FROMBASEEXPR);
+            QString toBaseUnitFromUnitExpr = xmlUnitscale.attribute(CFG_TOBBASEEXPR);
             // prevent overwriting existing built in unit conversions
             if (!qit.value().builtInUnitconversions.contains(unitname))
             {
@@ -726,7 +728,12 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
                 {
                     offset = QString("%1").arg(evalWithNumHop(offset),0,'g',10);
                 }
-                qit.value().customUnits.insert(unitname, UnitConverter(quantity, unitname, scale, offset));
+                if (!(toBaseUnitFromUnitExpr.isEmpty() || fromBaseToUnitExpr.isEmpty())) {
+                    qit.value().customUnits.insert(unitname, UnitConverter(UnitConverter::Expression, quantity, unitname, toBaseUnitFromUnitExpr, fromBaseToUnitExpr));
+                }
+                else {
+                    qit.value().customUnits.insert(unitname, UnitConverter(quantity, unitname, scale, offset));
+                }
                 if (tagAsBuiltIn)
                 {
                     qit.value().builtInUnitconversions.append(unitname);

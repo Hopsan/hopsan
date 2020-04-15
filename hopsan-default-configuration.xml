@@ -292,6 +292,9 @@
           <unit name="kilohm" scale="1e3"/>
           <unit name="megohm" scale="1e6"/>
         </quantity>
+        <quantity name="Magnitude" baseunit="-">
+          <unit name="dB" tobaseexpr="10^(x/20.0)" frombaseexpr="20.0*log10(x)"/>
+        </quantity>
     </unitsettings>
     <units>
     <!-- Note! The units tag is deprecated and should no longer be used   -->

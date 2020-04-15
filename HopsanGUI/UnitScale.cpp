@@ -32,6 +32,7 @@
 //$Id$
 
 #include "UnitScale.h"
+#include "CoreAccess.h"
 
 //! @brief Constructor for a unit / scale (double) combination
 UnitConverter::UnitConverter(const QString &rUnit, const double scale, const double offset) : mUnit(rUnit)
@@ -54,6 +55,12 @@ UnitConverter::UnitConverter(const QString &rQuantity, const QString &rUnit, con
     {
         clear();
     }
+}
+
+UnitConverter::UnitConverter(UnitConverter::ConverterExpression, const QString &quantity, const QString &unit, const QString &toBaseExpression, const QString &fromBaseExpression) :
+    mQuantity(quantity), mUnit(unit), mToBaseExpression(toBaseExpression), mFromBaseExpression(fromBaseExpression)
+{
+
 }
 
 
@@ -100,11 +107,16 @@ double UnitConverter::offsetToDouble(const double defaultValue) const
     }
 }
 
+bool UnitConverter::isExpression() const
+{
+    return !(mToBaseExpression.isEmpty() || mToBaseExpression.isEmpty());
+}
+
 //! @brief Check if scale is empty
 //! @returns True if empty else false
 bool UnitConverter::isEmpty() const
 {
-    return isScaleEmpty() && isOffsetEmpty();
+    return isScaleEmpty() && isOffsetEmpty() && !isExpression();
 }
 
 bool UnitConverter::isScaleEmpty() const
@@ -162,12 +174,13 @@ void UnitConverter::setOnlyScaleAndOffset(const double scale, const double offse
 //! @returns The rescaled value
 double UnitConverter::convertToBase(const double value) const
 {
-    if (isScaleEmpty())
-    {
+    if (isExpression()) {
+        return evalWithNumHop(QString("x=%1;%2").arg(value).arg(mToBaseExpression));
+    }
+    if (isScaleEmpty()) {
         return value+mOffset.toDouble();
     }
-    else
-    {
+    else {
         return mScale.toDouble()*value+mOffset.toDouble();
     }
 }
@@ -186,12 +199,13 @@ QString UnitConverter::convertToBase(const QString value) const
 //! @returns The rescaled value
 double UnitConverter::convertFromBase(const double value) const
 {
-    if (isScaleEmpty())
-    {
+    if (isExpression()) {
+        return evalWithNumHop(QString("x=%1;%2").arg(value).arg(mFromBaseExpression));
+    }
+    else if (isScaleEmpty()) {
         return (value - mOffset.toDouble());
     }
-    else
-    {
+    else {
         return (value - mOffset.toDouble()) / mScale.toDouble();
     }
 }
