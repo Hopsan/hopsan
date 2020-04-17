@@ -1819,187 +1819,13 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
 bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, int version, bool x64) const
 {
     const QString vStr = QString::number(version);
-
-    printMessage("------------------------------------------------------------------------");
-    printMessage("Compiling C files");
-    printMessage("------------------------------------------------------------------------");
-
     const QString fmiLibDir=mHopsanRootPath+"/Dependencies/FMILibrary";
 
-    bool cCompileOK=false;
-#ifdef _WIN32
-    QFile compileCBatchFile;
-    compileCBatchFile.setFileName(fmuBuildPath + "/compileC.bat");
-    if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compileC.bat for writing.");
-        return false;
-    }
-    //Write the compilation script file
-    QTextStream compileBatchCStream(&compileCBatchFile);
-    compileBatchCStream << "@echo off\n";
-    compileBatchCStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
-    compileBatchCStream << "@echo on\n";
-    compileBatchCStream << QString("gcc.exe -c fmu%1_model_cs.c -I\"%2/include\"").arg(vStr).arg(fmiLibDir) << "\n";
-    compileCBatchFile.close();
-
-    cCompileOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & compileC.bat");
-#else
-    QFile compileCBatchFile;
-    compileCBatchFile.setFileName(fmuBuildPath + "/compileC.sh");
-    if(!compileCBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compileC.sh for writing.");
-        return false;
-    }
-    //Write the compilation script file
-    QTextStream compileBatchCStream(&compileCBatchFile);
-    compileBatchCStream << QString("gcc -fPIC -c fmu%1_model_cs.c -I\"%2/include\"").arg(vStr).arg(fmiLibDir)<< "\n";
-    compileCBatchFile.close();
-
-    cCompileOK = callProcess("/bin/sh", QStringList() << "compileC.sh", fmuBuildPath);
-#endif
-    if (!cCompileOK) {
-        printErrorMessage("Failed to compile exported FMU C code.");
-        return false;
-    }
-    if(!assertFilesExist(fmuBuildPath, QStringList() << QString("fmu%1_model_cs.o").arg(vStr))) {
-        return false;
-    }
-
-
     printMessage("------------------------------------------------------------------------");
-    printMessage("Compiling C++ files");
+    printMessage("Compiling FMU source code");
     printMessage("------------------------------------------------------------------------");
 
-    bool cppCompileOK=false;
-#ifdef _WIN32
-    QFile compileCppBatchFile;
-    compileCppBatchFile.setFileName(fmuBuildPath + "/compileCpp.bat");
-    if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compileCpp.bat for writing.");
-        return false;
-    }
-
-    //Write the compilation script file
-    QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << "@echo off\n";
-    compileCppBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
-    compileCppBatchStream << "@echo on\n";
-    compileCppBatchStream << "g++ -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp " << mExtraSourceFiles.join(" ");
-    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-    Q_FOREACH(const QString &srcFile, srcFiles)
-    {
-        compileCppBatchStream << " " << srcFile;
-    }
-    // Add HopsanCore (and necessary dependency) include paths
-    for(const QString includePath : getHopsanCoreIncludePaths()) {
-        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
-    }
-    for(const QString includePath : mIncludePaths) {
-        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
-    }
-    compileCppBatchFile.close();
-
-    cppCompileOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & compileCpp.bat");
-#else
-//    QFile compileCppBatchFile;
-//    compileCppBatchFile.setFileName(fmuBuildPath + "/compileCpp.sh");
-//    if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-//    {
-//        printErrorMessage("Failed to open compileCpp.sh for writing.");
-//        return false;
-//    }
-//    //Write the compilation script file
-//    QTextStream compileCppBatchStream(&compileCppBatchFile);
-//    compileCppBatchStream << mCompilerSelection.path+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp " << mExtraSourceFiles.join(" ");
-//    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-//    Q_FOREACH(const QString &srcFile, srcFiles)
-//    {
-//        compileCppBatchStream << " " << srcFile;
-//    }
-//    // Add HopsanCore (and necessary dependency) include paths
-//    for(const QString includePath : getHopsanCoreIncludePaths()) {
-//        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
-//    }
-//    for(const QString includePath : mIncludePaths) {
-//        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
-//    }
-//    compileCppBatchFile.close();
-    QFile cppMakefile;
-    cppMakefile.setFileName(fmuBuildPath + "/Makefile");
-    if(!cppMakefile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open Makefile for writing.");
-        return false;
-    }
-    //Write the compilation script file
-    QTextStream cppMakefileStream(&cppMakefile);
-    cppMakefileStream << "CXX = g++\n";
-    cppMakefileStream << "CFLAGS = -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING\n";
-    cppMakefileStream << "INCLUDES = ";
-    // Add HopsanCore (and necessary dependency) include paths
-    for(const QString includePath : getHopsanCoreIncludePaths()) {
-        cppMakefileStream << QString(" -I\"%1\"").arg(includePath);
-    }
-    for(const QString includePath : mIncludePaths) {
-        cppMakefileStream << QString(" -I\"%1\"").arg(includePath);
-    }
-    cppMakefileStream << "\n";
-    cppMakefileStream << "SRC = fmu_hopsan.cpp";\
-    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-    for(const QString& srcFile : srcFiles)
-    {
-        cppMakefileStream << " " << srcFile;
-    }
-    cppMakefileStream << "\n\n";
-    cppMakefileStream << "VPATH := $(sort  $(dir $(SRC)))\n\n";
-    cppMakefileStream << "OBJ := $(patsubst %.cpp, %.o, $(notdir $(SRC)))\n\n";
-    cppMakefileStream << "all: 	$(OBJ)\n\n";
-    cppMakefileStream << "%.o : %.cpp Makefile\n";
-    cppMakefileStream << "\t$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@\n\n";
-    cppMakefile.close();
-
-    QFile compileCppBatchFile;
-    compileCppBatchFile.setFileName(fmuBuildPath + "/compileCpp.sh");
-    if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compileCpp.sh for writing.");
-        return false;
-    }
-    //Write the compilation script file
-    QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << "make -j all\n";
-    compileCppBatchFile.close();
-
-    cppCompileOK = callProcess("/bin/sh", QStringList() << "compileCpp.sh", fmuBuildPath);
-#endif
-    if (!cppCompileOK) {
-        printErrorMessage("Failed to compile exported FMU C++ Hopsan code.");
-        return false;
-    }
-
-    QStringList objectFiles;
-    objectFiles << "fmu_hopsan.o";
-    for(const QString& extraSrc : mExtraSourceFiles) {
-        QFileInfo extraObjFile(extraSrc);
-        objectFiles << extraObjFile.baseName()+".o";
-    }
-    for(const QString &srcFile : srcFiles) {
-        QFileInfo fi(srcFile);
-        objectFiles << fi.baseName()+".o";
-    }
-
-    if(!assertFilesExist(fmuBuildPath, objectFiles)) {
-        return false;
-    }
-
-    printMessage("------------------------------------------------------------------------");
-    printMessage("Linking");
-    printMessage("------------------------------------------------------------------------");
-
-    bool linkingOK=false;
+    bool compilationSuccessful=false;
 
     QString outputLibraryFile;
 #ifdef _WIN32
@@ -2016,70 +1842,99 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
 #endif
 #endif
     //! @todo Add OSX support
-    // Create output directory before linking
+    // Create output directory before compiling
     QDir systemRootDir("");
     systemRootDir.mkpath(QFileInfo(outputLibraryFile).absolutePath());
 
+    printMessage("Generating Makefile");
+
+    QFile makefile;
+    makefile.setFileName(fmuBuildPath + "/Makefile");
+    if(!makefile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open Makefile for writing.");
+        return false;
+    }
+    //Write the compilation script file
+    QTextStream makefileStream(&makefile);
+    makefileStream << "CXX = g++\n";
+    makefileStream << "CC = gcc\n";
+    makefileStream << "CXXFLAGS = -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING\n";
+    makefileStream << "CFLAGS = -fPIC -c\n";
+    makefileStream << "LFLAGS = -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.'\n";
+    makefileStream << "CXXINCLUDES = ";
+    // Add HopsanCore (and necessary dependency) include paths
+    for(const QString includePath : getHopsanCoreIncludePaths()) {
+        makefileStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    for(const QString includePath : mIncludePaths) {
+        makefileStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    makefileStream << "\n";
+    makefileStream << "CINCLUDES = -I\""+fmiLibDir+"/include\"\n";
+    makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
+    makefileStream << "CXXSRC = fmu_hopsan.cpp";
+    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
+    for(const QString& srcFile : srcFiles)
+    {
+        makefileStream << " " << srcFile;
+    }
+    makefileStream << "\n";
+    makefileStream << "CSRC = fmu"+vStr+"_model_cs.c\n";
+    makefileStream << "COBJ = fmu"+vStr+"_model_cs.o\n";
+    makefileStream << "\n\n";
+    makefileStream << "VPATH := $(sort  $(dir $(CXXSRC)))\n\n";
+    makefileStream << "CXXOBJ := $(patsubst %.cpp, %.o, $(notdir $(CXXSRC)))\n\n";
+    makefileStream << "all: 	$(CXXOBJ)\n";
+    makefileStream << "\t$(CC) $(CFLAGS) $(CINCLUDES) -c $(CSRC) -o $(COBJ)\n";
+    makefileStream << "\t$(CXX) $(LFLAGS) $(COBJ) $(CXXOBJ) -o $(OUTPUT)\n\n";
+    makefileStream << "%.o : %.cpp Makefile\n";
+    makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
+    makefile.close();
+
+    printMessage("Generating compilation script");
+
+    QFile compileScriptFile;
+    QString scriptExt;
 #ifdef _WIN32
-    QFile linkBatchFile;
-    linkBatchFile.setFileName(fmuBuildPath + "/link.bat");
-    if(!linkBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open link.bat for writing.");
-        return false;
-    }
-    //Write the compilation script file
-    QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << "@echo off\n";
-    linkBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
-    linkBatchStream << "@echo on\n";
-    linkBatchStream << "g++ -w -shared -static -static-libgcc -fPIC -Wl,--rpath,'$ORIGIN/.' " << "fmu"+vStr+"_model_cs.o";
-    Q_FOREACH(const QString &objFile, objectFiles)
-    {
-        linkBatchStream << " " << objFile;
-    }
-    for(const QString linkPaths : mLinkPaths) {
-        linkBatchStream << " -L\"" << linkPaths << "\"";
-    }
-    for(const QString linkLibrary : mLinkLibraries) {
-        linkBatchStream << " -l" << linkLibrary;
-    }
-    linkBatchStream << " -o \""+outputLibraryFile+"\"\n";
-    linkBatchFile.close();
-
-    linkingOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & link.bat");
-
+    scriptExt = "bat";
 #else
-    QFile linkBatchFile;
-    linkBatchFile.setFileName(fmuBuildPath + "/link.sh");
-    if(!linkBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    scriptExt = "sh";
+#endif
+    compileScriptFile.setFileName(fmuBuildPath + "/compile."+scriptExt);
+    if(!compileScriptFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open link.sh for writing.");
+        printErrorMessage("Failed to open compile."+scriptExt+" for writing.");
         return false;
     }
+
     //Write the compilation script file
-    QTextStream linkBatchStream(&linkBatchFile);
-    linkBatchStream << mCompilerSelection.path+"g++ -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.' " << "fmu"+vStr+"_model_cs.o";
-    Q_FOREACH(const QString &objFile, objectFiles)
-    {
-        linkBatchStream << " " << objFile;
-    }
-    for(const QString linkPaths : mLinkPaths) {
-        linkBatchStream << " -L\"" << linkPaths << "\"";
-    }
-    for(const QString linkLibrary : mLinkLibraries) {
-        linkBatchStream << " -l" << linkLibrary;
-    }
-    linkBatchStream << " -o \""+outputLibraryFile+"\"\n";
-    linkBatchFile.close();
+    QTextStream compileScriptStream(&compileScriptFile);
+    compileScriptStream << "make -j all\n";
+    compileScriptFile.close();
 
-    linkingOK = callProcess("/bin/sh", QStringList() << "link.sh", fmuBuildPath);
+    printMessage("Calling compilation script");
 
+#ifdef _WIN32
+    compilationSuccessful = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & compile.bat");
+#else
+    compilationSuccessful = callProcess("/bin/sh", QStringList() << "compile.sh", fmuBuildPath);
 #endif
 
-    if (!linkingOK) {
-        printErrorMessage("Failed to link exported FMU code.");
+    if (!compilationSuccessful) {
+        printErrorMessage("Failed to compile exported FMU C++ Hopsan code.");
         return false;
+    }
+
+    QStringList objectFiles;
+    objectFiles << "fmu_hopsan.o";
+    for(const QString& extraSrc : mExtraSourceFiles) {
+        QFileInfo extraObjFile(extraSrc);
+        objectFiles << extraObjFile.baseName()+".o";
+    }
+    for(const QString &srcFile : srcFiles) {
+        QFileInfo fi(srcFile);
+        objectFiles << fi.baseName()+".o";
     }
 
     return assertFilesExist("", QStringList() << outputLibraryFile);
