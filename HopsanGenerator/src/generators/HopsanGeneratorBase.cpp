@@ -35,6 +35,7 @@
 #include <QDir>
 #include <QDomElement>
 #include <QUuid>
+#include <QProcess>
 
 #include <cassert>
 
@@ -1244,10 +1245,28 @@ bool HopsanGeneratorBase::assertFilesExist(const QString &path, const QString &f
 bool HopsanGeneratorBase::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
 {
     QString stdOut, stdErr;
-    int i = ::callProcess(name, args, workingDirectory, 600, stdOut, stdErr);
-    printMessage(stdOut);
-    printMessage(stdErr);
-    return (i==0);
+
+    QProcess p;
+    if(!workingDirectory.isEmpty())
+    {
+        p.setWorkingDirectory(workingDirectory);
+    }
+    p.start(name, args);
+    double time = 0;
+    double maxTime = 600000;    //Ten minutes in milliseconds
+    while(!p.waitForFinished(100) && time < maxTime) {
+        stdOut = p.readAllStandardOutput();
+        if(!stdOut.isEmpty()) {
+            printMessage(stdOut);
+        }
+        stdErr = p.readAllStandardError();
+        if(!stdErr.isEmpty()) {
+            printMessage(stdErr);
+        }
+        time += 100;    //Print output every .1 seconds
+    };
+
+    return (p.exitStatus() == QProcess::ExitStatus::NormalExit);
 }
 
 
