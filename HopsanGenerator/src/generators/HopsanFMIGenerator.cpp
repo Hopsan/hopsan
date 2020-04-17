@@ -1775,6 +1775,63 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
 
     cppCompileOK = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & compileCpp.bat");
 #else
+//    QFile compileCppBatchFile;
+//    compileCppBatchFile.setFileName(fmuBuildPath + "/compileCpp.sh");
+//    if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        printErrorMessage("Failed to open compileCpp.sh for writing.");
+//        return false;
+//    }
+//    //Write the compilation script file
+//    QTextStream compileCppBatchStream(&compileCppBatchFile);
+//    compileCppBatchStream << mCompilerSelection.path+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp " << mExtraSourceFiles.join(" ");
+//    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
+//    Q_FOREACH(const QString &srcFile, srcFiles)
+//    {
+//        compileCppBatchStream << " " << srcFile;
+//    }
+//    // Add HopsanCore (and necessary dependency) include paths
+//    for(const QString includePath : getHopsanCoreIncludePaths()) {
+//        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
+//    }
+//    for(const QString includePath : mIncludePaths) {
+//        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
+//    }
+//    compileCppBatchFile.close();
+    QFile cppMakefile;
+    cppMakefile.setFileName(fmuBuildPath + "/Makefile");
+    if(!cppMakefile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open Makefile for writing.");
+        return false;
+    }
+    //Write the compilation script file
+    QTextStream cppMakefileStream(&cppMakefile);
+    cppMakefileStream << "CXX = g++\n";
+    cppMakefileStream << "CFLAGS = -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING\n";
+    cppMakefileStream << "INCLUDES = ";
+    // Add HopsanCore (and necessary dependency) include paths
+    for(const QString includePath : getHopsanCoreIncludePaths()) {
+        cppMakefileStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    for(const QString includePath : mIncludePaths) {
+        cppMakefileStream << QString(" -I\"%1\"").arg(includePath);
+    }
+    cppMakefileStream << "\n";
+    cppMakefileStream << "SRC = fmu_hopsan.cpp";\
+    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
+    for(const QString& srcFile : srcFiles)
+    {
+        cppMakefileStream << " " << srcFile;
+    }
+    cppMakefileStream << "\n\n";
+    cppMakefileStream << "VPATH := $(sort  $(dir $(SRC)))\n\n";
+    cppMakefileStream << "OBJ := $(patsubst %.cpp, %.o, $(notdir $(SRC)))\n\n";
+    cppMakefileStream << "all: 	$(OBJ)\n\n";
+    cppMakefileStream << "%.o : %.cpp Makefile\n";
+    cppMakefileStream << "\t$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@\n\n";
+    cppMakefile.close();
+
     QFile compileCppBatchFile;
     compileCppBatchFile.setFileName(fmuBuildPath + "/compileCpp.sh");
     if(!compileCppBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1784,19 +1841,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mCompilerSelection.path+"g++ -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "-DHOPSANCORE_NOMULTITHREADING " << "fmu_hopsan.cpp " << mExtraSourceFiles.join(" ");
-    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-    Q_FOREACH(const QString &srcFile, srcFiles)
-    {
-        compileCppBatchStream << " " << srcFile;
-    }
-    // Add HopsanCore (and necessary dependency) include paths
-    for(const QString includePath : getHopsanCoreIncludePaths()) {
-        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
-    }
-    for(const QString includePath : mIncludePaths) {
-        compileCppBatchStream << QString(" -I\"%1\"").arg(includePath);
-    }
+    compileCppBatchStream << "make -j all\n";
     compileCppBatchFile.close();
 
     cppCompileOK = callProcess("/bin/sh", QStringList() << "compileCpp.sh", fmuBuildPath);
