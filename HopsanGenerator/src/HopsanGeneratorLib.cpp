@@ -227,7 +227,7 @@ bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, con
     // Generate the component library files
     QStringList hppFiles {hppFileInfo.filePath()};
     QString libName = QDir(fmuImportRoot.canonicalFilePath()).dirName();
-    bool genOK = pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), libName, hppFiles, {libName+".xml"}, cflags, lflags);
+    bool genOK = pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), libName, hppFiles, {typeName+".xml"}, cflags, lflags);
     if (!genOK) {
         pGenerator->printErrorMessage("Failed to generate FMU import library");
         return false;
