@@ -132,71 +132,6 @@
                         QDialog                 { background-color: rgb(226,231,237); }
             </stylesheet>
     </style>
-    <unitscales>
-    <!-- Note! The unitscales tag is deprecated and should no longer be used   -->
-        <quantity name="Position" siunit="m">
-            <unitscale unit="km">1e-3</unitscale>
-            <unitscale unit="dm">10</unitscale>
-            <unitscale unit="cm">100</unitscale>
-            <unitscale unit="mm">1000</unitscale>
-            <unitscale unit="ft">3.2808</unitscale>
-            <unitscale unit="inch">39.3700787</unitscale>
-        </quantity>
-        <quantity name="Velocity" siunit="m/s">
-        </quantity>
-        <quantity name="Voltage" siunit="V">
-        </quantity>
-        <quantity name="Current" siunit="A">
-        </quantity>
-        <quantity name="Time" siunit="s">
-            <unitscale unit="ms">1e3</unitscale>
-            <unitscale unit="us">1e6</unitscale>
-            <unitscale unit="ns">1e9</unitscale>
-        </quantity>
-        <quantity name="Frequency" siunit="rad/s">
-            <unitscale unit="Hz">0.159154943091895</unitscale>
-            <unitscale unit="kHz">0.159154943091895e-3</unitscale>
-            <unitscale unit="MHz">0.159154943091895e-6</unitscale>
-            <unitscale unit="GHz">0.159154943091895e-9</unitscale>
-        </quantity>
-    <!-- Note! The unitscales tag is deprecated and should no longer be used   -->
-        <quantity name="Angle" siunit="rad">
-            <unitscale unit="deg">57.296</unitscale>
-        </quantity>
-        <quantity name="AngularVelocity" siunit="rad/s">
-            <unitscale unit="deg/s">57.296</unitscale>
-            <unitscale unit="rev/s">0.159155</unitscale>
-            <unitscale unit="rpm">9.549296585</unitscale>
-        </quantity>
-        <quantity name="Flow" siunit="m^3/s">
-            <unitscale unit="l/min">60000</unitscale>
-        </quantity>
-        <quantity name="Force" siunit="N">
-            <unitscale unit="kN">0.001</unitscale>
-        </quantity>
-        <quantity name="Torque" siunit="Nm">
-        </quantity>
-        <quantity name="Pressure" siunit="Pa">
-            <unitscale unit="bar">1e-5</unitscale>
-            <unitscale unit="MPa">1e-6</unitscale>
-            <unitscale unit="psi">0.0001450326</unitscale>
-        </quantity>
-        <quantity name="Area" siunit="m^2">
-            <unitscale unit="cm^2">1e4</unitscale>
-            <unitscale unit="mm^2">1e6</unitscale>
-            <unitscale unit="dm^2">1e2</unitscale>
-            <unitscale unit="ft^2">10.7639</unitscale>
-            <unitscale unit="inch^2">1550</unitscale>
-        </quantity>
-    <!-- Note! The unitscales tag is deprecated and should no longer be used   -->
-        <quantity name="Volume" siunit="m^3">
-            <unitscale unit="cm^3">1e6</unitscale>
-            <unitscale unit="l">1000</unitscale>
-        </quantity>
-        <quantity name="Displacement" siunit="m^3/rev">
-            <unitscale unit="cm^3/rev">1e6</unitscale>
-        </quantity>
-    </unitscales>
     <unitsettings>
         <!-- value in [BaseUnit] = scale * value in [CustomUnit] + offset  -->
         <quantity name="Position" baseunit="m">
@@ -296,21 +231,5 @@
           <unit name="dB" tobaseexpr="10^(x/20.0)" frombaseexpr="20.0*log10(x)"/>
         </quantity>
     </unitsettings>
-    <units>
-    <!-- Note! The units tag is deprecated and should no longer be used   -->
-        <defaultunit unit="V" name="Voltage"/>
-        <defaultunit unit="A" name="Current"/>
-        <defaultunit unit="rad" name="Angle"/>
-        <defaultunit unit="rad/s" name="AngularVelocity"/>
-        <defaultunit unit="m^3/s" name="Flow"/>
-        <defaultunit unit="N" name="Force"/>
-        <defaultunit unit="m" name="Position"/>
-        <defaultunit unit="Pa" name="Pressure"/>
-        <defaultunit unit="Nm" name="Torque"/>
-        <defaultunit unit="m/s" name="Velocity"/>
-        <defaultunit unit="s" name="Time"/>
-        <defaultunit unit="rad/s" name="Frequency"/>
-        <defaultunit unit="m^2" name="Area"/>
-    </units>
     <python/>
 </hopsandefaults>
