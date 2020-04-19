@@ -360,6 +360,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpResetXVectorButton);
     mpToolBar->addAction(mpBodePlotButton);
+    mpToolBar->addSeparator();
     mpToolBar->addAction(mpAllGenerationsDown);
     mpToolBar->addAction(mpAllGenerationsUp);
     mpToolBar->addAction(mpOpentimeScaleDialog);
