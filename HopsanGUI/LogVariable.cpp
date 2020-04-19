@@ -1635,7 +1635,7 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
             vRe.append(G[i].real());
             vIm.append(G[i].imag());
             vImNeg.append(-G[i].imag());
-            vBodeGain.append( 20.*log10( std::abs(G[i]) ) );            // Gain: abs(G) = sqrt(R^2 + X^2) in dB
+            vBodeGain.append( std::abs(G[i]) );                         // Gain: abs(G) = sqrt(R^2 + X^2)
             vBodePhaseUncorrected.append( rad2deg(std::arg(G[i])) );    // Phase: arg(G) = arctan(X/R) in deg
 
             // Correct the phase plot to make it continuous (because atan2 is limited from -180 to +180)
@@ -1651,7 +1651,7 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
                     phaseCorrection += 360;
                 }
             }
-            vBodePhase.append(vBodePhaseUncorrected.last() + phaseCorrection);
+            vBodePhase.append(deg2rad(vBodePhaseUncorrected.last() + phaseCorrection));
         }
     }
 
@@ -1685,13 +1685,13 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
     pFrequencyVar->multData(M_PI*2);
 
     SharedVariableDescriptionT pGainDesc(new VariableDescription());
-    pGainDesc->mDataName = "Magnitude";
-    pGainDesc->mDataUnit = "dB";
+    pGainDesc->mDataQuantity = "Magnitude";
+    pGainDesc->mDataName = "Gain";
     rGainData = SharedVectorVariableT(new FrequencyDomainVariable(pFrequencyVar, vBodeGain, pOutput->getGeneration(), pGainDesc, SharedMultiDataVectorCacheT()));
 
     SharedVariableDescriptionT pPhaseDesc(new VariableDescription());
     pPhaseDesc->mDataName = "Phase";
-    pPhaseDesc->mDataUnit = "deg";
+    pPhaseDesc->mDataQuantity = "Angle";
     rPhaseData = SharedVectorVariableT(new FrequencyDomainVariable(pFrequencyVar, vBodePhase, pOutput->getGeneration(), pPhaseDesc, SharedMultiDataVectorCacheT()));
 }
 

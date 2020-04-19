@@ -983,22 +983,27 @@ void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariable
         PlotCurve *pGainCurve = new PlotCurve(pGain, QwtPlot::yLeft, BodeGainType);
         pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->addCurve(pGainCurve);
         pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->setBottomAxisLogarithmic(true);
+        pGainCurve->setCurveDataUnitScale(gpConfig->getUnitScaleUC(pGain->getDataQuantity(), "dB"));
 
         PlotCurve *pPhaseCurve = new PlotCurve(pPhase, QwtPlot::yLeft, BodePhaseType);
         pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->addCurve(pPhaseCurve);
         pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->setBottomAxisLogarithmic(true);
+        pPhaseCurve->setCurveDataUnitScale(gpConfig->getUnitScaleUC(pPhaseCurve->getDataQuantity(), "deg"));
 
         pBodeTab->rescaleAxesToCurves();
 
         // Add a curve marker at the amplitude margin
         for(int i=1; i<pPhase->getDataSize(); ++i)
         {
+            auto toDb = gpConfig->getUnitScaleUC(pGain->getDataQuantity(), "dB");
             //! @todo a find crossing(s) function in variable should be nice
-            if( (pPhase->peekData(i)<-180) && (pPhase->peekData(i-1)>-180) )
+            if( (pPhase->peekData(i)<-deg2rad(180)) && (pPhase->peekData(i-1)>=-deg2rad(180)) )
             {
+                auto gainValDb = toDb.convertFromBase(pGain->peekData(i));
+                auto freqVal = pGain->getSharedTimeOrFrequencyVector()->peekData(i);
                 pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve,
-                                                                                pGain->getSharedTimeOrFrequencyVector()->peekData(i), pGain->peekData(i),
-                                                                                QString("Gain Margin = %1 dB").arg(-pGain->peekData(i)),
+                                                                                freqVal, gainValDb,
+                                                                                QString("Gain Margin = %1 dB").arg(-gainValDb),
                                                                                 false);
                 break;
             }
@@ -1008,11 +1013,13 @@ void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariable
         for(int i=1; i<pGain->getDataSize(); ++i)
         {
             //! @todo a find crossing(s) function in variable should be nice
-            if( (pGain->peekData(i)<-0) && (pGain->peekData(i-1)>-0) )
+            if( (pGain->peekData(i)<1) && (pGain->peekData(i-1)>=1) )
             {
+                auto phaseValDeg = rad2deg(pPhase->peekData(i));
+                auto freqVal = pPhase->getSharedTimeOrFrequencyVector()->peekData(i);
                 pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve,
-                                                                            pPhase->getSharedTimeOrFrequencyVector()->peekData(i), pPhase->peekData(i),
-                                                                            QString("Phase Margin = %1").arg(180.0+pPhase->peekData(i))+trUtf8("°"),
+                                                                            freqVal, phaseValDeg,
+                                                                            QString("Phase Margin = %1").arg(180.0+phaseValDeg)+trUtf8("°"),
                                                                             false);
                 break;
             }

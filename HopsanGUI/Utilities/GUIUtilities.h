@@ -113,13 +113,13 @@ inline bool fuzzyEqual(const double first, const double second, const double eps
 }
 
 //! @brief Utility function to convert degrees to radians
-inline double deg2rad(const double deg)
+inline constexpr double deg2rad(const double deg)
 {
     return deg*M_PI/180.0;
 }
 
 //! @brief Utility function to convert degrees to radians
-inline double rad2deg(const double rad)
+inline constexpr double rad2deg(const double rad)
 {
     return rad*180.0/M_PI;
 }
