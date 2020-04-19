@@ -154,14 +154,7 @@ public:
     // Data plot scaling
     bool isPlotInverted() const;
     void togglePlotInverted();
-//    void setCustomUnitScale(const UnitScale &rUnitScale);
-//    void removeCustomUnitScale();
-//    const UnitScale &getCustomUnitScale() const;
-//    const QString &getPlotScaleDataUnit() const;
-//    const QString &getActualPlotDataUnit() const;
-//    double getPlotScale() const;
-//    void setPlotOffsetIfTime(const double offset);
-    double getPlotOffset() const;
+    double getGenerationPlotOffsetIfTime() const;
 
     // Functions that only read data
     int getDataSize() const;
@@ -248,16 +241,6 @@ public:
         return retdata;
     }
 
-public slots:
-//    void setPlotScale(double scale);
-//    void setPlotOffset(double offset);
-//    void setPlotScaleAndOffset(const double scale, const double offset);
-
-    // Slots that require reimplementation in derived classes
-//    virtual void setTimePlotScaleAndOffset(const double scale, const double offset);
-//    virtual void setTimePlotScale(double scale);
-//    virtual void setTimePlotOffset(double offset);
-
 signals:
     void beingRemoved();
     void dataChanged();
@@ -275,8 +258,6 @@ protected:
     SharedVariableDescriptionT mpVariableDescription;
     SharedVectorVariableT mpSharedTimeOrFrequencyVector;
 
-    //UnitScale mCustomUnitScale;
-    //double mDataPlotOffset = 0;
     int mGeneration;
     bool mAllowAutoRemove = true;
 };
@@ -310,11 +291,6 @@ public:
     virtual void assignFrom(SharedVectorVariableT time, const QVector<double> &rData);
     virtual void assignFrom(const QVector<double> &rTime, const QVector<double> &rData);
     virtual void append(const double t, const double y);
-
-public slots:
-//    void setTimePlotScaleAndOffset(const double scale, const double offset);
-//    void setTimePlotScale(double scale);
-//    void setTimePlotOffset(double offset);
 };
 
 class ImportedTimeDomainVariable : public TimeDomainVariable

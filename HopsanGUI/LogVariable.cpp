@@ -256,48 +256,9 @@ void VariableDescription::setFullName(const QString compName, const QString port
 }
 
 
-//void VectorVariable::setPlotOffset(double offset)
-//{
-//    mDataPlotOffset = offset;
-//    emit dataChanged();
-//}
-
-//void VectorVariable::setPlotScaleAndOffset(const double scale, const double offset)
-//{
-//    mCustomUnitScale.setOnlyScale(scale);
-//    mDataPlotOffset = offset;
-//    emit dataChanged();
-//}
-
-//void VectorVariable::setTimePlotOffset(double offset)
-//{
-//    Q_UNUSED(offset);
-//    // Do nothing by default
-//}
-
-//void VectorVariable::setTimePlotScale(double scale)
-//{
-//    Q_UNUSED(scale);
-//    // Do nothing by default
-//}
-
-//void VectorVariable::setTimePlotScaleAndOffset(const double scale, const double offset)
-//{
-//    Q_UNUSED(scale);
-//    Q_UNUSED(offset);
-//    // Do nothing by default
-//}
-
-//void VectorVariable::setPlotScale(double scale)
-//{
-//    mCustomUnitScale.setOnlyScale(scale);
-//    emit dataChanged();
-//}
-
 VectorVariable::VectorVariable(const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache)
 {
     mpVariableDescription = varDesc;
-//    mDataPlotOffset = 0.0;
     mGeneration = generation;
     mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gpConfig->getCacheLogData());
     if (mpCachedDataVector->hasError())
@@ -468,20 +429,10 @@ void VectorVariable::togglePlotInverted()
     emit dataChanged();
 }
 
-////! @brief Set the plot offset if this is a Time vector otherwise do nothing
-////! @param[in] offset The desired time offset in Time base unit [seconds]
-//void VectorVariable::setPlotOffsetIfTime(const double offset)
-//{
-//    if (getDataQuantity() == TIMEVARIABLENAME)
-//    {
-//        mDataPlotOffset = offset;
-//        emit dataChanged();
-//    }
-//}
 
 //! @brief Returns the plot offset
 //! @note Only time variables can have an offset (same for all time variables in whole generation)
-double VectorVariable::getPlotOffset() const
+double VectorVariable::getGenerationPlotOffsetIfTime() const
 {
     if ( (getDataName() == TIMEVARIABLENAME) && getComponentName().isEmpty() && mpParentLogDataHandler )
     {
@@ -1727,30 +1678,6 @@ double VectorVariable::peekData(const int idx) const
 }
 
 
-////! @brief Returns the custom plot scale or 1 if not plotscale set.
-//double VectorVariable::getPlotScale() const
-//{
-//    return mCustomUnitScale.toDouble(1.0);
-//}
-
-//void VectorVariable::setCustomUnitScale(const UnitScale &rUnitScale)
-//{
-//    mCustomUnitScale = rUnitScale;
-//    emit dataChanged();
-//}
-
-//const UnitScale &VectorVariable::getCustomUnitScale() const
-//{
-//    return mCustomUnitScale;
-//}
-
-//void VectorVariable::removeCustomUnitScale()
-//{
-//    mCustomUnitScale.clear();
-//    emit dataChanged();
-//}
-
-
 TimeDomainVariable::TimeDomainVariable(SharedVectorVariableT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache) :
     VectorVariable(rData, generation, varDesc, pGenerationMultiCache)
 {
@@ -1884,30 +1811,6 @@ void TimeDomainVariable::append(const double t, const double y)
     mpSharedTimeOrFrequencyVector->append(t);
     //! @todo FIXA, it is bad to append x-data to shared time vector, there should be a custom private xvector Peter
 }
-
-//void TimeDomainVariable::setTimePlotScaleAndOffset(const double scale, const double offset)
-//{
-//    if (mpSharedTimeOrFrequencyVector)
-//    {
-//        mpSharedTimeOrFrequencyVector->setPlotScaleAndOffset(scale, offset);
-//    }
-//}
-
-//void TimeDomainVariable::setTimePlotScale(double scale)
-//{
-//    if (mpSharedTimeOrFrequencyVector)
-//    {
-//        mpSharedTimeOrFrequencyVector->setPlotScale(scale);
-//    }
-//}
-
-//void TimeDomainVariable::setTimePlotOffset(double offset)
-//{
-//    if (mpSharedTimeOrFrequencyVector)
-//    {
-//        mpSharedTimeOrFrequencyVector->setPlotOffset(offset);
-//    }
-//}
 
 
 ImportedTimeDomainVariable::ImportedTimeDomainVariable(SharedVectorVariableT time, const QVector<double> &rData, const int generation, SharedVariableDescriptionT varDesc, const QString &rImportFile, SharedMultiDataVectorCacheT pGenerationMultiCache) :

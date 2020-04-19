@@ -3376,7 +3376,7 @@ void HcomHandler::executeVariableInfoCommand(const QString cmd)
         infotext.append("   Quantity: ").append(pVar->getDataQuantity()).append("\n");
         if (pVar->getDataQuantity() == TIMEVARIABLENAME || pVar->getDataQuantity() == FREQUENCYVARIABLENAME)
         {
-            infotext.append(QString("Plot offset: %1").arg(pVar->getPlotOffset())).append("\n");
+            infotext.append(QString("Plot offset: %1").arg(pVar->getGenerationPlotOffsetIfTime())).append("\n");
         }
         infotext.append("     Length: ").append(length).append("\n");
         infotext.append(" Generation: ").append(gen);

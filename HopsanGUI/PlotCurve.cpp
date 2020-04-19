@@ -111,6 +111,34 @@ UnitConverter lookupUnitConverter(const QString& dataQuantity, const QString& ne
     return us;
 }
 
+class DataUnitConverter {
+public:
+    DataUnitConverter(const UnitConverter& uc, double dataPlotOffsett, bool invert, double localScale, double localOffset) :
+        mUc(uc), mDataPlotOffsett(dataPlotOffsett), mInvert(invert), mLocalScale(localScale), mLocalOffset(localOffset) { }
+
+    void convertVector(QVector<double> &rDataVector) {
+        double direction = mInvert ? -1.0 : 1.0;
+        if (mUc.isExpression()) {
+            for (double& rV : rDataVector) {
+                rV =  direction * mUc.convertFromBase(rV+mDataPlotOffsett) + mLocalOffset;
+            }
+        }
+        else {
+            const double scaleFromBaseToDesiredUnit = mLocalScale*direction/mUc.scaleToDouble(1.0);
+            const double offsetInBaseUnit = mDataPlotOffsett - mUc.offsetToDouble();
+            for (double& rV : rDataVector) {
+                rV =  (rV+offsetInBaseUnit)*scaleFromBaseToDesiredUnit + mLocalOffset;
+            }
+        }
+    }
+
+    UnitConverter mUc;
+    double mDataPlotOffsett;
+    bool mInvert;
+    double mLocalScale;
+    double mLocalOffset;
+};
+
 }
 
 //! @brief Constructor for plot curves.
@@ -1168,57 +1196,40 @@ void PlotCurve::updateCurve()
     {
         QVector<double> tempX, tempY;
         // We copy here, it should be faster then peek (at least when data is cached on disc)
-        //! @todo maybe be smart about doing this copy
+        //! @todo maybe be smart about doing this copy, only copy if a disk cached variable
         tempY = mData->getDataVectorCopy();
 
-        double direction = 1.0;
-        if (mData->getVariableDescription()->mInvertData)
-        {
-            direction = -1.0;
-        }
-        const double yScale = mCurveExtraDataScale*direction/mCurveDataUnitScale.scaleToDouble(1.0);
-        const double yCurveLocalOffset = mCurveExtraDataOffset;
-        const double yBaseOffset = mData->getPlotOffset()-mCurveDataUnitScale.offsetToDouble(0.0);
+        const bool invertYData = mData->getVariableDescription()->mInvertData;
+        DataUnitConverter yConverter(mCurveDataUnitScale, mData->getGenerationPlotOffsetIfTime(), invertYData, mCurveExtraDataScale, mCurveExtraDataOffset);
+        yConverter.convertVector(tempY);
 
         if (mCustomXdata && !mShowVsSamples)
         {
-            // Use special X-data
-            // We copy here, it should be faster then peek (at least when data is cached on disc)
+            // Use special X-data, Copy here, it should be faster then peek (at least when data is cached on disc)
             tempX = mCustomXdata->getDataVectorCopy();
-            double direction = 1;
-            if (mCustomXdata->getVariableDescription()->mInvertData)
-            {
-                direction = -1;
-            }
-            const double xScale = direction/mCurveCustomXDataUnitScale.scaleToDouble(1.0);
-            const double xBaseOffset = mCustomXdata->getPlotOffset()-mCurveCustomXDataUnitScale.offsetToDouble();
-            for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
-            {
-                tempX[i] = (tempX[i]+xBaseOffset)*xScale;
-                tempY[i] = (tempY[i]+yBaseOffset)*yScale + yCurveLocalOffset;
-            }
+            const bool xInvertData = mCustomXdata->getVariableDescription()->mInvertData;
+            constexpr double localCurveXScale = 1.0;
+            constexpr double localCurveXOffset = 0.0;
+            DataUnitConverter xConverter(mCurveCustomXDataUnitScale, mCustomXdata->getGenerationPlotOffsetIfTime(), xInvertData, localCurveXScale, localCurveXOffset);
+            xConverter.convertVector(tempX);
         }
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
         else if (mData->getSharedTimeOrFrequencyVector() && !mShowVsSamples)
         {
             tempX = mData->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
-            const double timeScale = 1.0/mCurveTFUnitScale.scaleToDouble(1.0);
-            const double baseTimeOffset = mData->getSharedTimeOrFrequencyVector()->getPlotOffset()-mCurveTFUnitScale.offsetToDouble();
-
-            for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
-            {
-                tempX[i] = (tempX[i]+baseTimeOffset)*timeScale;
-                tempY[i] = (tempY[i]+yBaseOffset)*yScale + yCurveLocalOffset;
-            }
+            const double timeDataOffset = mData->getSharedTimeOrFrequencyVector()->getGenerationPlotOffsetIfTime();
+            constexpr bool notInverted = false;
+            constexpr double localCurveTFScale = 1.0;
+            constexpr double localCurveTFOffset = 0.0;
+            DataUnitConverter xConverter(mCurveTFUnitScale, timeDataOffset, notInverted, localCurveTFScale, localCurveTFOffset);
+            xConverter.convertVector(tempX);
         }
         else
         {
             // No time vector or special x-vector, plot vs samples
             tempX.resize(tempY.size());
-            for (int i=0; i< tempX.size(); ++i)
-            {
+            for (int i=0; i< tempX.size(); ++i) {
                 tempX[i] = i;
-                tempY[i] = (tempY[i]+yBaseOffset)*yScale + yCurveLocalOffset;
             }
         }
 
