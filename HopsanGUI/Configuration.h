@@ -227,6 +227,7 @@ public:
     bool hasUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     double getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit) const;
     void getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitConverter &rUnitScale) const;
+    UnitConverter getUnitScaleUC(const QString &rPhysicalQuantity, const QString &rUnit) const;
     QStringList getQuantitiesForUnit(const QString &rUnit) const;
     QString getBaseUnit(const QString &rQuantity);
     bool isRegisteredBaseUnit(const QString &rUnitName) const;

@@ -1002,11 +1002,16 @@ double Configuration::getUnitScale(const QString &rPhysicalQuantity, const QStri
 
 void Configuration::getUnitScale(const QString &rPhysicalQuantity, const QString &rUnit, UnitConverter &rUnitScale) const
 {
-    rUnitScale.clear();
+    rUnitScale = getUnitScaleUC(rPhysicalQuantity, rUnit);
+}
+
+UnitConverter Configuration::getUnitScaleUC(const QString &rPhysicalQuantity, const QString &rUnit) const
+{
     if (mUnitScales.contains(rPhysicalQuantity))
     {
-        rUnitScale = mUnitScales.find(rPhysicalQuantity).value().customUnits.value(rUnit,UnitConverter("",0));
+        return mUnitScales.find(rPhysicalQuantity).value().customUnits.value(rUnit, UnitConverter("",0));
     }
+    return {};
 }
 
 //! @brief Returns a list of the Physical Quantities associated with this unit (hopefully only one)
