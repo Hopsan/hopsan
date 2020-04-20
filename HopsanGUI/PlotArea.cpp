@@ -67,6 +67,9 @@
 #include "qwt_plot_zoomer.h"
 
 #include <limits>
+
+namespace  {
+
 const double DoubleMax = std::numeric_limits<double>::max();
 const double DoubleMin = std::numeric_limits<double>::min();
 const double Double1000Min = 1000*DoubleMin;
@@ -74,6 +77,20 @@ const double Double1000Min = 1000*DoubleMin;
 inline int limitGen(int gen, int min, int max)
 {
     return qMin(qMax(gen, min), max);
+}
+
+QString displayNameForData(const SharedVectorVariableT& data) {
+    if (data->hasCustomLabel()) {
+        return data->getCustomLabel();
+    }
+    else if (data->hasAliasName()) {
+        return data->getAliasName();
+    }
+    else {
+        return data->getFullVariableNameWithSeparator(", ");
+    }
+}
+
 }
 
 //! @brief Rectangle painter widget, used for painting transparent rectangles when dragging things to plot tabs
@@ -1111,10 +1128,12 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     pResetUnitsMenu = menu.addMenu(QString("Reset Units"));
     QMap<QAction *, PlotCurve *> dataActionToCurveMap;
     QMap<QAction *, QVector<PlotCurve *>> timeorfreqActionToCurveMap;
+    QMap<QAction *, QVector<PlotCurve *>> customxActionToCurveMap;
     QList<PlotCurve *>::iterator itc;
     QList<UnitConverter>::iterator itu;
 
     QMap<VectorVariable*, QVector<PlotCurve*>> unique_time_or_frequency_variables_curve_map;
+    QMap<VectorVariable*, QVector<PlotCurve*>> unique_customx_variables_curve_map;
     for(itc=mPlotCurves.begin(); itc!=mPlotCurves.end(); ++itc)
     {
         PlotCurve *pCurve = *itc;
@@ -1144,10 +1163,20 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         }
 
         auto tf = pCurve->getSharedTimeOrFrequencyVariable();
-        unique_time_or_frequency_variables_curve_map[tf.data()].append(pCurve);
+        if (tf) {
+            unique_time_or_frequency_variables_curve_map[tf.data()].append(pCurve);
+        }
+        auto cx = pCurve->getSharedCustomXVariable();
+        if (cx) {
+            unique_customx_variables_curve_map[cx.data()].append(pCurve);
+        }
     }
 
     // Create change unit enteries for time or frequency data
+    if (!unique_time_or_frequency_variables_curve_map.isEmpty()) {
+        pResetUnitsMenu->addSeparator();
+        pChangeUnitsMenu->addSeparator();
+    }
     for (const auto& curveList : unique_time_or_frequency_variables_curve_map) {
 
         auto pFirstCurve = curveList.first();
@@ -1180,6 +1209,47 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
             QAction *pTempAction = pTempChangeUnitMenu->addAction((*itu).mUnit);
             for (const auto& pCurve : curveList) {
                 timeorfreqActionToCurveMap[pTempAction].append(pCurve);
+            }
+        }
+    }
+
+    // Create change unit enteries for custom X-data
+    if (!unique_customx_variables_curve_map.isEmpty()) {
+        pResetUnitsMenu->addSeparator();
+        pChangeUnitsMenu->addSeparator();
+    }
+    for (const auto& curveList : unique_customx_variables_curve_map) {
+
+        auto pFirstCurve = curveList.first();
+
+        QList<UnitConverter> unitScales;
+        QString dataName = displayNameForData(pFirstCurve->getSharedCustomXVariable());
+        QString dataQuantity = pFirstCurve->getSharedCustomXVariable()->getDataQuantity();
+
+        QAction *pTempResetUnitAction = pResetUnitsMenu->addAction(dataName);
+        for (const auto& pCurve : curveList) {
+            customxActionToCurveMap[pTempResetUnitAction].append(pCurve);
+        }
+
+        QMenu *pTempChangeUnitMenu = pChangeUnitsMenu->addMenu(dataName);
+        if (dataQuantity.isEmpty())
+        {
+            QStringList pqs = gpConfig->getQuantitiesForUnit(pFirstCurve->getSharedCustomXVariable()->getDataUnit());
+            if (pqs.size() == 1)
+            {
+                gpConfig->getUnitScales(pqs.first(), unitScales);
+            }
+        }
+        else
+        {
+            gpConfig->getUnitScales(dataQuantity, unitScales);
+        }
+
+        for(itu=unitScales.begin(); itu!=unitScales.end(); ++itu)
+        {
+            QAction *pTempAction = pTempChangeUnitMenu->addAction((*itu).mUnit);
+            for (const auto& pCurve : curveList) {
+                customxActionToCurveMap[pTempAction].append(pCurve);
             }
         }
     }
@@ -1248,6 +1318,13 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
                 pCurve->setCurveTFUnitScale(pSelectedAction->text());
             }
         }
+
+        auto cxlit = customxActionToCurveMap.find(pSelectedAction);
+        if (cxlit != customxActionToCurveMap.end()) {
+            for (auto pCurve : *cxlit) {
+                pCurve->setCurveCustomXDataUnitScale(pSelectedAction->text());
+            }
+        }
     }
 
     // Reset unit on selected curve
@@ -1263,7 +1340,13 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         if (lit != timeorfreqActionToCurveMap.end()) {
             for (auto pCurve : *lit) {
                 pCurve->resetCurveTFUnitScale();
-                //pCurve->setCurveExtraDataScaleAndOffset(1,0);
+            }
+        }
+
+        auto cxlit = customxActionToCurveMap.find(pSelectedAction);
+        if (cxlit != customxActionToCurveMap.end()) {
+            for (auto pCurve : *cxlit) {
+                pCurve->resetCurveCustomXDataUnitScale();
             }
         }
     }
@@ -1836,7 +1919,7 @@ void PlotArea::applyLegendSettings()
         mPlotCurves[i]->refreshCurveTitle();
     }
 
-    mpQwtPlot->insertLegend(NULL, QwtPlot::TopLegend);
+    mpQwtPlot->insertLegend(nullptr, QwtPlot::TopLegend);
 
     rescaleAxesToCurves();
 }
@@ -2265,7 +2348,7 @@ void PlotArea::constructAxisSettingsDialog()
     ++r;
     pAxisLimitsDialogLayout->addWidget(mpYRLockDialogCheckBox, r, c, 1, 2, Qt::AlignCenter);
 
-    r=3,c=3;
+    r=3;c=3;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("X Axis")),r,c,1,2, Qt::AlignCenter);
     ++r;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c, Qt::AlignCenter);
