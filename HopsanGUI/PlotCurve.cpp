@@ -875,6 +875,12 @@ void PlotCurve::setCustomXData(SharedVectorVariableT data)
     // Make sure generation is same
     data = switchVariableGeneration(data, mData->getGeneration());
 
+    // Reset custom scale if new data have different quantity
+    QString currentQuantity = mCurveCustomXDataUnitScale.isEmpty() ? QString() : mCurveCustomXDataUnitScale.mQuantity;
+    if(data && (data->getDataQuantity() != currentQuantity)) {
+        mCurveCustomXDataUnitScale.clear();
+    }
+
     // Set new data and connect signals
     mCustomXdata = data;
     connectCustomXDataSignals();
