@@ -1730,9 +1730,13 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     QTextStream makefileStream(&makefile);
     makefileStream << "CXX = g++\n";
     makefileStream << "CC = gcc\n";
-    makefileStream << "CXXFLAGS = -fPIC -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING\n";
-    makefileStream << "CFLAGS = -fPIC -c\n";
-    makefileStream << "LFLAGS = -fPIC -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.'\n";
+    QString fpicFlag;
+#ifndef _WIN32
+    fpicFlag= "-fPIC";
+#endif
+    makefileStream << "CXXFLAGS = "+fpicFlag+" -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING\n";
+    makefileStream << "CFLAGS = "+fpicFlag+" -c\n";
+    makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$ORIGIN/.'\n";
     makefileStream << "CXXINCLUDES = ";
     // Add HopsanCore (and necessary dependency) include paths
     for(const QString includePath : getHopsanCoreIncludePaths()) {
@@ -1768,7 +1772,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     QFile compileScriptFile;
     QString scriptExt;
 #ifdef _WIN32
-    scriptExt = "bat";
+    scriptExt = "ps1";
 #else
     scriptExt = "sh";
 #endif
@@ -1781,13 +1785,18 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
 
     //Write the compilation script file
     QTextStream compileScriptStream(&compileScriptFile);
+#ifdef _WIN32
+    compileScriptStream << "$env:Path = \""+mCompilerSelection.path+";$env:Path\"\n";
+    compileScriptStream << "mingw32-make -j all\n";
+#else
     compileScriptStream << "make -j all\n";
+#endif
     compileScriptFile.close();
 
     printMessage("Calling compilation script");
 
 #ifdef _WIN32
-    compilationSuccessful = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & compile.bat");
+    compilationSuccessful = callProcess("cmd.exe", QStringList() << "/c" << "cd /d " + fmuBuildPath + " & Powershell.exe -executionpolicy remotesigned -File compile."+scriptExt);
 #else
     compilationSuccessful = callProcess("/bin/sh", QStringList() << "compile.sh", fmuBuildPath);
 #endif
