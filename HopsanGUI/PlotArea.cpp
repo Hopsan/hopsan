@@ -2523,8 +2523,7 @@ void PlotArea::determineCurveXDataUnitScale(PlotCurve *pCurve)
         // Figure out the desired default unit (set in configuration) for the data behind this curve
         QString desiredDefaultUnit;
         // If quantity is not set, try to lookup based on original unit
-        if ( xDataQuantity.isEmpty() )
-        {
+        if ( xDataQuantity.isEmpty() ) {
             // Figure out compatible default unit based on the original data unit
             QStringList pqs = gpConfig->getQuantitiesForUnit(originalXDataUnit);
             if (pqs.size() > 1)
@@ -2537,47 +2536,49 @@ void PlotArea::determineCurveXDataUnitScale(PlotCurve *pCurve)
                 desiredDefaultUnit = gpConfig->getDefaultUnit(xDataQuantity);
             }
         }
-        else
-        {
+        else {
             desiredDefaultUnit = gpConfig->getDefaultUnit(xDataQuantity);
         }
 
         // Use the default unit if it is not the same as the original unit
-        if (!desiredDefaultUnit.isEmpty() && (desiredDefaultUnit != originalXDataUnit) )
-        {
-            UnitConverter us;
-            gpConfig->getUnitScale(xDataQuantity, desiredDefaultUnit, us);
-            pCurve->setCurveCustomXDataUnitScale(us);
+        if (!desiredDefaultUnit.isEmpty() && (desiredDefaultUnit != originalXDataUnit) ) {
+            pCurve->setCurveCustomXDataUnitScale(gpConfig->getUnitScaleUC(xDataQuantity, desiredDefaultUnit));
         }
 
         // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
-        // But only if there is an original unit to begin with otherwise we should scale something with unknown original unit (bad)
+        // But only if there is an original unit to begin with otherwise we would scale something with unknown original unit (bad)
         if (!originalXDataUnit.isEmpty())
         {
-            QString customUnit;
+            QMap<QString, QStringList> currentQuantityCustomUnits;
             for(int i=0; i<mPlotCurves.size(); ++i)
             {
-                // Skip checking the curve we are adding, and only check for curves on the same axis as we are adding to
-                if ( (mPlotCurves[i] != pCurve) && (mPlotCurves[i]->getAxisY() == pCurve->getAxisY()) )
-                {
-                    if( customUnit.isEmpty() )
-                    {
-                        // Assign custom unit on first occurrence
-                        customUnit = mPlotCurves[i]->getCurrentXPlotUnit();
+                // Skip checking the curve we are adding
+                if ( mPlotCurves[i] != pCurve) {
+
+                    auto uc = mPlotCurves[i]->getCurveCustomXDataUnitScale();
+                    if (uc.mQuantity.isEmpty()) {
+                        uc.mQuantity = xDataQuantity.isEmpty() ? "NoQuantity" : xDataQuantity;
                     }
-                    else if(customUnit != mPlotCurves[i]->getCurrentXPlotUnit())
-                    {
-                        // Unit is different between the other curves, so we do not want to use it
-                        customUnit = QString();
-                        break;
+                    if (!uc.isEmpty() && !uc.mUnit.isEmpty() ) {
+                        QStringList& rUnitsForQuantity = currentQuantityCustomUnits[uc.mQuantity];
+                        if (!rUnitsForQuantity.contains(uc.mUnit)) {
+                            rUnitsForQuantity.append(uc.mUnit);
+                        }
                     }
                 }
             }
-            // If we have found a custom unit that is shared among the other curves, then set that custom scale
-            // but only if it is different from the current unit, (we do not want a custom curve scale 1)
-            if( !customUnit.isEmpty()  && (customUnit != pCurve->getCurrentXPlotUnit()) )
-            {
-                pCurve->setCurveCustomXDataUnitScale(customUnit);
+
+            // In case multiple quantities are plotted, lookup unit for the correct one
+            auto it = currentQuantityCustomUnits.find(pCurve->getSharedCustomXVariable()->getDataQuantity());
+            if (it != currentQuantityCustomUnits.end() && !it->isEmpty()) {
+                // Hopefully the same unit is used for all data with this quantity (size 1)
+                // but in case not, use the unit from the latest added curve
+                QString customUnit = it->last();
+
+                // Only set if it is different from the current unit, (we do not want a custom curve scale 1)
+                if( !customUnit.isEmpty() && (customUnit != pCurve->getCurrentXPlotUnit()) ) {
+                    pCurve->setCurveCustomXDataUnitScale(customUnit);
+                }
             }
         }
     }

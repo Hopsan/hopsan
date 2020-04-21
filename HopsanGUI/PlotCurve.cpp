@@ -342,20 +342,11 @@ QString PlotCurve::getCurrentPlotUnit() const
 
 QString PlotCurve::getCurrentXPlotUnit() const
 {
-    //QString localScale = QString::number(mCurveExtraDataScale);
-    UnitConverter us = getCurveCustomXDataUnitScale();
-    if (!us.isEmpty())
-    {
-//        if (localScale != "1")
-//        {
-//            return QString("%1 * %2").arg(localScale).arg(us.mUnit);
-//        }
-//        else
-//        {
-            return us.mUnit;
-//        }
+    UnitConverter uc = getCurveCustomXDataUnitScale();
+    if (!uc.isEmpty()) {
+        return uc.mUnit;
     }
-    return "";
+    return {};
 }
 
 VariableSourceTypeT PlotCurve::getDataSource() const
@@ -705,9 +696,7 @@ void PlotCurve::setCurveCustomXDataUnitScale(const QString &rUnit)
             {
                 if (pqs.front() == pqsOrg.front())
                 {
-                    UnitConverter us;
-                    gpConfig->getUnitScale(pqs.first(), rUnit, us);
-                    setCurveCustomXDataUnitScale(us);
+                    setCurveCustomXDataUnitScale(gpConfig->getUnitScaleUC(pqs.first(), rUnit));
                 }
             }
         }
@@ -715,11 +704,8 @@ void PlotCurve::setCurveCustomXDataUnitScale(const QString &rUnit)
         else
         {
             // Check so that this unit is relevant for this type of data (datname). Else it will be ignored
-            if (gpConfig->hasUnitScale(xDataQuantity,rUnit))
-            {
-                UnitConverter us;
-                gpConfig->getUnitScale(xDataQuantity, rUnit, us);
-                setCurveCustomXDataUnitScale(us);
+            if (gpConfig->hasUnitScale(xDataQuantity,rUnit)) {
+                setCurveCustomXDataUnitScale(gpConfig->getUnitScaleUC(xDataQuantity, rUnit));
             }
         }
     }
@@ -727,29 +713,20 @@ void PlotCurve::setCurveCustomXDataUnitScale(const QString &rUnit)
 
 void PlotCurve::setCurveCustomXDataUnitScale(const UnitConverter &rUS)
 {
-    if (rUS.isEmpty())
-    {
+    // Clear the custom scale if it is empty or one and data have an actual unit
+    if (rUS.isEmpty() || (!mCustomXdata->getDataUnit().isEmpty() && mCurveCustomXDataUnitScale.isScaleOne())) {
         resetCurveCustomXDataUnitScale();
     }
-    else
-    {
+    else {
         mCurveCustomXDataUnitScale = rUS;
 
-        // Clear the custom scale if it is one and we have a data unit
-        if (!mCustomXdata->getDataUnit().isEmpty() && mCurveCustomXDataUnitScale.isScaleOne())
-        {
-            resetCurveCustomXDataUnitScale();
-        }
-        else
-        {
-            updateCurve();
-            //! @todo shouldn't these be triggered by signal in update curve?
-            mpParentPlotArea->replot();
-        }
+        updateCurve();
+        //! @todo shouldn't these be triggered by signal in update curve?
+        mpParentPlotArea->replot();
     }
 }
 
-const UnitConverter PlotCurve::getCurveCustomXDataUnitScale() const
+UnitConverter PlotCurve::getCurveCustomXDataUnitScale() const
 {
     // If we do not have a custom unit scale
     if (mCurveCustomXDataUnitScale.isEmpty())
