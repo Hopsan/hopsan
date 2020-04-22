@@ -8,6 +8,20 @@
             <text>The dutycycle D, is the ratio of the PeroidTime dT when the signal is high</text>
             <picture>pulsewavehelp.svg</picture>
         </help>
+        <replacables>
+            <replacable typename="SignalStep"/>
+            <replacable typename="SignalStepExponentialDelay"/>
+            <replacable typename="SignalStaircase"/>
+            <replacable typename="SignalSquareWave"/>
+            <replacable typename="SignalSoftStep"/>
+            <replacable typename="SignalSineWave"/>
+            <replacable typename="SignalTimestep"/>
+            <replacable typename="SignalConstant"/>
+            <replacable typename="SignalRamp"/>
+            <replacable typename="SignalPulse"/>
+            <replacable typename="SignalTime"/>
+            <replacable typename="SignalNoise"/>
+        </replacables>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>

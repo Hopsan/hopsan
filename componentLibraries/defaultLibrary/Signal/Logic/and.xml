@@ -4,6 +4,10 @@
         <icons>
             <icon scale="1" path="and.svg" iconrotation="OFF" type="user"/>
         </icons>
+        <replacables>
+            <replacable typename="SignalOr"/>
+            <replacable typename="SignalXor"/>
+        </replacables>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>
             <port x="0" y="0.25" a="180" name="in1"/>
