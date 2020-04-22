@@ -992,39 +992,6 @@ void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariable
 
         pBodeTab->rescaleAxesToCurves();
 
-        // Add a curve marker at the amplitude margin
-        for(int i=1; i<pPhase->getDataSize(); ++i)
-        {
-            auto toDb = gpConfig->getUnitScaleUC(pGain->getDataQuantity(), "dB");
-            //! @todo a find crossing(s) function in variable should be nice
-            if( (pPhase->peekData(i)<-deg2rad(180)) && (pPhase->peekData(i-1)>=-deg2rad(180)) )
-            {
-                auto gainValDb = toDb.convertFromBase(pGain->peekData(i));
-                auto freqVal = pGain->getSharedTimeOrFrequencyVector()->peekData(i);
-                pBodeTab->getPlotArea(BodePlotTab::MagnitudePlot)->insertMarker(pGainCurve,
-                                                                                freqVal, gainValDb,
-                                                                                QString("Gain Margin = %1 dB").arg(-gainValDb),
-                                                                                false);
-                break;
-            }
-        }
-
-        // Add a curve marker at the phase margin
-        for(int i=1; i<pGain->getDataSize(); ++i)
-        {
-            //! @todo a find crossing(s) function in variable should be nice
-            if( (pGain->peekData(i)<1) && (pGain->peekData(i-1)>=1) )
-            {
-                auto phaseValDeg = rad2deg(pPhase->peekData(i));
-                auto freqVal = pPhase->getSharedTimeOrFrequencyVector()->peekData(i);
-                pBodeTab->getPlotArea(BodePlotTab::PhasePlot)->insertMarker(pPhaseCurve,
-                                                                            freqVal, phaseValDeg,
-                                                                            QString("Phase Margin = %1").arg(180.0+phaseValDeg)+trUtf8("°"),
-                                                                            false);
-                break;
-            }
-        }
-
         //! @todo this should not happen here
         SharedVectorVariableT gainVar = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->defineNewVectorVariable("bodegain");
         if(gainVar.isNull())
