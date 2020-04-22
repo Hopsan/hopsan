@@ -374,6 +374,18 @@ QVector< complex<double> > realToComplex(const QVector<double> &rRealVector)
 }
 
 
+//! @brief Apply windowing function
+//! Only Hann windows are supported for now
+//! @param data Vector with data to be windowed
+void windowFunction(QVector<double> &data)
+{
+    //Hann window
+    int N = data.size()-1;
+    for(int n=0; n<=N; ++n) {
+        data[n] *= 0.5*(1-cos(2*M_PI*n/N));
+    }
+}
+
 
 //! @brief Forward fast fourier transform
 //! Transforms given vector into its fourier transform.

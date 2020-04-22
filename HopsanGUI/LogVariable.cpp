@@ -728,6 +728,9 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
             reduceVectorSize(time, n);
         }
 
+        //Apply window function
+        windowFunction(data);
+
         // Create a complex vector
         QVector< std::complex<double> > vComplex = realToComplex(data);
 
@@ -1596,6 +1599,10 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
         reduceVectorSize(vRealOut, n);
         reduceVectorSize(vRealIn, n);
     }
+
+    //Apply window function
+    windowFunction(vRealIn);
+    windowFunction(vRealOut);
 
     //Create complex vectors
     QVector< std::complex<double> > vCompIn = realToComplex(vRealIn);

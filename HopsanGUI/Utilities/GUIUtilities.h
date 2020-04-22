@@ -67,6 +67,7 @@ void replaceWord(QString &string, QString before, QString after);
 QString parseVariableDescription(QString input);
 QString parseVariableUnit(QString input);
 QVector< std::complex<double> > realToComplex(const QVector<double> &rRealVector);
+void windowFunction(QVector<double> &data);
 void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
 void removeDir(QString path, qint64 age_seconds=-1);
