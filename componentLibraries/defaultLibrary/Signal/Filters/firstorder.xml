@@ -8,6 +8,15 @@
             <text>General first order filter using bilinear transform.</text>
             <picture>firstorderhelp.svg</picture>
         </help>
+        <replacables>
+            <replacable typename="SignalHP1Filter"/>
+            <replacable typename="SignalHP2Filter"/>
+            <replacable typename="SignalIntegrator2"/>
+            <replacable typename="SignalLP1Filter"/>
+            <replacable typename="SignalLP2Filter"/>
+            <replacable typename="SignalSecondOrderTransferFunction"/>
+            <replacable typename="SignalSecondOrderFilter"/>
+        </replacables>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>

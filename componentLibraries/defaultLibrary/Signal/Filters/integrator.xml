@@ -7,6 +7,15 @@
         <help>
             <text>Integrator component using trapezoid method. Start value on output port will be used as initial value.</text>
         </help>
+        <replacables>
+            <replacable typename="SignalFirstOrderFilter"/>
+            <replacable typename="SignalHP1Filter"/>
+            <replacable typename="SignalHP2Filter"/>
+            <replacable typename="SignalLP1Filter"/>
+            <replacable typename="SignalLP2Filter"/>
+            <replacable typename="SignalSecondOrderTransferFunction"/>
+            <replacable typename="SignalSecondOrderFilter"/>
+        </replacables>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>

@@ -4,6 +4,11 @@
         <icons>
             <icon scale="1" path="SignalSign.svg" iconrotation="ON" type="user"/>
         </icons>
+       <replacables>
+            <replacable typename="SignalAbsoluteValue"/>
+            <replacable typename="SignalGain"/>
+            <replacable typename="SignalSquare"/>
+        </replacables>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>

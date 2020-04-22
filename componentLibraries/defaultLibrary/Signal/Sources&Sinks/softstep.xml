@@ -7,6 +7,20 @@
         <help>
             <picture>softstephelp.svg</picture>
         </help>
+        <replacables>
+            <replacable typename="SignalStep"/>
+            <replacable typename="SignalStepExponentialDelay"/>
+            <replacable typename="SignalStaircase"/>
+            <replacable typename="SignalSquareWave"/>
+            <replacable typename="SignalTime"/>
+            <replacable typename="SignalSineWave"/>
+            <replacable typename="SignalTimestep"/>
+            <replacable typename="SignalConstant"/>
+            <replacable typename="SignalRamp"/>
+            <replacable typename="SignalPulse"/>
+            <replacable typename="SignalPulseWave"/>
+            <replacable typename="SignalNoise"/>
+        </replacables>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>

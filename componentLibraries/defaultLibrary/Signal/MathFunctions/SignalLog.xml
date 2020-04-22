@@ -4,10 +4,28 @@
         <icons>
             <icon scale="1" path="SignalLog.svg" iconrotation="" type="user"/>
         </icons>
+        <replacables>
+            <replacable typename="SignalAcos"/>
+            <replacable typename="SignalAsin"/>
+            <replacable typename="SignalAtan"/>
+            <replacable typename="SignalCeil"/>
+            <replacable typename="SignalCosh"/>
+            <replacable typename="SignalCos"/>
+            <replacable typename="SignalExp"/>
+            <replacable typename="SignalFloor"/>
+            <replacable typename="SignalLog10"/>
+            <replacable typename="SignalPower"/>
+            <replacable typename="SignalRound"/>
+            <replacable typename="SignalSinh"/>
+            <replacable typename="SignalSin"/>
+            <replacable typename="SignalSqrt"/>
+            <replacable typename="SignalTanh"/>
+            <replacable typename="SignalTan"/>
+	</replacables>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>
-			<port x="0.5" y="1" a="90" name="error"/>
+            <port x="0.5" y="1" a="90" name="error"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
