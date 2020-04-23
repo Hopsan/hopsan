@@ -1215,6 +1215,24 @@ void PlotTab::exportImageSelectFile()
     }
 }
 
+//! @brief Updates maximum frequency in Bode dialog for Hz
+//! @param [in] value Maximum frequency in rad/s
+void PlotTab::updateMaximumBodeFreqHz(int value)
+{
+    mpMaxFrequencyHzSpinBox->blockSignals(true);
+    mpMaxFrequencyHzSpinBox->setValue(value/(2*M_PI));
+    mpMaxFrequencyHzSpinBox->blockSignals(false);
+}
+
+//! @brief Updates maximum frequency in Bode dialog for rad/s
+//! @param [in] value Maximum frequency in Hz
+void PlotTab::updateMaximumBodeFreqRadSec(int value)
+{
+    mpMaxFrequencyRadSecSpinBox->blockSignals(true);
+    mpMaxFrequencyRadSecSpinBox->setValue(value*2*M_PI);
+    mpMaxFrequencyRadSecSpinBox->blockSignals(false);
+}
+
 PlotArea *PlotTab::addPlotArea()
 {
     PlotArea *pArea = new PlotArea(this);
@@ -1449,32 +1467,38 @@ void PlotTab::openCreateBodePlotDialog()
     {
         const double dataSize = pTimeVector->getDataSize()+1;
         const double stopTime = pTimeVector->last();
-        const double maxFreq = dataSize/stopTime/2*M_PI*2;
+        const double maxFreq = dataSize/stopTime/2;
         QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
-        QLabel *pMaxFrequencyValue = new QLabel();
-        QLabel *pMaxFrequencyUnit = new QLabel("rad/s");
-        QSlider *pMaxFrequencySlider;
-        pMaxFrequencyValue->setNum(maxFreq);
-        pMaxFrequencySlider = new QSlider(this);
-        pMaxFrequencySlider->setOrientation(Qt::Horizontal);
-        pMaxFrequencySlider->setMinimum(0);
-        pMaxFrequencySlider->setMaximum(maxFreq);
-        pMaxFrequencySlider->setValue(maxFreq);
-        connect(pMaxFrequencySlider, SIGNAL(valueChanged(int)), pMaxFrequencyValue, SLOT(setNum(int)));
+        QLabel *pMaxFrequencyHzUnit = new QLabel("Hz");
+        QLabel *pMaxFrequencyRadSecUnit = new QLabel("rad/s");
+        mpMaxFrequencyHzSpinBox = new QSpinBox(this);
+        mpMaxFrequencyHzSpinBox->setMinimum(0);
+        mpMaxFrequencyHzSpinBox->setMaximum(maxFreq);
+        mpMaxFrequencyHzSpinBox->setValue(maxFreq);
+        mpMaxFrequencyHzSpinBox->setSingleStep(1);
+        mpMaxFrequencyRadSecSpinBox = new QSpinBox(this);
+        mpMaxFrequencyRadSecSpinBox->setMinimum(0);
+        mpMaxFrequencyRadSecSpinBox->setMaximum(maxFreq*2*M_PI);
+        mpMaxFrequencyRadSecSpinBox->setValue(maxFreq*2*M_PI);
+        mpMaxFrequencyRadSecSpinBox->setSingleStep(1);
+        connect(mpMaxFrequencyHzSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateMaximumBodeFreqRadSec(int)));
+        connect(mpMaxFrequencyRadSecSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateMaximumBodeFreqHz(int)));
 
         QHBoxLayout *pSliderLayout = new QHBoxLayout();
-        pSliderLayout->addWidget(pMaxFrequencySlider);
-        pSliderLayout->addWidget(pMaxFrequencyValue);
-        pSliderLayout->addWidget(pMaxFrequencyUnit);
+        pSliderLayout->addWidget(mpMaxFrequencyHzSpinBox);
+        pSliderLayout->addWidget(pMaxFrequencyHzUnit);
+        pSliderLayout->addWidget(mpMaxFrequencyRadSecSpinBox);
+        pSliderLayout->addWidget(pMaxFrequencyRadSecUnit);
 
         QCheckBox *pBodeCheckBox = new QCheckBox("Create Bode Plot", pBodeDialog);
         QCheckBox *pNyquistCheckBox = new QCheckBox("Create Nyquist Plot", pBodeDialog);
         pBodeCheckBox->setChecked(true);
         pNyquistCheckBox->setChecked(false);
-        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencySlider, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), mpMaxFrequencyHzSpinBox, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), mpMaxFrequencyRadSecSpinBox, SLOT(setEnabled(bool)));
         connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyLabel, SLOT(setEnabled(bool)));
-        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyValue, SLOT(setEnabled(bool)));
-        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyUnit, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyHzUnit, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyRadSecUnit, SLOT(setEnabled(bool)));
 
         QPushButton *pCancelButton = new QPushButton("Cancel");
         QPushButton *pNextButton = new QPushButton("Go!");
@@ -1536,7 +1560,7 @@ void PlotTab::openCreateBodePlotDialog()
             }
             else
             {
-                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), pMaxFrequencySlider->value()/(2*M_PI), pBodeCheckBox->isChecked(), pNyquistCheckBox->isChecked());
+                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), mpMaxFrequencyHzSpinBox->value(), pBodeCheckBox->isChecked(), pNyquistCheckBox->isChecked());
             }
         }
     }
