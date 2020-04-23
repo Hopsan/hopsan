@@ -230,6 +230,8 @@ protected slots:
     void saveToXml();
     void exportImage();
     void exportImageSelectFile();
+    void updateMaximumBodeFreqHz(int value);
+    void updateMaximumBodeFreqRadSec(int value);
 
 protected:
     PlotArea *addPlotArea();
@@ -252,6 +254,9 @@ protected:
 
     // Export graphics settings
     PlotGraphicsExporter mGraphicsExporter;
+
+    QSpinBox *mpMaxFrequencyHzSpinBox;
+    QSpinBox *mpMaxFrequencyRadSecSpinBox;
 };
 
 class BodePlotTab : public PlotTab
