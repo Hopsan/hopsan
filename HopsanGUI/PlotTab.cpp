@@ -1502,6 +1502,7 @@ void PlotTab::openCreateBodePlotDialog()
 
         QPushButton *pCancelButton = new QPushButton("Cancel");
         QPushButton *pNextButton = new QPushButton("Go!");
+        pNextButton->setDefault(true);
 
         // Toolbar
         QAction *pHelpAction = new QAction("Show Context Help", this);
