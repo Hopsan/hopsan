@@ -412,6 +412,14 @@ void PlotArea::addCurve(PlotCurve *pCurve, PlotCurveStyle style)
         connect(pLDH, SIGNAL(dataAdded()), this, SLOT(updateCurvesToNewGenerations()), Qt::UniqueConnection);
     }
 
+    //Unlock and reset zoom if adding first curve to an empty area
+    if(getNumberOfCurves() == 1) {
+        mpXLockCheckBox->setChecked(false);
+        mpYLLockCheckBox->setChecked(false);
+        mpYRLockCheckBox->setChecked(false);
+        resetZoom();
+    }
+
     // Refresh and redraw the plot area
     //! @todo maybe make it possible to rescale only selected axis, instead of always rescaling both of them
     rescaleAxesToCurves();
@@ -496,16 +504,6 @@ void PlotArea::removeCurve(PlotCurve *pCurve)
 
     // Reset time vector in case we had special x-axis set previously
     refreshPlotAreaCustomXData();
-
-    // Reset zoom and remove axis locks if last curve was removed (makes no sense to keep it zoomed in)
-    if(mPlotCurves.isEmpty())
-    {
-        mpXLockCheckBox->setChecked(false);
-        mpYLLockCheckBox->setChecked(false);
-        mpYRLockCheckBox->setChecked(false);
-        resetZoom();
-    }
-
     rescaleAxesToCurves();
     updateAxisLabels();
     updateWindowtitleModelName();
@@ -592,16 +590,6 @@ void PlotArea::hideCurve(PlotCurve *pCurve)
 
     // Reset time vector in case we had special x-axis set previously
     refreshPlotAreaCustomXData();
-
-    // Reset zoom and remove axis locks if last curve was removed (makes no sense to keep it zoomed in)
-    if(mPlotCurves.isEmpty())
-    {
-        mpXLockCheckBox->setChecked(false);
-        mpYLLockCheckBox->setChecked(false);
-        mpYRLockCheckBox->setChecked(false);
-        resetZoom();
-    }
-
     rescaleAxesToCurves();
     updateAxisLabels();
     updateWindowtitleModelName();
