@@ -5192,7 +5192,7 @@ void HcomHandler::executeBodeCommand(const QString cmd)
         HCOMERR("Data variable not found.");
         return;
     }
-    int fMax = 500;
+    int fMax = 500*2*M_PI;
     if(args.size() > 2)
     {
         fMax = args[2].toInt()/(2*M_PI); //!< @todo parse check needed
