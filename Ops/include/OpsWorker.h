@@ -125,6 +125,8 @@ public:
 
     double opsRand();
 
+    bool aborted();
+
 protected:
     size_t mIterationCounter;
     size_t mNumCandidates;
