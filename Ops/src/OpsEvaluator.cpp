@@ -60,7 +60,7 @@ void Evaluator::evaluateAllPoints()
     }
     else
     {
-        for(size_t i=0; i<mpWorker->mNumPoints; ++i)
+        for(size_t i=0; i<mpWorker->mNumPoints && !mpWorker->aborted(); ++i)
         {
             mpWorker->mCandidatePoints[0] = mpWorker->mPoints[i];
             evaluateCandidate(0);
@@ -79,7 +79,7 @@ void Evaluator::evaluateCandidate(size_t idx)
 
 void Evaluator::evaluateAllCandidates()
 {
-    for(size_t i=0; i<mpWorker->mNumCandidates; ++i)
+    for(size_t i=0; i<mpWorker->mNumCandidates && !mpWorker->aborted(); ++i)
     {
         evaluateCandidate(i);
     }

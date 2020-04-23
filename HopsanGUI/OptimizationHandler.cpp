@@ -720,7 +720,7 @@ bool OptimizationHandler::evaluateAllCandidates()
     mNeedsRescheduling = false;
 
     //Multi-threading, we cannot use the "evalall" function
-    for(size_t i=0; i<mpWorker->getNumberOfCandidates(); ++i)
+    for(size_t i=0; i<mpWorker->getNumberOfCandidates() && !mpWorker->aborted(); ++i)
     {
         mpHcomHandler->setModelPtr(mModelPtrs[i]);
         mpHcomHandler->executeCommand("opt set evalid "+QString::number(i));

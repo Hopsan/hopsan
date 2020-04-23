@@ -367,6 +367,11 @@ double Worker::opsRand()
     return double(rand())/double(RAND_MAX);
 }
 
+bool Worker::aborted()
+{
+    return mpMessageHandler->aborted();
+}
+
 void Worker::setParameterLimits(size_t idx, double min, double max)
 {
     mParameterMin[idx] = min;
