@@ -46,6 +46,8 @@ std::map<int,hopsan::HString> intParametersMap;
 std::map<int,hopsan::HString> boolParametersMap;
 std::map<int,hopsan::HString> stringParametersMap;
 
+static hopsan::HString get_string_retval;
+
 std::string parseResourceLocation(std::string uri)
 {
     // The resource location is an URI according to rfc3986 on the following format
@@ -186,10 +188,8 @@ int hopsan_get_boolean(int vr)
 const char* hopsan_get_string(int vr)
 {
     if(stringParametersMap.count(vr)) {
-        hopsan::HString value;
-        spCoreComponentSystem->getParameterValue(stringParametersMap[vr],value);
-        bool ok;
-        return value.c_str();
+        spCoreComponentSystem->getParameterValue(stringParametersMap[vr],get_string_retval);
+        return get_string_retval.c_str();
     }
     return "";
 }
