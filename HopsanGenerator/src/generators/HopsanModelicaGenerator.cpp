@@ -246,21 +246,21 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     variablesList.append(varSpec);
                 }
             }
-            else if(words.at(0) == "NodeSignalOut")                //Signal connector (output)
+            else if(words.at(0) == "output" && words.at(1) == "Real")                //Signal connector (output)
             {
                 for(int i=0; i<lines.at(l).count(",")+1; ++i)
                 {
-                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
                     PortSpecification port("WritePort", "NodeSignal", name);
                     portList.append(port);
                     portNames << name;
                 }
             }
-            else if(words.at(0) == "NodeSignalIn")                //Signal connector (input)
+            else if(words.at(0) == "input" && words.at(1) == "Real")                //Signal connector (input)
             {
                 for(int i=0; i<lines.at(l).count(",")+1; ++i)
                 {
-                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
                     PortSpecification port("ReadPort", "NodeSignal", name);
                     portList.append(port);
                     portNames << name;
