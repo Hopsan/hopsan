@@ -719,6 +719,7 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
             cursor.beginEditBlock();
             if(next.isSpace() || next == '\n') {
                 insertPlainText("()");
+                cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
             }
             else {
                 insertPlainText("(");
