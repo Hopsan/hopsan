@@ -1129,10 +1129,10 @@ QString HopsanGeneratorBase::generateModelicaCodeFromComponentSpec(ComponentSpec
     for(int p=0; p<comp.portNodeTypes.size(); ++p) {
         QString nodeType = comp.portNodeTypes[p];
         if(nodeType == "NodeSignal" && comp.portTypes[p] == "ReadPort") {
-            nodeType.append("In");
+            nodeType = "input Real";
         }
         else if(nodeType == "NodeSignal" && comp.portTypes[p] == "WritePort") {
-            nodeType.append("Out");
+            nodeType = "output Real";
         }
         outStream << indent << nodeType << " " << comp.portNames[p] << ";\n";
     }
