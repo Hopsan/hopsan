@@ -437,7 +437,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
                 startValueStr = "true";
             }
             else {
-                startValueStr == "false";
+                startValueStr = "false";
             }
         }
         else if(par.dataType == fmi1_base_type_str) {
@@ -472,10 +472,39 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     QString temp = extractTaggedSection(fmuComponentCode, "setpars");
     for(const auto &par : pars)
     {
-        QString tempVar = temp;
-        tempVar.replace("<<<vr>>>", par.fmuVr);
-        tempVar.replace("<<<var>>>", par.variableName);
-        setPars.append(tempVar+"\n");
+        QString tempPar = temp;
+        tempPar.replace("<<<vr>>>", par.fmuVr);
+        if ( par.dataType == fmi1_base_type_real )
+        {
+            tempPar.replace("<<<var>>>", "&"+par.variableName);
+            tempPar.replace("<<<setparfunction>>>","fmi1_import_set_real");
+        }
+        else if ( par.dataType == fmi1_base_type_int )
+        {
+            tempPar.replace("<<<var>>>", "&"+par.variableName);
+            tempPar.replace("<<<setparfunction>>>","fmi1_import_set_integer");
+        }
+        else if (par.dataType == fmi1_base_type_str )
+        {
+            QString tempPar2 = "        {\n";
+            tempPar2.append("        fmi1_string_t buff[1] = {"+par.variableName+".c_str()"+"};\n");
+            tempPar2.append(tempPar);
+            tempPar2.replace("<<<var>>>", "&buff[0]");
+            tempPar2.replace("<<<setparfunction>>>","fmi1_import_set_string");
+            tempPar2.append("}\n");
+            tempPar = tempPar2;
+        }
+        else if (par.dataType == fmi1_base_type_bool)
+        {
+            QString tempPar2 = "        {\n";
+            tempPar2.append(QString("        fmi1_boolean_t b = %1 ? 1 : 0;\n").arg(par.variableName));
+            tempPar2.append(tempPar);
+            tempPar2.replace("<<<var>>>", "&b");
+            tempPar2.replace("<<<setparfunction>>>","fmi1_import_set_boolean");
+            tempPar2.append("}\n");
+            tempPar = tempPar2;
+        }
+        setPars.append(tempPar+"\n");
     }
 
     QString readVars;

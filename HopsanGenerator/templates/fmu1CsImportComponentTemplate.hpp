@@ -182,10 +182,8 @@ public:
 
         //Set parameters
         fmi1_value_reference_t vr;
-        double value;
 >>>setpars>>>        vr = <<<vr>>>;
-        value = <<<var>>>;
-        fmistatus = fmi1_import_set_real(fmu, &vr, 1, &value);
+        fmistatus = <<<setparfunction>>>(fmu, &vr, 1, <<<var>>>);
         <<<setpars<<<
 
         //Enter initialization mode
