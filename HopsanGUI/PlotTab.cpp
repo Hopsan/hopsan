@@ -1233,6 +1233,13 @@ void PlotTab::updateMaximumBodeFreqRadSec(int value)
     mpMaxFrequencyRadSecSpinBox->blockSignals(false);
 }
 
+//! @brief Updates minimum and maximum limits of windowing time limits in frequency analysis dialog
+void PlotTab::updateWindowingMinMaxTime()
+{
+    mpWindowingMinTimeSpinBox->setMaximum(mpWindowingMaxTimeSpinBox->value());
+    mpWindowingMaxTimeSpinBox->setMinimum(mpWindowingMinTimeSpinBox->value());
+}
+
 PlotArea *PlotTab::addPlotArea()
 {
     PlotArea *pArea = new PlotArea(this);
@@ -1366,11 +1373,50 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     QDialog *pDialog = new QDialog(this);
     pDialog->setWindowTitle("Generate Frequency Spectrum");
 
-    QCheckBox *pLogScaleCheckBox = new QCheckBox("Use log scale");
+    QCheckBox *pLogScaleCheckBox = new QCheckBox("Use log scale", this);
     pLogScaleCheckBox->setChecked(true);
 
-    QCheckBox *pPowerSpectrumCheckBox = new QCheckBox("Power spectrum");
+    QCheckBox *pPowerSpectrumCheckBox = new QCheckBox("Power spectrum", this);
     pPowerSpectrumCheckBox->setChecked(false);
+
+    QGroupBox *pWindowingGroupBox = new QGroupBox("Windowing", pDialog);
+    QGridLayout *pWindowingLayout = new QGridLayout(pWindowingGroupBox);
+
+    QLabel *pWindowingLabel = new QLabel("Windowing function:",pDialog);
+    QComboBox *pWindowingComboBox = new QComboBox(pDialog);
+    pWindowingComboBox->addItems(QStringList() << "Rectangular" << "Hann Function");
+    pWindowingComboBox->setCurrentIndex(1);
+
+    double minX = pCurve->getSharedTimeOrFrequencyVariable()->minOfData();
+    double maxX = pCurve->getSharedTimeOrFrequencyVariable()->maxOfData();
+
+    QLabel *pMinTimeLabel = new QLabel("Min time: ", pDialog);
+
+    mpWindowingMinTimeSpinBox = new QDoubleSpinBox(this);
+    mpWindowingMinTimeSpinBox->setMinimum(minX);
+    mpWindowingMinTimeSpinBox->setMaximum(maxX);
+    mpWindowingMinTimeSpinBox->setValue(minX);
+    mpWindowingMinTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
+    mpWindowingMinTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+
+    QLabel *pMaxTimeLabel = new QLabel("Max time: ", pDialog);
+
+    mpWindowingMaxTimeSpinBox = new QDoubleSpinBox(this);
+    mpWindowingMaxTimeSpinBox->setMinimum(minX);
+    mpWindowingMaxTimeSpinBox->setMaximum(maxX);
+    mpWindowingMaxTimeSpinBox->setValue(maxX);
+    mpWindowingMaxTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
+    mpWindowingMaxTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+
+    connect(mpWindowingMinTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateWindowingMinMaxTime()));
+    connect(mpWindowingMaxTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateWindowingMinMaxTime()));
+
+    pWindowingLayout->addWidget(pWindowingLabel,            0, 0, 1, 2);
+    pWindowingLayout->addWidget(pWindowingComboBox,         0, 0, 1, 2);
+    pWindowingLayout->addWidget(pMinTimeLabel,              1, 0, 1, 1);
+    pWindowingLayout->addWidget(mpWindowingMinTimeSpinBox,  1, 1, 1, 1);
+    pWindowingLayout->addWidget(pMaxTimeLabel,              1, 2, 1, 1);
+    pWindowingLayout->addWidget(mpWindowingMaxTimeSpinBox,  1, 3, 1, 1);
 
     QPushButton *pCancelButton = new QPushButton("Cancel");
     QPushButton *pNextButton = new QPushButton("Go!");
@@ -1382,13 +1428,15 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     pToolBar->addAction(pHelpAction);
 
     QGridLayout *pLayout = new QGridLayout(pDialog);
-    pLayout->addWidget(pInfoLabel,               0, 0, 1, 4);
-    pLayout->addWidget(pLogScaleCheckBox,        1, 0, 1, 4);
-    pLayout->addWidget(pPowerSpectrumCheckBox,   2, 0, 1, 4);
-    pLayout->addWidget(pToolBar,                 3, 0, 1, 1);
-    pLayout->addWidget(new QWidget(pDialog),     3, 1, 1, 1);
-    pLayout->addWidget(pCancelButton,            3, 2, 1, 1);
-    pLayout->addWidget(pNextButton,              3, 3, 1, 1);
+    int row=0;
+    pLayout->addWidget(pInfoLabel,               row++, 0, 1, 4);
+    pLayout->addWidget(pLogScaleCheckBox,        row++, 0, 1, 4);
+    pLayout->addWidget(pPowerSpectrumCheckBox,   row++, 0, 1, 4);
+    pLayout->addWidget(pWindowingGroupBox,       row++, 2, 1, 2);
+    pLayout->addWidget(pToolBar,                 row, 0, 1, 1);
+    pLayout->addWidget(new QWidget(pDialog),     row, 1, 1, 1);
+    pLayout->addWidget(pCancelButton,            row, 2, 1, 1);
+    pLayout->addWidget(pNextButton,              row++, 3, 1, 1);
     pLayout->setColumnStretch(1, 1);
 
     pDialog->setLayout(pLayout);
@@ -1401,7 +1449,17 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     int rc = pDialog->exec();
     if (rc == QDialog::Accepted)
     {
-        SharedVectorVariableT pNewVar = pCurve->getSharedVectorVariable()->toFrequencySpectrum(SharedVectorVariableT(), pPowerSpectrumCheckBox->isChecked());
+        WindowingFunctionEnumT function;
+        if(pWindowingComboBox->currentIndex() == 0) {
+            function = RectangularWindow;
+        }
+        else if(pWindowingComboBox->currentIndex() == 1) {
+            function = HannWindow;
+        }
+
+        double minTime = mpWindowingMinTimeSpinBox->value();
+        double maxTime = mpWindowingMaxTimeSpinBox->value();
+        SharedVectorVariableT pNewVar = pCurve->getSharedVectorVariable()->toFrequencySpectrum(SharedVectorVariableT(), pPowerSpectrumCheckBox->isChecked(), function, minTime, maxTime);
 
         PlotTab *pTab = mpParentPlotWindow->addPlotTab();
         pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));
