@@ -232,6 +232,7 @@ protected slots:
     void exportImageSelectFile();
     void updateMaximumBodeFreqHz(int value);
     void updateMaximumBodeFreqRadSec(int value);
+    void updateWindowingMinMaxTime();
 
 protected:
     PlotArea *addPlotArea();
@@ -257,6 +258,10 @@ protected:
 
     QSpinBox *mpMaxFrequencyHzSpinBox;
     QSpinBox *mpMaxFrequencyRadSecSpinBox;
+
+    //Frequency spectrum dialog
+    QDoubleSpinBox *mpWindowingMinTimeSpinBox;
+    QDoubleSpinBox *mpWindowingMaxTimeSpinBox;
 };
 
 class BodePlotTab : public PlotTab

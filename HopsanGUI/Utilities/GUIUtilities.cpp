@@ -377,13 +377,21 @@ QVector< complex<double> > realToComplex(const QVector<double> &rRealVector)
 //! @brief Apply windowing function
 //! Only Hann windows are supported for now
 //! @param data Vector with data to be windowed
-void windowFunction(QVector<double> &data)
+void windowFunction(QVector<double> &data, WindowingFunctionEnumT function)
 {
-    //Hann window
-    int N = data.size()-1;
-    for(int n=0; n<=N; ++n) {
-        data[n] *= 0.5*(1-cos(2*M_PI*n/N));
+    switch(function) {
+        case RectangularWindow:
+        {
+            break;  //Rectangular shall do nothing
+        }
+        case HannWindow: {
+            int N = data.size()-1;
+            for(int n=0; n<=N; ++n) {
+                data[n] *= 0.5*(1-cos(2*M_PI*n/N));
+            }
+        }
     }
+
 }
 
 
@@ -482,6 +490,25 @@ void reduceVectorSize(QVector<double> &vector, int newSize)
     }
 
     vector = tempVector;
+}
+
+
+//! @brief Limits Y and X vector to specified range in X vector
+//! Both vectors must be of same size!
+//! @param x X-vector
+//! @param y Y-vector
+//! @param min Minimum x value
+//! @param max Maximum x value
+void limitVectorToRange(QVector<double> &x, QVector<double> &y, double min, double max)
+{
+    while(!x.isEmpty() && x.at(0) < min) {
+        x.remove(0);
+        y.remove(0);
+    }
+    while(!x.isEmpty() && x.at(x.size()-1) > max) {
+        x.remove(x.size()-1);
+        y.remove(x.size()-1);
+    }
 }
 
 

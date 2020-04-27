@@ -693,7 +693,7 @@ bool VectorVariable::isAutoremovalAllowed() const
     return mAllowAutoRemove;
 }
 
-SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum)
+SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime)
 {
     if(pTime)
     {
@@ -710,6 +710,17 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
             return SharedVectorVariableT();
         }
 
+        //Limit data to specified range
+        limitVectorToRange(time, data, minTime, maxTime);
+
+        //Shift time vector so that time starts at zero (does not matter for the frequency, but is required for computations below)
+        if(!time.isEmpty() && time[0] != 0) {
+            double offest = time[0];
+            for(int i=0; i<time.size(); ++i) {
+                time[i] -= offest;
+            }
+        }
+
         // Vector size has to be an even potential of 2.
         // Calculate largest potential that is smaller than or equal to the vector size.
 #ifndef Q_OS_OSX
@@ -722,14 +733,12 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
             QString oldString, newString;
             oldString.setNum(data.size());
             newString.setNum(n);
-            QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Wrong Vector Size"),
-                                     gpMainWindowWidget->tr("Size of data vector must be an even power of 2. Number of log samples was reduced from ") + oldString + gpMainWindowWidget->tr(" to ") + newString + ".");
             reduceVectorSize(data, n);
             reduceVectorSize(time, n);
         }
 
         //Apply window function
-        windowFunction(data);
+        windowFunction(data, windowingFunction);
 
         // Create a complex vector
         QVector< std::complex<double> > vComplex = realToComplex(data);
@@ -1407,7 +1416,7 @@ void TimeDomainVariable::lowPassFilter(SharedVectorVariableT pTime, const double
     }
 }
 
-SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum)
+SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime)
 {
     // Choose other data or own time vector
     if(pTime.isNull())
@@ -1415,7 +1424,7 @@ SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVector
         // If no diff vector supplied, use own time
         if (mpSharedTimeOrFrequencyVector)
         {
-            return VectorVariable::toFrequencySpectrum(mpSharedTimeOrFrequencyVector, doPowerSpectrum);
+            return VectorVariable::toFrequencySpectrum(mpSharedTimeOrFrequencyVector, doPowerSpectrum, windowingFunction, minTime, maxTime);
         }
         else
         {
@@ -1426,7 +1435,7 @@ SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVector
     }
     else
     {
-        return VectorVariable::toFrequencySpectrum(pTime, doPowerSpectrum);
+        return VectorVariable::toFrequencySpectrum(pTime, doPowerSpectrum, windowingFunction);
     }
 }
 
