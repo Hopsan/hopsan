@@ -1167,7 +1167,7 @@ void HcomHandler::createCommands()
     HcomCommand bodeCmd;
     bodeCmd.cmd = "bode";
     bodeCmd.description.append("Creates a bode plot from specified curves");
-    bodeCmd.help.append(" Usage: bode [invar] [outvar] [maxfreq]");
+    bodeCmd.help.append(" Usage: bode [invar] [outvar] [maxfreq] [windowfunction] [mintime] [maxtime]");
     bodeCmd.fnc = &HcomHandler::executeBodeCommand;
     bodeCmd.group = "Plot Commands";
     mCmdList << bodeCmd;
@@ -5177,7 +5177,7 @@ void HcomHandler::executeInheritTimestepCommand(const QString cmd)
 void HcomHandler::executeBodeCommand(const QString cmd)
 {
     QStringList args = splitCommandArguments(cmd);
-    if(args.size() < 2 || args.size() > 4)
+    if(args.size() < 2 || args.size() > 6)
     {
         HCOMERR("Wrong number of arguments.");
         return;
@@ -5198,9 +5198,44 @@ void HcomHandler::executeBodeCommand(const QString cmd)
         fMax = args[2].toInt()/(2*M_PI); //!< @todo parse check needed
     }
 
+    WindowingFunctionEnumT windowType = RectangularWindow;
+    if(args.size() > 3) {
+        if(args[3].toLower() == "hann") {
+            windowType = HannWindow;
+        }
+        else if(args[3].toLower() == "rectangular") {
+            windowType = RectangularWindow;
+        }
+        else {
+            HCOMERR("Unknown window function type: " + args[3]);
+            return;
+        }
+    }
+
+    if(args.size() == 5) {
+        HCOMERR("If minimum time is specified, maximum time is also required.");
+        return;
+    }
+
+    double minTime = -std::numeric_limits<double>::max();
+    double maxTime = std::numeric_limits<double>::max();
+    if(args.size() > 5) {
+        bool ok;
+        minTime = args[4].toDouble(&ok);
+        if(!ok) {
+            HCOMERR("Unknown minimum time value: " + args[4]);
+            return;
+        }
+        maxTime = args[5].toDouble(&ok);
+        if(!ok) {
+            HCOMERR("Unknown maximum time value: " + args[5]);
+            return;
+        }
+    }
+
     PlotWindow *pWindow = gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot");
     pWindow->closeAllTabs();
-    pWindow->createBodePlot(pData1, pData2, fMax);
+    pWindow->createBodePlot(pData1, pData2, fMax, true, false, windowType, minTime, maxTime);
 }
 
 

@@ -1610,7 +1610,7 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
         QString oldString, newString;
         oldString.setNum(vRealOut.size());
         newString.setNum(n);
-        QMessageBox::information(gpMainWindowWidget, QWidget::tr("Wrong Vector Size"), "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
+        //QMessageBox::information(gpMainWindowWidget, QWidget::tr("Wrong Vector Size"), "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
         reduceVectorSize(vRealOut, n);
         reduceVectorSize(vRealIn, n);
     }
