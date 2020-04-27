@@ -963,10 +963,10 @@ void PlotWindow::createPlotWindowFromTab()
 
 
 //! @todo should not run code on non bodeplot tabs
-void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax, bool bode, bool nyquist)
+void PlotWindow::createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax, bool bode, bool nyquist, WindowingFunctionEnumT windowFunction, double minTime, double maxTime)
 {
     SharedVectorVariableT pNyquist, pNyquistInv, pGain, pPhase;
-    createBodeVariables(var1, var2, Fmax, pNyquist, pNyquistInv, pGain, pPhase);
+    createBodeVariables(var1, var2, Fmax, pNyquist, pNyquistInv, pGain, pPhase, windowFunction, minTime, maxTime);
 
     // Nyquist plot
     if(nyquist) {

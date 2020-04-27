@@ -1240,6 +1240,13 @@ void PlotTab::updateWindowingMinMaxTime()
     mpWindowingMaxTimeSpinBox->setMinimum(mpWindowingMinTimeSpinBox->value());
 }
 
+//! @brief Updates minimum and maximum limits of windowing time limits in frequency analysis dialog
+void PlotTab::updateBodeWindowingMinMaxTime()
+{
+    mpBodeWindowingMinTimeSpinBox->setMaximum(mpBodeWindowingMaxTimeSpinBox->value());
+    mpBodeWindowingMaxTimeSpinBox->setMinimum(mpBodeWindowingMinTimeSpinBox->value());
+}
+
 PlotArea *PlotTab::addPlotArea()
 {
     PlotArea *pArea = new PlotArea(this);
@@ -1526,7 +1533,47 @@ void PlotTab::openCreateBodePlotDialog()
         const double dataSize = pTimeVector->getDataSize()+1;
         const double stopTime = pTimeVector->last();
         const double maxFreq = dataSize/stopTime/2;
-        QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
+
+        QGroupBox *pWindowingGroupBox = new QGroupBox("Windowing", pBodeDialog);
+        QGridLayout *pWindowingLayout = new QGridLayout(pWindowingGroupBox);
+
+        QLabel *pWindowingLabel = new QLabel("Windowing function:",pBodeDialog);
+        QComboBox *pWindowingComboBox = new QComboBox(pBodeDialog);
+        pWindowingComboBox->addItems(QStringList() << "Rectangular" << "Hann Function");
+        pWindowingComboBox->setCurrentIndex(1);
+
+        double minX = pTimeVector->minOfData();
+        double maxX = pTimeVector->maxOfData();
+
+        QLabel *pMinTimeLabel = new QLabel("Min time: ", pBodeDialog);
+
+        mpBodeWindowingMinTimeSpinBox = new QDoubleSpinBox(pBodeDialog);
+        mpBodeWindowingMinTimeSpinBox->setMinimum(minX);
+        mpBodeWindowingMinTimeSpinBox->setMaximum(maxX);
+        mpBodeWindowingMinTimeSpinBox->setValue(minX);
+        mpBodeWindowingMinTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
+        mpBodeWindowingMinTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+
+        QLabel *pMaxTimeLabel = new QLabel("Max time: ", pBodeDialog);
+
+        mpBodeWindowingMaxTimeSpinBox = new QDoubleSpinBox(pBodeDialog);
+        mpBodeWindowingMaxTimeSpinBox->setMinimum(minX);
+        mpBodeWindowingMaxTimeSpinBox->setMaximum(maxX);
+        mpBodeWindowingMaxTimeSpinBox->setValue(maxX);
+        mpBodeWindowingMaxTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
+        mpBodeWindowingMaxTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+
+        connect(mpBodeWindowingMinTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateBodeWindowingMinMaxTime()));
+        connect(mpBodeWindowingMaxTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateBodeWindowingMinMaxTime()));
+
+        pWindowingLayout->addWidget(pWindowingLabel,            0, 0, 1, 2);
+        pWindowingLayout->addWidget(pWindowingComboBox,         0, 0, 1, 2);
+        pWindowingLayout->addWidget(pMinTimeLabel,              1, 0, 1, 1);
+        pWindowingLayout->addWidget(mpBodeWindowingMinTimeSpinBox,  1, 1, 1, 1);
+        pWindowingLayout->addWidget(pMaxTimeLabel,              1, 2, 1, 1);
+        pWindowingLayout->addWidget(mpBodeWindowingMaxTimeSpinBox,  1, 3, 1, 1);
+
+        QGroupBox *pMaxFrequencyGroupBox = new QGroupBox("Maximum frequency in bode plot:",this);
         QLabel *pMaxFrequencyHzUnit = new QLabel("Hz");
         QLabel *pMaxFrequencyRadSecUnit = new QLabel("rad/s");
         mpMaxFrequencyHzSpinBox = new QSpinBox(this);
@@ -1542,7 +1589,7 @@ void PlotTab::openCreateBodePlotDialog()
         connect(mpMaxFrequencyHzSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateMaximumBodeFreqRadSec(int)));
         connect(mpMaxFrequencyRadSecSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateMaximumBodeFreqHz(int)));
 
-        QHBoxLayout *pSliderLayout = new QHBoxLayout();
+        QHBoxLayout *pSliderLayout = new QHBoxLayout(pMaxFrequencyGroupBox);
         pSliderLayout->addWidget(mpMaxFrequencyHzSpinBox);
         pSliderLayout->addWidget(pMaxFrequencyHzUnit);
         pSliderLayout->addWidget(mpMaxFrequencyRadSecSpinBox);
@@ -1554,7 +1601,7 @@ void PlotTab::openCreateBodePlotDialog()
         pNyquistCheckBox->setChecked(false);
         connect(pBodeCheckBox, SIGNAL(toggled(bool)), mpMaxFrequencyHzSpinBox, SLOT(setEnabled(bool)));
         connect(pBodeCheckBox, SIGNAL(toggled(bool)), mpMaxFrequencyRadSecSpinBox, SLOT(setEnabled(bool)));
-        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyLabel, SLOT(setEnabled(bool)));
+        connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyGroupBox, SLOT(setEnabled(bool)));
         connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyHzUnit, SLOT(setEnabled(bool)));
         connect(pBodeCheckBox, SIGNAL(toggled(bool)), pMaxFrequencyRadSecUnit, SLOT(setEnabled(bool)));
 
@@ -1572,8 +1619,8 @@ void PlotTab::openCreateBodePlotDialog()
         int row=0;
         pBodeDialogLayout->addWidget(pInputGroupBox,        row++, 0, 1, 3);
         pBodeDialogLayout->addWidget(pOutputGroupBox,       row++, 0, 1, 3);
-        pBodeDialogLayout->addWidget(pMaxFrequencyLabel,    row++, 0, 1, 3);
-        pBodeDialogLayout->addLayout(pSliderLayout,         row++, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pWindowingGroupBox,    row++, 0, 1, 3);
+        pBodeDialogLayout->addWidget(pMaxFrequencyGroupBox, row++, 0, 1, 3);
         pBodeDialogLayout->addWidget(pBodeCheckBox,         row++, 0, 1, 3);
         pBodeDialogLayout->addWidget(pNyquistCheckBox,      row++, 0, 1, 3);
         pBodeDialogLayout->addWidget(pToolBar,              row,   0, 1, 1);
@@ -1619,7 +1666,18 @@ void PlotTab::openCreateBodePlotDialog()
             }
             else
             {
-                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), mpMaxFrequencyHzSpinBox->value(), pBodeCheckBox->isChecked(), pNyquistCheckBox->isChecked());
+                WindowingFunctionEnumT function;
+                if(pWindowingComboBox->currentIndex() == 0) {
+                    function = RectangularWindow;
+                }
+                else if(pWindowingComboBox->currentIndex() == 1) {
+                    function = HannWindow;
+                }
+
+                double minTime = mpBodeWindowingMinTimeSpinBox->value();
+                double maxTime = mpBodeWindowingMaxTimeSpinBox->value();
+
+                mpParentPlotWindow->createBodePlot(pInputCurve->getSharedVectorVariable(), pOutputCurve->getSharedVectorVariable(), mpMaxFrequencyHzSpinBox->value(), pBodeCheckBox->isChecked(), pNyquistCheckBox->isChecked(), function, minTime, maxTime);
             }
         }
     }

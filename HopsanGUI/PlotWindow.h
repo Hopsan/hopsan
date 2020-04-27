@@ -81,7 +81,7 @@ public:
     PlotTab *getCurrentPlotTab();
     PlotTabWidget *getPlotTabWidget(); //!< @todo should this really be needed
 
-    void createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax, bool bode=true, bool nyquist=false);
+    void createBodePlot(SharedVectorVariableT var1, SharedVectorVariableT var2, int Fmax, bool bode=true, bool nyquist=false, WindowingFunctionEnumT windowFunction=RectangularWindow, double minTime=-std::numeric_limits<double>::max(), double maxTime=std::numeric_limits<double>::max());
 
     void showHelpPopupMessage(const QString &rMessage);
 
