@@ -1435,7 +1435,7 @@ SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVector
     }
     else
     {
-        return VectorVariable::toFrequencySpectrum(pTime, doPowerSpectrum, windowingFunction);
+        return VectorVariable::toFrequencySpectrum(pTime, doPowerSpectrum, windowingFunction, minTime, maxTime);
     }
 }
 

@@ -6320,107 +6320,139 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     //else if(desiredType != Scalar && expr.startsWith("fft(") && expr.endsWith(")"))
     else if(desiredType != Scalar && isHcomFunctionCall("fft", expr))
     {
-        QString args = expr.mid(4, expr.size()-5);
-        QStringList splitArgs = SymHop::Expression::splitWithRespectToParentheses(args, ',');
-        if(splitArgs.size() == 1)
-        {
-            mAnsType = DataVector;
-            const QString varName = args.section(",",0,0).trimmed();
-            evaluateExpression(varName, DataVector);
-            SharedVectorVariableT pVar = mAnsVector;
-            if (mAnsType == DataVector)
-            {
-                mAnsType = DataVector;
-                mAnsVector = pVar->toFrequencySpectrum(pVar->getSharedTimeOrFrequencyVector(), false);
-                return;
-            }
-            else
-            {
-                HCOMERR(QString("Variable: %1 was not found!").arg(varName));
-                mAnsType = Undefined;
-                return;
-            }
+        QStringList args = expr.mid(4, expr.size()-5).split(",");
+        for(int a=0; a<args.size(); ++a) {
+            args[a] = args[a].trimmed();
         }
-        else if(splitArgs.size() == 2)
-        {
-            const QString varName = splitArgs[0].trimmed();
-            evaluateExpression(varName, DataVector);
-            SharedVectorVariableT pVar = mAnsVector;
-            if (mAnsType == DataVector)
-            {
-                bool power=false;
-                QString arg2 = splitArgs[1].trimmed();
-                SharedVectorVariableT pTimeVar;
-                if( (arg2=="true") || (arg2=="false") )
-                {
-                    power = (arg2 == "true");
-                    pTimeVar = pVar->getSharedTimeOrFrequencyVector();
-                    mAnsType = DataVector;
-                }
-                else
-                {
-                    evaluateExpression(arg2, DataVector);
-                    pTimeVar = mAnsVector;
-                }
 
-                if (mAnsType == DataVector)
-                {
-                    mAnsType = DataVector;
-                    mAnsVector = pVar->toFrequencySpectrum(pTimeVar, power);
-                    return;
-                }
-                else
-                {
-                    HCOMERR(QString("Time variable: %1 was not found!").arg(arg2));
-                    mAnsType = Undefined;
-                    return;
-                }
-            }
-            else
-            {
-                HCOMERR(QString("Variable: %1 was not found!").arg(varName));
-                mAnsType = Undefined;
-                return;
-            }
+        QString dataVecArg;
+        QString timeVecArg;
+        QString powerArg;
+        QString windowingFuncArg;
+        QString minTimeArg;
+        QString maxTimeArg;
 
-        }
-        else if(splitArgs.size() == 3)
-        {
-            bool power = (splitArgs[2].trimmed() == "true");
-            const QString varName = splitArgs[0].trimmed();
-            evaluateExpression(varName, DataVector);
-            SharedVectorVariableT pVar = mAnsVector;
-            if (mAnsType == DataVector)
-            {
-                const QString timeVarName = splitArgs[1].trimmed();
-                evaluateExpression(timeVarName, DataVector);
-                SharedVectorVariableT pTimeVar = mAnsVector;
-                if (mAnsType == DataVector)
-                {
-                    mAnsType = DataVector;
-                    mAnsVector = pVar->toFrequencySpectrum(pTimeVar, power);
-                    return;
-                }
-                else
-                {
-                    HCOMERR(QString("Time variable: %1 was not found!").arg(timeVarName));
-                    mAnsType = Undefined;
-                    return;
-                }
+        //Figure out which arguments mean what
+        dataVecArg = args[0];
+        if(args.size()>1) {
+            if(args[1] == "true" || args[1] == "false") {
+                powerArg = args[1];
             }
-            else
-            {
-                HCOMERR(QString("Variable: %1 was not found!").arg(varName));
-                mAnsType = Undefined;
-                return;
+            else {
+                timeVecArg = args[1];
             }
         }
-        else
+        if(args.size()>2) {
+          if(!timeVecArg.isEmpty()) {
+            powerArg = args[2];
+          }
+          else {
+            windowingFuncArg = args[2];
+          }
+        }
+        if(args.size() > 3) {
+            if(!timeVecArg.isEmpty()) {
+                windowingFuncArg = args[3];
+            }
+            else {
+                minTimeArg = args[3];
+            }
+        }
+        if(args.size() > 4) {
+            if(!timeVecArg.isEmpty()) {
+                minTimeArg = args[4];
+            }
+            else {
+                maxTimeArg = args[4];
+            }
+        }
+        if(args.size() > 5) {
+          maxTimeArg = args[5];
+        }
+
+        //Fetch data vector
+        evaluateExpression(dataVecArg, DataVector);
+        SharedVectorVariableT pDataVar = mAnsVector;
+        if (mAnsType != DataVector)
         {
-            HCOMERR("Wrong number of arguments provided for fft function.\n"+mLocalFunctionDescriptions.find("fft").value().second);
+            HCOMERR(QString("Variable: %1 was not found!").arg(dataVecArg));
             mAnsType = Undefined;
             return;
         }
+
+        //Fetch time vector
+        SharedVectorVariableT pTimeVar;
+        if(timeVecArg.isEmpty())
+        {
+            pTimeVar = pDataVar->getSharedTimeOrFrequencyVector();
+        }
+        else
+        {
+            evaluateExpression(timeVecArg, DataVector);
+            pTimeVar = mAnsVector;
+            if (mAnsType != DataVector)
+            {
+                HCOMERR(QString("Variable: %1 was not found!").arg(timeVecArg));
+                mAnsType = Undefined;
+                return;
+            }
+        }
+
+        //Parse power spectrum argument
+        bool power = (powerArg == "true");
+
+        //Parse windowing function argument
+        WindowingFunctionEnumT windowingFunction;
+        if(!windowingFuncArg.isEmpty()) {
+            if(windowingFuncArg.toLower() == "hann") {
+                windowingFunction = HannWindow;
+            }
+            else if(windowingFuncArg.toLower() == "rectangular") {
+                windowingFunction = RectangularWindow;
+            }
+            else {
+                HCOMERR("Unknown windowing function: "+windowingFuncArg);
+                mAnsType = Undefined;
+                return;
+            }
+        }
+
+        //Parse window min and max time arguments
+        double minTime, maxTime;
+        if(!minTimeArg.isEmpty()) {
+            if(maxTimeArg.isEmpty()) {
+                HCOMERR("Maximum time for windowing is required when minimum time is specified");
+                mAnsType = Undefined;
+                return;
+            }
+            bool ok;
+            minTime = minTimeArg.toDouble(&ok);
+            if(!ok) {
+                HCOMERR("Unknown time limit: "+minTimeArg);
+                mAnsType = Undefined;
+                return;
+            }
+            maxTime = maxTimeArg.toDouble(&ok);
+            if(!ok) {
+                HCOMERR("Unknown time limit: "+maxTimeArg);
+                mAnsType = Undefined;
+                return;
+            }
+        }
+
+        if(powerArg.isEmpty()) {
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, false);
+        }
+        else if(windowingFuncArg.isEmpty()) {
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, power);
+        }
+        else if(minTimeArg.isEmpty()) {
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, power, windowingFunction);
+        }
+        else {
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, power, windowingFunction, minTime, maxTime);
+        }
+        return;
     }
     //else if(desiredType != Scalar && (expr.startsWith("greaterThan(") || expr.startsWith("gt(")) && expr.endsWith(")"))
     else if(desiredType != Scalar && (isHcomFunctionCall("greaterThan", expr) || isHcomFunctionCall("gt", expr)) )
