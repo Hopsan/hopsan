@@ -1580,11 +1580,17 @@ ImportedVectorVariable::ImportedVectorVariable(const QVector<double> &rData, con
 }
 
 
-void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorVariableT pOutput, int Fmax, SharedVectorVariableT &rNyquistData, SharedVectorVariableT &rNyquistDataInv, SharedVectorVariableT &rGainData, SharedVectorVariableT &rPhaseData)
+void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorVariableT pOutput, int Fmax, SharedVectorVariableT &rNyquistData, SharedVectorVariableT &rNyquistDataInv, SharedVectorVariableT &rGainData, SharedVectorVariableT &rPhaseData, WindowingFunctionEnumT windowType, double minTime, double maxTime)
 {
     // Create temporary real vectors
     QVector<double> vRealIn = pInput->getDataVectorCopy();
     QVector<double> vRealOut = pOutput->getDataVectorCopy();
+
+    //Limit vectors by min and max time
+    QVector<double> vTimeIn = pInput->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+    QVector<double> vTimeOut = pInput->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+    limitVectorToRange(vTimeIn, vRealIn, minTime, maxTime);
+    limitVectorToRange(vTimeOut, vRealOut, minTime, maxTime);
 
     // Abort and inform user if vectors are not of same size
     if(vRealOut.size() != vRealIn.size())
@@ -1610,8 +1616,8 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
     }
 
     //Apply window function
-    windowFunction(vRealIn);
-    windowFunction(vRealOut);
+    windowFunction(vRealIn, windowType);
+    windowFunction(vRealOut, windowType);
 
     //Create complex vectors
     QVector< std::complex<double> > vCompIn = realToComplex(vRealIn);

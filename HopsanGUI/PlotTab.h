@@ -233,6 +233,7 @@ protected slots:
     void updateMaximumBodeFreqHz(int value);
     void updateMaximumBodeFreqRadSec(int value);
     void updateWindowingMinMaxTime();
+    void updateBodeWindowingMinMaxTime();
 
 protected:
     PlotArea *addPlotArea();
@@ -256,6 +257,9 @@ protected:
     // Export graphics settings
     PlotGraphicsExporter mGraphicsExporter;
 
+    //Bode plot dialog
+    QDoubleSpinBox *mpBodeWindowingMinTimeSpinBox;
+    QDoubleSpinBox *mpBodeWindowingMaxTimeSpinBox;
     QSpinBox *mpMaxFrequencyHzSpinBox;
     QSpinBox *mpMaxFrequencyRadSecSpinBox;
 

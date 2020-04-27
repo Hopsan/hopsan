@@ -357,7 +357,7 @@ protected:
 // Convenient functions
 void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorVariableT pOutput, int Fmax,
                          SharedVectorVariableT &rNyquistData, SharedVectorVariableT &rNyquistDataInv,
-                         SharedVectorVariableT &rGainData, SharedVectorVariableT &rPhaseData);
+                         SharedVectorVariableT &rGainData, SharedVectorVariableT &rPhaseData, WindowingFunctionEnumT windowFunction=RectangularWindow, double minTime=-std::numeric_limits<double>::max(), double maxTime=std::numeric_limits<double>::max());
 
 SharedVectorVariableT switchVariableGeneration(SharedVectorVariableT pVar, int generation);
 
