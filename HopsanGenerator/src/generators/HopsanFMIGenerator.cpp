@@ -1916,9 +1916,9 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     QTextStream compileScriptStream(&compileScriptFile);
 #ifdef _WIN32
     compileScriptStream << "$env:Path = \""+mCompilerSelection.path+";$env:Path\"\n";
-    compileScriptStream << "mingw32-make -j all\n";
+    compileScriptStream << "mingw32-make -j16 all\n";
 #else
-    compileScriptStream << "make -j all\n";
+    compileScriptStream << "make -j16 all\n";
 #endif
     compileScriptFile.close();
 
@@ -1933,17 +1933,6 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     if (!compilationSuccessful) {
         printErrorMessage("Failed to compile exported FMU C++ Hopsan code.");
         return false;
-    }
-
-    QStringList objectFiles;
-    objectFiles << "fmu_hopsan.o";
-    for(const QString& extraSrc : mExtraSourceFiles) {
-        QFileInfo extraObjFile(extraSrc);
-        objectFiles << extraObjFile.baseName()+".o";
-    }
-    for(const QString &srcFile : srcFiles) {
-        QFileInfo fi(srcFile);
-        objectFiles << fi.baseName()+".o";
     }
 
     return assertFilesExist("", QStringList() << outputLibraryFile);
