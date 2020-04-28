@@ -1397,6 +1397,11 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     double minX = pCurve->getSharedTimeOrFrequencyVariable()->minOfData();
     double maxX = pCurve->getSharedTimeOrFrequencyVariable()->maxOfData();
 
+    if(minX == maxX) {
+        gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating frequency spectrum");
+        return;
+    }
+
     QLabel *pMinTimeLabel = new QLabel("Min time: ", pDialog);
 
     mpWindowingMinTimeSpinBox = new QDoubleSpinBox(this);
@@ -1544,6 +1549,11 @@ void PlotTab::openCreateBodePlotDialog()
 
         double minX = pTimeVector->minOfData();
         double maxX = pTimeVector->maxOfData();
+
+        if(minX == maxX) {
+            gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating Bode plot");
+            return;
+        }
 
         QLabel *pMinTimeLabel = new QLabel("Min time: ", pBodeDialog);
 
