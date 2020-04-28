@@ -386,7 +386,7 @@ void windowFunction(QVector<double> &data, WindowingFunctionEnumT function)
         }
         case HannWindow: {
             int N = data.size()-1;
-            for(int n=0; n<=N; ++n) {
+            for(int n=0; n<=N && N>0; ++n) {
                 data[n] *= 0.5*(1-cos(2*M_PI*n/N));
             }
         }
