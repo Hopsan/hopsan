@@ -69,7 +69,7 @@ void replaceWord(QString &string, QString before, QString after);
 QString parseVariableDescription(QString input);
 QString parseVariableUnit(QString input);
 QVector< std::complex<double> > realToComplex(const QVector<double> &rRealVector);
-void windowFunction(QVector<double> &data, WindowingFunctionEnumT function=RectangularWindow);
+void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, double &Ca, double &Cb);
 void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
 void limitVectorToRange(QVector<double> &x, QVector<double> &y, double min, double max);

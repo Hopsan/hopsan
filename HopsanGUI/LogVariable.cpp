@@ -738,7 +738,8 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
         }
 
         //Apply window function
-        windowFunction(data, windowingFunction);
+        double Ca, Cb;
+        windowFunction(data, windowingFunction, Ca, Cb);
 
         // Create a complex vector
         QVector< std::complex<double> > vComplex = realToComplex(data);
@@ -755,16 +756,16 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
 
         // FFT is symmetric, so only use first half
         // Also skip f=0, but include n/2 (nyquist)
+        double fs = time.length()/maxt;     //Sampling frequency
         for(int i=1; i<=n/2; ++i)
         {
-            if(doPowerSpectrum)
+
+            double tempMag = real(vComplex[i]*conj(vComplex[i]))/(n*Cb*fs*Ca*Ca);
+            if(!doPowerSpectrum)
             {
-                mag.append(real(vComplex[i]*conj(vComplex[i]))/double(n));
+                tempMag *= maxt;
             }
-            else
-            {
-                mag.append(std::abs(vComplex[i])/double(n));
-            }
+            mag.append(tempMag);
 
             // Build freq vector, Hopsan uses rad/s as base unit for frequency
             freq.append(2.0*M_PI*(double(i)/maxt));
@@ -1616,8 +1617,9 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
     }
 
     //Apply window function
-    windowFunction(vRealIn, windowType);
-    windowFunction(vRealOut, windowType);
+    double Ca, Cb;  //Not used in  Bode plots
+    windowFunction(vRealIn, windowType, Ca, Cb);
+    windowFunction(vRealOut, windowType, Ca, Cb);
 
     //Create complex vectors
     QVector< std::complex<double> > vCompIn = realToComplex(vRealIn);
