@@ -499,16 +499,36 @@ void reduceVectorSize(QVector<double> &vector, int newSize)
 //! @param y Y-vector
 //! @param min Minimum x value
 //! @param max Maximum x value
-void limitVectorToRange(QVector<double> &x, QVector<double> &y, double min, double max)
+void limitVectorToRange(QVector<double> &x, QVector<double> &y, double xmin, double xmax)
 {
-    while(!x.isEmpty() && x.at(0) < min) {
-        x.remove(0);
-        y.remove(0);
+    if(x.isEmpty()) {
+        return;
     }
-    while(!x.isEmpty() && x.at(x.size()-1) > max) {
-        x.remove(x.size()-1);
-        y.remove(x.size()-1);
+
+    //Compute index of smallest element within range
+    int imin = 0;
+    while(x.at(imin) < xmin) {
+        ++imin;
     }
+
+    //Remove all elements below range
+    x.remove(0,imin);
+    y.remove(0,imin);
+
+    if(x.isEmpty()) {
+        return;
+    }
+
+    //Compute index of largest element within range
+    int imax = x.size()-1;
+    while(x.at(imax) > xmax) {
+        --imax;
+    }
+
+    //Remove all elements above range
+    x.remove(imax+1, x.size()-imax-1);
+    y.remove(imax+1, y.size()-imax-1);
+
 }
 
 
