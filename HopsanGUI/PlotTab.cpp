@@ -1381,7 +1381,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     pDialog->setWindowTitle("Generate Frequency Spectrum");
 
     QCheckBox *pLogScaleCheckBox = new QCheckBox("Use log scale", this);
-    pLogScaleCheckBox->setChecked(true);
+    pLogScaleCheckBox->setChecked(false);
 
     QCheckBox *pPowerSpectrumCheckBox = new QCheckBox("Power spectrum", this);
     pPowerSpectrumCheckBox->setChecked(false);
