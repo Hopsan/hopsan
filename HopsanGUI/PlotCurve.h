@@ -131,6 +131,7 @@ public:
 
     QString getCurrentPlotUnit() const;
     QString getCurrentXPlotUnit() const;
+    QString getCurrentTFPlotUnit() const;
 
     UnitConverter getCurveTFUnitScale() const;
     void setCurveTFUnitScale(const UnitConverter &us);

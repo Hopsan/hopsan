@@ -1067,6 +1067,7 @@ void PlotArea::dropEvent(QDropEvent *event)
                             QCursor cursor;
                             if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
                             {
+                                setAxisLocked(QwtPlot::xBottom, false);
                                 setCustomXVectorForAll(data);
                                 //! @todo do we need to reset to default unit too ?
                             }
@@ -1309,12 +1310,18 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     {
         auto it = dataActionToCurveMap.find(pSelectedAction);
         if (it != dataActionToCurveMap.end()) {
+            if(it.value()->getCurrentPlotUnit() != pSelectedAction->text()) {
+                setAxisLocked((QwtPlot::Axis)it.value()->getAxisY(), false); //Reset lock axis setting, but only if unit is different from existing unit
+            }
             it.value()->setCurveDataUnitScale(pSelectedAction->text());
         }
 
         auto lit = timeorfreqActionToCurveMap.find(pSelectedAction);
         if (lit != timeorfreqActionToCurveMap.end()) {
             for (auto pCurve : *lit) {
+                if(pCurve->getCurrentTFPlotUnit() != pSelectedAction->text()) {
+                    setAxisLocked(QwtPlot::xBottom, false); //Reset lock axis setting, but only if unit is different from existing unit
+                }
                 pCurve->setCurveTFUnitScale(pSelectedAction->text());
             }
         }
@@ -1322,6 +1329,9 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
         auto cxlit = customxActionToCurveMap.find(pSelectedAction);
         if (cxlit != customxActionToCurveMap.end()) {
             for (auto pCurve : *cxlit) {
+                if(pCurve->getCurrentXPlotUnit() != pSelectedAction->text()) {
+                    setAxisLocked(QwtPlot::xBottom, false); //Reset lock axis setting, but only if unit is different from existing unit
+                }
                 pCurve->setCurveCustomXDataUnitScale(pSelectedAction->text());
             }
         }
