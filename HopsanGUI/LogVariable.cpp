@@ -756,7 +756,7 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
 
         // FFT is symmetric, so only use first half
         // Also skip f=0, but include n/2 (nyquist)
-        double fs = time.length()/maxt;     //Sampling frequency
+        double fs = time.size()/maxt;     //Sampling frequency
         for(int i=1; i<=n/2; ++i)
         {
 
