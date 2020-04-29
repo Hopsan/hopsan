@@ -6476,7 +6476,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
 
         if(powerArg.isEmpty()) {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, false);
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, true);
         }
         else if(windowingFuncArg.isEmpty()) {
             mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, power);
