@@ -1384,7 +1384,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     pLogScaleCheckBox->setChecked(false);
 
     QCheckBox *pPowerSpectrumCheckBox = new QCheckBox("Power spectrum", this);
-    pPowerSpectrumCheckBox->setChecked(false);
+    pPowerSpectrumCheckBox->setChecked(true);
 
     QGroupBox *pWindowingGroupBox = new QGroupBox("Windowing", pDialog);
     QGridLayout *pWindowingLayout = new QGridLayout(pWindowingGroupBox);
