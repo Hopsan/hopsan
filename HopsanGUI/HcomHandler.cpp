@@ -6461,13 +6461,13 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
             bool ok;
-            minTime = minTimeArg.toDouble(&ok);
+            minTime = getNumber(minTimeArg, &ok);
             if(!ok) {
                 HCOMERR("Unknown time limit: "+minTimeArg);
                 mAnsType = Undefined;
                 return;
             }
-            maxTime = maxTimeArg.toDouble(&ok);
+            maxTime = getNumber(maxTimeArg, &ok);
             if(!ok) {
                 HCOMERR("Unknown time limit: "+maxTimeArg);
                 mAnsType = Undefined;
