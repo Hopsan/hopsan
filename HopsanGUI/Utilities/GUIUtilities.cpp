@@ -377,15 +377,15 @@ QVector< complex<double> > realToComplex(const QVector<double> &rRealVector)
 //! @brief Apply windowing function
 //! Only Hann windows are supported for now
 //! @param data Vector with data to be windowed
-//! @param Ca Gain compensation factor
-//! @param Cb Frequency compensation factor
-void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, double &Ca, double &Cb)
+//! @param [out] Ca Gain compensation factor
+//! @param [out] Cb Frequency compensation factor
+void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, double &rCa, double &rCb)
 {
     switch(function) {
         case RectangularWindow:
         {
-            Ca = 1;
-            Cb = 1;
+            rCa = 1;
+            rCb = 1;
             break;  //Rectangular shall do nothing
         }
         case HannWindow: {
@@ -393,8 +393,8 @@ void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, doub
             for(int n=0; n<=N && N>0; ++n) {
                 data[n] *= 0.5*(1-cos(2*M_PI*n/N));
             }
-            Ca = 0.5;
-            Cb = 1.5;
+            rCa = 0.5;
+            rCb = 1.5;
         }
     }
 
