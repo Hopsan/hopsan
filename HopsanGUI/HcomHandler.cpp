@@ -6352,10 +6352,10 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         mAnsType = Undefined;
     }
-    //else if(desiredType != Scalar && expr.startsWith("fft(") && expr.endsWith(")"))
     else if(desiredType != Scalar && isHcomFunctionCall("fft", expr))
     {
-        QStringList args = expr.mid(4, expr.size()-5).split(",");
+        QString argStr = expr.mid(4, expr.size()-5);
+        QStringList args = SymHop::Expression::splitWithRespectToParentheses(argStr,',');
         for(int a=0; a<args.size(); ++a) {
             args[a] = args[a].trimmed();
         }
