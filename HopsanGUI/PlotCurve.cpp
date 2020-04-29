@@ -349,6 +349,15 @@ QString PlotCurve::getCurrentXPlotUnit() const
     return {};
 }
 
+QString PlotCurve::getCurrentTFPlotUnit() const
+{
+    UnitConverter uc = getCurveTFUnitScale();
+    if (!uc.isEmpty()) {
+        return uc.mUnit;
+    }
+    return {};
+}
+
 VariableSourceTypeT PlotCurve::getDataSource() const
 {
     return mData->getVariableSourceType();
