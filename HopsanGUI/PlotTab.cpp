@@ -1397,19 +1397,20 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     double minX = pCurve->getSharedTimeOrFrequencyVariable()->minOfData();
     double maxX = pCurve->getSharedTimeOrFrequencyVariable()->maxOfData();
 
-    if(minX == maxX) {
+    QLabel *pMinTimeLabel = new QLabel("Min time: ", pDialog);
+
+    double xdiff = maxX-minX;
+    if(0 == xdiff) {
         gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating frequency spectrum");
         return;
     }
-
-    QLabel *pMinTimeLabel = new QLabel("Min time: ", pDialog);
 
     mpWindowingMinTimeSpinBox = new QDoubleSpinBox(this);
     mpWindowingMinTimeSpinBox->setMinimum(minX);
     mpWindowingMinTimeSpinBox->setMaximum(maxX);
     mpWindowingMinTimeSpinBox->setValue(minX);
-    mpWindowingMinTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
-    mpWindowingMinTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+    mpWindowingMinTimeSpinBox->setDecimals(2-qFloor(log10(xdiff)));
+    mpWindowingMinTimeSpinBox->setSingleStep(pow(10,qFloor(log10(xdiff))-1));
 
     QLabel *pMaxTimeLabel = new QLabel("Max time: ", pDialog);
 
@@ -1417,8 +1418,8 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     mpWindowingMaxTimeSpinBox->setMinimum(minX);
     mpWindowingMaxTimeSpinBox->setMaximum(maxX);
     mpWindowingMaxTimeSpinBox->setValue(maxX);
-    mpWindowingMaxTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
-    mpWindowingMaxTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+    mpWindowingMaxTimeSpinBox->setDecimals(2-qFloor(log10(xdiff)));
+    mpWindowingMaxTimeSpinBox->setSingleStep(pow(10,qFloor(log10(xdiff))-1));
 
     connect(mpWindowingMinTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateWindowingMinMaxTime()));
     connect(mpWindowingMaxTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateWindowingMinMaxTime()));
@@ -1550,19 +1551,20 @@ void PlotTab::openCreateBodePlotDialog()
         double minX = pTimeVector->minOfData();
         double maxX = pTimeVector->maxOfData();
 
-        if(minX == maxX) {
+        QLabel *pMinTimeLabel = new QLabel("Min time: ", pBodeDialog);
+
+        double xdiff = maxX-minX;
+        if(0 == xdiff) {
             gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating Bode plot");
             return;
         }
-
-        QLabel *pMinTimeLabel = new QLabel("Min time: ", pBodeDialog);
 
         mpBodeWindowingMinTimeSpinBox = new QDoubleSpinBox(pBodeDialog);
         mpBodeWindowingMinTimeSpinBox->setMinimum(minX);
         mpBodeWindowingMinTimeSpinBox->setMaximum(maxX);
         mpBodeWindowingMinTimeSpinBox->setValue(minX);
-        mpBodeWindowingMinTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
-        mpBodeWindowingMinTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+        mpBodeWindowingMinTimeSpinBox->setDecimals(2-qFloor(log10(xdiff)));
+        mpBodeWindowingMinTimeSpinBox->setSingleStep(pow(10,qFloor(log10(xdiff))-1));
 
         QLabel *pMaxTimeLabel = new QLabel("Max time: ", pBodeDialog);
 
@@ -1570,8 +1572,8 @@ void PlotTab::openCreateBodePlotDialog()
         mpBodeWindowingMaxTimeSpinBox->setMinimum(minX);
         mpBodeWindowingMaxTimeSpinBox->setMaximum(maxX);
         mpBodeWindowingMaxTimeSpinBox->setValue(maxX);
-        mpBodeWindowingMaxTimeSpinBox->setDecimals(2-qFloor(log10(maxX-minX)));
-        mpBodeWindowingMaxTimeSpinBox->setSingleStep(pow(10,qFloor(log10(maxX-minX))-1));
+        mpBodeWindowingMaxTimeSpinBox->setDecimals(2-qFloor(log10(xdiff)));
+        mpBodeWindowingMaxTimeSpinBox->setSingleStep(pow(10,qFloor(log10(xdiff))-1));
 
         connect(mpBodeWindowingMinTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateBodeWindowingMinMaxTime()));
         connect(mpBodeWindowingMaxTimeSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateBodeWindowingMinMaxTime()));
