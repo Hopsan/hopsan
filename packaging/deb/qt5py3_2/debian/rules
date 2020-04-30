@@ -10,6 +10,9 @@ export QT_SELECT=5
 %:
 	dh $@
 
+override_dh_auto_configure:
+#	Prevent auto running cmake, since it is not yet the default build system
+
 override_dh_auto_build:
 #       First build dependencies
 	cd Dependencies; ./setupFMILibrary.sh
