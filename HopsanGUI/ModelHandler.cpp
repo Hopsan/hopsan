@@ -91,7 +91,7 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
     {
         mModelPtrs.append(pModelWidget);
         mCurrentIdx = mModelPtrs.size()-1;
-        gpCentralTabWidget->setCurrentIndex(gpCentralTabWidget->addTab(pModelWidget, name));
+        gpCentralTabWidget->setCurrentIndex(gpCentralTabWidget->insertTab(mCurrentIdx+1, pModelWidget, name));
         emit newModelWidgetAdded();
         emit modelChanged(pModelWidget);
     }
