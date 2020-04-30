@@ -30,6 +30,84 @@
 ******************************
     Version History
 ******************************
+2.14.0 (2020-05-01)
+
+This release contains an important change to how parameter referencing is done in start value expressions.
+This change affects embedded scripts (numhop) and parameter value expressions. Previously when a named value was used in an expression,
+the code first checked it the value was another parameter in the same component, then if one could not be found it checked in the parent
+system, and then in the grand parent system, and so on.
+This made it impossible to enforce choosing the parent system parameter if a local one of the same name existed.
+This new change requires that parameters in the own component are prefixed by "self."
+A named value not prefixed by self. is assumed to be part of the parent system, then the grandparent system and so on.
+Parameter expression example:  self.a + self.b + a
+Would add the local parameters 'a' and 'b', to the parent system parameter also named 'a'
+Models saved prior to version 2.14.0 will be auto updated, with the exception for embedded model initialization scripts.
+For these scripts a dialog window (and log message) will list the variables that need to be renamed.
+Note! There are no changes to how components are implemented in C++, this only affects modeling in HopsanGUI.
+
+--- Enhancements ---
+
+- HopsanCore:
+  - Use a more secure temp file generator to avoid security warning when compiling (mkstemp instead of tmpnam)
+    If a "system environment temp" directory is not set, temporary files may end up in the Hopsan installation directory, under bin
+    This is unlikely but may happen when running Hopsan from automated scripts
+  - Make it possible to differentiate between a components own parameters and parameters in the parent or grand parent systems, by
+    prefixing self. before parameter names in parameter expressions. For a components own parameters self. is now required.
+  - It is no longer necessary (but still possible) to specify .Value (in parameterName.Value) when referring to own parameters such
+    as start values in input/output ports
+    Example: "2*self.in" instead of "2*self.in.Value"
+
+- HopsanGUI:
+  - Add HCOM support for self.Name in expressions using parameter values.
+    Note! HCOM will not evaluate parameters in parent systems
+    Note! HCOM will still work without 'self.'
+    Note! HCOM scripts will not be auto updated
+  - Real-time animation can now run at unlimited speed
+  - You must now double-click in the workspace to open the quick-component insert dialog
+  - Make it possible to use common HCOM math function on vectors (will evaluate per element)
+  - Add "Save and Run" button the HCOM script editor
+  - It is now possible to change units in Bode plots for magnitude and frequency
+  - It is now possible to change unit for custom x-axis data (if a Quantity is set for that data)
+  - Add Windowing functions to frequency analysis tools.
+    You can choose a time range of the logged data, and apply rectangular or Hann windowing functions
+    Rectangular is the same as before (add no additional windowing)
+
+- HopsanGenerator:
+  - Export top-level system parameters as FMI parameters in exported FMUs
+  - FMI parameter import is now also available for FMI1 (as well as FMI2)
+  - Use Makefiles when compiling exported FMUs, this enables parallel compilation which is much faster
+
+- Documentation:
+  - Fix user documentation link for frequency analysis
+  - Add missing documentation for HCOM script flow control
+
+--- Bug Fixes ---
+
+- HopsanCore:
+  - Made parameter and system parameter evaluation behave the same way for all supported parameter types
+    This fix is part of the reworked code that introduced self.Name parameter reference
+
+- HopsanGUI:
+  - Fixed auto-update to follow redirects (auto update did not work after moving files to GitHub)
+  - Fixed crash when opening components with markdown documentation
+  - Prevent crash when mixing model and editor tabs (editor tabs will now always open to the right of model tabs)
+  - Fixed using referencing system parameter names for int and bool parameter types
+  - Fixed evaluation of HCOM round() in expressions like round(x)*y
+  - Change Bode plot frequency unit to rad/s, the values were in rad/s but previously the label claimed it was Hz
+  - Fixed invalid unit being shown when mixing multiple different Quantities on the x-axis in plots (you should avoid this anyway)
+  
+- HopsanGenerator:
+  - Fix import of parameter values for FMI v1 FMUs
+  - Fix loading of FMUs with different file name and FMU name
+
+--- Component Libraries ---
+
+ - New component for logging signals to external file
+ - Made angular velocity unit a quantity (so that the unit may be changed) for various
+   components where the unit was previously hard-coded
+ - Make many signal components replaceable with each other
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.13.0 (2019-11-26)
 
 --- Enhancements ---
