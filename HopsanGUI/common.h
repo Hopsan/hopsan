@@ -95,7 +95,7 @@ enum LocklevelEnumT {NotLocked, LimitedLock, FullyLocked};
 enum class ArchitectureEnumT {x86, x64};
 enum DeleteOrKeepFilesEnumT {KeepFiles, DeleteFiles};
 enum RecompileEnumT {NoRecompile, Recompile};
-enum WindowingFunctionEnumT {RectangularWindow, HannWindow};
+enum WindowingFunctionEnumT {RectangularWindow, HannWindow, FlatTopWindow};
 
 extern const char* getHopsanGUIBuildTime();
 

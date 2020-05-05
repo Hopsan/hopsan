@@ -5206,6 +5206,9 @@ void HcomHandler::executeBodeCommand(const QString cmd)
         else if(args[3].toLower() == "rectangular") {
             windowType = RectangularWindow;
         }
+        else if(args[3].toLower() == "flattop") {
+            windowType = FlatTopWindow;
+        }
         else {
             HCOMERR("Unknown window function type: " + args[3]);
             return;
@@ -6444,6 +6447,9 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
             else if(windowingFuncArg.toLower() == "rectangular") {
                 windowingFunction = RectangularWindow;
+            }
+            else if(windowingFuncArg.toLower() == "flattop") {
+                windowingFunction = FlatTopWindow;
             }
             else {
                 HCOMERR("Unknown windowing function: "+windowingFuncArg);

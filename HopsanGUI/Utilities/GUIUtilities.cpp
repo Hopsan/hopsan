@@ -395,6 +395,21 @@ void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, doub
             }
             rCa = 0.5;
             rCb = 1.5;
+            break;
+        }
+        case FlatTopWindow: {
+            int N = data.size()-1;
+            rCa = 0;
+            for(int n=0; n<=N && N>0; ++n) {
+                double w = 1.0 - 1.933*cos(2*M_PI*n/N) + 1.286*cos(4*M_PI*n/N) - 0.388*cos(6*M_PI*n/N) + 0.0322*cos(8*M_PI*n/N);
+                data[n] *= w;
+                rCa += w;
+                rCb += w*w;
+            }
+            rCa /= N;
+            rCb /= N;
+            rCb /= rCa*rCa;
+            break;
         }
     }
 
