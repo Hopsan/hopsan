@@ -381,6 +381,12 @@ QVector< complex<double> > realToComplex(const QVector<double> &rRealVector)
 //! @param [out] Cb Frequency compensation factor
 void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, double &rCa, double &rCb)
 {
+    if(data.size() <= 1) {
+        rCa = 1;
+        rCb = 1;
+        gpMessageHandler->addErrorMessage("Windowing functions require data of size greater than 1.");
+        return;
+    }
     switch(function) {
         case RectangularWindow:
         {
