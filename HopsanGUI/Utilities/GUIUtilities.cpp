@@ -400,8 +400,14 @@ void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, doub
         case FlatTopWindow: {
             int N = data.size()-1;
             rCa = 0;
+            //Coefficients for flat top window according to ISO 18431-2
+            double a0 = 1.0;
+            double a1 = -1.933;
+            double a2 = 1.286;
+            double a3 = -0.388;
+            double a4 = 0.0322;
             for(int n=0; n<=N && N>0; ++n) {
-                double w = 1.0 - 1.933*cos(2*M_PI*n/N) + 1.286*cos(4*M_PI*n/N) - 0.388*cos(6*M_PI*n/N) + 0.0322*cos(8*M_PI*n/N);
+                double w = a0 + a1*cos(2*M_PI*n/N) + a2*cos(4*M_PI*n/N) + a3*cos(6*M_PI*n/N) + a4*cos(8*M_PI*n/N);
                 data[n] *= w;
                 rCa += w;
                 rCb += w*w;
