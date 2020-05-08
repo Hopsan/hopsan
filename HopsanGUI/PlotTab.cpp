@@ -1391,7 +1391,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
 
     QLabel *pWindowingLabel = new QLabel("Windowing function:",pDialog);
     QComboBox *pWindowingComboBox = new QComboBox(pDialog);
-    pWindowingComboBox->addItems(QStringList() << "Rectangular" << "Hann Function" << "Flat Top");
+    pWindowingComboBox->addItems(QStringList() << "Rectangular" << "Hann Function" << "Flat Top (ISO 18431-2)");
     pWindowingComboBox->setCurrentIndex(0);
 
     double minX = pCurve->getSharedTimeOrFrequencyVariable()->minOfData();
@@ -1548,7 +1548,7 @@ void PlotTab::openCreateBodePlotDialog()
 
         QLabel *pWindowingLabel = new QLabel("Windowing function:",pBodeDialog);
         QComboBox *pWindowingComboBox = new QComboBox(pBodeDialog);
-        pWindowingComboBox->addItems(QStringList() << "Rectangular" << "Hann Function" << "Flat Top");
+        pWindowingComboBox->addItems(QStringList() << "Rectangular" << "Hann Function" << "Flat Top (ISO 18431-2)");
         pWindowingComboBox->setCurrentIndex(0);
 
         double minX = pTimeVector->minOfData();
