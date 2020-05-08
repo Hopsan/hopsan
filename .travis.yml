@@ -42,7 +42,7 @@ script:
   - ./runValidationTests.sh
   - cd bin
   - ls -l
-#  - otool -lv hopsancli
-#  - otool -lv hopsangui
-#  - otool -lv holc
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -lv hopsancli ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -lv hopsangui ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -lv holc ; fi
 #  - ./hopsangui ../Scripts/HCOM/exit.hcom
