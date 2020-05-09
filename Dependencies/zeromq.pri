@@ -12,7 +12,7 @@ have_local_zeromq() {
   unix:LIBS *= -L$${zeromq_lib} -lzmq$${dbg_ext}
   macx {
     # TODO: I am unable to get RPATH to work on osx, so ugly copying the dylib. file for now
-    QMAKE_POST_LINK += $$QMAKE_COPY $$quote($${zeromq_lib}/libzmq$${dbg_ext}.dylib) $$quote($${PWD}/../bin) $$escape_expand(\\n\\t)
+    QMAKE_POST_LINK += $$QMAKE_COPY $$quote($${zeromq_lib}/libzmq$${dbg_ext}*.dylib) $$quote($${PWD}/../bin) $$escape_expand(\\n\\t)
   } else {
     # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
     unix:QMAKE_RPATHDIR *= $${zeromq_lib}
