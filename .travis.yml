@@ -1,14 +1,21 @@
 # Enable C++ support
 language: cpp
 
-matrix:
+jobs:
   include:
     - os: linux
       sudo: required
-      dist: trusty
+      dist: xenial
+      addons:
+        apt_packages:
+          - qt5-default
+          - qtbase5-dev
+          - libqt5webkit5-dev
+          - libqt5svg5-dev
+          - libqt5opengl5-dev
       compiler: gcc
       env:
-        - QT_SELECT=4
+        - QT_SELECT=qt5
         - HOPSAN_BUILD_QMAKE_SPEC=linux-g++
     - os: osx
       compiler: clang
@@ -25,19 +32,18 @@ script:
   - bash --version
   - echo OSType $OSTYPE
   - cd Dependencies
+  - source ./setHopsanBuildPaths.sh
   - ./setupDiscount.sh
   - ./setupFMILibrary.sh
   - ./setupQwt.sh
   - ./setupZeroMQ.sh
   - ./setupKatex.sh
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./setupPythonQt.sh release 2.7 3.0 ; fi
   - cd ..
   - mkdir -p build
   - cd build
-  - source ../Dependencies/setHopsanBuildPaths.sh
   - ${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec ${HOPSAN_BUILD_QMAKE_SPEC} -config release
   - cd ..
-  - make -j4 -C build
+  - make -j6 -C build
   - ./runUnitTests.sh
   - ./runValidationTests.sh
   - cd bin

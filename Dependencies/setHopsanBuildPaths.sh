@@ -22,6 +22,7 @@ elif [[ $(command -v qmake) ]]; then
     # On debian based systems this script assumes that qmake is in fact, qtchooser
     export HOPSAN_BUILD_QT_QMAKE=qmake
     echo Found qmake in PATH
+    qmake --version
 elif [[ $OSTYPE == darwin* ]]; then
     # On macOS we break here with failure
     echo ERROR: Did not find qmake, aborting!
