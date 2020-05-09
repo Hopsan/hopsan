@@ -26,7 +26,7 @@ Homepage: https://github.com/Hopsan/hopsan
 
 Package: hopsan
 Architecture: any
-Depends: python3
+Depends: python3,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: This is a free simulation environment for fluid and mechatronic systems.
