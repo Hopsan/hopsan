@@ -13,6 +13,8 @@ jobs:
           - libqt5webkit5-dev
           - libqt5svg5-dev
           - libqt5opengl5-dev
+      services:
+        - xvfb
       compiler: gcc
       env:
         - QT_SELECT=qt5
@@ -44,7 +46,8 @@ script:
   - ${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec ${HOPSAN_BUILD_QMAKE_SPEC} -config release
   - cd ..
   - make -j6 -C build
-  - ./runUnitTests.sh
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then xvfb-run -a ./runUnitTests.sh ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./runUnitTests.sh ; fi
   - ./runValidationTests.sh
   - cd bin
   - ls -l
