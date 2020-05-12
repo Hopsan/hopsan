@@ -16,7 +16,6 @@ build:
 	cd Dependencies; ./setupQwt.sh
 	cd Dependencies; ./setupZeroMQ.sh
 	cd Dependencies; ./setupKatex.sh
-	cd Dependencies; ./setupPythonQt.sh release 2.7 3.1
 
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
@@ -62,7 +61,7 @@ binary-arch:	build install
 	dh_compress
 	dh_fixperms
 	dh_installdeb
-#	dh_shlibdeps --exclude=PythonQt --exclude=qwt
+#	dh_shlibdeps --exclude=qwt
 	dh_shlibdeps -l/opt/hopsan/bin
 	dh_gencontrol
 #        dh_md5sums

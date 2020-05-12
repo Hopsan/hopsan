@@ -123,7 +123,6 @@
 #define CFG_FROMBASEEXPR "frombaseexpr"
 #define CFG_TOBBASEEXPR "tobaseexpr"
 
-#define CFG_PYTHON "python"
 #define CFG_HCOM "hcom"
 #define CFG_PWD "pwd"
 #define CFG_COMMAND "command"
@@ -236,9 +235,6 @@ public:
 
 
     // Terminal and scripts
-    QString getLastPyScriptFile() const;
-    void setLastPyScriptFile(QString file);
-
     QStringList getTerminalHistory();
     void storeTerminalHistory(QStringList value);
 
@@ -254,7 +250,7 @@ private:
     void loadLibrarySettings(QDomElement &rDomElement);
     void loadModelicaFilesSettings(QDomElement &rDomElement);
     void loadModelSettings(QDomElement &rDomElement);
-    void loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement);
+    void loadScriptSettings(QDomElement &rHcomElement);
     void refreshQuickAccessVariables();
     void refreshIfDesktopPath(const QString &cfgKey);
 
@@ -283,7 +279,6 @@ private:
     QMap<QString, QString> mSelectedDefaultUnits;
     QMap<QString, QuantityUnitScale> mUnitScales;
 
-    QString mLastPyScriptFile;
     QStringList mTerminalHistory;
     QString mHcomWorkingDirectory;
 

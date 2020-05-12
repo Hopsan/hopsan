@@ -162,8 +162,6 @@ private:
     QCheckBox *mpDisableUndoCheckBox;
     QCheckBox *mpSaveUndoCheckBox;
 
-    QLineEdit *mpPyScriptPath;
-
     QCheckBox *mpDisableAnimationCheckBox;
 
     QCheckBox *mpTimeStepCheckBox;
@@ -179,7 +177,6 @@ private slots:
     void fixTimeStepInheritance(bool value);
     void browseUser();
     void browseIso();
-    void browseScript();
     void clearLogData();
 };
 

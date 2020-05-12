@@ -1171,7 +1171,6 @@ void PlotCurve::markActive(bool value)
 
 //! @brief Redraws the curve
 //! Updates a curve with regard to special X-axis, units and scaling.
-//! @todo after updating from python, scale is not refreshed maybe this should be done in here
 //! @todo add optional index if we only want to update particular value
 void PlotCurve::updateCurve()
 {

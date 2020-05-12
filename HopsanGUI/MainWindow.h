@@ -50,7 +50,6 @@ class OptionsDialog;
 class MessageWidget;
 class TerminalConsole;
 class PlotWidget2;
-class PyDockWidget;
 class SystemParametersWidget;
 class WelcomeWidget;
 class Configuration;
@@ -283,7 +282,6 @@ private:
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
     QDockWidget *mpSystemParametersDock;
-    QDockWidget *mpPyDockWidget;
 
     QWidget *mpCentralWidget;
     QGridLayout *mpTabgrid;

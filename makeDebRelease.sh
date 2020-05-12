@@ -22,8 +22,7 @@ debianDistArchArray=( buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster \
 ubuntuDistArchArray=( focal:amd64:focal
                       eoan:amd64:focal             eoan:i386:focal \
                       bionic:amd64:qt5py3_1        bionic:i386:qt5py3_1 \
-                      xenial:amd64:qt5py27         xenial:i386:qt5py27 \
-                      trusty:amd64:trusty          trusty:i386:trusty )
+                      xenial:amd64:qt5py27         xenial:i386:qt5py27 )
 
 # Pbuilder mirrors
 ubuntuMirror=http://se.archive.ubuntu.com/ubuntu/

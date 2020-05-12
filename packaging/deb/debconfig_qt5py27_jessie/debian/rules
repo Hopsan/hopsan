@@ -61,7 +61,7 @@ binary-arch:	build install
 	dh_compress
 	dh_fixperms
 	dh_installdeb
-#	dh_shlibdeps --exclude=PythonQt --exclude=qwt
+#	dh_shlibdeps --exclude=qwt
 	dh_shlibdeps -l/opt/hopsan/bin
 	dh_gencontrol
 #        dh_md5sums

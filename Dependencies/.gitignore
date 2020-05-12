@@ -6,9 +6,6 @@ fmilibrary_code/
 fmilibrary_build/
 qwt/
 qwt_build/
-pythonqt/
-pythonqt_build/
-pythonqt_code/
 zeromq/
 zeromq_build/
 discount/

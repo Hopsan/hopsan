@@ -74,7 +74,6 @@
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
-#include "Widgets/PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
 #include "Widgets/WelcomeWidget.h"
@@ -112,7 +111,6 @@ LibraryHandler *gpLibraryHandler = 0;
 HelpPopUpWidget *gpHelpPopupWidget = 0;
 SensitivityAnalysisDialog *gpSensitivityAnalysisDialog = 0;
 HelpDialog *gpHelpDialog = 0;
-PythonTerminalWidget *gpPythonTerminalWidget = 0;
 OptimizationDialog *gpOptimizationDialog = 0;
 QAction *gpToggleNamesAction = 0;
 QAction *gpTogglePortsAction = 0;
@@ -223,18 +221,6 @@ void MainWindow::createContents()
     mpHelpDialog = new HelpDialog(this);
     gpHelpDialog = mpHelpDialog;
 
-    //Create the Python widget
-#ifdef USEPYTHONQT
-    mpPyDockWidget = new QDockWidget(tr("Python Console"),this);
-    mpPyDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    gpPythonTerminalWidget = new PythonTerminalWidget(this);
-    mpPyDockWidget->setWidget(gpPythonTerminalWidget);
-    mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
-    addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
-#else
-    mpPyDockWidget = 0;
-#endif
-
     //Create the library handler
     gpLibraryHandler = new LibraryHandler();
 
@@ -328,13 +314,7 @@ void MainWindow::createContents()
     tabifyDockWidget(mpSystemParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
 
-#ifdef USEPYTHONQT
-    tabifyDockWidget(mpTerminalDock, mpPyDockWidget);
-    tabifyDockWidget(mpPyDockWidget, mpMessageDock);
-    tabifyDockWidget(mpMessageDock, mpTerminalDock);
-#else
     tabifyDockWidget(mpTerminalDock, mpMessageDock);
-#endif
     mpTerminalDock->raise();
 
     // Set the correct position of the help popup message in the central widget
@@ -1046,9 +1026,6 @@ void MainWindow::createMenus()
     mpViewMenu->addAction(mpTerminalDock->toggleViewAction());
     mpViewMenu->addAction(mpConnectivityToolBar->toggleViewAction());
     mpViewMenu->addAction(mpMessageDock->toggleViewAction());
-#ifdef USEPYTHONQT
-    mpViewMenu->addAction(mpPyDockWidget->toggleViewAction());
-#endif
     mpViewMenu->addAction(mpSimToolBar->toggleViewAction());
 
     mpToolsMenu->addAction(mpOptionsAction);
@@ -1387,9 +1364,6 @@ void MainWindow::toggleHideShowDockAreas(bool show)
         mpLibDock->show();
         mpTerminalDock->show();
         mpMessageDock->show();
-#ifdef USEPYTHONQT
-        mpPyDockWidget->show();
-#endif
         //mpPlotWidgetDock->show();
         //mpSystemParametersDock->hide();
     }
@@ -1398,9 +1372,6 @@ void MainWindow::toggleHideShowDockAreas(bool show)
         mpLibDock->hide();
         mpTerminalDock->hide();
         mpMessageDock->hide();
-#ifdef USEPYTHONQT
-        mpPyDockWidget->hide();
-#endif
         mpPlotWidgetDock->hide();
         mpSystemParametersDock->hide();
     }

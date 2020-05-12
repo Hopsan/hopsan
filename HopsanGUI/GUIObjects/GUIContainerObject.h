@@ -182,8 +182,6 @@ public:
     const QFileInfo &getModelFileInfo() const;
     QString getModelFilePath() const;
     QString getModelPath() const;
-    void setScriptFile(QString path);
-    QString getScriptFile();
 
     //Numbered sections methods
     void selectSection(int no, bool append=false);
@@ -332,7 +330,6 @@ protected:
 
     //Model and script file members
     QFileInfo mModelFileInfo;
-    QString mScriptFilePath;
     QString mNumHopScript;
 
     //Model object members

@@ -996,7 +996,7 @@ void OptimizationScriptWizard::saveConfiguration()
 }
 
 
-//! @brief Generates the Python script based upon selections made in the dialog
+//! @brief Generates the script based upon selections made in the dialog
 bool OptimizationScriptWizard::generateScript()
 {
     for(int i=0; i<mpParameterMinLineEdits.size(); ++i)
@@ -1328,7 +1328,7 @@ void OptimizationScriptWizard::generateCommonOptions(QString &templateCode)
 }
 
 
-//! @brief Returns the Python calling code to one of the selected functions
+//! @brief Returns the calling code to one of the selected functions
 //! @param i Index of selected function
 QString OptimizationScriptWizard::generateFunctionCode(int i)
 {

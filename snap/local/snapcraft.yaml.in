@@ -133,7 +133,6 @@ parts:
       ./setupFMILibrary.sh
       ./setupKatex.sh
       cd ..
-      #./setupPythonQt.sh release 3 3.2
       snapcraftctl build
 
       ./packaging/copyInstallHopsan.sh $(pwd)/../src ${SNAPCRAFT_PART_INSTALL}

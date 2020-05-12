@@ -41,9 +41,6 @@
 #include "MessageHandler.h"
 #include "CoreAccess.h"
 
-#include "Widgets/PyDockWidget.h"
-//! @todo this config object should not need to include PyDockWidget
-
 //Qt includes
 #include <QDomElement>
 #include <QMessageBox>
@@ -282,12 +279,6 @@ void Configuration::saveToXml()
             }
         }
 
-        //Save python session
-#ifdef USEPYTHONQT
-        QDomElement python = appendDomElement(configRoot, CFG_PYTHON);
-        gpPythonTerminalWidget->saveSettingsToDomElement(python);
-#endif
-
         QDomElement hcom = appendDomElement(configRoot, CFG_HCOM);
         appendDomTextNode(hcom, CFG_PWD, mHcomWorkingDirectory);
         for(int i=0; i<mTerminalHistory.size(); ++i)
@@ -406,10 +397,9 @@ void Configuration::loadFromXml()
             }
             // ----------------------------------------------
 
-            //Load settings to PyDockWidget in MainWindow
-            QDomElement pythonElement = configRoot.firstChildElement(CFG_PYTHON);
+            //Load settings to HcomDockWidget in MainWindow
             QDomElement hcomElement = configRoot.firstChildElement(CFG_HCOM);
-            loadScriptSettings(pythonElement, hcomElement);
+            loadScriptSettings(hcomElement);
         }
     }
     file.close();
@@ -807,14 +797,8 @@ void Configuration::loadModelSettings(QDomElement &rDomElement)
 
 
 //! @brief Utility function that loads script settings from dom elements
-void Configuration::loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement)
+void Configuration::loadScriptSettings(QDomElement &rHcomElement)
 {
-    if(!rPythonElement.isNull())
-    {
-        QDomElement lastScriptElement = rPythonElement.firstChildElement("lastscript");
-        mLastPyScriptFile = lastScriptElement.attribute("file");
-    }
-
     if(!rHcomElement.isNull())
     {
         QDomElement pwdElement = rHcomElement.firstChildElement(CFG_PWD);
@@ -1124,12 +1108,6 @@ QString Configuration::getStyleSheet() const
 }
 
 
-//! @brief Returns the last used script file
-QString Configuration::getLastPyScriptFile() const
-{
-    return mLastPyScriptFile;
-}
-
 QStringList Configuration::getUnitQuantities() const
 {
     return mUnitScales.keys();
@@ -1300,16 +1278,6 @@ void Configuration::addCustomUnit(QString quantity, QString unitname, QString sc
     }
     saveToXml();
 }
-
-
-
-void Configuration::setLastPyScriptFile(QString file)
-{
-    mLastPyScriptFile = file;
-    saveToXml();
-}
-
-
 
 void Configuration::setPlotGfxSize(const QSizeF size)
 {

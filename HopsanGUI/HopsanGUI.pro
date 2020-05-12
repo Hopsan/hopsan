@@ -37,17 +37,6 @@ include($${PWD}/../Dependencies/qwt.pri)
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set the PythonQt paths
-include($${PWD}/../Dependencies/pythonqt.pri)
-have_pythonqt(){
-    DEFINES *= USEPYTHONQT       #If PythonQt was found then lets build GUI with PythonQt and Python support
-    !build_pass:message(Compiling HopsanGUI with PythonQt support)
-} else {
-    !build_pass:warning(Compiling HopsanGUI WITHOUT PythonQt and Python support)
-}
-#--------------------------------------------------------
-
-#--------------------------------------------------------
 # Set the ZeroMQ paths
 include($${PWD}/../Dependencies/zeromq.pri)
 have_zeromq() {
@@ -150,16 +139,6 @@ QMAKE_CXXFLAGS *= -U__STRICT_ANSI__ -Wno-c++0x-compat
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
-    # Set Python paths
-    contains(DEFINES, USEPYTHONQT) {
-        !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")
-        !build_pass:message("PythonQt appears to require Python $${PYTHONQT_PYVERSION}")
-        QMAKE_CXXFLAGS *= $$system(python$${PYTHONQT_PYVERSION}-config --includes)
-        LIBS *= $$system(python$${PYTHONQT_PYVERSION}-config --libs)
-    } else {
-        !build_pass:message("Not looking for Python since we are not using PythonQT")
-    }
-
     # This will add runtime .so search paths to the executable, by using $ORIGIN these paths will be relative the executable (regardless of working dir, VERY useful)
     # The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to handle the $$ORIGIN stuff, adding manually to LFLAGS
     !macx:QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
@@ -172,17 +151,6 @@ unix {
     }
 }
 win32 {
-    # Set Python paths
-    contains(DEFINES, USEPYTHONQT) {
-        !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")
-        PYTHON_DEFAULT_PATHS *= c:/Python27
-        PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
-        INCLUDEPATH += $${PYTHON_PATH}/include
-        LIBS += -L$${PYTHON_PATH}/libs
-    } else {
-       !build_pass: message("Not looking for Python since we are not using PythonQT")
-    }
-
     # Enable auto-import
     QMAKE_LFLAGS += -Wl,--enable-auto-import
 
@@ -236,7 +204,6 @@ SOURCES += main.cpp \
     GUIConnectorAppearance.cpp \
     Widgets/SystemParametersWidget.cpp \
     PlotWindow.cpp \
-    PyWrapperClasses.cpp \
     GUIObjects/GUIWidgets.cpp \
     GUIObjects/GUISystem.cpp \
     GUIObjects/GUIObject.cpp \
@@ -329,7 +296,6 @@ HEADERS += MainWindow.h \
     GUIConnectorAppearance.h \
     Widgets/SystemParametersWidget.h \
     PlotWindow.h \
-    PyWrapperClasses.h \
     GUIObjects/GUIWidgets.h \
     GUIObjects/GUISystem.h \
     GUIObjects/GUIObject.h \
@@ -405,11 +371,6 @@ HEADERS += MainWindow.h \
     Dialogs/OptimizationScriptWizard.h \
     Widgets/TextEditorWidget.h \
     HcomTest.hpp
-
-    contains(DEFINES, USEPYTHONQT) {
-        SOURCES += Widgets/PyDockWidget.cpp
-        HEADERS += Widgets/PyDockWidget.h
-    }
 
 OTHER_FILES += \
     ../hopsan-default-configuration.xml

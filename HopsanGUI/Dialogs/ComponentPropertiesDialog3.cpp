@@ -715,15 +715,6 @@ QWidget *SystemProperties::createSystemSettings()
     mpSaveUndoCheckBox->setCheckable(true);
     mpSaveUndoCheckBox->setChecked(mpSystemObject->getSaveUndo());
 
-    // Startup python script file
-    QLabel *pPyScriptLabel = new QLabel("Script File:", pSettingsWidget);
-    pPyScriptLabel->setMinimumWidth(80);
-    mpPyScriptPath = new QLineEdit(pSettingsWidget);
-    mpPyScriptPath->setMinimumWidth(200);
-    mpPyScriptPath->setText(mpSystemObject->getScriptFile());
-    QPushButton* pPyScriptBrowseButton = new QPushButton(tr("..."), pSettingsWidget);
-    connect(pPyScriptBrowseButton, SIGNAL(clicked(bool)), this, SLOT(browseScript()));
-
     // Disalbe animation setting
     mpDisableAnimationCheckBox = new QCheckBox("Disable animation mode for current system (for educational use)", pSettingsWidget);
     mpDisableAnimationCheckBox->setCheckable(true);
@@ -731,10 +722,7 @@ QWidget *SystemProperties::createSystemSettings()
 
     QGridLayout *pSettingsLayout = new QGridLayout(pSettingsWidget);
     int row = 0;
-    pSettingsLayout->addWidget(pPyScriptLabel,               row,   0);
-    pSettingsLayout->addWidget(mpPyScriptPath,               row,   1);
-    pSettingsLayout->addWidget(pPyScriptBrowseButton,        row,   2);
-    pSettingsLayout->addWidget(mpKeepValuesAsStartValues,    ++row, 0, 1, 2);
+    pSettingsLayout->addWidget(mpKeepValuesAsStartValues,      row, 0, 1, 2);
     pSettingsLayout->addWidget(mpDisableUndoCheckBox,        ++row, 0, 1, 2);
     pSettingsLayout->addWidget(mpSaveUndoCheckBox,           ++row, 0, 1, 2);
     pSettingsLayout->addWidget(mpDisableAnimationCheckBox,   ++row, 0, 1, 2);
@@ -2381,7 +2369,6 @@ void SystemProperties::setValues()
     mpSystemObject->getCoreSystemAccessPtr()->setDesiredTimeStep(mpTimeStepEdit->text().toDouble());
     mpSystemObject->setNumberOfLogSamples(mpNumLogSamplesEdit->text().toInt());
     mpSystemObject->setLogStartTime(mpLogStartTimeEdit->text().toDouble());
-    mpSystemObject->setScriptFile(mpPyScriptPath->text());
 
     // Set model info
     mpSystemObject->setModelInfo(mpAuthorEdit->text(), mpEmailEdit->text(), mpAffiliationEdit->text(), mpDescriptionEdit->toPlainText());
@@ -2406,17 +2393,6 @@ void SystemProperties::browseIso()
     if (!iconFileName.isEmpty())
     {
         mpIsoIconPath->setText(iconFileName);
-    }
-}
-
-//! @brief Slot that opens a file dialog where user can select a script file for the system
-void SystemProperties::browseScript()
-{
-    QString scriptFileName = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose script"),
-                                                          gpDesktopHandler->getModelsPath());
-    if (!scriptFileName.isEmpty())
-    {
-        mpPyScriptPath->setText(scriptFileName);
     }
 }
 

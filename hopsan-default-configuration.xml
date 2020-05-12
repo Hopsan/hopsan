@@ -231,5 +231,4 @@
           <unit name="dB" tobaseexpr="10^(x/20.0)" frombaseexpr="20.0*log10(x)"/>
         </quantity>
     </unitsettings>
-    <python/>
 </hopsandefaults>

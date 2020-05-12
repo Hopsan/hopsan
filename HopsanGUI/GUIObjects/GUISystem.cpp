@@ -49,7 +49,6 @@
 //#include "Dialogs/ContainerPropertiesDialog.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIWidgets.h"
-#include "Widgets/PyDockWidget.h"
 #include "Configuration.h"
 #include "GUIContainerObject.h"
 #include "GUIComponent.h"
@@ -881,9 +880,6 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
         QDomElement gfxTypeElement = appendDomElement(guiStuff, HMF_GFXTAG);
         gfxTypeElement.setAttribute("type", gfxType);
 
-        QDomElement scriptFileElement = appendDomElement(guiStuff, HMF_SCRIPTFILETAG);
-        scriptFileElement.setAttribute("path", mScriptFilePath);
-
         this->refreshExternalPortsAppearanceAndPosition();
         QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
 
@@ -1145,7 +1141,6 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
         double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
         double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
-        setScriptFile(guiStuff.firstChildElement(HMF_SCRIPTFILETAG).attribute("path"));
 
         bool dontClearUndo = false;
         if(!guiStuff.firstChildElement(HMF_UNDO).isNull())
@@ -1392,10 +1387,6 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
             mpModelWidget->getGraphicsView()->updateViewPort();
         }
         this->mpModelWidget->setSaved(true);
-
-#ifdef USEPYTHONQT
-        gpPythonTerminalWidget->runPyScript(mScriptFilePath);
-#endif
 
         emit systemParametersChanged(); // Make sure we refresh the syspar widget
         emit checkMessages();

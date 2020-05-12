@@ -72,7 +72,6 @@
 #include "LibraryHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "Widgets/PlotWidget2.h"
-#include "Widgets/PyDockWidget.h"
 #include "Widgets/QuickNavigationWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
@@ -1439,7 +1438,7 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
 //! @see paste()
 void ContainerObject::cutSelected(CopyStack *xmlStack)
 {
-    // Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
+    // Don't copy if message widget as focus (they also use ctrl-c key sequence)
     // Also Check if we have any selected object, prevent clearing copy stack if nothing selected
     // Also Check if this system is locked then copy should not be allowed
     bool haveSelected = !mSelectedModelObjectsList.empty() || !mSelectedSubConnectorsList.empty() || !mSelectedWidgetsList.empty();
@@ -1460,7 +1459,7 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
 //! @see paste()
 void ContainerObject::copySelected(CopyStack *xmlStack)
 {
-    // Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
+    // Don't copy if message widget as focus (they also use ctrl-c key sequence)
     // Also Check if we have any selected object, prevent clearing copy stack if nothing selected
     // Also Check if this system is locked then copy should not be allowed
     bool haveSelected = !mSelectedModelObjectsList.empty() || !mSelectedSubConnectorsList.empty() || !mSelectedWidgetsList.empty();
@@ -2289,21 +2288,6 @@ QString ContainerObject::getModelPath() const
 {
     QFileInfo fi(getModelFilePath());
     return fi.absolutePath();
-}
-
-
-//! @brief Specifies a script file to be executed when model is loaded
-//! @todo Shall we have this?
-void ContainerObject::setScriptFile(QString path)
-{
-    mScriptFilePath = path;
-}
-
-
-//! @brief Returns path to the script file
-QString ContainerObject::getScriptFile()
-{
-    return mScriptFilePath;
 }
 
 
