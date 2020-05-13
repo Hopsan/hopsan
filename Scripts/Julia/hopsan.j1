@@ -1,0 +1,49 @@
+module hopsan
+  const hopsanlibpath = joinpath(ENV["HOPSANHOME"], "bin/libhopsanc")
+  const complibpath = joinpath(ENV["HOPSANHOME"], "componentLibraries/defaultLibrary/libdefaultcomponentlibrary.so")
+	
+  function getdatavector(variable)
+    size=Ref{Cint}(42)
+    dataptr=ccall((:getDataVector,hopsanlibpath),Ptr{Cdouble},(Cstring,Ref{Cint},),variable,size)
+    data = unsafe_wrap(Array{Cdouble}, dataptr, size[], own=false)
+    return data
+  end
+
+  function gettimevector()
+    size=Ref{Cint}(42)
+    dataptr=ccall((:getTimeVector,hopsanlibpath),Ptr{Cdouble},(Ref{Cint},),size)
+    data = unsafe_wrap(Array{Cdouble}, dataptr, size[], own=false)
+    return data
+  end
+
+  function loadlibrary(path)
+    ccall((:loadLibrary,hopsanlibpath),Cint,(Cstring,),path)
+  end
+
+  function loadmodel(path)
+    ccall((:loadModel,hopsanlibpath),Cint,(Cstring,),path)
+  end
+
+  function setstarttime(value)
+    ccall((:setStartTime,hopsanlibpath),Cint,(Cdouble,),value)
+  end
+
+  function settimestep(value)
+    ccall((:setTimeStep,hopsanlibpath),Cint,(Cdouble,),value)
+  end
+
+  function setstoptime(value)
+    ccall((:setStopTime,hopsanlibpath),Cint,(Cdouble,),value)
+  end
+
+  function initialize()
+    ccall((:initialize,hopsanlibpath),Cint,())
+  end
+
+  function simulate()
+    ccall((:simulate,hopsanlibpath),Cint,())
+  end
+
+  loadlibrary(complibpath)
+end
+
