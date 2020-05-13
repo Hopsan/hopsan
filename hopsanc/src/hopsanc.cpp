@@ -170,3 +170,41 @@ double *getTimeVector(int &size)
 }
 
 
+
+int setParameter(const char *name, const char *value)
+{
+    if(!spCoreComponentSystem) {
+        std::cout << "No model is loaded.\n";
+        return -1;
+    }
+
+    hopsan::HString nameStr(name);
+    hopsan::HVector<hopsan::HString> nameVec = nameStr.split('.');
+
+    if(nameVec.size() == 1) {
+        if(spCoreComponentSystem->setParameterValue(nameVec[0], hopsan::HString(value))) {
+            return 0;
+        }
+        else {
+            std::cout << "Failed to set parameter value: " << nameVec[0].c_str() << "\n";
+            return -1;
+        }
+    }
+    else if(nameVec.size() == 2) {
+        hopsan::Component *pComp = spCoreComponentSystem->getSubComponent(nameVec[0]);
+        if(!pComp) {
+            std::cout << "No such component: " << nameVec[0].c_str() << "\n";
+            return -1;
+        }
+        if(pComp->setParameterValue(nameVec[1], hopsan::HString(value))) {
+            return 0;
+        }
+        else {
+            std::cout << "Failed to set parameter value: " << nameVec[1].c_str() << "\n";
+            return -1;
+        }
+    }
+
+    std::cout << "Wrong number of arguments.\n";
+    return -1;
+}
