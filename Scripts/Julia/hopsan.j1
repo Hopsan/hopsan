@@ -24,6 +24,10 @@ module hopsan
     ccall((:loadModel,hopsanlibpath),Cint,(Cstring,),path)
   end
 
+  function setparameter(name,value)
+    ccall((:setParameter,hopsanlibpath),Cint,(Cstring,Cstring,),name,value)
+  end
+
   function setstarttime(value)
     ccall((:setStartTime,hopsanlibpath),Cint,(Cdouble,),value)
   end

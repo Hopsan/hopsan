@@ -6,6 +6,7 @@
 extern "C" {
     HOPSANC_DLLAPI int loadLibrary(const char* path);
     HOPSANC_DLLAPI int loadModel(const char* path);
+    HOPSANC_DLLAPI int setParameter(const char* name, const char *value);
     HOPSANC_DLLAPI void setStartTime(double value);
     HOPSANC_DLLAPI void setTimeStep(double value);
     HOPSANC_DLLAPI void setStopTime(double value);
