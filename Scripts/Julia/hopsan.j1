@@ -40,8 +40,6 @@ module hopsan
     ccall((:setStopTime,hopsanlibpath),Cint,(Cdouble,),value)
   end
 
-  function initialize()
-    ccall((:initialize,hopsanlibpath),Cint,())
   end
 
   function simulate()
