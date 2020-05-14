@@ -60,15 +60,28 @@ double *getDataVector(const char* variable, int &size)
 
     //Parse variable string
     hopsan::HString varStr(variable);
-    hopsan::HVector<hopsan::HString>splitVar = varStr.split('.');
+    hopsan::HVector<hopsan::HString> splitSys = varStr.split('|');
+    hopsan::HVector<hopsan::HString> splitVar = splitSys.last().split('.');
+    splitSys.resize(splitSys.size()-1);
     if(splitVar.size() < 3) {
         std::cout << "Component name, port name and variable name must be specified.\n";
         size = -1;
         return nullptr;
     }
 
+    //Find system
+    hopsan::ComponentSystem *pSystem = spCoreComponentSystem;
+    for(size_t i=0; i<splitSys.size(); ++i) {
+        pSystem = pSystem->getSubComponentSystem(splitSys[i]);
+        if(!pSystem) {
+            std::cout << "Error: Subsystem not found: " << splitSys[i].c_str() << "\n";
+            size = -1;
+            return nullptr;
+        }
+    }
+
     //Find component
-    hopsan::Component *pComp = spCoreComponentSystem->getSubComponent(splitVar[0]);
+    hopsan::Component *pComp = pSystem->getSubComponent(splitVar[0]);
     if(!pComp) {
         std::cout << "No such component: " << splitVar[0].c_str() << "\n";
         size = -1;
@@ -186,29 +199,61 @@ int setParameter(const char *name, const char *value)
         return -1;
     }
 
+    //Parse arguments
     hopsan::HString nameStr(name);
-    hopsan::HVector<hopsan::HString> nameVec = nameStr.split('.');
+    hopsan::HVector<hopsan::HString> sysVec = nameStr.split('|');
+    hopsan::HVector<hopsan::HString> nameVec = sysVec.last().split('.');
+    sysVec.resize(sysVec.size()-1);
 
-    if(nameVec.size() == 1) {
-        if(spCoreComponentSystem->setParameterValue(nameVec[0], hopsan::HString(value))) {
-            return 0;
-        }
-        else {
-            std::cout << "Failed to set parameter value: " << nameVec[0].c_str() << "\n";
+    //Generate component name and parameter name
+    hopsan::HString compName, parName;
+    if(nameVec.size() == 1) {   //System parameter
+        compName = "";
+        parName = nameVec[0];
+    }
+    else if(nameVec.size() == 2) { //Constant
+        compName = nameVec[0];
+        parName = nameVec[1];
+    }
+    else if(nameVec.size() == 3) { //Input variable
+        compName = nameVec[0];
+        parName = nameVec[1]+"#"+nameVec[2];
+    }
+    else {
+        std::cout << "Error: Parameter name not specified.\n";
+        return -1;
+    }
+
+    //Find system
+    hopsan::ComponentSystem *pSystem = spCoreComponentSystem;
+    for(size_t i=0; i<sysVec.size(); ++i) {
+        pSystem = pSystem->getSubComponentSystem(sysVec[i]);
+        if(!pSystem) {
+            std::cout << "Error: Subsystem not found: " << sysVec[i].c_str() << "\n";
             return -1;
         }
     }
-    else if(nameVec.size() == 2) {
-        hopsan::Component *pComp = spCoreComponentSystem->getSubComponent(nameVec[0]);
-        if(!pComp) {
-            std::cout << "No such component: " << nameVec[0].c_str() << "\n";
-            return -1;
-        }
-        if(pComp->setParameterValue(nameVec[1], hopsan::HString(value))) {
+
+    if(compName.empty()) {   //Set system parameter
+        if(pSystem->setParameterValue(parName, hopsan::HString(value))) {
             return 0;
         }
         else {
-            std::cout << "Failed to set parameter value: " << nameVec[1].c_str() << "\n";
+            std::cout << "Error: Failed to set parameter value: " << parName.c_str() << "\n";
+            return -1;
+        }
+    }
+    else if(nameVec.size() == 2 || nameVec.size() == 3) { //Set constant or input variable
+        hopsan::Component *pComp = pSystem->getSubComponent(compName);
+        if(!pComp) {
+            std::cout << "Error: No such component: " << compName.c_str() << "\n";
+            return -1;
+        }
+        if(pComp->setParameterValue(parName, hopsan::HString(value))) {
+            return 0;
+        }
+        else {
+            std::cout << "Error: Failed to set parameter value: " << parName.c_str() << "\n";
             return -1;
         }
     }
