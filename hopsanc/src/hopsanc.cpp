@@ -110,19 +110,26 @@ int loadLibrary(const char *path)
     return 0;
 }
 
-void setStartTime(double value)
+int setStartTime(double value)
 {
     startTime = value;
+    return 0;
 }
 
-void setTimeStep(double value)
+int setTimeStep(double value)
 {
+    if(!spCoreComponentSystem) {
+        std::cout << "Error: No model is loaded!\n";
+        return -1;
+    }
     spCoreComponentSystem->setDesiredTimestep(value);
+    return 0;
 }
 
-void setStopTime(double value)
+int setStopTime(double value)
 {
     stopTime = value;
+    return 0;
 }
 
 int simulate()
