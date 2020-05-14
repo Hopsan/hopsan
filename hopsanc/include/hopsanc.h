@@ -10,6 +10,7 @@ extern "C" {
     HOPSANC_DLLAPI void setStartTime(double value);
     HOPSANC_DLLAPI void setTimeStep(double value);
     HOPSANC_DLLAPI void setStopTime(double value);
+    HOPSANC_DLLAPI int setLogSamples(unsigned long int value);
     HOPSANC_DLLAPI int simulate();
     HOPSANC_DLLAPI double *getTimeVector(int &value);
     HOPSANC_DLLAPI double *getDataVector(const char *variable, int &size);
