@@ -100,31 +100,6 @@ double *getDataVector(const char* variable, int &size)
     return data;
 }
 
-int initialize()
-{
-    std::cout << "Checking model... ";
-    if (spCoreComponentSystem->checkModelBeforeSimulation()) {
-        std::cout << "Success!\n";
-    }
-    else {
-        std::cout << "Failed!\n";
-        printWaitingMessages(gHopsanCore, false, false);
-        return -1;
-    }
-
-    std::cout << "Initializing model... ";
-    if(spCoreComponentSystem->initialize(startTime, stopTime)) {
-        std::cout << "Success!\n";
-    }
-    else {
-        std::cout << "Failed!\n";
-        printWaitingMessages(gHopsanCore, false, false);
-        return -1;
-    }
-    printWaitingMessages(gHopsanCore, false, false);
-    return 0;
-}
-
 int loadLibrary(const char *path)
 {
     if(!gHopsanCore.loadExternalComponentLib(path)) {
@@ -152,10 +127,36 @@ void setStopTime(double value)
 
 int simulate()
 {
-    std::cout << "Simulating...\n";
+    if(!spCoreComponentSystem) {
+        std::cout << "Error: No model is loaded!\n";
+        return -1;
+    }
+    std::cout << "Checking model... ";
+    if (spCoreComponentSystem->checkModelBeforeSimulation()) {
+        std::cout << "Success!\n";
+    }
+    else {
+        std::cout << "Failed!\n";
+        printWaitingMessages(gHopsanCore, false, false);
+        return -1;
+    }
+
+    std::cout << "Initializing model... ";
+    if(spCoreComponentSystem->initialize(startTime, stopTime)) {
+        std::cout << "Success!\n";
+    }
+    else {
+        std::cout << "Failed!\n";
+        printWaitingMessages(gHopsanCore, false, false);
+        return -1;
+    }
+    printWaitingMessages(gHopsanCore, false, false);
+
+    std::cout << "Simulating... ";
     spCoreComponentSystem->simulate(stopTime);
     std::cout << "Finished!\n";
 
+    printWaitingMessages(gHopsanCore, false, false);
     return 0;
 }
 
