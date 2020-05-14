@@ -53,7 +53,7 @@ int loadModel(const char* path) {
 double *getDataVector(const char* variable, int &size)
 {
     if(!spCoreComponentSystem) {
-        std::cout << "No model is loaded.\n";
+        std::cout << "Error: No model is loaded.\n";
         size = -1;
         return nullptr;
     }
@@ -64,7 +64,7 @@ double *getDataVector(const char* variable, int &size)
     hopsan::HVector<hopsan::HString> splitVar = splitSys.last().split('.');
     splitSys.resize(splitSys.size()-1);
     if(splitVar.size() < 3) {
-        std::cout << "Component name, port name and variable name must be specified.\n";
+        std::cout << "Error: Component name, port name and variable name must be specified.\n";
         size = -1;
         return nullptr;
     }
@@ -83,7 +83,7 @@ double *getDataVector(const char* variable, int &size)
     //Find component
     hopsan::Component *pComp = pSystem->getSubComponent(splitVar[0]);
     if(!pComp) {
-        std::cout << "No such component: " << splitVar[0].c_str() << "\n";
+        std::cout << "Error: No such component: " << splitVar[0].c_str() << "\n";
         size = -1;
         return nullptr;
     }
@@ -91,14 +91,14 @@ double *getDataVector(const char* variable, int &size)
     //Find port
     hopsan::Port *pPort = pComp->getPort(splitVar[1]);
     if(!pPort) {
-        std::cout << "No such port: " << splitVar[1].c_str() << "\n";
+        std::cout << "Error: No such port: " << splitVar[1].c_str() << "\n";
         size = -1;
         return nullptr;
     }
 
     int varId = pPort->getNodeDataIdFromName(splitVar[2]);
     if(varId < 0) {
-        std::cout << "No such variable: " << splitVar[2].c_str() << "\n";
+        std::cout << "Error: No such variable: " << splitVar[2].c_str() << "\n";
         size = -1;
         return nullptr;
     }
@@ -183,6 +183,7 @@ int simulate()
 double *getTimeVector(int &size)
 {
     if(!spCoreComponentSystem) {
+        std::cout << "Error: No model is loaded.\n";
         size = -1;
         return nullptr;
     }
@@ -195,7 +196,7 @@ double *getTimeVector(int &size)
 int setParameter(const char *name, const char *value)
 {
     if(!spCoreComponentSystem) {
-        std::cout << "No model is loaded.\n";
+        std::cout << "Error: No model is loaded.\n";
         return -1;
     }
 
@@ -258,7 +259,7 @@ int setParameter(const char *name, const char *value)
         }
     }
 
-    std::cout << "Wrong number of arguments.\n";
+    std::cout << "Error: Wrong number of arguments.\n";
     return -1;
 }
 
