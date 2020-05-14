@@ -40,6 +40,8 @@ module hopsan
     ccall((:setStopTime,hopsanlibpath),Cint,(Cdouble,),value)
   end
 
+  function setlogsamples(value)
+    ccall((:setLogSamples,hopsanlibpath),Cint,(Culong,),value)
   end
 
   function simulate()

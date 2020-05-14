@@ -209,3 +209,14 @@ int setParameter(const char *name, const char *value)
     std::cout << "Wrong number of arguments.\n";
     return -1;
 }
+
+int setLogSamples(unsigned long value)
+{
+    if(!spCoreComponentSystem) {
+        std::cout << "Error: No model is loaded.\n";
+        return -1;
+    }
+    std::cout << "Setting samples to " << size_t(value) << "\n";
+    spCoreComponentSystem->setNumLogSamples(value);
+    return 0;
+}
