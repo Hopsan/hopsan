@@ -1,5 +1,6 @@
 #include "hopsanc.h"
 #include <iostream>
+#include <string.h>
 
 #include "HopsanCore.h"
 #include "HopsanEssentials.h"
@@ -50,12 +51,11 @@ int loadModel(const char* path) {
 //! @param [in] variable Variable name ("component.port.variable")
 //! @param [out] size Size of returned data array
 //! @returns Pointer to data array
-double *getDataVector(const char* variable, int &size)
+int getDataVector(const char* variable, double *data)
 {
     if(!spCoreComponentSystem) {
         std::cout << "Error: No model is loaded.\n";
-        size = -1;
-        return nullptr;
+        return -1;
     }
 
     //Parse variable string
@@ -65,8 +65,7 @@ double *getDataVector(const char* variable, int &size)
     splitSys.resize(splitSys.size()-1);
     if(splitVar.size() < 3) {
         std::cout << "Error: Component name, port name and variable name must be specified.\n";
-        size = -1;
-        return nullptr;
+        return -1;
     }
 
     //Find system
@@ -75,8 +74,7 @@ double *getDataVector(const char* variable, int &size)
         pSystem = pSystem->getSubComponentSystem(splitSys[i]);
         if(!pSystem) {
             std::cout << "Error: Subsystem not found: " << splitSys[i].c_str() << "\n";
-            size = -1;
-            return nullptr;
+            return -1;
         }
     }
 
@@ -84,33 +82,27 @@ double *getDataVector(const char* variable, int &size)
     hopsan::Component *pComp = pSystem->getSubComponent(splitVar[0]);
     if(!pComp) {
         std::cout << "Error: No such component: " << splitVar[0].c_str() << "\n";
-        size = -1;
-        return nullptr;
+        return -1;
     }
 
     //Find port
     hopsan::Port *pPort = pComp->getPort(splitVar[1]);
     if(!pPort) {
         std::cout << "Error: No such port: " << splitVar[1].c_str() << "\n";
-        size = -1;
-        return nullptr;
+        return -1;
     }
 
     int varId = pPort->getNodeDataIdFromName(splitVar[2]);
     if(varId < 0) {
         std::cout << "Error: No such variable: " << splitVar[2].c_str() << "\n";
-        size = -1;
-        return nullptr;
+        return -1;
     }
 
-    size = int(spCoreComponentSystem->getNumActuallyLoggedSamples());
-    double *data = new double[size];
     std::vector< std::vector<double> > *pLogData = pPort->getLogDataVectorPtr();
     for (size_t t=0; t<spCoreComponentSystem->getNumActuallyLoggedSamples(); ++t) {
         data[t] = (*pLogData)[t][size_t(varId)];
     }
-
-    return data;
+    return 0;
 }
 
 int loadLibrary(const char *path)
@@ -180,15 +172,14 @@ int simulate()
     return 0;
 }
 
-double *getTimeVector(int &size)
+int getTimeVector(double *data)
 {
     if(!spCoreComponentSystem) {
         std::cout << "Error: No model is loaded.\n";
-        size = -1;
-        return nullptr;
+        return -1;
     }
-    size = int(spCoreComponentSystem->getNumActuallyLoggedSamples());
-    return spCoreComponentSystem->getLogTimeVector()->data();
+    memcpy(data,spCoreComponentSystem->getLogTimeVector()->data(), spCoreComponentSystem->getNumActuallyLoggedSamples()*sizeof(double));
+    return 0;
 }
 
 
@@ -272,4 +263,13 @@ int setLogSamples(unsigned long value)
     std::cout << "Setting samples to " << size_t(value) << "\n";
     spCoreComponentSystem->setNumLogSamples(value);
     return 0;
+}
+
+size_t getLogSamples()
+{
+    if(!spCoreComponentSystem) {
+        std::cout << "Error: No model is loaded.\n";
+        return 0;
+    }
+    return spCoreComponentSystem->getNumActuallyLoggedSamples();
 }
