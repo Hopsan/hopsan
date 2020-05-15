@@ -153,19 +153,23 @@ int simulate()
         return -1;
     }
 
-    std::cout << "Initializing model... ";
+    std::cout << "Initializing... ";
     if(spCoreComponentSystem->initialize(startTime, stopTime)) {
         std::cout << "Success!\n";
+        printWaitingMessages(gHopsanCore, false, false);
     }
     else {
         std::cout << "Failed!\n";
         printWaitingMessages(gHopsanCore, false, false);
         return -1;
     }
-    printWaitingMessages(gHopsanCore, false, false);
 
     std::cout << "Simulating... ";
     spCoreComponentSystem->simulate(stopTime);
+    std::cout << "Finished!\n";
+
+    std::cout << "Finalizing... ";
+    spCoreComponentSystem->finalize();
     std::cout << "Finished!\n";
 
     printWaitingMessages(gHopsanCore, false, false);
