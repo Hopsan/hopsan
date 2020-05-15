@@ -3,16 +3,16 @@ module hopsan
   const complibpath = joinpath(ENV["HOPSANHOME"], "componentLibraries/defaultLibrary/libdefaultcomponentlibrary.so")
 	
   function getdatavector(variable)
-    size=Ref{Cint}(42)
-    dataptr=ccall((:getDataVector,hopsanlibpath),Ptr{Cdouble},(Cstring,Ref{Cint},),variable,size)
-    data = unsafe_wrap(Array{Cdouble}, dataptr, size[], own=false)
+    size=ccall((:getLogSamples,hopsanlibpath),Cint,())
+    data = zeros(size)
+    ccall((:getDataVector,hopsanlibpath),Cint,(Cstring,Ptr{Cdouble},),variable,data)
     return data
   end
 
   function gettimevector()
-    size=Ref{Cint}(42)
-    dataptr=ccall((:getTimeVector,hopsanlibpath),Ptr{Cdouble},(Ref{Cint},),size)
-    data = unsafe_wrap(Array{Cdouble}, dataptr, size[], own=false)
+    size=ccall((:getLogSamples,hopsanlibpath),Cint,())
+    data = zeros(size)
+    ccall((:getTimeVector,hopsanlibpath),Cint,(Ptr{Cdouble},),data)
     return data
   end
 
