@@ -488,8 +488,12 @@ void hopsan::autoPrependSelfToParameterExpressions(Component* pComponent) {
     const std::vector<ParameterEvaluator*> *pParameters = pComponent->getParametersVectorPtr();
     for (size_t i=0; i<pParameters->size(); ++i) {
         ParameterEvaluator* pParameter = (*pParameters)[i];
-        // Only double parameters can have expressions
-        if ((pParameter->getType() == "double") && !pParameter->getValue().isNummeric()) {
+        // Only double parameters can have expressions which need to be updated
+        // But previsouly a special hack was used when the parameter name and value was an exact match, then it was treated as an expected system parameter
+        const bool parameterIsOfTypeDouble = (pParameter->getType() == "double");
+        const bool parameterIsAnExpression = !pParameter->getValue().isNummeric();
+        const bool parameterExpressionIsNotTheSameAsTheParameterName = (pParameter->getValue() != pParameter->getName());
+        if (parameterIsOfTypeDouble && parameterIsAnExpression && parameterExpressionIsNotTheSameAsTheParameterName) {
             HString parameterValueExpression = pParameter->getValue();
             // Extract all named values from the parameter expression
             HVector<HString> namedValues = NumHopHelper::extractNamedValues(parameterValueExpression);
