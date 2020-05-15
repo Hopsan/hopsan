@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="AeroFlightRecorder.hpp" typename="AeroFlightRecorder" displayname="FlightRecorder">
+        <icons>
+            <icon scale="1" path="AeroFlightRecorder.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="AeroFlightRecorder.svg" iconrotation="ON" type="iso"/>
+        </icons>   
+        <ports>
+            <port x="0.25" y="0" a="270" name="longitude" enabled="true"/>
+			<port x="0.5" y="0" a="270" name="latitude" enabled="true"/>
+            <port x="0.75" y="0" a="270" name="altitude" enabled="true"/>
+			<port x="0" y="0.2" a="180" name="phi" enabled="true"/>
+			<port x="0" y="0.4" a="180" name="theta" enabled="true"/>
+            <port x="0" y="0.6" a="180" name="psi" enabled="true"/>
+			<port x="0" y="0.8" a="180" name="v" enabled="true"/>
+			<port x="1" y="0.2" a="0" name="dt" enabled="false"/>
+			<port x="1" y="0.4" a="0" name="scaleX" enabled="false"/>
+            <port x="1" y="0.6" a="0" name="scaleY" enabled="false"/>
+			<port x="1" y="0.8" a="0" name="scaleZ" enabled="false"/>
+        </ports>
+		<help>
+			<md>AeroFlightRecorder.md</md>
+        </help>
+    </modelobject>
+</hopsanobjectappearance>
