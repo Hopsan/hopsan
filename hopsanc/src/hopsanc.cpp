@@ -33,6 +33,9 @@ void printWaitingMessages(hopsan::HopsanEssentials& hopsanCore, bool printDebug,
 
 
 int loadModel(const char* path) {
+    if(spCoreComponentSystem) {
+        delete spCoreComponentSystem;
+    }
     spCoreComponentSystem = gHopsanCore.loadHMFModelFile(path, startTime, stopTime);
     if(!spCoreComponentSystem) {
         std::cout << "Failed to instantiate model!\n";
