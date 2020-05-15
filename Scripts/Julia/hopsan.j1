@@ -1,6 +1,10 @@
 module hopsan
   const hopsanlibpath = joinpath(ENV["HOPSANHOME"], "bin/libhopsanc")
-  const complibpath = joinpath(ENV["HOPSANHOME"], "componentLibraries/defaultLibrary/libdefaultcomponentlibrary.so")
+  if Sys.iswindows()
+    const complibpath = joinpath(ENV["HOPSANHOME"], "componentLibraries/defaultLibrary/defaultcomponentlibrary.dll")
+  elseif Sys.islinux()
+    const complibpath = joinpath(ENV["HOPSANHOME"], "componentLibraries/defaultLibrary/libdefaultcomponentlibrary.so")
+  end
 	
   function getdatavector(variable)
     size=ccall((:getLogSamples,hopsanlibpath),Cint,())
