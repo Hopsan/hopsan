@@ -132,6 +132,7 @@ parts:
       cd Dependencies
       ./setupFMILibrary.sh
       ./setupKatex.sh
+      ./setupTclap.sh
       cd ..
       snapcraftctl build
 

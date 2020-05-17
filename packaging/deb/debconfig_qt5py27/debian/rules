@@ -16,6 +16,7 @@ build:
 	cd Dependencies; ./setupQwt.sh
 	cd Dependencies; ./setupZeroMQ.sh
 	cd Dependencies; ./setupKatex.sh
+	cd Dependencies; ./setupTclap.sh
 
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
