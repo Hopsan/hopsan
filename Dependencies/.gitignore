@@ -15,6 +15,7 @@ hdf5-code/
 hdf5-build/
 katex/
 katex-code/
+tclap/
 tclap-code/
 cppzmq-code/
 msgpack-c/

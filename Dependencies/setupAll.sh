@@ -5,3 +5,4 @@
 ./setupMsgpack.sh
 ./setupZeroMQ.sh
 ./setupKatex.sh
+./setupTclap.sh
