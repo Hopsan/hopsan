@@ -30,6 +30,26 @@
 ******************************
     Version History
 ******************************
+2.14.1 (2020-05-17)
+
+--- Enhancements ---
+
+- HopsanGUI:
+  - Add flat top windowing function to frequency analysis
+  - Unset axis lock for the specific axis when changing units or X-axis variable
+  - Optimization can now be aborted while evaluating initial candidates
+
+--- Bug Fixes ---
+
+- Packaging:
+  - Ubuntu Eoan package no longer depends on libpythonqt-qt5-python3-3 which is not available in the package repository
+
+- HopsanGUI:
+  - Fix bug in automatic model updater that would incorrectly add self. to constant parameter values if the parameter name and value
+    expression were identical. In this case the intended result would be to use the parent system parameter of the same name
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.14.0 (2020-05-01)
 
 This release contains an important change to how parameter referencing is done in start value expressions.
