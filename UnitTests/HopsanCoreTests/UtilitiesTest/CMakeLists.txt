@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(HopsanCoreTests)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX _d)
 
 set(test_name tst_utilitiestesttest)

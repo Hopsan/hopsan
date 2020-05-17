@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(HopsanCLI)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX _d)
 
 file(GLOB_RECURSE hopsancli_srcfiles *.cpp)

@@ -12,7 +12,7 @@ TARGET = hopsanaddressserver
 lessThan(QT_MAJOR_VERSION, 5){
   QMAKE_CXXFLAGS += -std=c++11
 } else {
-  CONFIG += c++11
+  CONFIG += c++14
 }
 
 #--------------------------------------------------------
