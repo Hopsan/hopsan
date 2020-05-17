@@ -19,8 +19,11 @@
   </dependency>
 
   <dependency name="fmilibrary">
-    <releasefile sha256="4cc21f9e2c4114a6f4e303f82ca897ec9aa1eb6f7f09fef85979ea5fca309d9a">
-      <url>https://jmodelica.org/fmil/FMILibrary-2.0.3-src.zip</url>
+    <releasefile sha256="73e9977f10bf4f7cb19743a617a1b9b520159346dff2163338314ed38d08e525" platform="windows">
+      <url>https://github.com/modelon-community/fmi-library/archive/2.2.zip</url>
+    </releasefile>
+    <releasefile sha256="e254de026639c455b3289b351801cccdba71b9610a7c9f303e0783fafeee388e">
+      <url>https://github.com/modelon-community/fmi-library/archive/2.2.tar.gz</url>
     </releasefile>
   </dependency>
 
