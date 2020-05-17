@@ -11,6 +11,9 @@ installdir=${basedir}/${name}
 
 set -e
 
+# Download and verify
+./download-dependencies.py ${name}
+
 source setHopsanBuildPaths.sh
 
 # Create build dir and enter it

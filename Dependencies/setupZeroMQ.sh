@@ -2,13 +2,15 @@
 # $Id$
 
 # Shell script to build zeromq dependency automatically
-# Author: Peter Nordin peter.nordin@liu.se
 
 basedir=`pwd`
 name=zeromq
 codedir=${basedir}/${name}-code
 builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
+
+# Download and verify
+./download-dependencies.py ${name}
 
 # Make and enter build dir
 mkdir -p $builddir
@@ -34,10 +36,14 @@ cd $basedir
 # Now "install" cppzmq (header only), to the zmq install dir
 # TODO in the future use cmake to install cppzmq, but that does not work right now since no "zeromq-config.cmake" file seem to be created.
 # For now lets just copy the file
-codedir=${basedir}/cppzmq-code
+
+name=cppzmq
+codedir=${basedir}/${name}-code
 installdir=${installdir}/include/
 
-cp -a ${codedir}/*.hpp $installdir
+./download-dependencies.py ${name}
 
-cd $basedir
+cp -a ${codedir}/*.hpp ${installdir}
+
+cd ${basedir}
 echo "setupZeroMQ.sh done!"

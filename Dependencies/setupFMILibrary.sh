@@ -2,7 +2,6 @@
 # $Id$
 
 # Shell script building Hopsan dependency FMILibrary
-# Author: Peter Nordin peter.nordin@liu.se
 
 basedir=$(pwd)
 
@@ -11,7 +10,10 @@ codedir=${basedir}/${name}-code
 builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
+# Download and verify
+./download-dependencies.py ${name}
 
+# Patch
 pushd ${codedir}
 patch -p0 --forward < ../fmilibrary-c99.patch
 popd

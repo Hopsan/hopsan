@@ -7,6 +7,9 @@ codedir=${basedir}/${name}-code
 builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
+# Download and verify
+./download-dependencies.py ${name}
+
 if [[ -d ${installdir} ]]; then
     rm -rf ${installdir}
 fi

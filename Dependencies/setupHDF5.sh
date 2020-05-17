@@ -7,6 +7,9 @@ codedir=${basedir}/${name}-code
 builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
 
+# Download and verify
+./download-dependencies.py ${name}
+
 # Include general settings
 source setHopsanBuildPaths.sh
 
@@ -19,7 +22,7 @@ mkdir -p $builddir
 cd $builddir
 cmake -GNinja -Wno-dev -DBUILD_SHARED_LIBS=ON -DHDF5_BUILD_FORTRAN=OFF -DBUILD_TESTING=OFF -DHDF5_BUILD_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX=$installdir $codedir
 
-ninja 
+ninja
 ninja install
 
 cd $basedir

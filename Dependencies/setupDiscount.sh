@@ -2,13 +2,15 @@
 # $Id$
 
 # Shell script building HopsaGUI dependency Discount automatically
-# Author: Peter Nordin peter.nordin@liu.se
 
 basedir=`pwd`
 name=discount
 codedir=${basedir}/${name}-code
 builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
+
+# Download and verify
+./download-dependencies.py ${name}
 
 # Copy code to build dir, not sure if out-of-source build is possible
 mkdir -p $builddir

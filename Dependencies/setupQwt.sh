@@ -2,14 +2,15 @@
 # $Id$
 
 # Shell script building HopsaGUI dependency Qwt automatically
-# Author: Peter Nordin peter.nordin@liu.se
-
 
 basedir=$(pwd)
 name=qwt
 codedir=${basedir}/${name}-code
 builddir=${basedir}/${name}-build
 installdir=${basedir}/${name}
+
+# Download and verify
+./download-dependencies.py ${name}
 
 # Include general settings
 source setHopsanBuildPaths.sh
