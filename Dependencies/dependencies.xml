@@ -37,11 +37,11 @@
   </dependency>
 
   <dependency name="katex">
-    <releasefile sha256="c02ddb78b8a767d0a1827a506fad7b41f813fae936abb4e0d96bfa69c615a391" platform="windows">
-      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.0/katex.zip</url>
+    <releasefile sha256="837c6205d59f238d9e9f5657368f183bad5bb3f1d603c1df3427231722c1775e" platform="windows">
+      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.2/katex.zip</url>
     </releasefile>
-    <releasefile sha256="9bfc41364e1288f7545bbc86f9fb56438862797d155c166f078dc23fde42ae9e">
-      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.0/katex.tar.gz</url>
+    <releasefile sha256="a67fb16503f1e25d225a2cbe3b5b58637b29b96616e8b654430a939076568e71">
+      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.2/katex.tar.gz</url>
     </releasefile>
   </dependency>
 
