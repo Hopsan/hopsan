@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 
 # Shell script building Hopsan dependency FMILibrary
 
@@ -30,10 +29,10 @@ cd $builddir
 cmake -DFMILIB_INSTALL_PREFIX=${installdir} -Wno-dev ${codedir}
 
 # Build and install
-make -j$(getconf _NPROCESSORS_ONLN)
-make install
+cmake --build . --parallel $(getconf _NPROCESSORS_ONLN)
+cmake --build . --target install
 if [[ "$HOPSAN_BUILD_DEPENDENCIES_TEST" == "true" ]]; then
-  make test
+  ctest --parallel $(getconf _NPROCESSORS_ONLN)
 fi
 
 # Return to basedir

@@ -1,8 +1,6 @@
 @ECHO OFF
-REM $Id$
 
 REM Bat script for building ZeroMQ dependency automatically
-REM Author: Peter Nordin peter.nordin@liu.se
 
 setlocal
 set basedir=%~dp0
@@ -28,9 +26,11 @@ if exist %builddir% (
 mkdir %builddir%
 cd %builddir%
 cmake -Wno-dev -DWITH_LIBSODIUM=OFF -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
-mingw32-make -j8
-mingw32-make install
-mingw32-make test
+cmake --build . --parallel 8
+cmake --build . --target install
+if not "%HOPSAN_BUILD_DEPENDENCIES_TEST%" == "false" (
+  ctest --parallel 8
+)
 
 REM Now "install" cppzmq (header only), to the zmq install dir
 REM TODO in the future use cmake to install cppzmq, but that does not work right now since no "zeromq-config.cmake" file seem to be created.

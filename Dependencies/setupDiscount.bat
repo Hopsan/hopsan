@@ -1,8 +1,6 @@
 @ECHO OFF
-REM $Id$
 
 REM Bat script for building Discount automatically
-REM Author: Peter Nordin peter.nordin@liu.se
 
 setlocal
 set basedir=%~dp0
@@ -28,8 +26,8 @@ mkdir %builddir%
 cd %builddir%
 set PATH=%PATH_WITHOUT_MSYS%
 cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%\cmake
-mingw32-make -j8
-mingw32-make install
+cmake --build . --parallel 8
+cmake --build . --target install
 
 cd %basedir%
 echo.

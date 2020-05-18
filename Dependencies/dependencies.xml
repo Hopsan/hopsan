@@ -1,7 +1,7 @@
 <hopsandependencies>
 
 <!--
-  <dependency name="">
+  <dependency name="" version="">
     <releasefile sha256="" platform="windows">
       <url>https://github.com/</url>
       <url>https://backup</url>
@@ -60,7 +60,7 @@
     </releasefile>
   </dependency>
 
-    <dependency name="tclap">
+  <dependency name="tclap">
     <releasefile sha1="4f124216dd6e6936f5af6372d921a6c51563f8fd">
       <url>https://downloads.sourceforge.net/project/tclap/tclap-1.2.1.tar.gz</url>
     </releasefile>

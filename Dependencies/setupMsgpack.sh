@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Shell script for installing msgpack-c dependency automatically
 
 basedir=$(pwd)
@@ -24,7 +23,7 @@ cd $builddir
 cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
-cmake --build .
+cmake --build . --parallel $(getconf _NPROCESSORS_ONLN)
 cmake --build . --target install
 
 # Return to basedir

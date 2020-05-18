@@ -1,8 +1,6 @@
 @ECHO OFF
-REM $Id$
 
 REM Bat script building FMILibrary dependency automatically
-REM Author: Peter Nordin peter.nordin@liu.se
 
 setlocal
 set basedir=%~dp0
@@ -21,8 +19,8 @@ if exist %builddir% (
 mkdir %builddir%
 cd %builddir%
 cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DFMILIB_FMI_PLATFORM="win64" -DFMILIB_INSTALL_PREFIX=%installdir% %codedir%
-mingw32-make.exe SHELL=cmd -j8
-mingw32-make.exe SHELL=cmd install
+cmake --build . --parallel 8
+cmake --build . --target install
 
 cd %basedir%
 echo.

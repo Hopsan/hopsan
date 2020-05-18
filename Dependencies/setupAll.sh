@@ -6,3 +6,4 @@
 ./setupZeroMQ.sh
 ./setupKatex.sh
 ./setupTclap.sh
+./setupHDF5.sh

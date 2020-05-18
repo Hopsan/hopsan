@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 
 # Shell script to build zeromq dependency automatically
 
@@ -25,10 +24,10 @@ fi
 cmake ${zmq_cmake_args} -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
-make -j$(getconf _NPROCESSORS_ONLN)
-make install
+cmake --build . --parallel $(getconf _NPROCESSORS_ONLN)
+cmake --build . --target install
 if [[ "$HOPSAN_BUILD_DEPENDENCIES_TEST" == "true" ]]; then
-  make test
+  ctest --parallel $(getconf _NPROCESSORS_ONLN)
 fi
 
 cd $basedir
