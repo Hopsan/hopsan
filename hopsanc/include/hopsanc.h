@@ -1,8 +1,20 @@
 #ifndef HOPSANC_H
 #define HOPSANC_H
 
+#ifdef _WIN32
+#if defined HOPSANC_DLLEXPORT
+#define HOPSANC_DLLAPI __declspec(dllexport)
+#elif defined HOPSANC_DLLIMPORT
+#define HOPSANC_DLLAPI __declspec(dllimport)
+#else /* Static library */
+#define HOPSANC_DLLAPI
+#endif
+#else
+// Define empty on non WIN32 systems
+#define HOPSANC_DLLAPI
+#endif
+
 #include <stddef.h>
-#include "hopsanc_win32dll.h"
 
 extern "C" {
     HOPSANC_DLLAPI int loadLibrary(const char* path);
