@@ -2,8 +2,8 @@ image:
 - Visual Studio 2017
 environment:
   HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
-  HOPSAN_BUILD_QT_HOME: C:\Qt\5.6.3\mingw49_32
-  HOPSAN_BUILD_MINGW_HOME: C:\Qt\Tools\mingw492_32
+  HOPSAN_BUILD_QT_HOME: C:\Qt\5.9.9\mingw53_32
+  HOPSAN_BUILD_MINGW_HOME: C:\Qt\Tools\mingw530_32
 platform: x86
 configuration: Release
 install:
@@ -30,7 +30,7 @@ build_script:
   - cd build
   - qmake.exe ..\HopsanNG.pro -r -spec win32-g++ CONFIG+=release
   - cd ..
-  - mingw32-make.exe -j4 -C build
+  - mingw32-make.exe -j6 -C build
   - dir bin
 test_script:
   - runUnitTests.bat
