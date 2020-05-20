@@ -295,7 +295,7 @@ int setParameter(const char *name, const char *value)
 //! @brief Specifies number of log samples for the simulation
 //! @param [in] value Number of samples
 //! @returns Status (0 = success)
-int setLogSamples(unsigned long value)
+int setLogSamples(size_t value)
 {
     if(!spCoreComponentSystem) {
         std::cout << "Error: No model is loaded.\n";
