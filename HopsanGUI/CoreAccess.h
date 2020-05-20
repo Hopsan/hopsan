@@ -98,7 +98,7 @@ public:
 
 double evalWithNumHop(const QString &rExpression);
 
-QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem);
+QStringList getEmbeddedSriptVariableNames(const QString& expression, const QString& subcomponentName, CoreSystemAccess* pCoreSystem);
 
 void prependSelfToParameterExpressions(ContainerObject* pTopLevelGUISystem);
 QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem);

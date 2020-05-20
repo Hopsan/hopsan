@@ -1395,10 +1395,18 @@ double evalWithNumHop(const QString &rExpression)
     return value;
 }
 
-QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem)
+QStringList getEmbeddedSriptVariableNames(const QString& expression, const QString& subcomponentName,  CoreSystemAccess* pCoreSystem)
 {
     hopsan::NumHopHelper numhop;
-    numhop.setSystem(pCoreSystem->getCoreSystemPtr());
+    hopsan::ComponentSystem* pSystem = pCoreSystem->getCoreSystemPtr();
+    if (subcomponentName.isEmpty()) {
+        numhop.setSystem(pCoreSystem->getCoreSystemPtr());
+    }
+    else {
+        hopsan::Component* pComponent = pSystem->getSubComponent(qPrintable(subcomponentName));
+        numhop.setComponent(pComponent);
+    }
+
     auto hnames = numhop.extractVariableNames(qPrintable(expression));
     QStringList names;
     names.reserve(hnames.size());

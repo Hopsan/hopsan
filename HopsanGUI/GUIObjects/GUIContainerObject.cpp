@@ -1501,7 +1501,12 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
             val.toDouble(&isNumber);
             QStringList exprVariables;
             if (!isNumber) {
-                exprVariables = getEmbeddedSriptVariableNames(val, getCoreSystemAccessPtr());
+                exprVariables = getEmbeddedSriptVariableNames(val, (*it)->getName(), getCoreSystemAccessPtr());
+                // Erase all begining with .self as those can not be system parameters
+                auto new_end = std::remove_if(exprVariables.begin(), exprVariables.end(), [](QString& v){
+                    return v.startsWith("self.");
+                });
+                exprVariables.erase(new_end, exprVariables.end());
             }
 
             for (const auto& var : exprVariables) {
