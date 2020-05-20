@@ -1,15 +1,28 @@
 #include "hopsanc.h"
 #include <iostream>
 #include <string.h>
+#include <vector>
 
 #include "HopsanCore.h"
 #include "HopsanEssentials.h"
 #include "ComponentSystem.h"
+#include "ComponentUtilities/num2string.hpp"
 
 static hopsan::ComponentSystem *spCoreComponentSystem = nullptr;
 static hopsan::HopsanEssentials gHopsanCore;
 
 static double startTime, stopTime;
+
+std::vector<hopsan::HString> msgVec;
+
+//! @brief Puts specified message in message queue and prints it to cout
+//! The queue is used by host environments that does not support printing couts, e.g. Matlab
+//! @param [in] msg Message string
+void printMessage(hopsan::HString msg) {
+    msgVec.push_back(msg);
+    std::cout << msg.c_str() << "\n";
+}
+
 
 //! @brief Prints all waiting messages
 //! @param[in] printDebug Should debug messages also be printed
@@ -22,16 +35,33 @@ void printWaitingMessages(hopsan::HopsanEssentials& hopsanCore, bool printDebug,
         hopsanCore.getMessage(msg,type,tag);
         if (type == "debug") {
             if (printDebug) {
-                std::cout << msg.c_str() << "\n";
+                printMessage(msg);
             }
         }
         else {
-            std::cout << msg.c_str() << "\n";
+            printMessage(msg);
         }
     }
 }
 
 
+//! @brief Reads a message from the message queue and removes it, unless queue is empty
+//! Message will be truncated if buffer is too small
+//! @param [in,out] buf Message buffer
+//! @param [in] bufSize Buffer size
+//! @returns Status (0 = success)
+int getMessage(char* buf, size_t bufSize) {
+
+    if(!msgVec.empty()) {
+        if(bufSize < msgVec.at(0).size()) {
+            msgVec.at(0) = msgVec.at(0).substr(0,bufSize);
+        }
+        strcpy(buf,msgVec.at(0).c_str());
+        msgVec.erase(msgVec.begin());
+        return 0;
+    }
+    return -1;
+}
 
 //! @brief Loads specified model file
 //! @param [in] Full path to model file
@@ -42,13 +72,13 @@ int loadModel(const char* path) {
     }
     spCoreComponentSystem = gHopsanCore.loadHMFModelFile(path, startTime, stopTime);
     if(!spCoreComponentSystem) {
-        std::cout << "Failed to instantiate model!\n";
+        printMessage("Failed to instantiate model!");
         printWaitingMessages(gHopsanCore, false, false);
         return -1;
     }
     const hopsan::HString modelName = spCoreComponentSystem->getName();
     spCoreComponentSystem->addSearchPath(modelName+"-resources");
-    std::cout << "Loaded model: " << modelName.c_str() << "\n";
+    printMessage("Loaded model: "+modelName);
     printWaitingMessages(gHopsanCore, false, false);
     return 0;
 }
@@ -61,7 +91,7 @@ int loadModel(const char* path) {
 int getDataVector(const char* variable, double *data)
 {
     if(!spCoreComponentSystem) {
-        std::cout << "Error: No model is loaded.\n";
+        printMessage("Error: No model is loaded.");
         return -1;
     }
 
@@ -71,7 +101,7 @@ int getDataVector(const char* variable, double *data)
     hopsan::HVector<hopsan::HString> splitVar = splitSys.last().split('.');
     splitSys.resize(splitSys.size()-1);
     if(splitVar.size() < 3) {
-        std::cout << "Error: Component name, port name and variable name must be specified.\n";
+        printMessage("Error: Component name, port name and variable name must be specified.");
         return -1;
     }
 
@@ -80,7 +110,7 @@ int getDataVector(const char* variable, double *data)
     for(size_t i=0; i<splitSys.size(); ++i) {
         pSystem = pSystem->getSubComponentSystem(splitSys[i]);
         if(!pSystem) {
-            std::cout << "Error: Subsystem not found: " << splitSys[i].c_str() << "\n";
+            printMessage("Error: Subsystem not found: "+splitSys[i]);
             return -1;
         }
     }
@@ -88,20 +118,20 @@ int getDataVector(const char* variable, double *data)
     //Find component
     hopsan::Component *pComp = pSystem->getSubComponent(splitVar[0]);
     if(!pComp) {
-        std::cout << "Error: No such component: " << splitVar[0].c_str() << "\n";
+        printMessage("Error: No such component: "+splitVar[0]);
         return -1;
     }
 
     //Find port
     hopsan::Port *pPort = pComp->getPort(splitVar[1]);
     if(!pPort) {
-        std::cout << "Error: No such port: " << splitVar[1].c_str() << "\n";
+        printMessage("Error: No such port: "+splitVar[1]);
         return -1;
     }
 
     int varId = pPort->getNodeDataIdFromName(splitVar[2]);
     if(varId < 0) {
-        std::cout << "Error: No such variable: " << splitVar[2].c_str() << "\n";
+        printMessage("Error: No such variable: "+splitVar[2]);
         return -1;
     }
 
@@ -143,7 +173,7 @@ int setStartTime(double value)
 int setTimeStep(double value)
 {
     if(!spCoreComponentSystem) {
-        std::cout << "Error: No model is loaded!\n";
+        printMessage("Error: No model is loaded!");
         return -1;
     }
     spCoreComponentSystem->setDesiredTimestep(value);
@@ -166,37 +196,37 @@ int setStopTime(double value)
 int simulate()
 {
     if(!spCoreComponentSystem) {
-        std::cout << "Error: No model is loaded!\n";
+        printMessage("Error: No model is loaded!");
         return -1;
     }
-    std::cout << "Checking model... ";
+    printMessage("Checking model... ");
     if (spCoreComponentSystem->checkModelBeforeSimulation()) {
-        std::cout << "Success!\n";
+        printMessage("Success!");
     }
     else {
-        std::cout << "Failed!\n";
+        printMessage("Failed!");
         printWaitingMessages(gHopsanCore, false, false);
         return -1;
     }
 
-    std::cout << "Initializing... ";
+    printMessage("Initializing... ");
     if(spCoreComponentSystem->initialize(startTime, stopTime)) {
-        std::cout << "Success!\n";
+        printMessage("Success!");
         printWaitingMessages(gHopsanCore, false, false);
     }
     else {
-        std::cout << "Failed!\n";
+        printMessage("Failed!");
         printWaitingMessages(gHopsanCore, false, false);
         return -1;
     }
 
-    std::cout << "Simulating... ";
+    printMessage("Simulating... ");
     spCoreComponentSystem->simulate(stopTime);
-    std::cout << "Finished!\n";
+    printMessage("Finished!");
 
-    std::cout << "Finalizing... ";
+    printMessage("Finalizing... ");
     spCoreComponentSystem->finalize();
-    std::cout << "Finished!\n";
+    printMessage("Finished!");
 
     printWaitingMessages(gHopsanCore, false, false);
     return 0;
@@ -209,7 +239,7 @@ int simulate()
 int getTimeVector(double *data)
 {
     if(!spCoreComponentSystem) {
-        std::cout << "Error: No model is loaded.\n";
+        printMessage("Error: No model is loaded.");
         return -1;
     }
     memcpy(data,spCoreComponentSystem->getLogTimeVector()->data(), spCoreComponentSystem->getNumActuallyLoggedSamples()*sizeof(double));
@@ -224,7 +254,7 @@ int getTimeVector(double *data)
 int setParameter(const char *name, const char *value)
 {
     if(!spCoreComponentSystem) {
-        std::cout << "Error: No model is loaded.\n";
+        printMessage("Error: No model is loaded.");
         return -1;
     }
 
@@ -249,7 +279,7 @@ int setParameter(const char *name, const char *value)
         parName = nameVec[1]+"#"+nameVec[2];
     }
     else {
-        std::cout << "Error: Parameter name not specified.\n";
+        printMessage("Error: Parameter name not specified.");
         return -1;
     }
 
@@ -258,7 +288,7 @@ int setParameter(const char *name, const char *value)
     for(size_t i=0; i<sysVec.size(); ++i) {
         pSystem = pSystem->getSubComponentSystem(sysVec[i]);
         if(!pSystem) {
-            std::cout << "Error: Subsystem not found: " << sysVec[i].c_str() << "\n";
+            printMessage("Error: Subsystem not found: "+sysVec[i]);
             return -1;
         }
     }
@@ -268,26 +298,26 @@ int setParameter(const char *name, const char *value)
             return 0;
         }
         else {
-            std::cout << "Error: Failed to set parameter value: " << parName.c_str() << "\n";
+            printMessage("Error: Failed to set parameter value: "+parName);
             return -1;
         }
     }
     else if(nameVec.size() == 2 || nameVec.size() == 3) { //Set constant or input variable
         hopsan::Component *pComp = pSystem->getSubComponent(compName);
         if(!pComp) {
-            std::cout << "Error: No such component: " << compName.c_str() << "\n";
+            printMessage("Error: No such component: "+compName);
             return -1;
         }
         if(pComp->setParameterValue(parName, hopsan::HString(value))) {
             return 0;
         }
         else {
-            std::cout << "Error: Failed to set parameter value: " << parName.c_str() << "\n";
+            printMessage("Error: Failed to set parameter value: "+parName);
             return -1;
         }
     }
 
-    std::cout << "Error: Wrong number of arguments.\n";
+    printMessage("Error: Wrong number of arguments.");
     return -1;
 }
 
@@ -298,10 +328,10 @@ int setParameter(const char *name, const char *value)
 int setLogSamples(size_t value)
 {
     if(!spCoreComponentSystem) {
-        std::cout << "Error: No model is loaded.\n";
+        printMessage("Error: No model is loaded.");
         return -1;
     }
-    std::cout << "Setting samples to " << size_t(value) << "\n";
+    printMessage("Setting samples to "+to_hstring(value));
     spCoreComponentSystem->setNumLogSamples(value);
     return 0;
 }
@@ -312,7 +342,7 @@ int setLogSamples(size_t value)
 size_t getLogSamples()
 {
     if(!spCoreComponentSystem) {
-        std::cout << "Error: No model is loaded.\n";
+        printMessage("Error: No model is loaded.");
         return 0;
     }
     return spCoreComponentSystem->getNumActuallyLoggedSamples();
