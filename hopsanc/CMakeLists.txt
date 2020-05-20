@@ -11,7 +11,7 @@ file(GLOB_RECURSE srcfiles src/*.cpp)
 file(GLOB_RECURSE headerfiles include/*.h include/*.hpp)
 
 # Create library target and add source code files
-add_library(hopsanc STATIC ${srcfiles} ${headerfiles})
+add_library(hopsanc SHARED ${srcfiles} ${headerfiles})
 
 # Set include directories
 target_include_directories(hopsanc PUBLIC
