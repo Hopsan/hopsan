@@ -16,8 +16,12 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
 extern "C" {
-    HOPSANC_DLLAPI int loadLibrary(const char* path);
+#endif
+
+HOPSANC_DLLAPI int loadLibrary(const char* path);
+    HOPSANC_DLLAPI int getMessage(char* buf, size_t bufSize);
     HOPSANC_DLLAPI int loadModel(const char* path);
     HOPSANC_DLLAPI int setParameter(const char* name, const char *value);
     HOPSANC_DLLAPI int setStartTime(double value);
@@ -28,7 +32,10 @@ extern "C" {
     HOPSANC_DLLAPI int getTimeVector(double *data);
     HOPSANC_DLLAPI int getDataVector(const char *variable, double *data);
     HOPSANC_DLLAPI size_t getLogSamples();
+
+#ifdef __cplusplus
 }
+#endif
 
 
 #endif // HOPSANC_H
