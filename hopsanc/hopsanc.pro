@@ -47,8 +47,7 @@ unix {
 # Project files
 # -------------------------------------------------
 HEADERS = \
-    include/hopsanc.h \
-    include/hopsanc_win32dll.h
+    include/hopsanc.h
 
 SOURCES = \
    src/hopsanc.cpp
