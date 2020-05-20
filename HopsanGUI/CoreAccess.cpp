@@ -1464,3 +1464,27 @@ QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem)
     processSystem(pTopLevelGUISystem);
     return output;
 }
+
+bool CoreParameterData::hasBooleanValue() const
+{
+    // These are the values used for bool inside HopsanCore
+    return (mType == "bool") && ((mValue == "true") || (mValue == "false") || (mValue == "1") || (mValue == "0"));
+}
+
+bool CoreParameterData::hasIntegerValue() const
+{
+    bool isNummeric = false;
+    if (mType == "integer") {
+        mValue.toInt(&isNummeric);
+    }
+    return isNummeric;
+}
+
+bool CoreParameterData::hasDoubleValue() const
+{
+    bool isNummeric = false;
+    if (mType == "double") {
+        mValue.toDouble(&isNummeric);
+    }
+    return isNummeric;
+}

@@ -111,6 +111,10 @@ public:
     CoreParameterData(const QString name, const QString value, const QString type, const QString quantity="", const QString unit="", const QString desc="")
         : mName(name), mValue(value), mType(type), mQuantity(quantity), mUnit(unit), mDescription(desc) {}
 
+    bool hasBooleanValue() const;
+    bool hasIntegerValue() const;
+    bool hasDoubleValue() const;
+
     QString mName;
     QString mAlias;
     QString mValue;

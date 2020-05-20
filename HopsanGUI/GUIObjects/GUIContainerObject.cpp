@@ -1487,47 +1487,58 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
 
     // Copy components
     const auto thisSystemsParameterNames = getParameterNames();
-    QList<ModelObject *>::iterator it;
-    for(it = mSelectedModelObjectsList.begin(); it!=mSelectedModelObjectsList.end(); ++it)
+    for(auto& selectedMO : mSelectedModelObjectsList)
     {
-        qDebug() << "Copying " << (*it)->getName();
-        (*it)->saveToDomElement(*copyRoot, FullModel);
+        selectedMO->saveToDomElement(*copyRoot, FullModel);
 
-        QStringList componentParNames = (*it)->getParameterNames();
+        QStringList componentParNames = selectedMO->getParameterNames();
         for(const QString& componentParName : componentParNames)
         {
-            QString val = (*it)->getParameterValue(componentParName);
-            bool isNumber=false;
-            val.toDouble(&isNumber);
             QStringList exprVariables;
-            if (!isNumber) {
-                exprVariables = getEmbeddedSriptVariableNames(val, (*it)->getName(), getCoreSystemAccessPtr());
-                // Erase all begining with .self as those can not be system parameters
-                auto new_end = std::remove_if(exprVariables.begin(), exprVariables.end(), [](QString& v){
-                    return v.startsWith("self.");
-                });
-                exprVariables.erase(new_end, exprVariables.end());
+            CoreParameterData componentParameterData;
+            selectedMO->getParameter(componentParName, componentParameterData);
+            if (componentParameterData.mType == "double") {
+                if (!componentParameterData.hasDoubleValue()) {
+                    exprVariables = getEmbeddedSriptVariableNames(componentParameterData.mValue, selectedMO->getName(), getCoreSystemAccessPtr());
+                }
             }
+            else if (componentParameterData.mType == "integer") {
+                if (!componentParameterData.hasIntegerValue()) {
+                    exprVariables.append(componentParameterData.mValue);
+                }
+            }
+            else if (componentParameterData.mType == "bool") {
+                if (!componentParameterData.hasBooleanValue()) {
+                    exprVariables.append(componentParameterData.mValue);
+                }
+            }
+            else {
+                exprVariables.append(componentParameterData.mValue);
+            }
+
+            // Erase any begining with .self as those can not be system parameters
+            auto new_end = std::remove_if(exprVariables.begin(), exprVariables.end(), [](QString& v){ return v.startsWith("self."); });
+            exprVariables.erase(new_end, exprVariables.end());
 
             for (const auto& var : exprVariables) {
                 if(thisSystemsParameterNames.contains(var)) {
-                    CoreParameterData parData;
-                    getParameter(var, parData);
+                    CoreParameterData systemParameterData;
+                    getParameter(var, systemParameterData);
                     QDomElement xmlParameter = appendDomElement(*copyRoot, HMF_PARAMETERTAG);
-                    xmlParameter.setAttribute(HMF_NAMETAG, parData.mName);
-                    xmlParameter.setAttribute(HMF_VALUETAG, parData.mValue);
-                    xmlParameter.setAttribute(HMF_TYPE, parData.mType);
-                    if (!parData.mQuantity.isEmpty())
+                    xmlParameter.setAttribute(HMF_NAMETAG, systemParameterData.mName);
+                    xmlParameter.setAttribute(HMF_VALUETAG, systemParameterData.mValue);
+                    xmlParameter.setAttribute(HMF_TYPE, systemParameterData.mType);
+                    if (!systemParameterData.mQuantity.isEmpty())
                     {
-                        xmlParameter.setAttribute(HMF_QUANTITY, parData.mQuantity);
+                        xmlParameter.setAttribute(HMF_QUANTITY, systemParameterData.mQuantity);
                     }
-                    if (!parData.mUnit.isEmpty())
+                    if (!systemParameterData.mUnit.isEmpty())
                     {
-                        xmlParameter.setAttribute(HMF_UNIT, parData.mUnit);
+                        xmlParameter.setAttribute(HMF_UNIT, systemParameterData.mUnit);
                     }
-                    if (!parData.mDescription.isEmpty())
+                    if (!systemParameterData.mDescription.isEmpty())
                     {
-                        xmlParameter.setAttribute(HMF_DESCRIPTIONTAG, parData.mDescription);
+                        xmlParameter.setAttribute(HMF_DESCRIPTIONTAG, systemParameterData.mDescription);
                     }
                 }
             }
