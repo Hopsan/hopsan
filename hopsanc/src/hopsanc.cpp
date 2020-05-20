@@ -32,6 +32,10 @@ void printWaitingMessages(hopsan::HopsanEssentials& hopsanCore, bool printDebug,
 }
 
 
+
+//! @brief Loads specified model file
+//! @param [in] Full path to model file
+//! @returns Status (0 = success)
 int loadModel(const char* path) {
     if(spCoreComponentSystem) {
         delete spCoreComponentSystem;
@@ -50,10 +54,10 @@ int loadModel(const char* path) {
 }
 
 
-//! @brief Returns specified data vector as C array
+//! @brief Provides specified data vector from last simulation
 //! @param [in] variable Variable name ("component.port.variable")
-//! @param [out] size Size of returned data array
-//! @returns Pointer to data array
+//! @param [in,out] data Buffer where data vector is stored (must be preallocated to match number of log samples)
+//! @returns Status (0 = success)
 int getDataVector(const char* variable, double *data)
 {
     if(!spCoreComponentSystem) {
@@ -108,6 +112,10 @@ int getDataVector(const char* variable, double *data)
     return 0;
 }
 
+
+//! @brief Loads specified component library
+//! @param [in] Full path to binary file of component library
+//! @returns Status (0 = success)
 int loadLibrary(const char *path)
 {
     if(!gHopsanCore.loadExternalComponentLib(path)) {
@@ -118,12 +126,20 @@ int loadLibrary(const char *path)
     return 0;
 }
 
+
+//! @brief Sets start time for simulation
+//! @param [in] Start time
+//! @returns Status (0 = success)
 int setStartTime(double value)
 {
     startTime = value;
     return 0;
 }
 
+
+//! @brief Sets time step for simulation
+//! @param [in] Time step
+//! @returns Status (0 = success)
 int setTimeStep(double value)
 {
     if(!spCoreComponentSystem) {
@@ -134,12 +150,19 @@ int setTimeStep(double value)
     return 0;
 }
 
+
+//! @brief Sets stop time for simulation
+//! @param [in] Stop time
+//! @returns Status (0 = success)
 int setStopTime(double value)
 {
     stopTime = value;
     return 0;
 }
 
+
+//! @brief Starts a simulation
+//! @returns Status (0 = success)
 int simulate()
 {
     if(!spCoreComponentSystem) {
@@ -179,6 +202,10 @@ int simulate()
     return 0;
 }
 
+
+//! @brief Provides time vector from last simulation
+//! @param [in,out] data Buffer where data vector is stored (must be preallocated to match number of log samples)
+//! @returns Status (0 = success)
 int getTimeVector(double *data)
 {
     if(!spCoreComponentSystem) {
@@ -190,7 +217,10 @@ int getTimeVector(double *data)
 }
 
 
-
+//! @brief Sets a parameter value
+//! @param [in] name Name of parameter (with all qualifiers)
+//! @param [in] value New value for parameter (will be converted from string to correct type)
+//! @returns Status (0 = success)
 int setParameter(const char *name, const char *value)
 {
     if(!spCoreComponentSystem) {
@@ -261,6 +291,10 @@ int setParameter(const char *name, const char *value)
     return -1;
 }
 
+
+//! @brief Specifies number of log samples for the simulation
+//! @param [in] value Number of samples
+//! @returns Status (0 = success)
 int setLogSamples(unsigned long value)
 {
     if(!spCoreComponentSystem) {
@@ -272,6 +306,9 @@ int setLogSamples(unsigned long value)
     return 0;
 }
 
+
+//! @brief Returns number of logged samples from last simulation
+//! @returns Number of samples
 size_t getLogSamples()
 {
     if(!spCoreComponentSystem) {
