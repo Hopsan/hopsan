@@ -8,6 +8,7 @@ import os
 import stat
 import platform
 import tarfile
+import tempfile
 import zipfile
 import xml.etree.ElementTree as ET
 if sys.version_info.major == 2:
@@ -19,6 +20,12 @@ else:
 def match_platform(platform_name):
     actual = platform.system().lower()
     return platform_name == actual
+
+
+def get_attribute(element, attribute_name):
+    if attribute_name in element.attrib:
+        return element.attrib[attribute_name]
+    return str()
 
 
 def file_name(path):
@@ -33,27 +40,33 @@ def hashsum_file(filepath, algorithm):
 
 
 def verify_filehash(filepath, algorithm, hashsum):
-    return hashsum_file(filepath, algorithm) == hashsum
+    return hashsum_file(filepath, algorithm) == hashsum.lower()
 
 
 def download(url, dst, hash_algo, expected_hashsum):
     print('Info: Downloading '+url)
     try:
         if sys.version_info.major == 2:
-            tempfile, headers = urllib.urlretrieve(url)
+            temp_file_name, headers = urllib.urlretrieve(url)
         else:
-            tempfile, headers = urllib.request.urlretrieve(url)
-        if verify_filehash(tempfile, hash_algo, expected_hashsum):
-            shutil.copy2(tempfile, dst)
+            temp_file = tempfile.NamedTemporaryFile(delete=False)
+            with urllib.request.urlopen(url) as response:
+                size = response.getheader('Content-Length', 'Unknown')
+                print('Info: Size '+size+' byte')
+                headers = response.getheaders()
+                shutil.copyfileobj(response, temp_file)
+            temp_file_name = temp_file.name
+            temp_file.close()
+        if verify_filehash(temp_file_name, hash_algo, expected_hashsum):
+            shutil.move(temp_file_name, dst)
             os.chmod(dst, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH | stat.S_IWUSR | stat.S_IWGRP)
             print('Info: Success downloading and verifying '+dst)
             return True
         else:
             print(headers)
-            print('Error: The download failed, invalid checksum of resulting file')
-            # TODO delete tempfile
+            print('Error: The download failed, invalid checksum of retreived file: '+temp_file_name)
     except Exception as the_exception:
-        print('Error: Could not download file due to connection error')
+        print('Error: Could not download file, exception thrown')
         print(str(the_exception))
     return False
 
@@ -99,31 +112,33 @@ def clear_and_unpack(archive_file, dep_name):
     shutil.rmtree(root_path)
 
 
-def split_name_version(full_name):
+def join_name_version_type(name, version, dep_type=None):
+    dep_item = name
+    if version:
+        dep_item = dep_item + ':' + version
+    if dep_type:
+        dep_item = dep_item + ':' + dep_type
+    return dep_item
+
+
+def split_name_version_type(full_name):
     name = str()
     version = str()
+    dep_type = str()
     parts = full_name.split(':')
     if len(parts) >= 1:
         name = parts[0]
     if len(parts) >= 2:
         version = parts[1]
-    return (name, version)
+    if len(parts) >= 3:
+        dep_type = parts[2]
+    return (name, version, dep_type)
 
 
 class DependenciesXML:
     def __init__(self, dependencies_xml_file):
         tree = ET.parse(dependencies_xml_file)
         self.root = tree.getroot()
-
-    def __get_version(self, dep_element):
-        if 'version' in dep_element.attrib:
-            return dep_element.attrib['version']
-        return str()
-
-    def __get_platform(self, releasefile_element):
-        if 'platform' in releasefile_element.attrib:
-            return releasefile_element.attrib['platform']
-        return str()
 
     def __get_expected_hash(self, releasefile_element):
         algos = ('md5', 'sha1', 'sha256')
@@ -136,7 +151,7 @@ class DependenciesXML:
         found_name = False
         found_version = False
         for choice in choices:
-            cname, cversion = split_name_version(choice)
+            cname, cversion, _ = split_name_version_type(choice)
             if cname == name:
                 found_name = True
             if cversion and cversion == version:
@@ -175,25 +190,24 @@ class DependenciesXML:
 
         return ("", False)
 
-    def __get_dependencies_matching_choice(self, chosen_deps, download_all):
+    def __get_dependencies_matching_choice(self, chosen_deps, choose_all):
         allready_added_names = list()
         matching_dependencies = list()
         for dep in self.root:
             dep_name = dep.attrib['name']
-            dep_version = self.__get_version(dep)
-            found_match = self.__match_choice(dep_name, dep_version, chosen_deps, download_all)
+            dep_version = get_attribute(dep, 'version')
+            found_match = self.__match_choice(dep_name, dep_version, chosen_deps, choose_all)
             if found_match and dep_name not in allready_added_names:
                 matching_dependencies.append(dep)
                 allready_added_names.append(dep_name)
         return matching_dependencies
 
-    def get_dependencies_names(self):
+    def list_dependencies(self):
         names = list()
         for dep in self.root:
-            dep_name = dep.attrib['name']
-            dep_version = self.__get_version(dep)
-            if dep_version:
-                dep_name = dep_name + ':' + dep_version
+            dep_name = join_name_version_type(dep.attrib['name'],
+                                              get_attribute(dep, 'version'),
+                                              get_attribute(dep, 'type'))
             names.append(dep_name)
         return names
 
@@ -201,11 +215,11 @@ class DependenciesXML:
         for choice in choices:
             found_names = list()
             found = False
-            for full_name in self.get_dependencies_names():
-                dname, dversion = split_name_version(full_name)
-                cname, cversion = split_name_version(choice)
+            for dep_item in self.list_dependencies():
+                dname, dversion, _ = split_name_version_type(dep_item)
+                cname, cversion, _ = split_name_version_type(choice)
                 if dname == cname:
-                    found_names.append(full_name)
+                    found_names.append(join_name_version_type(dname,dversion))
                     if dversion == cversion:
                         found = True
                         break
@@ -215,16 +229,21 @@ class DependenciesXML:
                 else:
                     print('Warning: '+choice+' does not match! There are no alternatives.')
 
-    def download_and_unpack_chosen_dependencies(self, choices, download_all,  force):
+    def download_and_unpack_chosen_dependencies(self, choices, download_all, include_toolchain, force):
         dependencies_to_download = self.__get_dependencies_matching_choice(choices, download_all)
         for dep in dependencies_to_download:
             dep_name = dep.attrib['name']
+            dep_type = get_attribute(dep, 'type')
+            # Skip toolchin files unless they are explicitly flaged to be included (due to size)
+            if dep_type == 'toolchain' and not include_toolchain:
+                print('Skipping toolchain download: '+dep_name)
+                continue
             print('--------------------'+dep_name+'------------------------------')
             files_matching_platform = list()
             files_without_platform = list()
             for releasefile in dep:
                 if releasefile.tag == 'releasefile':
-                    platform_restriction = self.__get_platform(releasefile)
+                    platform_restriction = get_attribute(releasefile, 'platform')
                     if match_platform(platform_restriction):
                         files_matching_platform.append(releasefile)
                     elif platform_restriction == "":
@@ -236,13 +255,15 @@ class DependenciesXML:
             # Trigger the actual download and unpacking
             for releasefile in files_matching_platform:
                 file_name, did_download = self.__download_and_check_releasefile(dep_name, releasefile,  force)
-                if did_download or file_name and not os.path.exists(dep_name+'-code') or file_name and force:
-                    clear_and_unpack(file_name, dep_name)
+                if dep_type != 'toolchain':
+                    if did_download or file_name and not os.path.exists(dep_name+'-code') or file_name and force:
+                        clear_and_unpack(file_name, dep_name)
 
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--all',  dest='download_all', action='store_true',  help='Download all dependencies' )
+    argparser.add_argument('--all',  dest='download_all', action='store_true',  help='Download all dependencies (excluding toolchain)' )
+    argparser.add_argument('--include-toolchain',  dest='download_toolchain', action='store_true',  help='Download toolchain dependencies' )
     argparser.add_argument('--list',  dest='list', action='store_true',  help='List available dependencies' )
     argparser.add_argument('--force', dest='force', action='store_true',
         help='Force download even if file exists, code, build and installation directories will be reset')
@@ -255,8 +276,8 @@ if __name__ == "__main__":
 
     deps_xml = DependenciesXML('dependencies.xml')
     if args.list:
-        names = deps_xml.get_dependencies_names()
+        names = deps_xml.list_dependencies()
         for name in names:
             print(name)
     deps_xml.check_choices(chosen_deps)
-    deps_xml.download_and_unpack_chosen_dependencies(chosen_deps, args.download_all,  args.force)
+    deps_xml.download_and_unpack_chosen_dependencies(chosen_deps, args.download_all, args.download_toolchain, args.force)
