@@ -231,7 +231,7 @@ bool ParameterEvaluator::refreshParameterValueText()
 bool ParameterEvaluator::evaluate(HString &rResult)
 {
     ++mDepthCounter;
-    if (mDepthCounter > 500)
+    if (mDepthCounter > 250)
     {
         mpParameterEvaluatorHandler->getComponent()->addErrorMessage("You seem to be stuck in a parameter evaluation loop (aborting): " +
                                                                      mParameterName + " = " + mParameterValue);

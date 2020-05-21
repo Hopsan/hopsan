@@ -1055,15 +1055,15 @@ private slots:
         QTest::newRow("15") << "TestVolume" << "P1#Pressure" << "self.alpha.DataTheDoesNotExist" << false << "-";
         QTest::newRow("16") << "TestVolume" << "P1#Pressure" << "self.P2.DataTheDoesNotExist" << false << "-";
         // Test that looping parameter is not working
-        QTest::newRow("16") << "TestVolume" << "P2#Pressure" << "self.P1.Pressure" << false << "-";
+        QTest::newRow("17") << "TestVolume" << "P2#Pressure" << "self.P1.Pressure" << false << "-";
         // Ensure that we can set a "multi-line" script in an expression
-        QTest::newRow("17") << "TestVolume" << "P2#Pressure" << "a=5; b=a*2; b" << true << "10";
+        QTest::newRow("18") << "TestVolume" << "P2#Pressure" << "a=5; b=a*2; b" << true << "10";
         // Ensure that we can assign an other parameter in an expression, this is really odd, but I see no point in preventing it
-        QTest::newRow("18") << "TestVolume" << "P2#Pressure" << "self.V = 5" << true << "5";
-        QTest::newRow("19") << "TestVolume" << "P2#Pressure" << "self.V = 5; 6" << true << "6";
-        QTest::newRow("20") << "TestVolume" << "P2#Pressure" << "6; self.V = 4" << true << "4";
-        QTest::newRow("21") << "TestVolume" << "P2#Pressure" << "self.alpha.Value = 4" << true << "4";
-        QTest::newRow("22") << "TestVolume" << "P2#Pressure" << "self.alpha = 4" << true << "4";
+        QTest::newRow("19") << "TestVolume" << "P2#Pressure" << "self.V = 5" << true << "5";
+        QTest::newRow("20") << "TestVolume" << "P2#Pressure" << "self.V = 5; 6" << true << "6";
+        QTest::newRow("21") << "TestVolume" << "P2#Pressure" << "6; self.V = 4" << true << "4";
+        QTest::newRow("22") << "TestVolume" << "P2#Pressure" << "self.alpha.Value = 4" << true << "4";
+        QTest::newRow("23") << "TestVolume" << "P2#Pressure" << "self.alpha = 4" << true << "4";
     }
 
     void Component_Get_Name()
