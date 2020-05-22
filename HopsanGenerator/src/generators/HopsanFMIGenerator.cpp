@@ -1819,7 +1819,7 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
 bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, int version, bool x64) const
 {
     const QString vStr = QString::number(version);
-    const QString fmiLibDir=mHopsanRootPath+"/Dependencies/fmilibrary";
+    const QString fmiLibDir=mHopsanRootPath+"/dependencies/fmilibrary";
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Compiling FMU source code");
@@ -1945,7 +1945,7 @@ bool HopsanFMIGenerator::compressFiles(const QString &fmuStagePath, const QStrin
     QString fmuDestination = QString("../%1.fmu").arg(modelName);
     bool compressedOK = false;
 #ifdef _WIN32
-    QString program = mHopsanRootPath + "/Dependencies/tools/7z/7za";
+    QString program = mHopsanRootPath + "/dependencies/tools/7z/7za";
     QStringList arguments = QStringList() << "a" << "-tzip" << fmuDestination << "*";
     compressedOK = callProcess(program, arguments, fmuStagePath);
 #elif __linux__

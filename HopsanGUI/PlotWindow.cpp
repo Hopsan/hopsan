@@ -65,8 +65,8 @@
 #include "PlotHandler.h"
 
 
-#include "Dependencies/BarChartPlotter/barchartplotter.h"
-#include "Dependencies/BarChartPlotter/axisbase.h"
+#include "dependencies/BarChartPlotter/barchartplotter.h"
+#include "dependencies/BarChartPlotter/axisbase.h"
 
 
 //=============================================================

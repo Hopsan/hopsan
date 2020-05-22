@@ -24,5 +24,5 @@ Utilities/licenseChanger.py componentLibraries/extensionLibrary08 ${LIC_HEADER} 
 Utilities/licenseChanger.py UnitTests ${LIC_HEADER} ${DOSET}
 
 LIC_HEADER='licenseHeaderGPLv3'
-Utilities/licenseChanger.py HopsanGUI ${LIC_HEADER} ${DOSET} -e HopsanGUI/Dependencies
+Utilities/licenseChanger.py HopsanGUI ${LIC_HEADER} ${DOSET} -e HopsanGUI/dependencies
 Utilities/licenseChanger.py HoLC ${LIC_HEADER} ${DOSET}

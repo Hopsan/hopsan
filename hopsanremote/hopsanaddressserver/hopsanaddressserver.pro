@@ -29,11 +29,11 @@ LIBS += -L$${PWD}/../../lib -lhopsanremotecommon
 
 #--------------------------------------------------------
 # Set the ZeroMQ paths
-include($${PWD}/../../Dependencies/zeromq.pri)
+include($${PWD}/../../dependencies/zeromq.pri)
 !have_zeromq() {
   !build_pass:error("Failed to locate ZeroMQ libs, have you compiled them in the expected location?")
 }
-include($${PWD}/../../Dependencies/msgpack.pri)
+include($${PWD}/../../dependencies/msgpack.pri)
 !have_msgpack() {
   !build_pass:error("Failed to locate msgpack-c library")
 }
@@ -41,7 +41,7 @@ include($${PWD}/../../Dependencies/msgpack.pri)
 
 #--------------------------------------------------------
 # Set the tclap include path
-INCLUDEPATH *= $${PWD}/../../Dependencies/tclap/include
+INCLUDEPATH *= $${PWD}/../../dependencies/tclap/include
 #--------------------------------------------------------
 
 # -------------------------------------------------

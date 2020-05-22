@@ -16,7 +16,7 @@ add_test(NAME ${test_name} COMMAND ${test_name})
 
 # Copy runtime requirement dll's to run directory
 if (WIN32)
-    include(${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/fmilibrary.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary.cmake)
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> ${CMAKE_CURRENT_BINARY_DIR})
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsangenerator> ${CMAKE_CURRENT_BINARY_DIR})
     copy_file_after_build(${test_name} $<TARGET_FILE:fmilibrary> ${CMAKE_CURRENT_BINARY_DIR})
@@ -30,8 +30,8 @@ copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../HopsanCore ${C
 copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../componentLibraries/defaultLibrary ${CMAKE_CURRENT_BINARY_DIR}/../../componentLibraries)
 
 # Copy FMILibrary to mimic installation
-copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/fmilibrary ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies)
 
 # Copy FMUChecker and 7z to mimic installation
-copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/tools/FMUChecker ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies/tools)
-copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/tools/7z ${CMAKE_CURRENT_BINARY_DIR}/../../Dependencies/tools)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/tools/FMUChecker ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies/tools)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/tools/7z ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies/tools)

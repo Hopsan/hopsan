@@ -9,7 +9,7 @@ cd componentLibraries/defaultLibrary
 qmake -qt=5
 make -j2 -B
 cd ../../
-cd Dependencies
+cd dependencies
 ./setupZMQandMSGPACK.sh
 ./setupFMILibrary.sh
 cd ..

@@ -9,7 +9,7 @@ The instructions on this page are __very likely outdated__
 HopsanGenerator depends on some external libraries. Here is a description on how to build them.
 \subsection fmulibrary-ubuntu Ubuntu
 -# Download FMILibrary-2.0.1-src.zip from <a href="http://www.jmodelica.org/FMILibrary" target="_blank">http://www.jmodelica.org/FMILibrary</a>
--# Unpack the files to HopsanGenerator/Dependencies/FMILibrary-2.0.1
+-# Unpack the files to HopsanGenerator/dependencies/FMILibrary-2.0.1
 -# Open a terminal and go to the new folder
 -# Create a build directory: 'mkdir build-fmilib'
 -# Go into the build directory: 'cd build-fmilib'
@@ -18,7 +18,7 @@ HopsanGenerator depends on some external libraries. Here is a description on how
 
 \subsection fmilibrary-windows Windows (MinGW)
 -# Download FMILibrary-2.0.1-src.zip from <a href="http://www.jmodelica.org/FMILibrary" target="_blank">http://www.jmodelica.org/FMILibrary</a>
--# Unpack the files to HopsanGenerator/Dependencies/FMILibrary-2.0.1
+-# Unpack the files to HopsanGenerator/dependencies/FMILibrary-2.0.1
 -# Download and install cmake-gui from <a href="http://www.cmake.com" target="_blank">http://www.cmake.com</a>
 -# Open the CMake GUI
 -# Set 'Where is the source code' to the FMILibrary-2.0.1 folder
@@ -31,12 +31,12 @@ HopsanGenerator depends on some external libraries. Here is a description on how
 \subsection qwt-ubuntu-auto Ubuntu (Automatically)
 This will build against your **system-version** of the Qt libs, if you have a different version in the QtSDK see how to manually build below
 -# Make sure that you have the libqt4-dev package installed. `apt-get install libqt4-dev``
--# Run the `unpackPatchAndBuildQwt.sh` script in Dependencies, it will build Qwt
+-# Run the `unpackPatchAndBuildQwt.sh` script in dependencies, it will build Qwt
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection qwt-ubuntu-manual Ubuntu (Manually)
 -# First download a version >=trunk from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
--# Unpack into the Dependencies directory
+-# Unpack into the dependencies directory
 -# The default on Unix is to build only Release mode, if you want to change this (only if you want to debug into qwt), you can do that in the qwtbuild.pri file.
   -# "Enable debug_and_release + build_all if you want to build both."
 -# Build the qwt project (you can use shadowbuild)
@@ -46,7 +46,7 @@ This will build against your **system-version** of the Qt libs, if you have a di
 
 \subsection qwt-windows Windows (MinGW and VC++)
 -# Run the `unpackPatchAndBuildQwt.bat` script
-  -# Or download the desired version from [http://sourceforge.net/projects/qwt/files/](http://sourceforge.net/projects/qwt/files/) and unpack it into the Dependencies directory
+  -# Or download the desired version from [http://sourceforge.net/projects/qwt/files/](http://sourceforge.net/projects/qwt/files/) and unpack it into the dependencies directory
 -# If you are going to build a 64-bit version, then rename the qwt-version directory to qwt-version_64 where "version" is the qwt version number.
 -# Build the Qwt project with QtCreator, make sure that you select the correct compiler. It is **very important** that you compile with the same compiler as you will use to build Hopsan.
   -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri

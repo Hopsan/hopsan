@@ -30,7 +30,7 @@ QMAKE_CXXFLAGS *= -U__STRICT_ANSI__ -Wno-c++0x-compat
 
 #--------------------------------------------------------
 # Set the tclap and rapidxml include path
-INCLUDEPATH *= $${PWD}/../Dependencies/tclap/include
+INCLUDEPATH *= $${PWD}/../dependencies/tclap/include
 INCLUDEPATH *= $${PWD}/../HopsanCore/dependencies/rapidxml
 #--------------------------------------------------------
 
@@ -64,7 +64,7 @@ contains(DEFINES, HOPSANCLI_USEGENERATOR) {
   INCLUDEPATH *= $${PWD}/../HopsanGenerator/include
   LIBS *= -L$${PWD}/../bin -lhopsangenerator$${DEBUG_EXT}
   LIBS *= -lsymhop$${DEBUG_EXT}
-  include($${PWD}/../Dependencies/fmilibrary.pri)
+  include($${PWD}/../dependencies/fmilibrary.pri)
   DEFINES *= HOPSANGENERATOR_DLLIMPORT
 } else {
   message(Compiling HopsanCLI without HopsanGenerator)

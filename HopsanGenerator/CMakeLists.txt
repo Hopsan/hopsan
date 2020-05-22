@@ -12,7 +12,7 @@ set(CMAKE_AUTORCC ON)
 
 set(target_name hopsangenerator)
 
-include(${CMAKE_CURRENT_LIST_DIR}/../Dependencies/fmilibrary.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/fmilibrary.cmake)
 
 file(GLOB_RECURSE srcfiles src/*.cpp templates.qrc)
 file(GLOB_RECURSE headerfiles include/*.h include/*.hpp)

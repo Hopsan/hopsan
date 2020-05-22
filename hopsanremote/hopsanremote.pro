@@ -1,4 +1,4 @@
-include($${PWD}/../Dependencies/zeromq-check.pri)
+include($${PWD}/../dependencies/zeromq-check.pri)
 !have_zeromq() {
   !build_pass:warning("Failed to locate ZeroMQ libs, building WITHOUT HopsanRemote parts")
 } else {

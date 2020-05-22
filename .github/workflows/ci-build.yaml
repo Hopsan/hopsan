@@ -26,7 +26,7 @@ on: [pull_request]
 
     #- name: Build dependencies
       #shell: cmd
-      #working-directory: Dependencies
+      #working-directory: dependencies
       #run: setupFMILibrary.bat ----------------- THIS DOES NOT WORK YET
 
     #- name: Configure
@@ -68,12 +68,12 @@ jobs:
 
       - name: Download dependencies
         shell: bash
-        working-directory: Dependencies
+        working-directory: dependencies
         run: ./download-dependencies.py fmilibrary tclap
 
       - name: Build dependencies
         shell: bash
-        working-directory: Dependencies
+        working-directory: dependencies
         run: |
           ./setupFMILibrary.sh
           ./setupTclap.sh

@@ -11,16 +11,16 @@ build:
 	dh_testdir
 
 	# First build dependencies
-	cd Dependencies; ./setupDiscount.sh
-	cd Dependencies; ./setupFMILibrary.sh
-	cd Dependencies; ./setupQwt.sh
-	cd Dependencies; ./setupZeroMQ.sh
-	cd Dependencies; ./setupKatex.sh
-	cd Dependencies; ./setupTclap.sh
+	cd dependencies; ./setupDiscount.sh
+	cd dependencies; ./setupFMILibrary.sh
+	cd dependencies; ./setupQwt.sh
+	cd dependencies; ./setupZeroMQ.sh
+	cd dependencies; ./setupKatex.sh
+	cd dependencies; ./setupTclap.sh
 
 	# Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
-	source Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
+	source dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
 	make -j8 -C hopsanShadowBuild
 
 clean:

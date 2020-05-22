@@ -730,7 +730,7 @@ def copyFiles():
     mkdirs(gTemporaryBuildDir+'/Models')
     mkdirs(gTemporaryBuildDir+'/componentLibraries')
     mkdirs(gTemporaryBuildDir+'/doc')
-    mkdirs(gTemporaryBuildDir+'/Dependencies/tools')
+    mkdirs(gTemporaryBuildDir+'/dependencies/tools')
 
     # Copy "bin" folder to temporary directory
     copyDirTo(r'bin', gTemporaryBuildDir)
@@ -744,14 +744,14 @@ def copyFiles():
     git_export('HopsanCore', gTemporaryBuildDir)
 
     # Export needed core code dependencies
-    copyDirTo(r'Dependencies/katex',                gTemporaryBuildDir+r'/Dependencies')
+    copyDirTo(r'dependencies/katex',                gTemporaryBuildDir+r'/dependencies')
 
     # Copy 3pdependency installations
-    if not copyDirTo(r'Dependencies/fmilibrary', gTemporaryBuildDir+r'/Dependencies'):
+    if not copyDirTo(r'dependencies/fmilibrary', gTemporaryBuildDir+r'/dependencies'):
         return False
 
     # Copy 7zip to temporary directory
-    git_export(r'Dependencies/tools/7z', gTemporaryBuildDir+'/Dependencies/tools')
+    git_export(r'dependencies/tools/7z', gTemporaryBuildDir+'/dependencies/tools')
 
     # Export "Example Models" SVN directory to temporary directory
     git_export(r'Models\Example Models', gTemporaryBuildDir+r'\Models')
@@ -927,7 +927,7 @@ def cleanUp():
 
 def extractHopsanBuildPath(arch, path_name):
     # Ok this wil run the script for every variable we call, but it is fast so who cares
-    p = subprocess.Popen([r'Dependencies\setHopsanBuildPaths.bat', arch], shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen([r'dependencies\setHopsanBuildPaths.bat', arch], shell=True, stdout=subprocess.PIPE)
     stdout, stderr = p.communicate()
     if p.returncode == 0:  # is 0 if success
         for line in stdout.splitlines():
@@ -1017,7 +1017,7 @@ qt_bins_ok = checkFilesExistInDir(qmakeDir, qtRuntimeBins)
 qt_plugins_ok = checkFilesExistInDir(qmakeDir+'/../plugins',qtPluginBins)
 mingw_bins_ok = checkFilesExistInDir(mingwDir, mingwBins)
 mingw_optbins_ok = checkFilesExistInDir(mingwDir+'/../opt/bin', mingwOptBins)
-deps_ok = checkFilesExistInDir(hopsanDir+'/Dependencies', dependencyFiles)
+deps_ok = checkFilesExistInDir(hopsanDir+'/dependencies', dependencyFiles)
 
 success = success and qt_bins_ok and qt_plugins_ok and mingw_bins_ok and mingw_optbins_ok and deps_ok
 
@@ -1044,7 +1044,7 @@ if success:
     for f in mingwOptBins:
         copyFileToDir(mingwDir+'/../opt/bin', f, hopsanDir+'/bin')
     for f in dependencyFiles:
-        copyFileToDir(hopsanDir+'/Dependencies', f, hopsanDir+'/bin', keep_relative_path=False)
+        copyFileToDir(hopsanDir+'/dependencies', f, hopsanDir+'/bin', keep_relative_path=False)
 
 if success:
     if not createCleanOutputDirectory():

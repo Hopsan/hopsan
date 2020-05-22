@@ -279,7 +279,7 @@ def main(rootDirPath):
     suffixes = list()
     suffixes.append('.hpp')
     excludeDirs = list()
-    excludeDirs.append('Dependencies')
+    excludeDirs.append('dependencies')
 
     if not os.path.isabs(rootDirPath):
         #print('cwd: '+os.getcwd())

@@ -556,8 +556,8 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                         htmlStream << "<html>\n";
                         htmlStream << "  <head>\n";
                         htmlStream << "    <meta charset=\"UTF-8\">\n";
-                        htmlStream << "      " << QString("<script src=\"file:///%1katex/katex.min.js\" type=\"text/javascript\"></script>\n").arg(gpDesktopHandler->getExecPath()+"../Dependencies/");
-                        htmlStream << "      " << QString("<link href=\"file:///%1katex/katex.min.css\" rel=\"stylesheet\" type=\"text/css\">\n").arg(gpDesktopHandler->getExecPath()+"../Dependencies/");
+                        htmlStream << "      " << QString("<script src=\"file:///%1katex/katex.min.js\" type=\"text/javascript\"></script>\n").arg(gpDesktopHandler->getExecPath()+"../dependencies/");
+                        htmlStream << "      " << QString("<link href=\"file:///%1katex/katex.min.css\" rel=\"stylesheet\" type=\"text/css\">\n").arg(gpDesktopHandler->getExecPath()+"../dependencies/");
                         htmlStream << "  </head>\n";
 
                         inHtmlStream.seek(0);

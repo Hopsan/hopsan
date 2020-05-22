@@ -1716,7 +1716,7 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, int solve
     QString extraCFlags, extraLFlags;
     if(pLib->type == FmuLib)
     {
-        const QString fmiLibDir="/Dependencies/fmilibrary";
+        const QString fmiLibDir="/dependencies/fmilibrary";
         extraCFlags = QString("-I\"%1\"").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"/include");
         extraLFlags = QString("-L\"%1\" -l").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"/lib");
 #ifdef _WIN32

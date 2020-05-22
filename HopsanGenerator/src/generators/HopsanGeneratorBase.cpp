@@ -1476,7 +1476,7 @@ bool HopsanGeneratorBase::copyBoostIncludeFilesToDir(const QString &path) const
     saveDir.cd("include");
     saveDir.cd("boost");
 
-    copyDir( QString("../Dependencies/boost"), saveDir.path(), {} );
+    copyDir( QString("../dependencies/boost"), saveDir.path(), {} );
 
     saveDir.cd("bin");
     QStringList binFiles = saveDir.entryList(QDir::Files | QDir::NoDotAndDotDot);

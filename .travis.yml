@@ -20,7 +20,7 @@ jobs:
         - QT_SELECT=qt5
         - HOPSAN_BUILD_QMAKE_SPEC=linux-g++
       install:
-        - cd Dependencies
+        - cd dependencies
         - ./download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap
         - cd ..
     - os: osx
@@ -32,7 +32,7 @@ jobs:
         - brew install qt
         - brew link --force qt
         - which qmake
-        - cd Dependencies
+        - cd dependencies
         - ./download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap
         - cd ..
 
@@ -40,7 +40,7 @@ jobs:
 script:
   - bash --version
   - echo OSType $OSTYPE
-  - cd Dependencies
+  - cd dependencies
   - source ./setHopsanBuildPaths.sh
   - ./setupDiscount.sh
   - ./setupFMILibrary.sh

@@ -70,7 +70,7 @@ function git_export_all {
   echo "Exporting from git: ${src} to ${dst}"
   mkdir -p ${dst}
   pushd ${src}
-  ${hopsancode_root}/Dependencies/git-archive-all/git_archive_all.py ${tarfile}
+  ${hopsancode_root}/dependencies/git-archive-all/git_archive_all.py ${tarfile}
   popd
   mv ${src}/${tarfile} ${dst}
   pushd ${dst}

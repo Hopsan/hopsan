@@ -11,7 +11,7 @@ add_executable(hopsancli ${hopsancli_srcfiles})
 target_include_directories(hopsancli PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../HopsanCore/dependencies/rapidxml>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/tclap/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/tclap/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Utilities>)
 
 target_link_libraries(hopsancli hopsancore)

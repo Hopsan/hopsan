@@ -659,8 +659,8 @@ QStringList listHopsanCoreSourceFiles(const QString &hopsanInstallationPath)
 {
     QStringList allFiles;
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/src", "cpp", allFiles);
-    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "cc", allFiles);
-    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "cpp", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/dependencies", "cc", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/dependencies", "cpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libnumhop/src", "cpp", allFiles);
     allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/src/indexingcsvparser.cpp";
 
@@ -680,8 +680,8 @@ QStringList listHopsanCoreIncludeFiles(const QString &hopsanInstallationPath)
     QStringList allFiles;
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/include", "h", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/include", "hpp", allFiles);
-    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "h", allFiles);
-    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/Dependencies", "hpp", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/dependencies", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/dependencies", "hpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/rapidxml", "hpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libnumhop/include", "h", allFiles);
     allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/include/indexingcsvparser/indexingcsvparser.h";

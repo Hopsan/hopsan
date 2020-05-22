@@ -30,7 +30,7 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set the QWT paths
-include($${PWD}/../Dependencies/qwt.pri)
+include($${PWD}/../dependencies/qwt.pri)
 !have_qwt(){
     !build_pass:error("Could not find QWT libs, have you compiled them in the expected location")
 }
@@ -38,11 +38,11 @@ include($${PWD}/../Dependencies/qwt.pri)
 
 #--------------------------------------------------------
 # Set the ZeroMQ paths
-include($${PWD}/../Dependencies/zeromq.pri)
+include($${PWD}/../dependencies/zeromq.pri)
 have_zeromq() {
     DEFINES *= USEZMQ
     !build_pass:message(Compiling HopsanGUI with ZeroMQ and msgpack support)
-    include($${PWD}/../Dependencies/msgpack.pri)
+    include($${PWD}/../dependencies/msgpack.pri)
 
     # Also require msgpack.c, setup msgpack path
     !have_msgpack() {
@@ -95,7 +95,7 @@ DEFINES *= OPS_DLLIMPORT
 
 #--------------------------------------------------------
 # Set Discount (libmarkdown) paths
-include($${PWD}/../Dependencies/discount.pri)
+include($${PWD}/../dependencies/discount.pri)
 have_libmarkdown(){
   DEFINES *= USEDISCOUNT
   !build_pass:message(Compiling with Discount (libmarkdown) support)
@@ -105,7 +105,7 @@ have_libmarkdown(){
 #--------------------------------------------------------
 
 # Set hdf5 paths
-include($${PWD}/../Dependencies/hdf5.pri)
+include($${PWD}/../dependencies/hdf5.pri)
 have_hdf5(){
   DEFINES *= USEHDF5
   !build_pass:message("Compiling with HDF5 support")
@@ -222,9 +222,9 @@ SOURCES += main.cpp \
     GUIObjects/GUIContainerPort.cpp \
     Dialogs/ContainerPortPropertiesDialog.cpp \
     Dialogs/HelpDialog.cpp \
-    Dependencies/BarChartPlotter/plotterbase.cpp \
-    Dependencies/BarChartPlotter/barchartplotter.cpp \
-    Dependencies/BarChartPlotter/axisbase.cpp \
+    dependencies/BarChartPlotter/plotterbase.cpp \
+    dependencies/BarChartPlotter/barchartplotter.cpp \
+    dependencies/BarChartPlotter/axisbase.cpp \
     Dialogs/OptimizationDialog.cpp \
     Dialogs/SensitivityAnalysisDialog.cpp \
     Dialogs/MovePortsDialog.cpp \
@@ -313,9 +313,9 @@ HEADERS += MainWindow.h \
     GUIObjects/GUIContainerPort.h \
     Dialogs/ContainerPortPropertiesDialog.h \
     Dialogs/HelpDialog.h \
-    Dependencies/BarChartPlotter/plotterbase.h \
-    Dependencies/BarChartPlotter/barchartplotter.h \
-    Dependencies/BarChartPlotter/axisbase.h \
+    dependencies/BarChartPlotter/plotterbase.h \
+    dependencies/BarChartPlotter/barchartplotter.h \
+    dependencies/BarChartPlotter/axisbase.h \
     Dialogs/OptimizationDialog.h \
     Dialogs/SensitivityAnalysisDialog.h \
     Dialogs/MovePortsDialog.h \

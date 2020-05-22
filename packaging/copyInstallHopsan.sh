@@ -66,10 +66,10 @@ install_dir  $srcDir/bin                                       $dstDir
 
 # Copy dependencies files
 # =======================
-srcDeps=${srcDir}/Dependencies
+srcDeps=${srcDir}/dependencies
 
-install_dir  ${srcDeps}/katex                                  $dstDir/Dependencies
-install_dir  ${srcDeps}/fmilibrary                             $dstDir/Dependencies
+install_dir  ${srcDeps}/katex                                  $dstDir/dependencies
+install_dir  ${srcDeps}/fmilibrary                             $dstDir/dependencies
 
 install_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
@@ -83,7 +83,7 @@ install -m644 -t $dstDir                                   $srcDir/hopsan-defaul
 install -m644 -t $dstDir                                   $srcDir/Hopsan-release-notes.txt
 install -m644 -t $dstDir                                   $srcDir/README.md
 
-# Strip any runpaths to Dependencies directory
+# Strip any runpaths to dependencies directory
 # from ELF binaries. Note! ($ORIGIN/./) will remain.
 # By first moving the source dependencies directory
 # the runpaths will no longer be valid and patchelf

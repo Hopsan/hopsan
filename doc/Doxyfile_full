@@ -823,8 +823,8 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../Dependencies/ \
-                         ../HopsanGUI/Dependencies/ \
+EXCLUDE                = ../dependencies/ \
+                         ../HopsanGUI/dependencies/ \
                          ../ThirdParty
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or

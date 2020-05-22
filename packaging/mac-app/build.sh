@@ -1,13 +1,12 @@
 #!/bin/sh                                                                                                                                                                    
 #                                                                                                                                                                            
-# @file   makeMacRelease.sh                                                                                                                                                         
+# @file   makeMacRelease.sh                                                                                                                                                  
 # @author Magnus Sethson <magnus.sethson@liu.se>                                                                                                                             
 # @date   2015-02-27                                                                                                                                                         
 #                                                                                                                                                                            
 # @brief Script for building, configuring, compiling and adjusting HopsanGUI for Mac OS X
-#                                                                                                                                                                            
-#$Id$                                                                                                                   
-#  
+#
+
 
 buildRoot="packaging/mac-app/"
 name="hopsan"
@@ -50,7 +49,7 @@ cp -prfX libhopsancore$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prfX libhopsangenerator$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 cp -prfX libsymhop$LIBTAG.1.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 
-cp -prfX ../Dependencies/qwt-6.1.2/lib/libqwt.6.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
+cp -prfX ../dependencies/qwt-6.1.2/lib/libqwt.6.dylib HopsanGUI$LIBTAG.app/Contents/Frameworks/
 
 mkdir -p HopsanGUI$LIBTAG.app/Contents/Resources/HopsanCore/include
 

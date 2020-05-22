@@ -18,7 +18,7 @@ cd componentLibraries/defaultLibrary_shb
 qmake -qt=$qtver ../defaultLibrary/defaultLibrary.pro
 make -j2 -B
 cd ../../
-#cd Dependencies
+#cd dependencies
 #./unpackAndBuildZMQandMSGPACK.sh
 #cd ..
 mkdir -p HopsanCLI_shb

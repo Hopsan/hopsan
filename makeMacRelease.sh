@@ -1,19 +1,18 @@
 #!/bin/sh                                                                                                                                                                    
 #                                                                                                                                                                            
-# @file   makeMacRelease.sh                                                                                                                                                         
+# @file   makeMacRelease.sh                                                                                                                                                  
 # @author Magnus Sethson <magnus.sethson@liu.se>                                                                                                                             
 # @date   2015-02-27                                                                                                                                                         
 #                                                                                                                                                                            
 # @brief Script for building, configuring, compiling and adjusting HopsanGUI for Mac OS X
 #                                                                                                                                                                            
-#$Id$                                                                                                                   
-#  
+#
 
 rm -fr bin/*
 
-# Building Dependencies
+# Building dependencies
 
-cd Dependencies
+cd dependencies
 
 . setupQwt.sh --force
 . setupFMILibrary.sh --force

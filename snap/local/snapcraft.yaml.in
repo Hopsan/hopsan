@@ -129,7 +129,7 @@ parts:
       cd ../src
       sed -e "s|UnitTests||" -i HopsanNG.pro
       ./packaging/prepareSourceCode.sh $(pwd) $(pwd) HOPSAN_BASE_VERSION HOPSAN_RELEASE_REVISION HOPSAN_FULL_RELEASE_VERSION HOPSAN_DEVELOPMENT_RELEASE false
-      cd Dependencies
+      cd dependencies
       ./setupFMILibrary.sh
       ./setupKatex.sh
       ./setupTclap.sh

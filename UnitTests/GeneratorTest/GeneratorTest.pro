@@ -29,7 +29,7 @@ INCLUDEPATH *= $${PWD}/../../HopsanGenerator/include
 LIBS += -L$${PWD}/../../bin -lhopsancore$${DEBUG_EXT}
 LIBS *= -lhopsangenerator$${DEBUG_EXT}
 LIBS *= -lsymhop$${DEBUG_EXT}
-include($${PWD}/../../Dependencies/fmilibrary.pri)
+include($${PWD}/../../dependencies/fmilibrary.pri)
 DEFINES *= HOPSANGENERATOR_DLLIMPORT
 
 

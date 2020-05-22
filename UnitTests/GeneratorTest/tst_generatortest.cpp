@@ -242,7 +242,7 @@ private slots:
 #if defined(__APPLE__)
         QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
 #else
-        const QString fmuCheckPath=QDir::cleanPath(QString::fromStdString(mHopsanInstallRoot+"/Dependencies/tools/FMUChecker"));
+        const QString fmuCheckPath=QDir::cleanPath(QString::fromStdString(mHopsanInstallRoot+"/dependencies/tools/FMUChecker"));
 
 #ifdef _WIN32
         QString fmuChecker32 = QString("%1/%2").arg(fmuCheckPath).arg("fmuCheck.win32.exe");

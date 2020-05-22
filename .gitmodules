@@ -4,9 +4,9 @@
 [submodule "HopsanCore/dependencies/libnumhop"]
 	path = HopsanCore/dependencies/libnumhop
 	url = https://github.com/peterNordin/libNumHop.git
-[submodule "Dependencies/tools"]
-	path = Dependencies/tools
+[submodule "dependencies/tools"]
+	path = dependencies/tools
 	url = https://github.com/Hopsan/hopsan_deps_tools.git
-[submodule "Dependencies/git-archive-all"]
-	path = Dependencies/git-archive-all
+[submodule "dependencies/git-archive-all"]
+	path = dependencies/git-archive-all
 	url = https://github.com/Kentzo/git-archive-all.git

@@ -15,12 +15,12 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 #       First build dependencies
-	cd Dependencies; ./setupFMILibrary.sh
-	cd Dependencies; ./setupKatex.sh
+	cd dependencies; ./setupFMILibrary.sh
+	cd dependencies; ./setupKatex.sh
 
 #       Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
-	source Dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
+	source dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
 	make -j8 -C hopsanShadowBuild
 
 override_dh_auto_clean:
