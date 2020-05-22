@@ -1395,10 +1395,18 @@ double evalWithNumHop(const QString &rExpression)
     return value;
 }
 
-QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem)
+QStringList getEmbeddedSriptVariableNames(const QString& expression, const QString& subcomponentName,  CoreSystemAccess* pCoreSystem)
 {
     hopsan::NumHopHelper numhop;
-    numhop.setSystem(pCoreSystem->getCoreSystemPtr());
+    hopsan::ComponentSystem* pSystem = pCoreSystem->getCoreSystemPtr();
+    if (subcomponentName.isEmpty()) {
+        numhop.setSystem(pCoreSystem->getCoreSystemPtr());
+    }
+    else {
+        hopsan::Component* pComponent = pSystem->getSubComponent(qPrintable(subcomponentName));
+        numhop.setComponent(pComponent);
+    }
+
     auto hnames = numhop.extractVariableNames(qPrintable(expression));
     QStringList names;
     names.reserve(hnames.size());
@@ -1455,4 +1463,28 @@ QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem)
 
     processSystem(pTopLevelGUISystem);
     return output;
+}
+
+bool CoreParameterData::hasBooleanValue() const
+{
+    // These are the values used for bool inside HopsanCore
+    return (mType == "bool") && ((mValue == "true") || (mValue == "false") || (mValue == "1") || (mValue == "0"));
+}
+
+bool CoreParameterData::hasIntegerValue() const
+{
+    bool isNummeric = false;
+    if (mType == "integer") {
+        mValue.toInt(&isNummeric);
+    }
+    return isNummeric;
+}
+
+bool CoreParameterData::hasDoubleValue() const
+{
+    bool isNummeric = false;
+    if (mType == "double") {
+        mValue.toDouble(&isNummeric);
+    }
+    return isNummeric;
 }

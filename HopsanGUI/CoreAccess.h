@@ -98,7 +98,7 @@ public:
 
 double evalWithNumHop(const QString &rExpression);
 
-QStringList getEmbeddedSriptVariableNames(const QString& expression, CoreSystemAccess* pCoreSystem);
+QStringList getEmbeddedSriptVariableNames(const QString& expression, const QString& subcomponentName, CoreSystemAccess* pCoreSystem);
 
 void prependSelfToParameterExpressions(ContainerObject* pTopLevelGUISystem);
 QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem);
@@ -110,6 +110,10 @@ public:
     CoreParameterData() {}
     CoreParameterData(const QString name, const QString value, const QString type, const QString quantity="", const QString unit="", const QString desc="")
         : mName(name), mValue(value), mType(type), mQuantity(quantity), mUnit(unit), mDescription(desc) {}
+
+    bool hasBooleanValue() const;
+    bool hasIntegerValue() const;
+    bool hasDoubleValue() const;
 
     QString mName;
     QString mAlias;

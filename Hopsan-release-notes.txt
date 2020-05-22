@@ -30,6 +30,16 @@
 ******************************
     Version History
 ******************************
+2.14.2 (2020-05-22)
+
+--- Bug Fixes ---
+
+- HopsanGUI:
+  - Fixed new bug that prevented system parameters from automatically being copied into new systems when the
+    component using them was copied.
+  - Fixed old bug where system parameters of other types then double would never be copied into a new system.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.14.1 (2020-05-17)
 
 --- Enhancements ---
@@ -44,10 +54,9 @@
 - Packaging:
   - Ubuntu Eoan package no longer depends on libpythonqt-qt5-python3-3 which is not available in the package repository
 
-- HopsanGUI:
+- HopsanCore:
   - Fix bug in automatic model updater that would incorrectly add self. to constant parameter values if the parameter name and value
     expression were identical. In this case the intended result would be to use the parent system parameter of the same name
-
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 2.14.0 (2020-05-01)
@@ -115,7 +124,7 @@ Note! There are no changes to how components are implemented in C++, this only a
   - Fixed evaluation of HCOM round() in expressions like round(x)*y
   - Change Bode plot frequency unit to rad/s, the values were in rad/s but previously the label claimed it was Hz
   - Fixed invalid unit being shown when mixing multiple different Quantities on the x-axis in plots (you should avoid this anyway)
-  
+
 - HopsanGenerator:
   - Fix import of parameter values for FMI v1 FMUs
   - Fix loading of FMUs with different file name and FMU name
