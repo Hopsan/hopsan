@@ -20,7 +20,7 @@ The buttons at the top of the main window is divided into five toolbars. The fir
 \image html "File Toolbar.png"
 \image latex "File Toolbar.png" "File toolbar"
 
-The second toolbar has buttons for editing tools, such as copy, cut, paste, undo and redo. There is also an icon that opens the global program options. 
+The second toolbar has buttons for editing tools, such as copy, cut, paste, undo and redo. There is also an icon that opens the global program options.
 \image html "Edit Toolbar.png"
 \image latex "Edit Toolbar.png" "Edit toolbar"
 
@@ -31,7 +31,7 @@ The third toolbar consists of viewport operations such as centering the viewport
 The forth toolbar consists of tools for modifying the model. It is possible to align, rotate and flip components. Alignments are always relative to the last selected component.
 \image html "Tools Toolbar.png"
 \image latex "Tools Toolbar.png" "Tools Toolbar"
-    
+
 Finally, the last toolbar contains simulation controls selecting start time, time step and stop time, running a simulation, plotting and changing simulation parameters. This toolbar also has the icon for changing model specific properties. Note that after changing simulation parameters it is necessary to click outside the text field before clicking on Simulate; otherwise the changes will not apply for this simulation.
 \image html "Simulation Toolbar.png"
 \image latex "Simulation Toolbar.png" "Simulation toolbar"
@@ -48,8 +48,6 @@ Components are added to the workspace by dragging them from the library widget t
 \section message-widget Message Widget
 The message widget at the bottom is the program's way of communicating with the user. Messages are displayed in different colors depending on their purpose; black for default messages, orange for warnings, red for errors and blue for debug messages. It is possible to filter which type of message to show by clicking on the colored buttons, and to clear the entire message history. Note that this action cannot be undone! Messages of similar type can also be grouped together, to make the contents more readable.
 
-\section python-widget Python Widget
-It is possible to control Hopsan with the Python scripting language. This can be used to facilitate complicated and time consuming operations, or to automate the execution in different ways. See separate section for more information on existing commands and limitations.
 */
 
 /*!
