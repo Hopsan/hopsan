@@ -3,16 +3,9 @@
 
 Hopsan depends on a few third party libraries.
 Some of these are required others are optional.
-When you build Hopsan through QtCreator the Hopsan project files will look for the dependencies in the dependencies directory.
-For your convenience there are scripts that will automatically unpack, configure and build each dependency, provided that the build requirements are installed.
-
-These scripts can be found in the __dependencies__ directory.
+When you build Hopsan through QtCreator the Hopsan project files will look for the dependencies inside the dependencies director, or in the system if you are using Linux.
+For your convenience there are setup scripts in the __dependencies__ directory  hat will automatically unpack, configure and build each dependency, provided that the build requirements are installed.
 See \ref page_hopsandependencies for information on which dependencies are required and which are optional.
-
-__Note!__ Some dependencies do not require compilation. It is enough that the needed files are present in the dependencies directory. \n
-__Note!__ Some scripts are missing on POSIX platforms, is those cases you should use your systems version of the libraries instead. Install them from you distribution package database.
-
-If you wish to see the old (outdated) instructions for manual dependency building they are kept here \subpage page_buildhopsandependenciesmanually
 
 \section sec_buildhopsaninqtcreator Build Hopsan in QtCreator (all OS)
 -# Build the required and desired optional dependencies first
