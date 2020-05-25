@@ -576,6 +576,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
             pObj->setAppearanceDataBasePath(fileInfo.absolutePath());
             pObj->loadFromDomElement(systemElement);
             pObj->setIconPath(pAppearanceData->getIconPath(UserGraphics, Absolute), UserGraphics, Absolute);
+            pObj->getAppearanceData()->setIconScale(pAppearanceData->getIconScale(UserGraphics), UserGraphics);
             pObj->refreshAppearance();
             return pObj;
         }
