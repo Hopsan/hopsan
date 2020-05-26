@@ -228,6 +228,7 @@ public:
     virtual void solveSystem();
     virtual double getStateVariableDerivative(int /*i*/);
     virtual double getStateVariableSecondDerivative(int /*i*/);
+    virtual void getResiduals(double * /*y*/, double* /*res*/);
 
 protected:
     //==========Protected member functions==========

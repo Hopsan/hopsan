@@ -1799,6 +1799,14 @@ double Component::getStateVariableDerivative(int)
     return 0;
 }
 
+
+void Component::getResiduals(double *, double *)
+{
+    stopSimulation("getResidual() is not implemented in component.");
+    return;
+}
+
+
 double Component::getStateVariableSecondDerivative(int)
 {
     addErrorMessage("getStateVariableSecondDerivative() is not implemented in component.");

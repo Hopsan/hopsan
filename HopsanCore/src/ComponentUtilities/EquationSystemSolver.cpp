@@ -36,6 +36,15 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "Component.h"
 #include "ComponentUtilities/matrix.h"
+#include "ComponentUtilities/num2string.hpp"
+#include "ComponentSystem.h"
+
+//Sundials includes
+#include "kinsol/kinsol.h"
+#include "nvector/nvector_serial.h"
+#include "sunmatrix/sunmatrix_dense.h"
+#include "sunlinsol/sunlinsol_dense.h"
+#include "sunmatrix/sunmatrix_sparse.h"
 
 #include <cstring>
 #include <stdlib.h>
@@ -597,3 +606,142 @@ void NumericalIntegrationSolver::solvevariableTimeStep()
     //END DEBUG
 }
 
+
+static int kinsolResidualCallback(N_Vector y, N_Vector f, void *user_data)
+{
+    Component *pComponent = static_cast<Component*>(user_data);
+    pComponent->getResiduals(NV_DATA_S(y), NV_DATA_S(f));
+    return(0);
+}
+
+
+KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, SolverTypeEnum solverType=NewtonIteration)
+{
+    mSolverType = solverType;
+
+    int flag;
+
+    y = nullptr;
+    scale = nullptr;
+    LS = nullptr;
+
+    mpParentComponent = pParentComponent;
+
+    mSolverTime = pParentComponent->getTime();
+
+    //Initialize vectors
+    y = N_VNew_Serial(n);
+    scale = N_VNew_Serial(n);
+    N_VConst(1, scale);
+
+    // Create solver memory
+    mem = KINCreate();
+    if(mem == nullptr) {
+        pParentComponent->stopSimulation("KINCreate() return null pointer.");
+        return;
+    }
+
+    flag = KINSetUserData(mem, static_cast<void*>(pParentComponent));
+    if(flag < 0) {
+        pParentComponent->stopSimulation("KINSetUserData() failed with flag "+to_hstring(flag)+".");
+        return;
+    }
+
+    ////
+
+    if(solverType == FixedPointIteration) {
+      flag = KINSetMAA(mem, 2);
+      if (flag < 0) {
+          pParentComponent->stopSimulation("KINSetMAA() failed with flag "+to_hstring(flag)+".");
+          return;
+      }
+    }
+
+    flag = KINInit(mem, kinsolResidualCallback, y);
+    if (flag < 0) {
+        pParentComponent->stopSimulation("KINInit() failed with flag "+to_hstring(flag)+".");
+        return;
+    }
+
+    setTolerance(tol);
+
+    if(solverType == NewtonIteration) {
+        J = SUNDenseMatrix(n, n);
+        if(J == nullptr) {
+            pParentComponent->stopSimulation("SUNDenseMatrix() return null pointer.");
+            return;
+        }
+
+        LS = SUNLinSol_Dense(y, J);
+        if(LS == nullptr) {
+            pParentComponent->stopSimulation("SUNLinSol_Dense() return null pointer.");
+            return;
+        }
+
+        flag = KINSetLinearSolver(mem, LS, J);
+        if (flag < 0) {
+            pParentComponent->stopSimulation("KINSetLinearSolver() failed with flag "+to_hstring(flag)+".");
+            return;
+        }
+
+        flag = KINSetMaxSetupCalls(mem, 1);
+        if (flag < 0) {
+            mpParentComponent->stopSimulation("KINSetMaxSetupCalls() failed with flag "+to_hstring(flag)+".");
+            return;
+        }
+    }
+
+    return;
+}
+
+KinsolSolver::~KinsolSolver()
+{
+    N_VDestroy(y);
+    N_VDestroy(scale);
+    KINFree(&mem);
+    if(mSolverType == NewtonIteration) {
+        SUNLinSolFree(LS);
+        SUNMatDestroy(J);
+    }
+}
+
+void KinsolSolver::solve()
+{
+    int strategy = KIN_LINESEARCH;
+    if(mSolverType == FixedPointIteration) {
+        strategy = KIN_FP;
+    }
+
+    int flag = KINSol(mem, y, strategy, scale, scale);
+    if (flag < 0) {
+        mpParentComponent->stopSimulation("KINSol() failed with flag "+to_hstring(flag)+".");
+        return;
+    }
+}
+
+double KinsolSolver::getState(int i)
+{
+    return NV_Ith_S(y,i);
+}
+
+void KinsolSolver::setState(int i, double value)
+{
+    NV_Ith_S(y,i) = value;
+}
+
+void KinsolSolver::setTolerance(double value)
+{
+    int flag = KINSetFuncNormTol(mem, value);
+    if (flag < 0) {
+        mpParentComponent->stopSimulation("KINSetFuncNormTol() failed with flag "+to_hstring(flag)+".");
+        return;
+    }
+
+    if(mSolverType == NewtonIteration) {
+        flag = KINSetScaledStepTol(mem, value);
+        if (flag < 0) {
+            mpParentComponent->stopSimulation("KINSetScaledStepTol() failed with flag "+to_hstring(flag)+".");
+            return;
+        }
+    }
+}

@@ -38,6 +38,18 @@
 #include "matrix.h"
 #include "ludcmp.h"
 
+#include <vector>
+
+//Forward declarations
+struct _generic_N_Vector;
+typedef struct _generic_N_Vector *N_Vector;
+
+struct _generic_SUNLinearSolver;
+typedef struct _generic_SUNLinearSolver *SUNLinearSolver;
+
+struct _generic_SUNMatrix;
+typedef struct _generic_SUNMatrix *SUNMatrix;
+
 namespace hopsan {
 
 //! @ingroup ComponentUtilityClasses
@@ -99,6 +111,28 @@ private:
     size_t mMaxIter;
 };
 
+
+class HOPSANCORE_DLLAPI KinsolSolver
+{
+public:
+    enum SolverTypeEnum {NewtonIteration=0,FixedPointIteration=1};
+
+    KinsolSolver(Component *pParentComponent, double tol, int n, SolverTypeEnum solverType);
+    ~KinsolSolver();
+    void solve();
+    double getState(int i);
+    void setState(int i, double value);
+    void setTolerance(double value);
+private:
+    Component *mpParentComponent;
+    void *mem;
+    N_Vector y;
+    N_Vector scale;
+    SUNLinearSolver LS;
+    SUNMatrix J;
+    double mSolverTime;
+    SolverTypeEnum mSolverType = NewtonIteration;
+};
 
 }
 
