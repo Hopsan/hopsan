@@ -40,6 +40,12 @@ HEADERS += $${PWD}/dependencies/libnumhop/include/numhop.h
 #--------------------------------------------------------
 
 # -------------------------------------------------
+# Set Sundials paths
+INCLUDEPATH *= $${PWD}/../Dependencies/sundials-5.3.0/include
+LIBS *= -L$${PWD}/../Dependencies/sundials-5.3.0/lib -lsundials_kinsol
+# -------------------------------------------------
+
+# -------------------------------------------------
 # Non platform specific HopsanCore options
 # -------------------------------------------------
 QMAKE_CXXFLAGS += -pedantic -Wno-long-long
