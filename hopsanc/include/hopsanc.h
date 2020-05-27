@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-HOPSANC_DLLAPI int loadLibrary(const char* path);
+    HOPSANC_DLLAPI int loadLibrary(const char* path);
     HOPSANC_DLLAPI int getMessage(char* buf, size_t bufSize);
     HOPSANC_DLLAPI int loadModel(const char* path);
     HOPSANC_DLLAPI int setParameter(const char* name, const char *value);
