@@ -68,6 +68,7 @@ hopsan::QuantityRegister::QuantityRegister()
 
     // Register quantity aliases
     registerQuantityAlias("Position", "Length");
+    registerQuantityAlias("Position", "Altitude");
 }
 
 void hopsan::QuantityRegister::registerQuantity(const hopsan::HString &rQuantity, const hopsan::HString &rBaseUnit)
