@@ -60,7 +60,7 @@ namespace hopsan {
         size_t mNumVars;
         double mLastLogTime;
         std::vector<double *> mpInData;
-        HVector<HString> mRows; //Used by row-wise file types, to write everything in finalize
+        std::vector<HString> mRows; //Used by row-wise file types, to write everything in finalize
 
     public:
         static Component *Creator()
@@ -175,16 +175,16 @@ namespace hopsan {
                 //Generate HopsanCore version string
                 HString version = "HopsanCore "+HString(HOPSANCOREVERSION);
 
-                mRows.append("    'VERSION'");
-                mRows.append("    3");
-                mRows.append("    '"+fileName+"' '"+modelName+"' '"+dateTime+"' '"+version+"'");
-                mRows.append("");   //Placeholder for cols and rows (number of rows unknown at this point)
-                mRows.append("    'Time'");
+                mRows.push_back("    'VERSION'");
+                mRows.push_back("    3");
+                mRows.push_back("    '"+fileName+"' '"+modelName+"' '"+dateTime+"' '"+version+"'");
+                mRows.push_back("");   //Placeholder for cols and rows (number of rows unknown at this point)
+                mRows.push_back("    'Time'");
                 for(size_t i=0; i<mNumVars; ++i) {
                     //Variable names
                     mRows[mRows.size()-1].append(",    '"+namesVector[i]+"'");
                 }
-                mRows.append("  Time");
+                mRows.push_back("  Time");
                 for(size_t i=0; i<mNumVars; ++i) {
                     //Variable scaling (always 1, for backwards compatibility)
                     mRows[mRows.size()-1].append(" 1");
@@ -223,7 +223,7 @@ namespace hopsan {
             else if(mFileType == HopsanPLO) {
                 std::stringstream ss;
                 ss << std::scientific << mTime;
-                mRows.append("  "+HString(ss.str().c_str()));
+                mRows.push_back("  "+HString(ss.str().c_str()));
                 for(size_t i=0; i<mNumVars; ++i) {
                     if ((*mpInData[i]) < 0) {
                         mRows[mRows.size()-1].append(" ");
