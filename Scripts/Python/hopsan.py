@@ -2,8 +2,12 @@ class hopsan:
     def __init__(self):
         import ctypes
         import os
-        self.hdll = ctypes.cdll.LoadLibrary(os.getenv('HOPSANHOME')+"/bin/libhopsanc.so")
-        libpath= os.getenv('HOPSANHOME')+"componentLibraries/defaultLibrary/libdefaultcomponentlibrary.so"
+        if os.name == "posix":
+            self.hdll = ctypes.cdll.LoadLibrary(os.getenv('HOPSANHOME')+"/bin/libhopsanc.so")
+            libpath= os.getenv('HOPSANHOME')+"componentLibraries/defaultLibrary/libdefaultcomponentlibrary.so"
+        elif os.name == "nt":
+            self.hdll = ctypes.cdll.LoadLibrary(os.getenv('HOPSANHOME')+"/bin/hopsanc.dll")
+            libpath= os.getenv('HOPSANHOME')+"componentLibraries/defaultLibrary/defaultcomponentlibrary.dll"
         self.hdll.loadLibrary(libpath.encode())
 
     def loadModel(self, path):
