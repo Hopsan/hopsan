@@ -119,6 +119,10 @@ int getDataVector(const char* variable, double *data)
     hopsan::Component *pComp = pSystem->getSubComponent(splitVar[0]);
     if(!pComp) {
         printMessage("Error: No such component: "+splitVar[0]);
+        printMessage("Alternatives:");
+        for(const hopsan::HString &name : pSystem->getSubComponentNames()) {
+            printMessage("  "+name);
+        };
         return -1;
     }
 
@@ -325,7 +329,7 @@ int setParameter(const char *name, const char *value)
 //! @brief Specifies number of log samples for the simulation
 //! @param [in] value Number of samples
 //! @returns Status (0 = success)
-int setLogSamples(size_t value)
+int setNumberOfLogSamples(size_t value)
 {
     if(!spCoreComponentSystem) {
         printMessage("Error: No model is loaded.");
@@ -339,7 +343,7 @@ int setLogSamples(size_t value)
 
 //! @brief Returns number of logged samples from last simulation
 //! @returns Number of samples
-size_t getLogSamples()
+size_t getNumberOfLogSamples()
 {
     if(!spCoreComponentSystem) {
         printMessage("Error: No model is loaded.");
