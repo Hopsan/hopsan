@@ -7,14 +7,14 @@ module hopsan
   end
 	
   function getdatavector(variable)
-    size=ccall((:getLogSamples,hopsanlibpath),Cint,())
+    size=ccall((:getNumberOfLogSamples,hopsanlibpath),Cint,())
     data = zeros(size)
     ccall((:getDataVector,hopsanlibpath),Cint,(Cstring,Ptr{Cdouble},),variable,data)
     return data
   end
 
   function gettimevector()
-    size=ccall((:getLogSamples,hopsanlibpath),Cint,())
+    size=ccall((:getNumberOfLogSamples,hopsanlibpath),Cint,())
     data = zeros(size)
     ccall((:getTimeVector,hopsanlibpath),Cint,(Ptr{Cdouble},),data)
     return data
@@ -45,7 +45,7 @@ module hopsan
   end
 
   function setlogsamples(value)
-    ccall((:setLogSamples,hopsanlibpath),Cint,(Culong,),value)
+    ccall((:setNumberOfLogSamples,hopsanlibpath),Cint,(Culong,),value)
   end
 
   function simulate()

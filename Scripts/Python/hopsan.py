@@ -13,7 +13,7 @@ class hopsan:
         self.hdll.simulate()
 
     def getTimeVector(self):
-        samples = self.hdll.getLogSamples()
+        samples = self.hdll.getNumberOfLogSamples()
         import ctypes
         arrayType = ctypes.c_double * samples
         t = arrayType(*[1] * samples)
@@ -21,7 +21,7 @@ class hopsan:
         return t
 
     def getDataVector(self, name):
-        samples = self.hdll.getLogSamples()
+        samples = self.hdll.getNumberOfLogSamples()
         import ctypes
         arrayType = ctypes.c_double * samples
         x = arrayType(*[1] * samples)
@@ -48,5 +48,5 @@ class hopsan:
 
     def setLogSamples(self, value):
         import ctypes
-        self.hdll.setLogSamples.argtypes = [ctypes.c_int]
-        self.hdll.setLogSamples(value)
+        self.hdll.setNumberOfLogSamples.argtypes = [ctypes.c_int]
+        self.hdll.setNumberOfLogSamples(value)
