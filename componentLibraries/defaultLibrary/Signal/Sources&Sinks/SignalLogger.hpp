@@ -88,6 +88,8 @@ namespace hopsan {
 
         void initialize()
         {
+            mRows.clear();
+
             mNumVars = mpIn->getNumConnectedPorts();
             mpInData.resize(mNumVars);
             for (size_t i=0; i<mNumVars; ++i)
