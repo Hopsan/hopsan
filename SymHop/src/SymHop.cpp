@@ -2371,8 +2371,6 @@ void Expression::factor(const Expression var)
         Expression factoredTerm = Expression::fromFactorsDivisors(QList<Expression>() << var << termsWithVarExpr, QList<Expression>());
 
         this->replaceBy(Expression::fromTerms(QList<Expression>() << factoredTerm << termsWithoutVar));
-
-        this->_simplify(Expression::FullSimplification, Recursive);
     }
 }
 
