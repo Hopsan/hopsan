@@ -193,6 +193,14 @@ namespace hopsan {
                 }
             }
 
+            //Close and re-open file in append mode
+            mFile.close();
+            mFile.open(mFilePath.c_str(),std::ios_base::app);
+            if (!mFile.is_open()) {
+                stopSimulation("Could not open file for writing: "+mFilePath);
+                return;
+            }
+
             mLastLogTime = mTime-(*mpDt);
             simulateOneTimestep();
         }
