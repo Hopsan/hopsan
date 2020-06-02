@@ -409,6 +409,8 @@ GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
     {
         isValidNode = true;
         niceName = pNode->getNiceName().c_str();
+        QStringList qVariableLabels, cVariableLabels;
+        QList<size_t> qVarIdx, cVarIdx;
         for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
         {
             const hopsan::NodeDataDescription *pVarDesc = pNode->getDataDescription(i);
@@ -418,19 +420,20 @@ GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
             {
                 qVariables << pVarDesc->shortname.c_str();
                 qVariableIds << pVarDesc->id;
-                variableLabels << pVarDesc->name.c_str();
-                varIdx << pVarDesc->id;
+                qVariableLabels << pVarDesc->name.c_str();
+                qVarIdx << pVarDesc->id;
             }
             // Check if "C-type variable"
             else if(varType == hopsan::TLMType)
             {
                 cVariables << pVarDesc->shortname.c_str();
                 cVariableIds << pVarDesc->id;
-                variableLabels << pVarDesc->name.c_str();
-                varIdx << pVarDesc->id;
+                cVariableLabels << pVarDesc->name.c_str();
+                cVarIdx << pVarDesc->id;
             }
-
         }
+        variableLabels << qVariableLabels << cVariableLabels;
+        varIdx << qVarIdx << cVarIdx;
         hopsanCore.removeNode(pNode);
     }
 }
