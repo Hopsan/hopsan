@@ -33,7 +33,7 @@ classdef hopsan
             obj.checkMessages();
         end
         function setLogSamples(obj,t)
-            calllib('hopsanc','setLogSamples',t);
+            calllib('hopsanc','setNumberOfLogSamples',t);
             obj.checkMessages();
         end
         function loadModel(obj,path)
@@ -49,13 +49,13 @@ classdef hopsan
             obj.checkMessages();
         end
         function t = getTimeVector(obj)
-            nSamples = calllib('hopsanc','getLogSamples');
+            nSamples = calllib('hopsanc','getNumberOfLogSamples');
             buf = zeros(nSamples,1);
             [status,t] = calllib('hopsanc','getTimeVector',buf);
             obj.checkMessages();
         end
         function x = getDataVector(obj,name)
-            nSamples = calllib('hopsanc','getLogSamples');
+            nSamples = calllib('hopsanc','getNumberOfLogSamples');
             buf = zeros(nSamples,1);
             [status,name,x] = calllib('hopsanc','getDataVector',name,buf);
             obj.checkMessages();
