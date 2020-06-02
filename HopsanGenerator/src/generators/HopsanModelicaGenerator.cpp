@@ -842,8 +842,8 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     //Identify system equations containing a unique variable (can be resolved after the rest of the system)
     for(int u=0; u<unknowns.size(); ++u)
     {
-        size_t count=0;
-        size_t lastFound=-1;
+        int count=0;
+        int lastFound=-1;
         for(int e=0; e<systemEquations.size(); ++e)
         {
             if(systemEquations[e].contains(unknowns[u]))
