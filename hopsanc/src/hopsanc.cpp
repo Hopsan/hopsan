@@ -351,3 +351,9 @@ size_t getNumberOfLogSamples()
     }
     return spCoreComponentSystem->getNumActuallyLoggedSamples();
 }
+
+int printWaitingMessages()
+{
+    printWaitingMessages(gHopsanCore, false, false);
+    return 0;
+}
