@@ -1192,6 +1192,9 @@ QString Expression::toString() const
     }
     else if(this->isMultiplyOrDivide())
     {
+        int numMinus = mFactors.count(Expression("-1"))+mDivisors.count(Expression("-1"));
+        bool isOdd = (numMinus%2 != 0);
+
         Q_FOREACH(const Expression &factor, mFactors)
         {
             QString factString = factor.toString();
@@ -1226,9 +1229,11 @@ QString Expression::toString() const
         }
         if(mDivisors.size() > 0) { ret.chop(1); }
         if(mDivisors.size() > 1) { ret.append(")"); }
-        if(ret.startsWith("-1.0*"))     //Replace -1.0*5 with -5
-        {
-            ret.remove(1, 4);
+        ret.remove("*-1.0*");
+        ret.remove("-1.0*");
+        ret.remove("*-1.0");
+        if(isOdd) {
+            ret.prepend("-");
         }
     }
     else if(this->isPower())
