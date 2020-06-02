@@ -8,6 +8,7 @@ class hopsan:
         elif os.name == "nt":
             self.hdll = ctypes.cdll.LoadLibrary(os.getenv('HOPSANHOME')+"/bin/hopsanc.dll")
             libpath= os.getenv('HOPSANHOME')+"componentLibraries/defaultLibrary/defaultcomponentlibrary.dll"
+        self.hdll.printWaitingMessages()
         if os.path.exists(libpath):
             self.hdll.loadLibrary(libpath.encode())
 

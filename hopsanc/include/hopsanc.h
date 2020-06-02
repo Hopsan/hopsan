@@ -20,6 +20,7 @@
 extern "C" {
 #endif
 
+    HOPSANC_DLLAPI int printWaitingMessages();
     HOPSANC_DLLAPI int loadLibrary(const char* path);
     HOPSANC_DLLAPI int getMessage(char* buf, size_t bufSize);
     HOPSANC_DLLAPI int loadModel(const char* path);
