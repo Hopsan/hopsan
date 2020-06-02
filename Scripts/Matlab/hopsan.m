@@ -10,7 +10,11 @@ classdef hopsan
             end
         end
         function obj = hopsan()
-            path = fullfile(getenv("HOPSANHOME"), '\bin\hopsanc.dll');
+            if ispc
+                path = fullfile(getenv("HOPSANHOME"), '\bin\hopsanc.dll');
+            elseif isunix
+                path = fullfile(getenv("HOPSANHOME"), '\bin\libhopsanc.so');
+            end
             hpath = fullfile(getenv("HOPSANHOME"), '\hopsanc\include\hopsanc.h');
             loadlibrary(path,hpath);
             obj.checkMessages();
