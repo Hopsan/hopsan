@@ -120,10 +120,14 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
         //Transform equation system using Bilinear Transform method
         generateComponentObject(comp, typeName, displayName, cqsType, /*initAlgorithms,*/ preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
-    else /*if(solver == NumericalIntegration)*/
+    else if(solver == NumericalIntegration)
     {
         //Transform equation system using numerical integration methods
         generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+    }
+    else if(solver == Kinsol)
+    {
+        generateComponentObjectKinsol(comp,typeName,displayName,cqsType,preAlgorithms,equations,finalAlgorithms,portList,parametersList,variablesList,logStream);
     }
 
     logFile.close();
@@ -1934,6 +1938,446 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     //comp.simEquations.append(stateEquations);
 
     equations.clear();
+}
+
+void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+{
+    logStream << "Initializing Modelica generator for Kinsol solver.\n";
+    logStream << "Date and time: " << QDateTime::currentDateTime().toString() << "\n";
+
+       //Create list of equations
+    QList<Expression> systemEquations;
+    QStringList limitedVariables;
+    QStringList limitedDerivatives;
+    QStringList upperLimits;
+    QStringList lowerLimits;
+    for(int e=0; e<plainEquations.size(); ++e) {
+        if(plainEquations[e].trimmed().startsWith("//")) {
+            continue;   //Ignore comments
+        }
+        systemEquations.append(Expression(plainEquations.at(e)));
+        if(systemEquations.last().getFunctionName() == "limitVariable") {
+            if(systemEquations.last().getArguments().size() == 3) {
+                limitedVariables << systemEquations.last().getArgument(0).toString();
+                limitedDerivatives << "";
+                lowerLimits << systemEquations.last().getArgument(1).toString();
+                upperLimits << systemEquations.last().getArgument(2).toString();
+            }
+            else if(systemEquations.last().getArguments().size() == 4) {
+                limitedVariables << systemEquations.last().getArgument(0).toString();
+                limitedDerivatives << systemEquations.last().getArgument(1).toString();
+                lowerLimits << systemEquations.last().getArgument(2).toString();
+                upperLimits << systemEquations.last().getArgument(3).toString();
+            }
+            else {
+                printErrorMessage("Wrong number of arguments for \"limitVariable\" function (should be 3 or 4)");
+                return;
+            }
+            systemEquations.removeLast();
+            continue;
+        }
+        logStream << systemEquations.last().toString() << "\n";
+        if(!systemEquations[e].isEquation()) {
+            printErrorMessage("Equation is not an equation.");
+            return;
+        }
+    }
+
+    //Verify each equation
+    for(int i=0; i<systemEquations.size(); ++i) {
+        if(!systemEquations[i].verifyExpression()) {
+            printErrorMessage("Component generation failed: Verification of variables failed.");
+            return;
+        }
+    }
+
+    //Sum up all used variables to a single list
+    QList<Expression> unknowns;
+    for(int i=0; i<systemEquations.size(); ++i) {
+        unknowns.append(systemEquations[i].getVariables());
+    }
+
+    QList<Expression> knowns;
+    for(int i=0; i<preAlgorithms.size(); ++i) {
+        if(preAlgorithms[i].contains("=")) {
+            QString var = preAlgorithms[i].section("=",0,0).trimmed();
+            knowns.append(var);
+        }
+    }
+
+    for(int i=0; i<finalAlgorithms.size(); ++i) {
+        if(finalAlgorithms[i].contains("=")) {
+            QString var = finalAlgorithms[i].section("=",0,0).trimmed();
+            if(var.contains("(") || var.contains("{")) continue;
+            knowns.append(var);
+        }
+    }
+
+    //Add parameters to list of known variables
+    for(int i=0; i<parameters.size(); ++i) {
+        knowns.append(Expression(parameters[i].name));
+    }
+
+    for(int i=0; i<ports.size(); ++i) {
+        QString num = QString::number(i+1);
+        if(ports[i].porttype == "ReadPort") {
+            knowns.append(Expression(ports[i].name));
+        }
+        else if(ports[i].porttype == "PowerPort" && cqsType == "C") {
+            QStringList qVars;
+            qVars << GeneratorNodeInfo(ports[i].nodetype).qVariables;
+            for(int v=0; v<qVars.size(); ++v) {
+                knowns.append(Expression(qVars[v]+num));
+            }
+        }
+        else if(ports[i].porttype == "PowerPort" && cqsType == "Q") {
+            QStringList cVars;
+            cVars << GeneratorNodeInfo(ports[i].nodetype).cVariables;
+            for(int v=0; v<cVars.size(); ++v) {
+                knowns.append(Expression(cVars[v]+num));
+            }
+        }
+    }
+
+    //Remove known variables from list of unknowns
+    for(int i=0; i<knowns.size(); ++i) {
+        unknowns.removeAll(knowns[i]);
+    }
+    removeDuplicates(unknowns);
+
+    //Verify equation system
+    if(!verifyEquationSystem(systemEquations, unknowns, this)) {
+        printErrorMessage("Verification of equation system failed.");
+        return;
+    }
+
+    //Make all equations left-sided
+    for(int e=0; e<systemEquations.size(); ++e) {
+        systemEquations[e].toLeftSided();
+    }
+
+    QStringList derivatives;
+    for(const auto &equation : systemEquations) {
+        for(const auto &unknown : unknowns) {
+            if(equation.contains(Expression::fromFunctionArguments("der",QList<Expression>() << unknown))) {
+                derivatives << unknown.toString();
+            }
+        }
+    }
+    for(auto &equation : systemEquations) {
+        for(const auto &derivative : derivatives) {
+            //equation.replace(Expression("der("+derivative+")"), Expression("derivative_"+derivative));
+            equation.replace(Expression("der("+derivative+")"), Expression("(1.5*"+derivative+" - 2*delay_"+derivative+".getIdx(0) + 0.5*delay_"+derivative+".getIdx(1))/mTimestep"));
+            equation._simplify(Expression::FullSimplification, Expression::Recursive);
+        }
+    }
+
+    //Identify system equations containing only one unknown (can be resolved before the rest of the system)
+    for(int e=0; e<systemEquations.size(); ++e) {
+        QList<Expression> usedUnknowns;
+        for(const auto &unknown : unknowns) {
+            if(systemEquations[e].contains(unknown)) {
+                usedUnknowns.append(unknown);
+            }
+        }
+
+        if(usedUnknowns.size() == 1) {
+            //Found only one unknown, try to break it out of the equation
+            Expression tempExpr = systemEquations[e];
+            tempExpr.factor(usedUnknowns[0]);
+            if(tempExpr.getTerms().size() == 1) {
+                tempExpr = Expression(0.0);
+            }
+            else {
+                Expression term = tempExpr.getTerms()[0];
+                tempExpr.removeTerm(term);
+                term.replace(usedUnknowns[0], Expression(1));
+                term._simplify(Expression::FullSimplification, Expression::Recursive);
+                tempExpr.divideBy(term);
+                tempExpr.changeSign();
+                tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+            }
+            if(!tempExpr.contains(usedUnknowns[0])) {
+                preAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
+                systemEquations.removeAt(e);
+                --e;
+                unknowns.removeAll(usedUnknowns[0]);
+            }
+        }
+    }
+
+
+    //Identify system equations containing a unique variable (can be resolved after the rest of the system)
+    for(int u=0; u<unknowns.size(); ++u) {
+        size_t count=0;
+        int lastFound=-1;
+        for(int e=0; e<systemEquations.size(); ++e)
+        {
+            if(systemEquations[e].contains(unknowns[u]))
+            {
+                ++count;
+                lastFound=e;
+            }
+        }
+        if(count==1)
+        {
+            //Found the unknown if only one equation, try to break it out and prepend on final algorithms
+            Expression tempExpr = *systemEquations[lastFound].getLeft();
+            tempExpr.factor(unknowns[u]);
+            if(tempExpr.getTerms().size() == 1) {
+                tempExpr = Expression(0.0);
+            }
+            else {
+                Expression term = tempExpr.getTerms()[0];
+                tempExpr.removeTerm(term);
+                term.replace(unknowns[u], Expression(1));
+                term._simplify(Expression::FullSimplification, Expression::Recursive);
+                tempExpr.divideBy(term);
+                tempExpr.changeSign();
+                tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+            }
+            if(!tempExpr.contains(unknowns[u]))
+            {
+                Expression algExpr = Expression::fromEquation(unknowns[u], tempExpr);
+                algExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+                finalAlgorithms.prepend(algExpr.toString());
+                systemEquations.removeAt(lastFound);
+                unknowns.removeAt(u);
+                u = 0;  //Restart checking
+            }
+        }
+    }
+
+
+    QMap<int,int> stateToEquationsMap;
+    for(int e=0; e<systemEquations.size(); ++e) {
+        for(int u=0; u<unknowns.size(); ++u) {
+            Expression delayExpr = Expression("delay_"+unknowns[u].toString()+".getIdx(1)");
+            if(systemEquations[e].contains(delayExpr)) {
+                Expression temp = systemEquations[e];
+                temp.toLeftSided();
+                temp.linearize();
+                temp = (*temp.getLeft());
+                temp._simplify(Expression::FullSimplification, Expression::Recursive);
+                temp.factor(delayExpr);
+                temp = temp.getTerms().first();
+                if(temp.getFactors().contains(delayExpr)) {
+                    stateToEquationsMap.insert(u,e);
+                    break;
+                }
+            }
+        }
+    }
+
+    //If each system equation contains the derivative of one unknown, we can convert the system to an explicit ODE
+    bool isExplicitODE = (stateToEquationsMap.count() == unknowns.size());
+    if(isExplicitODE) {
+
+        printMessage("System is explicit ODE, using fixed-point equation solver.");
+
+        //First rearrange system equations to match unknowns
+        QList<Expression> tempEquations;
+        for(int i=0; i<unknowns.size(); ++i) {
+            tempEquations.append(systemEquations[stateToEquationsMap.value(i)]);
+        }
+        systemEquations = tempEquations;
+
+        //Now break out the unknown variable to the left-hand side of each system equation
+        for(int i=0; i<unknowns.size(); ++i) {
+            Expression u = unknowns[i];
+            Expression e = systemEquations[i];
+
+            e.toLeftSided();
+            e.linearize();
+            e = (*e.getLeft());
+            e._simplify(Expression::FullSimplification, Expression::Recursive);
+            e.factor(u);
+
+            if(e.getTerms().size() == 1)
+            {
+                e = Expression::fromEquation(Expression(0), Expression(0));   //Only one term, state var must equal zero
+            }
+            else
+            {
+                Expression term = e.getTerms().first();
+                e.removeTerm(term);
+                printMessage("Removed first term: "+e.toString());
+                term.replace(u, Expression(1));
+                printMessage("Removed \""+u.toString()+"\" from term: "+e.toString());
+                term._simplify(Expression::FullSimplification, Expression::Recursive);
+                printMessage("Simplified term: "+e.toString());
+                e.divideBy(term);
+                e.changeSign();
+                e._simplify(Expression::FullSimplification, Expression::Recursive);
+                printMessage(e.toString());
+            }
+            systemEquations[i] = Expression::fromEquation(e,Expression(0));
+        }
+    }
+
+    logStream << "\n--- Initial Algorithms ---\n";
+    for(int i=0; i<preAlgorithms.size(); ++i) {
+        logStream << preAlgorithms[i] << "\n";
+    }
+
+    logStream << "\n--- Equation System ---\n";
+    for(int i=0; i<systemEquations.size(); ++i) {
+        if(isExplicitODE) {
+            logStream << unknowns[i].toString() << " = " << systemEquations[i].getLeft()->toString() << "\n";
+        }
+        else {
+            logStream << systemEquations[i].getLeft()->toString() << " = 0\n";
+        }
+    }
+
+    logStream << "\n--- Final Algorithms ---\n";
+    for(int i=0; i<finalAlgorithms.size(); ++i) {
+        logStream << finalAlgorithms[i] << "\n";
+    }
+
+    //Generate component specification object
+
+    comp.typeName = typeName;
+    comp.displayName = displayName;
+    comp.cqsType = cqsType;
+    if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
+
+    for(int i=0; i<ports.size(); ++i)
+    {
+        comp.portNames << ports[i].name;
+        comp.portDescriptions << ports[i].description;
+        comp.portUnits << ports[i].unit;
+        comp.portNodeTypes << ports[i].nodetype;
+        comp.portTypes << ports[i].porttype;
+        comp.portNotReq << ports[i].notrequired;
+        comp.portDefaults << ports[i].defaultvalue;
+    }
+
+    for(int i=0; i<parameters.size(); ++i)
+    {
+        comp.parNames << parameters[i].name;
+        comp.parDisplayNames << parameters[i].displayName;
+        comp.parDescriptions << parameters[i].description;
+        comp.parUnits << parameters[i].unit;
+        comp.parInits << parameters[i].init;
+    }
+
+    comp.parNames << "mTolerance";
+    comp.parDisplayNames << "tolerance";
+    comp.parDescriptions << "Solver tolerance";
+    comp.parUnits << "-";
+    comp.parInits << "1e-5";
+
+    for(int i=0; i<variables.size(); ++i)
+    {
+        comp.varNames.append(variables[i].name);
+        comp.varInits.append(variables[i].init);
+        comp.varTypes.append("double");
+    }
+
+    for(const auto &der : derivatives) {
+        comp.varNames.append("delay_"+der);
+        comp.varInits.append("");
+        comp.varTypes.append("Delay");
+    }
+
+    for(int i=0; i<limitedVariables.size(); ++i) {
+        comp.parNames << "lowerlimit_"+limitedVariables[i];
+        comp.parDisplayNames << limitedVariables[i]+"_min";
+        comp.parDescriptions << "Minimum value for "+limitedVariables[i];
+        comp.parUnits << "-";
+        comp.parInits << lowerLimits[i];
+
+        comp.parNames << "upperlimit_"+limitedVariables[i];
+        comp.parDisplayNames << limitedVariables[i]+"_max";
+        comp.parDescriptions << "Maximum value for "+limitedVariables[i];
+        comp.parUnits << "-";
+        comp.parInits << upperLimits[i];
+    }
+
+    comp.varNames << "mpSolver";
+    comp.varInits << "";
+    comp.varTypes << "KinsolSolver*";
+
+    QString solverMethod = "KinsolSolver::NewtonIteration";
+    if(isExplicitODE) {
+        solverMethod = "KinsolSolver::FixedPointIteration";
+    }
+    comp.initEquations << "mpSolver = new KinsolSolver(this, mTolerance, "+QString::number(systemEquations.size())+", "+solverMethod+");";
+    for(const auto &der : derivatives) {
+        comp.initEquations << "delay_"+der+".initialize(2,"+der+");";
+    }
+
+    comp.simEquations << "//Initial algorithm section";
+    for(int i=0; i<preAlgorithms.size(); ++i)
+    {
+        comp.simEquations << preAlgorithms[i]+";";
+    }
+    comp.simEquations << "";
+    comp.simEquations << "//Provide Kinsol with updated state variables";
+    for(int u=0; u<unknowns.size(); ++u) {
+        comp.simEquations << "mpSolver->setState("+QString::number(u)+","+unknowns[u].toString()+");";
+    }
+    comp.simEquations << "";
+    comp.simEquations << "//Solve algebraic equation system";
+    comp.simEquations << "mpSolver->solve();";
+    comp.simEquations << "";
+    comp.simEquations << "//Obtain new state variables from Kinsol";
+    for(int u=0; u<unknowns.size(); ++u) {
+        comp.simEquations << unknowns[u].toString()+" = mpSolver->getState("+QString::number(u)+");";
+    }
+    comp.simEquations << "";
+
+    if(!limitedVariables.isEmpty()) {
+        for(int i=0; i<limitedVariables.size(); ++i) {
+            QString var = limitedVariables.at(i);
+            QString der = limitedDerivatives.at(i);
+            comp.simEquations << "if("+var+"<lowerlimit_"+var+") {";
+            comp.simEquations << "    "+var+" = lowerlimit_"+var+";";
+            if(!der.isEmpty()) {
+                comp.simEquations << "    delay_"+var+".initialize(2,"+var+");";
+                comp.simEquations << "    if("+der+"<0) {";
+                comp.simEquations << "        "+der+" = 0;";
+                comp.simEquations << "        delay_"+der+".initialize(2,"+der+");";
+                comp.simEquations << "    }";
+            }
+            comp.simEquations << "}";
+            comp.simEquations << "if("+var+">upperlimit_"+var+") {";
+            comp.simEquations << "    "+var+" = upperlimit_"+var+";";
+            if(!der.isEmpty()) {
+                comp.simEquations << "    delay_"+var+".initialize(2,"+var+");";
+                comp.simEquations << "    if("+der+">0) {";
+                comp.simEquations << "        "+der+" = 0;";
+                comp.simEquations << "        delay_"+der+".initialize(2,"+der+");";
+                comp.simEquations << "    }";
+            }
+            comp.simEquations << "}";
+        }
+    }
+    comp.simEquations << "";
+
+    comp.simEquations << "//Final algorithm section";
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        comp.simEquations << finalAlgorithms[i]+";";
+    }
+    comp.simEquations << "";
+    for(const auto &der : derivatives) {
+        comp.simEquations << "delay_"+der+".update("+der+");";
+    }
+
+    comp.auxiliaryFunctions << "//! @brief Returns the residuals for speed and position";
+    comp.auxiliaryFunctions << "//! @param [in] y Array of state variables from previous iteration";
+    comp.auxiliaryFunctions << "//! @param [out] res Array of residuals or new state variables";
+    comp.auxiliaryFunctions << "void getResiduals(double *y, double *res) {";
+    for(int u=0; u<unknowns.size(); ++u) {
+        comp.auxiliaryFunctions << "    double "+unknowns[u].toString()+" = y["+QString::number(u)+"];";
+    }
+    comp.auxiliaryFunctions << "    ";
+    for(int e=0; e<systemEquations.size(); ++e) {
+        comp.auxiliaryFunctions << "    res["+QString::number(e)+"] = "+systemEquations[e].getLeft()->toString()+";";
+    }
+    comp.auxiliaryFunctions << "}";
 }
 
 
