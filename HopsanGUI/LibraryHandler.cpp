@@ -1242,7 +1242,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             if (!gpConfig->getGCCPath().isEmpty())
                             {
                                 gpMessageHandler->addInfoMessage("Attempting to recompile library: "+pLibrary->name+"...");
-                                recompileLibrary(pLibrary,0,true);
+                                recompileLibrary(pLibrary,2,true);
                                 gpMessageHandler->collectHopsanCoreMessages();
 
                                 // Try to load again

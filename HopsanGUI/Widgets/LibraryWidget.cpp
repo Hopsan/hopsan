@@ -654,7 +654,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     path = QFileInfo(cafFile).path();
                     if(sourceFile.endsWith(".mo"))
                     {
-                        if (!spGenerator->generateFromModelica(path+"/"+sourceFile, 0,
+                        if (!spGenerator->generateFromModelica(path+"/"+sourceFile, 2,
                                                                HopsanGeneratorGUI::CompileT::DoNotCompile))
                         {
                             gpMessageHandler->addErrorMessage("Failed to import Modelica");
