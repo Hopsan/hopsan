@@ -2435,7 +2435,7 @@ void Expression::factorMostCommonFactor()
 
 //! @brief Verifies that the expression is correct
 //FIXED
-bool Expression::verifyExpression()
+bool Expression::verifyExpression() const
 {
 
     //Verify all functions
