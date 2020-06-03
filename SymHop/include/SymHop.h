@@ -149,7 +149,7 @@ public:
     void factor(const Expression var);
     void factorMostCommonFactor();
 
-    bool verifyExpression();
+    bool verifyExpression() const;
 
     //Public functions that are not intended to be used externally
     bool _verifyFunctions() const;
