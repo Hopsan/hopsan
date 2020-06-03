@@ -12,11 +12,16 @@ classdef hopsan
         function obj = hopsan()
             if ispc
                 path = fullfile(getenv("HOPSANHOME"), '\bin\hopsanc.dll');
+                complibpath = fullfile(getenv("HOPSANHOME"), '\componentLibraries\defaultLibrary\defaultcomponentlibrary.dll');
             elseif isunix
                 path = fullfile(getenv("HOPSANHOME"), '\bin\libhopsanc.so');
+                complibpath = fullfile(getenv("HOPSANHOME"), '\componentLibraries\defaultLibrary\libdefaultcomponentlibrary.so');
             end
             hpath = fullfile(getenv("HOPSANHOME"), '\hopsanc\include\hopsanc.h');
             loadlibrary(path,hpath);
+            if isfile(complibpath)
+                calllib('hopsanc','loadLibrary',complibpath);
+            end
             obj.checkMessages();
         end
 
