@@ -643,6 +643,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 auto spGenerator = createDefaultImportGenerator();
 
                 //Generate C++ code from Modelica if source files are Modelica code
+                bool modelicaFailed=false;
                 for(const QString &caf : pLib->cafFiles)
                 {
                     QFile cafFile(caf);
@@ -657,17 +658,20 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                         if (!spGenerator->generateFromModelica(path+"/"+sourceFile, 2,
                                                                HopsanGeneratorGUI::CompileT::DoNotCompile))
                         {
-                            gpMessageHandler->addErrorMessage("Failed to import Modelica");
+                            modelicaFailed = true;
+                            gpMessageHandler->addErrorMessage("Failed to translate Modelica to C++");
                         }
                     }
                 }
 
-                if (!spGenerator->compileComponentLibrary(libPath)) {
-                    gpMessageHandler->addErrorMessage("Library compiler failed");
+                if(!modelicaFailed) {
+                    if (!spGenerator->compileComponentLibrary(libPath)) {
+                        gpMessageHandler->addErrorMessage("Library compiler failed");
+                    }
                 }
 
                 // Now reload the library
-                gpLibraryHandler->loadLibrary(libPath);
+                gpLibraryHandler->loadLibrary(libPath,ExternalLib,Visible,NoRecompile);
             }
             gpModelHandler->restoreState();
             getLibraryItem(pLib)->setExpanded(expanded);
