@@ -102,7 +102,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     ComponentSpecification comp;
 
     //qDebug() << "Parsing!";
-    printMessage("Parsing Modelica code...");
+    printMessage("Parsing "+moFile.fileName()+"...");
 
     //Parse Modelica code and generate equation system
     parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
@@ -111,29 +111,33 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     printMessage("Transforming...");
 
     QFile logFile(QFileInfo(path).absolutePath()+"/generatorlog.txt");
-    qDebug() << "Writing log to " + QFileInfo(path).absolutePath()+"generatorlog.txt";
     logFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
     QTextStream logStream(&logFile);
 
+    bool success = false;
     if(solver == BilinearTransform)
     {
         //Transform equation system using Bilinear Transform method
-        generateComponentObject(comp, typeName, displayName, cqsType, /*initAlgorithms,*/ preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+        success = generateComponentObject(comp, typeName, displayName, cqsType, /*initAlgorithms,*/ preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
     else if(solver == NumericalIntegration)
     {
         //Transform equation system using numerical integration methods
-        generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+        success = generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
     else if(solver == Kinsol)
     {
-        generateComponentObjectKinsol(comp,typeName,displayName,cqsType,preAlgorithms,equations,finalAlgorithms,portList,parametersList,variablesList,logStream);
+        success = generateComponentObjectKinsol(comp,typeName,displayName,cqsType,preAlgorithms,equations,finalAlgorithms,portList,parametersList,variablesList,logStream);
     }
 
     logFile.close();
 
-    //qDebug() << "Compiling!";
     printMessage("Generating component...");
+
+    if(!success) {
+        printErrorMessage("Translation from Modelica to C++ failed.");
+        return false;
+    }
 
     //Compile component
     QString cppCode = generateSourceCodefromComponentSpec(comp, false);
@@ -509,7 +513,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
 
 //! @brief Generates XML and compiles the new component
-void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, /*QStringList &initAlgorithms,*/ QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, /*QStringList &initAlgorithms,*/ QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     logStream << "Initializing Modelica generator for bilinear transform.\n";
     logStream << "Date and time: " << QDateTime::currentDateTime().toString() << "\n";
@@ -536,7 +540,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         {
             printErrorMessage("Equation is not an equation.");
             logStream << "Last equation is not an equation. Aborting.";
-            return;
+            return false;
         }
     }
 
@@ -563,7 +567,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             {
                 //! @todo Use sorting instead?
                 printErrorMessage("VariableLimits not preceeded by equations defining variable.");
-                return;
+                return false;
             }
 
             limitedVariables << systemEquations[i].getArgument(0);
@@ -581,7 +585,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             if(i<2)
             {
                 printErrorMessage("Variable2Limits not preeded by equations defining variable and derivative.");
-                return;
+                return false;
             }
 
             limitedVariables << systemEquations[i].getArgument(0);
@@ -602,7 +606,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         if(!systemEquations[i].verifyExpression())
         {
             printErrorMessage("Component generation failed: Verification of variables failed.");
-            return;
+            return false;
         }
     }
 
@@ -679,7 +683,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     if(!verifyEquationSystem(systemEquations, unknowns, this))
     {
 //        printErrorMessage("Verification of equation system failed.");
-        return;
+        return false;
     }
 
     //Make all equations left-sided
@@ -905,7 +909,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         printErrorMessage("Could not sort equations. System is probably under-determined.");
         //qDebug() << "Could not sort equations. System is probably under-determined.";
-        return;
+        return false;
     }
 
     for(int e=0; e<systemEquations.size(); ++e)
@@ -1071,10 +1075,12 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         comp.simEquations << finalAlgorithms[i]+";";
     }
+
+    return true;
 }
 
 
-void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType,
+bool HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType,
                                                                           QStringList  &initAlgorithms, QStringList &preAlgorithms, QStringList &plainEquations,
                                                                           QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters,
                                                                           QList<VariableSpecification> &variables, QTextStream &logStream)
@@ -1109,7 +1115,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         {
             printErrorMessage("Equation is not an equation.");
             logStream << "Last equation is not an equation. Aborting.";
-            return;
+            return false;
         }
     }
 
@@ -1512,7 +1518,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         printErrorMessage("Number of system equations does not equal number of system variables.");
         printErrorMessage("Number of system equations: " + QString::number(systemEquations.size()));
         printErrorMessage("Number of system variables: " + QString::number(unknowns.size()));
-        return;
+        return false;
     }
 
     //Differentiate each equation for each state variable to generate the Jacobian matrix
@@ -1549,7 +1555,7 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
         logStream << "\nCould not sort system equations. System is probably under-determined. Aborting.";
         printErrorMessage("Could not sort equations. System is probably under-determined.");
         qDebug() << "Could not sort equations. System is probably under-determined.";
-        return;
+        return false;
     }
 
     logStream << "\n--- Jacobian Matrix ---\n";
@@ -1938,14 +1944,16 @@ void HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     //comp.simEquations.append(stateEquations);
 
     equations.clear();
+
+    return true;
 }
 
-void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
-{
-    logStream << "Initializing Modelica generator for Kinsol solver.\n";
-    logStream << "Date and time: " << QDateTime::currentDateTime().toString() << "\n";
 
-       //Create list of equations
+bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+{
+    printMessage("Initializing Modelica generator for Kinsol solver.");
+
+    //Create list of equations
     QList<Expression> systemEquations;
     QStringList limitedVariables;
     QStringList limitedDerivatives;
@@ -1971,51 +1979,51 @@ void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             }
             else {
                 printErrorMessage("Wrong number of arguments for \"limitVariable\" function (should be 3 or 4)");
-                return;
+                return false;
             }
             systemEquations.removeLast();
             continue;
         }
         logStream << systemEquations.last().toString() << "\n";
         if(!systemEquations[e].isEquation()) {
-            printErrorMessage("Equation is not an equation.");
-            return;
+            printErrorMessage("Expected an equation: "+systemEquations[e].toString());
+            return false;
         }
     }
 
     //Verify each equation
-    for(int i=0; i<systemEquations.size(); ++i) {
-        if(!systemEquations[i].verifyExpression()) {
-            printErrorMessage("Component generation failed: Verification of variables failed.");
-            return;
+    for(const auto &equation : systemEquations) {
+        if(!equation.verifyExpression()) {
+            printErrorMessage("Illegal function(s) found in "+equation.toString());
+            return false;
         }
     }
 
     //Sum up all used variables to a single list
     QList<Expression> unknowns;
-    for(int i=0; i<systemEquations.size(); ++i) {
-        unknowns.append(systemEquations[i].getVariables());
+    for(const auto &equation : systemEquations) {
+        unknowns.append(equation.getVariables());
     }
 
     QList<Expression> knowns;
-    for(int i=0; i<preAlgorithms.size(); ++i) {
-        if(preAlgorithms[i].contains("=")) {
-            QString var = preAlgorithms[i].section("=",0,0).trimmed();
+    for(const auto &algorithm : preAlgorithms) {
+        if(algorithm.contains("=")) {
+            QString var = algorithm.section("=",0,0).trimmed();
             knowns.append(var);
         }
     }
 
-    for(int i=0; i<finalAlgorithms.size(); ++i) {
-        if(finalAlgorithms[i].contains("=")) {
-            QString var = finalAlgorithms[i].section("=",0,0).trimmed();
+    for(const auto &algorithm : preAlgorithms) {
+        if(algorithm.contains("=")) {
+            QString var = algorithm.section("=",0,0).trimmed();
             if(var.contains("(") || var.contains("{")) continue;
             knowns.append(var);
         }
     }
 
     //Add parameters to list of known variables
-    for(int i=0; i<parameters.size(); ++i) {
-        knowns.append(Expression(parameters[i].name));
+    for(const auto  &par : parameters) {
+        knowns.append(Expression(par.name));
     }
 
     for(int i=0; i<ports.size(); ++i) {
@@ -2040,15 +2048,16 @@ void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     }
 
     //Remove known variables from list of unknowns
-    for(int i=0; i<knowns.size(); ++i) {
-        unknowns.removeAll(knowns[i]);
+    for(const auto &known : knowns) {
+        unknowns.removeAll(known);
     }
     removeDuplicates(unknowns);
 
     //Verify equation system
+    printMessage("Found "+QString::number(systemEquations.size())+" equations, "+QString::number(knowns.size())+" known variables and "+QString::number(unknowns.size())+" unknown variables.");
     if(!verifyEquationSystem(systemEquations, unknowns, this)) {
         printErrorMessage("Verification of equation system failed.");
-        return;
+        return false;
     }
 
     //Make all equations left-sided
@@ -2098,7 +2107,10 @@ void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
                 tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
             }
             if(!tempExpr.contains(usedUnknowns[0])) {
-                preAlgorithms.append(Expression::fromEquation(usedUnknowns[0], tempExpr).toString());
+                Expression algorithm = Expression::fromEquation(usedUnknowns[0], tempExpr);
+                printMessage("Moving the following equations to intial algorithm section:");
+                printMessage("  "+algorithm.toString());
+                preAlgorithms.append(algorithm.toString());
                 systemEquations.removeAt(e);
                 --e;
                 unknowns.removeAll(usedUnknowns[0]);
@@ -2140,6 +2152,8 @@ void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             {
                 Expression algExpr = Expression::fromEquation(unknowns[u], tempExpr);
                 algExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+                printMessage("Moving the following equations to final algorithms:");
+                printMessage("  "+algExpr.toString());
                 finalAlgorithms.prepend(algExpr.toString());
                 systemEquations.removeAt(lastFound);
                 unknowns.removeAt(u);
@@ -2201,37 +2215,40 @@ void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             {
                 Expression term = e.getTerms().first();
                 e.removeTerm(term);
-                printMessage("Removed first term: "+e.toString());
                 term.replace(u, Expression(1));
-                printMessage("Removed \""+u.toString()+"\" from term: "+e.toString());
                 term._simplify(Expression::FullSimplification, Expression::Recursive);
-                printMessage("Simplified term: "+e.toString());
                 e.divideBy(term);
                 e.changeSign();
                 e._simplify(Expression::FullSimplification, Expression::Recursive);
-                printMessage(e.toString());
             }
             systemEquations[i] = Expression::fromEquation(e,Expression(0));
         }
     }
 
     logStream << "\n--- Initial Algorithms ---\n";
+    printMessage("Initial algorithms:");
     for(int i=0; i<preAlgorithms.size(); ++i) {
         logStream << preAlgorithms[i] << "\n";
+        printMessage("  "+preAlgorithms[i]);
     }
 
     logStream << "\n--- Equation System ---\n";
+    printMessage("Equation system:");
     for(int i=0; i<systemEquations.size(); ++i) {
         if(isExplicitODE) {
             logStream << unknowns[i].toString() << " = " << systemEquations[i].getLeft()->toString() << "\n";
+            printMessage("  "+unknowns[i].toString()+" = "+systemEquations[i].getLeft()->toString());
         }
         else {
             logStream << systemEquations[i].getLeft()->toString() << " = 0\n";
+            printMessage("  "+systemEquations[i].getLeft()->toString()+" = 0");
         }
     }
 
     logStream << "\n--- Final Algorithms ---\n";
+    printMessage("Final algorithms:");
     for(int i=0; i<finalAlgorithms.size(); ++i) {
+        printMessage("  "+finalAlgorithms[i]);
         logStream << finalAlgorithms[i] << "\n";
     }
 
@@ -2378,6 +2395,10 @@ void HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         comp.auxiliaryFunctions << "    res["+QString::number(e)+"] = "+systemEquations[e].getLeft()->toString()+";";
     }
     comp.auxiliaryFunctions << "}";
+
+    printMessage("Component specification succesfully generated!");
+
+    return true;
 }
 
 
