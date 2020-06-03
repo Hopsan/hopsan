@@ -1690,6 +1690,7 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, int solve
     }
 
     //Generate C++ code from Modelica if source files are Modelica code
+    bool modelicaFailed=false;
     for(const QString &caf : pLib->cafFiles)
     {
         QFile cafFile(caf);
@@ -1706,7 +1707,8 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, int solve
             if (!spGenerator->generateFromModelica(path+"/"+sourceFile, solver,
                                                    HopsanGeneratorGUI::CompileT::DoNotCompile))
             {
-                gpMessageHandler->addErrorMessage("Failed to import Modelica");
+                modelicaFailed = true;
+                gpMessageHandler->addErrorMessage("Failed to translate Modelica to C++");
             }
         }
     }
@@ -1728,9 +1730,11 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, int solve
 
     //Call compile utility
     QString libfile = QFileInfo(pLib->xmlFilePath).absoluteFilePath();
-    if (!spGenerator->compileComponentLibrary(libfile, extraCFlags, extraLFlags))
-    {
-        gpMessageHandler->addErrorMessage(QString("Failed to compile component library: %1").arg(libfile));
+    if(!modelicaFailed) {
+        if (!spGenerator->compileComponentLibrary(libfile, extraCFlags, extraLFlags))
+        {
+            gpMessageHandler->addErrorMessage(QString("Failed to compile component library: %1").arg(libfile));
+        }
     }
 
     if(!dontUnloadAndLoad)
