@@ -28,6 +28,7 @@ defineTest(have_msgpack) {
 
 have_local_msgpack() {
   INCLUDEPATH *= $${msgpack_home}/include
+  message(Found local msgpack-c)
 } else:have_system_msgpack() {
   CONFIG *= link_pkgconfig
   PKGCONFIG *= msgpack
