@@ -79,6 +79,7 @@ public:
     void commonConstructorCode(QStringList symbols, bool &ok, const ExpressionSimplificationT simplifications=FullSimplification);
 
     bool operator==(const Expression &other) const;
+    bool operator!=(const Expression &other) const;
     void operator=(const Expression &other);
     void operator=(Expression &other);
 

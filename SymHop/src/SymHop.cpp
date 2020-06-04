@@ -606,6 +606,14 @@ bool Expression::operator==(const Expression &other) const
 }
 
 
+//! @brief Equality operator for expressions
+//FIXED
+bool Expression::operator!=(const Expression &other) const
+{
+    return !(*this == other);
+}
+
+
 //! @brief Assignment operator for expressions
 //! @param other Expression to assign from
 void Expression::operator=(const Expression &other)
@@ -1649,6 +1657,10 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             ret = Expression(0);
         }
         else if(func.startsWith("mDelay"))
+        {
+            ret = Expression(0);
+        }
+        else if(func.startsWith("delay_") && func.contains(".getIdx"))
         {
             ret = Expression(0);
         }
