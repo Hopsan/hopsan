@@ -2225,6 +2225,27 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         }
     }
 
+
+    //Differentiate each equation for each state variable to generate the Jacobian matrix
+    QList<QList<Expression> > jacobian;
+    if(!isExplicitODE) {
+        for(int e=0; e<systemEquations.size(); ++e)
+        {
+             //Remove all delay operators, since they shall not be in the Jacobian anyway
+            gTempExpr = systemEquations[e];
+            gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+
+            QList<Expression> result;
+            for(int u=0; u<unknowns.size(); ++u)
+            {
+                result.append(*concurrentDiff(unknowns[u]).getLeft());
+            }
+
+            jacobian.append(result);
+        }
+    }
+
+
     logStream << "\n--- Initial Algorithms ---\n";
     printMessage("Initial algorithms:");
     for(int i=0; i<preAlgorithms.size(); ++i) {
@@ -2386,7 +2407,8 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     comp.auxiliaryFunctions << "//! @brief Returns the residuals for speed and position";
     comp.auxiliaryFunctions << "//! @param [in] y Array of state variables from previous iteration";
     comp.auxiliaryFunctions << "//! @param [out] res Array of residuals or new state variables";
-    comp.auxiliaryFunctions << "void getResiduals(double *y, double *res) {";
+    comp.auxiliaryFunctions << "void getResiduals(double *y, double *res)";
+    comp.auxiliaryFunctions << "{";
     for(int u=0; u<unknowns.size(); ++u) {
         comp.auxiliaryFunctions << "    double "+unknowns[u].toString()+" = y["+QString::number(u)+"];";
     }
@@ -2395,6 +2417,30 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         comp.auxiliaryFunctions << "    res["+QString::number(e)+"] = "+systemEquations[e].getLeft()->toString()+";";
     }
     comp.auxiliaryFunctions << "}";
+
+    if(!isExplicitODE) {
+        comp.auxiliaryFunctions << "";
+        comp.auxiliaryFunctions << "//! @brief Returns the residuals for speed and position";
+        comp.auxiliaryFunctions << "//! @param [in] y Array of state variables from previous iteration";
+        comp.auxiliaryFunctions << "//! @param [in] f Array of function values (f(y))";
+        comp.auxiliaryFunctions << "//! @param [out] J Array of Jacobian elements, stored column-wise";
+        comp.auxiliaryFunctions << "void getJacobian(double *y, double *f, double *J)";
+        comp.auxiliaryFunctions << "{";
+        for(int u=0; u<unknowns.size(); ++u) {
+            comp.auxiliaryFunctions << "    double "+unknowns[u].toString()+" = y["+QString::number(u)+"];";
+        }
+        comp.auxiliaryFunctions << "    ";
+
+        //Only compute Jacobian elements that are non-zero for best performance
+        for(int i=0; i<jacobian.size(); ++i) {
+            for(int j=0; j<jacobian[i].size(); ++j) {
+                if(jacobian[i][j] != Expression(0)) {
+                    comp.auxiliaryFunctions << QString("    J[%2*%3+%1] = ").arg(i).arg(j).arg(unknowns.size()) + jacobian[i][j].toString() + ";";
+                }
+            }
+        }
+        comp.auxiliaryFunctions << "}";
+    }
 
     printMessage("Component specification succesfully generated!");
 
