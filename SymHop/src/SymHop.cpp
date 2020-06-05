@@ -1237,7 +1237,7 @@ QString Expression::toString() const
         }
         if(mDivisors.size() > 0) { ret.chop(1); }
         if(mDivisors.size() > 1) { ret.append(")"); }
-        ret.remove("*-1.0*");
+        ret.replace("*-1.0*","*");
         ret.remove("-1.0*");
         ret.remove("*-1.0");
         if(isOdd) {
