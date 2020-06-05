@@ -66,9 +66,18 @@ bool CSVParserNG::openText(HString text)
         return false;
     }
 
-    char tempdirbuff[MAX_PATH+1];
-    GetTempPathA(MAX_PATH+1, tempdirbuff);
-    HString tmpfilename = HString(tempdirbuff)+tmpfilebuff;
+    HString tmpfilename;
+    // tmpnam_s should give an absolute path C:\something, if second char is not :
+    // then assume its a relative path (this happens with MinGW-w64 4.9.4)
+    if (tmpfilebuff[1] != ':') {
+        char tempdirbuff[MAX_PATH+1];
+        GetTempPathA(MAX_PATH+1, tempdirbuff);
+        tmpfilename = HString(tempdirbuff)+tmpfilebuff;
+    }
+    else {
+        tmpfilename = HString(tmpfilebuff);
+    }
+
     FILE* pTempfile = fopen(tmpfilename.c_str(), "w+b");
 #else
     char tmpfilebuff[18] {"hopsan-csv-XXXXXX"};
