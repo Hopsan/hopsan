@@ -145,3 +145,24 @@ cmake --build . --config Release --parallel 8
 ctest --parallel 8
 cmake --build . --config Release --target install
 ```
+## Generating Documentation
+The Hopsan documentation is based on Doxygen. Additionally Graphviz and dvipng (comes with LaTeX) are used to generate dependency graphs and equations.
+
+### Generate on GNU/Linux
+Install the necessary packages with: `apt-get install doxygen graphviz dvipng`
+
+To build the documentation, run the *buildDocumentation.sh* script. Add the argument, **full**, to build the full documentation including code reference.
+Open `doc/html/index.html` in a web browser after building.
+
+### Generate on Windows
+
+* (Required) The latest version of Doxygen can be downloaded here: http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
+* (Optional) A LaTeX package including dvipng (to generate png for latex equations), We recommend: http://miktex.org/
+* (Optional) Ghostscript **32-bit** version for formulas, install to the default directory. Example: `C:/ProgramFiles/gs/gs9.27` or `C:/ProgramFiles (x86)/gs/gs9.27`  
+  The search paths are hard-coded in the *buildDocumentation.bat* script, you may need to add new path setting in the script if your version is newer.  
+  You can find it here: https://www.ghostscript.com/download/gsdnld.html
+* (Optional) The latest stable version of Graphviz can be downloaded here: https://graphviz.org/download  
+  The search paths are hard-coded in the *buildDocumentation.bat* script, you may need to add new path setting in the script if your version is newer.
+
+To build the documentation, double click the *buildDocumentation.bat* or *buildFullDocumentation.bat* script files.
+Open `doc/html/index.html` in a web browser after building.
