@@ -26,6 +26,7 @@
 #include "GeneratorUtilities.h"
 #include <QTime>
 #include <QFileInfo>
+#include <QRandomGenerator>
 
 namespace {
 
@@ -2162,89 +2163,22 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         }
     }
 
-
-    QMap<int,int> stateToEquationsMap;
-    for(int e=0; e<systemEquations.size(); ++e) {
-        for(int u=0; u<unknowns.size(); ++u) {
-            Expression delayExpr = Expression("delay_"+unknowns[u].toString()+".getIdx(1)");
-            if(systemEquations[e].contains(delayExpr)) {
-                Expression temp = systemEquations[e];
-                temp.toLeftSided();
-                temp.linearize();
-                temp = (*temp.getLeft());
-                temp._simplify(Expression::FullSimplification, Expression::Recursive);
-                temp.factor(delayExpr);
-                temp = temp.getTerms().first();
-                if(temp.getFactors().contains(delayExpr)) {
-                    stateToEquationsMap.insert(u,e);
-                    break;
-                }
-            }
-        }
-    }
-
-    //If each system equation contains the derivative of one unknown, we can convert the system to an explicit ODE
-    bool isExplicitODE = (stateToEquationsMap.count() == unknowns.size());
-    if(isExplicitODE) {
-
-        printMessage("System is explicit ODE, using fixed-point equation solver.");
-
-        //First rearrange system equations to match unknowns
-        QList<Expression> tempEquations;
-        for(int i=0; i<unknowns.size(); ++i) {
-            tempEquations.append(systemEquations[stateToEquationsMap.value(i)]);
-        }
-        systemEquations = tempEquations;
-
-        //Now break out the unknown variable to the left-hand side of each system equation
-        for(int i=0; i<unknowns.size(); ++i) {
-            Expression u = unknowns[i];
-            Expression e = systemEquations[i];
-
-            e.toLeftSided();
-            e.linearize();
-            e = (*e.getLeft());
-            e._simplify(Expression::FullSimplification, Expression::Recursive);
-            e.factor(u);
-
-            if(e.getTerms().size() == 1)
-            {
-                e = Expression::fromEquation(Expression(0), Expression(0));   //Only one term, state var must equal zero
-            }
-            else
-            {
-                Expression term = e.getTerms().first();
-                e.removeTerm(term);
-                term.replace(u, Expression(1));
-                term._simplify(Expression::FullSimplification, Expression::Recursive);
-                e.divideBy(term);
-                e.changeSign();
-                e._simplify(Expression::FullSimplification, Expression::Recursive);
-            }
-            systemEquations[i] = Expression::fromEquation(e,Expression(0));
-        }
-    }
-
-
     //Differentiate each equation for each state variable to generate the Jacobian matrix
     QList<QList<Expression> > jacobian;
-    if(!isExplicitODE) {
-        for(int e=0; e<systemEquations.size(); ++e)
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+         //Remove all delay operators, since they shall not be in the Jacobian anyway
+        gTempExpr = systemEquations[e];
+        gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+
+        QList<Expression> result;
+        for(int u=0; u<unknowns.size(); ++u)
         {
-             //Remove all delay operators, since they shall not be in the Jacobian anyway
-            gTempExpr = systemEquations[e];
-            gTempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
-
-            QList<Expression> result;
-            for(int u=0; u<unknowns.size(); ++u)
-            {
-                result.append(*concurrentDiff(unknowns[u]).getLeft());
-            }
-
-            jacobian.append(result);
+            result.append(*concurrentDiff(unknowns[u]).getLeft());
         }
-    }
 
+        jacobian.append(result);
+    }
 
     logStream << "\n--- Initial Algorithms ---\n";
     printMessage("Initial algorithms:");
@@ -2256,14 +2190,8 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     logStream << "\n--- Equation System ---\n";
     printMessage("Equation system:");
     for(int i=0; i<systemEquations.size(); ++i) {
-        if(isExplicitODE) {
-            logStream << unknowns[i].toString() << " = " << systemEquations[i].getLeft()->toString() << "\n";
-            printMessage("  "+unknowns[i].toString()+" = "+systemEquations[i].getLeft()->toString());
-        }
-        else {
             logStream << systemEquations[i].getLeft()->toString() << " = 0\n";
             printMessage("  "+systemEquations[i].getLeft()->toString()+" = 0");
-        }
     }
 
     logStream << "\n--- Final Algorithms ---\n";
@@ -2338,9 +2266,6 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     comp.varTypes << "KinsolSolver*";
 
     QString solverMethod = "KinsolSolver::NewtonIteration";
-    if(isExplicitODE) {
-        solverMethod = "KinsolSolver::FixedPointIteration";
-    }
     comp.initEquations << "mpSolver = new KinsolSolver(this, mTolerance, "+QString::number(systemEquations.size())+", "+solverMethod+");";
     for(const auto &der : derivatives) {
         comp.initEquations << "delay_"+der+".initialize(2,"+der+");";
@@ -2418,29 +2343,27 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     }
     comp.auxiliaryFunctions << "}";
 
-    if(!isExplicitODE) {
-        comp.auxiliaryFunctions << "";
-        comp.auxiliaryFunctions << "//! @brief Returns the residuals for speed and position";
-        comp.auxiliaryFunctions << "//! @param [in] y Array of state variables from previous iteration";
-        comp.auxiliaryFunctions << "//! @param [in] f Array of function values (f(y))";
-        comp.auxiliaryFunctions << "//! @param [out] J Array of Jacobian elements, stored column-wise";
-        comp.auxiliaryFunctions << "void getJacobian(double *y, double *f, double *J)";
-        comp.auxiliaryFunctions << "{";
-        for(int u=0; u<unknowns.size(); ++u) {
-            comp.auxiliaryFunctions << "    double "+unknowns[u].toString()+" = y["+QString::number(u)+"];";
-        }
-        comp.auxiliaryFunctions << "    ";
+    comp.auxiliaryFunctions << "";
+    comp.auxiliaryFunctions << "//! @brief Returns the residuals for speed and position";
+    comp.auxiliaryFunctions << "//! @param [in] y Array of state variables from previous iteration";
+    comp.auxiliaryFunctions << "//! @param [in] f Array of function values (f(y))";
+    comp.auxiliaryFunctions << "//! @param [out] J Array of Jacobian elements, stored column-wise";
+    comp.auxiliaryFunctions << "void getJacobian(double *y, double *f, double *J)";
+    comp.auxiliaryFunctions << "{";
+    for(int u=0; u<unknowns.size(); ++u) {
+        comp.auxiliaryFunctions << "    double "+unknowns[u].toString()+" = y["+QString::number(u)+"];";
+    }
+    comp.auxiliaryFunctions << "    ";
 
-        //Only compute Jacobian elements that are non-zero for best performance
-        for(int i=0; i<jacobian.size(); ++i) {
-            for(int j=0; j<jacobian[i].size(); ++j) {
-                if(jacobian[i][j] != Expression(0)) {
-                    comp.auxiliaryFunctions << QString("    J[%2*%3+%1] = ").arg(i).arg(j).arg(unknowns.size()) + jacobian[i][j].toString() + ";";
-                }
+    //Only compute Jacobian elements that are non-zero for best performance
+    for(int i=0; i<jacobian.size(); ++i) {
+        for(int j=0; j<jacobian[i].size(); ++j) {
+            if(jacobian[i][j] != Expression(0)) {
+                comp.auxiliaryFunctions << QString("    J[%2*%3+%1] = ").arg(i).arg(j).arg(unknowns.size()) + jacobian[i][j].toString() + ";";
             }
         }
-        comp.auxiliaryFunctions << "}";
     }
+    comp.auxiliaryFunctions << "}";
 
     printMessage("Component specification succesfully generated!");
 
