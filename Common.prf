@@ -7,8 +7,6 @@ CONFIG(debug, debug|release) {
     DEFINES *= QT_NO_DEBUG_OUTPUT
     DEFINES *= HOPSAN_BUILD_TYPE_RELEASE
 }
-#Add a defined value with the debug extension (that can be used in the code)
-DEFINES *= HOPSAN_DEBUG_POSTFIX=$${DEBUG_EXT}
 
 # Set optimization flags
 # Og = optimization that does not interfere with debugging

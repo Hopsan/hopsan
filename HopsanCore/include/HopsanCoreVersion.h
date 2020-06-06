@@ -43,17 +43,17 @@
  #define DEBUGRELEASECOMPILED "DEBUG"
  #define HOPSAN_BUILD_TYPE_STR "DEBUG"
  #if not defined(HOPSAN_DEBUG_POSTFIX)
-   #define HOPSAN_DEBUG_POSTFIX _d
+   #define HOPSAN_DEBUG_POSTFIX "_d"
  #endif
 #elif defined(HOPSAN_BUILD_TYPE_RELEASE) ||  defined(RELEASECOMPILING)
  #define DEBUGRELEASECOMPILED "RELEASE"
  #define HOPSAN_BUILD_TYPE_STR "RELEASE"
- #define HOPSAN_DEBUG_POSTFIX
+ #define HOPSAN_DEBUG_POSTFIX ""
 #else
  //#warning You must specify Debug or Release compiling by defining HOPSAN_BUILD_TYPE_DEBUG or HOPSAN_BUILD_TYPE_RELEASE
  #define DEBUGRELEASECOMPILED "UNDEFINED"
  #define HOPSAN_BUILD_TYPE_STR "UNDEFINED"
- #define HOPSAN_DEBUG_POSTFIX
+ #define HOPSAN_DEBUG_POSTFIX ""
 #endif
 
 // Include compiler info macros

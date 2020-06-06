@@ -44,14 +44,14 @@
 #endif
 
 #if defined _WIN32
-#define SHAREDLIB_PREFIX
-#define SHAREDLIB_SUFFIX dll
+#define SHAREDLIB_PREFIX ""
+#define SHAREDLIB_SUFFIX "dll"
 #elif defined __APPLE__
-#define SHAREDLIB_PREFIX lib
-#define SHAREDLIB_SUFFIX dylib
+#define SHAREDLIB_PREFIX "lib"
+#define SHAREDLIB_SUFFIX "dylib"
 #else
-#define SHAREDLIB_PREFIX lib
-#define SHAREDLIB_SUFFIX so
+#define SHAREDLIB_PREFIX "lib"
+#define SHAREDLIB_SUFFIX "so"
 #endif
 
 #endif // HOPSANCOREMACROS_H

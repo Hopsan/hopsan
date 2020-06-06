@@ -52,7 +52,7 @@
 #endif
 
 #ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-#define DEFAULTLIBFILE TO_STR(SHAREDLIB_PREFIX) "defaultcomponentlibrary" TO_STR(HOPSAN_DEBUG_POSTFIX) "." TO_STR(SHAREDLIB_SUFFIX)
+#define DEFAULTLIBFILE SHAREDLIB_PREFIX "defaultcomponentlibrary" HOPSAN_DEBUG_POSTFIX "." SHAREDLIB_SUFFIX
 const std::string defaultLibraryFilePath = DEFAULT_LIBRARY_ROOT "/" DEFAULTLIBFILE;
 #else
 const std::string defaultLibraryFilePath = "";
@@ -81,11 +81,11 @@ void removeDir(QString path)
 
 QString getLibFile(const ComponentLibrary& cl) {
     QFileInfo libXmlFi(cl.mLoadFilePath);
-    QString libfile = libXmlFi.absolutePath()+"/"+(TO_STR(SHAREDLIB_PREFIX)+cl.mSharedLibraryName);
+    QString libfile = QString("%1/%2%3").arg(libXmlFi.absolutePath()).arg(SHAREDLIB_PREFIX).arg(cl.mSharedLibraryName);
 #ifdef HOPSAN_BUILD_TYPE_DEBUG
     libfile.append(cl.mSharedLibraryDebugExtension);
 #endif
-    libfile.append("." TO_STR(SHAREDLIB_SUFFIX));
+    libfile.append("." SHAREDLIB_SUFFIX);
     return libfile;
 }
 
@@ -543,7 +543,7 @@ private slots:
 //            printMessages();
 //        }
 
-//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(TO_STR(SHAREDLIB_SUFFIX))).c_str()),
+//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(SHAREDLIB_SUFFIX)).c_str()),
 //                 "Failure! Modelica generator failed to generate .dll/.so.");
         QWARN("Modelica generator test is disabled");
     }
