@@ -1298,6 +1298,12 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
+size_t Component::calcNumSimSteps(const double startT, const double stopT) const
+{
+    // Round to nearest, we may not get exactly the stop time that we want
+    return size_t(std::max(stopT-startT,0.0)/mTimestep+0.5);
+}
+
 //! @brief Add an inputVariable (Scalar signal ReadPort)
 //! @param [in] rName The name of the variable
 //! @param [in] rDescription The description of the variable

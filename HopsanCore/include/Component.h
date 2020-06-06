@@ -240,11 +240,7 @@ protected:
     virtual void simulateOneTimestep();
     virtual void finalize();
     virtual void setTimestep(const double timestep);
-    inline virtual size_t calcNumSimSteps(const double startT, const double stopT)
-    {
-        // Round to nearest, we may not get exactly the stop time that we want
-        return size_t(std::max(stopT-startT,0.0)/mTimestep+0.5);
-    }
+    virtual size_t calcNumSimSteps(const double startT, const double stopT) const;
 
     // Interface variable functions
     Port *addInputVariable(const HString &rName, const HString &rDescription, const HString &rQuantityOrUnit, const double defaultValue, double **ppNodeData=0);
