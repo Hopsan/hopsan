@@ -83,7 +83,13 @@ if not "%HOPSAN_BUILD_MINGW_HOME%" == "" (
 
 set hopsan_build_paths=%mingw_path%;%qmake_path%;%git_path%;%cmake_path%;%doxygen_path%
 
-REM Echo expected paths
+REM Set default CMake generator, can be used to override build to use MSVC instead of MinGW
+if %HOPSAN_BUILD_CMAKE_GENERATOR%x == x (
+	set HOPSAN_BUILD_CMAKE_GENERATOR="MinGW Makefiles"
+)
+
+REM Echo expected paths and generator
+echo HOPSAN_BUILD_CMAKE_GENERATOR: %HOPSAN_BUILD_CMAKE_GENERATOR%
 echo cmake_path:   %cmake_path%
 echo doxygen_path: %doxygen_path%
 echo mingw_path:   %mingw_path%
