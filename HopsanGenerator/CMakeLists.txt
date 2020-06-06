@@ -18,6 +18,13 @@ file(GLOB_RECURSE srcfiles src/*.cpp templates.qrc)
 file(GLOB_RECURSE headerfiles include/*.h include/*.hpp)
 
 add_library(${target_name} SHARED ${srcfiles} ${headerfiles})
+
+# Set compiler definitions
+if(WIN32)
+  target_compile_definitions(${target_name} PRIVATE HOPSANGENERATOR_DLLEXPORT)
+  target_compile_definitions(${target_name} INTERFACE HOPSANGENERATOR_DLLIMPORT)
+endif()
+
 target_include_directories(${target_name} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
