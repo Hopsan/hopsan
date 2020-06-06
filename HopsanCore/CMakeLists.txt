@@ -27,6 +27,7 @@ add_rapidxml_src(hopsancore)
 # Set compiler definitions
 if(WIN32)
   target_compile_definitions(hopsancore PRIVATE HOPSANCORE_DLLEXPORT)
+  target_compile_definitions(hopsancore INTERFACE HOPSANCORE_DLLIMPORT)
 endif()
 target_compile_definitions(hopsancore PRIVATE HOPSANCORE_WRITELOG)
 if(CMAKE_BUILD_TYPE MATCHES Debug)

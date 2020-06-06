@@ -29,10 +29,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <limits>
 
 using namespace hopsan;
 
-const size_t HString::npos = -1;
+const size_t hopsan::HString::npos = std::numeric_limits<size_t>::max();
 
 HString::HString()
 {

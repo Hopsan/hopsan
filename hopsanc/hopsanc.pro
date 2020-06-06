@@ -28,6 +28,7 @@ INCLUDEPATH *= $${PWD}/include/
 # Add the include path to (HopsanCore)
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 #--------------------------------------------------
 
 # -------------------------------------------------

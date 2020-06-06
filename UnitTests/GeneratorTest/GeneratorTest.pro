@@ -27,6 +27,7 @@ lessThan(QT_MAJOR_VERSION, 5){
 INCLUDEPATH += $${PWD}/../../HopsanCore/include
 INCLUDEPATH *= $${PWD}/../../HopsanGenerator/include
 LIBS += -L$${PWD}/../../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 LIBS *= -lhopsangenerator$${DEBUG_EXT}
 LIBS *= -lsymhop$${DEBUG_EXT}
 include($${PWD}/../../dependencies/fmilibrary.pri)

@@ -20,6 +20,7 @@ TEMPLATE = app
 # Include and link to hopsan core
 INCLUDEPATH += $${PWD}/../../HopsanCore/include/
 LIBS += -L$${PWD}/../../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 
 unix{
 QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'

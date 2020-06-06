@@ -24,6 +24,7 @@ LIBS *= -L$${PWD}/../../bin
 
 # In debug mode HopsanCore has the debug extension _d
 LIBS *= -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 
 # Reduce compile output clutter, but show warnings
 CONFIG += silent warn_on plugin

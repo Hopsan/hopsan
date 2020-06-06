@@ -18,6 +18,7 @@ TEMPLATE = app
 
 INCLUDEPATH += $${PWD}/../../../HopsanCore/include/
 LIBS += -L$${PWD}/../../../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 
 # Enable C++11
 lessThan(QT_MAJOR_VERSION, 5){

@@ -40,6 +40,7 @@ include($${PWD}/../../dependencies/msgpack.pri)
 INCLUDEPATH *= $${PWD}/../../Utilities/
 INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 LIBS *= -L$${PWD}/../../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
 
 # -------------------------------------------------
 # Platform specific additional project options

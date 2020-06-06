@@ -229,6 +229,9 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     ch.addDefinition("HOPSAN_BUILD_TYPE_RELEASE");
     ch.addLinkLibrary("hopsancore");
 #endif
+#ifdef _WIN32
+    ch.addDefinition("HOPSANCORE_DLLIMPORT", "");
+#endif
     ch.addLinkLibrary("c++", {Compiler::Clang});
     for(QString linkLibPath : cl.mLinkLibraries) {
         ch.addLinkLibrary(linkLibPath);
