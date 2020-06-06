@@ -33,6 +33,7 @@
 
 #include "OpsWorkerSimplex.h"
 #include "OpsMessageHandler.h"
+#include <algorithm>
 using namespace Ops;
 
 WorkerSimplex::WorkerSimplex(Evaluator *pEvaluator, MessageHandler *pMessageHandler)

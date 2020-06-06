@@ -36,6 +36,7 @@
 #include "OpsMessageHandler.h"
 #include <math.h>
 #include <sstream>
+#include <algorithm>
 
 using namespace Ops;
 
