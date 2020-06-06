@@ -14,5 +14,5 @@ target_link_libraries(${test_name} hopsancore Qt5::Test Qt5::Xml)
 add_test(${test_name} ${test_name})
 
 if (WIN32)
-    copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> ${CMAKE_CURRENT_BINARY_DIR})
+    copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> $<TARGET_FILE_DIR:${test_name}>)
 endif()
