@@ -29,7 +29,9 @@
 #include <QDir>
 #include <QtXml>
 #include <QFileInfo>
+#include <iostream>
 #include "HopsanEssentials.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "HopsanCoreVersion.h"
 
 #ifndef DEFAULT_LIBRARY_ROOT
@@ -61,6 +63,15 @@ private Q_SLOTS:
 
 private:
     void recurseCollectXMLFiles(const QDir &rDir);
+    void printCoreMessages()
+    {
+        while (mHopsanCore.getCoreMessageHandler()->getNumWaitingMessages() > 0) {
+            HString message, type, tag;
+            mHopsanCore.getCoreMessageHandler()->getMessage(message, type, tag);
+            std::cout << type.c_str() << ": " << message.c_str() << std::endl;
+        }
+    }
+
     QFileInfoList mAllXMLFiles;
     HopsanEssentials mHopsanCore;
 };
@@ -139,6 +150,9 @@ void DefaultLibraryXMLTest::initTestCase()
     if (!defaultLibraryFilePath.empty())
     {
         bool loadOK = mHopsanCore.loadExternalComponentLib(defaultLibraryFilePath.c_str());
+        if (!loadOK) {
+            printCoreMessages();
+        }
         QVERIFY2(loadOK, qPrintable(QString("Could not load the default component library file: %1").arg(defaultLibraryFilePath.c_str())));
     }
 }
