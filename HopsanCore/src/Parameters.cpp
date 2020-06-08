@@ -230,8 +230,20 @@ bool ParameterEvaluator::refreshParameterValueText()
 //! @see evaluate()
 bool ParameterEvaluator::evaluate(HString &rResult)
 {
+
+// These values are arejust a guess, there is no easy way of kowing how long it will take until the stack overflow
+// MSVC is lower them MinGW, GCC, Clang
+// Possible a value could be chose based on what would be a resonable max depth, but this is aslo impossible to know
+// This recursion happens when a parameter depdens on an other which depends on another and so on
+// The max_depth will usually trigger when someone tries to referr to is self or self assign
+#if defined(_MSC_VER)
+    #define max_depth 50
+#else
+    #define max_depth 250
+#endif
+
     ++mDepthCounter;
-    if (mDepthCounter > 250)
+    if (mDepthCounter > max_depth)
     {
         mpParameterEvaluatorHandler->getComponent()->addErrorMessage("You seem to be stuck in a parameter evaluation loop (aborting): " +
                                                                      mParameterName + " = " + mParameterValue);
