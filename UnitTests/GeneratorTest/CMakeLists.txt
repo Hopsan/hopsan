@@ -12,7 +12,11 @@ target_compile_definitions(${test_name} PRIVATE
     EXTERNAL_LIBRARIES_ROOT=\"${CMAKE_CURRENT_LIST_DIR}/../../componentLibraries\"
     HOPSAN_INSTALL_ROOT=\"${CMAKE_CURRENT_BINARY_DIR}/../../\")
 target_link_libraries(${test_name} hopsangenerator Qt5::Test)
-add_test(NAME ${test_name} COMMAND ${test_name})
+if (MSVC)
+    message(WARNING "Skipping ${test_name} for MSVC")
+else()
+    add_test(NAME ${test_name} COMMAND ${test_name})
+endif()
 
 # Copy runtime requirement dll's to run directory
 if (WIN32)
