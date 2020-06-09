@@ -32,6 +32,10 @@ copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../HopsanCore ${C
 
 # Copy default library source code to mimic installation
 copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../componentLibraries/defaultLibrary ${CMAKE_CURRENT_BINARY_DIR}/../../componentLibraries)
+if (MSVC)
+  # Copy default library dll to mimic installation
+  copy_file_after_build(${test_name} $<TARGET_FILE:defaultcomponentlibrary> ${CMAKE_CURRENT_BINARY_DIR}/../../componentLibraries/defaultLibrary)
+endif()
 
 # Copy FMILibrary to mimic installation
 copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies)
