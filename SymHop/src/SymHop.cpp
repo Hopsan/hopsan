@@ -3409,7 +3409,7 @@ QString SymHop::getFunctionDerivative(const QString &key)
 //FIXED
 QStringList SymHop::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow";
 }
 
 
@@ -3417,7 +3417,7 @@ QStringList SymHop::getSupportedFunctionsList()
 //FIXED
 QStringList SymHop::getCustomFunctionList()
 {
-    return QStringList() << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "nonZero";
+    return QStringList() << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "nonZero" << "turbulentFlow";
 }
 
 

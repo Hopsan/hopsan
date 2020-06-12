@@ -1949,6 +1949,31 @@ bool HopsanModelicaGenerator::generateComponentObjectNumericalIntegration(Compon
     return true;
 }
 
+bool HopsanModelicaGenerator::replaceCustomFunctions(Expression &expr) {
+    Expression *pFuncExpr = expr.findFunction("turbulentFlow");
+    while(pFuncExpr != nullptr) {
+        if(pFuncExpr->getArguments().size() != 5) {
+            printErrorMessage("turbulentFlow() function takes exactly 5 arguments.");
+            return false;
+        }
+        QString c1 = "("+pFuncExpr->getArguments().at(0).toString()+")";
+        QString c2 = "("+pFuncExpr->getArguments().at(1).toString()+")";
+        QString Zc1 = "("+pFuncExpr->getArguments().at(2).toString()+")";
+        QString Zc2 = "("+pFuncExpr->getArguments().at(3).toString()+")";
+        QString Ks = "("+pFuncExpr->getArguments().at(4).toString()+")";
+        Expression newExpr = Expression(QString("onPositive(%1-%2)*(%5*(sqrt(abs(%1-%2)+(%3+%4)*(%3+%4)*%5*%5/4.0)-%5*(%3+%4)/2.0)) + onNegative(%1-%2)*(%5*(%5*(%3+%4)/2.0-sqrt(abs(%1-%2)+(%3+%4)*(%3+%4)*%5*%5/4.0)))").arg(c1).arg(c2).arg(Zc1).arg(Zc2).arg(Ks));
+        printMessage("Replacing: "+pFuncExpr->toString());
+        printMessage("With: "+newExpr.toString());
+        *pFuncExpr = newExpr;
+
+        pFuncExpr = expr.findFunction("turbulentFlow");
+    }
+
+    return true;
+    //Ks = Cq*d*3.1415*xv*sqrt(2.0/rho);
+        //P2.q =   onPositive(P1.c-P2.c)*(Ks*(sqrt(abs(P1.c-P2.c)+(P1.Zc+P2.Zc)*(P1.Zc+P2.Zc)*Ks*Ks/4.0)-Ks*(P1.Zc+P2.Zc)/2.0)) + onNegative(P1.c-P2.c)*(Ks*(Ks*(P1.Zc+P2.Zc)/2.0-sqrt(abs(P1.c-P2.c)+(P1.Zc+P2.Zc)*(P1.Zc+P2.Zc)*Ks*Ks/4.0)));
+}
+
 
 bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
@@ -1984,6 +2009,10 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             }
             systemEquations.removeLast();
             continue;
+        }
+        if(!replaceCustomFunctions(systemEquations.last())) {
+            printErrorMessage("Failed to replace custom functions.");
+            return false;
         }
         logStream << systemEquations.last().toString() << "\n";
         if(!systemEquations[e].isEquation()) {
