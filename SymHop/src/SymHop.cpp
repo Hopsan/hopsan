@@ -1699,6 +1699,22 @@ Expression Expression::derivative(const Expression x, bool &ok) const
                 //ret = "pow("+f+","+g+"-1)*(("+g+")*("+df+")+("+f+")*log(("+f+"))*("+dg+"))";
             }
         }
+        else if(func == "max") {
+            Expression g2,dg2;
+            if(mArguments.size() < 2) {
+                ok = false;
+            }
+            else {
+                g2 = mArguments[1];
+                g2.changeSign();
+                bool success;
+                dg2 = mArguments[1].derivative(x, success);    //Derivative of first argument
+                if(!success) {
+                    ok = false;
+                }
+            }
+            ret = Expression::fromFunctionArguments("ifPositive",QList<Expression>() << Expression::fromTwoTerms(g,g2) << dg << dg2);
+        }
         //No special function, so use chain rule
         else
         {
