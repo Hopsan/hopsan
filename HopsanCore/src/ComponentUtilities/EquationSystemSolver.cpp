@@ -720,6 +720,12 @@ KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnu
             return;
         }
 
+        flag = KINSetNumMaxIters(mem,1000);
+        if(flag<0) {
+            mpComponent->stopSimulation("KINSetNumMaxIters() failed with flag "+to_hstring(flag)+".");
+            return;
+        }
+
         flag = KINSetJacFn(mem, kinsolJacobianCallback);
         if (flag < 0) {
             mpComponent->stopSimulation("KINSetJacFn() failed with flag "+to_hstring(flag)+".");
