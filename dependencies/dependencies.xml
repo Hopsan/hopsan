@@ -99,4 +99,10 @@
     </releasefile>
   </dependency>
 
+  <dependency name="sundials">
+    <releasefile sha1="a33d5a9f19fad4e4a257a8c9ae1c321550885996">
+      <url>https://github.com/LLNL/sundials/releases/download/v5.3.0/sundials-5.3.0.tar.gz</url>
+    </releasefile>
+  </dependency>
+
 </hopsandependencies>
