@@ -34,7 +34,6 @@
 #include "HopsanCoreVersion.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include "Components/DummyComponent.hpp"
-#include "Components/ModelicaComponent.hpp"
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -107,8 +106,7 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_MISSINGCOMPONENT, DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_SUBSYSTEM, ComponentSystem::Creator);
     mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM, ConditionalComponentSystem::Creator);
-    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_CPPCOMPONENT, DummyComponent::Creator);
-    mpComponentFactory->registerCreatorFunction(HOPSAN_BUILTIN_TYPENAME_MODELICACOMPONENT, ModelicaComponent::Creator);
+
 #ifdef HOPSAN_INTERNALDEFAULTCOMPONENTS
     register_default_components(mpComponentFactory);
 #endif

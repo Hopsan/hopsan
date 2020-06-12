@@ -84,8 +84,6 @@ void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name
 
     connect(pModelWidget->getTopLevelSystemContainer()->getLogDataHandler().data(), SIGNAL(dataAddedFromModel(bool)), gpMainWindow->mpShowLossesAction, SLOT(setEnabled(bool)));
 
-    //connect(gpMainWindow->mpDebug2Action, SIGNAL(triggered()), pModelWidget, SLOT(generateModelicaCode()));
-
     // If the Modelwidget should not be detatched then add it as a tab and switch to that tab
     if(!options.testFlag(Detatched))
     {

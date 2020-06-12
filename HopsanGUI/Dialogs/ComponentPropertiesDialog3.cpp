@@ -55,7 +55,6 @@
 #include "ComponentPropertiesDialog3.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
-#include "Dialogs/EditComponentDialog.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -119,73 +118,6 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     {
         mAllowEditing = (!mpModelObject->isLocallyLocked() && (mpModelObject->getModelLockLevel() < FullyLocked));
     }
-
-#ifdef EXPERIMENTAL
-    if(mpModelObject->getTypeName() == MODELICATYPENAME && false)    //! @todo Temporarily disabled for Modelica experiments, DO NOT MERGE
-    {
-        this->hide();
-
-        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica, gpMainWindowWidget);
-        pEditDialog->exec();
-
-        if(pEditDialog->result() == QDialog::Accepted)
-        {
-            CoreGeneratorAccess coreAccess;
-            QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
-            QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
-            QString libPath = dummy+typeName+"/";
-            QDir().mkpath(libPath);
-            int solver = pEditDialog->getSolver();
-
-            QFile moFile(libPath+typeName+".mo");
-            moFile.open(QFile::WriteOnly | QFile::Truncate);
-            moFile.write(pEditDialog->getCode().toUtf8());
-            moFile.close();
-
-            coreAccess.generateFromModelica(libPath+typeName+".mo", solver, true);
-            gpLibraryHandler->loadLibrary(libPath);
-
-            mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
-        }
-        delete(pEditDialog);
-
-        this->close();
-        return;
-    }
-    else if(mpModelObject->getTypeName() == "CppComponent")
-    {
-        this->hide();
-
-        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp, gpMainWindowWidget);
-        pEditDialog->exec();
-
-        if(pEditDialog->result() == QDialog::Accepted)
-        {
-            CoreGeneratorAccess coreAccess;
-            QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-
-            QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
-            QString libPath = dummy+typeName+"/";
-            QDir().mkpath(libPath);
-
-            QFile hppFile(libPath+typeName+".hpp");
-            hppFile.open(QFile::WriteOnly | QFile::Truncate);
-            hppFile.write(pEditDialog->getCode().toUtf8());
-            hppFile.close();
-
-            coreAccess.generateFromCpp(libPath+typeName+".hpp");
-            coreAccess.generateLibrary(libPath, QStringList() << typeName+".hpp");
-            coreAccess.compileComponentLibrary(libPath+typeName+"_lib.xml");
-            gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
-
-            mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
-        }
-        delete(pEditDialog);
-
-        this->close();
-        return;
-    }
-#endif //EXPERIMENTAL
 
     this->setPalette(gpConfig->getPalette());
     setWindowTitle(tr("Component Properties"));
@@ -287,85 +219,6 @@ void ComponentPropertiesDialog3::editPortPos()
     MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getLibraryAppearanceData().data(), mpModelObject->getParentContainerObject()->getGfxType());
     connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
 }
-#ifdef EXPERIMENTAL
-void ComponentPropertiesDialog3::copyToNewComponent()
-{
-    QString sourceCode = mpSourceCodeTextEdit->toPlainText();
-
-    QDateTime time = QDateTime();
-    uint t = time.currentDateTime().toTime_t();     //Number of milliseconds since 1970
-    double rd = rand() / (double)RAND_MAX;
-    int r = int(rd*1000000.0);                      //Random number between 0 and 1000000
-    QString randomName = mpModelObject->getTypeName()+QString::number(t)+QString::number(r);
-
-
-    sourceCode.replace("#ifdef "+mpModelObject->getTypeName().toUpper()+"_HPP_INCLUDED", "");
-    sourceCode.replace("#define "+mpModelObject->getTypeName().toUpper()+"_HPP_INCLUDED", "");
-    sourceCode.replace("#endif //  "+mpModelObject->getTypeName().toUpper()+"_HPP_INCLUDED", "");
-    sourceCode.replace("class "+mpModelObject->getTypeName()+" :", "class "+randomName+" :");
-    sourceCode.replace("return new "+mpModelObject->getTypeName()+"()", "return new "+randomName+"()");
-
-    EditComponentDialog *pEditDialog = new EditComponentDialog(sourceCode, EditComponentDialog::Cpp, gpMainWindowWidget);
-
-    pEditDialog->exec();
-
-    if(pEditDialog->result() == QDialog::Accepted)
-    {
-        CoreGeneratorAccess coreAccess;
-        QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-        QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
-        QString libPath = dummy+typeName+"/";
-        QDir().mkpath(libPath);
-
-        QFile hppFile(libPath+typeName+".hpp");
-        hppFile.open(QFile::WriteOnly | QFile::Truncate);
-        hppFile.write(pEditDialog->getCode().toUtf8());
-        hppFile.close();
-
-        coreAccess.generateFromCpp(libPath+typeName+".hpp");
-        coreAccess.generateLibrary(libPath, QStringList() << typeName+".hpp");
-        coreAccess.compileComponentLibrary(libPath+typeName+"_lib.xml");
-        gpLibraryHandler->loadLibrary(libPath+typeName+"_lib.xml");
-        mpModelObject->getParentContainerObject()->replaceComponent(mpModelObject->getName(), typeName);
-    }
-    pEditDialog->deleteLater();
-}
-
-void ComponentPropertiesDialog3::recompile()
-{
-    QString basePath = this->mpModelObject->getAppearanceData()->getBasePath();
-    QString fileName = this->mpModelObject->getAppearanceData()->getSourceCodeFile();
-
-    QString sourceCode = mpSourceCodeTextEdit->toPlainText();
-    int solver = mpSolverComboBox->currentIndex();
-
-    //Read source code from file
-    QFile oldSourceFile(basePath+fileName);
-    if(!oldSourceFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-    QString oldSourceCode;
-    while(!oldSourceFile.atEnd())
-    {
-        oldSourceCode.append(oldSourceFile.readLine());
-    }
-    oldSourceFile.close();
-
-    QFile sourceFile(basePath+fileName);
-    if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
-        return;
-    sourceFile.write(sourceCode.toStdString().c_str());
-    sourceFile.close();
-
-    //Recompile with new code
-    LibraryEntry entry = gpLibraryHandler->getEntry(mpModelObject->getTypeName());
-    if (!entry.isNull())
-    {
-        gpLibraryHandler->recompileLibrary(entry.pLibrary, true, solver);
-    }
-
-    this->close();
-}
-#endif //EXPERIMENTAL
 
 
 bool ComponentPropertiesDialog3::setAliasNames()
@@ -1064,10 +917,6 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         if(mpModelObject->getAppearanceData()->isParameterHidden(variameter.mName))
             continue;
 
-        //Don't add ports, parameters and defaults constants for modelica components
-        if(mpModelObject->getTypeName() == MODELICATYPENAME && (variameter.mName == "ports" || variameter.mName == "parameters" || variameter.mName == "defaults"))
-            continue;
-
         variameter.mDescription = parameters[constantsIds[i]].mDescription;
         variameter.mUnit = parameters[constantsIds[i]].mUnit;
         variameter.mQuantity = parameters[constantsIds[i]].mQuantity;
@@ -1209,11 +1058,6 @@ bool VariableTableWidget::setStartValues()
         // Extract name and value from row
         QString name = pValueWideget->getName();
         QString value = pValueWideget->getValueText();
-
-        if(mpModelObject->getTypeName() == MODELICATYPENAME && name != "model")
-        {
-            continue;
-        }
 
         // Check if we have new custom scaling
         UnitConverter newCustomUnitScale, previousUnitScale;

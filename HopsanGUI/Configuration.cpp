@@ -218,12 +218,6 @@ void Configuration::saveToXml()
             xmlUserLib.setAttribute(XML_LIBTYPE, typeStr);
         }
 
-        QDomElement modelicaFilesXml = appendDomElement(configRoot, XML_MODELICAFILES);
-        for(int i=0; i<mModelicaFiles.size(); ++i)
-        {
-            appendDomTextNode(modelicaFilesXml, XML_MODELICAFILE, mModelicaFiles.at(i).absoluteFilePath());
-        }
-
         QDomElement models = appendDomElement(configRoot, XML_MODELS);
         for(int i=0; i<mLastSessionModels.size(); ++i)
         {
@@ -373,10 +367,6 @@ void Configuration::loadFromXml()
             //Load library settings
             QDomElement libsElement = configRoot.firstChildElement(XML_LIBS);
             loadLibrarySettings(libsElement);
-
-            //Load Modelica files settings
-            QDomElement modelicaFilesElement = configRoot.firstChildElement(XML_MODELICAFILES);
-            loadModelicaFilesSettings(modelicaFilesElement);
 
             //Load model settings
             QDomElement modelsElement = configRoot.firstChildElement(XML_MODELS);
@@ -761,16 +751,6 @@ void Configuration::loadLibrarySettings(QDomElement &rDomElement)
     }
 }
 
-void Configuration::loadModelicaFilesSettings(QDomElement &rDomElement)
-{
-    QDomElement modelicaFileElement = rDomElement.firstChildElement(XML_MODELICAFILE);
-    while(!modelicaFileElement.isNull())
-    {
-        mModelicaFiles.append(QFileInfo(modelicaFileElement.text()));
-        modelicaFileElement = modelicaFileElement.nextSiblingElement(XML_MODELICAFILE);
-    }
-}
-
 
 //! @brief Utility function that loads model settings
 void Configuration::loadModelSettings(QDomElement &rDomElement)
@@ -890,19 +870,6 @@ QStringList Configuration::getUserLibs() const
 QList<LibraryTypeEnumT> Configuration::getUserLibTypes() const
 {
     return mUserLibTypes;
-}
-
-
-//! @brief Returns a list of all loaded Modelica files
-QStringList Configuration::getModelicaFiles() const
-{
-    QStringList ret;
-    Q_FOREACH(const QFileInfo &file, mModelicaFiles)
-    {
-        ret << file.absoluteFilePath();
-    }
-
-    return ret;
 }
 
 
@@ -1184,18 +1151,6 @@ void Configuration::removeUserLib(const QString &value)
 }
 
 
-//! @brief Adds a new Modelica file to the configuration
-void Configuration::addModelicaFile(const QString &value)
-{
-    QFileInfo file(value);
-    if(!mModelicaFiles.contains(file))
-    {
-        mModelicaFiles.append(file);
-    }
-    saveToXml();
-}
-
-
 //! @brief Adds a model to the list of recently opened models
 //! @brief value Path to the model
 void Configuration::addRecentModel(QString value)
@@ -1306,7 +1261,6 @@ void Configuration::registerSettings()
     mStringSettings.insert(CFG_PLOTGFXDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_SIMULINKEXPORTDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_SUBSYSTEMDIR, gpDesktopHandler->getModelsPath());
-    mStringSettings.insert(CFG_MODELICAMODELSDIR, gpDesktopHandler->getModelsPath());
     mStringSettings.insert(CFG_EXTERNALLIBDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_SCRIPTDIR, gpDesktopHandler->getScriptsPath());
     mStringSettings.insert(CFG_PLOTWINDOWDIR, gpDesktopHandler->getDocumentsPath());

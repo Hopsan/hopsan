@@ -82,13 +82,11 @@ private:
     QTreeWidget *mpTree;
     QTreeWidgetItem *mpCreateExternalLibraryItem;
     QTreeWidgetItem *mpLoadLibraryItem;
-    QTreeWidgetItem *mpAddModelicaFileItem;
     QLineEdit *mpFilterEdit;
 
     //Maps between GUI objects and library contents
     QMap<QTreeWidgetItem *, QString> mItemToTypeNameMap;        //Map between component items and typenames
     QMap<QTreeWidgetItem *, QSharedPointer<ComponentLibrary> > mItemToLibraryMap;    //Map between component items and libraries it might origin from
-    QMap<QTreeWidgetItem *, QString> mItemToModelicaFileNameMap;
 };
 
 #endif // LIBRARYWIDGET_H

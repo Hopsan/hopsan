@@ -63,7 +63,6 @@
 #include "UndoStack.h"
 #include "version_gui.h"
 #include "HcomHandler.h"
-#include "ModelicaLibrary.h"
 #include "SimulationThreadHandler.h"
 #include "CoreAccess.h"
 
@@ -80,7 +79,6 @@
 #include "Widgets/HVCWidget.h"
 #include "Widgets/DataExplorer.h"
 #include "Widgets/FindWidget.h"
-#include "Widgets/ModelicaEditor.h"
 #include "Widgets/TextEditorWidget.h"
 
 #include "Dialogs/OptionsDialog.h"
@@ -117,8 +115,6 @@ QAction *gpTogglePortsAction = 0;
 OptionsDialog *gpOptionsDialog = 0;
 QGridLayout *gpCentralGridLayout = 0;
 FindWidget *gpFindWidget = 0;
-ModelicaLibrary *gpModelicaLibrary = 0;
-ModelicaEditor *gpModelicaEditor = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -223,9 +219,6 @@ void MainWindow::createContents()
 
     //Create the library handler
     gpLibraryHandler = new LibraryHandler();
-
-    //Create the Modelica handler
-    gpModelicaLibrary = new ModelicaLibrary();
 
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);

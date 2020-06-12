@@ -78,7 +78,6 @@
 #define CFG_PLOTGFXDIR "plotgfxdir"
 #define CFG_SIMULINKEXPORTDIR "simulinkexportdir"
 #define CFG_SUBSYSTEMDIR "subsystemdir"
-#define CFG_MODELICAMODELSDIR "modelicamodelsdir"
 #define CFG_EXTERNALLIBDIR "externallibdir"
 #define CFG_SCRIPTDIR "scriptdir"
 #define CFG_PLOTWINDOWDIR "plotwindowdir"
@@ -199,8 +198,6 @@ public:
     QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation) const;
 
     // Libraries
-    void addModelicaFile(const QString &value);
-    QStringList getModelicaFiles() const;
     void addUserLib(const QString &value, LibraryTypeEnumT type);
     void removeUserLib(const QString &value);
     QStringList getUserLibs() const;
@@ -248,7 +245,6 @@ private:
     void loadStyleSettings(QDomElement &rDomElement);
     void loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn);
     void loadLibrarySettings(QDomElement &rDomElement);
-    void loadModelicaFilesSettings(QDomElement &rDomElement);
     void loadModelSettings(QDomElement &rDomElement);
     void loadScriptSettings(QDomElement &rHcomElement);
     void refreshQuickAccessVariables();
@@ -270,7 +266,6 @@ private:
 
     QList<QFileInfo> mUserLibs;
     QList<LibraryTypeEnumT> mUserLibTypes;
-    QList<QFileInfo> mModelicaFiles;
 
     QStringList mRecentModels;
     QStringList mLastSessionModels;

@@ -238,9 +238,6 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 #define XML_LIBTYPE_EXTERNAL "external"
 #define XML_LIBTYPE_FMU "fmu"
 
-#define XML_MODELICAFILES "modelicafiles"
-#define XML_MODELICAFILE "modelicafile"
-
 #define XML_MODELS "models"
 #define XML_LASTSESSIONMODEL "lastsessionmodel"
 #define XML_RECENTMODEL "recentmodel"

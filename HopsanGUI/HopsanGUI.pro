@@ -239,7 +239,6 @@ SOURCES += main.cpp \
     CachableDataVector.cpp \
     DesktopHandler.cpp \
     Dialogs/ComponentPropertiesDialog3.cpp \
-    Dialogs/EditComponentDialog.cpp \
     Widgets/DebuggerWidget.cpp \
     HcomHandler.cpp \
     Widgets/HVCWidget.cpp \
@@ -256,8 +255,6 @@ SOURCES += main.cpp \
     PlotCurveControlBox.cpp \
     MessageHandler.cpp \
     Widgets/FindWidget.cpp \
-    ModelicaLibrary.cpp \
-    Widgets/ModelicaEditor.cpp \
     Widgets/PlotWidget2.cpp \
     Utilities/IndexIntervalCollection.cpp \
     LogDataGeneration.cpp \
@@ -330,7 +327,6 @@ HEADERS += MainWindow.h \
     CachableDataVector.h \
     DesktopHandler.h \
     Dialogs/ComponentPropertiesDialog3.h \
-    Dialogs/EditComponentDialog.h \
     Widgets/DebuggerWidget.h \
     HcomHandler.h \
     Widgets/HVCWidget.h \
@@ -348,8 +344,6 @@ HEADERS += MainWindow.h \
     PlotCurveControlBox.h \
     MessageHandler.h \
     Widgets/FindWidget.h \
-    ModelicaLibrary.h \
-    Widgets/ModelicaEditor.h \
     GraphicsViewPort.h \
     Widgets/PlotWidget2.h \
     Utilities/IndexIntervalCollection.h \
