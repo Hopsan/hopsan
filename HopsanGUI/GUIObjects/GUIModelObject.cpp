@@ -656,13 +656,6 @@ void ModelObject::openPropertiesDialog()
     {
         // Note! this is a smart pointer, it will automatically become NULL when dialog is deleted
         mpPropertiesDialog = new ComponentPropertiesDialog3(this, mpDialogParentWidget);
-
-        if(getTypeName() != QString(MODELICATYPENAME)+" NOT" && getTypeName() != "CppComponent") //! @todo DEBUG
-        {
-            connect(this, SIGNAL(objectDeleted()), mpPropertiesDialog, SLOT(reject()));
-            mpPropertiesDialog->setAttribute(Qt::WA_DeleteOnClose);
-            mpPropertiesDialog->show();
-        }
     }
 }
 

@@ -36,8 +36,6 @@
 #define HOPSAN_BUILTIN_TYPENAME_MISSINGCOMPONENT "MissingComponent"
 #define HOPSAN_BUILTIN_TYPENAME_SUBSYSTEM "Subsystem"
 #define HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM "ConditionalSubsystem"
-#define HOPSAN_BUILTIN_TYPENAME_CPPCOMPONENT "CppComponent"
-#define HOPSAN_BUILTIN_TYPENAME_MODELICACOMPONENT "ModelicaComponent"
 
 #include "Node.h"
 #include "Component.h"

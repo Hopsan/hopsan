@@ -50,9 +50,7 @@
 #include "LibraryHandler.h"
 #include "CoreAccess.h"
 #include "Utilities/HelpPopUpWidget.h"
-#include "ModelicaLibrary.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
-#include "ModelicaEditor.h"
 #include "ProjectTabWidget.h"
 #include "MessageHandler.h"
 #include "Configuration.h"
@@ -317,54 +315,6 @@ void LibraryWidget::update()
         ++itt2;
     }
 
-    QTreeWidgetItem *pModelicaComponentsItem = new QTreeWidgetItem();
-    pModelicaComponentsItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-FolderModelica.svg"));
-    pModelicaComponentsItem->setText(0, componentlibrary::roots::modelicaComponents);
-    pModelicaComponentsItem->setFont(0,boldFont);
-    if(filter.isEmpty()) {
-        mpTree->addTopLevelItem(pModelicaComponentsItem);
-    }
-    foreach(const QString &model, gpModelicaLibrary->getModelNames())
-    {
-        QTreeWidgetItem *pModelicaComponentItem = new QTreeWidgetItem();
-        pModelicaComponentItem->setText(0,model);
-
-        QString annotations = gpModelicaLibrary->getModel(model).getAnnotations();
-        if(!annotations.isEmpty())
-        {
-            QString cafFilePath = annotations.section("cafFile",1,1).section("\"",1,1).section("\"",0,0);
-            QString icon = annotations.section("hopsanIcon",1,1).section("\"",1,1).section("\"",0,0);
-            if(!icon.isEmpty())
-            {
-                pModelicaComponentItem->setIcon(0, QIcon(icon));
-            }
-            else if(!cafFilePath.isEmpty())
-            {
-                ModelObjectAppearance appearane;
-                QFile cafFile(cafFilePath);
-                if (cafFile.open(QIODevice::ReadOnly | QIODevice::Text))
-                {
-                    QDomDocument domDocument;
-                    QDomElement cafRoot = loadXMLDomDocument(cafFile, domDocument, CAF_ROOT);
-                    cafFile.close();
-                    if(!cafRoot.isNull())
-                    {
-                        //Read appearance data from the caf xml file
-                        QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file, also not hardcode tagnames
-                        appearane.setBasePath(QFileInfo(cafFile).absolutePath()+"/");
-                        appearane.readFromDomElement(xmlModelObjectAppearance);
-                        appearane.cacheIcons();
-                        pModelicaComponentItem->setIcon(0, QIcon(appearane.getIconPath(UserGraphics,Absolute)));
-                    }
-                }
-            }
-        }
-
-        //! @todo Fix icon!
-        mItemToTypeNameMap.insert(pModelicaComponentItem, QString(MODELICATYPENAME)+"_"+model);
-        pModelicaComponentsItem->addChild(pModelicaComponentItem);
-    }
-
     if(filter.isEmpty())
     {
         mpCreateExternalLibraryItem = new QTreeWidgetItem();
@@ -383,29 +333,6 @@ void LibraryWidget::update()
         mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-LoadLibrary.svg"));
         mpLoadLibraryItem->setToolTip(0, "Load external library");
         mpTree->addTopLevelItem(mpLoadLibraryItem);
-
-        mpAddModelicaFileItem = new QTreeWidgetItem();
-        mpAddModelicaFileItem->setText(0, "Load Modelica file");
-        mpAddModelicaFileItem->setFont(0, font);
-        mpAddModelicaFileItem->setIcon(0, QIcon(QString(ICONPATH)+"svg/Hopsan-Modelica.svg"));
-        mpAddModelicaFileItem->setToolTip(0, "Load Modelica file");
-        mpTree->addTopLevelItem(mpAddModelicaFileItem);
-    }
-
-    //Append Modelica files
-    QStringList paths;
-    gpModelicaLibrary->getModelicaFiles(paths);
-
-    foreach(const QString &path, paths)
-    {
-        QTreeWidgetItem *pModelicaItem = new QTreeWidgetItem();
-        pModelicaItem->setText(0, QFileInfo(path).fileName());
-        pModelicaItem->setToolTip(0, path);
-        pModelicaItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-New.svg"));
-        mItemToModelicaFileNameMap.insert(pModelicaItem, path);
-        if(filter.isEmpty() || (pModelicaItem->text(0).toLower().contains(filter.toLower()))) {
-            mpTree->addTopLevelItem(pModelicaItem);
-        }
     }
 
     //Expand previously expanded folders
@@ -453,14 +380,9 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         QString typeName = mItemToTypeNameMap.find(item).value();
         if(gpLibraryHandler->getEntry(typeName).state == Enabled) {
             QIcon icon;
-            if(typeName.startsWith(QString(MODELICATYPENAME)+"_")) {
-                icon = item->icon(0);
-            }
-            else {
-                SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
-                QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
-                icon.addFile(iconPath,QSize(55,55));
-            }
+            SharedModelObjectAppearanceT pAppearance = gpLibraryHandler->getModelObjectAppearancePtr(typeName);
+            QString iconPath = pAppearance->getFullAvailableIconPath(mGfxType);
+            icon.addFile(iconPath,QSize(55,55));
 
             //Create the mimedata (text with type name)
             QMimeData *mimeData = new QMimeData;
@@ -476,15 +398,6 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             gpHelpPopupWidget->hide();
         }
     }
-    else if(mItemToModelicaFileNameMap.contains(item) && qApp->mouseButtons().testFlag(Qt::LeftButton)) {
-        QString filePath = mItemToModelicaFileNameMap.find(item).value();
-        qDebug() << "Opening: " << filePath;
-
-        ModelicaEditor *pEditor = new ModelicaEditor(filePath, gpCentralTabWidget);
-        gpCentralTabWidget->setCurrentIndex(gpCentralTabWidget->addTab(pEditor, QFileInfo(filePath).fileName()));
-
-
-    }
     else if((item == mpCreateExternalLibraryItem) && qApp->mouseButtons() == Qt::LeftButton) {
         gpLibraryHandler->createNewLibrary();
         return;
@@ -493,28 +406,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         gpLibraryHandler->loadLibrary();
         return;
     }
-    else if((item == mpAddModelicaFileItem) && qApp->mouseButtons() == Qt::LeftButton) {
-        //gpLibraryHandler->createNewModelicaComponent();
-        gpModelicaLibrary->loadModelicaFile();
-        return;
-    }
 
     if(qApp->mouseButtons() == Qt::RightButton) {
-        //Ignore right-click for load library and add modelica file items
-        if(item == mpLoadLibraryItem || item == mpAddModelicaFileItem) {
-            return;
-        }
-
-        //Context menu for Modelica file items
-        if(mItemToModelicaFileNameMap.keys().contains(item)) {
-            QMenu contextMenu;
-            QAction *pUnloadAction = contextMenu.addAction("Unload Modelica File");
-
-            QAction *pSelectedAction = contextMenu.exec(QCursor::pos());
-
-            if(pSelectedAction == pUnloadAction) {
-                gpModelicaLibrary->unloadModelicaFile(mItemToModelicaFileNameMap.find(item).value());
-            }
+        //Ignore right-click for load library item
+        if(item == mpLoadLibraryItem) {
             return;
         }
 
@@ -589,8 +484,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
         if(item &&
            item->text(0) != componentlibrary::roots::externalLibraries &&
-           item->text(0) != componentlibrary::roots::fmus &&
-           item->text(0) != componentlibrary::roots::modelicaComponents) {
+           item->text(0) != componentlibrary::roots::fmus) {
             pOpenFolderAction->setVisible(true);
         }
 

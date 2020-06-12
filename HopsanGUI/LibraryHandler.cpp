@@ -76,7 +76,6 @@
 #include "ModelHandler.h"
 #include "version_gui.h"
 #include "MessageHandler.h"
-#include "Dialogs/EditComponentDialog.h"
 #include "GUIObjects/GUISystem.h"
 #include "GeneratorUtils.h"
 #include "Utilities/GUIUtilities.h"
@@ -141,58 +140,6 @@ void LibraryHandler::loadLibrary()
 //        }
     }
 }
-
-#ifdef EXPERIMENTAL
-void LibraryHandler::createNewCppComponent()
-{
-    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp, gpMainWindowWidget);
-    pEditDialog->exec();
-    if(pEditDialog->result() == QDialog::Accepted)
-    {
-        CoreGeneratorAccess coreAccess;
-        QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-
-        QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
-        QString libPath = dummy+typeName+"/";
-        QDir().mkpath(libPath);
-
-        QFile hppFile(libPath+typeName+".hpp");
-        hppFile.open(QFile::WriteOnly | QFile::Truncate);
-        hppFile.write(pEditDialog->getCode().toUtf8());
-        hppFile.close();
-
-        coreAccess.generateFromCpp(libPath+typeName+".hpp", true);
-        loadLibrary(libPath+typeName+"_lib.xml");
-    }
-    delete(pEditDialog);
-    return;
-}
-
-void LibraryHandler::createNewModelicaComponent()
-{
-    EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica, gpMainWindowWidget);
-    pEditDialog->exec();
-    if(pEditDialog->result() == QDialog::Accepted)
-    {
-        CoreGeneratorAccess coreAccess;
-        QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0).section("\n",0,0);
-        QString dummy = gpDesktopHandler->getGeneratedComponentsPath();
-        QString libPath = dummy+typeName+"/";
-        QDir().mkpath(libPath);
-        int solver = pEditDialog->getSolver();
-
-        QFile moFile(libPath+typeName+".mo");
-        moFile.open(QFile::WriteOnly | QFile::Truncate);
-        moFile.write(pEditDialog->getCode().toUtf8());
-        moFile.close();
-
-        coreAccess.generateFromModelica(libPath+typeName+".mo", true, solver, true);
-        loadLibrary(libPath+typeName+"_lib.xml");
-    }
-    delete(pEditDialog);
-    return;
-}
-#endif //EXPERIMENTAL
 
 
 //! @brief Loads a component library from either XML or folder (deprecated, for backwards compatibility)

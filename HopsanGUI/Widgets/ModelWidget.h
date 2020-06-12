@@ -128,7 +128,6 @@ public slots:
     void lockModelEditingFull(bool lock);
     void lockModelEditingLimited(bool lock);
     void openAnimation();
-    void simulateModelica();
     void collectPlotData(bool overWriteGeneration=false);
     void setUseRemoteSimulation(bool tf);
     void revertModel();

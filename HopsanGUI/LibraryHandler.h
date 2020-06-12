@@ -30,13 +30,9 @@
 namespace componentlibrary {
 namespace roots {
 constexpr auto externalLibraries = "External Libraries";
-constexpr auto modelicaComponents = "Modelica Components";
 constexpr auto fmus = "FMUs";
 }
 }
-
-#define MODELICATYPENAME "ModelicaComponent"
-
 
 //Qt includes
 #include <QObject>
@@ -193,10 +189,6 @@ public:
 public slots:
     void importFmu();
     void loadLibrary();
-#ifdef EXPERIMENTAL
-    void createNewCppComponent();
-    void createNewModelicaComponent();
-#endif //EXPERIMENTAL
 
 signals:
     void contentsChanged();

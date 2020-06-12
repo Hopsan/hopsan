@@ -219,7 +219,6 @@ HEADERS += \
     include/ComponentUtilities/HopsanPowerUser.h \
     include/HopsanCoreMacros.h \
     include/compiler_info.h \
-    include/Components/ModelicaComponent.hpp \
     include/ComponentUtilities/LookupTable.h \
     include/ComponentUtilities/PLOParser.h \
     $${PWD}/dependencies/indexingcsvparser/include/indexingcsvparser/indexingcsvparser.h \

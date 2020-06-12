@@ -28,13 +28,11 @@
         <file>graphics/builtinCAF/visible/Subsystem/systemport.xml</file>
         <file>graphics/objecticons/containerport.svg</file>
         <file>graphics/objecticons/cppcomponent.svg</file>
-        <file>graphics/objecticons/modelicacomponent.svg</file>
         <file>graphics/objecticons/fmucomponent.svg</file>
         <file>graphics/porticons/EmptyPort.svg</file>
         <file>graphics/builtinCAF/hidden/builtin_hidden.xml</file>
         <file>graphics/builtinCAF/visible/builtin_visible.xml</file>
         <file>graphics/porticons/Mechanic2dPort.svg</file>
-        <file>graphics/porticons/ModelicaPort.svg</file>
         <file>graphics/builtinCAF/visible/Subsystem/conditionalSubSystem.xml</file>
         <file>graphics/objecticons/conditionalSubsystemDefault.svg</file>
         <file>graphics/porticons/SignalPortBiDirectional.svg</file>
@@ -134,7 +132,6 @@
         <file>graphics/uiicons/svg/Hopsan-PlayRealTime.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Folder.svg</file>
         <file>graphics/uiicons/svg/Hopsan-FolderExternal.svg</file>
-        <file>graphics/uiicons/svg/Hopsan-FolderModelica.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Info.svg</file>
         <file>graphics/hopsan-icon.svg</file>
         <file>graphics/hopsan-logo.svg</file>

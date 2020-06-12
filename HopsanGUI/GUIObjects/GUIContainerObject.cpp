@@ -1212,14 +1212,8 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
             Port *pStartP = pConnector->getStartPort();
             Port *pEndP = pConnector->getEndPort();
 
-            // Modelica component disconnect
-            if(pStartP->getParentModelObject()->getTypeName() == MODELICATYPENAME ||
-                    pEndP->getParentModelObject()->getTypeName() == MODELICATYPENAME)
-            {
-                success = true;
-            }
             // Volunector disconnect
-            else if ( pConnector->isVolunector() )
+            if ( pConnector->isVolunector() )
             {
                 bool ok1 = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
                                                                       pStartP->getName(),
@@ -1300,25 +1294,8 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
             Port *pStartPort = mpTempConnector->getStartPort();
             Port *pEndPort = pPort;
 
-            if(pStartPort->getNodeType() == "NodeModelica" || pEndPort->getNodeType() == "NodeModelica")
-            {
-                //! @todo Also make sure that the port in the Modelica code is correct physical type
-                if((pStartPort->getNodeType() == "NodeModelica" && pEndPort->getNodeType() == "NodeModelica") ||
-                   (pStartPort->getNodeType() == "NodeModelica" && pEndPort->getParentModelObject()->getTypeCQS() == "C") ||
-                   (pEndPort->getNodeType() == "NodeModelica" && pStartPort->getParentModelObject()->getTypeCQS() == "C") ||
-                   (pStartPort->getNodeType() == "NodeModelica" && pEndPort->getParentModelObject()->getTypeCQS() == "S") ||
-                   (pEndPort->getNodeType() == "NodeModelica" && pStartPort->getParentModelObject()->getTypeCQS() == "S"))
-                {
-                    success = true;
-                }
-                else
-                {
-                    gpMessageHandler->addErrorMessage("Modelica ports can only be connected to other Modelica ports or C-type power ports.");
-                    success = false;
-                }
-            }
 #ifdef DEVELOPMENT
-            else if(pStartPort->getNodeType() == "NodeHydraulic" &&                 //Connecting two Q-type hydraulic ports, add a "volunector"
+            if(pStartPort->getNodeType() == "NodeHydraulic" &&                 //Connecting two Q-type hydraulic ports, add a "volunector"
                     pEndPort->getNodeType() == "NodeHydraulic" &&
                     pStartPort->getParentModelObject()->getTypeCQS() == "Q" &&
                     pEndPort->getParentModelObject()->getTypeCQS() == "Q")

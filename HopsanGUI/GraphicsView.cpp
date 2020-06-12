@@ -270,15 +270,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         mpContainerObject->getUndoStackPtr()->newPost();
         event->accept();
         QPointF position = event->pos();
-        if(text.startsWith(QString(MODELICATYPENAME)+"_"))
-        {
-            ModelObject* pObj = mpContainerObject->addModelObject(MODELICATYPENAME, this->mapToScene(position.toPoint()));
-            pObj->setParameterValue("model",text.section("_",1,1));
-        }
-        else
-        {
-            mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()));
-        }
+        mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()));
         this->setFocus();
     }
 
