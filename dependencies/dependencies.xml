@@ -2,10 +2,10 @@
 
 <!--
   Attributes:
-  Required: name 
+  Required: name
   Optional: version            For different versions of the same name
   Optional: type [toolchain]   Toolchain dependencies will not be unpacked into name-code automatically
-  
+
   Required: md5, sha1 or sha256
   Optional: platform [windows] Specify file meant for Windows only
 
@@ -92,7 +92,7 @@
       <url>https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/5.4.0/threads-posix/seh/x86_64-5.4.0-release-posix-seh-rt_v5-rev0.7z</url>
     </releasefile>
   </dependency>
-  
+
   <dependency name="qt-mingw-w64" version="5.9.9" type="toolchain">
     <releasefile sha1="AEC1C773904D64A7BDEC7FC94A45420ED0B988CE" platform="windows">
       <url>https://github.com/Hopsan/hopsan_qt_mingw64/releases/download/v5.9.9/qt-5.9.9-x64-5.4.0-release-posix-seh-rt_v5-rev0-webkit.7z</url>

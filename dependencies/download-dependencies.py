@@ -176,7 +176,7 @@ class DependenciesXML:
             if os.path.isfile(fname):
                 print('Info: File already exists '+fname)
                 if verify_filehash(fname, hash_algo, expected_hashsum):
-                    return (fname, False)
+                    return (fname, False, True)
                 else:
                     print('Warning: ' + hash_algo + ' missmatch in file ' + fname)
                     print('Expected: ' + expected_hashsum)
@@ -186,9 +186,9 @@ class DependenciesXML:
             if do_download:
                 isok = download(url, fname, hash_algo, expected_hashsum)
                 if isok:
-                    return (fname, True)
+                    return (fname, True, True)
 
-        return ("", False)
+        return ("", False, False)
 
     def __get_dependencies_matching_choice(self, chosen_deps, choose_all):
         allready_added_names = list()
@@ -231,6 +231,7 @@ class DependenciesXML:
 
     def download_and_unpack_chosen_dependencies(self, choices, download_all, include_toolchain, force):
         dependencies_to_download = self.__get_dependencies_matching_choice(choices, download_all)
+        all_verified = True
         for dep in dependencies_to_download:
             dep_name = dep.attrib['name']
             dep_type = get_attribute(dep, 'type')
@@ -253,11 +254,15 @@ class DependenciesXML:
                 files_matching_platform = files_without_platform
 
             # Trigger the actual download and unpacking
+            this_verified = False
             for releasefile in files_matching_platform:
-                file_name, did_download = self.__download_and_check_releasefile(dep_name, releasefile,  force)
+                file_name, did_download, verified_ok = self.__download_and_check_releasefile(dep_name, releasefile,  force)
                 if dep_type != 'toolchain':
                     if did_download or file_name and not os.path.exists(dep_name+'-code') or file_name and force:
                         clear_and_unpack(file_name, dep_name)
+                this_verified |= verified_ok
+            all_verified &= this_verified
+        return all_verified
 
 
 if __name__ == "__main__":
@@ -280,4 +285,8 @@ if __name__ == "__main__":
         for name in names:
             print(name)
     deps_xml.check_choices(chosen_deps)
-    deps_xml.download_and_unpack_chosen_dependencies(chosen_deps, args.download_all, args.download_toolchain, args.force)
+    all_ok = deps_xml.download_and_unpack_chosen_dependencies(chosen_deps, args.download_all, args.download_toolchain, args.force)
+    if all_ok:
+        exit(0)
+    else:
+        exit(1)
