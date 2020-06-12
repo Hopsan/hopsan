@@ -164,6 +164,8 @@ public:
     static QStringList splitWithRespectToParentheses(const QString str, const QChar c);
     static bool verifyParantheses(const QString str);
 
+    Expression *findFunction(const QString funcName);
+
     //! @todo Must be public for the object-less constructor functions, solve later (AND DON'T USE THEM ANYWHERE ELSE!!!)
     //ExpressionTypeT mType;
     QString mString;                //Used for symbols
