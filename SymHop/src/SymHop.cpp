@@ -271,6 +271,7 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
         if(str.count("(") != str.count(")"))
         {
             ok = false;
+            gSymHopMessages << "Unbalanced paretheses in expression: " << str;
             return;
         }
 
@@ -685,7 +686,9 @@ Expression Expression::fromFactorDivisor(const Expression factor, const Expressi
 //! @param divisors List with divisors
 Expression Expression::fromFactorsDivisors(const QList<Expression> factors, const QList<Expression> divisors)
 {
-    assert(factors.size()>0);
+    if(factors.isEmpty()) {
+        gSymHopMessages << "In Expression::fromFactorsDivisors(): At least one factor is required. Returning Expression(0).";
+    }
 
     if(factors.size() == 1 && divisors.isEmpty())
     {
@@ -1701,7 +1704,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         {
             if(getFunctionDerivative(func) == "")
             {
-                //QMessageBox::critical(0, "SymHop", "Could not compute function derivative of \"" + func +"\": Not implemented.");
+                gSymHopMessages << "In Expression::derivative(): Could not compute function derivative of \"" << func << "\": Not implemented.";
                 ok = false;
             }
             else
@@ -1814,7 +1817,10 @@ Expression Expression::derivative(const Expression x, bool &ok) const
     Expression retExp = Expression(ret);
     retExp._simplify(FullSimplification, Recursive);
 
-    assert(retExp.toString() != "");
+    if(retExp.toString() == "") {
+        ok = false;
+        gSymHopMessages << "In Expression::derivative(): Empty return string encountered.";
+    }
 
     return retExp;
 }
@@ -1887,6 +1893,13 @@ Expression *Expression::findFunction(const QString funcName) {
     }
 
     return nullptr;
+}
+
+QStringList Expression::readErrorMessages()
+{
+    QStringList ret = gSymHopMessages;
+    gSymHopMessages.clear();
+    return ret;
 }
 
 
@@ -2345,7 +2358,11 @@ void Expression::expand(const ExpressionSimplificationT simplifications)
 //FIXED
 void Expression::linearize()
 {
-    assert(this->isEquation());
+    if(!this->isEquation()) {
+        gSymHopMessages << "In Expression::linearize(): Only equation expressions can be linearized.";
+        return;
+    }
+
 
     this->expand();
 
@@ -2408,7 +2425,10 @@ void Expression::linearize()
 //FIXED
 void Expression::toLeftSided()
 {
-    assert(this->isEquation());
+    if(!this->isEquation()) {
+        gSymHopMessages << "In Expression::toLeftSided(): Only equations can be converted to left-sided.";
+        return;
+    }
     if(mpRight->isAdd())
     {
         for(int i=0; i<mpRight->mTerms.size(); ++i)
@@ -3509,6 +3529,7 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
     QList<int> order;
     if(!findPath(order, dependencies, 0, preferredOrder))
     {
+        gSymHopMessages << "In sortEquationSystem(): Failed to find sorting path.";
         return false;
     }
 

@@ -1989,7 +1989,15 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         if(plainEquations[e].trimmed().startsWith("//")) {
             continue;   //Ignore comments
         }
-        systemEquations.append(Expression(plainEquations.at(e)));
+        bool ok;
+        systemEquations.append(Expression(plainEquations.at(e), &ok));
+        if(!ok) {
+            QStringList errors = systemEquations.last().readErrorMessages();
+            for(const QString &error : errors) {
+                printErrorMessage(error);
+            }
+            return false;
+        }
         if(systemEquations.last().getFunctionName() == "limitVariable") {
             if(systemEquations.last().getArguments().size() == 3) {
                 limitedVariables << systemEquations.last().getArgument(0).toString();
