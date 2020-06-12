@@ -2104,10 +2104,12 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     }
 
     QStringList derivatives;
+    QList<Expression> allVariables = knowns;
+    allVariables.append(unknowns);
     for(const auto &equation : systemEquations) {
-        for(const auto &unknown : unknowns) {
-            if(equation.contains(Expression::fromFunctionArguments("der",QList<Expression>() << unknown))) {
-                derivatives << unknown.toString();
+        for(const auto &variable : allVariables) {
+            if(equation.contains(Expression::fromFunctionArguments("der",QList<Expression>() << variable))) {
+                derivatives << variable.toString();
             }
         }
     }
