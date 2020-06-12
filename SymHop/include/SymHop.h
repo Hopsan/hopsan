@@ -59,6 +59,7 @@ inline SymHopFunctionoid::~SymHopFunctionoid() { }
 namespace SymHop {
 
 typedef double (*FunctionPtr)(QString, bool&); // function pointer type
+static QStringList gSymHopMessages;
 
 class SYMHOP_DLLAPI Expression
 {
@@ -165,6 +166,8 @@ public:
     static bool verifyParantheses(const QString str);
 
     Expression *findFunction(const QString funcName);
+
+    QStringList readErrorMessages();
 
     //! @todo Must be public for the object-less constructor functions, solve later (AND DON'T USE THEM ANYWHERE ELSE!!!)
     //ExpressionTypeT mType;
