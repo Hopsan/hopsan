@@ -1820,6 +1820,76 @@ Expression Expression::derivative(const Expression x, bool &ok) const
 }
 
 
+Expression *Expression::findFunction(const QString funcName) {
+    if(this->getFunctionName() == funcName) {
+        return this;
+    }
+
+    Expression *pExpr = nullptr;
+    for(Expression &term : mTerms) {
+        pExpr = term.findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+    }
+    for(Expression &argument : mArguments) {
+        pExpr = argument.findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+    }
+    for(Expression &factor : mFactors) {
+        pExpr = factor.findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+    }
+    for(Expression &divisor : mDivisors)
+    {
+        pExpr = divisor.findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+    }
+    if(mpBase) {
+        pExpr = mpBase->findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+    }
+    if(mpPower) {
+        pExpr = mpPower->findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+
+    }
+    if(mpLeft) {
+        pExpr = mpLeft->findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+
+    }
+    if(mpRight) {
+        pExpr = mpRight->findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+
+    }
+    if(mpDividend) {
+        pExpr = mpDividend->findFunction(funcName);
+        if(pExpr != nullptr) {
+            return pExpr;
+        }
+
+    }
+
+    return nullptr;
+}
+
+
 //! @brief Returns whether or not expression contains a sub expression
 //! @param expr Expression to check for
 //FIXED
