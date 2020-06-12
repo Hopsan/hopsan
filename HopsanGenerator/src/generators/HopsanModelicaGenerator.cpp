@@ -2132,7 +2132,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
         if(usedUnknowns.size() == 1) {
             //Found only one unknown, try to break it out of the equation
-            Expression tempExpr = systemEquations[e];
+            Expression tempExpr = *systemEquations[e].getLeft();
             tempExpr.factor(usedUnknowns[0]);
             if(tempExpr.getTerms().size() == 1) {
                 tempExpr = Expression(0.0);
