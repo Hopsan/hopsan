@@ -15,6 +15,8 @@ DESTDIR = $${PWD}/
 # *= Means append unique
 INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 
+INCLUDEPATH *= $${PWD}/../../Dependencies/sundials-5.3.0/include/
+
 # The location of the HopsanCore .dll or .so file, needed to link against when compiling your library
 LIBS *= -L$${PWD}/../../bin
 

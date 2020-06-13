@@ -14,8 +14,8 @@ HEADERS +=  \
  $${PWD}/Mechanical/MechanicSteel.hpp \ 
  $${PWD}/Mechanical/Mechanical.h \ 
  $${PWD}/Mechanical/MechanicalSeparator.hpp \ 
- $${PWD}/Mechanical/mechanicRotPowerSensor.hpp \ 
- $${PWD}/Components.h
+ $${PWD}/Components.h \
+ $${PWD}/Mechanical/LinearInertia.hpp
 
 SOURCES += 
 
