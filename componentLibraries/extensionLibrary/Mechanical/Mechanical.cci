@@ -28,3 +28,4 @@ pComponentFactory->registerCreatorFunction("MechanicFreeFixWall",MechanicFreeFix
 pComponentFactory->registerCreatorFunction("MechanicSteel",MechanicSteel::Creator);
 pComponentFactory->registerCreatorFunction("MechanicalSeparator",MechanicalSeparator::Creator);
 pComponentFactory->registerCreatorFunction("MechanicRotationalPowerSensor",MechanicRotationalPowerSensor::Creator);
+pComponentFactory->registerCreatorFunction("LinearInertia",LinearInertia::Creator);
