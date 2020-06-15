@@ -49,6 +49,7 @@ script:
   - ./setupMsgpack.sh
   - ./setupKatex.sh
   - ./setupTclap.sh
+  - ./setupSundials.sh
   - cd ..
   - mkdir -p build
   - cd build
