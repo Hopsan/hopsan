@@ -26,6 +26,10 @@ QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 }
 
+# -------------------------------------------------------
+# Set Sundials paths
+include($${PWD}/../dependencies/sundials.pri)
+# -------------------------------------------------------
 
 SOURCES += \
     tst_hstringtest.cpp

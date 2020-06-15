@@ -39,16 +39,16 @@ SOURCES += $${PWD}/dependencies/libnumhop/src/VariableStorage.cpp
 HEADERS += $${PWD}/dependencies/libnumhop/include/numhop.h
 #--------------------------------------------------------
 
-# -------------------------------------------------
+# -------------------------------------------------------
 # Set Sundials paths
-exists($${PWD}/../dependencies/sundials/lib) {
-      message( "Compiling with Sundials support" )
-      DEFINES *= USESUNDIALS
-      INCLUDEPATH *= $${PWD}/../dependencies/sundials/include
-      LIBS *= -L$${PWD}/../dependencies/sundials/lib -lsundials_kinsol
+include($${PWD}/../dependencies/sundials.pri)
+have_sundials(){
+  DEFINES *= USESUNDIALS
+  !build_pass:message("Compiling with Sundials support")
 } else {
-      message( "Compiling WITHOUT Sundials support" )
+  !build_pass:message("Compiling without Sundials support")
 }
+# -------------------------------------------------------
 
 # -------------------------------------------------
 

@@ -27,6 +27,11 @@ QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 QMAKE_CXXFLAGS += -std=c++11
 
+# -------------------------------------------------------
+# Set Sundials paths
+include($${PWD}/../dependencies/sundials.pri)
+# -------------------------------------------------------
+
 SOURCES += \
     tst_utilitiestesttest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
