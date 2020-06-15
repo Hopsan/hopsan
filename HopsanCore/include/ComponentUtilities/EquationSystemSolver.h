@@ -126,10 +126,12 @@ public:
 private:
     Component *mpParentComponent;
     void *mem;
+#ifdef USESUNDIALS
     N_Vector y;
     N_Vector scale;
     SUNLinearSolver LS;
     SUNMatrix J;
+#endif
     double mSolverTime;
     SolverTypeEnum mSolverType = NewtonIteration;
 };
