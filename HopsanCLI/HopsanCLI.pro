@@ -65,6 +65,11 @@ contains(DEFINES, HOPSANCLI_USEGENERATOR) {
 }
 #--------------------------------------------------------
 
+# -------------------------------------------------------
+# Set Sundials paths
+include($${PWD}/../dependencies/sundials.pri)
+# -------------------------------------------------------
+
 CONFIG(debug, debug|release) {
   QMAKE_CXXFLAGS += -pedantic -Wno-long-long -Wconversion
 }
