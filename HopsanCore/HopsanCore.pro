@@ -44,8 +44,8 @@ HEADERS += $${PWD}/dependencies/libnumhop/include/numhop.h
 exists($${PWD}/../dependencies/sundials/lib) {
       message( "Compiling with Sundials support" )
       DEFINES *= USESUNDIALS
-      INCLUDEPATH *= $${PWD}/../Dependencies/sundials-5.3.0/include
-      LIBS *= -L$${PWD}/../Dependencies/sundials-5.3.0/lib -lsundials_kinsol
+      INCLUDEPATH *= $${PWD}/../dependencies/sundials/include
+      LIBS *= -L$${PWD}/../dependencies/sundials/lib -lsundials_kinsol
 } else {
       message( "Compiling WITHOUT Sundials support" )
 }
