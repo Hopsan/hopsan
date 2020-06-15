@@ -1806,6 +1806,11 @@ void Component::getResiduals(double *, double *)
     return;
 }
 
+void Component::getJacobian(double *, double *, double *)
+{
+    stopSimulation("getJacobian() is not implemented in component.");
+    return;
+}
 
 double Component::getStateVariableSecondDerivative(int)
 {
