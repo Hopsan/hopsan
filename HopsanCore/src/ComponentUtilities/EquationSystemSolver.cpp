@@ -616,6 +616,14 @@ static int kinsolResidualCallback(N_Vector y, N_Vector f, void *user_data)
     pComponent->getResiduals(NV_DATA_S(y), NV_DATA_S(f));
     return(0);
 }
+
+
+static int kinsolJacobianCallback(N_Vector y, N_Vector f, SUNMatrix J, void *user_data,N_Vector tmp1, N_Vector tmp2)
+{
+    Component *pComponent = static_cast<Component*>(user_data);
+    pComponent->getJacobian(NV_DATA_S(y), NV_DATA_S(f), SM_DATA_D(J));
+    return 0;
+}
 #endif
 
 
@@ -692,6 +700,18 @@ KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, Solve
         flag = KINSetMaxSetupCalls(mem, 1);
         if (flag < 0) {
             mpParentComponent->stopSimulation("KINSetMaxSetupCalls() failed with flag "+to_hstring(flag)+".");
+            return;
+        }
+
+        flag = KINSetNumMaxIters(mem,1000);
+        if(flag<0) {
+            mpParentComponent->stopSimulation("KINSetNumMaxIters() failed with flag "+to_hstring(flag)+".");
+            return;
+        }
+
+        flag = KINSetJacFn(mem, kinsolJacobianCallback);
+        if (flag < 0) {
+            pParentComponent->stopSimulation("KINSetJacFn() failed with flag "+to_hstring(flag)+".");
             return;
         }
     }

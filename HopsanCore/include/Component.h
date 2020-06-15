@@ -229,6 +229,7 @@ public:
     virtual double getStateVariableDerivative(int /*i*/);
     virtual double getStateVariableSecondDerivative(int /*i*/);
     virtual void getResiduals(double * /*y*/, double* /*res*/);
+    virtual void getJacobian(double * /*y*/, double* /*f*/, double* /*J*/);
 
 protected:
     //==========Protected member functions==========
