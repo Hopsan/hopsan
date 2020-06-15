@@ -40,11 +40,13 @@
 #include "ComponentSystem.h"
 
 //Sundials includes
+#ifdef USESUNDIALS
 #include "kinsol/kinsol.h"
 #include "nvector/nvector_serial.h"
 #include "sunmatrix/sunmatrix_dense.h"
 #include "sunlinsol/sunlinsol_dense.h"
 #include "sunmatrix/sunmatrix_sparse.h"
+#endif
 
 #include <cstring>
 #include <stdlib.h>
@@ -607,16 +609,19 @@ void NumericalIntegrationSolver::solvevariableTimeStep()
 }
 
 
+#ifdef USESUNDIALS
 static int kinsolResidualCallback(N_Vector y, N_Vector f, void *user_data)
 {
     Component *pComponent = static_cast<Component*>(user_data);
     pComponent->getResiduals(NV_DATA_S(y), NV_DATA_S(f));
     return(0);
 }
+#endif
 
 
 KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, SolverTypeEnum solverType=NewtonIteration)
 {
+#ifdef USESUNDIALS
     mSolverType = solverType;
 
     int flag;
@@ -690,12 +695,16 @@ KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, Solve
             return;
         }
     }
-
     return;
+#else
+    mpParentComponent->stopSimulation("Sundials solvers not available.");
+    return;
+#endif
 }
 
 KinsolSolver::~KinsolSolver()
 {
+#ifdef USESUNDIALS
     N_VDestroy(y);
     N_VDestroy(scale);
     KINFree(&mem);
@@ -703,10 +712,12 @@ KinsolSolver::~KinsolSolver()
         SUNLinSolFree(LS);
         SUNMatDestroy(J);
     }
+#endif
 }
 
 void KinsolSolver::solve()
 {
+#ifdef USESUNDIALS
     int strategy = KIN_LINESEARCH;
     if(mSolverType == FixedPointIteration) {
         strategy = KIN_FP;
@@ -717,20 +728,28 @@ void KinsolSolver::solve()
         mpParentComponent->stopSimulation("KINSol() failed with flag "+to_hstring(flag)+".");
         return;
     }
+#endif
 }
 
 double KinsolSolver::getState(int i)
 {
+#ifdef USESUNDIALS
     return NV_Ith_S(y,i);
+#else
+    return 0;   //Avoid compile error
+#endif
 }
 
 void KinsolSolver::setState(int i, double value)
 {
+#ifdef USESUNDIALS
     NV_Ith_S(y,i) = value;
+#endif
 }
 
 void KinsolSolver::setTolerance(double value)
 {
+#ifdef USESUNDIALS
     int flag = KINSetFuncNormTol(mem, value);
     if (flag < 0) {
         mpParentComponent->stopSimulation("KINSetFuncNormTol() failed with flag "+to_hstring(flag)+".");
@@ -744,4 +763,5 @@ void KinsolSolver::setTolerance(double value)
             return;
         }
     }
+#endif
 }
