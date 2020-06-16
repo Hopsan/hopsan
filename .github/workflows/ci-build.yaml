@@ -28,7 +28,7 @@ jobs:
       - name: Download dependencies
         shell: cmd
         working-directory: dependencies
-        run: python download-dependencies.py fmilibrary tclap
+        run: python download-dependencies.py fmilibrary tclap sundials
 
       - name: Build dependencies
         shell: cmd
@@ -36,6 +36,7 @@ jobs:
         run: |
             call setupTclap.bat
             call setupFMILibrary.bat
+            call setupSundials.bat
 
       - name: Configure
         working-directory: hopsan-build
@@ -75,7 +76,7 @@ jobs:
       - name: Download dependencies
         shell: bash
         working-directory: dependencies
-        run: ./download-dependencies.py fmilibrary tclap
+        run: ./download-dependencies.py fmilibrary tclap sundials
 
       - name: Build dependencies
         shell: bash
@@ -83,6 +84,7 @@ jobs:
         run: |
           ./setupFMILibrary.sh
           ./setupTclap.sh
+          ./setupSundials.sh
 
       - name: Configure
         working-directory: hopsan-build
