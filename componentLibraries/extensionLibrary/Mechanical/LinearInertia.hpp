@@ -48,12 +48,15 @@ class LinearInertia : public ComponentQ
 private:
     Port *mpP1;
     Port *mpP2;
-    MechanicNodeDataPointerStructT mP1, mP2;
     double *mpM, *mpB, *mpK;
-    KinsolSolver *mpSolver;
     int mSolverType;
     double mTolerance;
     double *mpXMin, *mpXMax;
+
+    double *mpP1_f, *mpP1_x, *mpP1_v, *mpP1_c, *mpP1_Zx, *mpP1_me;
+    double *mpP2_f, *mpP2_x, *mpP2_v, *mpP2_c, *mpP2_Zx, *mpP2_me;
+
+    KinsolSolver *mpSolver;
 
 public:
     static Component *Creator()
@@ -77,38 +80,84 @@ public:
         addInputVariable("K", "Spring Constant", "N/m", 1, &mpK);
         addInputVariable("x_min", "Minimum Position of Port P2", "m", -1.0e+300, &mpXMin);
         addInputVariable("x_max", "Maximum Position of Port P2", "m", 1.0e+300, &mpXMax);
+
     }
 
 
     void initialize()
     {
-        mpSolver = new KinsolSolver(this, mTolerance, 2, KinsolSolver::SolverTypeEnum(mSolverType));
+        mpP1_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+        mpP1_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+        mpP1_v = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+        mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+        mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+        mpP1_me = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
 
-        //Assign node data pointers
-        getMechanicPortNodeDataPointers(mpP1, mP1);
-        getMechanicPortNodeDataPointers(mpP2, mP2);
+        mpP2_f = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+        mpP2_x = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+        mpP2_v = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+        mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+        mpP2_Zx = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
+        mpP2_me = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
+
+        mpSolver = new KinsolSolver(this, mTolerance, 2, KinsolSolver::SolverTypeEnum(mSolverType));
 
         simulateOneTimestep();
     }
 
     void simulateOneTimestep()
     {
+        double xmax = (*mpXMax);
+        double xmin = (*mpXMin);
+        double x1,v1,f1,c1,Zc1,x2,v2,f2,c2,Zc2;
+        c1 = (*mpP1_c);
+        Zc1 = (*mpP1_Zx);
+        v2 = (*mpP2_v);
+        x2 = (*mpP2_x);
+        c2 = (*mpP2_c);
+        Zc2 = (*mpP2_Zx);
+
         //Provide Kinsol with updated state variables
-        mpSolver->setState(0,mP2.v());
-        mpSolver->setState(1,mP2.x());
+        mpSolver->setState(0,v2);
+        mpSolver->setState(1,x2);
 
         //Solve algebraic equation system
         mpSolver->solve();
 
         //Obtain new state variables from Kinsol
-        mP2.rv() = mpSolver->getState(0);
-        mP2.rx() = mpSolver->getState(1);
+        v2 = mpSolver->getState(0);
+        x2 = mpSolver->getState(1);
+
+        if(x2 > xmax) {
+            x2 = xmax;
+            if(v2 > 0) {
+                v2 = 0;
+            }
+        }
+        if(x2 < xmin) {
+            x2 = xmin;
+            if(v2 < 0) {
+                v2 = 0;
+            }
+        }
 
         //Final algebraic expressions
-        mP1.rx() = -mP2.x();
-        mP1.rv() = -mP2.v();
-        mP1.rf() = mP1.c() + mP1.Zc()*mP1.v();
-        mP2.rf() = mP2.c() + mP2.Zc()*mP2.v();
+        x1 = -x2;
+        v1 = -v2;
+        f1 = c1 + Zc1*v1;
+        f2 = c2 + Zc2*v2;
+
+        (*mpP1_x) = x1;
+        (*mpP1_v) = v1;
+        (*mpP1_f) = f1;
+        (*mpP2_x) = x2;
+        (*mpP2_v) = v2;
+        (*mpP2_f) = f2;
+    }
+
+    void finalize()
+    {
+        delete mpSolver;
     }
 
 
@@ -116,34 +165,48 @@ public:
     //! @param [in] y Array of state variables from previous iteration
     //! @param [out] res Array of residuals or new state variables
     void getResiduals(double *y, double *res) {
-        double v = y[0]; //y1 = v
-        double x = y[1]; //y2 = x
-        double oldV = mP2.v();
-        double oldX = mP2.x();
+        double v2 = y[0]; //y1 = v
+        double x2 = y[1]; //y2 = x
+        double oldV2 = (*mpP2_v);
+        double oldX2 = (*mpP2_x);
         double M = (*mpM);
         double B = (*mpB);
         double K = (*mpK);
-        double xmin = (*mpXMin);
-        double xmax = (*mpXMax);
+        double c1 = (*mpP1_c);
+        double c2 = (*mpP2_c);
+        double Zc1 = (*mpP1_Zx);
+        double Zc2 = (*mpP2_Zx);
 
         // Compute new state variables
-        double vnew = (M*oldV/mTimestep - K*x + mP1.c() - mP2.c())/((M/mTimestep + B + mP1.Zc() + mP2.Zc()));
-        double xnew = oldX + mTimestep/2.0*(oldV + vnew);
-
-        // Apply variable limitations
-        vnew = dxLimit2(limit(xnew, xmin,xmax),vnew,xmin,xmax)*vnew;
-        xnew = limit(xnew,xmin,xmax);
+        double vnew = (M*oldV2/mTimestep - K*x2 + c1 - c2)/(M/mTimestep + B + Zc1 + Zc2);
+        double xnew = oldX2 + mTimestep/2.0*(oldV2 + vnew);
 
         if(mSolverType == KinsolSolver::NewtonIteration) {
             //Newton iteration, return residuals (old variables minus new variables)
-            res[0] = v - dxLimit2(limit(xnew,xmin,xmax),vnew,xmin,xmax) * vnew;
-            res[1] = x - limit(xnew,xmin,xmax);
+            res[0] = v2 - vnew;
+            res[1] = x2 - xnew;
         }
         else if(mSolverType == KinsolSolver::FixedPointIteration) {
             //Fixed-point iteration, return new variables
-            res[0] = dxLimit2(limit(xnew, xmin,xmax),vnew,xmin,xmax)*vnew;
-            res[1] = limit(xnew,xmin,xmax);
+            res[0] = vnew;
+            res[1] = xnew;
         }
+    }
+
+    void getJacobian(double *y, double *f, double *J)
+    {
+        (void)y;
+        (void)f;
+        double M = (*mpM);
+        double B = (*mpB);
+        double K = (*mpK);
+        double Zc1 = (*mpP1_Zx);
+        double Zc2 = (*mpP2_Zx);
+
+        J[0*2+0] = M/mTimestep/(M/mTimestep + B + Zc1 + Zc2);
+        J[1*2+0] = -K/(M/mTimestep + B + Zc1 + Zc2);
+        J[0*2+1] = mTimestep/2.0;
+        J[1*2+1] = 1.0;
     }
 };
 }
