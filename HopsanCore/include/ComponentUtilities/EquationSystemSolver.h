@@ -38,17 +38,15 @@
 #include "matrix.h"
 #include "ludcmp.h"
 
+//Sundials includes
+#ifdef USESUNDIALS
+#include "kinsol/kinsol.h"
+#include "nvector/nvector_serial.h"
+#include "sunmatrix/sunmatrix_dense.h"
+#include "sunlinsol/sunlinsol_dense.h"
+#endif
+
 #include <vector>
-
-//Forward declarations
-struct _generic_N_Vector;
-typedef struct _generic_N_Vector *N_Vector;
-
-struct _generic_SUNLinearSolver;
-typedef struct _generic_SUNLinearSolver *SUNLinearSolver;
-
-struct _generic_SUNMatrix;
-typedef struct _generic_SUNMatrix *SUNMatrix;
 
 namespace hopsan {
 
