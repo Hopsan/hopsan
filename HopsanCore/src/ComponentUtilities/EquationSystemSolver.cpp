@@ -636,6 +636,7 @@ KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, Solve
     y = nullptr;
     scale = nullptr;
     LS = nullptr;
+    J = nullptr;
 
     mpParentComponent = pParentComponent;
 
@@ -658,8 +659,6 @@ KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, Solve
         pParentComponent->stopSimulation("KINSetUserData() failed with flag "+to_hstring(flag)+".");
         return;
     }
-
-    ////
 
     if(solverType == FixedPointIteration) {
       flag = KINSetMAA(mem, 2);
@@ -724,12 +723,16 @@ KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, Solve
 KinsolSolver::~KinsolSolver()
 {
 #ifdef USESUNDIALS
+    KINFree(&mem);
     N_VDestroy(y);
     N_VDestroy(scale);
-    KINFree(&mem);
+    y = nullptr;
+    scale = nullptr;
     if(mSolverType == NewtonIteration) {
         SUNLinSolFree(LS);
         SUNMatDestroy(J);
+        LS = nullptr;
+        J = nullptr;
     }
 #endif
 }
