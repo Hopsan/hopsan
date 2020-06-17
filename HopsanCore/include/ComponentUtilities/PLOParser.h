@@ -23,13 +23,12 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   CSVParser.h
+//! @file   PLOParser.h
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2014-10-03
 //!
 //! @brief Contains the Core Utility PLOParser class
 //!
-//$Id$
 
 #ifndef PLOPARSER_H
 #define PLOPARSER_H
@@ -70,7 +69,7 @@ public:
 protected:
     bool readFile(std::iostream& rFileStream);
     std::vector<double> mData;
-    std::vector<double> mPlotScales;
+    std::vector<HString> mPlotQuantitiesOrScales;
     std::vector<HString> mDataNames;
     size_t mNumDataRows, mNumDataCols, mPloVersion;
     HString mErrorString;

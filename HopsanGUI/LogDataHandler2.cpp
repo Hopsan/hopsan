@@ -221,7 +221,8 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
         fileStream << "    'VERSION'\n";
         fileStream << "    " << version << "\n";
         fileStream << "    '"<<ploFileInfo.baseName()<<".PLO'\n";
-        if ((timeVectors.size() > 0) || (freqVectors.size() > 0))
+        // PLO Version 1 does not count the time or frequency vector in the number of data columns
+        if ( (version == 1) && ((timeVectors.size() > 0) || (freqVectors.size() > 0)) )
         {
             fileStream << "    " << nDataCols-1  <<"    "<< nDataRows <<"\n";
         }
@@ -260,13 +261,15 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     }
 
     // Write plotScalings line
-    // Note! Plotscale removed in 0.7 for backward compatibility write ones
+    // Note! Plotscale was removed in HopsanNG 0.7, for backward compatibility with PLO v1, write ones
+    // Plot v2 prints Quantity names if known, else scale one
+    //! @todo In format 3 we should likely write Quantity:Unit to clarify the values unit
     for(int i=0; i<variables.size(); ++i)
     {
         const QString &q = variables[i]->getDataQuantity();
         if (version==1 || q.isEmpty())
         {
-            fileStream << " " << 1;
+            fileStream << " " << 1.0;
         }
         else
         {
@@ -301,7 +304,7 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     }
 
     // Write plot data ending header
-    if (version==1 || version==2)
+    if (version < 3)
     {
         fileStream << "  "+ploFileInfo.baseName()+".PLO.DAT_-1" <<"\n";
         fileStream << "  "+modelFileInfo.fileName() <<"\n";
