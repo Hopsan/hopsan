@@ -36,6 +36,7 @@
 
 #include "win32dll.h"
 #include <vector>
+#include <iostream>
 #include "HopsanTypes.h"
 
 namespace hopsan {
@@ -50,6 +51,7 @@ public:
     bool isEmpty() const;
     bool eof() const;
 
+    bool readText(const HString &text);
     bool readFile(const HString &rFilepath);
     //! @todo maybe have a function that directly copies time and data
 
@@ -66,6 +68,7 @@ public:
     bool copyColumn(const HString &rDataName, std::vector<double> &rColumn);
 
 protected:
+    bool readFile(std::iostream& rFileStream);
     std::vector<double> mData;
     std::vector<double> mPlotScales;
     std::vector<HString> mDataNames;

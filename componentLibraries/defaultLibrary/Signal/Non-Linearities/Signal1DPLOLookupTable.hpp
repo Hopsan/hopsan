@@ -87,7 +87,13 @@ namespace hopsan {
                 bool isOK=false;
                 mLookupTable.clear();
 
-                isOK = mPLOParser.readFile(findFilePath(mPloFileName));
+                if (mUseTextInput) {
+                    isOK = mPLOParser.readText(mTextInput);
+                }
+                else {
+                    isOK = mPLOParser.readFile(findFilePath(mPloFileName));
+                }
+
                 if(!isOK)
                 {
                     HString msg = mUseTextInput ? "Unable to initialize PLO parser: "+mPLOParser.getErrorString() :

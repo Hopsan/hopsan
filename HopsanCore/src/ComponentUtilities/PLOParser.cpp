@@ -61,111 +61,122 @@ bool PLOParser::isEmpty() const
     return mData.empty();
 }
 
+bool PLOParser::readText(const HString &text)
+{
+   std::stringbuf string_buffer;
+   std::iostream ios(&string_buffer);
+   ios << text.c_str();
+   ios.seekg(0);
+   return readFile(ios);
+}
+
 bool PLOParser::readFile(const HString &rFilepath)
+{
+    // Attempt to open file
+    std::fstream myfile(rFilepath.c_str());
+    // Attempt to open file
+    if (myfile.is_open()) {
+        bool readOK = readFile(myfile);
+        myfile.close();
+        return readOK;
+    }
+    else {
+        mErrorString = "Could not open file: "+rFilepath;
+        myfile.close();
+        return false;
+    }
+}
+
+bool PLOParser::readFile(std::iostream &rFileStream)
 {
     // Clear old data
     clearData();
 
-    // Attempt to open file
-    std::ifstream myfile(rFilepath.c_str());
-    if (myfile.is_open())
+    std::string tmp;
+
+    // Read version data and check if this seems to be a plo file
+    rFileStream >> tmp;
+    if ( tmp != "'VERSION'" )
     {
-        std::string tmp;
-
-        // Read version data and check if this seems to be a plo file
-        myfile >> tmp;
-        if ( tmp != "'VERSION'" )
-        {
-            mErrorString = rFilepath+" Does not seem to be a plo file, Aborting import!";
-            myfile.close();
-            return false;
-        }
-
-        // Read version number
-        myfile >> mPloVersion;
-        if (mPloVersion < 1 || mPloVersion > 2)
-        {
-            mErrorString = "Incorrect PLO version: " + to_hstring(mPloVersion);
-            myfile.close();
-            return false;
-        }
-
-
-        // Skip name line
-        getline(myfile, tmp); // First remove previous newline
-        getline(myfile, tmp);
-        //! @todo maybe parse this for model info for plo v2 format
-
-        // Read num data
-        myfile >> mNumDataCols;
-        myfile >> mNumDataRows;
-
-        if ( mNumDataCols < 1 || mNumDataRows < 1 )
-        {
-            mErrorString = "No data rows or columns found";
-            myfile.close();
-            return false;
-        }
-
-        // Read column names
-
-        mDataNames.reserve(mNumDataCols+1); //One extra in case plo v1 and Time in first column
-        for (size_t i=0; i<mNumDataCols; ++i)
-        {
-            myfile >> tmp;
-            HString name(tmp.c_str());
-
-            //! @todo isn't there frequency as well
-            if ( (i==0) && (mPloVersion == 1) && (name=="'Time',") )
-            {
-                ++mNumDataCols;
-            }
-            // Remove ', and ' from names
-            name.replace("',", "");
-            name.replace("'", "");
-
-            // Remember name
-            mDataNames.push_back(name);
-        }
-
-        // Read plotscales
-        mPlotScales.resize(mNumDataCols);
-        for (size_t i=0; i<mNumDataCols; ++i)
-        {
-            double scale;
-            myfile >> scale;
-            mPlotScales[i] = scale;
-        }
-
-        // Read data
-        mData.resize(mNumDataCols*mNumDataRows);
-        for (size_t i=0; i<mNumDataCols*mNumDataRows; ++i)
-        {
-            double val;
-            myfile >> val;
-            mData[i] = val;
-        }
-
-        if (mPloVersion == 1)
-        {
-            // Read DAT line (not used, ignored in HopsanNG)
-            myfile >> tmp;
-
-            // Read modelname
-            myfile >> tmp;
-            //! @todo should we save this?
-        }
-
-        // All good
-        myfile.close();
-        return true;
-    }
-    else
-    {
-        mErrorString = "Could not open file";
-        myfile.close();
+        mErrorString = "Plo file does not begin with 'VERSION', or not a valid plo format, Aborting import!";
         return false;
     }
+
+    // Read version number
+    rFileStream >> mPloVersion;
+    if (mPloVersion < 1 || mPloVersion > 2)
+    {
+        mErrorString = "Incorrect PLO version: " + to_hstring(mPloVersion);
+        return false;
+    }
+
+
+    // Skip name line
+    getline(rFileStream, tmp); // First remove previous newline
+    getline(rFileStream, tmp);
+    //! @todo maybe parse this for model info for plo v2 format
+
+    // Read num data
+    rFileStream >> mNumDataCols;
+    rFileStream >> mNumDataRows;
+
+    if ( mNumDataCols < 1 || mNumDataRows < 1 )
+    {
+        mErrorString = "No data rows or columns found";
+        return false;
+    }
+
+    // Read column names
+
+    mDataNames.reserve(mNumDataCols+1); //One extra in case plo v1 and Time in first column
+    for (size_t i=0; i<mNumDataCols; ++i)
+    {
+        rFileStream >> tmp;
+        HString name(tmp.c_str());
+
+        //! @todo isn't there frequency as well
+        if ( (i==0) && (mPloVersion == 1) && (name=="'Time',") )
+        {
+            ++mNumDataCols;
+        }
+        // Remove ', and ' from names
+        name.replace("',", "");
+        name.replace("'", "");
+
+        // Remember name
+        mDataNames.push_back(name);
+    }
+
+    // Read plotscales
+    mPlotScales.resize(mNumDataCols);
+    for (size_t i=0; i<mNumDataCols; ++i)
+    {
+        double scale;
+        rFileStream >> scale;
+        mPlotScales[i] = scale;
+    }
+
+    // Read data
+    mData.resize(mNumDataCols*mNumDataRows);
+    for (size_t i=0; i<mNumDataCols*mNumDataRows; ++i)
+    {
+        double val;
+        rFileStream >> val;
+        mData[i] = val;
+    }
+
+    if (mPloVersion == 1)
+    {
+        // Read DAT line (not used, ignored in HopsanNG)
+        rFileStream >> tmp;
+
+        // Read modelname
+        rFileStream >> tmp;
+        //! @todo should we save this?
+    }
+
+    // All good
+    return true;
 }
 
 HString PLOParser::getErrorString() const
