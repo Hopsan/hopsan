@@ -18,8 +18,6 @@
     <cflags>-I./someLib/include</cflags>
     <lflags>-L./someLib/bin -lsomeLib</lflags>
     <lflags os="win64">-lWs2_32</lflags> -->
-    <cflags>-I../../dependencies/sundials/include -DUSESUNDIALS</cflags>
-    <lflags>-L../../dependencies/sundials/lib -lsundials_kinsol</lflags>
   </buildflags>
   <component>Mechanical/MechanicalSeparator.hpp</component>
   <component>Mechanical/MechanicForceTransformerQ.hpp</component>

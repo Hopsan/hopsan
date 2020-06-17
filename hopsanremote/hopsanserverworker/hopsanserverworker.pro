@@ -29,11 +29,6 @@ include($${PWD}/../../dependencies/msgpack.pri)
 }
 #--------------------------------------------------------
 
-# -------------------------------------------------------
-# Set Sundials paths
-include($${PWD}/../dependencies/sundials.pri)
-# -------------------------------------------------------
-
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../../Utilities/
 INCLUDEPATH *= $${PWD}/../../HopsanCore/include/

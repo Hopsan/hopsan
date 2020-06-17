@@ -626,21 +626,41 @@ static int kinsolJacobianCallback(N_Vector y, N_Vector f, SUNMatrix J, void *use
 #endif
 
 
-KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, SolverTypeEnum solverType=NewtonIteration)
+class KinsolSolver::Impl
+{
+public:
+    Impl(Component *pParentComponent, double tol, int n, SolverTypeEnum solverType=NewtonIteration);
+    ~Impl();
+    void solve();
+    double getState(int i);
+    void setState(int i, double value);
+    void setTolerance(double value);
+
+    Component *mpComponent;
+    void *mem;
+#ifdef USESUNDIALS
+    N_Vector y;
+    N_Vector scale;
+    SUNLinearSolver LS;
+    SUNMatrix J;
+#endif
+    double mSolverTime;
+    SolverTypeEnum mType = NewtonIteration;
+};
+
+
+KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnum type)
+    : mpComponent(pComponent),
+      mSolverTime(pComponent->getTime()),
+      mType(type)
 {
 #ifdef USESUNDIALS
-    mSolverType = solverType;
-
     int flag;
 
     y = nullptr;
     scale = nullptr;
     LS = nullptr;
     J = nullptr;
-
-    mpParentComponent = pParentComponent;
-
-    mSolverTime = pParentComponent->getTime();
 
     //Initialize vectors
     y = N_VNew_Serial(n);
@@ -650,77 +670,77 @@ KinsolSolver::KinsolSolver(Component *pParentComponent, double tol, int n, Solve
     // Create solver memory
     mem = KINCreate();
     if(mem == nullptr) {
-        pParentComponent->stopSimulation("KINCreate() return null pointer.");
+        mpComponent->stopSimulation("KINCreate() return null pointer.");
         return;
     }
 
-    flag = KINSetUserData(mem, static_cast<void*>(pParentComponent));
+    flag = KINSetUserData(mem, static_cast<void*>(mpComponent));
     if(flag < 0) {
-        pParentComponent->stopSimulation("KINSetUserData() failed with flag "+to_hstring(flag)+".");
+        mpComponent->stopSimulation("KINSetUserData() failed with flag "+to_hstring(flag)+".");
         return;
     }
 
-    if(solverType == FixedPointIteration) {
-      flag = KINSetMAA(mem, 2);
-      if (flag < 0) {
-          pParentComponent->stopSimulation("KINSetMAA() failed with flag "+to_hstring(flag)+".");
-          return;
-      }
+    if(type == FixedPointIteration) {
+        flag = KINSetMAA(mem, 2);
+        if (flag < 0) {
+            mpComponent->stopSimulation("KINSetMAA() failed with flag "+to_hstring(flag)+".");
+            return;
+        }
     }
 
     flag = KINInit(mem, kinsolResidualCallback, y);
     if (flag < 0) {
-        pParentComponent->stopSimulation("KINInit() failed with flag "+to_hstring(flag)+".");
+        mpComponent->stopSimulation("KINInit() failed with flag "+to_hstring(flag)+".");
         return;
     }
 
     setTolerance(tol);
 
-    if(solverType == NewtonIteration) {
+    if(type == NewtonIteration) {
         J = SUNDenseMatrix(n, n);
         if(J == nullptr) {
-            pParentComponent->stopSimulation("SUNDenseMatrix() return null pointer.");
+            mpComponent->stopSimulation("SUNDenseMatrix() return null pointer.");
             return;
         }
 
         LS = SUNLinSol_Dense(y, J);
         if(LS == nullptr) {
-            pParentComponent->stopSimulation("SUNLinSol_Dense() return null pointer.");
+            mpComponent->stopSimulation("SUNLinSol_Dense() return null pointer.");
             return;
         }
 
         flag = KINSetLinearSolver(mem, LS, J);
         if (flag < 0) {
-            pParentComponent->stopSimulation("KINSetLinearSolver() failed with flag "+to_hstring(flag)+".");
+            mpComponent->stopSimulation("KINSetLinearSolver() failed with flag "+to_hstring(flag)+".");
             return;
         }
 
         flag = KINSetMaxSetupCalls(mem, 1);
         if (flag < 0) {
-            mpParentComponent->stopSimulation("KINSetMaxSetupCalls() failed with flag "+to_hstring(flag)+".");
+            mpComponent->stopSimulation("KINSetMaxSetupCalls() failed with flag "+to_hstring(flag)+".");
             return;
         }
 
         flag = KINSetNumMaxIters(mem,1000);
         if(flag<0) {
-            mpParentComponent->stopSimulation("KINSetNumMaxIters() failed with flag "+to_hstring(flag)+".");
+            mpComponent->stopSimulation("KINSetNumMaxIters() failed with flag "+to_hstring(flag)+".");
             return;
         }
 
         flag = KINSetJacFn(mem, kinsolJacobianCallback);
         if (flag < 0) {
-            pParentComponent->stopSimulation("KINSetJacFn() failed with flag "+to_hstring(flag)+".");
+            mpComponent->stopSimulation("KINSetJacFn() failed with flag "+to_hstring(flag)+".");
             return;
         }
     }
     return;
 #else
-    mpParentComponent->stopSimulation("Sundials solvers not available.");
+    mpComponent->stopSimulation("Sundials solvers not available.");
     return;
 #endif
 }
 
-KinsolSolver::~KinsolSolver()
+KinsolSolver::Impl::~Impl()
 {
 #ifdef USESUNDIALS
     KINFree(&mem);
@@ -728,7 +748,7 @@ KinsolSolver::~KinsolSolver()
     N_VDestroy(scale);
     y = nullptr;
     scale = nullptr;
-    if(mSolverType == NewtonIteration) {
+    if(mType == NewtonIteration) {
         SUNLinSolFree(LS);
         SUNMatDestroy(J);
         LS = nullptr;
@@ -737,23 +757,23 @@ KinsolSolver::~KinsolSolver()
 #endif
 }
 
-void KinsolSolver::solve()
+void KinsolSolver::Impl::solve()
 {
 #ifdef USESUNDIALS
     int strategy = KIN_LINESEARCH;
-    if(mSolverType == FixedPointIteration) {
+    if(mType == FixedPointIteration) {
         strategy = KIN_FP;
     }
 
     int flag = KINSol(mem, y, strategy, scale, scale);
     if (flag < 0) {
-        mpParentComponent->stopSimulation("KINSol() failed with flag "+to_hstring(flag)+".");
+        mpComponent->stopSimulation("KINSol() failed with flag "+to_hstring(flag)+".");
         return;
     }
 #endif
 }
 
-double KinsolSolver::getState(int i)
+double KinsolSolver::Impl::getState(int i)
 {
 #ifdef USESUNDIALS
     return NV_Ith_S(y,i);
@@ -762,28 +782,57 @@ double KinsolSolver::getState(int i)
 #endif
 }
 
-void KinsolSolver::setState(int i, double value)
+void KinsolSolver::Impl::setState(int i, double value)
 {
 #ifdef USESUNDIALS
     NV_Ith_S(y,i) = value;
 #endif
 }
 
-void KinsolSolver::setTolerance(double value)
+void KinsolSolver::Impl::setTolerance(double value)
 {
 #ifdef USESUNDIALS
     int flag = KINSetFuncNormTol(mem, value);
     if (flag < 0) {
-        mpParentComponent->stopSimulation("KINSetFuncNormTol() failed with flag "+to_hstring(flag)+".");
+        mpComponent->stopSimulation("KINSetFuncNormTol() failed with flag "+to_hstring(flag)+".");
         return;
     }
 
-    if(mSolverType == NewtonIteration) {
+    if(mType == NewtonIteration) {
         flag = KINSetScaledStepTol(mem, value);
         if (flag < 0) {
-            mpParentComponent->stopSimulation("KINSetScaledStepTol() failed with flag "+to_hstring(flag)+".");
+            mpComponent->stopSimulation("KINSetScaledStepTol() failed with flag "+to_hstring(flag)+".");
             return;
         }
     }
 #endif
+}
+
+
+
+KinsolSolver::KinsolSolver(Component *pComponent, double tol, int n, SolverTypeEnum type=NewtonIteration) : impl(new Impl(pComponent, tol, n, type)) {}
+
+KinsolSolver::~KinsolSolver()
+{
+    delete impl;
+}
+
+void KinsolSolver::solve()
+{
+    impl->solve();
+}
+
+double KinsolSolver::getState(int i)
+{
+    return impl->getState(i);
+}
+
+void KinsolSolver::setState(int i, double value)
+{
+    impl->setState(i, value);
+}
+
+void KinsolSolver::setTolerance(double value)
+{
+    impl->setTolerance(value);
 }
