@@ -113,11 +113,6 @@ have_hdf5(){
   !build_pass:message("Compiling without HDF5 support")
 }
 
-# -------------------------------------------------------
-# Set Sundials paths
-include($${PWD}/../dependencies/sundials.pri)
-# -------------------------------------------------------
-
 #--------------------------------------------------------
 # Set our own HopsanGUI Include Path
 INCLUDEPATH *= $${PWD}/

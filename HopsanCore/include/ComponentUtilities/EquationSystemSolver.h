@@ -38,14 +38,6 @@
 #include "matrix.h"
 #include "ludcmp.h"
 
-//Sundials includes
-#ifdef USESUNDIALS
-#include "kinsol/kinsol.h"
-#include "nvector/nvector_serial.h"
-#include "sunmatrix/sunmatrix_dense.h"
-#include "sunlinsol/sunlinsol_dense.h"
-#endif
-
 #include <vector>
 
 namespace hopsan {
@@ -115,23 +107,15 @@ class HOPSANCORE_DLLAPI KinsolSolver
 public:
     enum SolverTypeEnum {NewtonIteration=0,FixedPointIteration=1};
 
-    KinsolSolver(Component *pParentComponent, double tol, int n, SolverTypeEnum solverType);
+    KinsolSolver(Component *pComponent, double tol, int n, SolverTypeEnum type);
     ~KinsolSolver();
     void solve();
     double getState(int i);
     void setState(int i, double value);
     void setTolerance(double value);
 private:
-    Component *mpParentComponent;
-    void *mem;
-#ifdef USESUNDIALS
-    N_Vector y;
-    N_Vector scale;
-    SUNLinearSolver LS;
-    SUNMatrix J;
-#endif
-    double mSolverTime;
-    SolverTypeEnum mSolverType = NewtonIteration;
+    class Impl;
+    Impl* impl;
 };
 
 }
