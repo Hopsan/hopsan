@@ -657,10 +657,10 @@ KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnu
 #ifdef USESUNDIALS
     int flag;
 
-    y = nullptr;
-    scale = nullptr;
-    LS = nullptr;
-    J = nullptr;
+    y = 0;
+    scale = 0;
+    LS = 0;
+    J = 0;
 
     //Initialize vectors
     y = N_VNew_Serial(n);
@@ -669,7 +669,7 @@ KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnu
 
     // Create solver memory
     mem = KINCreate();
-    if(mem == nullptr) {
+    if(!mem) {
         mpComponent->stopSimulation("KINCreate() return null pointer.");
         return;
     }
@@ -698,13 +698,13 @@ KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnu
 
     if(type == NewtonIteration) {
         J = SUNDenseMatrix(n, n);
-        if(J == nullptr) {
+        if(!J) {
             mpComponent->stopSimulation("SUNDenseMatrix() return null pointer.");
             return;
         }
 
         LS = SUNLinSol_Dense(y, J);
-        if(LS == nullptr) {
+        if(!LS) {
             mpComponent->stopSimulation("SUNLinSol_Dense() return null pointer.");
             return;
         }
@@ -746,13 +746,13 @@ KinsolSolver::Impl::~Impl()
     KINFree(&mem);
     N_VDestroy(y);
     N_VDestroy(scale);
-    y = nullptr;
-    scale = nullptr;
+    y = 0;
+    scale = 0;
     if(mType == NewtonIteration) {
         SUNLinSolFree(LS);
         SUNMatDestroy(J);
-        LS = nullptr;
-        J = nullptr;
+        LS = 0;
+        J = 0;
     }
 #endif
 }
