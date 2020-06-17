@@ -20,6 +20,9 @@ INCLUDEPATH += $${PWD}/../../../HopsanCore/include/
 LIBS += -L$${PWD}/../../../bin -lhopsancore$${DEBUG_EXT}
 DEFINES *= HOPSANCORE_DLLIMPORT
 
+# Enable C++14
+CONFIG += c++14
+
 unix{
 QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 

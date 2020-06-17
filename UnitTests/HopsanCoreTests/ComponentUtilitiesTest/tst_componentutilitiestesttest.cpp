@@ -538,6 +538,83 @@ private Q_SLOTS:
         QTest::newRow("4") << tempVec << 0.001 << 1.0 << -1000000000.0 << 1000000000.0 << (10000.0)*0.001;
         QTest::newRow("5") << tempVec << 0.001 << 1.0 << -1000000000.0 << 2.0 << 2.0;
     }
+
+    void ploParser()
+    {
+        QFETCH( QString, ploData);
+        QFETCH( QString, indexDataName);
+        QFETCH( QString, outputDataName);
+        QFETCH( bool, expectParseOK);
+        QFETCH( int, expectedInIndex);
+        QFETCH( int, expectedOutIndex);
+        QFETCH( double, expectedLastValue);
+
+        PLOParser parser;
+        bool parsedOK = parser.readText(qPrintable(ploData));
+        QCOMPARE(parsedOK, expectParseOK);
+        int iIn = parser.getColIdxForDataName(qPrintable(indexDataName));
+        int iOut = parser.getColIdxForDataName(qPrintable(outputDataName));
+        QCOMPARE(iIn, expectedInIndex);
+        QCOMPARE(iOut, expectedOutIndex);
+        if ((iIn >= 0) && (iOut >= 0)) {
+            std::vector<double> values;
+            bool copyOK = parser.copyColumn(iOut, values);
+            QVERIFY(copyOK);
+            QCOMPARE(values.back(), expectedLastValue);
+        }
+    }
+
+    void ploParser_data()
+    {
+        QTest::addColumn< QString >("ploData");
+        QTest::addColumn< QString >("indexDataName");
+        QTest::addColumn< QString >("outputDataName");
+        QTest::addColumn< bool >("expectParseOK");
+        QTest::addColumn< int >("expectedInIndex");
+        QTest::addColumn< int >("expectedOutIndex");
+        QTest::addColumn< double >("expectedLastValue");
+
+        QString ploData1 = R"(
+          'VERSION'
+          1
+          'temp1.PLO'
+          2    4
+          'Time',    'x', 'y'
+          1.0 1.0 1.0
+          0  10 100
+          1  20 200
+          2  30 300
+          3  40 400
+          test1.PLO.DAT_-1
+          Test Model.hmf)";
+
+        QString ploData2 = R"(
+          'VERSION'
+          2
+          'temp.PLO'
+          3    4
+          'Time',    'x', 'y'
+          Time  Position Position
+          0  10 100
+          1  20 200
+          2  30 300
+          3  40 400
+          test2.PLO.DAT_-1
+          Test Model.hmf)";
+
+        QTest::newRow("plo1 0") << ploData1 << "Time" << "x" << true << 0 << 1 << 40.0;
+        QTest::newRow("plo1 1") << ploData1 << "Time" << "y" << true << 0 << 2 << 400.0;
+        QTest::newRow("plo1 2") << ploData1 << "x" << "y" << true << 1 << 2 << 400.0;
+        QTest::newRow("plo1 3") << ploData1 << "x" << "notExist" << true << 1 << -1 << -1.0;
+        QTest::newRow("plo1 4") << ploData1 << "notExist" << "y" << true << -1 << 2 << -1.0;
+
+        QTest::newRow("plo2 0") << ploData2 << "Time" << "x" << true << 0 << 1 << 40.0;
+        QTest::newRow("plo2 1") << ploData2 << "Time" << "y" << true << 0 << 2 << 400.0;
+        QTest::newRow("plo2 2") << ploData2 << "x" << "y" << true << 1 << 2 << 400.0;
+        QTest::newRow("plo2 3") << ploData2 << "x" << "notExist" << true << 1 << -1 << 40.0;
+        QTest::newRow("plo2 4") << ploData2 << "notExist" << "y" << true << -1 << 2 << 40.0;
+
+    }
 };
 
 
