@@ -145,6 +145,7 @@ public:
     void replace(const Expression oldsymbol, const Expression newExpr);
 
     void expand(const ExpressionSimplificationT simplifications=FullSimplification);
+    void expandPowers();
     void linearize();
 
     void toLeftSided();
