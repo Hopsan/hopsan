@@ -758,8 +758,8 @@ void KinsolSolver::Impl::solve()
     }
 
     int flag = KINSol(mem, y, strategy, scale, scale);
-    if (flag < 0) {
-        mpComponent->stopSimulation("KINSol() failed with flag "+to_hstring(flag)+".");
+    if (flag < 0 && flag != -5 && flag != -7) {
+        mpComponent->stopSimulation("KINSol() failed with flag "+HString(KINGetReturnFlagName(flag))+".");
         return;
     }
 }
