@@ -2369,6 +2369,48 @@ void Expression::expand(const ExpressionSimplificationT simplifications)
 }
 
 
+//Expand power functions from e.g. "pow(x,3)" to "x*x*x". This will improve performance in generated code.
+void Expression::expandPowers()
+{
+    if(this->isPower() && this->getPower()->isNumericalSymbol()) {
+        int nFactors = int(mpPower->toDouble());
+        QList<Expression> factors;
+        for(int i=0; i<nFactors; ++i) {
+            factors << (*mpBase);
+        }
+        Expression replacement = Expression::fromFactorsDivisors(factors, QList<Expression>());
+        this->replaceBy(replacement);
+        return;
+    }
+
+    if(this->isEquation()) {
+        mpLeft->expandPowers();
+        mpRight->expandPowers();
+    }
+
+    if(this->isMultiplyOrDivide()) {
+        for(auto &factor : mFactors) {
+            factor.expandPowers();
+        }
+        for(auto &divisor : mDivisors) {
+            divisor.expandPowers();
+        }
+    }
+
+    if(this->isAdd()) {
+        for(auto &term : mTerms) {
+            term.expandPowers();
+        }
+    }
+
+    if(this->isFunction()) {
+        for(auto &arg : mArguments) {
+            arg.expandPowers();
+        }
+    }
+}
+
+
 //! @brief Linearizes the expression by multiplying with all divisors until no divisors remains
 //! @note Should only be used on equations (obviously)
 //FIXED
