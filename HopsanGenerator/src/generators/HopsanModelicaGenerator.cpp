@@ -2103,57 +2103,121 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         systemEquations[e].toLeftSided();
     }
 
+    //Identify all derivatives and store in list/maps
     QStringList derivatives;
     QList<Expression> allVariables = knowns;
     allVariables.append(unknowns);
+    QMap<QString, QString> secondDerivatives;
+    QMap<QString, Expression> secondDerivativeEquations;
     for(const auto &equation : systemEquations) {
         for(const auto &variable : allVariables) {
-            if(equation.contains(Expression::fromFunctionArguments("der",QList<Expression>() << variable))) {
-                derivatives << variable.toString();
+            Expression derExpr = Expression::fromFunctionArguments("der",QList<Expression>() << variable);
+            if(equation.contains(derExpr)) {
+                if(equation.getLeft()->getTerms().size() == 2 && equation.getLeft()->getTerms().at(0) == derExpr) {
+                    Expression testExpr = equation.getLeft()->getTerms().at(1);
+                    testExpr.changeSign();
+                    if(testExpr.isVariable()) {
+                        secondDerivatives.insert(variable.toString(), testExpr.toString());
+                        secondDerivativeEquations.insert(variable.toString(), equation);
+                    }
+                }
+                else if(equation.getLeft()->getTerms().size() == 2 && equation.getLeft()->getTerms().at(1) == derExpr) {
+                    Expression testExpr = equation.getLeft()->getTerms().at(0);
+                    testExpr.changeSign();
+                    if(testExpr.isVariable()) {
+                        secondDerivatives.insert(variable.toString(), testExpr.toString());
+                        secondDerivativeEquations.insert(variable.toString(), equation);
+                    }
+                }
+                else {
+                    derivatives << variable.toString();
+                }
             }
         }
     }
+
+    //Replace derivatives of derivatives with second derivatives (dder)
+    for(const auto &pureDer : secondDerivatives.keys()) {
+        Expression var = secondDerivatives.value(pureDer);
+        if(derivatives.contains(var.toString())) {
+            for(const auto &equation : systemEquations) {
+                if(equation.contains(Expression::fromFunctionArguments("der",QList<Expression>() << var))) {
+                    systemEquations.removeOne(secondDerivativeEquations.value(pureDer));
+                    systemEquations.append(equation);
+                    systemEquations.last().replace(Expression::fromFunctionArguments("der",QList<Expression>() << var), Expression::fromFunctionArguments("dder",QList<Expression>() << pureDer));
+                    systemEquations.last().replace(var, Expression::fromFunctionArguments("der",QList<Expression>() << pureDer));
+                }
+                break;
+            }
+        }
+        derivatives.append(pureDer);
+    }
+
+    //Elliminate derivatives with discrete transform
+    int bdfOrder = 2;
+    QString bdfStr, bdfStr2;
+    if(bdfOrder == 1) {
+        bdfStr = "(%1 - delay_%1.getIdx(0))/mTimestep";
+        bdfStr2 = "(%1 - 2*delay_%1.getIdx(0) + delay_%1.getIdx(1))/mTimestep/mTimestep";
+    }
+    else if(bdfOrder == 2) {
+        bdfStr = "(1.5*%1 - 2*delay_%1.getIdx(0) + 0.5*delay_%1.getIdx(1))/mTimestep";
+        bdfStr2 = "(%1 - 8/3*delay_%1.getIdx(0) + 22/9*delay_%1.getIdx(1) - 8/9*delay_%1.getIdx(2) + 1/9*delay_%1.getIdx(3))*9/4/mTimestep/mTimestep";
+    }
     for(auto &equation : systemEquations) {
         for(const auto &derivative : derivatives) {
-            //equation.replace(Expression("der("+derivative+")"), Expression("derivative_"+derivative));
-            equation.replace(Expression("der("+derivative+")"), Expression("(1.5*"+derivative+" - 2*delay_"+derivative+".getIdx(0) + 0.5*delay_"+derivative+".getIdx(1))/mTimestep"));
+            equation.replace(Expression("der("+derivative+")"), Expression(bdfStr.arg(derivative)));
+            equation._simplify(Expression::FullSimplification, Expression::Recursive);
+        }
+        for(const auto &derivative : secondDerivatives.keys()) {
+            equation.replace(Expression("dder("+derivative+")"), Expression(bdfStr2.arg(derivative)));
             equation._simplify(Expression::FullSimplification, Expression::Recursive);
         }
     }
 
     //Identify system equations containing only one unknown (can be resolved before the rest of the system)
-    for(int e=0; e<systemEquations.size(); ++e) {
-        QList<Expression> usedUnknowns;
-        for(const auto &unknown : unknowns) {
-            if(systemEquations[e].contains(unknown)) {
-                usedUnknowns.append(unknown);
+    bool didSomething = true;
+    while(didSomething) {
+        didSomething = false;
+        for(int e=0; e<systemEquations.size(); ++e) {
+            QList<Expression> usedUnknowns;
+            for(const auto &unknown : unknowns) {
+                if(systemEquations[e].contains(unknown)) {
+                    usedUnknowns.append(unknown);
+                }
             }
-        }
 
-        if(usedUnknowns.size() == 1) {
-            //Found only one unknown, try to break it out of the equation
-            Expression tempExpr = *systemEquations[e].getLeft();
-            tempExpr.factor(usedUnknowns[0]);
-            if(tempExpr.getTerms().size() == 1) {
-                tempExpr = Expression(0.0);
-            }
-            else {
-                Expression term = tempExpr.getTerms()[0];
-                tempExpr.removeTerm(term);
-                term.replace(usedUnknowns[0], Expression(1));
-                term._simplify(Expression::FullSimplification, Expression::Recursive);
-                tempExpr.divideBy(term);
-                tempExpr.changeSign();
-                tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
-            }
-            if(!tempExpr.contains(usedUnknowns[0])) {
-                Expression algorithm = Expression::fromEquation(usedUnknowns[0], tempExpr);
-                printMessage("Moving the following equations to intial algorithm section:");
-                printMessage("  "+algorithm.toString());
-                preAlgorithms.append(algorithm.toString());
-                systemEquations.removeAt(e);
-                --e;
-                unknowns.removeAll(usedUnknowns[0]);
+            if(usedUnknowns.size() == 1) {
+                //Found only one unknown, try to break it out of the equation
+                systemEquations[e].linearize();
+                Expression tempExpr = *systemEquations[e].getLeft();
+                tempExpr.expand();
+                tempExpr.factor(usedUnknowns[0]);
+                if(tempExpr.getTerms().size() == 1) {
+                    tempExpr = Expression(0.0);
+                }
+                else {
+                    Expression term = tempExpr.getTerms()[0];
+                    tempExpr.removeTerm(term);
+                    term.replace(usedUnknowns[0], Expression(1));
+                    term._simplify(Expression::FullSimplification, Expression::Recursive);
+                    tempExpr.divideBy(term);
+                    tempExpr.changeSign();
+                    tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
+                }
+                if(!tempExpr.contains(usedUnknowns[0])) {
+                    Expression algorithm = Expression::fromEquation(usedUnknowns[0], tempExpr);
+                    algorithm._simplify(Expression::FullSimplification, Expression::Recursive);
+                    algorithm.expandPowers();
+                    printMessage("Moving the following equations to intial algorithm section:");
+                    printMessage("  "+algorithm.toString());
+
+                    preAlgorithms.append(algorithm.toString());
+                    systemEquations.removeAt(e);
+                    --e;
+                    unknowns.removeAll(usedUnknowns[0]);
+                    didSomething = true;
+                }
             }
         }
     }
@@ -2194,6 +2258,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
                 algExpr._simplify(Expression::FullSimplification, Expression::Recursive);
                 printMessage("Moving the following equations to final algorithms:");
                 printMessage("  "+algExpr.toString());
+                algExpr.expandPowers();
                 finalAlgorithms.prepend(algExpr.toString());
                 systemEquations.removeAt(lastFound);
                 unknowns.removeAt(u);
@@ -2214,9 +2279,15 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         for(int u=0; u<unknowns.size(); ++u)
         {
             result.append(*concurrentDiff(unknowns[u]).getLeft());
+            result.last().expandPowers();
         }
 
         jacobian.append(result);
+    }
+
+    //Expand power functions for performance
+    for(auto &equation : systemEquations) {
+        equation.expandPowers();
     }
 
     logStream << "\n--- Initial Algorithms ---\n";
@@ -2311,7 +2382,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         comp.initEquations << "mpSolver = new KinsolSolver(this, mTolerance, "+QString::number(systemEquations.size())+", "+solverMethod+");";
     }
     for(const auto &der : derivatives) {
-        comp.initEquations << "delay_"+der+".initialize(2,"+der+");";
+        comp.initEquations << "delay_"+der+".initialize("+QString::number(2*bdfOrder)+","+der+");";
     }
 
     comp.simEquations << "//Initial algorithm section";
@@ -2343,20 +2414,20 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             comp.simEquations << "if("+var+"<lowerlimit_"+var+") {";
             comp.simEquations << "    "+var+" = lowerlimit_"+var+";";
             if(!der.isEmpty()) {
-                comp.simEquations << "    delay_"+var+".initialize(2,"+var+");";
+                comp.simEquations << "    delay_"+var+".initialize("+QString::number(2*bdfOrder)+","+var+");";
                 comp.simEquations << "    if("+der+"<0) {";
                 comp.simEquations << "        "+der+" = 0;";
-                comp.simEquations << "        delay_"+der+".initialize(2,"+der+");";
+                comp.simEquations << "        delay_"+der+".initialize("+QString::number(bdfOrder)+","+der+");";
                 comp.simEquations << "    }";
             }
             comp.simEquations << "}";
             comp.simEquations << "if("+var+">upperlimit_"+var+") {";
             comp.simEquations << "    "+var+" = upperlimit_"+var+";";
             if(!der.isEmpty()) {
-                comp.simEquations << "    delay_"+var+".initialize(2,"+var+");";
+                comp.simEquations << "    delay_"+var+".initialize("+QString::number(2*bdfOrder)+","+var+");";
                 comp.simEquations << "    if("+der+">0) {";
                 comp.simEquations << "        "+der+" = 0;";
-                comp.simEquations << "        delay_"+der+".initialize(2,"+der+");";
+                comp.simEquations << "        delay_"+der+".initialize("+QString::number(bdfOrder)+","+der+");";
                 comp.simEquations << "    }";
             }
             comp.simEquations << "}";
