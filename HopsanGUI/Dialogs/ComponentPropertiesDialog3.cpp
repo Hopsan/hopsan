@@ -1892,7 +1892,12 @@ void ParameterValueSelectionWidget::openValueEditDialog()
 
     auto rc = pTexteditorDialog->exec();
     if (rc == QDialog::Accepted) {
-        mpValueEdit->setText(pTexteditor->toPlainText());
+        QString text = pTexteditor->toPlainText();
+        // Increase max length if needed
+        if (mpValueEdit->maxLength() < text.size()) {
+            mpValueEdit->setMaxLength(text.size());
+        }
+        mpValueEdit->setText(text);
     }
 }
 
