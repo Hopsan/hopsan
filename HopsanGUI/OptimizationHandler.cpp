@@ -189,6 +189,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 void OptimizationHandler::initModels(ModelWidget *pModel, int nModels, QString &modelPath)
 {
     QString originalModelBasePath = pModel->getTopLevelSystemContainer()->getAppearanceData()->getBasePath();
+    mModelPtrs.clear();
     while(mModelPtrs.size() < nModels)
     {
         auto pNewModel = gpModelHandler->loadModel(modelPath, ModelHandler::IgnoreAlreadyOpen | ModelHandler::Detatched);
