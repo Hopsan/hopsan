@@ -6449,7 +6449,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
 
         QString dataVecArg;
         QString timeVecArg;
-        QString powerArg;
+        QString typeArg;
         QString windowingFuncArg;
         QString minTimeArg;
         QString maxTimeArg;
@@ -6457,8 +6457,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         //Figure out which arguments mean what
         dataVecArg = args[0];
         if(args.size()>1) {
-            if(args[1] == "true" || args[1] == "false") {
-                powerArg = args[1];
+            if(args[1] == "energy" || args[1] == "power" || args[1] == "rms") {
+                typeArg = args[1];
             }
             else {
                 timeVecArg = args[1];
@@ -6466,7 +6466,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
         if(args.size()>2) {
           if(!timeVecArg.isEmpty()) {
-            powerArg = args[2];
+            typeArg = args[2];
           }
           else {
             windowingFuncArg = args[2];
@@ -6521,7 +6521,16 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
 
         //Parse power spectrum argument
-        bool power = (powerArg == "true");
+        FrequencySpectrumEnumT type;
+        if("power" == typeArg) {
+            type = PowerSpectrum;
+        }
+        else if("energy" == typeArg) {
+            type = EnergySpectrum;
+        }
+        else if("rms" == typeArg) {
+            type = RMSSpectrum;
+        }
 
         //Parse windowing function argument
         WindowingFunctionEnumT windowingFunction;
@@ -6565,17 +6574,17 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
         }
 
-        if(powerArg.isEmpty()) {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, true);
+        if(typeArg.isEmpty()) {
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, PowerSpectrum);
         }
         else if(windowingFuncArg.isEmpty()) {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, power);
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, type);
         }
         else if(minTimeArg.isEmpty()) {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, power, windowingFunction);
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, type, windowingFunction);
         }
         else {
-            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, power, windowingFunction, minTime, maxTime);
+            mAnsVector = pDataVar->toFrequencySpectrum(pTimeVar, type, windowingFunction, minTime, maxTime);
         }
         return;
     }

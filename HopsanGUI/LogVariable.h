@@ -188,7 +188,7 @@ public:
 
     // Functions that only read data but that require reimplementation in derived classes
     virtual const SharedVectorVariableT getSharedTimeOrFrequencyVector() const;
-    virtual SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum, const WindowingFunctionEnumT windowingFunction=RectangularWindow, double minTime=-std::numeric_limits<double>::max(), double maxTime=std::numeric_limits<double>::max());
+    virtual SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const FrequencySpectrumEnumT type, const WindowingFunctionEnumT windowingFunction=RectangularWindow, double minTime=-std::numeric_limits<double>::max(), double maxTime=std::numeric_limits<double>::max());
 
     // Functions that modify the data
     void assignFrom(const QVector<double> &rSrc);
@@ -288,7 +288,7 @@ public:
     void diffBy(SharedVectorVariableT pOther);
     void integrateBy(SharedVectorVariableT pOther);
     void lowPassFilter(SharedVectorVariableT pTime, const double w);
-    SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime);
+    SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const FrequencySpectrumEnumT type, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime);
     void assignFrom(const SharedVectorVariableT pOther);
     virtual void assignFrom(SharedVectorVariableT time, const QVector<double> &rData);
     virtual void assignFrom(const QVector<double> &rTime, const QVector<double> &rData);
