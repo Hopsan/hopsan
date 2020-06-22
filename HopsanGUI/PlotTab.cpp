@@ -1338,8 +1338,13 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     QCheckBox *pLogScaleCheckBox = new QCheckBox("Use log scale", this);
     pLogScaleCheckBox->setChecked(false);
 
-    QCheckBox *pPowerSpectrumCheckBox = new QCheckBox("Power spectrum", this);
-    pPowerSpectrumCheckBox->setChecked(true);
+    QLabel *pSpectrumTypeLabel = new QLabel("Type:",this);
+
+    QComboBox *pSpectrumTypeComboBox = new QComboBox(this);
+    pSpectrumTypeComboBox->addItem("Power spectrum");
+    pSpectrumTypeComboBox->addItem("Energy spectrum");
+    pSpectrumTypeComboBox->addItem("RMS spectrum");
+    pSpectrumTypeComboBox->setCurrentIndex(0);
 
     QGroupBox *pWindowingGroupBox = new QGroupBox("Windowing", pDialog);
     QGridLayout *pWindowingLayout = new QGridLayout(pWindowingGroupBox);
@@ -1399,7 +1404,8 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
     int row=0;
     pLayout->addWidget(pInfoLabel,               row++, 0, 1, 4);
     pLayout->addWidget(pLogScaleCheckBox,        row++, 0, 1, 4);
-    pLayout->addWidget(pPowerSpectrumCheckBox,   row++, 0, 1, 4);
+    pLayout->addWidget(pSpectrumTypeLabel,       row,   0, 1, 1);
+    pLayout->addWidget(pSpectrumTypeComboBox,    row++, 1, 1, 3);
     pLayout->addWidget(pWindowingGroupBox,       row++, 2, 1, 2);
     pLayout->addWidget(pToolBar,                 row, 0, 1, 1);
     pLayout->addWidget(new QWidget(pDialog),     row, 1, 1, 1);
@@ -1430,7 +1436,19 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
 
         double minTime = mpWindowingMinTimeSpinBox->value();
         double maxTime = mpWindowingMaxTimeSpinBox->value();
-        SharedVectorVariableT pNewVar = pCurve->getSharedVectorVariable()->toFrequencySpectrum(SharedVectorVariableT(), pPowerSpectrumCheckBox->isChecked(), function, minTime, maxTime);
+        FrequencySpectrumEnumT type;
+        switch(pSpectrumTypeComboBox->currentIndex()) {
+            case 0:
+                type = PowerSpectrum;
+                break;
+            case 1:
+                type = EnergySpectrum;
+                break;
+            case 2:
+                type = RMSSpectrum;
+                break;
+        }
+        SharedVectorVariableT pNewVar = pCurve->getSharedVectorVariable()->toFrequencySpectrum(SharedVectorVariableT(), type, function, minTime, maxTime);
 
         PlotTab *pTab = mpParentPlotWindow->addPlotTab();
         pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));

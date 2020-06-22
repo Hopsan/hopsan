@@ -700,7 +700,7 @@ bool VectorVariable::isAutoremovalAllowed() const
     return mAllowAutoRemove;
 }
 
-SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime)
+SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const FrequencySpectrumEnumT type, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime)
 {
     if(pTime)
     {
@@ -766,11 +766,15 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
         double fs = time.size()/maxt;     //Sampling frequency
         for(int i=1; i<=n/2; ++i)
         {
-
-            double tempMag = real(vComplex[i]*conj(vComplex[i]))/(n*Cb*fs*Ca*Ca);
-            if(!doPowerSpectrum)
-            {
-                tempMag *= maxt;
+            double tempMag;
+            if(type == RMSSpectrum) {
+                tempMag = M_SQRT2*abs(vComplex[i])/(n*Ca);
+            }
+            else if(type == PowerSpectrum) {
+                tempMag = real(vComplex[i]*conj(vComplex[i]))/(n*Cb*fs*Ca*Ca);
+            }
+            else if(type == EnergySpectrum) {
+                tempMag = real(vComplex[i]*conj(vComplex[i]))*maxt/(n*Cb*fs*Ca*Ca);
             }
             mag.append(tempMag);
 
@@ -780,13 +784,14 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
 
         SharedVariableDescriptionT pDesc(new VariableDescription());
         pDesc->mCustomLabel = mpVariableDescription->getFullNameWithSeparator(",");
-        if (doPowerSpectrum)
-        {
+        if (type == PowerSpectrum) {
             pDesc->mDataName = "Power Spectrum";
         }
-        else
-        {
-            pDesc->mDataName = "Relative Magnitude";
+        else if(type == EnergySpectrum) {
+            pDesc->mDataName = "Energy Spectrum";
+        }
+        else if(type == RMSSpectrum)  {
+            pDesc->mDataName = "RMS Spectrum";
         }
 
         //! @todo we may need to change description information for this variable to avoid trouble
@@ -1424,7 +1429,7 @@ void TimeDomainVariable::lowPassFilter(SharedVectorVariableT pTime, const double
     }
 }
 
-SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const bool doPowerSpectrum, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime)
+SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVectorVariableT pTime, const FrequencySpectrumEnumT type, const WindowingFunctionEnumT windowingFunction, double minTime, double maxTime)
 {
     // Choose other data or own time vector
     if(pTime.isNull())
@@ -1432,7 +1437,7 @@ SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVector
         // If no diff vector supplied, use own time
         if (mpSharedTimeOrFrequencyVector)
         {
-            return VectorVariable::toFrequencySpectrum(mpSharedTimeOrFrequencyVector, doPowerSpectrum, windowingFunction, minTime, maxTime);
+            return VectorVariable::toFrequencySpectrum(mpSharedTimeOrFrequencyVector, type, windowingFunction, minTime, maxTime);
         }
         else
         {
@@ -1443,7 +1448,7 @@ SharedVectorVariableT TimeDomainVariable::toFrequencySpectrum(const SharedVector
     }
     else
     {
-        return VectorVariable::toFrequencySpectrum(pTime, doPowerSpectrum, windowingFunction, minTime, maxTime);
+        return VectorVariable::toFrequencySpectrum(pTime, type, windowingFunction, minTime, maxTime);
     }
 }
 

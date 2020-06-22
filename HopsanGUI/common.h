@@ -97,6 +97,7 @@ enum class ArchitectureEnumT {x86, x64};
 enum DeleteOrKeepFilesEnumT {KeepFiles, DeleteFiles};
 enum RecompileEnumT {NoRecompile, Recompile};
 enum WindowingFunctionEnumT {RectangularWindow, HannWindow, FlatTopWindow};
+enum FrequencySpectrumEnumT {Undefined, PowerSpectrum, EnergySpectrum, RMSSpectrum};
 
 extern const char* getHopsanGUIBuildTime();
 
