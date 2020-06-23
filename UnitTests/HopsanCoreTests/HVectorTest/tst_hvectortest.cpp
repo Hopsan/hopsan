@@ -29,16 +29,100 @@
 
 using namespace hopsan;
 
-Q_DECLARE_METATYPE(HVector<double>);
-typedef HVector<double> HVectord;
-
 class HVectorTest : public QObject
 {
     Q_OBJECT
 
 private slots:
-    void sizeTest();
-    void sizeTest_data();
+    void sizeTest()
+    {
+        HVector<double> vec;
+        QCOMPARE(vec.size(), static_cast<size_t>(0));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(0));
+        QVERIFY(vec.empty());
+
+        vec.reserve(16);
+        QCOMPARE(vec.size(), static_cast<size_t>(0));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(16));
+        QVERIFY(vec.empty());
+
+        vec.resize(8);
+        QCOMPARE(vec.size(), static_cast<size_t>(8));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(16));
+        QVERIFY(!vec.empty());
+
+        // Resize will allocate double the capacity when reallocating
+        vec.resize(24);
+        QCOMPARE(vec.size(), static_cast<size_t>(24));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(48));
+
+        // Resize will shrink, but not reduce capacity
+        vec.resize(16);
+        QCOMPARE(vec.size(), static_cast<size_t>(16));
+        QCOMPARE(vec.capacity(),static_cast<size_t>( 48));
+
+        vec.resize(48);
+        QCOMPARE(vec.size(),static_cast<size_t>(48));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(48));
+
+        // Reserve wont shrink capacity
+        vec.reserve(16);
+        QCOMPARE(vec.size(), static_cast<size_t>(48));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(48));
+
+        vec.append(1);
+        QCOMPARE(vec.size(), static_cast<size_t>(49));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(49u*2));
+
+        vec.append(1);
+        QCOMPARE(vec.size(), static_cast<size_t>(50));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(49u*2));
+
+        vec.clear();
+        QCOMPARE(vec.size(), static_cast<size_t>(0));
+        QCOMPARE(vec.capacity(), static_cast<size_t>(0));
+        QVERIFY(vec.empty());
+    }
+
+    void append()
+    {
+        HVector<double> vec;
+        vec.resize(3, 0);
+        vec.append(1.0);
+        QVERIFY(!vec.empty());
+        QCOMPARE(vec[3], 1.);
+    }
+
+    void storeClass()
+    {
+        HVector<HString> vec;
+        vec.resize(3, "abc");
+        QCOMPARE(vec[1].c_str(), "abc");
+    }
+
+    void copy()
+    {
+        HVector<HString> vec1;
+        vec1.resize(3, "abc");
+
+        auto vec2 = vec1;
+        for (size_t i = 0; i < vec1.size(); ++i) {
+            QCOMPARE(vec1[i].c_str(), vec2[i].c_str());
+        }
+
+        vec1.clear();
+        // Ensure vec2 was not touched by clearing vec1
+        QCOMPARE(vec2[2].c_str(), "abc");
+    }
+
+    void resizeInit()
+    {
+        HVector<double> vec;
+        vec.resize(3, 2.);
+        QCOMPARE(vec[0], 2.);
+        QCOMPARE(vec[1], 2.);
+        QCOMPARE(vec[2], 2.);
+    }
 
     void first() {
         HVector<int> vec;
@@ -61,33 +145,6 @@ private slots:
         QVERIFY(vec.last() == 2);
     }
 };
-
-void HVectorTest::sizeTest()
-{
-    QFETCH(HVectord, Vector);
-    QFETCH(size_t, correctSize);
-    QVERIFY2(Vector.size() == correctSize, QString("Failure! The HVector size is not correct %1!=%2").arg(Vector.size()).arg(correctSize).toStdString().c_str());
-}
-
-void HVectorTest::sizeTest_data()
-{
-    QTest::addColumn<HVectord>("Vector");
-    QTest::addColumn<size_t>("correctSize");
-    HVectord vec1;
-    QTest::newRow("HVectord vec1") << vec1 << size_t(0);
-    vec1.resize(5);
-    QTest::newRow("vec1.resize(5)") << vec1 << size_t(5);
-    vec1.resize(5000000);
-    QTest::newRow("vec1.resize(5000000)") << vec1 << size_t(5000000);
-    vec1.resize(2);
-    QTest::newRow("vec1.resize(2)") << vec1 << size_t(2);
-    vec1.resize(4, 4.0);
-    QTest::newRow("vec1.resize(4, 4.0)") << vec1 << size_t(4);
-    vec1.append(44.9);
-    QTest::newRow("vec1.append(44.9)") << vec1 << size_t(5);
-    vec1.clear();
-    QTest::newRow("vec1.clear()") << vec1 << size_t(0);
-}
 
 QTEST_APPLESS_MAIN(HVectorTest)
 

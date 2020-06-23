@@ -31,6 +31,9 @@
 #include "win32dll.h"
 #include <cstddef>
 
+#include <cstdlib>
+#include <algorithm>
+
 namespace hopsan {
 
 template<typename T>
@@ -138,17 +141,22 @@ class HVector
 private:
     T *mpDataArray;
     size_t mSize;
+    size_t mCapacity;
 
 public:
     HVector()
     {
         mpDataArray = 0;
         mSize = 0;
+        mCapacity = 0;
     }
 
     //! @brief copy constructor
     HVector(const HVector<T> &rOther)
     {
+        mpDataArray = 0;
+        mSize = 0;
+        mCapacity = 0;
         *this = rOther;
     }
 
@@ -160,73 +168,70 @@ public:
     //! @brief Clear the array
     void clear()
     {
-        if (mpDataArray)
-        {
-            delete[] mpDataArray;
-            mSize = 0;
-            mpDataArray=0;
+        free(mpDataArray);
+        mpDataArray = 0;
+        mSize = 0;
+        mCapacity = 0;
+    }
+
+    //! @brief Reserve capacity for the array
+    //! @details If new size is smaller than old nothing is changed
+    //! If new size is larger than old, the additional elements will be uninitialized
+    //! @param [in] s New size
+    void reserve(size_t s)
+    {
+        if (s > mCapacity) {
+            void* pNewData = realloc(static_cast<void*>(mpDataArray), s*sizeof(T));
+            if (pNewData) {
+                mpDataArray = static_cast<T*>(pNewData);
+                mCapacity = s;
+            }
+            mSize = std::min(mCapacity, mSize);
         }
     }
 
     //! @brief Resize the array, keeping old data if any.
-    //! @details If new size is smaller than old, old data will be truncated
+    //! @details If new size is smaller than old, old data will intact up to the new size
     //! If new size is larger than old, the additional elements will be uninitialized
     //! @param [in] s New size
-    void resize(const size_t s)
+    void resize(size_t s)
     {
-        // Create new dummy array
-        T* pNewArray = new T[s];
-
-        // Check how many elements to copy
-        size_t nCopy = s;
-        if (size() < s)
-        {
-            nCopy = size();
+        if (s <= mCapacity) {
+            mSize = s;
         }
-
-        // Copy old data to new array
-        for (size_t i=0; i<nCopy; ++i)
-        {
-            pNewArray[i] = mpDataArray[i];
+        else {
+            // Reserve twice the memory, to avoid reallocation on every resize in append case
+            //! @todo Multiplying with 2 may be OK for small arrays, but for very large ones this could be a problem
+            reserve(s*2);
+            mSize = s;
         }
-
-        // Clear old data
-        clear();
-
-        // Set new data
-        mpDataArray = pNewArray;
-        mSize = s;
     }
 
     //! @brief Resize the array, initializing all values to defaultValue
     //! @param [in] s New size
-    //! @param [in] rDefaultValue initialize value for all elements
-    void resize(const size_t s, const T &rDefaultValue)
+    //! @param [in] defaultValue initialize value for all elements
+    void resize(size_t s, const T &defaultValue)
     {
-        clear();
-        mpDataArray = new T[s];
-        mSize = s;
-        for (size_t i=0; i<mSize; ++i)
-        {
-            mpDataArray[i] = rDefaultValue;
-        }
+        resize(s);
+        std::fill(&mpDataArray[0], &mpDataArray[mSize], defaultValue);
     }
 
     //! @brief Append data
     //! @note This function is slow, it will reallocate all array memory every time
-    //! @param [in] rData Data to append
-    void append(const T &rData)
+    //! @param [in] data Data to append
+    void append(const T &data)
     {
-        resize(size()+1);
-        mpDataArray[size()-1] = rData;
+        size_t prevSize = mSize;
+        resize(prevSize+1);
+        mpDataArray[prevSize] = data;
     }
 
-    const T& operator[] (const size_t i) const
+    const T& operator[] (size_t i) const
     {
         return mpDataArray[i];
     }
 
-    T& operator[] (const size_t i)
+    T& operator[] (size_t i)
     {
         return mpDataArray[i];
     }
@@ -258,6 +263,13 @@ public:
         return mSize;
     }
 
+    //! @brief Returns the reserved number of element slots in the array
+    //! @returns Number of reserved elements in the array
+    size_t capacity() const
+    {
+        return mCapacity;
+    }
+
     //! @brief Check if the array is empty
     //! @returns true if the array is empty
     bool empty() const
@@ -267,12 +279,8 @@ public:
 
     HVector<T>& operator=(const HVector<T> &rhs)
     {
-        mpDataArray = new T[rhs.size()];
-        mSize = rhs.size();
-        for (size_t i=0; i<rhs.size(); ++i)
-        {
-            mpDataArray[i] = rhs[i];
-        }
+        resize(rhs.size());
+        std::copy(&rhs.mpDataArray[0], &rhs.mpDataArray[rhs.size()], mpDataArray);
         return *this;
     }
 };
