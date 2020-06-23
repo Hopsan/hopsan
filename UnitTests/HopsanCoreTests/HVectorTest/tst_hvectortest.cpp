@@ -25,7 +25,8 @@
 #include <QString>
 #include <QtTest>
 
-#include "HopsanTypes.h"
+#include "HVector.hpp"
+#include "HString.h"
 
 using namespace hopsan;
 

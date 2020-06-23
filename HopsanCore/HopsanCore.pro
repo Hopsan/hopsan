@@ -135,7 +135,7 @@ SOURCES += \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cpp \
     src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
     src/ComponentUtilities/EquationSystemSolver.cpp \
-    src/HopsanTypes.cpp \
+    src/HString.cpp \
     src/ComponentUtilities/HopsanPowerUser.cpp \
     src/ComponentUtilities/LookupTable.cpp \
     src/ComponentUtilities/PLOParser.cpp \
@@ -155,6 +155,8 @@ HEADERS += \
     include/Node.h \
     include/HopsanEssentials.h \
     include/HopsanCore.h \
+    include/HString.h \
+    include/HVector.hpp \
     include/ComponentUtilities.h \
     include/ComponentSystem.h \
     include/ComponentEssentials.h \

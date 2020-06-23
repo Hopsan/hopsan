@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------
 
- Copyright 2017 Hopsan Group
+ Copyright 2020 Hopsan Group
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,10 +22,8 @@
 
 -----------------------------------------------------------------------------*/
 
+#include "HString.h"
 
-//$Id$
-
-#include "HopsanTypes.h"
 #include <cstdlib>
 #include <cstring>
 #include <string>
