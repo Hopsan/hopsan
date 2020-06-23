@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -u
+#set -u
 
 cd bin
 # Run test programs
