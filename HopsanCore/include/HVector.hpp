@@ -25,7 +25,6 @@
 #ifndef HVECTOR_H
 #define HVECTOR_H
 
-#include <cstdlib>
 #include <algorithm>
 
 namespace hopsan {
@@ -63,7 +62,7 @@ public:
     //! @brief Clear the array
     void clear()
     {
-        free(mpDataArray);
+        delete[] mpDataArray;
         mpDataArray = 0;
         mSize = 0;
         mCapacity = 0;
@@ -76,12 +75,13 @@ public:
     void reserve(size_t s)
     {
         if (s > mCapacity) {
-            void* pNewData = realloc(static_cast<void*>(mpDataArray), s*sizeof(T));
+            T* pNewData = new T[s];
             if (pNewData) {
-                mpDataArray = static_cast<T*>(pNewData);
+                std::copy(&mpDataArray[0], &mpDataArray[mSize], pNewData);
+                delete[] mpDataArray;
+                mpDataArray = pNewData;
                 mCapacity = s;
             }
-            mSize = std::min(mCapacity, mSize);
         }
     }
 
