@@ -81,8 +81,29 @@
 #define HCOMWARN(text) mpConsole->printWarningMessage(text,"",false)
 #define HCOMERR(text) mpConsole->printErrorMessage(text,"",false)
 
-#define GENERATIONSPECIFIERSTR "@"
-#define GENERATIONSPECIFIERCHAR '@'
+namespace generationspecifier {
+  constexpr auto separatorString = "@";
+  constexpr auto separatorChar = '@';
+  constexpr int currentGeneration = -1;
+  constexpr int allGenerations = -2;
+  constexpr int noGenerationSpecified = -3;
+  constexpr int invalidGeneration = -4;
+}
+constexpr int fromDisplayGeneration(int displayGeneration) {
+    return displayGeneration - 1;
+}
+constexpr int toDisplayGeneration(int dataGeneration) {
+    return  dataGeneration + 1;
+}
+constexpr bool isValidGenerationValue(int g) {
+    return g > generationspecifier::noGenerationSpecified;
+}
+constexpr bool isSingleGenerationValue(int g) {
+    return g >= generationspecifier::currentGeneration;
+}
+constexpr bool isSingleExplicitGenerationValue(int g) {
+    return g >= 0;
+}
 
 //----------------------------------------------------------------------------------
 
@@ -2879,7 +2900,7 @@ void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
         QStringList output;
         if(cmd.isEmpty())
         {
-            getMatchingLogVariableNames("*" GENERATIONSPECIFIERSTR "H", output, false);
+            getMatchingLogVariableNames(QString("*%1H").arg(generationspecifier::separatorString), output, false);
         }
         else
         {
@@ -3033,9 +3054,9 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
             bool parseGenOk;
             int gen = parseAndChopGenerationSpecifier(exclude_pattern, parseGenOk);
             // If generation is not specified, then assume current generation
-            if (parseGenOk && (gen < -2))
+            if (parseGenOk && !isValidGenerationValue(gen))
             {
-                exclude_pattern.append(GENERATIONSPECIFIERCHAR).append("c");
+                exclude_pattern.append(generationspecifier::separatorChar).append("c");
             }
             QStringList excludeNames;
             getMatchingLogVariableNames(exclude_pattern, excludeNames);
@@ -3051,9 +3072,9 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
         bool parseGenOk;
         int gen = parseAndChopGenerationSpecifier(tmp, parseGenOk);
         // If generation is not specified, then assume current generation
-        if (parseGenOk && (gen < -2))
+        if (parseGenOk && !isValidGenerationValue(gen))
         {
-            args[s].append(GENERATIONSPECIFIERCHAR).append("c");
+            args[s].append(generationspecifier::separatorChar).append("c");
         }
 
         QStringList variables;
@@ -3470,14 +3491,17 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
 
     // First look for variable in logdata
     SharedVectorVariableT pLogDataVariable;
-    if (gen >= -1 || gen == -3)
+    if (isSingleGenerationValue(gen) || (gen == generationspecifier::noGenerationSpecified))
     {
+        if (gen == generationspecifier::noGenerationSpecified) {
+            gen = generationspecifier::currentGeneration;
+        }
         pLogDataVariable = mpModel->getLogDataHandler()->getVectorVariable(variableName, gen);
     }
 
     // If specifier was not given or set to current gen, then also search for variable in model
     bool foundInModel=false;
-    if (gen == -1 || gen == -3)
+    if ((gen == generationspecifier::currentGeneration) || (gen == generationspecifier::noGenerationSpecified))
     {
         // Split fullname
         QStringList sysnames;
@@ -3686,12 +3710,10 @@ void HcomHandler::executeDisplayTimePlotOffsetCommand(const QString cmd)
 
     if (mpModel && mpModel->getLogDataHandler())
     {
-        if (generation == -1)
-        {
+        if (generation == generationspecifier::currentGeneration) {
             generation = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
         }
-        else if (generation < -1)
-        {
+        else if (!isSingleGenerationValue(generation)) {
             HCOMERR("Incorrect generation value, or could not parse generation");
             return;
         }
@@ -3739,11 +3761,11 @@ void HcomHandler::executeChangeTimePlotOffsetCommand(const QString cmd)
 
     if (mpModel && mpModel->getLogDataHandler())
     {
-        if (generation == -1)
+        if (generation == generationspecifier::currentGeneration)
         {
             generation = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
         }
-        else if (generation < -1)
+        else if (!isSingleGenerationValue(generation))
         {
             HCOMERR("Incorrect generation value, or could not parse generation");
             return;
@@ -4258,15 +4280,15 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         // Handle special case where we want to export a specific generation only
         // Example: *.g (g=15, g=l, g=h)
         QString specialCase = args.last();
-        if ( (args.size() == 1) && specialCase.startsWith("*" GENERATIONSPECIFIERSTR) )
+        if ( (args.size() == 1) && specialCase.startsWith(QString("*%1").arg(generationspecifier::separatorString) ) )
         {
             bool parseOK;
             int g=parseAndChopGenerationSpecifier(specialCase, parseOK);
             if (parseOK)
             {
-                if (g>-2)
+                if (isSingleGenerationValue(g))
                 {
-                    if (g == -1)
+                    if (g == generationspecifier::currentGeneration)
                     {
                         g = mpModel->getLogDataHandler()->getCurrentGenerationNumber();
                     }
@@ -4292,7 +4314,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
                     }
                     return;
                 }
-                else if(g==-2)
+                else if(g == generationspecifier::allGenerations)
                 {
                     HCOMERR("sapl can not export different full generations to the same file");
                     return;
@@ -4315,7 +4337,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         for(QString &arg : args)
         {
             arg.remove("\"");
-            if (arg.startsWith("*" GENERATIONSPECIFIERSTR))
+            if (arg.startsWith(QString("*%1").arg(generationspecifier::separatorString)))
             {
                 HCOMWARN("Ignoring "+arg+" you can only use this as a single argument to sapl");
             }
@@ -5741,15 +5763,12 @@ void HcomHandler::changePlotVariables(const QString cmd, const int axis, bool ho
             QString tempVarName = varNames[s];
             bool parseOK;
             int desiredGen = parseAndChopGenerationSpecifier(tempVarName, parseOK);
-            if (desiredGen == -3 && mpModel && mpModel->getLogDataHandler() )
-            {
-                getMatchingLogVariableNames(varNames[s], variables, false, mpModel->getLogDataHandler()->getCurrentGenerationNumber());
-            }
-            else
-            {
+            if (isValidGenerationValue(desiredGen)) {
                 getMatchingLogVariableNames(varNames[s], variables);
             }
-
+            else if (mpModel && mpModel->getLogDataHandler()) {
+                getMatchingLogVariableNames(varNames[s], variables, false, mpModel->getLogDataHandler()->getCurrentGenerationNumber());
+            }
 
             if (variables.isEmpty())
             {
@@ -5837,7 +5856,7 @@ void HcomHandler::addPlotCurve(QString var, const int axis, PlotCurveStyle style
     else
     {
         // If plot curve contains gen specifier, then we want that generation to remain in the plot and not auto refresh
-        if (var.contains(GENERATIONSPECIFIERCHAR))
+        if (var.contains(generationspecifier::separatorChar))
         {
             addPlotCurve(data, axis, false, style);
         }
@@ -5873,10 +5892,10 @@ void HcomHandler::removeLogVariable(QString fullShortVarNameWithGen) const
 
     QString name = fullShortVarNameWithGen;
     int generation = parseAndChopGenerationSpecifier(name, parseOK);
-    if (generation == -2 || generation == -3)
+    if (generation == generationspecifier::allGenerations || generation == generationspecifier::noGenerationSpecified)
     {
-        // Remove all if -2 or -3 returned (all if no gen specified)
-        generation = -2;
+        // Remove all if 'all' or 'no' returned (all if no gen specified)
+        generation = generationspecifier::allGenerations;
     }
 
     if (parseOK)
@@ -8050,7 +8069,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
     //! @todo what about subsystem $
 
     // If we know generation then search for it directly
-    if (desiredGen >= -1)
+    if (isSingleGenerationValue(desiredGen))
     {
         QRegExp regexp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard);
         QList<SharedVectorVariableT> alias_variables = pLogDataHandler->getMatchingVariablesAtGeneration(regexp, desiredGen, Alias);
@@ -8061,7 +8080,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             rVariables.append(name);
             if (addGenerationSpecifier)
             {
-                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+                rVariables.last().append(generationspecifier::separatorString+QString::number(toDisplayGeneration(var->getGeneration())));
             }
         }
         QList<SharedVectorVariableT> full_variables = pLogDataHandler->getMatchingVariablesAtGeneration(regexp, desiredGen, FullName);
@@ -8072,12 +8091,12 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             rVariables.append(name);
             if (addGenerationSpecifier)
             {
-                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+                rVariables.last().append(generationspecifier::separatorString+QString::number(toDisplayGeneration(var->getGeneration())));
             }
         }
     }
     // Do more costly name lookup, generate a list of all variables and all generations
-    else if (desiredGen == -2)
+    else if (desiredGen == generationspecifier::allGenerations)
     {
         QRegExp regexp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard);
         QList<SharedVectorVariableT> alias_variables = pLogDataHandler->getMatchingVariablesFromAllGenerations(regexp, Alias);
@@ -8088,7 +8107,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             rVariables.append(name);
             if (addGenerationSpecifier)
             {
-                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+                rVariables.last().append(generationspecifier::separatorString+QString::number(toDisplayGeneration(var->getGeneration())));
             }
         }
         QList<SharedVectorVariableT> full_variables = pLogDataHandler->getMatchingVariablesFromAllGenerations(regexp, FullName);
@@ -8099,12 +8118,12 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             rVariables.append(name);
             if (addGenerationSpecifier)
             {
-                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+                rVariables.last().append(generationspecifier::separatorString+QString::number(toDisplayGeneration(var->getGeneration())));
             }
         }
     }
     // Else generation number was not specified, lookup names at all generations
-    else if (desiredGen == -3)
+    else if (desiredGen == generationspecifier::noGenerationSpecified)
     {
         QRegExp regexp(pattern_long, Qt::CaseSensitive, QRegExp::Wildcard);
         QList<SharedVectorVariableT> alias_variables = pLogDataHandler->getMatchingVariablesAtRespectiveNewestGeneration(regexp, Alias);
@@ -8115,7 +8134,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             rVariables.append(name);
             if (addGenerationSpecifier)
             {
-                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+                rVariables.last().append(generationspecifier::separatorString+QString::number(toDisplayGeneration(var->getGeneration())));
             }
         }
         QList<SharedVectorVariableT> full_variables = pLogDataHandler->getMatchingVariablesAtRespectiveNewestGeneration(regexp, FullName);
@@ -8126,7 +8145,7 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
             rVariables.append(name);
             if (addGenerationSpecifier)
             {
-                rVariables.last().append(QString(GENERATIONSPECIFIERSTR "%1").arg(var->getGeneration()+1));
+                rVariables.last().append(generationspecifier::separatorString+QString::number(toDisplayGeneration(var->getGeneration())));
             }
         }
     }
@@ -8139,9 +8158,10 @@ void HcomHandler::getMatchingLogVariableNames(QString pattern, QStringList &rVar
 //! @returns The desired generation, or: -1 = Current generation, -2 = All generations, -3 = Not Specified, -4 on failure
 int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
 {
-    rOk=true;
-    int i = rStr.lastIndexOf(GENERATIONSPECIFIERSTR);
-    if ((i > -1) && mpModel)
+    rOk = true;
+    const int i = rStr.lastIndexOf(generationspecifier::separatorString);
+    const bool generationStringFound = (i > -1);
+    if (generationStringFound && mpModel)
     {
         QString genStr = rStr.right(rStr.size()-i-1);
 
@@ -8158,12 +8178,12 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
         else if( (genStr == "*") || (genStr == "a") || (genStr == "A") )
         {
             rStr.chop(2);
-            return -2;
+            return generationspecifier::allGenerations;
         }
         else if( (genStr == "c") || (genStr == "C") )
         {
             rStr.chop(2);
-            return -1;
+            return generationspecifier::currentGeneration;
         }
         else if(genStr.startsWith("(") && genStr.endsWith(")"))
         {
@@ -8171,42 +8191,45 @@ int HcomHandler::parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const
             rStr.chop(genStr.size()+1);
             SymHop::Expression expr(genStr);
             double g = expr.evaluate(mLocalVars, &mLocalFunctionoidPtrs);
-            return int(g+0.5)-1;
+            return fromDisplayGeneration(int(g+0.5));
         }
         else
         {
+            // Handle a specific generation number
             int g;
             if (toInt(genStr, g))
             {
                 rStr.truncate(i);
-                //! @todo what about handling zero, maybe should disp nothing
                 // Handle negative indexes ( -1 would mean the previous one: current-1 )
-                if (g < 0)
-                {
+                if (g < 0) {
                     g = mpModel->getLogDataHandler()->getCurrentGenerationNumber() + g;
                 }
-                // Else we take g-1 in order to "undo" the generations being displayed +1
-                else
-                {
-                    g = g-1;
+                // Special handling of zero (treat it the same as generation one) but in the data this will still be generation zero
+                else if (g == 0) {
+                    // We cant use 0 here as that would subtract to -1 which would mean currentGeneration
+                    g = fromDisplayGeneration(1);
+                }
+                // Handle a particular generation number
+                else {
+                    g = fromDisplayGeneration(g);
                 }
 
                 // Make sure we do not request a generation that does not exist
-                if (g < mpModel->getLogDataHandler()->getLowestGenerationNumber())
-                {
-                    return -4;
+                if (g < mpModel->getLogDataHandler()->getLowestGenerationNumber()) {
+                    return generationspecifier::invalidGeneration;
                 }
+
                 return qMax(g, 0);
             }
             else
             {
-                rOk=false;
-                return -4;
+                rOk = false;
+                return generationspecifier::invalidGeneration;
             }
         }
     }
 
-    return -3;
+    return generationspecifier::noGenerationSpecified;
 }
 
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
@@ -8324,7 +8347,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         for(int i=1; i<left.size(); ++i)
         {
             //! @todo this should be a help function
-            if(!(left.at(i).isLetterOrNumber() || left.at(i) == '_' || left.at(i) == '.' || left.at(i) == ':' || left.at(i) == GENERATIONSPECIFIERCHAR))
+            if(!(left.at(i).isLetterOrNumber() || left.at(i) == '_' || left.at(i) == '.' || left.at(i) == ':' || left.at(i) == generationspecifier::separatorChar))
             {
                 leftIsOk = false;
             }
@@ -8379,11 +8402,10 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
                 int gen = parseAndChopGenerationSpecifier(left, parseOk);
                 if (parseOk)
                 {
-                    if (gen != -4 && gen != -2 )
+                    if (isSingleGenerationValue(gen) || (gen == generationspecifier::noGenerationSpecified))
                     {
-                        if (gen < -1)
-                        {
-                            gen = -1;
+                        if (gen == generationspecifier::noGenerationSpecified) {
+                            gen = generationspecifier::currentGeneration;
                         }
 
                         // Value given but left does not exist (or at least generation does not exist), create/insert it
@@ -8807,16 +8829,16 @@ SharedVectorVariableT HcomHandler::getLogVariable(QString fullShortName) const
         warningMessage = QString("Could not parse generation specifier in: %2, choosing current").arg(fullShortName);
     }
     // Handle ALL generations return code
-    else if(genRC == -2)
+    else if(genRC == generationspecifier::allGenerations)
     {
-        warningMessage = "Could not parse a unique generation number, choosing current";
+        warningMessage = "Could not parse a unique generation number, choosing current generation";
     }
     // Use given generation number
-    else if (genRC >= 0)
+    else if (isSingleExplicitGenerationValue(genRC))
     {
         generation = genRC;
     }
-    // Note! genRC = -1 (latest) and -3 (not specified) will be handled as if current is chosen (without warning)
+    // Note! genRC = -1 (current) and -3 (not specified) will be handled as if current is chosen (without warning)
 
     // Convert to long name
     toLongDataNames(fullShortName);
@@ -8874,7 +8896,7 @@ QStringList HcomHandler::getAutoCompleteWords() const
 
     //Log variables
     QStringList variables;
-    getMatchingLogVariableNames("*" GENERATIONSPECIFIERSTR "H", variables, false);
+    getMatchingLogVariableNames(QString("*%1H").arg(generationspecifier::separatorString), variables, false);
     ret <<  variables;
 
 
