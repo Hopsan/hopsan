@@ -11,13 +11,6 @@ CONFIG -= qt
 DESTDIR = $${PWD}/../../bin
 TARGET = hopsanserverworker
 
-# Enable C++11
-lessThan(QT_MAJOR_VERSION, 5){
-  QMAKE_CXXFLAGS += -std=c++11
-} else {
-  CONFIG += c++14
-}
-
 #--------------------------------------------------------
 # Depend on the remote common lib
 INCLUDEPATH += $${PWD}/../libhopsanremotecommon/include

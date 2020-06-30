@@ -11,14 +11,6 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 
 QT -= core gui
 
-# Enable C++11
-lessThan(QT_MAJOR_VERSION, 5){
-  QMAKE_CXXFLAGS += -std=c++11
-} else {
-  CONFIG += c++11
-}
-
-
 #--------------------------------------------------
 # Add the include path to our self, (HopsanC)
 INCLUDEPATH *= $${PWD}/include/

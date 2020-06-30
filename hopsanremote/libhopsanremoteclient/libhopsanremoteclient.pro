@@ -1,6 +1,8 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
+include( $${PWD}/../../Common.prf )
+
 TEMPLATE = lib
 CONFIG += staticlib
 QT       -= core gui
@@ -9,13 +11,6 @@ CONFIG += thread
 
 TARGET = hopsanremoteclient
 DESTDIR = $${PWD}/../../lib
-
-# Enable C++11
-lessThan(QT_MAJOR_VERSION, 5){
-  QMAKE_CXXFLAGS += -std=c++11
-} else {
-  CONFIG += c++14
-}
 
 #--------------------------------------------------------
 # Set the ZeroMQ paths

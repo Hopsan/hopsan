@@ -13,12 +13,6 @@ QT -= gui
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
-# Enable C++11
-lessThan(QT_MAJOR_VERSION, 5){
-  QMAKE_CXXFLAGS += -std=c++11
-} else {
-  CONFIG += c++14
-}
 # Allow non-strict ansi code
 QMAKE_CXXFLAGS *= -U__STRICT_ANSI__ -Wno-c++0x-compat
 

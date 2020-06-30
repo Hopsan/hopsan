@@ -18,6 +18,9 @@ CONFIG(release, debug|release) {
   QMAKE_CXXFLAGS += -O3
 }
 
+# Enable C++14
+CONFIG += c++14
+
 #Determine if default component lib should be build in
 #DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS
 
