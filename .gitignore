@@ -1,9 +1,11 @@
 .svn/
+.vs/
 bin/
 HopsanNG_bd/
 output64/
 output/
 output_deb/
+out/
 *.pro.user*
 *~
 *.o
@@ -15,6 +17,7 @@ output_deb/
 *.moc
 *.exe
 moc_*.cpp
+CMakeSettings.json
 Makefile
 compileWithMinGW.bat
 GPATH
