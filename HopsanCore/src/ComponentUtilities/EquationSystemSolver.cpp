@@ -40,12 +40,10 @@
 #include "ComponentSystem.h"
 
 //Sundials includes
-#ifdef USESUNDIALS
 #include "kinsol/kinsol.h"
 #include "nvector/nvector_serial.h"
 #include "sunmatrix/sunmatrix_dense.h"
 #include "sunlinsol/sunlinsol_dense.h"
-#endif
 
 #include <cstring>
 #include <stdlib.h>
@@ -608,7 +606,6 @@ void NumericalIntegrationSolver::solvevariableTimeStep()
 }
 
 
-#ifdef USESUNDIALS
 static int kinsolResidualCallback(N_Vector y, N_Vector f, void *user_data)
 {
     Component *pComponent = static_cast<Component*>(user_data);
@@ -623,7 +620,6 @@ static int kinsolJacobianCallback(N_Vector y, N_Vector f, SUNMatrix J, void *use
     pComponent->getJacobian(NV_DATA_S(y), NV_DATA_S(f), SM_DATA_D(J));
     return 0;
 }
-#endif
 
 
 class KinsolSolver::Impl
@@ -638,12 +634,10 @@ public:
 
     Component *mpComponent;
     void *mem;
-#ifdef USESUNDIALS
     N_Vector y;
     N_Vector scale;
     SUNLinearSolver LS;
     SUNMatrix J;
-#endif
     double mSolverTime;
     SolverTypeEnum mType = NewtonIteration;
 };
@@ -654,7 +648,6 @@ KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnu
       mSolverTime(pComponent->getTime()),
       mType(type)
 {
-#ifdef USESUNDIALS
     int flag;
 
     y = 0;
@@ -734,15 +727,10 @@ KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnu
         }
     }
     return;
-#else
-    mpComponent->stopSimulation("Sundials solvers not available.");
-    return;
-#endif
 }
 
 KinsolSolver::Impl::~Impl()
 {
-#ifdef USESUNDIALS
     KINFree(&mem);
     N_VDestroy(y);
     N_VDestroy(scale);
@@ -754,12 +742,10 @@ KinsolSolver::Impl::~Impl()
         LS = 0;
         J = 0;
     }
-#endif
 }
 
 void KinsolSolver::Impl::solve()
 {
-#ifdef USESUNDIALS
     int strategy = KIN_LINESEARCH;
     if(mType == FixedPointIteration) {
         strategy = KIN_FP;
@@ -770,28 +756,20 @@ void KinsolSolver::Impl::solve()
         mpComponent->stopSimulation("KINSol() failed with flag "+to_hstring(flag)+".");
         return;
     }
-#endif
 }
 
 double KinsolSolver::Impl::getState(int i)
 {
-#ifdef USESUNDIALS
     return NV_Ith_S(y,i);
-#else
-    return 0;   //Avoid compile error
-#endif
 }
 
 void KinsolSolver::Impl::setState(int i, double value)
 {
-#ifdef USESUNDIALS
     NV_Ith_S(y,i) = value;
-#endif
 }
 
 void KinsolSolver::Impl::setTolerance(double value)
 {
-#ifdef USESUNDIALS
     int flag = KINSetFuncNormTol(mem, value);
     if (flag < 0) {
         mpComponent->stopSimulation("KINSetFuncNormTol() failed with flag "+to_hstring(flag)+".");
@@ -805,7 +783,6 @@ void KinsolSolver::Impl::setTolerance(double value)
             return;
         }
     }
-#endif
 }
 
 
