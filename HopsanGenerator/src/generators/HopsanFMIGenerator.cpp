@@ -1802,8 +1802,8 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
             return;
     }
     QStringList componentFiles;
-    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "hpp", componentFiles);
-    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "h", componentFiles);
+    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/", "hpp", componentFiles);
+    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/", "h", componentFiles);
     Q_FOREACH(const QString &file, componentFiles)
     {
         //qDebug() << "Replacing component file: " << file;
@@ -1863,17 +1863,10 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
 #ifndef _WIN32
     fpicFlag= "-fPIC";
 #endif
-    QDir sundialsLibDir(getHopsanRootPath()+"/dependencies/sundials/lib");
     makefileStream << "CXXFLAGS = "+fpicFlag+" -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING";
-    if(sundialsLibDir.exists()) {
-        makefileStream << " -DUSESUNDIALS";
-    }
     makefileStream << "\n";
     makefileStream << "CFLAGS = "+fpicFlag+" -c\n";
     makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
-    if(sundialsLibDir.exists()) {
-        makefileStream << " -L"+sundialsLibDir.path()+" -lsundials_kinsol";
-    }
     makefileStream << "\n";
     makefileStream << "CXXINCLUDES = ";
     // Add HopsanCore (and necessary dependency) include paths
@@ -1882,9 +1875,6 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     }
     for(const QString &includePath : mIncludePaths) {
         makefileStream << QString(" -I\"%1\"").arg(includePath);
-    }
-    if(sundialsLibDir.exists()) {
-        makefileStream << " -I"+getHopsanRootPath()+"/dependencies/sundials/include";
     }
     makefileStream << "\n";
     makefileStream << "CINCLUDES = -I\""+fmiLibDir+"/include\"\n";
@@ -1900,11 +1890,14 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     makefileStream << "COBJ = fmu"+vStr+"_model_cs.o\n";
     makefileStream << "\n\n";
     makefileStream << "VPATH := $(sort  $(dir $(CXXSRC)))\n\n";
-    makefileStream << "CXXOBJ := $(patsubst %.cpp, %.o, $(notdir $(CXXSRC)))\n\n";
+    makefileStream << "CXXOBJ := $(patsubst %.cpp, %.o, $(notdir $(CXXSRC)))\n";
+    makefileStream << "CXXOBJ := $(patsubst %.c, %.o, $(notdir $(CXXOBJ)))\n\n";
     makefileStream << "all: 	$(CXXOBJ)\n";
     makefileStream << "\t$(CC) $(CFLAGS) $(CINCLUDES) -c $(CSRC) -o $(COBJ)\n";
     makefileStream << "\t$(CXX) $(COBJ) $(CXXOBJ) $(LFLAGS) -o $(OUTPUT)\n\n";
     makefileStream << "%.o : %.cpp Makefile\n";
+    makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
+    makefileStream << "%.o : %.c Makefile\n";
     makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
     makefile.close();
 
@@ -1945,11 +1938,6 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     if (!compilationSuccessful) {
         printErrorMessage("Failed to compile exported FMU C++ Hopsan code.");
         return false;
-    }
-
-    //Copy all Sundials library files to resources directory
-    for(const QFileInfo &fileInfo : sundialsLibDir.entryInfoList(QStringList() << "*"+QString(LIBEXT) << "*"+QString(LIBEXT)+".*")) {
-        copyFile(fileInfo.absoluteFilePath(),fmuStagePath+"/resources/"+fileInfo.fileName());
     }
 
     return assertFilesExist("", QStringList() << outputLibraryFile);

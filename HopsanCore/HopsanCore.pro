@@ -39,16 +39,50 @@ SOURCES += $${PWD}/dependencies/libnumhop/src/VariableStorage.cpp
 HEADERS += $${PWD}/dependencies/libnumhop/include/numhop.h
 #--------------------------------------------------------
 
-# -------------------------------------------------------
-# Set Sundials paths
-include($${PWD}/../dependencies/sundials.pri)
-have_sundials(){
-  DEFINES *= USESUNDIALS
-  !build_pass:message("Compiling with Sundials support")
-} else {
-  !build_pass:message("Compiling without Sundials support")
-}
-# -------------------------------------------------------
+#-------------------------------------------------
+# Set sundials paths (compile in)
+system("cd dependencies/sundials-build && \
+cmake ../sundials \
+-DCMAKE_INSTALL_PREFIX=$${PWD}/../bin \
+-DCMAKE_BUILD_TYPE=RELEASE \
+-DBUILD_ARKODE=OFF \
+-DBUILD_CVODE=OFF \
+-DBUILD_CVODES=OFF \
+-DBUILD_IDA=OFF \
+-DBUILD_IDAS=OFF \
+-DBUILD_KINSOL=ON \
+-DBUILD_SHARED_LIBS=ON\
+-DBUILD_STATIC_LIBS=OFF \
+-DEXAMPLES_ENABLE_C=OFF \
+-DEXAMPLES_INSTALL=OFF")
+INCLUDEPATH *= $${PWD}/dependencies/sundials-build/include
+INCLUDEPATH *= $${PWD}/dependencies/sundials/include
+SOURCES += $${PWD}/dependencies/sundials/src/kinsol/kinsol_spils.c \
+           $${PWD}/dependencies/sundials/src/kinsol/kinsol_ls.c \
+           $${PWD}/dependencies/sundials/src/kinsol/kinsol_io.c \
+           $${PWD}/dependencies/sundials/src/kinsol/kinsol_direct.c \
+           $${PWD}/dependencies/sundials/src/kinsol/kinsol_bbdpre.c \
+           $${PWD}/dependencies/sundials/src/kinsol/kinsol.c \
+           $${PWD}/dependencies/sundials/src/sunmatrix/dense/fsunmatrix_dense.c \
+           $${PWD}/dependencies/sundials/src/sunmatrix/dense/sunmatrix_dense.c \
+           $${PWD}/dependencies/sundials/src/nvector/serial/fnvector_serial.c \
+           $${PWD}/dependencies/sundials/src/nvector/serial/nvector_serial.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_futils.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_nvector_senswrapper.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_nonlinearsolver.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_version.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_iterative.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_band.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_direct.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_dense.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_nvector.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_linearsolver.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_matrix.c \
+           $${PWD}/dependencies/sundials/src/sundials/sundials_math.c \
+           $${PWD}/dependencies/sundials/src/sunmatrix/band/sunmatrix_band.c \
+           $${PWD}/dependencies/sundials/src/sunlinsol/band/sunlinsol_band.c \
+           $${PWD}/dependencies/sundials/src/sunlinsol/dense/sunlinsol_dense.c \
+#-------------------------------------------------
 
 # -------------------------------------------------
 

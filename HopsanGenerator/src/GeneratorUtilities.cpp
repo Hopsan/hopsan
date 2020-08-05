@@ -540,7 +540,9 @@ QStringList getHopsanCoreIncludePaths()
                     "componentLibraries/defaultLibrary";
     includePaths << "HopsanCore/dependencies/rapidxml" <<
                     "HopsanCore/dependencies/indexingcsvparser/include" <<
-                    "HopsanCore/dependencies/libnumhop/include";
+                    "HopsanCore/dependencies/libnumhop/include" <<
+                    "HopsanCore/dependencies/sundials-build/include" <<
+                    "HopsanCore/dependencies/sundials/include";
     return includePaths;
 }
 
@@ -665,6 +667,32 @@ QStringList listHopsanCoreSourceFiles(const QString &hopsanInstallationPath)
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/dependencies", "cc", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/dependencies", "cpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libnumhop/src", "cpp", allFiles);
+
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/kinsol/kinsol_spils.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/kinsol/kinsol_ls.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/kinsol/kinsol_io.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/kinsol/kinsol_direct.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/kinsol/kinsol_bbdpre.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/kinsol/kinsol.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sunmatrix/dense/fsunmatrix_dense.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sunmatrix/dense/sunmatrix_dense.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/nvector/serial/fnvector_serial.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/nvector/serial/nvector_serial.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_futils.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_nvector_senswrapper.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_nonlinearsolver.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_version.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_iterative.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_band.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_direct.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_dense.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_nvector.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_linearsolver.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_matrix.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sundials/sundials_math.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sunmatrix/band/sunmatrix_band.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sunlinsol/band/sunlinsol_band.c";
+    allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/sundials/src/sunlinsol/dense/sunlinsol_dense.c";
     allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/src/indexingcsvparser.cpp";
 
     QDir rootDir(hopsanInstallationPath);
@@ -687,6 +715,7 @@ QStringList listHopsanCoreIncludeFiles(const QString &hopsanInstallationPath)
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/dependencies", "hpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/rapidxml", "hpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libnumhop/include", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/sundials/include", "h", allFiles);
     allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/include/indexingcsvparser/indexingcsvparser.h";
 
     QDir rootDir(hopsanInstallationPath);
