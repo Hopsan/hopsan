@@ -541,7 +541,7 @@ QStringList getHopsanCoreIncludePaths()
     includePaths << "HopsanCore/dependencies/rapidxml" <<
                     "HopsanCore/dependencies/indexingcsvparser/include" <<
                     "HopsanCore/dependencies/libnumhop/include" <<
-                    "HopsanCore/dependencies/sundials-build/include" <<
+                    "HopsanCore/dependencies/sundials-extra/include" <<
                     "HopsanCore/dependencies/sundials/include";
     return includePaths;
 }
@@ -716,6 +716,7 @@ QStringList listHopsanCoreIncludeFiles(const QString &hopsanInstallationPath)
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/rapidxml", "hpp", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/libnumhop/include", "h", allFiles);
     findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/sundials/include", "h", allFiles);
+    findAllFilesInFolderAndSubFolders(hopsanInstallationPath+"/HopsanCore/dependencies/sundials-extra/include", "h", allFiles);
     allFiles << hopsanInstallationPath+"/HopsanCore/dependencies/indexingcsvparser/include/indexingcsvparser/indexingcsvparser.h";
 
     QDir rootDir(hopsanInstallationPath);

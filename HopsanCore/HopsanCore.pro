@@ -41,21 +41,7 @@ HEADERS += $${PWD}/dependencies/libnumhop/include/numhop.h
 
 #-------------------------------------------------
 # Set sundials paths (compile in)
-system("cd dependencies/sundials-build && \
-cmake ../sundials \
--DCMAKE_INSTALL_PREFIX=$${PWD}/../bin \
--DCMAKE_BUILD_TYPE=RELEASE \
--DBUILD_ARKODE=OFF \
--DBUILD_CVODE=OFF \
--DBUILD_CVODES=OFF \
--DBUILD_IDA=OFF \
--DBUILD_IDAS=OFF \
--DBUILD_KINSOL=ON \
--DBUILD_SHARED_LIBS=ON\
--DBUILD_STATIC_LIBS=OFF \
--DEXAMPLES_ENABLE_C=OFF \
--DEXAMPLES_INSTALL=OFF")
-INCLUDEPATH *= $${PWD}/dependencies/sundials-build/include
+INCLUDEPATH *= $${PWD}/dependencies/sundials-extra/include
 INCLUDEPATH *= $${PWD}/dependencies/sundials/include
 SOURCES += $${PWD}/dependencies/sundials/src/kinsol/kinsol_spils.c \
            $${PWD}/dependencies/sundials/src/kinsol/kinsol_ls.c \
