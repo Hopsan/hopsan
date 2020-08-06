@@ -36,7 +36,6 @@ jobs:
         run: |
             call setupTclap.bat
             call setupFMILibrary.bat
-            call setupSundials.bat
 
       - name: Configure
         working-directory: hopsan-build
@@ -84,7 +83,6 @@ jobs:
         run: |
           ./setupFMILibrary.sh
           ./setupTclap.sh
-          ./setupSundials.sh
 
       - name: Configure
         working-directory: hopsan-build
