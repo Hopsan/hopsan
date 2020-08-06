@@ -24,7 +24,6 @@ build_script:
   - setupQwt.bat
   - setupZeroMQ.bat
   - setupMsgpack.bat
-  - setupSundials.bat
   - call setHopsanBuildPaths.bat
   - cd ..
   - mkdir build
