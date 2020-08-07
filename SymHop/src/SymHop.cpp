@@ -1655,6 +1655,10 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         {
             ret = Expression(0);
         }
+        else if(func == "dxLimit3")
+        {
+            ret = Expression(0);
+        }
         else if(func == "mDelay")
         {
             ret = Expression(0);

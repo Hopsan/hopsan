@@ -289,6 +289,13 @@ double hopsan::dxLimit(const double x, const double xmin, const double xmax)
     return 1.0;
 }
 
+double hopsan::dxLimit3(const double dx, const double x, const double xmin, const double xmax)
+{
+    if(x >= xmax) { return fmin(dx, 0.0); }
+    if(x <= xmin) { return fmax(dx, 0.0); }
+    return dx;
+}
+
 //! @brief Sets the derivative of x to zero if x is outside of limits.
 //! @ingroup AuxiliarySimulationFunctions
 //! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.

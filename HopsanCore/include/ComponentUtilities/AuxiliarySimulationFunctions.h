@@ -66,6 +66,7 @@ double HOPSANCORE_DLLAPI dxSegare(const double x, const double d);
 double HOPSANCORE_DLLAPI limit(const double x, const double xmin, const double xmax);
 double HOPSANCORE_DLLAPI dxLimit(const double x, const double xmin, const double xmax);
 double HOPSANCORE_DLLAPI dxLimit2(const double x, const double sx, const double xmin, const double xmax);
+double HOPSANCORE_DLLAPI dxLimit3(const double dx, const double x, const double xmin, const double xmax);
 double HOPSANCORE_DLLAPI lowLimit(const double x, const double xmin);
 double HOPSANCORE_DLLAPI dxLowLimit(const double x, const double xmin);
 double HOPSANCORE_DLLAPI dxLowLimit2(const double x, const double sx, const double xmin);
