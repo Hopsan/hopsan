@@ -717,6 +717,13 @@ Expression Expression::fromBasePower(const Expression base, const Expression pow
     return ret;
 }
 
+Expression Expression::fromFunctionArgument(const QString function, Expression argument)
+{
+    return Expression::fromFunctionArguments(function, QList<Expression>() << argument);
+}
+
+
+
 //FIXED
 Expression Expression::fromFunctionArguments(const QString function, const QList<Expression> arguments)
 {
