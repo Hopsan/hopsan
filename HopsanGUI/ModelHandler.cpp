@@ -771,7 +771,7 @@ void ModelHandler::setToolBarSimulationTimeFromTab(ModelWidget *pModel)
 
 void ModelHandler::saveState()
 {
-    mStateInfoIndex = mCurrentIdx;
+    mStateInfoIndex = gpCentralTabWidget->currentIndex();
     mStateInfoList.clear();
 
     while(!mModelPtrs.isEmpty())
@@ -811,7 +811,7 @@ void ModelHandler::saveState()
 
 void ModelHandler::restoreState()
 {
-    int numTextTabs = gpCentralTabWidget->count();
+    int numTextTabs = gpCentralTabWidget->count()-1;
     for(int i=0; i<mStateInfoList.size(); ++i)
     {
         ModelStateInfo info = mStateInfoList[i];
@@ -842,7 +842,7 @@ void ModelHandler::restoreState()
 //        getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
 //        mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());
     }
-    this->setCurrentModel(mStateInfoIndex);
+    gpCentralTabWidget->setCurrentIndex(mStateInfoIndex);
     mStateInfoList.clear();
 }
 
