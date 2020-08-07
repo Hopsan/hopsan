@@ -67,6 +67,7 @@ public:
     enum ExpressionTypeT {Null, Equality,Symbol,Operator,Function};
     enum ExpressionSimplificationT {FullSimplification, TrivialSimplifications, NoSimplifications};
     enum ExpressionRecursiveT {Recursive, NonRecursive};
+    enum InlineTransformT {Trapezoid, ImplicitEuler, BDF1, BDF2};
     Expression(Expression &other);
     Expression(const Expression &other);
     Expression(QString const indata=QString(), bool *ok=0, const ExpressionSimplificationT simplifications=FullSimplification);
@@ -122,6 +123,7 @@ public:
     Expression derivative(const Expression x, bool &ok) const;
     bool contains(const Expression expr) const;
     Expression bilinearTransform() const;
+    Expression inlineTransform(const InlineTransformT transform, bool &ok) const;
 
     QStringList getFunctions() const;
     QString getFunctionName() const;

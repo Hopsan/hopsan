@@ -2051,6 +2051,91 @@ Expression Expression::bilinearTransform() const
 }
 
 
+Expression Expression::inlineTransform(const InlineTransformT transform, bool &ok) const
+{
+    QString transformStr;
+    if(transform == Trapezoid) {
+        transformStr = "2.0/mTimestep*(1.0-Z)/(1.0+Z)*(%1)";
+    }
+    else if(transform == ImplicitEuler || transform == BDF1) {
+        transformStr = "(1.0 - Z)/mTimestep*(%1)";
+    }
+    else if(transform == BDF2) {
+        transformStr = "(1.5 - 2*Z + 0.5*Z*Z)/mTimestep*(%1)";
+    }
+    else {
+        gSymHopMessages << "In Expression::inlineTransform(): Undefined inline transform: "+QString::number(int(transform));
+        ok = false;
+        return (*this);
+    }
+
+    Expression retExpr;
+    retExpr.replaceBy(*this);
+    QStringList res;
+
+    if(this->isAdd())
+    {
+        QList<Expression> newTerms = mTerms;
+        QList<Expression>::iterator it;
+        for(it=newTerms.begin(); it!=newTerms.end(); ++it)
+        {
+            (*it) = (*it).inlineTransform(transform, ok);
+            if(!ok) {
+                return (*this);
+            }
+        }
+        retExpr = Expression::fromTerms(newTerms);
+    }
+    else if(this->isEquation())
+    {
+        Expression newLeft = *mpLeft;
+        Expression newRight = *mpRight;
+        newLeft = newLeft.inlineTransform(transform, ok);
+        if(!ok) {
+            return (*this);
+        }
+        newRight = newRight.inlineTransform(transform, ok);
+        if(!ok) {
+            return (*this);
+        }
+
+        retExpr = Expression::fromEquation(newLeft, newRight);
+    }
+    else if(this->isMultiplyOrDivide())
+    {
+        QList<Expression> newFactors = mFactors;
+        QList<Expression>::iterator it;
+        for(it=newFactors.begin(); it!=newFactors.end(); ++it)
+        {
+            (*it) = (*it).inlineTransform(transform, ok);
+            if(!ok) {
+                return (*this);
+            }
+        }
+        QList<Expression> newDivisors = mDivisors;
+        for(it=newDivisors.begin(); it!=newDivisors.end(); ++it)
+        {
+            (*it) = (*it).inlineTransform(transform, ok);
+            if(!ok) {
+                return (*this);
+            }
+        }
+        retExpr = Expression::fromFactorsDivisors(newFactors, newDivisors);
+    }
+    else if(this->isFunction())
+    {
+        if(mFunction == "der")
+        {
+            QString funcArg = retExpr.getArgument(0).toString();
+            retExpr = Expression(transformStr.arg(funcArg));
+        }
+    }
+
+    ok = true;
+    return retExpr;
+}
+
+
 //! @brief Returns a list with all contained symbols in the expression
 //FIXED
 QList<Expression> Expression::getVariables() const
