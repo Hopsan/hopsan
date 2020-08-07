@@ -13,6 +13,7 @@ set(HOPSANCORE_INSTALL_DST "" CACHE STRING "Hopsan source code installation rela
 include(dependencies/libnumhop.cmake)
 include(dependencies/indexingcsvparser.cmake)
 include(dependencies/rapidxml.cmake)
+include(dependencies/sundials.cmake)
 
 # Find HopsanCore source code
 file(GLOB_RECURSE hopsancore_srcfiles src/*.cpp)
@@ -23,6 +24,7 @@ add_library(hopsancore SHARED ${hopsancore_srcfiles} ${hopsancore_headerfiles})
 add_libnumhop_src(hopsancore)
 add_indexingcsvparser_src(hopsancore)
 add_rapidxml_src(hopsancore)
+add_sundials_src(hopsancore)
 
 # Set compiler definitions
 if(WIN32)
@@ -60,4 +62,5 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION ${HOPSANCORE_INST
 # Install dependencies source code
 install_libnumhop_src(${HOPSANCORE_INSTALL_DST}dependencies/libnumhop)
 install_indexingcsvparser_src(${HOPSANCORE_INSTALL_DST}dependencies/indexingcsvparser)
-install_rapidxml_src(${HOPSANCORE_INSTALL_DST}dependencies/rapidxml )
+install_rapidxml_src(${HOPSANCORE_INSTALL_DST}dependencies/rapidxml)
+install_sundials_src(${HOPSANCORE_INSTALL_DST}dependencies/sundials)
