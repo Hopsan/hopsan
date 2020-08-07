@@ -1988,10 +1988,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
     //Create list of equations
     QList<Expression> systemEquations;
-    QStringList limitedVariables;
-    QStringList limitedDerivatives;
-    QStringList upperLimits;
-    QStringList lowerLimits;
+    QList<VariableLimitation> limitedVariables;;
     for(int e=0; e<plainEquations.size(); ++e) {
         if(plainEquations[e].trimmed().startsWith("//")) {
             continue;   //Ignore comments
@@ -2006,22 +2003,24 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             return false;
         }
         if(systemEquations.last().getFunctionName() == "limitVariable") {
-            if(systemEquations.last().getArguments().size() == 3) {
-                limitedVariables << systemEquations.last().getArgument(0).toString();
-                limitedDerivatives << "";
-                lowerLimits << systemEquations.last().getArgument(1).toString();
-                upperLimits << systemEquations.last().getArgument(2).toString();
+            int nArgs = systemEquations.last().getArguments().size();
+            VariableLimitation limit;
+            if(nArgs == 3) {
+                limit.var = systemEquations.last().getArgument(0).toString();
+                limit.min = systemEquations.last().getArgument(1).toString();
+                limit.max = systemEquations.last().getArgument(2).toString();
             }
-            else if(systemEquations.last().getArguments().size() == 4) {
-                limitedVariables << systemEquations.last().getArgument(0).toString();
-                limitedDerivatives << systemEquations.last().getArgument(1).toString();
-                lowerLimits << systemEquations.last().getArgument(2).toString();
-                upperLimits << systemEquations.last().getArgument(3).toString();
+            else if(nArgs == 4) {
+                limit.var = systemEquations.last().getArgument(0).toString();
+                limit.der = systemEquations.last().getArgument(1).toString();
+                limit.min = systemEquations.last().getArgument(2).toString();
+                limit.max = systemEquations.last().getArgument(3).toString();
             }
             else {
-                printErrorMessage("Wrong number of arguments for \"limitVariable\" function (should be 3 or 4)");
+                printErrorMessage("Wrong number of arguments to limitVariable() (should be 3 or 4).");
                 return false;
             }
+            limitedVariables.append(limit);
             systemEquations.removeLast();
             continue;
         }
@@ -2030,7 +2029,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             return false;
         }
         logStream << systemEquations.last().toString() << "\n";
-        if(!systemEquations[e].isEquation()) {
+        if(!systemEquations.last().isEquation()) {
             printErrorMessage("Expected an equation: "+systemEquations[e].toString());
             return false;
         }
@@ -2105,40 +2104,30 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         return false;
     }
 
-    //Make all equations left-sided
-    for(int e=0; e<systemEquations.size(); ++e) {
-        systemEquations[e].toLeftSided();
+
+    //Verify limitations
+    for(VariableLimitation &limit : limitedVariables) {
+        if(!unknowns.contains(limit.var) || (!limit.der.isEmpty() && !unknowns.contains(limit.der))) {
+            printErrorMessage("Limited variables not found in model, or are not unknown.");
+            return false;
+        }
     }
 
-    //Identify all derivatives and store in list/maps
-    QStringList derivatives;
-    QList<Expression> allVariables = knowns;
-    allVariables.append(unknowns);
-    QMap<QString, QString> secondDerivatives;
-    QMap<QString, Expression> secondDerivativeEquations;
-    for(const auto &equation : systemEquations) {
-        for(const auto &variable : allVariables) {
-            Expression derExpr = Expression::fromFunctionArguments("der",QList<Expression>() << variable);
-            if(equation.contains(derExpr)) {
-                if(equation.getLeft()->getTerms().size() == 2 && equation.getLeft()->getTerms().at(0) == derExpr) {
-                    Expression testExpr = equation.getLeft()->getTerms().at(1);
-                    testExpr.changeSign();
-                    if(testExpr.isVariable()) {
-                        secondDerivatives.insert(variable.toString(), testExpr.toString());
-                        secondDerivativeEquations.insert(variable.toString(), equation);
-                    }
-                }
-                else if(equation.getLeft()->getTerms().size() == 2 && equation.getLeft()->getTerms().at(1) == derExpr) {
-                    Expression testExpr = equation.getLeft()->getTerms().at(0);
-                    testExpr.changeSign();
-                    if(testExpr.isVariable()) {
-                        secondDerivatives.insert(variable.toString(), testExpr.toString());
-                        secondDerivativeEquations.insert(variable.toString(), equation);
-                    }
-                }
-                else {
-                    derivatives << variable.toString();
-                }
+    //Map limitations to corresponding equations
+    for(VariableLimitation &limit : limitedVariables) {
+        Expression firstDerExpr = Expression::fromFunctionArgument("der", Expression(limit.var));
+        for(const auto &equation : systemEquations) {
+            if(equation.contains(firstDerExpr)) {
+                limit.varEquation = systemEquations.indexOf(equation);
+            }
+        }
+        if(limit.der.isEmpty()) {
+            continue;
+        }
+        Expression secondDerExpr = Expression::fromFunctionArgument("der", Expression(limit.der));
+        for(const auto &equation : systemEquations) {
+            if(equation.contains(secondDerExpr)) {
+                limit.derEquation = systemEquations.indexOf(equation);
             }
         }
     }
@@ -2200,16 +2189,64 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         systemEquations[e].toDelayForm(delayTerms, delaySteps);
         systemEquations[e]._simplify(Expression::FullSimplification);
     }
-    for(auto &equation : systemEquations) {
-        for(const auto &derivative : derivatives) {
-            equation.replace(Expression("der("+derivative+")"), Expression(bdfStr.arg(derivative)));
-            equation._simplify(Expression::FullSimplification, Expression::Recursive);
+
+    //Apply limitations
+    for(VariableLimitation &limit : limitedVariables) {
+        systemEquations[limit.varEquation].factor(Expression(limit.var));
+
+        Expression rem = systemEquations[limit.varEquation];
+        rem.replace(Expression(limit.var), Expression(0));
+        rem._simplify(Expression::FullSimplification, Expression::Recursive);
+
+        Expression div = systemEquations[limit.varEquation];
+        div.subtractBy(rem);
+        div.replace(Expression(limit.var), Expression(1));
+        div.expand();
+        div._simplify(Expression::FullSimplification);
+
+        rem = Expression::fromFactorDivisor(rem, div);
+        rem.changeSign();
+        rem._simplify(Expression::FullSimplification, Expression::Recursive);
+
+        Expression limitTerm("-limit(("+rem.toString()+"),"+limit.min+","+limit.max+")");
+        systemEquations[limit.varEquation] = Expression::fromTwoTerms(Expression(limit.var), limitTerm);
+
+        if(!limit.der.isEmpty()) {
+            systemEquations[limit.derEquation].factor(Expression(limit.der));
+
+            Expression rem2 = systemEquations[limit.derEquation];
+            qDebug() << "rem1: " << rem2.toString();
+            rem2.replace(Expression(limit.der), Expression(0));
+            qDebug() << "rem2: " << rem2.toString();
+            rem2._simplify(Expression::FullSimplification, Expression::Recursive);
+            qDebug() << "rem3: " << rem2.toString();
+
+            Expression div2 = systemEquations[limit.derEquation];
+            qDebug() << "div1: " << div2.toString();
+            div2.subtractBy(rem2);
+            qDebug() << "div2: " << div2.toString();
+            div2.replace(Expression(limit.der), Expression(1));
+            qDebug() << "div3: " << div2.toString();
+            div2.factorMostCommonFactor();
+            qDebug() << "div4: " << div2.toString();
+            div2.expand();
+            qDebug() << "div5: " << div2.toString();
+            div2._simplify(Expression::FullSimplification, Expression::Recursive);
+            qDebug() << "div6: " << div2.toString();
+
+            rem2 = Expression::fromFactorDivisor(rem2, div2);
+            rem2.changeSign();
+
+            limitTerm.changeSign();
+            //systemEquations[limit.derEquation] = Expression::fromTwoTerms(Expression(limit.der), Expression::fromTwoFactors(Expression("-dxLimit("+limitTerm.toString()+","+limit.min+","+limit.max+")"), rem2));
+            systemEquations[limit.derEquation] = Expression::fromTwoTerms(Expression(limit.der), Expression::fromTwoFactors(Expression("-1"), Expression::fromFunctionArguments("dxLimit3", QList<Expression>() << rem2 << rem << Expression(limit.min) << Expression(limit.max))));
         }
-        for(const auto &derivative : secondDerivatives.keys()) {
-            equation.replace(Expression("dder("+derivative+")"), Expression(bdfStr2.arg(derivative)));
-            equation._simplify(Expression::FullSimplification, Expression::Recursive);
+
+        for(const auto &eq : systemEquations) {
+            qDebug() << eq.toString();
         }
     }
+
 
     //Identify system equations containing only one unknown (can be resolved before the rest of the system)
     bool didSomething = true;
