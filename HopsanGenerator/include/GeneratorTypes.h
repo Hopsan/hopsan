@@ -211,6 +211,17 @@ public:
     QString init;
 };
 
+class VariableLimitation {
+public:
+    QString var;        //Name of variable to limit
+    QString der;        //Name of derivative of variable
+    QString min;         //Minimum value
+    QString max;         //Maximum value
+    int varEquation;    //Equation where variable is defined
+    int derEquation;    //Equation where derivative is defined
+};
+
+
 
 class ComponentSpecification
 {

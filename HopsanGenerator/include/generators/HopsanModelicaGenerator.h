@@ -28,6 +28,7 @@
 #include "HopsanGeneratorBase.h"
 #include "SymHop.h"
 
+
 class HopsanModelicaGenerator : public HopsanGeneratorBase
 {
 public:
