@@ -1675,6 +1675,9 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         {
             ret = dg;
         }
+        else if(func == "limit") {
+                ret = dg;
+        }
         else if(func == "pow")
         {
             if(g == Expression("Z") || g == Expression("-Z"))
@@ -3468,7 +3471,6 @@ QString SymHop::getFunctionDerivative(const QString &key)
     if(key == "onPositive") { return "dxOnPositive"; }
     if(key == "onNegative") { return "dxOnNegative"; }
     if(key == "signedSquareL") { return "dxSignedSquareL"; }
-    if(key == "limit") { return "dxLimit"; }
     if(key == "der") { return "dder"; }     //For use with Modelica parser
 
     //For use with Modelica parser
