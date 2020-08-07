@@ -95,7 +95,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     QString code = moFile.readAll();
     moFile.close();
 
-    QString typeName, displayName, cqsType;
+    QString typeName, displayName, cqsType, transform;
     QStringList initAlgorithms, preAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
     QList<ParameterSpecification> parametersList;
@@ -106,7 +106,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     printMessage("Parsing "+moFile.fileName()+"...");
 
     //Parse Modelica code and generate equation system
-    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
+    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, transform);
 
     //qDebug() << "Transforming!";
     printMessage("Transforming...");
@@ -128,7 +128,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     }
     else if(solver == Kinsol)
     {
-        success = generateComponentObjectKinsol(comp,typeName,displayName,cqsType,preAlgorithms,equations,finalAlgorithms,portList,parametersList,variablesList,logStream);
+        success = generateComponentObjectKinsol(comp,typeName,displayName,cqsType,transform,preAlgorithms,equations,finalAlgorithms,portList,parametersList,variablesList,logStream);
     }
 
     logFile.close();
@@ -176,7 +176,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
 void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType,
                                                  QStringList &initAlgorithms, QStringList &preAlgorithms, QStringList &equations,
                                                  QStringList &finalAlgorithms, QList<PortSpecification> &portList,
-                                                 QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList)
+                                                 QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList, QString &transform)
 {
     QStringList lines = code.split("\n");
     QStringList portNames;
@@ -213,6 +213,10 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 tempLine.remove(" ");
                 int idx = tempLine.indexOf("hopsanCqsType=");
                 cqsType = tempLine.at(idx+15);
+                if(tempLine.contains("linearTransform=")) {
+                    transform = tempLine.section("linearTransform=",1,1).section("\"",1,1);
+                    qDebug() << "Transform: " << transform;
+                }
             }
             else if(words.at(0) == "parameter")         //"parameter" keyword
             {
@@ -1975,7 +1979,10 @@ bool HopsanModelicaGenerator::replaceCustomFunctions(Expression &expr) {
 }
 
 
-bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+
+
+
+bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transformStr, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     printMessage("Initializing Modelica generator for Kinsol solver.");
 
@@ -2136,33 +2143,62 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         }
     }
 
-    //Replace derivatives of derivatives with second derivatives (dder)
-    for(const auto &pureDer : secondDerivatives.keys()) {
-        Expression var = secondDerivatives.value(pureDer);
-        if(derivatives.contains(var.toString())) {
-            for(const auto &equation : systemEquations) {
-                if(equation.contains(Expression::fromFunctionArguments("der",QList<Expression>() << var))) {
-                    systemEquations.removeOne(secondDerivativeEquations.value(pureDer));
-                    systemEquations.append(equation);
-                    systemEquations.last().replace(Expression::fromFunctionArguments("der",QList<Expression>() << var), Expression::fromFunctionArguments("dder",QList<Expression>() << pureDer));
-                    systemEquations.last().replace(var, Expression::fromFunctionArguments("der",QList<Expression>() << pureDer));
-                }
-                break;
-            }
-        }
-        derivatives.append(pureDer);
+    //Make all equations left-sided
+    for(int e=0; e<systemEquations.size(); ++e) {
+        systemEquations[e].toLeftSided();
     }
 
-    //Elliminate derivatives with discrete transform
-    int bdfOrder = 2;
-    QString bdfStr, bdfStr2;
-    if(bdfOrder == 1) {
-        bdfStr = "(%1 - delay_%1.getIdx(0))/mTimestep";
-        bdfStr2 = "(%1 - 2*delay_%1.getIdx(0) + delay_%1.getIdx(1))/mTimestep/mTimestep";
+    //Apply inline transform
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+        bool ok;
+        Expression::InlineTransformT transform;
+        if(transformStr == "trapezoid") {
+            transform = Expression::Trapezoid;
+        }
+        else if(transformStr == "impliciteuler") {
+            transform = Expression::ImplicitEuler;
+        }
+        else if(transformStr == "bdf1") {
+            transform = Expression::BDF1;
+        }
+        else if(transformStr == "bdf2") {
+            transform = Expression::BDF2;
+        }
+        else {
+            printErrorMessage("Inline transform \""+transformStr+"\" is not currently supported.");
+            return false;
+        }
+        systemEquations[e] = systemEquations[e].inlineTransform(transform, ok);
+        if(!ok) {
+            QStringList errors = systemEquations[e].readErrorMessages();
+            for(const QString &error : errors) {
+                printErrorMessage(error);
+            }
+        }
+        systemEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
     }
-    else if(bdfOrder == 2) {
-        bdfStr = "(1.5*%1 - 2*delay_%1.getIdx(0) + 0.5*delay_%1.getIdx(1))/mTimestep";
-        bdfStr2 = "(%1 - 8/3*delay_%1.getIdx(0) + 22/9*delay_%1.getIdx(1) - 8/9*delay_%1.getIdx(2) + 1/9*delay_%1.getIdx(3))*9/4/mTimestep/mTimestep";
+    for(const auto &eq : systemEquations) {
+        qDebug() << eq.toString();
+    }
+
+
+    //Linearize equations
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+        systemEquations[e].linearize();
+        systemEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
+        systemEquations[e].replaceBy((*systemEquations[e].getLeft()));
+    }
+
+    //Transform delay operators to delay functions and store delay terms separately
+    QList<Expression> delayTerms;
+    QStringList delaySteps;
+    for(int e=0; e<systemEquations.size(); ++e)
+    {
+        systemEquations[e].expand();
+        systemEquations[e].toDelayForm(delayTerms, delaySteps);
+        systemEquations[e]._simplify(Expression::FullSimplification);
     }
     for(auto &equation : systemEquations) {
         for(const auto &derivative : derivatives) {
@@ -2190,7 +2226,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
             if(usedUnknowns.size() == 1) {
                 //Found only one unknown, try to break it out of the equation
                 systemEquations[e].linearize();
-                Expression tempExpr = *systemEquations[e].getLeft();
+                Expression tempExpr = systemEquations[e];
                 tempExpr.expand();
                 tempExpr.factor(usedUnknowns[0]);
                 if(tempExpr.getTerms().size() == 1) {
@@ -2238,7 +2274,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         if(count==1)
         {
             //Found the unknown if only one equation, try to break it out and prepend on final algorithms
-            Expression tempExpr = *systemEquations[lastFound].getLeft();
+            Expression tempExpr = systemEquations[lastFound];
             tempExpr.factor(unknowns[u]);
             if(tempExpr.getTerms().size() == 1) {
                 tempExpr = Expression(0.0);
@@ -2278,7 +2314,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         QList<Expression> result;
         for(int u=0; u<unknowns.size(); ++u)
         {
-            result.append(*concurrentDiff(unknowns[u]).getLeft());
+            result.append(concurrentDiff(unknowns[u]));
             result.last().expandPowers();
         }
 
@@ -2300,8 +2336,8 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     logStream << "\n--- Equation System ---\n";
     printMessage("Equation system:");
     for(int i=0; i<systemEquations.size(); ++i) {
-            logStream << systemEquations[i].getLeft()->toString() << " = 0\n";
-            printMessage("  "+systemEquations[i].getLeft()->toString()+" = 0");
+            logStream << systemEquations[i].toString() << " = 0\n";
+            printMessage("  "+systemEquations[i].toString()+" = 0");
     }
 
     logStream << "\n--- Final Algorithms ---\n";
@@ -2344,31 +2380,17 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     comp.parUnits << "-";
     comp.parInits << "1e-5";
 
+    for(int i=0; i<delayTerms.size(); ++i)
+    {
+        comp.utilities << "Delay";
+        comp.utilityNames << "mDelay"+QString::number(i);
+    }
+
     for(int i=0; i<variables.size(); ++i)
     {
         comp.varNames.append(variables[i].name);
         comp.varInits.append(variables[i].init);
         comp.varTypes.append("double");
-    }
-
-    for(const auto &der : derivatives) {
-        comp.varNames.append("delay_"+der);
-        comp.varInits.append("");
-        comp.varTypes.append("Delay");
-    }
-
-    for(int i=0; i<limitedVariables.size(); ++i) {
-        comp.parNames << "lowerlimit_"+limitedVariables[i];
-        comp.parDisplayNames << limitedVariables[i]+"_min";
-        comp.parDescriptions << "Minimum value for "+limitedVariables[i];
-        comp.parUnits << "-";
-        comp.parInits << lowerLimits[i];
-
-        comp.parNames << "upperlimit_"+limitedVariables[i];
-        comp.parDisplayNames << limitedVariables[i]+"_max";
-        comp.parDescriptions << "Maximum value for "+limitedVariables[i];
-        comp.parUnits << "-";
-        comp.parInits << upperLimits[i];
     }
 
     if(!unknowns.isEmpty()) {
@@ -2381,8 +2403,10 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         QString solverMethod = "KinsolSolver::NewtonIteration";
         comp.initEquations << "mpSolver = new KinsolSolver(this, mTolerance, "+QString::number(systemEquations.size())+", "+solverMethod+");";
     }
-    for(const auto &der : derivatives) {
-        comp.initEquations << "delay_"+der+".initialize("+QString::number(2*bdfOrder)+","+der+");";
+
+    for(int i=0; i<delayTerms.size(); ++i)
+    {
+        comp.initEquations << "mDelay"+QString::number(i)+".initialize("+QString::number(int(delaySteps.at(i).toDouble()))+", "+delayTerms[i].toString()+");";
     }
 
     comp.simEquations << "//Initial algorithm section";
@@ -2407,43 +2431,17 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         comp.simEquations << "";
     }
 
-    if(!limitedVariables.isEmpty()) {
-        for(int i=0; i<limitedVariables.size(); ++i) {
-            QString var = limitedVariables.at(i);
-            QString der = limitedDerivatives.at(i);
-            comp.simEquations << "if("+var+"<lowerlimit_"+var+") {";
-            comp.simEquations << "    "+var+" = lowerlimit_"+var+";";
-            if(!der.isEmpty()) {
-                comp.simEquations << "    delay_"+var+".initialize("+QString::number(2*bdfOrder)+","+var+");";
-                comp.simEquations << "    if("+der+"<0) {";
-                comp.simEquations << "        "+der+" = 0;";
-                comp.simEquations << "        delay_"+der+".initialize("+QString::number(bdfOrder)+","+der+");";
-                comp.simEquations << "    }";
-            }
-            comp.simEquations << "}";
-            comp.simEquations << "if("+var+">upperlimit_"+var+") {";
-            comp.simEquations << "    "+var+" = upperlimit_"+var+";";
-            if(!der.isEmpty()) {
-                comp.simEquations << "    delay_"+var+".initialize("+QString::number(2*bdfOrder)+","+var+");";
-                comp.simEquations << "    if("+der+">0) {";
-                comp.simEquations << "        "+der+" = 0;";
-                comp.simEquations << "        delay_"+der+".initialize("+QString::number(bdfOrder)+","+der+");";
-                comp.simEquations << "    }";
-            }
-            comp.simEquations << "}";
-        }
-    }
-    comp.simEquations << "";
-
     comp.simEquations << "//Final algorithm section";
     for(int i=0; i<finalAlgorithms.size(); ++i)
     {
         comp.simEquations << finalAlgorithms[i]+";";
     }
     comp.simEquations << "";
-    for(const auto &der : derivatives) {
-        comp.simEquations << "delay_"+der+".update("+der+");";
+    for(int i=0; i<delayTerms.size(); ++i)
+    {
+        comp.simEquations << "mDelay"+QString::number(i)+".update("+delayTerms[i].toString()+");";
     }
+
 
     if(!unknowns.isEmpty()) {
         comp.auxiliaryFunctions << "//! @brief Returns the residuals for speed and position";
@@ -2456,7 +2454,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         }
         comp.auxiliaryFunctions << "    ";
         for(int e=0; e<systemEquations.size(); ++e) {
-            comp.auxiliaryFunctions << "    res["+QString::number(e)+"] = "+systemEquations[e].getLeft()->toString()+";";
+            comp.auxiliaryFunctions << "    res["+QString::number(e)+"] = "+systemEquations[e].toString()+";";
         }
         comp.auxiliaryFunctions << "}";
 
