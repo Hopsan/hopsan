@@ -90,6 +90,7 @@ public:
     static Expression fromFactorDivisor(const Expression factor, const Expression divisor);
     static Expression fromFactorsDivisors(const QList<Expression> factors, const QList<Expression> divisors);
     static Expression fromBasePower(const Expression base, const Expression power);
+    static Expression fromFunctionArgument(const QString function, Expression argument);
     static Expression fromFunctionArguments(const QString function, const QList<Expression> arguments);
     static Expression fromEquation(const Expression left, const Expression right);
 
