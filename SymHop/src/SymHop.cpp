@@ -1291,11 +1291,10 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
     QList<Expression> terms = getTerms();
 
     //Cycle terms
-    QList<Expression>::iterator t;
-    for (t = terms.begin(); t != terms.end(); ++t)
+    for (auto &term : terms)
     {
         int idx = 0;
-        Q_FOREACH(const Expression &factor, (*t).getFactors())
+        for(const auto &factor : term.getFactors())
         {
             if(factor == Expression("Z"))
             {
@@ -1310,7 +1309,8 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
         //Remove all Z operators
         if(idx > 0)
         {
-            (*t).removeFactor(Expression("Z"));
+            term.replace(Expression("Z"), Expression(1.0));
+            term._simplify(TrivialSimplifications, Recursive);
         }
 
         while(termMap.size() < idx+1)
@@ -1319,7 +1319,7 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
         }
 
         //Store delay term
-        termMap[idx].append(*t);
+        termMap[idx].append(term);
     }
 
     //Replace delayed terms with delay function and store delay terms and delay steps in reference vectors
@@ -1339,9 +1339,9 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 
             delayTerm.factorMostCommonFactor();
 
-            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size())+".getIdx", QList<Expression>() << Expression(1)));
+            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size())+".getOldest", QList<Expression>()));
 
-            QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20)+".getIdx(1.0)";
+            QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20)+".getOldest()";
             ret.append(term);
             ret.append("+");
 
