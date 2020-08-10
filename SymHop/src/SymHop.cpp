@@ -2128,6 +2128,7 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
         {
             QString funcArg = retExpr.getArgument(0).toString();
             retExpr = Expression(transformStr.arg(funcArg));
+            retExpr = retExpr.inlineTransform(transform, ok);
         }
     }
 
