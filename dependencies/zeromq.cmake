@@ -1,0 +1,13 @@
+set(local_zeromq_dir ${CMAKE_CURRENT_LIST_DIR}/zeromq)
+find_package(ZeroMQ CONFIG REQUIRED PATHS ${local_zeromq_dir})
+if (ZeroMQ_FOUND)
+  message(STATUS "Building with ZeroMQ support")
+  target_compile_definitions(libzmq INTERFACE USEZMQ)
+else()
+  message(WARNING "Building without ZeroMQ support")
+endif()
+
+if (EXISTS ${local_zeromq_dir})
+  file(GLOB lib_files ${local_zeromq_dir}/lib/libzmq.so*)
+  install(FILES ${lib_files} DESTINATION lib)
+endif()
