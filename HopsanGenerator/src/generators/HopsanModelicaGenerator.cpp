@@ -2192,6 +2192,12 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         systemEquations[e]._simplify(Expression::FullSimplification);
     }
 
+    //Simplify delay terms
+    for(Expression &term : delayTerms) {
+        term._simplify(Expression::FullSimplification, Expression::Recursive);
+        term.expandPowers();
+    }
+
     //Apply limitations
     for(VariableLimitation &limit : limitedVariables) {
         systemEquations[limit.varEquation].factor(Expression(limit.var));
