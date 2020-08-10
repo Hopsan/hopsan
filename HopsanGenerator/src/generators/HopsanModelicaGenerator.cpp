@@ -2185,7 +2185,9 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     QStringList delaySteps;
     for(int e=0; e<systemEquations.size(); ++e)
     {
+        systemEquations[e]._simplify();
         systemEquations[e].expand();
+        systemEquations[e].factor(Expression("Z"));
         systemEquations[e].toDelayForm(delayTerms, delaySteps);
         systemEquations[e]._simplify(Expression::FullSimplification);
     }
