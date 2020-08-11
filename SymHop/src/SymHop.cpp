@@ -1336,27 +1336,39 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
             }
             delayTermSymbols.removeLast();
             Expression delayTerm = Expression(delayTermSymbols);
+            double num = delayTerm.getNumericalFactor();
+            if(delayTerm.isNumericalSymbol()) {
+                retExpr.addBy(Expression(num));
+                continue;       //Don't store purely numerical delay factors (they will never change anyway)
+            }
+            delayTerm = delayTerm.removeNumericalFactors();
 
             delayTerm.factorMostCommonFactor();
 
-            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size())+".getOldest", QList<Expression>()));
+            //Check if delay term already exists, if so re-use it
+            int idx = rDelayTerms.size();
+            for(int d=0; d<rDelayTerms.size(); ++d) {
+                if(rDelayTerms[d] == delayTerm) {
+                    if(int(rDelaySteps[d].toDouble()) == i) {
+                        idx = d;
+                    }
+                }
+            }
 
-            QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20)+".getOldest()";
-            ret.append(term);
-            ret.append("+");
+            retExpr.addBy(fromTwoFactors(Expression(num),fromFunctionArguments("mDelay"+QString::number(idx)+".getOldest", QList<Expression>())));
 
-            rDelayTerms.append(delayTerm);
-            rDelaySteps.append(QString::number(i, 'f', 20));
-            while(rDelaySteps.last().endsWith("00")) { rDelaySteps.last().chop(1); }
+            if(idx == rDelayTerms.size()) {
+                QString term = "mDelay"+QString::number(rDelayTerms.size(), 'f', 20)+".getOldest()";
+                rDelayTerms.append(delayTerm);
+                rDelaySteps.append(QString::number(i, 'f', 20));
+                while(rDelaySteps.last().endsWith("00")) { rDelaySteps.last().chop(1); }
+            }
         }
     }
     for(int t=0; t<termMap[0].size(); ++t)
     {
         retExpr.addBy(termMap[0][t]);
-        ret.append("("+termMap[0][t].toString()+")");
-        ret.append("+");
     }
-    ret.removeLast();
 
     //Replace this expression by the new one
     //this->replaceBy(Expression(ret));
