@@ -2200,6 +2200,9 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
     //Apply limitations
     for(VariableLimitation &limit : limitedVariables) {
+        if(true) {
+            break;
+        }
         systemEquations[limit.varEquation].factor(Expression(limit.var));
 
         Expression rem = systemEquations[limit.varEquation];
@@ -2270,9 +2273,10 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
             if(usedUnknowns.size() == 1) {
                 //Found only one unknown, try to break it out of the equation
-                systemEquations[e].linearize();
-                Expression tempExpr = systemEquations[e];
+                Expression tempExpr = Expression::fromEquation(systemEquations[e],Expression(0));
+                tempExpr.linearize();
                 tempExpr.expand();
+                tempExpr = (*tempExpr.getLeft());
                 tempExpr.factor(usedUnknowns[0]);
                 if(tempExpr.getTerms().size() == 1) {
                     tempExpr = Expression(0.0);
@@ -2482,6 +2486,29 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         comp.simEquations << finalAlgorithms[i]+";";
     }
     comp.simEquations << "";
+    if(true) {
+        comp.simEquations << "bool reachedLimit = false;";
+        for(const auto &limit : limitedVariables) {
+            comp.simEquations << "if("+limit.var+" < "+limit.min+") {";
+            comp.simEquations << "    "+limit.var+" = "+limit.min+";";
+            comp.simEquations << "    "+limit.der+" = max(0.0,"+limit.der+");";
+            comp.simEquations << "    reachedLimit = true;";
+            comp.simEquations << "}";
+            comp.simEquations << "if("+limit.var+" > "+limit.max+") {";
+            comp.simEquations << "    "+limit.var+" = "+limit.max+";";
+            comp.simEquations << "    "+limit.der+" = min(0.0,"+limit.der+");";
+            comp.simEquations << "    reachedLimit = true;";
+            comp.simEquations << "}";
+        }
+
+        comp.simEquations << "if(reachedLimit) {";
+        for(int i=0; i<delayTerms.size(); ++i)
+        {
+            comp.simEquations << "    mDelay"+QString::number(i)+".initialize("+QString::number(int(delaySteps.at(i).toDouble()))+", "+delayTerms[i].toString()+");";
+        }
+        comp.simEquations << "}";
+        comp.simEquations << "";
+    }
     for(int i=0; i<delayTerms.size(); ++i)
     {
         comp.simEquations << "mDelay"+QString::number(i)+".update("+delayTerms[i].toString()+");";
