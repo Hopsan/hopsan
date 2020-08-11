@@ -2188,6 +2188,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         systemEquations[e]._simplify();
         systemEquations[e].expand();
         systemEquations[e].factor(Expression("Z"));
+        systemEquations[e].factor(Expression("pow(Z)"));
         systemEquations[e].toDelayForm(delayTerms, delaySteps);
         systemEquations[e]._simplify(Expression::FullSimplification);
     }
