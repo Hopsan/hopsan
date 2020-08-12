@@ -16,7 +16,7 @@ isEqual(QT_MAJOR_VERSION, 5){
     QT += widgets
 }
 
-INCLUDEPATH += include/hopsangeneratorgui
+INCLUDEPATH += include
 
 SOURCES += src/hopsangeneratorgui.cpp
 

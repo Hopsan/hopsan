@@ -1,4 +1,4 @@
-#include "hopsangeneratorgui.h"
+#include "hopsangeneratorgui/hopsangeneratorgui.h"
 
 #include <QFileInfo>
 #include <QDir>
