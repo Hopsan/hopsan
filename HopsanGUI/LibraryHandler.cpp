@@ -374,7 +374,7 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     setStyleSheet("QTableWidget {background-color: transparent;}");
     mpGeneralTable = new QTableWidget(this);
     mpGeneralTable->setColumnCount(2);
-    mpGeneralTable->setRowCount(4);
+    mpGeneralTable->setRowCount(5);
 #if QT_VERSION >= 0x050000  //not available in Qt4
     mpGeneralTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 #endif
@@ -389,6 +389,7 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     addLabelItem(mpGeneralTable,1,0,"Display name:");
     addLabelItem(mpGeneralTable,2,0,"CQS type:");
     addLabelItem(mpGeneralTable,3,0,"Language:");
+    addLabelItem(mpGeneralTable,4,0,"Integration Method:");
     addInputItem(mpGeneralTable,0,1);
     addInputItem(mpGeneralTable,1,1);
     mpCqsTypeComboBox = new QComboBox(this);
@@ -397,6 +398,11 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     mpLanguageComboBox = new QComboBox(this);
     mpLanguageComboBox->addItems(QStringList() << "C++" << "Modelica");
     mpGeneralTable->setCellWidget(3,1,mpLanguageComboBox);
+    mpIntegrationMethodComboBox = new QComboBox(this);
+    mpIntegrationMethodComboBox->addItems(QStringList() << "Explicit Euler" << "Implicit Euler" << "Trapezoid Rule" << "BDF1" << "BDF2" << "BDF3" << "BDF4" << "BDF5");
+    updateIntegrationMethodComboBoxVisibility();
+    mpGeneralTable->setCellWidget(4,1,mpIntegrationMethodComboBox);
+    connect(mpLanguageComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateIntegrationMethodComboBoxVisibility()));
 
     //Constants
 
@@ -587,6 +593,34 @@ ComponentSpecification NewComponentDialog::getSpecification()
     }
     int language = qobject_cast<QComboBox*>(mpGeneralTable->cellWidget(3,1))->currentIndex();
     spec.modelica = (1 == language);
+    if(spec.modelica) {
+        switch (mpIntegrationMethodComboBox->currentIndex()) {
+            case 0:
+                spec.transform = "expliciteuler";
+                break;
+            case 1:
+                spec.transform = "impliciteuler";
+                break;
+            case 2:
+                spec.transform = "trapezoid";
+                break;
+            case 3:
+                spec.transform = "bdf1";
+                break;
+            case 4:
+                spec.transform = "bdf2";
+                break;
+            case 5:
+                spec.transform = "bdf3";
+                break;
+            case 6:
+                spec.transform = "bdf4";
+                break;
+            case 7:
+                spec.transform = "bdf5";
+                break;
+        }
+    }
     for(int r=1; r<mpConstantsTable->rowCount(); ++r) {
         spec.constantNames.append(mpConstantsTable->item(r,1)->text());
         spec.constantDescriptions.append(mpConstantsTable->item(r,2)->text());
@@ -839,6 +873,11 @@ void NewComponentDialog::removePortRow()
 
 }
 
+void NewComponentDialog::updateIntegrationMethodComboBoxVisibility()
+{
+    mpIntegrationMethodComboBox->setEnabled(mpLanguageComboBox->currentIndex() == 1);
+}
+
 void NewComponentDialog::adjustTableSize(QTableWidget *pTable)
 {
     int size = 0;
@@ -890,7 +929,7 @@ void LibraryHandler::addComponentToLibrary(SharedComponentLibraryPtrT pLibrary, 
         spec = mpDialog->getSpecification();
 
         QString targetPath = QFileInfo(pLibrary->xmlFilePath).absolutePath()+"/"+folders.join("/");
-        pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, targetPath, spec.typeName, spec.displayName, spec.cqsType,
+        pGenerator->addComponentToLibrary(pLibrary->xmlFilePath, targetPath, spec.typeName, spec.displayName, spec.cqsType, spec.transform,
                                           spec.constantNames, spec.constantDescriptions, spec.constantUnits, spec.constantInits,
                                           spec.inputNames, spec.inputDescriptions, spec.inputUnits, spec.inputInits,
                                           spec.outputNames, spec.outputDescriptions, spec.outputUnits, spec.outputInits,

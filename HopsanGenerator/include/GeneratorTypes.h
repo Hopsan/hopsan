@@ -253,6 +253,7 @@ public:
     QStringList finalEquations;
     QStringList deconfEquations;
     QStringList auxiliaryFunctions;
+    QString transform;
 
     QString plainCode;
 };

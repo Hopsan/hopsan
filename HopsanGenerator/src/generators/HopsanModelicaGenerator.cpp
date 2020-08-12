@@ -1982,7 +1982,7 @@ bool HopsanModelicaGenerator::replaceCustomFunctions(Expression &expr) {
 
 
 
-bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transformStr, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transform, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     printMessage("Initializing Modelica generator for Kinsol solver.");
 
@@ -2141,29 +2141,13 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     for(int e=0; e<systemEquations.size(); ++e)
     {
         bool ok;
-        Expression::InlineTransformT transform;
-        if(transformStr == "trapezoid") {
-            transform = Expression::Trapezoid;
-        }
-        else if(transformStr == "impliciteuler") {
-            transform = Expression::ImplicitEuler;
-        }
-        else if(transformStr == "bdf1") {
-            transform = Expression::BDF1;
-        }
-        else if(transformStr == "bdf2") {
-            transform = Expression::BDF2;
-        }
-        else {
-            printErrorMessage("Inline transform \""+transformStr+"\" is not currently supported.");
-            return false;
-        }
-        systemEquations[e] = systemEquations[e].inlineTransform(transform, ok);
+        systemEquations[e] = systemEquations[e].inlineTransform(strToTransform(transform), ok);
         if(!ok) {
             QStringList errors = systemEquations[e].readErrorMessages();
             for(const QString &error : errors) {
                 printErrorMessage(error);
             }
+            return false;
         }
         systemEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
     }

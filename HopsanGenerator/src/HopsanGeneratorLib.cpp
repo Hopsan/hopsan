@@ -369,7 +369,7 @@ bool callExeExportGenerator(const char* outputPath, void* pHopsanSystem, const c
 //! @param[in] librarySourcePath Path to library CPP file relative to path for library XML file
 //! @param[in] typeName Typename for new component
 //! @param[in] displayName Display name for new component
-bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPath, const char* typeName, const char* displayName, const char* cqsType,
+bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPath, const char* typeName, const char* displayName, const char* cqsType, const char* transform,
                                const char* const constantNames[], const int numConstantNames,
                                const char* const constantDescriptions[], const int numConstantDescriptions,
                                const char* const constantUnits[], const int numConstantUnits,
@@ -429,6 +429,7 @@ bool callAddComponentToLibrary(const char* libraryXmlPath, const char* targetPat
     compSpec.typeName = typeName;
     compSpec.displayName = displayName;
     compSpec.cqsType = cqsType;
+    compSpec.transform = transform;
     for(int i=0; i<numConstantNames; ++i) {
         compSpec.parDisplayNames.append(constantNames[i]);
         if(modelica) {
