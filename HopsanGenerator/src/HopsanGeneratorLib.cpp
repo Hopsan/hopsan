@@ -75,7 +75,7 @@ bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, mes
     auto pGenerator = std::unique_ptr<HopsanModelicaGenerator>(new HopsanModelicaGenerator(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
     bool genImportOK = pGenerator->generateFromModelica(moFilePath, HopsanGeneratorBase::SolverT(solver));
-    if(compile)
+    if(genImportOK && compile)
     {
         QFileInfo mofile(moFilePath);
         QString dir = mofile.absolutePath()+"/";
