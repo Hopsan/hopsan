@@ -51,7 +51,7 @@ public:
 
     bool addComponentToLibrary(const QString &libraryXmlPath, const QString &cafPath);
 
-    bool addComponentToLibrary(const QString &libraryXmlPath, const QString targetPath, const QString &typeName, const QString &displayName, const QString &cqsType,
+    bool addComponentToLibrary(const QString &libraryXmlPath, const QString targetPath, const QString &typeName, const QString &displayName, const QString &cqsType, QString &transformStr,
                                const QStringList &constantNames, const QStringList &constantDescriptions, const QStringList &constantUnits, const QStringList &constantInits,
                                const QStringList &inputNames, const QStringList &inputDescriptions, const QStringList &inputUnits, const QStringList &inputInits,
                                const QStringList &outputNames, const QStringList &outputDescriptions, const QStringList &outputUnits, const QStringList &outputInits,

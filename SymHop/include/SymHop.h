@@ -67,7 +67,7 @@ public:
     enum ExpressionTypeT {Null, Equality,Symbol,Operator,Function};
     enum ExpressionSimplificationT {FullSimplification, TrivialSimplifications, NoSimplifications};
     enum ExpressionRecursiveT {Recursive, NonRecursive};
-    enum InlineTransformT {Trapezoid, ImplicitEuler, BDF1, BDF2};
+    enum InlineTransformT {UndefinedTransform, Trapezoid, ExplicitEuler, ImplicitEuler, BDF1, BDF2, BDF3, BDF4, BDF5, AdamsMoulton1, AdamsMoulton2, AdamsMoulton3, AdamsMoulton4};
     Expression(Expression &other);
     Expression(const Expression &other);
     Expression(QString const indata=QString(), bool *ok=0, const ExpressionSimplificationT simplifications=FullSimplification);
@@ -201,6 +201,8 @@ bool SYMHOP_DLLAPI sortEquationSystem(QList<Expression> &equations, QList<QList<
 void SYMHOP_DLLAPI removeDuplicates(QList<Expression> &rSet);
 
 bool SYMHOP_DLLAPI isWhole(const double value);
+
+SymHop::Expression::InlineTransformT SYMHOP_DLLAPI strToTransform(const QString &str);
 }
 
 //bool fuzzyEqual(const double &x, const double &y);

@@ -2066,17 +2066,36 @@ Expression Expression::bilinearTransform() const
 Expression Expression::inlineTransform(const InlineTransformT transform, bool &ok) const
 {
     QString transformStr;
-    if(transform == Trapezoid) {
+    if(transform == Trapezoid || transform == AdamsMoulton2) {
         transformStr = "2.0/mTimestep*(1.0-Z)/(1.0+Z)*(%1)";
     }
-    else if(transform == ImplicitEuler || transform == BDF1) {
+    else if(transform == ExplicitEuler) {
+        transformStr = "(1.0 - Z)/Z/mTimestep*(%1)";
+    }
+    else if(transform == ImplicitEuler || transform == BDF1 || transform == AdamsMoulton1) {
         transformStr = "(1.0 - Z)/mTimestep*(%1)";
     }
     else if(transform == BDF2) {
         transformStr = "(1.5 - 2*Z + 0.5*Z*Z)/mTimestep*(%1)";
     }
+    else if(transform == BDF3) {
+        transformStr = "(11.0 - 18.0*Z + 9.0*Z*Z - 2.0*Z*Z*Z)/6.0/mTimestep*(%1)";
+    }
+    else if(transform == BDF4) {
+        transformStr = "(25.0 - 48.0*Z + 36.0*Z*Z-16.0*Z*Z*Z+3.0*Z*Z*Z*Z)/12.0/mTimestep*(%1)";
+    }
+    else if(transform == BDF5) {
+        transformStr = "(137.0 - 300.0*Z + 300.0*Z*Z - 200.0*Z*Z*Z + 75.0*Z*Z*Z*Z - 12.0*Z*Z*Z*Z*Z)/60.0/mTimestep*(%1)";
+    }
+    else if(transform == AdamsMoulton3) {
+        transformStr = "(1.0-Z)/(5.0/12.0 + 2.0/3.0*Z - 1.0/12.0*Z*Z)/mTimestep*(%1)";
+                      //(1.0-Z)/(5.0/12.0 + 2.0/3.0*Z - 1.0/12.0*Z*Z)/mTimestep
+    }
+    else if(transform == AdamsMoulton4) {
+        transformStr = "(1.0-Z)/(9.0/24.0 + 19.0/24.0*Z - 5.0/24.0*Z*Z + 1.0/24.0*Z*Z*Z)/mTimestep*(%1)";
+    }
     else {
-        gSymHopMessages << "In Expression::inlineTransform(): Undefined inline transform: "+QString::number(int(transform));
+        gSymHopMessages << "In Expression::inlineTransform(): Undefined inline transform";
         ok = false;
         return (*this);
     }
@@ -3816,4 +3835,47 @@ QStringList Expression::splitWithRespectToParentheses(const QString str, const Q
     }
     ret.append(str.mid(start,len));
     return ret;
+}
+
+Expression::InlineTransformT SymHop::strToTransform(const QString &str)
+{
+    if(str == "trapezoid") {
+        return Expression::Trapezoid;
+    }
+    else if(str == "expliciteuler") {
+        return Expression::ExplicitEuler;
+    }
+    else if(str == "impliciteuler") {
+        return Expression::ImplicitEuler;
+    }
+    else if(str == "bdf1") {
+        return Expression::BDF1;
+    }
+    else if(str == "bdf2") {
+        return Expression::BDF2;
+    }
+    else if(str == "bdf3") {
+        return Expression::BDF3;
+    }
+    else if(str == "bdf4") {
+        return Expression::BDF4;
+    }
+    else if(str == "bdf5") {
+        return Expression::BDF5;
+    }
+    else if(str == "adamsmoulton1") {
+        return Expression::AdamsMoulton1;
+    }
+    else if(str == "adamsmoulton2") {
+        return Expression::AdamsMoulton2;
+    }
+    else if(str == "adamsmoulton3") {
+        return Expression::AdamsMoulton3;
+    }
+    else if(str == "adamsmoulton4") {
+        return Expression::AdamsMoulton4;
+    }
+    else {
+        return Expression::UndefinedTransform;
+    }
 }

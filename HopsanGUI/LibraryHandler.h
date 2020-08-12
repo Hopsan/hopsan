@@ -97,6 +97,7 @@ public:
     QStringList portTypes;
     QList<bool> portsRequired;
     bool modelica;
+    QString transform;
 };
 
 //! @brief Represents an object (most likely a component) that has been loaded
@@ -133,6 +134,8 @@ private slots:
     void removeInputVariableRow();
     void removeOutputVariableRow();
     void removePortRow();
+
+    void updateIntegrationMethodComboBoxVisibility();
 private:
     void addLabelItem(QTableWidget *pTable, int r, int c, QString text);
     void addInputItem(QTableWidget *pTable, int r, int c, QString defaultValue=QString());
@@ -144,7 +147,7 @@ private:
     QTableWidget *mpOutputVariablesTable;
     QTableWidget *mpPortsTable;
 
-    QComboBox *mpCqsTypeComboBox, *mpLanguageComboBox;
+    QComboBox *mpCqsTypeComboBox, *mpLanguageComboBox, *mpIntegrationMethodComboBox;;
 
     QVector<QToolButton*> mRemoveConstantToolButtons;
     QVector<QToolButton*> mRemoveInputVariableToolButtons;

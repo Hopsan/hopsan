@@ -1124,7 +1124,7 @@ QString HopsanGeneratorBase::generateModelicaCodeFromComponentSpec(ComponentSpec
     QString indent = "    "; //Hard-coded for now
 
     outStream << "model " << comp.typeName << " \"" << comp.displayName << "\"\n";
-    outStream << indent << "annotation(hopsanCqsType = \"" << comp.cqsType << "\")\n";
+    outStream << indent << "annotation(hopsanCqsType = \"" << comp.cqsType << ", linearTransform = \"" << comp.transform << "\")\n";
     outStream << "\n";
     for(int p=0; p<comp.portNodeTypes.size(); ++p) {
         QString nodeType = comp.portNodeTypes[p];
