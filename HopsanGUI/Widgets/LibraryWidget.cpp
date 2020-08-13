@@ -549,6 +549,11 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     path = QFileInfo(cafFile).path();
                     if(sourceFile.endsWith(".mo"))
                     {
+                        QString hppFile = sourceFile;
+                        hppFile.replace(".mo", ".hpp");
+                        if(QFileInfo(path+"/"+hppFile).exists() && QFileInfo(path+"/"+sourceFile).lastModified() < QFileInfo(pLib->libFilePath).lastModified()) {
+                            continue;   //Do not compile regenerate C++ code unless Modelica code is modified
+                        }
                         if (!spGenerator->generateFromModelica(path+"/"+sourceFile, 2,
                                                                HopsanGeneratorGUI::CompileT::DoNotCompile))
                         {
