@@ -128,7 +128,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     }
     else if(solver == Kinsol)
     {
-        success = generateComponentObjectKinsol(comp,typeName,displayName,cqsType,transform,preAlgorithms,equations,finalAlgorithms,portList,parametersList,variablesList,logStream);
+        success = generateComponentObjectKinsol(comp,typeName,displayName,cqsType,transform,initAlgorithms,equations,portList,parametersList,variablesList,logStream);
     }
 
     logFile.close();
@@ -1982,7 +1982,7 @@ bool HopsanModelicaGenerator::replaceCustomFunctions(Expression &expr) {
 
 
 
-bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transform, QStringList &preAlgorithms, QStringList &plainEquations, QStringList &finalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transform, QStringList &initAlgorithms, QStringList &plainEquations, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     printMessage("Initializing Modelica generator for Kinsol solver.");
 
@@ -2050,17 +2050,10 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
     }
 
     QList<Expression> knowns;
-    for(const auto &algorithm : preAlgorithms) {
+    for(auto &algorithm : initAlgorithms) {
+        algorithm.replace(":=","=");
         if(algorithm.contains("=")) {
             QString var = algorithm.section("=",0,0).trimmed();
-            knowns.append(var);
-        }
-    }
-
-    for(const auto &algorithm : preAlgorithms) {
-        if(algorithm.contains("=")) {
-            QString var = algorithm.section("=",0,0).trimmed();
-            if(var.contains("(") || var.contains("{")) continue;
             knowns.append(var);
         }
     }
@@ -2245,6 +2238,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
 
     //Identify system equations containing only one unknown (can be resolved before the rest of the system)
+    QStringList preAlgorithms;
     bool didSomething = true;
     while(didSomething) {
         didSomething = false;
@@ -2294,6 +2288,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
 
     //Identify system equations containing a unique variable (can be resolved after the rest of the system)
+    QStringList finalAlgorithms;
     for(int u=0; u<unknowns.size(); ++u) {
         size_t count=0;
         int lastFound=-1;
@@ -2362,9 +2357,9 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
     logStream << "\n--- Initial Algorithms ---\n";
     printMessage("Initial algorithms:");
-    for(int i=0; i<preAlgorithms.size(); ++i) {
-        logStream << preAlgorithms[i] << "\n";
-        printMessage("  "+preAlgorithms[i]);
+    for(int i=0; i<initAlgorithms.size(); ++i) {
+        logStream << initAlgorithms[i] << "\n";
+        printMessage("  "+initAlgorithms[i]);
     }
 
     logStream << "\n--- Equation System ---\n";
@@ -2443,7 +2438,12 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         comp.initEquations << "mDelay"+QString::number(i)+".initialize("+QString::number(int(delaySteps.at(i).toDouble()))+", "+delayTerms[i].toString()+");";
     }
 
-    comp.simEquations << "//Initial algorithm section";
+    comp.initEquations << "//Initial algorithm section";
+    for(const auto &algorithm : initAlgorithms) {
+        comp.initEquations << algorithm+";";
+    }
+
+    comp.simEquations << "//Pre-algorithm section";
     for(int i=0; i<preAlgorithms.size(); ++i)
     {
         comp.simEquations << preAlgorithms[i]+";";
