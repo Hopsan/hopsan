@@ -2155,6 +2155,15 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
     }
     else if(this->isFunction())
     {
+        if(mFunction == "delay" && mArguments.size() == 2) {
+            QString funcArg = retExpr.getArgument(0).toString();
+            int steps = int(retExpr.getArgument(1).toDouble());
+            retExpr = funcArg;
+            for(int i=0; i<steps; ++i) {
+                retExpr.multiplyBy(Expression("Z"));
+            }
+            retExpr = retExpr.inlineTransform(transform, ok);
+        }
         if(mFunction == "der")
         {
             QString funcArg = retExpr.getArgument(0).toString();
@@ -3617,7 +3626,7 @@ QString SymHop::getFunctionDerivative(const QString &key)
 //FIXED
 QStringList SymHop::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow" << "delay";
 }
 
 
