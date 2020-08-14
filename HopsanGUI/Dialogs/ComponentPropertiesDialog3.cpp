@@ -492,7 +492,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             if (path.endsWith(".md"))
             {
 #ifdef USEDISCOUNT
-                QFileInfo mdFi(path);
+                QFileInfo mdFile(path);
 
                 QString htmlFilePath = mpModelObject->getHelpHtmlPath();
                 htmlFilePath.truncate(htmlFilePath.size()-3);
@@ -527,7 +527,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                     QMap<size_t, QString> equationMap;
                     QMap<size_t, QString> imageMap;
                     QTextStream inHtmlStream(&tmp_html);
-                    size_t ln=0;
+                    size_t lineNumber = 0;
                     while(!inHtmlStream.atEnd())
                     {
                         //! @todo multiline ?
@@ -536,22 +536,54 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                         {
                             QString eq = line.mid(13, line.size()-18).trimmed();
                             //eq.replace("\\", "\\\\");
-                            equationMap.insert(ln, QString("<div class=\"equation\" expr=\"%1\"></div>").arg(eq));
+                            equationMap.insert(lineNumber, QString("<div class=\"equation\" expr=\"%1\"></div>").arg(eq));
                         }
                         else if (line.startsWith("<p><img"))
                         {
                             size_t b = line.indexOf("src=")+4;
-                            QString image = line.left(b+1)+"file:///"+mdFi.absolutePath()+"/"+line.right(line.size()-b-1);
-                            imageMap.insert( ln, image );
+                            QString image = line.left(b+1)+"file:///"+mdFile.absolutePath()+"/"+line.right(line.size()-b-1);
+                            imageMap.insert( lineNumber, image );
                         }
-                        ++ln;
+                        ++lineNumber;
                     }
 
                     htmlFile.open(QIODevice::WriteOnly);
-                    htmlStream.seek(0);
+                    QTextStream& outHtmlStream = htmlStream;
+                    outHtmlStream.seek(0);
 
-                    if (!equationMap.empty())
-                    {
+                    auto processHtmlStream = [&imageMap, &equationMap, &inHtmlStream, &outHtmlStream]() {
+                        inHtmlStream.seek(0);
+                        size_t lineNumber = 0;
+                        while (!inHtmlStream.atEnd())
+                        {
+                            // Check if image line should be replaced
+                            auto imit = imageMap.find(lineNumber);
+                            if (imit != imageMap.end())
+                            {
+                                outHtmlStream << imit.value() << "\n";
+                                imageMap.erase(imit);
+                                // Also discard the actual line
+                                inHtmlStream.readLine();
+                            }
+                            // If not then print the actual line
+                            else
+                            {
+                                outHtmlStream << inHtmlStream.readLine() << "\n";
+                            }
+
+                            // Check if an equation should be added
+                            auto eqit = equationMap.find(lineNumber);
+                            if (eqit != equationMap.end())
+                            {
+                                outHtmlStream << eqit.value() << "\n";
+                                equationMap.erase(eqit);
+                            }
+
+                            lineNumber++;
+                        }
+                    };
+
+                    if (!equationMap.empty()) {
                         htmlStream << "<!DOCTYPE html>\n";
                         htmlStream << "<html>\n";
                         htmlStream << "  <head>\n";
@@ -560,35 +592,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                         htmlStream << "      " << QString("<link href=\"file:///%1katex/katex.min.css\" rel=\"stylesheet\" type=\"text/css\">\n").arg(gpDesktopHandler->getExecPath()+"../dependencies/");
                         htmlStream << "  </head>\n";
 
-                        inHtmlStream.seek(0);
-                        ln=0;
-                        while (!inHtmlStream.atEnd())
-                        {
-                            // Check if image line should be replaced
-                            auto imit = imageMap.find(ln);
-                            if (imit != imageMap.end())
-                            {
-                                htmlStream << imit.value() << "\n";
-                                imageMap.erase(imit);
-                                // Also discard the actual line
-                                inHtmlStream.readLine();
-                            }
-                            // If not then print the actual line
-                            else
-                            {
-                                htmlStream << inHtmlStream.readLine() << "\n";
-                            }
-
-                            // Check if an equation should be added
-                            auto eqit = equationMap.find(ln);
-                            if (eqit != equationMap.end())
-                            {
-                                htmlStream << eqit.value() << "\n";
-                                equationMap.erase(eqit);
-                            }
-
-                            ln++;
-                        }
+                        processHtmlStream();
 
                         htmlStream << "  <script type=\"text/javascript\">\n";
                         htmlStream << "    var eqns = document.getElementsByClassName(\"equation\");\n";
@@ -599,24 +603,12 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
 
                         htmlStream << "</html>\n";
 
-                        htmlFile.close();
+                    }
+                    else {
+                        processHtmlStream();
+                    }
 
-                    }
-                    else
-                    {
-                        // Check if image line should be replaced
-                        auto imit = imageMap.find(ln);
-                        if (imit != imageMap.end())
-                        {
-                            htmlStream << imit.value() << "\n";
-                            imageMap.erase(imit);
-                        }
-                        // If not then print the actual line
-                        else
-                        {
-                            htmlStream << inHtmlStream.readLine() << "\n";
-                        }
-                    }
+                    htmlFile.close();
 
                     // Set html to view
                     pHtmlView->loadHtmlFile(QUrl::fromLocalFile(htmlFilePath));
