@@ -1,0 +1,13 @@
+set(local_hdf5_dir ${CMAKE_CURRENT_LIST_DIR}/hdf5)
+find_package(Hdf5 CONFIG COMPONENTS C CXX PATHS ${local_hdf5_dir})
+if (Hdf5_FOUND)
+  message(STATUS "Building with HDF5 support")
+  target_compile_definitions(libzmq INTERFACE USEHDF5)
+else()
+  message(WARNING "Building without HDF5 support")
+endif()
+
+if (EXISTS ${local_hdf5_dir})
+  file(GLOB lib_files ${local_hdf5_dir}/lib/libhdf5.so* ${local_hdf5_dir}/lib/libhdf5_cpp.so*)
+  install(FILES ${lib_files} DESTINATION lib)
+endif()

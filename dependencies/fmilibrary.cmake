@@ -8,3 +8,8 @@ if(WIN32)
   set_target_properties(fmilibrary PROPERTIES
     IMPORTED_IMPLIB ${fmi_home}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}fmilib_shared${CMAKE_IMPORT_LIBRARY_SUFFIX})
 endif()
+
+if (EXISTS ${fmi_home})
+  file(GLOB lib_files ${fmi_home}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}fmilib_shared${CMAKE_SHARED_LIBRARY_SUFFIX}*)
+  install(FILES ${lib_files} DESTINATION lib)
+endif()

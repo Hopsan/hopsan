@@ -291,24 +291,31 @@ bool HopsanGeneratorGUI::loadGeneratorLibrary()
         constexpr auto generatorLibName = SHAREDLIB_PREFIX "hopsangenerator" DEBUG_SUFFIX;
 
         mPrivates->mGeneratorLibrary.setFileName(generatorLibName);
-        QString errorString1, errorString2;
-        bool loadok1 = false, loadok2 = false;
+        QString errorString1, errorString2, errorString3;
+        bool loadok1 = false, loadok2 = false, loadok3 = false;
         loadok1 = mPrivates->mGeneratorLibrary.load();
         if (!loadok1)
         {
             errorString1 = mPrivates->mGeneratorLibrary.errorString();
             // Try again with expected absolute path in case current dir is not in the search path
             // (depends on distribution) or LD_LIBRARY_PATH, but if that fail, show the first error message
-            const auto absGeneratorLibName = QString("%1/bin/%2").arg(mPrivates->hopsanRoot.c_str()).arg(generatorLibName);
-            mPrivates->mGeneratorLibrary.setFileName(absGeneratorLibName);
+            const auto absGeneratorLibPathBin = QString("%1/bin/%2").arg(mPrivates->hopsanRoot.c_str()).arg(generatorLibName);
+            mPrivates->mGeneratorLibrary.setFileName(absGeneratorLibPathBin);
             loadok2 = mPrivates->mGeneratorLibrary.load();
             if (!loadok2)
             {
                 errorString2 = mPrivates->mGeneratorLibrary.errorString();
+                // Attemt to locate in lib (Linux cmake build)
+                const auto absGeneratorLibPathLib = QString("%1/lib/%2").arg(mPrivates->hopsanRoot.c_str()).arg(generatorLibName);
+                mPrivates->mGeneratorLibrary.setFileName(absGeneratorLibPathLib);
+                loadok3 = mPrivates->mGeneratorLibrary.load();
+                if (!loadok3) {
+                    errorString3 = mPrivates->mGeneratorLibrary.errorString();
+                }
             }
         }
 
-        if (loadok1 || loadok2)
+        if (loadok1 || loadok2 || loadok3)
         {
             printMessage(QString("Loaded %1").arg(generatorLibName));
             return true;
@@ -317,6 +324,7 @@ bool HopsanGeneratorGUI::loadGeneratorLibrary()
         {
             printErrorMessage(errorString1);
             printErrorMessage(errorString2);
+            printErrorMessage(errorString3);
             return false;
         }
     }
