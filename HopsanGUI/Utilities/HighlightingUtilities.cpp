@@ -533,7 +533,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
 //! @todo Duplicated with HopsanGenerator
 QStringList ModelicaHighlighter::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "nonZero" << "turbulentFlow";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "nonZero" << "turbulentFlow" << "delay";
 }
 
 void ModelicaHighlighter::highlightBlock(const QString &text)
