@@ -2476,12 +2476,16 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         for(const auto &limit : limitedVariables) {
             comp.simEquations << "if("+limit.var+" < "+limit.min+") {";
             comp.simEquations << "    "+limit.var+" = "+limit.min+";";
-            comp.simEquations << "    "+limit.der+" = max(0.0,"+limit.der+");";
+            if(!limit.der.isEmpty()) {
+                comp.simEquations << "    "+limit.der+" = max(0.0,"+limit.der+");";
+            }
             comp.simEquations << "    reachedLimit = true;";
             comp.simEquations << "}";
             comp.simEquations << "if("+limit.var+" > "+limit.max+") {";
             comp.simEquations << "    "+limit.var+" = "+limit.max+";";
-            comp.simEquations << "    "+limit.der+" = min(0.0,"+limit.der+");";
+            if(!limit.der.isEmpty()) {
+                comp.simEquations << "    "+limit.der+" = min(0.0,"+limit.der+");";
+            }
             comp.simEquations << "    reachedLimit = true;";
             comp.simEquations << "}";
         }
