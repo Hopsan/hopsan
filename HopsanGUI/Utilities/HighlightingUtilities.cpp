@@ -492,7 +492,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkRed);
     keywordFormat.setFontWeight(QFont::Bold);
     keywordPatterns.clear();
-    keywordPatterns  << "\\bmodel\\b" << "\\bequation\\b" << "\\balgorithm\\b" << "\\bend\\b" << "\\bannotation\\b" << "\\bconnector\\b";
+    keywordPatterns  << "\\bmodel\\b" << "\\bequation\\b" << "\\binitial\\b" << "\\balgorithm\\b" << "\\bend\\b" << "\\bannotation\\b" << "\\bconnector\\b";
 
     foreach (const QString &pattern, keywordPatterns)
     {
