@@ -96,7 +96,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     moFile.close();
 
     QString typeName, displayName, cqsType, transform;
-    QStringList initAlgorithms, preAlgorithms, equations, finalAlgorithms;
+    QStringList initAlgorithms, algorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
     QList<ParameterSpecification> parametersList;
     QList<VariableSpecification> variablesList;
@@ -106,7 +106,10 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     printMessage("Parsing "+moFile.fileName()+"...");
 
     //Parse Modelica code and generate equation system
-    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, transform);
+    if(!parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, algorithms, equations, portList, parametersList, variablesList, transform)) {
+        printErrorMessage("Failed to parse Modelica model.");
+        return false;
+    }
 
     //qDebug() << "Transforming!";
     printMessage("Transforming...");
@@ -119,16 +122,16 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
     if(solver == BilinearTransform)
     {
         //Transform equation system using Bilinear Transform method
-        success = generateComponentObject(comp, typeName, displayName, cqsType, /*initAlgorithms,*/ preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+        success = generateComponentObject(comp, typeName, displayName, cqsType, /*initAlgorithms,*/ algorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
     else if(solver == NumericalIntegration)
     {
         //Transform equation system using numerical integration methods
-        success = generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, preAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
+        success = generateComponentObjectNumericalIntegration(comp, typeName, displayName, cqsType, initAlgorithms, algorithms, equations, finalAlgorithms, portList, parametersList, variablesList, logStream);
     }
     else if(solver == Kinsol)
     {
-        success = generateComponentObjectKinsol(comp,typeName,displayName,cqsType,transform,initAlgorithms,equations,portList,parametersList,variablesList,logStream);
+        success = generateComponentObjectKinsol(comp,typeName,displayName,cqsType,transform,initAlgorithms,algorithms,equations,portList,parametersList,variablesList,logStream);
     }
 
     logFile.close();
@@ -163,7 +166,7 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
 }
 
 
-
+enum ModelicaCodePartT { UndefinedPart, HeaderSection, InitialAlgorithmSection, AlgorithmSection, EquationSection };
 
 //! @brief Parses a modelica model code to Hopsan classes
 //! @param code Input Modelica code
@@ -173,26 +176,28 @@ bool HopsanModelicaGenerator::generateFromModelica(QString path, SolverT solver)
 //! @param equations Equations for new component
 //! @param portList List of port specifications for new component
 //! @param parametersList List of parameter specifications for new component
-void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType,
-                                                 QStringList &initAlgorithms, QStringList &preAlgorithms, QStringList &equations,
-                                                 QStringList &finalAlgorithms, QList<PortSpecification> &portList,
-                                                 QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList, QString &transform)
+bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType,
+                                                 QStringList &initAlgorithms, QStringList &algorithms, QStringList &equations,
+                                                 QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList,
+                                                 QList<VariableSpecification> &variablesList, QString &transform)
 {
     QStringList lines = code.split("\n");
     QStringList portNames;
-    bool initAlgorithmPart = false;
-    bool preAlgorithmPart = false;  //Are we in the intial "algorithms" part?
-    bool equationPart = false;          //Are we in the "equations" part?
-    bool finalAlgorithmPart = false;    //Are we in the final "algorithms" part?
+    QStringList nodeTypes;
+    GeneratorNodeInfo::getNodeTypes(nodeTypes);
+    ModelicaCodePartT section = UndefinedPart;
+    bool foundHeader = false;
+    bool foundInitialAlgorithms = false;
     for(int l=0; l<lines.size(); ++l)
     {
         if(lines[l].trimmed().startsWith("//")) continue;
-        if(!initAlgorithmPart && !preAlgorithmPart && !equationPart && !finalAlgorithmPart)
+        QStringList words = lines.at(l).trimmed().split(" ");
+        if(section == UndefinedPart)
         {
-            //qDebug() << l << " - not in algorithms or equations";
-            QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "model")              //"model" keyword
             {
+                section = HeaderSection;
+                foundHeader = true;
                 typeName = words.at(1);
                 if(words.size() > 2)
                 {
@@ -207,136 +212,127 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     displayName.chop(1);
                 }
             }
-            else if(words.at(0).startsWith("annotation("))        //"annotation" keyword
-            {
-                QString tempLine = lines[l];
-                tempLine.remove(" ");
-                int idx = tempLine.indexOf("hopsanCqsType=");
-                cqsType = tempLine.at(idx+15);
-                if(tempLine.contains("linearTransform=")) {
-                    transform = tempLine.section("linearTransform=",1,1).section("\"",1,1);
-                    qDebug() << "Transform: " << transform;
-                }
+        }
+        else if(section == HeaderSection && words.at(0).startsWith("annotation("))        //"annotation" keyword
+        {
+            QString tempLine = lines[l];
+            tempLine.remove(" ");
+            int idx = tempLine.indexOf("hopsanCqsType=");
+            cqsType = tempLine.at(idx+15);
+            if(tempLine.contains("linearTransform=")) {
+                transform = tempLine.section("linearTransform=",1,1).section("\"",1,1);
             }
-            else if(words.at(0) == "parameter")         //"parameter" keyword
-            {
-                QString name = words.at(2).section("(",0,0);
-                QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
-                QString init;
-                //Default value can be written with white spaces in different way, test them all
-                if(!words.at(2).section(")", 1).isEmpty())
-                    init = words.at(2).section(")", 1).section("=", 1);             //...blabla)=x
-                else if(words.at(2).endsWith("="))
-                    init = words.at(3);                                             //...blabla)= x
-                else if(words.at(3).startsWith("=") && words.at(3).size() > 1)
-                    init = words.at(3).section("=", 1);                             //...blabla) =x
-                else if(words.at(3) == "=")
-                    init = words.at(4);                                             // ...blabla) = x
-                init.remove(";");
+        }
+        else if(section == HeaderSection && words.at(0) == "parameter")         //"parameter" keyword
+        {
+            QString name = words.at(2).section("(",0,0);
+            QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
+            QString init;
+            //Default value can be written with white spaces in different way, test them all
+            if(!words.at(2).section(")", 1).isEmpty())
+                init = words.at(2).section(")", 1).section("=", 1);             //...blabla)=x
+            else if(words.at(2).endsWith("="))
+                init = words.at(3);                                             //...blabla)= x
+            else if(words.at(3).startsWith("=") && words.at(3).size() > 1)
+                init = words.at(3).section("=", 1);                             //...blabla) =x
+            else if(words.at(3) == "=")
+                init = words.at(4);                                             // ...blabla) = x
+            init.remove(";");
 
-                QString parDisplayName = lines.at(l).section("\"", -2, -2);
+            QString parDisplayName = lines.at(l).section("\"", -2, -2);
 
-                ParameterSpecification par(name, name, parDisplayName, unit, init);
-                parametersList.append(par);
-            }
-            else if(words.at(0) == "Real")              //"Real" keyword (local variable)
+            ParameterSpecification par(name, name, parDisplayName, unit, init);
+            parametersList.append(par);
+        }
+        else if(section == HeaderSection && words.at(0) == "Real")              //"Real" keyword (local variable)
+        {
+            for(int i=0; i<lines.at(l).count(",")+1; ++i)
             {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                QString var = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                QString name, init;
+                if(var.contains("("))
                 {
-                    QString var = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    QString name, init;
-                    if(var.contains("("))
-                    {
-                        name = var.section("(",0,0);
-                        init = var.section("=",1,1).section(")",0,0);
-                    }
-                    else
-                    {
-                        name = var;
-                        init = "";
-                    }
-                    VariableSpecification varSpec(name, init);
-                    variablesList.append(varSpec);
+                    name = var.section("(",0,0);
+                    init = var.section("=",1,1).section(")",0,0);
                 }
-            }
-            else if(words.at(0) == "output" && words.at(1) == "Real")                //Signal connector (output)
-            {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                else
                 {
-                    QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("WritePort", "NodeSignal", name);
-                    portList.append(port);
-                    portNames << name;
+                    name = var;
+                    init = "";
                 }
+                VariableSpecification varSpec(name, init);
+                variablesList.append(varSpec);
             }
-            else if(words.at(0) == "input" && words.at(1) == "Real")                //Signal connector (input)
+        }
+        else if(section == HeaderSection && words.at(0) == "output" && words.at(1) == "Real")                //Signal connector (output)
+        {
+            for(int i=0; i<lines.at(l).count(",")+1; ++i)
             {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
-                {
-                    QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("ReadPort", "NodeSignal", name);
-                    portList.append(port);
-                    portNames << name;
-                }
+                QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
+                PortSpecification port("WritePort", "NodeSignal", name);
+                portList.append(port);
+                portNames << name;
             }
-            else if(words.at(0) == "initial" && words.at(1) == "algorithm")
+        }
+        else if(section == HeaderSection && words.at(0) == "input" && words.at(1) == "Real")                //Signal connector (input)
+        {
+            for(int i=0; i<lines.at(l).count(",")+1; ++i)
             {
-                initAlgorithmPart = true;
+                QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
+                PortSpecification port("ReadPort", "NodeSignal", name);
+                portList.append(port);
+                portNames << name;
             }
-            else if(words.at(0) == "algorithm" && !equationPart)    //Pre-simulation algorithm part begins!
-            {
-                preAlgorithmPart = true;
-            }
-            else if(words.at(0) == "equation")                      //Equation part begins!
-            {
-                preAlgorithmPart = false;
-                equationPart = true;
-            }
-            else if(words.at(0) == "algorithm" && equationPart)     //Final algorithm part begins!
-            {
-                equationPart = false;
-                finalAlgorithmPart = true;
-            }
-            else if(words.at(0) == "end" && (preAlgorithmPart || equationPart || finalAlgorithmPart))       //We are finished
-            {
-                break;
-            }
-            else                                                //Power connector
-            {
-                QStringList nodeTypes;
-                GeneratorNodeInfo::getNodeTypes(nodeTypes);
-                Q_FOREACH(const QString &type, nodeTypes)
-                {
-                    if(words.at(0) == type)
-                    {
-                        for(int i=0; i<lines.at(l).count(",")+1; ++i)
-                        {
-                            QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                            PortSpecification port("PowerPort", type, name);
-                            portList.append(port);
-                            portNames << name;
-                        }
+        }
+        else if(section == HeaderSection && nodeTypes.contains(words[0]))                                            //Power connector
+        {
+            for(const auto &type : nodeTypes) {
+                if(words.at(0) == type) {
+                    for(int i=0; i<lines.at(l).count(",")+1; ++i) {
+                        QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                        PortSpecification port("PowerPort", type, name);
+                        portList.append(port);
+                        portNames << name;
                     }
                 }
             }
         }
-        else if(initAlgorithmPart)
+        else if(section != UndefinedPart && words.at(0) == "initial" && words.at(1) == "algorithm")
         {
+            if(foundInitialAlgorithms) {
+                printErrorMessage("Only one initial algorithm section allowed.");
+                return false;
+            }
+            section = InitialAlgorithmSection;
+        }
+        else if(section != UndefinedPart && words.at(0) == "algorithm")    //Algorithm section begins
+        {
+            section = AlgorithmSection;
+        }
+        else if(section != UndefinedPart && words.at(0) == "equation")    //Equation section begins
+        {
+            section = EquationSection;
+        }
+        else if(section != UndefinedPart && words.at(0) == "end")       //We are finished
+        {
+            break;
+        }
+        else if(section == InitialAlgorithmSection)
+        {
+            foundInitialAlgorithms = true;
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
             {
                 break;
             }
-            else if(words.at(0) == "algorithm") //Pre-simulation algorithm part begins, end of initial algorithm section
+            else if(words.at(0) == "algorithm") //New algorithm section begins
             {
-                initAlgorithmPart = false;
-                preAlgorithmPart = true;
+                section = AlgorithmSection;
                 continue;
             }
-            else if(words.at(0) == "equation")       //Equation part beginning, end of initial algorithm section
+            else if(words.at(0) == "equation") //New equation section beginning
             {
-                initAlgorithmPart = false;
-                equationPart = true;
+                section = EquationSection;
                 continue;
             }
             initAlgorithms << lines.at(l).trimmed();
@@ -361,7 +357,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     }
                     else
                     {
-                        int idx = preAlgorithms.last().indexOf(temp);
+                        int idx = initAlgorithms.last().indexOf(temp);
                         int idx2=idx+temp.size()+1;
                         while(idx2 < initAlgorithms.last().size()+1 && initAlgorithms.last().at(idx2).isLetterOrNumber())
                             ++idx2;
@@ -372,54 +368,61 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
             }
             initAlgorithms.last().chop(1);
         }
-        else if(preAlgorithmPart)
+        else if(section == AlgorithmSection)
         {
-            //qDebug() << l << " - in algorithms";
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
             {
                 break;
             }
-            if(words.at(0) == "equation")       //Equation part beginning, end of algorithm section
+            else if(words.at(0) == "initial" && words.at(1) == "algorithm") //Initial algorithm section begins
             {
-                preAlgorithmPart = false;
-                equationPart = true;
+                if(foundInitialAlgorithms) {
+                    printErrorMessage("Only one initial algorithm section allowed.");
+                    return false;
+                }
+                section = InitialAlgorithmSection;
                 continue;
             }
-            preAlgorithms << lines.at(l).trimmed();
-            preAlgorithms.last().replace(":=", "=");
+            else if(words.at(0) == "equation") //New equation section begins
+            {
+                section = EquationSection;
+                continue;
+            }
+            algorithms << lines.at(l).trimmed();
+            algorithms.last().replace(":=", "=");
             //Replace variables with Hopsan syntax, i.e. P2.q => q2
             for(int i=0; i<portNames.size(); ++i)
             {
                 QString temp = portNames.at(i)+".";
-                while(preAlgorithms.last().contains(temp))
+                while(algorithms.last().contains(temp))
                 {
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
-                        int idx = preAlgorithms.last().indexOf(temp)+temp.size()-1;
+                        int idx = algorithms.last().indexOf(temp)+temp.size()-1;
                         if(portList.at(i).porttype == "WritePort")
                         {
-                            preAlgorithms.last().remove(idx, 4);
+                            algorithms.last().remove(idx, 4);
                         }
                         else if(portList.at(i).porttype == "ReadPort")
                         {
-                            preAlgorithms.last().remove(idx, 3);
+                            algorithms.last().remove(idx, 3);
                         }
                     }
                     else
                     {
-                        int idx = preAlgorithms.last().indexOf(temp);
+                        int idx = algorithms.last().indexOf(temp);
                         int idx2=idx+temp.size()+1;
-                        while(idx2 < preAlgorithms.last().size()+1 && preAlgorithms.last().at(idx2).isLetterOrNumber())
+                        while(idx2 < algorithms.last().size()+1 && algorithms.last().at(idx2).isLetterOrNumber())
                             ++idx2;
-                        preAlgorithms.last().insert(idx2, QString::number(i+1));
-                        preAlgorithms.last().remove(idx, temp.size());
+                        algorithms.last().insert(idx2, QString::number(i+1));
+                        algorithms.last().remove(idx, temp.size());
                     }
                 }
             }
-            preAlgorithms.last().chop(1);
+            algorithms.last().chop(1);
         }
-        else if(equationPart)
+        else if(section == EquationSection)
         {
            // qDebug() << l << " - in equations";
             QStringList words = lines.at(l).trimmed().split(" ");
@@ -427,10 +430,18 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
             {
                 break;
             }
-            if(words.at(0) == "algorithm")       //Final algorithm section begins
+            else if(words.at(0) == "initial" && words.at(1) == "algorithm") //Initial algorithm section begins
             {
-                equationPart = false;
-                finalAlgorithmPart = true;
+                if(foundInitialAlgorithms) {
+                    printErrorMessage("Only one initial algorithm section allowed.");
+                    return false;
+                }
+                section = InitialAlgorithmSection;
+                continue;
+            }
+            else if(words.at(0) == "algorithm") //New algorithm section beginning
+            {
+                section = EquationSection;
                 continue;
             }
             equations << lines.at(l).trimmed();
@@ -459,58 +470,25 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 equations.last().chop(1);
             }
         }
-        else if(finalAlgorithmPart)
-        {
-           // qDebug() << l << " - in algorithms";
-            QStringList words = lines.at(l).trimmed().split(" ");
-            if(words.at(0) == "end")       //We are finished
-            {
-                break;
-            }
-            finalAlgorithms << lines.at(l).trimmed();
-            finalAlgorithms.last().replace(":=", "=");
-            //Replace variables with Hopsan syntax, i.e. P2.q => q2
-            for(int i=0; i<portNames.size(); ++i)
-            {
-                QString temp = portNames.at(i)+".";
-                while(finalAlgorithms.last().contains(temp))
-                {
-                    if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
-                    {
-                    //    int idx = finalAlgorithms.last().indexOf(temp)+temp.size()-1;
-//                        if(portList.at(i).porttype == "WritePortType")
-//                        {
-//                            finalAlgorithms.last().remove(idx, 4);
-//                        }
-//                        else if(portList.at(i).porttype == "ReadPortType")
-//                        {
-//                            finalAlgorithms.last().remove(idx, 3);
-//                        }
-                        finalAlgorithms.last().replace(".","__");
-                    }
-                    else
-                    {
-                        int idx = finalAlgorithms.last().indexOf(temp);
-                        int idx2=idx+temp.size()+1;
-                        while(idx2 < finalAlgorithms.last().size()+1 && finalAlgorithms.last().at(idx2).isLetterOrNumber())
-                            ++idx2;
-                        finalAlgorithms.last().insert(idx2, QString::number(i+1));
-                        finalAlgorithms.last().remove(idx, temp.size());
-                    }
-                }
-            }
-            finalAlgorithms.last().chop(1);
-        }
     }
 
     initAlgorithms.removeAll("\n");
     initAlgorithms.removeAll("");
-    preAlgorithms.removeAll("\n");
-    preAlgorithms.removeAll("");
+    algorithms.removeAll("\n");
+    algorithms.removeAll("");
     equations.removeAll("\n");
     equations.removeAll("");
-    finalAlgorithms.removeAll("\n");
-    finalAlgorithms.removeAll("");
+
+    if(!foundHeader) {
+        printErrorMessage("Syntax error in Modelica code: Could not parse model header.");
+        return false;
+    }
+    else if(algorithms.isEmpty() && equations.isEmpty()) {
+        printErrorMessage("Modelica model contains no algorithms or equations.");
+        return false;
+    }
+    printMessage("Successfully parsed Modelica model.");
+    return true;
 }
 
 
@@ -1982,7 +1960,7 @@ bool HopsanModelicaGenerator::replaceCustomFunctions(Expression &expr) {
 
 
 
-bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transform, QStringList &initAlgorithms, QStringList &plainEquations, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
+bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transform, QStringList &initAlgorithms, QStringList &algorithms, QStringList &plainEquations, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream)
 {
     printMessage("Initializing Modelica generator for Kinsol solver.");
 
