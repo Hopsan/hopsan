@@ -675,6 +675,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 #endif
                 gpLibraryHandler->removeComponentFromLibrary(typeName, pLibrary, deleteOrKeepFiles);
             }
+            getLibraryItem(pLibrary)->setExpanded(true);
         }
     }
 }
