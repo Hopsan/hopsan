@@ -420,6 +420,16 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
     }
 }
 
+ModelObjectAnimationMovableData *ModelObjectAnimationData::getMovablePtr(int idx)
+{
+    for(int i=0; i<movables.size(); ++i) {
+        if(movables[i].idx == idx) {
+            return &movables[i];
+        }
+    }
+    return nullptr;
+}
+
 
 ModelObjectAppearance::ModelObjectAppearance()
 {

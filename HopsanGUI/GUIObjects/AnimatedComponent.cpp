@@ -936,7 +936,7 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void AnimatedIcon::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     int idx = mpAnimatedComponent->indexOfMovable(this);
-    if(idx >= 0 && mpAnimatedComponent->getAnimationDataPtr()->movables[idx].isAdjustable)
+    if(idx >= 0 && mpAnimatedComponent->getAnimationDataPtr()->getMovablePtr(mIdx)->isAdjustable)
     {
         mpSelectionBox->setHovered();
     }
@@ -965,16 +965,17 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
 
         ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
-        bool switchable = pData->movables[idx].isSwitchable;
+
+        bool switchable = pData->getMovablePtr(idx)->isSwitchable;
         if(switchable)
         {
             //! @todo Don't do pointer lookup every time step!
             double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->movables[mIdx].switchablePort, pData->movables[mIdx].switchableDataName);
-            double onValue = pData->movables[idx].switchableOnValue;
-            double offValue = pData->movables[idx].switchableOffValue;
+            double onValue = pData->getMovablePtr(idx)->switchableOnValue;
+            double offValue = pData->getMovablePtr(idx)->switchableOffValue;
             if((*pNodeData) == onValue/*mpAnimatedComponent->mpMovables[idx]->isVisible()*/)
             {
-                if(pData->movables[idx].hideIconOnSwitch)
+                if(pData->getMovablePtr(idx)->hideIconOnSwitch)
                 {
                     mpAnimatedComponent->mpMovables[idx]->setVisible(false);
                 }
@@ -982,7 +983,7 @@ void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
             }
             else
             {
-                if(pData->movables[idx].hideIconOnSwitch)
+                if(pData->getMovablePtr(idx)->hideIconOnSwitch)
                 {
                     mpAnimatedComponent->mpMovables[idx]->setVisible(true);
                 }
@@ -1007,12 +1008,12 @@ void AnimatedIcon::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         }
 
         ModelObjectAnimationData *pData = mpAnimatedComponent->getAnimationDataPtr();
-        bool momentary = pData->movables[idx].isMomentary;
+        bool momentary = pData->getMovablePtr(idx)->isMomentary;
         if(momentary)
         {
-            double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->movables[mIdx].switchablePort, pData->movables[mIdx].switchableDataName);
-            double offValue = pData->movables[idx].switchableOffValue;
-            if(pData->movables[idx].hideIconOnSwitch)
+            double *pNodeData = mpAnimatedComponent->mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(mpAnimatedComponent->mpModelObject->getName(), pData->getMovablePtr(mIdx)->switchablePort, pData->movables[mIdx].switchableDataName);
+            double offValue = pData->getMovablePtr(idx)->switchableOffValue;
+            if(pData->getMovablePtr(idx)->hideIconOnSwitch)
             {
                 mpAnimatedComponent->mpMovables[idx]->setVisible(false);
             }

@@ -200,6 +200,7 @@ class ModelObjectAnimationData
 public:
     void readFromDomElement(QDomElement &rDomElement, QString basePath);
     void saveToDomElement(QDomElement &rDomElement);
+    ModelObjectAnimationMovableData *getMovablePtr(int idx);
 
     //Movables
     QList<ModelObjectAnimationMovableData> movables;
