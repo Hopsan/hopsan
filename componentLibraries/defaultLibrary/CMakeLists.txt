@@ -34,4 +34,5 @@ install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/ DESTINATION componentLibraries/defa
   PATTERN "*.txt"
   PATTERN "*.md"
   PATTERN "*.hmf"
+  PATTERN "*.svg"
   PATTERN "LICENSE")
