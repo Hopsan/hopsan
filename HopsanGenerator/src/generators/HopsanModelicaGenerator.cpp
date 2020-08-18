@@ -2172,67 +2172,6 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         term.expandPowers();
     }
 
-    //Apply limitations
-    for(VariableLimitation &limit : limitedVariables) {
-        if(true) {
-            break;
-        }
-        systemEquations[limit.varEquation].factor(Expression(limit.var));
-
-        Expression rem = systemEquations[limit.varEquation];
-        rem.replace(Expression(limit.var), Expression(0));
-        rem._simplify(Expression::FullSimplification, Expression::Recursive);
-
-        Expression div = systemEquations[limit.varEquation];
-        div.subtractBy(rem);
-        div.replace(Expression(limit.var), Expression(1));
-        div.expand();
-        div._simplify(Expression::FullSimplification);
-
-        rem = Expression::fromFactorDivisor(rem, div);
-        rem.changeSign();
-        rem._simplify(Expression::FullSimplification, Expression::Recursive);
-
-        Expression limitTerm("-limit(("+rem.toString()+"),"+limit.min+","+limit.max+")");
-        systemEquations[limit.varEquation] = Expression::fromTwoTerms(Expression(limit.var), limitTerm);
-
-        if(!limit.der.isEmpty()) {
-            systemEquations[limit.derEquation].factor(Expression(limit.der));
-
-            Expression rem2 = systemEquations[limit.derEquation];
-            qDebug() << "rem1: " << rem2.toString();
-            rem2.replace(Expression(limit.der), Expression(0));
-            qDebug() << "rem2: " << rem2.toString();
-            rem2._simplify(Expression::FullSimplification, Expression::Recursive);
-            qDebug() << "rem3: " << rem2.toString();
-
-            Expression div2 = systemEquations[limit.derEquation];
-            qDebug() << "div1: " << div2.toString();
-            div2.subtractBy(rem2);
-            qDebug() << "div2: " << div2.toString();
-            div2.replace(Expression(limit.der), Expression(1));
-            qDebug() << "div3: " << div2.toString();
-            div2.factorMostCommonFactor();
-            qDebug() << "div4: " << div2.toString();
-            div2.expand();
-            qDebug() << "div5: " << div2.toString();
-            div2._simplify(Expression::FullSimplification, Expression::Recursive);
-            qDebug() << "div6: " << div2.toString();
-
-            rem2 = Expression::fromFactorDivisor(rem2, div2);
-            rem2.changeSign();
-
-            limitTerm.changeSign();
-            //systemEquations[limit.derEquation] = Expression::fromTwoTerms(Expression(limit.der), Expression::fromTwoFactors(Expression("-dxLimit("+limitTerm.toString()+","+limit.min+","+limit.max+")"), rem2));
-            systemEquations[limit.derEquation] = Expression::fromTwoTerms(Expression(limit.der), Expression::fromTwoFactors(Expression("-1"), Expression::fromFunctionArguments("dxLimit3", QList<Expression>() << rem2 << rem << Expression(limit.min) << Expression(limit.max))));
-        }
-
-        for(const auto &eq : systemEquations) {
-            qDebug() << eq.toString();
-        }
-    }
-
-
     //Identify system equations containing only one unknown (can be resolved before the rest of the system)
     QStringList preAlgorithms;
     bool didSomething = true;
