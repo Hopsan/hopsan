@@ -2027,6 +2027,7 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         unknowns.append(equation.getVariables());
     }
 
+    //Add variables defined in initial algorithms to list of known variables
     QList<Expression> knowns;
     for(auto &algorithm : initAlgorithms) {
         algorithm.replace(":=","=");
@@ -2036,11 +2037,25 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         }
     }
 
+    for(auto &algorithm : algorithms) {
+        algorithm.replace(":=","=");
+        Expression algExpr = Expression(algorithm);
+        if(!algExpr.isAssignment()) {
+            printErrorMessage("Only assignments are allowed in algorithm sections.");
+            return false;
+        }
+        for(auto &equation : systemEquations) {
+            equation.replace(*algExpr.getLeft(), *algExpr.getRight());
+        }
+        systemEquations.append(algExpr);
+    }
+
     //Add parameters to list of known variables
     for(const auto  &par : parameters) {
         knowns.append(Expression(par.name));
     }
 
+    //Add TLM input variables to list of known variables
     for(int i=0; i<ports.size(); ++i) {
         QString num = QString::number(i+1);
         if(ports[i].porttype == "ReadPort") {
@@ -2074,7 +2089,6 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         printErrorMessage("Verification of equation system failed.");
         return false;
     }
-
 
     //Verify limitations
     for(VariableLimitation &limit : limitedVariables) {
@@ -2122,10 +2136,6 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
         }
         systemEquations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
     }
-    for(const auto &eq : systemEquations) {
-        qDebug() << eq.toString();
-    }
-
 
     //Linearize equations
     for(int e=0; e<systemEquations.size(); ++e)
