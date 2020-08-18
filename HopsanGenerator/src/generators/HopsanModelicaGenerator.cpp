@@ -389,6 +389,40 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 section = EquationSection;
                 continue;
             }
+            if(words.at(0) == "if") {
+                QString condition = lines[l].remove("if").remove("then").trimmed();
+                QStringList vars;
+                QStringList ifExpressions;
+                QStringList elseExpressions;
+                ++l;
+                while(!lines.at(l).trimmed().startsWith("end if") && !lines.at(l).trimmed().startsWith("else")) {
+                    QString lhs = lines.at(l).section(":=",0,0).trimmed();
+                    QString rhs = lines.at(l).section(":=",1,1).trimmed();
+                    vars << lhs;
+                    ifExpressions << rhs;
+                    elseExpressions << "";  //Populate in case it is needed below
+                    ++l;
+                }
+                if(lines.at(l).trimmed().startsWith("else")) {
+
+                    ++l;
+                    while(!lines.at(l).trimmed().startsWith("end if")) {
+                        QString lhs = lines.at(l).section(":=",0,0).trimmed();
+                        QString rhs = lines.at(l).section(":=",1,1).trimmed();
+                        elseExpressions[vars.indexOf(lhs)] = rhs;
+                        ++l;
+                    }
+                }
+                for(int i=0; i<vars.size(); ++i) {
+                    if(elseExpressions.isEmpty()) {
+                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+vars[i]+")";
+                    }
+                    else {
+                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+elseExpressions[i]+")";
+                    }
+                }
+                continue;
+            }
             algorithms << lines.at(l).trimmed();
             algorithms.last().replace(":=", "=");
             //Replace variables with Hopsan syntax, i.e. P2.q => q2

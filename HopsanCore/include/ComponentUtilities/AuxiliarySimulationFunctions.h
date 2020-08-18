@@ -73,6 +73,12 @@ double HOPSANCORE_DLLAPI dxLowLimit2(const double x, const double sx, const doub
 double HOPSANCORE_DLLAPI div(const double x, const double y);
 
 
+inline double ifElse(const bool x, const double y1, const double y2)
+{
+    if (x) { return y1; }
+    else { return y2; }
+}
+
 // ----------Inline Functions converted from auxhop in old Hopsan----------
 
 //! @brief Returns y1 or y2 depending on the value of x.
