@@ -2057,6 +2057,14 @@ bool HopsanModelicaGenerator::generateComponentObjectKinsol(ComponentSpecificati
 
     //Sum up all used variables to a single list
     QList<Expression> unknowns;
+    for(const auto &variable : variables) {
+        unknowns.append(Expression(variable.name));
+    }
+    for(const auto &port : ports) {
+        if(port.porttype == "WritePort") {
+            unknowns.append(Expression(port.name));
+        }
+    }
     for(const auto &equation : systemEquations) {
         unknowns.append(equation.getVariables());
     }
