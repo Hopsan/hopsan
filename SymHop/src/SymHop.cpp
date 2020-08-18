@@ -1741,6 +1741,19 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             }
             ret = Expression::fromFunctionArguments("ifPositive",QList<Expression>() << Expression::fromTwoTerms(g,g2) << dg << dg2);
         }
+        else if(func == "ifElse") {
+            if(mArguments.size() == 2) {
+                ret = Expression::fromFunctionArguments("ifElse", QList<Expression>() << dg);
+            }
+            else if(mArguments.size() == 3) {
+                bool success;
+                Expression dg2 = mArguments[1].derivative(x, success);
+                if(!success) {
+                    ok = false;
+                }
+                ret = Expression::fromFunctionArguments("ifElse", QList<Expression>() << dg << dg2);
+            }
+        }
         //No special function, so use chain rule
         else
         {
