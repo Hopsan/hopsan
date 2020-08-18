@@ -834,9 +834,9 @@ void ModelHandler::restoreState()
         {
             addNewModel();
         }
-        gpCentralTabWidget->setCurrentIndex(numTextTabs+i);
+        gpCentralTabWidget->setCurrentIndex(1+i);
         this->mCurrentIdx = numTextTabs+i;
-        gpCentralTabWidget->setTabText(numTextTabs+i, info.tabName);
+        gpCentralTabWidget->setTabText(1+i, info.tabName);
 
         //! @todo FIXA /Peter
 //        getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
