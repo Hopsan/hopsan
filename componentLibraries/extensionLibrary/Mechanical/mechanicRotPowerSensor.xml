@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="mechanicRotPowerSensor.hpp" typename="MechanicRotPowerSensor" displayname="Mechanic Rotational Power Sensor">
+        <icons>
+            <icon scale="1" path="mechanicRotPowerSensorIcon_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="mechanicRotPowerSensorIcon_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+        <text></text>
+        <md>mechanicRotPowerSensor.md</md>
+        </help>
+        <ports>
+            <port x="0.5" y="1" a="90" name="P1"/>
+            <port x="0.5" y="0" a="270" name="out"/>
+        </ports>
+        <animation>
+            <icon userpath="mechanicRotPowerSensor_base.svg"/>
+            <movable>
+                <icon userpath="mechanicRotPowerSensor_movable.svg"/>
+                <data port="out" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="-60" idx="0" divisor="PMax#Value"/>
+                <transformorigin x="4" y="15"/>
+                <start x="14" y="3" a="0"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>
