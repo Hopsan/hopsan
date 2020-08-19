@@ -727,4 +727,5 @@ QTreeWidgetItem *LibraryWidget::getLibraryItem(QSharedPointer<GUIComponentLibrar
         }
         ++it;
     }
+    return nullptr;
 }
