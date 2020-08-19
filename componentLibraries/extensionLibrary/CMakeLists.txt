@@ -23,7 +23,7 @@ install(TARGETS ${targetname}
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/ DESTINATION componentLibraries/extensionLibrary
   FILES_MATCHING
   PATTERN "*.cpp"
-  PATTERN "*.h *"
+  PATTERN "*.h"
   PATTERN "*.hpp"
   PATTERN "*.cci"
   PATTERN "*.xml"
