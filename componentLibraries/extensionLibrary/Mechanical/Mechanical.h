@@ -27,3 +27,4 @@
 #include "MechanicFreeFixWall.hpp"
 #include "MechanicSteel.hpp"
 #include "MechanicalSeparator.hpp"
+#include "mechanicRotPowerSensor.hpp"
