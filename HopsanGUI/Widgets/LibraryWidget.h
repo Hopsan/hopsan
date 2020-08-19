@@ -48,7 +48,7 @@
 
 //Forward declarations
 class LibraryHandler;
-class ComponentLibrary;
+class GUIComponentLibrary;
 
 //! @brief Library widget class
 class LibraryWidget : public QWidget
@@ -76,7 +76,7 @@ protected:
 private:
     void getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTreeWidgetItem *> &rSubItems);
     bool isComponentItem(QTreeWidgetItem *item);
-    QTreeWidgetItem *getLibraryItem(QSharedPointer<ComponentLibrary> pLibrary);
+    QTreeWidgetItem *getLibraryItem(QSharedPointer<GUIComponentLibrary> pLibrary);
 
     //GUI Stuff
     QTreeWidget *mpTree;
@@ -86,7 +86,7 @@ private:
 
     //Maps between GUI objects and library contents
     QMap<QTreeWidgetItem *, QString> mItemToTypeNameMap;        //Map between component items and typenames
-    QMap<QTreeWidgetItem *, QSharedPointer<ComponentLibrary> > mItemToLibraryMap;    //Map between component items and libraries it might origin from
+    QMap<QTreeWidgetItem *, QSharedPointer<GUIComponentLibrary> > mItemToLibraryMap;    //Map between component items and libraries it might origin from
 };
 
 #endif // LIBRARYWIDGET_H

@@ -50,7 +50,7 @@ constexpr auto fmus = "FMUs";
 #include "GUIObjects/GUIModelObjectAppearance.h"
 
 //! @brief Component Library metadata class
-class ComponentLibrary
+class GUIComponentLibrary
 {
 public:
     QString id;
@@ -72,7 +72,7 @@ public:
 
     QString getLibraryMainFilePath() const;
 };
-typedef QSharedPointer<ComponentLibrary> SharedComponentLibraryPtrT;
+typedef QSharedPointer<GUIComponentLibrary> SharedComponentLibraryPtrT;
 
 class ComponentSpecification
 {

@@ -718,7 +718,7 @@ bool LibraryWidget::isComponentItem(QTreeWidgetItem *item)
     return mItemToTypeNameMap.contains(item);
 }
 
-QTreeWidgetItem *LibraryWidget::getLibraryItem(QSharedPointer<ComponentLibrary> pLibrary)
+QTreeWidgetItem *LibraryWidget::getLibraryItem(QSharedPointer<GUIComponentLibrary> pLibrary)
 {
     QTreeWidgetItemIterator it(mpTree);
     while (*it) {

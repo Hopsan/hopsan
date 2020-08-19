@@ -255,7 +255,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
     {
         for (QString &xmlFile : foundLibraryXmlFiles)
         {
-            SharedComponentLibraryPtrT pLib(new ComponentLibrary);
+            SharedComponentLibraryPtrT pLib(new GUIComponentLibrary);
             pLib->loadPath = loadPath;
             pLib->xmlFilePath = xmlFile;
             pLib->type = type;
@@ -1742,7 +1742,7 @@ bool ComponentLibraryEntry::isValid() const
 }
 
 
-QString ComponentLibrary::getLibraryMainFilePath() const
+QString GUIComponentLibrary::getLibraryMainFilePath() const
 {
     if (xmlFilePath.isEmpty())
     {
