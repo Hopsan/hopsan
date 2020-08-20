@@ -9,5 +9,5 @@ function(add_rapidxml_src target)
 endfunction()
 
 function(install_rapidxml_src destination)
-    install(DIRECTORY ${rapidxml_dir} DESTINATION ${destination} )
+    install(DIRECTORY ${rapidxml_dir}/ DESTINATION ${destination} )
 endfunction()
