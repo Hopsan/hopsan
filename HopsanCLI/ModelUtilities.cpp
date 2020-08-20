@@ -322,7 +322,8 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
         for (size_t p=0; p<pSysParameters->size(); ++p)
         {
             //! @todo what about alias name
-            HString fullname = prefix.c_str() + pSystem->getName() + "#" + pSysParameters->at(p)->getName();
+            HString fullSelfName = prefix.empty() ? "self" : prefix.c_str();
+            HString fullname = fullSelfName + "#" + pSysParameters->at(p)->getName();
             *pFile << fullname.c_str() << "," << pSysParameters->at(p)->getValue().c_str() << endl;
         }
 
@@ -382,85 +383,41 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                     // Parse line vector
                     if (lineVec.size() == 2)
                     {
-                        std::vector<std::string> vec2, nameVec, syshierarcy;
-                        string componentName, parameterName;
-                        splitStringOnDelimiter(lineVec[0], '$', vec2);
+                        std::vector<std::string> nameParts;
+                        string fullComponentName, parameterName;
+                        splitStringOnDelimiter(lineVec[0], '#', nameParts);
 
-                        // Last of vec2 will contain the rest of the name filed (comp and param name)
-                        int i;
-                        for (i=0; i<int(vec2.size())-1; ++i)
-                        {
-                            syshierarcy.push_back(vec2[i]);
-                        }
-
-                        // Split last name part into comp and param name
-                        splitStringOnDelimiter(vec2[i], '#', nameVec);
-                        if (nameVec.size() == 2 || nameVec.size() == 3 )
-                        {
-                            if (nameVec.size() == 2)
-                            {
-                                componentName = nameVec[0];
-                                parameterName = nameVec[1];
+                        // Split last name part into fullcomponent and parameter#value name
+                        if (nameParts.size() == 2 || nameParts.size() == 3 ) {
+                            if (nameParts.size() == 2) {
+                                fullComponentName = nameParts[0];
+                                parameterName = nameParts[1];
                             }
-                            if (nameVec.size() == 3)
-                            {
+                            if (nameParts.size() == 3) {
                                 // Set component name and reset the parameter (startvalue) name
-                                componentName = nameVec[0];
-                                parameterName = nameVec[1]+"#"+nameVec[2];
+                                fullComponentName = nameParts[0];
+                                parameterName = nameParts[1]+"#"+nameParts[2];
                             }
 
 
-                            // Dig down subsystem hiearchy
-                            ComponentSystem *pParentSys = pSystem;
-                            for (size_t s=1; s<syshierarcy.size(); ++s)
-                            {
-                                //! @todo what about first level (0), should we check that name is ok
-                                ComponentSystem *pSubSys = pParentSys->getSubComponentSystem(syshierarcy[s].c_str());
-                                if (!pSubSys)
-                                {
-                                    printErrorMessage("Subsystem: "+syshierarcy[s]+" could not be found in parent system: "+pParentSys->getName().c_str());
-                                    pParentSys = 0;
-                                    break;
-                                }
-                                else
-                                {
-                                    pParentSys = pSubSys;
-                                }
+                            hopsan::Component* pComponent;
+                            if (fullComponentName == "self") {
+                                pComponent = pSystem;
                             }
-
-                            // Set the parameter value if component is found
-                            if (pParentSys)
-                            {
-                                Component *pComp = 0;
-                                // If syshierarcy is empty then we are setting a parameter in the top-level system
-                                if (syshierarcy.empty())
-                                {
-                                    pComp = pParentSys;
-                                }
-                                else
-                                {
-                                    pComp = pParentSys->getSubComponent(componentName.c_str());
-                                }
-
-                                if (pComp)
-                                {
-                                    // lineVec[1] should be parameter value
-                                    //! @todo what about parameter alias
-                                    bool ok = pComp->setParameterValue(parameterName.c_str(), lineVec[1].c_str());
-                                    if (!ok)
-                                    {
-                                        printErrorMessage("Setting parameter: " + parameterName + " in component: " + componentName);
-                                    }
-                                }
-                                else
-                                {
-                                    printErrorMessage("No component: " + componentName + " in system: " + pParentSys->getName().c_str() );
+                            else {
+                                pComponent = getComponentWithFullName(pSystem, fullComponentName);
+                            }
+                            if (pComponent) {
+                                // lineVec[1] should be the parameter value
+                                //! @todo what about parameter alias
+                                bool ok = pComponent->setParameterValue(parameterName.c_str(), lineVec[1].c_str());
+                                if (!ok) {
+                                    printErrorMessage("Setting parameter: " + parameterName + " in component: " + fullComponentName);
                                 }
                             }
                         }
-                        else
-                        {
-                            printErrorMessage(vec2[i] + " should be componentName#parameterName on line: " + line);
+                        else {
+                            printErrorMessage(lineVec[0] + " should be FullComponentName#ParameterName on line: " + line);
                         }
                     }
                     else
@@ -518,6 +475,36 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
     else
     {
         printErrorMessage("Could not open file: " + filePath);
+    }
+}
+
+Component *getComponentWithFullName(ComponentSystem *pRootSystem, const string &fullComponentName)
+{
+    std::vector<std::string> nameParts;
+    splitStringOnDelimiter(fullComponentName, '$', nameParts);
+
+    // Search into subsystems
+    hopsan::ComponentSystem* pCurrentSystem = pRootSystem;
+    for (size_t i=0; i<nameParts.size()-1; ++i) {
+        // First check if the component is a sub system, in which case the loop continues to the next part
+        auto pSystemComponent = pCurrentSystem->getSubComponentSystem(nameParts[i].c_str());
+        if (pSystemComponent) {
+            pCurrentSystem = pSystemComponent;
+        }
+        else {
+            printErrorMessage("Subsystem: "+nameParts[i]+" could not be found in parent system: "+pCurrentSystem->getName().c_str());
+            return nullptr;
+        }
+    }
+
+    // Now lookup the component
+    hopsan::Component* pComponent = pCurrentSystem->getSubComponent(nameParts.back().c_str());
+    if (pComponent) {
+        return pComponent;
+    }
+    else {
+        printErrorMessage("No component: " + nameParts.back() + " in system: " + pCurrentSystem->getName().c_str() );
+        return nullptr;
     }
 }
 

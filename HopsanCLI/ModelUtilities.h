@@ -60,6 +60,7 @@ void generateFullSubSystemHierarchyName(const hopsan::ComponentSystem *pSys, hop
 hopsan::HString generateFullPortVariableName(const hopsan::Port *pPort, const size_t dataId);
 
 
+hopsan::Component *getComponentWithFullName(hopsan::ComponentSystem *pRootSystem, const std::string &fullComponentName);
 hopsan::Port* getPortWithFullName(hopsan::ComponentSystem *pRootSystem, const std::string &fullPortName);
 
 template<typename PortFunction>
