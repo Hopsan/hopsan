@@ -86,7 +86,7 @@ protected:
 
     //Display component members
     QGraphicsTextItem *mpText;
-    QString mUnit;
+    QString mDescription, mUnit;
     double mUnitScaling;
 
     QMap<QString, QPointF> mPortPositions;
