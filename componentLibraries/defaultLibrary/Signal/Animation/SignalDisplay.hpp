@@ -48,6 +48,7 @@ class SignalDisplay : public ComponentC
     private:
         HString mUnit, mDescription;
         double mUnitScaling;
+        int mPrecision;
 
     public:
         static Component *Creator()
@@ -62,6 +63,7 @@ class SignalDisplay : public ComponentC
             addConstant("description","Description label", "", mDescription);
             addConstant("unit","Unit","", mUnit);
             addConstant("unitscaling", "Unit scaling (from SI unit)", "", 1, mUnitScaling);
+            addConstant("precision", "Maximum number of total digits", "", 8, mPrecision);
         }
 
 
