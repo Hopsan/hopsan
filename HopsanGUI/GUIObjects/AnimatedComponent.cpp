@@ -198,8 +198,11 @@ void AnimatedComponent::updateAnimation()
         double textData;
         mpModelObject->getPort("in")->getLastNodeData("Value", textData);
         textData *= mUnitScaling;
-        QString text = QString::number(textData,'g', 4);
-        text = text.left(6);
+        QString text = QString::number(textData,'f', mPrecision);
+        text = text.left(mPrecision);
+        while(text.size() < mPrecision) {
+            text.append("0");
+        }
         text.prepend(mDescription);
         text.append(mUnit);
         mpText->setPlainText(text);
@@ -542,6 +545,9 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
         //Figure out unit and scaling
         mUnit = mpModelObject->getParameterValue("unit");
         mUnitScaling = mpModelObject->getParameterValue("unitscaling").toDouble();
+
+        //Figure out precision
+        mPrecision = mpModelObject->getParameterValue("precision").toInt();
     }
 }
 

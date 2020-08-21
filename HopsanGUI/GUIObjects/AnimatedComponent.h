@@ -88,6 +88,7 @@ protected:
     QGraphicsTextItem *mpText;
     QString mDescription, mUnit;
     double mUnitScaling;
+    int mPrecision;
 
     QMap<QString, QPointF> mPortPositions;
 
