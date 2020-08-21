@@ -46,6 +46,8 @@ class SignalDisplay : public ComponentC
 {
 
     private:
+        HString mUnit;
+        double mUnitScaling;
 
     public:
         static Component *Creator()
@@ -57,6 +59,8 @@ class SignalDisplay : public ComponentC
         {
             //Add ports to the component
             addInputVariable("in","","",0.0);
+            addConstant("unit","Unit","", mUnit);
+            addConstant("unitscaling", "Unit scaling (from SI unit)", "", 1, mUnitScaling);
         }
 
 
