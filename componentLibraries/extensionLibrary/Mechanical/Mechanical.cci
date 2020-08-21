@@ -27,4 +27,4 @@ pComponentFactory->registerCreatorFunction("MechanicForceTransformerQ",MechanicF
 pComponentFactory->registerCreatorFunction("MechanicFreeFixWall",MechanicFreeFixWall::Creator);
 pComponentFactory->registerCreatorFunction("MechanicSteel",MechanicSteel::Creator);
 pComponentFactory->registerCreatorFunction("MechanicalSeparator",MechanicalSeparator::Creator);
-pComponentFactory->registerCreatorFunction("MechanicRotPowerSensor",MechanicRotPowerSensor::Creator);
+pComponentFactory->registerCreatorFunction("MechanicRotationalPowerSensor",MechanicRotationalPowerSensor::Creator);
