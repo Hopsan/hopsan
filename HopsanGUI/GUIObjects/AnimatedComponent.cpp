@@ -200,6 +200,7 @@ void AnimatedComponent::updateAnimation()
         textData *= mUnitScaling;
         QString text = QString::number(textData,'g', 4);
         text = text.left(6);
+        text.prepend(mDescription);
         text.append(mUnit);
         mpText->setPlainText(text);
     }
@@ -531,6 +532,12 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
     {
         mpText->setDefaultTextColor(Qt::green);
         mpText->show();
+
+        //Figure out description text
+        mDescription = mpModelObject->getParameterValue("description");
+        if(!mDescription.isEmpty()) {
+            mDescription.append(" ");
+        }
 
         //Figure out unit and scaling
         mUnit = mpModelObject->getParameterValue("unit");
