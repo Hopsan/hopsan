@@ -84,7 +84,10 @@ protected:
     QList<QList<QVector<double> > > *mpData;
     QList<QList<double*> > *mpNodeDataPtrs;
 
+    //Display component members
     QGraphicsTextItem *mpText;
+    QString mUnit;
+    double mUnitScaling;
 
     QMap<QString, QPointF> mPortPositions;
 
