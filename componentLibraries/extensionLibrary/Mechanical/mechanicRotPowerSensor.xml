@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="mechanicRotPowerSensor.hpp" typename="MechanicRotPowerSensor" displayname="Mechanic Rotational Power Sensor">
+    <modelobject sourcecode="mechanicRotPowerSensor.hpp" typename="MechanicRotationalPowerSensor" displayname="Mechanic Rotational Power Sensor">
         <icons>
             <icon scale="1" path="mechanicRotPowerSensorIcon_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="mechanicRotPowerSensorIcon_iso.svg" iconrotation="ON" type="iso"/>

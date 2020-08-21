@@ -22,8 +22,8 @@
 //!
 
 
-#ifndef MECHANICROTPOWERSENSOR_HPP_INCLUDED
-#define MECHANICROTPOWERSENSOR_HPP_INCLUDED
+#ifndef MECHANICROTATIONALPOWERSENSOR_HPP_INCLUDED
+#define MECHANICROTATIONALPOWERSENSOR_HPP_INCLUDED
 
 #include <iostream>
 #include "ComponentEssentials.h"
@@ -33,7 +33,7 @@ namespace hopsan {
     //!
 
     //!
-    class MechanicRotPowerSensor : public ComponentSignal
+    class MechanicRotationalPowerSensor : public ComponentSignal
     {
     private:
         double *mpND_t, *mpND_out,*mpND_w, *mpPmax;
@@ -43,7 +43,7 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicRotPowerSensor();
+            return new MechanicRotationalPowerSensor();
         }
 
         void configure()
