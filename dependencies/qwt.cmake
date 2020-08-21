@@ -1,10 +1,34 @@
 set(local_qwt_dir ${CMAKE_CURRENT_LIST_DIR}/qwt)
 
 add_library(qwt SHARED IMPORTED)
-set_target_properties(qwt PROPERTIES
-  IMPORTED_LOCATION ${local_qwt_dir}/lib/libqwt.so
-  INTERFACE_INCLUDE_DIRECTORIES ${local_qwt_dir}/include
-  INTERFACE_COMPILE_DEFINITIONS QWT_DLL)
 
-file(GLOB lib_files ${local_qwt_dir}/lib/libqwt.so*)
-install(FILES ${lib_files} DESTINATION lib)
+if (WIN32)
+  set_target_properties(qwt PROPERTIES
+    IMPORTED_LOCATION ${local_qwt_dir}/lib/qwt${CMAKE_SHARED_LIBRARY_SUFFIX}
+    IMPORTED_LOCATION_DEBUG ${local_qwt_dir}/lib/qwtd${CMAKE_SHARED_LIBRARY_SUFFIX}
+    IMPORTED_IMPLIB ${local_qwt_dir}/lib/libqwt.a
+    IMPORTED_IMPLIB_DEBUG ${local_qwt_dir}/lib/libqwtd.a
+    INTERFACE_INCLUDE_DIRECTORIES ${local_qwt_dir}/include
+    INTERFACE_COMPILE_DEFINITIONS QWT_DLL)
+
+  if (EXISTS ${local_qwt_dir})
+    set(ds "")
+    if (${CMAKE_BUILD_TYPE} MATCHES Debug)
+      set(ds "d")
+    endif()
+    file(GLOB lib_files ${local_qwt_dir}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}qwt${ds}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    install(FILES ${lib_files} DESTINATION bin)
+  endif()
+
+else()
+  set_target_properties(qwt PROPERTIES
+    IMPORTED_LOCATION ${local_qwt_dir}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}qwt${CMAKE_SHARED_LIBRARY_SUFFIX}
+    INTERFACE_INCLUDE_DIRECTORIES ${local_qwt_dir}/include
+    INTERFACE_COMPILE_DEFINITIONS QWT_DLL)
+
+  if (EXISTS ${local_qwt_dir})
+    file(GLOB lib_files ${local_qwt_dir}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}qwt${CMAKE_SHARED_LIBRARY_SUFFIX}*)
+    install(FILES ${lib_files} DESTINATION lib)
+  endif()
+
+endif()
