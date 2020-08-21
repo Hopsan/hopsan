@@ -46,7 +46,7 @@ class SignalDisplay : public ComponentC
 {
 
     private:
-        HString mUnit, mDescription;
+        HString mUnit, mDescription, mBackgroundColor, mTextColor;
         double mUnitScaling;
         int mPrecision;
 
@@ -64,6 +64,8 @@ class SignalDisplay : public ComponentC
             addConstant("unit","Unit","", mUnit);
             addConstant("unitscaling", "Unit scaling (from SI unit)", "", 1, mUnitScaling);
             addConstant("precision", "Maximum number of total digits", "", 8, mPrecision);
+            addConstant("backgroundcolor", "Background color (red,green,blue)", "", "255,255,255", mBackgroundColor);
+            addConstant("textcolor", "Text color (red,green,blue)", "", "0,50,80", mTextColor);
         }
 
 

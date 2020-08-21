@@ -206,6 +206,7 @@ void AnimatedComponent::updateAnimation()
         text.prepend(mDescription);
         text.append(mUnit);
         mpText->setPlainText(text);
+        mpText->setHtml(mHtml+ text + "</div>");
     }
 
     //Loop through all movable icons
@@ -548,6 +549,13 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
 
         //Figure out precision
         mPrecision = mpModelObject->getParameterValue("precision").toInt();
+
+        //Figure out colors
+        mBackgroundColor = mpModelObject->getParameterValue("backgroundcolor");
+        mTextColor = mpModelObject->getParameterValue("textcolor");
+
+        //Generate HTML style string
+        mHtml = "<div style='background:rgba("+mBackgroundColor+", 100%);font-family: monospace;color:rgba("+mTextColor+", 100%); '>";
     }
 }
 

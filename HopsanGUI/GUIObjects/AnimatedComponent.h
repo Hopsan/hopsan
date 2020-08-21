@@ -86,7 +86,7 @@ protected:
 
     //Display component members
     QGraphicsTextItem *mpText;
-    QString mDescription, mUnit;
+    QString mDescription, mUnit, mBackgroundColor, mTextColor, mHtml;
     double mUnitScaling;
     int mPrecision;
 
