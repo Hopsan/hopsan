@@ -24,9 +24,6 @@
 
 //!
 //! @file   ModelUtilities.h
-//! @author FluMeS
-//! @date   2012-05-30
-//!
 //! @brief Contains model specific helpfunctions for CLI
 //!
 //$Id$

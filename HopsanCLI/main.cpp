@@ -24,12 +24,8 @@
 
 //!
 //! @file   HopsanCLI/main.cpp
-//! @author FluMeS
-//! @date   2011-03-28
-//!
 //! @brief The HopsanCLI main file
 //!
-//$Id$
 
 #include <iostream>
 #include <string>
@@ -337,7 +333,7 @@ int main(int argc, char *argv[])
             for (size_t i=0; i<types.size(); ++i)
             {
                 Component *pComp = gHopsanCore.createComponent(types[i].c_str());
-                nErrors += gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages(); + gHopsanCore.getNumWarningMessages();
+                nErrors += gHopsanCore.getNumErrorMessages() + gHopsanCore.getNumFatalMessages();// + gHopsanCore.getNumWarningMessages();
                 printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
                 gHopsanCore.removeComponent(pComp);
             }
