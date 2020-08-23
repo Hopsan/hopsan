@@ -47,7 +47,8 @@ void printComponentHierarchy(hopsan::ComponentSystem *pSystem, std::string prefi
 
 // ===== Save Functions =====
 enum SaveResults {Final, Full};
-void saveResults(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany, std::string prefix="", std::ofstream *pFile=0);
+void saveResults(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany, const std::vector<std::string> &includeFilter,
+                 std::string prefix="", std::ofstream *pFile=0);
 void transposeCSVresults(const std::string &rFileName);
 void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentSystem* pSystem, std::string prefix="", std::ofstream *pFile=0);
 

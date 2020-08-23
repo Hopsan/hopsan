@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> parameterImportOption("", "parameterImport", "CSV file with parameter values to import", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> hvcTestOption("t","validate","Perform model validation based on HopsanValidationConfiguration",false,"","Path to .hvc file", cmd);
         TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
-        TCLAP::ValueArg<std::string> logonlyOption("","logonly","If specified, log only given ports. Can be a file (one full port name per line) or coma separated list.",false,"","string", cmd);
+        TCLAP::ValueArg<std::string> logonlyOption("","logonly","If specified, log only given ports or variables. Can be a file (one full port/variable name per line) or coma separated list.",false,"","string", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
         TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
@@ -839,7 +839,7 @@ int main(int argc, char *argv[])
                 printComponentHierarchy(pRootSystem, "", true, true);
                 cout << endl;
 
-
+                std::vector<std::string> logOnlyPortsOrVariables;
                 if (pRootSystem && simulateOption.isSet())
                 {
                     bool doSimulate=true;
@@ -884,7 +884,6 @@ int main(int argc, char *argv[])
 
                     if (logonlyOption.isSet())
                     {
-                        std::vector<std::string> enabled_ports;
                         auto file_or_list = logonlyOption.getValue();
                         // Check if argument is a file, if so, read from it line-by-line
                         std::ifstream port_name_file(file_or_list);
@@ -895,7 +894,7 @@ int main(int argc, char *argv[])
                             {
                                 if (!line.empty())
                                 {
-                                    enabled_ports.push_back(line);
+                                    logOnlyPortsOrVariables.push_back(line);
                                 }
                             }
                             port_name_file.close();
@@ -903,12 +902,12 @@ int main(int argc, char *argv[])
                         // Else read , separated string
                         else
                         {
-                            splitStringOnDelimiter(file_or_list,',',enabled_ports);
+                            splitStringOnDelimiter(file_or_list,',',logOnlyPortsOrVariables);
                         }
 
                         // Now disable all nodes and then enable the requested ones
                         forEachPort(pRootSystem, [](hopsan::Port& port){port.setEnableLogging(false);});
-                        for (const auto& port_name : enabled_ports)
+                        for (const auto& port_name : logOnlyPortsOrVariables)
                         {
                             hopsan::Port* pPort = getPortWithFullName(pRootSystem, port_name);
                             if (pPort)
@@ -984,7 +983,7 @@ int main(int argc, char *argv[])
                     {
                         prefix = pRootSystem->getName().c_str()+string("$");
                     }
-                    saveResults(pRootSystem, destinationPath+resultsFinalCSVOption.getValue(), Final, prefix);
+                    saveResults(pRootSystem, destinationPath+resultsFinalCSVOption.getValue(), Final, logOnlyPortsOrVariables, prefix);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {
@@ -1005,7 +1004,7 @@ int main(int argc, char *argv[])
                     {
                         prefix = pRootSystem->getName().c_str()+string("$");
                     }
-                    saveResults(pRootSystem, destinationPath+resultsFullCSVOption.getValue(), Full, prefix);
+                    saveResults(pRootSystem, destinationPath+resultsFullCSVOption.getValue(), Full, logOnlyPortsOrVariables, prefix);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {

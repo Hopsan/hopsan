@@ -33,6 +33,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "ModelUtilities.h"
 #include "version_cli.h"
@@ -42,6 +43,16 @@
 
 using namespace std;
 using namespace hopsan;
+
+namespace {
+
+template <typename ContainerT, typename ValueT>
+bool contains(const ContainerT& container, const ValueT& value) {
+    auto it = std::find(container.begin(), container.end(), value);
+    return (it != container.end());
+}
+
+}
 
 void generateFullSubSystemHierarchyName(const ComponentSystem *pSys, HString &rFullSysName)
 {
@@ -138,7 +149,8 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
 
 
 
-void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany, string prefix, ofstream *pFile)
+void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany, const std::vector<string>& includeFilter,
+                 std::string prefix, ofstream *pFile)
 {
     bool doCloseFile=false;
     if (!pFile)
@@ -189,30 +201,41 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 {
                     //cout << "port: " << p << " of: " << ports.size() << endl;
                     Port *pPort = ports[p];
+
                     // Ignore ports that have logging disabled when saving full data
                     if ((howMany == SaveResults::Full) && !pPort->isLoggingEnabled())
                     {
                         continue;
                     }
+
+                    HString fullPortName = prefix.c_str() + pComp->getName() + "#" + pPort->getName();
+                    const bool includeAllVariablesInThisPort = (includeFilter.empty() || contains(includeFilter, fullPortName.c_str())) &&
+                                                               pPort->isLoggingEnabled();
+
                     const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
                     if (pVars)
                     {
                         for (size_t v=0; v<pVars->size(); ++v)
                         {
-                            HString fullname = prefix.c_str() + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
 
+                            HString fullVarName = fullPortName + "#" + pVars->at(v).name;
                             if (howMany == Final)
                             {
-                                *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
+                                *pFile << fullVarName.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
                                 *pFile << "," << std::scientific << pPort->readNode(v) << endl;
                             }
                             else if (howMany == Full)
                             {
+                                const bool includeThisVariable = includeAllVariablesInThisPort || contains(includeFilter, fullVarName.c_str());
+                                if (!includeThisVariable) {
+                                    continue;
+                                }
+
                                 // Only write something if data has been logged (skip ports that are not logged)
                                 // We assume that the data vector has been cleared
                                 if (pPort->getLogDataVectorPtr()->size() > 0)
                                 {
-                                    *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
+                                    *pFile << fullVarName.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
                                     //! @todo what about time vector
                                     vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
                                     for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
@@ -229,7 +252,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 // Recurse into subsystems
                 if (pComp->isComponentSystem())
                 {
-                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix+pComp->getName().c_str()+"$", pFile);
+                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, includeFilter, prefix+pComp->getName().c_str()+"$", pFile);
                 }
             }
         }
