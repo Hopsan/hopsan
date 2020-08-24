@@ -46,11 +46,11 @@
   </dependency>
 
   <dependency name="katex">
-    <releasefile sha256="837c6205d59f238d9e9f5657368f183bad5bb3f1d603c1df3427231722c1775e" platform="windows">
-      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.2/katex.zip</url>
+    <releasefile sha256="0bfaaa3f778d527b4841e7718010a209a2d31aa76e0976b5a441522791d06d18" platform="windows">
+      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.12.0/katex.zip</url>
     </releasefile>
-    <releasefile sha256="a67fb16503f1e25d225a2cbe3b5b58637b29b96616e8b654430a939076568e71">
-      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.10.2/katex.tar.gz</url>
+    <releasefile sha256="9fd44a2e93cb1abb819c258b35c725cba54e5123c8420799b6a40a6a76ccf89e">
+      <url>https://github.com/KaTeX/KaTeX/releases/download/v0.12.0/katex.tar.gz</url>
     </releasefile>
   </dependency>
 
