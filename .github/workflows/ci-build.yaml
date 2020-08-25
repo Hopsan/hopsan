@@ -28,7 +28,7 @@ jobs:
       - name: Download dependencies
         shell: cmd
         working-directory: dependencies
-        run: python download-dependencies.py fmilibrary tclap sundials
+        run: python download-dependencies.py fmilibrary tclap
 
       - name: Build dependencies
         shell: cmd
@@ -75,7 +75,7 @@ jobs:
       - name: Download dependencies
         shell: bash
         working-directory: dependencies
-        run: ./download-dependencies.py fmilibrary tclap sundials
+        run: ./download-dependencies.py fmilibrary tclap
 
       - name: Build dependencies
         shell: bash
