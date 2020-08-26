@@ -179,7 +179,7 @@ public:
     void generateCafFile(const QString &target, const QString &typeName, const QString &displayName, const QString &srcFile);
     void generateMainSource(SharedComponentLibraryPtrT pLibrary);
 
-    void recompileLibrary(SharedComponentLibraryPtrT pLib, int solver=0, bool dontUnloadAndLoad=false);
+    void recompileLibrary(SharedComponentLibraryPtrT pLib, bool dontUnloadAndLoad=false);
 
     QStringList getLoadedTypeNames() const;
     ComponentLibraryEntry getEntry(const QString &typeName, const QString &subTypeName="") const;

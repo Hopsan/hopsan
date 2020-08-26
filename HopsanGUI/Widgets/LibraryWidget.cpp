@@ -554,8 +554,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                         if(QFileInfo(path+"/"+hppFile).exists() && QFileInfo(path+"/"+sourceFile).lastModified() < QFileInfo(pLib->libFilePath).lastModified()) {
                             continue;   //Do not compile regenerate C++ code unless Modelica code is modified
                         }
-                        if (!spGenerator->generateFromModelica(path+"/"+sourceFile, 2,
-                                                               HopsanGeneratorGUI::CompileT::DoNotCompile))
+                        if (!spGenerator->generateFromModelica(path+"/"+sourceFile, HopsanGeneratorGUI::CompileT::DoNotCompile))
                         {
                             modelicaFailed = true;
                             gpMessageHandler->addErrorMessage("Failed to translate Modelica to C++");

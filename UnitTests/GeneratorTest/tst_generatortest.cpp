@@ -538,7 +538,7 @@ private slots:
 #else
         gccPath = gcc32Path;
 #endif
-/*        bool exportOK =*/ callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, 0, true, mHopsanInstallRoot.c_str());
+/*        bool exportOK =*/ callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, true, mHopsanInstallRoot.c_str());
 //        if (!exportOK) {
 //            printMessages();
 //        }
