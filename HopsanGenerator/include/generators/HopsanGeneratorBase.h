@@ -61,7 +61,6 @@ class ComponentSystem;
 class HOPSANGENERATOR_DLLAPI HopsanGeneratorBase
 {
 public:
-    enum SolverT {NumericalIntegration, BilinearTransform, Kinsol};
     enum TargetLanguageT {Cpp, Modelica};
     using MessageHandlerT = std::function<void(const char*, const char, void*)>;
 

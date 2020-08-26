@@ -333,7 +333,7 @@ void HopsanGeneratorGUI::setAutoCloseWidgetsOnSuccess(bool doAutoClose)
     mPrivates->mAutoCloseWidgets = doAutoClose;
 }
 
-bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const int solver, const CompileT compile)
+bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const CompileT compile)
 {
     auto lw = mPrivates->createNewWidget();
     loadGeneratorLibrary();
@@ -345,8 +345,8 @@ bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const
     bool doCompile = (compile == CompileT::DoCompile);
     MessageForwarder forwarder(lw->widget());
 
-    using ModelicaImportFunction_t = bool(const char*, const char*, MessageHandler_t, void*, int, bool, const char*);
-    bool didOK = mPrivates->call<ModelicaImportFunction_t>(forwarder, functionName, mofile.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(&forwarder), solver, doCompile, hopsanRoot.c_str());
+    using ModelicaImportFunction_t = bool(const char*, const char*, MessageHandler_t, void*, bool, const char*);
+    bool didOK = mPrivates->call<ModelicaImportFunction_t>(forwarder, functionName, mofile.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(&forwarder), doCompile, hopsanRoot.c_str());
     lw->setDidSucceed(didOK);
     return didOK;
 }

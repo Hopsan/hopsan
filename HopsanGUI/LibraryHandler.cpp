@@ -1228,7 +1228,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                             if (!gpConfig->getGCCPath().isEmpty())
                             {
                                 gpMessageHandler->addInfoMessage("Attempting to recompile library: "+pLibrary->name+"...");
-                                recompileLibrary(pLibrary,2,true);
+                                recompileLibrary(pLibrary,true);
                                 gpMessageHandler->collectHopsanCoreMessages();
 
                                 // Try to load again
@@ -1661,7 +1661,7 @@ void LibraryHandler::importFmu()
 //! @brief Recompiles specified component library (safe to use with opened models)
 //! @param lib Component library to recompile
 //! @param solver Solver to use (for Modelica code only)
-void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, int solver, bool dontUnloadAndLoad)
+void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool dontUnloadAndLoad)
 {
     CoreLibraryAccess coreLibrary;
     auto spGenerator = createDefaultImportGenerator();
@@ -1690,8 +1690,7 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, int solve
         if(sourceFile.endsWith(".mo"))
         {
             qDebug() << "GENERATING: " << path+"/"+sourceFile;
-            if (!spGenerator->generateFromModelica(path+"/"+sourceFile, solver,
-                                                   HopsanGeneratorGUI::CompileT::DoNotCompile))
+            if (!spGenerator->generateFromModelica(path+"/"+sourceFile, HopsanGeneratorGUI::CompileT::DoNotCompile))
             {
                 modelicaFailed = true;
                 gpMessageHandler->addErrorMessage("Failed to translate Modelica to C++");

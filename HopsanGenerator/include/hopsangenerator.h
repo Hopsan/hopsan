@@ -15,7 +15,7 @@ extern "C" {
 
     HOPSANGENERATOR_DLLAPI bool callComponentLibraryCompiler(const char* outputPath, const char* extraCFlags, const char* extraLFlags, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
 
-    HOPSANGENERATOR_DLLAPI bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, messagehandler_t messageHandler=0, void* pMessageObject=0, int solver=0, bool compile=false, const char* hopsanInstallPath="");
+    HOPSANGENERATOR_DLLAPI bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, messagehandler_t messageHandler=0, void* pMessageObject=0, bool compile=false, const char* hopsanInstallPath="");
 
     HOPSANGENERATOR_DLLAPI bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler=0, void* pMessageObject=0);
 

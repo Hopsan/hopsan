@@ -70,11 +70,11 @@ QString toMoFilename(QString filename) {
 //! @param compilerPath Path to compiler bin directory
 //! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
 //! @param[in] quiet Hide generator output
-bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject, int solver, bool compile, const char* hopsanInstallPath)
+bool callModelicaGenerator(const char* moFilePath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject, bool compile, const char* hopsanInstallPath)
 {
     auto pGenerator = std::unique_ptr<HopsanModelicaGenerator>(new HopsanModelicaGenerator(hopsanInstallPath, compilerPath));
     pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    bool genImportOK = pGenerator->generateFromModelica(moFilePath, HopsanGeneratorBase::SolverT(solver));
+    bool genImportOK = pGenerator->generateFromModelica(moFilePath);
     if(genImportOK && compile)
     {
         QFileInfo mofile(moFilePath);
