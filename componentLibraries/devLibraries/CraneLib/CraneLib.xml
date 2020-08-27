@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="CraneLib">
-    <lib debug_ext="_d">CraneLib</lib>
-    <source>CraneLib.cpp</source>
-    <component>Crane.hpp</component>
-    <caf>Crane.xml</caf>
-</hopsancomponentlibrary>

@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = defaultLibrary exampleComponentLib devLibraries extensionLibrary
+SUBDIRS = defaultLibrary exampleComponentLib extensionLibrary

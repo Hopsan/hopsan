@@ -639,7 +639,6 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CPP#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\')
     prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     replace_pattern('componentLibraries/componentLibraries.pro', 'defaultLibrary', '')
-    replace_pattern('componentLibraries/componentLibraries.pro', 'devLibraries', '')
 
 
 def buildRelease():

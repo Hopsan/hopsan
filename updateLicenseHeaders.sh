@@ -18,9 +18,7 @@ Utilities/licenseChanger.py Ops ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py SymHop ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py componentLibraries/defaultLibrary ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py componentLibraries/exampleComponentLib ${LIC_HEADER} ${DOSET}
-Utilities/licenseChanger.py componentLibraries/devLibraries ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py componentLibraries/extensionLibrary ${LIC_HEADER} ${DOSET}
-Utilities/licenseChanger.py componentLibraries/extensionLibrary08 ${LIC_HEADER} ${DOSET}
 Utilities/licenseChanger.py UnitTests ${LIC_HEADER} ${DOSET}
 
 LIC_HEADER='licenseHeaderGPLv3'
