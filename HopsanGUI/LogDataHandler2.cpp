@@ -61,16 +61,7 @@
 #include "HopsanTypes.h"
 
 #ifdef USEHDF5
-#include "H5Cpp.h"
-
-//! @brief Help function to append string attribute to HDF5 object
-void appendH5Attribute(H5::H5Object &rObject, const H5std_string &attrName, const H5std_string &attrValue)
-{
-    H5::DataSpace attr_dataspace = H5::DataSpace( H5S_SCALAR );
-    H5::StrType attr_strtype( H5::PredType::C_S1, qMax(attrValue.size(), size_t(1)) );
-    H5::Attribute attribute = rObject.createAttribute( attrName, attr_strtype, attr_dataspace );
-    attribute.write( attr_strtype, attrValue );
-}
+#include "hopsanhdf5exporter.h"
 #endif
 
 
@@ -347,142 +338,30 @@ void LogDataHandler2::exportGenerationToCSV(const QString &rFilePath, int gen) c
     exportToCSV(rFilePath, vars);
 }
 
+
 void LogDataHandler2::exportToHDF5(const QString &rFilePath, const QList<SharedVectorVariableT> &rVariables) const
 {
-    QString error;
 #ifdef USEHDF5
-    const H5std_string filePath = rFilePath.toStdString().c_str();
-    try
-    {
-        // turn off auto printing of thrown exceptions so that they can be handled below
-        H5::Exception::dontPrint();
+    QList<hopsan::HVector<double> > dataVectors;
+    HopsanHDF5Exporter *pExporter = new HopsanHDF5Exporter(hopsan::HString(rFilePath.toStdString().c_str()), hopsan::HString(mpParentModel->getTopLevelSystemContainer()->getModelFileInfo().fileName().toStdString().c_str()), hopsan::HString(QString("HopsanGUI %1").arg(HOPSANGUIVERSION).toStdString().c_str()));
+    for (const SharedVectorVariableT &rVar : rVariables) {
+        QStringList systemHierarchy;
+        QString componentName,portName,variableName;
+        splitFullVariableName(rVar->getFullVariableName(),systemHierarchy,componentName,portName,variableName);
+        hopsan::HVector<double> dataVector(rVar->getDataVectorCopy().toStdVector());
 
-        // Create and open a file
-        H5::H5File file(filePath, H5F_ACC_TRUNC);
-
-        H5::Group root = file.openGroup("/");
-        appendH5Attribute(root, "date", QDateTime::currentDateTime().toString(Qt::ISODate).toStdString());
-        appendH5Attribute(root, "model", mpParentModel->getTopLevelSystemContainer()->getModelFileInfo().fileName().toStdString());
-        appendH5Attribute(root, "tool", QString("HopsanGUI %1").arg(HOPSANGUIVERSION).toStdString());
-
-        // Build directory/group hierarchy
-        // We need this to avoid massive exception casting when creating directories as
-        // group names will be repeated, also we need to create one group depth at a time
-        // The map will sort the group names as unique values in the correct order
-        QMap<QString, char> varhier;
-        for (const SharedVectorVariableT &rVar : rVariables)
-        {
-            QStringList sysnames;
-            QString c,p,v;
-            splitFullVariableName(rVar->getFullVariableName(),sysnames,c,p,v);
-
-            QString hdf5name = "/results/";
-            varhier.insert(hdf5name, 0);
-            for (const QString &sysname : sysnames)
-            {
-                hdf5name.append(sysname);
-                varhier.insert(hdf5name, 0);
-                hdf5name.append("/");
-            }
-            if (!c.isEmpty())
-            {
-                hdf5name.append(c);
-                varhier.insert(hdf5name, 0);
-                if (!p.isEmpty())
-                {
-                    hdf5name.append("/").append(p);
-                    varhier.insert(hdf5name, 0);
-                }
-            }
-        }
-        // Create all Groups
-        for (const QString &key : varhier.keys())
-        {
-            file.createGroup(key.toStdString());
-        }
-
-        for (const SharedVectorVariableT &rVar : rVariables)
-        {
-            // Create a dataspace for a vector of data
-            hsize_t dims[1];
-            dims[0] = rVar->getDataSize();
-            H5::DataSpace dataspace(1, dims);
-
-            // Convert full or smart name to hdf5 path (groups) name
-            QStringList sysnames;
-            QString c,p,v;
-            splitFullVariableName(rVar->getFullVariableName(),sysnames,c,p,v);
-
-            QStringList hdf5names;
-            QString hdf5fullname = "/results/";
-            for (const QString &sysname : sysnames)
-            {
-                hdf5fullname.append(sysname);
-                hdf5fullname.append("/");
-            }
-            if (!c.isEmpty())
-            {
-                hdf5fullname.append(c);
-                if (!p.isEmpty())
-                {
-                    hdf5fullname.append("/").append(p);
-                }
-            }
-            // Append last part of the name
-            hdf5fullname.append("/").append(v);
-            hdf5names.append(hdf5fullname);
-
-            // If we have an alias aswell then append it also
-            //! @todo should alias be model global ?
-            if (rVar->hasAliasName())
-            {
-                hdf5names.append(rVar->getSystemHierarchy()->join("/")+rVar->getAliasName());
-            }
-
-            for (const QString &rHdf5Name : hdf5names)
-            {
-                // Create the data set, we hope that the code above has created the group already
-                // if not then we will fail here and exit with an exception
-                H5::DataSet dataset = file.createDataSet(rHdf5Name.toStdString().c_str(), H5::PredType::NATIVE_DOUBLE, dataspace);
-
-                // Write the data
-                QVector<double> *pData = rVar->beginFullVectorOperation();
-                // Note! if name is already taken, then this will throw an exception
-                dataset.write(pData->data(), H5::PredType::NATIVE_DOUBLE);
-                rVar->endFullVectorOperation(pData);
-
-                // Add meta data attributes
-                appendH5Attribute(dataset, "Unit", rVar->getDataUnit().toStdString().c_str());
-                appendH5Attribute(dataset, "Quantity", rVar->getDataQuantity().toStdString().c_str());
-            }
-        }
-
-        file.close();
-    }
-    // catch failure caused by the H5File operations
-    catch(H5::FileIException e)
-    {
-        error = QString("%1 in %2").arg(e.getCDetailMsg()).arg(e.getCFuncName());
-    }
-    // catch failure caused by the DataSet operations
-    catch(H5::DataSetIException e)
-    {
-        error = QString("%1 in %2").arg(e.getCDetailMsg()).arg(e.getCFuncName());
-    }
-    // catch failure caused by the DataSpace operations
-    catch(H5::DataSpaceIException e)
-    {
-        error = QString("%1 in %2").arg(e.getCDetailMsg()).arg(e.getCFuncName());
+        hopsan::HString systemHierarchyStr = systemHierarchy.join(".").toStdString().c_str();
+        pExporter->addVariable(systemHierarchyStr,componentName.toStdString().c_str(),portName.toStdString().c_str(),variableName.toStdString().c_str(),rVar->getAliasName().toStdString().c_str(),rVar->getDataUnit().toStdString().c_str(),rVar->getDataQuantity().toStdString().c_str(),dataVector);
     }
 
+    bool success = pExporter->writeToFile();
+
+    if (!success) {
+        gpMessageHandler->addErrorMessage(pExporter->getLastError().c_str());
+    }
 #else
-    error = "HDF5 is not Supported in this build";
+    gpMessageHandler->addErrorMessage("HDF5 is not Supported in this build");
 #endif
-
-    if (!error.isEmpty())
-    {
-        gpMessageHandler->addErrorMessage(error);
-    }
 }
 
 void LogDataHandler2::exportGenerationToHDF5(const QString &rFilePath, int gen) const
