@@ -105,11 +105,14 @@ have_libmarkdown(){
 #--------------------------------------------------------
 
 # Set hdf5 paths
+LIBS += -L$${PWD}/../lib -lhopsanhdf5exporter$${DEBUG_EXT}
 include($${PWD}/../dependencies/hdf5.pri)
 have_hdf5(){
+  INCLUDEPATH *= $${PWD}/../hopsanhdf5exporter
   DEFINES *= USEHDF5
   !build_pass:message("Compiling with HDF5 support")
 } else {
+  LIBS -= -L$${PWD}/../lib -lhopsanhdf5exporter$${DEBUG_EXT}
   !build_pass:message("Compiling without HDF5 support")
 }
 
@@ -368,3 +371,5 @@ OTHER_FILES += \
     ../hopsan-default-configuration.xml
 
 DISTFILES +=
+
+message($$LIBS)

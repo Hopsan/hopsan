@@ -26,6 +26,7 @@
 #define HVECTOR_H
 
 #include <algorithm>
+#include <vector>
 
 namespace hopsan {
 
@@ -52,6 +53,16 @@ public:
         mSize = 0;
         mCapacity = 0;
         *this = rOther;
+    }
+
+    HVector(const std::vector<T> &rOther)
+    {
+        mpDataArray = 0;
+        mSize = 0;
+        mCapacity = 0;
+        this->reserve(rOther.size());
+        this->resize(rOther.size());
+        std::copy(rOther.begin(), rOther.end(), mpDataArray);
     }
 
     ~HVector()
@@ -177,6 +188,11 @@ public:
         resize(rhs.size());
         std::copy(&rhs.mpDataArray[0], &rhs.mpDataArray[rhs.size()], mpDataArray);
         return *this;
+    }
+
+    T* data()
+    {
+        return mpDataArray;
     }
 };
 
