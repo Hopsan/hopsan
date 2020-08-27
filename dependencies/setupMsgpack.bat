@@ -14,7 +14,7 @@ call setHopsanBuildPaths.bat
 REM build
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
 cmake --build . --parallel 8
 cmake --build . --target install
 if not "%HOPSAN_BUILD_DEPENDENCIES_TEST%" == "false" (

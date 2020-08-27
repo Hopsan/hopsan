@@ -25,7 +25,7 @@ if exist %builddir% (
 )
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -DWITH_LIBSODIUM=OFF -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+cmake -Wno-dev -DWITH_LIBSODIUM=OFF -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
 cmake --build . --parallel 8
 cmake --build . --target install
 if not "%HOPSAN_BUILD_DEPENDENCIES_TEST%" == "false" (
