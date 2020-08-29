@@ -36,6 +36,11 @@
 #include "CliUtilities.h"
 
 #include "HopsanEssentials.h"
+#include "HopsanTypes.h"
+
+#ifdef USEHDF5
+#include "hopsanhdf5exporter.h"
+#endif
 
 using namespace std;
 using namespace hopsan;
@@ -546,4 +551,96 @@ hopsan::Port* getPortWithFullName(hopsan::ComponentSystem *pRootSystem, const st
         return pComponent->getPort(portName.c_str());
     }
     return nullptr;
+}
+
+
+//! @brief Save results to HDF5 format
+//! @param [in] pSys Pointer to component system
+//! @param [in] rFileName File name for output file
+//! @param [in] howMany Specifies if all results or only final values should be saved
+void saveResultsToHDF5(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany)
+{
+#ifdef USEHDF5
+    if(!pSys) {
+        return;
+    }
+    HopsanHDF5Exporter *pExporter = new HopsanHDF5Exporter(rFileName.c_str(), pSys->getName().c_str(), std::string("HopsanCLI "+std::string(HOPSANCLIVERSION)).c_str());
+
+    //Store time vetor
+    vector<double> *pLogTimeVector = pSys->getLogTimeVector();
+    if (pLogTimeVector->size() > 0)
+    {
+        HString s,c,p;
+        HVector<double> timeVector;
+        if(howMany == Full) {
+            timeVector = HVector<double>(*pLogTimeVector);
+        }
+        else {
+            timeVector.append(pLogTimeVector->back());
+        }
+        pExporter->addVariable(s,c,p,"Time","","s","Time",timeVector);
+    }
+
+    //Store data vectors
+    vector<Component*> components;
+    pSys->getSubComponentsRecursively(components);      //Get list of pointers to all sub-components at all sub-system levels
+    for (const auto pComp : components) {
+        if (pComp) {
+            vector<Port*> ports = pComp->getPortPtrVector();
+            for (size_t p=0; p<ports.size(); ++p)
+            {
+                Port *pPort = ports[p];
+                // Ignore ports that have logging disabled when saving full data
+                if (!pPort->isLoggingEnabled())
+                {
+                    continue;
+                }
+                const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
+                if (pVars)
+                {
+                    for (size_t v=0; v<pVars->size(); ++v)
+                    {
+                        //Generate system hierarchy string (point separated)
+                        HString systemHierarchy;
+                        ComponentSystem *pParentSystem = pComp->getSystemParent();
+                        while(pParentSystem != nullptr && pParentSystem->getSystemParent() != nullptr) {
+                            if(pParentSystem != nullptr) {
+                                systemHierarchy = pParentSystem->getName()+"."+systemHierarchy;
+                            }
+                            pParentSystem = pParentSystem->getSystemParent();
+                        }
+                        if(!systemHierarchy.empty()) {
+                            systemHierarchy.erase(systemHierarchy.size()-1,1);
+                        }
+
+                        //Create data vector
+                        vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                        if(pLogData == nullptr || pLogData->empty()) {
+                            continue;
+                        }
+                        HVector<double> dataVector;
+                        if(howMany == Full) {
+                            dataVector.resize(pSys->getNumActuallyLoggedSamples());
+                            for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
+                            {
+                                dataVector[t] = (*pLogData)[t][v];
+                            }
+                        }
+                        else {
+                            dataVector.append(pLogData->back()[v]);
+                        }
+
+                        //Add variable to exporter
+                        pExporter->addVariable(systemHierarchy, pComp->getName(), pPort->getName(), pVars->at(v).name, pPort->getVariableAlias(v).c_str(), pVars->at(v).unit, pVars->at(v).quantity, dataVector);
+                    }
+                }
+            }
+        }
+    }
+
+    pExporter->writeToFile();
+    delete pExporter;
+#else
+    printErrorMessage("HopsanCLI was built without HDF5 support");
+#endif
 }
