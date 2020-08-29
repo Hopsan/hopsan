@@ -245,7 +245,9 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> loadSimulationSVOption("", "loadSimStartValues", "Load the start values (simulation state without time offset) from this file", false, "Path to file", "string", cmd);
         TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultsFinalCSVOption("", "resultsFinalCSV", "Export the results (only final values)", false, "", "Path to file", cmd);
-        TCLAP::ValueArg<std::string> resultsFullCSVOption("", "resultsFullCSV", "Export the results (all logged data)", false, "", "Path to file", cmd);
+        TCLAP::ValueArg<std::string> resultsFullCSVOption("", "resultsFullCSV", "Export the results (all logged data) to CSV", false, "", "Path to file", cmd);
+        TCLAP::ValueArg<std::string> resultsFinalHDF5Option("", "resultsFinalHDF5", "Exeport the results (only final values) to HDF5", false, "", "Path to file", cmd);
+        TCLAP::ValueArg<std::string> resultsFullHDF5Option("", "resultsFullHDF5", "Exeport the results (all logged data) to HDF5", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> parameterExportOption("", "parameterExport", "CSV file with exported parameter values", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> parameterImportOption("", "parameterImport", "CSV file with parameter values to import", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> hvcTestOption("t","validate","Perform model validation based on HopsanValidationConfiguration",false,"","Path to .hvc file", cmd);
@@ -1011,6 +1013,17 @@ int main(int argc, char *argv[])
                     {
                         printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue(), silentOption.getValue());
                     }
+                }
+
+
+                if(resultsFullHDF5Option.isSet()) {
+                    cout << "Saving full results to file: " << destinationPath+resultsFullHDF5Option.getValue() << endl;
+                    saveResultsToHDF5(pRootSystem, destinationPath+resultsFullHDF5Option.getValue(), Full);
+                }
+
+                if(resultsFinalHDF5Option.isSet()) {
+                    cout << "Saving final results to file: " << destinationPath+resultsFinalHDF5Option.getValue() << endl;
+                    saveResultsToHDF5(pRootSystem, destinationPath+resultsFinalHDF5Option.getValue(), Final);
                 }
 
                 // Save simulation state
