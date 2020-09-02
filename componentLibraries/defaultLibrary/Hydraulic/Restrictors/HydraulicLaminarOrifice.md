@@ -12,8 +12,8 @@ No initial conditions can be set for Q-type blocks.
 <!--- ### Tips--->
 
 ### Theory
-The laminar flow through the orifice is proportional to the pressure difference according to
-<!---EQUATION q_{2} = K_{c} \left(p_{1}-p_{2}\right) --->
+The laminar flow through the orifice is proportional to the pressure difference according to equation EQREF{eq:flow}
+<!---EQUATION LABEL=eq:flow q_{2} = K_{c} \left(p_{1}-p_{2}\right) --->
 
 #### Hopsan TLM adaption
 In Q components the positive flow direction is outwards from each port, in this case the TLM equations are
@@ -25,9 +25,9 @@ The flow equation can now be rewritten in the following steps
 <!---EQUATION q_{2} = K_{c} \left( c_{1} - c_{2} \right) - K_{c} q_{2} \left( Z_{c1} + Z_{c2} \right) --->
 <!---EQUATION q_{2} \left( 1 + K_{c} q_{2} \left( Z_{c1} + Z_{c2} \right)  \right) = K_{c} \left(  c_{1} - c_{2} \right) --->
 
-Which finally becomes the implemented equation
+Which finally becomes the implemented equation EQREF{eq:final}
 
-<!---EQUATION q2 = \frac{K_{c}\left(c_{1}-c_{2}\right)}{1.0+K_{c}\left(Zc_{1}+Zc_{2}\right)} --->
+<!---EQUATION LABEL=eq:final q2 = \frac{K_{c}\left(c_{1}-c_{2}\right)}{1.0+K_{c}\left(Zc_{1}+Zc_{2}\right)} --->
 
 #### References
 

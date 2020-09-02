@@ -524,19 +524,44 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                     QString tmp_html = htmlStream.readAll();
                     htmlFile.close();
 
-                    QMap<size_t, QString> equationMap;
+                    struct EquationData {
+                        size_t lineNumber = 0;
+                        QString label;
+                        size_t number;
+                        QString equation;
+                        QString htmlequation;
+                    };
+
+                    QMap<size_t, EquationData> equationMap;
                     QMap<size_t, QString> imageMap;
+                    QMap<QString, QString> eqrefMap;
                     QTextStream inHtmlStream(&tmp_html);
                     size_t lineNumber = 0;
+                    size_t equationNumber = 1;
                     while(!inHtmlStream.atEnd())
                     {
-                        //! @todo multiline ?
+                        //! @todo multiline equations?
                         QString line = inHtmlStream.readLine().trimmed();
                         if (line.startsWith("<!---EQUATION"))
                         {
-                            QString eq = line.mid(13, line.size()-18).trimmed();
-                            //eq.replace("\\", "\\\\");
-                            equationMap.insert(lineNumber, QString("<div class=\"equation\" expr=\"%1\"></div>").arg(eq));
+                            EquationData eqdata;
+                            eqdata.lineNumber = lineNumber;
+                            eqdata.number = equationNumber++;
+                            if (line.contains("LABEL")) {
+                                QRegularExpression re(R"(LABEL=(\S+)\s+(.+)--->)");
+                                QRegularExpressionMatch match = re.match(line, 13);
+                                QString label = match.captured(1).trimmed();
+                                if (!label.isEmpty()) {
+                                    eqdata.label = label;
+                                }
+                                eqdata.equation = match.captured(2).trimmed();
+                            }
+                            else {
+                                QRegularExpression re(R"(\s*(.+)--->)");
+                                eqdata.equation = re.match(line, 13).captured(1).trimmed();
+                            }
+                            eqdata.htmlequation = QString("<div class=\"equation\" expr=\"\\tag{%1} %2\"></div>").arg(eqdata.number).arg(eqdata.equation);
+                            equationMap.insert(lineNumber, eqdata);
                         }
                         else if (line.startsWith("<p><img"))
                         {
@@ -544,14 +569,37 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                             QString image = line.left(b+1)+"file:///"+mdFile.absolutePath()+"/"+line.right(line.size()-b-1);
                             imageMap.insert( lineNumber, image );
                         }
+                        else if (line.contains("EQREF")) {
+                            QRegularExpression re(R"(EQREF{(\S+)})");
+                            auto matchIterator = re.globalMatch(line);
+                            while (matchIterator.hasNext()) {
+                                auto match = matchIterator.next();
+                                auto label = match.captured(1);
+                                eqrefMap.insert(QString("EQREF{%1}").arg(label), label);
+                            }
+                        }
                         ++lineNumber;
+                    }
+
+                    // Resolve equation references, (replace the label with the actual equation number)
+                    const auto allEquations = equationMap.values();
+                    for (auto it = eqrefMap.begin(); it != eqrefMap.end(); ++it) {
+                        QString& rLabel = it.value();
+
+                        auto findEquationWithLabel = [rLabel](const auto& equationData) -> bool {
+                            return (equationData.label == rLabel);
+                        };
+                        auto eq_it = std::find_if(equationMap.begin(), equationMap.end(), findEquationWithLabel);
+                        if (eq_it != equationMap.end()) {
+                            rLabel = QString("(%1)").arg(eq_it.value().number);
+                        }
                     }
 
                     htmlFile.open(QIODevice::WriteOnly);
                     QTextStream& outHtmlStream = htmlStream;
                     outHtmlStream.seek(0);
 
-                    auto processHtmlStream = [&imageMap, &equationMap, &inHtmlStream, &outHtmlStream]() {
+                    auto processHtmlStream = [&imageMap, &equationMap, &eqrefMap, &inHtmlStream, &outHtmlStream]() {
                         inHtmlStream.seek(0);
                         size_t lineNumber = 0;
                         while (!inHtmlStream.atEnd())
@@ -565,17 +613,22 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                                 // Also discard the actual line
                                 inHtmlStream.readLine();
                             }
-                            // If not then print the actual line
+                            // If not then print the actual line (with replaced equation references)
                             else
                             {
-                                outHtmlStream << inHtmlStream.readLine() << "\n";
+                                //! @todo Could be slightly more efficient if remembering what lines various equation refs are
+                                QString line = inHtmlStream.readLine();
+                                for (auto it = eqrefMap.begin(); it != eqrefMap.end(); ++ it) {
+                                    line.replace(it.key(), it.value());
+                                }
+                                outHtmlStream << line << "\n";
                             }
 
                             // Check if an equation should be added
                             auto eqit = equationMap.find(lineNumber);
                             if (eqit != equationMap.end())
                             {
-                                outHtmlStream << eqit.value() << "\n";
+                                outHtmlStream << eqit.value().htmlequation << "\n";
                                 equationMap.erase(eqit);
                             }
 
