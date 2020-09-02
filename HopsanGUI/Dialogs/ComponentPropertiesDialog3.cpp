@@ -679,6 +679,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                 pHtmlView->loadHtmlFile(QUrl::fromLocalFile(path));
             }
             pHelpLayout->addWidget(pHtmlView);
+            pHtmlView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
         }
 
         if(!mpModelObject->getHelpPicture().isEmpty())
