@@ -26,7 +26,7 @@ gIncludeCompiler = False
 gTemporaryBuildDir = r'C:\temp_release'
 
 # External programs
-inkscapeDirList = [r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
+inkscapeDirList = [r'C:\Program Files\Inkscape\bin', r'C:\Program Files (x86)\Inkscape\bin', r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
 innoDirList = [r'C:\Program Files\Inno Setup 6', r'C:\Program Files (x86)\Inno Setup 6', r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 doxygenDirList = [r'C:\Program Files\doxygen\bin', r'C:\Program Files (x86)\doxygen\bin']
 gsDirList = [r'C:\Program Files\gs\gs9.27\bin', r'C:\Program Files (x86)\gs\gs9.27\bin', r'C:\Program Files\gs\gs9.22\bin', r'C:\Program Files (x86)\gs\gs9.22\bin', r'C:\Program Files\gs\gs9.21\bin', r'C:\Program Files (x86)\gs\gs9.21\bin', r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files (x86)\gs\gs9.19\bin', r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin', ]
@@ -40,7 +40,7 @@ msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Pro
 # Note! This list must be adapted to the actual version of Qt/MinGW that you are using when building the release
 qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll',
                  'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll',
-                 'Qt5Test.dll', 'icuin56.dll', 'icuuc56.dll', 'icudt56.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
+                 'Qt5Test.dll', 'libicuin56.dll', 'libicuuc56.dll', 'libicudt56.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
 qtRuntimeBins32 = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
                  'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5Xml.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
                  'Qt5Test.dll', 'Qt5PrintSupport.dll']
@@ -50,8 +50,8 @@ mingwBins32   = ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwOptBins  = []
 mingwOptBins32  = ['libeay32.dll', 'ssleay32.dll']
 
-dependencyFiles = ['qwt/lib/qwt.dll', 'zeromq/bin/libzmq.dll', 'hdf5/bin/hdf5_cpp-shared.dll', 'hdf5/bin/hdf5-shared.dll', 'fmilibrary/lib/libfmilib_shared.dll',
-                   'discount/lib/libmarkdown.dll']
+dependencyFiles = ['qwt/lib/qwt.dll', 'zeromq/bin/libzmq.dll', 'hdf5/bin/hdf5_cpp.dll', 'hdf5/bin/hdf5.dll', 'fmilibrary/lib/libfmilib_shared.dll',
+                   'discount/bin/libmarkdown.dll']
 
 # -------------------- Setup End --------------------
 
