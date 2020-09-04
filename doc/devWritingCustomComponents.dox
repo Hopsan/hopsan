@@ -294,10 +294,12 @@ The first line contains basic information about the XML code, and should always 
   - \b visible If the port is visible by default, \e true or \e false. (If omitted defaults to true)
   
  \page devWritingCppComponentsPageMarkdownHelp Markdown help with LaTeX equation support
- New from version 0.7 is the ability to write component help documentation in markdown with additional support for LaTeX equations.
- As of 0.7 release there is only one component using the feature, the HydraulicLaminarOrifice, and it is demonstrated here as an example.
- When you write new components or update old ones, please consider using this feature.
- For help on typical markdown syntax see the Internet!\n
+ You can write component help documentation in markdown with additional support for LaTeX equations.
+ The markdown files will be converted to, and viewed as HTML.\n
+ The LaTeX equation support is not an official part of markdown, but in Hopsan you can add HTML comments starting with EQUATION to the markdown files.\n
+ Equations are numbered automatically and can be give a LABEL that can be referenced from the text using EQREF{label} (will be replaced in the generated HTML).\n
+ For help on how to write markdown, search the internet for a cheat sheet or similar.
+ For inclusion of images and equations see the following example.\n\n
  
  __MyExampleOrifice.md:__
  \verbinclude MyExampleOrifice.md
