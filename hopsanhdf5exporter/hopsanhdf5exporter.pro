@@ -5,7 +5,7 @@
 #-------------------------------------------------
 include( ../Common.prf )
 
-QT       -= gui
+QT       -= core gui
 TEMPLATE = lib
 CONFIG += staticlib
 
@@ -15,14 +15,6 @@ DESTDIR = $${PWD}/../lib
 INCLUDEPATH += $${PWD}/include
 
 TARGET = $${TARGET}$${DEBUG_EXT}
-
-DEFINES += HOPSANHDF5EXPORTER_LIBRARY
-
-# The following define makes your compiler emit warnings if you use
-# any feature of Qt which has been marked as deprecated (the exact warnings
-# depend on your compiler). Please consult the documentation of the
-# deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
 
 #--------------------------------------------------------
 # Set hopsan core paths
@@ -35,19 +27,16 @@ DEFINES *= HOPSANCORE_DLLIMPORT
 include($${PWD}/../dependencies/hdf5.pri)
 have_hdf5(){
   DEFINES *= USEHDF5
-  !build_pass:message("Compiling with HDF5 support")
-} else {
-  !build_pass:message("Compiling without HDF5 support")
-}
-
-
-# You can also make your code fail to compile if you use deprecated APIs.
-# In order to do so, uncomment the following line.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-SOURCES += \
+  SOURCES += \
         hopsanhdf5exporter.cpp
 
-HEADERS += \
+  HEADERS += \
         hopsanhdf5exporter.h
+
+  !build_pass:message("Compiling hopsanhdf5exporter with HDF5 support")
+} else {
+  # I have found no obvious way to make a subdir project do nothing, build fails if there is nothing here, at least on MACOS
+  SOURCES += \
+        hopsanhdf5exporter_dummy.cpp
+  !build_pass:warning("Compiling hopsanhdf5exporter without HDF5 support (a stub library will be created)")
+}
