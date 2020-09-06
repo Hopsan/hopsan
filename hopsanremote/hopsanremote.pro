@@ -5,7 +5,6 @@ include($${PWD}/../dependencies/zeromq-check.pri)
 
   TEMPLATE = subdirs
 
-  CONFIG += ordered
   SUBDIRS = \
       libhopsanremotecommon \
       libhopsanremoteclient \
@@ -14,4 +13,12 @@ include($${PWD}/../dependencies/zeromq-check.pri)
       hopsanremoteclient \
       hopsanaddressserver \
       hopsanservermonitor
+
+  libhopsanremoteclient.dependes = libhopsanremotecommon
+  hopsanserver.depends = libhopsanremotecommon
+  hopsanserverworker.depends = libhopsanremotecommon
+  hopsanremoteclient.depends = libhopsanremoteclient
+  hopsanaddressserver.depends = libhopsanremotecommon libhopsanremoteclient
+  hopsanservermonitor.depends = libhopsanremoteclient
+
 }
