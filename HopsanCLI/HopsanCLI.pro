@@ -65,22 +65,23 @@ contains(DEFINES, HOPSANCLI_USEGENERATOR) {
 }
 #--------------------------------------------------------
 
-CONFIG(debug, debug|release) {
-  QMAKE_CXXFLAGS += -pedantic -Wno-long-long -Wconversion
-}
-
+#--------------------------------------------------------
 # Set hdf5 paths
 LIBS += -L$${PWD}/../lib -lhopsanhdf5exporter$${DEBUG_EXT}
 include($${PWD}/../dependencies/hdf5.pri)
 have_hdf5(){
   INCLUDEPATH *= $${PWD}/../hopsanhdf5exporter
   DEFINES *= USEHDF5
-  !build_pass:message("Compiling with HDF5 support")
+  !build_pass:message("Compiling HopsanCLI with HDF5 support")
 } else {
-  LIBS -= -L$${PWD}/../lib -lhopsanhdf5exporter$${DEBUG_EXT}
-  !build_pass:message("Compiling without HDF5 support")
+  LIBS -= -lhopsanhdf5exporter$${DEBUG_EXT}
+  !build_pass:message("Compiling HopsanCLI without HDF5 support")
 }
+#--------------------------------------------------------
 
+CONFIG(debug, debug|release) {
+  QMAKE_CXXFLAGS += -pedantic -Wno-long-long -Wconversion
+}
 
 # -------------------------------------------------
 # Platform specific additional project options
