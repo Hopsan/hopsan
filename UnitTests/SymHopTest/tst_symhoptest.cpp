@@ -587,7 +587,8 @@ private Q_SLOTS:
         QTest::addColumn<Expression>("expr");
         QTest::addColumn<Expression>("factor");
         QTest::addColumn<Expression>("result");
-        QTest::newRow("0") << Expression("x*y+3*x+z") << Expression("x") << Expression("x*(y+3)+z");
+        bool dummy;
+        QTest::newRow("0") << Expression("x*y+3*x+z") << Expression("x") << Expression("x*(y+3)+z", &dummy, Expression::NoSimplifications);
     }
 
     void SymHop_Factor_Most_Common_Factor()
@@ -604,7 +605,8 @@ private Q_SLOTS:
     {
         QTest::addColumn<Expression>("expr");
         QTest::addColumn<Expression>("result");
-        QTest::newRow("0") << Expression("x*y+x*z+3*x+A*y") << Expression("x*(y+z+3)+A*y");
+        bool dummy;
+        QTest::newRow("0") << Expression("x*y+x*z+3*x+A*y") << Expression("x*(y+z+3)+A*y", &dummy, Expression::NoSimplifications);
     }
 
     void SymHop_Simplify()
@@ -743,7 +745,8 @@ private Q_SLOTS:
     {
         QTest::addColumn<Expression>("expr");
         QTest::addColumn<Expression>("result");
-        QTest::newRow("0") << Expression("x*Z+y*Z^2") << Expression("mDelay0.getIdx(1)+mDelay1.getIdx(1)");
+        bool dummy;
+        QTest::newRow("0") << Expression("x*Z+y*Z^2") << Expression("mDelay0.getOldest()+mDelay1.getOldest()", &dummy, Expression::NoSimplifications);
     }
 
     void SymHop_Bilinear_Transform()
