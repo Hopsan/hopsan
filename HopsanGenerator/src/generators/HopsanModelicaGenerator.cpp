@@ -26,7 +26,6 @@
 #include "GeneratorUtilities.h"
 #include <QTime>
 #include <QFileInfo>
-#include <QRandomGenerator>
 
 namespace {
 
