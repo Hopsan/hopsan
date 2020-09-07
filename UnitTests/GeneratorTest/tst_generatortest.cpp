@@ -522,11 +522,14 @@ private slots:
 
     void Generator_Modelica()
     {
+#if defined(__APPLE__)
+        QWARN("Generator Modelica tests are disbaled on MacOS, until generator code works there");
+#else
         QFETCH(std::string, code);
         QFETCH(std::string, name);
 
         //Generate FMU
-        QFile moFile(qcwd+"/modelica/motest.mo");
+        QFile moFile(qcwd+"/modelica/modelica.mo");
         moFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
         moFile.write(QString(code.c_str()).toUtf8());
         moFile.close();
@@ -538,14 +541,30 @@ private slots:
 #else
         gccPath = gcc32Path;
 #endif
-/*        bool exportOK =*/ callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, true, mHopsanInstallRoot.c_str());
-//        if (!exportOK) {
-//            printMessages();
-//        }
+        bool success = callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, true, mHopsanInstallRoot.c_str());
 
-//        QVERIFY2(QDir().exists((cwd+"/modelica/"+name+std::string(SHAREDLIB_SUFFIX)).c_str()),
-//                 "Failure! Modelica generator failed to generate .dll/.so.");
-        QWARN("Modelica generator test is disabled");
+        QVERIFY2(success, "Failure! Failed to translate Modelica to C++.");
+
+        std::string xmlFile = cwd+"/modelica/modelica_lib.xml";
+        std::string lflags, cflags;
+        std::string hopsanpath = cwd+"/..";
+        success = callComponentLibraryCompiler(xmlFile.c_str(),lflags.c_str(),cflags.c_str(),hopsanpath.c_str(),gccPath.c_str(),&generatorMessageCallback, this);
+
+        QVERIFY2(success, "Failure! Failed to compile Modelica library.");
+
+        std::string libfile=cwd+"/modelica/";
+        #ifndef _WIN32
+            libfile.append("lib");
+        #endif
+            libfile.append("modelica");
+        #ifdef HOPSAN_BUILD_TYPE_DEBUG
+            libfile.append("_d");
+        #endif
+        libfile.append("." SHAREDLIB_SUFFIX);
+
+        QVERIFY2(QDir().exists(libfile.c_str()),
+                 std::string("Failure! Modelica generator failed to generate .dll/.so: "+libfile).c_str());
+#endif
     }
 
     void Generator_Modelica_data()
@@ -553,8 +572,8 @@ private slots:
         QTest::addColumn<std::string>("code");
         QTest::addColumn<std::string>("name");
 
-        const char* moCode = "model MyLaminarOrifice \"Hydraulic Laminar Orifice\"\n"
-              "   annotation(hopsanCqsType = \"Q\");\n"
+        const char* moCode = "model TestLaminarOrifice \"Hydraulic Laminar Orifice\"\n"
+              "   annotation(hopsanCqsType = \"Q\", linearTransform=\"bdf2\");\n"
               "   parameter Real Kc(unit=\"-\")=1e-11 \"Pressure-Flow Coefficient\";\n"
               "   NodeHydraulic P1, P2;\n"
               "equation\n"
@@ -562,7 +581,7 @@ private slots:
               "   P1.q = -P2.q;\n"
               "   P1.p = P1.c + P1.Zc*P1.q;\n"
               "   P2.p = P2.c + P2.Zc*P2.q;\n"
-              "end LaminarOrifice;\n";
+              "end TestLaminarOrifice;\n";
 
         removeDir(QDir::currentPath()+"/modelica");
         QDir().mkpath(QDir::currentPath()+"/modelica");
