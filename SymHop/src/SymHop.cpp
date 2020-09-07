@@ -2406,6 +2406,9 @@ void Expression::removeFactor(const Expression var)
     }
 
     mFactors.removeOne(var);
+    if(mFactors.size() == 1 && mDivisors.empty()) {
+        this->replaceBy(Expression(mFactors.first()));
+    }
     return;
 }
 
