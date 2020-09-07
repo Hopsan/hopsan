@@ -758,7 +758,7 @@ void KinsolSolver::Impl::solve()
     }
 
     int flag = KINSol(mem, y, strategy, scale, scale);
-    if (flag < 0 && flag != -5 && flag != -7) {
+    if (flag < KIN_SUCCESS && flag != KIN_LINESEARCH_NONCONV && flag != KIN_MXNEWT_5X_EXCEEDED) {
         mpComponent->stopSimulation("KINSol() failed with flag "+HString(KINGetReturnFlagName(flag))+".");
         return;
     }
