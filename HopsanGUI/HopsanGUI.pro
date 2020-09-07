@@ -76,7 +76,7 @@ DEFINES *= HOPSANCORE_DLLIMPORT
 #--------------------------------------------------------
 # Set hopsangeneratorgui Paths
 INCLUDEPATH *= $${PWD}/../hopsangeneratorgui/include
-LIBS *= -L$${PWD}/../bin -lhopsangeneratorgui$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../lib -lhopsangeneratorgui$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
