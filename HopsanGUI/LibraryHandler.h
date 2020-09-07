@@ -118,6 +118,8 @@ class NewComponentDialog : public QDialog
 {
     Q_OBJECT
 public:
+    enum NewComponentLanguage { Cpp, Modelica };
+
     NewComponentDialog(QWidget *parent);
 
     ComponentSpecification getSpecification();
