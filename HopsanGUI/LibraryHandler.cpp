@@ -875,7 +875,7 @@ void NewComponentDialog::removePortRow()
 
 void NewComponentDialog::updateIntegrationMethodComboBoxVisibility()
 {
-    mpIntegrationMethodComboBox->setEnabled(mpLanguageComboBox->currentIndex() == 1);
+    mpIntegrationMethodComboBox->setEnabled(mpLanguageComboBox->currentText() == "C++");
 }
 
 void NewComponentDialog::adjustTableSize(QTableWidget *pTable)
