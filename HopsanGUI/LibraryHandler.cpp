@@ -396,10 +396,14 @@ NewComponentDialog::NewComponentDialog(QWidget *parent)
     mpCqsTypeComboBox->addItems(QStringList() << "S (signal)" << "Q (resistive)" << "C (capacitive)");
     mpGeneralTable->setCellWidget(2,1,mpCqsTypeComboBox);
     mpLanguageComboBox = new QComboBox(this);
-    mpLanguageComboBox->addItems(QStringList() << "C++" << "Modelica");
+    mpLanguageComboBox->addItem("");
+    mpLanguageComboBox->addItem("");
+    mpLanguageComboBox->setItemText(NewComponentLanguage::Cpp, "C++");
+    mpLanguageComboBox->setItemText(NewComponentLanguage::Modelica, "Modelica");
     mpGeneralTable->setCellWidget(3,1,mpLanguageComboBox);
     mpIntegrationMethodComboBox = new QComboBox(this);
     mpIntegrationMethodComboBox->addItems(QStringList() << "Explicit Euler" << "Implicit Euler" << "Trapezoid Rule" << "BDF1" << "BDF2" << "BDF3" << "BDF4" << "BDF5");
+    mpIntegrationMethodComboBox->setCurrentIndex(4);
     updateIntegrationMethodComboBoxVisibility();
     mpGeneralTable->setCellWidget(4,1,mpIntegrationMethodComboBox);
     connect(mpLanguageComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(updateIntegrationMethodComboBoxVisibility()));
@@ -875,7 +879,7 @@ void NewComponentDialog::removePortRow()
 
 void NewComponentDialog::updateIntegrationMethodComboBoxVisibility()
 {
-    mpIntegrationMethodComboBox->setEnabled(mpLanguageComboBox->currentText() == "C++");
+    mpIntegrationMethodComboBox->setEnabled(mpLanguageComboBox->currentIndex() == NewComponentLanguage::Modelica);
 }
 
 void NewComponentDialog::adjustTableSize(QTableWidget *pTable)
