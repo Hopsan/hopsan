@@ -8,7 +8,7 @@ include( ../Common.prf )
 TARGET = hopsangeneratorgui
 TEMPLATE = lib
 CONFIG += staticlib
-DESTDIR = $${PWD}/../bin
+DESTDIR = $${PWD}/../lib
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 QT     += core gui
