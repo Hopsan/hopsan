@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject displayname="ModelicaIfElse" typename="ModelicaIfElse" sourcecode="ModelicaIfElse.mo" libpath="" recompilable="true">
+    <icons>
+        <icon scale="1" path="ModelicaIfElse.svg" iconrotation="ON" type="user"/>
+    </icons>
+    <ports>
+      <port y="0.5" name="x" x="0" a="180"/>
+      <port name="z" x="1.0" y="0.5" a="0.0"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>
