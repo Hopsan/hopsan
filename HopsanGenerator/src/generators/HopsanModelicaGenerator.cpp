@@ -43,14 +43,12 @@ bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Exp
         {
             equationList.append(equations[s].toString());
         }
-        qDebug() << "Equations: " << equationList;
 
         QStringList stateVarList;
         for(int s=0; s<stateVars.size(); ++s)
         {
             stateVarList.append(stateVars[s].toString());
         }
-        qDebug() << "State vars: " << stateVarList;
 
         pGenerator->printErrorMessage("Number of equations = " + QString::number(equations.size()) + ", number of state variables = " + QString::number(stateVars.size()));
         retval = false;
