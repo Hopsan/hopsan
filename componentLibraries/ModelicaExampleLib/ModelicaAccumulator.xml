@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject sourcecode="ModelicaAccumulator.mo" displayname="Accumulator" typename="ModelicaAccumulator" recompilable="true" libpath="">
+    <icons>
+        <icon scale="1" path="ModelicaAccumulator.svg" iconrotation="ON" type="user"/>
+    </icons>
+    <ports>
+      <port name="Va" x="1.0" y="0.14" a="0.0"/>
+      <port name="pa" x="1.0" y="0.29" a="0.0"/>
+      <port name="xmp" x="1.0" y="0.44" a="0.0"/>
+      <port name="vmp" x="1.0" y="0.59" a="0.0"/>
+      <port name="P1" x="0.5" y="1.0" a="90.0"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

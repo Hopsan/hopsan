@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject sourcecode="ModelicaSecondOrderTransferFunction.mo" displayname="Second Order Transfer Function" recompilable="true" libpath="" typename="ModelicaSecondOrderTransferFunction">
+    <icons>
+        <icon scale="1" path="ModelicaSecondOrderTransferFunction.svg" iconrotation="ON" type="user"/>
+    </icons>
+    
+    <ports>
+      <port name="in" x="0.0" y="0.5" a="0.0"/>
+      <port name="out" x="1.0" y="0.5" a="0.0"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

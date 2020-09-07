@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject sourcecode="Modelica22Valve.mo" typename="Modelica22Valve" displayname="2/2 Valve" recompilable="true" libpath="">
+    <icons>
+        <icon scale="1" path="Modelica22Valve.svg" iconrotation="ON" type="user"/>
+    </icons>
+    <ports>
+      <port name="x" x="0.0" y="0.75" a="180.0"/>
+      <port name="P1" x="0.5" y="0.1" a="90.0"/>
+      <port name="P2" x="0.5" y="0.9" a="270.0"/>
+      <port name="xv" x="1.0" y="0.5" a="0.0"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

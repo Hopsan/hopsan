@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsancomponentlibrary version="0.3">
+  <id>d02e18a4-a0f3-4a9a-9fc8-9e7b5d8e1e1f</id>
+  <name>ModelicaExampleLib</name>
+  <lib debug_ext="_d">ModelicaExampleLib</lib>
+  <buildflags>
+
+
+  </buildflags>
+
+
+
+  <source>ModelicaExampleLib.cpp</source>
+
+
+  <component>ModelicaMass.hpp</component>
+  <component>ModelicaOrifice.hpp</component>
+  <component>Modelica22Valve.hpp</component>
+  <component>ModelicaSecondOrderTransferFunction.hpp</component>
+  <component>ModelicaAccumulator.hpp</component>
+  <component>ModelicaIfElse.hpp</component>
+
+  <componentxml>ModelicaMass.xml</componentxml>
+  <componentxml>ModelicaOrifice.xml</componentxml>
+  <componentxml>Modelica22Valve.xml</componentxml>
+  <componentxml>ModelicaSecondOrderTransferFunction.xml</componentxml>
+  <componentxml>ModelicaAccumulator.xml</componentxml>
+  <componentxml>ModelicaIfElse.xml</componentxml>
+
+  <auxiliary>ModelicaMass.mo</auxiliary>
+  <auxiliary>ModelicaOrifice.mo</auxiliary>
+  <auxiliary>Modelica22Valve.mo</auxiliary>
+  <auxiliary>ModelicaSecondOrderTransferFunction.mo</auxiliary>
+  <auxiliary>ModelicaAccumulator.mo</auxiliary>
+  <auxiliary>ModelicaIfElse.mo</auxiliary>
+
+</hopsancomponentlibrary>
