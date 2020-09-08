@@ -547,8 +547,7 @@ private slots:
 
         std::string xmlFile = cwd+"/modelica/modelica_lib.xml";
         std::string lflags, cflags;
-        std::string hopsanpath = cwd+"/..";
-        success = callComponentLibraryCompiler(xmlFile.c_str(),lflags.c_str(),cflags.c_str(),hopsanpath.c_str(),gccPath.c_str(),&generatorMessageCallback, this);
+        success = callComponentLibraryCompiler(xmlFile.c_str(),lflags.c_str(),cflags.c_str(),mHopsanInstallRoot.c_str(),gccPath.c_str(),&generatorMessageCallback, this);
 
         QVERIFY2(success, "Failure! Failed to compile Modelica library.");
 
