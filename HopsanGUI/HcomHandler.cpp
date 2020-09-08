@@ -378,6 +378,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunctionoid("exists", new HcomFunctionoidExists(this), "Returns whether or not specified component exists in model", "Usage: exists(name)");
     registerFunctionoid("maxpar", new HcomFunctionoidMaxPar(this), "Returns the maximum value of specified parameter for specified component type", "Usage: maxpar(type,par)");
     registerFunctionoid("minpar", new HcomFunctionoidMinPar(this), "Returns the minimum value of specified parameter for specified component type", "Usage: minpar(type,par)");
+    registerFunctionoid("hg", new HcomFunctionoidHg(this), "Returns highest generation number", "Usage: hg()");
 
     createCommands();
 
@@ -804,6 +805,13 @@ void HcomHandler::createCommands()
     rmvarCmd.group = "Variable Commands";
     mCmdList << rmvarCmd;
 
+    HcomCommand dihgCmd;
+    dihgCmd.cmd = "dihg";
+    dihgCmd.description.append("Display highest generation");
+    dihgCmd.help.append(" Usage: dihg\n");
+    dihgCmd.fnc = &HcomHandler::executeDisplayHighestGenerationCommand;
+    dihgCmd.group = "Variable Commands";
+    mCmdList << dihgCmd;
 //    HcomCommand chdfscCmd;
 //    chdfscCmd.cmd = "chdfsc";
 //    chdfscCmd.description.append("Change default plot scale of specified variable");
@@ -3063,6 +3071,26 @@ void HcomHandler::executeRemoveVariableCommand(const QString cmd)
         }
     }
 }
+
+//! @brief Execute function for "dihg" command
+void HcomHandler::executeDisplayHighestGenerationCommand(const QString cmd)
+{
+    Q_UNUSED(cmd);
+
+    if(!mpModel) {
+        HCOMERR("No model is open.");
+        mAnsType = Undefined;
+        return;
+    }
+
+    int gen = mpModel->getLogDataHandler()->getHighestGenerationNumber();
+    gen++; //convert from zero-indexing to one-indexing
+    HCOMPRINT(QString::number(gen));
+    mAnsScalar = gen;
+    mAnsType = Scalar;
+}
+
+
 
 
 ////! @brief Execute function for "chdfsc" command
@@ -9505,4 +9533,17 @@ double HcomFunctionoidMinPar::operator()(QString &str, bool &ok)
     }
 
     return ans;
+}
+
+
+double HcomFunctionoidHg::operator()(QString &str, bool &ok)
+{
+    Q_UNUSED(str);
+
+    if(!mpHandler->getModelPtr()) {
+        ok = false;
+        mpHandler->mpConsole->printErrorMessage("No model is open", "", false);
+        return 0;
+    }
+    return mpHandler->getModelPtr()->getLogDataHandler()->getHighestGenerationNumber()+1;
 }
