@@ -157,6 +157,7 @@ private:
 
     void executeDisplayVariablesCommand(const QString cmd);
     void executeRemoveVariableCommand(const QString cmd);
+    void executeDisplayHighestGenerationCommand(const QString cmd);
 //    void executeChangeDefaultPlotScaleCommand(const QString cmd);
 //    void executeDisplayDefaultPlotScaleCommand(const QString cmd);
 //    void executeChangeDefaultPlotOffsetCommand(const QString cmd);
@@ -439,6 +440,12 @@ public:
     double operator()(QString &str, bool &ok);
 };
 
+class HcomFunctionoidHg : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidHg(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double operator()(QString &str, bool &ok);
+};
 
 class HcomFunctionoidExists : public HcomFunctionoid
 {
