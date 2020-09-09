@@ -266,7 +266,11 @@ Loads plot files from .csv or .plo<br>
 
 \subsection bode bode
 Creates a bode plot from specified curves<br>
- Usage: bode [invar] [outvar] [maxfreq]
+ Usage: bode [invar] [outvar] [maxfreq] [windowfunction] [mintime] [maxtime]
+
+\subsection nyquist nyquist
+Creates a Nyquist plot from specified curves<br>
+ Usage: nyquist [invar] [outvar]
 
 \subsection lock lock
 Locks or unlocks all axes in current plot window<br>
@@ -393,6 +397,11 @@ Removes specified variable<br>
  Usage: rmvar [variables] -n [variables]<br>
   Flags (optional):<br>
    -n Exclude specified variables   -noalias Exclude all alias variables
+
+\subsection dihg dihg
+Display highest generation<br>
+ Usage: dihg<br>
+
 
 \subsection sequ sequ
 Set quantity on specified variable(s)<br>
@@ -615,6 +624,10 @@ Usage: floor(vector)
 Index-wise greater than check between vectors and/or scalars (equivalent to ">" operator)<br>
 Usage: gt(varName, threshold)<br>
 Usage: gt(var1, var2)
+
+\subsection hg hg()
+Returns highest generation number<br>
+Usage: hg()
 
 \subsection imax imax()
 Calculate index of maximum value of vector<br>
