@@ -929,7 +929,7 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     comp.parNames << "mTolerance";
     comp.parDisplayNames << "tolerance";
     comp.parDescriptions << "Solver tolerance";
-    comp.parUnits << "-";
+    comp.parUnits << "";
     comp.parInits << "1e-5";
 
     for(int i=0; i<delayTerms.size(); ++i)
