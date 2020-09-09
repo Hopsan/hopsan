@@ -13,6 +13,7 @@ set -e
 # Download and verify
 ./download-dependencies.py ${name}
 
+# Include general settings
 source setHopsanBuildPaths.sh
 
 # Create build dir and enter it
@@ -23,7 +24,7 @@ cd $builddir
 cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
-cmake --build . --parallel $(getconf _NPROCESSORS_ONLN)
+cmake --build .
 cmake --build . --target install
 
 # Return to basedir

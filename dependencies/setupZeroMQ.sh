@@ -11,6 +11,9 @@ installdir=${basedir}/${name}
 # Download and verify
 ./download-dependencies.py ${name}
 
+# Include general settings
+source setHopsanBuildPaths.sh
+
 # Make and enter build dir
 mkdir -p $builddir
 cd $builddir
@@ -24,10 +27,10 @@ fi
 cmake ${zmq_cmake_args} -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
-cmake --build . --parallel $(getconf _NPROCESSORS_ONLN)
+cmake --build .
 cmake --build . --target install
 if [[ "$HOPSAN_BUILD_DEPENDENCIES_TEST" == "true" ]]; then
-  ctest --parallel $(getconf _NPROCESSORS_ONLN)
+  ctest
 fi
 
 cd $basedir

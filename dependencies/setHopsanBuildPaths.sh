@@ -37,3 +37,6 @@ else
     echo Could not find qmake, attempting to use qmake-qt5
     export HOPSAN_BUILD_QT_QMAKE=qmake-qt5
 fi
+
+export CTEST_PARALLEL_LEVEL=$(getconf _NPROCESSORS_ONLN)
+export CMAKE_BUILD_PARALLEL_LEVEL=$(getconf _NPROCESSORS_ONLN)
