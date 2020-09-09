@@ -34,6 +34,20 @@ INCLUDEPATH *= $${PWD}/../Utilities
 #--------------------------------------------------------
 
 #--------------------------------------------------------
+# Set hdf5exporter and hdf5 paths
+LIBS += -L$${PWD}/../lib -lhopsanhdf5exporter$${DEBUG_EXT}
+include($${PWD}/../dependencies/hdf5.pri)
+have_hdf5(){
+  INCLUDEPATH *= $${PWD}/../hopsanhdf5exporter
+  DEFINES *= USEHDF5
+  !build_pass:message("Compiling HopsanCLI with HDF5 support")
+} else {
+  LIBS -= -lhopsanhdf5exporter$${DEBUG_EXT}
+  !build_pass:message("Compiling HopsanCLI without HDF5 support")
+}
+#--------------------------------------------------------
+
+#--------------------------------------------------------
 # Set hopsan core paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include
 LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
@@ -62,20 +76,6 @@ contains(DEFINES, HOPSANCLI_USEGENERATOR) {
   DEFINES *= HOPSANGENERATOR_DLLIMPORT
 } else {
   message(Compiling HopsanCLI without HopsanGenerator)
-}
-#--------------------------------------------------------
-
-#--------------------------------------------------------
-# Set hdf5 paths
-LIBS += -L$${PWD}/../lib -lhopsanhdf5exporter$${DEBUG_EXT}
-include($${PWD}/../dependencies/hdf5.pri)
-have_hdf5(){
-  INCLUDEPATH *= $${PWD}/../hopsanhdf5exporter
-  DEFINES *= USEHDF5
-  !build_pass:message("Compiling HopsanCLI with HDF5 support")
-} else {
-  LIBS -= -lhopsanhdf5exporter$${DEBUG_EXT}
-  !build_pass:message("Compiling HopsanCLI without HDF5 support")
 }
 #--------------------------------------------------------
 

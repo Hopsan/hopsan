@@ -3,6 +3,8 @@
 
 #include <ctime>
 
+using namespace hopsan;
+
 //! @brief Help function to append string attribute to HDF5 object
 void appendH5Attribute(H5::H5Object &rObject, const H5std_string &attrName, const H5std_string &attrValue)
 {
