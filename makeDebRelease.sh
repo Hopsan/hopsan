@@ -234,8 +234,13 @@ fi
 #
 set -e
 ${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitdir} ${stage_directory} \
-                                                        ${baseversion} ${releaserevision} ${fullversionname} \
-                                                        ${doDevRelease} ${doBuildInComponents}
+                                                  ${baseversion} ${releaserevision} ${fullversionname} \
+                                                  ${doDevRelease} ${doBuildInComponents}
+# Download dependencies, since that can not be done inside a pbuilder environment
+# Unfortunately all dependencies must be downloaded since we can not know at this point which of them will be used
+pushd ${stage_directory}/dependencies
+./download-dependencies.py --all
+popd
 set +e
 # Remove .git directory and submodule files (if present) before packaging source code
 find ${stage_directory} -name .git -exec rm -rf {} \;
