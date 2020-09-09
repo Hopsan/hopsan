@@ -20,7 +20,6 @@ debianDistArchArray=( buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster \
                       stretch:amd64:qt5py27        stretch:i386:qt5py27 \
                       jessie:amd64:qt5py27_jessie  jessie:i386:qt5py27_jessie )
 ubuntuDistArchArray=( focal:amd64:focal
-                      eoan:amd64:focal             eoan:i386:focal \
                       bionic:amd64:qt5py3_1        bionic:i386:qt5py3_1 \
                       xenial:amd64:qt5py27         xenial:i386:qt5py27 )
 
