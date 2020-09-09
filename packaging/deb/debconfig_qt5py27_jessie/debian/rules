@@ -11,6 +11,7 @@ build:
 	dh_testdir
 
 	# First build dependencies
+	packaging/fixPythonShebang.sh ./ 2
 	cd dependencies; ./setupDiscount.sh
 	cd dependencies; ./setupFMILibrary.sh
 	cd dependencies; ./setupQwt.sh

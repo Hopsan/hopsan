@@ -2,7 +2,7 @@ Source: hopsan
 Section: non-free/x11
 Priority: optional
 Maintainer: Peter Nordin <peter.nordin@liu.se>
-Build-Depends: fakeroot, debhelper (>= 8.0.0), patchelf, unzip, cmake, libtool-bin, automake, pkg-config, qt5-default, python-dev (<< 3.0.0), qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libhdf5-dev,
+Build-Depends: fakeroot, debhelper (>= 8.0.0), patchelf, unzip, cmake, libtool-bin, automake, pkg-config, qt5-default, python (<< 3.0.0), qtbase5-dev, qtbase5-private-dev, libqt5webkit5-dev, libqt5svg5-dev, libqt5opengl5-dev, libhdf5-dev,
 Standards-Version: 3.9.2
 Homepage: https://github.com/Hopsan/hopsan
 
