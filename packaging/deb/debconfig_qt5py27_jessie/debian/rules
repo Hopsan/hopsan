@@ -15,6 +15,7 @@ build:
 	cd dependencies; ./setupFMILibrary.sh
 	cd dependencies; ./setupQwt.sh
 	cd dependencies; ./setupZeroMQ.sh
+	cd dependencies; ./setupMsgpack.sh
 	cd dependencies; ./setupKatex.sh
 	cd dependencies; ./setupTclap.sh
 
