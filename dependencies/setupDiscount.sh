@@ -14,7 +14,7 @@ installdir=${basedir}/${name}
 
 # Copy code to build dir, not sure if out-of-source build is possible
 mkdir -p $builddir
-cd $builddir
+pushd $builddir
 cp -a $codedir/* .
 
 # Generate makefiles
@@ -29,5 +29,5 @@ make -j$(getconf _NPROCESSORS_ONLN) -w
 # Install
 make install
 
-cd $basepwd
+popd
 echo "setupDiscount.sh done!"
