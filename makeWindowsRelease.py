@@ -768,6 +768,9 @@ def copyFiles():
     git_export(r'componentLibraries\exampleComponentLib', gTemporaryBuildDir+r'\componentLibraries')
     copyFileToDir('componentLibraries/exampleComponentLib', 'exampleComponentLib.dll', gTemporaryBuildDir+r'\componentLibraries\exampleComponentLib')
 
+    # Export ModelicaExmpleLibrary
+    git_export(r'componentLibraries\ModelicaExampleLib', gTemporaryBuildDir+r'\componentLibraries')
+
     # Export "extensionLibrary" Git directory to temporary directory
     git_export(r'componentLibraries\extensionLibrary', gTemporaryBuildDir+r'\componentLibraries')
     copyFileToDir('componentLibraries/extensionLibrary', 'extensionLibrary.dll', gTemporaryBuildDir+r'\componentLibraries\extensionLibrary')

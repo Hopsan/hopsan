@@ -50,6 +50,7 @@ install_dir  $srcDir/HopsanCore/dependencies                   $dstDir/HopsanCor
 
 install_dir  $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries
 install_dir  $srcDir/componentLibraries/exampleComponentLib    $dstDir/componentLibraries
+install_dir  $srcDir/componentLibraries/ModelicaExampleLib     $dstDir/componentLibraries
 install_dir  $srcDir/componentLibraries/extensionLibrary       $dstDir/componentLibraries
 install_dir  $srcDir/componentLibraries/autoLibs               $dstDir/componentLibraries
 
