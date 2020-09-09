@@ -1311,9 +1311,9 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
                                                              pEndPort->getName());
                 success = ok1 && ok2;
             }
-#endif
             // Else treat as normal ports
             else
+#endif
             {
                 success = this->getCoreSystemAccessPtr()->connect(pStartPort->getParentModelObjectName(),
                                                                   pStartPort->getName(),
