@@ -30,14 +30,84 @@
 ******************************
     Version History
 ******************************
+2.15.0 (2020-09-10)
+
+--- Enhancements ---
+
+New C-API shared library wrapper for Hopsan core with Julia, Matlab and Python language wrapper, see:
+  Scripts/Julia/hopsan.j1
+  Scripts/Matlab/hopsan.m
+  Scripts/Python/hopsan.py
+
+Update to Qt 5.9.9 and MinGW-w64 5.4.0 on Windows
+  If you are building component libraries externally from an IDE, make sure that you use the new compiler (included with Hopsan)
+
+- HopsanCore:
+  - Add Kinsol solver (libsundials) for solving algebraic equation systems
+    This library source code is bundled with and compiled into HopsanCore
+
+- HopsanCLI:
+  - Enable HDF5 export of log variables from HopsanCLI
+  - Improved parameter export, with the following changes since previous versions
+     * Parameter export no longer prefix the subsystem name twice to system parameters
+     * System parameters in the top-level systems are prepended with the reserved name "self"
+     This means that old parameter files containing system parameters will no longer import correctly, without manual editing
+     However, parameter import was broken anyway, so that should not be a big problem (fixed in this release)
+  - Enable filtering --logonly results on individual variables in ports
+    The entire port is still logged in memory, but only the desired variables are written to CSV file
+
+- HopsanGUI:
+
+  - The built-in python terminal has been removed, because it never worked well, and caused a lot of maintenance problems
+  - Apply icon scale when adding subsystem components
+  - Add automatic numbering and referencing of equations in markdown (LaTeX) help documentation.
+    Use LABEL=name and EQREF{name} according to the example in:
+    exampleComponentLib\HydraulicComponents\MyExampleOrifice.md
+  - Display highest generation command in HCOM, adds "dihg" command and "hg()" function
+
+- HopsanGenerator:
+
+  - Use standard Modelica attributes for input and output variables in Modelica importer
+  - Complete rewrite of Modelica generator and related functionality
+    See the included ModelicaExampleLib
+
+
+--- Bug Fixes ---
+
+- HopsanCore:
+  - Fix compilation issue and stack overflow when using MSVC compiler
+  - Fix PLO v2 import bugs (import did not work)
+
+- HopsanCLI:
+  - Fixed broken parameter import
+  - The command line argument --logonly, did not consider system ports on subsystems
+
+- HopsanGUI:
+  - Always reload models before starting a new optimization, this avoids running old models if you make changes between optimization runs
+  - Correct tab names and tab indexes after restoring HopsanGUI state, when multiple models and/or text editors were opened
+  - Fixed PLO v2 export bugs
+  - Fixed markdown help not being shown when markdown file does not include equations
+  - Fixed LaTeX rendering of parentheses and brackets in help equations, (Updated to KaTeX 0.12.0)
+
+
+--- Component Libraries ---
+
+  - Add new component "AeroFlightRecorder" to the "AeroComponents" library
+  - Resolves problem in SignalLogger with exponentially increasing simulation time due to appending and reallocating data vector
+  - Fix SignalLogger file stream on Windows, so that all values get written
+  - Fix incorrect equations in Gas Accumulator (HydraulicAckumulator)
+  - Add missing embedded text support to PLOLookupTable
+  - Display components (for animation) now has parameters for description, unit, unit scaling, precision, background color and text color
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.14.2 (2020-05-22)
 
 --- Bug Fixes ---
 
 - HopsanGUI:
   - Fixed new bug that prevented system parameters from automatically being copied into new systems when the
-    component using them was copied.
-  - Fixed old bug where system parameters of other types then double would never be copied into a new system.
+    component using them was copied
+  - Fixed old bug where system parameters of other types then double would never be copied into a new system
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 2.14.1 (2020-05-17)
