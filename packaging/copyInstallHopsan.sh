@@ -76,7 +76,8 @@ install_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dst
 install_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/fmilibrary/lib  libfmilib_shared  $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/discount/lib    libmarkdown       $dstDir/bin
-install_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5*-shared   $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5           $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5_cpp       $dstDir/bin
 
 # Install additional files
 # =====================
