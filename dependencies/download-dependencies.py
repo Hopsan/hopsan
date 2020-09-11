@@ -10,6 +10,7 @@ import platform
 import tarfile
 import tempfile
 import zipfile
+import json
 import xml.etree.ElementTree as ET
 if sys.version_info.major == 2:
     import urllib
@@ -28,8 +29,23 @@ def get_attribute(element, attribute_name):
     return str()
 
 
-def file_name(path):
+def get_file_name_from_url(path):
     return os.path.basename(path)
+
+
+def decide_file_name(dependency_name, url):
+    fname = get_file_name_from_url(url)
+    if dependency_name not in fname.lower():
+        fname = dependency_name + '-' + fname
+    return fname
+
+
+def get_expected_hash_and_algo(releasefile_element):
+    algos = ('md5', 'sha1', 'sha256')
+    for algo in algos:
+        if algo in releasefile_element.attrib:
+            return (algo, releasefile_element.attrib[algo])
+    return ('nohash_algo', 'nohash')
 
 
 def hashsum_file(filepath, algorithm):
@@ -140,13 +156,6 @@ class DependenciesXML:
         tree = ET.parse(dependencies_xml_file)
         self.root = tree.getroot()
 
-    def __get_expected_hash(self, releasefile_element):
-        algos = ('md5', 'sha1', 'sha256')
-        for algo in algos:
-            if algo in releasefile_element.attrib:
-                return (algo, releasefile_element.attrib[algo])
-        return ('nohash', 'nohash')
-
     def __match_choice(self, name, version, choices, allow_missing):
         found_name = False
         found_version = False
@@ -165,12 +174,10 @@ class DependenciesXML:
         return False
 
     def __download_and_check_releasefile(self, dep_name, releasefile_element, force):
-        hash_algo, expected_hashsum = self.__get_expected_hash(releasefile_element)
+        hash_algo, expected_hashsum = get_expected_hash_and_algo(releasefile_element)
         for url_element in releasefile_element:
             url = url_element.text
-            fname = file_name(url)
-            if dep_name not in fname.lower():
-                fname = dep_name + '-' + fname
+            fname = decide_file_name(dep_name, url)
 
             do_download = True
             if os.path.isfile(fname):
@@ -210,6 +217,38 @@ class DependenciesXML:
                                               get_attribute(dep, 'type'))
             names.append(dep_name)
         return names
+
+    def ouput_dependencies_flatpak(self):
+        datas = list()
+        for dep in self.root:
+            dep_name = dep.attrib['name']
+            dep_type = get_attribute(dep, 'type')
+            dep_files = list()
+            for releasefile_element in dep:
+                if releasefile_element.tag == 'releasefile':
+                    platform_restriction = get_attribute(releasefile_element, 'platform')
+                    if platform_restriction != 'windows' and dep_type != 'toolchain':
+                        depfile = dict()
+                        hash_algo, expected_hashsum = get_expected_hash_and_algo(releasefile_element)
+                        depfile[hash_algo] = expected_hashsum
+                        depfile['url'] = list()
+                        for url_element in releasefile_element:
+                            url = url_element.text
+                            depfile['url'].append(url)
+                        url = depfile['url'][0]
+                        fname = decide_file_name(dep_name, url)
+                        depfile['dest-filename'] = 'dependencies/'+fname
+                        dep_files.append(depfile)
+            if len(dep_files) > 0:
+                data = dict()
+                data['type'] = 'file'
+                dep_file = dep_files[0]  # Only one supported
+                urls = dep_file['url']
+                dep_file['url'] = urls[0]
+                dep_file['mirror-urls'] = urls[1:]
+                data.update(dep_file)
+                datas.append(data)
+        return datas
 
     def check_choices(self, choices):
         for choice in choices:
@@ -272,6 +311,7 @@ if __name__ == "__main__":
     argparser.add_argument('--list',  dest='list', action='store_true',  help='List available dependencies' )
     argparser.add_argument('--force', dest='force', action='store_true',
         help='Force download even if file exists, code, build and installation directories will be reset')
+    argparser.add_argument('--output-flatpak', dest='output_flatpak', action='store_true', help='Generate for flatpak manifest')
 
     argparser.add_argument('dependency_name', nargs='*', action='append', type=str,
                                              help='Space separated list of dependencies to download')
@@ -280,6 +320,13 @@ if __name__ == "__main__":
     chosen_deps = args.dependency_name[0]
 
     deps_xml = DependenciesXML('dependencies.xml')
+    if args.output_flatpak:
+        deps = deps_xml.ouput_dependencies_flatpak()
+        output = str()
+        for dep in deps:
+            output += json.dumps(dep)+',\n'
+        print(output)
+
     if args.list:
         names = deps_xml.list_dependencies()
         for name in names:
