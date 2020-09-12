@@ -14,7 +14,7 @@ target_include_directories(hopsancli PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/tclap/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Utilities>)
 
-target_link_libraries(hopsancli hopsancore)
+target_link_libraries(hopsancli hopsancore hopsanhdf5exporter)
 
 set_target_properties(hopsancli PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
 
