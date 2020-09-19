@@ -26,16 +26,22 @@
 
 #include "hopsanremotecommon/FileAccess.h"
 
-#include <dirent.h>
 #include <sstream>
 #include <iostream>
 #include <errno.h>
 #include <cstring>
 
 #ifdef _WIN32
-#include <direct.h>
+#  include <direct.h>
+#  ifdef __MINGW32__
+#    include <dirent.h>
+#  elif defined _MSC_VER
+//   Use local copy of https://github.com/tronkko/dirent
+#    include "dirent.h" 
+#  endif
 #else
-#include <unistd.h>
+#  include <unistd.h>
+#  include <dirent.h>
 #endif
 
 #include <sys/stat.h>
