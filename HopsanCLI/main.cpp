@@ -993,7 +993,7 @@ int main(int argc, char *argv[])
                     {
                         prefix = pRootSystem->getName().c_str()+string("$");
                     }
-                    saveResults(pRootSystem, destinationPath+resultsFinalCSVOption.getValue(), Final, logOnlyPortsOrVariables, prefix);
+                    saveResultsToCSV(pRootSystem, destinationPath+resultsFinalCSVOption.getValue(), Final, logOnlyPortsOrVariables);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {
@@ -1014,7 +1014,7 @@ int main(int argc, char *argv[])
                     {
                         prefix = pRootSystem->getName().c_str()+string("$");
                     }
-                    saveResults(pRootSystem, destinationPath+resultsFullCSVOption.getValue(), Full, logOnlyPortsOrVariables, prefix);
+                    saveResultsToCSV(pRootSystem, destinationPath+resultsFullCSVOption.getValue(), Full, logOnlyPortsOrVariables);
                     // Should we transpose the result
                     if (resultsCSVSortOption.getValue() == "cols")
                     {
@@ -1030,12 +1030,12 @@ int main(int argc, char *argv[])
 
                 if(resultsFullHDF5Option.isSet()) {
                     cout << "Saving full results to file: " << destinationPath+resultsFullHDF5Option.getValue() << endl;
-                    saveResultsToHDF5(pRootSystem, destinationPath+resultsFullHDF5Option.getValue(), Full);
+                    saveResultsToHDF5(pRootSystem, destinationPath+resultsFullHDF5Option.getValue(), logOnlyPortsOrVariables, Full);
                 }
 
                 if(resultsFinalHDF5Option.isSet()) {
                     cout << "Saving final results to file: " << destinationPath+resultsFinalHDF5Option.getValue() << endl;
-                    saveResultsToHDF5(pRootSystem, destinationPath+resultsFinalHDF5Option.getValue(), Final);
+                    saveResultsToHDF5(pRootSystem, destinationPath+resultsFinalHDF5Option.getValue(), logOnlyPortsOrVariables, Final);
                 }
 
                 // Save simulation state

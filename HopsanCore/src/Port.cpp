@@ -380,7 +380,7 @@ void Port::setVariableAlias(const HString &rAlias, const size_t id)
 //! @brief Get the alias name for a specific node variable id
 //! @param [in] id The node data id of the requested variable (Ex: NodeHydraulic::Pressure)
 //! @return The alias name or empty string if no alias name exist for requested variable
-const HString &Port::getVariableAlias(const size_t id)
+const HString &Port::getVariableAlias(const size_t id) const
 {
     std::map<HString, size_t>::const_iterator it;
     for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
@@ -442,7 +442,7 @@ bool Port::isLoggingEnabled() const
 //! @brief Get all node data descriptions
 //! @param [in] subPortIdx Ignored on non multi ports
 //! @returns A const pointer to the internal node vector with node data descriptions
-const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t subPortIdx)
+const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t subPortIdx) const
 {
     HOPSAN_UNUSED(subPortIdx)
     // We prefer to use the startnode
@@ -570,15 +570,25 @@ vector<double> *Port::getLogTimeVectorPtr(const size_t subPortIdx)
 }
 
 //! @param [in] subPortIdx Ignored on non multi ports
-vector<vector<double> > *Port::getLogDataVectorPtr(const size_t subPortIdx)
+vector<vector<double> > *Port::getLogDataVectorPtr(size_t subPortIdx)
 {
+    // TODO use const cast maybe
     HOPSAN_UNUSED(subPortIdx)
-    if (mpNode != 0)
-    {
+    if (mpNode != 0) {
         return &(mpNode->mDataStorage);
     }
-    else
-    {
+    else {
+        return 0;
+    }
+}
+
+const std::vector<std::vector<double> > *Port::getLogDataVectorPtr(size_t subPortIdx) const
+{
+    HOPSAN_UNUSED(subPortIdx)
+    if (mpNode != 0) {
+        return &(mpNode->mDataStorage);
+    }
+    else {
         return 0;
     }
 }
@@ -1071,7 +1081,7 @@ double *MultiPort::getNodeDataPtr(const size_t idx, const size_t subPortIdx) con
 //! @brief Get all node data descriptions from a connected sub port node
 //! @param [in] subPortIdx The subport idx to fetch from (range is checked)
 //! @returns A const pointer to the internal node vector with node data descriptions or 0 if subPortIdx is out of range or if no node exist in port
-const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t subPortIdx)
+const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t subPortIdx) const
 {
     if (subPortIdx < mSubPortsVector.size())
     {
@@ -1133,6 +1143,14 @@ std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t s
 {
     if (isConnected())
     {
+        return mSubPortsVector[subPortIdx]->getLogDataVectorPtr();
+    }
+    return 0;
+}
+
+const std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(size_t subPortIdx) const
+{
+    if (isConnected()) {
         return mSubPortsVector[subPortIdx]->getLogDataVectorPtr();
     }
     return 0;

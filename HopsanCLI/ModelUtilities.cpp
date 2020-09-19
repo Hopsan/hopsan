@@ -45,28 +45,30 @@
 using namespace std;
 using namespace hopsan;
 
-namespace {
-
-template <typename ContainerT, typename ValueT>
-bool contains(const ContainerT& container, const ValueT& value) {
-    auto it = std::find(container.begin(), container.end(), value);
-    return (it != container.end());
-}
-
-}
-
-void generateFullSubSystemHierarchyName(const ComponentSystem *pSys, HString &rFullSysName)
+void generateFullSubSystemHierarchyName(const ComponentSystem *pSys, HString &rFullSysName, const HString& separator)
 {
     if (pSys->getSystemParent())
     {
-        generateFullSubSystemHierarchyName(pSys->getSystemParent(), rFullSysName);
-        rFullSysName.append(pSys->getName()).append("$");
+        generateFullSubSystemHierarchyName(pSys->getSystemParent(), rFullSysName, separator);
+        rFullSysName.append(pSys->getName()).append(separator);
     }
     else
     {
         // Do not include top-level name in sub-system hierarchy
         rFullSysName.clear();
     }
+}
+
+HString generateFullSubSystemHierarchyName(const Component *pComponent, const HString &separator, bool includeLastSeparator)
+{
+    const ComponentSystem* pSystem = pComponent->isComponentSystem() ? dynamic_cast<const ComponentSystem*>(pComponent) : pComponent->getSystemParent();
+
+    HString fullSysName;
+    generateFullSubSystemHierarchyName(pSystem, fullSysName, separator);
+    if (!includeLastSeparator && !fullSysName.empty()) {
+        fullSysName.erase(fullSysName.size()-separator.size(),separator.size());
+    }
+    return fullSysName;
 }
 
 HString generateFullPortVariableName(const Port *pPort, const size_t dataId)
@@ -555,92 +557,126 @@ hopsan::Port* getPortWithFullName(hopsan::ComponentSystem *pRootSystem, const st
 
 
 //! @brief Save results to HDF5 format
-//! @param [in] pSys Pointer to component system
+//! @param [in] pRootSystem Pointer to component system
 //! @param [in] rFileName File name for output file
+//! @param [in] includeFilter list of full port names or variables names to include (excluding all others)
 //! @param [in] howMany Specifies if all results or only final values should be saved
-void saveResultsToHDF5(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany)
+void saveResultsToHDF5(ComponentSystem *pRootSystem, const string &rFileName, const std::vector<string>& includeFilter, const SaveResults howMany)
 {
 #ifdef USEHDF5
-    if(!pSys) {
+    if(!pRootSystem) {
         return;
     }
-    HopsanHDF5Exporter *pExporter = new HopsanHDF5Exporter(rFileName.c_str(), pSys->getName().c_str(), std::string("HopsanCLI "+std::string(HOPSANCLIVERSION)).c_str());
+    HopsanHDF5Exporter exporter(rFileName.c_str(), pRootSystem->getName().c_str(), std::string("HopsanCLI "+std::string(HOPSANCLIVERSION)).c_str());
 
-    //Store time vetor
-    vector<double> *pLogTimeVector = pSys->getLogTimeVector();
-    if (pLogTimeVector->size() > 0)
-    {
-        HString s,c,p;
+    auto addTimeVariable = [&exporter, howMany](ComponentSystem* pSystem) {
+        vector<double> *pLogTimeVector = pSystem->getLogTimeVector();
         HVector<double> timeVector;
         if(howMany == Full) {
-            timeVector = HVector<double>(*pLogTimeVector);
+            timeVector = HVector<double>(*pLogTimeVector); //! TODO  Copy twice ==== BAAAD
         }
         else {
             timeVector.append(pLogTimeVector->back());
         }
-        pExporter->addVariable(s,c,p,"Time","","s","Time",timeVector);
-    }
+        HString parentSystemNames = generateFullSubSystemHierarchyName(pSystem,".", false);
+        exporter.addVariable(parentSystemNames, "", "","Time","","s","Time",timeVector);
+    };
 
-    //Store data vectors
-    vector<Component*> components;
-    pSys->getSubComponentsRecursively(components);      //Get list of pointers to all sub-components at all sub-system levels
-    for (const auto pComp : components) {
-        if (pComp) {
-            vector<Port*> ports = pComp->getPortPtrVector();
-            for (size_t p=0; p<ports.size(); ++p)
-            {
-                Port *pPort = ports[p];
-                // Ignore ports that have logging disabled when saving full data
-                if (!pPort->isLoggingEnabled())
-                {
-                    continue;
-                }
-                const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
-                if (pVars)
-                {
-                    for (size_t v=0; v<pVars->size(); ++v)
-                    {
-                        //Generate system hierarchy string (point separated)
-                        HString systemHierarchy;
-                        ComponentSystem *pParentSystem = pComp->getSystemParent();
-                        while(pParentSystem != nullptr && pParentSystem->getSystemParent() != nullptr) {
-                            if(pParentSystem != nullptr) {
-                                systemHierarchy = pParentSystem->getName()+"."+systemHierarchy;
-                            }
-                            pParentSystem = pParentSystem->getSystemParent();
-                        }
-                        if(!systemHierarchy.empty()) {
-                            systemHierarchy.erase(systemHierarchy.size()-1,1);
-                        }
-
-                        //Create data vector
-                        vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
-                        if(pLogData == nullptr || pLogData->empty()) {
-                            continue;
-                        }
-                        HVector<double> dataVector;
-                        if(howMany == Full) {
-                            dataVector.resize(pSys->getNumActuallyLoggedSamples());
-                            for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
-                            {
-                                dataVector[t] = (*pLogData)[t][v];
-                            }
-                        }
-                        else {
-                            dataVector.append(pLogData->back()[v]);
-                        }
-
-                        //Add variable to exporter
-                        pExporter->addVariable(systemHierarchy, pComp->getName(), pPort->getName(), pVars->at(v).name, pPort->getVariableAlias(v).c_str(), pVars->at(v).unit, pVars->at(v).quantity, dataVector);
-                    }
+    auto addVariable = [&exporter, howMany](const ComponentSystem* pSystem, const Component* pComponent, const Port* pPort, size_t variableIndex) {
+        const vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+        if( (pLogData != nullptr) && !pLogData->empty()) {
+            HVector<double> dataVector;
+            if(howMany == Full) {
+                const size_t numLoggedSamples = pSystem->getNumActuallyLoggedSamples();
+                dataVector.reserve(numLoggedSamples);
+                for (size_t t=0; t < numLoggedSamples; ++t) {
+                    dataVector.append((*pLogData)[t][variableIndex]);
                 }
             }
-        }
-    }
+            else {
+                dataVector.append(pLogData->back()[variableIndex]);
+            }
 
-    pExporter->writeToFile();
-    delete pExporter;
+            HString parentSystemNames = generateFullSubSystemHierarchyName(pSystem,".", false);
+            const NodeDataDescription& variable = *pPort->getNodeDataDescription(variableIndex);
+
+            exporter.addVariable(parentSystemNames, pComponent->getName(), pPort->getName(), variable.name, pPort->getVariableAlias(variableIndex).c_str(),
+                                 variable.unit, variable.quantity, dataVector);
+        }
+    };
+
+    saveResultsTo(pRootSystem, includeFilter, addTimeVariable, addVariable);
+
+    exporter.writeToFile();
 #else
     printErrorMessage("HopsanCLI was built without HDF5 support");
 #endif
 }
+
+//! @brief Save results to HDF5 format
+//! @param [in] pRootSystem Pointer to component system
+//! @param [in] rFileName File name for output file
+//! @param [in] howMany Specifies if all results or only final values should be saved
+//! @param [in] includeFilter list of full port names or variables names to include (excluding all others)
+void saveResultsToCSV(ComponentSystem *pRootSystem, const string &rFileName, const SaveResults howMany, const std::vector<string>& includeFilter)
+{
+    if (pRootSystem)
+    {
+        ofstream outfile;
+        outfile.open(rFileName.c_str());
+        if (outfile.good()) {
+
+            auto addTimeVariable = [&outfile, howMany](ComponentSystem* pSystem) {
+                //! @todo alias a for time ? is that even posible
+                HString parentSystemNames = generateFullSubSystemHierarchyName(pSystem,"$");
+                if (howMany == Final) {
+                    outfile << parentSystemNames.c_str() << "Time,,s," << std::scientific << pSystem->getTime() << endl;
+                }
+                else if (howMany == Full) {
+                    vector<double> *pLogTimeVector = pSystem->getLogTimeVector();
+                    if (pLogTimeVector->size() > 0) {
+                        outfile << parentSystemNames.c_str() << "Time,,s";
+                        for (size_t t=0; t<pLogTimeVector->size(); ++t) {
+                            outfile << "," << std::scientific << (*pLogTimeVector)[t];
+                        }
+                        outfile << endl;
+                    }
+                }
+            };
+
+            auto addVariable = [&outfile, howMany](const ComponentSystem* pSystem, const Component* pComponent, const Port* pPort, size_t variableIndex) {
+                const NodeDataDescription& variable = *pPort->getNodeDataDescription(variableIndex);
+                const vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                if( (pLogData != nullptr) && !pLogData->empty()) {
+                    const HString fullVarName = generateFullSubSystemHierarchyName(pSystem,"$") + pComponent->getName() + "#" + pPort->getName() + "#" + variable.name;
+                    if (howMany == Final) {
+                        outfile << fullVarName.c_str() << "," << pPort->getVariableAlias(variableIndex).c_str() << "," << variable.unit.c_str();
+                        outfile << "," << std::scientific << pPort->readNode(variableIndex) << endl;
+                    }
+                    else if (howMany == Full)
+                    {
+                        // Only write something if data has been logged (skip ports that are not logged)
+                        // We assume that the data vector has been cleared
+                        if (pPort->getLogDataVectorPtr()->size() > 0) {
+                            outfile << fullVarName.c_str() << "," << pPort->getVariableAlias(variableIndex).c_str() << "," << variable.unit.c_str();
+                            for (size_t t=0; t<pSystem->getNumActuallyLoggedSamples(); ++t) {
+                                outfile << "," << std::scientific << (*pLogData)[t][variableIndex];
+                            }
+                            outfile << endl;
+                        }
+                    }
+                }
+            };
+
+            saveResultsTo(pRootSystem, includeFilter, addTimeVariable, addVariable);
+
+        }
+        else {
+            printErrorMessage("Could not open: " + rFileName + " for writing!");
+        }
+
+        outfile.close();
+    }
+}
+
+

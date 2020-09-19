@@ -883,21 +883,6 @@ std::vector<HString> ComponentSystem::getSubComponentNames() const
 }
 
 
-//! @brief Returns a list of pointers to all components the system and all sub systems
-//! @param [out] rComponents Pointers to all components
-void ComponentSystem::getSubComponentsRecursively(std::vector<Component*> &rComponents) const
-{
-    //! @todo for now create a vector of the component names, later maybe we should return a pointer to the real internal map
-    SubComponentMapT::const_iterator it;
-    for (it = mSubComponentMap.begin(); it != mSubComponentMap.end(); ++it)
-    {
-        rComponents.push_back(it->second);
-        if(it->second->isComponentSystem()) {
-            reinterpret_cast<ComponentSystem*>(it->second)->getSubComponentsRecursively(rComponents);
-        }
-    }
-}
-
 //! @brief Check if a system has a subcomponent with given name
 //! @param [in] rName The name to check for
 //! @returns true or false

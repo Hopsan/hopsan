@@ -97,7 +97,6 @@ namespace hopsan {
         const std::vector<Component*> getSubComponents() const;
         ComponentSystem* getSubComponentSystem(const HString &rName) const;
         std::vector<HString> getSubComponentNames() const;
-        void getSubComponentsRecursively(std::vector<Component *> &rComponents) const;
         bool haveSubComponent(const HString &rName) const;
         bool isEmpty() const;
 

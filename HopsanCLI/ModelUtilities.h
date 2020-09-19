@@ -44,9 +44,9 @@ void printComponentHierarchy(hopsan::ComponentSystem *pSystem, std::string prefi
 
 // ===== Save Functions =====
 enum SaveResults {Final, Full};
-void saveResults(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany, const std::vector<std::string> &includeFilter,
-                 std::string prefix="", std::ofstream *pFile=0);
-void saveResultsToHDF5(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany);
+void saveResultsToCSV(hopsan::ComponentSystem *pRootSystem, const std::string &rFileName, const SaveResults howMany, const std::vector<std::string>& includeFilter);
+void saveResultsToHDF5(hopsan::ComponentSystem *pRootSystem, const std::string &rFileName, const std::vector<std::string>& includeFilter, const SaveResults howMany);
+
 void transposeCSVresults(const std::string &rFileName);
 void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentSystem* pSystem, std::string prefix="", std::ofstream *pFile=0);
 
@@ -55,12 +55,21 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
 void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::string> &rComps, std::vector<std::string> &rPorts);
 
 // ===== Help Functions =====
-void generateFullSubSystemHierarchyName(const hopsan::ComponentSystem *pSys, hopsan::HString &rFullSysName);
+void generateFullSubSystemHierarchyName(const hopsan::ComponentSystem *pSys, hopsan::HString &rFullSysName, const hopsan::HString &separator);
+hopsan::HString generateFullSubSystemHierarchyName(const hopsan::Component *pComponent, const hopsan::HString &separator, bool includeLastSeparator=true);
 hopsan::HString generateFullPortVariableName(const hopsan::Port *pPort, const size_t dataId);
 
 
 hopsan::Component *getComponentWithFullName(hopsan::ComponentSystem *pRootSystem, const std::string &fullComponentName);
 hopsan::Port* getPortWithFullName(hopsan::ComponentSystem *pRootSystem, const std::string &fullPortName);
+
+
+// ===== Template Help Function =====
+template <typename ContainerT, typename ValueT>
+bool contains(const ContainerT& container, const ValueT& value) {
+    auto it = std::find(container.begin(), container.end(), value);
+    return (it != container.end());
+}
 
 template<typename PortFunction>
 void forEachPort(hopsan::ComponentSystem *pRootSystem, PortFunction function )
@@ -80,6 +89,73 @@ void forEachPort(hopsan::ComponentSystem *pRootSystem, PortFunction function )
             forEachPort(dynamic_cast<hopsan::ComponentSystem*>(pComponent), function);
         }
     }
+}
+
+template <typename SaveTimeFunc, typename SaveVariableFunc>
+void saveResultsTo(hopsan::ComponentSystem *pCurrentSystem, const std::vector<std::string>& includeFilter, SaveTimeFunc writeTime,
+                   SaveVariableFunc writeVariable )
+{
+    hopsan::HString prefix = generateFullSubSystemHierarchyName(pCurrentSystem, "$"); //!< @todo not necessary every time if we use recursion instead
+
+    // Use names to get components in alphabeteical order
+    const std::vector<hopsan::HString> componentNames = pCurrentSystem->getSubComponentNames();
+    size_t numberOfLoggedComponentsInThisSystem = 0;
+    for (const auto& name : componentNames) {
+        hopsan::Component *pComponent = pCurrentSystem->getSubComponent(name);
+
+        size_t numberOfLoggedVariablesInThisComponent = 0;
+        const std::vector<hopsan::Port*> ports = pComponent->getPortPtrVector();
+        for (const hopsan::Port* pPort : ports) {
+            // Ignore ports that have logging disabled
+            if (!pPort->isLoggingEnabled()) {
+                continue;
+            }
+
+            hopsan::HString fullPortName = prefix + pComponent->getName() + "#" + pPort->getName();
+            const bool includeAllVariablesInThisPort = (includeFilter.empty() || contains(includeFilter, fullPortName.c_str())) &&
+                    pPort->isLoggingEnabled();
+
+            const std::vector<hopsan::NodeDataDescription> *pVariables = pPort->getNodeDataDescriptions(); // TODO do not return pointer
+            if (pVariables)
+            {
+                for (size_t v=0; v<pVariables->size(); ++v)
+                {
+                    const hopsan::NodeDataDescription* pVariable = &pVariables->at(v);
+
+                    // Create data vector
+                    const std::vector< std::vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                    if(pLogData == nullptr || pLogData->empty()) {
+                        continue;
+                    }
+
+                    hopsan::HString fullVarName = fullPortName+"#"+pVariable->name;
+                    const bool includeThisVariable = includeAllVariablesInThisPort || contains(includeFilter, fullVarName.c_str());
+                    if (!includeThisVariable) {
+                        continue;
+                    }
+
+                    // Add variable to exporter
+                    writeVariable(pCurrentSystem, pComponent, pPort, v);
+
+                    numberOfLoggedVariablesInThisComponent++;
+                }
+            }
+        }
+        if (numberOfLoggedVariablesInThisComponent > 0) {
+            numberOfLoggedComponentsInThisSystem++;
+        }
+
+        // Recurse into subsystems
+        if (pComponent->isComponentSystem()) {
+            saveResultsTo(dynamic_cast<hopsan::ComponentSystem*>(pComponent), includeFilter, writeTime, writeVariable);
+        }
+    }
+
+    // Save this sytems time vector
+    if (numberOfLoggedComponentsInThisSystem > 0) {
+        writeTime(pCurrentSystem);
+    }
+
 }
 
 

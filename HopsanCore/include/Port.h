@@ -148,7 +148,7 @@ namespace hopsan {
         virtual std::vector<double> *getDataVectorPtr(const size_t subPortIdx=0);
 
         virtual size_t getNumDataVariables() const;
-        virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0);
+        virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0) const;
         virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0) const;
         virtual int getNodeDataIdFromName(const HString &rName, const size_t subPortIdx=0);
 
@@ -157,12 +157,13 @@ namespace hopsan {
         virtual HString getSignalNodeQuantity() const;
         virtual bool getSignalNodeQuantityModifyable() const;
 
-        const HString &getVariableAlias(const size_t id);
+        const HString &getVariableAlias(const size_t id) const;
         int getVariableIdByAlias(const HString &rAlias) const;
 
         virtual bool haveLogData(const size_t subPortIdx=0);
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
-        virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
+        virtual std::vector<std::vector<double> > *getLogDataVectorPtr(size_t subPortIdx=0);
+        virtual const std::vector<std::vector<double> > *getLogDataVectorPtr(size_t subPortIdx=0) const;
         virtual void setEnableLogging(const bool enableLog);
         bool isLoggingEnabled() const;
 
@@ -308,13 +309,14 @@ namespace hopsan {
         double *getNodeDataPtr(const size_t idx, const size_t subPortIdx) const;
         std::vector<double> *getDataVectorPtr(const size_t subPortIdx=0);
 
-        const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0);
+        const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t subPortIdx=0) const;
         const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t subPortIdx=0) const;
         int getNodeDataIdFromName(const HString &rName, const size_t subPortIdx=0);
 
         bool haveLogData(const size_t subPortIdx=0);
         std::vector<double> *getLogTimeVectorPtr(const size_t subPortIdx=0);
         std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t subPortIdx=0);
+        const std::vector<std::vector<double> > *getLogDataVectorPtr(size_t subPortIdx=0) const;
         virtual void setEnableLogging(const bool enableLog);
 
         double getStartValue(const size_t idx, const size_t subPortIdx=0);
