@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 
-SUBDIRS = HopsanCoreTests SymHopTest GeneratorTest DefaultLibraryXMLTest
+SUBDIRS = HopsanCoreTests SymHopTest GeneratorTest DefaultLibraryXMLTest hopsanclitest

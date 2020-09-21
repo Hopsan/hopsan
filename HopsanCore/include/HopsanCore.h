@@ -37,6 +37,7 @@
 #define HOPSANCORE_H_INCLUDED
 
 #include "win32dll.h"
+#include "HopsanCoreVersion.h"
 #include "HopsanEssentials.h"
 
 
