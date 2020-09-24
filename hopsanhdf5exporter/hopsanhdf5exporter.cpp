@@ -2,6 +2,7 @@
 #include "H5Cpp.h"
 
 #include <ctime>
+#include <set>
 
 using namespace hopsan;
 
@@ -33,14 +34,12 @@ void HopsanHDF5Exporter::addVariable(hopsan::HString &rSystemHierarchy, const ho
 
 bool HopsanHDF5Exporter::writeToFile()
 {
-    HString error;
-    const H5std_string filePath = mFilePath.c_str();
     try {
         // turn off auto printing of thrown exceptions so that they can be handled below
         H5::Exception::dontPrint();
 
         // Create and open a file
-        H5::H5File file(filePath, H5F_ACC_TRUNC);
+        H5::H5File file(mFilePath.c_str(), H5F_ACC_TRUNC);
 
         //Generate date and time string
         time_t rawtime;
@@ -59,128 +58,115 @@ bool HopsanHDF5Exporter::writeToFile()
         // Build directory/group hierarchy
         // We need this to avoid massive exception casting when creating directories as
         // group names will be repeated, also we need to create one group depth at a time
-        // The map will sort the group names as unique values in the correct order
-        std::map<HString, char> varhier;
+        // The set will sort the group names as unique values in the correct order
+        std::set<HString> uniqueGroupPaths;
         for(size_t i=0; i<mSystemHierarchies.size(); ++i) {
 
-            //Split system hierarchy string to a vector of sub strings
             std::vector<HString> sysnames;
-            HString tempHierarchy = mSystemHierarchies[i];
-            while(!tempHierarchy.empty()) {
-                sysnames.push_back(tempHierarchy.substr(0, tempHierarchy.find(".")));
-                if(!tempHierarchy.containes(".")) {
-                    tempHierarchy.clear();
-                }
-                else {
-                    tempHierarchy.erase(0,tempHierarchy.find(".") + 1);
-                }
-
+            if (!mSystemHierarchies[i].empty()) {
+                //Split system hierarchy string to a vector of sub strings
+                //! @todo tmp would not be needed if HVector has iterators implemented
+                auto tmp = mSystemHierarchies[i].split('.');
+                sysnames = std::vector<HString>(tmp.data(), tmp.data()+tmp.size());
             }
 
-            HString c = mComponentNames[i];
-            HString p = mPortNames[i];
-            HString v = mVariableNames[i];
+            const HString& componentName = mComponentNames[i];
+            const HString& portName = mPortNames[i];
 
-            HString hdf5name = "/results/";
-            varhier.insert(std::pair<HString,char>(hdf5name, 0));
+            HString fullGroupPath = "/results/";
+            uniqueGroupPaths.insert(fullGroupPath);
             for (const auto &sysname : sysnames) {
-                hdf5name.append(sysname);
-                varhier.insert(std::pair<HString,char>(hdf5name, 0));
-                hdf5name.append("/");
+                fullGroupPath.append(sysname);
+                uniqueGroupPaths.insert(fullGroupPath);
+                fullGroupPath.append("/");
             }
-            if (!c.empty()) {
-                hdf5name.append(c);
-                varhier.insert(std::pair<HString,char>(hdf5name, 0));
-                if (!p.empty()) {
-                    hdf5name.append("/").append(p);
-                    varhier.insert(std::pair<HString,char>(hdf5name, 0));
+            if (!componentName.empty()) {
+                fullGroupPath.append(componentName);
+                uniqueGroupPaths.insert(fullGroupPath);
+                if (!portName.empty()) {
+                    fullGroupPath.append("/").append(portName);
+                    uniqueGroupPaths.insert(fullGroupPath);
                 }
             }
         }
+
         // Create all Groups
-        for (const auto &var : varhier) {
-            file.createGroup(var.first.c_str());
+        for (const auto &groupPath : uniqueGroupPaths) {
+            file.createGroup(groupPath.c_str());
         }
 
+        HVector<HString> errors;
         for(size_t i=0; i<mSystemHierarchies.size(); ++i) {
             // Create a dataspace for a vector of data
             hsize_t dims[1];
             dims[0] = size_t(mDataVectors[i].size());
             H5::DataSpace dataspace(1, dims);
 
-            // Convert full or smart name to hdf5 path (groups) name
-            //Split system hierarchy string to a vector of sub strings
-            std::vector<HString> sysnames;
-            while(!mSystemHierarchies[i].empty()) {
-                sysnames.push_back(mSystemHierarchies[i].substr(0, mSystemHierarchies[i].find(".")));
-                mSystemHierarchies[i].erase(0,mSystemHierarchies[i].find(".") + 1);
-                if(!mSystemHierarchies[i].containes(".")) {
-                    mSystemHierarchies[i].clear();
-                }
-                else {
-                    mSystemHierarchies[i].erase(0,mSystemHierarchies[i].find(".") + 1);
-                }
+            HString systemNames = mSystemHierarchies[i];
+            systemNames.replace('.', '/');
+            if (!systemNames.empty()) {
+                systemNames.append('/');
             }
 
-            HString c = mComponentNames[i];
-            HString p = mPortNames[i];
-            HString v = mVariableNames[i];
+            const HString& componentName = mComponentNames[i];
+            const HString& portName = mPortNames[i];
+            const HString& variableName = mVariableNames[i];
 
-            std::vector<HString> hdf5names;
-            HString hdf5fullname = "/results/";
-            for (const auto &sysname : sysnames) {
-                hdf5fullname.append(sysname.c_str());
-                hdf5fullname.append("/");
-            }
-            if (!c.empty()) {
-                hdf5fullname.append(c.c_str());
-                if (!p.empty()) {
-                    hdf5fullname.append("/").append(p.c_str());
+            std::vector<HString> hdf5NamesForThisVariable;
+
+            HString hdf5FullVariableName = "/results/" + systemNames;
+            if (!componentName.empty()) {
+                hdf5FullVariableName.append(componentName).append('/');
+                if (!portName.empty()) {
+                    hdf5FullVariableName.append(portName).append('/');
                 }
             }
-            // Append last part of the name
-            hdf5fullname.append("/").append(v.c_str());
-            hdf5names.push_back(hdf5fullname);
+            // Append last part of the name, the variable name
+            hdf5FullVariableName.append(variableName);
 
-            // If we have an alias aswell then append it also
+            hdf5NamesForThisVariable.push_back(hdf5FullVariableName);
+
+            // If variable has an alias then  create an additional hdf5 variable with the alias name
             //! @todo should alias be model global ?
+            //! @todo investigate if links can be be used instead of duplicating data
             if (!mAliasNames[i].empty()) {
-                HString aliasStr = mSystemHierarchies[i];
-                aliasStr.replace(".", "/");
-                aliasStr.append("/");
-                aliasStr.append(mAliasNames[i]);
-                hdf5names.push_back(aliasStr.c_str());
+                HString hdf5FullVariableAliasName = "/results/"+systemNames+mAliasNames[i];
+                hdf5NamesForThisVariable.push_back(hdf5FullVariableAliasName);
             }
 
-            for (const auto &rHdf5Name : hdf5names) {
+            for (const auto &hdf5Name : hdf5NamesForThisVariable) {
                 // Create the data set, we hope that the code above has created the group already
                 // if not then we will fail here and exit with an exception
-                H5::DataSet dataset = file.createDataSet(rHdf5Name.c_str(), H5::PredType::NATIVE_DOUBLE, dataspace);
+                // Exception will also occure if name is already taken
+                try {
+                    H5::DataSet dataset = file.createDataSet(hdf5Name.c_str(), H5::PredType::NATIVE_DOUBLE, dataspace);
 
-                // Write the data
-                // Note! if name is already taken, then this will throw an exception
-                dataset.write(mDataVectors[i].data(), H5::PredType::NATIVE_DOUBLE);
+                    // Write the data
+                    dataset.write(mDataVectors[i].data(), H5::PredType::NATIVE_DOUBLE);
 
-                // Add meta data attributes
-                appendH5Attribute(dataset, "Unit", mUnits[i].c_str());
-                appendH5Attribute(dataset, "Quantity", mUnits[i].c_str());
+                    // Add meta data attributes
+                    appendH5Attribute(dataset, "Unit", mUnits[i].c_str());
+                    appendH5Attribute(dataset, "Quantity", mQuantities[i].c_str());
+                }
+                catch(H5::Exception &e) {
+                    errors.append(HString(e.getCDetailMsg())+" in "+HString(e.getCFuncName()) + " for dataset " + hdf5Name);
+                    // Log this error but continue to the next variable
+                }
             }
         }
 
         file.close();
+
+        if (errors.size() > 0) {
+            mLastError = errors[0];
+            for (size_t i=1; i<errors.size(); ++i) {
+                mLastError += "; " + errors[i];
+            }
+            return false;
+        }
     }
-    // catch failure caused by the H5File operations
-    catch(H5::FileIException &e) {
-        mLastError = HString(e.getCDetailMsg())+" in "+HString(e.getCFuncName());
-        return false;
-    }
-    // catch failure caused by the DataSet operations
-    catch(H5::DataSetIException &e) {
-        mLastError = HString(e.getCDetailMsg())+" in "+HString(e.getCFuncName());
-        return false;
-    }
-    // catch failure caused by the DataSpace operations
-    catch(H5::DataSpaceIException &e) {
+    // Catch any other H5 exceptions
+    catch(H5::Exception &e) {
         mLastError = HString(e.getCDetailMsg())+" in "+HString(e.getCFuncName());
         return false;
     }

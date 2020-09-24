@@ -607,7 +607,10 @@ void saveResultsToHDF5(ComponentSystem *pRootSystem, const string &rFileName, co
 
     saveResultsTo(pRootSystem, includeFilter, addTimeVariable, addVariable);
 
-    exporter.writeToFile();
+    bool writeOK = exporter.writeToFile();
+    if (!writeOK) {
+        printErrorMessage(("Failure when writing HDF5 file: "+exporter.getLastError()).c_str());
+    }
 #else
     printErrorMessage("HopsanCLI was built without HDF5 support");
 #endif
