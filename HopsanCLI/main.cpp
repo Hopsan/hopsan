@@ -254,6 +254,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
         TCLAP::ValueArg<std::string> logonlyOption("","logonly","If specified, log only given ports or variables. Can be a file (one full port/variable name per line) or coma separated list.",false,"","string", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
+        TCLAP::ValueArg<std::string> parallelOption("p","parallel","Enable parallel simulation with specified number of threads. 0 threads  means auto-detect number of procssors.",false,"0","integer", cmd);
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
         TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so/.dylib externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
         TCLAP::MultiArg<std::string> optimizationOption("o","optScript","Optimization scripts",false,"Path to files", cmd);
@@ -955,7 +956,18 @@ int main(int argc, char *argv[])
                     {
                         cout << "Simulating: " << startTime << " to " << stopTime << " with Ts: " << stepTime << "     Please Wait!" << endl;
                         TicToc simuTimer("SimulationTime");
-                        pRootSystem->simulate(stopTime);
+                        if(parallelOption.isSet()) {
+                            int nThreads = atoi(parallelOption.getValue().c_str());
+                            if(nThreads < 0) {
+                                printErrorMessage("Number of threads cannot be negative.");
+                                return -1;
+                            }
+                            pRootSystem->simulateMultiThreaded(startTime, stopTime, nThreads);
+                        }
+                        else {
+                            pRootSystem->simulate(stopTime);
+                        }
+
                         simuTimer.TocPrint();
                     }
                     if (pRootSystem->wasSimulationAborted())
