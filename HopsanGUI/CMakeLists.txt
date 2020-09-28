@@ -14,6 +14,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/zeromq.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/msgpack.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/qwt.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/discount.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/katex.cmake)
 
 set(target_name hopsangui)
 
@@ -33,4 +34,5 @@ install(TARGETS ${target_name}
   RUNTIME DESTINATION bin
 )
 
-install(FILES ${CMAKE_CURRENT_LIST_DIR}/../hopsan-default-configuration.xml DESTINATION bin/../)
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/../hopsan-default-configuration.xml
+        DESTINATION .)
