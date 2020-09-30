@@ -1,6 +1,6 @@
 /*!
-\page page_codingconventions Hopsan Coding Conventions
-The following coding conventions are to be used both in HopsanCore and HopsanGUI.
+\page page_codingconventions Hopsan Coding Style
+The following coding style is the preferred in all Hopsan C++ code.
 
 \section bracket-style Bracket Style
 - For functions there shall be one line break before the first curly brace.
