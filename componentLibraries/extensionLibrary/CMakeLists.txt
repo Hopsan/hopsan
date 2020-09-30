@@ -36,4 +36,5 @@ install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/ DESTINATION componentLibraries/exte
   PATTERN "*.md"
   PATTERN "*.hmf"
   PATTERN "*.svg"
-  PATTERN "LICENSE")
+  PATTERN "LICENSE"
+  PATTERN "CMakeLists.txt" EXCLUDE)
