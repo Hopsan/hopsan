@@ -1746,7 +1746,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         }
         else if(func == "ifElse") {
             if(mArguments.size() == 2) {
-                ret = Expression::fromFunctionArguments("ifElse", QList<Expression>() << dg);
+                ret = Expression::fromFunctionArguments("ifElse", QList<Expression>() << g << dg);
             }
             else if(mArguments.size() == 3) {
                 bool success;
@@ -1754,7 +1754,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
                 if(!success) {
                     ok = false;
                 }
-                ret = Expression::fromFunctionArguments("ifElse", QList<Expression>() << dg << dg2);
+                ret = Expression::fromFunctionArguments("ifElse", QList<Expression>() << g << dg << dg2);
             }
         }
         //No special function, so use chain rule
