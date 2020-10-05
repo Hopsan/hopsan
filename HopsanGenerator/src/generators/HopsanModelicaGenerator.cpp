@@ -636,6 +636,7 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             equation.replace(*algExpr.getLeft(), *algExpr.getRight());
         }
         systemEquations.append(algExpr);
+        unknowns.append(algExpr.getVariables());
     }
 
     //Add parameters to list of known variables
