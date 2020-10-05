@@ -1589,7 +1589,10 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         }
 
         //Custom functions
-        if(func == "log")
+        if(func == "greaterThan" || func == "smallerThan" || func == "greaterThanOrEqual" || func == "smallerThanOrEqual" || func == "notEqual" || func == "equal") {
+            ret = Expression(0);
+        }
+        else if(func == "log")
         {
             ret = Expression::fromFactorDivisor(dg, g);
         }
