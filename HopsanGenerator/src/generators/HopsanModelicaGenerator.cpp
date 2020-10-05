@@ -380,6 +380,7 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     QString lhs = lines.at(l).section(":=",0,0).trimmed();
                     QString rhs = lines.at(l).section(":=",1,1).trimmed();
                     vars << lhs;
+                    rhs.remove(";");
                     ifExpressions << rhs;
                     elseExpressions << "";  //Populate in case it is needed below
                     ++l;
@@ -391,21 +392,23 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                         QString lhs = lines.at(l).section(":=",0,0).trimmed();
                         QString rhs = lines.at(l).section(":=",1,1).trimmed();
                         elseExpressions[vars.indexOf(lhs)] = rhs;
+                        rhs.remove(";");
                         ++l;
                     }
                 }
                 for(int i=0; i<vars.size(); ++i) {
                     if(elseExpressions.isEmpty()) {
-                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+vars[i]+")";
+                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+vars[i]+");";
                     }
                     else {
-                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+elseExpressions[i]+")";
+                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+elseExpressions[i]+");";
                     }
                 }
-                continue;
             }
-            algorithms << lines.at(l).trimmed();
-            algorithms.last().replace(":=", "=");
+            else {
+                algorithms << lines.at(l).trimmed();
+                algorithms.last().replace(":=", "=");
+            }
             //Replace variables with Hopsan syntax, i.e. P2.q => q2
             for(int i=0; i<portNames.size(); ++i)
             {
