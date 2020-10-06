@@ -462,7 +462,48 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 section = EquationSection;
                 continue;
             }
-            equations << lines.at(l).trimmed();
+            else if(words.at(0) == "if") {
+                QString condition = lines[l].remove("if").remove("then").trimmed();
+                QStringList vars;
+                QStringList ifExpressions;
+                QStringList elseExpressions;
+                ++l;
+                while(!lines.at(l).trimmed().startsWith("end if") && !lines.at(l).trimmed().startsWith("else")) {
+                    QString lhs = lines.at(l).section("=",0,0).trimmed();
+                    QString rhs = lines.at(l).section("=",1,1).trimmed();
+                    vars << lhs;
+                    rhs.remove(";");
+                    ifExpressions << rhs;
+                    ++l;
+                }
+                if(lines.at(l).trimmed().startsWith("else")) {
+
+                    ++l;
+                    while(!lines.at(l).trimmed().startsWith("end if")) {
+                        QString lhs = lines.at(l).section("=",0,0).trimmed();
+                        QString rhs = lines.at(l).section("=",1,1).trimmed();
+                        elseExpressions << rhs;
+                        rhs.remove(";");
+                        ++l;
+                    }
+                }
+                for(int i=0; i<vars.size(); ++i) {
+                    if(elseExpressions.isEmpty()) {
+                        printErrorMessage("If statements in equation sections must have an \"else\" section.");
+                        return false;
+                    }
+                    else if(elseExpressions.size() != ifExpressions.size()) {
+                        printErrorMessage("\"If\" section and \"else\" section must have same number of equations.");
+                        return false;
+                    }
+                    else {
+                        equations << vars[i]+"=ifElse("+condition+","+ifExpressions[i]+","+elseExpressions[i]+");";
+                    }
+                }
+            }
+            else {
+                equations << lines.at(l).trimmed();
+            }
             //Replace variables with Hopsan syntax, i.e. P2.q => q2
             for(int i=0; i<portNames.size(); ++i)
             {
