@@ -409,36 +409,9 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 algorithms << lines.at(l).trimmed();
                 algorithms.last().replace(":=", "=");
             }
-            //Replace variables with Hopsan syntax, i.e. P2.q => q2
-            for(int i=0; i<portNames.size(); ++i)
-            {
-                QString temp = portNames.at(i)+".";
-                while(algorithms.last().contains(temp))
-                {
-                    if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
-                    {
-                        int idx = algorithms.last().indexOf(temp)+temp.size()-1;
-                        if(portList.at(i).porttype == "WritePort")
-                        {
-                            algorithms.last().remove(idx, 4);
-                        }
-                        else if(portList.at(i).porttype == "ReadPort")
-                        {
-                            algorithms.last().remove(idx, 3);
-                        }
-                    }
-                    else
-                    {
-                        int idx = algorithms.last().indexOf(temp);
-                        int idx2=idx+temp.size()+1;
-                        while(idx2 < algorithms.last().size()+1 && algorithms.last().at(idx2).isLetterOrNumber())
-                            ++idx2;
-                        algorithms.last().insert(idx2, QString::number(i+1));
-                        algorithms.last().remove(idx, temp.size());
-                    }
-                }
+            if(algorithms.endsWith(";")) {
+                algorithms.last().chop(1);
             }
-            algorithms.last().chop(1);
         }
         else if(section == EquationSection)
         {
@@ -527,6 +500,38 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
             }
             if(!equations.isEmpty()) {
                 equations.last().chop(1);
+            }
+        }
+    }
+
+    for(auto &algorithm : algorithms) {
+        //Replace variables with Hopsan syntax, i.e. P2.q => q2
+        for(int i=0; i<portNames.size(); ++i)
+        {
+            QString temp = portNames.at(i)+".";
+            while(algorithm.contains(temp))
+            {
+                if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
+                {
+                    int idx = algorithm.indexOf(temp)+temp.size()-1;
+                    if(portList.at(i).porttype == "WritePort")
+                    {
+                        algorithm.remove(idx, 4);
+                    }
+                    else if(portList.at(i).porttype == "ReadPort")
+                    {
+                        algorithm.remove(idx, 3);
+                    }
+                }
+                else
+                {
+                    int idx = algorithm.indexOf(temp);
+                    int idx2=idx+temp.size()+1;
+                    while(idx2 < algorithm.size()+1 && algorithm.at(idx2).isLetterOrNumber())
+                        ++idx2;
+                    algorithm.insert(idx2, QString::number(i+1));
+                    algorithm.remove(idx, temp.size());
+                }
             }
         }
     }
