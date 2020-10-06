@@ -592,7 +592,7 @@ private Q_SLOTS:
           'VERSION'
           2
           'temp.PLO'
-          3    4
+          2    4
           'Time',    'x', 'y'
           Time  Position Position
           0  10 100

@@ -126,15 +126,16 @@ bool PLOParser::readFile(std::iostream &rFileStream)
     }
 
     // Read column names
+    const bool isPloV1orV2 = (mPloVersion == 1) || (mPloVersion == 2);
 
-    mDataNames.reserve(mNumDataCols+1); //One extra in case plo v1 and Time in first column
+    mDataNames.reserve(mNumDataCols+1); // Reserve one extra in case plo v1 or v2 and Time in first column
     for (size_t i=0; i<mNumDataCols; ++i)
     {
         rFileStream >> tmp;
         HString name(tmp.c_str());
 
-        if ( (i==0) && (mPloVersion == 1) && ((name=="'Time',") || (name=="'Frequency',")) )
-        {
+        // PLO v1 and v2 does not count the "Time" or "Frequency" vector if it is in column 1, so add one to the number of columns in that case
+        if ( (i==0) && isPloV1orV2 && ((name=="'Time',") || (name=="'Frequency',")) ) {
             ++mNumDataCols;
         }
         //! @todo Use proper splitting on , and then trimm

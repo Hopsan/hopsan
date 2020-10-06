@@ -212,8 +212,8 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
         fileStream << "    'VERSION'\n";
         fileStream << "    " << version << "\n";
         fileStream << "    '"<<ploFileInfo.baseName()<<".PLO'\n";
-        // PLO Version 1 does not count the time or frequency vector in the number of data columns
-        if ( (version == 1) && ((timeVectors.size() > 0) || (freqVectors.size() > 0)) )
+        // PLO Version 1 and 2 does not count the time or frequency vector in the number of data columns
+        if ( ((version == 1) || (version == 2)) && ((timeVectors.size() > 0) || (freqVectors.size() > 0)) )
         {
             fileStream << "    " << nDataCols-1  <<"    "<< nDataRows <<"\n";
         }
@@ -260,7 +260,7 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
         const QString &q = variables[i]->getDataQuantity();
         if (version==1 || q.isEmpty())
         {
-            fileStream << " " << 1.0;
+            fileStream << "  " << 1.0;
         }
         else
         {
@@ -489,7 +489,7 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
                 }
             }
             // Else check for data header info
-            else if(lineNum == 5)//(line.startsWith("'Time"))
+            else if(lineNum == 5)
             {
                 if ( ((ploVersion == 1) || (ploVersion == 2)) && (line.startsWith("'" TIMEVARIABLENAME) || line.startsWith("'" FREQUENCYVARIABLENAME)) )
                 {
