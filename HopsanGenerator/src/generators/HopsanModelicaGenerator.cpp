@@ -676,6 +676,11 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             printErrorMessage("Only assignments are allowed in algorithm sections.");
             return false;
         }
+        if(!algExpr.verifyExpression()) {
+            printErrorMessage("Illegal function(s) found in "+algExpr.toString());
+            return false;
+        }
+
         for(auto &equation : systemEquations) {
             equation.replace(*algExpr.getLeft(), *algExpr.getRight());
         }
